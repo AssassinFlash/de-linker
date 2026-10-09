@@ -1,0 +1,122 @@
+[
+ {
+  "file": "home-1440-en-local.png",
+  "url": "http://127.0.0.1:8888/",
+  "status": 200,
+  "title": "Linker (local a)",
+  "scrollWidth": 1440,
+  "clientWidth": 1440,
+  "height": 1089,
+  "fonts": [
+   "Manrope, sans-serif"
+  ],
+  "htmlLang": "en-US",
+  "errors": []
+ },
+ {
+  "file": "home-390-en-local.png",
+  "url": "http://127.0.0.1:8888/",
+  "status": 200,
+  "title": "Linker (local a)",
+  "scrollWidth": 390,
+  "clientWidth": 390,
+  "height": 886,
+  "fonts": [
+   "Manrope, sans-serif"
+  ],
+  "htmlLang": "en-US",
+  "errors": []
+ },
+ {
+  "file": "home-1440-de-local.png",
+  "url": "http://127.0.0.1:8888/de/",
+  "status": 404,
+  "title": "Page not found – Linker (local a)",
+  "scrollWidth": 1440,
+  "clientWidth": 1440,
+  "height": 1461,
+  "fonts": [
+   "Manrope, sans-serif"
+  ],
+  "htmlLang": "en-US",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "file": "home-390-de-local.png",
+  "url": "http://127.0.0.1:8888/de/",
+  "status": 404,
+  "title": "Page not found – Linker (local a)",
+  "scrollWidth": 390,
+  "clientWidth": 390,
+  "height": 1256,
+  "fonts": [
+   "Manrope, sans-serif"
+  ],
+  "htmlLang": "en-US",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "file": "home-1440-en-live.png",
+  "url": "https://de-linker.com/?cbq=1791552966014",
+  "status": 200,
+  "title": "PV & Storage Solutions for Installers and EPCs | Linker",
+  "scrollWidth": 1440,
+  "clientWidth": 1440,
+  "height": 8264,
+  "fonts": [
+   "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+   "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+  ],
+  "htmlLang": "en-US",
+  "errors": []
+ },
+ {
+  "file": "home-390-en-live.png",
+  "url": "https://de-linker.com/?cbq=1791552966014",
+  "status": 200,
+  "title": "PV & Storage Solutions for Installers and EPCs | Linker",
+  "scrollWidth": 390,
+  "clientWidth": 390,
+  "height": 8827,
+  "fonts": [
+   "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+   "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+  ],
+  "htmlLang": "en-US",
+  "errors": []
+ },
+ {
+  "file": "home-1440-de-live.png",
+  "url": "https://de-linker.com/de/?cbq=1791552966014",
+  "status": 200,
+  "title": "PV- & Speicherlösungen für Installateure und EPCs | Linker",
+  "scrollWidth": 1440,
+  "clientWidth": 1440,
+  "height": 8577,
+  "fonts": [
+   "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+   "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+  ],
+  "htmlLang": "de-DE",
+  "errors": []
+ },
+ {
+  "file": "home-390-de-live.png",
+  "url": "https://de-linker.com/de/?cbq=1791552966014",
+  "status": 200,
+  "title": "PV- & Speicherlösungen für Installateure und EPCs | Linker",
+  "scrollWidth": 390,
+  "clientWidth": 390,
+  "height": 9283,
+  "fonts": [
+   "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+   "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+  ],
+  "htmlLang": "de-DE",
+  "errors": []
+ }
+]
