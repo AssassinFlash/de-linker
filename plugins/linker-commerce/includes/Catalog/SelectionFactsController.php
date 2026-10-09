@@ -13,9 +13,9 @@ use WP_REST_Request;
 
 /**
  * GET /wp-json/linker/v1/selection-facts?ids=1,2,3 returns
- * { "<id>": SelectionFactSet } for the published products among the IDs, in
- * the order asked. It is public and the same for every visitor: no login,
- * nonce or cookie, so a page cache may keep it (docs/specs/7-selection-facts.md).
+ * { "<id>": SelectionFactSet } for the published products among the IDs. It is
+ * public and the same for every visitor: no login, nonce or cookie, so a page
+ * cache may keep it (docs/specs/7-selection-facts.md).
  */
 final class SelectionFactsController {
 

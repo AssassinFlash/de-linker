@@ -11,10 +11,11 @@ namespace Linker\Commerce\Catalog;
 
 /**
  * Converts a product figure ({value, unit}) to kW, kVA or kWh by its unit
- * alone, never by its key name: on the live site `ac_output_kw_nominal` holds W
- * in 29 products and kW in 28 (docs/research/2026-10-09/old-repo-live-catalogue-facts.md).
- * Every method returns null when the value is not a plain non-negative number
- * (or range) or the unit is not one of its table.
+ * alone, never by its key name: among the 89 live inverters and batteries of
+ * 2026-10-09 (tests/fixtures/live-products-2026-10-09.json)
+ * `ac_output_kw_nominal` holds W in 29 products and kW in 28. Every method
+ * returns null when the value is not a plain non-negative number (or range) or
+ * the unit is not one of its table.
  */
 final class Units {
 

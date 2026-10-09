@@ -31,4 +31,4 @@
 - [ ] 文本 "1/N/PE a.c. 230 V" → `phase=1`，不再判三相。
 - [ ] REST 匿名返回 7 个键；未发布商品不出现；101 个 id 返回 400。
 
-2026-10-09 #7 实施按证据修订（证据见 PR）：能量键"产品自身图值先于单个模块"并补 `rated_energy_kwh`、`usable_energy`（线上 1954–1958 的 `module_energy_kwh_nominal` 只是一个模块，产品值在 `system_nominal_energy_kwh`/`rated_energy_kwh`；4103–4106 的可用能量键名是 `usable_energy`）；`system_energy_kwh_range` 进 `kwh_range`；`kwh_range`、`ac_apparent_kva` 只在图值给出时出现，7 个键始终在；不在列表里的分类取最近的列表祖先（backup-power、meters-current-transformers → accessories）；1959 同源错误的另 6 个功率值（取自同一数据手册 p.3 的 CH2 列）一并按 p.2 改为 29 999 W/VA、59 998 Wp；1179/1181 按 SAJ H2 系列页核定为 `home`。
+2026-10-09 #7 实施按证据修订（证据见 PR）：能量键"产品自身图值先于单个模块"并补 `rated_energy_kwh`（线上 1954–1958 的 `module_energy_kwh_nominal` 只是一个模块，产品值在 `system_nominal_energy_kwh`/`rated_energy_kwh`）；可用能量键补 `usable_energy`（4103–4106 的键名；`usable_energy_kwh` 只在草稿商品上）；`system_energy_kwh_range` 进 `kwh_range`；`kwh_range`、`ac_apparent_kva` 只在图值给出时出现，7 个键始终在；不在列表里的分类取最近的列表祖先（backup-power、meters-current-transformers → accessories）；1959 同源错误的另 6 个功率值（取自同一数据手册 p.3 的 CH2 列）一并按 p.2 改为 29 999 W/VA、59 998 Wp；1179/1181 按 SAJ H2 系列页核定为 `home`。

@@ -67,7 +67,7 @@ final class SelectionFacts {
 	 * Figure keys of the usable energy; the first present one decides. The
 	 * spec's keys (docs/specs/7-selection-facts.md) with a system figure before a
 	 * module figure, as in NOMINAL_KEYS, and usable_energy, the key of the SAJ
-	 * CB2 batteries (4103–4106).
+	 * CB2 batteries (4103–4106); usable_energy_kwh is on draft products only.
 	 */
 	private const USABLE_KEYS = array(
 		'system_usable_energy_kwh',
@@ -82,7 +82,8 @@ final class SelectionFacts {
 	 * product's own figure before the figure of one of its modules: GoodWe
 	 * GW61.4-BAT-AC-G10 (1954) states module_energy_kwh_nominal 10.24 and
 	 * system_nominal_energy_kwh 61.4, GW208.9-BAT-LC-G10 (1956) states 52.24 per
-	 * module and rated_energy_kwh 208.9.
+	 * module and rated_energy_kwh 208.9 (the draft Pylontech PowerCube products
+	 * 4123–4127 likewise state a module and a system_capacity_kwh_nominal).
 	 */
 	private const NOMINAL_KEYS = array(
 		'system_capacity_kwh_nominal',

@@ -1,6 +1,7 @@
 {
 	"description": "Data changes of ticket #7 (docs/specs/7-selection-facts.md): pa_application and pa_phase for the nine EcoFlow OCEAN 2 inverters created on 2026-10-07, the Application of SAJ H2-25K-T3/H2-30K-T3-DE and GoodWe ESA 20–30 kW as their manufacturers state it, and the power figures of SAJ CHS2-29.9K-T4-X from its datasheet. \"from\" is the live value read on 2026-10-09; tools/migrate/7-facts.py applies \"to\" where it finds \"from\" and refuses on anything else.",
 	"new_attribute": {
+		"_source": "As on the EcoFlow OCEAN 2 inverters already on the site (3555–3580, 2026-10-09): pa_phase at position 0, visible; pa_application at position 3, hidden.",
 		"pa_phase": {
 			"position": 0,
 			"visible": true
@@ -407,40 +408,84 @@
 		}
 	],
 	"basis": {
-		"ecoflow-p3-phase": {
-			"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
-			"page": 2,
-			"states": "Table \"EcoFlow OCEAN 2 Hybrid Inverter Three-Phase\", columns EF HD-P3-5K0-S2 … EF HD-P3-15K-G2/-G2F; Nennspannung \"L–L: 380 / 400 V AC; L–N: 220 / 230 V AC; 3L + N + PE\"."
-		},
-		"ecoflow-p3-home": {
-			"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
-			"page": 1,
-			"states": "Cover: \"Solarspeicherlösung für Privathaushalte\" (EcoFlow OCEAN 2, 3-phasig, 5/6/8/10/12/15 kW). EcoFlow's EU product page is titled \"EcoFlow OCEAN 2 Three-Phase Solar Home Battery Storage\" (energy.ecoflow.com/eu/products/ocean-2-home-battery, read via Apify 2026-10-09)."
-		},
-		"ecoflow-p1-phase": {
-			"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-datasheet-en.pdf",
-			"page": 2,
-			"states": "Table \"EcoFlow OCEAN 2 Hybrid Inverter Single-Phase\", columns EF HD-P1-3K-S2 … EF HD-P1-6K-S2; Grid Connection \"L+N+PE\"."
-		},
-		"ecoflow-p1-home": {
-			"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-user-manual-de-v1-3.pdf",
-			"page": 6,
-			"states": "Self-consumption mode: \"…die Selbstversorgungsquote der Haushalte verbessert\". EcoFlow's EU product page is titled \"EcoFlow OCEAN 2 | Single Phase Home Battery Storage\" (energy.ecoflow.com/eu/products/ocean-2-single-phase-home-battery, read via Apify 2026-10-09). The single-phase datasheet itself names no segment."
-		},
-		"saj-h2-home": {
-			"document": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
-			"page": 2,
-			"states": "The datasheet names no segment (\"H2 10-30K Three Phase Hybrid Inverter\"). SAJ lists the H2 series under \"Residential Hybrid Inverter\" (saj-electric.com/residential-hybrid-inverter) and its series page says it \"is designed to deliver intelligent energy management for residential solar and battery storage systems\"; the 10–30K-T models are \"suitable for larger residential or light commercial projects\" (saj-electric.com/h2-series; both read via Apify 2026-10-09). SAJ's commercial hybrid line is CHS2/CH3/CM2."
-		},
-		"goodwe-esa-home": {
-			"document": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
-			"page": 1,
-			"states": "ESA Series 5-30kW/5-108kWh: \"1st TÜV-certified low-noise residential integrated system\", \"Whole-home backup\". GoodWe's series page: power \"for homes and small businesses\" (en.goodwe.com/esa-5-30kw, read via Apify 2026-10-09)."
-		},
-		"saj-chs2-p2": {
-			"document": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
-			"page": 2,
-			"states": "Column CHS2-29.9K-T4-X: Max. PV Array Power [Wp]@STC 59998; Rated AC Power [W] 29999; Max.Apparent Power[VA] 29999; Back-up Max.Output Power [VA] 29999; Peak Output Apparent Power [VA] 29999. The 29900/59800 values on the live product are those of the CH2-29.9K-T4 inverter on page 3."
-		}
+		"ecoflow-p3-phase": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+				"page": 2,
+				"states": "Table \"EcoFlow OCEAN 2 Hybrid Inverter Three-Phase\", columns EF HD-P3-5K0-S2 … EF HD-P3-15K-G2/-G2F; Nennspannung \"L–L: 380 / 400 V AC; L–N: 220 / 230 V AC; 3L + N + PE\"."
+			}
+		],
+		"ecoflow-p3-home": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+				"page": 1,
+				"states": "Cover: \"Solarspeicherlösung für Privathaushalte\", EcoFlow OCEAN 2, 3-phasig, 5/6/8/10/12/15 kW."
+			},
+			{
+				"page_url": "https://energy.ecoflow.com/eu/products/ocean-2-home-battery",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "Title \"EcoFlow OCEAN 2 Three-Phase Solar Home Battery Storage\"."
+			}
+		],
+		"ecoflow-p1-phase": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-datasheet-en.pdf",
+				"page": 2,
+				"states": "Table \"EcoFlow OCEAN 2 Hybrid Inverter Single-Phase\", columns EF HD-P1-3K-S2 … EF HD-P1-6K-S2; Grid Connection \"L+N+PE\"."
+			}
+		],
+		"ecoflow-p1-home": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-user-manual-de-v1-3.pdf",
+				"page": 6,
+				"states": "Self-consumption mode: \"…die Selbstversorgungsquote der Haushalte verbessert\". The single-phase datasheet names no segment."
+			},
+			{
+				"page_url": "https://energy.ecoflow.com/eu/products/ocean-2-single-phase-home-battery",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "Title \"EcoFlow OCEAN 2 | Single Phase Home Battery Storage\"."
+			}
+		],
+		"saj-h2-home": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+				"page": 1,
+				"states": "Names no segment: \"H2 10-30K Three Phase Hybrid Inverter\" (page 2 repeats page 1)."
+			},
+			{
+				"page_url": "https://www.saj-electric.com/h2-series",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "\"The SAJ H2 Series hybrid inverter is designed to deliver intelligent energy management for residential solar and battery storage systems\"; the 10–30K-T models are \"suitable for larger residential or light commercial projects\"."
+			},
+			{
+				"page_url": "https://www.saj-electric.com/residential-hybrid-inverter",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "SAJ lists the H2 series under \"Residential Hybrid Inverter\"; its commercial hybrid line is CHS2/CH3/CM2."
+			}
+		],
+		"goodwe-esa-home": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+				"page": 1,
+				"states": "ESA Series 5-30kW/5-108kWh: \"1st TÜV-certified low-noise residential integrated system\", \"Whole-home backup\"."
+			},
+			{
+				"page_url": "https://en.goodwe.com/esa-5-30kw",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "\"…reliable power for homes and small businesses\"."
+			}
+		],
+		"saj-chs2-p2": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+				"page": 2,
+				"states": "Column CHS2-29.9K-T4-X: Max. PV Array Power [Wp]@STC 59998; Rated AC Power [W] 29999; Max.Apparent Power[VA] 29999; Back-up Max.Output Power [VA] 29999; Peak Output Apparent Power [VA] 29999."
+			},
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+				"page": 3,
+				"states": "Column CH2-29.9K-T4 (the inverter alone): 59800 Wp, 29900 W/VA — the values the live product carries without a citation."
+			}
+		]
 	}
 }

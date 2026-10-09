@@ -13,7 +13,7 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 | `plugins/linker-tools` | Genie 与 Solution Configurator：PHP 壳（`Linker\Tools\` → `includes/`）和 React 应用（`src/`，入口 `genie`、`configurator`、`shared`），构建产物提交在 `build/` |
 | `services/genie` | Genie 的代理循环服务（FastAPI，`linker_genie`；与 `linker-tools` 里转发请求的 PHP 代理不是一回事） |
 | `services/engine` | Solution Configurator 的引擎（FastAPI，`linker_engine`） |
-| `tools/` | just 模块（`build.just`）、PHP 项目共用的工具配置（`php/`：PHPCS 规则；PHPStan 设置，`phpstan.neon` 全部 PHP 项目共用，`phpstan-plugins.neon` 再加插件用的 WooCommerce stubs 与测试 bootstrap；插件的 PHPUnit bootstrap）、本地栈 `local/`（uv 项目 `linker-local`，见 `docs/local-stack.md`） |
+| `tools/` | just 模块（`build.just`）、PHP 项目共用的工具配置（`php/`：PHPCS 规则；PHPStan 设置，`phpstan.neon` 全部 PHP 项目共用，`phpstan-plugins.neon` 再加插件用的 WooCommerce stubs 与测试 bootstrap；插件的 PHPUnit bootstrap）、本地栈 `local/`（uv 项目 `linker-local`，见 `docs/local-stack.md`）、数据迁移 `migrate/`（每票一个 `<票号>-<名>.py` + 计划 `.json` + WordPress 侧 `.php`，经 WP-CLI 执行；uv 项目，PHP 由 `linker-commerce` 的 PHPCS/PHPStan 检查） |
 | `docs/` | 验收协议、各票规格（`docs/specs/`）与研究证据 |
 
 PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插件的 `phpcs.xml.dist`、`phpstan.neon.dist`、`tests/php/bootstrap.php` 只写本插件的文件、文本域与前缀，其余引用 `tools/php/`；`phpunit.xml.dist` 每个插件一份，因为 PHPUnit 9.6 的配置文件之间不能共享根元素属性。JS 单测是 `src/` 与 `bin/` 下的 `*.test.ts(x)`，端到端测试在 `plugins/linker-tools/tests/e2e/`。Python 服务是 uv 的 src 布局：规格里写作 `services/genie/retrieval.py` 的模块就是 `services/genie/src/linker_genie/retrieval.py`；包外的脚本（如 `services/genie/index/`）同样受 Ruff 与 mypy 检查（两者都对整个服务目录运行）；测试在各服务的 `tests/`。`tools/local` 同时是 uv 项目（`src/linker_local/`、`tests/`）与只做静态检查的 Composer 项目（实例用的 mu-plugin `mu/` 与 PHP 服务器路由 `router.php`）。
@@ -66,8 +66,8 @@ brew install php@8.3
 
 | 命令 | 内容 |
 |---|---|
-| `just check` | 三个插件与 `tools/local` 的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务与 `tools/local` 的 Ruff（lint + format）与 mypy（strict），都覆盖整个项目目录；最后 `build::check` |
-| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local` 的 pytest（后者含用真实 MySQL/Redis/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过） |
+| `just check` | 三个插件与 `tools/local` 的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务与 `tools/local`、`tools/migrate` 的 Ruff（lint + format）与 mypy（strict），都覆盖整个项目目录；最后 `build::check` |
+| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local`、`tools/migrate` 的 pytest（tools/local 含用真实 MySQL/Redis/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过） |
 | `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
 | `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.2.0 + Redis 对象缓存，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |

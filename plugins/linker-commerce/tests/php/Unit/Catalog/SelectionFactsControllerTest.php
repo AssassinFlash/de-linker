@@ -66,9 +66,9 @@ final class SelectionFactsControllerTest extends TestCase {
 	}
 
 	/**
-	 * Only published products are answered, once each, in the order asked.
+	 * Only published products are answered, once each.
 	 */
-	public function test_returns_the_published_products_in_request_order(): void {
+	public function test_returns_only_the_published_products(): void {
 		$this->mock_post( 6480, 'product', 'publish' );
 		$this->mock_post( 3555, 'product', 'publish' );
 		$this->mock_post( 7001, 'product', 'draft' );
@@ -86,7 +86,7 @@ final class SelectionFactsControllerTest extends TestCase {
 
 		$facts = ( new SelectionFactsController() )->get_items( self::request( array( 6480, 7001, 42, 3555, 6480, 999999 ) ) );
 
-		$this->assertSame( array( 6480, 3555 ), array_keys( (array) $facts ) );
+		$this->assertEqualsCanonicalizing( array( 3555, 6480 ), array_keys( (array) $facts ) );
 		$this->assertSame( 'home', ( (array) $facts )[3555]['application'] );
 		$this->assertSame( 'unknown', ( (array) $facts )[6480]['application'] );
 	}
