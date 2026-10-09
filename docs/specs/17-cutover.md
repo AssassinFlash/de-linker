@@ -18,3 +18,6 @@
 - [ ] Genie R1/R2 线上通过；询盘流程线上通过；邮件 24 小时内到达 sales@ 与 Bcc。
 - [ ] `wp plugin list` 无旧插件；Snippets 表不存在或为空；插件目录无残留。
 - [ ] 视觉验收：首页、产品页、配置器、Genie、账户 × EN/DE × 1440/390（线上）。
+
+## 变更记录
+- 2026-10-09（#5）：切换时写入两个选项，指向 VPS 上的服务：`linker_engine_url`（#14 的引擎）与 `linker_genie_url`（#13 的 Genie）。本地由 `just serve` 写入同名选项。

@@ -29,3 +29,5 @@
 - 2026-10-09（#5）：WordPress 默认发件人 `wordpress@127.0.0.1` 被 PHPMailer 拒绝（本地每封核心邮件都会失败），隔离 mu-plugin 把它改为 `wordpress@example.test`。
 - 2026-10-09（#5）：一次性登录：mu-plugin 的 `linker_local_login_url()` 生成 token（只存 SHA-256），`linker-local login` 经 `wp eval` 调用；10 分钟与一次性按 NIST SP 800-63B-4 "Out-of-Band Verifiers"。
 - 2026-10-09（#5）：#6 的快照尚不存在，`up` 先做 WordPress 7.1.3 + WooCommerce 11.1.0 的干净安装；`--snapshot <dir>` 装入快照的 `plugins/<slug>/` 与 `uploads/`（数据库归 #6）。干净安装上 `/de/`、`/products/`、`/proforma-request/` 不存在（404），它们来自 #6 的数据与 #9 的语言层。
+- 2026-10-09（#5，评审后）："隔离日志为空"改为可量的说法：建好的实例日志里就有 WordPress 自己的更新检查（api.wordpress.org，http 与 https 各一次），都已被拦下；量度是"日志里没有线上主机 `de-linker.com` 的行、每一行都是一次被拦下的请求"。Requests 自己跟随重定向，`pre_http_request` 只看第一个 URL，所以隔离也拦从 127.0.0.1 重定向到别处的请求（`requests-requests.before_redirect`）。
+- 2026-10-09（#5，评审后）：快照接口另装 `themes/<slug>/`（只复制，启用哪个由数据库定）：线上主题 `picostrap5` / `picostrap5-child-base` 不在规格 6 的四个许可插件里，没有它们，装入线上数据库后的本地首页也对不上线上（规格 6 的变更记录同步）。

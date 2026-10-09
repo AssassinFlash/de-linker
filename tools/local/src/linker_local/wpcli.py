@@ -9,19 +9,43 @@ from pathlib import Path
 
 from linker_local.instance import Instance
 
+# The production host runs WP-CLI 2.12.0 (docs/research/2026-10-09/framework-choice.md §2).
+VERSION = "2.12"
+
 
 class WpCliError(RuntimeError):
     """A WP-CLI command failed; the message carries its error output."""
 
 
 def phar() -> Path:
-    """Homebrew's `wp` (WP-CLI 2.12, the production host's version, framework-choice.md §2)."""
+    """Homebrew's `wp`, run under the instance's PHP rather than its own shebang."""
     found = shutil.which("wp")
     if found is None:
         raise WpCliError(
             "WP-CLI is not installed: brew install wp-cli (docs/local-stack.md)"
         )
     return Path(found)
+
+
+def environment(extra: dict[str, str] | None = None) -> dict[str, str]:
+    """The environment of every WP-CLI run. A person running WP-CLI is offered
+    to replace its phar (Runner::auto_check_update()); it stays on 2.12."""
+    return {**os.environ, "WP_CLI_DISABLE_AUTO_CHECK_UPDATE": "1", **(extra or {})}
+
+
+def require_version(php: Path) -> None:
+    """Fail unless `wp` is WP-CLI 2.12.x, the production host's minor version."""
+    found = subprocess.run(
+        [str(php), str(phar()), "--version"],
+        capture_output=True,
+        text=True,
+        env=environment(),
+        check=False,
+    ).stdout.strip()
+    if not found.startswith(f"WP-CLI {VERSION}."):
+        raise WpCliError(
+            f"WP-CLI {VERSION} is required (production's), `wp` is {found or 'not runnable'}"
+        )
 
 
 class WpCli:
@@ -41,11 +65,6 @@ class WpCli:
             *args,
         ]
 
-    def environment(self, extra: dict[str, str] | None = None) -> dict[str, str]:
-        # WP-CLI offers to replace its own phar when a person runs it
-        # (Runner::auto_check_update()); the instance stays on 2.12.
-        return {**os.environ, "WP_CLI_DISABLE_AUTO_CHECK_UPDATE": "1", **(extra or {})}
-
     def run(
         self, *args: str, stdin: str | None = None, env: dict[str, str] | None = None
     ) -> str:
@@ -55,7 +74,7 @@ class WpCli:
             input=stdin,
             capture_output=True,
             text=True,
-            env=self.environment(env),
+            env=environment(env),
             cwd=self.instance.dir,
             check=False,
         )
@@ -68,7 +87,7 @@ class WpCli:
         """Run a command attached to the terminal; return its exit status."""
         return subprocess.run(
             self.command(*args),
-            env=self.environment(),
+            env=environment(),
             cwd=self.instance.dir,
             check=False,
         ).returncode

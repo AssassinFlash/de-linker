@@ -7,9 +7,8 @@ import shutil
 from pathlib import Path
 
 from linker_local.checkout import Checkout
-from linker_local.instance import Instance
-from linker_local.processes import Background, ProcessError
-from linker_local.registry import port_is_free
+from linker_local.instance import HOST, Instance
+from linker_local.processes import Background
 
 # Worker processes of PHP's built-in server (PHP_CLI_SERVER_WORKERS, PHP 7.4+,
 # PHP manual "Built-in web server"; read via Apify on 2026-10-09). Six because
@@ -66,27 +65,21 @@ def process(instance: Instance) -> Background:
 
 def start(instance: Instance, php: Path) -> None:
     """(Re)start the server, so it runs the files of the checkout that called `up`."""
-    server = process(instance)
-    server.stop()
-    if not port_is_free(instance.port):
-        raise ProcessError(
-            f"port {instance.port} of {instance.name} is in use by another program "
-            f"(lsof -nP -iTCP:{instance.port} -sTCP:LISTEN)"
-        )
-    server.start(
+    process(instance).restart(
         [
             str(php),
             "-c",
             str(instance.php_ini),
             "-S",
-            f"127.0.0.1:{instance.port}",
+            f"{HOST}:{instance.port}",
             "-t",
             str(instance.docroot),
             str(instance.router),
         ],
         {**os.environ, "PHP_CLI_SERVER_WORKERS": str(WORKERS)},
+        instance.port,
+        START_TIMEOUT,
     )
-    server.wait_for_port(instance.port, START_TIMEOUT)
 
 
 def stop(instance: Instance) -> bool:

@@ -8,6 +8,7 @@ else a missing tool fails it.
 
 from __future__ import annotations
 
+import fcntl
 import http.client
 import json
 import os
@@ -15,15 +16,20 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlencode, urlsplit
 
 import pytest
 
-from linker_local.instance import Instance
-from linker_local.registry import Registry, port_is_free
+from linker_local.instance import SHARED, Instance, database_of
+from linker_local.mysql import CREDENTIALS, MySQL
+from linker_local.processes import port_is_free
+from linker_local.registry import Registry
 
 NAMES = ("pytesta", "pytestb")
 CLI = Path(sys.executable).with_name("linker-local")
@@ -119,15 +125,17 @@ def path_of(url: str) -> str:
 
 def drop_databases() -> None:
     for name in NAMES:
-        subprocess.run(
-            [
-                "mysql",
-                "--user=root",
-                "--execute",
-                f"DROP DATABASE IF EXISTS `linker_{name}`",
-            ],
-            check=True,
-        )
+        MySQL(CREDENTIALS).drop_database(database_of(name))
+
+
+@contextmanager
+def one_run_per_machine() -> Iterator[None]:
+    """Hold a lock for the whole run: every checkout's `just test` uses the same
+    MySQL server, database names and ports. The lock ends with the process."""
+    SHARED.mkdir(parents=True, exist_ok=True)
+    with (SHARED / "stack-test.lock").open("w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        yield
 
 
 @pytest.fixture(scope="module")
@@ -138,19 +146,25 @@ def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
         if os.environ.get("CI"):
             pytest.skip(message)
         pytest.fail(message)
+    taken = [name for name in NAMES if Registry(SHARED).get(name) is not None]
+    if taken:
+        pytest.fail(
+            f"real instances use the test names {taken}; their databases would go"
+        )
     home = tmp_path_factory.mktemp("linker-local-home")
     built = Stack(home, {**os.environ, "LINKER_LOCAL_HOME": str(home)})
-    drop_databases()  # left by an aborted run
-    try:
-        for name in NAMES:
-            built.cli("up", name)
-        yield built
-    finally:
-        for name in NAMES:
-            built.cli("down", name, check=False)
-        drop_databases()
-        # Two WordPress installs; pytest would otherwise keep them with its last runs.
-        shutil.rmtree(home, ignore_errors=True)
+    with one_run_per_machine():
+        drop_databases()  # left by an aborted run
+        try:
+            for name in NAMES:
+                built.cli("up", name)
+            yield built
+        finally:
+            for name in NAMES:
+                built.cli("down", name, check=False)
+            drop_databases()
+            # Two WordPress installs; pytest would otherwise keep them with its last runs.
+            shutil.rmtree(home, ignore_errors=True)
 
 
 def test_two_instances_run_side_by_side(stack: Stack) -> None:
@@ -207,7 +221,7 @@ def test_pretty_permalinks_and_files_are_served(stack: Stack) -> None:
     assert (checkout.status, checkout.headers["Location"]) == (302, cart)
 
 
-def test_a_form_mails_into_the_instance_and_nothing_reaches_production(
+def test_a_form_mails_into_the_instance_instead_of_sending(
     stack: Stack,
 ) -> None:
     a = stack.instance("pytesta")
@@ -231,8 +245,6 @@ def test_a_form_mails_into_the_instance_and_nothing_reaches_production(
     message = new.pop().read_text()
     assert "To: local-admin@example.test" in message
     assert "Subject: [Linker (local pytesta)] Password Reset" in message
-    log = a.log_dir / "isolation.log"
-    assert "de-linker.com" not in (log.read_text() if log.exists() else "")
 
 
 def test_a_captured_message_keeps_its_bcc(stack: Stack) -> None:
@@ -267,6 +279,59 @@ def test_wordpress_requests_reach_this_machine_only(stack: Stack) -> None:
     assert "\tGET\thttps://de-linker.com/\n" in log
 
 
+@contextmanager
+def serving(respond: type[BaseHTTPRequestHandler]) -> Iterator[int]:
+    """Run a handler on a free port of 127.0.0.1; yield the port."""
+    server = ThreadingHTTPServer(("127.0.0.1", 0), respond)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
+    try:
+        yield server.server_address[1]
+    finally:
+        server.shutdown()
+        thread.join()
+        server.server_close()
+
+
+def test_a_redirect_cannot_lead_wordpress_off_this_machine(stack: Stack) -> None:
+    b = stack.instance("pytestb")
+    reached: list[str] = []
+
+    class Elsewhere(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            reached.append(self.path)
+            self.send_response(200)
+            self.end_headers()
+
+        def log_message(self, format: str, *args: object) -> None:
+            pass
+
+    with serving(Elsewhere) as elsewhere:
+        # localhost is this machine too, but not the one address the isolation allows.
+        target = f"http://localhost:{elsewhere}/escaped"
+
+        class Redirect(BaseHTTPRequestHandler):
+            def do_GET(self) -> None:
+                self.send_response(302)
+                self.send_header("Location", target)
+                self.end_headers()
+
+            def log_message(self, format: str, *args: object) -> None:
+                pass
+
+        with serving(Redirect) as redirect:
+            outcome = stack.wp(
+                b.name,
+                "eval",
+                f"$r = wp_remote_get( 'http://127.0.0.1:{redirect}/' );"
+                " echo is_wp_error( $r ) ? 'refused' : wp_remote_retrieve_response_code( $r );",
+            )
+
+    assert outcome == "refused"
+    assert reached == []
+    assert f"\tREDIRECT\t{target}\n" in (b.log_dir / "isolation.log").read_text()
+
+
 def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
     stack: Stack,
 ) -> None:
@@ -279,6 +344,15 @@ def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
     assert home.headers["X-Robots-Tag"] == "noindex, nofollow"
 
 
+def cookies_of(response: Response) -> str:
+    """The WordPress cookies a response sets, as a Cookie header."""
+    return "; ".join(
+        value.split(";", 1)[0]
+        for value in response.headers.get_all("Set-Cookie", [])
+        if value.startswith("wordpress_")
+    )
+
+
 def test_a_login_link_signs_in_once(stack: Stack) -> None:
     a = stack.instance("pytesta")
     link = path_of(stack.cli("login", a.name).stdout.strip())
@@ -286,11 +360,7 @@ def test_a_login_link_signs_in_once(stack: Stack) -> None:
     first = request(a.port, link)
 
     assert (first.status, first.headers["Location"]) == (302, f"{a.url}/wp-admin/")
-    cookies = "; ".join(
-        value.split(";", 1)[0]
-        for value in first.headers.get_all("Set-Cookie", [])
-        if value.startswith("wordpress_")
-    )
+    cookies = cookies_of(first)
     assert "wordpress_logged_in_" in cookies
     # Signed out, wp-admin sends a visitor to wp-login.php; signed in, the page
     # answers, or on a fresh install WooCommerce's one-time welcome redirect.
@@ -299,6 +369,22 @@ def test_a_login_link_signs_in_once(stack: Stack) -> None:
     signed_in = request(a.port, "/wp-admin/profile.php", cookie=cookies)
     assert "/wp-login.php" not in (signed_in.headers["Location"] or "")
     assert request(a.port, link).status == 403
+
+
+def test_the_server_runs_with_productions_php_limits(stack: Stack) -> None:
+    a = stack.instance("pytesta")
+    cookies = cookies_of(
+        request(a.port, path_of(stack.cli("login", a.name).stdout.strip()))
+    )
+    request(
+        a.port, "/wp-admin/profile.php", cookie=cookies
+    )  # past WooCommerce's welcome redirect
+
+    upload = request(a.port, "/wp-admin/media-new.php", cookie=cookies)
+
+    # WordPress reports the smaller of upload_max_filesize and post_max_size;
+    # without the instance's php.ini it would be PHP's default, 2 MB.
+    assert "Maximum upload file size: 2 GB." in upload.body
 
 
 def test_serve_starts_the_services_and_down_stops_everything(stack: Stack) -> None:

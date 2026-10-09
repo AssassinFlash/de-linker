@@ -21,6 +21,7 @@ if ( ! defined( 'LINKER_LOCAL_DIR' ) ) {
 add_filter( 'pre_wp_mail', 'linker_local_capture_mail', PHP_INT_MAX );
 add_filter( 'wp_mail_from', 'linker_local_mail_from' );
 add_filter( 'pre_http_request', 'linker_local_filter_http', PHP_INT_MAX, 3 );
+add_action( 'requests-requests.before_redirect', 'linker_local_filter_redirect' );
 
 if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// The browser may fetch from this machine only (any port: the instance, its engine and Genie).
@@ -95,7 +96,7 @@ function linker_local_mailer( string $directory ) {
 		 * @return bool Whether the file was written.
 		 */
 		public function postSend(): bool {
-			$file = sprintf( '%s/%s-%s.eml', $this->directory, gmdate( 'Ymd-His' ), bin2hex( random_bytes( 4 ) ) );
+			$file = sprintf( '%s/%s-%s.eml', $this->directory, gmdate( 'Ymd-His' ), wp_generate_uuid4() );
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a local file outside WP_Filesystem's scope.
 			return false !== file_put_contents( $file, $this->getSentMIMEMessage() );
 		}
@@ -104,7 +105,7 @@ function linker_local_mailer( string $directory ) {
 
 /**
  * Lets WordPress's HTTP API reach 127.0.0.1 only; anything else is refused and
- * written to LINKER_LOCAL_DIR/logs/isolation.log.
+ * written to the isolation log.
  *
  * @param false|array<string, mixed>|WP_Error $response Answer from an earlier filter, false to send.
  * @param array<string, mixed>                $args     Request arguments.
@@ -112,15 +113,46 @@ function linker_local_mailer( string $directory ) {
  * @return false|array<string, mixed>|WP_Error
  */
 function linker_local_filter_http( $response, array $args, string $url ) {
-	if ( false !== $response ) {
+	if ( false !== $response || linker_local_is_local( $url ) ) {
 		return $response;
 	}
-	if ( '127.0.0.1' === wp_parse_url( $url, PHP_URL_HOST ) ) {
-		return false;
-	}
-	$method = isset( $args['method'] ) && is_string( $args['method'] ) ? $args['method'] : 'GET';
-	$line   = sprintf( "%s\t%s\t%s\n", gmdate( 'c' ), $method, $url );
-	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a local log outside WP_Filesystem's scope.
-	file_put_contents( LINKER_LOCAL_DIR . '/logs/isolation.log', $line, FILE_APPEND | LOCK_EX );
+	linker_local_log_blocked( isset( $args['method'] ) && is_string( $args['method'] ) ? $args['method'] : 'GET', $url );
 	return new WP_Error( 'linker_local_blocked', sprintf( 'Blocked by the local isolation: %s', $url ) );
+}
+
+/**
+ * Requests follows redirects itself, after pre_http_request has seen only the
+ * first URL; a redirect from 127.0.0.1 to anywhere else is refused here.
+ * WP_Http turns the exception into a WP_Error, as for its own redirect checks
+ * (WP_Http::validate_redirects()).
+ *
+ * @param string $location Redirect target.
+ * @throws WpOrg\Requests\Exception When the target is not on 127.0.0.1.
+ */
+function linker_local_filter_redirect( string $location ): void {
+	if ( ! linker_local_is_local( $location ) ) {
+		linker_local_log_blocked( 'REDIRECT', $location );
+		throw new WpOrg\Requests\Exception( esc_html( sprintf( 'Blocked by the local isolation: %s', $location ) ), 'linker_local_blocked' );
+	}
+}
+
+/**
+ * Whether a URL points at this machine.
+ *
+ * @param string $url URL.
+ * @return bool
+ */
+function linker_local_is_local( string $url ): bool {
+	return '127.0.0.1' === wp_parse_url( $url, PHP_URL_HOST );
+}
+
+/**
+ * Appends a refused request to LINKER_LOCAL_DIR/logs/isolation.log.
+ *
+ * @param string $method HTTP method, or REDIRECT for a refused redirect.
+ * @param string $url    URL.
+ */
+function linker_local_log_blocked( string $method, string $url ): void {
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a local log outside WP_Filesystem's scope.
+	file_put_contents( LINKER_LOCAL_DIR . '/logs/isolation.log', sprintf( "%s\t%s\t%s\n", gmdate( 'c' ), $method, $url ), FILE_APPEND | LOCK_EX );
 }

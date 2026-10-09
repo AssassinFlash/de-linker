@@ -9,13 +9,13 @@ from __future__ import annotations
 
 import fcntl
 import os
-import socket
 import tomllib
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
 from linker_local.instance import Instance, check_name
+from linker_local.processes import port_is_free
 
 # The first port tried, wp-env's default (8888); like `wp-env --auto-port`, the
 # allocation scans upward from it to the next free ports (@wordpress/env README,
@@ -112,24 +112,3 @@ def _free_ports(count: int, taken: set[int]) -> list[int]:
             if len(ports) == count:
                 return ports
     raise RuntimeError(f"no {count} free ports between {FIRST_PORT} and {LAST_PORT}")
-
-
-def port_is_free(port: int) -> bool:
-    """Whether a server can listen on 127.0.0.1:port.
-
-    Nothing may answer there; a connection attempt also finds a server on
-    *:port. The address must then bind as servers bind it, with SO_REUSEADDR
-    (PHP's main/network.c and uvicorn's config.py both set it; read via Apify
-    on 2026-10-09), which disregards the connections of a just-stopped
-    server that are still in TIME_WAIT.
-    """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-        if probe.connect_ex(("127.0.0.1", port)) == 0:
-            return False
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-        probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        try:
-            probe.bind(("127.0.0.1", port))
-        except OSError:
-            return False
-    return True

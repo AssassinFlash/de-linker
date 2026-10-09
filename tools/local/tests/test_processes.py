@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from linker_local.processes import Background, ProcessError
+from linker_local.processes import Background, ProcessError, port_is_free
 
 SLEEPER = [sys.executable, "-c", "import time; time.sleep(60)"]
 
@@ -33,6 +33,22 @@ def test_starts_a_detached_process_and_stops_it(tmp_path: Path) -> None:
     assert process.stop() is False
 
 
+def test_a_terminal_in_another_locale_and_time_zone_finds_the_process(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    process = background(tmp_path)
+    pid = process.start(SLEEPER, dict(os.environ))
+    try:
+        # `up` ran in one terminal; `status` runs in another (this Mac's locale is zh_CN).
+        monkeypatch.setenv("LC_ALL", "zh_CN.UTF-8")
+        monkeypatch.setenv("LANG", "zh_CN.UTF-8")
+        monkeypatch.setenv("TZ", "Asia/Shanghai")
+
+        assert process.pid() == pid
+    finally:
+        assert process.stop() is True
+
+
 def test_a_pid_now_used_by_another_program_is_left_alone(tmp_path: Path) -> None:
     process = background(tmp_path)
     process.pid_file.parent.mkdir(parents=True)
@@ -55,18 +71,48 @@ def test_waits_until_the_port_answers(tmp_path: Path) -> None:
     )
     try:
         process.wait_for_port(port, timeout=10)
+
+        with socket.create_connection(("127.0.0.1", port), timeout=1):
+            pass
     finally:
         process.stop()
 
 
-def test_a_process_that_exits_during_start_is_reported_with_its_log(
+def test_a_process_that_exits_during_start_is_reported_with_its_own_output(
     tmp_path: Path,
 ) -> None:
     process = background(tmp_path)
+    process.log_file.parent.mkdir(parents=True)
+    process.log_file.write_text("an earlier run's output\n")
     process.start(
         [sys.executable, "-c", "print('cannot bind'); raise SystemExit(1)"],
         dict(os.environ),
     )
 
-    with pytest.raises(ProcessError, match="cannot bind"):
+    with pytest.raises(ProcessError, match="cannot bind") as failure:
         process.wait_for_port(free_port(), timeout=10)
+    assert "earlier run" not in str(failure.value)
+
+
+def test_a_listening_port_is_not_free() -> None:
+    with socket.create_server(("127.0.0.1", 0)) as server:
+        assert not port_is_free(server.getsockname()[1])
+
+
+def test_a_port_whose_server_stopped_is_free_while_its_connections_are_in_time_wait() -> (
+    None
+):
+    with socket.create_server(("127.0.0.1", 0)) as server:
+        port = server.getsockname()[1]
+        with socket.create_connection(("127.0.0.1", port)) as client:
+            accepted, _ = server.accept()
+            # The server side closes first, so its end of the connection waits in TIME_WAIT.
+            accepted.close()
+            client.recv(1)
+    with socket.socket() as plain:
+        with pytest.raises(OSError):
+            plain.bind(
+                ("127.0.0.1", port)
+            )  # without SO_REUSEADDR the port still looks taken
+
+    assert port_is_free(port)

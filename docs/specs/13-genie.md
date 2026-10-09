@@ -55,3 +55,6 @@
 - [ ] 核验注入测试五类全部拦截；核验失败率写入 PR。
 - [ ] ProductCard：加入 Lösungsentwurf 的 pending/added/unverified/retry 与加入方案的 saving/saved/failed 均在卡内可见，按钮高度不变，内容不越过卡片（旧票 191 的验收行）；工作区与常驻 × 1440/390。
 - [ ] 视觉验收：四入口 + 常驻 × 状态 × EN/DE × 1440/390。
+
+## 变更记录
+- 2026-10-09（#5）：Genie 服务的地址在选项 `linker_genie_url`：本地由 `just serve <name>` 写入 `http://127.0.0.1:<端口>`，线上由切换（#17）写入 VPS 地址；壳的 Proxy 从这个选项读。

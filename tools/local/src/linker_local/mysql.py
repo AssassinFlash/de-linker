@@ -11,7 +11,11 @@ import secrets
 import subprocess
 from pathlib import Path
 
+from linker_local.instance import SHARED
+
 USER = "linker_local"
+# Where the password of linker_local is kept: one per machine, as the user is.
+CREDENTIALS = SHARED / "linker_local.my.cnf"
 
 
 class MySQLError(RuntimeError):

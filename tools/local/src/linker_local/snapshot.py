@@ -1,12 +1,14 @@
-"""Files from a snapshot of the production site: its licensed plugins and its uploads.
+"""Files from a snapshot of the production site: plugins, themes and uploads.
 
-Ticket #6 writes the snapshot; this module installs the files it holds:
+Ticket #6 writes the snapshot; this module installs the files it holds, and
+#6's `load` reuses it next to its own database import:
 
     <snapshot>/plugins/<slug>/   a plugin directory, as in wp-content/plugins
+    <snapshot>/themes/<slug>/    a theme directory, as in wp-content/themes
     <snapshot>/uploads/          wp-content/uploads
 
-`linker-local up <name> --snapshot <dir>` calls it; the snapshot's database
-is #6's to load.
+Plugins and themes replace the instance's directories of the same name;
+uploads are merged in. Which theme is active is the database's business.
 """
 
 from __future__ import annotations
@@ -22,27 +24,44 @@ class SnapshotError(RuntimeError):
 
 
 def install(instance: Instance, snapshot: Path) -> list[str]:
-    """Copy the snapshot's plugins and uploads into the instance; return the plugin slugs."""
-    plugins = snapshot / "plugins"
-    uploads = snapshot / "uploads"
-    if not plugins.is_dir() and not uploads.is_dir():
-        raise SnapshotError(f"{snapshot} has neither plugins/ nor uploads/")
-    slugs: list[str] = []
-    if plugins.is_dir():
-        for source in sorted(path for path in plugins.iterdir() if path.is_dir()):
-            if source.name.startswith("linker-"):
-                raise SnapshotError(
-                    f"{source}: linker-* plugins come from the checkout, not from a snapshot"
-                )
-            target = instance.wp_content / "plugins" / source.name
-            if target.is_symlink():
-                target.unlink()
-            elif target.exists():
-                shutil.rmtree(target)
-            shutil.copytree(source, target, symlinks=True)
-            slugs.append(source.name)
+    """Copy the snapshot's files into the instance; return the plugin slugs."""
+    plugins, themes, uploads = (
+        snapshot / part for part in ("plugins", "themes", "uploads")
+    )
+    if not any(part.is_dir() for part in (plugins, themes, uploads)):
+        raise SnapshotError(f"{snapshot} has none of plugins/, themes/, uploads/")
+    for source in _directories(plugins):
+        if source.name.startswith("linker-"):
+            raise SnapshotError(
+                f"{source}: linker-* plugins come from the checkout, not from a snapshot"
+            )
+    slugs = [
+        _replace(source, instance.wp_content / "plugins")
+        for source in _directories(plugins)
+    ]
+    for source in _directories(themes):
+        _replace(source, instance.wp_content / "themes")
     if uploads.is_dir():
         shutil.copytree(
             uploads, instance.wp_content / "uploads", symlinks=True, dirs_exist_ok=True
         )
     return slugs
+
+
+def _directories(parent: Path) -> list[Path]:
+    return (
+        sorted(path for path in parent.iterdir() if path.is_dir())
+        if parent.is_dir()
+        else []
+    )
+
+
+def _replace(source: Path, parent: Path) -> str:
+    """Copy `source` to parent/<its name>, removing what was there; return the name."""
+    target = parent / source.name
+    if target.is_symlink():
+        target.unlink()
+    elif target.exists():
+        shutil.rmtree(target)
+    shutil.copytree(source, target, symlinks=True)
+    return source.name

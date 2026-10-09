@@ -12,11 +12,15 @@ from pathlib import Path
 # LINKER_LOCAL_HOME shares them instead of replacing them.
 SHARED = Path.home() / "de-linker-local"
 
+# The address every instance, engine and Genie listens on: the loopback only
+# (spec 5: `php -S 127.0.0.1:<port>`).
+HOST = "127.0.0.1"
+
 DATABASE_PREFIX = "linker_"
 # A database name has at most 64 characters (MySQL 8.4 Reference Manual §11.2.1
 # "Identifier Length Limits", read via Apify on 2026-10-09), and an instance's
-# database is "linker_<name>". The name is also a directory and part of a URL
-# path, so it keeps to lower-case letters, digits and "_".
+# database is "linker_<name>". The name is also a directory name and goes
+# unquoted into SQL and TOML, so it keeps to lower-case letters, digits and "_".
 NAME = re.compile(r"[a-z][a-z0-9_]*")
 NAME_MAX_LENGTH = 64 - len(DATABASE_PREFIX)
 
@@ -55,7 +59,7 @@ class Instance:
 
     @property
     def url(self) -> str:
-        return f"http://127.0.0.1:{self.port}"
+        return f"http://{HOST}:{self.port}"
 
     @property
     def dir(self) -> Path:

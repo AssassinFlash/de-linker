@@ -1,10 +1,9 @@
-import socket
 from pathlib import Path
 
 import pytest
 
 from linker_local import registry
-from linker_local.registry import FIRST_PORT, Registry, port_is_free
+from linker_local.registry import FIRST_PORT, Registry
 
 
 @pytest.fixture
@@ -76,27 +75,3 @@ def test_refuses_a_name_that_cannot_name_a_database(
     with pytest.raises(ValueError):
         Registry(tmp_path).register("Bad-Name")
     assert not (tmp_path / "instances.toml").exists()
-
-
-def test_a_listening_port_is_not_free() -> None:
-    with socket.create_server(("127.0.0.1", 0)) as server:
-        assert not port_is_free(server.getsockname()[1])
-
-
-def test_a_port_whose_server_stopped_is_free_while_its_connections_are_in_time_wait() -> (
-    None
-):
-    with socket.create_server(("127.0.0.1", 0)) as server:
-        port = server.getsockname()[1]
-        with socket.create_connection(("127.0.0.1", port)) as client:
-            accepted, _ = server.accept()
-            # The server side closes first, so its end of the connection waits in TIME_WAIT.
-            accepted.close()
-            client.recv(1)
-    with socket.socket() as plain:
-        with pytest.raises(OSError):
-            plain.bind(
-                ("127.0.0.1", port)
-            )  # without SO_REUSEADDR the port still looks taken
-
-    assert port_is_free(port)

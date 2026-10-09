@@ -15,8 +15,8 @@ def write(path: Path, text: str) -> None:
 @pytest.fixture
 def instance(tmp_path: Path) -> Instance:
     built = Instance("a", 1, 2, 3, tmp_path / "home")
-    (built.wp_content / "plugins").mkdir(parents=True)
-    (built.wp_content / "uploads").mkdir()
+    for part in ("plugins", "themes", "uploads"):
+        (built.wp_content / part).mkdir(parents=True)
     return built
 
 
@@ -57,6 +57,24 @@ def test_a_plugin_from_a_newer_snapshot_replaces_the_installed_one(
     assert uploads == ["kept.jpg", "new.jpg"]
 
 
+def test_installs_themes_and_leaves_choosing_one_to_the_database(
+    tmp_path: Path, instance: Instance
+) -> None:
+    write(instance.wp_content / "themes" / "picostrap5-child-base" / "old.css", "")
+    taken = tmp_path / "snapshot"
+    write(taken / "themes" / "picostrap5" / "style.css", "/* Theme Name: picostrap5 */")
+    write(taken / "themes" / "picostrap5-child-base" / "style.css", "/* child */")
+
+    slugs = snapshot.install(instance, taken)
+
+    assert slugs == []  # nothing to activate: themes are not plugins
+    themes = instance.wp_content / "themes"
+    assert (themes / "picostrap5" / "style.css").exists()
+    assert sorted(
+        path.name for path in (themes / "picostrap5-child-base").iterdir()
+    ) == ["style.css"]
+
+
 def test_our_plugins_never_come_from_a_snapshot(
     tmp_path: Path, instance: Instance
 ) -> None:
@@ -71,5 +89,5 @@ def test_our_plugins_never_come_from_a_snapshot(
 def test_a_directory_without_plugins_or_uploads_is_not_a_snapshot(
     tmp_path: Path, instance: Instance
 ) -> None:
-    with pytest.raises(SnapshotError, match="neither"):
+    with pytest.raises(SnapshotError, match="none of"):
         snapshot.install(instance, tmp_path)

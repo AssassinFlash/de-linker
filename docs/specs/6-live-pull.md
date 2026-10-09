@@ -17,3 +17,6 @@
 - [ ] 快照装入后：已发布商品 106、附件 2,755、德语 sitemap 150 条本地全部 200。
 - [ ] `grep` 证明 SQL 中无 `$P$`/`$wp$` 密码哈希、无应用密码、无 `@`（除 `example.test` 与员工账号）。
 - [ ] 两次 `snapshot` 的 manifest 可比对（增量清单）。
+
+## 变更记录
+- 2026-10-09（#5）：快照目录写成 `plugins/<slug>/`、`themes/<slug>/`、`uploads/` 三部分；`load` 装这些文件用 #5 的 `linker_local.snapshot.install`（`tools/local`，`just up <name> --snapshot <dir>` 用的也是它），自己只做导入 SQL、`search-replace`、清缓存，不再写第二份装文件的代码。线上主题 `picostrap5`、`picostrap5-child-base` 要进快照，否则本地首页对不上线上。线上数据库是 MariaDB 11.8.9，`wp db export` 的第一行是 MySQL 客户端不认的沙箱注释，导入本地 MySQL 前去掉（`docs/local-stack.md`）。

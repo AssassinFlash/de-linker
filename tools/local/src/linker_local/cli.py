@@ -10,16 +10,15 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 
-from linker_local import server, services, wordpress
+from linker_local import server, services, wordpress, wpcli
 from linker_local.checkout import Checkout
-from linker_local.instance import SHARED, Instance, check_name, database_of, home
-from linker_local.mysql import MySQL
+from linker_local.instance import Instance, check_name, database_of, home
+from linker_local.mysql import CREDENTIALS, MySQL
 from linker_local.registry import Registry
 from linker_local.wpcli import WpCli
 
 # The production host runs PHP 8.3 (docs/research/2026-10-09/framework-choice.md §2).
 PHP_VERSION = "8.3"
-MYSQL_CREDENTIALS = SHARED / "linker_local.my.cnf"
 
 # Failures the user can act on, printed as one line. Every error class of this
 # package (DownloadError, MySQLError, ProcessError, SnapshotError, WpCliError)
@@ -50,9 +49,7 @@ def up(args: argparse.Namespace) -> int:
     say = _sayer(instance)
     if instance.is_provisioned():
         wordpress.refresh(instance, php, checkout, say, args.snapshot)
-    elif instance.dir.exists() or MySQL(MYSQL_CREDENTIALS).database_exists(
-        instance.database
-    ):
+    elif instance.dir.exists() or MySQL(CREDENTIALS).database_exists(instance.database):
         raise RuntimeError(
             f"{instance.name} is incomplete (an earlier `up` stopped part-way); "
             f"`just reset {instance.name}` builds it again"
@@ -60,7 +57,7 @@ def up(args: argparse.Namespace) -> int:
     else:
         say(f"new instance on port {instance.port}")
         wordpress.provision(
-            instance, php, checkout, MySQL(MYSQL_CREDENTIALS), say, args.snapshot
+            instance, php, checkout, MySQL(CREDENTIALS), say, args.snapshot
         )
     server.start(instance, php)
     _summary(instance)
@@ -85,10 +82,11 @@ def reset(args: argparse.Namespace) -> int:
     say = _sayer(instance)
     server.stop(instance)
     services.stop(instance)
-    mysql = MySQL(MYSQL_CREDENTIALS)
+    mysql = MySQL(CREDENTIALS)
     say(f"deleting database {instance.database} and {instance.dir}")
     mysql.drop_database(instance.database)
-    shutil.rmtree(instance.dir, ignore_errors=True)
+    if instance.dir.exists():
+        shutil.rmtree(instance.dir)
     wordpress.provision(instance, php, checkout, mysql, say, args.snapshot)
     server.start(instance, php)
     _summary(instance)
@@ -180,7 +178,9 @@ def _parser() -> argparse.ArgumentParser:
         sub.set_defaults(run=run)
         return sub
 
-    snapshot_help = "a snapshot directory (#6): install its plugins/ and uploads/"
+    snapshot_help = (
+        "a snapshot directory (#6): install its plugins/, themes/ and uploads/"
+    )
     sub = command(
         "up", up, "create the instance if it does not exist, then (re)start its server"
     )
@@ -206,7 +206,7 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _php() -> Path:
-    """The PHP 8.3 binary: $PHP (the justfile passes Homebrew's php@8.3), else `php`."""
+    """PHP 8.3 ($PHP; the justfile passes Homebrew's php@8.3), checked with WP-CLI 2.12."""
     name = os.environ.get("PHP", "php")
     found = shutil.which(name)
     version = ""
@@ -222,6 +222,7 @@ def _php() -> Path:
             f"PHP {PHP_VERSION} is required, {name} is {version or 'not runnable'}: "
             "brew install php@8.3, then run through `just` (docs/local-stack.md)"
         )
+    wpcli.require_version(Path(found))
     return Path(found)
 
 
@@ -230,7 +231,7 @@ def _refuse_foreign(name: str) -> None:
     directory = home() / name
     if directory.exists():
         raise RuntimeError(f"{directory} exists but is not a registered instance")
-    if MySQL(MYSQL_CREDENTIALS).database_exists(database_of(name)):
+    if MySQL(CREDENTIALS).database_exists(database_of(name)):
         raise RuntimeError(
             f"database {database_of(name)} exists but is not a registered instance"
         )

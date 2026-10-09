@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import shutil
 import urllib.request
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -32,8 +33,7 @@ def fetch(url: str, cache: Path, sha1: str | None = None) -> Path:
         try:
             with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
                 with partial.open("wb") as handle:
-                    while chunk := response.read(1 << 20):
-                        handle.write(chunk)
+                    shutil.copyfileobj(response, handle)
         except OSError as error:
             partial.unlink(missing_ok=True)
             raise DownloadError(f"{url}: {error}") from error
@@ -48,8 +48,5 @@ def fetch(url: str, cache: Path, sha1: str | None = None) -> Path:
 
 
 def _sha1(path: Path) -> str:
-    digest = hashlib.sha1()
     with path.open("rb") as handle:
-        while chunk := handle.read(1 << 20):
-            digest.update(chunk)
-    return digest.hexdigest()
+        return hashlib.file_digest(handle, "sha1").hexdigest()

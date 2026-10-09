@@ -35,8 +35,8 @@ PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插�
 | Python | 3.12 | VPS（§7）；各服务的 `.python-version` |
 | uv | 0.10.11 | 写出 `uv.lock` 的版本，CI 固定同一版本 |
 | just | 1.58 | 本机版本，CI 固定同一版本 |
-| WP-CLI | 2.12 | 生产主机实测 2.12.0（§2）；本地实例用 Homebrew 的 `wp`，在 PHP 8.3 上运行 |
-| MySQL | Homebrew 9.6 | 本地实例的数据库；生产是 MariaDB 11.8.9（2026-10-09 SSH 只读），差异见 `docs/local-stack.md` |
+| WP-CLI | 2.12 | 生产主机实测 2.12.0（§2）；本地实例用 Homebrew 的 `wp`，在 PHP 8.3 上运行，`linker-local` 每次检查它是 2.12 |
+| MySQL | Homebrew，未固定版本（2026-10-09 为 9.6.0） | 本地实例的数据库；生产是 MariaDB 11.8.9（2026-10-09 SSH 只读），差异见 `docs/local-stack.md` |
 
 ### 与 framework-choice.md §9 的差异
 

@@ -15,9 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from linker_local.checkout import Checkout
-from linker_local.instance import Instance
+from linker_local.instance import HOST, Instance
 from linker_local.processes import Background, ProcessError
-from linker_local.registry import port_is_free
 from linker_local.wpcli import WpCli
 
 # Seconds to wait for a service's port: uvicorn listened 0.55–0.7 s after
@@ -59,13 +58,7 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         subprocess.run(
             [str(uv), "sync", "--locked", "--project", str(project)], check=True
         )
-        process = service.process(instance)
-        process.stop()
-        if not port_is_free(port):
-            raise ProcessError(
-                f"port {port} of {instance.name}'s {service.name} is in use"
-            )
-        process.start(
+        service.process(instance).restart(
             [
                 str(uv),
                 "run",
@@ -75,14 +68,15 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
                 "uvicorn",
                 service.app,
                 "--host",
-                "127.0.0.1",
+                HOST,
                 "--port",
                 str(port),
             ],
             dict(os.environ),
+            port,
+            START_TIMEOUT,
         )
-        process.wait_for_port(port, START_TIMEOUT)
-        url = f"http://127.0.0.1:{port}"
+        url = f"http://{HOST}:{port}"
         wp.run("option", "update", service.option, url)
         urls.append(f"{service.name} {url}")
     return urls

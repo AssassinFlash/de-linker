@@ -5,8 +5,6 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 # `just build` and `just build::check`.
 mod build "tools/build.just"
 
-plugins := "linker-commerce linker-i18n linker-tools"
-
 # Composer projects: the plugins, and tools/local for its mu-plugins and router.
 php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tools tools/local"
 
@@ -100,9 +98,12 @@ php-check: php-install
 php-test: php-install
     #!/usr/bin/env bash
     set -euo pipefail
-    for plugin in {{ plugins }}; do
-        echo "== $plugin: PHPUnit"
-        cd "{{ justfile_directory() }}/plugins/$plugin"
+    for project in {{ php_projects }}; do
+        cd "{{ justfile_directory() }}/$project"
+        # tools/local has no PHPUnit suite: its mu-plugins are tested on real
+        # instances by its pytest stack tests.
+        [ -f phpunit.xml.dist ] || continue
+        echo "== $project: PHPUnit"
         {{ php }} vendor/bin/phpunit
     done
 
