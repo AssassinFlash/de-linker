@@ -12,6 +12,13 @@
 4. 存储：单个 SQLite：`documents`、`chunks(id, doc_sha, page, section, text, lang, model_tags)`、`chunks_fts`（FTS5，unicode61 + 德语复合词不拆）、`chunks_vec`（sqlite-vec）。
 5. 发布：`index-<version>.sqlite` + manifest → VPS `/opt/linker-genie/index/<version>/`，`current` 软链，回滚即切软链。
 
+## 索引放在哪里：由 bake-off 决定（业主 2026-10-09）
+线上事实（2026-10-09 只读实测）：共享主机的 MariaDB 支持向量函数与向量索引（`VEC_DISTANCE_*` 可用，11.7+），InnoDB 全文索引可用，PHP 自带 SQLite 3.45 开了 FTS5；主机上没有 Python，不能跑任何本地模型。因此：
+- **A. API 向量胜出**（gemini-embedding-2 等）：索引搬到共享主机——块与向量存进 WordPress 的 MariaDB（VECTOR 列 + 向量索引 + FULLTEXT），`search-knowledge` 成为 `linker-commerce` 里的纯 PHP + SQL，查询向量经 API 取得；VPS 只保留 Genie 代理循环与引擎。
+- **B. 开源文本向量胜出**：查询编码需要进程跑模型 → 索引与编码器留在 VPS（SQLite FTS5 + sqlite-vec），按下文运行时约束。
+- **C. 纯 BM25 与混合检索差距 < 5 个百分点**：不用向量，索引（全文）放共享主机，无 API、无模型。
+构建管线与存储无关：Docling 解析与分块的产物以 JSONL（块、页码、上下文头、可选向量）为中间格式，提供导出到 MariaDB（SQL）与 SQLite 两个目标；bake-off 报告里必须单列"BM25 单独 vs 混合"的差距，供 C 判断。
+
 ## 运行时约束（业主 2026-10-09：不升级任何主机）
 VPS 为 1 vCPU、3.9 GB、无 GPU。查询时的向量编码只能是：① 在 1 核上实时可跑的文本模型（int8 后约 300M 参数以内，如 multilingual-e5-base；BGE-M3 int8 以实测延迟 ≤1.5 s 为准），或 ② API（aihubmix 的 gemini-embedding-2 等，由 bake-off 决定）。自托管重排器在 1 核上不可行：重排只用 API 或不做。内存预算：引擎 + Genie 服务 + 索引 + 模型合计 ≤ 3 GB，索引以 SQLite 文件按需读取。多模态页面向量：图像侧只在 Mac 离线构建；查询侧要么走 API，要么文本塔满足 ① 的约束。
 
