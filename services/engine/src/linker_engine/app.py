@@ -32,6 +32,8 @@ from .models import (
     ReportRequest,
     ResidentialInput,
     ResidentialResult,
+    RoofPackRequest,
+    RoofPlaneResult,
     RoofRequest,
     RoofResult,
 )
@@ -166,6 +168,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             return services().roof.outline(request)
         except Lod2Unavailable as error:
             raise unavailable(error, "lod2_unavailable") from error
+
+    @app.post("/roof/pack")
+    def roof_pack(request: RoofPackRequest) -> RoofPlaneResult:
+        """Modules on a roof plane drawn by hand."""
+        return roof_service.pack_drawn(request, services().engine.catalog.module)
 
     @app.post("/report/pdf")
     def report_pdf(request: ReportRequest) -> Response:

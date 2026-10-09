@@ -20,6 +20,7 @@ from linker_engine.models import (
     CommercialInput,
     ReportRequest,
     ResidentialInput,
+    RoofPackRequest,
     RoofRequest,
 )
 
@@ -32,6 +33,7 @@ MODELS: dict[str, type[BaseModel]] = {
     "residential-input": ResidentialInput,
     "commercial-input": CommercialInput,
     "roof-request": RoofRequest,
+    "roof-pack-request": RoofPackRequest,
     "report-request": ReportRequest,
 }
 

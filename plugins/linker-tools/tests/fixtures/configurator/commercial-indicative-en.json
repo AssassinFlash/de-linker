@@ -1,0 +1,25 @@
+{
+	"status": "indicative",
+	"load": null,
+	"options": [],
+	"power_kw_range": {
+		"low": 85.0,
+		"high": 220.0
+	},
+	"energy_kwh_range": {
+		"low": 170.0,
+		"high": 220.0
+	},
+	"basis": [
+		"Peak reduction of 50 kW, with energy for one to two hours at that power (Intilion: about 1C for peak shaving, 0.5C for self-consumption)",
+		"Self-consumption: about 1 kWh of usable storage per kWp of PV, so 120 kWh for 120 kWp (Voltfang)",
+		"These are indicative figures. Send us your 15-minute load profile and we size the system."
+	],
+	"systems": [],
+	"warnings": [
+		"Above 30 kVA, VDE-AR-N 4105 requires central grid and system protection (NA-Schutz).",
+		"Above 135 kW the grid connection follows VDE-AR-N 4110.",
+		"Above 100,000 kWh a year your grid operator meters a 15-minute load profile; ask them for last year's data."
+	],
+	"inquiry": "mailto:sales@de-linker.com?subject=Commercial%20storage%20inquiry%2080538"
+}

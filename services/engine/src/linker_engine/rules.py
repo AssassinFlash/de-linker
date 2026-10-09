@@ -13,6 +13,8 @@ from dataclasses import dataclass
 
 PLANNER = "docs/research/2026-10-09/planner-methods.md"
 TICKET = "docs/specs/14-solution-configurator.md"
+# The Apify runs that read each source, with the passage each rule rests on.
+SOURCES = "docs/acceptance/2026-10-09/14/sources.md"
 
 
 @dataclass(frozen=True)
@@ -66,7 +68,7 @@ HTW_REFERENCE_YIELD = Rule(
     1024.0,
     "kWh per kWp and year",
     f"HTW Unabhängigkeitsrechner: PV yield behind its tables, 35° south, {HTW_FAQ}",
-    "services/engine/data/htw/source.json",
+    SOURCES,
 )
 HTW_HOUSEHOLD_SPREAD_PP = Rule(
     "htw_household_spread",
@@ -75,7 +77,7 @@ HTW_HOUSEHOLD_SPREAD_PP = Rule(
     "HTW Berlin, Studie Dezentrale Solarstromspeicher (2015): most households deviate by less than "
     "5 percentage points from the mean self-sufficiency, "
     "https://solar.htw-berlin.de/wp-content/uploads/HTW-Studie-Dezentrale-Solarstromspeicher.pdf",
-    "Apify fetch 2026-10-09 (ticket #14 research)",
+    SOURCES,
 )
 HEAT_PUMP_KWH_LOW = Rule(
     "heat_pump_low",
@@ -83,7 +85,7 @@ HEAT_PUMP_KWH_LOW = Rule(
     "kWh per year",
     "HTW Berlin, Stromspeicher-Inspektion 2021: four measured heat pumps used 2664 to 4011 kWh/a, "
     "https://solar.htw-berlin.de/wp-content/uploads/HTW-Stromspeicher-Inspektion-2021.pdf",
-    "Apify fetch 2026-10-09 (ticket #14 research)",
+    SOURCES,
 )
 HEAT_PUMP_KWH_HIGH = Rule(
     "heat_pump_high",
@@ -99,7 +101,7 @@ EV_KWH_LOW = Rule(
     "HTW Berlin, Solares Laden von Elektrofahrzeugen (2025, 730 homes): half of the homes charge "
     "1551 to 3097 kWh/a at their own wallbox, "
     "https://solar.htw-berlin.de/wp-content/uploads/HTW-Solares-Laden-von-Elektrofahrzeugen.pdf",
-    "Apify fetch 2026-10-09 (ticket #14 research)",
+    SOURCES,
 )
 EV_KWH_HIGH = Rule(
     "ev_high",
@@ -219,37 +221,40 @@ STRING_FUSE_ISC_FACTOR = Rule(
     1.25,
     "x Isc STC",
     f"Maximum string short-circuit current I_SC_MAX = 1.25 x Isc STC; {IEC_712}",
-    "Apify fetch 2026-10-09 (ticket #14 research)",
+    SOURCES,
 )
 STRING_FUSE_OCPR_FACTOR = Rule(
     "string_fuse_ocpr_factor",
     1.35,
     "x module maximum series fuse rating",
     f"String protection is required when 1.35 x I_MOD_MAX_OCPR < (N - 1) x I_SC_MAX; {IEC_712}",
-    "Apify fetch 2026-10-09 (ticket #14 research)",
+    SOURCES,
 )
 STRING_FUSE_POLES = Rule(
     "string_fuse_poles",
     2.0,
     "fuses per string",
-    "Arrays without an earthed conductor are protected in both poles (Mitolo 2025; ABB Technical Application "
-    "Paper 2019, pp. 90-91, https://search.abb.com/library/Download.aspx?DocumentID=9AKK107492A3277)",
-    "Apify fetch 2026-10-09 (ticket #14 research)",
+    "Arrays without an earthed conductor are protected in both poles (Mitolo 2025, "
+    "https://journals.riverpublishers.com/index.php/DGAEJ/article/view/30737/22485; Eaton Bussmann "
+    "photovoltaic application guide: fuse links in both the positive and the negative cable)",
+    SOURCES,
 )
 STRING_FUSE_GROUP = Rule(
     "string_fuse_group",
     1.0,
     "MPPT per protection group",
-    "Each MPPT input that fault current cannot cross counts as its own sub-array (MCS installation guide "
-    "2012, p. 33); the IEC 60364-7-712:2017 figures treat multiple MPPT inputs separately",
-    "Apify fetch 2026-10-09 (ticket #14 research)",
+    "Only strings in parallel feed a string fault: two parallel strings never exceed one string's "
+    "short-circuit current as reverse current (SMA SMC_RUECK-11), three or more need string protection "
+    "(Eaton Bussmann photovoltaic application guide); an inverter's separate MPPT inputs are separate "
+    "arrays (IEC 62548:2016, Figure 5)",
+    SOURCES,
 )
 STRING_FUSE_RATING_MIN = Rule(
     "string_fuse_rating_min",
     1.5,
     "x Isc STC",
     f"gPV fuse rating window 1.5 x Isc < In < 2.4 x Isc; {IEC_712}",
-    "Apify fetch 2026-10-09 (ticket #14 research)",
+    SOURCES,
 )
 STRING_FUSE_RATING_MAX = Rule(
     "string_fuse_rating_max",
@@ -333,7 +338,7 @@ RLM_THRESHOLD_KWH = Rule(
     "kWh per year",
     "Consumers above 100,000 kWh/a are metered with a registering load profile (MsbG § 55 (1) Nr. 1, "
     "https://www.gesetze-im-internet.de/messbg/__55.html)",
-    "docs/acceptance/2026-10-09/14/sources.md",
+    SOURCES,
 )
 CI_HOURS_PEAK = Rule(
     "ci_hours_peak",
@@ -341,7 +346,7 @@ CI_HOURS_PEAK = Rule(
     "h of storage per kW of peak reduction",
     "Intilion: peak shaving runs batteries at about 1C "
     "(https://intilion.com/blog/stromspeicher-fur-gewerbe-und-industrie/)",
-    "docs/acceptance/2026-10-09/14/sources.md",
+    SOURCES,
 )
 CI_HOURS_SELF_CONSUMPTION = Rule(
     "ci_hours_self_consumption",
@@ -349,7 +354,7 @@ CI_HOURS_SELF_CONSUMPTION = Rule(
     "h of storage per kW",
     "Intilion: self-consumption storage runs at about 0.5C, 100 kWh for 50 kW "
     "(https://intilion.com/blog/stromspeicher-fur-gewerbe-und-industrie/)",
-    "docs/acceptance/2026-10-09/14/sources.md",
+    SOURCES,
 )
 CI_KWH_PER_KWP = Rule(
     "ci_kwh_per_kwp",
@@ -357,7 +362,7 @@ CI_KWH_PER_KWP = Rule(
     "kWh usable per kWp",
     "Voltfang (2026-02-18): about 1 kWh of usable storage per kWp of PV for C&I self-consumption "
     "(https://voltfang.de/2026/02/18/wie-gross-muss-eine-pv-anlage-fuer-einen-gewerbespeicher-sein/)",
-    "docs/acceptance/2026-10-09/14/sources.md",
+    SOURCES,
 )
 CI_KWP_PER_MWH_LOW = Rule(
     "ci_kwp_per_mwh_low",
@@ -365,7 +370,7 @@ CI_KWP_PER_MWH_LOW = Rule(
     "kWp per MWh/a",
     "Voltfang (2026-02-18): 0.8 to 1.0 kWp of PV per MWh/a for a C&I storage system "
     "(https://voltfang.de/2026/02/18/wie-gross-muss-eine-pv-anlage-fuer-einen-gewerbespeicher-sein/)",
-    "docs/acceptance/2026-10-09/14/sources.md",
+    SOURCES,
 )
 CI_KWP_PER_MWH_HIGH = Rule(
     "ci_kwp_per_mwh_high",

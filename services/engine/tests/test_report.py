@@ -88,3 +88,52 @@ def test_a_logo_that_is_no_image_is_refused() -> None:
         pdf.logo_image("data:image/png;base64,bm90IGFuIGltYWdl")
     with pytest.raises(pdf.LogoError):
         pdf.logo_image("data:image/svg+xml;base64,PHN2Zy8+")
+
+
+@pytest.mark.parametrize(
+    ("locale", "inverter", "phase", "first_line", "datasheet"),
+    [
+        (
+            "en",
+            ("Inverter", "GoodWe GW10K-ETA-G20"),
+            "3-phase, as selected · met",
+            "1 pc",
+            "GW_ESA-5-30kW_Datasheet-EN.pdf",
+        ),
+        (
+            "de",
+            ("Wechselrichter", "GoodWe GW10K-ETA-G20"),
+            "3-phasig, wie gewählt · erfüllt",
+            "1 Stk.",
+            "GW_ESA-5-30kW_Datasheet-EN.pdf",
+        ),
+    ],
+)
+def test_rows_name_the_inverter_link_the_documents_and_count_in_words(
+    engine: Engine,
+    locale: str,
+    inverter: tuple[str, str],
+    phase: str,
+    first_line: str,
+    datasheet: str,
+) -> None:
+    sections = {section.id: section for section in build(engine, locale).sections}
+    basis = sections["basis"]
+    assert (basis.rows[0].label, basis.rows[0].value) == inverter
+    assert phase in [row.value for row in basis.rows]
+    assert basis.paragraphs == []
+    documents = [row for row in sections["releases"].rows if row.href]
+    assert documents[0].value == datasheet
+    assert (
+        documents[0].href
+        == f"https://de-linker.com/wp-content/uploads/2026/09/{datasheet}"
+    )
+    table = sections["bom"].table
+    assert table is not None
+    assert table.rows[0][0] == first_line
+
+
+def test_the_pdf_prints_the_address_of_each_linked_document(engine: Engine) -> None:
+    text = text_of(pdf.render(build(engine, "en")))
+    assert "GW_ESA-5-30kW_Datasheet-EN.pdf" in text
+    assert "https://de-linker.com/wp-content/uploads/2026/09/" in text.replace("\n", "")

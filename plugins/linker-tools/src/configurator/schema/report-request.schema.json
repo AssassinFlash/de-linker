@@ -1,0 +1,248 @@
+{
+	"$defs": {
+		"Location": {
+			"additionalProperties": false,
+			"properties": {
+				"latitude": {
+					"maximum": 55.2,
+					"minimum": 47.0,
+					"title": "Latitude",
+					"type": "number"
+				},
+				"longitude": {
+					"maximum": 15.1,
+					"minimum": 5.8,
+					"title": "Longitude",
+					"type": "number"
+				}
+			},
+			"required": [
+				"latitude",
+				"longitude"
+			],
+			"title": "Location",
+			"type": "object"
+		},
+		"PlaneInput": {
+			"additionalProperties": false,
+			"description": "One roof plane of the array. Without planes the array is one plane at the default tilt and facing.",
+			"properties": {
+				"kwp": {
+					"exclusiveMinimum": 0,
+					"maximum": 100,
+					"title": "Kwp",
+					"type": "number"
+				},
+				"tilt_deg": {
+					"maximum": 90,
+					"minimum": 0,
+					"title": "Tilt Deg",
+					"type": "number"
+				},
+				"azimuth_deg": {
+					"description": "Facing: north 0, east 90, south 180, west 270",
+					"exclusiveMaximum": 360,
+					"minimum": 0,
+					"title": "Azimuth Deg",
+					"type": "number"
+				}
+			},
+			"required": [
+				"kwp",
+				"tilt_deg",
+				"azimuth_deg"
+			],
+			"title": "PlaneInput",
+			"type": "object"
+		},
+		"ResidentialInput": {
+			"additionalProperties": false,
+			"properties": {
+				"locale": {
+					"default": "en",
+					"enum": [
+						"en",
+						"de"
+					],
+					"title": "Locale",
+					"type": "string"
+				},
+				"plz": {
+					"description": "German postcode (PLZ)",
+					"pattern": "^\\d{5}$",
+					"title": "Plz",
+					"type": "string"
+				},
+				"annual_kwh": {
+					"description": "Annual household consumption. The bounds only reject typing errors; where the methods are valid is checked and reported separately.",
+					"maximum": 50000,
+					"minimum": 500,
+					"title": "Annual Kwh",
+					"type": "number"
+				},
+				"pv_kwp": {
+					"exclusiveMinimum": 0,
+					"maximum": 100,
+					"title": "Pv Kwp",
+					"type": "number"
+				},
+				"planes": {
+					"anyOf": [
+						{
+							"items": {
+								"$ref": "#/$defs/PlaneInput"
+							},
+							"type": "array"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"default": null,
+					"title": "Planes"
+				},
+				"location": {
+					"anyOf": [
+						{
+							"$ref": "#/$defs/Location"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"default": null,
+					"description": "The roof's position from the roof step; otherwise the PLZ centre."
+				},
+				"phase": {
+					"enum": [
+						1,
+						3
+					],
+					"title": "Phase",
+					"type": "integer"
+				},
+				"backup": {
+					"default": "none",
+					"enum": [
+						"none",
+						"needed",
+						"needed_accessory_ok"
+					],
+					"title": "Backup",
+					"type": "string"
+				},
+				"backup_load_kw": {
+					"anyOf": [
+						{
+							"exclusiveMinimum": 0,
+							"maximum": 50,
+							"type": "number"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"default": null,
+					"title": "Backup Load Kw"
+				},
+				"backup_hours": {
+					"anyOf": [
+						{
+							"exclusiveMinimum": 0,
+							"maximum": 72,
+							"type": "number"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"default": null,
+					"title": "Backup Hours"
+				},
+				"heat_pump": {
+					"default": false,
+					"title": "Heat Pump",
+					"type": "boolean"
+				},
+				"electric_vehicle": {
+					"default": false,
+					"title": "Electric Vehicle",
+					"type": "boolean"
+				},
+				"existing_inverter": {
+					"anyOf": [
+						{
+							"maxLength": 80,
+							"type": "string"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"default": null,
+					"description": "Model of an inverter already installed (retrofit).",
+					"title": "Existing Inverter"
+				},
+				"inverter_id": {
+					"anyOf": [
+						{
+							"type": "integer"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"default": null,
+					"description": "Swap: use this inverter.",
+					"title": "Inverter Id"
+				},
+				"battery_id": {
+					"anyOf": [
+						{
+							"type": "integer"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"default": null,
+					"description": "Swap: use this battery.",
+					"title": "Battery Id"
+				}
+			},
+			"required": [
+				"plz",
+				"annual_kwh",
+				"pv_kwp",
+				"phase"
+			],
+			"title": "ResidentialInput",
+			"type": "object"
+		}
+	},
+	"additionalProperties": false,
+	"properties": {
+		"input": {
+			"$ref": "#/$defs/ResidentialInput"
+		},
+		"logo": {
+			"anyOf": [
+				{
+					"maxLength": 700000,
+					"type": "string"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"description": "Logo for the report header as a data URL (image/png or image/jpeg, at most about 500 kB).",
+			"title": "Logo"
+		}
+	},
+	"required": [
+		"input"
+	],
+	"title": "ReportRequest",
+	"type": "object"
+}

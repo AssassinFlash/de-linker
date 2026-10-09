@@ -227,6 +227,7 @@ class Candidates(BaseModel):
 class ReportRow(BaseModel):
     label: str
     value: str
+    href: str | None = None  # a document on de-linker.com the value names
 
 
 class ReportTable(BaseModel):
@@ -291,6 +292,17 @@ class PlaceResult(BaseModel):
 class RoofRequest(Strict):
     plz: Plz
     location: Location
+    locale: Locale = "en"
+
+
+class RoofPackRequest(Strict):
+    """A roof plane drawn by hand where no official outline is available."""
+
+    polygon: Annotated[
+        list[tuple[float, float]], Field(min_length=3, max_length=200)
+    ] = Field(description="Ring as [longitude, latitude] pairs")
+    tilt_deg: Annotated[float, Field(ge=0, le=90)]
+    azimuth_deg: Annotated[float, Field(ge=0, lt=360)]
     locale: Locale = "en"
 
 

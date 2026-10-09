@@ -24,11 +24,17 @@
 		"storybook": "storybook dev"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "5.9.1",
 		"@wordpress/dom-ready": "4.51.0",
 		"@wordpress/element": "8.3.0",
 		"@wordpress/i18n": "6.24.0",
+		"ajv": "8.20.0",
+		"maplibre-gl": "5.24.0",
 		"react": "18.3.1",
-		"react-dom": "18.3.1"
+		"react-dom": "18.3.1",
+		"react-hook-form": "7.88.0",
+		"terra-draw": "1.35.0",
+		"terra-draw-maplibre-gl-adapter": "1.4.1"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.64.0",

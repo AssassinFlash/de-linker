@@ -1,0 +1,54 @@
+{
+	"additionalProperties": false,
+	"description": "A roof plane drawn by hand where no official outline is available.",
+	"properties": {
+		"polygon": {
+			"description": "Ring as [longitude, latitude] pairs",
+			"items": {
+				"maxItems": 2,
+				"minItems": 2,
+				"prefixItems": [
+					{
+						"type": "number"
+					},
+					{
+						"type": "number"
+					}
+				],
+				"type": "array"
+			},
+			"maxItems": 200,
+			"minItems": 3,
+			"title": "Polygon",
+			"type": "array"
+		},
+		"tilt_deg": {
+			"maximum": 90,
+			"minimum": 0,
+			"title": "Tilt Deg",
+			"type": "number"
+		},
+		"azimuth_deg": {
+			"exclusiveMaximum": 360,
+			"minimum": 0,
+			"title": "Azimuth Deg",
+			"type": "number"
+		},
+		"locale": {
+			"default": "en",
+			"enum": [
+				"en",
+				"de"
+			],
+			"title": "Locale",
+			"type": "string"
+		}
+	},
+	"required": [
+		"polygon",
+		"tilt_deg",
+		"azimuth_deg"
+	],
+	"title": "RoofPackRequest",
+	"type": "object"
+}

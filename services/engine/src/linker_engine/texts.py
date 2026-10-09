@@ -253,15 +253,17 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Feld für den vorhandenen Wechselrichter leer lassen, um eine neue Anlage zu planen.",
     ),
     # Rule values ---------------------------------------------------------------------
-    "value.application.home": ("home", "Wohngebäude"),
+    "value.application.home": ("residential", "Wohngebäude"),
     "value.application.commercial": ("commercial", "Gewerbe"),
     "value.application.unknown": ("not stated", "nicht angegeben"),
     "value.unknown": ("not in the datasheet data", "nicht in den Datenblattwerten"),
     "value.phase": (
-        "{value}-phase, {limit}-phase requested",
-        "{value}-phasig, {limit}-phasig verlangt",
+        "{value}-phase; selected: {limit}-phase",
+        "{value}-phasig; gewählt: {limit}-phasig",
     ),
-    "value.application": ("{value}, {limit} requested", "{value}, {limit} verlangt"),
+    "value.phase_match": ("{value}-phase, as selected", "{value}-phasig, wie gewählt"),
+    "value.application": ("{value}; selected: {limit}", "{value}; gewählt: {limit}"),
+    "value.application_match": ("{value}, as selected", "{value}, wie gewählt"),
     "value.single_phase_limit": (
         "{value} kVA, at most {limit} kVA",
         "{value} kVA, höchstens {limit} kVA",
@@ -271,8 +273,8 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "{value} kW für einen Generator mit {limit} kWp",
     ),
     "value.dc_ac_ratio": (
-        "{value}, manufacturer limit {limit}",
-        "{value}, Herstellergrenze {limit}",
+        "{value}, at most {limit} per the manufacturer",
+        "{value}, laut Hersteller höchstens {limit}",
     ),
     "value.backup.native": ("backup output {value} kVA", "Notstromausgang {value} kVA"),
     "value.backup.accessory": (
@@ -473,16 +475,22 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "{count} × {wp} Wp in one string; Voc at {tmin} °C: {voc} V per module",
         "{count} × {wp} Wp in einem Strang; Voc bei {tmin} °C: {voc} V je Modul",
     ),
+    "row.inverter": ("Inverter", "Wechselrichter"),
     "row.document": ("Document", "Dokument"),
     "row.page": ("page {page}", "Seite {page}"),
     "col.quantity": ("Qty", "Menge"),
     "col.item": ("Item", "Position"),
     "col.model": ("Model", "Modell"),
     "col.scope": ("Supplied by", "Lieferung"),
-    "unit.pcs": ("pcs", "Stk."),
-    "unit.m": ("m", "m"),
-    "unit.pairs": ("pairs", "Paare"),
-    "unit.set": ("set", "Satz"),
+    "unit.pcs.one": ("{n} pc", "{n} Stk."),
+    "unit.pcs.other": ("{n} pcs", "{n} Stk."),
+    "unit.m.other": ("{n} m", "{n} m"),
+    "unit.pairs.one": ("{n} pair", "{n} Paar"),
+    "unit.pairs.other": ("{n} pairs", "{n} Paare"),
+    "unit.set.one": ("{n} set", "{n} Satz"),
+    "unit.set.other": ("{n} sets", "{n} Sätze"),
+    # The reply time is the promise the Proforma request page makes
+    # (docs/specs/11-commerce.md, item 4).
     "next.draft": (
         "Add the Linker products to your solution draft and request a Proforma; we reply within one business day.",
         "Übernehmen Sie die Linker-Produkte in Ihren Lösungsentwurf und fordern Sie eine Proforma an; "

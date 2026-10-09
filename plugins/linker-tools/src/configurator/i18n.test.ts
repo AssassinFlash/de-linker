@@ -1,0 +1,97 @@
+// @vitest-environment node
+
+/**
+ * Every text of the configurator has its German translation (Sie form), and the
+ * translation file holds nothing the code no longer uses.
+ */
+
+/**
+ * External dependencies
+ */
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { expect, test } from 'vitest';
+
+/**
+ * Internal dependencies
+ */
+import german from '../../languages/linker-tools-de_DE_formal-linker-tools-configurator.json';
+
+// A string literal in single or double quotes; prettier picks double quotes
+// only for a text that contains an apostrophe.
+const STRING = String.raw`(?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)")`;
+const SINGLE = new RegExp(
+	String.raw`\b__\(\s*${ STRING }\s*,\s*'linker-tools'`,
+	'g'
+);
+const PLURAL = new RegExp(
+	String.raw`\b_n\(\s*${ STRING }\s*,\s*${ STRING }\s*,`,
+	'g'
+);
+
+function literal( match: RegExpMatchArray ): string {
+	return ( match[ 1 ] ?? match[ 2 ] ).replace( /\\(['"])/g, '$1' );
+}
+
+function sources( dir: string ): string[] {
+	return readdirSync( dir ).flatMap( ( name ) => {
+		const path = join( dir, name );
+		if ( statSync( path ).isDirectory() ) {
+			return sources( path );
+		}
+		return /\.tsx?$/.test( name ) && ! /\.(test|stories)\./.test( name )
+			? [ path ]
+			: [];
+	} );
+}
+
+function used(): Map< string, number > {
+	const out = new Map< string, number >();
+	for ( const file of [
+		...sources( 'src/configurator' ),
+		'src/shared/ProductCard.tsx',
+	] ) {
+		const text = readFileSync( file, 'utf8' );
+		for ( const match of text.matchAll( SINGLE ) ) {
+			out.set( literal( match ), 1 );
+		}
+		for ( const match of text.matchAll( PLURAL ) ) {
+			out.set( literal( match ), 2 );
+		}
+	}
+	return out;
+}
+
+const messages = german.locale_data.messages as Record< string, unknown >;
+
+test( 'every configurator text has a German translation', () => {
+	const missing = [ ...used().keys() ].filter(
+		( id ) => ! ( id in messages )
+	);
+	expect( missing ).toEqual( [] );
+} );
+
+test( 'plural texts carry both German forms', () => {
+	const wrong = [ ...used() ].filter(
+		( [ id, forms ] ) => ( messages[ id ] as string[] ).length !== forms
+	);
+	expect( wrong ).toEqual( [] );
+} );
+
+test( 'the translation file holds only texts the code uses', () => {
+	const ids = used();
+	const unused = Object.keys( messages ).filter(
+		( id ) => id && ! ids.has( id )
+	);
+	expect( unused ).toEqual( [] );
+} );
+
+test( 'German uses the formal address and the agreed terms', () => {
+	const text = JSON.stringify( messages );
+	expect( text ).not.toMatch( /\b(du|dein|deine|dich|dir)\b/i );
+	expect( text ).not.toMatch( /Warenkorb|Kasse|Artikel|Katalog/ );
+	expect( messages[ 'Add all to solution draft' ] ).toEqual( [
+		'Alles zum Lösungsentwurf hinzufügen',
+	] );
+	expect( messages[ 'Save solution' ] ).toEqual( [ 'Lösung speichern' ] );
+} );

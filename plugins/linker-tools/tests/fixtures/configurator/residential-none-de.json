@@ -1,0 +1,2010 @@
+{
+	"status": "no_candidate",
+	"yield": {
+		"kwh_year_range": {
+			"low": 12041.0,
+			"high": 14597.0
+		},
+		"kwh_per_kwp_range": {
+			"low": 1003.0,
+			"high": 1216.0
+		},
+		"kwh_year_mean": 13428.0,
+		"monthly_kwh": [
+			544.8,
+			798.0,
+			1209.6,
+			1448.4,
+			1468.8,
+			1536.0,
+			1582.8,
+			1482.0,
+			1252.8,
+			980.4,
+			594.0,
+			530.4
+		],
+		"years": [
+			2005,
+			2023
+		],
+		"planes": [
+			{
+				"kwp": 12.0,
+				"tilt_deg": 35.0,
+				"azimuth_deg": 180.0
+			}
+		],
+		"latitude": 48.1401,
+		"longitude": 11.5885,
+		"source": "PVGIS 5 (PVGIS-SARAH3) über pvlib, Systemverluste 14 %"
+	},
+	"storage": {
+		"recommended": true,
+		"usable_kwh_range": {
+			"low": 9.0,
+			"high": 9.0
+		},
+		"upper_kwh": 9.0,
+		"backup_reserve_kwh": 0.0,
+		"basis": [
+			{
+				"id": "htw_min_pv",
+				"passed": true,
+				"value": 2.0,
+				"limit": 0.5,
+				"label": "PV-Leistung mindestens 0,5 kWp je MWh Jahresverbrauch (HTW Berlin)",
+				"text": "2 kWp je MWh, mindestens 0,5"
+			},
+			{
+				"id": "htw_max_per_kwp",
+				"passed": null,
+				"value": 18.0,
+				"limit": 1.5,
+				"label": "Nutzbare Kapazität höchstens 1,5 kWh je kWp (HTW Berlin)",
+				"text": "1,5 kWh × 12 kWp = 18 kWh"
+			},
+			{
+				"id": "htw_max_per_mwh",
+				"passed": null,
+				"value": 9.0,
+				"limit": 1.5,
+				"label": "Nutzbare Kapazität höchstens 1,5 kWh je MWh Jahresverbrauch (HTW Berlin)",
+				"text": "1,5 kWh × 6 MWh = 9 kWh"
+			}
+		]
+	},
+	"metrics": null,
+	"selected": null,
+	"candidates": {
+		"inverters": [],
+		"batteries": [],
+		"accessories": [],
+		"excluded": [
+			{
+				"product": {
+					"id": 1179,
+					"sku": "DLK-SAJ-H225KT3",
+					"model": "H2-25K-T3",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1181,
+					"sku": "DLK-SAJ-H230KT3DE",
+					"model": "H2-30K-T3-DE",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1182,
+					"sku": "DLK-SAJ-HS210KT2X",
+					"model": "HS2-10K-T2-X",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1183,
+					"sku": "DLK-SAJ-HS26KT2X",
+					"model": "HS2-6K-T2-X",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 9.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "9 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.0,
+						"limit": 1.5,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,00, laut Hersteller höchstens 1,50"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1184,
+					"sku": "DLK-SAJ-HS28KT2X",
+					"model": "HS2-8K-T2-X",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1185,
+					"sku": "DLK-SAJ-HS312KT2WP",
+					"model": "HS3-12K-T2-W/G-PX",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1186,
+					"sku": "DLK-SAJ-HS36KT2WP",
+					"model": "HS3-6K-T2-W/G-PX",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1187,
+					"sku": "DLK-SAJ-HS38KT2WP",
+					"model": "HS3-8K-T2-W/G-PX",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1946,
+					"sku": "DLK-GOODWE-GW80KETG10",
+					"model": "GW80K-ET-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1947,
+					"sku": "DLK-GOODWE-GW9999KETG10",
+					"model": "GW99.99K-ET-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 1948,
+					"sku": "DLK-GOODWE-GW100KETG10",
+					"model": "GW100K-ET-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 2063,
+					"sku": "DLK-SAJ-H215KT3",
+					"model": "H2-15K-T3",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 2064,
+					"sku": "DLK-SAJ-H220KT3",
+					"model": "H2-20K-T3",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 2198,
+					"sku": "DLK-SAJ-HS35KT2WP",
+					"model": "HS3-5K-T2-W/G-PX",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 10.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "10 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.4,
+						"limit": 2.0,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,40, laut Hersteller höchstens 2,00"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 2199,
+					"sku": "DLK-SAJ-HS310KT2WP",
+					"model": "HS3-10K-T2-W/G-PX",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3555,
+					"sku": "DLK-ECOFLOW-EFHDP310K0S2",
+					"model": "EF HD-P3-10K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3556,
+					"sku": "DLK-GOODWE-GW10KETAG20",
+					"model": "GW10K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3574,
+					"sku": "DLK-ECOFLOW-EFHDP36K0S2",
+					"model": "EF HD-P3-6K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3575,
+					"sku": "DLK-ECOFLOW-EFHDP38K0S2",
+					"model": "EF HD-P3-8K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3576,
+					"sku": "DLK-ECOFLOW-EFHDP312K0S2",
+					"model": "EF HD-P3-12K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3577,
+					"sku": "DLK-ECOFLOW-EFHDP16K0S2",
+					"model": "EF HD-P1-6K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 6.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "6 kVA, höchstens 4,6 kVA"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3578,
+					"sku": "DLK-ECOFLOW-EFHDP18K0S2",
+					"model": "EF HD-P1-8K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 8.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "8 kVA, höchstens 4,6 kVA"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3579,
+					"sku": "DLK-ECOFLOW-EFHDP110K0S2",
+					"model": "EF HD-P1-10K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 10.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "10 kVA, höchstens 4,6 kVA"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3580,
+					"sku": "DLK-ECOFLOW-EFHDP112K0S2",
+					"model": "EF HD-P1-12K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 12.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "12 kVA, höchstens 4,6 kVA"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3583,
+					"sku": "DLK-GOODWE-GW8KETAG20",
+					"model": "GW8K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3584,
+					"sku": "DLK-GOODWE-GW12KETAG20",
+					"model": "GW12K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3585,
+					"sku": "DLK-GOODWE-GW15KETAG20",
+					"model": "GW15K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 3595,
+					"sku": "DLK-GOODWE-ETR125",
+					"model": "GW125K-ETR-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "battery_release",
+						"passed": false,
+						"value": 0.0,
+						"limit": null,
+						"label": "Batterie von den Herstellern freigegeben",
+						"text": "0 freigegebene Batterien"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 4107,
+					"sku": "DLK-SAJ-H210KT3",
+					"model": "H2-10K-T3",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 4108,
+					"sku": "DLK-SAJ-H212KT3",
+					"model": "H2-12K-T3",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 4109,
+					"sku": "DLK-SAJ-HS25KT2X",
+					"model": "HS2-5K-T2-X",
+					"brand": "SAJ",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 7.5,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "7,5 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.4,
+						"limit": 1.5,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,40, laut Hersteller höchstens 1,50"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6480,
+					"sku": "DLK-ECOFLOW-EFHDP35K0S2",
+					"model": "EF HD-P3-5K0-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 10.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "10 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.4,
+						"limit": 2.0,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,40, laut Hersteller höchstens 2,00"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6481,
+					"sku": "DLK-ECOFLOW-EFHDP315KG2",
+					"model": "EF HD-P3-15K-G2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6482,
+					"sku": "DLK-ECOFLOW-EFHDP315KG2F",
+					"model": "EF HD-P3-15K-G2F",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6483,
+					"sku": "DLK-ECOFLOW-EFHDP13KS2",
+					"model": "EF HD-P1-3K-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 9.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "9 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 4.0,
+						"limit": 3.0,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "4,00, laut Hersteller höchstens 3,00"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6484,
+					"sku": "DLK-ECOFLOW-EFHDP13K68S2",
+					"model": "EF HD-P1-3K68-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 9.68,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "9,68 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 3.26,
+						"limit": 2.63,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "3,26, laut Hersteller höchstens 2,63"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6485,
+					"sku": "DLK-ECOFLOW-EFHDP14K6S2",
+					"model": "EF HD-P1-4K6-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 10.6,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "10,6 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.61,
+						"limit": 2.3,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,61, laut Hersteller höchstens 2,30"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6486,
+					"sku": "DLK-ECOFLOW-EFHDP15KS2",
+					"model": "EF HD-P1-5K-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 5.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "5 kVA, höchstens 4,6 kVA"
+					},
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 11.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "11 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.4,
+						"limit": 2.2,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,40, laut Hersteller höchstens 2,20"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6487,
+					"sku": "DLK-ECOFLOW-EFHDP15K75S2",
+					"model": "EF HD-P1-5K75-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 5.75,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "5,75 kVA, höchstens 4,6 kVA"
+					},
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 11.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "11 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.09,
+						"limit": 1.91,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,09, laut Hersteller höchstens 1,91"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6488,
+					"sku": "DLK-ECOFLOW-EFHDP16KS2",
+					"model": "EF HD-P1-6K-S2",
+					"brand": "EcoFlow",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 6.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "6 kVA, höchstens 4,6 kVA"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6506,
+					"sku": "DLK-GOODWE-GW75KETG10",
+					"model": "GW75K-ET-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "battery_release",
+						"passed": false,
+						"value": 0.0,
+						"limit": null,
+						"label": "Batterie von den Herstellern freigegeben",
+						"text": "0 freigegebene Batterien"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6507,
+					"sku": "DLK-GOODWE-GW80KETRG10",
+					"model": "GW80K-ETR-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "battery_release",
+						"passed": false,
+						"value": 0.0,
+						"limit": null,
+						"label": "Batterie von den Herstellern freigegeben",
+						"text": "0 freigegebene Batterien"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6508,
+					"sku": "DLK-GOODWE-GW9999KETRG10",
+					"model": "GW99.99K-ETR-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "battery_release",
+						"passed": false,
+						"value": 0.0,
+						"limit": null,
+						"label": "Batterie von den Herstellern freigegeben",
+						"text": "0 freigegebene Batterien"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6509,
+					"sku": "DLK-GOODWE-GW100KETRG10",
+					"model": "GW100K-ETR-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "battery_release",
+						"passed": false,
+						"value": 0.0,
+						"limit": null,
+						"label": "Batterie von den Herstellern freigegeben",
+						"text": "0 freigegebene Batterien"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6510,
+					"sku": "DLK-GOODWE-GW110KETRG10",
+					"model": "GW110K-ETR-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "battery_release",
+						"passed": false,
+						"value": 0.0,
+						"limit": null,
+						"label": "Batterie von den Herstellern freigegeben",
+						"text": "0 freigegebene Batterien"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6511,
+					"sku": "DLK-GOODWE-GW12499KETRG10",
+					"model": "GW124.99K-ETR-G10",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "application",
+						"passed": false,
+						"value": "commercial",
+						"limit": "home",
+						"label": "Anwendung",
+						"text": "Gewerbe; gewählt: Wohngebäude"
+					},
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "battery_release",
+						"passed": false,
+						"value": 0.0,
+						"limit": null,
+						"label": "Batterie von den Herstellern freigegeben",
+						"text": "0 freigegebene Batterien"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6512,
+					"sku": "DLK-GOODWE-GW5KETAG20",
+					"model": "GW5K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					},
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 10.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "10 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.4,
+						"limit": 2.0,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,40, laut Hersteller höchstens 2,00"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6513,
+					"sku": "DLK-GOODWE-GW6KETAG20",
+					"model": "GW6K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6514,
+					"sku": "DLK-GOODWE-GW9999KETAG20",
+					"model": "GW9.999K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6515,
+					"sku": "DLK-GOODWE-GW20KETAG20",
+					"model": "GW20K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6516,
+					"sku": "DLK-GOODWE-GW25KETAG20",
+					"model": "GW25K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6517,
+					"sku": "DLK-GOODWE-GW29999KETAG20",
+					"model": "GW29.999K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6518,
+					"sku": "DLK-GOODWE-GW30KETAG20",
+					"model": "GW30K-ETA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "phase",
+						"passed": false,
+						"value": 3.0,
+						"limit": 1.0,
+						"label": "Phasen des Netzanschlusses",
+						"text": "3-phasig; gewählt: 1-phasig"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6523,
+					"sku": "DLK-GOODWE-GW3KEHAG20",
+					"model": "GW3K-EHA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 6.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "6 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 4.0,
+						"limit": 2.0,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "4,00, laut Hersteller höchstens 2,00"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6524,
+					"sku": "DLK-GOODWE-GW36KEHAG20",
+					"model": "GW3.6K-EHA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 7.2,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "7,2 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 3.33,
+						"limit": 2.0,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "3,33, laut Hersteller höchstens 2,00"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6525,
+					"sku": "DLK-GOODWE-GW5KEHAG20",
+					"model": "GW5K-EHA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 5.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "5 kVA, höchstens 4,6 kVA"
+					},
+					{
+						"id": "pv_input",
+						"passed": false,
+						"value": 10.0,
+						"limit": 12.0,
+						"label": "Maximale PV-Eingangsleistung des Wechselrichters deckt den Generator ab",
+						"text": "10 kW für einen Generator mit 12 kWp"
+					},
+					{
+						"id": "dc_ac_ratio",
+						"passed": false,
+						"value": 2.4,
+						"limit": 2.0,
+						"label": "DC/AC-Verhältnis innerhalb der Herstellergrenze",
+						"text": "2,40, laut Hersteller höchstens 2,00"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6526,
+					"sku": "DLK-GOODWE-GW6KEHAG20",
+					"model": "GW6K-EHA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 6.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "6 kVA, höchstens 4,6 kVA"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6527,
+					"sku": "DLK-GOODWE-GW8KEHAG20",
+					"model": "GW8K-EHA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 8.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "8 kVA, höchstens 4,6 kVA"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			},
+			{
+				"product": {
+					"id": 6528,
+					"sku": "DLK-GOODWE-GW10KEHAG20",
+					"model": "GW10K-EHA-G20",
+					"brand": "GoodWe",
+					"device_class": "inverters"
+				},
+				"failed": [
+					{
+						"id": "single_phase_limit",
+						"passed": false,
+						"value": 10.0,
+						"limit": 4.6,
+						"label": "Einphasige Einspeisung höchstens 4,6 kVA (VDE-AR-N 4105)",
+						"text": "10 kVA, höchstens 4,6 kVA"
+					},
+					{
+						"id": "backup",
+						"passed": false,
+						"value": null,
+						"limit": "needed",
+						"label": "Notstrom- oder Ersatzstromversorgung",
+						"text": "nicht in den Datenblattwerten"
+					},
+					{
+						"id": "engineering_data",
+						"passed": false,
+						"value": null,
+						"limit": null,
+						"label": "Belegte Datenblattwerte für die Stringauslegung",
+						"text": "nicht in den Datenblattwerten"
+					}
+				]
+			}
+		]
+	},
+	"rules": [
+		{
+			"id": "htw_min_pv",
+			"passed": true,
+			"value": 2.0,
+			"limit": 0.5,
+			"label": "PV-Leistung mindestens 0,5 kWp je MWh Jahresverbrauch (HTW Berlin)",
+			"text": "2 kWp je MWh, mindestens 0,5"
+		},
+		{
+			"id": "htw_max_per_kwp",
+			"passed": null,
+			"value": 18.0,
+			"limit": 1.5,
+			"label": "Nutzbare Kapazität höchstens 1,5 kWh je kWp (HTW Berlin)",
+			"text": "1,5 kWh × 12 kWp = 18 kWh"
+		},
+		{
+			"id": "htw_max_per_mwh",
+			"passed": null,
+			"value": 9.0,
+			"limit": 1.5,
+			"label": "Nutzbare Kapazität höchstens 1,5 kWh je MWh Jahresverbrauch (HTW Berlin)",
+			"text": "1,5 kWh × 6 MWh = 9 kWh"
+		}
+	],
+	"warnings": [
+		"Notstrom ist gewählt, aber ohne Last und Dauer; der Kapazität wird daher keine Reserve hinzugefügt."
+	],
+	"relaxations": [
+		"Dreiphasiger Anschluss: Mehr Wechselrichter kommen in Frage.",
+		"Zubehör für die Ersatzstromversorgung zulassen.",
+		"Ohne Notstrom planen.",
+		"Kleinerer Generator: Die größte PV-Eingangsleistung dieser Auswahl beträgt 24 kWp."
+	],
+	"report": {
+		"title": "Auslegungsbericht",
+		"subtitle": "Lösungskonfigurator, Anlage für ein Wohngebäude",
+		"generated_at": "2026-10-09T12:00:00Z",
+		"locale": "de",
+		"sections": [
+			{
+				"id": "site",
+				"title": "Standort und Eingaben",
+				"rows": [
+					{
+						"label": "Postleitzahl",
+						"value": "80538 München",
+						"href": null
+					},
+					{
+						"label": "Position",
+						"value": "48,140, 11,588",
+						"href": null
+					},
+					{
+						"label": "Jahresverbrauch",
+						"value": "6.000 kWh",
+						"href": null
+					},
+					{
+						"label": "PV-Generator",
+						"value": "12 kWp",
+						"href": null
+					},
+					{
+						"label": "Dachfläche 1",
+						"value": "12 kWp, Neigung 35°, Ausrichtung 180°",
+						"href": null
+					},
+					{
+						"label": "Netzanschluss",
+						"value": "1-phasig",
+						"href": null
+					},
+					{
+						"label": "Notstrom",
+						"value": "Benötigt",
+						"href": null
+					},
+					{
+						"label": "Wärmepumpe",
+						"value": "Nein",
+						"href": null
+					},
+					{
+						"label": "Elektroauto",
+						"value": "Nein",
+						"href": null
+					}
+				],
+				"paragraphs": [],
+				"table": null
+			},
+			{
+				"id": "yield",
+				"title": "PV-Ertrag",
+				"rows": [
+					{
+						"label": "Jahresertrag, Spanne 2005–2023",
+						"value": "12.041 – 14.597 kWh",
+						"href": null
+					},
+					{
+						"label": "Mittlerer Jahresertrag",
+						"value": "13.428 kWh",
+						"href": null
+					},
+					{
+						"label": "Spezifischer Ertrag",
+						"value": "1.003 – 1.216 kWh/kWp",
+						"href": null
+					},
+					{
+						"label": "Quelle",
+						"value": "PVGIS 5 (PVGIS-SARAH3) über pvlib, Systemverluste 14 %",
+						"href": null
+					}
+				],
+				"paragraphs": [],
+				"table": null
+			},
+			{
+				"id": "storage",
+				"title": "Speicherauslegung",
+				"rows": [
+					{
+						"label": "PV-Leistung mindestens 0,5 kWp je MWh Jahresverbrauch (HTW Berlin)",
+						"value": "2 kWp je MWh, mindestens 0,5 · erfüllt",
+						"href": null
+					},
+					{
+						"label": "Nutzbare Kapazität höchstens 1,5 kWh je kWp (HTW Berlin)",
+						"value": "1,5 kWh × 12 kWp = 18 kWh",
+						"href": null
+					},
+					{
+						"label": "Nutzbare Kapazität höchstens 1,5 kWh je MWh Jahresverbrauch (HTW Berlin)",
+						"value": "1,5 kWh × 6 MWh = 9 kWh",
+						"href": null
+					},
+					{
+						"label": "Nutzbare Kapazität, HTW-Obergrenze",
+						"value": "9 kWh",
+						"href": null
+					}
+				],
+				"paragraphs": [],
+				"table": null
+			},
+			{
+				"id": "warnings",
+				"title": "Hinweise",
+				"rows": [],
+				"paragraphs": [
+					"Notstrom ist gewählt, aber ohne Last und Dauer; der Kapazität wird daher keine Reserve hinzugefügt."
+				],
+				"table": null
+			},
+			{
+				"id": "assumptions",
+				"title": "Annahmen und Grenzen",
+				"rows": [],
+				"paragraphs": [
+					"Dieser Bericht enthält keine Wirtschaftlichkeitsrechnung: keine Amortisationszeit, keinen Cashflow, keine Einspeisevergütung.",
+					"Die Stringauslegung verwendet  als Referenzmodul; das tatsächlich verbaute Modul kann sie verändern.",
+					"Die Autarkiewerte beschreiben einen durchschnittlichen Haushalt; Messwerte weichen je nach Verbrauchsverhalten ab.",
+					"Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+					"Leerlaufspannung geprüft bei −10 °C Zelltemperatur. (Planungsannahme ohne veröffentlichte Quelle)",
+					"MPP-Spannung geprüft bei 70 °C Zelltemperatur, mit dem Voc-Temperaturkoeffizienten des Moduls. (Planungsannahme ohne veröffentlichte Quelle)",
+					"DC-Kabel: 15 m je Strang und Pol, bis der Leitungsweg aufgemessen ist. (Planungsannahme ohne veröffentlichte Quelle)",
+					"Zwei Steckverbinderpaare je Strang: eines am Generator, eines am Wechselrichter. (Planungsannahme ohne veröffentlichte Quelle)"
+				],
+				"table": null
+			},
+			{
+				"id": "next",
+				"title": "Nächste Schritte",
+				"rows": [],
+				"paragraphs": [
+					"Übernehmen Sie die Linker-Produkte in Ihren Lösungsentwurf und fordern Sie eine Proforma an; wir antworten innerhalb eines Werktags.",
+					"Prüfen Sie vor der Bestellung die Stringauslegung mit dem tatsächlich verbauten Modul, die Leitungswege und den Netzanschluss vor Ort."
+				],
+				"table": null
+			}
+		]
+	}
+}

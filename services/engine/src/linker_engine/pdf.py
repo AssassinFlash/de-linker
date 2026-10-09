@@ -35,13 +35,18 @@ from reportlab.platypus import (
 )
 from reportlab.platypus.flowables import Flowable
 
-from .models import Report, ReportSection
+from .models import Report, ReportRow, ReportSection
 from .texts import t
 
-INK = colors.HexColor("#1d2a36")
-MUTED = colors.HexColor("#5b6773")
-RULE = colors.HexColor("#d5dbe1")
-ACCENT = colors.HexColor("#0b6e4f")
+# The site's colour tokens, as the configurator's screen uses them
+# (plugins/linker-tools/src/configurator/configurator.css): --proto-color-ink,
+# --proto-color-muted, --proto-color-line and --proto-teal-800.
+INK = colors.HexColor("#0c0f0f")
+MUTED_HEX = "#5a6363"
+MUTED = colors.HexColor(MUTED_HEX)
+RULE = colors.HexColor("#e2e5e5")
+ACCENT_HEX = "#084d46"
+ACCENT = colors.HexColor(ACCENT_HEX)
 LOGO_MAX_HEIGHT = 16 * mm
 LOGO_MAX_WIDTH = 60 * mm
 _DATA_URL = re.compile(r"^data:image/(png|jpeg);base64,(?P<data>[A-Za-z0-9+/=\s]+)$")
@@ -107,8 +112,19 @@ def _linked(text: str) -> str:
     escaped = _escape(text)
     return re.sub(
         r"(https://de-linker\.com/\S+)",
-        r'<link href="\1" color="#0b6e4f">\1</link>',
+        rf'<link href="\1" color="{ACCENT_HEX}">\1</link>',
         escaped,
+    )
+
+
+def _value(row: ReportRow) -> str:
+    """A row's value; a document is linked and its address printed for the paper copy."""
+    if not row.href:
+        return _linked(row.value)
+    href = _escape(row.href)
+    return (
+        f'<link href="{href}" color="{ACCENT_HEX}">{_escape(row.value)}</link>'
+        f'<br/><font size="6.8" color="{MUTED_HEX}">{href}</font>'
     )
 
 
@@ -134,7 +150,7 @@ def _section(
         rows = [
             [
                 Paragraph(_escape(row.label), styles["label"]),
-                Paragraph(_linked(row.value), styles["cell"]),
+                Paragraph(_value(row), styles["cell"]),
             ]
             for row in section.rows
         ]

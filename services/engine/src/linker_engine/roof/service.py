@@ -8,6 +8,7 @@ reference modules fit on it.
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Any
 
@@ -16,7 +17,7 @@ from shapely.geometry.base import BaseGeometry
 
 from .. import geo
 from ..catalog import PvModule
-from ..models import RoofPlaneResult, RoofRequest, RoofResult
+from ..models import RoofPackRequest, RoofPlaneResult, RoofRequest, RoofResult
 from ..texts import t
 from . import lod2
 from .citygml import RoofPlane
@@ -136,3 +137,41 @@ class RoofService:
             licence=tile.licence,
             assumptions=assumptions,
         )
+
+
+def _zone(longitude: float) -> int:
+    """UTM zone of a German longitude (32 west of 12° E, 33 east of it)."""
+    return 32 if longitude < 12 else 33
+
+
+def pack_drawn(request: RoofPackRequest, module: PvModule) -> RoofPlaneResult:
+    """Modules on a plane the user drew on the aerial image, at the tilt and facing they give."""
+    zone = _zone(request.polygon[0][0])
+    ring = [
+        lod2.to_utm(zone, latitude, longitude)
+        for longitude, latitude in request.polygon
+    ]
+    horizontal = Polygon(ring)
+    area = horizontal.area / max(math.cos(math.radians(request.tilt_deg)), 1e-6)
+    plane = RoofPlane(
+        ring=ring,
+        tilt_deg=request.tilt_deg,
+        azimuth_deg=request.azimuth_deg,
+        area_m2=round(area, 2),
+    )
+    packed = pack(plane, module)
+    count = len(packed.modules)
+    return RoofPlaneResult(
+        id=1,
+        polygon=[(float(lon), float(lat)) for lon, lat in request.polygon],
+        tilt_deg=plane.tilt_deg,
+        azimuth_deg=plane.azimuth_deg,
+        area_m2=plane.area_m2,
+        usable=packed.usable,
+        excluded_reason=packed.reason,
+        modules=count,
+        kwp=round(count * module.pmax_w / 1000, 2),
+        module_polygons=[
+            _ring(zone, [list(p) for p in ring]) for ring in packed.modules
+        ],
+    )

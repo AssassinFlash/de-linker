@@ -6,9 +6,9 @@ import pytest
 from conftest import TRIFTSTRASSE_5, munich_tile
 
 from linker_engine.catalog import Catalog
-from linker_engine.models import Location, RoofRequest
+from linker_engine.models import Location, RoofPackRequest, RoofRequest
 from linker_engine.roof import lod2
-from linker_engine.roof.service import RoofService
+from linker_engine.roof.service import RoofService, pack_drawn
 
 
 @pytest.fixture
@@ -102,3 +102,18 @@ def test_portal_states_fall_back_to_drawing() -> None:
     tile = lod2.tile_for("DE-HE", 50.0782, 8.2398)
     with pytest.raises(lod2.Lod2Unavailable):
         lod2.fetch(tile, Path("/nonexistent"))
+
+
+def test_a_hand_drawn_plane_gets_a_module_count(catalog: Catalog) -> None:
+    # About 10 m x 6 m around Triftstraße 5, facing south at 30°.
+    polygon = [
+        (11.58836, 48.14024),
+        (11.58850, 48.14024),
+        (11.58850, 48.14030),
+        (11.58836, 48.14030),
+    ]
+    plane = pack_drawn(
+        RoofPackRequest(polygon=polygon, tilt_deg=30, azimuth_deg=180), catalog.module
+    )
+    assert plane.usable and plane.modules == len(plane.module_polygons) > 0
+    assert plane.kwp == pytest.approx(plane.modules * 0.46)

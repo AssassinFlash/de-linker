@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for the script registration.
+ * Tests for the script and style registration.
  *
  * @package Linker\Tools
  */
@@ -72,7 +72,31 @@ final class AssetsTest extends TestCase {
 					'args'  => array( 'linker-tools-' . $entry, 'linker-tools', $plugin_dir . 'languages' ),
 				)
 			);
+
+			// Only an entry that imports CSS has build/<entry>.css.
+			$styled = file_exists( $plugin_dir . 'build/' . $entry . '.css' );
+			WP_Mock::userFunction(
+				'wp_register_style',
+				array(
+					'times' => $styled ? 1 : 0,
+					'args'  => array(
+						'linker-tools-' . $entry,
+						self::PLUGIN_URL . 'build/' . $entry . '.css',
+						array(),
+						$asset['version'],
+					),
+				)
+			);
+			WP_Mock::userFunction(
+				'wp_style_add_data',
+				array(
+					'times' => $styled ? 1 : 0,
+					'args'  => array( 'linker-tools-' . $entry, 'rtl', 'replace' ),
+				)
+			);
 		}
+
+		$this->assertFileExists( $plugin_dir . 'build/configurator.css' );
 
 		( new Assets( $plugin_file ) )->register();
 

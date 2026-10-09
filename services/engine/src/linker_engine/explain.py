@@ -10,17 +10,32 @@ UNKNOWN = "value.unknown"
 def value_text(
     rule_id: str, value: object, limit: object, locale: Locale, **context: object
 ) -> str:
-    """For example "20 kW for a 10 kWp array" or "3-phase, 3-phase requested"."""
+    """For example "20 kW for a 10 kWp array" or "3-phase, as selected"."""
     if value is None:
         return t(UNKNOWN, locale)
     if rule_id == "application":
         key = f"value.application.{value}"
         shown = t(key, locale) if has(key) else str(value)
         return t(
-            "value.application",
+            "value.application_match" if value == limit else "value.application",
             locale,
             value=shown,
             limit=t(f"value.application.{limit}", locale),
+        )
+    if rule_id == "phase":
+        return t(
+            "value.phase_match" if value == limit else "value.phase",
+            locale,
+            value=value,
+            limit=limit,
+        )
+    if rule_id == "dc_ac_ratio" and isinstance(value, int | float):
+        # A ratio reads as one: 1.00 rather than 1.
+        return t(
+            "value.dc_ac_ratio",
+            locale,
+            value=fmt(value, locale, 2),
+            limit=fmt(limit, locale, 2),
         )
     if rule_id == "backup":
         if value == "accessory":

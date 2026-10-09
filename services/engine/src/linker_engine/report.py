@@ -9,6 +9,8 @@ flow or tariff anywhere (docs/specs/14-solution-configurator.md).
 
 from __future__ import annotations
 
+from urllib.parse import unquote, urlsplit
+
 from . import rules
 from .models import Line, Report, ReportRow, ReportSection, ReportTable, RuleResult
 from .residential import Design
@@ -37,6 +39,11 @@ def _range(
     return f"{fmt(low, locale)} – {fmt(high, locale)} {unit}".strip()
 
 
+def _file_name(url: str) -> str:
+    """The document's file name, which is also its title in the product data."""
+    return unquote(urlsplit(url).path.rsplit("/", 1)[-1]) or url
+
+
 def _rule_row(rule: RuleResult, locale: Locale) -> ReportRow:
     state = (
         ""
@@ -48,10 +55,15 @@ def _rule_row(rule: RuleResult, locale: Locale) -> ReportRow:
     )
 
 
+def _quantity_text(line: Line, locale: Locale) -> str:
+    """The quantity with its unit, in the grammatical number of the count: 1 pc, 22 pcs, 60 m."""
+    return tn(f"unit.{line.unit}", line.quantity, locale, n=line.quantity)
+
+
 def _bom_table(lines: list[Line], locale: Locale) -> ReportTable:
     rows = []
     for line in lines:
-        quantity = f"{fmt(line.quantity, locale)} {t(f'unit.{line.unit}', locale)}"
+        quantity = _quantity_text(line, locale)
         model = f"{line.product.brand} {line.product.model}" if line.product else "–"
         scope = t("scope.ours" if line.product else "scope.installer", locale)
         rows.append([quantity, line.label, model, scope])
@@ -243,7 +255,13 @@ def residential(design: Design, generated_at: str) -> Report:
 
     if design.selected:
         selected = design.selected
-        basis_rows = [_rule_row(rule, locale) for rule in selected.inverter_rules]
+        basis_rows = [
+            ReportRow(
+                label=t("row.inverter", locale),
+                value=f"{selected.inverter.brand} {selected.inverter.model}",
+            )
+        ]
+        basis_rows += [_rule_row(rule, locale) for rule in selected.inverter_rules]
         s = selected.strings
         if s:
             total = sum(g.strings for g in s.groups)
@@ -266,7 +284,6 @@ def residential(design: Design, generated_at: str) -> Report:
             ReportSection(
                 id="basis",
                 title=t("report.basis", locale),
-                paragraphs=[f"{selected.inverter.brand} {selected.inverter.model}"],
                 rows=basis_rows,
             )
         )
@@ -289,7 +306,9 @@ def residential(design: Design, generated_at: str) -> Report:
                 )
                 release_rows.append(
                     ReportRow(
-                        label=t("row.document", locale), value=f"{document.url}{page}"
+                        label=t("row.document", locale),
+                        value=f"{_file_name(document.url)}{page}",
+                        href=document.url,
                     )
                 )
         sections.append(
