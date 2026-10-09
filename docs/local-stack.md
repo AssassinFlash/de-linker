@@ -69,7 +69,7 @@ brew services start redis
 
 不一致、且有意如此：
 
-- 数据库服务器是 Homebrew MySQL（未固定版本，2026-10-09 为 9.6.0），线上是 MariaDB 11.8.9；表的排序规则同为 `utf8mb4_unicode_520_ci`。自 10.5.25、10.6.18、10.11.8、11.0.6、11.1.5、11.2.4、11.4.2 这几个版本起（线上的 11.8.9 在其后），`mariadb-dump` 在导出文件第一行写入沙箱注释 `/*!999999\- enable the sandbox mode */`，任何版本的 MySQL 客户端都会在这一行报错（MariaDB 基金会《mariadb-dump file compatibility change》，2026-10-09 经 Apify 读取）；#6 导入线上数据时要去掉第一行。
+- 数据库服务器是 Homebrew MySQL（未固定版本，2026-10-09 为 9.6.0），线上是 MariaDB 11.8.9；表的排序规则同为 `utf8mb4_unicode_520_ci`。自 10.5.25、10.6.18、10.11.8、11.0.6、11.1.5、11.2.4、11.4.2 这几个版本起（线上的 11.8.9 在其后），`mariadb-dump` 在导出文件第一行写入沙箱注释 `/*!999999\- enable the sandbox mode */`，MySQL 8.4 及更早的客户端会在这一行报错（MariaDB 基金会《mariadb-dump file compatibility change》，2026-10-09 经 Apify 读取）。本机的 MySQL 9.6 客户端把这一行当普通注释接受，#6 的实测（tests/test_load.py）是线上 dump 原样导入，不去掉首行。
 - PHP 的 `disable_functions` 等主机加固项不复制。
 - 插件的 `vendor/` 由 `just` 按 `composer install` 装（含开发依赖，`just check`/`just test` 要用），所以本地每个请求都会多加载 PHPUnit、Mockery 的全局函数；线上发布不带开发依赖。
 - 本地是干净安装：WooCommerce 用它自己的默认设置（美元、商店页对访客显示"即将开业"；线上是欧元、已开业），主题是 Twenty Twenty-Five。线上的主题（`picostrap5` / `picostrap5-child-base`）、插件（2026-10-09 经 SSH 只读读 `active_plugins` 与各插件头：启用的有 LiveCanvas 4.9.3、SEOPress 10.3、SEOPress PRO 10.2.1、WindPress 3.2.88、ACF PRO 6.3.1、Classic Editor 1.7.0 等）、页面、设置与内容都随 #6 的快照来；快照带哪些由 #6 定。

@@ -6,6 +6,8 @@ Ticket #6 writes the snapshot; this module installs the files it holds, and
     <snapshot>/plugins/<slug>/   a plugin directory, as in wp-content/plugins
     <snapshot>/themes/<slug>/    a theme directory, as in wp-content/themes
     <snapshot>/uploads/          wp-content/uploads
+    <snapshot>/live/plugins/     the live site's other plugins (only live_code)
+    <snapshot>/live/mu-plugins/  the live site's must-use plugins (only live_code)
 
 Plugins and themes replace the instance's directories of the same name;
 uploads are merged in. Which theme is active is the database's business.
@@ -39,8 +41,15 @@ def check(snapshot: Path) -> None:
             )
 
 
-def install(instance: Instance, snapshot: Path) -> list[str]:
-    """Copy the snapshot's files into the instance; return the plugin slugs."""
+def install(instance: Instance, snapshot: Path, live_code: bool = False) -> list[str]:
+    """Copy the snapshot's files into the instance; return the plugin slugs.
+
+    live_code also installs the live/ trees, whose only consumer is
+    linker-pull's `load --live-code` (a local copy of the live site, #6):
+    the live site's other plugins and its must-use plugins, each entry
+    replacing the same-named one. `up --snapshot` never passes live_code, so
+    an instance's linker-* plugins keep coming from its checkout.
+    """
     check(snapshot)
     plugins, themes, uploads = (
         snapshot / part for part in ("plugins", "themes", "uploads")
@@ -54,6 +63,11 @@ def install(instance: Instance, snapshot: Path) -> list[str]:
     if uploads.is_dir():
         shutil.copytree(
             uploads, instance.wp_content / "uploads", symlinks=True, dirs_exist_ok=True
+        )
+    if live_code:
+        _replace_entries(snapshot / "live" / "plugins", instance.wp_content / "plugins")
+        _replace_entries(
+            snapshot / "live" / "mu-plugins", instance.wp_content / "mu-plugins"
         )
     return slugs
 
@@ -75,3 +89,21 @@ def _replace(source: Path, parent: Path) -> str:
         shutil.rmtree(target)
     shutil.copytree(source, target, symlinks=True)
     return source.name
+
+
+def _replace_entries(source: Path, target: Path) -> None:
+    """Every entry of `source` (a directory or a file) replaces the same-named
+    entry of `target` (a link included); what only `target` has stays."""
+    if not source.is_dir():
+        return
+    target.mkdir(parents=True, exist_ok=True)
+    for entry in sorted(source.iterdir()):
+        destination = target / entry.name
+        if destination.is_symlink() or destination.is_file():
+            destination.unlink()
+        elif destination.exists():
+            shutil.rmtree(destination)
+        if entry.is_dir():
+            shutil.copytree(entry, destination, symlinks=True)
+        else:
+            shutil.copy2(entry, destination)

@@ -86,6 +86,55 @@ def test_our_plugins_never_come_from_a_snapshot(
         snapshot.install(instance, tmp_path / "snapshot")
 
 
+def test_live_code_installs_the_live_trees_without_it_it_does_not(
+    tmp_path: Path, instance: Instance
+) -> None:
+    """The live/ trees are linker-pull's `load --live-code` (a copy of the live
+    site): its plugins (linker-* among them) and its must-use plugin files."""
+    write(instance.wp_content / "plugins" / "old-custom" / "gone.php", "<?php old")
+    write(instance.wp_content / "mu-plugins" / "a-local-mu.php", "<?php stays")
+    taken = tmp_path / "snapshot"
+    write(taken / "uploads" / "2026" / "logo.webp", "webp")
+    write(taken / "live" / "plugins" / "linker-i18n" / "linker-i18n.php", "<?php new")
+    write(taken / "live" / "mu-plugins" / "old-loader.php", "<?php new")
+
+    snapshot.install(instance, taken)  # without live_code the live trees wait
+
+    plugins = instance.wp_content / "plugins"
+    assert not (plugins / "linker-i18n").exists()
+    assert (plugins / "old-custom" / "gone.php").read_text() == "<?php old"
+    mu = instance.wp_content / "mu-plugins"
+    assert not (mu / "old-loader.php").exists()
+    assert (mu / "a-local-mu.php").is_file()
+
+    snapshot.install(instance, taken, live_code=True)
+
+    assert (plugins / "linker-i18n" / "linker-i18n.php").read_text() == "<?php new"
+    assert (mu / "old-loader.php").read_text() == "<?php new"
+    assert (mu / "a-local-mu.php").is_file()
+
+
+def test_live_code_replaces_same_named_plugins_and_mu_files(
+    tmp_path: Path, instance: Instance
+) -> None:
+    write(instance.wp_content / "plugins" / "old-custom" / "gone.php", "<?php old")
+    write(instance.wp_content / "mu-plugins" / "old-loader.php", "<?php old")
+    taken = tmp_path / "snapshot"
+    write(taken / "uploads" / "2026" / "logo.webp", "webp")
+    write(taken / "live" / "plugins" / "old-custom" / "replaced.php", "<?php new")
+    write(taken / "live" / "mu-plugins" / "old-loader.php", "<?php new")
+
+    snapshot.install(instance, taken, live_code=True)
+
+    plugins = instance.wp_content / "plugins"
+    assert sorted(path.name for path in (plugins / "old-custom").iterdir()) == [
+        "replaced.php"
+    ]
+    assert (instance.wp_content / "mu-plugins" / "old-loader.php").read_text() == (
+        "<?php new"
+    )
+
+
 def test_a_directory_without_plugins_or_uploads_is_not_a_snapshot(
     tmp_path: Path, instance: Instance
 ) -> None:
