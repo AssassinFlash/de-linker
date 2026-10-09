@@ -1,0 +1,10 @@
+# The shared settings (level, stubs) live in tools/php/phpstan.neon.
+includes:
+	- ../php/phpstan.neon
+
+parameters:
+	paths:
+		- mu
+		- router.php
+	bootstrapFiles:
+		- phpstan-bootstrap.php

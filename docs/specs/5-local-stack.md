@@ -20,3 +20,12 @@
 - [ ] 两实例的 `/`、`/de/`、`/products/`、`/proforma-request/` 均 200；`wp core version` = 7.1.3，`wp plugin get woocommerce --field=version` = 11.1.0。
 - [ ] 提交一个本地表单后 `mail/` 里出现 `.eml`，线上没有任何请求（隔离日志为空）。
 - [ ] Computer Use：本地与线上首页 EN/DE × 1440/390 对照截图入 `docs/acceptance/<date>/5/`。
+
+## 变更记录
+- 2026-10-09（#5）：`instances.toml` 放在数据根 `~/de-linker-local/`，不在仓库：每张票一个工作树，它们共用一台 MySQL 与同一组端口，只有按机器的登记表能保证端口不冲突。每个实例登记三个端口（WordPress、engine、Genie），从 8888（wp-env 的默认端口）起向上取空闲端口；库名与目录由名字推出。
+- 2026-10-09（#5）：`php.ini` 取线上实测值：`memory_limit`、`post_max_size`、`upload_max_filesize` 2048M，`max_execution_time`、`max_input_time` 360，`max_input_vars` 5000（主机 `~/.cl.selector/alt_php83.cfg`，SSH 只读）。原写的 512M/64M 没有来源。
+- 2026-10-09（#5）：`pre_http_request` 只放行 127.0.0.1，删去 PVGIS 开关：PVGIS 由 `services/engine` 调用（#14 规格"引擎"节），不经过 WordPress 的 HTTP API，WordPress 侧没有调用方。
+- 2026-10-09（#5）：不写 `.htaccess`：`php -S` 不读它，`tools/local/router.php` 做同样的改写；mu-plugin 让 `got_url_rewrite()` 为真，否则后台固定链接页给每种结构加 `/index.php`。
+- 2026-10-09（#5）：WordPress 默认发件人 `wordpress@127.0.0.1` 被 PHPMailer 拒绝（本地每封核心邮件都会失败），隔离 mu-plugin 把它改为 `wordpress@example.test`。
+- 2026-10-09（#5）：一次性登录：mu-plugin 的 `linker_local_login_url()` 生成 token（只存 SHA-256），`linker-local login` 经 `wp eval` 调用；10 分钟与一次性按 NIST SP 800-63B-4 "Out-of-Band Verifiers"。
+- 2026-10-09（#5）：#6 的快照尚不存在，`up` 先做 WordPress 7.1.3 + WooCommerce 11.1.0 的干净安装；`--snapshot <dir>` 装入快照的 `plugins/<slug>/` 与 `uploads/`（数据库归 #6）。干净安装上 `/de/`、`/products/`、`/proforma-request/` 不存在（404），它们来自 #6 的数据与 #9 的语言层。

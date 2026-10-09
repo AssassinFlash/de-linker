@@ -1,0 +1,346 @@
+"""The local stack end to end: real MySQL, PHP 8.3, WP-CLI and two WordPress instances.
+
+The tests drive `linker-local` as `just` does, with a data root of their own
+and the instance names pytesta and pytestb. They need this Mac's tools
+(docs/local-stack.md): CI, which has none of them, skips the module; anywhere
+else a missing tool fails it.
+"""
+
+from __future__ import annotations
+
+import http.client
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+from collections.abc import Iterator
+from dataclasses import dataclass
+from pathlib import Path
+from urllib.parse import urlencode, urlsplit
+
+import pytest
+
+from linker_local.instance import Instance
+from linker_local.registry import Registry, port_is_free
+
+NAMES = ("pytesta", "pytestb")
+CLI = Path(sys.executable).with_name("linker-local")
+
+
+def missing_tools() -> list[str]:
+    missing = []
+    php = os.environ.get("PHP")
+    version = (
+        subprocess.run(
+            [php, "-r", "echo PHP_MAJOR_VERSION, '.', PHP_MINOR_VERSION;"],
+            capture_output=True,
+            text=True,
+            check=False,
+        ).stdout
+        if php and shutil.which(php)
+        else ""
+    )
+    if version != "8.3":
+        missing.append("PHP 8.3 in $PHP (`just test` sets it)")
+    if shutil.which("wp") is None:
+        missing.append("WP-CLI (`wp`)")
+    if (
+        shutil.which("mysql") is None
+        or subprocess.run(
+            ["mysql", "--user=root", "--execute", "SELECT 1"],
+            capture_output=True,
+            check=False,
+        ).returncode
+        != 0
+    ):
+        missing.append("a MySQL server that `mysql -u root` reaches")
+    return missing
+
+
+@dataclass
+class Response:
+    status: int
+    headers: http.client.HTTPMessage
+    body: str
+
+
+@dataclass
+class Stack:
+    home: Path
+    env: dict[str, str]
+
+    def cli(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+        result = subprocess.run(
+            [str(CLI), *args], capture_output=True, text=True, env=self.env, check=False
+        )
+        if check and result.returncode != 0:
+            pytest.fail(
+                f"linker-local {' '.join(args)} failed:\n{result.stdout}{result.stderr}"
+            )
+        return result
+
+    def wp(self, name: str, *args: str) -> str:
+        return self.cli("wp", name, *args).stdout.strip()
+
+    def instance(self, name: str) -> Instance:
+        instance = Registry(self.home).get(name)
+        assert instance is not None
+        return instance
+
+
+def request(
+    port: int,
+    target: str,
+    method: str = "GET",
+    form: dict[str, str] | None = None,
+    cookie: str = "",
+) -> Response:
+    """One HTTP request to 127.0.0.1, redirects not followed, no proxy."""
+    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=60)
+    try:
+        headers = {"Cookie": cookie} if cookie else {}
+        body = None
+        if form is not None:
+            body = urlencode(form)
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+        connection.request(method, target, body=body, headers=headers)
+        response = connection.getresponse()
+        return Response(response.status, response.headers, response.read().decode())
+    finally:
+        connection.close()
+
+
+def path_of(url: str) -> str:
+    parts = urlsplit(url)
+    return parts.path + (f"?{parts.query}" if parts.query else "")
+
+
+def drop_databases() -> None:
+    for name in NAMES:
+        subprocess.run(
+            [
+                "mysql",
+                "--user=root",
+                "--execute",
+                f"DROP DATABASE IF EXISTS `linker_{name}`",
+            ],
+            check=True,
+        )
+
+
+@pytest.fixture(scope="module")
+def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+    missing = missing_tools()
+    if missing:
+        message = "the local stack needs " + "; ".join(missing)
+        if os.environ.get("CI"):
+            pytest.skip(message)
+        pytest.fail(message)
+    home = tmp_path_factory.mktemp("linker-local-home")
+    built = Stack(home, {**os.environ, "LINKER_LOCAL_HOME": str(home)})
+    drop_databases()  # left by an aborted run
+    try:
+        for name in NAMES:
+            built.cli("up", name)
+        yield built
+    finally:
+        for name in NAMES:
+            built.cli("down", name, check=False)
+        drop_databases()
+        # Two WordPress installs; pytest would otherwise keep them with its last runs.
+        shutil.rmtree(home, ignore_errors=True)
+
+
+def test_two_instances_run_side_by_side(stack: Stack) -> None:
+    a, b = (stack.instance(name) for name in NAMES)
+
+    assert {a.port, a.engine_port, a.genie_port}.isdisjoint(
+        {b.port, b.engine_port, b.genie_port}
+    )
+    status = stack.cli("status").stdout
+    for instance in (a, b):
+        row = rf"^{instance.name}\s+{re.escape(instance.url)}\s+{instance.database}\s+running\s"
+        assert re.search(row, status, re.MULTILINE), status
+        assert request(instance.port, "/").status == 200
+    stack.wp(a.name, "option", "update", "linker_probe", "a")
+    assert (
+        stack.cli("wp", b.name, "option", "get", "linker_probe", check=False).returncode
+        == 1
+    )
+
+
+def test_both_run_the_production_versions(stack: Stack) -> None:
+    for name in NAMES:
+        assert stack.wp(name, "core", "version") == "7.1.3"
+        assert (
+            stack.wp(name, "plugin", "get", "woocommerce", "--field=version")
+            == "11.1.0"
+        )
+        statuses = stack.wp(
+            name, "plugin", "list", "--status=active", "--field=name"
+        ).split()
+        assert {"woocommerce", "linker-commerce", "linker-i18n", "linker-tools"} <= set(
+            statuses
+        )
+
+
+def test_pretty_permalinks_and_files_are_served(stack: Stack) -> None:
+    a = stack.instance("pytesta")
+    shop = path_of(stack.wp(a.name, "eval", "echo wc_get_page_permalink( 'shop' );"))
+    for target in ("/", shop, "/sample-page/", "/wp-json/", "/wp-login.php"):
+        assert request(a.port, target).status == 200, target
+    # Our plugins are links into the checkout; their files are served through them.
+    assert (
+        request(a.port, "/wp-content/plugins/linker-tools/build/shared.js").status
+        == 200
+    )
+    # A directory is addressed with a trailing slash.
+    admin = request(a.port, "/wp-admin")
+    assert (admin.status, admin.headers["Location"]) == (301, "/wp-admin/")
+    # WooCommerce sends an empty cart from the checkout to the cart.
+    checkout = request(
+        a.port, path_of(stack.wp(a.name, "eval", "echo wc_get_checkout_url();"))
+    )
+    cart = stack.wp(a.name, "eval", "echo wc_get_cart_url();")
+    assert (checkout.status, checkout.headers["Location"]) == (302, cart)
+
+
+def test_a_form_mails_into_the_instance_and_nothing_reaches_production(
+    stack: Stack,
+) -> None:
+    a = stack.instance("pytesta")
+    before = set(a.mail_dir.glob("*.eml"))
+
+    sent = request(
+        a.port,
+        "/wp-login.php?action=lostpassword",
+        method="POST",
+        form={
+            "user_login": "local-admin",
+            "redirect_to": "",
+            "wp-submit": "Get New Password",
+        },
+    )
+
+    assert sent.status == 302
+    assert "checkemail=confirm" in sent.headers["Location"]
+    new = set(a.mail_dir.glob("*.eml")) - before
+    assert len(new) == 1
+    message = new.pop().read_text()
+    assert "To: local-admin@example.test" in message
+    assert "Subject: [Linker (local pytesta)] Password Reset" in message
+    log = a.log_dir / "isolation.log"
+    assert "de-linker.com" not in (log.read_text() if log.exists() else "")
+
+
+def test_a_captured_message_keeps_its_bcc(stack: Stack) -> None:
+    a = stack.instance("pytesta")
+    before = set(a.mail_dir.glob("*.eml"))
+
+    sent = stack.wp(
+        a.name,
+        "eval",
+        "var_export( wp_mail( 'sales@example.test', 'Inquiry', 'Body',"
+        " array( 'Bcc: archive@example.test' ) ) );",
+    )
+
+    assert sent == "true"
+    (captured,) = set(a.mail_dir.glob("*.eml")) - before
+    assert "Bcc: archive@example.test" in captured.read_text()
+
+
+def test_wordpress_requests_reach_this_machine_only(stack: Stack) -> None:
+    b = stack.instance("pytestb")
+
+    outcome = stack.wp(
+        b.name,
+        "eval",
+        "$r = wp_remote_get( 'https://de-linker.com/' );"
+        " echo is_wp_error( $r ) ? $r->get_error_code() : 'sent';"
+        " echo ' ', wp_remote_retrieve_response_code( wp_remote_get( home_url( '/' ) ) );",
+    )
+
+    assert outcome == "linker_local_blocked 200"
+    log = (b.log_dir / "isolation.log").read_text()
+    assert "\tGET\thttps://de-linker.com/\n" in log
+
+
+def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
+    stack: Stack,
+) -> None:
+    home = request(stack.instance("pytesta").port, "/")
+
+    assert home.headers["Content-Security-Policy"] == (
+        "default-src 'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval';"
+        " form-action 'self'"
+    )
+    assert home.headers["X-Robots-Tag"] == "noindex, nofollow"
+
+
+def test_a_login_link_signs_in_once(stack: Stack) -> None:
+    a = stack.instance("pytesta")
+    link = path_of(stack.cli("login", a.name).stdout.strip())
+
+    first = request(a.port, link)
+
+    assert (first.status, first.headers["Location"]) == (302, f"{a.url}/wp-admin/")
+    cookies = "; ".join(
+        value.split(";", 1)[0]
+        for value in first.headers.get_all("Set-Cookie", [])
+        if value.startswith("wordpress_")
+    )
+    assert "wordpress_logged_in_" in cookies
+    # Signed out, wp-admin sends a visitor to wp-login.php; signed in, the page
+    # answers, or on a fresh install WooCommerce's one-time welcome redirect.
+    signed_out = request(a.port, "/wp-admin/profile.php")
+    assert "/wp-login.php" in signed_out.headers["Location"]
+    signed_in = request(a.port, "/wp-admin/profile.php", cookie=cookies)
+    assert "/wp-login.php" not in (signed_in.headers["Location"] or "")
+    assert request(a.port, link).status == 403
+
+
+def test_serve_starts_the_services_and_down_stops_everything(stack: Stack) -> None:
+    a = stack.instance("pytesta")
+
+    stack.cli("serve", a.name)
+
+    for port, option in (
+        (a.engine_port, "linker_engine_url"),
+        (a.genie_port, "linker_genie_url"),
+    ):
+        health = request(port, "/health")
+        assert (health.status, json.loads(health.body)) == (200, {"status": "ok"})
+        assert stack.wp(a.name, "option", "get", option) == f"http://127.0.0.1:{port}"
+    assert re.search(
+        r"^pytesta\s.*\srunning\s+engine, genie\s", stack.cli("status").stdout, re.M
+    )
+
+    stack.cli("down", a.name)
+
+    assert all(port_is_free(port) for port in (a.port, a.engine_port, a.genie_port))
+    stack.cli("up", a.name)
+    assert request(a.port, "/").status == 200
+
+
+def test_reset_rebuilds_one_instance_repeatedly_and_leaves_the_other_alone(
+    stack: Stack,
+) -> None:
+    a, b = (stack.instance(name) for name in NAMES)
+    stack.wp(b.name, "option", "update", "linker_probe", "b")
+
+    for _ in range(2):
+        stack.wp(a.name, "option", "update", "linker_probe", "before reset")
+        stack.cli("reset", a.name)
+        assert (
+            stack.cli(
+                "wp", a.name, "option", "get", "linker_probe", check=False
+            ).returncode
+            == 1
+        )
+        assert stack.instance(a.name) == a
+        assert request(a.port, "/").status == 200
+
+    assert stack.wp(b.name, "option", "get", "linker_probe") == "b"
+    assert request(b.port, "/").status == 200

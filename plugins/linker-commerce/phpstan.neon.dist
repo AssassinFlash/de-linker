@@ -7,3 +7,5 @@ parameters:
 		- linker-commerce.php
 		- includes
 		- tests/php
+		# The bootstrap the plugins' tests share.
+		- ../../tools/php/bootstrap.php

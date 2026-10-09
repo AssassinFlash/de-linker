@@ -1,0 +1,27 @@
+{
+	"name": "linker/linker-local",
+	"description": "Static analysis of the local-only PHP of tools/local: the instances' mu-plugins and the server router.",
+	"type": "project",
+	"license": "proprietary",
+	"require": {
+		"php": ">=8.3"
+	},
+	"require-dev": {
+		"php-stubs/woocommerce-stubs": "~11.1.0",
+		"php-stubs/wordpress-stubs": "~7.1.0",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"phpstan/phpstan": "^2.1",
+		"szepeviktor/phpstan-wordpress": "^2.0",
+		"woocommerce/woocommerce-sniffs": "^2.0",
+		"wp-coding-standards/wpcs": "^3.4"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"platform": {
+			"php": "8.3"
+		},
+		"sort-packages": true
+	}
+}
