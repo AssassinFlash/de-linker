@@ -1,0 +1,22 @@
+{
+	"what": "Lookup tables of the HTW Berlin Unabhängigkeitsrechner: self-sufficiency (tabelleAutarkie.json) and self-consumption share (tabelleEigenverbrauch.json) as 0-1 fractions. Row 0 holds PV power in kWp per MWh/a, column 0 usable storage in kWh per MWh/a, both 0 to 10 in steps of 0.0625; cells are read by bilinear interpolation, as the calculator's own js/unabhaengig.js does.",
+	"publisher": "HTW Berlin, Forschungsgruppe Solarspeichersysteme",
+	"calculator": "https://solar.htw-berlin.de/rechner/unabhaengigkeitsrechner/",
+	"method": "https://solar.htw-berlin.de/faq-unabhaengigkeitsrechner/",
+	"files": {
+		"tabelleAutarkie.json": {
+			"url": "https://solar.htw-berlin.de/unabhaengigkeitsrechner/js/tabelleAutarkie.json",
+			"last_modified": "2024-08-23T10:47:35Z",
+			"bytes": 211091,
+			"sha256": "598ca7b1d51de7f9b9d138f9545184465494f00a1b60848248d53748daf24b58"
+		},
+		"tabelleEigenverbrauch.json": {
+			"url": "https://solar.htw-berlin.de/unabhaengigkeitsrechner/js/tabelleEigenverbrauch.json",
+			"last_modified": "2024-08-23T10:47:35Z",
+			"bytes": 237007,
+			"sha256": "1bce41717bd6c61f7a40623bfa01ec07919cb309a677d631148647d060d91476"
+		}
+	},
+	"fetched": "2026-10-09, through Apify",
+	"licence": "None stated by HTW Berlin; the calculator page allows embedding anywhere (Content-Security-Policy frame-ancestors *). Attribution to HTW Berlin is shown wherever a value from these tables appears."
+}

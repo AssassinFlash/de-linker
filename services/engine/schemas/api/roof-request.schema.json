@@ -1,0 +1,54 @@
+{
+	"$defs": {
+		"Location": {
+			"additionalProperties": false,
+			"properties": {
+				"latitude": {
+					"maximum": 55.2,
+					"minimum": 47.0,
+					"title": "Latitude",
+					"type": "number"
+				},
+				"longitude": {
+					"maximum": 15.1,
+					"minimum": 5.8,
+					"title": "Longitude",
+					"type": "number"
+				}
+			},
+			"required": [
+				"latitude",
+				"longitude"
+			],
+			"title": "Location",
+			"type": "object"
+		}
+	},
+	"additionalProperties": false,
+	"properties": {
+		"plz": {
+			"description": "German postcode (PLZ)",
+			"pattern": "^\\d{5}$",
+			"title": "Plz",
+			"type": "string"
+		},
+		"location": {
+			"$ref": "#/$defs/Location"
+		},
+		"locale": {
+			"default": "en",
+			"enum": [
+				"en",
+				"de"
+			],
+			"title": "Locale",
+			"type": "string"
+		}
+	},
+	"required": [
+		"plz",
+		"location"
+	],
+	"title": "RoofRequest",
+	"type": "object"
+}

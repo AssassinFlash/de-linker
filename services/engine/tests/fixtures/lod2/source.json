@@ -1,0 +1,9 @@
+{
+	"what": "Every building whose centroid lies within 60 m of Triftstraße 5, 80538 München (centroid 48.140278 N, 11.588411 E), cut unchanged from the official Bavarian LoD2 tile 692_5334.",
+	"tile": "https://download1.bayernwolke.de/a/lod2/citygml/692_5334.gml",
+	"tile_bytes": 120983815,
+	"tile_sha256": "b3b028ad9df43108351172fa1920b8aa1296f603126d45c422d9b7a66a2a6510",
+	"tile_last_modified": "2026-10-06T21:35:22Z",
+	"fetched": "2026-10-09",
+	"licence": "CC BY 4.0, Bayerische Vermessungsverwaltung – www.geodaten.bayern.de"
+}

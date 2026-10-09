@@ -1,0 +1,91 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://de-linker.com/schemas/engine/compatibility.schema.json",
+	"title": "Compatibility (release) data",
+	"description": "data/compatibility.json (docs/specs/8-engineering-data.md, target shape 3): which inverter and battery pairs a manufacturer document releases, and the parts the documents name around an inverter. Patterns are regular expressions tested against the product model (pa_model) with search semantics; anchor them with ^ and $. Every pair that matches a combination applies: the verdict is the most restrictive one (not_released < released_with_accessory < released), conditions, documents and accessories are joined, module ranges are intersected. A combination no pair matches has no documented release (verdict unknown).",
+	"type": "object",
+	"required": ["schema_version", "version", "pairs", "requirements"],
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "const": 1 },
+		"version": { "type": "string", "minLength": 1 },
+		"pairs": { "type": "array", "items": { "$ref": "#/$defs/pair" } },
+		"requirements": { "type": "array", "items": { "$ref": "#/$defs/requirement" } }
+	},
+	"$defs": {
+		"pattern": { "type": "string", "minLength": 1, "format": "regex" },
+		"pair": {
+			"type": "object",
+			"required": ["inverter", "battery", "verdict", "conditions", "documents"],
+			"additionalProperties": false,
+			"properties": {
+				"inverter": { "$ref": "#/$defs/pattern" },
+				"battery": { "$ref": "#/$defs/pattern" },
+				"verdict": { "enum": ["released", "released_with_accessory", "not_released"] },
+				"conditions": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+				"documents": { "type": "array", "items": { "$ref": "#/$defs/documentRef" } },
+				"modules": {
+					"description": "Battery modules per stack that the release covers.",
+					"type": "object",
+					"required": ["min", "max"],
+					"additionalProperties": false,
+					"properties": {
+						"min": { "type": "integer", "minimum": 1 },
+						"max": { "type": "integer", "minimum": 1 }
+					}
+				},
+				"accessories": { "type": "array", "items": { "$ref": "#/$defs/accessory" } }
+			},
+			"if": { "properties": { "verdict": { "const": "released_with_accessory" } } },
+			"then": { "required": ["accessories"], "properties": { "accessories": { "minItems": 1 } } }
+		},
+		"requirement": {
+			"description": "A part a document names for an inverter whatever the battery: a meter that ships in the box (included) or one to order beside it.",
+			"type": "object",
+			"required": ["inverter", "kind", "included", "conditions", "documents"],
+			"additionalProperties": false,
+			"properties": {
+				"inverter": { "$ref": "#/$defs/pattern" },
+				"kind": { "enum": ["meter", "backup", "parallel_controller"] },
+				"included": { "type": "boolean" },
+				"phase": { "enum": [1, 3] },
+				"max_units": {
+					"description": "parallel_controller: the most inverters one controller coordinates.",
+					"type": "integer",
+					"minimum": 1
+				},
+				"accessories": { "type": "array", "items": { "$ref": "#/$defs/accessory" } },
+				"conditions": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+				"documents": { "type": "array", "items": { "$ref": "#/$defs/documentRef" } }
+			},
+			"if": { "properties": { "included": { "const": false } } },
+			"then": { "required": ["accessories"] }
+		},
+		"accessory": {
+			"type": "object",
+			"required": ["model", "quantity", "per"],
+			"additionalProperties": false,
+			"properties": {
+				"model": { "$ref": "#/$defs/pattern" },
+				"quantity": { "type": "integer", "minimum": 1 },
+				"per": { "enum": ["system", "stack", "unit"] }
+			}
+		},
+		"text": {
+			"description": "Every customer-facing text exists in English and German (AGENTS.md section 3).",
+			"type": "object",
+			"required": ["en", "de"],
+			"additionalProperties": false,
+			"properties": { "en": { "type": "string", "minLength": 1 }, "de": { "type": "string", "minLength": 1 } }
+		},
+		"documentRef": {
+			"type": "object",
+			"required": ["url"],
+			"additionalProperties": false,
+			"properties": {
+				"url": { "type": "string", "pattern": "^https://de-linker\\.com/" },
+				"page": { "type": "integer", "minimum": 1 }
+			}
+		}
+	}
+}

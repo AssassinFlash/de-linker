@@ -1,0 +1,117 @@
+{
+	"note": "Official aerial imagery (DOP, 10-20 cm) of each federal state as WMS 1.3.0 in EPSG:3857. Services, layers and the credit each state asks for are the facts the old repository verified (all 16 GetMap requests answered on 2026-07-18; licence classes checked on 2026-09-01), re-checked with live GetMap requests on 2026-10-09.",
+	"states": {
+		"DE-NW": {
+			"wms": "https://www.wms.nrw.de/geobasis/wms_nw_dop",
+			"layer": "nw_dop_rgb",
+			"credit": "Geobasis NRW",
+			"licence": "dl-de/zero-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/zero-2-0"
+		},
+		"DE-BY": {
+			"wms": "https://geoservices.bayern.de/od/wms/dop/v1/dop20",
+			"layer": "by_dop20c",
+			"credit": "Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+			"licence": "CC BY 4.0",
+			"licence_url": "https://creativecommons.org/licenses/by/4.0/"
+		},
+		"DE-BW": {
+			"wms": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_ATKIS_DOP_20_C",
+			"layer": "IMAGES_DOP_20_RGB",
+			"credit": "LGL-BW",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		},
+		"DE-NI": {
+			"wms": "https://opendata.lgln.niedersachsen.de/doorman/noauth/dop_wms",
+			"layer": "ni_dop20",
+			"credit": "LGLN",
+			"licence": "CC BY 4.0",
+			"licence_url": "https://creativecommons.org/licenses/by/4.0/"
+		},
+		"DE-HE": {
+			"wms": "https://www.gds-srv.hessen.de/cgi-bin/lika-services/de-viewer/access/ogc-free-images.ows",
+			"layer": "he_dop20_rgb",
+			"credit": "HVBG Hessen",
+			"licence": "dl-de/zero-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/zero-2-0"
+		},
+		"DE-RP": {
+			"wms": "https://geo4.service24.rlp.de/wms/rp_dop20.fcgi",
+			"layer": "rp_dop20",
+			"credit": "GeoBasis-DE / LVermGeoRP",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		},
+		"DE-SN": {
+			"wms": "https://geodienste.sachsen.de/wms_geosn_dop-rgb/guest",
+			"layer": "sn_dop_020",
+			"credit": "GeoSN",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		},
+		"DE-BE": {
+			"wms": "https://isk.geobasis-bb.de/mapproxy/dop20c/service/wms",
+			"layer": "bebb_dop20c",
+			"credit": "GeoBasis-DE/LGB, Geoportal Berlin",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		},
+		"DE-BB": {
+			"wms": "https://isk.geobasis-bb.de/mapproxy/dop20c/service/wms",
+			"layer": "bebb_dop20c",
+			"credit": "GeoBasis-DE/LGB",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		},
+		"DE-SH": {
+			"wms": "https://service.gdi-sh.de/WMS_SH_DOP20col_OpenGBD",
+			"layer": "sh_dop20_rgb",
+			"credit": "GeoBasis-DE/LVermGeo SH",
+			"licence": "CC BY 4.0",
+			"licence_url": "https://creativecommons.org/licenses/by/4.0/"
+		},
+		"DE-TH": {
+			"wms": "https://www.geoproxy.geoportal-th.de/geoproxy/services/DOP",
+			"layer": "th_dop",
+			"credit": "GDI-Th",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		},
+		"DE-ST": {
+			"wms": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_DOP_WMS_OpenData/guest",
+			"layer": "lsa_lvermgeo_dop20_2",
+			"credit": "GeoBasis-DE / LVermGeo LSA",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		},
+		"DE-HB": {
+			"wms": "https://geodienste.bremen.de/wms_dop_lb",
+			"layer": "dop10_2025_HB",
+			"credit": "Landesamt GeoInformation Bremen",
+			"licence": "CC BY 4.0",
+			"licence_url": "https://creativecommons.org/licenses/by/4.0/"
+		},
+		"DE-MV": {
+			"wms": "https://www.geodaten-mv.de/dienste/adv_dop",
+			"layer": "mv_dop",
+			"credit": "GeoBasis-DE/M-V",
+			"licence": "CC BY 4.0",
+			"licence_url": "https://creativecommons.org/licenses/by/4.0/"
+		},
+		"DE-SL": {
+			"wms": "https://geoportal.saarland.de/freewms/dop",
+			"layer": "sl_dop",
+			"credit": "LVGL Saarland",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		},
+		"DE-HH": {
+			"wms": "https://geodienste.hamburg.de/wms_dop_zeitreihe_unbelaubt",
+			"layer": "dop_zeitreihe_unbelaubt",
+			"credit": "LGV Hamburg",
+			"licence": "dl-de/by-2-0",
+			"licence_url": "https://www.govdata.de/dl-de/by-2-0"
+		}
+	}
+}
