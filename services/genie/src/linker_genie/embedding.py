@@ -17,6 +17,7 @@ Vectors travel as float32 little-endian bytes, the form sqlite-vec stores.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import struct
@@ -51,6 +52,11 @@ class Embedder(Protocol):
     @property
     def dimensions(self) -> int: ...
 
+    @property
+    def fingerprint(self) -> dict[str, str]:
+        """What makes two encoders produce the same vectors; the index records it."""
+        ...
+
     def embed_documents(self, passages: Sequence[Passage]) -> list[bytes]:
         """One vector per passage, for storing."""
         ...
@@ -58,6 +64,14 @@ class Embedder(Protocol):
     def embed_query(self, text: str) -> bytes:
         """The vector a query is searched with."""
         ...
+
+
+def _sha256(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def pack(vector: Sequence[float]) -> bytes:
@@ -163,7 +177,20 @@ class OnnxEmbedder:
 
         for filename in spec.onnx_data:
             fetch(filename)
-        self._tokenizer = Tokenizer.from_file(fetch(spec.tokenizer_file))
+        onnx_path = fetch(spec.onnx_file)
+        tokenizer_path = fetch(spec.tokenizer_file)
+        self._fingerprint = {
+            "model": spec.name,
+            "revision": spec.revision,
+            "onnx_file": spec.onnx_file,
+            "onnx_sha256": _sha256(onnx_path),
+            "tokenizer_sha256": _sha256(tokenizer_path),
+            "query_prefix": spec.query_prefix,
+            "passage_prefix": spec.passage_prefix,
+            "pooling": spec.pooling,
+            "dimensions": str(spec.dimensions),
+        }
+        self._tokenizer = Tokenizer.from_file(tokenizer_path)
         self._tokenizer.enable_truncation(MAX_TOKENS)
         # Batches are padded with the model's own pad token (XLM-RoBERTa's `<pad>`).
         pad = self._tokenizer.token_to_id("<pad>")
@@ -178,7 +205,7 @@ class OnnxEmbedder:
         options.add_session_config_entry("session.intra_op.allow_spinning", "0")
         options.add_session_config_entry("session.inter_op.allow_spinning", "0")
         self._session = onnxruntime.InferenceSession(
-            fetch(spec.onnx_file), options, providers=["CPUExecutionProvider"]
+            onnx_path, options, providers=["CPUExecutionProvider"]
         )
         self._inputs = {item.name for item in self._session.get_inputs()}
         self._outputs = [item.name for item in self._session.get_outputs()]
@@ -190,6 +217,10 @@ class OnnxEmbedder:
     @property
     def dimensions(self) -> int:
         return self.spec.dimensions
+
+    @property
+    def fingerprint(self) -> dict[str, str]:
+        return dict(self._fingerprint)
 
     def _vectors(self, texts: Sequence[str]) -> list[bytes]:
         import numpy as np
@@ -217,9 +248,15 @@ class OnnxEmbedder:
 
     def embed_documents(self, passages: Sequence[Passage]) -> list[bytes]:
         texts = [self.spec.passage_prefix + passage.text for passage in passages]
-        vectors: list[bytes] = []
-        for start in range(0, len(texts), ONNX_BATCH):
-            vectors.extend(self._vectors(texts[start : start + ONNX_BATCH]))
+        # Batches of similar length waste less on padding; the order is restored after.
+        order = sorted(range(len(texts)), key=lambda index: len(texts[index]))
+        vectors: list[bytes] = [b""] * len(texts)
+        for start in range(0, len(order), ONNX_BATCH):
+            batch = order[start : start + ONNX_BATCH]
+            for index, vector in zip(
+                batch, self._vectors([texts[index] for index in batch]), strict=True
+            ):
+                vectors[index] = vector
         return vectors
 
     def embed_query(self, text: str) -> bytes:
@@ -245,6 +282,12 @@ class GeminiEmbedder:
 
     model = GEMINI
     dimensions = GEMINI_DIMENSIONS
+    fingerprint = {
+        "model": GEMINI,
+        "dimensions": str(GEMINI_DIMENSIONS),
+        "query_format": "task: question answering | query: {text}",
+        "document_format": "title: {title} | text: {text}",
+    }
 
     def __init__(
         self, api_key: str, base_url: str, urlopen: UrlOpen = urllib.request.urlopen

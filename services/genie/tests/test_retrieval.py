@@ -27,6 +27,7 @@ class AxisEncoder:
 
     model = "toy"
     dimensions = 3
+    fingerprint = {"model": "toy", "dimensions": "3"}
 
     def embed_documents(self, passages: Sequence[Passage]) -> list[bytes]:
         raise AssertionError("queries only")
@@ -119,7 +120,14 @@ def index_path(tmp_path: Path) -> Path:
         pack(AXES["battery"]),
         pack(AXES["certificate"]),
     ]
-    meta = corpus.Meta("20261009T000000Z", "toy", 3, "docling test", 512)
+    meta = corpus.Meta(
+        "20261009T000000Z",
+        "toy",
+        3,
+        "docling test",
+        512,
+        embedding=AxisEncoder.fingerprint,
+    )
     products = [(101, "GW10K-ET"), (202, "LX F12.8-H")]
     corpus.write(tmp_path / "corpus", meta, documents, products, chunks, vectors)
     store.export(tmp_path / "corpus", path)
@@ -265,3 +273,13 @@ def test_a_keywords_only_index_searches_without_vectors(tmp_path: Path) -> None:
 
     assert index.encoder is None
     assert [hit.chunk_id for hit in index.search("input power", "en")] == ["x"]
+
+
+def test_an_encoder_other_than_the_one_that_built_the_index_is_refused(
+    index_path: Path,
+) -> None:
+    class Other(AxisEncoder):
+        fingerprint = {"model": "toy", "dimensions": "3", "onnx_sha256": "different"}
+
+    with pytest.raises(RuntimeError, match="differs"):
+        DocumentIndex(index_path, encoder=Other())

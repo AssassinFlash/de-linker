@@ -86,13 +86,7 @@ def export(directory: Path, path: Path) -> None:
     db = connect(path)
     try:
         db.executescript(SCHEMA)
-        values = {
-            "schema_version": str(SCHEMA_VERSION),
-            "version": meta.version,
-            "embedding_model": meta.embedding_model or "",
-            "dimensions": str(meta.dimensions or 0),
-            "parser": meta.parser,
-        }
+        values = corpus.meta_values(meta, SCHEMA_VERSION)
         db.executemany(
             "INSERT INTO meta (key, value) VALUES (?, ?)", sorted(values.items())
         )

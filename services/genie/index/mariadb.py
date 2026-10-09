@@ -21,8 +21,10 @@ from typing import TextIO
 from index import corpus
 from linker_genie.retrieval import SCHEMA_VERSION
 
-# Rows per INSERT statement: MariaDB's max_allowed_packet defaults to 16 MB; 100 chunks
-# of at most 512 tokens with a 3072-dimension vector in text stay well inside it.
+# Rows per INSERT statement. One statement must fit max_allowed_packet, 16 MiB by
+# default ("Server System Variables", MariaDB docs, read via Apify 2026-10-09): 100 chunks
+# of at most 512 tokens (about 3 KB of text each) with a 3072-dimension vector written
+# out (about 34 KB) come to about 3.7 MB.
 ROWS_PER_INSERT = 100
 
 
@@ -88,13 +90,7 @@ def export(directory: Path, path: Path, prefix: str = "wp_") -> None:
             "  KEY `by_document` (`doc_sha256`, `page`),\n"
             f"  FULLTEXT KEY `words` (`header`, `text`){vector_index}\n) {charset};\n"
         )
-        values = {
-            "schema_version": str(SCHEMA_VERSION),
-            "version": meta.version,
-            "embedding_model": meta.embedding_model or "",
-            "dimensions": str(meta.dimensions or 0),
-            "parser": meta.parser,
-        }
+        values = corpus.meta_values(meta, SCHEMA_VERSION)
         _insert(
             out,
             f"{t}meta",

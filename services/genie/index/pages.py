@@ -37,6 +37,8 @@ RENDER_DPI = 150
 # Requests in flight. Each takes about 4 s through AIHubMix (measured 2026-10-09);
 # 16 at a time keeps the 11,697 pages near an hour.
 WORKERS = 16
+# Tries per page with exponential backoff (2, 4, 8, 16 s): rides out a dropped
+# connection; the run of 2026-10-09 saw one (IncompleteRead), which the retry cleared.
 ATTEMPTS = 5
 PAGE_VECTORS = INDEX_DIR / "page-vectors" / f"{GEMINI}.sqlite"
 

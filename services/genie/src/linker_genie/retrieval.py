@@ -119,6 +119,18 @@ class DocumentIndex:
             self.encoder = query_encoder(self.embedding_model)
         else:
             self.encoder = encoder
+        recorded = json.loads(meta.get("embedding_fingerprint", "{}"))
+        if (
+            self.encoder is not None
+            and recorded
+            and self.encoder.fingerprint != recorded
+        ):
+            # Vectors of a different model, file, tokenizer or input format would rank
+            # nonsense; the index states what built it and nothing else may query it.
+            raise RuntimeError(
+                f"{path}: query encoder {self.encoder.fingerprint} differs from the "
+                f"encoder that built the index {recorded}"
+            )
 
     def close(self) -> None:
         self._db.close()

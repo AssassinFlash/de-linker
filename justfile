@@ -68,6 +68,17 @@ serve name:
 wp name *args:
     PHP={{ php }} {{ linker_local }} wp "$@"
 
+# docs/specs/10-knowledge-index.md; `just index --help` lists the options.
+# Build Genie's document index on this Mac: hosted PDFs, Docling, chunks, vectors, SQLite.
+[working-directory("services/genie")]
+index *args:
+    uv run --locked --group index python -m index.build {{ args }}
+
+# Score the latest index build on the golden set: recall@5 and citation page accuracy.
+[working-directory("services/genie")]
+eval *args:
+    uv run --locked --group index python -m index.eval.run {{ args }}
+
 [private]
 php-install:
     #!/usr/bin/env bash

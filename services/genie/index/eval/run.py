@@ -1,10 +1,10 @@
 """Evaluation (`just eval`): recall@5 and citation page accuracy of the golden set.
 
-Runs every golden question against a built index in up to four settings: hybrid
-(keywords + vectors) and keywords only, each without product IDs (the whole library)
-and with the IDs of the products that sell the question's model. Prints a Markdown
-table and writes `eval.json` next to the index. Fails when the hybrid search over the
-whole library, or the keyword-only one, misses a threshold of the ticket.
+Runs every golden question against a built index: the production path first (by
+product: narrowed to the products that sell the question's model, hybrid when the
+index has vectors), then the whole library, then keywords only. Prints a Markdown table
+and writes `eval.json` next to the index. Fails when the production path misses a
+threshold of the ticket (recall@5 90 %, citation page accuracy 95 %).
 """
 
 from __future__ import annotations
@@ -141,14 +141,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     products = product_ids_by_model(index_path)
     hybrid = DocumentIndex(index_path)
     keyword = DocumentIndex(index_path, encoder=None)
+    # The production path first: Genie asks about a model it has resolved to products
+    # (docs/specs/13-genie.md, linker/search-knowledge takes product_ids), so the search
+    # narrows to those products' documents; with vectors when the index has them.
+    mode, index = (
+        ("hybrid", hybrid) if hybrid.encoder is not None else ("keywords", keyword)
+    )
     settings = [
-        ("keywords, whole library", keyword, None),
-        ("keywords, by product", keyword, products),
+        (f"{mode}, by product", index, products),
+        (f"{mode}, whole library", index, None),
     ]
     if hybrid.encoder is not None:
-        settings[:0] = [
-            ("hybrid, whole library", hybrid, None),
-            ("hybrid, by product", hybrid, products),
+        settings += [
+            ("keywords, by product", keyword, products),
+            ("keywords, whole library", keyword, None),
         ]
     summaries = []
     for name, index, by_product in settings:
@@ -167,15 +173,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         json.dumps([summary.__dict__ for summary in summaries], indent=1),
         encoding="utf-8",
     )
-    gated = [item for item in summaries if item.setting.endswith("whole library")]
-    failed = [
-        item.setting
-        for item in gated
-        if item.recall < RECALL_THRESHOLD or item.page_accuracy < PAGE_THRESHOLD
-    ]
-    if failed:
+    gated = summaries[0]
+    if gated.recall < RECALL_THRESHOLD or gated.page_accuracy < PAGE_THRESHOLD:
         print(
-            f"\nBelow threshold (recall@5 {RECALL_THRESHOLD:.0%}, page accuracy {PAGE_THRESHOLD:.0%}): {failed}"
+            f"\n{gated.setting} is below the ticket's thresholds "
+            f"(recall@5 {RECALL_THRESHOLD:.0%}, citation page accuracy {PAGE_THRESHOLD:.0%})"
         )
         return 1
     return 0

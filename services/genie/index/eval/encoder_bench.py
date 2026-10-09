@@ -10,7 +10,7 @@ throwaway uv environment under /tmp/bench-<date>/, with:
     --onnx <file> --tokenizer <tokenizer.json> --pooling cls|mean|sentence_embedding --prefix "query: "
 or  --sentence-transformer <hub id>     (PyTorch fp32 through sentence-transformers)
 It prints one JSON object. Needs numpy plus onnxruntime and tokenizers, or
-sentence-transformers; none of them is a dependency of the service.
+sentence-transformers, and this package on the path for its token cap.
 """
 
 from __future__ import annotations
@@ -25,12 +25,10 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
 
-# BGE-M3 and multilingual-e5 are XLM-RoBERTa models; e5's card: "Long texts will be
-# truncated to at most 512 tokens". A question is far shorter; the cap only bounds input.
-MAX_LENGTH = 512
+from linker_genie.embedding import MAX_TOKENS
 
 
-def _proc(path: str, field: str) -> float | None:
+def proc_mb(path: str, field: str) -> float | None:
     """A kB figure from a /proc file, in MB; None where /proc does not exist."""
     try:
         for line in Path(path).read_text().splitlines():
@@ -42,7 +40,7 @@ def _proc(path: str, field: str) -> float | None:
 
 
 def mem_available() -> float | None:
-    return _proc("/proc/meminfo", "MemAvailable")
+    return proc_mb("/proc/meminfo", "MemAvailable")
 
 
 def onnx_encoder(
@@ -53,7 +51,7 @@ def onnx_encoder(
     from tokenizers import Tokenizer
 
     tokenizer = Tokenizer.from_file(str(tokenizer_file))
-    tokenizer.enable_truncation(MAX_LENGTH)
+    tokenizer.enable_truncation(MAX_TOKENS)
     options = onnxruntime.SessionOptions()
     # The VPS runtime rule (owner, 2026-10-09): one thread, and no spinning while idle,
     # so the encoder never holds the single core the engine also needs.
@@ -107,7 +105,7 @@ def run(
     encode = encode_factory()
     loaded = time.perf_counter()
     after_load = mem_available()
-    rss_loaded = _proc("/proc/self/status", "VmRSS")
+    rss_loaded = proc_mb("/proc/self/status", "VmRSS")
     first_started = time.perf_counter()
     encode(questions[0])
     first = time.perf_counter() - first_started
@@ -129,7 +127,7 @@ def run(
         "p95_ms": round(ordered[max(0, round(0.95 * len(ordered)) - 1)] * 1000, 1),
         "max_ms": round(ordered[-1] * 1000, 1),
         "rss_loaded_mb": rss_loaded and round(rss_loaded),
-        "rss_peak_mb": (peak := _proc("/proc/self/status", "VmHWM")) and round(peak),
+        "rss_peak_mb": (peak := proc_mb("/proc/self/status", "VmHWM")) and round(peak),
         "mem_available_before_mb": before and round(before),
         "mem_available_loaded_mb": after_load and round(after_load),
         "mem_available_lowest_mb": lowest and round(lowest),

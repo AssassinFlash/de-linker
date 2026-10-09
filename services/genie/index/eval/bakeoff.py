@@ -31,9 +31,14 @@ import numpy.typing as npt
 
 from index.eval.goldset import GOLDEN_PATH, Question, load
 from index.eval.metrics import quote_in
+from index.eval.run import product_ids_by_model
 from index.pages import PAGE_VECTORS
-from linker_genie.embedding import GEMINI, Embedder, gemini_from_env
+from linker_genie.embedding import GEMINI, Embedder, GeminiEmbedder, gemini_from_env
 from linker_genie.retrieval import CANDIDATES, DocumentIndex, rrf
+
+# Queries timed one by one for an API model; the rest are fetched in batches. 50 is the
+# sample the VPS encoder benchmark times (index.eval.encoder_bench).
+TIMED_API_QUERIES = 50
 
 PageKey = tuple[str, int]
 Ranking = list[PageKey]
@@ -86,9 +91,17 @@ class Matrix:
         vectors = vectors / np.linalg.norm(vectors, axis=1, keepdims=True)
         return cls([(row[0], row[1]) for row in rows], vectors.astype(np.float32))
 
-    def ranking(self, query: bytes) -> Ranking:
+    def ranking(self, query: bytes, documents: set[str] | None = None) -> Ranking:
+        """The CANDIDATES nearest pages, among `documents` when given."""
         scores = self.vectors @ np.frombuffer(query, dtype="<f4")
-        best = np.argsort(-scores)[:CANDIDATES]
+        if documents is not None:
+            allowed = np.array([key[0] in documents for key in self.keys])
+            scores = np.where(allowed, scores, -np.inf)
+        best = [
+            index
+            for index in np.argsort(-scores)[:CANDIDATES]
+            if np.isfinite(scores[index])
+        ]
         return [self.keys[index] for index in best]
 
 
@@ -159,6 +172,16 @@ class Encoders:
             )
         return self.vectors[key]
 
+    def prefill(
+        self, encoder: GeminiEmbedder, texts: Sequence[str], timed: int
+    ) -> None:
+        """An API model: time `timed` single queries, fetch the rest in batched requests."""
+        for text in texts[:timed]:
+            self.encode(encoder, text)
+        rest = [text for text in texts if (encoder.model, text) not in self.vectors]
+        for text, vector in zip(rest, encoder.embed_queries(rest), strict=True):
+            self.vectors[(encoder.model, text)] = vector
+
     def latency(self) -> dict[str, dict[str, float]]:
         out = {}
         for model, values in self.seconds.items():
@@ -170,6 +193,31 @@ class Encoders:
                 ),
             }
         return out
+
+
+class Scopes:
+    """What a question may retrieve: the whole library, or with --by-product the
+    documents of the products that sell its model (the search's own narrowing)."""
+
+    def __init__(self, base: DocumentIndex, pages: Pages, by_product: bool) -> None:
+        self.base = base
+        self.pages = pages
+        self.products = product_ids_by_model(base.path) if by_product else {}
+        self._rowids: dict[str, list[int] | None] = {}
+
+    def rowids(self, question: Question) -> list[int] | None:
+        if question.model not in self._rowids:
+            ids = self.products.get(question.model.casefold())
+            self._rowids[question.model] = self.base.scope(ids, None) if ids else None
+        return self._rowids[question.model]
+
+    def documents(self, question: Question) -> set[str] | None:
+        rowids = self.rowids(question)
+        return (
+            None
+            if rowids is None
+            else {self.pages.of_rowid[rowid][0] for rowid in rowids}
+        )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -190,6 +238,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         metavar="STORE",
         help="page-text vector store (index.eval.page_vectors)",
     )
+    parser.add_argument(
+        "--by-product",
+        action="store_true",
+        help="narrow each question to its model's products",
+    )
     parser.add_argument("--golden", type=Path, default=GOLDEN_PATH)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -199,7 +252,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         model: Path(path) for model, path in (item.split("=", 1) for item in args.index)
     }
     base = DocumentIndex(next(iter(indexes.values())), encoder=None)
-    pages = Pages.read(next(iter(indexes.values())))
+    pages = Pages.read(base.path)
+    scopes = Scopes(base, pages, args.by_product)
     encoders = Encoders()
     rankings: dict[str, dict[str, Ranking]] = {}
 
@@ -207,36 +261,44 @@ def main(argv: Sequence[str] | None = None) -> int:
         rankings[name] = {question.id: make(question) for question in questions}
         print(f"ranked: {name}", file=sys.stderr, flush=True)
 
-    rank("BM25", lambda q: pages.ranking(base.keyword_ranking(q.question, None)))
+    rank(
+        "BM25",
+        lambda q: pages.ranking(base.keyword_ranking(q.question, scopes.rowids(q))),
+    )
+    texts = list(dict.fromkeys(question.question for question in questions))
     for model, path in indexes.items():
-        rank(f"dense {model}", dense_ranker(DocumentIndex(path), pages, encoders))
+        index = DocumentIndex(path)
+        if isinstance(index.encoder, GeminiEmbedder):
+            encoders.prefill(index.encoder, texts, TIMED_API_QUERIES)
+        rank(f"dense {model}", dense_ranker(index, pages, encoders, scopes))
     if args.images:
         gemini = gemini_from_env()
         if gemini is None:
             raise SystemExit("--images needs AIHUBMIX_API_KEY and AIHUBMIX_BASE_URL")
-        rank(
-            f"{GEMINI} page images",
-            matrix_ranker(Matrix.from_store(PAGE_VECTORS), gemini, encoders),
-        )
+        encoders.prefill(gemini, texts, TIMED_API_QUERIES)
+        images = Matrix.from_store(PAGE_VECTORS)
+        rank(f"{GEMINI} page images", matrix_ranker(images, gemini, encoders, scopes))
     if args.page_text:
         model = json.loads(args.page_text.with_suffix(".json").read_text())["model"]
         encoder = DocumentIndex(indexes[model]).encoder
         if encoder is None:
             raise SystemExit(f"{model}: no query encoder on this machine")
+        text_pages = Matrix.from_store(args.page_text)
         rank(
             f"OCR page text {model}",
-            matrix_ranker(Matrix.from_store(args.page_text), encoder, encoders),
+            matrix_ranker(text_pages, encoder, encoders, scopes),
         )
 
     settings: list[tuple[str, list[str]]] = [("BM25", ["BM25"])]
     for model in indexes:
         settings.append((f"dense {model}", [f"dense {model}"]))
         settings.append((f"BM25 + {model}", ["BM25", f"dense {model}"]))
-    for name in [
+    extra = [
         name
         for name in rankings
         if name.endswith("page images") or name.startswith("OCR page text")
-    ]:
+    ]
+    for name in extra:
         settings.append((name, [name]))
         for model in indexes:
             settings.append(
@@ -247,12 +309,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     for name, parts in settings:
         row = Row(name)
         for question in questions:
-            ranked = _fuse([rankings[part][question.id] for part in parts])
+            ranked = fuse([rankings[part][question.id] for part in parts])
             row.scores[question.id] = score(ranked, question, pages)
         rows.append(row)
 
+    english = english_documents(base.path)
+
+    def german_on_english(question: Question) -> bool:
+        return question.lang == "de" and all(
+            item.doc_sha256 in english for item in question.evidence
+        )
+
     report = {
         "questions": len(questions),
+        "by_product": args.by_product,
         "figure_questions": sum(
             1 for question in questions if question.kind == "figure"
         ),
@@ -263,18 +333,36 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "all": row.subset(questions, lambda q: True),
                 "en": row.subset(questions, lambda q: q.lang == "en"),
                 "de": row.subset(questions, lambda q: q.lang == "de"),
+                "de_question_en_document": row.subset(questions, german_on_english),
                 "figure": row.subset(questions, lambda q: q.kind == "figure"),
             }
             for row in rows
         ],
     }
     args.out.write_text(json.dumps(report, indent=1), encoding="utf-8")
-    print(json.dumps(report["rows"], indent=None)[:2000])
+    for row in report["rows"]:
+        overall = row["all"]
+        print(
+            f"{row['setting']}: recall@5 {overall['recall@5']:.3f} "
+            f"recall@10 {overall['recall@10']:.3f} page {overall['page_accuracy']:.3f}"
+        )
     return 0
 
 
+def english_documents(path: Path) -> set[str]:
+    """Documents whose language, as the index records it, is English."""
+    db = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+    try:
+        return {
+            row[0]
+            for row in db.execute("SELECT sha256 FROM documents WHERE lang = 'en'")
+        }
+    finally:
+        db.close()
+
+
 def dense_ranker(
-    index: DocumentIndex, pages: Pages, encoders: Encoders
+    index: DocumentIndex, pages: Pages, encoders: Encoders, scopes: Scopes
 ) -> Callable[[Question], Ranking]:
     """Pages of the chunks nearest to the question in one model's index."""
     encoder = index.encoder
@@ -283,23 +371,27 @@ def dense_ranker(
 
     def ranking(question: Question) -> Ranking:
         vector = encoders.encode(encoder, question.question)
-        return pages.ranking(index.vector_ranking(question.question, None, vector))
+        return pages.ranking(
+            index.vector_ranking(question.question, scopes.rowids(question), vector)
+        )
 
     return ranking
 
 
 def matrix_ranker(
-    matrix: Matrix, encoder: Embedder, encoders: Encoders
+    matrix: Matrix, encoder: Embedder, encoders: Encoders, scopes: Scopes
 ) -> Callable[[Question], Ranking]:
     """Pages nearest to the question among page vectors (images or page text)."""
 
     def ranking(question: Question) -> Ranking:
-        return matrix.ranking(encoders.encode(encoder, question.question))
+        return matrix.ranking(
+            encoders.encode(encoder, question.question), scopes.documents(question)
+        )
 
     return ranking
 
 
-def _fuse(rankings: Sequence[Ranking]) -> Ranking:
+def fuse(rankings: Sequence[Ranking]) -> Ranking:
     """Reciprocal rank fusion of page rankings (one ranking passes through unchanged)."""
     if len(rankings) == 1:
         return list(rankings[0])

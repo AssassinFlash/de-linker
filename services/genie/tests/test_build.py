@@ -19,6 +19,7 @@ class CountingEmbedder:
 
     model = "counting"
     dimensions = 2
+    fingerprint = {"model": "counting", "dimensions": "2"}
 
     def __init__(self) -> None:
         self.embedded = 0

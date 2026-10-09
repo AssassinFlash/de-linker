@@ -33,6 +33,15 @@ class LocalEmbedder:
     def dimensions(self) -> int:
         return self.spec.dimensions
 
+    @property
+    def fingerprint(self) -> dict[str, str]:
+        return {
+            "model": self.spec.name,
+            "revision": self.spec.revision,
+            "backend": "sentence-transformers",
+            "dimensions": str(self.spec.dimensions),
+        }
+
     def _encode(self, texts: Sequence[str]) -> list[bytes]:
         vectors = self._model.encode(
             list(texts),

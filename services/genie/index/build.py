@@ -109,7 +109,8 @@ class EmbeddingCache:
 
     def __init__(self, path: Path, model: str) -> None:
         self.model = model
-        self._db = sqlite3.connect(path)
+        # Several builds may fill the cache at once (one per model): wait for the lock.
+        self._db = sqlite3.connect(path, timeout=300)
         self._db.execute(
             "CREATE TABLE IF NOT EXISTS vectors (key TEXT PRIMARY KEY, vector BLOB NOT NULL)"
         )
@@ -290,7 +291,12 @@ def embed_corpus(source: Path, out_root: Path, embedder: Embedder) -> Path:
     build_dir = out_root / "builds" / version
     corpus_dir = build_dir / "corpus"
     new_meta = corpus.Meta(
-        version, embedder.model, embedder.dimensions, meta.parser, meta.max_tokens
+        version,
+        embedder.model,
+        embedder.dimensions,
+        meta.parser,
+        meta.max_tokens,
+        embedding=embedder.fingerprint,
     )
     products = corpus.read_products(source)
     corpus.write(corpus_dir, new_meta, documents, products, chunks, vectors)
@@ -359,6 +365,7 @@ def build(
         dimensions=embedder.dimensions if embedder else None,
         parser=", ".join(sorted(chunked.parsers)),
         max_tokens=MAX_TOKENS,
+        embedding=embedder.fingerprint if embedder else None,
     )
     corpus_dir = build_dir / "corpus"
     corpus.write(

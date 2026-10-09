@@ -74,6 +74,8 @@ brew install php@8.3
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
 | `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.2.0 + Redis 对象缓存，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
 | `just pull` | 线上只读快照到 `~/de-linker-data/<YYYYMMDD-HHMM>/`；`just pull load …` 等子命令见下文“线上快照” |
+| `just index` | Genie 的文档索引，只在 Mac 上跑（`docs/specs/10-knowledge-index.md`）：只读拉取媒体库 PDF 与商品、Docling 解析（按 sha256 缓存）、分块、向量、写 SQLite；数据与产物在仓库外的 `~/de-linker-data/`（`LINKER_DATA` 可改）。装 `index` 依赖组（Docling、ONNX Runtime 等），CI 不装 |
+| `just eval` | 用黄金集（`services/genie/index/eval/golden.jsonl`）给最新一次索引打分：召回@5、引用页码正确率；低于票面阈值即失败 |
 
 每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），锁文件与清单不一致就失败（`composer validate`、`npm ci`、`uv --locked`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）运行 `just check` 与 `just test`，再运行 `just build`，重建出的 `build/` 必须与提交的逐字节相同。
 

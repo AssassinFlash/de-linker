@@ -49,6 +49,20 @@ class Meta:
     dimensions: int | None
     parser: str
     max_tokens: int
+    # The encoder's fingerprint (linker_genie.embedding.Embedder.fingerprint).
+    embedding: dict[str, str] | None = None
+
+
+def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
+    """The key/value rows every store's `meta` table holds."""
+    return {
+        "schema_version": str(schema_version),
+        "version": meta.version,
+        "embedding_model": meta.embedding_model or "",
+        "dimensions": str(meta.dimensions or 0),
+        "embedding_fingerprint": json.dumps(meta.embedding or {}, sort_keys=True),
+        "parser": meta.parser,
+    }
 
 
 def _write_lines(path: Path, rows: Iterator[dict[str, Any]]) -> None:

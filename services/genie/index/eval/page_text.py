@@ -23,8 +23,8 @@ from index.pages import RENDER_DPI
 from index.paths import INDEX_DIR, INVENTORY_PATH, PDF_DIR
 
 STORE = INDEX_DIR / "page-text" / "ocr.sqlite"
-# Worker processes: Apple Vision runs on the Neural Engine; three keep it busy while
-# the CPU renders, alongside a running Docling parse (measured 2026-10-09).
+# Worker processes. Each renders on one core and hands the image to Apple Vision; three
+# read 2-3 pages/s beside the Docling parse on the build Mac (run of 2026-10-09).
 WORKERS = 3
 
 

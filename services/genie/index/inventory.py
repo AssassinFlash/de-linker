@@ -38,6 +38,8 @@ PER_PAGE = 100
 # Four parallel downloads: the host is shared hosting; four keeps one PDF list
 # (2.0 GB, 417 files on 2026-10-09) to minutes without opening many connections.
 DOWNLOAD_WORKERS = 4
+# Tries per file with backoff (1, 2 s): a dropped connection is retried, a file that
+# keeps failing stops the run.
 DOWNLOAD_ATTEMPTS = 3
 
 # The documents field's own vocabulary (every `download_type` / `download_role` value
