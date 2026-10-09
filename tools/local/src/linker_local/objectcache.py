@@ -5,10 +5,11 @@ Production gets a Redis object cache at the cutover (docs/specs/17-cutover.md,
 instances share Homebrew's Redis server and its database 0; each keeps to its
 own key prefix, and nothing here deletes another instance's keys.
 
-The plugin's own `wp redis enable` / `disable` / `update-dropin`, its admin
-buttons for the same, and deactivating it run FLUSHDB (redis-cache 3.0.0,
-includes/cli/class-commands.php and includes/class-plugin.php), which empties
-the shared database for every instance, so the drop-in is copied here instead.
+The plugin's own `wp redis enable` / `disable` / `update-dropin` and its
+deactivation hook run FLUSHDB (redis-cache 3.0.0: includes/cli/class-commands.php
+and includes/class-plugin.php call (new Predis)->flush(), which runs flushdb()
+in includes/class-predis.php without the prefix filter), emptying the shared
+database for every instance, so the drop-in is copied here instead.
 """
 
 from __future__ import annotations
@@ -82,9 +83,12 @@ def install(instance: Instance, wp: WpCli) -> None:
     wp.run("plugin", "install", str(archive))
     wp.run("plugin", "verify-checksums", PLUGIN)
     wp.run("plugin", "activate", PLUGIN)
-    plugin = instance.wp_content / "plugins" / PLUGIN
-    del plugin
-    wp.run("redis", "enable")  # MUTATION: the plugin's own enable runs FLUSHDB
+    # What `wp redis enable` copies, without the FLUSHDB around it
+    # (includes/cli/class-commands.php, enable()).
+    shutil.copyfile(
+        instance.wp_content / "plugins" / PLUGIN / "includes" / "object-cache.php",
+        instance.wp_content / "object-cache.php",
+    )
     status = wp.run("redis", "status")
     if "Status: Connected" not in status:
         raise RedisError(f"the object cache is not connected:\n{status}")
