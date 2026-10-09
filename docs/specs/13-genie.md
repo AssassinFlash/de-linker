@@ -22,7 +22,7 @@
 ### B. 服务（`services/genie`，FastAPI + Pydantic AI）
 - `POST /turn`（SSE 流）：`{conversation_id, messages[], locale, page_context:{type: category|product|draft|account|other, product_id?, draft_ids?}, user:{logged_in, partner?}}`。
 - Agent：工具 = A 的 ability（HTTP，服务令牌只用于 inquiry-status 的用户上下文透传，不持 WP 写权限）；每轮 ≤4 次工具调用；strict 结构化输出 `{language, blocks:[{type:'text', text, refs:[fact_id]} | {type:'ask', field, options[]} | {type:'cards', product_ids[]} | {type:'compare', product_ids[]} | {type:'action', name, args} | {type:'handoff', summary}]}`；文本不含数字，写 `{fact:ID}` 占位。
-- 锚定核验（各一文件一测试）：`refs`（引用 ID ∈ 本轮工具结果）、`numbers`（占位符可渲染）、`actions`（允许列表与参数来源）、`scope`（公司/服务/物流意图只允许 handoff）、`wording`（无 Incoterms、无 "our engineers recommend"、库存只说有货）。失败 → 带错误重答一次 → 回退模板（只列 qualified 卡 + 一个追问）。
+- 运行时只有两个机制，都复刻自对标物：① **结构化输出**——模型只能产出带商品/事实 ID 的结构（Pydantic AI strict schema；非法结构由库拒绝并重答一次，再不行回退为"只列 qualified 卡 + 一个追问"的模板）；② **服务端填数（hydration，Rufus 的做法）**——文本里的数值由服务端从本轮工具结果填入。**没有文本改写，没有正则，没有审查层。** 范围外意图由模型按 schema 选择 handoff 块（提示词定义），不由代码判词。
 - 水合：服务端把占位符替换为工具结果里的值与单位；卡片数据由壳按 product_id 再取。
 - 模型：默认 DeepSeek（OpenAI 兼容 strict），`GENIE_PROVIDER=anthropic` 可切；实测核验失败率 ≥5% 则默认切 Anthropic（写入 PR）。
 - 提示词 `prompts/{en,de}/system.md`：范围、口径、追问顺序、"每轮最多一个追问"、"不写数字"。
@@ -36,15 +36,15 @@
 
 ## 验收
 
-旧 Advisor 的 190/191 只是症状；验收要证明这类混乱从结构上不可能发生，再用一组覆盖面广的面板证明行为。
+旧 Advisor 的 190/191 只是症状。下面的保证与面板是**构建时的测试与评估集**（Rufus 用评估集和 LLM-as-judge 衡量质量，见 `docs/research/2026-10-09/platform-ai-shopping-assistants.md` 第 155、191 行），不是运行时组件；每条标注复刻来源。
 
 ### 结构保证（每条一个自动化测试，任一失败不合并）
-- 模型输出里不出现数字：所有数值由服务端从工具结果填入（对 500 轮日志做断言）。
-- 正文引用 ⊆ 本轮工具结果；卡片商品 ⊆ 正文引用的商品；推荐商品 ⊆ `search-products` 的 qualified。
-- 工具返回里 `excluded` 的商品不可能出现在卡片或正文。
-- 动作只能是允许列表里的，参数只来自工具结果。
-- 范围外意图只有 handoff 块；禁词检查对每轮生效。
-- 卡片的反馈态在卡内、按钮高度不变（组件级 Storybook 视觉测试，所有状态）。
+- 模型输出里不出现数字，数值由服务端填入——复刻 Rufus 的 hydration（报告第 151、171 行）。
+- 正文引用 ⊆ 本轮工具结果；卡片 ⊆ 正文引用；推荐 ⊆ `search-products` 的 qualified——复刻全部对标物的共同骨架 (a)"答案锚定平台目录与实时状态"（第 12、65 行）。
+- 动作只能是允许列表里的，参数只来自工具结果——复刻 Accio 的"高风险动作需用户批准"（第 89 行）与 Sidekick 的小工具面。
+- 范围外意图只有 handoff 块——业主 10-05 裁定，由提示词与 schema 实现。
+- 披露句出现一次——复刻 Shopify（第 102 行）。
+- 卡片反馈态在卡内、按钮高度不变——普通组件测试（Storybook），与助手无关。
 
 ### 行为面板（`docs/acceptance/genie-panel.md`，≥30 问，EN/DE 各一遍；由 #16 做成端到端套件）
 覆盖：每个产品分类至少 2 问；四个入口各 2 问；条件齐全 / 冲突 / 事实不足 / 加装 / 48 V 与 HV / 备用 / 品牌偏好 / 对比 / 文档 / 库存与价格（登录与未登录）/ 范围外（公司、物流、安装）/ 多轮追问后出结果 / 动作（加入 Lösungsentwurf、加入方案、打开配置器、查询盘）。每问写明期望集合（从 `docs/research/2026-10-09/old-repo-live-catalogue-facts.md` 推导）与期望行为。通过标准：期望集合一致率 100%，追问不超过一个，披露句出现一次。
