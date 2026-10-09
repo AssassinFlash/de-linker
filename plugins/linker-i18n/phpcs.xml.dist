@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ruleset name="Linker i18n">
+	<description>WordPress Coding Standards 3, WooCommerce sniffs and PHPCompatibilityWP.</description>
+
+	<file>linker-i18n.php</file>
+	<file>includes</file>
+	<file>tests</file>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<!-- The production host runs PHP 8.3.33 and WordPress 7.1.3 (docs/research/2026-10-09/framework-choice.md §2). -->
+	<config name="testVersion" value="8.3-"/>
+	<config name="minimum_wp_version" value="7.1"/>
+
+	<!-- WooCommerce-Core = WordPress (WPCS 3) + WooCommerce sniffs + PHPCompatibilityWP. -->
+	<rule ref="WooCommerce-Core"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="linker-i18n"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="Linker\I18n"/>
+				<element value="linker_i18n"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Classes follow PSR-4 (one class per file, named after the class), as in WooCommerce's src/. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>includes/*</exclude-pattern>
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+</ruleset>

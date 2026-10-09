@@ -1,14 +1,58 @@
 name: check
+
 on:
   pull_request:
   push:
     branches: [main]
+
+permissions:
+  contents: read
+
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        # Production versions: PHP 8.3 on the host and Python 3.12 on the VPS
+        # (docs/research/2026-10-09/framework-choice.md §2, §7); Node 22 builds
+        # the apps on the Mac, within the engines of @wordpress/scripts 36.
+        php: ["8.3"]
+        node: ["22"]
+        python: ["3.12"]
     steps:
-      - uses: actions/checkout@v4
-      - name: smoke
-        run: |
-          test -f README.md
-          echo "pipeline ok"
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: plugins/linker-tools/package-lock.json
+
+      - uses: astral-sh/setup-uv@v10
+        with:
+          # The uv that wrote the uv.lock files.
+          version: "0.10.11"
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+          cache-dependency-glob: services/*/uv.lock
+
+      - uses: taiki-e/install-action@v2
+        with:
+          # The just the justfile is written for.
+          tool: just@1.58.0
+
+      - name: just check
+        run: just check
+
+      - name: Playwright's Chromium and its system libraries
+        working-directory: plugins/linker-tools
+        run: npx playwright install --with-deps --only-shell chromium
+
+      - name: just test
+        run: just test

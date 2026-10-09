@@ -1,7 +1,76 @@
 # de-linker
 
-Rebuild of de-linker.com (German B2B PV/storage inquiry site on WordPress + WooCommerce).
+de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能询盘网站。私有仓库。
 
-Private. Working rules live in `AGENTS.md` (to be written). Delivery: local → review → live.
+工作规则在 `AGENTS.md`，执行票的交付与验收在 `docs/acceptance/protocol.md`，证据在 `docs/research/`。交付管线：本地 → 评审站 → 线上。
 
-CI pipeline verified on 2026-10-09.
+## 目录
+
+| 路径 | 内容 |
+|---|---|
+| `plugins/linker-commerce` | 商务链、产品事实与 Abilities。PHP，`Linker\Commerce\` → `includes/` |
+| `plugins/linker-i18n` | Polylang 伴侣插件。PHP，`Linker\I18n\` → `includes/` |
+| `plugins/linker-tools` | Genie 与 Solution Configurator：PHP 壳（`Linker\Tools\` → `includes/`）和 React 应用（`src/`，入口 `genie`、`configurator`、`shared`），构建产物提交在 `build/` |
+| `services/genie` | Genie 的代理服务（FastAPI，`linker_genie`） |
+| `services/engine` | Solution Configurator 的引擎（FastAPI，`linker_engine`） |
+| `tools/` | just 模块与少量脚本 |
+| `docs/` | 验收协议与研究证据 |
+
+PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`；JS 单测与源码同目录（`*.test.tsx`），端到端测试在 `plugins/linker-tools/tests/e2e/`；Python 测试在各服务的 `tests/`。
+
+## 工具链
+
+| 项 | 版本 | 来源 |
+|---|---|---|
+| PHP | 8.3 | 生产主机实测 8.3.33（`docs/research/2026-10-09/framework-choice.md` §2）。写在各插件 `composer.json` 的 `config.platform.php`（PHPStan 也从这里读）与 `phpcs.xml.dist` 的 `testVersion` |
+| WordPress / WooCommerce | 7.1 / 11.1 | 主机实测 7.1.3 / 11.1.0（§2）：插件头 `Requires at least`、`minimum_wp_version`、`php-stubs/wordpress-stubs ~7.1.0`、`php-stubs/woocommerce-stubs ~11.1.0` |
+| PHPUnit | 9.6 | WP_Mock 1.1 要求 `phpunit/phpunit ^9.6`；WordPress 与 WooCommerce 也用 9.6（§6） |
+| PHPStan | level 8 | AGENTS.md §4；WooCommerce core 用 level 8（§6） |
+| PHPCS | WPCS 3 + woocommerce-sniffs + PHPCompatibilityWP | AGENTS.md §4；规则集 `WooCommerce-Core` 包含三者 |
+| Node | 22 | `@wordpress/scripts` 36 的 engines 为 `^22.22.2 \|\| ^24.15.0 \|\| >=26.0.0` |
+| React | 18.3.1 | WordPress 7.1.3 自带的版本（§2）。构建时 React、JSX 运行时与 `@wordpress/*` 都外部化，页面用 WordPress 那份；`node_modules` 里的只供测试与类型检查 |
+| Vitest / Playwright / Storybook | 5 / 1.64 / 10.6 | `@wordpress/scripts` 36 的 `test-unit-js` 只支持 Vitest 5（`node_modules/@wordpress/scripts/docs/vitest-migration.md`）；Playwright 与 Storybook 与 Gutenberg（Playwright ^1.63）、WooCommerce Blocks（Storybook 10.5）同代（§3.1、§3.3），取安装时的最新版 |
+| Python | 3.12 | VPS（§7）；各服务的 `.python-version` |
+| uv | 0.10.11 | 写出 `uv.lock` 的版本，CI 固定同一版本 |
+| just | 1.58 | 本机版本，CI 固定同一版本 |
+
+### 包管理器：npm
+
+`plugins/linker-tools` 是仓库里唯一的 npm 包，用 npm 与 `package-lock.json`。依据（framework-choice.md §9.2）：WordPress 的插件脚手架与 Gutenberg 都用 npm；这里没有跨包共享的 JS，pnpm 工作区的好处用不上；`@wordpress/build` 将来的接入方式是 npm workspaces。
+
+`package-lock.json` 里的下载地址写 `registry.npmjs.org`。插件目录的 `.npmrc` 设 `replace-registry-host=always`，npm 一律从当前机器配置的源下载（本机是 npmmirror，CI 是 npmjs），与锁文件里写的主机无关。
+
+### PHP 8.3
+
+本机默认的 `php` 是 Homebrew 的 8.5。安装 8.3：
+
+```sh
+brew install php@8.3
+```
+
+`php@8.3` 不替换默认的 `php`。justfile 优先用 `/opt/homebrew/opt/php@8.3/bin/php`，没有时用 PATH 上的 `php`（CI 就是这样），`PHP=/path/to/php just check` 可以覆盖；Composer、PHPCS、PHPStan、PHPUnit 都用这个 PHP 运行，不是 8.3 时直接报错。
+
+## 命令
+
+| 命令 | 内容 |
+|---|---|
+| `just check` | 三个插件的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务的 Ruff（lint + format）与 mypy `--strict`；最后 `build::check` |
+| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务的 pytest |
+| `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
+| `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
+
+每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）运行 `just check` 与 `just test`。
+
+票面写的是 `just build:check`。just 的配方名不能含 `:`（`build:check:` 会解析报错），`::` 是 just 的模块路径分隔符，所以 `build` 是模块 `tools/build.just`：`just build` 运行它的默认配方，`just build::check` 运行检查。npm 脚本仍叫 `build` 与 `build:check`。
+
+### 构建产物
+
+改了 `plugins/linker-tools/src/`（`*.test.*` 与 `*.stories.*` 除外）、`package.json`、`package-lock.json` 或 `webpack.config.js` 之后，运行 `just build` 并连同 `build/` 一起提交。`build/manifest.json` 记录每个源文件与每个产物的 SHA-256；源码改了没重建、产物被手改，`build::check` 都会失败。
+
+### 三条链的样例
+
+- PHP：`linker-commerce` 在 `wp_abilities_api_categories_init` 与 `wp_abilities_api_init` 上注册分类 `linker-commerce` 与 ability `linker-commerce/get-version`（只读、可走 REST、仅管理员可执行），两处都先检查 `function_exists`。`linker-tools` 从 `build/*.asset.php` 读依赖与版本，把每个入口注册为脚本 `linker-tools-<入口>`；只注册不加载，加载由输出挂载点的代码负责。
+- JS：每个入口在 DOM 就绪后挂载到 `<div data-linker-app="<入口>">`，文案走 `@wordpress/i18n`（文本域 `linker-tools`）。端到端测试在 Storybook 上跑，不需要 WordPress。
+- Python：每个服务有 `GET /health`。
+
+样例不在任何页面上显示：脚本只注册、不入队，页面上也还没有挂载点。
