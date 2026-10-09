@@ -13,6 +13,7 @@ use Linker\Commerce\Catalog\SelectionFacts;
 use Linker\Commerce\Catalog\SelectionFactSet;
 use Linker\Commerce\Tests\Support\LiveCatalogue;
 use Linker\Commerce\Tests\Support\MocksProducts;
+use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
 /**
@@ -20,7 +21,9 @@ use WP_Mock\Tools\TestCase;
  * (tests/fixtures/live-products-2026-10-09.json). The expected values are the
  * research CSV (tests/fixtures/live-catalogue-facts.csv, the table of
  * docs/research/2026-10-09/old-repo-live-catalogue-facts.md) converted by hand;
- * the comments mark where the contract reads a figure differently from the CSV.
+ * test_the_table_follows_the_csv() binds them to the CSV, and the comments and
+ * NOT_AC_POWER / SYSTEM_NOT_MODULE mark where the contract reads a figure
+ * differently from the CSV.
  *
  * @covers \Linker\Commerce\Catalog\SelectionFacts
  * @covers \Linker\Commerce\Catalog\SelectionFactSet
@@ -142,6 +145,33 @@ final class SelectionFactsLiveCatalogueTest extends TestCase {
 	);
 
 	/**
+	 * Battery systems whose CSV power is a charge/discharge power, not an AC
+	 * output; the contract reads only AC power keys, so EXPECTED says unknown.
+	 */
+	private const NOT_AC_POWER = array(
+		1832 => 'rated_power_w',
+		2067 => 'rated_power_w',
+		2068 => 'rated_power_w',
+		2069 => 'rated_power_w',
+		2070 => 'rated_power_w',
+		1954 => 'max_charge_discharge_power_kw',
+		1955 => 'max_charge_discharge_power_kw',
+		1956 => 'max_charging_discharging_power_kw',
+		1957 => 'max_input_output_power_kw',
+		1958 => 'max_input_output_power_kw',
+		4103 => 'rated_power',
+		4104 => 'rated_power',
+		4105 => 'rated_power',
+		4106 => 'rated_power',
+	);
+
+	/**
+	 * Battery systems whose CSV nominal energy is one module's; EXPECTED holds
+	 * the product's own figure, which is larger.
+	 */
+	private const SYSTEM_NOT_MODULE = array( 1954, 1955, 1956, 1957, 1958 );
+
+	/**
 	 * The research's "residential three-phase hybrid inverters" (home and three-phase, 28).
 	 */
 	private const HOME_THREE_PHASE = array( 1182, 1183, 1184, 1185, 1186, 1187, 2063, 2064, 2198, 2199, 3555, 3556, 3574, 3575, 3576, 3583, 3584, 3585, 4107, 4108, 4109, 6512, 6513, 6514, 6515, 6516, 6517, 6518 );
@@ -167,7 +197,7 @@ final class SelectionFactsLiveCatalogueTest extends TestCase {
 	 */
 	public function expected_facts(): array {
 		$cases = array();
-		foreach ( LiveCatalogue::products() as $id => $product ) {
+		foreach ( LiveCatalogue::published() as $id => $product ) {
 			$cases[ "{$id} {$product['name']}" ] = array( $id, self::facts( self::EXPECTED[ $id ] ) );
 		}
 
@@ -181,8 +211,68 @@ final class SelectionFactsLiveCatalogueTest extends TestCase {
 		$expected = array_keys( self::EXPECTED );
 		sort( $expected );
 
-		$this->assertSame( $expected, array_keys( LiveCatalogue::products() ) );
+		$this->assertSame( $expected, array_keys( LiveCatalogue::published() ) );
 		$this->assertCount( 89, $expected );
+	}
+
+	/**
+	 * Every column of EXPECTED that the CSV holds equals the CSV converted by
+	 * hand, except where NOT_AC_POWER and SYSTEM_NOT_MODULE say why not; a range
+	 * in the CSV is EXPECTED's kwh_range.
+	 *
+	 * @dataProvider csv_rows
+	 *
+	 * @param int                   $id  Product ID.
+	 * @param array<string, string> $csv The product's CSV row.
+	 */
+	public function test_the_table_follows_the_csv( int $id, array $csv ): void {
+		list( $device_class, $application, $phase, $ac_power_kw, $pv_input_kw, $usable_kwh, $nominal_kwh, $kwh_range ) = self::EXPECTED[ $id ];
+
+		$this->assertSame( $csv['category'], $device_class );
+		$this->assertSame( '' === $csv['pa_application'] ? self::U : strtolower( $csv['pa_application'] ), $application );
+		$this->assertSame( self::csv_phase( '' === $csv['pa_phase'] ? $csv['fig_phase'] : $csv['pa_phase'] ), $phase );
+		if ( isset( self::NOT_AC_POWER[ $id ] ) ) {
+			$this->assertSame( '_tv_b2b_figures.' . self::NOT_AC_POWER[ $id ], $csv['ac_power_src'] );
+			$this->assertSame( self::U, $ac_power_kw );
+		} else {
+			$this->assertSame( self::csv_number( $csv['ac_power'] ), $ac_power_kw );
+		}
+		$this->assertSame( self::csv_number( $csv['max_pv_input'] ), $pv_input_kw );
+		$this->assertSame( self::csv_number( $csv['usable_kwh'] ), $usable_kwh );
+		$range = self::csv_range( $csv['nominal_kwh'] );
+		if ( null !== $range ) {
+			$this->assertSame( self::U, $nominal_kwh );
+			$this->assertSame( $range, $kwh_range );
+		} elseif ( in_array( $id, self::SYSTEM_NOT_MODULE, true ) ) {
+			$this->assertSame( '_tv_b2b_figures.module_energy_kwh_nominal', $csv['nominal_src'] );
+			$this->assertGreaterThan( self::csv_number( $csv['nominal_kwh'] ), $nominal_kwh );
+		} else {
+			$this->assertSame( self::csv_number( $csv['nominal_kwh'] ), $nominal_kwh );
+		}
+	}
+
+	/**
+	 * Cases of test_the_table_follows_the_csv(), one per CSV row.
+	 *
+	 * @return array<string, array{int, array<string, string>}>
+	 */
+	public function csv_rows(): array {
+		$cases = array();
+		foreach ( LiveCatalogue::research_csv() as $id => $row ) {
+			$cases[ "{$id} {$row['name']}" ] = array( $id, $row );
+		}
+
+		return $cases;
+	}
+
+	/**
+	 * The CSV has a row for every product of the table.
+	 */
+	public function test_the_csv_covers_the_table(): void {
+		$ids = array_keys( LiveCatalogue::research_csv() );
+		sort( $ids );
+
+		$this->assertSame( array_keys( LiveCatalogue::published() ), $ids );
 	}
 
 	/**
@@ -261,13 +351,107 @@ final class SelectionFactsLiveCatalogueTest extends TestCase {
 	}
 
 	/**
+	 * The draft PowerCube-X2 (4124) states 24.9 kWh, taken from a document of
+	 * another Pylontech product line.
+	 */
+	public function test_draft_4124_before_the_migration(): void {
+		$this->mock_live_products( array( 4124 ) );
+
+		$this->assertSame( 24.9, SelectionFacts::for_product( 4124 )->nominal_kwh );
+	}
+
+	/**
+	 * After the migration it has its datasheet's 3.552 kWh × 5 modules.
+	 */
+	public function test_draft_4124_after_the_migration(): void {
+		$this->mock_live_products( array( 4124 ), true );
+
+		$this->assertSame( 17.76, SelectionFacts::for_product( 4124 )->nominal_kwh );
+	}
+
+	/**
+	 * What every live product's facts hold fits SelectionFactSet::schema(),
+	 * the schema the REST route documents.
+	 */
+	public function test_every_live_fact_set_fits_the_schema(): void {
+		WP_Mock::passthruFunction( '__' );
+		$schema   = SelectionFactSet::schema();
+		$products = LiveCatalogue::published( true );
+		$this->mock_live_products( array_keys( $products ), true );
+
+		foreach ( array_keys( $products ) as $id ) {
+			$facts = SelectionFacts::for_product( $id )->to_array();
+			$this->assertSame( array(), array_diff( $schema['required'], array_keys( $facts ) ), (string) $id );
+			$this->assertSame( array(), array_diff( array_keys( $facts ), array_keys( $schema['properties'] ) ), (string) $id );
+			$this->assertContains( $facts['device_class'], $schema['properties']['device_class']['enum'], (string) $id );
+			$this->assertContains( $facts['application'], $schema['properties']['application']['enum'], (string) $id );
+			$this->assertContains( $facts['phase'], array( 1, 3, self::U ), (string) $id );
+		}
+	}
+
+	/**
+	 * A CSV phase cell as a phase fact, read by hand from the cells the CSV has.
+	 *
+	 * @param string $cell pa_phase, or the figure text when pa_phase is empty.
+	 * @return int|string
+	 */
+	private static function csv_phase( string $cell ): int|string {
+		$phases = array(
+			'Three-phase'     => 3,
+			'Three Phase'     => 3,
+			'3L+N+PE'         => 3,
+			'3+N+PE, 380/400' => 3,
+			'Single-phase'    => 1,
+		);
+
+		return $phases[ $cell ] ?? self::U;
+	}
+
+	/**
+	 * A CSV cell "<value> <unit>" in kW or kWh; an empty cell is unknown.
+	 *
+	 * @param string $cell CSV cell.
+	 * @return float|string
+	 */
+	private static function csv_number( string $cell ): float|string {
+		if ( '' === $cell ) {
+			return self::U;
+		}
+		list( $value, $unit ) = explode( ' ', $cell );
+		$divisors             = array(
+			'W'   => 1000,
+			'Wp'  => 1000,
+			'kW'  => 1,
+			'kWh' => 1,
+		);
+
+		return (float) $value / $divisors[ $unit ];
+	}
+
+	/**
+	 * A CSV energy cell that is a range or a list of options, as [min, max].
+	 *
+	 * @param string $cell CSV cell.
+	 * @return array{float, float}|null
+	 */
+	private static function csv_range( string $cell ): ?array {
+		$numbers = preg_split( '/\s*[–\-\/]\s*/u', explode( ' kWh', $cell )[0] );
+		if ( false === $numbers || count( $numbers ) < 2 ) {
+			return null;
+		}
+		$numbers = array_map( 'floatval', $numbers );
+
+		return array( min( $numbers ), max( $numbers ) );
+	}
+
+	/**
 	 * IDs of the inverters whose facts are home and three-phase, ascending.
 	 *
 	 * @param bool $migrated Whether tools/migrate/7-facts.json is applied.
 	 * @return int[]
 	 */
 	private function home_three_phase_inverters( bool $migrated ): array {
-		$products = LiveCatalogue::products( $migrated );
+		$products = LiveCatalogue::published( $migrated );
 		$this->mock_live_products( array_keys( $products ), $migrated );
 
 		$ids = array();

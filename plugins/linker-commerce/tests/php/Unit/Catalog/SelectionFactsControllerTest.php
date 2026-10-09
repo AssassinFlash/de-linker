@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Catalog;
 
+use Linker\Commerce\Catalog\SelectionFactSet;
 use Linker\Commerce\Catalog\SelectionFactsController;
 use Linker\Commerce\Tests\Support\MocksProducts;
 use LogicException;
@@ -18,20 +19,22 @@ use WP_Mock\Tools\TestCase;
 use WP_REST_Request;
 
 /**
- * Tests for SelectionFactsController. The HTTP behaviour (anonymous 200, the
- * 400 for 101 IDs) is WordPress's handling of these arguments, checked on a
- * local WordPress in the pull request.
+ * Tests for SelectionFactsController without WordPress. Its HTTP behaviour on a
+ * real site (anonymous answers, the 400 for 101 IDs, unpublished products left
+ * out, the OPTIONS schema) is SelectionFactsRestTest in tests/php/Integration.
  *
  * @covers \Linker\Commerce\Catalog\SelectionFactsController
+ * @covers \Linker\Commerce\Catalog\SelectionFactSet::schema
  */
 final class SelectionFactsControllerTest extends TestCase {
 
 	use MocksProducts;
 
 	/**
-	 * The route is a public GET whose ids are 1 to 100 positive integers.
+	 * The route is a public GET of 1 to 100 positive product IDs, with its schema.
 	 */
 	public function test_registers_a_public_route_for_up_to_100_ids(): void {
+		WP_Mock::passthruFunction( '__' );
 		$controller = new SelectionFactsController();
 		WP_Mock::userFunction(
 			'register_rest_route',
@@ -41,20 +44,24 @@ final class SelectionFactsControllerTest extends TestCase {
 					'linker/v1',
 					'/selection-facts',
 					array(
-						'methods'             => 'GET',
-						'callback'            => array( $controller, 'get_items' ),
-						'permission_callback' => '__return_true',
-						'args'                => array(
-							'ids' => array(
-								'type'     => 'array',
-								'items'    => array(
-									'type'    => 'integer',
-									'minimum' => 1,
+						array(
+							'methods'             => 'GET',
+							'callback'            => array( $controller, 'get_items' ),
+							'permission_callback' => array( $controller, 'get_items_permissions_check' ),
+							'args'                => array(
+								'ids' => array(
+									'description' => 'Product IDs, at most 100.',
+									'type'        => 'array',
+									'items'       => array(
+										'type'    => 'integer',
+										'minimum' => 1,
+									),
+									'maxItems'    => 100,
+									'required'    => true,
 								),
-								'maxItems' => 100,
-								'required' => true,
 							),
 						),
+						'schema' => array( $controller, 'get_public_item_schema' ),
 					),
 				),
 			)
@@ -63,6 +70,18 @@ final class SelectionFactsControllerTest extends TestCase {
 		$controller->register_routes();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The schema is an object of SelectionFactSet schemas: what OPTIONS shows.
+	 */
+	public function test_schema_maps_ids_to_fact_sets(): void {
+		WP_Mock::passthruFunction( '__' );
+		$schema = ( new SelectionFactsController() )->get_public_item_schema();
+
+		$this->assertSame( 'selection-facts', $schema['title'] );
+		$this->assertSame( 'object', $schema['type'] );
+		$this->assertSame( SelectionFactSet::schema(), $schema['additionalProperties'] );
 	}
 
 	/**

@@ -18,6 +18,8 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 
 PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插件的 `phpcs.xml.dist`、`phpstan.neon.dist`、`tests/php/bootstrap.php` 只写本插件的文件、文本域与前缀，其余引用 `tools/php/`；`phpunit.xml.dist` 每个插件一份，因为 PHPUnit 9.6 的配置文件之间不能共享根元素属性。JS 单测是 `src/` 与 `bin/` 下的 `*.test.ts(x)`，端到端测试在 `plugins/linker-tools/tests/e2e/`。Python 服务是 uv 的 src 布局：规格里写作 `services/genie/retrieval.py` 的模块就是 `services/genie/src/linker_genie/retrieval.py`；包外的脚本（如 `services/genie/index/`）同样受 Ruff 与 mypy 检查（两者都对整个服务目录运行）；测试在各服务的 `tests/`。`tools/local` 同时是 uv 项目（`src/linker_local/`、`tests/`）与只做静态检查的 Composer 项目（实例用的 mu-plugin `mu/` 与 PHP 服务器路由 `router.php`）。
 
+`tools/migrate` 是 uv 项目（测试在 `tools/migrate/tests/`）；它的 WordPress 侧 `*.php` 经 `wp eval-file` 运行，借用 `plugins/linker-commerce` 的 `phpcs.xml.dist`/`phpstan.neon.dist` 检查（迁移的是这个插件读的商品数据），不另设 Composer 项目。需要真实站点的测试——`linker-commerce` 的 `tests/php/Integration`（`LINKER_COMMERCE_TEST_SITE`，站点地址）与 `tools/migrate/tests/test_7_facts_wordpress.py`（`LINKER_MIGRATE_TEST_WP`，WP-CLI 命令）——在没有这两个环境变量时跳过，CI 上就是跳过。
+
 ## 工具链
 
 | 项 | 版本 | 来源 |

@@ -1,5 +1,5 @@
 {
-	"description": "Data changes of ticket #7 (docs/specs/7-selection-facts.md): pa_application and pa_phase for the nine EcoFlow OCEAN 2 inverters created on 2026-10-07, the Application of SAJ H2-25K-T3/H2-30K-T3-DE and GoodWe ESA 20–30 kW as their manufacturers state it, and the power figures of SAJ CHS2-29.9K-T4-X from its datasheet. \"from\" is the live value read on 2026-10-09; tools/migrate/7-facts.py applies \"to\" where it finds \"from\" and refuses on anything else.",
+	"description": "Data changes of ticket #7 (docs/specs/7-selection-facts.md): pa_application and pa_phase for the nine EcoFlow OCEAN 2 inverters created on 2026-10-07, the Application of SAJ H2-25K-T3/H2-30K-T3-DE and GoodWe ESA 20–30 kW as their manufacturers state it, the power figures of SAJ CHS2-29.9K-T4-X from its datasheet, and the capacity and voltage figures of the draft Pylontech PowerCube-X2 (4124) from its datasheet (owner ruling 2026-10-09: the datasheet decides when product facts conflict; the product stays a draft). \"from\" is the live value read on 2026-10-09; tools/migrate/7-facts.py applies \"to\" where it finds \"from\" and refuses on anything else.",
 	"new_attribute": {
 		"_source": "As on the EcoFlow OCEAN 2 inverters already on the site (3555–3580, 2026-10-09): pa_phase at position 0, visible; pa_application at position 3, hidden.",
 		"pa_phase": {
@@ -405,6 +405,106 @@
 				}
 			},
 			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "system_capacity_kwh_nominal",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "kWh",
+				"value": "24.9"
+			},
+			"to": {
+				"value": "17.76",
+				"unit": "kWh",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "system_voltage_v_nominal",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "336"
+			},
+			"to": {
+				"value": "240",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "system_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "315~378"
+			},
+			"to": {
+				"value": "217.5~270",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "module_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "45~54"
+			},
+			"to": {
+				"value": "43.5~54",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
 		}
 	],
 	"basis": {
@@ -485,6 +585,17 @@
 				"document": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
 				"page": 3,
 				"states": "Column CH2-29.9K-T4 (the inverter alone): 59800 Wp, 29900 W/VA — the values the live product carries without a citation."
+			}
+		],
+		"pylontech-powercube-x2-p12": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+				"page": 12,
+				"states": "PowerCube-X1/X2-V2 Operation Manual, 2.3 System Specifications, column PowerCube-X2-V2: Battery System Capacity (kWh) 3.552 × n, Battery System Voltage (Vdc) 48 × n, Battery Charge Upper-Voltage (Vdc) 54 × n, Battery Module Discharge Lower-Voltage (Vdc) 43.5 × n (n = 2~10 H48074 modules). The product is 5 × H48074 + SC0500-100S-V2 (its name and description), so n = 5: 17.76 kWh, 240 V, 217.5~270 V; per module 43.5~54 V. Its name already says 17.76 kWh and stays."
+			},
+			{
+				"ruling": "Owner, 2026-10-09: where product facts conflict, the product's datasheet decides (\"以实际资料显示的数据为准\"); 4124 named 17.76 kWh while system_capacity_kwh_nominal said 24.9.",
+				"states": "The four replaced figures cite pylontech_optim_us.pdf p.30, a document of another Pylontech product line (OPTIM US); 24.9 kWh and 336 / 315~378 V are a 7-module string."
 			}
 		]
 	}

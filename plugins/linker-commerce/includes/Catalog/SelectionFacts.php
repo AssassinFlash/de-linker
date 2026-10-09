@@ -43,7 +43,7 @@ final class SelectionFacts {
 	 * Slugs of the pa_application terms that are applications. The third live
 	 * term, commercial-industrial, has no product (2026-10-09).
 	 */
-	private const APPLICATIONS = array( 'home', 'commercial' );
+	public const APPLICATIONS = array( 'home', 'commercial' );
 
 	/**
 	 * Figure keys of the rated AC power, in the spec's order; the first present
@@ -82,8 +82,7 @@ final class SelectionFacts {
 	 * product's own figure before the figure of one of its modules: GoodWe
 	 * GW61.4-BAT-AC-G10 (1954) states module_energy_kwh_nominal 10.24 and
 	 * system_nominal_energy_kwh 61.4, GW208.9-BAT-LC-G10 (1956) states 52.24 per
-	 * module and rated_energy_kwh 208.9 (the draft Pylontech PowerCube products
-	 * 4123–4127 likewise state a module and a system_capacity_kwh_nominal).
+	 * module and rated_energy_kwh 208.9.
 	 */
 	private const NOMINAL_KEYS = array(
 		'system_capacity_kwh_nominal',
@@ -137,6 +136,7 @@ final class SelectionFacts {
 	 * categories lead to more than one.
 	 *
 	 * @param int $product_id Product ID.
+	 * @return value-of<self::DEVICE_CLASSES>|'unknown'
 	 */
 	private static function device_class( int $product_id ): string {
 		$terms   = get_the_terms( $product_id, 'product_cat' );
@@ -147,8 +147,9 @@ final class SelectionFacts {
 				$classes[ $class ] = true;
 			}
 		}
+		$class = array_key_first( $classes );
 
-		return 1 === count( $classes ) ? (string) array_key_first( $classes ) : SelectionFactSet::UNKNOWN;
+		return 1 === count( $classes ) && null !== $class ? $class : SelectionFactSet::UNKNOWN;
 	}
 
 	/**
@@ -157,6 +158,7 @@ final class SelectionFacts {
 	 *
 	 * @param int    $term_id Category term ID.
 	 * @param string $slug    Category slug.
+	 * @return value-of<self::DEVICE_CLASSES>|null
 	 */
 	private static function listed_category( int $term_id, string $slug ): ?string {
 		if ( in_array( $slug, self::DEVICE_CLASSES, true ) ) {
