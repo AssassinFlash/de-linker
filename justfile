@@ -11,6 +11,10 @@ php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tool
 # uv projects: the services, and tools/local (linker-local).
 py_projects := "services/genie services/engine tools/local"
 
+# `just pull` takes a snapshot of the live site; `just pull load|diff|scan|…`
+# (tools/pull/pull.just, docs/specs/6-live-pull.md).
+mod pull "tools/pull/pull.just"
+
 # The PHP tools run on PHP 8.3, the production host's version
 # (docs/research/2026-10-09/framework-choice.md §2): Homebrew's php@8.3 when it
 # is installed, otherwise `php` on PATH (CI). `PHP=/path/to/php just …` wins.
@@ -21,10 +25,10 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check py-check build::check
+check: php-check js-check py-check pull::check build::check
 
 # Unit tests of every chain and the end-to-end tests.
-test: php-test js-test py-test
+test: php-test js-test py-test pull::test
 
 # Local WordPress instances (docs/local-stack.md): `up` creates the instance on
 # first use, then (re)starts it with this checkout's plugins.
