@@ -42,7 +42,7 @@ post      1 page:capability                                              slug=le
 imported 20/36
 imported 36/36
 Success: Links rewritten in 0 German posts.
-post 12 -> 155: pending
-post 20 -> 173: pending
+post 12 -> 223: pending
+post 20 -> 241: pending
 36 imported, 34 synced, 2 not synced
 exit 0

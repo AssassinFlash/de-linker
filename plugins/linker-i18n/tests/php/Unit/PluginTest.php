@@ -72,6 +72,7 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'woocommerce_add_to_cart_product_id', Storefront::class, 'cart_product', 10, 1 ),
 		array( 'filter', 'woocommerce_store_api_add_to_cart_data', Storefront::class, 'store_cart_product', 10, 1 ),
 		array( 'filter', 'woocommerce_product_get_name', Storefront::class, 'name', 10, 2 ),
+		array( 'filter', 'woocommerce_add_to_cart_item_name_in_quotes', Storefront::class, 'quoted_item_name', 10, 2 ),
 		array( 'filter', 'woocommerce_cart_item_permalink', Storefront::class, 'cart_item_permalink', 10, 2 ),
 		array( 'filter', 'woocommerce_product_get_sku', Storefront::class, 'sku', 10, 2 ),
 		array( 'filter', 'woocommerce_get_shop_page_id', Storefront::class, 'page_id', 10, 1 ),

@@ -28,9 +28,10 @@ Urls (Linker\I18n\Tests\Integration\Urls)
 
 Woo (Linker\I18n\Tests\Integration\Woo)
  ✔ Stock pushed by sku reaches both languages
+ ✔ German add to cart notice names the german product
  ✔ German inquiry
 
-Time: 01:53.547, Memory: 8.00 MB
+Time: 00:41.813, Memory: 8.00 MB
 
-OK (19 tests, 788 assertions)
+OK (20 tests, 798 assertions)
 exit 0

@@ -128,6 +128,45 @@ final class WooTest extends SiteTestCase {
 	}
 
 	/**
+	 * The add-to-cart notice of a German request names the German product:
+	 * WooCommerce builds the notice's name from get_the_title(), which the
+	 * get_name() filter does not reach, so the plugin filters the name in
+	 * the quotes itself. The fixture product's titles differ between the
+	 * languages (Chint DTSU666's do not: both are the model name).
+	 */
+	public function test_german_add_to_cart_notice_names_the_german_product(): void {
+		$pair = self::php(
+			'
+			$english = get_page_by_path( "saj-cb2-100-3-hv5", OBJECT, "product" );
+			$id      = pll_get_post( $english->ID, "en" );
+			return array(
+				"en"      => $id,
+				"name"    => get_post_field( "post_title", pll_get_post( $id, "de" ) ),
+				"name_en" => get_post_field( "post_title", $id ),
+			);
+			'
+		);
+		self::assertIsArray( $pair );
+		$this->assertNotSame( $pair['name_en'], $pair['name'] );
+
+		$message = self::php(
+			'
+			$languages = new Linker\I18n\Languages();
+			$entered   = $languages->enter( "de" );
+			$message   = wc_add_to_cart_message( $input["en"], false, true );
+			$languages->leave( $entered );
+			return $message;
+			',
+			array( 'en' => $pair['en'] )
+		);
+		$this->assertIsString( $message );
+		$decoded = html_entity_decode( $message, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$this->assertStringNotContainsString( $pair['name_en'], $decoded );
+		$this->assertStringContainsString( $pair['name'], $decoded );
+		$this->assertStringContainsString( 'wurde Ihrem Warenkorb', $decoded );
+	}
+
+	/**
 	 * An inquiry through the Store API in German: the order line is the
 	 * English product with its German name, the order is German, the
 	 * customer's confirmation is German and formal, the shop's notice English;

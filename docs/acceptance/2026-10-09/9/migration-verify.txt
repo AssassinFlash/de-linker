@@ -11,6 +11,7 @@ ok  200 lang=de-DE /de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/
 ok  200 lang=de-DE /de/produkt-kategorie/gewerbespeicher/batteriesysteme/
 ok  200 lang=de-DE /de/produkt-kategorie/heimspeicher/
 ok  200 lang=de-DE /de/produkt-kategorie/ladestationen/
+BAD 200 lang=de-DE /de/produkt-kategorie/uncategorized-de/  (not one of the old German URLs)
 ok  200 lang=de-DE /de/produkt-kategorie/wechselrichter/
 ok  200 lang=de-DE /de/produkt-kategorie/zubehoer/
 ok  200 lang=de-DE /de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/
@@ -29,5 +30,5 @@ ok  200 lang=de-DE /de/proforma-anfrage/ -> /de/warenkorb/
 ok  200 lang=de-DE /de/ueber-uns/
 ok  200 lang=de-DE /de/ueber-uns/leistungsfaehigkeit/
 ok  200 lang=de-DE /de/warenkorb/
-30 German pages, posts, products and categories; 30 of the 150 listed URLs are theirs
-exit 0
+31 German pages, posts, products and categories; 30 of the 150 listed URLs are theirs
+exit 1

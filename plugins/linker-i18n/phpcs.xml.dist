@@ -11,8 +11,12 @@
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
+			<!-- The plugin's own strings, and WooCommerce's own wrapper string the
+			add-to-cart notice is rebuilt with (Woo/Storefront.php), so its quotes
+			follow the locale. -->
 			<property name="text_domain" type="array">
 				<element value="linker-i18n"/>
+				<element value="woocommerce"/>
 			</property>
 		</properties>
 	</rule>

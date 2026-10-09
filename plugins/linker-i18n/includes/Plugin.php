@@ -125,6 +125,7 @@ final class Plugin {
 		add_filter( 'woocommerce_add_to_cart_product_id', array( $storefront, 'cart_product' ) );
 		add_filter( 'woocommerce_store_api_add_to_cart_data', array( $storefront, 'store_cart_product' ) );
 		add_filter( 'woocommerce_product_get_name', array( $storefront, 'name' ), 10, 2 );
+		add_filter( 'woocommerce_add_to_cart_item_name_in_quotes', array( $storefront, 'quoted_item_name' ), 10, 2 );
 		add_filter( 'woocommerce_cart_item_permalink', array( $storefront, 'cart_item_permalink' ), 10, 2 );
 		add_filter( 'woocommerce_product_get_sku', array( $storefront, 'sku' ), 10, 2 );
 		foreach ( array( 'shop', 'cart', 'checkout', 'myaccount', 'terms' ) as $page ) {

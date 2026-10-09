@@ -1,0 +1,19 @@
+Visual acceptance: deferred to the snapshot instance (owner ruling 2026-10-09)
+
+The local instance used here is the bare fixture stack (seed.php + 9-i18n.py):
+WooCommerce 11.1.0, Polylang 3.8.10, the bundled theme, no live theme, uploads
+or licensed plugins. The owner's ruling of 2026-10-09: local instances must
+carry the live snapshot for development and acceptance, so their look matches
+the live site; screenshots of the bare stack are not visual acceptance.
+
+This delivery therefore splits the ticket's visual line:
+
+- Delivered here (pipeline evidence): the integration suite and the migration
+  runs above. German server HTML, the German URLs, hreflang, the sitemaps, the
+  404s, the cart holding the English product under its German name and link,
+  the order line and both emails are asserted on the bare stack, where the
+  plugin's behavior does not depend on the theme.
+- Deferred to #6's snapshot instance: the visual acceptance of product,
+  category, inquiry and account pages EN/DE x 1440/390, once the snapshot is
+  loaded (the same pages and viewports the ticket names). The bare-stack
+  screenshots taken during this session were discarded as evidence.

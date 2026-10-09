@@ -69,6 +69,27 @@ final class Storefront {
 	}
 
 	/**
+	 * The German name in the quotes of WooCommerce's add-to-cart message
+	 * (filter `woocommerce_add_to_cart_item_name_in_quotes`): the message
+	 * takes its name from `get_the_title()`, which the `get_name()` filter
+	 * does not reach, so a German request's notice would name the English
+	 * product. The wrapper is WooCommerce's own string, so its quotes follow
+	 * the locale (German „…“).
+	 *
+	 * @param string     $quoted     The item name in quotes.
+	 * @param int|string $product_id Product ID.
+	 * @return string
+	 */
+	public function quoted_item_name( $quoted, $product_id = 0 ): string {
+		$german = $this->german_of_id( is_numeric( $product_id ) ? (int) $product_id : 0 );
+		if ( null === $german ) {
+			return $quoted;
+		}
+		/* translators: %s: product name */
+		return sprintf( _x( '&ldquo;%s&rdquo;', 'Item name in quotes', 'woocommerce' ), wp_strip_all_tags( (string) get_the_title( $german ) ) );
+	}
+
+	/**
 	 * The German link of an English product in the cart of a German request
 	 * (filter `woocommerce_cart_item_permalink`, used by the cart template and
 	 * the Store API).
@@ -125,10 +146,23 @@ final class Storefront {
 	 * @param mixed $product Product.
 	 */
 	private function german_of( $product ): ?int {
-		if ( ! $product instanceof \WC_Product || ! $this->german_request() || Languages::SOURCE !== $this->languages->of_post( $product->get_id() ) ) {
+		if ( ! $product instanceof \WC_Product ) {
 			return null;
 		}
-		return $this->languages->post_translation( $product->get_id(), Languages::TARGET );
+		return $this->german_of_id( $product->get_id() );
+	}
+
+	/**
+	 * The German product of an English product ID, in a German front-end or
+	 * REST request; null otherwise.
+	 *
+	 * @param int $product_id Product ID.
+	 */
+	private function german_of_id( int $product_id ): ?int {
+		if ( ! $this->german_request() || Languages::SOURCE !== $this->languages->of_post( $product_id ) ) {
+			return null;
+		}
+		return $this->languages->post_translation( $product_id, Languages::TARGET );
 	}
 
 	/**
