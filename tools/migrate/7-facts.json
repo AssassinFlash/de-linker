@@ -1,0 +1,446 @@
+{
+	"description": "Data changes of ticket #7 (docs/specs/7-selection-facts.md): pa_application and pa_phase for the nine EcoFlow OCEAN 2 inverters created on 2026-10-07, the Application of SAJ H2-25K-T3/H2-30K-T3-DE and GoodWe ESA 20–30 kW as their manufacturers state it, and the power figures of SAJ CHS2-29.9K-T4-X from its datasheet. \"from\" is the live value read on 2026-10-09; tools/migrate/7-facts.py applies \"to\" where it finds \"from\" and refuses on anything else.",
+	"new_attribute": {
+		"pa_phase": {
+			"position": 0,
+			"visible": true
+		},
+		"pa_application": {
+			"position": 3,
+			"visible": false
+		}
+	},
+	"attributes": [
+		{
+			"product": 6480,
+			"name": "EcoFlow OCEAN 2 HD-P3-5K0-S2 (5 kW three-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p3-home"
+		},
+		{
+			"product": 6480,
+			"name": "EcoFlow OCEAN 2 HD-P3-5K0-S2 (5 kW three-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "ecoflow-p3-phase"
+		},
+		{
+			"product": 6481,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2 (15 kW three-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p3-home"
+		},
+		{
+			"product": 6481,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2 (15 kW three-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "ecoflow-p3-phase"
+		},
+		{
+			"product": 6482,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2F (15 kW three-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p3-home"
+		},
+		{
+			"product": 6482,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2F (15 kW three-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "ecoflow-p3-phase"
+		},
+		{
+			"product": 6483,
+			"name": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6483,
+			"name": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6484,
+			"name": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6484,
+			"name": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6485,
+			"name": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6485,
+			"name": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6486,
+			"name": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6486,
+			"name": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6487,
+			"name": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6487,
+			"name": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6488,
+			"name": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6488,
+			"name": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 1179,
+			"name": "SAJ H2-25K-T3",
+			"taxonomy": "pa_application",
+			"from": [
+				"commercial"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "saj-h2-home"
+		},
+		{
+			"product": 1181,
+			"name": "SAJ H2-30K-T3-DE",
+			"taxonomy": "pa_application",
+			"from": [
+				"commercial"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "saj-h2-home"
+		},
+		{
+			"product": 6515,
+			"name": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+			"taxonomy": "pa_application",
+			"from": [
+				"home"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "goodwe-esa-home"
+		},
+		{
+			"product": 6516,
+			"name": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+			"taxonomy": "pa_application",
+			"from": [
+				"home"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "goodwe-esa-home"
+		},
+		{
+			"product": 6517,
+			"name": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+			"taxonomy": "pa_application",
+			"from": [
+				"home"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "goodwe-esa-home"
+		},
+		{
+			"product": 6518,
+			"name": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+			"taxonomy": "pa_application",
+			"from": [
+				"home"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "goodwe-esa-home"
+		}
+	],
+	"figures": [
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "ac_output_kw_nominal",
+			"from": {
+				"value": "29900",
+				"unit": "W",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "W",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "rated_ac_power",
+			"from": {
+				"value": "29900",
+				"unit": "W",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "W",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "ac_output_kw_max",
+			"from": {
+				"value": "29900",
+				"unit": "VA",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "VA",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "backup_power_kw",
+			"from": {
+				"value": "29900",
+				"unit": "VA",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "VA",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "peak_backup_apparent_power_va",
+			"from": {
+				"value": "29900",
+				"unit": "VA",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "VA",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "max_pv_input_power_w",
+			"from": {
+				"value": "59800",
+				"unit": "Wp",
+				"value_de": "59800"
+			},
+			"to": {
+				"value": "59998",
+				"unit": "Wp",
+				"value_de": "59998",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "max_pv_array_power",
+			"from": {
+				"value": "59800",
+				"unit": "Wp",
+				"value_de": "59800"
+			},
+			"to": {
+				"value": "59998",
+				"unit": "Wp",
+				"value_de": "59998",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		}
+	],
+	"basis": {
+		"ecoflow-p3-phase": {
+			"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+			"page": 2,
+			"states": "Table \"EcoFlow OCEAN 2 Hybrid Inverter Three-Phase\", columns EF HD-P3-5K0-S2 … EF HD-P3-15K-G2/-G2F; Nennspannung \"L–L: 380 / 400 V AC; L–N: 220 / 230 V AC; 3L + N + PE\"."
+		},
+		"ecoflow-p3-home": {
+			"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+			"page": 1,
+			"states": "Cover: \"Solarspeicherlösung für Privathaushalte\" (EcoFlow OCEAN 2, 3-phasig, 5/6/8/10/12/15 kW). EcoFlow's EU product page is titled \"EcoFlow OCEAN 2 Three-Phase Solar Home Battery Storage\" (energy.ecoflow.com/eu/products/ocean-2-home-battery, read via Apify 2026-10-09)."
+		},
+		"ecoflow-p1-phase": {
+			"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-datasheet-en.pdf",
+			"page": 2,
+			"states": "Table \"EcoFlow OCEAN 2 Hybrid Inverter Single-Phase\", columns EF HD-P1-3K-S2 … EF HD-P1-6K-S2; Grid Connection \"L+N+PE\"."
+		},
+		"ecoflow-p1-home": {
+			"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-user-manual-de-v1-3.pdf",
+			"page": 6,
+			"states": "Self-consumption mode: \"…die Selbstversorgungsquote der Haushalte verbessert\". EcoFlow's EU product page is titled \"EcoFlow OCEAN 2 | Single Phase Home Battery Storage\" (energy.ecoflow.com/eu/products/ocean-2-single-phase-home-battery, read via Apify 2026-10-09). The single-phase datasheet itself names no segment."
+		},
+		"saj-h2-home": {
+			"document": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+			"page": 2,
+			"states": "The datasheet names no segment (\"H2 10-30K Three Phase Hybrid Inverter\"). SAJ lists the H2 series under \"Residential Hybrid Inverter\" (saj-electric.com/residential-hybrid-inverter) and its series page says it \"is designed to deliver intelligent energy management for residential solar and battery storage systems\"; the 10–30K-T models are \"suitable for larger residential or light commercial projects\" (saj-electric.com/h2-series; both read via Apify 2026-10-09). SAJ's commercial hybrid line is CHS2/CH3/CM2."
+		},
+		"goodwe-esa-home": {
+			"document": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+			"page": 1,
+			"states": "ESA Series 5-30kW/5-108kWh: \"1st TÜV-certified low-noise residential integrated system\", \"Whole-home backup\". GoodWe's series page: power \"for homes and small businesses\" (en.goodwe.com/esa-5-30kw, read via Apify 2026-10-09)."
+		},
+		"saj-chs2-p2": {
+			"document": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+			"page": 2,
+			"states": "Column CHS2-29.9K-T4-X: Max. PV Array Power [Wp]@STC 59998; Rated AC Power [W] 29999; Max.Apparent Power[VA] 29999; Back-up Max.Output Power [VA] 29999; Peak Output Apparent Power [VA] 29999. The 29900/59800 values on the live product are those of the CH2-29.9K-T4 inverter on page 3."
+		}
+	}
+}
