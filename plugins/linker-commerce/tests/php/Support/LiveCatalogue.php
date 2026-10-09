@@ -13,7 +13,7 @@ use RuntimeException;
 
 /**
  * The 89 published inverters and batteries of de-linker.com as read on
- * 2026-10-09, and the draft 4124 that the migration corrects
+ * 2026-10-09, and the draft PowerCubes 4123–4126 that the migration corrects
  * (tests/fixtures/live-products-2026-10-09.json, see its "source"), optionally
  * with the data changes of tools/migrate/7-facts.json applied.
  */

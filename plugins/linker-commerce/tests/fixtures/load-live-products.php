@@ -1,12 +1,14 @@
 <?php
 /**
  * Seeds a local WordPress with live-products-2026-10-09.json: the product
- * categories, the global attributes and terms the products use, and the 89
- * products under their live IDs with their attributes, figures and document
- * URLs. It reproduces the catalogue the selection-facts expectations were
- * converted against, so the REST route and tools/migrate/7-facts.py can be run
- * on real WooCommerce data of that day. It runs only where
- * wp_get_environment_type() is "local" and skips products whose ID is taken.
+ * categories, the global attributes and terms the products use, and the 93
+ * products under their live IDs (the 89 published ones and the draft
+ * PowerCubes 4123–4126 that tools/migrate/7-facts.json corrects), with their
+ * attributes, figures and document URLs. It reproduces the catalogue the
+ * selection-facts expectations were converted against, so the REST route and
+ * tools/migrate/7-facts.py can be run on real WooCommerce data of that day. It
+ * runs only where wp_get_environment_type() is "local" and skips products
+ * whose ID is taken.
  *
  * Usage: wp eval-file --use-include plugins/linker-commerce/tests/fixtures/load-live-products.php
  *

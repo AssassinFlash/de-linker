@@ -351,8 +351,9 @@ final class SelectionFactsLiveCatalogueTest extends TestCase {
 	}
 
 	/**
-	 * The draft PowerCube-X2 (4124) states 24.9 kWh, taken from a document of
-	 * another Pylontech product line.
+	 * The draft PowerCube-X2 (4124) states 24.9 kWh, the seven-module X2 row of
+	 * the 2022 Pylontech brochure (pylontech_optim_us.pdf p.30), not this
+	 * five-module product.
 	 */
 	public function test_draft_4124_before_the_migration(): void {
 		$this->mock_live_products( array( 4124 ) );

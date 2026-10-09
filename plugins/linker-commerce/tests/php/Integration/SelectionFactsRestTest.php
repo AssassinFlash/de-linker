@@ -21,8 +21,9 @@ use WP_Mock\Tools\TestCase;
  * on a local WordPress whose products come from
  * tests/fixtures/load-live-products.php (with or without
  * tools/migrate/7-facts.py applied). The site's address is the environment
- * variable LINKER_COMMERCE_TEST_SITE, e.g. http://127.0.0.1:8107; without it,
- * or when the site does not answer, the tests are skipped (CI has no site).
+ * variable LINKER_COMMERCE_TEST_SITE, e.g. http://127.0.0.1:8107; without it
+ * the tests are skipped (CI has no site), and with it but a site that does not
+ * answer they fail.
  *
  * @coversNothing
  */
@@ -43,7 +44,8 @@ final class SelectionFactsRestTest extends TestCase {
 	private string $site = '';
 
 	/**
-	 * Skips when no local site is configured or reachable.
+	 * Skips when no local site is configured; fails when the configured site
+	 * does not answer.
 	 */
 	public function setUp(): void {
 		parent::setUp();
@@ -53,7 +55,7 @@ final class SelectionFactsRestTest extends TestCase {
 		}
 		$this->site = rtrim( $site, '/' );
 		if ( 0 === self::request( 'GET', $this->site . '/wp-json/' )['status'] ) {
-			$this->markTestSkipped( "{$this->site} does not answer." );
+			$this->fail( "{$this->site} does not answer." );
 		}
 	}
 

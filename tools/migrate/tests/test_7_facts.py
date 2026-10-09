@@ -1,6 +1,7 @@
 """Tests of 7-facts.py: what it reports and when it writes, against a site kept
 in a JSON file by fake_wp.py. The WordPress side (7-facts.php) is checked by
-PHPStan and was run on a local WordPress (pull request of #7)."""
+PHPStan and driven against a real local WordPress by
+test_7_facts_wordpress.py."""
 
 from __future__ import annotations
 
@@ -62,7 +63,9 @@ def site_holding(side: str, siteurl: str = LOCAL) -> dict[str, Any]:
         product = products[str(change["product"])]
         figures = json.loads(product["figures"])
         figures[change["key"]] = change[side]
-        product["figures"] = json.dumps(figures)
+        # fake_wp.py stores figures the way 7-facts.php does: unescaped
+        # Unicode (a value may hold "×").
+        product["figures"] = json.dumps(figures, ensure_ascii=False)
     return {"siteurl": siteurl, "products": products, "writes": []}
 
 
