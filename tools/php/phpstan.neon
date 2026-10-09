@@ -1,0 +1,16 @@
+# Shared PHPStan settings of the Linker plugins. %rootDir% is the
+# vendor/phpstan/phpstan of the plugin being analysed, so each plugin reads the
+# stubs from its own vendor/. The PHP version (8.3) comes from that plugin's
+# composer.json config.platform.php.
+includes:
+	- %rootDir%/../../szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+	# Level 8 for all code (AGENTS.md §4; WooCommerce core runs level 8,
+	# docs/research/2026-10-09/framework-choice.md §6).
+	level: 8
+	paths:
+		# Relative to this file: the bootstrap the plugins' tests share.
+		- bootstrap.php
+	scanFiles:
+		- %rootDir%/../../php-stubs/woocommerce-stubs/woocommerce-stubs.php

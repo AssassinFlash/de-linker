@@ -1,0 +1,31 @@
+# Editor settings. Tabs follow the WordPress coding standards for PHP, JS and
+# CSS; the other sections follow each format's own rule or tool.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+
+# YAML may not indent with tabs (YAML 1.2 §6.1); two spaces as in GitHub's
+# workflow examples.
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Four spaces: PEP 8 for Python; uv writes pyproject.toml that way.
+[*.{py,toml}]
+indent_style = space
+indent_size = 4
+
+# Four spaces: what `just --fmt` writes.
+[{justfile,*.just}]
+indent_style = space
+indent_size = 4
+
+# Two trailing spaces are a line break in Markdown (CommonMark §6.7).
+[*.md]
+trim_trailing_whitespace = false

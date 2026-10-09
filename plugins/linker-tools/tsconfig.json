@@ -1,0 +1,26 @@
+{
+	// Type-checking only (`tsc --noEmit`): Babel in @wordpress/scripts
+	// transpiles, and @wordpress/browserslist-config decides the output syntax.
+	"compilerOptions": {
+		"target": "ESNext",
+		"lib": [ "DOM", "DOM.Iterable", "ESNext" ],
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"jsx": "react-jsx",
+		"strict": true,
+		"noEmit": true,
+		"isolatedModules": true,
+		// Tests import webpack.config.js to read the entries it builds.
+		"allowJs": true,
+		"skipLibCheck": true
+	},
+	"include": [
+		"bin",
+		"src",
+		"tests",
+		".storybook",
+		"playwright.config.ts",
+		"vitest.config.mts",
+		"vitest.setup.ts"
+	]
+}

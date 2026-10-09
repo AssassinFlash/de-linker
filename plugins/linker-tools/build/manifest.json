@@ -1,0 +1,22 @@
+{
+	"sources": {
+		"package-lock.json": "0298274b544f211b8346ac7f61cdea6c2b70ecaa9b54dc5d3df09cb687d0d68c",
+		"package.json": "838ababc7a652be40d1ffc2b16b457a28f48b64b866d505f5efa0fc041cbe30d",
+		"src/configurator/App.tsx": "1d978aa4898ad07b0a8b17e56feb518af6fc3b34e59b7edd4b79c88c76a0cc05",
+		"src/configurator/index.tsx": "f116f1a9eb6abd79cf07f6645a55185a104008f083e37f27824247b8017c2789",
+		"src/genie/App.tsx": "f5a8bc134762ef4726233a5345d6a3acc54a68a3b3c224ec8eb7f3beae0c9437",
+		"src/genie/index.tsx": "a73dd538d6f110622d2dee4f424226c8a878feba939e06977dc3395bad584a5c",
+		"src/shared/App.tsx": "fd207a63e20f0d4aaf72a5e35e56816340d8c86b4199c10c404c4670a0ccf036",
+		"src/shared/index.tsx": "6cdaeb5338038339aeb67fd42d46adbd615658493e915be8c544399ff2b61617",
+		"src/shared/mount.tsx": "41caed6ce658407063aa80d3248f2a2f651f8ad3380338385b5db0440786768f",
+		"webpack.config.js": "b878d181b448520878912d80746fe6a4fb62a2909305e8b469648aa42493db4e"
+	},
+	"build": {
+		"build/configurator.asset.php": "b55fbd592620cdaf2c1e89d8fdd05ae596808c1d05a719c40f270c4c7234704d",
+		"build/configurator.js": "670572e811019a1e8046af587f7e43b22da746774a13a9a172b4503209eac479",
+		"build/genie.asset.php": "a845d9d1e8b48fae4e5d909921cf02aefc20306c0d7c53330884b3f81aed8002",
+		"build/genie.js": "d38dc91f2f5358b3d9180fd4ff9e164d0f13ac0efd599b7db4a8727213d48452",
+		"build/shared.asset.php": "0aa20091dfab05fc87cc510fd89bae3de916b3d554cd7a11054b7e3691418fde",
+		"build/shared.js": "548cb907466c0031d46b1789b6c95c477415f87ea5c0dddc4ff062e13b7dc763"
+	}
+}

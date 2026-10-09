@@ -1,0 +1,9 @@
+# The shared plugin settings (level, stubs) live in tools/php/phpstan.neon.
+includes:
+	- ../../tools/php/phpstan.neon
+
+parameters:
+	paths:
+		- linker-commerce.php
+		- includes
+		- tests/php

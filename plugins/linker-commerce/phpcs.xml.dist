@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ruleset name="Linker Commerce">
+	<description>Linker Commerce: the shared plugin rules (tools/php/phpcs.xml) with this plugin's text domain and prefixes.</description>
+
+	<file>linker-commerce.php</file>
+	<file>includes</file>
+	<file>tests</file>
+	<file>../../tools/php/bootstrap.php</file>
+
+	<rule ref="../../tools/php/phpcs.xml"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="linker-commerce"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="Linker\Commerce"/>
+				<element value="linker_commerce"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

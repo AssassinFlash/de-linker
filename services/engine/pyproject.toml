@@ -1,0 +1,35 @@
+[project]
+name = "linker-engine"
+version = "0.1.0"
+description = "Sizing engine of the Solution Configurator."
+# The VPS runs Python 3.12 (docs/research/2026-10-09/framework-choice.md §7).
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.143.0",
+    "uvicorn>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.13.1",
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[build-system]
+# Range written by `uv init --package` with uv 0.10.11.
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff.lint]
+# Ruff's defaults (E4, E7, E9, F) plus import sorting, bugbear and pyupgrade.
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# A deprecation is fixed when it appears, not when the API is removed.
+filterwarnings = ["error"]

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="Linker plugins">
+	<description>Shared PHPCS rules of the Linker plugins: WordPress Coding Standards 3, WooCommerce sniffs and PHPCompatibilityWP.</description>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<!-- The production host runs PHP 8.3.33 and WordPress 7.1.3 (docs/research/2026-10-09/framework-choice.md §2). -->
+	<config name="testVersion" value="8.3-"/>
+	<config name="minimum_wp_version" value="7.1"/>
+
+	<!-- WooCommerce-Core = WordPress (WPCS 3) + WooCommerce sniffs + PHPCompatibilityWP. -->
+	<rule ref="WooCommerce-Core"/>
+
+	<!-- Classes follow PSR-4 (one class per file, named after the class), as in WooCommerce's src/. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>includes/*</exclude-pattern>
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+</ruleset>
