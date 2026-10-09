@@ -18,6 +18,9 @@
 ## 引用与核验（供 #13）
 模型只能引用 `chunk_id`；服务端渲染为"文档标题 · 第 N 页"并链接 `url#page=N`；答案里的数字必须出现在被引块文本中（确定性检查）。
 
+## 模型对比（bake-off，业主 2026-10-09 要求：用证据定模型，差距不大就用无成本的）
+同一黄金集、同一分块、同一融合下比较：BM25 基线；开源文本 BGE-M3；开源文本 multilingual-e5-base（VPS 1 vCPU 可实时跑的量级）；付费 API `gemini-embedding-2` 文本（aihubmix，OpenAI 兼容 `/v1/embeddings`，3072 维）；`gemini-embedding-2` 多模态（aihubmix 的 Gemini 原生 `embedContent`，页面渲染为 PNG 做页面向量）。指标：召回@5、页码正确率、查询延迟、构建成本、索引体积；黄金集 ≥200 问且含 ≥30 个图类问题（接线图、尺寸图、图表）。决策规则：API 相对开源在召回@5 与页码正确率上的提升都 < 5 个百分点 → 用开源；否则用 API 并记录月成本；多模态只看图类子集的提升。密钥在 `~/.config/terravolt-builder/aihubmix.env`，永不进仓库。结果表：`docs/research/2026-10-09/embedding-bakeoff.md`。
+
 ## 评测（`services/genie/index/eval/`）
 黄金集：从旧仓库的事实卡（ADR-0030，路径用 `git ls-tree` 查找）抽逐字引文生成 EN/DE 问答 ≥ 200 条；指标：召回@5、引用页码正确率；`just eval` 输出表格进 PR。
 
