@@ -1,5 +1,5 @@
 {
-	"description": "Data changes of ticket #7 (docs/specs/7-selection-facts.md): pa_application and pa_phase for the nine EcoFlow OCEAN 2 inverters created on 2026-10-07, the Application of SAJ H2-25K-T3/H2-30K-T3-DE and GoodWe ESA 20–30 kW as their manufacturers state it, the power figures of SAJ CHS2-29.9K-T4-X from its datasheet, and the capacity and voltage figures of the draft Pylontech PowerCube-X2 (4124) from its datasheet (owner ruling 2026-10-09: the datasheet decides when product facts conflict; the product stays a draft). \"from\" is the live value read on 2026-10-09; tools/migrate/7-facts.py applies \"to\" where it finds \"from\" and refuses on anything else.",
+	"description": "Data changes of ticket #7 (docs/specs/7-selection-facts.md): pa_application and pa_phase for the nine EcoFlow OCEAN 2 inverters created on 2026-10-07, the Application of SAJ H2-25K-T3/H2-30K-T3-DE and GoodWe ESA 20–30 kW as their manufacturers state it, the power figures of SAJ CHS2-29.9K-T4-X from its datasheet, and figures of the draft Pylontech PowerCubes X1/X2/H1/H2 (4123–4126) from their manuals in place of the 2022 Pylontech brochure (owner ruling 2026-10-09: the datasheet decides when product facts conflict; the products stay drafts; the PowerCube-M2A-180 draft 4127 was checked against its manual p.10 and agrees). \"from\" is the live value read on 2026-10-09; tools/migrate/7-facts.py applies \"to\" where it finds \"from\" and refuses on anything else.",
 	"new_attribute": {
 		"_source": "As on the EcoFlow OCEAN 2 inverters already on the site (3555–3580, 2026-10-09): pa_phase at position 0, visible; pa_application at position 3, hidden.",
 		"pa_phase": {
@@ -505,6 +505,181 @@
 				}
 			},
 			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "dimensions_mm",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "mm",
+				"value": "600×505×1380"
+			},
+			"to": {
+				"value": "600×505×2130",
+				"unit": "mm",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4123,
+			"name": "Pylontech PowerCube-X1 (16.8 kWh, 7 x H48050 + SC0500-100S-V2)",
+			"key": "system_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "315~378"
+			},
+			"to": {
+				"value": "304.5~378",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x1-p12"
+		},
+		{
+			"product": 4123,
+			"name": "Pylontech PowerCube-X1 (16.8 kWh, 7 x H48050 + SC0500-100S-V2)",
+			"key": "module_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "45~54"
+			},
+			"to": {
+				"value": "43.5~54",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x1-p12"
+		},
+		{
+			"product": 4125,
+			"name": "Pylontech PowerCube-H1 (36 kWh, 15 x H48050 + SC1000-100)",
+			"key": "system_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 31
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p31"
+				],
+				"unit": "Vdc",
+				"value": "664~810"
+			},
+			"to": {
+				"value": "652.5~810",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+					"page": 10
+				}
+			},
+			"basis": "pylontech-powercube-h1h2-p10"
+		},
+		{
+			"product": 4125,
+			"name": "Pylontech PowerCube-H1 (36 kWh, 15 x H48050 + SC1000-100)",
+			"key": "module_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "45~54"
+			},
+			"to": {
+				"value": "43.5~54",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+					"page": 10
+				}
+			},
+			"basis": "pylontech-powercube-h1h2-p10"
+		},
+		{
+			"product": 4126,
+			"name": "Pylontech PowerCube-H2 (42.62 kWh, 12 x H48074 + SC1000-100)",
+			"key": "system_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 31
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p31"
+				],
+				"unit": "Vdc",
+				"value": "531~648"
+			},
+			"to": {
+				"value": "522~648",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+					"page": 10
+				}
+			},
+			"basis": "pylontech-powercube-h1h2-p10"
+		},
+		{
+			"product": 4126,
+			"name": "Pylontech PowerCube-H2 (42.62 kWh, 12 x H48074 + SC1000-100)",
+			"key": "module_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "45~54"
+			},
+			"to": {
+				"value": "43.5~54",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+					"page": 10
+				}
+			},
+			"basis": "pylontech-powercube-h1h2-p10"
 		}
 	],
 	"basis": {
@@ -591,11 +766,33 @@
 			{
 				"document": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
 				"page": 12,
-				"states": "PowerCube-X1/X2-V2 Operation Manual, 2.3 System Specifications, column PowerCube-X2-V2: Battery System Capacity (kWh) 3.552 × n, Battery System Voltage (Vdc) 48 × n, Battery Charge Upper-Voltage (Vdc) 54 × n, Battery Module Discharge Lower-Voltage (Vdc) 43.5 × n (n = 2~10 H48074 modules). The product is 5 × H48074 + SC0500-100S-V2 (its name and description), so n = 5: 17.76 kWh, 240 V, 217.5~270 V; per module 43.5~54 V. Its name already says 17.76 kWh and stays."
+				"states": "PowerCube-X1/X2-V2 Operation Manual, 2.3 System Specifications, column PowerCube-X2-V2: Battery System Capacity (kWh) 3.552 × n, Battery System Voltage (Vdc) 48 × n, Battery Charge Upper-Voltage (Vdc) 54 × n, Battery Module Discharge Lower-Voltage (Vdc) 43.5 × n (n = 2~10 H48074 modules), Rack 600*505*2130 mm (n = 2~10). The product is 5 × H48074 + SC0500-100S-V2 (its name and description), so n = 5: 17.76 kWh, 240 V, 217.5~270 V; per module 43.5~54 V; the rack is 600×505×2130 mm. Its name already says 17.76 kWh and stays."
 			},
 			{
-				"ruling": "Owner, 2026-10-09: where product facts conflict, the product's datasheet decides (\"以实际资料显示的数据为准\"); 4124 named 17.76 kWh while system_capacity_kwh_nominal said 24.9.",
-				"states": "The four replaced figures cite pylontech_optim_us.pdf p.30, a document of another Pylontech product line (OPTIM US); 24.9 kWh and 336 / 315~378 V are a 7-module string."
+				"ruling": "Owner, 2026-10-09: where product facts conflict, the product's datasheet decides (\"以实际资料显示的数据为准\"). 4124 was named 17.76 kWh while system_capacity_kwh_nominal said 24.9.",
+				"states": "The replaced figures cite pylontech_optim_us.pdf, which is in fact the 2022 Pylontech brochure (\"2022Pylontech brochure-PY221107EN-SD\"; archived under that name). Its p.30 is the PowerCube X series table (X1 336V50Ah, X2 336V74Ah: seven modules, 336 V, 315~378 V; X2 24.9 kWh, 600*505*1380 mm) with module voltage range 45~54 V; p.31 the PowerCube H series (H1 720 V, 664~810 V; H2 576 V, 531~648 V). The manuals give the discharge limit as 43.5 V per module. Its 24.9 kWh, 336 V, 315~378 V and 600*505*1380 mm are the seven-module X2, not this five-module product; the five figures that cite it are replaced."
+			}
+		],
+		"pylontech-powercube-x1-p12": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+				"page": 12,
+				"states": "Column PowerCube-X1-V2: Battery Charge Upper-Voltage (Vdc) 54 × n, Battery Module Discharge Lower-Voltage (Vdc) 43.5 × n (n = 2~10 H48050 modules). The product is 7 × H48050 + SC0500-100S-V2, so 304.5~378 V; per module 43.5~54 V. Its 16.8 kWh, 336 V and 600×505×1300 mm (Rack 1, n = 2~8) agree with the manual and stay."
+			},
+			{
+				"ruling": "Owner, 2026-10-09: where product facts conflict, the product's datasheet decides (\"以实际资料显示的数据为准\").",
+				"states": "The replaced figures cite pylontech_optim_us.pdf, which is in fact the 2022 Pylontech brochure (\"2022Pylontech brochure-PY221107EN-SD\"; archived under that name). Its p.30 is the PowerCube X series table (X1 336V50Ah, X2 336V74Ah: seven modules, 336 V, 315~378 V; X2 24.9 kWh, 600*505*1380 mm) with module voltage range 45~54 V; p.31 the PowerCube H series (H1 720 V, 664~810 V; H2 576 V, 531~648 V). The manuals give the discharge limit as 43.5 V per module."
+			}
+		],
+		"pylontech-powercube-h1h2-p10": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+				"page": 10,
+				"states": "PowerCube-H1/H2 manual, 2.2.1 The parameter of system: Battery System Charge Upper-Voltage (Vdc) 54 × n, Battery System Discharge lower-Voltage (Vdc) 43.5 × n (n = 5~18). H1 4125 is 15 × H48050: 652.5~810 V; H2 4126 is 12 × H48074: 522~648 V; per module 43.5~54 V. Their capacities (36 / 42.62 kWh), voltages (720 / 576 V) and racks (600×505×2130 mm) agree with the manual and stay."
+			},
+			{
+				"ruling": "Owner, 2026-10-09: where product facts conflict, the product's datasheet decides (\"以实际资料显示的数据为准\").",
+				"states": "The replaced figures cite pylontech_optim_us.pdf, which is in fact the 2022 Pylontech brochure (\"2022Pylontech brochure-PY221107EN-SD\"; archived under that name). Its p.30 is the PowerCube X series table (X1 336V50Ah, X2 336V74Ah: seven modules, 336 V, 315~378 V; X2 24.9 kWh, 600*505*1380 mm) with module voltage range 45~54 V; p.31 the PowerCube H series (H1 720 V, 664~810 V; H2 576 V, 531~648 V). The manuals give the discharge limit as 43.5 V per module."
 			}
 		]
 	}
