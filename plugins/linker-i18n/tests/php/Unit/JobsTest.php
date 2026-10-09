@@ -1,0 +1,206 @@
+<?php
+/**
+ * Tests for the translation jobs.
+ *
+ * @package Linker\I18n
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\I18n\Tests\Unit;
+
+use Linker\I18n\Jobs;
+use Linker\I18n\Languages;
+use Linker\I18n\LinkLocalizer;
+use Linker\I18n\Translation\Aligner;
+use Linker\I18n\Translation\Client;
+use Linker\I18n\Translation\Fields;
+use Linker\I18n\Translation\HtmlTokenizer;
+use Linker\I18n\Translation\Planner;
+use Linker\I18n\Translation\Rules;
+use Linker\I18n\Translation\Segmenter;
+use Linker\I18n\Translation\State;
+use Linker\I18n\Translation\TranslationFailed;
+use Linker\I18n\Translation\Translator;
+use Linker\I18n\Translation\Validator;
+use Linker\I18n\Twins;
+use Linker\I18n\Woo\Projection;
+use Mockery;
+use WP_Mock;
+use WP_Mock\Tools\TestCase;
+
+// WordPress's own minute, the value of MINUTE_IN_SECONDS
+// (wp-includes/functions.php); WP_Mock defines no constants, and Jobs
+// multiplies the retry minutes with it.
+if ( ! defined( 'MINUTE_IN_SECONDS' ) ) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WordPress's own constant.
+	define( 'MINUTE_IN_SECONDS', 60 );
+}
+
+/**
+ * Tests for Jobs.
+ *
+ * @covers \Linker\I18n\Jobs
+ */
+final class JobsTest extends TestCase {
+
+	/**
+	 * The minutes WordPress's MINUTE_IN_SECONDS counts (wp-includes/functions.php);
+	 * WP_Mock defines no constants.
+	 */
+	private const MINUTE = 60;
+
+	/**
+	 * The jobs of the test, over a real Translator whose client is a stub.
+	 *
+	 * @param bool $available Whether the stub client has its key.
+	 * @param bool $transient Whether the stub client fails for a passing reason.
+	 */
+	private function jobs( bool $available, bool $transient ): Jobs {
+		$data       = dirname( __DIR__, 3 ) . '/data';
+		$languages  = new Languages();
+		$tokenizer  = new HtmlTokenizer();
+		$translator = new Translator(
+			$languages,
+			new Planner( new Segmenter( $tokenizer ), new Aligner() ),
+			new Fields(),
+			new State(),
+			new class( $available, $transient ) implements Client {
+
+				/**
+				 * Sets up the stub.
+				 *
+				 * @param bool $available Whether it has its key.
+				 * @param bool $transient Whether it fails for a passing reason.
+				 */
+				public function __construct(
+					private readonly bool $available,
+					private readonly bool $transient,
+				) {}
+
+				/**
+				 * Whether the translator can be called.
+				 */
+				public function available(): bool {
+					return $this->available;
+				}
+
+				/**
+				 * Fails the way the test wants.
+				 *
+				 * @param array<int, string> $texts    English texts.
+				 * @param string             $feedback Earlier reasons.
+				 * @return list<string>
+				 * @throws TranslationFailed Always.
+				 */
+				public function translate( array $texts, string $feedback = '' ): array {
+					if ( $this->transient || $this->available ) {
+						// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- test text, never shown.
+						throw new TranslationFailed( $this->transient ? 'DeepSeek unreachable: stand-in down' : 'translation rejected', $this->transient );
+					}
+					return array();
+				}
+			},
+			new Validator( Rules::load( $data ) ),
+			new Twins( $languages, new LinkLocalizer( $languages, $tokenizer ), new Projection( $languages ) )
+		);
+		return new Jobs( $languages, $translator, new Twins( $languages, new LinkLocalizer( $languages, $tokenizer ), new Projection( $languages ) ), new State() );
+	}
+
+	/**
+	 * The WordPress functions a failing translation run touches. time() is
+	 * PHP's own and stays real, so the scheduled moment is matched as a window.
+	 */
+	private function wordpress(): void {
+		// @phpstan-ignore-next-line WP_Mock's responder types are not in its stubs.
+		WP_Mock::onFilter( 'linker_i18n_translatable_meta' )
+			->withAnyArgs()
+			->reply( Fields::SEO_META );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'update_metadata', array( 'return' => true ) );
+		WP_Mock::userFunction( 'delete_metadata', array( 'return' => true ) );
+		WP_Mock::passthruFunction( 'wp_slash' );
+		WP_Mock::userFunction(
+			'wp_json_encode',
+			array(
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- wp_json_encode() itself is mocked.
+				'return' => static fn( $value ): string|false => json_encode( $value ),
+			)
+		);
+	}
+
+	/**
+	 * An English post with text to translate.
+	 */
+	private function english_post(): void {
+		PolylangDouble::mock(
+			array( 5 => 'en' ),
+			array(),
+			array(),
+			array(),
+			'en',
+			array(),
+			array(
+				5 => array(
+					'post_type'    => 'product',
+					'post_title'   => 'Power meter',
+					'post_excerpt' => 'A meter for the grid connection.',
+					'post_content' => '<p>A three-phase power meter with a display.</p>',
+				),
+			)
+		);
+	}
+
+	/**
+	 * A failure for a passing reason is scheduled again with the next
+	 * attempt, after the retry minutes (15, Jobs::RETRY_MINUTES, private).
+	 */
+	public function test_a_transient_failure_is_scheduled_again_with_the_next_attempt(): void {
+		$this->english_post();
+		$this->wordpress();
+		WP_Mock::userFunction(
+			'as_schedule_single_action',
+			array(
+				'times'  => 1,
+				'args'   => array(
+					Mockery::on( static fn( int $when ): bool => $when > time() && $when <= time() + 15 * self::MINUTE + 5 ),
+					Jobs::HOOK,
+					array( 'post', 5, false, 2 ),
+					Jobs::GROUP,
+				),
+				'return' => 7,
+			)
+		);
+
+		$this->jobs( true, true )->run( 'post', 5 );
+
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The last attempt is not scheduled again.
+	 */
+	public function test_the_last_attempt_is_not_scheduled_again(): void {
+		$this->english_post();
+		$this->wordpress();
+		WP_Mock::userFunction( 'as_schedule_single_action', array( 'times' => 0 ) );
+
+		$this->jobs( true, true )->run( 'post', 5, false, 3 );
+
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A failure for a lasting reason (no key, a rejected translation) is
+	 * never scheduled again.
+	 */
+	public function test_a_lasting_failure_is_not_scheduled_again(): void {
+		$this->english_post();
+		$this->wordpress();
+		WP_Mock::userFunction( 'as_schedule_single_action', array( 'times' => 0 ) );
+
+		$this->jobs( false, false )->run( 'post', 5 );
+
+		$this->assertConditionsMet();
+	}
+}

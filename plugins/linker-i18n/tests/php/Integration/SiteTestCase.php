@@ -18,13 +18,15 @@ use PHPUnit\Framework\TestCase;
  * and this plugin, loaded with the live fixture (tests/fixtures/seed.php) and
  * migrated (tools/migrate/9-i18n.py), over HTTP and through WP-CLI:
  *
- *     LINKER_I18N_SITE=http://127.0.0.1:8109 \
- *     LINKER_I18N_WP=$HOME/de-linker-local/t9/wp.sh \
+ *     LINKER_I18N_SITE=http://127.0.0.1:8897 \
+ *     LINKER_I18N_WP=/tmp/t9-wp.sh \
  *     LINKER_I18N_STUB=http://127.0.0.1:8119/ \
  *     vendor/bin/phpunit --testsuite integration
  *
- * LINKER_I18N_WP is a WP-CLI command for that site, LINKER_I18N_STUB the
- * DeepSeek stand-in (`php -S 127.0.0.1:8119 tests/php/Integration/stub/deepseek.php`).
+ * The site is a `linker-local` instance (tools/local, `just up t9`);
+ * LINKER_I18N_WP is a WP-CLI command for that site (a wrapper around
+ * `linker-local wp t9`), LINKER_I18N_STUB the DeepSeek stand-in
+ * (`php -S 127.0.0.1:8119 tests/php/Integration/stub/deepseek.php`).
  * The instance runs with DISABLE_WP_CRON, so that a translation runs only
  * when a test runs it. Without LINKER_I18N_SITE the tests are skipped.
  * DEEPSEEK_API_KEY of the calling shell never reaches WP-CLI: a test that

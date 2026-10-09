@@ -96,6 +96,7 @@ def test_wp_config_names_the_instance_and_its_directory(instance: Instance) -> N
     assert "define( 'WP_HOME', 'http://127.0.0.1:8888' );" in extra
     assert "define( 'WP_SITEURL', 'http://127.0.0.1:8888' );" in extra
     assert "define( 'WP_ENVIRONMENT_TYPE', 'local' );" in extra
+    assert "define( 'DISABLE_WP_CRON', true );" in extra
     assert f"define( 'LINKER_LOCAL_MAIL_DIR', '{instance.mail_dir}' );" in extra
     assert (
         f"define( 'LINKER_LOCAL_ISOLATION_LOG', '{instance.isolation_log}' );" in extra
@@ -118,6 +119,10 @@ def test_reads_the_installed_versions(instance: Instance) -> None:
     write(
         instance.wp_content / "plugins" / "redis-cache" / "redis-cache.php",
         "<?php\n/**\n * Plugin Name: Redis Object Cache\n * Version: 3.0.0\n */\n",
+    )
+    write(
+        instance.wp_content / "plugins" / "polylang" / "polylang.php",
+        "<?php\n/**\n * Plugin Name: Polylang\n * Version: 3.8.10\n */\n",
     )
 
     assert wordpress.versions(instance) == wordpress.PINNED

@@ -52,7 +52,7 @@ final class WooTest extends SiteTestCase {
 				"manage_stock"   => $product->get_manage_stock(),
 				"stock_quantity" => $product->get_stock_quantity(),
 				"stock_status"   => $product->get_stock_status(),
-				"mail"           => defined( "LINKER_LOCAL_DIR" ) ? LINKER_LOCAL_DIR . "/mail" : "",
+				"mail"           => defined( "LINKER_LOCAL_MAIL_DIR" ) ? LINKER_LOCAL_MAIL_DIR : "",
 				"admin_email"    => get_option( "admin_email" ),
 			);
 			',

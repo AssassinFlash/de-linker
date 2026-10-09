@@ -88,12 +88,47 @@ final class Setup {
 				$log[] = $this->outcome( $this->request( 'PUT', '/pll/v1/languages/' . (int) $current['term_id'], $language ), 'updated language ' . $language['slug'] . ' (' . $language['locale'] . ')' );
 			}
 		}
+		$log[] = $this->drop_default_terms();
 		$log[] = $this->outcome( $this->request( 'POST', '/pll/v1/settings', self::OPTIONS ), 'options set' );
 		// Polylang caches each language's home URL, which depends on the options.
 		PLL()->model->clean_languages_cache();
 		$log[] = $this->german_formats();
 		flush_rewrite_rules( false );
 		return $log;
+	}
+
+	/**
+	 * Deletes the default terms Polylang makes for German when the language is
+	 * created (Polylang's src/default-term.php: an "Uncategorized" with the
+	 * slug uncategorized-de for every taxonomy with a default_<taxonomy>
+	 * option - category from WordPress, product_cat from WooCommerce). The
+	 * German shop has nothing in them and their archives are not among the
+	 * site's German URLs, so the migration's verify reports them; WordPress's
+	 * own default terms stay. Empty German terms only: one that holds objects
+	 * is somebody's content.
+	 *
+	 * @return string What was removed, for the command line.
+	 */
+	public function drop_default_terms(): string {
+		$removed = array();
+		foreach ( PLL()->model->get_translated_taxonomies() as $taxonomy ) {
+			if ( '' === $taxonomy ) {
+				continue;
+			}
+			$default = (int) get_option( 'default_' . $taxonomy );
+			$german  = $default ? pll_get_term( $default, Languages::TARGET ) : 0;
+			if ( $german === $default ) {
+				continue;
+			}
+			$term = $german > 0 ? get_term( $german ) : null;
+			if ( $term instanceof \WP_Term && 0 === $term->count ) {
+				$removed[] = $taxonomy . ':' . $term->slug;
+				wp_delete_term( $term->term_id, $taxonomy );
+			}
+		}
+		return array() === $removed
+			? 'default terms: none to remove'
+			: 'default terms removed: ' . implode( ', ', $removed );
 	}
 
 	/**
@@ -133,6 +168,14 @@ final class Setup {
 	 */
 	public function assign_default(): void {
 		PLL()->model->set_language_in_mass();
+		// Polylang's mass assignment writes term_relationships directly,
+		// without the object-cache invalidation wp_set_object_terms() does:
+		// with a persistent object cache (Redis, as the cutover plans for
+		// production; docs/specs/17-cutover.md) a page whose language was read
+		// before this - the front page, the posts page, the shop page, which
+		// every request reads - keeps its cached "no language" answer, and the
+		// German versions cannot pair with them. One flush, once, here.
+		wp_cache_flush();
 	}
 
 	/**

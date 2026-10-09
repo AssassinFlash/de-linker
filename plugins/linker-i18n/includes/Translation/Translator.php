@@ -142,7 +142,7 @@ final class Translator {
 			}
 		}
 		$twin = State::POST === $kind ? $this->twins->post( $source_id, $values, $slug ) : $this->twins->term( $source_id, $values, $slug );
-		$this->record( $kind, $twin, $fields, array_fill_keys( array_keys( $fields ), array() ), array(), $missing );
+		$this->record( $kind, $twin, $fields, array(), array(), $missing );
 		$status = array() === $missing ? State::SYNCED : State::PENDING;
 		$this->state->set_status( $kind, $source_id, $status, array() === $missing ? '' : 'no German for ' . implode( ', ', $missing ) );
 		return $status;

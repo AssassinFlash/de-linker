@@ -47,14 +47,15 @@ final class PolylangDouble {
 	/**
 	 * Mocks Polylang.
 	 *
-	 * @param array<int, string>  $post_languages Post ID => language.
-	 * @param array<int, int>     $post_pairs     English post ID => German post ID.
-	 * @param array<int, string>  $term_languages Term ID => language.
-	 * @param array<int, int>     $term_pairs     English term ID => German term ID.
-	 * @param string              $current        The current language.
-	 * @param array<string, bool> $translated     Post type or taxonomy => whether Polylang translates it.
+	 * @param array<int, string>               $post_languages Post ID => language.
+	 * @param array<int, int>                  $post_pairs     English post ID => German post ID.
+	 * @param array<int, string>               $term_languages Term ID => language.
+	 * @param array<int, int>                  $term_pairs     English term ID => German term ID.
+	 * @param string                           $current        The current language.
+	 * @param array<string, bool>              $translated     Post type or taxonomy => whether Polylang translates it.
+	 * @param array<int, array<string, mixed>> $posts Fields of the post get_post() returns, by ID.
 	 */
-	public static function mock( array $post_languages = array(), array $post_pairs = array(), array $term_languages = array(), array $term_pairs = array(), string $current = 'en', array $translated = array() ): void {
+	public static function mock( array $post_languages = array(), array $post_pairs = array(), array $term_languages = array(), array $term_pairs = array(), string $current = 'en', array $translated = array(), array $posts = array() ): void {
 		$translates = static fn( string $type ): bool => $translated[ $type ] ?? in_array( $type, array( 'page', 'post', 'product', 'product_cat', 'category', 'pa_phase' ), true );
 		$pair       = static function ( array $pairs, array $languages, int $id, string $language ) {
 			if ( ( $languages[ $id ] ?? null ) === $language ) {
@@ -79,7 +80,7 @@ final class PolylangDouble {
 		WP_Mock::userFunction( 'pll_get_term', array( 'return' => static fn( int $id, string $language ) => $pair( $term_pairs, $term_languages, $id, $language ) ) );
 		WP_Mock::userFunction( 'pll_is_translated_post_type', array( 'return' => $translates ) );
 		WP_Mock::userFunction( 'pll_is_translated_taxonomy', array( 'return' => $translates ) );
-		WP_Mock::userFunction( 'get_post', array( 'return' => static fn( $id ) => isset( $post_languages[ (int) $id ] ) ? self::post( (int) $id ) : null ) );
+		WP_Mock::userFunction( 'get_post', array( 'return' => static fn( $id ) => isset( $post_languages[ (int) $id ] ) ? self::post( (int) $id, $posts[ (int) $id ] ?? array() ) : null ) );
 		WP_Mock::userFunction( 'get_term', array( 'return' => static fn( $id ) => isset( $term_languages[ (int) $id ] ) ? self::term( (int) $id ) : null ) );
 		self::$languages = array();
 		self::$polylang  = new PolylangInstance( self::language( $current ) );

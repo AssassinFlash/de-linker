@@ -1,4 +1,4 @@
-$ python3 tools/migrate/9-i18n.py --wp ~/de-linker-local/t9/wp.sh --user local-admin rollback --write
+$ python3 tools/migrate/9-i18n.py --wp /tmp/t9-wp.sh --user local-admin rollback --write
 20 German posts are drafts now
 
 404 /de/produkt/chint-dtsu666/
@@ -7,9 +7,9 @@ $ python3 tools/migrate/9-i18n.py --wp ~/de-linker-local/t9/wp.sh --user local-a
 200 /product/chint-dtsu666/
 200 /about/
 
-$ python3 tools/migrate/9-i18n.py --wp ~/de-linker-local/t9/wp.sh --user local-admin apply --write   (again, after the rollback)
-post 12 -> 223: pending
-post 20 -> 241: pending
+$ python3 tools/migrate/9-i18n.py --wp /tmp/t9-wp.sh --user local-admin apply --write   (again, after the rollback)
+post 19 -> 54: pending
+post 11 -> 38: pending
 36 imported, 34 synced, 2 not synced
 200 /de/produkt/chint-dtsu666/
 200 /de/ueber-uns/

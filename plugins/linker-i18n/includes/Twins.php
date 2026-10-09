@@ -107,6 +107,7 @@ final class Twins {
 		);
 		$this->writing = true;
 		$kses          = $this->suspend_kses();
+		$defaulting    = $this->suspend_default_category();
 		try {
 			if ( null === $twin ) {
 				$postarr['post_date']     = $source->post_date;
@@ -130,12 +131,38 @@ final class Twins {
 			}
 		} finally {
 			$this->restore_kses( $kses );
+			$this->restore_default_category( $defaulting );
 			$this->writing = false;
 		}
 		if ( 'product' === $source->post_type ) {
 			$this->projection->project( $source_id );
 		}
 		return $twin;
+	}
+
+	/**
+	 * Suspends WooCommerce's default-category forcing while the German
+	 * product's terms mirror the English ones: an empty list is the English
+	 * product having none, and the forced default is an English term - its
+	 * assignment would make Polylang's term sync create the German default
+	 * term, a category the site's German has no use for (the ones language
+	 * creation makes are removed by Setup::drop_default_terms()).
+	 *
+	 * @return bool Whether the hook was there.
+	 */
+	private function suspend_default_category(): bool {
+		return remove_action( 'set_object_terms', array( \WC_Post_Data::class, 'force_default_term' ), 10 );
+	}
+
+	/**
+	 * Puts the suspended hook back.
+	 *
+	 * @param bool $suspended What suspend_default_category() returned.
+	 */
+	private function restore_default_category( bool $suspended ): void {
+		if ( $suspended ) {
+			add_action( 'set_object_terms', array( \WC_Post_Data::class, 'force_default_term' ), 10, 5 );
+		}
 	}
 
 	/**
@@ -161,6 +188,7 @@ final class Twins {
 		);
 		$this->writing = true;
 		$kses          = $this->suspend_kses();
+		$defaulting    = $this->suspend_default_category();
 		try {
 			if ( null === $twin ) {
 				// A placeholder slug first: the German slug may equal the English one,

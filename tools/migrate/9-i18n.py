@@ -12,6 +12,10 @@ The steps (docs/specs/9-i18n.md, "迁移"):
 
 1. Polylang configured by `wp linker-i18n setup` (the plugin's own
    configuration), and every existing object without a language made English.
+   Creating the German language makes Polylang create German default terms
+   ("Uncategorized", slug uncategorized-de, for every taxonomy with a
+   default_<taxonomy> option: category, product_cat); setup deletes the empty
+   ones right away - their archives are not among the site's German URLs.
 2. German product categories, post categories and attribute terms: names and
    slugs from the old plugin's data (below), descriptions from its dictionary.
 3. German pages, posts, products and LiveCanvas partials and templates from
@@ -371,6 +375,10 @@ class Migration:
     # Steps 2–4.
     def apply(self, items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
+        # 20 per batch: the small batches of the research's walkthrough
+        # (docs/research/2026-10-09/i18n-opensource-replication.md §8.2) - one
+        # JSON payload through WP-CLI's stdin stays small and a failed batch is
+        # re-runnable, since import is idempotent by English object.
         for start in range(0, len(items), 20):
             batch = [
                 {key: value for key, value in item.items() if key != "label"}
@@ -395,6 +403,9 @@ class Migration:
             for row in self.status()
             if row["kind"] in TRANSLATED_TYPES and row["german"]
         ]
+        # 50 per `wp post update` call: one command line of ids stays short;
+        # the size carries no guarantee (unlike apply's 20), it only keeps the
+        # invocation readable in the cutover log.
         for start in range(0, len(german), 50):
             self.wp.run(
                 "post",

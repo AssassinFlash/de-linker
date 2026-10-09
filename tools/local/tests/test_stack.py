@@ -186,12 +186,19 @@ def test_both_run_the_production_versions(stack: Stack) -> None:
             stack.wp(name, "plugin", "get", "woocommerce", "--field=version")
             == "11.2.0"
         )
+        assert (
+            stack.wp(name, "plugin", "get", "polylang", "--field=version") == "3.8.10"
+        )
         statuses = stack.wp(
             name, "plugin", "list", "--status=active", "--field=name"
         ).split()
-        assert {"woocommerce", "linker-commerce", "linker-i18n", "linker-tools"} <= set(
-            statuses
-        )
+        assert {
+            "woocommerce",
+            "polylang",
+            "linker-commerce",
+            "linker-i18n",
+            "linker-tools",
+        } <= set(statuses)
 
 
 def test_each_instance_has_its_own_redis_object_cache(stack: Stack) -> None:

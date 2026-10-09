@@ -1,10 +1,12 @@
-Visual acceptance: deferred to the snapshot instance (owner ruling 2026-10-09)
+Visual acceptance: deferred to the snapshot instance (owner ruling 2026-10-10)
 
 The local instance used here is the bare fixture stack (seed.php + 9-i18n.py):
-WooCommerce 11.1.0, Polylang 3.8.10, the bundled theme, no live theme, uploads
-or licensed plugins. The owner's ruling of 2026-10-09: local instances must
-carry the live snapshot for development and acceptance, so their look matches
-the live site; screenshots of the bare stack are not visual acceptance.
+the local stack's t9 (`just up t9`) - WordPress 7.1.3, WooCommerce 11.2.0,
+Polylang 3.8.10, the de_DE_formal language packs and the bundled theme, no
+live theme, uploads or licensed plugins. The owner's ruling of 2026-10-10:
+local instances must carry the live snapshot for development and acceptance,
+so their look matches the live site; screenshots of the bare stack are not
+visual acceptance.
 
 This delivery therefore splits the ticket's visual line:
 

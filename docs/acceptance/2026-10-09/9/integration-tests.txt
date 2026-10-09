@@ -1,4 +1,4 @@
-$ cd plugins/linker-i18n && LINKER_I18N_SITE=http://127.0.0.1:8109 LINKER_I18N_WP=$HOME/de-linker-local/t9/wp.sh LINKER_I18N_STUB=http://127.0.0.1:8119/ vendor/bin/phpunit --testsuite integration --testdox
+$ cd plugins/linker-i18n && LINKER_I18N_SITE=http://127.0.0.1:8897 LINKER_I18N_WP=/tmp/t9-wp.sh LINKER_I18N_STUB=http://127.0.0.1:8119/ vendor/bin/phpunit --testsuite integration --testdox   (site: the stack instance `just up t9`; LINKER_I18N_WP wraps `linker-local wp t9`)
 PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
 
 Rest (Linker\I18n\Tests\Integration\Rest)
@@ -31,7 +31,7 @@ Woo (Linker\I18n\Tests\Integration\Woo)
  ✔ German add to cart notice names the german product
  ✔ German inquiry
 
-Time: 00:41.813, Memory: 8.00 MB
+Time: 00:50.890, Memory: 8.00 MB
 
 OK (20 tests, 798 assertions)
 exit 0
