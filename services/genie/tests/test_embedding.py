@@ -1,0 +1,221 @@
+"""Embedding models: request formats and vector packing, without network or weights."""
+
+import io
+import json
+import struct
+import sys
+import types
+from collections.abc import Iterator
+from contextlib import contextmanager
+from typing import Any
+
+import pytest
+
+from linker_genie.embedding import (
+    ARCTIC_M,
+    E5_SMALL,
+    GEMINI_BATCH,
+    OPEN_MODELS,
+    GeminiEmbedder,
+    OnnxEmbedder,
+    Passage,
+    pack,
+    query_encoder,
+)
+
+
+class FakeApi:
+    """Answers OpenAI-compatible /v1/embeddings requests with one-hot vectors."""
+
+    def __init__(self) -> None:
+        self.requests: list[dict[str, Any]] = []
+
+    @contextmanager
+    def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
+        body = json.loads(request.data)
+        self.requests.append(
+            {"url": request.full_url, "auth": request.headers["Authorization"], **body}
+        )
+        data = [
+            {"index": i, "embedding": [float(i), 1.0]}
+            for i in range(len(body["input"]))
+        ]
+        yield io.BytesIO(
+            json.dumps(
+                {"data": list(reversed(data)), "usage": {"total_tokens": 7}}
+            ).encode()
+        )
+
+
+def test_pack_writes_float32_little_endian() -> None:
+    assert pack([1.0, -2.5]) == struct.pack("<2f", 1.0, -2.5)
+
+
+def test_gemini_documents_carry_title_and_text_and_go_in_batches_of_100() -> None:
+    api = FakeApi()
+    gemini = GeminiEmbedder("secret", "https://aihubmix.example/", urlopen=api)
+    passages = [
+        Passage(title="ET datasheet", text=f"chunk {i}")
+        for i in range(GEMINI_BATCH + 1)
+    ]
+
+    vectors = gemini.embed_documents(passages)
+
+    assert [len(request["input"]) for request in api.requests] == [GEMINI_BATCH, 1]
+    assert api.requests[0]["input"][0] == "title: ET datasheet | text: chunk 0"
+    assert api.requests[0]["url"] == "https://aihubmix.example/v1/embeddings"
+    assert api.requests[0]["auth"] == "Bearer secret"
+    assert api.requests[0]["model"] == "gemini-embedding-2"
+    assert vectors[1] == pack([1.0, 1.0])  # re-ordered by the response's index
+    assert gemini.tokens == 14
+
+
+def test_gemini_queries_carry_the_question_answering_task() -> None:
+    api = FakeApi()
+
+    GeminiEmbedder("secret", "https://aihubmix.example", urlopen=api).embed_query(
+        "Wie schwer ist der GW10K-ET?"
+    )
+
+    assert api.requests[0]["input"] == [
+        "task: question answering | query: Wie schwer ist der GW10K-ET?"
+    ]
+
+
+def test_a_document_without_title_is_marked_none() -> None:
+    api = FakeApi()
+
+    GeminiEmbedder("k", "https://a.example", urlopen=api).embed_documents(
+        [Passage(title="", text="t")]
+    )
+
+    assert api.requests[0]["input"] == ["title: none | text: t"]
+
+
+class FakeSession:
+    """Stands in for onnxruntime.InferenceSession: hidden states from the token count."""
+
+    outputs = ("last_hidden_state",)
+
+    def __init__(self, path: str, options: Any, providers: list[str]) -> None:
+        self.options = options
+
+    def get_inputs(self) -> list[Any]:
+        return [
+            types.SimpleNamespace(name=name) for name in ("input_ids", "attention_mask")
+        ]
+
+    def get_outputs(self) -> list[Any]:
+        return [types.SimpleNamespace(name=name) for name in self.outputs]
+
+    def run(self, names: object, feed: dict[str, Any]) -> list[Any]:
+        import numpy as np
+
+        batch, length = feed["input_ids"].shape
+        # Token i of every row is the vector (i + 1, 1): CLS = (1, 1); the mean depends
+        # on how many tokens the mask keeps.
+        hidden = np.stack([np.arange(1, length + 1), np.ones(length)], axis=1)
+        return [np.repeat(hidden[None, :, :], batch, axis=0).astype("float32")]
+
+
+@pytest.fixture
+def onnx_model(monkeypatch: pytest.MonkeyPatch, tmp_path: Any) -> list[Any]:
+    from tokenizers import Tokenizer
+    from tokenizers.models import WordLevel
+    from tokenizers.pre_tokenizers import Whitespace
+
+    words = [
+        "[PAD]",
+        "[UNK]",
+        "query",
+        ":",
+        "passage",
+        "how",
+        "heavy",
+        "is",
+        "it",
+        "a",
+        "b",
+    ]
+    tokenizer = Tokenizer(
+        WordLevel({word: i for i, word in enumerate(words)}, unk_token="[UNK]")
+    )
+    tokenizer.pre_tokenizer = Whitespace()
+    tokenizer.save(str(tmp_path / "tokenizer.json"))
+    sessions: list[Any] = []
+
+    class Options:
+        def __init__(self) -> None:
+            self.entries: dict[str, str] = {}
+
+        def add_session_config_entry(self, key: str, value: str) -> None:
+            self.entries[key] = value
+
+    def session(path: str, options: Any, providers: list[str]) -> FakeSession:
+        created = FakeSession(path, options, providers)
+        sessions.append(created)
+        return created
+
+    module = types.ModuleType("onnxruntime")
+    module.__dict__.update(
+        SessionOptions=Options,
+        ExecutionMode=types.SimpleNamespace(ORT_SEQUENTIAL="sequential"),
+        InferenceSession=session,
+    )
+    monkeypatch.setitem(sys.modules, "onnxruntime", module)
+    monkeypatch.setattr(
+        "huggingface_hub.hf_hub_download",
+        lambda repo, filename, revision: str(tmp_path / "tokenizer.json"),
+    )
+    return sessions
+
+
+def test_the_vps_query_encoder_runs_one_thread_without_spinning(
+    onnx_model: list[Any],
+) -> None:
+    OnnxEmbedder(OPEN_MODELS[E5_SMALL])
+
+    options = onnx_model[0].options
+    assert (options.intra_op_num_threads, options.inter_op_num_threads) == (1, 1)
+    assert options.entries == {
+        "session.intra_op.allow_spinning": "0",
+        "session.inter_op.allow_spinning": "0",
+    }
+
+
+def test_cls_pooling_takes_the_first_token_and_normalizes(
+    onnx_model: list[Any],
+) -> None:
+    import numpy as np
+
+    vector = np.frombuffer(
+        OnnxEmbedder(OPEN_MODELS[ARCTIC_M]).embed_query("how heavy is it"), "<f4"
+    )
+
+    assert vector == pytest.approx(np.array([1, 1]) / np.sqrt(2))
+
+
+def test_mean_pooling_averages_the_tokens_the_mask_keeps(onnx_model: list[Any]) -> None:
+    import numpy as np
+
+    e5 = OnnxEmbedder(OPEN_MODELS[E5_SMALL])
+    # "query : a" -> 3 tokens: mean of (1,1), (2,1), (3,1) = (2, 1); in a batch with a
+    # longer passage the padding must not count.
+    short, longer = e5.embed_documents([Passage("t", "a"), Passage("t", "a b a b")])
+
+    assert np.frombuffer(short, "<f4") == pytest.approx(np.array([2, 1]) / np.sqrt(5))
+    assert np.frombuffer(longer, "<f4") == pytest.approx(
+        np.array([3.5, 1]) / np.sqrt(13.25)
+    )
+
+
+def test_without_a_key_there_is_no_gemini_query_encoder(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("AIHUBMIX_API_KEY", raising=False)
+
+    assert query_encoder("gemini-embedding-2") is None
+
+
+def test_an_unknown_model_has_no_query_encoder() -> None:
+    assert query_encoder("voyage-4") is None

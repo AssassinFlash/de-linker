@@ -1,0 +1,11 @@
+{
+ "sha256": "b296b6142e93eedb93fd4595a42be69da999fdeb1ab394d4c64307ca879beaed",
+ "docling": "docling 2.136.0",
+ "status": "success",
+ "pages": 3,
+ "garbled_pages": [
+  2
+ ],
+ "errors": [],
+ "seconds": 59.7
+}
