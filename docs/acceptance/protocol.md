@@ -4,14 +4,14 @@
 `Status / Label: wayfinder:task / Parent: 001 / Batch / Blocked-by / 规格关联`；**交付结果**（一段，可验收的终态）；**范围（文件）**（逐文件，含行号或函数名）；**不做**；**验收**（复选框，每行写清用什么真实数据、在哪个环境、量什么）；**证据入口**。没有这六节的票不派。
 
 ## 2. 执行会话规则
-- 每票一个全新会话，先 `python3 tools/next_ticket.py --feature advisor-rebuild` 确认就绪与链尖，再 `git branch claim/NNN refs/landed/chain-tip`，工作树放 `~/Documents/de-linker-worktrees/wt-NNN`。
+- 每票一个全新会话：`gh issue view 3` 看地图，`gh issue view N` 看票（头部 `Blocked-by` 全部关闭才能开工），从 `main` 切 `t<N>/<slug>`；工作树放 `~/Documents/de-linker-worktrees/de-linker-t<N>`，主检出 `~/Documents/de-linker` 保持 main。
 - 本轮发现的问题本轮修（含票外问题），不开 follow-up；修完全量再评审。
 - 任何数字/阈值/规则先追来源；外部核实只走 Apify。
 - 子代理用 Opus 5.5；一张票不并行写同一文件。
 
 ## 3. 三件套（缺一不交付）
 **A. 代码审查**：Spec（需求与业务结果，对照票面 + 关联决议）与 Standards（职责、数据流、重复、复杂度，对照 010 工程标准）两名独立评审，看从起始提交到最新的全量 diff（含未提交）；发现项必须有位置、触发、影响；必改项清零后再全量评审一轮；无必改即停，不空转。
-**B. 自动化测试**：改动所在层的真实夹具测试（PHP 单测 `php tests/unit/<name>-test.php`；引擎 `PYTHONPATH=. pytest -q tests/`；JS 源码模块测试 `npm test`）；回归用例表（§5）中与本票相关的行必须有可运行断言并通过；不跑与改动无关的全量套件。
+**B. 自动化测试**：改动所在层的真实夹具测试，入口统一为 `just test`（PHPUnit、Vitest、Playwright、pytest 都由它调度；`just check` 跑静态检查，`just build` 与 `just build::check` 负责构建产物）；回归用例表（§5）中与本票相关的行必须有可运行断言并通过；不跑与改动无关的全量套件。
 **C. 基于 Computer Use 的视觉验收**：在真实浏览器（登录态用 `tools/magic_login.py --user 3`，不用密码）对本票触及的每个页面/状态，在 1440 与 390 两种视口、EN 与 DE 两种语言下截图并逐项核对：布局（不溢出、不遮挡、不撑高）、字体（族、字号、行高与设计稿一致）、配色（token 一致、对比度）、交互反馈（pending/success/error/retry 可见且稳定）、细节状态（空态、长文案、键盘 Tab 顺序、焦点环）。基准 = 设计稿（147 图的原型）/ 票面需求 / 交互预期；任何影响理解、操作或品牌一致性的问题在交付前修复。截图归档：`.scratch/advisor-rebuild/work/<NNN>/evidence-{local,live}/`，文件名 `<page>-<viewport>-<lang>-<state>.png`。
 
 ## 4. 上线与回滚
@@ -39,7 +39,7 @@
 | R14 | 披露与范围 | 打开 dock | 披露句出现一次；问"Lieferzeit?" 只有邮箱句 |
 
 ## 6. 本线 review 入口
-执行 AI 交付时在票的 Notes 写：起始/最终提交、三件套证据路径、未解问题 = 0 的声明。本线用 `code-review` 全量 diff + 抽查视觉证据 + 真实请求复核 R1/R2 后，才允许 `land_branch.py --ticket NNN`。
+执行 AI 交付时在票的 Notes 写：起始/最终提交、三件套证据路径、未解问题 = 0 的声明。本线派 Spec 与 Standards 两名独立评审审全量 diff、抽查视觉证据、复核真实请求（R1/R2 适用时）；无必改项才 squash 合并 PR 并关票，否则打回原执行会话修复后再审。
 
 ## 7. 2026-10-09 修订（新仓库）
 - 票在 GitHub Issues（地图 #3）；分支名 `t<票号>/<slug>`；PR 标题以票号开头；PR 描述附三件套证据路径。
