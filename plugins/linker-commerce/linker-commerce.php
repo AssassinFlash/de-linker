@@ -23,4 +23,4 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-( new Plugin( __FILE__ ) )->register();
+( new Plugin( __FILE__, new Abilities\Registrar( __FILE__ ) ) )->register();

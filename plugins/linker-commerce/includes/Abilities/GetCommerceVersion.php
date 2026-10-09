@@ -1,6 +1,6 @@
 <?php
 /**
- * Ability linker-commerce/get-version.
+ * Ability linker/get-commerce-version.
  *
  * @package Linker\Commerce
  */
@@ -9,17 +9,15 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Plugin;
-
 /**
  * Reports which version of Linker Commerce is installed, read from the plugin header.
  */
-final class GetVersion {
+final class GetCommerceVersion {
 
 	/**
 	 * Ability name.
 	 */
-	public const NAME = 'linker-commerce/get-version';
+	public const NAME = 'linker/get-commerce-version';
 
 	/**
 	 * Sets up the ability.
@@ -29,7 +27,7 @@ final class GetVersion {
 	public function __construct( private readonly string $plugin_file ) {}
 
 	/**
-	 * Arguments for wp_register_ability().
+	 * Arguments for wp_register_ability(), apart from the category.
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -37,7 +35,6 @@ final class GetVersion {
 		return array(
 			'label'               => __( 'Get Linker Commerce version', 'linker-commerce' ),
 			'description'         => __( 'Returns the version of the Linker Commerce plugin installed on this site.', 'linker-commerce' ),
-			'category'            => Plugin::ABILITY_CATEGORY,
 			'output_schema'       => array(
 				'type'                 => 'object',
 				'properties'           => array(

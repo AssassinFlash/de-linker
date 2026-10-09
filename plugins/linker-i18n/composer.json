@@ -1,6 +1,6 @@
 {
 	"name": "linker/linker-i18n",
-	"description": "Polylang companion for de-linker.com: same slugs, translated URL segments, translate on save, REST language, minimal WooCommerce sync.",
+	"description": "Polylang companion for de-linker.com.",
 	"type": "wordpress-plugin",
 	"license": "proprietary",
 	"require": {

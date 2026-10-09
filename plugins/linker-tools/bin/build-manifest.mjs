@@ -1,17 +1,18 @@
 /**
  * Records which sources the committed build/ was made from, and checks it.
  *
- *     node bin/build-manifest.mjs write   after `wp-scripts build`
+ *     node bin/build-manifest.mjs write   last step of `npm run build`
  *     node bin/build-manifest.mjs check   fail if a source or a built file
  *                                         changed since the last write
  *
- * Sources are every file under src/ except tests and stories, plus the files
+ * Sources are the files under src/ except tests and stories, plus the files
  * that steer the build. The manifest keeps one SHA-256 per file, so a failed
  * check names what changed.
  */
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath( new URL( '..', import.meta.url ) );
@@ -23,17 +24,16 @@ const buildInputs = [
 ];
 const notBuilt = /\.(test|stories)\.[jt]sx?$/;
 
+// Files under `dir` that git tracks or would track. Ignored files, such as the
+// .DS_Store that Finder drops, never reach the repository, so they don't count.
 function listFiles( dir ) {
-	return readdirSync( join( root, dir ), {
-		recursive: true,
-		withFileTypes: true,
-	} )
-		.filter( ( entry ) => entry.isFile() )
-		.map( ( entry ) =>
-			relative( root, join( entry.parentPath, entry.name ) )
-				.split( sep )
-				.join( '/' )
-		);
+	return execFileSync(
+		'git',
+		[ 'ls-files', '-z', '--cached', '--others', '--exclude-standard', dir ],
+		{ cwd: root, encoding: 'utf8' }
+	)
+		.split( '\0' )
+		.filter( ( file ) => file !== '' && existsSync( join( root, file ) ) );
 }
 
 function hashFiles( files ) {

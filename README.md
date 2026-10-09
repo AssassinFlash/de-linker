@@ -16,7 +16,7 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 | `tools/` | just 模块与少量脚本 |
 | `docs/` | 验收协议与研究证据 |
 
-PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`；JS 单测与源码同目录（`*.test.tsx`），端到端测试在 `plugins/linker-tools/tests/e2e/`；Python 测试在各服务的 `tests/`。
+PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`；JS 单测与源码同目录（`*.test.ts(x)`，含 `bin/` 的脚本），端到端测试在 `plugins/linker-tools/tests/e2e/`；Python 测试在各服务的 `tests/`。
 
 ## 工具链
 
@@ -59,17 +59,17 @@ brew install php@8.3
 | `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
 
-每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）运行 `just check` 与 `just test`。
+每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）运行 `just check` 与 `just test`，再运行 `just build`，重建出的 `build/` 必须与提交的逐字节相同。
 
 票面写的是 `just build:check`。just 的配方名不能含 `:`（`build:check:` 会解析报错），`::` 是 just 的模块路径分隔符，所以 `build` 是模块 `tools/build.just`：`just build` 运行它的默认配方，`just build::check` 运行检查。npm 脚本仍叫 `build` 与 `build:check`。
 
 ### 构建产物
 
-改了 `plugins/linker-tools/src/`（`*.test.*` 与 `*.stories.*` 除外）、`package.json`、`package-lock.json` 或 `webpack.config.js` 之后，运行 `just build` 并连同 `build/` 一起提交。`build/manifest.json` 记录每个源文件与每个产物的 SHA-256；源码改了没重建、产物被手改，`build::check` 都会失败。
+改了 `plugins/linker-tools/src/`（`*.test.*` 与 `*.stories.*` 除外）、`package.json`、`package-lock.json` 或 `webpack.config.js` 之后，运行 `just build` 并连同 `build/` 一起提交。`build/manifest.json` 记录每个源文件与每个产物的 SHA-256（只算 git 会收录的文件，`.DS_Store` 之类被忽略的文件不算）；源码改了没重建、产物被手改，`build::check` 都会失败并列出文件。
 
 ### 三条链的样例
 
-- PHP：`linker-commerce` 在 `wp_abilities_api_categories_init` 与 `wp_abilities_api_init` 上注册分类 `linker-commerce` 与 ability `linker-commerce/get-version`（只读、可走 REST、仅管理员可执行），两处都先检查 `function_exists`。`linker-tools` 从 `build/*.asset.php` 读依赖与版本，把每个入口注册为脚本 `linker-tools-<入口>`；只注册不加载，加载由输出挂载点的代码负责。
+- PHP：`linker-commerce` 的 `Abilities\Registrar` 在 `wp_abilities_api_categories_init` 与 `wp_abilities_api_init` 上注册分类 `linker` 与 ability `linker/get-commerce-version`（只读、可走 REST、仅管理员可执行），两处都先检查 `function_exists`；ability 名沿用 `docs/specs/13-genie.md` 的 `linker/` 前缀，一个 ability 一个类。`linker-tools` 的 `Assets` 从 `build/*.asset.php` 读依赖与版本，把每个入口注册为脚本 `linker-tools-<入口>`；只注册不加载，加载由输出挂载点的代码负责。各插件的钩子都列在 `Plugin::register()`。
 - JS：每个入口在 DOM 就绪后挂载到 `<div data-linker-app="<入口>">`，文案走 `@wordpress/i18n`（文本域 `linker-tools`）。端到端测试在 Storybook 上跑，不需要 WordPress。
 - Python：每个服务有 `GET /health`。
 

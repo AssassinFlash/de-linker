@@ -17,21 +17,14 @@ final class Plugin {
 	/**
 	 * Sets up the plugin.
 	 *
-	 * @param string $file Absolute path of the main plugin file.
+	 * @param Assets $assets Registers the built apps as scripts.
 	 */
-	public function __construct( private readonly string $file ) {}
+	public function __construct( private readonly Assets $assets ) {}
 
 	/**
 	 * Adds the plugin's hooks.
 	 */
 	public function register(): void {
-		add_action( 'init', array( $this, 'register_assets' ) );
-	}
-
-	/**
-	 * Registers the built apps as scripts.
-	 */
-	public function register_assets(): void {
-		( new Assets( $this->file ) )->register();
+		add_action( 'init', array( $this->assets, 'register' ) );
 	}
 }

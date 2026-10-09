@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Tests\Unit;
 
+use Linker\Tools\Assets;
 use Linker\Tools\Plugin;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -24,11 +25,11 @@ final class PluginTest extends TestCase {
 	 * The plugin registers its scripts on init.
 	 */
 	public function test_register_adds_the_hooks(): void {
-		$plugin = new Plugin( '/srv/www/wp-content/plugins/linker-tools/linker-tools.php' );
+		$assets = new Assets( '/srv/www/wp-content/plugins/linker-tools/linker-tools.php' );
 
-		WP_Mock::expectActionAdded( 'init', array( $plugin, 'register_assets' ) );
+		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 
-		$plugin->register();
+		( new Plugin( $assets ) )->register();
 
 		$this->assertConditionsMet();
 	}

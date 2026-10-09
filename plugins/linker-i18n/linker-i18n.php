@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Linker i18n
- * Description:       Polylang companion for de-linker.com: same slugs, translated URL segments, translate on save, REST language, minimal WooCommerce sync.
+ * Description:       Polylang companion for de-linker.com.
  * Version:           0.1.0
  * Requires at least: 7.1
  * Requires PHP:      8.3

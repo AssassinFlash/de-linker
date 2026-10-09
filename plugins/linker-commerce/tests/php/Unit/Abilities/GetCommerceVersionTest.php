@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for the linker-commerce/get-version ability.
+ * Tests for the linker/get-commerce-version ability.
  *
  * @package Linker\Commerce
  */
@@ -9,17 +9,16 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Abilities;
 
-use Linker\Commerce\Abilities\GetVersion;
-use Linker\Commerce\Plugin;
+use Linker\Commerce\Abilities\GetCommerceVersion;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
 /**
- * Tests for GetVersion.
+ * Tests for GetCommerceVersion.
  *
- * @covers \Linker\Commerce\Abilities\GetVersion
+ * @covers \Linker\Commerce\Abilities\GetCommerceVersion
  */
-final class GetVersionTest extends TestCase {
+final class GetCommerceVersionTest extends TestCase {
 
 	private const FILE = '/srv/www/wp-content/plugins/linker-commerce/linker-commerce.php';
 
@@ -32,14 +31,13 @@ final class GetVersionTest extends TestCase {
 	}
 
 	/**
-	 * The ability is read-only, sits in the plugin's category and is exposed to REST.
+	 * The ability is read-only, takes no input and is exposed to REST.
 	 */
 	public function test_args_describe_a_read_only_rest_ability(): void {
-		$ability = new GetVersion( self::FILE );
+		$ability = new GetCommerceVersion( self::FILE );
 		$args    = $ability->args();
 
 		$this->assertSame( 'Get Linker Commerce version', $args['label'] );
-		$this->assertSame( Plugin::ABILITY_CATEGORY, $args['category'] );
 		$this->assertSame( array( $ability, 'execute' ), $args['execute_callback'] );
 		$this->assertSame( array( $ability, 'can_execute' ), $args['permission_callback'] );
 		$this->assertSame(
@@ -67,7 +65,7 @@ final class GetVersionTest extends TestCase {
 				'return' => array( 'version' => '0.1.0' ),
 			)
 		);
-		$ability = new GetVersion( self::FILE );
+		$ability = new GetCommerceVersion( self::FILE );
 		$schema  = $ability->args()['output_schema'];
 		$result  = $ability->execute();
 
@@ -95,6 +93,6 @@ final class GetVersionTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( $can_manage_options, ( new GetVersion( self::FILE ) )->can_execute() );
+		$this->assertSame( $can_manage_options, ( new GetCommerceVersion( self::FILE ) )->can_execute() );
 	}
 }
