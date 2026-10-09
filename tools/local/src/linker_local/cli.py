@@ -38,12 +38,13 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def up(args: argparse.Namespace) -> int:
+    # Everything that can refuse is checked before a new name takes ports.
+    check_name(args.name)
     php = _php()
     checkout = Checkout.here()
     registry = Registry(home())
     instance = registry.get(args.name)
     if instance is None:
-        check_name(args.name)
         _refuse_foreign(args.name)
         instance = registry.register(args.name)
     say = _sayer(instance)
