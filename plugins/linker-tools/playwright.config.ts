@@ -8,7 +8,9 @@
  */
 import { defineConfig, devices } from '@playwright/test';
 
-// Storybook's default dev-server port (`storybook dev --help`).
+// The port `storybook init` writes into the scaffolded script
+// (`storybook dev -p 6006`). Without -p, Storybook 10.6 takes a free port, and
+// the run must know the URL in advance.
 const port = 6006;
 
 export default defineConfig( {

@@ -33,7 +33,11 @@ php-install:
     fi
     composer="$(command -v composer)"
     for plugin in {{ plugins }}; do
-        (cd "plugins/$plugin" && {{ php }} "$composer" install --no-interaction --no-progress --quiet)
+        cd "{{ justfile_directory() }}/plugins/$plugin"
+        # `composer install` only warns about a composer.lock that no longer
+        # matches composer.json; `validate` fails, as `npm ci` and `uv --locked` do.
+        {{ php }} "$composer" validate --no-check-publish
+        {{ php }} "$composer" install --no-interaction --no-progress --quiet
     done
 
 [private]

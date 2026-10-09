@@ -4,6 +4,10 @@
 	"private": true,
 	"description": "Genie and Solution Configurator front-end apps for de-linker.com.",
 	"license": "UNLICENSED",
+	"//": [
+		"react, react-dom and @wordpress/{dom-ready,element,i18n}: the versions WordPress 7.1.3 ships (react 18.3.1 in wordpress-develop 7.1.3/package.json; the @wordpress packages at the Gutenberg commit it pins, dd294ab8). The build leaves them external; these copies serve tests and types.",
+		"typescript stays on 6.0: typescript-eslint 8.71.1, which @wordpress/eslint-plugin 27 uses, accepts typescript >=4.8.4 <6.1.0."
+	],
 	"engines": {
 		"node": "^22.22.2 || ^24.15.0 || >=26.0.0"
 	},
@@ -17,12 +21,12 @@
 		"lint:types": "tsc --noEmit",
 		"test:unit": "wp-scripts test-unit-js",
 		"test:e2e": "playwright test",
-		"storybook": "storybook dev --port 6006"
+		"storybook": "storybook dev"
 	},
 	"dependencies": {
-		"@wordpress/dom-ready": "^4.56.0",
-		"@wordpress/element": "^8.8.0",
-		"@wordpress/i18n": "^6.29.0",
+		"@wordpress/dom-ready": "4.51.0",
+		"@wordpress/element": "8.3.0",
+		"@wordpress/i18n": "6.24.0",
 		"react": "18.3.1",
 		"react-dom": "18.3.1"
 	},

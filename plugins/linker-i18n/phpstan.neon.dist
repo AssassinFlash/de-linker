@@ -1,14 +1,9 @@
-# PHPStan: level 8 for all code (AGENTS.md §4; WooCommerce core runs level 8,
-# docs/research/2026-10-09/framework-choice.md §6). The PHP version (8.3) comes
-# from composer.json's config.platform.php.
+# The shared plugin settings (level, stubs) live in tools/php/phpstan.neon.
 includes:
-	- vendor/szepeviktor/phpstan-wordpress/extension.neon
+	- ../../tools/php/phpstan.neon
 
 parameters:
-	level: 8
 	paths:
 		- linker-i18n.php
 		- includes
-		- tests
-	scanFiles:
-		- vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+		- tests/php

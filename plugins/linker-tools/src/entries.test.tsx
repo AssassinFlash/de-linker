@@ -9,13 +9,19 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
  */
 import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 
-// Every entry in webpack.config.js, with the title its app renders.
+/**
+ * Internal dependencies
+ */
+import webpackConfig from '../webpack.config.js';
+
+// The entries are whatever webpack.config.js builds; the titles are what the
+// test expects each app to render.
+const entries = Object.keys( webpackConfig.entry );
 const titles: Record< string, string > = {
 	genie: "Genie - Linker's AI assistant",
 	configurator: 'Solution Configurator',
 	shared: 'Linker Tools',
 };
-const entries = Object.keys( titles );
 
 function mountPoint( name: string ) {
 	return `<div data-linker-app="${ name }"></div>`;
@@ -36,6 +42,17 @@ beforeEach( () => {
 afterEach( () => {
 	resetLocaleData( {}, 'linker-tools' );
 	document.body.innerHTML = '';
+} );
+
+test( 'every built entry is src/<entry>/index.tsx and has an expected title', () => {
+	expect( webpackConfig.entry ).toEqual(
+		Object.fromEntries(
+			Object.keys( titles ).map( ( entry ) => [
+				entry,
+				`./src/${ entry }/index.tsx`,
+			] )
+		)
+	);
 } );
 
 test.each( entries )(

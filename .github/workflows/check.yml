@@ -21,23 +21,25 @@ jobs:
         php: ["8.3"]
         node: ["22"]
         python: ["3.12"]
+    # Each action is pinned to the commit of its latest release on 2026-10-09
+    # (`gh api repos/<owner>/<repo>/releases/latest`); the tag follows the SHA.
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.php }}
+          # The composer.lock files are Composer 2 locks (written with 2.9.7).
           tools: composer:v2
           coverage: none
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node }}
           cache: npm
           cache-dependency-path: plugins/linker-tools/package-lock.json
 
-      # setup-uv publishes no moving major tag after v7, so the release is named.
-      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           # The uv that wrote the uv.lock files.
           version: "0.10.11"
@@ -45,7 +47,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: services/*/uv.lock
 
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           # The just the justfile is written for.
           tool: just@1.58.0

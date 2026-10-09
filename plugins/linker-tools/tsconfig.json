@@ -10,6 +10,8 @@
 		"strict": true,
 		"noEmit": true,
 		"isolatedModules": true,
+		// Tests import webpack.config.js to read the entries it builds.
+		"allowJs": true,
 		"skipLibCheck": true
 	},
 	"include": [

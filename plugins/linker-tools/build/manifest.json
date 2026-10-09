@@ -1,7 +1,7 @@
 {
 	"sources": {
-		"package-lock.json": "8f8a651ab2a113349ee7563945f69bd1aad1a2cdf8cddac9230e4891a6360405",
-		"package.json": "183b82b577e63924b3d1db2340a465b1eca05c647b8428efa0bf0ac5516789fe",
+		"package-lock.json": "0298274b544f211b8346ac7f61cdea6c2b70ecaa9b54dc5d3df09cb687d0d68c",
+		"package.json": "838ababc7a652be40d1ffc2b16b457a28f48b64b866d505f5efa0fc041cbe30d",
 		"src/configurator/App.tsx": "1d978aa4898ad07b0a8b17e56feb518af6fc3b34e59b7edd4b79c88c76a0cc05",
 		"src/configurator/index.tsx": "f116f1a9eb6abd79cf07f6645a55185a104008f083e37f27824247b8017c2789",
 		"src/genie/App.tsx": "f5a8bc134762ef4726233a5345d6a3acc54a68a3b3c224ec8eb7f3beae0c9437",
