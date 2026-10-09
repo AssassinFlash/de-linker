@@ -14,27 +14,30 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
-from linker_local import downloads, secret, server, snapshot
+from linker_local import downloads, objectcache, secret, server, snapshot
 from linker_local.checkout import Checkout
-from linker_local.instance import SHARED, Instance
+from linker_local.instance import Instance
 from linker_local.mysql import USER, MySQL
 from linker_local.wpcli import WpCli
 
 # WordPress as on the production host: wp-includes/version.php there, read over
 # SSH on 2026-10-09 (also docs/research/2026-10-09/framework-choice.md §2).
 WORDPRESS_VERSION = "7.1.3"
-WORDPRESS_ZIP = "https://wordpress.org/wordpress-7.1.3.zip"
+WORDPRESS_ZIP = f"https://wordpress.org/wordpress-{WORDPRESS_VERSION}.zip"
 # Published next to the archive, https://wordpress.org/wordpress-7.1.3.zip.sha1
-# (read via Apify on 2026-10-09).
+# (read via Apify on 2026-10-09); a new version needs its own.
 WORDPRESS_SHA1 = "13eb1d042b1ca39224e44906cd84fe203112210c"
-# WooCommerce as on the production host: the plugin header there, read over SSH
-# on 2026-10-09. The host updates plugins by itself and moved from 11.1.0 (the
-# version in framework-choice.md §2) to 11.2.0 at 07:54 UTC that day.
+# WooCommerce as on the production host: `wp plugin get woocommerce
+# --field=version` there on 2026-10-09 (the #7 session) and the plugin header,
+# read over SSH. The host updates plugins by itself: 11.1.0 (the version in
+# framework-choice.md §2) became 11.2.0 at 07:54 UTC that day.
 WOOCOMMERCE_VERSION = "11.2.0"
-# The download link of 11.2.0 in the wordpress.org plugin API (read via Apify on
+# The download link the wordpress.org plugin API gives 11.2.0 (read via Apify on
 # 2026-10-09). wordpress.org publishes no hash of the archive; its files are
 # checked one by one against wordpress.org's checksums (`wp plugin verify-checksums`).
-WOOCOMMERCE_ZIP = "https://downloads.wordpress.org/plugin/woocommerce.11.2.0.zip"
+WOOCOMMERCE_ZIP = (
+    f"https://downloads.wordpress.org/plugin/woocommerce.{WOOCOMMERCE_VERSION}.zip"
+)
 
 ADMIN_USER = "local-admin"
 # .test is reserved and never resolves to a real mailbox (RFC 6761 §6.2, read
@@ -45,7 +48,6 @@ ADMIN_EMAIL = "local-admin@example.test"
 TABLE_PREFIX = "wp_"
 PERMALINKS = "/%postname%/"
 
-CACHE = SHARED / ".cache"
 SALTS = (
     "AUTH_KEY",
     "SECURE_AUTH_KEY",
@@ -84,7 +86,7 @@ def provision(
     mysql.create_database(instance.database)
 
     say(f"WordPress {WORDPRESS_VERSION}")
-    archive = downloads.fetch(WORDPRESS_ZIP, CACHE, sha1=WORDPRESS_SHA1)
+    archive = downloads.fetch(WORDPRESS_ZIP, sha1=WORDPRESS_SHA1)
     _extract_wordpress(archive, instance.docroot)
     server.install(instance, checkout)
     install_mu_plugins(instance, checkout)
@@ -120,10 +122,13 @@ def provision(
     )
 
     say(f"WooCommerce {WOOCOMMERCE_VERSION}")
-    woocommerce = downloads.fetch(WOOCOMMERCE_ZIP, CACHE)
+    woocommerce = downloads.fetch(WOOCOMMERCE_ZIP)
     wp.run("plugin", "install", str(woocommerce))
     wp.run("plugin", "verify-checksums", "woocommerce")
     wp.run("plugin", "activate", "woocommerce")
+
+    say(f"Redis object cache ({objectcache.PLUGIN} {objectcache.PLUGIN_VERSION})")
+    objectcache.install(wp)
 
     if snapshot_dir is not None:
         install_snapshot(instance, wp, snapshot_dir, say)
@@ -145,6 +150,12 @@ def refresh(
 ) -> None:
     """Bring a built instance to this checkout: php.ini, router, mu-plugins, plugin links."""
     _require_plugin_dependencies(checkout)
+    installed = versions(instance)
+    if installed != (WORDPRESS_VERSION, WOOCOMMERCE_VERSION):
+        say(
+            f"runs WordPress {installed[0]} / WooCommerce {installed[1]}, not the pinned "
+            f"{WORDPRESS_VERSION} / {WOOCOMMERCE_VERSION}: `just reset {instance.name}` rebuilds it"
+        )
     server.install(instance, checkout)
     install_mu_plugins(instance, checkout)
     wp = WpCli(php, instance)
@@ -258,6 +269,9 @@ def wp_config_constants(instance: Instance) -> str:
         "define( 'WP_ENVIRONMENT_TYPE', 'local' );",
         f"define( 'LINKER_LOCAL_MAIL_DIR', {_php_string(str(instance.mail_dir))} );",
         f"define( 'LINKER_LOCAL_ISOLATION_LOG', {_php_string(str(instance.isolation_log))} );",
+        "",
+        "// The Redis object cache (Redis Object Cache plugin).",
+        *objectcache.wp_config_constants(instance),
     ]
     return "\n".join(lines) + "\n"
 

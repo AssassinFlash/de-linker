@@ -178,7 +178,11 @@ def _signal_group(pid: int, sig: signal.Signals) -> None:
 
 
 def _alive(pid: int) -> bool:
-    """Whether the process exists; reaps it first when it is our own child."""
+    """Whether the process exists; reaps it first when it is our own child.
+
+    A pid that another user's process has taken since (after a restart) cannot
+    be signalled: it exists, and the start-time check tells it is not ours.
+    """
     try:
         os.waitpid(pid, os.WNOHANG)
     except ChildProcessError:
@@ -187,4 +191,6 @@ def _alive(pid: int) -> bool:
         os.kill(pid, 0)
     except ProcessLookupError:
         return False
+    except PermissionError:
+        pass  # it exists, owned by another user
     return True

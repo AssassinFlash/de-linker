@@ -9,16 +9,20 @@ import urllib.request
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from linker_local.instance import SHARED
+
 # Seconds a download may wait for data: the 600 that WP-CLI 2.12 gives its own
 # `wp core download` (core-command, Core_Command::download()).
 TIMEOUT = 600
+# One cache for the whole Mac, shared by every data root.
+CACHE = SHARED / ".cache"
 
 
 class DownloadError(RuntimeError):
     """A download failed or its content is not the expected one."""
 
 
-def fetch(url: str, cache: Path, sha1: str | None = None) -> Path:
+def fetch(url: str, cache: Path = CACHE, sha1: str | None = None) -> Path:
     """Return the cached copy of `url`, downloading it first when missing.
 
     With `sha1`, the file is checked on every call, cached or not, and a

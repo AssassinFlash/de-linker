@@ -35,3 +35,12 @@ def test_status_without_instances(
     assert main(["status"]) == 0
 
     assert capsys.readouterr().out == f"no instances in {empty_home}\n"
+
+
+def test_a_missing_snapshot_is_refused_before_anything_is_made(
+    empty_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["up", "a", "--snapshot", str(empty_home / "missing")]) == 1
+
+    assert "has none of plugins/, themes/, uploads/" in capsys.readouterr().err
+    assert list(empty_home.iterdir()) == []

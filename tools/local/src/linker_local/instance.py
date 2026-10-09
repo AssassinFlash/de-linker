@@ -34,6 +34,10 @@ def database_of(name: str) -> str:
     return DATABASE_PREFIX + name
 
 
+def directory_of(root: Path, name: str) -> Path:
+    return root / name
+
+
 def check_name(name: str) -> None:
     """Raise ValueError unless `name` can name an instance."""
     if not NAME.fullmatch(name) or len(name) > NAME_MAX_LENGTH:
@@ -63,7 +67,7 @@ class Instance:
 
     @property
     def dir(self) -> Path:
-        return self.root / self.name
+        return directory_of(self.root, self.name)
 
     @property
     def docroot(self) -> Path:

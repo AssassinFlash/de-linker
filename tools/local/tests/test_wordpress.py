@@ -102,6 +102,8 @@ def test_wp_config_names_the_instance_and_its_directory(instance: Instance) -> N
     )
     for salt in wordpress.SALTS:
         assert f"define( '{salt}', '" in extra
+    assert "define( 'WP_REDIS_PREFIX', 'linker_a:' );" in extra
+    assert "define( 'WP_REDIS_SELECTIVE_FLUSH', true );" in extra
 
 
 def test_reads_the_installed_versions(instance: Instance) -> None:

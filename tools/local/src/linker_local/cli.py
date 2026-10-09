@@ -10,9 +10,9 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 
-from linker_local import server, services, snapshot, wordpress, wpcli
+from linker_local import objectcache, server, services, snapshot, wordpress, wpcli
 from linker_local.checkout import Checkout
-from linker_local.instance import Instance, check_name, database_of, home
+from linker_local.instance import Instance, check_name, database_of, directory_of, home
 from linker_local.mysql import CREDENTIALS, MySQL
 from linker_local.registry import Registry
 from linker_local.wpcli import WpCli
@@ -42,6 +42,7 @@ def up(args: argparse.Namespace) -> int:
     if args.snapshot is not None:
         snapshot.check(args.snapshot)
     php = require_php()
+    objectcache.require_redis()
     checkout = Checkout.here()
     registry = Registry(home())
     instance = registry.get(args.name)
@@ -83,6 +84,7 @@ def reset(args: argparse.Namespace) -> int:
     if args.snapshot is not None:
         snapshot.check(args.snapshot)
     php = require_php()
+    objectcache.require_redis()
     checkout = Checkout.here()
     say = _sayer(instance)
     server.stop(instance)
@@ -235,7 +237,7 @@ def require_php() -> Path:
 
 def _refuse_foreign(name: str) -> None:
     """A new name must not take over a database or directory that something else made."""
-    directory = home() / name
+    directory = directory_of(home(), name)
     if directory.exists():
         raise RuntimeError(f"{directory} exists but is not a registered instance")
     if MySQL(CREDENTIALS).database_exists(database_of(name)):

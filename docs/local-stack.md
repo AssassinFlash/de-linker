@@ -1,13 +1,14 @@
 # 本地栈
 
-`just up <name>` 在这台 Mac 上建出一个独立的 WordPress 实例：Homebrew 的 PHP 8.3 与 MySQL、WP-CLI，WordPress 7.1.3 + WooCommerce 11.2.0（线上版本），我们的三个插件以符号链接挂入当前检出。不用 Docker，不连线上。代码在 `tools/local/`（uv 项目 `linker-local`），规格是 `docs/specs/5-local-stack.md`。
+`just up <name>` 在这台 Mac 上建出一个独立的 WordPress 实例：Homebrew 的 PHP 8.3、MySQL 与 Redis（对象缓存），WP-CLI，WordPress 7.1.3 + WooCommerce 11.2.0（线上版本），我们的三个插件以符号链接挂入当前检出。不用 Docker，不连线上。代码在 `tools/local/`（uv 项目 `linker-local`），规格是 `docs/specs/5-local-stack.md`。
 
 ## 前提（一次性）
 
 ```sh
-brew install php@8.3 mysql wp-cli uv just composer
+brew install php@8.3 mysql redis wp-cli uv just composer
 brew pin wp-cli          # WP-CLI 留在 2.12（线上的版本）；Homebrew 没有旧版本可装回
 brew services start mysql
+brew services start redis
 ```
 
 - `mysql -u root` 经本机 socket 免密码登录（Homebrew MySQL 的默认）；`linker-local` 用它建库、建用户 `linker_local`。
@@ -36,6 +37,7 @@ brew services start mysql
 | 地址 | `http://127.0.0.1:<port>`，后台 `/wp-admin/`，用户 `local-admin`，口令在 `admin.txt` |
 | 端口 | 每个实例三个：WordPress、engine、Genie；从 8888（wp-env 的默认端口）起向上取空闲端口 |
 | 数据库 | `linker_<name>`，用户 `linker_local`（口令在 `~/de-linker-local/linker_local.my.cnf`，600） |
+| 对象缓存 | Homebrew 的 Redis（`127.0.0.1:6379`，各实例共用）+ Redis Object Cache 3.0.0；键前缀 `linker_<name>:`，清缓存只清本实例的键 |
 | 目录 | `~/de-linker-local/<name>/` |
 
 ```text
@@ -60,7 +62,8 @@ brew services start mysql
 |---|---|---|
 | WordPress | 7.1.3，安装包 SHA-1 `13eb1d04…` 每次使用前核对 | 线上实测（`docs/research/2026-10-09/framework-choice.md` §2）；SHA-1 为 wordpress.org 发布的 `wordpress-7.1.3.zip.sha1` |
 | WooCommerce | 11.2.0，`wp plugin verify-checksums` 逐文件核对 wordpress.org 的校验和 | 线上插件头（2026-10-09 SSH 只读）。线上会自动更新：WooCommerce 当天 07:54 UTC 从 11.1.0 升到 11.2.0，WordPress 设了 `WP_AUTO_UPDATE_CORE = 'minor'`；本地是钉死的，线上再变时改 `tools/local/src/linker_local/wordpress.py` 的版本与地址 |
-| PHP | 8.3；`memory_limit`、`post_max_size`、`upload_max_filesize` 2048M，`max_execution_time`、`max_input_time` 360，`max_input_vars` 5000 | 主机 `~/.cl.selector/alt_php83.cfg`（2026-10-09 SSH 只读） |
+| PHP | 8.3；`memory_limit`、`post_max_size`、`upload_max_filesize` 2048M，`max_execution_time`、`max_input_time` 360，`max_input_vars` 5000 | 主机 `~/.cl.selector/alt_php83.cfg`（2026-10-09 SSH 只读）；网页请求实际生效的值由 WooCommerce 系统状态核对（同日 REST 只读：`php_max_execution_time` 360、上传与 POST 上限 2 GB、`max_input_vars` 5000）。命令行里 `max_execution_time` 是 0：PHP 的 CLI 把它固定为 0，线上与本地 WP-CLI 都一样 |
+| 对象缓存 | Redis 对象缓存 | 线上切换时启用（规格 17"主机卫生"）；本地同（规格 5） |
 | 表前缀、固定链接 | `wp_`、`/%postname%/` | 线上 `wp-config.php` 与 `permalink_structure` |
 | WP-CLI | 2.12 | 线上实测 |
 
@@ -105,9 +108,9 @@ brew services start mysql
 
 ## 测试
 
-`just test` 跑 `tools/local` 的单元测试，并用真实的 MySQL、PHP 8.3 与 WP-CLI 建两个实例 `pytesta`、`pytestb` 验证：并存、版本、路由、改写、线上的 PHP 限额、邮件截获与 Bcc、直接 `mail()` 失败、外联与重定向拦截、响应头、一次性登录、快照装入、错误快照路径先被拒绝、服务、重复 reset。共 14 个；2026-10-09 实测：机器空闲时约 90 秒，并行的工作窗口占满 CPU 时（load average 25）130–200 秒。
+`just test` 跑 `tools/local` 的单元测试，并用真实的 MySQL、PHP 8.3 与 WP-CLI 建两个实例 `pytesta`、`pytestb` 验证：并存、版本、各自的 Redis 对象缓存、路由、改写、线上的 PHP 限额、邮件截获与 Bcc、写不了信时报失败、直接 `mail()` 失败、外联与重定向拦截、响应头、一次性登录与它的 10 分钟、快照装入、错误快照路径先被拒绝、服务、重复 reset（含清掉旧缓存）。共 17 个；2026-10-09 实测：机器空闲时约 90 秒，并行的工作窗口占满 CPU 时（load average 25）130–200 秒。
 
-- 这两个实例有自己的数据根（`LINKER_LOCAL_HOME`，结束后删除），但 MySQL、缓存和端口是全机共用的：同一时间只有一组在跑，其余检出的 `just test` 在锁 `~/de-linker-local/stack-test.lock` 上等候。
+- 这两个实例有自己的数据根（`LINKER_LOCAL_HOME`，结束后删除），但 MySQL、Redis、下载缓存和端口是全机共用的：同一时间只有一组在跑，其余检出的 `just test` 在锁 `~/de-linker-local/stack-test.lock` 上等候。
 - 若真有实例叫 `pytesta` 或 `pytestb`，测试拒绝运行，免得删掉它的库。
 - CI 上没有这些工具，这组测试跳过；本机缺工具则失败。
 
@@ -119,6 +122,7 @@ brew services start mysql
 | `mysql` 报 `Can't connect … socket` | MySQL 没在跑：`brew services start mysql` |
 | `… is incomplete (an earlier up stopped part-way)` | 上次建到一半失败：`just reset <name>` |
 | `PHP 8.3 is required` | 直接运行了 `linker-local`：经 `just` 运行，或设 `PHP=/opt/homebrew/opt/php@8.3/bin/php` |
+| `Redis is not running` | `brew services start redis` |
 | `WP-CLI 2.12 is required` | `wp` 被升级或换掉了。Homebrew 没有旧版本，所以先 `brew pin wp-cli`；已经升级的，从 WP-CLI 的发布页取 2.12.0 的 phar 放到 PATH 上的 `wp` |
 | `… exists but is not a registered instance` | 这个名字的目录或数据库不是 `linker-local` 建的（例如别的窗口手搭的栈）：换个名字，或把那个目录与库移走 |
 | `vendor/ is missing` | 插件的 Composer 依赖没装：`just up` 会先装 |

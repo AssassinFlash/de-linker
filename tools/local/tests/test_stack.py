@@ -26,6 +26,7 @@ from urllib.parse import urlencode, urlsplit
 
 import pytest
 
+from linker_local import server
 from linker_local.cli import require_php
 from linker_local.instance import SHARED, Instance, database_of
 from linker_local.mysql import CREDENTIALS, MySQL
@@ -89,7 +90,9 @@ def request(
     cookie: str = "",
 ) -> Response:
     """One HTTP request to 127.0.0.1, redirects not followed, no proxy."""
-    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=60)
+    # No answer can come later than the server's own max_execution_time.
+    timeout = int(server.PRODUCTION_LIMITS["max_execution_time"])
+    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=timeout)
     try:
         headers = {"Cookie": cookie} if cookie else {}
         body = None
@@ -147,6 +150,8 @@ def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
         finally:
             for name in NAMES:
                 built.cli("down", name, check=False)
+                # Their Redis keys, once nothing serves the instance any more.
+                built.cli("wp", name, "cache", "flush", check=False)
             drop_databases()
             # Two WordPress installs; pytest would otherwise keep them with its last runs.
             shutil.rmtree(home, ignore_errors=True)
@@ -183,6 +188,22 @@ def test_both_run_the_production_versions(stack: Stack) -> None:
         assert {"woocommerce", "linker-commerce", "linker-i18n", "linker-tools"} <= set(
             statuses
         )
+
+
+def test_each_instance_has_its_own_redis_object_cache(stack: Stack) -> None:
+    a, b = (stack.instance(name) for name in NAMES)
+
+    for instance in (a, b):
+        assert "Status: Connected" in stack.wp(instance.name, "redis", "status")
+        persistent = "var_export( wp_using_ext_object_cache() );"
+        assert stack.wp(instance.name, "eval", persistent) == "true"
+    # A value outlives the WP-CLI process that set it, and stays in its instance.
+    stack.wp(a.name, "cache", "set", "linker_probe", "from a")
+    assert stack.wp(a.name, "cache", "get", "linker_probe") == "from a"
+    assert (
+        stack.cli("wp", b.name, "cache", "get", "linker_probe", check=False).returncode
+        == 1
+    )
 
 
 def test_pretty_permalinks_and_files_are_served(stack: Stack) -> None:
@@ -238,6 +259,19 @@ def test_a_form_mails_into_the_instance_instead_of_sending(
     assert stack.wp(a.name, "eval", direct) == "false"
 
 
+def test_mail_that_cannot_be_written_is_reported_as_failed(stack: Stack) -> None:
+    a = stack.instance("pytesta")
+    a.mail_dir.chmod(0o500)
+    try:
+        sent = stack.wp(
+            a.name, "eval", "var_export( wp_mail( 'sales@example.test', 'S', 'B' ) );"
+        )
+    finally:
+        a.mail_dir.chmod(0o755)
+
+    assert sent == "false"
+
+
 def test_a_captured_message_keeps_its_bcc(stack: Stack) -> None:
     a = stack.instance("pytesta")
     before = set(a.mail_dir.glob("*.eml"))
@@ -266,7 +300,7 @@ def test_wordpress_requests_reach_this_machine_only(stack: Stack) -> None:
     )
 
     assert outcome == "linker_local_blocked 200"
-    log = (b.log_dir / "isolation.log").read_text()
+    log = b.isolation_log.read_text()
     assert "\tGET\thttps://de-linker.com/\n" in log
 
 
@@ -320,7 +354,7 @@ def test_a_redirect_cannot_lead_wordpress_off_this_machine(stack: Stack) -> None
 
     assert outcome == "refused"
     assert reached == []
-    assert f"\tREDIRECT\t{target}\n" in (b.log_dir / "isolation.log").read_text()
+    assert f"\tREDIRECT\t{target}\n" in b.isolation_log.read_text()
 
 
 def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
@@ -360,6 +394,18 @@ def test_a_login_link_signs_in_once(stack: Stack) -> None:
     signed_in = request(a.port, "/wp-admin/profile.php", cookie=cookies)
     assert "/wp-login.php" not in (signed_in.headers["Location"] or "")
     assert request(a.port, link).status == 403
+
+
+def test_a_login_link_lives_ten_minutes(stack: Stack) -> None:
+    lifetime = stack.wp(
+        "pytesta",
+        "eval",
+        "add_action( 'setted_transient', function ( $name, $value, $expiration ) {"
+        " if ( str_starts_with( $name, 'linker_local_login_' ) ) { echo $expiration; } }, 10, 3 );"
+        " linker_local_login_url( 'local-admin' );",
+    )
+
+    assert lifetime == "600"
 
 
 def test_the_server_runs_with_productions_php_limits(stack: Stack) -> None:
@@ -454,7 +500,14 @@ def test_reset_rebuilds_one_instance_repeatedly_and_leaves_the_other_alone(
 
     for _ in range(2):
         stack.wp(a.name, "option", "update", "linker_probe", "before reset")
+        stack.wp(a.name, "cache", "set", "linker_probe", "before reset")
         stack.cli("reset", a.name)
+        assert (
+            stack.cli(
+                "wp", a.name, "cache", "get", "linker_probe", check=False
+            ).returncode
+            == 1
+        )
         assert (
             stack.cli(
                 "wp", a.name, "option", "get", "linker_probe", check=False

@@ -64,6 +64,19 @@ def test_a_pid_now_used_by_another_program_is_left_alone(tmp_path: Path) -> None
     assert not process.pid_file.exists()
 
 
+def test_a_pid_now_used_by_another_users_process_is_left_alone(tmp_path: Path) -> None:
+    process = background(tmp_path)
+    process.pid_file.parent.mkdir(parents=True)
+    # pid 1 is launchd (root): it exists, and this user may not signal it.
+    process.pid_file.write_text(
+        "1\nThu Jan  1 00:00:00 1970\n/opt/homebrew/opt/php@8.3/bin/php -S x\n"
+    )
+
+    assert process.pid() is None
+    assert process.stop() is False
+    assert not process.pid_file.exists()
+
+
 def test_waits_until_the_port_answers(tmp_path: Path) -> None:
     process = background(tmp_path)
     port = free_port()

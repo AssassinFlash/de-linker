@@ -1,0 +1,10 @@
+# What the three plugins share on top of phpstan.neon: WooCommerce's stubs and
+# the bootstrap of their tests (paths relative to this file).
+includes:
+	- phpstan.neon
+
+parameters:
+	paths:
+		- bootstrap.php
+	scanFiles:
+		- %rootDir%/../../php-stubs/woocommerce-stubs/woocommerce-stubs.php
