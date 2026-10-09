@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) || exit;
 
 ( static function ( string $payload ): void {
-	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- base64 keeps the request one shell word over SSH.
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- base64 lets any request JSON sit in the single-quoted literal 7-facts.py writes into this file.
 	$request  = json_decode( base64_decode( $payload ), true, 512, JSON_THROW_ON_ERROR );
 	$meta_key = $request['meta_key'];
 

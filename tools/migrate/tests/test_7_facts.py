@@ -202,3 +202,18 @@ def test_every_change_names_its_basis() -> None:
     for group in facts.GROUPS:
         for change in PLAN[group]:
             assert change["basis"] in PLAN["basis"], change
+
+
+def test_a_failed_write_stops_before_the_read_back(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    state = site_holding("from")
+    state["faults"] = ["fail-write"]
+    site = make_site(tmp_path, state)
+
+    with pytest.raises(SystemExit) as exit_info:
+        facts.main(["--wp", site.wp, "--write", "--backup-dir", str(tmp_path)])
+
+    assert str(exit_info.value.code).startswith("WP-CLI failed (255)")
+    assert "Uncaught RuntimeException" in str(exit_info.value.code)
+    assert "Read back:" not in capsys.readouterr().out

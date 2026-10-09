@@ -8,7 +8,7 @@ answers as the real file does, reading from and writing to site.json:
      "products": {"<id>": {"attributes": {"<taxonomy>": {"terms": [...], "attached": [...] | null}},
                            "figures": "<JSON object>",
                            "protected": {"<field>": ...}}},
-     "faults": ["ignore-writes" | "touch-stock"],
+     "faults": ["ignore-writes" | "touch-stock" | "fail-write"],
      "writes": [<every write request>]}
 """
 
@@ -64,6 +64,10 @@ def main() -> int:
                 str(i): site["products"].get(str(i)) for i in request["products"]
             },
         }
+    elif "fail-write" in site.get("faults", []):
+        # What WP-CLI does when 7-facts.php throws: an error, no answer.
+        print("PHP Fatal error:  Uncaught RuntimeException: refused", file=sys.stderr)
+        return 255
     else:
         write(site, request)
         site_path.write_text(json.dumps(site, ensure_ascii=False))
