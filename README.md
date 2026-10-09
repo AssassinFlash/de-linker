@@ -86,4 +86,4 @@ brew install php@8.3
 
 ### Storybook 端口
 
-`npm run storybook` 固定 `-p 6006`：这是 `storybook init` 写进脚本的默认值，端到端测试（`plugins/linker-tools/playwright.config.ts`）需要事先知道端口，所以两处一致；不带 `-p` 时 Storybook 10.6 每次取空闲端口。
+`npm run storybook` 不固定端口（Storybook 10.6 每次取空闲端口）；端到端测试由 `plugins/linker-tools/playwright.config.ts` 自己启动一个实例并固定在 6006（`--exact-port`，`reuseExistingServer: false`），所以开发中的 Storybook 与 `just test` 可以同时运行、互不占用。6006 只是 `storybook init` 的默认值，用作测试实例的已知地址。

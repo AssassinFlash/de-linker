@@ -21,7 +21,7 @@
 		"lint:types": "tsc --noEmit",
 		"test:unit": "wp-scripts test-unit-js",
 		"test:e2e": "playwright test",
-		"storybook": "storybook dev -p 6006"
+		"storybook": "storybook dev"
 	},
 	"dependencies": {
 		"@wordpress/dom-ready": "4.51.0",
