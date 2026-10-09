@@ -26,6 +26,7 @@ from urllib.parse import urlencode, urlsplit
 
 import pytest
 
+from linker_local.cli import require_php
 from linker_local.instance import SHARED, Instance, database_of
 from linker_local.mysql import CREDENTIALS, MySQL
 from linker_local.processes import port_is_free
@@ -36,32 +37,16 @@ CLI = Path(sys.executable).with_name("linker-local")
 
 
 def missing_tools() -> list[str]:
+    """What this Mac lacks for the stack: linker-local's own checks, and MySQL."""
     missing = []
-    php = os.environ.get("PHP")
-    version = (
-        subprocess.run(
-            [php, "-r", "echo PHP_MAJOR_VERSION, '.', PHP_MINOR_VERSION;"],
-            capture_output=True,
-            text=True,
-            check=False,
-        ).stdout
-        if php and shutil.which(php)
-        else ""
-    )
-    if version != "8.3":
-        missing.append("PHP 8.3 in $PHP (`just test` sets it)")
-    if shutil.which("wp") is None:
-        missing.append("WP-CLI (`wp`)")
-    if (
-        shutil.which("mysql") is None
-        or subprocess.run(
-            ["mysql", "--user=root", "--execute", "SELECT 1"],
-            capture_output=True,
-            check=False,
-        ).returncode
-        != 0
-    ):
-        missing.append("a MySQL server that `mysql -u root` reaches")
+    try:
+        require_php()  # PHP 8.3 in $PHP (`just test` sets it) and WP-CLI 2.12
+    except RuntimeError as error:
+        missing.append(str(error))
+    try:
+        MySQL(CREDENTIALS).query("SELECT 1")
+    except (OSError, RuntimeError) as error:
+        missing.append(f"a MySQL server that `mysql -u root` reaches ({error})")
     return missing
 
 
@@ -190,7 +175,7 @@ def test_both_run_the_production_versions(stack: Stack) -> None:
         assert stack.wp(name, "core", "version") == "7.1.3"
         assert (
             stack.wp(name, "plugin", "get", "woocommerce", "--field=version")
-            == "11.1.0"
+            == "11.2.0"
         )
         statuses = stack.wp(
             name, "plugin", "list", "--status=active", "--field=name"
@@ -210,6 +195,9 @@ def test_pretty_permalinks_and_files_are_served(stack: Stack) -> None:
         request(a.port, "/wp-content/plugins/linker-tools/build/shared.js").status
         == 200
     )
+    # WordPress knows the server rewrites URLs, as production's does; otherwise
+    # Settings > Permalinks would put /index.php/ in front of every structure.
+    assert stack.wp(a.name, "eval", "var_export( got_url_rewrite() );") == "true"
     # A directory is addressed with a trailing slash.
     admin = request(a.port, "/wp-admin")
     assert (admin.status, admin.headers["Location"]) == (301, "/wp-admin/")
@@ -245,6 +233,9 @@ def test_a_form_mails_into_the_instance_instead_of_sending(
     message = new.pop().read_text()
     assert "To: local-admin@example.test" in message
     assert "Subject: [Linker (local pytesta)] Password Reset" in message
+    # Mail that skips wp_mail() fails instead of reaching this Mac's sendmail.
+    direct = "var_export( mail( 'sales@example.test', 'Direct', 'Body' ) );"
+    assert stack.wp(a.name, "eval", direct) == "false"
 
 
 def test_a_captured_message_keeps_its_bcc(stack: Stack) -> None:
@@ -408,6 +399,51 @@ def test_serve_starts_the_services_and_down_stops_everything(stack: Stack) -> No
     assert all(port_is_free(port) for port in (a.port, a.engine_port, a.genie_port))
     stack.cli("up", a.name)
     assert request(a.port, "/").status == 200
+
+
+def test_a_snapshot_brings_its_plugins_themes_and_uploads(
+    stack: Stack, tmp_path: Path
+) -> None:
+    b = stack.instance("pytestb")
+    taken = tmp_path / "20261010-0900"
+    plugin = taken / "plugins" / "snapshot-fixture" / "snapshot-fixture.php"
+    theme = taken / "themes" / "snapshot-theme"
+    upload = taken / "uploads" / "2026" / "10" / "datasheet.txt"
+    for path in (plugin.parent, theme, upload.parent):
+        path.mkdir(parents=True)
+    plugin.write_text("<?php\n/**\n * Plugin Name: Snapshot fixture\n */\n")
+    (theme / "style.css").write_text("/*\nTheme Name: Snapshot theme\n*/\n")
+    (theme / "index.php").write_text("<?php\n")
+    upload.write_text("datasheet")
+
+    stack.cli("up", b.name, "--snapshot", str(taken))
+
+    assert (
+        stack.wp(b.name, "plugin", "get", "snapshot-fixture", "--field=status")
+        == "active"
+    )
+    themes = stack.wp(b.name, "theme", "list", "--field=name").split()
+    assert "snapshot-theme" in themes
+    assert (
+        stack.wp(b.name, "theme", "list", "--status=active", "--field=name")
+        != "snapshot-theme"
+    )
+    served = request(b.port, "/wp-content/uploads/2026/10/datasheet.txt")
+    assert (served.status, served.body) == (200, "datasheet")
+
+
+def test_a_wrong_snapshot_path_is_refused_before_anything_changes(
+    stack: Stack, tmp_path: Path
+) -> None:
+    a = stack.instance("pytesta")
+
+    refused = stack.cli(
+        "reset", a.name, "--snapshot", str(tmp_path / "missing"), check=False
+    )
+
+    assert refused.returncode == 1
+    assert "has none of plugins/, themes/, uploads/" in refused.stderr
+    assert request(a.port, "/").status == 200  # not reset: still built and running
 
 
 def test_reset_rebuilds_one_instance_repeatedly_and_leaves_the_other_alone(

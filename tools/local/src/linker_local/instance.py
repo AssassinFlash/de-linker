@@ -94,6 +94,11 @@ class Instance:
         return self.dir / "logs"
 
     @property
+    def isolation_log(self) -> Path:
+        """Requests the isolation mu-plugin refused, one per line."""
+        return self.log_dir / "isolation.log"
+
+    @property
     def run_dir(self) -> Path:
         return self.dir / "run"
 

@@ -37,11 +37,13 @@ def test_a_terminal_in_another_locale_and_time_zone_finds_the_process(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     process = background(tmp_path)
+    # `up` ran in one terminal ...
+    monkeypatch.setenv("LC_ALL", "en_US.UTF-8")
+    monkeypatch.setenv("TZ", "America/New_York")
     pid = process.start(SLEEPER, dict(os.environ))
     try:
-        # `up` ran in one terminal; `status` runs in another (this Mac's locale is zh_CN).
+        # ... and `status` runs in another (this Mac's own locale and time zone).
         monkeypatch.setenv("LC_ALL", "zh_CN.UTF-8")
-        monkeypatch.setenv("LANG", "zh_CN.UTF-8")
         monkeypatch.setenv("TZ", "Asia/Shanghai")
 
         assert process.pid() == pid

@@ -14,24 +14,27 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
-from linker_local import downloads, server, snapshot
+from linker_local import downloads, secret, server, snapshot
 from linker_local.checkout import Checkout
 from linker_local.instance import SHARED, Instance
 from linker_local.mysql import USER, MySQL
 from linker_local.wpcli import WpCli
 
-# WordPress and WooCommerce as on the production host (WP-CLI over SSH,
-# 2026-10-09; docs/research/2026-10-09/framework-choice.md §2).
+# WordPress as on the production host: wp-includes/version.php there, read over
+# SSH on 2026-10-09 (also docs/research/2026-10-09/framework-choice.md §2).
 WORDPRESS_VERSION = "7.1.3"
 WORDPRESS_ZIP = "https://wordpress.org/wordpress-7.1.3.zip"
 # Published next to the archive, https://wordpress.org/wordpress-7.1.3.zip.sha1
 # (read via Apify on 2026-10-09).
 WORDPRESS_SHA1 = "13eb1d042b1ca39224e44906cd84fe203112210c"
-WOOCOMMERCE_VERSION = "11.1.0"
-# The download link of 11.1.0 in the wordpress.org plugin API (read via Apify on
+# WooCommerce as on the production host: the plugin header there, read over SSH
+# on 2026-10-09. The host updates plugins by itself and moved from 11.1.0 (the
+# version in framework-choice.md §2) to 11.2.0 at 07:54 UTC that day.
+WOOCOMMERCE_VERSION = "11.2.0"
+# The download link of 11.2.0 in the wordpress.org plugin API (read via Apify on
 # 2026-10-09). wordpress.org publishes no hash of the archive; its files are
 # checked one by one against wordpress.org's checksums (`wp plugin verify-checksums`).
-WOOCOMMERCE_ZIP = "https://downloads.wordpress.org/plugin/woocommerce.11.1.0.zip"
+WOOCOMMERCE_ZIP = "https://downloads.wordpress.org/plugin/woocommerce.11.2.0.zip"
 
 ADMIN_USER = "local-admin"
 # .test is reserved and never resolves to a real mailbox (RFC 6761 §6.2, read
@@ -100,9 +103,7 @@ def provision(
         stdin=wp_config_constants(instance),
     )
     (instance.docroot / "wp-config.php").chmod(0o600)
-    # 24 characters, the length of the passwords WP-CLI generates
-    # (`wp user create`, entity-command User_Command).
-    admin_password = secrets.token_urlsafe(18)
+    admin_password = secret.password()
     wp.run(
         "core",
         "install",
@@ -255,7 +256,8 @@ def wp_config_constants(instance: Instance) -> str:
         f"define( 'WP_HOME', {_php_string(instance.url)} );",
         f"define( 'WP_SITEURL', {_php_string(instance.url)} );",
         "define( 'WP_ENVIRONMENT_TYPE', 'local' );",
-        f"define( 'LINKER_LOCAL_DIR', {_php_string(str(instance.dir))} );",
+        f"define( 'LINKER_LOCAL_MAIL_DIR', {_php_string(str(instance.mail_dir))} );",
+        f"define( 'LINKER_LOCAL_ISOLATION_LOG', {_php_string(str(instance.isolation_log))} );",
     ]
     return "\n".join(lines) + "\n"
 

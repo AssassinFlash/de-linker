@@ -99,11 +99,11 @@ php-test: php-install
     #!/usr/bin/env bash
     set -euo pipefail
     for project in {{ php_projects }}; do
-        cd "{{ justfile_directory() }}/$project"
         # tools/local has no PHPUnit suite: its mu-plugins are tested on real
-        # instances by its pytest stack tests.
-        [ -f phpunit.xml.dist ] || continue
+        # instances by its pytest stack tests. Every other project must have one.
+        if [ "$project" = tools/local ]; then continue; fi
         echo "== $project: PHPUnit"
+        cd "{{ justfile_directory() }}/$project"
         {{ php }} vendor/bin/phpunit
     done
 

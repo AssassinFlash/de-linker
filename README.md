@@ -23,7 +23,7 @@ PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插�
 | 项 | 版本 | 来源 |
 |---|---|---|
 | PHP | 8.3 | 生产主机实测 8.3.33（`docs/research/2026-10-09/framework-choice.md` §2）。写在各插件 `composer.json` 的 `config.platform.php`（PHPStan 从这里读）与 `tools/php/phpcs.xml` 的 `testVersion` |
-| WordPress / WooCommerce | 7.1 / 11.1 | 主机实测 7.1.3 / 11.1.0（§2）：插件头 `Requires at least`、`minimum_wp_version`、`php-stubs/wordpress-stubs ~7.1.0`、`php-stubs/woocommerce-stubs ~11.1.0` |
+| WordPress / WooCommerce | 7.1 / 11.2 | 主机实测 7.1.3（§2）；WooCommerce 由主机自动更新，2026-10-09 07:54 UTC 起是 11.2.0（当天 SSH 只读读插件头，§2 写的 11.1.0 是更新前测的）：插件头 `Requires at least`、`minimum_wp_version`、`php-stubs/wordpress-stubs ~7.1.0`、`php-stubs/woocommerce-stubs ~11.2.0` |
 | PHPUnit | 9.6 | WP_Mock 1.1 要求 `phpunit/phpunit ^9.6`；WordPress 与 WooCommerce 也用 9.6（§6） |
 | PHPStan | level 8 | AGENTS.md §4；WooCommerce core 用 level 8（§6）。写在 `tools/php/phpstan.neon` |
 | PHPCS | WPCS 3 + woocommerce-sniffs + PHPCompatibilityWP | AGENTS.md §4；规则集 `WooCommerce-Core` 包含三者。锁定的 PHPCompatibility 是 9.3.5（2019-12 发布，早于 PHP 8.0；woocommerce-sniffs 2.0 要求 phpcompatibility-wp ^2.1.7，后者要求 php-compatibility ^9.0），它没有 PHP 8.x 的 sniff，`testVersion 8.3-` 几乎不起作用：真正挡住新于 8.3 的语法与函数的是 PHPStan（按 `config.platform.php` 的 8.3 解析）和 CI 上的 PHP 8.3 |
@@ -69,7 +69,7 @@ brew install php@8.3
 | `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local` 的 pytest（后者含用真实 MySQL/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过） |
 | `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
-| `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.1.0，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
+| `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.2.0，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
 
 每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），锁文件与清单不一致就失败（`composer validate`、`npm ci`、`uv --locked`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）运行 `just check` 与 `just test`，再运行 `just build`，重建出的 `build/` 必须与提交的逐字节相同。
 

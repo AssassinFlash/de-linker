@@ -10,7 +10,7 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 
-from linker_local import server, services, wordpress, wpcli
+from linker_local import server, services, snapshot, wordpress, wpcli
 from linker_local.checkout import Checkout
 from linker_local.instance import Instance, check_name, database_of, home
 from linker_local.mysql import CREDENTIALS, MySQL
@@ -39,7 +39,9 @@ def main(argv: list[str] | None = None) -> int:
 def up(args: argparse.Namespace) -> int:
     # Everything that can refuse is checked before a new name takes ports.
     check_name(args.name)
-    php = _php()
+    if args.snapshot is not None:
+        snapshot.check(args.snapshot)
+    php = require_php()
     checkout = Checkout.here()
     registry = Registry(home())
     instance = registry.get(args.name)
@@ -77,7 +79,10 @@ def down(args: argparse.Namespace) -> int:
 
 def reset(args: argparse.Namespace) -> int:
     instance = _registered(args.name)
-    php = _php()
+    # Checked before anything is deleted.
+    if args.snapshot is not None:
+        snapshot.check(args.snapshot)
+    php = require_php()
     checkout = Checkout.here()
     say = _sayer(instance)
     server.stop(instance)
@@ -96,7 +101,7 @@ def reset(args: argparse.Namespace) -> int:
 def login(args: argparse.Namespace) -> int:
     instance = _built(args.name)
     # The login name travels in the environment, so no quoting puts it into PHP code.
-    url = WpCli(_php(), instance).run(
+    url = WpCli(require_php(), instance).run(
         "eval",
         "echo linker_local_login_url( (string) getenv( 'LINKER_LOCAL_LOGIN' ) );",
         env={"LINKER_LOCAL_LOGIN": args.user},
@@ -155,14 +160,16 @@ def status(args: argparse.Namespace) -> int:
 
 def serve(args: argparse.Namespace) -> int:
     instance = _built(args.name)
-    for line in services.serve(instance, Checkout.here(), WpCli(_php(), instance)):
+    for line in services.serve(
+        instance, Checkout.here(), WpCli(require_php(), instance)
+    ):
         print(f"{instance.name}: {line}")
     return 0
 
 
 def wp(args: argparse.Namespace) -> int:
     instance = _built(args.name)
-    return WpCli(_php(), instance).passthrough(args.args)
+    return WpCli(require_php(), instance).passthrough(args.args)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -205,7 +212,7 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _php() -> Path:
+def require_php() -> Path:
     """PHP 8.3 ($PHP; the justfile passes Homebrew's php@8.3), checked with WP-CLI 2.12."""
     name = os.environ.get("PHP", "php")
     found = shutil.which(name)
@@ -265,5 +272,5 @@ def _summary(instance: Instance) -> None:
         f"{instance.name}: {instance.url}/ (wp-admin: {wordpress.ADMIN_USER}, password in {instance.admin_file})"
     )
     print(
-        f"{instance.name}: mail in {instance.mail_dir}/, blocked requests in {instance.log_dir / 'isolation.log'}"
+        f"{instance.name}: mail in {instance.mail_dir}/, blocked requests in {instance.isolation_log}"
     )

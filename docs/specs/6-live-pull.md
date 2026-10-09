@@ -20,3 +20,4 @@
 
 ## 变更记录
 - 2026-10-09（#5）：快照目录写成 `plugins/<slug>/`、`themes/<slug>/`、`uploads/` 三部分；`load` 装这些文件用 #5 的 `linker_local.snapshot.install`（`tools/local`，`just up <name> --snapshot <dir>` 用的也是它），自己只做导入 SQL、`search-replace`、清缓存，不再写第二份装文件的代码。线上主题 `picostrap5`、`picostrap5-child-base` 要进快照，否则本地首页对不上线上。线上数据库是 MariaDB 11.8.9，`wp db export` 的第一行是 MySQL 客户端不认的沙箱注释，导入本地 MySQL 前去掉（`docs/local-stack.md`）。
+- 2026-10-09（#5）：`load` 先比对快照 manifest 里的 `wp core version` 与 WooCommerce 版本和实例装的是否一致，不一致就拒绝装入：线上会自动更新（WooCommerce 2026-10-09 从 11.1.0 升到 11.2.0），把新版本迁移过的库装进旧代码是降级，没有迁移路径。#5 在干净安装上无法验收的几项，在装入后验：`/products/`、`/proforma-request/` 返回 200，本地与线上首页对照截图重做一次；`/de/` 归 #9。

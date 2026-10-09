@@ -96,7 +96,10 @@ def test_wp_config_names_the_instance_and_its_directory(instance: Instance) -> N
     assert "define( 'WP_HOME', 'http://127.0.0.1:8888' );" in extra
     assert "define( 'WP_SITEURL', 'http://127.0.0.1:8888' );" in extra
     assert "define( 'WP_ENVIRONMENT_TYPE', 'local' );" in extra
-    assert f"define( 'LINKER_LOCAL_DIR', '{instance.dir}' );" in extra
+    assert f"define( 'LINKER_LOCAL_MAIL_DIR', '{instance.mail_dir}' );" in extra
+    assert (
+        f"define( 'LINKER_LOCAL_ISOLATION_LOG', '{instance.isolation_log}' );" in extra
+    )
     for salt in wordpress.SALTS:
         assert f"define( '{salt}', '" in extra
 
@@ -108,10 +111,10 @@ def test_reads_the_installed_versions(instance: Instance) -> None:
     )
     write(
         instance.wp_content / "plugins" / "woocommerce" / "woocommerce.php",
-        "<?php\n/**\n * Plugin Name: WooCommerce\n * Version: 11.1.0\n */\n",
+        "<?php\n/**\n * Plugin Name: WooCommerce\n * Version: 11.2.0\n */\n",
     )
 
-    assert wordpress.versions(instance) == ("7.1.3", "11.1.0")
+    assert wordpress.versions(instance) == ("7.1.3", "11.2.0")
 
 
 def test_reads_no_versions_from_an_empty_instance(instance: Instance) -> None:

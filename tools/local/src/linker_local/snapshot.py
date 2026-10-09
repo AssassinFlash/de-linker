@@ -23,18 +23,28 @@ class SnapshotError(RuntimeError):
     """The directory is not a snapshot this module can install."""
 
 
-def install(instance: Instance, snapshot: Path) -> list[str]:
-    """Copy the snapshot's files into the instance; return the plugin slugs."""
-    plugins, themes, uploads = (
-        snapshot / part for part in ("plugins", "themes", "uploads")
-    )
-    if not any(part.is_dir() for part in (plugins, themes, uploads)):
+def check(snapshot: Path) -> None:
+    """Raise SnapshotError unless `snapshot` is a directory install() can use.
+
+    `up` and `reset` call it first, so a mistyped path fails before an
+    instance is built or deleted.
+    """
+    parts = [snapshot / part for part in ("plugins", "themes", "uploads")]
+    if not any(part.is_dir() for part in parts):
         raise SnapshotError(f"{snapshot} has none of plugins/, themes/, uploads/")
-    for source in _directories(plugins):
+    for source in _directories(snapshot / "plugins"):
         if source.name.startswith("linker-"):
             raise SnapshotError(
                 f"{source}: linker-* plugins come from the checkout, not from a snapshot"
             )
+
+
+def install(instance: Instance, snapshot: Path) -> list[str]:
+    """Copy the snapshot's files into the instance; return the plugin slugs."""
+    check(snapshot)
+    plugins, themes, uploads = (
+        snapshot / part for part in ("plugins", "themes", "uploads")
+    )
     slugs = [
         _replace(source, instance.wp_content / "plugins")
         for source in _directories(plugins)

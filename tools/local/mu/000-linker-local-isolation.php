@@ -12,10 +12,10 @@ declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 
-// The instance directory, defined in wp-config.php by linker-local. Without it
-// there is nowhere to put mail, so the site stops instead of sending any.
-if ( ! defined( 'LINKER_LOCAL_DIR' ) ) {
-	throw new RuntimeException( 'LINKER_LOCAL_DIR is not defined; this mu-plugin belongs to an instance made by linker-local.' );
+// Where mail and refused requests go, defined in wp-config.php by linker-local.
+// Without them there is nowhere to put mail, so the site stops instead of sending any.
+if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || ! defined( 'LINKER_LOCAL_ISOLATION_LOG' ) ) {
+	throw new RuntimeException( 'LINKER_LOCAL_MAIL_DIR or LINKER_LOCAL_ISOLATION_LOG is not defined; this mu-plugin belongs to an instance made by linker-local.' );
 }
 
 add_filter( 'pre_wp_mail', 'linker_local_capture_mail', PHP_INT_MAX );
@@ -31,7 +31,7 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 
 /**
  * Lets wp_mail() build the message as usual, then hands it a mailer that writes
- * the message to LINKER_LOCAL_DIR/mail/*.eml instead of sending it.
+ * the message to LINKER_LOCAL_MAIL_DIR/*.eml instead of sending it.
  *
  * @param null|bool $pre Short-circuit value from an earlier filter; null to send.
  * @return null|bool The value unchanged.
@@ -39,7 +39,7 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 function linker_local_capture_mail( $pre ) {
 	if ( null === $pre ) {
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- wp_mail() sends through this global; replacing it is how mail stays local.
-		$GLOBALS['phpmailer'] = linker_local_mailer( LINKER_LOCAL_DIR . '/mail' );
+		$GLOBALS['phpmailer'] = linker_local_mailer( LINKER_LOCAL_MAIL_DIR );
 	}
 	return $pre;
 }
@@ -93,12 +93,17 @@ function linker_local_mailer( string $directory ) {
 		/**
 		 * Writes the message instead of sending it.
 		 *
-		 * @return bool Whether the file was written.
+		 * @return bool True; a failure throws, as PHPMailer's own sending does
+		 *              with exceptions on, so wp_mail() reports wp_mail_failed.
+		 * @throws PHPMailer\PHPMailer\Exception When the file cannot be written.
 		 */
 		public function postSend(): bool {
 			$file = sprintf( '%s/%s-%s.eml', $this->directory, gmdate( 'Ymd-His' ), wp_generate_uuid4() );
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a local file outside WP_Filesystem's scope.
-			return false !== file_put_contents( $file, $this->getSentMIMEMessage() );
+			if ( false === file_put_contents( $file, $this->getSentMIMEMessage() ) ) {
+				throw new PHPMailer\PHPMailer\Exception( esc_html( sprintf( 'Could not write %s.', $file ) ) );
+			}
+			return true;
 		}
 	};
 }
@@ -147,12 +152,12 @@ function linker_local_is_local( string $url ): bool {
 }
 
 /**
- * Appends a refused request to LINKER_LOCAL_DIR/logs/isolation.log.
+ * Appends a refused request to LINKER_LOCAL_ISOLATION_LOG.
  *
  * @param string $method HTTP method, or REDIRECT for a refused redirect.
  * @param string $url    URL.
  */
 function linker_local_log_blocked( string $method, string $url ): void {
 	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a local log outside WP_Filesystem's scope.
-	file_put_contents( LINKER_LOCAL_DIR . '/logs/isolation.log', sprintf( "%s\t%s\t%s\n", gmdate( 'c' ), $method, $url ), FILE_APPEND | LOCK_EX );
+	file_put_contents( LINKER_LOCAL_ISOLATION_LOG, sprintf( "%s\t%s\t%s\n", gmdate( 'c' ), $method, $url ), FILE_APPEND | LOCK_EX );
 }

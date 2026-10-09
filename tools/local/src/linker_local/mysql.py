@@ -7,10 +7,10 @@ which Homebrew's MySQL accepts without a password); WordPress connects as
 
 from __future__ import annotations
 
-import secrets
 import subprocess
 from pathlib import Path
 
+from linker_local import secret
 from linker_local.instance import SHARED
 
 USER = "linker_local"
@@ -68,9 +68,7 @@ class MySQL:
                 f"MySQL user {USER} exists but {self.credentials} is missing; drop the user "
                 f"(mysql -u root -e \"DROP USER '{USER}'@'localhost'\") and reset the instances"
             )
-        # 24 characters, the length of the passwords WP-CLI generates (`wp user
-        # create`); token_urlsafe() yields only [A-Za-z0-9_-], safe in the quotes below.
-        password = secrets.token_urlsafe(18)
+        password = secret.password()
         self.credentials.parent.mkdir(parents=True, exist_ok=True)
         self.credentials.touch(mode=0o600)
         self.credentials.write_text(f"[client]\nuser={USER}\npassword={password}\n")
