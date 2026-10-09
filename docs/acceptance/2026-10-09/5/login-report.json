@@ -1,0 +1,24 @@
+[
+ {
+  "width": "1440",
+  "firstStatus": 200,
+  "landed": "http://127.0.0.1:8888/wp-admin/",
+  "title": "Dashboard ‹ Linker (local a) — WordPress",
+  "scrollWidth": 1440,
+  "clientWidth": 1440,
+  "firstErrors": [],
+  "secondStatus": 403,
+  "secondText": "This login link is invalid, expired or already used."
+ },
+ {
+  "width": "390",
+  "firstStatus": 200,
+  "landed": "http://127.0.0.1:8888/wp-admin/",
+  "title": "Dashboard ‹ Linker (local a) — WordPress",
+  "scrollWidth": 390,
+  "clientWidth": 390,
+  "firstErrors": [],
+  "secondStatus": 403,
+  "secondText": "This login link is invalid, expired or already used."
+ }
+]

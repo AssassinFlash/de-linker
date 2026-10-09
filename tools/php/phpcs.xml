@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Linker plugins">
-	<description>Shared PHPCS rules of the Linker plugins: WordPress Coding Standards 3, WooCommerce sniffs and PHPCompatibilityWP.</description>
+<ruleset name="Linker PHP">
+	<description>Shared PHPCS rules of the Linker PHP projects (the plugins and tools/local): WordPress Coding Standards 3, WooCommerce sniffs and PHPCompatibilityWP.</description>
 
 	<arg name="extensions" value="php"/>
 	<arg name="colors"/>

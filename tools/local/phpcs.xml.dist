@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset name="Linker local">
+	<description>The local-only PHP of tools/local (mu-plugins, server router): the shared rules (tools/php/phpcs.xml) with this tool's prefixes.</description>
+
+	<file>mu</file>
+	<file>router.php</file>
+	<file>phpstan-bootstrap.php</file>
+
+	<rule ref="../php/phpcs.xml"/>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="Linker\Local"/>
+				<element value="linker_local"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

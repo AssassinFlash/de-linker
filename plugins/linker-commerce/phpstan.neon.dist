@@ -1,6 +1,7 @@
-# The shared plugin settings (level, stubs) live in tools/php/phpstan.neon.
+# The shared plugin settings (level, stubs, test bootstrap) live in
+# tools/php/phpstan-plugins.neon.
 includes:
-	- ../../tools/php/phpstan.neon
+	- ../../tools/php/phpstan-plugins.neon
 
 parameters:
 	paths:

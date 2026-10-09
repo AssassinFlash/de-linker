@@ -13,17 +13,17 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 | `plugins/linker-tools` | Genie 与 Solution Configurator：PHP 壳（`Linker\Tools\` → `includes/`）和 React 应用（`src/`，入口 `genie`、`configurator`、`shared`），构建产物提交在 `build/` |
 | `services/genie` | Genie 的代理循环服务（FastAPI，`linker_genie`；与 `linker-tools` 里转发请求的 PHP 代理不是一回事） |
 | `services/engine` | Solution Configurator 的引擎（FastAPI，`linker_engine`） |
-| `tools/` | just 模块（`build.just`）与三个插件共用的 PHP 工具配置（`php/`：PHPCS 规则、PHPStan 设置、PHPUnit bootstrap） |
+| `tools/` | just 模块（`build.just`）、PHP 项目共用的工具配置（`php/`：PHPCS 规则；PHPStan 设置，`phpstan.neon` 全部 PHP 项目共用，`phpstan-plugins.neon` 再加插件用的 WooCommerce stubs 与测试 bootstrap；插件的 PHPUnit bootstrap）、本地栈 `local/`（uv 项目 `linker-local`，见 `docs/local-stack.md`） |
 | `docs/` | 验收协议、各票规格（`docs/specs/`）与研究证据 |
 
-PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插件的 `phpcs.xml.dist`、`phpstan.neon.dist`、`tests/php/bootstrap.php` 只写本插件的文件、文本域与前缀，其余引用 `tools/php/`；`phpunit.xml.dist` 每个插件一份，因为 PHPUnit 9.6 的配置文件之间不能共享根元素属性。JS 单测是 `src/` 与 `bin/` 下的 `*.test.ts(x)`，端到端测试在 `plugins/linker-tools/tests/e2e/`。Python 服务是 uv 的 src 布局：规格里写作 `services/genie/retrieval.py` 的模块就是 `services/genie/src/linker_genie/retrieval.py`；包外的脚本（如 `services/genie/index/`）同样受 Ruff 与 mypy 检查（两者都对整个服务目录运行）；测试在各服务的 `tests/`。
+PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插件的 `phpcs.xml.dist`、`phpstan.neon.dist`、`tests/php/bootstrap.php` 只写本插件的文件、文本域与前缀，其余引用 `tools/php/`；`phpunit.xml.dist` 每个插件一份，因为 PHPUnit 9.6 的配置文件之间不能共享根元素属性。JS 单测是 `src/` 与 `bin/` 下的 `*.test.ts(x)`，端到端测试在 `plugins/linker-tools/tests/e2e/`。Python 服务是 uv 的 src 布局：规格里写作 `services/genie/retrieval.py` 的模块就是 `services/genie/src/linker_genie/retrieval.py`；包外的脚本（如 `services/genie/index/`）同样受 Ruff 与 mypy 检查（两者都对整个服务目录运行）；测试在各服务的 `tests/`。`tools/local` 同时是 uv 项目（`src/linker_local/`、`tests/`）与只做静态检查的 Composer 项目（实例用的 mu-plugin `mu/` 与 PHP 服务器路由 `router.php`）。
 
 ## 工具链
 
 | 项 | 版本 | 来源 |
 |---|---|---|
 | PHP | 8.3 | 生产主机实测 8.3.33（`docs/research/2026-10-09/framework-choice.md` §2）。写在各插件 `composer.json` 的 `config.platform.php`（PHPStan 从这里读）与 `tools/php/phpcs.xml` 的 `testVersion` |
-| WordPress / WooCommerce | 7.1 / 11.1 | 主机实测 7.1.3 / 11.1.0（§2）：插件头 `Requires at least`、`minimum_wp_version`、`php-stubs/wordpress-stubs ~7.1.0`、`php-stubs/woocommerce-stubs ~11.1.0` |
+| WordPress / WooCommerce | 7.1 / 11.2 | 主机实测 7.1.3（§2）；WooCommerce 由主机自动更新，2026-10-09 07:54 UTC 起是 11.2.0（当天 SSH 只读读插件头，§2 写的 11.1.0 是更新前测的）：插件头 `Requires at least`、`minimum_wp_version`、`php-stubs/wordpress-stubs ~7.1.0`、`php-stubs/woocommerce-stubs ~11.2.0` |
 | PHPUnit | 9.6 | WP_Mock 1.1 要求 `phpunit/phpunit ^9.6`；WordPress 与 WooCommerce 也用 9.6（§6） |
 | PHPStan | level 8 | AGENTS.md §4；WooCommerce core 用 level 8（§6）。写在 `tools/php/phpstan.neon` |
 | PHPCS | WPCS 3 + woocommerce-sniffs + PHPCompatibilityWP | AGENTS.md §4；规则集 `WooCommerce-Core` 包含三者。锁定的 PHPCompatibility 是 9.3.5（2019-12 发布，早于 PHP 8.0；woocommerce-sniffs 2.0 要求 phpcompatibility-wp ^2.1.7，后者要求 php-compatibility ^9.0），它没有 PHP 8.x 的 sniff，`testVersion 8.3-` 几乎不起作用：真正挡住新于 8.3 的语法与函数的是 PHPStan（按 `config.platform.php` 的 8.3 解析）和 CI 上的 PHP 8.3 |
@@ -35,6 +35,9 @@ PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插�
 | Python | 3.12 | VPS（§7）；各服务的 `.python-version` |
 | uv | 0.10.11 | 写出 `uv.lock` 的版本，CI 固定同一版本 |
 | just | 1.58 | 本机版本，CI 固定同一版本 |
+| WP-CLI | 2.12 | 生产主机实测 2.12.0（§2）；本地实例用 Homebrew 的 `wp`，在 PHP 8.3 上运行，`linker-local` 每次检查它是 2.12 |
+| MySQL | Homebrew，未固定版本（2026-10-09 为 9.6.0） | 本地实例的数据库；生产是 MariaDB 11.8.9（2026-10-09 SSH 只读），差异见 `docs/local-stack.md` |
+| Redis | Homebrew，未固定版本（2026-10-09 为 8.10.2） | 本地实例的对象缓存，配 Redis Object Cache 3.0.0；生产在切换时启用（规格 5、17） |
 
 ### 与 framework-choice.md §9 的差异
 
@@ -63,10 +66,11 @@ brew install php@8.3
 
 | 命令 | 内容 |
 |---|---|
-| `just check` | 三个插件的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务的 Ruff（lint + format）与 mypy（strict），都覆盖整个服务目录；最后 `build::check` |
-| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务的 pytest |
+| `just check` | 三个插件与 `tools/local` 的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务与 `tools/local` 的 Ruff（lint + format）与 mypy（strict），都覆盖整个项目目录；最后 `build::check` |
+| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local` 的 pytest（后者含用真实 MySQL/Redis/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过） |
 | `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
+| `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.2.0 + Redis 对象缓存，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
 
 每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），锁文件与清单不一致就失败（`composer validate`、`npm ci`、`uv --locked`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）运行 `just check` 与 `just test`，再运行 `just build`，重建出的 `build/` 必须与提交的逐字节相同。
 

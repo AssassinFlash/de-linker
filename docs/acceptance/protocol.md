@@ -12,7 +12,7 @@
 ## 3. 三件套（缺一不交付）
 **A. 代码审查**：Spec（需求与业务结果，对照票面 + 关联决议）与 Standards（职责、数据流、重复、复杂度，对照 010 工程标准）两名独立评审，看从起始提交到最新的全量 diff（含未提交）；发现项必须有位置、触发、影响；必改项清零后再全量评审一轮；无必改即停，不空转。
 **B. 自动化测试**：改动所在层的真实夹具测试，入口统一为 `just test`（PHPUnit、Vitest、Playwright、pytest 都由它调度；`just check` 跑静态检查，`just build` 与 `just build::check` 负责构建产物）；回归用例表（§5）中与本票相关的行必须有可运行断言并通过；不跑与改动无关的全量套件。
-**C. 基于 Computer Use 的视觉验收**：在真实浏览器（登录态用 `tools/magic_login.py --user 3`，不用密码）对本票触及的每个页面/状态，在 1440 与 390 两种视口、EN 与 DE 两种语言下截图并逐项核对：布局（不溢出、不遮挡、不撑高）、字体（族、字号、行高与设计稿一致）、配色（token 一致、对比度）、交互反馈（pending/success/error/retry 可见且稳定）、细节状态（空态、长文案、键盘 Tab 顺序、焦点环）。基准 = 设计稿（147 图的原型）/ 票面需求 / 交互预期；任何影响理解、操作或品牌一致性的问题在交付前修复。截图归档：`.scratch/advisor-rebuild/work/<NNN>/evidence-{local,live}/`，文件名 `<page>-<viewport>-<lang>-<state>.png`。
+**C. 基于 Computer Use 的视觉验收**：在真实浏览器（本地实例的登录态用 `just login <name> [--user <login>]` 打印的一次性链接，不用密码）对本票触及的每个页面/状态，在 1440 与 390 两种视口、EN 与 DE 两种语言下截图并逐项核对：布局（不溢出、不遮挡、不撑高）、字体（族、字号、行高与设计稿一致）、配色（token 一致、对比度）、交互反馈（pending/success/error/retry 可见且稳定）、细节状态（空态、长文案、键盘 Tab 顺序、焦点环）。基准 = 设计稿（147 图的原型）/ 票面需求 / 交互预期；任何影响理解、操作或品牌一致性的问题在交付前修复。截图归档：`docs/acceptance/<date>/<票号>/`，文件名 `<page>-<viewport>-<lang>-<state>.png`（本地与线上对照时 state 写 `local`/`live`）。
 
 ## 4. 上线与回滚
 - 顺序：b2b-core → 引擎/助手服务 → 插件壳；一个文件获得新的 require/include 时，目标先上线。
@@ -46,3 +46,4 @@
 - 工具名：Genie - Linker's AI assistant；Solution Configurator / Lösungskonfigurator。用词与 FAQ/文案规则以 AGENTS.md 为准。
 - R7 的"订单状态"改为"询盘状态"（四状态）；R1–R14 其余不变；配置器用例见票 #14。
 - 没有硬规则：协议可被证据推翻，改时写明证据。
+- §3C 的登录与截图归档改为本仓库的做法（#5）：本地登录用 `just login`；旧仓库的 `tools/magic_login.py` 要经 Code Snippets 在线上开桥，本仓库没有也不用它。截图归档 `docs/acceptance/<date>/<票号>/`，与规格 5 的验收一致。
