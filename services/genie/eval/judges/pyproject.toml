@@ -1,0 +1,37 @@
+[project]
+name = "linker-judges"
+version = "0.1.0"
+description = "#33 judge bake-off: decision and LLM judges against blind human labels (evaluation only, not runtime)."
+# Same interpreter as services/genie (docs/research/2026-10-09/framework-choice.md §7).
+requires-python = ">=3.12"
+# Standard library only: the judges are HTTP calls and the dataset builder shells out to
+# pdftotext. services/genie runs `mypy .` over this directory too, so an import that its
+# environment lacks would fail its check.
+dependencies = []
+
+[project.scripts]
+judges = "linker_judges.cli:main"
+
+[dependency-groups]
+# The versions services/genie pins for the same tools.
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[build-system]
+# Range written by `uv init --package` with uv 0.10.11, as in services/genie.
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff.lint]
+# services/genie's selection, so both checks agree on these files.
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]

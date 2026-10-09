@@ -1,0 +1,14 @@
+{
+ "judge": "lev",
+ "weights": "lev (4B) Q4_K_M",
+ "host": "chesterjohn-2.local",
+ "machine": "arm64",
+ "calls": 20,
+ "errors": 0,
+ "p50_s": 3.5083602709928527,
+ "p95_s": 4.4577412090147845,
+ "max_s": 4.966783333977219,
+ "rss_peak_mib": 910.984375,
+ "rss_last_mib": 896.828125,
+ "mem_available_min_mib": null
+}
