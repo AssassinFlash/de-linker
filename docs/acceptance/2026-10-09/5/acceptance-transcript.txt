@@ -1,9 +1,10 @@
-# e792203 2026-10-09T14:16:54Z, load: 22.14 23.88 23.90
+# 0875221 2026-10-09T14:57:17Z, load: 36.63 27.43 22.29
 $ just up a && just up b
 a: new instance on port 8888
 a: database linker_a
 a: WordPress 7.1.3
 a: WooCommerce 11.2.0
+a: Redis object cache (redis-cache 3.0.0)
 a: plugins linker-commerce, linker-i18n, linker-tools -> /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
 a: http://127.0.0.1:8888/ (wp-admin: local-admin, password in /Users/chesterjohn/de-linker-local/a/admin.txt)
 a: mail in /Users/chesterjohn/de-linker-local/a/mail/, blocked requests in /Users/chesterjohn/de-linker-local/a/logs/isolation.log
@@ -11,10 +12,11 @@ b: new instance on port 8891
 b: database linker_b
 b: WordPress 7.1.3
 b: WooCommerce 11.2.0
+b: Redis object cache (redis-cache 3.0.0)
 b: plugins linker-commerce, linker-i18n, linker-tools -> /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
 b: http://127.0.0.1:8891/ (wp-admin: local-admin, password in /Users/chesterjohn/de-linker-local/b/admin.txt)
 b: mail in /Users/chesterjohn/de-linker-local/b/mail/, blocked requests in /Users/chesterjohn/de-linker-local/b/logs/isolation.log
-( just up a && just up b; )  5.94s user 3.50s system 27% cpu 34.561 total
+( just up a && just up b; )  10.42s user 5.79s system 18% cpu 1:25.64 total
 $ just status
 name  url                    database  server   services  WordPress  Woo     checkout
 a     http://127.0.0.1:8888  linker_a  running  -         7.1.3      11.2.0  /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
@@ -23,10 +25,14 @@ $ just wp a core version
 7.1.3
 $ just wp a plugin get woocommerce --field=version
 11.2.0
+$ just wp a redis status | grep -E 'Status|Prefix'
+Status: Connected
 $ just wp b core version
 7.1.3
 $ just wp b plugin get woocommerce --field=version
 11.2.0
+$ just wp b redis status | grep -E 'Status|Prefix'
+Status: Connected
 $ routes: curl -s -o /dev/null -w "%{http_code} %{redirect_url}" http://127.0.0.1:<port><path>
 a /                    200 
 a /de/                 404 
@@ -44,48 +50,53 @@ b /shop/               200
 b /checkout/           302 http://127.0.0.1:8891/cart/
 b /cart/               200 
 b /my-account/         200 
-$ just wp a option update linker_probe before-reset && just wp b option update linker_probe b
+$ just wp a option update linker_probe before-reset; just wp a cache set linker_probe before-reset; just wp b option update linker_probe b
 Success: Updated 'linker_probe' option.
+Success: Set object 'linker_probe' in group 'default'.
 Success: Updated 'linker_probe' option.
 $ just reset a   # run 1
 a: deleting database linker_a and /Users/chesterjohn/de-linker-local/a
 a: database linker_a
 a: WordPress 7.1.3
 a: WooCommerce 11.2.0
+a: Redis object cache (redis-cache 3.0.0)
 a: plugins linker-commerce, linker-i18n, linker-tools -> /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
 a: http://127.0.0.1:8888/ (wp-admin: local-admin, password in /Users/chesterjohn/de-linker-local/a/admin.txt)
 a: mail in /Users/chesterjohn/de-linker-local/a/mail/, blocked requests in /Users/chesterjohn/de-linker-local/a/logs/isolation.log
-just reset a  6.78s user 4.77s system 52% cpu 21.794 total
-$ just wp a option get linker_probe
+just reset a  10.32s user 6.08s system 44% cpu 37.000 total
+$ just wp a option get linker_probe; just wp a cache get linker_probe
 Error: Could not get 'linker_probe' option. Does it exist?
+Error: Object with key 'linker_probe' and group 'default' not found.
 $ just reset a   # run 2
 a: deleting database linker_a and /Users/chesterjohn/de-linker-local/a
 a: database linker_a
 a: WordPress 7.1.3
 a: WooCommerce 11.2.0
+a: Redis object cache (redis-cache 3.0.0)
 a: plugins linker-commerce, linker-i18n, linker-tools -> /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
 a: http://127.0.0.1:8888/ (wp-admin: local-admin, password in /Users/chesterjohn/de-linker-local/a/admin.txt)
 a: mail in /Users/chesterjohn/de-linker-local/a/mail/, blocked requests in /Users/chesterjohn/de-linker-local/a/logs/isolation.log
-just reset a  6.26s user 4.73s system 60% cpu 18.315 total
-$ just wp a option get linker_probe
+just reset a  10.32s user 6.15s system 38% cpu 42.822 total
+$ just wp a option get linker_probe; just wp a cache get linker_probe
 Error: Could not get 'linker_probe' option. Does it exist?
+Error: Object with key 'linker_probe' and group 'default' not found.
 $ just wp b option get linker_probe
 b
 $ just status
 name  url                    database  server   services  WordPress  Woo     checkout
 a     http://127.0.0.1:8888  linker_a  running  -         7.1.3      11.2.0  /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
 b     http://127.0.0.1:8891  linker_b  running  -         7.1.3      11.2.0  /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
-$ ls ~/de-linker-local/a/mail/ | wc -l; wc -l < ~/de-linker-local/a/logs/isolation.log
+$ ls ~/de-linker-local/a/mail/ | wc -l; wc -l < isolation.log
 0
-6
+10
 $ curl -X POST "http://127.0.0.1:8888/wp-login.php?action=lostpassword" -d user_login=local-admin   # WordPress core form that sends mail
 302 -> http://127.0.0.1:8888/wp-login.php?checkemail=confirm
 $ ls ~/de-linker-local/a/mail/
-20261009-141839-f2298c65-d72e-4cd3-82c5-6c5c81900566.eml
+20261009-150050-b7ca0709-3567-41df-a8c9-c35ccb6b4e60.eml
 $ sed -n 1,9p <that .eml>
-Date: Fri, 9 Oct 2026 14:18:39 +0000
+Date: Fri, 9 Oct 2026 15:00:50 +0000
 From: WordPress <wordpress@example.test>
-Message-ID: <33BLqmLgPH7a9wmE88GqJRQnSjY0SszfnaO0ixPk@127.0.0.1>
+Message-ID: <XXfbzwAaxmGtC84Kr4WH0ClkvrJ0MqZKQchdfM5o@127.0.0.1>
 X-Mailer: PHPMailer 7.1.1 (https://github.com/PHPMailer/PHPMailer)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -97,11 +108,11 @@ $ isolation.log: lines added by the form; lines naming de-linker.com
 0
 $ cut -f2,3 ~/de-linker-local/a/logs/isolation.log | sed "s/?.*//" | sort | uniq -c   # every line: a request refused while the instance was built
    1 POST	http://api.wordpress.org/core/version-check/1.7/
-   1 POST	http://api.wordpress.org/plugins/update-check/1.1/
-   1 POST	http://api.wordpress.org/themes/update-check/1.1/
+   2 POST	http://api.wordpress.org/plugins/update-check/1.1/
+   2 POST	http://api.wordpress.org/themes/update-check/1.1/
    1 POST	https://api.wordpress.org/core/version-check/1.7/
-   1 POST	https://api.wordpress.org/plugins/update-check/1.1/
-   1 POST	https://api.wordpress.org/themes/update-check/1.1/
+   2 POST	https://api.wordpress.org/plugins/update-check/1.1/
+   2 POST	https://api.wordpress.org/themes/update-check/1.1/
 $ just wp a eval 'var_export( mail( "sales@example.test", "Direct", "Body" ) );'   # mail() past wp_mail()
 false
 
@@ -109,9 +120,9 @@ $ just wp b eval '$r = wp_remote_get( "https://de-linker.com/" ); echo is_wp_err
 linker_local_blocked
 
 $ tail -1 ~/de-linker-local/b/logs/isolation.log
-2026-10-09T14:18:41+00:00	GET	https://de-linker.com/
+2026-10-09T15:00:54+00:00	GET	https://de-linker.com/
 $ just login a
-http://127.0.0.1:8888/wp-login.php?action=linker-local-login&token=<56 hex>3ded5be1
+http://127.0.0.1:8888/wp-login.php?action=linker-local-login&token=<56 hex>861e2e05
 $ curl the link twice
 first:  302 -> http://127.0.0.1:8888/wp-admin/
 second: 403
@@ -137,7 +148,7 @@ $ just up a
 a: plugins linker-commerce, linker-i18n, linker-tools -> /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
 a: http://127.0.0.1:8888/ (wp-admin: local-admin, password in /Users/chesterjohn/de-linker-local/a/admin.txt)
 a: mail in /Users/chesterjohn/de-linker-local/a/mail/, blocked requests in /Users/chesterjohn/de-linker-local/a/logs/isolation.log
-just up a  2.40s user 1.53s system 75% cpu 5.213 total
+just up a  2.50s user 1.57s system 69% cpu 5.876 total
 $ just status
 name  url                    database  server   services  WordPress  Woo     checkout
 a     http://127.0.0.1:8888  linker_a  running  -         7.1.3      11.2.0  /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t5
