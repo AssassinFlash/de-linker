@@ -46,6 +46,8 @@ type Status =
 	| 'ready'
 	| 'looking'
 	| 'found'
+	| 'drawn'
+	| 'refused'
 	| 'none'
 	| 'unavailable'
 	| 'error';
@@ -345,9 +347,13 @@ export function RoofStep( {
 			setPlanes( ( current ) => [ ...current, drawn ] );
 			setDrawnIds( ( current ) => new Set( [ ...current, id ] ) );
 			setChosen( ( current ) => new Set( [ ...current, id ] ) );
-			setStatus( 'found' );
-		} catch {
-			setStatus( 'error' );
+			setStatus( 'drawn' );
+		} catch ( error ) {
+			setStatus(
+				error instanceof EngineError && error.kind === 'invalid'
+					? 'refused'
+					: 'error'
+			);
 		}
 	}
 
@@ -402,6 +408,11 @@ export function RoofStep( {
 					result.address
 				)
 			: __( 'Official building model found.', 'linker-tools' ),
+		drawn: __( 'The plane you drew is in the list.', 'linker-tools' ),
+		refused: __(
+			'Draw the plane on one roof: this one is too large or outside Germany.',
+			'linker-tools'
+		),
 		none: __(
 			'No building at this point. Click on a roof, or draw the plane yourself.',
 			'linker-tools'

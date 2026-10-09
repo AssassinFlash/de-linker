@@ -117,3 +117,24 @@ def test_a_hand_drawn_plane_gets_a_module_count(catalog: Catalog) -> None:
     )
     assert plane.usable and plane.modules == len(plane.module_polygons) > 0
     assert plane.kwp == pytest.approx(plane.modules * 0.46)
+
+
+def test_a_drawn_plane_outside_germany_or_beyond_a_roof_is_refused() -> None:
+    with pytest.raises(ValueError, match="greater than or equal"):
+        RoofPackRequest(
+            polygon=[(-0.1, 51.5), (-0.09, 51.5), (-0.09, 51.51)],
+            tilt_deg=30,
+            azimuth_deg=180,
+        )
+    # About 110 m x 75 m: no roof plane of a house.
+    with pytest.raises(ValueError, match="at most 3000 m²"):
+        RoofPackRequest(
+            polygon=[
+                (11.588, 48.140),
+                (11.589, 48.140),
+                (11.589, 48.141),
+                (11.588, 48.141),
+            ],
+            tilt_deg=30,
+            azimuth_deg=180,
+        )

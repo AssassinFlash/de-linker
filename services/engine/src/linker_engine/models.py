@@ -1,12 +1,13 @@
 """Request and response bodies of the HTTP API.
 
-The JSON Schemas of these models are exported to `schemas/` (see
-`linker_engine.schema_export`); the configurator validates its form against
-the exported request schema, so the rules of an input exist once.
+The JSON Schemas of the requests are exported to `schemas/api/` and into the
+configurator (scripts/export_schemas.py); the configurator validates its form
+against them, so the rules of an input exist once.
 """
 
 from __future__ import annotations
 
+import math
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -33,9 +34,17 @@ class PlaneInput(Strict):
     ]
 
 
+# Germany's extent in WGS84, rounded outwards: positions outside are typing errors.
+LATITUDE = Field(ge=47.0, le=55.2)
+LONGITUDE = Field(ge=5.8, le=15.1)
+# A drawn plane larger than this is no roof plane of a building this tool plans;
+# the bound also caps the packing work of one request.
+MAX_DRAWN_PLANE_M2 = 3000.0
+
+
 class Location(Strict):
-    latitude: Annotated[float, Field(ge=47.0, le=55.2)]
-    longitude: Annotated[float, Field(ge=5.8, le=15.1)]
+    latitude: Annotated[float, LATITUDE]
+    longitude: Annotated[float, LONGITUDE]
 
 
 class ResidentialInput(Strict):
@@ -306,11 +315,29 @@ class RoofPackRequest(Strict):
     """A roof plane drawn by hand where no official outline is available."""
 
     polygon: Annotated[
-        list[tuple[float, float]], Field(min_length=3, max_length=200)
+        list[tuple[Annotated[float, LONGITUDE], Annotated[float, LATITUDE]]],
+        Field(min_length=3, max_length=200),
     ] = Field(description="Ring as [longitude, latitude] pairs")
     tilt_deg: Annotated[float, Field(ge=0, le=90)]
     azimuth_deg: Annotated[float, Field(ge=0, lt=360)]
     locale: Locale = "en"
+
+    @model_validator(mode="after")
+    def roof_sized(self) -> RoofPackRequest:
+        # Plan area on a local equirectangular projection; exact enough for a bound.
+        mean = math.radians(sum(lat for _, lat in self.polygon) / len(self.polygon))
+        points = [
+            (lon * 111_320 * math.cos(mean), lat * 110_540) for lon, lat in self.polygon
+        ]
+        twice = sum(
+            x1 * y2 - x2 * y1
+            for (x1, y1), (x2, y2) in zip(points, points[1:] + points[:1], strict=True)
+        )
+        if abs(twice) / 2 > MAX_DRAWN_PLANE_M2:
+            raise ValueError(
+                f"a drawn plane covers at most {MAX_DRAWN_PLANE_M2:.0f} m²"
+            )
+        return self
 
 
 class RoofPlaneResult(BaseModel):

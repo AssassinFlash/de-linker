@@ -302,6 +302,12 @@
 			"No logo chosen": [ "Kein Logo ausgewählt" ],
 			"PNG or JPEG, at most 500 kB.": [
 				"PNG oder JPEG, höchstens 500 kB."
+			],
+			"The plane you drew is in the list.": [
+				"Die gezeichnete Fläche steht in der Liste."
+			],
+			"Draw the plane on one roof: this one is too large or outside Germany.": [
+				"Zeichnen Sie die Fläche auf einem einzelnen Dach ein: Diese ist zu groß oder liegt außerhalb Deutschlands."
 			]
 		}
 	}
