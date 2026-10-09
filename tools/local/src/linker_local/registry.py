@@ -10,11 +10,11 @@ from __future__ import annotations
 import fcntl
 import os
 import tomllib
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-from linker_local.instance import Instance, check_name
+from linker_local.instance import SHARED, Instance, check_name
 from linker_local.processes import port_is_free
 
 # The first port tried, wp-env's default (8888); like `wp-env --auto-port`, the
@@ -48,15 +48,14 @@ class Registry:
     def register(self, name: str) -> Instance:
         """Return the instance called `name`, allocating its ports if it is new."""
         check_name(name)
-        with self._locked():
+        with _machine_lock():
             instances = self._read()
             if name in instances:
                 return instances[name]
-            taken = {
-                port
-                for instance in instances.values()
-                for port in (instance.port, instance.engine_port, instance.genie_port)
-            }
+            taken = _ports(instances.values())
+            if self.root.resolve() != SHARED.resolve():
+                # Another data root (a test run's) still shares this Mac's ports.
+                taken |= _ports(Registry(SHARED)._read().values())
             port, engine_port, genie_port = _free_ports(3, taken)
             instances[name] = Instance(name, port, engine_port, genie_port, self.root)
             self._write(instances)
@@ -87,20 +86,30 @@ class Registry:
             lines.append(f"port = {instance.port}\n")
             lines.append(f"engine_port = {instance.engine_port}\n")
             lines.append(f"genie_port = {instance.genie_port}\n")
+        self.root.mkdir(parents=True, exist_ok=True)
         temporary = self.file.with_suffix(".toml.tmp")
         temporary.write_text("".join(lines), encoding="utf-8")
         os.replace(temporary, self.file)
 
-    @contextmanager
-    def _locked(self) -> Iterator[None]:
-        """Serialise registrations: two checkouts may run `just up` at once."""
-        self.root.mkdir(parents=True, exist_ok=True)
-        with (self.root / "instances.lock").open("w") as lock:
-            fcntl.flock(lock, fcntl.LOCK_EX)
-            try:
-                yield
-            finally:
-                fcntl.flock(lock, fcntl.LOCK_UN)
+
+@contextmanager
+def _machine_lock() -> Iterator[None]:
+    """Serialise allocations on this Mac: two checkouts may run `just up` at once."""
+    SHARED.mkdir(parents=True, exist_ok=True)
+    with (SHARED / "instances.lock").open("w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
+def _ports(instances: Iterable[Instance]) -> set[int]:
+    return {
+        port
+        for instance in instances
+        for port in (instance.port, instance.engine_port, instance.genie_port)
+    }
 
 
 def _free_ports(count: int, taken: set[int]) -> list[int]:

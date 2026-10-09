@@ -1,4 +1,4 @@
-"""The local stack end to end: real MySQL, PHP 8.3, WP-CLI and two WordPress instances.
+"""The local stack end to end: real MySQL, Redis, PHP 8.3, WP-CLI and two WordPress instances.
 
 The tests drive `linker-local` as `just` does, with a data root of their own
 and the instance names pytesta and pytestb. They need this Mac's tools
@@ -26,7 +26,7 @@ from urllib.parse import urlencode, urlsplit
 
 import pytest
 
-from linker_local import server
+from linker_local import objectcache, server
 from linker_local.cli import require_php
 from linker_local.instance import SHARED, Instance, database_of
 from linker_local.mysql import CREDENTIALS, MySQL
@@ -48,6 +48,10 @@ def missing_tools() -> list[str]:
         MySQL(CREDENTIALS).query("SELECT 1")
     except (OSError, RuntimeError) as error:
         missing.append(f"a MySQL server that `mysql -u root` reaches ({error})")
+    try:
+        objectcache.require_redis()
+    except RuntimeError as error:
+        missing.append(str(error))
     return missing
 
 
@@ -150,8 +154,8 @@ def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
         finally:
             for name in NAMES:
                 built.cli("down", name, check=False)
-                # Their Redis keys, once nothing serves the instance any more.
-                built.cli("wp", name, "cache", "flush", check=False)
+                if (instance := Registry(home).get(name)) is not None:
+                    objectcache.forget(instance)  # their Redis keys
             drop_databases()
             # Two WordPress installs; pytest would otherwise keep them with its last runs.
             shutil.rmtree(home, ignore_errors=True)
@@ -497,6 +501,7 @@ def test_reset_rebuilds_one_instance_repeatedly_and_leaves_the_other_alone(
 ) -> None:
     a, b = (stack.instance(name) for name in NAMES)
     stack.wp(b.name, "option", "update", "linker_probe", "b")
+    stack.wp(b.name, "cache", "set", "linker_probe", "b")
 
     for _ in range(2):
         stack.wp(a.name, "option", "update", "linker_probe", "before reset")
@@ -518,4 +523,6 @@ def test_reset_rebuilds_one_instance_repeatedly_and_leaves_the_other_alone(
         assert request(a.port, "/").status == 200
 
     assert stack.wp(b.name, "option", "get", "linker_probe") == "b"
+    # Building a never empties the shared Redis database: b's cached key survives.
+    assert stack.wp(b.name, "cache", "get", "linker_probe") == "b"
     assert request(b.port, "/").status == 200

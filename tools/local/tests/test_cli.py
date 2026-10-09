@@ -1,8 +1,12 @@
+import socket
+import sys
 from pathlib import Path
 
 import pytest
 
+from linker_local import cli, objectcache
 from linker_local.cli import main
+from linker_local.registry import Registry
 
 
 @pytest.fixture(autouse=True)
@@ -44,3 +48,37 @@ def test_a_missing_snapshot_is_refused_before_anything_is_made(
 
     assert "has none of plugins/, themes/, uploads/" in capsys.readouterr().err
     assert list(empty_home.iterdir()) == []
+
+
+@pytest.fixture
+def redis_down(monkeypatch: pytest.MonkeyPatch) -> None:
+    """PHP is there, Redis is not."""
+    monkeypatch.setattr(cli, "require_php", lambda: Path(sys.executable))
+    with socket.create_server(("127.0.0.1", 0)) as probe:
+        unused = probe.getsockname()[1]
+    monkeypatch.setattr(objectcache, "REDIS_PORT", unused)
+
+
+def test_without_redis_up_registers_nothing(
+    empty_home: Path, redis_down: None, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["up", "a"]) == 1
+
+    assert "Redis is not running" in capsys.readouterr().err
+    assert Registry(empty_home).all() == []
+
+
+def test_without_redis_reset_deletes_nothing(
+    empty_home: Path, redis_down: None, capsys: pytest.CaptureFixture[str]
+) -> None:
+    (empty_home / "instances.toml").write_text(
+        "[a]\nport = 1\nengine_port = 2\ngenie_port = 3\n"
+    )
+    kept = empty_home / "a" / "wordpress" / "index.php"
+    kept.parent.mkdir(parents=True)
+    kept.write_text("<?php")
+
+    assert main(["reset", "a"]) == 1
+
+    assert "Redis is not running" in capsys.readouterr().err
+    assert kept.exists()

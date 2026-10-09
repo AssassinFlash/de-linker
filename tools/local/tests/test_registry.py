@@ -6,6 +6,14 @@ from linker_local import registry
 from linker_local.registry import FIRST_PORT, Registry
 
 
+@pytest.fixture(autouse=True)
+def machine(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """A stand-in for ~/de-linker-local, the machine's own registry and lock."""
+    shared = tmp_path / "machine"
+    monkeypatch.setattr(registry, "SHARED", shared)
+    return shared
+
+
 @pytest.fixture
 def busy(monkeypatch: pytest.MonkeyPatch) -> set[int]:
     """Ports the fake port_is_free() reports as in use, so tests ignore this Mac's ports."""
@@ -75,3 +83,16 @@ def test_refuses_a_name_that_cannot_name_a_database(
     with pytest.raises(ValueError):
         Registry(tmp_path).register("Bad-Name")
     assert not (tmp_path / "instances.toml").exists()
+
+
+def test_another_data_root_avoids_the_ports_of_this_macs_instances(
+    tmp_path: Path, machine: Path, busy: set[int]
+) -> None:
+    real = Registry(machine).register("a")  # registered, its server stopped
+
+    test = Registry(tmp_path / "test-root").register("pytesta")
+
+    assert {test.port, test.engine_port, test.genie_port}.isdisjoint(
+        {real.port, real.engine_port, real.genie_port}
+    )
+    assert test.port == FIRST_PORT + 3

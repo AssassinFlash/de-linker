@@ -10,7 +10,7 @@
   - `down <name>`、`reset <name>`（删库删目录重建）、`login <name>`（生成一次性登录链接：WP-CLI `wp user session create` 不存在，用 `wp eval` 生成带 nonce 的临时自动登录 token，10 分钟过期，用后即删）、`status`。
   - `serve`：以 uv 启动 `services/engine`（端口按实例分配）与 `services/genie`，并用 `wp option update` 把地址写入实例。
 - 隔离 mu-plugin（`tools/local/mu/000-linker-local-isolation.php`）：`wp_mail` 改为写入实例目录 `mail/*.eml`（本地邮件捕获）；`pre_http_request` 只放行 127.0.0.1（重定向同样只许 127.0.0.1），拦下的记入隔离日志；CSP 放行本机端口；把站点标为 noindex。
-- `docs/local-stack.md`：安装前提（`brew install php@8.3 mysql`）、命令、目录、常见故障。
+- `docs/local-stack.md`：安装前提（`brew install php@8.3 mysql redis wp-cli uv just composer`）、命令、目录、常见故障。
 
 ## 不做
 不做多机复现；不做 Docker；不改线上。
@@ -33,3 +33,4 @@
 - 2026-10-09（#5，评审后）：快照接口另装 `themes/<slug>/`（只复制，启用哪个由数据库定）：线上主题 `picostrap5` / `picostrap5-child-base` 不在规格 6 的四个许可插件里，没有它们，装入线上数据库后的本地首页也对不上线上（规格 6 的变更记录同步）。
 - 2026-10-09（#5，第二轮评审）：WooCommerce 改钉 11.2.0。线上会自动更新插件，WooCommerce 在 2026-10-09 07:54 UTC 从 11.1.0 升到 11.2.0（线上插件头与 `woocommerce_db_version`，SSH 只读）；11.1.0 是更新前测的（framework-choice.md §2）。WordPress 仍是 7.1.3（线上设了 `WP_AUTO_UPDATE_CORE = 'minor'`）。插件与 `tools/local` 的 `php-stubs/woocommerce-stubs` 同步改为 `~11.2.0`。线上再自动更新时，改 `tools/local/src/linker_local/wordpress.py` 的版本与地址。
 - 2026-10-09（#5，第三轮评审，接 #35）：本地 Redis 对象缓存：Homebrew `redis` + wordpress.org 的 Redis Object Cache 3.0.0（`verify-checksums` 核对），每实例 `WP_REDIS_PREFIX = linker_<name>:` 与 `WP_REDIS_SELECTIVE_FLUSH`，建实例时 `wp redis enable` 后清本前缀，reset 后读不到旧库留下的键。`max_execution_time` 保留 360，不取 #35 写的 0：线上网页请求的值是 360（WooCommerce 系统状态 `php_max_execution_time`，2026-10-09 REST 只读；`~/.cl.selector/alt_php83.cfg` 同为 360）；0 是命令行里的值，PHP 的 CLI 把它固定为 0，本地 WP-CLI 也是 0。WooCommerce 11.2.0 的来源另记：2026-10-09 线上 `wp plugin get woocommerce --field=version`（#7 执行会话）。
+- 2026-10-09（#5，第四轮评审）：Redis Object Cache 的 `wp redis enable`（以及 `disable`、`update-dropin`、后台按钮、停用插件）执行 FLUSHDB，清空共用的第 0 号库、连带别的实例；所以建实例时先只删本前缀的键，再自己复制插件的 `object-cache.php`，不用这些命令。端口登记：任何数据根（包括测试的）分配端口时都避开 `~/de-linker-local/instances.toml` 里登记的端口，并共用同一把机器锁。

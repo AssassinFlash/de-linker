@@ -21,8 +21,8 @@ from linker_local.wpcli import WpCli
 PHP_VERSION = "8.3"
 
 # Failures the user can act on, printed as one line. Every error class of this
-# package (DownloadError, MySQLError, ProcessError, SnapshotError, WpCliError)
-# is a RuntimeError; ValueError is a bad instance name.
+# package (DownloadError, MySQLError, ProcessError, RedisError, SnapshotError,
+# WpCliError) is a RuntimeError; ValueError is a bad instance name.
 ERRORS = (RuntimeError, ValueError, subprocess.CalledProcessError)
 
 
@@ -39,11 +39,7 @@ def main(argv: list[str] | None = None) -> int:
 def up(args: argparse.Namespace) -> int:
     # Everything that can refuse is checked before a new name takes ports.
     check_name(args.name)
-    if args.snapshot is not None:
-        snapshot.check(args.snapshot)
-    php = require_php()
-    objectcache.require_redis()
-    checkout = Checkout.here()
+    php, checkout = _preconditions(args.snapshot)
     registry = Registry(home())
     instance = registry.get(args.name)
     if instance is None:
@@ -80,12 +76,7 @@ def down(args: argparse.Namespace) -> int:
 
 def reset(args: argparse.Namespace) -> int:
     instance = _registered(args.name)
-    # Checked before anything is deleted.
-    if args.snapshot is not None:
-        snapshot.check(args.snapshot)
-    php = require_php()
-    objectcache.require_redis()
-    checkout = Checkout.here()
+    php, checkout = _preconditions(args.snapshot)  # before anything is deleted
     say = _sayer(instance)
     server.stop(instance)
     services.stop(instance)
@@ -102,6 +93,8 @@ def reset(args: argparse.Namespace) -> int:
 
 def login(args: argparse.Namespace) -> int:
     instance = _built(args.name)
+    # The token is a transient, which lives in Redis once the object cache is on.
+    objectcache.require_redis()
     # The login name travels in the environment, so no quoting puts it into PHP code.
     url = WpCli(require_php(), instance).run(
         "eval",
@@ -136,7 +129,7 @@ def status(args: argparse.Namespace) -> int:
         )
     ]
     for instance in instances:
-        core, woocommerce = wordpress.versions(instance)
+        found = wordpress.versions(instance)
         checkout = wordpress.linked_checkout(instance)
         rows.append(
             (
@@ -145,8 +138,8 @@ def status(args: argparse.Namespace) -> int:
                 instance.database,
                 "running" if server.process(instance).pid() else "stopped",
                 ", ".join(services.running(instance)) or "-",
-                core or "-",
-                woocommerce or "-",
+                found["WordPress"] or "-",
+                found["WooCommerce"] or "-",
                 str(checkout) if checkout else "-",
             )
         )
@@ -233,6 +226,17 @@ def require_php() -> Path:
         )
     wpcli.require_version(Path(found))
     return Path(found)
+
+
+def _preconditions(snapshot_dir: Path | None) -> tuple[Path, Checkout]:
+    """What up and reset need, checked before they register, build or delete anything."""
+    if snapshot_dir is not None:
+        snapshot.check(snapshot_dir)
+    php = require_php()
+    objectcache.require_redis()
+    checkout = Checkout.here()
+    wordpress.require_plugin_dependencies(checkout)
+    return php, checkout
 
 
 def _refuse_foreign(name: str) -> None:

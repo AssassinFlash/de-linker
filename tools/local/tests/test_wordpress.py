@@ -115,9 +115,13 @@ def test_reads_the_installed_versions(instance: Instance) -> None:
         instance.wp_content / "plugins" / "woocommerce" / "woocommerce.php",
         "<?php\n/**\n * Plugin Name: WooCommerce\n * Version: 11.2.0\n */\n",
     )
+    write(
+        instance.wp_content / "plugins" / "redis-cache" / "redis-cache.php",
+        "<?php\n/**\n * Plugin Name: Redis Object Cache\n * Version: 3.0.0\n */\n",
+    )
 
-    assert wordpress.versions(instance) == ("7.1.3", "11.2.0")
+    assert wordpress.versions(instance) == wordpress.PINNED
 
 
 def test_reads_no_versions_from_an_empty_instance(instance: Instance) -> None:
-    assert wordpress.versions(instance) == (None, None)
+    assert set(wordpress.versions(instance).values()) == {None}

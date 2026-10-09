@@ -39,6 +39,13 @@ WOOCOMMERCE_ZIP = (
     f"https://downloads.wordpress.org/plugin/woocommerce.{WOOCOMMERCE_VERSION}.zip"
 )
 
+# What versions() compares an instance with.
+PINNED = {
+    "WordPress": WORDPRESS_VERSION,
+    "WooCommerce": WOOCOMMERCE_VERSION,
+    "Redis Object Cache": objectcache.PLUGIN_VERSION,
+}
+
 ADMIN_USER = "local-admin"
 # .test is reserved and never resolves to a real mailbox (RFC 6761 §6.2, read
 # via Apify on 2026-10-09).
@@ -71,7 +78,6 @@ def provision(
     snapshot_dir: Path | None = None,
 ) -> None:
     """Create the instance's database and files; the instance must not exist yet."""
-    _require_plugin_dependencies(checkout)
     for directory in (
         instance.dir,
         instance.mail_dir,
@@ -128,7 +134,7 @@ def provision(
     wp.run("plugin", "activate", "woocommerce")
 
     say(f"Redis object cache ({objectcache.PLUGIN} {objectcache.PLUGIN_VERSION})")
-    objectcache.install(wp)
+    objectcache.install(instance, wp)
 
     if snapshot_dir is not None:
         install_snapshot(instance, wp, snapshot_dir, say)
@@ -149,12 +155,15 @@ def refresh(
     snapshot_dir: Path | None = None,
 ) -> None:
     """Bring a built instance to this checkout: php.ini, router, mu-plugins, plugin links."""
-    _require_plugin_dependencies(checkout)
     installed = versions(instance)
-    if installed != (WORDPRESS_VERSION, WOOCOMMERCE_VERSION):
+    if installed != PINNED:
+        drift = ", ".join(
+            f"{name} {installed[name]} (pinned {PINNED[name]})"
+            for name in PINNED
+            if installed[name] != PINNED[name]
+        )
         say(
-            f"runs WordPress {installed[0]} / WooCommerce {installed[1]}, not the pinned "
-            f"{WORDPRESS_VERSION} / {WOOCOMMERCE_VERSION}: `just reset {instance.name}` rebuilds it"
+            f"runs {drift}: `just reset {instance.name}` rebuilds it with the pinned versions"
         )
     server.install(instance, checkout)
     install_mu_plugins(instance, checkout)
@@ -204,21 +213,25 @@ def linked_checkout(instance: Instance) -> Path | None:
     return None
 
 
-def versions(instance: Instance) -> tuple[str | None, str | None]:
-    """WordPress and WooCommerce versions read from the instance's files."""
-    return (
-        _first_match(
+def versions(instance: Instance) -> dict[str, str | None]:
+    """The pinned packages' versions as the instance's files state them."""
+    plugins = instance.wp_content / "plugins"
+    return {
+        "WordPress": _first_match(
             instance.docroot / "wp-includes" / "version.php",
             r"\$wp_version = '([^']+)'",
         ),
-        _first_match(
-            instance.wp_content / "plugins" / "woocommerce" / "woocommerce.php",
-            r"\* Version: (\S+)",
+        "WooCommerce": _first_match(
+            plugins / "woocommerce" / "woocommerce.php", r"\* Version: (\S+)"
         ),
-    )
+        "Redis Object Cache": _first_match(
+            plugins / objectcache.PLUGIN / "redis-cache.php", r"\* Version: (\S+)"
+        ),
+    }
 
 
-def _require_plugin_dependencies(checkout: Checkout) -> None:
+def require_plugin_dependencies(checkout: Checkout) -> None:
+    """Fail unless our plugins' Composer dependencies are installed (they load vendor/autoload.php)."""
     missing = [
         p.name
         for p in checkout.plugins()

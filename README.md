@@ -67,7 +67,7 @@ brew install php@8.3
 | 命令 | 内容 |
 |---|---|
 | `just check` | 三个插件与 `tools/local` 的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务与 `tools/local` 的 Ruff（lint + format）与 mypy（strict），都覆盖整个项目目录；最后 `build::check` |
-| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local` 的 pytest（后者含用真实 MySQL/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过） |
+| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local` 的 pytest（后者含用真实 MySQL/Redis/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过） |
 | `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
 | `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.2.0 + Redis 对象缓存，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
