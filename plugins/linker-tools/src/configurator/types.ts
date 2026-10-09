@@ -155,6 +155,7 @@ export interface ResidentialInput {
 	pv_kwp: number;
 	planes?: PlaneInput[];
 	location?: { latitude: number; longitude: number };
+	roof_source?: 'lod2' | 'drawn';
 	phase: 1 | 3;
 	backup: 'none' | 'needed' | 'needed_accessory_ok';
 	backup_load_kw?: number;

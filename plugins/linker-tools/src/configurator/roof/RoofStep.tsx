@@ -37,6 +37,7 @@ import {
 	facingName,
 	outlineFeatures,
 	planeFeatures,
+	roofSource,
 	totals,
 } from './geometry';
 
@@ -80,6 +81,7 @@ export function RoofStep( {
 	const [ result, setResult ] = useState< RoofResult | null >( null );
 	const [ planes, setPlanes ] = useState< RoofPlane[] >( [] );
 	const [ chosen, setChosen ] = useState< Set< number > >( new Set() );
+	const [ drawnIds, setDrawnIds ] = useState< Set< number > >( new Set() );
 	const [ clicked, setClicked ] = useState< {
 		latitude: number;
 		longitude: number;
@@ -341,6 +343,7 @@ export function RoofStep( {
 			const id = Math.max( 0, ...planes.map( ( p ) => p.id ) ) + 100;
 			const drawn = { ...plane, id };
 			setPlanes( ( current ) => [ ...current, drawn ] );
+			setDrawnIds( ( current ) => new Set( [ ...current, id ] ) );
 			setChosen( ( current ) => new Set( [ ...current, id ] ) );
 			setStatus( 'found' );
 		} catch {
@@ -381,6 +384,7 @@ export function RoofStep( {
 			} ) ),
 			location: position,
 			address: result?.address ?? null,
+			source: roofSource( sum.planes, drawnIds ),
 		} );
 	}
 

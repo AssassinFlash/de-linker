@@ -137,3 +137,40 @@ def test_the_pdf_prints_the_address_of_each_linked_document(engine: Engine) -> N
     text = text_of(pdf.render(build(engine, "en")))
     assert "GW_ESA-5-30kW_Datasheet-EN.pdf" in text
     assert "https://de-linker.com/wp-content/uploads/2026/09/" in text.replace("\n", "")
+
+
+def test_roof_planes_from_lod2_are_credited_under_the_states_licence(
+    engine: Engine,
+) -> None:
+    request = ResidentialInput.model_validate(
+        {
+            "plz": "80538",
+            "annual_kwh": 5000,
+            "pv_kwp": 6.44,
+            "phase": 3,
+            # One plane at the cached PVGIS orientation: the row, not the yield, is tested.
+            "planes": [{"kwp": 6.44, "tilt_deg": 35, "azimuth_deg": 180}],
+            "roof_source": "lod2",
+        }
+    )
+    built = report.residential(
+        residential.design(engine, request), "2026-10-09T12:00:00Z"
+    )
+    site = {row.label: row.value for row in built.sections[0].rows}
+    assert site["Roof planes"] == (
+        "From the state's official LoD2 building model, "
+        "CC BY 4.0 (Bayerische Vermessungsverwaltung)"
+    )
+
+
+def test_roof_source_needs_planes() -> None:
+    with pytest.raises(ValueError, match="roof_source"):
+        ResidentialInput.model_validate(
+            {
+                "plz": "80538",
+                "annual_kwh": 5000,
+                "pv_kwp": 10,
+                "phase": 3,
+                "roof_source": "lod2",
+            }
+        )

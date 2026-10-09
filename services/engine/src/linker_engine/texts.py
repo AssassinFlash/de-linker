@@ -365,10 +365,12 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Vorjahres bei ihm an.",
     ),
     "pdf.footer": (
-        "Linker Solution Configurator · de-linker.com · Yield: PVGIS © European Union · "
-        "Self-sufficiency: HTW Berlin · Postcodes: GeoNames (CC BY 4.0)",
-        "Linker Lösungskonfigurator · de-linker.com · Ertrag: PVGIS © Europäische Union · "
-        "Autarkie: HTW Berlin · Postleitzahlen: GeoNames (CC BY 4.0)",
+        "Linker Solution Configurator · de-linker.com",
+        "Linker Lösungskonfigurator · de-linker.com",
+    ),
+    "pdf.credits": (
+        "Yield: PVGIS © European Union · Self-sufficiency: HTW Berlin · Postcodes: GeoNames (CC BY 4.0)",
+        "Ertrag: PVGIS © Europäische Union · Autarkie: HTW Berlin · Postleitzahlen: GeoNames (CC BY 4.0)",
     ),
     # Report ------------------------------------------------------------------------
     "report.title": ("Design report", "Auslegungsbericht"),
@@ -401,6 +403,12 @@ _TEXTS: dict[str, tuple[str, str]] = {
     ),
     "row.array": ("PV array", "PV-Generator"),
     "row.plane": ("Roof plane {index}", "Dachfläche {index}"),
+    "row.roof_source": ("Roof planes", "Dachflächen"),
+    "row.roof_lod2": (
+        "From the state's official LoD2 building model, {licence}",
+        "Aus dem amtlichen LoD2-Gebäudemodell des Landes, {licence}",
+    ),
+    "row.roof_drawn": ("Drawn on the aerial image", "Im Luftbild eingezeichnet"),
     "row.plane_value": (
         "{kwp} kWp, tilt {tilt}°, facing {azimuth}°",
         "{kwp} kWp, Neigung {tilt}°, Ausrichtung {azimuth}°",

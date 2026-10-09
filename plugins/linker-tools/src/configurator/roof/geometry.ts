@@ -118,3 +118,19 @@ export function totals( planes: RoofPlane[], chosen: Set< number > ) {
 		planes: picked,
 	};
 }
+
+/**
+ * Where the chosen planes come from: one official LoD2 plane makes the roof
+ * official data, which the report credits under the state's licence.
+ *
+ * @param picked The chosen planes.
+ * @param drawn  Ids of the planes the user drew.
+ */
+export function roofSource(
+	picked: RoofPlane[],
+	drawn: Set< number >
+): 'lod2' | 'drawn' {
+	return picked.some( ( plane ) => ! drawn.has( plane.id ) )
+		? 'lod2'
+		: 'drawn';
+}

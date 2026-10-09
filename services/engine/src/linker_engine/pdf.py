@@ -212,7 +212,9 @@ def render(report: Report, logo: str | None = None) -> bytes:
         subject=report.subtitle,
         lang=report.locale,
     )
-    width = A4[0] - 2 * margin
+    # The frame of SimpleDocTemplate keeps 6 pt of padding on either side.
+    padding = 6
+    width = document.width - 2 * padding
     heading: list[Flowable] = [
         Paragraph(_escape(report.title), styles["title"]),
         Paragraph(_escape(report.subtitle), styles["subtitle"]),
@@ -244,13 +246,16 @@ def render(report: Report, logo: str | None = None) -> bytes:
         story += _section(section, styles, width)
 
     footer = t("pdf.footer", report.locale)
+    credits = t("pdf.credits", report.locale)
 
     def page(canvas: object, doc: object) -> None:
         canvas.saveState()  # type: ignore[attr-defined]
         canvas.setFont("Vera", 7)  # type: ignore[attr-defined]
         canvas.setFillColor(MUTED)  # type: ignore[attr-defined]
-        canvas.drawString(margin, 10 * mm, footer)  # type: ignore[attr-defined]
-        canvas.drawRightString(A4[0] - margin, 10 * mm, str(doc.page))  # type: ignore[attr-defined]
+        left, right = margin + padding, A4[0] - margin - padding
+        canvas.drawString(left, 13 * mm, footer)  # type: ignore[attr-defined]
+        canvas.drawRightString(right, 13 * mm, str(doc.page))  # type: ignore[attr-defined]
+        canvas.drawString(left, 9.5 * mm, credits)  # type: ignore[attr-defined]
         canvas.restoreState()  # type: ignore[attr-defined]
 
     document.build(story, onFirstPage=page, onLaterPages=page)

@@ -56,6 +56,11 @@ class ResidentialInput(Strict):
         default=None,
         description="The roof's position from the roof step; otherwise the PLZ centre.",
     )
+    roof_source: Literal["lod2", "drawn"] | None = Field(
+        default=None,
+        description="Where the planes come from: the state's official LoD2 building model "
+        "(the report credits it under its licence) or drawn by hand on the aerial image.",
+    )
     phase: Literal[1, 3]
     backup: Backup = "none"
     backup_load_kw: Annotated[float, Field(gt=0, le=50)] | None = None
@@ -74,6 +79,8 @@ class ResidentialInput(Strict):
     def planes_add_up(self) -> ResidentialInput:
         if self.planes and abs(sum(p.kwp for p in self.planes) - self.pv_kwp) > 0.01:
             raise ValueError("the planes' kWp must add up to pv_kwp")
+        if self.roof_source and not self.planes:
+            raise ValueError("roof_source describes planes; send the planes with it")
         return self
 
 

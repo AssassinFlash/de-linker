@@ -113,6 +113,23 @@
 			"default": null,
 			"description": "The roof's position from the roof step; otherwise the PLZ centre."
 		},
+		"roof_source": {
+			"anyOf": [
+				{
+					"enum": [
+						"lod2",
+						"drawn"
+					],
+					"type": "string"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"description": "Where the planes come from: the state's official LoD2 building model (the report credits it under its licence) or drawn by hand on the aerial image.",
+			"title": "Roof Source"
+		},
 		"phase": {
 			"enum": [
 				1,

@@ -14,6 +14,7 @@ from urllib.parse import unquote, urlsplit
 from . import rules
 from .models import Line, Report, ReportRow, ReportSection, ReportTable, RuleResult
 from .residential import Design
+from .roof import lod2
 from .texts import Locale, fmt, t, tn
 
 # Rules whose value the report can state without a source; listed under assumptions.
@@ -37,6 +38,16 @@ def _range(
     if round(low, 2) == round(high, 2):
         return f"{fmt(low, locale)} {unit}".strip()
     return f"{fmt(low, locale)} – {fmt(high, locale)} {unit}".strip()
+
+
+def _roof_source(source: str | None, state: str, locale: Locale) -> str | None:
+    """Where the roof planes come from; LoD2 data is credited under the state's licence."""
+    if source == "drawn":
+        return t("row.roof_drawn", locale)
+    known = lod2.sources().get(state)
+    if source == "lod2" and known:
+        return t("row.roof_lod2", locale, licence=known["license"])
+    return None
 
 
 def _file_name(url: str) -> str:
@@ -116,6 +127,9 @@ def residential(design: Design, generated_at: str) -> Report:
                 ),
             )
         )
+    roof = _roof_source(request.roof_source, design.place.state, locale)
+    if roof:
+        site.append(ReportRow(label=t("row.roof_source", locale), value=roof))
     site += [
         ReportRow(
             label=t("row.phase", locale),

@@ -231,6 +231,12 @@
 	padding-right: 3.5rem;
 }
 
+/* A value the app sets (the PV array from the roof step) reads as set. */
+.linker-configurator input[readonly] {
+	background: var(--proto-neutral-50, #f7f8f8);
+	border-style: dashed;
+}
+
 .linker-field__unit {
 	position: absolute;
 	right: 0.75rem;
@@ -537,6 +543,12 @@
 
 .linker-table__line {
 	display: block;
+}
+
+/* An action in a row sits on the row's text line, still 24 px tall to tap. */
+.linker-table .linker-button {
+	min-height: 1.5rem;
+	padding: 0;
 }
 
 .linker-table__line + .linker-table__line {
@@ -925,6 +937,10 @@
 
 	.linker-table td:not([data-label]) {
 		display: block;
+	}
+
+	.linker-table td.linker-table__empty {
+		display: none;
 	}
 
 	.linker-table td:not([data-label])::before {

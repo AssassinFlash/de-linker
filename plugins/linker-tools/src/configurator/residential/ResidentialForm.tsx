@@ -29,6 +29,8 @@ export interface RoofSelection {
 	location: { latitude: number; longitude: number };
 	modules: number;
 	address: string | null;
+	/** Official LoD2 planes (the report credits the state's data) or drawn ones. */
+	source: 'lod2' | 'drawn';
 }
 
 export interface ResidentialValues {
@@ -80,6 +82,7 @@ export function toInput(
 	if ( roof ) {
 		input.planes = roof.planes;
 		input.location = roof.location;
+		input.roof_source = roof.source;
 	}
 	if ( values.backup !== 'none' ) {
 		const load = number( values.backup_load_kw );

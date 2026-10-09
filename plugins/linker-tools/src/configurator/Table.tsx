@@ -27,9 +27,20 @@ export interface TableProps {
 	rows: { key: string; cells: ReactNode[] }[];
 }
 
+function isEmpty( cell: ReactNode ): boolean {
+	return (
+		cell === null ||
+		cell === undefined ||
+		cell === '' ||
+		( Array.isArray( cell ) && cell.length === 0 )
+	);
+}
+
+function classes( ...names: ( string | false )[] ): string | undefined {
+	return names.filter( Boolean ).join( ' ' ) || undefined;
+}
+
 export function Table( { caption, columns, rows }: TableProps ) {
-	const kind = ( column: TableColumn ) =>
-		column.numeric ? 'linker-table__number' : undefined;
 	return (
 		<table className="linker-table" role="table">
 			{ caption ? <caption>{ caption }</caption> : null }
@@ -40,7 +51,9 @@ export function Table( { caption, columns, rows }: TableProps ) {
 							key={ column.label }
 							scope="col"
 							role="columnheader"
-							className={ kind( column ) }
+							className={ classes(
+								!! column.numeric && 'linker-table__number'
+							) }
 						>
 							{ column.hidden ? (
 								<span className="linker-sr-only">
@@ -60,14 +73,22 @@ export function Table( { caption, columns, rows }: TableProps ) {
 							<td
 								key={ columns[ index ].label }
 								role="cell"
-								className={ kind( columns[ index ] ) }
+								className={ classes(
+									!! columns[ index ].numeric &&
+										'linker-table__number',
+									// Hidden on phones, where the cell is a labelled line.
+									isEmpty( cell ) && 'linker-table__empty'
+								) }
 								data-label={
 									columns[ index ].hidden
 										? undefined
 										: columns[ index ].label
 								}
 							>
-								{ cell }
+								{ /* One element: on phones the label sits beside it. */ }
+								<span className="linker-table__value">
+									{ cell }
+								</span>
 							</td>
 						) ) }
 					</tr>

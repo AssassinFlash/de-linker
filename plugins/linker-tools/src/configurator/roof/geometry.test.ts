@@ -11,7 +11,13 @@ import { expect, test } from 'vitest';
  * Internal dependencies
  */
 import { fixtures } from '../../../tests/configurator/fakes';
-import { defaultChoice, facingName, planeFeatures, totals } from './geometry';
+import {
+	defaultChoice,
+	facingName,
+	planeFeatures,
+	roofSource,
+	totals,
+} from './geometry';
 
 const roof = fixtures.roof.en;
 
@@ -45,4 +51,13 @@ test.each( [
 	[ 225, 'south-west' ],
 ] )( 'facing %s° reads %s', ( azimuth, name ) => {
 	expect( facingName( azimuth ) ).toBe( name );
+} );
+
+test( 'one official plane makes the roof LoD2 data; drawn planes alone do not', () => {
+	const official = roof.planes[ 2 ];
+	const drawn = { ...official, id: 117 };
+	expect( roofSource( [ official, drawn ], new Set( [ 117 ] ) ) ).toBe(
+		'lod2'
+	);
+	expect( roofSource( [ drawn ], new Set( [ 117 ] ) ) ).toBe( 'drawn' );
 } );
