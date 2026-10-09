@@ -88,7 +88,7 @@ py-check:
         cd "{{ justfile_directory() }}/services/$service"
         uv run --locked ruff check .
         uv run --locked ruff format --check .
-        uv run --locked mypy src tests
+        uv run --locked mypy .
     done
 
 [private]

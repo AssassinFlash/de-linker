@@ -10,6 +10,8 @@ permissions:
 
 jobs:
   check:
+    # The VPS's release (docs/research/2026-10-09/old-repo-006-target-architecture.md);
+    # named, so the runner does not move when ubuntu-latest does.
     runs-on: ubuntu-24.04
     strategy:
       matrix:

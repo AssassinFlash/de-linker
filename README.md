@@ -14,9 +14,9 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 | `services/genie` | Genie 的代理服务（FastAPI，`linker_genie`） |
 | `services/engine` | Solution Configurator 的引擎（FastAPI，`linker_engine`） |
 | `tools/` | just 模块与少量脚本 |
-| `docs/` | 验收协议与研究证据 |
+| `docs/` | 验收协议、各票规格（`docs/specs/`）与研究证据 |
 
-PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`；JS 单测与源码同目录（`*.test.ts(x)`，含 `bin/` 的脚本），端到端测试在 `plugins/linker-tools/tests/e2e/`；Python 测试在各服务的 `tests/`。
+PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。JS 单测是 `src/` 与 `bin/` 下的 `*.test.ts(x)`，端到端测试在 `plugins/linker-tools/tests/e2e/`。Python 服务是 uv 的 src 布局：规格里写作 `services/genie/retrieval.py` 的模块就是 `services/genie/src/linker_genie/retrieval.py`；包外的脚本（如 `services/genie/index/`）同样受 Ruff 与 mypy 检查（两者都对整个服务目录运行）；测试在各服务的 `tests/`。
 
 ## 工具链
 
@@ -33,6 +33,13 @@ PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`；JS 单�
 | Python | 3.12 | VPS（§7）；各服务的 `.python-version` |
 | uv | 0.10.11 | 写出 `uv.lock` 的版本，CI 固定同一版本 |
 | just | 1.58 | 本机版本，CI 固定同一版本 |
+
+### 与 framework-choice.md §9 的差异
+
+- 端到端测试用 `playwright test` 而不是 `wp-scripts test-e2e`/`test-playwright`：后者每次运行先下载全部浏览器（`node_modules/@wordpress/scripts/scripts/test-playwright.js`），默认配置还假定 wp-env 与 WordPress 后台登录；#5 的本地站点出现之前，端到端用例驱动的是 Storybook。
+- 没有 `automattic/jetpack-autoloader`：它解决的是多个插件发布同一 Composer 包的版本冲突，而三个插件目前没有运行时依赖；出现共享的运行时包时再引入。
+- Storybook 用 `@storybook/react-vite` 而不是 WooCommerce Blocks 的 react-webpack5：Vite 已随 Vitest 安装，TSX 不需要另配 Babel。
+- Vitest 不装 React 插件：Vite 8 按 tsconfig 的 `jsx: react-jsx` 编译 TSX（`vitest.config.mts`）。
 
 ### 包管理器：npm
 
@@ -54,7 +61,7 @@ brew install php@8.3
 
 | 命令 | 内容 |
 |---|---|
-| `just check` | 三个插件的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务的 Ruff（lint + format）与 mypy `--strict`；最后 `build::check` |
+| `just check` | 三个插件的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务的 Ruff（lint + format）与 mypy（strict），都覆盖整个服务目录；最后 `build::check` |
 | `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务的 pytest |
 | `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |

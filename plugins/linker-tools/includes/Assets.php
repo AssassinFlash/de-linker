@@ -20,7 +20,7 @@ namespace Linker\Tools;
 final class Assets {
 
 	/**
-	 * Sets up the registrar.
+	 * Sets up the script registration.
 	 *
 	 * @param string $plugin_file Absolute path of the main plugin file.
 	 */
