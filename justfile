@@ -8,8 +8,8 @@ mod build "tools/build.just"
 # Composer projects: the plugins, and tools/local for its mu-plugins and router.
 php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tools tools/local"
 
-# uv projects: the services, and tools/local (linker-local).
-py_projects := "services/genie services/engine tools/local"
+# uv projects: the services, tools/local (linker-local), and the data migrations (tools/migrate).
+py_projects := "services/genie services/engine tools/local tools/migrate"
 
 # The PHP tools run on PHP 8.3, the production host's version
 # (docs/research/2026-10-09/framework-choice.md §2): Homebrew's php@8.3 when it

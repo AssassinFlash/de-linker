@@ -17,5 +17,9 @@
 		<testsuite name="unit">
 			<directory>tests/php/Unit</directory>
 		</testsuite>
+		<!-- HTTP against a local site (LINKER_COMMERCE_TEST_SITE); skipped without one. -->
+		<testsuite name="integration">
+			<directory>tests/php/Integration</directory>
+		</testsuite>
 	</testsuites>
 </phpunit>

@@ -1,0 +1,30 @@
+[project]
+name = "linker-migrate"
+version = "0.1.0"
+description = "Data migrations of de-linker.com through WP-CLI: <ticket>-<name>.py with its plan (.json) and WordPress side (.php)."
+# The Python of the services and of tools/local (docs/research/2026-10-09/framework-choice.md §7).
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[tool.uv]
+# Scripts run as files (python3 tools/migrate/7-facts.py), not an installed package.
+package = false
+
+[tool.ruff.lint]
+# Ruff's defaults (E4, E7, E9, F) plus import sorting, bugbear and pyupgrade, as in the services.
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# A deprecation is fixed when it appears, not when the API is removed.
+filterwarnings = ["error"]

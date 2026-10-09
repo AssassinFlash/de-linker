@@ -8,3 +8,7 @@ parameters:
 		- linker-commerce.php
 		- includes
 		- tests/php
+		# The local seeding of the test fixture, run with `wp eval-file`.
+		- tests/fixtures
+		# The data migrations of the products this plugin reads (tools/migrate/*.php, run with `wp eval-file -`).
+		- ../../tools/migrate

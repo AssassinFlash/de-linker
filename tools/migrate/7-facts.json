@@ -1,0 +1,799 @@
+{
+	"description": "Data changes of ticket #7 (docs/specs/7-selection-facts.md): pa_application and pa_phase for the nine EcoFlow OCEAN 2 inverters created on 2026-10-07, the Application of SAJ H2-25K-T3/H2-30K-T3-DE and GoodWe ESA 20–30 kW as their manufacturers state it, the power figures of SAJ CHS2-29.9K-T4-X from its datasheet, and figures of the draft Pylontech PowerCubes X1/X2/H1/H2 (4123–4126) from their manuals in place of the 2022 Pylontech brochure (owner ruling 2026-10-09: the datasheet decides when product facts conflict; the products stay drafts; the PowerCube-M2A-180 draft 4127 was checked against its manual p.10 and agrees). \"from\" is the live value read on 2026-10-09; tools/migrate/7-facts.py applies \"to\" where it finds \"from\" and refuses on anything else.",
+	"new_attribute": {
+		"_source": "As on the EcoFlow OCEAN 2 inverters already on the site (3555–3580, 2026-10-09): pa_phase at position 0, visible; pa_application at position 3, hidden.",
+		"pa_phase": {
+			"position": 0,
+			"visible": true
+		},
+		"pa_application": {
+			"position": 3,
+			"visible": false
+		}
+	},
+	"attributes": [
+		{
+			"product": 6480,
+			"name": "EcoFlow OCEAN 2 HD-P3-5K0-S2 (5 kW three-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p3-home"
+		},
+		{
+			"product": 6480,
+			"name": "EcoFlow OCEAN 2 HD-P3-5K0-S2 (5 kW three-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "ecoflow-p3-phase"
+		},
+		{
+			"product": 6481,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2 (15 kW three-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p3-home"
+		},
+		{
+			"product": 6481,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2 (15 kW three-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "ecoflow-p3-phase"
+		},
+		{
+			"product": 6482,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2F (15 kW three-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p3-home"
+		},
+		{
+			"product": 6482,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2F (15 kW three-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "ecoflow-p3-phase"
+		},
+		{
+			"product": 6483,
+			"name": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6483,
+			"name": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6484,
+			"name": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6484,
+			"name": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6485,
+			"name": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6485,
+			"name": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6486,
+			"name": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6486,
+			"name": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6487,
+			"name": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6487,
+			"name": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 6488,
+			"name": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+			"taxonomy": "pa_application",
+			"from": [],
+			"to": [
+				"home"
+			],
+			"basis": "ecoflow-p1-home"
+		},
+		{
+			"product": 6488,
+			"name": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"single-phase"
+			],
+			"basis": "ecoflow-p1-phase"
+		},
+		{
+			"product": 1179,
+			"name": "SAJ H2-25K-T3",
+			"taxonomy": "pa_application",
+			"from": [
+				"commercial"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "saj-h2-home"
+		},
+		{
+			"product": 1181,
+			"name": "SAJ H2-30K-T3-DE",
+			"taxonomy": "pa_application",
+			"from": [
+				"commercial"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "saj-h2-home"
+		},
+		{
+			"product": 6515,
+			"name": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+			"taxonomy": "pa_application",
+			"from": [
+				"home"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "goodwe-esa-home"
+		},
+		{
+			"product": 6516,
+			"name": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+			"taxonomy": "pa_application",
+			"from": [
+				"home"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "goodwe-esa-home"
+		},
+		{
+			"product": 6517,
+			"name": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+			"taxonomy": "pa_application",
+			"from": [
+				"home"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "goodwe-esa-home"
+		},
+		{
+			"product": 6518,
+			"name": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+			"taxonomy": "pa_application",
+			"from": [
+				"home"
+			],
+			"to": [
+				"home"
+			],
+			"basis": "goodwe-esa-home"
+		}
+	],
+	"figures": [
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "ac_output_kw_nominal",
+			"from": {
+				"value": "29900",
+				"unit": "W",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "W",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "rated_ac_power",
+			"from": {
+				"value": "29900",
+				"unit": "W",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "W",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "ac_output_kw_max",
+			"from": {
+				"value": "29900",
+				"unit": "VA",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "VA",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "backup_power_kw",
+			"from": {
+				"value": "29900",
+				"unit": "VA",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "VA",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "peak_backup_apparent_power_va",
+			"from": {
+				"value": "29900",
+				"unit": "VA",
+				"value_de": "29900"
+			},
+			"to": {
+				"value": "29999",
+				"unit": "VA",
+				"value_de": "29999",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "max_pv_input_power_w",
+			"from": {
+				"value": "59800",
+				"unit": "Wp",
+				"value_de": "59800"
+			},
+			"to": {
+				"value": "59998",
+				"unit": "Wp",
+				"value_de": "59998",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 1959,
+			"name": "SAJ CHS2-29.9K-T4-X",
+			"key": "max_pv_array_power",
+			"from": {
+				"value": "59800",
+				"unit": "Wp",
+				"value_de": "59800"
+			},
+			"to": {
+				"value": "59998",
+				"unit": "Wp",
+				"value_de": "59998",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-chs2-p2"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "system_capacity_kwh_nominal",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "kWh",
+				"value": "24.9"
+			},
+			"to": {
+				"value": "17.76",
+				"unit": "kWh",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "system_voltage_v_nominal",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "336"
+			},
+			"to": {
+				"value": "240",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "system_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "315~378"
+			},
+			"to": {
+				"value": "217.5~270",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "module_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "45~54"
+			},
+			"to": {
+				"value": "43.5~54",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4124,
+			"name": "Pylontech PowerCube-X2 (17.76 kWh, 5 x H48074 + SC0500-100S-V2)",
+			"key": "dimensions_mm",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "mm",
+				"value": "600×505×1380"
+			},
+			"to": {
+				"value": "600×505×2130",
+				"unit": "mm",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x2-p12"
+		},
+		{
+			"product": 4123,
+			"name": "Pylontech PowerCube-X1 (16.8 kWh, 7 x H48050 + SC0500-100S-V2)",
+			"key": "system_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "315~378"
+			},
+			"to": {
+				"value": "304.5~378",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x1-p12"
+		},
+		{
+			"product": 4123,
+			"name": "Pylontech PowerCube-X1 (16.8 kWh, 7 x H48050 + SC0500-100S-V2)",
+			"key": "module_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "45~54"
+			},
+			"to": {
+				"value": "43.5~54",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+					"page": 12
+				}
+			},
+			"basis": "pylontech-powercube-x1-p12"
+		},
+		{
+			"product": 4125,
+			"name": "Pylontech PowerCube-H1 (36 kWh, 15 x H48050 + SC1000-100)",
+			"key": "system_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 31
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p31"
+				],
+				"unit": "Vdc",
+				"value": "664~810"
+			},
+			"to": {
+				"value": "652.5~810",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+					"page": 10
+				}
+			},
+			"basis": "pylontech-powercube-h1h2-p10"
+		},
+		{
+			"product": 4125,
+			"name": "Pylontech PowerCube-H1 (36 kWh, 15 x H48050 + SC1000-100)",
+			"key": "module_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "45~54"
+			},
+			"to": {
+				"value": "43.5~54",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+					"page": 10
+				}
+			},
+			"basis": "pylontech-powercube-h1h2-p10"
+		},
+		{
+			"product": 4126,
+			"name": "Pylontech PowerCube-H2 (42.62 kWh, 12 x H48074 + SC1000-100)",
+			"key": "system_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 31
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p31"
+				],
+				"unit": "Vdc",
+				"value": "531~648"
+			},
+			"to": {
+				"value": "522~648",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+					"page": 10
+				}
+			},
+			"basis": "pylontech-powercube-h1h2-p10"
+		},
+		{
+			"product": 4126,
+			"name": "Pylontech PowerCube-H2 (42.62 kWh, 12 x H48074 + SC1000-100)",
+			"key": "module_voltage_range_v",
+			"from": {
+				"citation": {
+					"doc": "pylontech_optim_us.pdf",
+					"page": 30
+				},
+				"evidence_refs": [
+					"pylontech_optim_us.pdf:p30"
+				],
+				"unit": "Vdc",
+				"value": "45~54"
+			},
+			"to": {
+				"value": "43.5~54",
+				"unit": "Vdc",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+					"page": 10
+				}
+			},
+			"basis": "pylontech-powercube-h1h2-p10"
+		}
+	],
+	"basis": {
+		"ecoflow-p3-phase": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+				"page": 2,
+				"states": "Table \"EcoFlow OCEAN 2 Hybrid Inverter Three-Phase\", columns EF HD-P3-5K0-S2 … EF HD-P3-15K-G2/-G2F; Nennspannung \"L–L: 380 / 400 V AC; L–N: 220 / 230 V AC; 3L + N + PE\"."
+			}
+		],
+		"ecoflow-p3-home": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+				"page": 1,
+				"states": "Cover: \"Solarspeicherlösung für Privathaushalte\", EcoFlow OCEAN 2, 3-phasig, 5/6/8/10/12/15 kW."
+			},
+			{
+				"page_url": "https://energy.ecoflow.com/eu/products/ocean-2-home-battery",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "Title \"EcoFlow OCEAN 2 Three-Phase Solar Home Battery Storage\"."
+			}
+		],
+		"ecoflow-p1-phase": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-datasheet-en.pdf",
+				"page": 2,
+				"states": "Table \"EcoFlow OCEAN 2 Hybrid Inverter Single-Phase\", columns EF HD-P1-3K-S2 … EF HD-P1-6K-S2; Grid Connection \"L+N+PE\"."
+			}
+		],
+		"ecoflow-p1-home": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-user-manual-de-v1-3.pdf",
+				"page": 6,
+				"states": "Self-consumption mode: \"…die Selbstversorgungsquote der Haushalte verbessert\". The single-phase datasheet names no segment."
+			},
+			{
+				"page_url": "https://energy.ecoflow.com/eu/products/ocean-2-single-phase-home-battery",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "Title \"EcoFlow OCEAN 2 | Single Phase Home Battery Storage\"."
+			}
+		],
+		"saj-h2-home": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+				"page": 1,
+				"states": "Names no segment: \"H2 10-30K Three Phase Hybrid Inverter\" (page 2 repeats page 1)."
+			},
+			{
+				"page_url": "https://www.saj-electric.com/h2-series",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "\"The SAJ H2 Series hybrid inverter is designed to deliver intelligent energy management for residential solar and battery storage systems\"; the 10–30K-T models are \"suitable for larger residential or light commercial projects\"."
+			},
+			{
+				"page_url": "https://www.saj-electric.com/residential-hybrid-inverter",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "SAJ lists the H2 series under \"Residential Hybrid Inverter\"; its commercial hybrid line is CHS2/CH3/CM2."
+			}
+		],
+		"goodwe-esa-home": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+				"page": 1,
+				"states": "ESA Series 5-30kW/5-108kWh: \"1st TÜV-certified low-noise residential integrated system\", \"Whole-home backup\"."
+			},
+			{
+				"page_url": "https://en.goodwe.com/esa-5-30kw",
+				"read": "manufacturer page, read with Apify (apify/rag-web-browser) on 2026-10-09",
+				"states": "\"…reliable power for homes and small businesses\"."
+			}
+		],
+		"saj-chs2-p2": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+				"page": 2,
+				"states": "Column CHS2-29.9K-T4-X: Max. PV Array Power [Wp]@STC 59998; Rated AC Power [W] 29999; Max.Apparent Power[VA] 29999; Back-up Max.Output Power [VA] 29999; Peak Output Apparent Power [VA] 29999."
+			},
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+				"page": 3,
+				"states": "Column CH2-29.9K-T4 (the inverter alone): 59800 Wp, 29900 W/VA — the values the live product carries without a citation."
+			}
+		],
+		"pylontech-powercube-x2-p12": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+				"page": 12,
+				"states": "PowerCube-X1/X2-V2 Operation Manual, 2.3 System Specifications, column PowerCube-X2-V2: Battery System Capacity (kWh) 3.552 × n, Battery System Voltage (Vdc) 48 × n, Battery Charge Upper-Voltage (Vdc) 54 × n, Battery Module Discharge Lower-Voltage (Vdc) 43.5 × n (n = 2~10 H48074 modules), Rack 600*505*2130 mm (n = 2~10). The product is 5 × H48074 + SC0500-100S-V2 (its name and description), so n = 5: 17.76 kWh, 240 V, 217.5~270 V; per module 43.5~54 V; the rack is 600×505×2130 mm. Its name already says 17.76 kWh and stays."
+			},
+			{
+				"ruling": "Owner, 2026-10-09: where product facts conflict, the product's datasheet decides (\"以实际资料显示的数据为准\"). 4124 was named 17.76 kWh while system_capacity_kwh_nominal said 24.9.",
+				"states": "The replaced figures cite pylontech_optim_us.pdf, which is in fact the 2022 Pylontech brochure (\"2022Pylontech brochure-PY221107EN-SD\"; archived under that name). Its p.30 is the PowerCube X series table (X1 336V50Ah, X2 336V74Ah: seven modules, 336 V, 315~378 V; X2 24.9 kWh, 600*505*1380 mm) with module voltage range 45~54 V; p.31 the PowerCube H series (H1 720 V, 664~810 V; H2 576 V, 531~648 V). The manuals give the discharge limit as 43.5 V per module. Its 24.9 kWh, 336 V, 315~378 V and 600*505*1380 mm are the seven-module X2, not this five-module product; the five figures that cite it are replaced."
+			}
+		],
+		"pylontech-powercube-x1-p12": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_x1x2-manual.pdf",
+				"page": 12,
+				"states": "Column PowerCube-X1-V2: Battery Charge Upper-Voltage (Vdc) 54 × n, Battery Module Discharge Lower-Voltage (Vdc) 43.5 × n (n = 2~10 H48050 modules). The product is 7 × H48050 + SC0500-100S-V2, so 304.5~378 V; per module 43.5~54 V. Its 16.8 kWh, 336 V and 600×505×1300 mm (Rack 1, n = 2~8) agree with the manual and stay."
+			},
+			{
+				"ruling": "Owner, 2026-10-09: where product facts conflict, the product's datasheet decides (\"以实际资料显示的数据为准\").",
+				"states": "The replaced figures cite pylontech_optim_us.pdf, which is in fact the 2022 Pylontech brochure (\"2022Pylontech brochure-PY221107EN-SD\"; archived under that name). Its p.30 is the PowerCube X series table (X1 336V50Ah, X2 336V74Ah: seven modules, 336 V, 315~378 V; X2 24.9 kWh, 600*505*1380 mm) with module voltage range 45~54 V; p.31 the PowerCube H series (H1 720 V, 664~810 V; H2 576 V, 531~648 V). The manuals give the discharge limit as 43.5 V per module."
+			}
+		],
+		"pylontech-powercube-h1h2-p10": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/08/delinker-pylontech_powercube_h1h2-manual.pdf",
+				"page": 10,
+				"states": "PowerCube-H1/H2 manual, 2.2.1 The parameter of system: Battery System Charge Upper-Voltage (Vdc) 54 × n, Battery System Discharge lower-Voltage (Vdc) 43.5 × n (n = 5~18). H1 4125 is 15 × H48050: 652.5~810 V; H2 4126 is 12 × H48074: 522~648 V; per module 43.5~54 V. Their capacities (36 / 42.62 kWh), voltages (720 / 576 V) and racks (600×505×2130 mm) agree with the manual and stay."
+			},
+			{
+				"ruling": "Owner, 2026-10-09: where product facts conflict, the product's datasheet decides (\"以实际资料显示的数据为准\").",
+				"states": "The replaced figures cite pylontech_optim_us.pdf, which is in fact the 2022 Pylontech brochure (\"2022Pylontech brochure-PY221107EN-SD\"; archived under that name). Its p.30 is the PowerCube X series table (X1 336V50Ah, X2 336V74Ah: seven modules, 336 V, 315~378 V; X2 24.9 kWh, 600*505*1380 mm) with module voltage range 45~54 V; p.31 the PowerCube H series (H1 720 V, 664~810 V; H2 576 V, 531~648 V). The manuals give the discharge limit as 43.5 V per module."
+			}
+		]
+	}
+}

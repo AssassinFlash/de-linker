@@ -6,6 +6,8 @@
 	<file>includes</file>
 	<file>tests</file>
 	<file>../../tools/php/bootstrap.php</file>
+	<!-- The data migrations of the products this plugin reads. -->
+	<file>../../tools/migrate</file>
 
 	<rule ref="../../tools/php/phpcs.xml"/>
 

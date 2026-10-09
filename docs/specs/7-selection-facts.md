@@ -30,3 +30,9 @@
 - [ ] 单位表测试：`10`+kW→10；`10000`+W→10；`7500`+Wp→7.5；`5120`+Wh→5.12；无 unit→unknown。
 - [ ] 文本 "1/N/PE a.c. 230 V" → `phase=1`，不再判三相。
 - [ ] REST 匿名返回 7 个键；未发布商品不出现；101 个 id 返回 400。
+
+2026-10-09 #7 实施按证据修订（证据见 PR）：能量键"产品自身图值先于单个模块"并补 `rated_energy_kwh`（线上 1954–1958 的 `module_energy_kwh_nominal` 只是一个模块，产品值在 `system_nominal_energy_kwh`/`rated_energy_kwh`）；可用能量键补 `usable_energy`（4103–4106 的键名；`usable_energy_kwh` 只在草稿商品上）；`system_energy_kwh_range` 进 `kwh_range`；`kwh_range`、`ac_apparent_kva` 只在图值给出时出现，7 个键始终在；不在列表里的分类取最近的列表祖先（backup-power、meters-current-transformers → accessories）；1959 同源错误的另 6 个功率值（取自同一数据手册 p.3 的 CH2 列）一并按 p.2 改为 29 999 W/VA、59 998 Wp；1179/1181 按 SAJ H2 系列页核定为 `home`。
+
+2026-10-09 评审补记：商品的分类经祖先归并后落在两个设备类（如同时在 inverters 与 home-storage）时，`device_class` 为 `unknown`。
+
+2026-10-09 业主裁定（产品事实冲突以数据手册为准）：草稿 4124 Pylontech PowerCube-X2 的 5 个图值（`system_capacity_kwh_nominal` 24.9 kWh、`system_voltage_v_nominal` 336 V、`system_voltage_range_v` 315~378 V、`module_voltage_range_v` 45~54 V、`dimensions_mm` 600×505×1380）引自 `pylontech_optim_us.pdf`——该文件实为 2022 Pylontech 宣传册（PY221107EN），其 p.30 的 PowerCube X 系列表是 7 模块 336 V 配置（X1 16.8 kWh、X2 24.9 kWh，45~54 V × 7 = 315~378 V），不是本品的配置；按我们托管的 PowerCube-X1/X2-V2 手册 p.12（X2：3.552 kWh × n、48 V × n、43.5/54 V × n，本品 n = 5，机架 600×505×2130）改为 17.76 kWh、240 V、217.5~270 V、43.5~54 V、600×505×2130，随 `tools/migrate/7-facts.json` 写入；名称本就是 17.76 kWh，不改；仍为草稿。兄弟草稿同一冲突一并按手册改：4123 X1（n = 7）315~378 V→304.5~378 V、45~54 V→43.5~54 V；4125 H1（n = 15）664~810 V→652.5~810 V、45~54 V→43.5~54 V；4126 H2（n = 12）531~648 V→522~648 V、45~54 V→43.5~54 V（引用 X1X2 手册 p.12、H1H2 手册 p.10；被换的值引自宣传册 p.30/31，其余册面值——容量、标称电压、机架——与手册按本品模块数算出的值一致故不改，唯独电压区间按手册的模块放电下限 43.5 V × n 取下限）；4127 M2A-180 核对无冲突（手册 p.10 的 38.4/43.2/32.4 V × n，n = 19 → 729.6 V、615.6~820.8 V、5.6832 × 19 = 107.98 kWh，与宣传册 p.36 引用值一致），不改。
