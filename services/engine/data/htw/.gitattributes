@@ -1,0 +1,2 @@
+# Byte-exact copies of the HTW files (CRLF as served); source.json records their sha256.
+tabelle*.json -text
