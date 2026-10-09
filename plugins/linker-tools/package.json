@@ -11,7 +11,7 @@
 		"build": "wp-scripts build && node bin/build-manifest.mjs write",
 		"build:check": "node bin/build-manifest.mjs check",
 		"start": "wp-scripts start",
-		"format": "wp-scripts format",
+		"format": "prettier --write .",
 		"lint:format": "prettier --check .",
 		"lint:js": "wp-scripts lint-js --max-warnings=0",
 		"lint:types": "tsc --noEmit",

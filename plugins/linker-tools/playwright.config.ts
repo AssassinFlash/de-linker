@@ -22,7 +22,9 @@ export default defineConfig( {
 	webServer: {
 		command: `npx storybook dev --ci --exact-port --port ${ port }`,
 		url: `http://localhost:${ port }/iframe.html`,
-		reuseExistingServer: ! process.env.CI,
+		// Start this checkout's Storybook every time; reusing whatever already
+		// listens on the port (another worktree's Storybook) would test that.
+		reuseExistingServer: false,
 	},
 	projects: [
 		{

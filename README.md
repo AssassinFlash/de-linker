@@ -11,7 +11,7 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 | `plugins/linker-commerce` | 商务链、产品事实与 Abilities。PHP，`Linker\Commerce\` → `includes/` |
 | `plugins/linker-i18n` | Polylang 伴侣插件。PHP，`Linker\I18n\` → `includes/` |
 | `plugins/linker-tools` | Genie 与 Solution Configurator：PHP 壳（`Linker\Tools\` → `includes/`）和 React 应用（`src/`，入口 `genie`、`configurator`、`shared`），构建产物提交在 `build/` |
-| `services/genie` | Genie 的代理服务（FastAPI，`linker_genie`） |
+| `services/genie` | Genie 的代理循环服务（FastAPI，`linker_genie`；与 `linker-tools` 里转发请求的 PHP 代理不是一回事） |
 | `services/engine` | Solution Configurator 的引擎（FastAPI，`linker_engine`） |
 | `tools/` | just 模块与少量脚本 |
 | `docs/` | 验收协议、各票规格（`docs/specs/`）与研究证据 |
