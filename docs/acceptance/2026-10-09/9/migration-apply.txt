@@ -1,0 +1,48 @@
+$ python3 tools/migrate/9-i18n.py --wp ~/de-linker-local/t9/wp.sh --user local-admin apply --write
+options set
+German date and time formats set
+English given to the objects without a language
+Success: Polylang configured.
+term     51 category:system-design                                       slug=- fields=name
+term     24 pa_application:commercial                                    slug=- fields=name
+term     25 pa_application:home                                          slug=- fields=name
+term     26 pa_battery-voltage:high-voltage                              slug=- fields=name
+term     39 pa_phase:single-phase                                        slug=- fields=name
+term     40 pa_phase:three-phase                                         slug=- fields=name
+term     46 product_cat:accessories                                      slug=zubehoer fields=description,name
+term     43 product_cat:commercial-storage                               slug=gewerbespeicher fields=description,name
+term     44 product_cat:ems-monitoring                                   slug=ems-monitoring fields=description,name
+term     45 product_cat:ev-chargers                                      slug=ladestationen fields=description,name
+term     42 product_cat:home-storage                                     slug=heimspeicher fields=description,name
+term     41 product_cat:inverters                                        slug=wechselrichter fields=description,name
+term     47 product_cat:all-in-one-systems                               slug=all-in-one-systeme fields=description,name
+term     50 product_cat:backup-power                                     slug=notstrom fields=description,name
+term     48 product_cat:battery-systems                                  slug=batteriesysteme fields=description,name
+term     49 product_cat:meters-current-transformers                      slug=energiezaehler-stromwandler fields=description,name
+post     12 page:blog                                                    slug=blog fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_title
+post     15 page:products                                                slug=produkte fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_title
+post     16 page:cart                                                    slug=warenkorb fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_title
+post     17 page:proforma-request                                        slug=proforma-anfrage fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_title
+post     18 page:my-account                                              slug=mein-konto fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_title
+post     19 page:compare-products                                        slug=compare-products fields=post_title
+post     31 page:home                                                    slug=home fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_content,post_title
+post     33 page:contact                                                 slug=kontakt fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_content,post_title
+post     34 page:about                                                   slug=ueber-uns fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_content,post_title
+post     20 post:hybrid-inverter-vs-ac-coupled-storage                   slug=hybridwechselrichter-vs-ac-speicher fields=post_excerpt,post_title
+post     26 product:saj-chs2-29-9k-t4-x                                  slug=- fields=post_content,post_excerpt,post_title
+post     27 product:saj-emanager-emanager-5-0-residential-energy-manager slug=- fields=post_content,post_excerpt,post_title
+post     28 product:goodwe-gw60k-sts-g10                                 slug=- fields=post_content,post_excerpt,post_title
+post     29 product:chint-dtsu666                                        slug=- fields=post_excerpt,post_title
+post     30 product:goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger    slug=- fields=post_excerpt,post_title
+post     23 product:goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh   slug=- fields=post_content,post_excerpt,post_title
+post     24 product:saj-cb2-100-3-hv5                                    slug=- fields=post_content,post_excerpt,post_title
+post     25 product:goodwe-gw208-9-bat-lcd-g10                           slug=- fields=post_excerpt,post_title
+post     22 product:goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module slug=- fields=post_content,post_excerpt,post_title
+post      1 page:capability                                              slug=leistungsfaehigkeit fields=meta:_seopress_titles_desc,meta:_seopress_titles_title,post_content,post_title
+imported 20/36
+imported 36/36
+Success: Links rewritten in 0 German posts.
+post 12 -> 155: pending
+post 20 -> 173: pending
+36 imported, 34 synced, 2 not synced
+exit 0

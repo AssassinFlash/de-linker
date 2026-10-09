@@ -1,0 +1,39 @@
+<?php
+/**
+ * Corrects a PHPDoc of WP_Mock 1.1 for PHPStan (a stub file: only the PHPDoc
+ * counts, the code is WP_Mock's).
+ *
+ * WP_Mock matches a callback of any instance of a class given as
+ * array( new AnyInstance( Class::class ), 'method' ): HookedCallback::react()
+ * looks the callback up in exactly that form. The PHPDoc of expectHookAdded()
+ * leaves the form out. The two matcher classes are declared because a stub file
+ * is validated on its own.
+ */
+namespace Mockery\Matcher {
+    class Type
+    {
+    }
+}
+
+namespace WP_Mock\Matcher {
+    class AnyInstance
+    {
+    }
+}
+
+namespace {
+    class WP_Mock
+    {
+        /**
+         * @param string $type the type of hook being added ('action' or 'filter')
+         * @param string $hook the hook name
+         * @param string|callable-string|callable|\Mockery\Matcher\Type|array{\WP_Mock\Matcher\AnyInstance, string} $callback the callback that should be registered
+         * @param int $priority the priority it should be registered at
+         * @param int $args the number of arguments that should be allowed
+         * @return void
+         */
+        public static function expectHookAdded(string $type, string $hook, $callback, int $priority = 10, int $args = 1) : void
+        {
+        }
+    }
+}

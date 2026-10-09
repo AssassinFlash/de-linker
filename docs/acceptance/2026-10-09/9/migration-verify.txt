@@ -1,0 +1,33 @@
+$ python3 tools/migrate/9-i18n.py --wp ~/de-linker-local/t9/wp.sh verify --urls plugins/linker-i18n/tests/fixtures/live/de-sitemap.json
+ok  200 lang=de-DE /de/
+ok  200 lang=de-DE /de/blog/
+ok  200 lang=de-DE /de/compare-products/
+ok  200 lang=de-DE /de/hybridwechselrichter-vs-ac-speicher/
+ok  200 lang=de-DE /de/kontakt/
+ok  200 lang=de-DE /de/mein-konto/
+ok  200 lang=de-DE /de/produkt-kategorie/ems-monitoring/
+ok  200 lang=de-DE /de/produkt-kategorie/gewerbespeicher/
+ok  200 lang=de-DE /de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/
+ok  200 lang=de-DE /de/produkt-kategorie/gewerbespeicher/batteriesysteme/
+ok  200 lang=de-DE /de/produkt-kategorie/heimspeicher/
+ok  200 lang=de-DE /de/produkt-kategorie/ladestationen/
+ok  200 lang=de-DE /de/produkt-kategorie/wechselrichter/
+ok  200 lang=de-DE /de/produkt-kategorie/zubehoer/
+ok  200 lang=de-DE /de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/
+ok  200 lang=de-DE /de/produkt-kategorie/zubehoer/notstrom/
+ok  200 lang=de-DE /de/produkt/chint-dtsu666/
+ok  200 lang=de-DE /de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/
+ok  200 lang=de-DE /de/produkt/goodwe-gw208-9-bat-lcd-g10/
+ok  200 lang=de-DE /de/produkt/goodwe-gw60k-sts-g10/
+ok  200 lang=de-DE /de/produkt/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/
+ok  200 lang=de-DE /de/produkt/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/
+ok  200 lang=de-DE /de/produkt/saj-cb2-100-3-hv5/
+ok  200 lang=de-DE /de/produkt/saj-chs2-29-9k-t4-x/
+ok  200 lang=de-DE /de/produkt/saj-emanager-emanager-5-0-residential-energy-manager/
+ok  200 lang=de-DE /de/produkte/
+ok  200 lang=de-DE /de/proforma-anfrage/ -> /de/warenkorb/
+ok  200 lang=de-DE /de/ueber-uns/
+ok  200 lang=de-DE /de/ueber-uns/leistungsfaehigkeit/
+ok  200 lang=de-DE /de/warenkorb/
+30 German pages, posts, products and categories; 30 of the 150 listed URLs are theirs
+exit 0

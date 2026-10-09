@@ -1,0 +1,18 @@
+$ python3 tools/migrate/9-i18n.py --wp ~/de-linker-local/t9/wp.sh --user local-admin rollback --write
+20 German posts are drafts now
+exit 0
+404 /de/produkt/chint-dtsu666/
+404 /de/ueber-uns/
+200 /de/produkte/
+200 /product/chint-dtsu666/
+200 /about/
+
+$ python3 tools/migrate/9-i18n.py --wp ~/de-linker-local/t9/wp.sh --user local-admin apply --write   (again, after the rollback)
+Success: Links rewritten in 0 German posts.
+post 12 -> 155: pending
+post 20 -> 173: pending
+36 imported, 34 synced, 2 not synced
+exit 0
+200 /de/produkt/chint-dtsu666/
+200 /de/ueber-uns/
+200 /de/produkte/

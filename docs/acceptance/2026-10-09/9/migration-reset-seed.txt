@@ -1,0 +1,7 @@
+$ wp eval-file plugins/linker-i18n/tests/fixtures/reset.php
+Success: Removed 20 German posts, 18 German terms, 0 orders.
+exit 0
+
+$ wp eval-file plugins/linker-i18n/tests/fixtures/seed.php --skip-plugins=linker-i18n,polylang
+Success: Fixture loaded: 11 pages and posts, 9 products, 10 categories, 29 dictionary rows.
+exit 0

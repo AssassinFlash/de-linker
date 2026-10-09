@@ -1,0 +1,54 @@
+[
+	{
+		"categories": [
+			10
+		],
+		"content": "<div class=\"linker-article-comparison\">\n<section class=\"linker-article-topic\">\n<h2 id=\"article-hybrid-inverter\">What is a hybrid inverter?</h2>\n<p>A hybrid inverter combines a solar inverter and a battery inverter in one unit. It manages DC power from solar panels, converts it to AC for your loads, and directs surplus energy into battery storage—all through a single device.</p>\n</section>\n<section class=\"linker-article-topic\">\n<h2 id=\"article-ac-coupled\">What is an AC-coupled system?</h2>\n<p>In an AC-coupled setup, solar panels connect to a dedicated solar inverter, and batteries connect to a separate battery inverter. The two inverters communicate through the AC bus. This is the common retrofit path when adding storage to an existing PV installation.</p>\n</section>\n</div>\n<div class=\"linker-article-comparison\">\n<section class=\"linker-article-topic\">\n<h2 id=\"article-choose-hybrid\">When to choose hybrid</h2>\n<p>Hybrid inverters shine in new installations. They reduce component count, simplify wiring, and offer higher round-trip efficiency because energy is converted only once between DC and AC. The switchover time to backup differs by model; each product page gives it from the datasheet.</p>\n</section>\n<section class=\"linker-article-topic\">\n<h2 id=\"article-choose-ac-coupled\">When to choose AC-coupled</h2>\n<p>AC-coupled makes sense when you already have a working solar inverter and want to add batteries without replacing the existing hardware. The trade-off is slightly lower efficiency and a more complex commissioning process.</p>\n</section>\n</div>\n<section class=\"linker-article-check\">\n<h2 id=\"article-installer-checks\">What installers should verify</h2>\n<p>Confirm battery compatibility, maximum charge/discharge rates, grid-code settings, and whether the chosen topology supports backup power during grid outages.</p>\n</section>\n<p class=\"linker-article-next\"><a href=\"/products/\">Browse our products</a></p>",
+		"de": {
+			"content_rendered": null,
+			"excerpt_rendered": "<p>Ein praktischer Vergleich von Hybrid-Wechselrichter- und AC-gekoppelten Speicherarchitekturen, um Installateuren bei der Wahl der richtigen Topologie für Wohn- und kleine Gewerbeprojekte zu helfen.</p>\n",
+			"title": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung"
+		},
+		"excerpt": "A practical comparison of hybrid inverter and AC-coupled storage architectures to help installers choose the right topology for residential and small-commercial projects.",
+		"id": 551,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+				"description": "Ein praktischer Vergleich von Hybrid-Wechselrichter- und AC-gekoppelten Speicherarchitekturen, um Installateuren bei der Wahl der richtigen Topologie für Wohn- und kleine Gewerbeprojekte zu helfen.",
+				"h1": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung",
+				"hreflang": {
+					"de": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+					"en": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+					"x-default": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/"
+				},
+				"html_lang": "de-DE",
+				"title": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung | Linker"
+			},
+			"de_url": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+			"en": {
+				"canonical": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+				"description": "A practical comparison of hybrid inverter and AC-coupled storage architectures to help installers choose the right topology for residential and small-commercial projects.",
+				"h1": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup",
+				"hreflang": {
+					"de": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+					"en": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+					"x-default": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/"
+				},
+				"html_lang": "en-US",
+				"title": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup | Linker"
+			},
+			"en_url": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/"
+		},
+		"menu_order": 0,
+		"parent": 0,
+		"seo": {
+			"_seopress_titles_desc": "",
+			"_seopress_titles_title": ""
+		},
+		"slug": "hybrid-inverter-vs-ac-coupled-storage",
+		"status": "publish",
+		"template": "",
+		"title": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup",
+		"type": "post"
+	}
+]

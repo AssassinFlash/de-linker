@@ -2,9 +2,21 @@
 # tools/php/phpstan-plugins.neon.
 includes:
 	- ../../tools/php/phpstan-plugins.neon
+	# Mockery doubles typed as the class they stand in for (the unit tests).
+	- vendor/phpstan/phpstan-mockery/extension.neon
 
 parameters:
 	paths:
 		- linker-i18n.php
 		- includes
 		- tests/php
+	scanFiles:
+		# Polylang's API (pll_*() and PLL()); the plugin requires Polylang.
+		- vendor/wpsyntex/polylang-stubs/polylang-stubs.php
+		# Action Scheduler (as_*()), which WooCommerce bundles; the plugin requires WooCommerce.
+		- vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+		# The WP-CLI calls of the command (see the file for why it is local).
+		- tests/phpstan/wp-cli.php
+	stubFiles:
+		# WP_Mock's PHPDoc of expectHookAdded() without the AnyInstance form it supports.
+		- tests/phpstan/wp-mock.stub
