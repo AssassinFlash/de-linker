@@ -12,6 +12,9 @@
 4. 存储：单个 SQLite：`documents`、`chunks(id, doc_sha, page, section, text, lang, model_tags)`、`chunks_fts`（FTS5，unicode61 + 德语复合词不拆）、`chunks_vec`（sqlite-vec）。
 5. 发布：`index-<version>.sqlite` + manifest → VPS `/opt/linker-genie/index/<version>/`，`current` 软链，回滚即切软链。
 
+## 运行时约束（业主 2026-10-09：不升级任何主机）
+VPS 为 1 vCPU、3.9 GB、无 GPU。查询时的向量编码只能是：① 在 1 核上实时可跑的文本模型（int8 后约 300M 参数以内，如 multilingual-e5-base；BGE-M3 int8 以实测延迟 ≤1.5 s 为准），或 ② API（aihubmix 的 gemini-embedding-2 等，由 bake-off 决定）。自托管重排器在 1 核上不可行：重排只用 API 或不做。内存预算：引擎 + Genie 服务 + 索引 + 模型合计 ≤ 3 GB，索引以 SQLite 文件按需读取。多模态页面向量：图像侧只在 Mac 离线构建；查询侧要么走 API，要么文本塔满足 ① 的约束。
+
 ## 检索（`services/genie/retrieval.py`）
 `search_documents(query, lang, product_ids=None, doc_types=None, k=8)`：先按 product_ids 对应的型号标签圈定文档（无则全库）；FTS5 与向量各取 top-30，RRF 融合；可选重排（bge-reranker，CPU）；返回 `[{chunk_id, doc_url, page, section, text, score}]`。向量不可用时退回纯 FTS。
 
