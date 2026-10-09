@@ -83,3 +83,7 @@ brew install php@8.3
 - Python：每个服务有 `GET /health`。
 
 样例不在任何页面上显示：脚本只注册、不入队，页面上也还没有挂载点。
+
+### Storybook 端口
+
+`npm run storybook` 固定 `-p 6006`：这是 `storybook init` 写进脚本的默认值，端到端测试（`plugins/linker-tools/playwright.config.ts`）需要事先知道端口，所以两处一致；不带 `-p` 时 Storybook 10.6 每次取空闲端口。
