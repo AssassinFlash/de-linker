@@ -33,6 +33,30 @@ final class TokensTest extends TestCase {
 	}
 
 	/**
+	 * Every font the stylesheet serves resolves to its plugin file, and each
+	 * file is really there: the presentation installer requires these files
+	 * before it writes (a missing font is the same broken presentation for
+	 * the visitor as an empty template).
+	 */
+	public function test_fonts_resolves_every_font_the_stylesheet_serves(): void {
+		$fonts = Tokens::fonts();
+
+		$this->assertSame(
+			array(
+				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-400.ttf',
+				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-500.ttf',
+				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-600.ttf',
+				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-700.ttf',
+				dirname( __DIR__, 4 ) . '/assets/fonts/dm-serif-display-400.ttf',
+			),
+			$fonts
+		);
+		foreach ( $fonts as $font ) {
+			$this->assertFileExists( $font );
+		}
+	}
+
+	/**
 	 * Additional CSS gains the tokens once, and a second install replaces the same marked block.
 	 */
 	public function test_install_is_idempotent(): void {
@@ -60,6 +84,40 @@ final class TokensTest extends TestCase {
 		$tokens->install();
 
 		$this->assertSame( 1, substr_count( $saved[0], Tokens::MARKER ) );
+		$this->assertStringContainsString( '--proto-accent: #0c7f73', $saved[0] );
+	}
+
+	/**
+	 * CSS outside the managed block survives every install: a site's own
+	 * Additional CSS keeps its place before and after the tokens block.
+	 */
+	public function test_install_preserves_css_outside_the_marked_block(): void {
+		$before = "/* the site's own rule */\nh1{color:red}";
+		$after  = "/* later site css */\np{margin:0}";
+		$saved  = array( $before . "\n\n" . Tokens::MARKER . "\n:root{--stale:1}\n/* /linker-commerce-tokens */\n\n" . $after );
+		WP_Mock::userFunction(
+			'wp_get_custom_css',
+			array(
+				'return' => static function () use ( &$saved ): string {
+					return $saved[0];
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_custom_css_post',
+			array(
+				'return' => static function ( string $css ) use ( &$saved ): int {
+					$saved[0] = $css;
+					return 1;
+				},
+			)
+		);
+
+		( new Tokens() )->install();
+
+		$this->assertStringStartsWith( $before, $saved[0] );
+		$this->assertStringEndsWith( $after, $saved[0] );
+		$this->assertStringNotContainsString( '--stale', $saved[0] );
 		$this->assertStringContainsString( '--proto-accent: #0c7f73', $saved[0] );
 	}
 

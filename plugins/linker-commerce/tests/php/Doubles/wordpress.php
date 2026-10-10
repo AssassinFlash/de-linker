@@ -126,12 +126,23 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 
 	if ( ! class_exists( 'WP_CLI' ) ) {
 		class WP_CLI {
+			/** @var array<string, callable> The commands add_command registered. */
+			public static array $registered_commands = array();
 			public static function error( $message ) {
 				throw new \WP_CLI\ExitException( (string) $message );
 			}
-			public static function log( $message ) {}
-			public static function success( $message ) {}
-			public static function add_command( $name, $callable ) {}
+			public static function log( $message ) {
+				echo 'wp-cli log: ' . $message . "\n";
+			}
+			public static function success( $message ) {
+				echo 'wp-cli success: ' . $message . "\n";
+			}
+			public static function warning( $message ) {
+				echo 'wp-cli warning: ' . $message . "\n";
+			}
+			public static function add_command( $name, $callable ) {
+				self::$registered_commands[ (string) $name ] = $callable;
+			}
 		}
 	}
 	if ( ! class_exists( 'WP_CLI\ExitException' ) ) {

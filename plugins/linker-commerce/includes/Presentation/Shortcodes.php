@@ -9,32 +9,21 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-use Linker\Commerce\Account\DocumentDownload;
-use Linker\Commerce\Account\Documents;
-use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Catalog\Faqs;
-use Linker\Commerce\Proforma\Issuer;
-use WC_Order;
 use WC_Product;
 
 /**
- * Price gating, the empty Proforma-request gate, inquiry status, PI download,
- * the account lists and the product FAQ: each shortcode reads an existing class.
+ * Price gating and the empty Proforma-request gate: the two shortcodes the
+ * exported templates consume.
  */
 final class Shortcodes {
 
 	/**
 	 * Sets up the shortcodes.
 	 *
-	 * @param LoginGate      $gate      The empty Proforma-request page.
-	 * @param SavedSolutions $solutions Saved solutions.
-	 * @param Documents      $documents Proforma invoices and design reports.
+	 * @param LoginGate $gate The empty Proforma-request page.
 	 */
-	public function __construct(
-		private readonly LoginGate $gate,
-		private readonly SavedSolutions $solutions,
-		private readonly Documents $documents
-	) {}
+	public function __construct( private readonly LoginGate $gate ) {}
 
 	/**
 	 * Registers the shortcodes.
@@ -42,10 +31,6 @@ final class Shortcodes {
 	public function register(): void {
 		add_shortcode( 'linker_price', array( $this, 'price' ) );
 		add_shortcode( 'linker_checkout', array( $this, 'checkout' ) );
-		add_shortcode( 'linker_inquiry_status', array( $this, 'inquiry_status' ) );
-		add_shortcode( 'linker_proforma', array( $this, 'proforma' ) );
-		add_shortcode( 'linker_saved_solutions', array( $this, 'saved_solutions' ) );
-		add_shortcode( 'linker_documents', array( $this, 'documents' ) );
 		add_shortcode( 'linker_faqs', array( $this, 'faqs' ) );
 	}
 
@@ -77,68 +62,13 @@ final class Shortcodes {
 	}
 
 	/**
-	 * The current inquiry's status.
-	 *
-	 * @param array<string, string>|string $atts Shortcode attributes.
+	 * Whether this is an empty Proforma request (not a confirmation or pay page).
 	 */
-	public function inquiry_status( $atts = array() ): string {
-		unset( $atts );
-		$order = $this->viewed_inquiry();
-		if ( ! $order instanceof WC_Order ) {
-			return '';
+	private function is_empty_request(): bool {
+		if ( is_wc_endpoint_url( 'order-received' ) || is_wc_endpoint_url( 'order-pay' ) ) {
+			return false;
 		}
-		$status = $order->get_status();
-		return sprintf(
-			'<p class="linker-inquiry-status inline-flex min-h-8 items-center rounded-full bg-neutral-100 px-3 text-sm font-semibold" data-status="%1$s">%2$s</p>',
-			esc_attr( $status ),
-			esc_html( wc_get_order_status_name( $status ) )
-		);
-	}
-
-	/**
-	 * A download link for the current inquiry's Proforma invoice.
-	 *
-	 * @param array<string, string>|string $atts Shortcode attributes.
-	 */
-	public function proforma( $atts = array() ): string {
-		unset( $atts );
-		$order = $this->viewed_inquiry();
-		if ( ! $order instanceof WC_Order ) {
-			return '';
-		}
-		$number = (string) $order->get_meta( Issuer::NUMBER_META );
-		if ( '' === $number ) {
-			return '';
-		}
-		return sprintf(
-			'<a class="linker-proforma inline-flex min-h-11 items-center rounded-lg bg-[#0c7f73] px-5 font-bold text-white" href="%1$s">%2$s</a>',
-			esc_url( DocumentDownload::proforma_url( $order ) ),
-			esc_html( $number )
-		);
-	}
-
-	/**
-	 * The customer's saved solutions, via the existing account template.
-	 *
-	 * @param array<string, string>|string $atts Shortcode attributes.
-	 */
-	public function saved_solutions( $atts = array() ): string {
-		unset( $atts );
-		ob_start();
-		$this->solutions->render();
-		return (string) ob_get_clean();
-	}
-
-	/**
-	 * The customer's documents, via the existing account template.
-	 *
-	 * @param array<string, string>|string $atts Shortcode attributes.
-	 */
-	public function documents( $atts = array() ): string {
-		unset( $atts );
-		ob_start();
-		$this->documents->render();
-		return (string) ob_get_clean();
+		return WC()->cart->is_empty();
 	}
 
 	/**
@@ -192,27 +122,5 @@ final class Shortcodes {
 		}
 		$html .= '</section>';
 		return $html;
-	}
-
-	/**
-	 * Whether this is an empty Proforma request (not a confirmation or pay page).
-	 */
-	private function is_empty_request(): bool {
-		if ( is_wc_endpoint_url( 'order-received' ) || is_wc_endpoint_url( 'order-pay' ) ) {
-			return false;
-		}
-		return WC()->cart->is_empty();
-	}
-
-	/**
-	 * The inquiry on the account's view-order page, or null.
-	 */
-	private function viewed_inquiry(): ?WC_Order {
-		if ( ! is_wc_endpoint_url( 'view-order' ) ) {
-			return null;
-		}
-		global $wp;
-		$order = wc_get_order( absint( $wp->query_vars['view-order'] ?? 0 ) );
-		return $order instanceof WC_Order ? $order : null;
 	}
 }

@@ -26,11 +26,39 @@ final class Tokens {
 	private const END = '/* /linker-commerce-tokens */';
 
 	/**
+	 * Absolute path of the exported stylesheet.
+	 */
+	public static function path(): string {
+		return dirname( __DIR__, 2 ) . '/content/tokens.css';
+	}
+
+	/**
+	 * The font files the stylesheet serves, read from its @font-face src()
+	 * URLs: the stylesheet owns which fonts exist, so a font added there is
+	 * guarded without touching this class. Urls outside this plugin (none
+	 * today) are skipped — they are not files a run installs.
+	 *
+	 * @return list<string> Absolute paths.
+	 */
+	public static function fonts(): array {
+		$plugin_dir = dirname( __DIR__, 2 );
+		$prefix     = '/wp-content/plugins/linker-commerce/';
+		$fonts      = array();
+		if ( preg_match_all( '/src:url\("([^"]+)"\)/', self::css(), $urls ) ) {
+			foreach ( array_unique( $urls[1] ) as $url ) {
+				if ( str_starts_with( $url, $prefix ) ) {
+					$fonts[] = $plugin_dir . '/' . substr( $url, strlen( $prefix ) );
+				}
+			}
+		}
+		return $fonts;
+	}
+
+	/**
 	 * The exported stylesheet.
 	 */
 	public static function css(): string {
-		$path = dirname( __DIR__, 2 ) . '/content/tokens.css';
-		return (string) self::read( $path );
+		return (string) self::read( self::path() );
 	}
 
 	/**

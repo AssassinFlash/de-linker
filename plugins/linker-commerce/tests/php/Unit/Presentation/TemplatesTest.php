@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\Templates;
 use Linker\Commerce\Tests\TestCase;
+use Mockery;
 use WP_Mock;
 use WP_Post;
 
@@ -43,6 +44,42 @@ final class TemplatesTest extends TestCase {
 	}
 
 	/**
+	 * A missing template is created with its meta key — its content slashed
+	 * like every write — and an insert WordPress refuses stops the run.
+	 */
+	public function test_sync_inserts_slashed_and_raises_on_a_refused_insert(): void {
+		$slashed = 0;
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
+		WP_Mock::userFunction(
+			'wp_slash',
+			array(
+				'return' => static function ( string $value ) use ( &$slashed ): string {
+					++$slashed;
+					return $value;
+				},
+			)
+		);
+		$error = Mockery::mock( \WP_Error::class );
+		$error->allows( 'get_error_message' )->andReturn( 'Invalid post type' );
+		WP_Mock::userFunction(
+			'wp_insert_post',
+			array(
+				'return' => $error,
+			)
+		);
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'wp_insert_post refused the is_shop_page template: Invalid post type' );
+		try {
+			( new Templates() )->sync();
+		} finally {
+			Mockery::close();
+		}
+		$this->assertSame( 1, $slashed );
+	}
+
+	/**
 	 * A missing template is created with its meta key; a second run updates the same posts and does not create another.
 	 */
 	public function test_sync_is_idempotent(): void {
@@ -54,6 +91,7 @@ final class TemplatesTest extends TestCase {
 		$existing = array();
 		$created  = 0;
 		$updated  = 0;
+		$slashes  = 0;
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction(
 			'get_posts',
@@ -99,7 +137,15 @@ final class TemplatesTest extends TestCase {
 				},
 			)
 		);
-		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn ( $value ) => $value ) );
+		WP_Mock::userFunction(
+			'wp_slash',
+			array(
+				'return' => static function ( string $value ) use ( &$slashes ): string {
+					++$slashes;
+					return $value;
+				},
+			)
+		);
 
 		$templates = new Templates();
 		$first     = $templates->sync();
@@ -111,6 +157,65 @@ final class TemplatesTest extends TestCase {
 		$this->assertSame( 0, $second['created'] );
 		$this->assertSame( 6, $second['updated'] );
 		$this->assertSame( 6, $updated );
+		// Every insert and every update slashes its content — both write paths.
+		$this->assertSame( 12, $slashes );
+	}
+
+	/**
+	 * Templates whose post content already matches the file are left alone:
+	 * counted unchanged, never written.
+	 */
+	public function test_sync_counts_unchanged_templates_and_writes_nothing(): void {
+		$catalog = Templates::catalog();
+		$updated = 0;
+		$inserts = 0;
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => static function ( array $args ) use ( $catalog ): array {
+					$key = (string) ( $args['meta_key'] ?? '' );
+					$id  = 600 + array_search( $key, array_keys( $catalog ), true );
+					return array( self::post( $id, (string) file_get_contents( $catalog[ $key ] ) ) );
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static function ( int $id ) use ( $catalog ): WP_Post {
+					$key = (string) array_keys( $catalog )[ $id - 600 ];
+					return self::post( $id, (string) file_get_contents( $catalog[ $key ] ) );
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_insert_post',
+			array(
+				'times'  => 0,
+				'return' => static function () use ( &$inserts ): int {
+					++$inserts;
+					return 1;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'times'  => 0,
+				'return' => static function () use ( &$updated ): int {
+					++$updated;
+					return 1;
+				},
+			)
+		);
+
+		$report = ( new Templates() )->sync();
+
+		$this->assertSame( 0, $report['created'] );
+		$this->assertSame( 0, $report['updated'] );
+		$this->assertSame( 6, $report['unchanged'] );
+		$this->assertSame( 0, $inserts + $updated );
 	}
 
 	/**

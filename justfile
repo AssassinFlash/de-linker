@@ -84,6 +84,52 @@ eval *args:
 present name:
     PHP={{ php }} {{ linker_local }} wp "{{ name }}" linker-commerce present --user=1
 
+# Recompile an instance's WindPress cache through its admin — the only compile
+# that exists (Tailwind v4 has no server-side build): one-time login, WindPress
+# → Settings → Performance → Generate, the stored cache must be newer than the
+# one from before, and the templates' anchor classes must be in the product.
+# `just windpress-compile <instance>` after every content-changing round.
+[positional-arguments]
+windpress-compile name *options:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    name="$1"; shift
+    user=""
+    for option in "$@"; do
+        case "$option" in
+            --user=*) user="${option#--user=}" ;;
+            *) echo "unknown option: $option (supported: --user=<login>)" >&2; exit 2 ;;
+        esac
+    done
+    if [ -z "$user" ]; then
+        user="$(PHP={{ php }} {{ linker_local }} wp "$name" user list --role=administrator --field=user_login | tail -n 1 | head -n 1)"
+        if [ -z "$user" ]; then
+            echo "no administrator found on $name" >&2
+            exit 1
+        fi
+    fi
+    cache_php='echo (int) @filemtime( wp_upload_dir()["basedir"] . "/windpress/cache/tailwind.css" );'
+    before="$(PHP={{ php }} {{ linker_local }} wp "$name" eval "$cache_php" | tail -n 1)"
+    login_url="$(PHP={{ php }} {{ linker_local }} login "$name" --user="$user" | tail -n 1)"
+    echo "windpress: compiling through the admin (user: $user, cache mtime before: $before)"
+    # The compile runs in WindPress's browser-side worker; the recipe drives the
+    # full chromium build (the headless shell alone is not what the admin ships).
+    (cd "{{ justfile_directory() }}/plugins/linker-tools" && npx playwright install chromium)
+    node "{{ justfile_directory() }}/tools/windpress-compile.mjs" "$login_url" "$before"
+    after="$(PHP={{ php }} {{ linker_local }} wp "$name" eval "$cache_php" | tail -n 1)"
+    if [ -z "$after" ] || [ "$after" -le "$before" ]; then
+        echo "windpress: the cache file did not get newer ($before -> $after)" >&2
+        exit 1
+    fi
+    # The anchor-class check is the plugin's own (WindPressCache::missing_anchor_classes),
+    # so the recipe fails on exactly the classes the templates need.
+    missing="$(PHP={{ php }} {{ linker_local }} wp "$name" eval 'echo json_encode( ( new Linker\Commerce\Presentation\WindPressCache() )->missing_anchor_classes( (string) @file_get_contents( wp_upload_dir()["basedir"] . "/windpress/cache/tailwind.css" ) ) );' | tail -n 1)"
+    if [ "$missing" != "[]" ]; then
+        echo "windpress: the compiled cache misses the templates' anchor classes: $missing" >&2
+        exit 1
+    fi
+    echo "windpress: cache recompiled ($before -> $after), anchor classes present"
+
 [private]
 php-install:
     #!/usr/bin/env bash

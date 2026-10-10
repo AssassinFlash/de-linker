@@ -10,17 +10,14 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 /**
- * An empty /proforma-request/ stays on that URL (200) and shows the live
- * login-gate copy instead of WooCommerce's redirect to the solution draft.
- * A default WooCommerce checkout (the local stack's empty install) still
- * redirects: this only applies to the site's Proforma-request slug.
+ * An empty Proforma request stays on the checkout page (200) and shows the
+ * live login-gate copy instead of WooCommerce's redirect to the solution
+ * draft. A default WooCommerce checkout (the local stack's empty install)
+ * still redirects: this only applies to the site's checkout page — in any
+ * language, so the decision reads the page's translation group (Polylang),
+ * never a slug.
  */
 final class LoginGate {
-
-	/**
-	 * Checkout page slug of the Proforma request (docs/specs/11-commerce.md).
-	 */
-	public const SLUG = 'proforma-request';
 
 	/**
 	 * Stops WooCommerce sending an empty Proforma request to the cart.
@@ -68,10 +65,23 @@ final class LoginGate {
 	}
 
 	/**
-	 * Whether the current request is the site's Proforma-request checkout.
+	 * Whether the current request is the site's checkout page or one of its
+	 * translations: WooCommerce's checkout is a single (English) page whose
+	 * translations — the German Proforma-Anfrage — must keep the same
+	 * empty-draft behavior, so the check reads the translation group of the
+	 * checkout page id instead of matching a slug.
 	 */
 	private function is_proforma_request(): bool {
-		$page = get_post( wc_get_page_id( 'checkout' ) );
-		return $page instanceof \WP_Post && self::SLUG === $page->post_name;
+		$checkout_id = (int) wc_get_page_id( 'checkout' );
+		if ( $checkout_id <= 0 ) {
+			return false;
+		}
+		$ids = array( $checkout_id );
+		if ( function_exists( 'pll_get_post_translations' ) ) {
+			foreach ( (array) pll_get_post_translations( $checkout_id ) as $translation ) {
+				$ids[] = (int) $translation;
+			}
+		}
+		return is_page( array_values( array_unique( $ids ) ) );
 	}
 }
