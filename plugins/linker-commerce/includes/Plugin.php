@@ -13,6 +13,9 @@ use Linker\Commerce\Abilities\Registrar;
 use Linker\Commerce\Admin\FiguresMetaBox;
 use Linker\Commerce\Catalog\EngineeringFeedController;
 use Linker\Commerce\Catalog\SelectionFactsController;
+use Linker\Commerce\Storefront\CatalogFilters;
+use Linker\Commerce\Storefront\ProductView;
+use Linker\Commerce\Storefront\Storefront;
 
 /**
  * Hooks Linker Commerce into WordPress.
@@ -52,6 +55,10 @@ final class Plugin {
 		add_action( 'save_post_product', array( $this->figures, 'save' ) );
 		add_action( 'admin_notices', array( $this->figures, 'notice_refused' ) );
 		add_action( 'cli_init', array( $this, 'register_cli' ) );
+
+		$filters = new CatalogFilters();
+		$filters->register();
+		( new Storefront( $this->file ) )->register();
 	}
 
 	/**

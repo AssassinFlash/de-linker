@@ -1470,6 +1470,215 @@ msgid "Rated AC power the product data states in kVA; present only then."
 msgstr ""
 "Nennleistung (AC) in kVA, die die Produktdaten angeben; nur dann vorhanden."
 
+msgid "Filters"
+msgstr "Filter"
+
+msgid "Filters (%d)"
+msgid_plural "Filters (%d)"
+msgstr[0] "Filter (%d)"
+msgstr[1] "Filter (%d)"
+
+msgid "product"
+msgid_plural "products"
+msgstr[0] "Produkt"
+msgstr[1] "Produkte"
+
+msgid "Category"
+msgstr "Kategorie"
+
+msgid "All products"
+msgstr "Alle Produkte"
+
+msgid "Brand"
+msgstr "Marke"
+
+msgid "Application"
+msgstr "Anwendung"
+
+msgid "Home"
+msgstr "Privat"
+
+msgid "Commercial"
+msgstr "Gewerbe"
+
+msgid "%d-phase"
+msgid_plural "%d-phase"
+msgstr[0] "%d-phasig"
+msgstr[1] "%d-phasig"
+
+msgid "AC power"
+msgstr "AC-Leistung"
+
+msgid "Power"
+msgstr "Leistung"
+
+msgid "Up to 6 kW"
+msgstr "Bis 6 kW"
+
+msgid "6 to 15 kW"
+msgstr "6 bis 15 kW"
+
+msgid "15 to 30 kW"
+msgstr "15 bis 30 kW"
+
+msgid "Over 30 kW"
+msgstr "Über 30 kW"
+
+msgid "Usable energy"
+msgstr "Nutzbare Energie"
+
+msgid "Set"
+msgstr "Übernehmen"
+
+msgid "Plan with the Solution Configurator"
+msgstr "Mit dem Lösungskonfigurator planen"
+
+msgid "Open the Solution Configurator"
+msgstr "Lösungskonfigurator öffnen"
+
+msgid "Clear"
+msgstr "Zurücksetzen"
+
+msgid "Show products"
+msgstr "Produkte anzeigen"
+
+msgid "Item no."
+msgstr "Artikelnr."
+
+msgid "View product"
+msgstr "Produkt ansehen"
+
+msgid "No product matches these filters. Clear one to see more."
+msgstr ""
+"Kein Produkt passt zu dieser Filterauswahl. Setzen Sie einen Filter zurück, "
+"um mehr zu sehen."
+
+msgid "Close filters"
+msgstr "Filter schließen"
+
+msgid "Product filters"
+msgstr "Produktfilter"
+
+msgid "Minimum AC power in kilowatts"
+msgstr "Minimale AC-Leistung in Kilowatt"
+
+msgid "Maximum AC power in kilowatts"
+msgstr "Maximale AC-Leistung in Kilowatt"
+
+msgid "Minimum usable energy in kilowatt hours"
+msgstr "Minimale nutzbare Energie in Kilowattstunden"
+
+msgid "Maximum usable energy in kilowatt hours"
+msgstr "Maximale nutzbare Energie in Kilowattstunden"
+
+msgid "Recommended"
+msgstr "Empfohlen"
+
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+msgid "Name A-Z"
+msgstr "Name A-Z"
+
+msgid "Power low-high"
+msgstr "Leistung niedrig-hoch"
+
+msgid "Power high-low"
+msgstr "Leistung hoch-niedrig"
+
+msgid "Breadcrumb"
+msgstr "Brotkrumen"
+
+msgid "Product image"
+msgstr "Produktbild"
+
+msgid "Product photography for this model is in preparation."
+msgstr "Die Produktfotografie für dieses Modell wird vorbereitet."
+
+msgid "Item number:"
+msgstr "Artikelnummer:"
+
+msgid "Net price after partner sign-in"
+msgstr "Nettopreis nach Partner-Anmeldung"
+
+msgid "In stock"
+msgstr "Auf Lager"
+
+msgid "Currently unavailable"
+msgstr "Derzeit nicht verfügbar"
+
+msgid "Sign in for partner pricing"
+msgstr "Für Partnerpreise anmelden"
+
+msgid "Ask about this product"
+msgstr "Produkt anfragen"
+
+msgid "Product sections"
+msgstr "Produktbereiche"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Technical data"
+msgstr "Technische Daten"
+
+msgid "Specifications"
+msgstr "Spezifikationen"
+
+msgid ""
+"The specification table for this product is in preparation. Ask us for the "
+"datasheet."
+msgstr ""
+"Die Spezifikationstabelle für dieses Produkt wird vorbereitet. Fragen Sie "
+"uns nach dem Datenblatt."
+
+msgid ""
+"No documents are attached to this product yet. Ask us and we will add them."
+msgstr ""
+"Für dieses Produkt sind noch keine Dokumente hinterlegt. Fragen Sie uns, wir "
+"ergänzen sie."
+
+msgid "FAQs"
+msgstr "Produktfragen"
+
+msgid "Compatible products"
+msgstr "Kompatible Produkte"
+
+msgid "Close image viewer"
+msgstr "Bildbetrachter schließen"
+
+msgid "Key product data"
+msgstr "Produktdaten"
+
+msgid "Grid phases"
+msgstr "Netzphasen"
+
+msgid "Energy capacity"
+msgstr "Nutzbare Energie"
+
+#: templates/storefront-archive-product.php
+msgid ""
+"Configure a storage system from your site data; the result is a solution "
+"draft you can send as an inquiry."
+msgstr ""
+"Konfigurieren Sie aus Ihren Standortdaten ein Speichersystem; das Ergebnis "
+"ist ein Lösungsentwurf, den Sie als Anfrage senden können."
+
+#: templates/storefront-single-product.php
+msgid ""
+"Introduction in preparation. The specification below carries the values from "
+"the datasheet on file."
+msgstr ""
+"Die Einleitung wird vorbereitet. Die Spezifikation darunter enthält die "
+"Werte des hinterlegten Datenblatts."
+
+#. The account menu's Documents (Unterlagen, #11) and the product page's
+#. attachments (Dokumente) share the msgid; this context takes the storefront.
+#: templates/storefront-single-product.php
+msgctxt "product attachments"
+msgid "Documents"
+msgstr "Dokumente"
+
 #: includes/Presentation/LoginGate.php
 msgid "Empty solution draft"
 msgstr "Leerer Lösungsentwurf"
@@ -1479,8 +1688,12 @@ msgid "Nothing to submit yet."
 msgstr "Noch nichts zum Absenden."
 
 #: includes/Presentation/LoginGate.php
-msgid "Your solution draft is empty. Add matched systems, then come back for your Proforma."
-msgstr "Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie dann für Ihre Proformarechnung zurück."
+msgid ""
+"Your solution draft is empty. Add matched systems, then come back for your "
+"Proforma."
+msgstr ""
+"Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie "
+"dann für Ihre Proformarechnung zurück."
 
 #: includes/Presentation/LoginGate.php
 msgid "Proforma request sign-in"
@@ -1491,12 +1704,21 @@ msgid "Get your Proforma"
 msgstr "Proformarechnung anfordern"
 
 #: includes/Presentation/LoginGate.php
-msgid "Sign in with your partner account, add matched systems, and your Proforma is one step away."
-msgstr "Melden Sie sich mit Ihrem Partnerkonto an, fügen Sie passende Systeme hinzu, und Ihre Proformarechnung ist nur noch einen Schritt entfernt."
+msgid ""
+"Sign in with your partner account, add matched systems, and your Proforma is "
+"one step away."
+msgstr ""
+"Melden Sie sich mit Ihrem Partnerkonto an, fügen Sie passende Systeme hinzu, "
+"und Ihre Proformarechnung ist nur noch einen Schritt entfernt."
 
 #: includes/Presentation/LoginGate.php
-msgid "The Proforma request is reserved for Linker partner accounts. Register, add your systems, and return here — VAT and delivery are ours to handle."
-msgstr "Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren Sie sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — Umsatzsteuer und Lieferung übernehmen wir."
+msgid ""
+"The Proforma request is reserved for Linker partner accounts. Register, add "
+"your systems, and return here — VAT and delivery are ours to handle."
+msgstr ""
+"Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren Sie "
+"sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — "
+"Umsatzsteuer und Lieferung übernehmen wir."
 
 #: includes/Presentation/LoginGate.php
 msgid "Sign in or register"

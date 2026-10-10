@@ -523,6 +523,36 @@ def test_a_snapshot_brings_its_plugins_themes_and_uploads(
     assert (served.status, served.body) == (200, "datasheet")
 
 
+def test_a_snapshot_activates_only_the_plugins_the_site_ran_active(
+    stack: Stack, tmp_path: Path
+) -> None:
+    b = stack.instance("pytestb")
+    taken = tmp_path / "20261010-0033"
+    liveplugin = taken / "plugins" / "fixture-live" / "fixture-live.php"
+    gone = taken / "plugins" / "fixture-retired" / "fixture-retired.php"
+    for path in (liveplugin.parent, gone.parent):
+        path.mkdir(parents=True)
+    liveplugin.write_text("<?php\n/**\n * Plugin Name: Fixture live\n */\n")
+    gone.write_text("<?php\n/**\n * Plugin Name: Fixture retired\n */\n")
+    (taken / "site").mkdir()
+    (taken / "site" / "plugins.json").write_text(
+        '[{"name": "fixture-live", "status": "active", "file": "fixture-live/fixture-live.php"},'
+        ' {"name": "fixture-retired", "status": "inactive", "file": "fixture-retired/fixture-retired.php"}]'
+    )
+
+    stack.cli("up", b.name, "--snapshot", str(taken))
+
+    # The local instance runs the live site's parity set: files of both
+    # plugins, active only what the live site ran active (W1, 2026-10-10).
+    assert (
+        stack.wp(b.name, "plugin", "get", "fixture-live", "--field=status") == "active"
+    )
+    assert (
+        stack.wp(b.name, "plugin", "get", "fixture-retired", "--field=status")
+        == "inactive"
+    )
+
+
 def test_a_wrong_snapshot_path_is_refused_before_anything_changes(
     stack: Stack, tmp_path: Path
 ) -> None:

@@ -190,6 +190,62 @@ final class Command {
 	}
 
 	/**
+	 * Repairs the LiveCanvas partials' language pairs: the header, footer and
+	 * product partials carry an is_* role meta, and a role's two partials —
+	 * the snapshot's English one (the lower ID; the German version is minted
+	 * after the snapshot load) — must each carry their language and share a
+	 * translation group. An instance imported before Twins ensured the
+	 * source's language has them unpaired or mislabelled, which makes
+	 * LiveCanvas's ID-ordered partial lookup render the German partial for
+	 * every language (#11's forensics, 2026-10-10).
+	 *
+	 * @subcommand repair-partials
+	 *
+	 * @param array<int, string>    $args       Positional arguments.
+	 * @param array<string, string> $assoc_args Options.
+	 */
+	public function repair_partials( array $args, array $assoc_args ): void {
+		unset( $args, $assoc_args );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			WP_CLI::error( 'Run as an administrator: wp linker-i18n repair-partials --user=<admin>.' );
+		}
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- a walk of the partials, not a write.
+		$ids   = array_map( 'intval', $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'lc_partial' AND post_status <> 'trash' ORDER BY ID ASC" ) );
+		$roles = array();
+		foreach ( $ids as $id ) {
+			foreach ( get_post_meta( $id ) as $key => $values ) {
+				if ( str_starts_with( (string) $key, 'is_' ) ) {
+					$roles[ $key . ':' . $values[0] ][] = $id;
+				}
+			}
+		}
+		$repaired = 0;
+		$skipped  = 0;
+		foreach ( $roles as $role => $members ) {
+			if ( 2 !== count( $members ) ) {
+				++$skipped;
+				WP_CLI::log( sprintf( '%s: %d partials, left alone', $role, count( $members ) ) );
+				continue;
+			}
+			list( $english, $german ) = $members;
+			if ( Languages::SOURCE !== $this->languages->of_post( $english ) ) {
+				$this->languages->set_post_language( $english, Languages::SOURCE );
+				++$repaired;
+			}
+			if ( Languages::TARGET !== $this->languages->of_post( $german ) ) {
+				$this->languages->set_post_language( $german, Languages::TARGET );
+				++$repaired;
+			}
+			if ( $german !== $this->languages->post_translation( $english, Languages::TARGET ) ) {
+				$this->languages->pair_posts( $english, $german );
+				++$repaired;
+			}
+		}
+		WP_CLI::success( sprintf( 'LiveCanvas partial pairs: %d repairs, %d roles left alone.', $repaired, $skipped ) );
+	}
+
+	/**
 	 * Rewrites the links in every German page, post and product to the German
 	 * pages (after an import, when the targets exist).
 	 *

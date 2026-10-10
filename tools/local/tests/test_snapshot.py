@@ -38,6 +38,39 @@ def test_installs_the_plugins_and_uploads_of_a_snapshot(
     ).read_text() == "pdf"
 
 
+def test_only_the_plugins_the_site_ran_active_activate(
+    tmp_path: Path, instance: Instance
+) -> None:
+    taken = tmp_path / "20261010-0033"
+    write(taken / "plugins" / "livecanvas" / "livecanvas.php", "<?php")
+    write(taken / "plugins" / "windpress" / "windpress.php", "<?php")
+    write(taken / "plugins" / "wp-seopress" / "wp-seopress.php", "<?php")
+    write(
+        taken / "site" / "plugins.json",
+        '[{"name": "livecanvas", "status": "active", "file": "livecanvas/livecanvas.php"},'
+        ' {"name": "windpress", "status": "inactive", "file": "windpress/windpress.php"},'
+        ' {"name": "wp-seopress", "status": "active", "file": "wp-seopress/wp-seopress.php"}]',
+    )
+
+    slugs = snapshot.install(instance, taken)
+
+    # The files all arrive; only what the live site ran active activates
+    # (a local instance must look like live, AGENTS.md 2026-10-10).
+    assert slugs == ["livecanvas", "wp-seopress"]
+    assert (instance.wp_content / "plugins" / "windpress" / "windpress.php").exists()
+
+
+def test_a_snapshot_without_the_manifest_activates_every_plugin(
+    tmp_path: Path, instance: Instance
+) -> None:
+    taken = tmp_path / "fixture"
+    write(taken / "plugins" / "snapshot-fixture" / "snapshot-fixture.php", "<?php")
+
+    slugs = snapshot.install(instance, taken)
+
+    assert slugs == ["snapshot-fixture"]
+
+
 def test_a_plugin_from_a_newer_snapshot_replaces_the_installed_one(
     tmp_path: Path, instance: Instance
 ) -> None:

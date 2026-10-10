@@ -14,7 +14,11 @@ use Linker\Commerce\Admin\FiguresMetaBox;
 use Linker\Commerce\Catalog\EngineeringFeedController;
 use Linker\Commerce\Catalog\SelectionFactsController;
 use Linker\Commerce\Plugin;
+use Linker\Commerce\Storefront\CatalogFilters;
+use Linker\Commerce\Storefront\ProductView;
+use Linker\Commerce\Storefront\Storefront;
 use WP_Mock;
+use WP_Mock\Matcher\AnyInstance;
 use WP_Mock\Tools\TestCase;
 
 /**
@@ -48,6 +52,12 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'save_post_product', array( $figures, 'save' ) );
 		WP_Mock::expectActionAdded( 'admin_notices', array( $figures, 'notice_refused' ) );
 		WP_Mock::expectActionAdded( 'cli_init', array( $plugin, 'register_cli' ) );
+
+		// AnyInstance matches the object the registration constructs.
+		WP_Mock::expectActionAdded( 'pre_get_posts', array( new AnyInstance( CatalogFilters::class ), 'filter' ), 99 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'template_include', array( new AnyInstance( Storefront::class ), 'template' ), 99999 ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( new AnyInstance( Storefront::class ), 'assets' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'woocommerce_show_page_title', '__return_false' );
 
 		$plugin->register();
 

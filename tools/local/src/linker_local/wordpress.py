@@ -47,6 +47,16 @@ WOOCOMMERCE_ZIP = (
 # (`wp plugin verify-checksums`) like WooCommerce's.
 POLYLANG_VERSION = "3.8.10"
 POLYLANG_ZIP = f"https://downloads.wordpress.org/plugin/polylang.{POLYLANG_VERSION}.zip"
+# LiveCanvas as #12 runs it: the snapshot carries the live site's 4.9.3, whose
+# wp/v2 REST answer on page 2 gains an HTML prefix (docs/specs/12-site-chrome.md
+# item 3); 4.9.4 fixes it and 4.9.5 is that fix's release. It is not on
+# wordpress.org: the archive of record is the unzipped plugin in
+# ~/de-linker-data/livecanvas-4.9.5/ on this Mac (installed from there on
+# 2026-10-10). An instance reset from a snapshot drifts back to 4.9.3 on
+# purpose -- the pin makes the drift visible in `up`'s warning, and the
+# upgrade step is the snapshot's to carry once the live site moves.
+LIVECANVAS_VERSION = "4.9.5"
+LIVECANVAS_MAIN = "livecanvas-plugin-index.php"
 # The German (Formal) language packs: the site is English and German at equal
 # rank and German runs in the formal register (AGENTS.md §1 and §3), so every
 # instance carries de_DE_formal - WordPress core's pack and WooCommerce's,
@@ -65,6 +75,7 @@ PINNED = {
     "WordPress": WORDPRESS_VERSION,
     "WooCommerce": WOOCOMMERCE_VERSION,
     "Polylang": POLYLANG_VERSION,
+    "LiveCanvas": LIVECANVAS_VERSION,
     "Redis Object Cache": objectcache.PLUGIN_VERSION,
 }
 
@@ -185,7 +196,13 @@ def refresh(
     say: Say,
     snapshot_dir: Path | None = None,
 ) -> None:
-    """Bring a built instance to this checkout: php.ini, router, mu-plugins, plugin links."""
+    """Bring a built instance to this checkout: php.ini, router, mu-plugins, plugin links.
+
+    An instance is never recycled between checkouts or tickets: it keeps its
+    database (the snapshot, the migrations a session applied), and the plugin
+    links follow whichever checkout runs `up`; a ticket that needs a clean
+    database takes its own instance."""
+
     installed = versions(instance)
     if installed != PINNED:
         drift = ", ".join(
@@ -272,6 +289,9 @@ def versions(instance: Instance) -> dict[str, str | None]:
         ),
         "Polylang": _first_match(
             plugins / "polylang" / "polylang.php", r"\* Version: (\S+)"
+        ),
+        "LiveCanvas": _first_match(
+            plugins / "livecanvas" / LIVECANVAS_MAIN, r"Version: (\S+)"
         ),
         "Redis Object Cache": _first_match(
             plugins / objectcache.PLUGIN / "redis-cache.php", r"\* Version: (\S+)"

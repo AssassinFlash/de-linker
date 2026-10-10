@@ -540,6 +540,11 @@ def _active_plugins(wp: WpCli) -> list[str]:
         )
     except LoadError:
         return []
+    # A gap in the option's integer keys (the live list has one: a plugin was
+    # unset in place, leaving indices 0-7, 9, 10, 11) makes WP-CLI print an
+    # object whose keys are the old indices; its values are still the list.
+    if isinstance(value, dict):
+        return [str(entry) for entry in value.values()]
     return [str(entry) for entry in value] if isinstance(value, list) else []
 
 

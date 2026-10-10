@@ -37,6 +37,20 @@ final class PolylangDouble {
 	public static PolylangInstance $polylang;
 
 	/**
+	 * The pll_set_post_language() calls of the current test: post ID => language.
+	 *
+	 * @var array<int, string>
+	 */
+	public static array $set_post_language = array();
+
+	/**
+	 * The pll_save_post_translations() calls of the current test, in order.
+	 *
+	 * @var list<array<string, int>>
+	 */
+	public static array $saved_post_translations = array();
+
+	/**
 	 * The language objects of the current test, by slug: one object per
 	 * language, so a test can tell which one is current.
 	 *
@@ -80,7 +94,26 @@ final class PolylangDouble {
 		WP_Mock::userFunction( 'pll_get_term', array( 'return' => static fn( int $id, string $language ) => $pair( $term_pairs, $term_languages, $id, $language ) ) );
 		WP_Mock::userFunction( 'pll_is_translated_post_type', array( 'return' => $translates ) );
 		WP_Mock::userFunction( 'pll_is_translated_taxonomy', array( 'return' => $translates ) );
-		WP_Mock::userFunction( 'get_post', array( 'return' => static fn( $id ) => isset( $post_languages[ (int) $id ] ) ? self::post( (int) $id, $posts[ (int) $id ] ?? array() ) : null ) );
+		WP_Mock::userFunction( 'get_post', array( 'return' => static fn( $id ) => isset( $post_languages[ (int) $id ] ) || isset( $posts[ (int) $id ] ) ? self::post( (int) $id, $posts[ (int) $id ] ?? array() ) : null ) );
+		self::$set_post_language       = array();
+		self::$saved_post_translations = array();
+		WP_Mock::userFunction(
+			'pll_set_post_language',
+			array(
+				'return' => static function ( int $id, string $slug ): bool {
+					self::$set_post_language[ $id ] = $slug;
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_save_post_translations',
+			array(
+				'return' => static function ( array $map ): void {
+					self::$saved_post_translations[] = $map;
+				},
+			)
+		);
 		WP_Mock::userFunction( 'get_term', array( 'return' => static fn( $id ) => isset( $term_languages[ (int) $id ] ) ? self::term( (int) $id ) : null ) );
 		self::$languages = array();
 		self::$polylang  = new PolylangInstance( self::language( $current ) );

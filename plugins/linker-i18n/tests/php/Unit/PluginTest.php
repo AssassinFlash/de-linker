@@ -70,6 +70,7 @@ final class PluginTest extends TestCase {
 		array( 'action', 'woocommerce_product_set_stock_status', Projection::class, 'changed', 20, 1 ),
 		array( 'action', 'woocommerce_updated_product_stock', Projection::class, 'changed', 20, 1 ),
 		array( 'filter', 'woocommerce_add_to_cart_product_id', Storefront::class, 'cart_product', 10, 1 ),
+		array( 'filter', 'linker_commerce_facts_product_id', Storefront::class, 'facts_product_id', 10, 1 ),
 		array( 'filter', 'woocommerce_store_api_add_to_cart_data', Storefront::class, 'store_cart_product', 10, 1 ),
 		array( 'filter', 'woocommerce_product_get_name', Storefront::class, 'name', 10, 2 ),
 		array( 'filter', 'woocommerce_add_to_cart_item_name_in_quotes', Storefront::class, 'quoted_item_name', 10, 2 ),

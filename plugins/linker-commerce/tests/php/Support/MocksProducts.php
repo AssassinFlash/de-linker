@@ -29,6 +29,18 @@ trait MocksProducts {
 	 * @param mixed              $figures     What get_post_meta() returns for _tv_b2b_figures.
 	 */
 	protected function mock_product( int $id, array $categories, array $application, array $phase, mixed $figures ): void {
+		// The language layer's twin swap is a no-op in unit tests: the facts
+		// product stays the mocked one (has_filter says the swap listens).
+		WP_Mock::userFunction( 'has_filter', array( 'return' => 1 ) );
+		// The @var narrows WP_Mock's union of responder doc types to the
+		// Filter responder its code defines.
+		/** The filter responder WP_Mock's with() returns.
+		 *
+		 * @var \WP_Mock\Filter_Responder $responder
+		 */
+		$responder = WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( $id );
+		$responder->reply( $id );
+
 		$terms = array(
 			'product_cat'    => $categories,
 			'pa_application' => array_values( $application ),

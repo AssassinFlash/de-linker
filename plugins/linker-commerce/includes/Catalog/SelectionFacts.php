@@ -107,11 +107,27 @@ final class SelectionFacts {
 	private const PHASE_KEYS = array( 'phase', 'phases' );
 
 	/**
-	 * The selection facts of a product.
+	 * The selection facts of a product. A product of another language than
+	 * the facts' source carries no facts of its own; the
+	 * `linker_commerce_facts_product_id` filter lets the language layer swap
+	 * in the source-language twin (one fact per product: the English one).
 	 *
 	 * @param int $product_id Product ID.
 	 */
 	public static function for_product( int $product_id ): SelectionFactSet {
+		if ( \function_exists( 'has_filter' ) && has_filter( 'linker_commerce_facts_product_id' ) ) {
+			/**
+			 * Filters the product the selection facts answer for: the language
+			 * layer swaps in the source-language twin of a translated product.
+			 * Without a listener (no language layer, unit tests) the asked-for
+			 * product answers itself.
+			 *
+			 * @since 0.1.0
+			 *
+			 * @param int $product_id The product ID asked for.
+			 */
+			$product_id = (int) apply_filters( 'linker_commerce_facts_product_id', $product_id );
+		}
 		$figures                             = self::figures( $product_id );
 		list( $ac_power_kw, $ac_apparent )   = self::ac_power( $figures );
 		list( $usable_kwh, $usable_range )   = self::energy( $figures, self::USABLE_KEYS );
