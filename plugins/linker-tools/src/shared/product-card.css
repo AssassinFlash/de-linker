@@ -103,7 +103,11 @@
 .linker-card__badge--warn {
 	color: var(--proto-color-ink, #0c0f0f);
 	border-color: var(--proto-sem-warn, #c4a04a);
-	background: color-mix(in srgb, var(--proto-sem-warn, #c4a04a) 16%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--proto-sem-warn, #c4a04a) 16%,
+		transparent
+	);
 }
 
 .linker-card__facts {

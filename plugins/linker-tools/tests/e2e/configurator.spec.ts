@@ -144,6 +144,10 @@ test( 'the keyboard reaches every input in reading order, each with a visible fo
 	for ( let step = 0; step < 11; step++ ) {
 		await page.keyboard.press( 'Tab' );
 		const focused = await page.evaluate( () => {
+			// The rule wants an element's ownerDocument; a serialized evaluate
+			// callback runs in the page with no node ref, so the document
+			// itself is the only handle there is.
+			// eslint-disable-next-line @wordpress/no-global-active-element
 			const element = document.activeElement as HTMLElement;
 			return {
 				id: element.id || element.textContent?.trim() || '',
