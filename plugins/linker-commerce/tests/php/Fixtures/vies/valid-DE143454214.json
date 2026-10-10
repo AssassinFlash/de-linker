@@ -1,0 +1,22 @@
+{
+ "status": 200,
+ "body": {
+  "countryCode": "DE",
+  "vatNumber": "143454214",
+  "requestDate": "2026-10-09T13:06:52.491Z",
+  "valid": true,
+  "requestIdentifier": "",
+  "name": "---",
+  "address": "---",
+  "traderName": "---",
+  "traderStreet": "---",
+  "traderPostalCode": "---",
+  "traderCity": "---",
+  "traderCompanyType": "---",
+  "traderNameMatch": "NOT_PROCESSED",
+  "traderStreetMatch": "NOT_PROCESSED",
+  "traderPostalCodeMatch": "NOT_PROCESSED",
+  "traderCityMatch": "NOT_PROCESSED",
+  "traderCompanyTypeMatch": "NOT_PROCESSED"
+ }
+}

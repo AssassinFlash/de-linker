@@ -2,6 +2,8 @@
 # tools/php/phpstan-plugins.neon.
 includes:
 	- ../../tools/php/phpstan-plugins.neon
+	# Mockery::mock(X::class) is an X in the tests.
+	- vendor/phpstan/phpstan-mockery/extension.neon
 
 parameters:
 	paths:
@@ -12,3 +14,15 @@ parameters:
 		- tests/fixtures
 		# The data migrations of the products this plugin reads (tools/migrate/*.php, run with `wp eval-file -`).
 		- ../../tools/migrate
+	excludePaths:
+		# Stand-ins for WordPress and WooCommerce classes; PHPStan reads the real ones from the stubs.
+		- tests/php/Doubles
+	scanFiles:
+		# Action Scheduler (as_schedule_single_action()), bundled with WooCommerce.
+		- vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+		# Polylang's API (PLL(), pll_current_language()); the plugin reads it when present.
+		- vendor/wpsyntex/polylang-stubs/polylang-stubs.php
+		# WP_Mock declares its hook responders next to the hooks, outside the autoloader.
+		- vendor/10up/wp_mock/php/WP_Mock/Action.php
+		- vendor/10up/wp_mock/php/WP_Mock/Filter.php
+		- vendor/10up/wp_mock/php/WP_Mock/HookedCallback.php

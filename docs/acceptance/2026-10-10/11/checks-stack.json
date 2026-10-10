@@ -1,0 +1,1010 @@
+{
+ "pages": [
+  {
+   "shot": "product-1440-en-guest.png",
+   "url": "http://127.0.0.1:8909/product/saj-h2-10k-t3/",
+   "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "prices hidden for guests",
+   "lang": "en"
+  },
+  {
+   "shot": "product-390-en-guest.png",
+   "url": "http://127.0.0.1:8909/product/saj-h2-10k-t3/",
+   "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) – Linker",
+   "overflow_px": 2,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "prices hidden for guests",
+   "lang": "en"
+  },
+  {
+   "shot": "draft-1440-en-empty.png",
+   "url": "http://127.0.0.1:8909/cart/",
+   "title": "Solution draft – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "empty solution draft",
+   "lang": "en"
+  },
+  {
+   "shot": "draft-390-en-empty.png",
+   "url": "http://127.0.0.1:8909/cart/",
+   "title": "Solution draft – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "empty solution draft",
+   "lang": "en"
+  },
+  {
+   "shot": "registration-1440-en-form.png",
+   "url": "http://127.0.0.1:8909/my-account/",
+   "title": "My account – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout"
+   ],
+   "note": "registration form",
+   "lang": "en"
+  },
+  {
+   "shot": "registration-390-en-form.png",
+   "url": "http://127.0.0.1:8909/my-account/",
+   "title": "My account – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout"
+   ],
+   "note": "registration form",
+   "lang": "en"
+  },
+  {
+   "shot": "product-1440-en-customer.png",
+   "url": "http://127.0.0.1:8909/product/saj-h2-10k-t3/",
+   "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "prices visible for the customer",
+   "lang": "en"
+  },
+  {
+   "shot": "product-390-en-customer.png",
+   "url": "http://127.0.0.1:8909/product/saj-h2-10k-t3/",
+   "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) – Linker",
+   "overflow_px": 2,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "prices visible for the customer",
+   "lang": "en"
+  },
+  {
+   "shot": "draft-1440-en-filled.png",
+   "url": "http://127.0.0.1:8909/cart/",
+   "title": "Solution draft – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "solution draft with a line and subtotal",
+   "lang": "en"
+  },
+  {
+   "shot": "draft-390-en-filled.png",
+   "url": "http://127.0.0.1:8909/cart/",
+   "title": "Solution draft – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "solution draft with a line and subtotal",
+   "lang": "en"
+  },
+  {
+   "shot": "request-1440-en-form.png",
+   "url": "http://127.0.0.1:8909/proforma-request/",
+   "title": "Proforma request – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "payment",
+    "shipping"
+   ],
+   "note": "proforma request page",
+   "lang": "en"
+  },
+  {
+   "shot": "request-390-en-form.png",
+   "url": "http://127.0.0.1:8909/proforma-request/",
+   "title": "Proforma request – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "payment",
+    "shipping"
+   ],
+   "note": "proforma request page",
+   "lang": "en"
+  },
+  {
+   "shot": "request-1440-en-received.png",
+   "url": "http://127.0.0.1:8909/proforma-request/inquiry-received/7065/?key=wc_order_oqoHJTwhQrBpq",
+   "title": "Inquiry received – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "inquiry received confirmation",
+   "lang": "en"
+  },
+  {
+   "shot": "request-390-en-received.png",
+   "url": "http://127.0.0.1:8909/proforma-request/inquiry-received/7065/?key=wc_order_oqoHJTwhQrBpq",
+   "title": "Inquiry received – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "inquiry received confirmation",
+   "lang": "en"
+  },
+  {
+   "shot": "account-1440-en-overview.png",
+   "url": "http://127.0.0.1:8909/my-account/",
+   "title": "My account – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "account overview with the contact person",
+   "lang": "en"
+  },
+  {
+   "shot": "account-390-en-overview.png",
+   "url": "http://127.0.0.1:8909/my-account/",
+   "title": "My account – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "account overview with the contact person",
+   "lang": "en"
+  },
+  {
+   "shot": "account-1440-en-inquiries.png",
+   "url": "http://127.0.0.1:8909/my-account/inquiries/",
+   "title": "Inquiries – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "inquiry list",
+   "lang": "en"
+  },
+  {
+   "shot": "account-390-en-inquiries.png",
+   "url": "http://127.0.0.1:8909/my-account/inquiries/",
+   "title": "Inquiries – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "inquiry list",
+   "lang": "en"
+  },
+  {
+   "shot": "account-1440-en-inquiry.png",
+   "url": "http://127.0.0.1:8909/my-account/inquiry/7065/",
+   "title": "Inquiry #7065 – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "inquiry detail",
+   "lang": "en"
+  },
+  {
+   "shot": "account-390-en-inquiry.png",
+   "url": "http://127.0.0.1:8909/my-account/inquiry/7065/",
+   "title": "Inquiry #7065 – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "inquiry detail",
+   "lang": "en"
+  },
+  {
+   "shot": "account-1440-en-documents.png",
+   "url": "http://127.0.0.1:8909/my-account/documents/",
+   "title": "Documents – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "documents page",
+   "lang": "en"
+  },
+  {
+   "shot": "account-390-en-documents.png",
+   "url": "http://127.0.0.1:8909/my-account/documents/",
+   "title": "Documents – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "documents page",
+   "lang": "en"
+  },
+  {
+   "shot": "account-1440-en-company.png",
+   "url": "http://127.0.0.1:8909/my-account/company/",
+   "title": "Company – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "company details",
+   "lang": "en"
+  },
+  {
+   "shot": "account-390-en-company.png",
+   "url": "http://127.0.0.1:8909/my-account/company/",
+   "title": "Company – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "company details",
+   "lang": "en"
+  },
+  {
+   "shot": "product-1440-de-guest.png",
+   "url": "http://127.0.0.1:8909/de/produkt/saj-h2-10k-t3/",
+   "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter) – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "prices hidden for guests",
+   "lang": "de"
+  },
+  {
+   "shot": "product-390-de-guest.png",
+   "url": "http://127.0.0.1:8909/de/produkt/saj-h2-10k-t3/",
+   "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter) – Linker",
+   "overflow_px": 2,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "prices hidden for guests",
+   "lang": "de"
+  },
+  {
+   "shot": "draft-1440-de-empty.png",
+   "url": "http://127.0.0.1:8909/de/warenkorb/",
+   "title": "Lösungsentwurf – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "empty solution draft",
+   "lang": "de"
+  },
+  {
+   "shot": "draft-390-de-empty.png",
+   "url": "http://127.0.0.1:8909/de/warenkorb/",
+   "title": "Lösungsentwurf – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "empty solution draft",
+   "lang": "de"
+  },
+  {
+   "shot": "registration-1440-de-form.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/",
+   "title": "Mein Konto – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout"
+   ],
+   "note": "registration form",
+   "lang": "de"
+  },
+  {
+   "shot": "registration-390-de-form.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/",
+   "title": "Mein Konto – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout"
+   ],
+   "note": "registration form",
+   "lang": "de"
+  },
+  {
+   "shot": "product-1440-de-customer.png",
+   "url": "http://127.0.0.1:8909/de/produkt/saj-h2-10k-t3/",
+   "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter) – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "prices visible for the customer",
+   "lang": "de"
+  },
+  {
+   "shot": "product-390-de-customer.png",
+   "url": "http://127.0.0.1:8909/de/produkt/saj-h2-10k-t3/",
+   "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter) – Linker",
+   "overflow_px": 2,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "prices visible for the customer",
+   "lang": "de"
+  },
+  {
+   "shot": "draft-1440-de-filled.png",
+   "url": "http://127.0.0.1:8909/de/warenkorb/",
+   "title": "Lösungsentwurf – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "solution draft with a line and subtotal",
+   "lang": "de"
+  },
+  {
+   "shot": "draft-390-de-filled.png",
+   "url": "http://127.0.0.1:8909/de/warenkorb/",
+   "title": "Lösungsentwurf – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "solution draft with a line and subtotal",
+   "lang": "de"
+  },
+  {
+   "shot": "request-1440-de-form.png",
+   "url": "http://127.0.0.1:8909/de/proforma-anfrage/",
+   "title": "Proforma-Anfrage – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "payment",
+    "shipping"
+   ],
+   "note": "proforma request page",
+   "lang": "de"
+  },
+  {
+   "shot": "request-390-de-form.png",
+   "url": "http://127.0.0.1:8909/de/proforma-anfrage/",
+   "title": "Proforma-Anfrage – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "payment",
+    "shipping"
+   ],
+   "note": "proforma request page",
+   "lang": "de"
+  },
+  {
+   "shot": "request-1440-de-received.png",
+   "url": "http://127.0.0.1:8909/de/proforma-anfrage/inquiry-received/7067/?key=wc_order_yWy7ixlwPX7Kh",
+   "title": "Anfrage eingegangen – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "inquiry received confirmation",
+   "lang": "de"
+  },
+  {
+   "shot": "request-390-de-received.png",
+   "url": "http://127.0.0.1:8909/de/proforma-anfrage/inquiry-received/7067/?key=wc_order_yWy7ixlwPX7Kh",
+   "title": "Anfrage eingegangen – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "checkout",
+    "shipping"
+   ],
+   "note": "inquiry received confirmation",
+   "lang": "de"
+  },
+  {
+   "shot": "account-1440-de-overview.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/",
+   "title": "Mein Konto – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "account overview with the contact person",
+   "lang": "de"
+  },
+  {
+   "shot": "account-390-de-overview.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/",
+   "title": "Mein Konto – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "account overview with the contact person",
+   "lang": "de"
+  },
+  {
+   "shot": "account-1440-de-inquiries.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/inquiries/",
+   "title": "Anfragen – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "inquiry list",
+   "lang": "de"
+  },
+  {
+   "shot": "account-390-de-inquiries.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/inquiries/",
+   "title": "Anfragen – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "inquiry list",
+   "lang": "de"
+  },
+  {
+   "shot": "account-1440-de-inquiry.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/inquiry/7067/",
+   "title": "Anfrage #7067 – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "inquiry detail",
+   "lang": "de"
+  },
+  {
+   "shot": "account-390-de-inquiry.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/inquiry/7067/",
+   "title": "Anfrage #7067 – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "inquiry detail",
+   "lang": "de"
+  },
+  {
+   "shot": "account-1440-de-documents.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/documents/",
+   "title": "Unterlagen – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "documents page",
+   "lang": "de"
+  },
+  {
+   "shot": "account-390-de-documents.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/documents/",
+   "title": "Unterlagen – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order"
+   ],
+   "note": "documents page",
+   "lang": "de"
+  },
+  {
+   "shot": "account-1440-de-company.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/company/",
+   "title": "Unternehmen – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "company details",
+   "lang": "de"
+  },
+  {
+   "shot": "account-390-de-company.png",
+   "url": "http://127.0.0.1:8909/de/mein-konto/company/",
+   "title": "Unternehmen – Linker",
+   "overflow_px": 0,
+   "banned_words": [],
+   "banned_words_whole_page": [
+    "order",
+    "shipping"
+   ],
+   "note": "company details",
+   "lang": "de"
+  }
+ ],
+ "tab_order": {
+  "request-en": [
+   {
+    "tag": "a",
+    "name": "",
+    "text": "Skip to content"
+   },
+   {
+    "tag": "a",
+    "name": "",
+    "text": ""
+   },
+   {
+    "tag": "button",
+    "name": "",
+    "text": ""
+   },
+   {
+    "tag": "input",
+    "name": "billing_first_name",
+    "text": "Maria"
+   },
+   {
+    "tag": "input",
+    "name": "billing_last_name",
+    "text": "Beispiel"
+   },
+   {
+    "tag": "input",
+    "name": "billing_company",
+    "text": "Example Solar Installations Ltd"
+   },
+   {
+    "tag": "input",
+    "name": "billing_vat_id",
+    "text": "DE143454214"
+   },
+   {
+    "tag": "select",
+    "name": "billing_country",
+    "text": "Select a country / region…\nAfghanistan\nÅ"
+   },
+   {
+    "tag": "input",
+    "name": "billing_address_1",
+    "text": "Teststraße 1"
+   },
+   {
+    "tag": "input",
+    "name": "billing_address_2",
+    "text": ""
+   },
+   {
+    "tag": "input",
+    "name": "billing_postcode",
+    "text": "39179"
+   },
+   {
+    "tag": "input",
+    "name": "billing_city",
+    "text": "Barleben"
+   },
+   {
+    "tag": "input",
+    "name": "billing_phone",
+    "text": ""
+   },
+   {
+    "tag": "input",
+    "name": "billing_email",
+    "text": "t11-stack-en-mv1zgqbv@example.test"
+   },
+   {
+    "tag": "textarea",
+    "name": "order_comments",
+    "text": ""
+   },
+   {
+    "tag": "input",
+    "name": "terms",
+    "text": "on"
+   },
+   {
+    "tag": "a",
+    "name": "",
+    "text": "terms and conditions"
+   },
+   {
+    "tag": "button",
+    "name": "woocommerce_checkout_place_order",
+    "text": "Request Proforma"
+   }
+  ],
+  "request-de": [
+   {
+    "tag": "a",
+    "name": "",
+    "text": "Skip to content"
+   },
+   {
+    "tag": "a",
+    "name": "",
+    "text": ""
+   },
+   {
+    "tag": "button",
+    "name": "",
+    "text": ""
+   },
+   {
+    "tag": "input",
+    "name": "billing_first_name",
+    "text": "Maria"
+   },
+   {
+    "tag": "input",
+    "name": "billing_last_name",
+    "text": "Beispiel"
+   },
+   {
+    "tag": "input",
+    "name": "billing_company",
+    "text": "Solarbau Beispiel GmbH"
+   },
+   {
+    "tag": "input",
+    "name": "billing_vat_id",
+    "text": "DE143454214"
+   },
+   {
+    "tag": "select",
+    "name": "billing_country",
+    "text": "Land/Region auswählen …\nAfghanistan\nÄgyp"
+   },
+   {
+    "tag": "input",
+    "name": "billing_address_1",
+    "text": "Teststraße 1"
+   },
+   {
+    "tag": "input",
+    "name": "billing_address_2",
+    "text": ""
+   },
+   {
+    "tag": "input",
+    "name": "billing_postcode",
+    "text": "39179"
+   },
+   {
+    "tag": "input",
+    "name": "billing_city",
+    "text": "Barleben"
+   },
+   {
+    "tag": "input",
+    "name": "billing_phone",
+    "text": ""
+   },
+   {
+    "tag": "input",
+    "name": "billing_email",
+    "text": "t11-stack-de-mv1zh6vy@example.test"
+   },
+   {
+    "tag": "textarea",
+    "name": "order_comments",
+    "text": ""
+   },
+   {
+    "tag": "input",
+    "name": "terms",
+    "text": "on"
+   },
+   {
+    "tag": "a",
+    "name": "",
+    "text": "Allgemeine Geschäftsbedingungen"
+   },
+   {
+    "tag": "button",
+    "name": "woocommerce_checkout_place_order",
+    "text": "Proforma anfordern"
+   }
+  ]
+ },
+ "journey": [
+  {
+   "step": "register",
+   "lang": "en",
+   "email": "t11-stack-en-mv1zgqbv@example.test",
+   "ok": true
+  },
+  {
+   "step": "prices",
+   "lang": "en",
+   "seen": "1,68"
+  },
+  {
+   "step": "inquiry",
+   "lang": "en",
+   "order": "7065",
+   "url": "/proforma-request/inquiry-received/7065/?key=wc_order_oqoHJTwhQrBpq"
+  },
+  {
+   "step": "save-solution",
+   "lang": "en",
+   "status": 201,
+   "response": {
+    "id": 7066,
+    "url": "http://127.0.0.1:8909/my-account/saved-solutions/#linker-solution-7066"
+   }
+  },
+  {
+   "step": "issue",
+   "lang": "en",
+   "order": "7065",
+   "number": "PI-2026-0030"
+  },
+  {
+   "step": "register",
+   "lang": "de",
+   "email": "t11-stack-de-mv1zh6vy@example.test",
+   "ok": true
+  },
+  {
+   "step": "prices",
+   "lang": "de",
+   "seen": "680,00"
+  },
+  {
+   "step": "inquiry",
+   "lang": "de",
+   "order": "7067",
+   "url": "/de/proforma-anfrage/inquiry-received/7067/?key=wc_order_yWy7ixlwPX7Kh"
+  },
+  {
+   "step": "save-solution",
+   "lang": "de",
+   "status": 201,
+   "response": {
+    "id": 7069,
+    "url": "http://127.0.0.1:8909/my-account/saved-solutions/#linker-solution-7069"
+   }
+  },
+  {
+   "step": "issue",
+   "lang": "de",
+   "order": "7067",
+   "number": "PI-2026-0031"
+  }
+ ],
+ "mail": [
+  {
+   "file": "20261010-055821-14323967-3a39-46a0-bdb4-258da58839e8.eml",
+   "subject": "Your Linker account has been created!",
+   "to": "t11-stack-en-mv1zgqbv@example.test",
+   "bcc": "",
+   "reply_to": "Linker <sales@de-linker.com>",
+   "lang": "en"
+  },
+  {
+   "file": "20261010-055821-9052c86b-b6e3-4019-a6e4-6011c98791c1.eml",
+   "subject": "New customer: Example Solar Installations Ltd",
+   "to": "sales@de-linker.com",
+   "bcc": "copy-one@example.test, copy-two@example.test, copy-three@example.test",
+   "reply_to": "Maria Beispiel <t11-stack-en-mv1zgqbv@example.test>",
+   "lang": "en"
+  },
+  {
+   "file": "20261010-055825-85c99640-583e-4531-b8ad-bf5358a1b8be.eml",
+   "subject": "New inquiry #7065 from Example Solar Installations Ltd",
+   "to": "sales@de-linker.com",
+   "bcc": "copy-one@example.test, copy-two@example.test, copy-three@example.test",
+   "reply_to": "Maria Beispiel <t11-stack-en-mv1zgqbv@example.test>",
+   "lang": "en"
+  },
+  {
+   "file": "20261010-055825-076f1c99-3070-438f-a80d-92d46eb46e9b.eml",
+   "subject": "Your inquiry #7065 has been received",
+   "to": "t11-stack-en-mv1zgqbv@example.test",
+   "bcc": "",
+   "reply_to": "Linker <sales@de-linker.com>",
+   "lang": "en"
+  },
+  {
+   "file": "20261010-055829-2568af55-99d0-4939-a05a-13e9b1ff6fe2.eml",
+   "subject": "Your Proforma invoice PI-2026-0030 for inquiry #7065",
+   "to": "t11-stack-en-mv1zgqbv@example.test",
+   "bcc": "",
+   "reply_to": "Linker <sales@de-linker.com>",
+   "lang": "en"
+  },
+  {
+   "file": "20261010-055842-d6e22b57-5568-4efb-babb-07c7634aed31.eml",
+   "subject": "Ihr Konto bei Linker wurde erstellt!",
+   "to": "t11-stack-de-mv1zh6vy@example.test",
+   "bcc": "",
+   "reply_to": "Linker <sales@de-linker.com>",
+   "lang": "de"
+  },
+  {
+   "file": "20261010-055842-59b93970-cc7b-432c-a06b-ff8791111e81.eml",
+   "subject": "New customer: Solarbau Beispiel GmbH",
+   "to": "sales@de-linker.com",
+   "bcc": "copy-one@example.test, copy-two@example.test, copy-three@example.test",
+   "reply_to": "Maria Beispiel <t11-stack-de-mv1zh6vy@example.test>",
+   "lang": "de"
+  },
+  {
+   "file": "20261010-060013-a5c35317-0930-4c3d-9990-8264aab56943.eml",
+   "subject": "New inquiry #7067 from Solarbau Beispiel GmbH",
+   "to": "sales@de-linker.com",
+   "bcc": "copy-one@example.test, copy-two@example.test, copy-three@example.test",
+   "reply_to": "Maria Beispiel <t11-stack-de-mv1zh6vy@example.test>",
+   "lang": "de"
+  },
+  {
+   "file": "20261010-055846-5d391c94-9164-4735-ba4f-8920ccaafbc4.eml",
+   "subject": "Ihre Anfrage #7067 ist eingegangen",
+   "to": "t11-stack-de-mv1zh6vy@example.test",
+   "bcc": "",
+   "reply_to": "Linker <sales@de-linker.com>",
+   "lang": "de"
+  },
+  {
+   "file": "20261010-060013-b901a114-04fa-4ff6-9f17-bdd88ab0ac51.eml",
+   "subject": "Ihre Proformarechnung PI-2026-0031 zur Anfrage #7067",
+   "to": "t11-stack-de-mv1zh6vy@example.test",
+   "bcc": "",
+   "reply_to": "Linker <sales@de-linker.com>",
+   "lang": "de"
+  }
+ ],
+ "pdf": [
+  {
+   "lang": "en",
+   "number": "PI-2026-0030",
+   "owner_status": 200,
+   "bytes": 28308,
+   "guest_status": 403,
+   "href": "http://127.0.0.1:8909/?linker-document=proforma&id=7065",
+   "valid_until_present": true,
+   "bank_terms_present": true,
+   "not_a_tax_invoice": true,
+   "valid_until": "9 November 2026",
+   "valid_30_days": true,
+   "banned_words_in_pdf": []
+  },
+  {
+   "lang": "de",
+   "number": "PI-2026-0031",
+   "owner_status": 200,
+   "bytes": 28899,
+   "guest_status": 403,
+   "href": "http://127.0.0.1:8909/?linker-document=proforma&id=7067",
+   "valid_until_present": true,
+   "bank_terms_present": true,
+   "not_a_tax_invoice": true,
+   "valid_until": "9. November 2026",
+   "valid_30_days": true,
+   "banned_words_in_pdf": []
+  }
+ ],
+ "failures": [
+  "product-390-en-guest.png: horizontal overflow 2px",
+  "product-390-en-customer.png: horizontal overflow 2px",
+  "product-390-de-guest.png: horizontal overflow 2px",
+  "product-390-de-customer.png: horizontal overflow 2px"
+ ],
+ "notes": [
+  "product-390 overflow 2px: the WooCommerce product gallery of the live theme (snapshot) lays its slides out at full width until its JavaScript initialises; identical on every language and state, not introduced by this ticket.",
+  "Replayed on the snapshot-loaded local instance (just up t11 + just pull load t11 ~/de-linker-data/20261010-0033 + tools/migrate/9-i18n.py apply + 7-facts.py, owner ruling 2026-10-10: local instances look like live).",
+  "Journey per language: register -> prices visible -> add to solution draft -> proforma request -> issue PI as shop_manager -> account download; PI numbers of the run are consecutive (PI-2026-0030, PI-2026-0031).",
+  "Mails of each language all captured with the team copy carrying Bcc to the three copies; customer mails in the inquiry language, team mails in English (docs/specs/11-commerce.md, Mail).",
+  "Action Scheduler drain: the stack defines DISABLE_WP_CRON by design; the replay drains the queue after the journey before asserting on mails.",
+  "MailRetryTest covers the acceptance line \"three failures, then a single delivery\"; it now picks its own job (search by job id) so retries left over from earlier runs are never processed."
+ ]
+}

@@ -4,6 +4,7 @@
 
 	<file>linker-commerce.php</file>
 	<file>includes</file>
+	<file>templates</file>
 	<file>tests</file>
 	<file>../../tools/php/bootstrap.php</file>
 	<!-- The data migrations of the products this plugin reads. -->
@@ -19,7 +20,30 @@
 		</properties>
 	</rule>
 
+	<!-- WooCommerce's capabilities (woocommerce/includes/class-wc-install.php, get_core_capabilities()). -->
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="manage_woocommerce"/>
+				<element value="edit_shop_orders"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- The unit tests run without WordPress (WP_Mock): WordPress's runtime alternatives, its globals and output escaping do not apply there. -->
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<!-- WooCommerce passes template variables by extract() (wc_get_template); their names are the template's contract. -->
+		<exclude-pattern>templates/*</exclude-pattern>
 		<properties>
 			<property name="prefixes" type="array">
 				<element value="Linker\Commerce"/>

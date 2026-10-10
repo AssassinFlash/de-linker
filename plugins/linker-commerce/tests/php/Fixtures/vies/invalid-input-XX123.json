@@ -1,0 +1,11 @@
+{
+ "status": 200,
+ "body": {
+  "actionSucceed": false,
+  "errorWrappers": [
+   {
+    "error": "INVALID_INPUT"
+   }
+  ]
+ }
+}

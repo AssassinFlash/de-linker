@@ -1,0 +1,148 @@
+<?php
+/**
+ * Tests for the mail queue.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Tests\Unit\Mail;
+
+use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\Message;
+use Linker\Commerce\Tests\TestCase;
+use WP_Error;
+use WP_Mock;
+
+/**
+ * Tests for JobStore.
+ *
+ * @covers \Linker\Commerce\Mail\JobStore
+ */
+final class JobStoreTest extends TestCase {
+
+	/**
+	 * Post meta of job 7.
+	 *
+	 * @var array<string, mixed>
+	 */
+	private array $meta = array();
+
+	/**
+	 * Job 7 is a queued email; post meta lives in $meta.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ) => json_encode( $value ) ) );
+		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn ( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn ( string $text ): string => strip_tags( $text ) ) );
+		WP_Mock::userFunction(
+			'update_post_meta',
+			array(
+				'return' => function ( int $id, string $key, $value ): bool {
+					$this->meta[ $key ] = $value;
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => fn ( int $id, string $key ) => $this->meta[ $key ] ?? '' ) );
+		WP_Mock::userFunction( 'get_post_type', array( 'return' => static fn ( int $id ) => 7 === $id ? JobStore::POST_TYPE : false ) );
+	}
+
+	/**
+	 * A message is stored as a private post and comes back with its attempts.
+	 */
+	public function test_create_and_load(): void {
+		WP_Mock::userFunction(
+			'wp_insert_post',
+			array(
+				'times'  => 1,
+				'args'   => array(
+					array(
+						'post_type'   => JobStore::POST_TYPE,
+						'post_status' => 'private',
+						'post_title'  => 'New inquiry #20',
+					),
+					true,
+				),
+				'return' => 7,
+			)
+		);
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		$message = new Message( array( 'sales@de-linker.com' ), 'New <b>inquiry</b> #20', '<p>Body</p>', array( 'Bcc: a@example.test' ), array() );
+		$jobs    = new JobStore();
+
+		$this->assertSame( 7, $jobs->create( $message ) );
+		$job = $jobs->load( 7 );
+		$this->assertNotNull( $job );
+		$this->assertEquals( $message, $job['message'] );
+		$this->assertSame( 0, $job['attempts'] );
+		$this->assertNull( $jobs->load( 8 ) );
+	}
+
+	/**
+	 * A post that cannot be written gives 0.
+	 */
+	public function test_create_fails(): void {
+		WP_Mock::userFunction( 'wp_insert_post', array( 'return' => new WP_Error( 'db', 'No.' ) ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => true ) );
+
+		$this->assertSame( 0, ( new JobStore() )->create( new Message( array(), 'S', 'B', array(), array() ) ) );
+	}
+
+	/**
+	 * Failures are counted; a message that failed its last attempt becomes a draft; a sent one is deleted.
+	 */
+	public function test_failure_and_deletion(): void {
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'times' => 1,
+				'args'  => array(
+					array(
+						'ID'          => 7,
+						'post_status' => JobStore::FAILED_STATUS,
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_delete_post',
+			array(
+				'times' => 1,
+				'args'  => array( 7, true ),
+			)
+		);
+		$jobs = new JobStore();
+
+		$jobs->record_failure( 7, 2, 'Could not instantiate mail function.' );
+		$this->assertSame( 2, $this->meta['_linker_mail_attempts'] );
+		$jobs->fail( 7, 8, 'Still failing.' );
+		$this->assertSame( 'Still failing.', $this->meta['_linker_mail_error'] );
+		$jobs->delete( 7 );
+
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The post type is private and has no screens.
+	 */
+	public function test_post_type(): void {
+		WP_Mock::passthruFunction( '__' );
+		WP_Mock::userFunction(
+			'register_post_type',
+			array(
+				'times' => 1,
+				'args'  => array(
+					JobStore::POST_TYPE,
+					\Mockery::on( static fn ( array $args ): bool => false === $args['public'] && false === $args['show_ui'] ),
+				),
+			)
+		);
+
+		( new JobStore() )->register_post_type();
+
+		$this->assertConditionsMet();
+	}
+}

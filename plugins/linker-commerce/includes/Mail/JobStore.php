@@ -1,0 +1,146 @@
+<?php
+/**
+ * Messages waiting for another attempt.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Mail;
+
+/**
+ * Keeps each message that could not be sent at once as a private post, so the
+ * message survives until a later attempt (Action Scheduler passes only the
+ * post id: its arguments are limited to 8000 characters, too short for an HTML
+ * email, mail-root-cause.md §5 M2). A message that was sent is deleted; one
+ * that failed every attempt stays, marked as failed.
+ */
+final class JobStore {
+
+	/**
+	 * Post type of the queued messages.
+	 */
+	public const POST_TYPE = 'linker_mail_job';
+
+	/**
+	 * Post meta: the message, its attempts so far, the last error.
+	 */
+	private const MESSAGE_META  = '_linker_mail_message';
+	private const ATTEMPTS_META = '_linker_mail_attempts';
+	private const ERROR_META    = '_linker_mail_error';
+
+	/**
+	 * Post status of a message that failed every attempt.
+	 */
+	public const FAILED_STATUS = 'draft';
+
+	/**
+	 * Registers the post type; runs on init.
+	 */
+	public function register_post_type(): void {
+		register_post_type(
+			self::POST_TYPE,
+			array(
+				'label'           => __( 'Queued emails', 'linker-commerce' ),
+				'public'          => false,
+				'show_ui'         => false,
+				'rewrite'         => false,
+				'query_var'       => false,
+				'supports'        => array( 'title' ),
+				'capability_type' => 'post',
+			)
+		);
+	}
+
+	/**
+	 * Stores a message.
+	 *
+	 * @param Message $message Message.
+	 * @return int Job id, 0 when the post could not be written.
+	 */
+	public function create( Message $message ): int {
+		$id = wp_insert_post(
+			array(
+				'post_type'   => self::POST_TYPE,
+				'post_status' => 'private',
+				'post_title'  => wp_strip_all_tags( $message->subject ),
+			),
+			true
+		);
+		if ( is_wp_error( $id ) ) {
+			return 0;
+		}
+		// The body lives in meta, which no content filter rewrites.
+		update_post_meta( $id, self::MESSAGE_META, wp_slash( (string) wp_json_encode( $message->to_array() ) ) );
+		update_post_meta( $id, self::ATTEMPTS_META, 0 );
+		return $id;
+	}
+
+	/**
+	 * A stored message and its attempts so far.
+	 *
+	 * @param int $id Job id.
+	 * @return array{message: Message, attempts: int}|null Null when there is no such job.
+	 */
+	public function load( int $id ): ?array {
+		if ( self::POST_TYPE !== get_post_type( $id ) ) {
+			return null;
+		}
+		$data = json_decode( (string) get_post_meta( $id, self::MESSAGE_META, true ), true );
+		if ( ! is_array( $data ) ) {
+			return null;
+		}
+		return array(
+			'message'  => Message::from_array( $data ),
+			'attempts' => (int) get_post_meta( $id, self::ATTEMPTS_META, true ),
+		);
+	}
+
+	/**
+	 * Records a failed attempt.
+	 *
+	 * @param int    $id       Job id.
+	 * @param int    $attempts Attempts so far.
+	 * @param string $error    Error of the last attempt.
+	 */
+	public function record_failure( int $id, int $attempts, string $error ): void {
+		update_post_meta( $id, self::ATTEMPTS_META, $attempts );
+		update_post_meta( $id, self::ERROR_META, $error );
+	}
+
+	/**
+	 * Marks a message that failed its last attempt.
+	 *
+	 * @param int    $id       Job id.
+	 * @param int    $attempts Attempts made.
+	 * @param string $error    Error of the last attempt.
+	 */
+	public function fail( int $id, int $attempts, string $error ): void {
+		$this->record_failure( $id, $attempts, $error );
+		wp_update_post(
+			array(
+				'ID'          => $id,
+				'post_status' => self::FAILED_STATUS,
+			)
+		);
+	}
+
+	/**
+	 * The messages whose last retry failed: the staff's "not delivered" number
+	 * (mail-root-cause.md §9, the administrator's visibility).
+	 */
+	public function failed_count(): int {
+		$counts = wp_count_posts( self::POST_TYPE );
+		return (int) ( $counts->{ self::FAILED_STATUS } ?? 0 );
+	}
+
+	/**
+	 * Deletes a message that was sent.
+	 *
+	 * @param int $id Job id.
+	 */
+	public function delete( int $id ): void {
+		wp_delete_post( $id, true );
+	}
+}
