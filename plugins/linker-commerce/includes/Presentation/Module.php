@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 /**
- * Shortcodes, the empty Proforma-request gate, WindPress and the live scope classes.
+ * Shortcodes, the empty Proforma-request gate and WindPress.
  */
 final class Module {
 
@@ -34,19 +34,5 @@ final class Module {
 		$this->shortcodes->register();
 		$this->gate->register();
 		$this->windpress->register();
-		add_filter( 'body_class', array( $this, 'body_class' ) );
-	}
-
-	/**
-	 * Live scope classes the rebuilt CSS still keys off.
-	 *
-	 * @param string[] $classes Body classes.
-	 * @return string[]
-	 */
-	public function body_class( array $classes ): array {
-		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-			$classes[] = 'sf-account-page';
-		}
-		return $classes;
 	}
 }

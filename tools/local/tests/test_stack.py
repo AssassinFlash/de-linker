@@ -233,12 +233,13 @@ def test_pretty_permalinks_and_files_are_served(stack: Stack) -> None:
     # A directory is addressed with a trailing slash.
     admin = request(a.port, "/wp-admin")
     assert (admin.status, admin.headers["Location"]) == (301, "/wp-admin/")
-    # WooCommerce sends an empty cart from the checkout to the cart.
+    # The login gate keeps an empty checkout on its page in every language
+    # (#54): WooCommerce's redirect to the cart is gated off for the checkout
+    # page and its translations.
     checkout = request(
         a.port, path_of(stack.wp(a.name, "eval", "echo wc_get_checkout_url();"))
     )
-    cart = stack.wp(a.name, "eval", "echo wc_get_cart_url();")
-    assert (checkout.status, checkout.headers["Location"]) == (302, cart)
+    assert checkout.status == 200
 
 
 def test_a_form_mails_into_the_instance_instead_of_sending(

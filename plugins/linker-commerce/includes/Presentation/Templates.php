@@ -68,12 +68,16 @@ final class Templates {
 	/**
 	 * Creates or updates each template so the instance matches the files.
 	 *
-	 * @return array{created: int, updated: int, unchanged: int}
+	 * @return array{created: int, updated: int, unchanged: int, created_ids: list<int>}
+	 *         The ids of the posts this sync created (a rollback deletes them;
+	 *         the ones it only updated keep their pre-run content in the backup).
+	 * @throws \RuntimeException When WordPress refuses a template insert.
 	 */
 	public function sync(): array {
-		$created   = 0;
-		$updated   = 0;
-		$unchanged = 0;
+		$created     = 0;
+		$updated     = 0;
+		$unchanged   = 0;
+		$created_ids = array();
 		foreach ( self::catalog() as $meta => $path ) {
 			$html = Tokens::read( $path );
 			$id   = $this->existing_id( $meta );
@@ -83,14 +87,16 @@ final class Templates {
 						'post_type'    => self::POST_TYPE,
 						'post_status'  => 'publish',
 						'post_title'   => self::TITLES[ $meta ],
-						'post_content' => $html,
+						'post_content' => wp_slash( $html ),
 					),
 					true
 				);
 				if ( is_wp_error( $id ) ) {
-					continue;
+					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- an exception message for the operator log, not page output.
+					throw new \RuntimeException( sprintf( 'wp_insert_post refused the %s template: %s', $meta, $id->get_error_message() ) );
 				}
 				update_post_meta( (int) $id, $meta, '1' );
+				$created_ids[] = (int) $id;
 				++$created;
 				continue;
 			}
@@ -110,9 +116,10 @@ final class Templates {
 			++$updated;
 		}
 		return array(
-			'created'   => $created,
-			'updated'   => $updated,
-			'unchanged' => $unchanged,
+			'created'     => $created,
+			'updated'     => $updated,
+			'unchanged'   => $unchanged,
+			'created_ids' => $created_ids,
 		);
 	}
 

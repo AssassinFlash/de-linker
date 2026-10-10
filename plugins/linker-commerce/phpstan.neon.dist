@@ -19,10 +19,12 @@ parameters:
 	excludePaths:
 		# Stand-ins for WordPress and WooCommerce classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
-		# WP-CLI is not in the WordPress stubs; the command is covered by unit tests.
-		- includes/Cli
-		- tests/php/Unit/Cli
 	scanFiles:
+		# WP_CLI (the commands call WP_CLI::error/warning/log/success and catch
+		# WP_CLI\ExitException); wp-cli is not in the WordPress stubs. The
+		# runtime doubles live in wordpress.php, which stays out of analysis so
+		# the real WP_Post/WP_REST_Request stubs are not shadowed.
+		- tests/php/Doubles/wp-cli-stubs.php
 		# Action Scheduler (as_schedule_single_action()), bundled with WooCommerce.
 		- vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
 		# Polylang's API (PLL(), pll_current_language()); the plugin reads it when present.

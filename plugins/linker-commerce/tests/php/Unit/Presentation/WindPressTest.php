@@ -53,6 +53,9 @@ final class WindPressTest extends TestCase {
 
 		$this->assertContains( 'livecanvas/checkout_page.html', $names );
 		$this->assertContains( 'livecanvas/single_product.html', $names );
+		// The PHP half enters the scan surface by name, so its classes compile.
+		$this->assertContains( 'includes/Presentation/Shortcodes.php', $names );
+		$this->assertContains( 'includes/Presentation/LoginGate.php', $names );
 		$this->assertNotSame( array(), $contents );
 		foreach ( $contents as $file ) {
 			$this->assertArrayHasKey( 'name', $file );
