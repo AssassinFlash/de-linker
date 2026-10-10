@@ -60,15 +60,16 @@ test.each( entries )(
 	async ( entry ) => {
 		await loadEntry( entry, entries.map( mountPoint ).join( '' ) );
 
-		expect(
-			entries.map(
-				( name ) =>
-					document.querySelector( `[data-linker-app="${ name }"]` )
-						?.textContent
-			)
-		).toEqual(
-			entries.map( ( name ) => ( name === entry ? titles[ entry ] : '' ) )
-		);
+		// Each app shows its title in its own mount points and nothing in the others.
+		const shown = entries.map( ( name ) => {
+			const text =
+				document.querySelector( `[data-linker-app="${ name }"]` )
+					?.textContent ?? '';
+			return name === entry
+				? text.includes( titles[ entry ] )
+				: text === '';
+		} );
+		expect( shown ).toEqual( entries.map( () => true ) );
 	}
 );
 

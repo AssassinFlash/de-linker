@@ -25,7 +25,43 @@ add_action( 'requests-requests.before_redirect', 'linker_local_filter_redirect' 
 
 if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// The browser may fetch from this machine only (any port: the instance, its engine and Genie).
-	header( "Content-Security-Policy: default-src 'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'; form-action 'self'" );
+	// Two kinds of outside material reach a page, both by the site's own design:
+	// - the live theme's template scripts (the snapshot's pages enqueue Alpine,
+	// Preline, lottie-player and taos from these CDNs; without them the local
+	// instance would not look like the live one, AGENTS.md §2);
+	// - the Solution Configurator's roof step: the official aerial imagery of
+	// each federal state (services/engine/data/imagery.json, open-licence WMS,
+	// credited on the map), which MapLibre loads by fetch (connect-src) and
+	// paints as images (img-src), not through WordPress's HTTP API.
+	// Sorted, unique, the same order the stack test derives from imagery.json.
+	$linker_local_imagery = implode(
+		' ',
+		array(
+			'https://geo4.service24.rlp.de',
+			'https://geodienste.bremen.de',
+			'https://geodienste.hamburg.de',
+			'https://geodienste.sachsen.de',
+			'https://geoportal.saarland.de',
+			'https://geoservices.bayern.de',
+			'https://isk.geobasis-bb.de',
+			'https://opendata.lgln.niedersachsen.de',
+			'https://owsproxy.lgl-bw.de',
+			'https://service.gdi-sh.de',
+			'https://www.gds-srv.hessen.de',
+			'https://www.geodaten-mv.de',
+			'https://www.geodatenportal.sachsen-anhalt.de',
+			'https://www.geoproxy.geoportal-th.de',
+			'https://www.wms.nrw.de',
+		)
+	);
+	$linker_local_sources = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'";
+	header(
+		"Content-Security-Policy: default-src {$linker_local_sources}; " .
+		"script-src {$linker_local_sources} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com; " .
+		"img-src {$linker_local_sources} {$linker_local_imagery}; " .
+		"connect-src {$linker_local_sources} {$linker_local_imagery}; " .
+		"form-action 'self'"
+	);
 	header( 'X-Robots-Tag: noindex, nofollow' );
 }
 

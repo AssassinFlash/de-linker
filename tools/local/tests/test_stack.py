@@ -368,14 +368,43 @@ def test_a_redirect_cannot_lead_wordpress_off_this_machine(stack: Stack) -> None
     assert f"\tREDIRECT\t{target}\n" in b.isolation_log.read_text()
 
 
+IMAGERY = json.loads(
+    (
+        Path(__file__).resolve().parents[3]
+        / "services"
+        / "engine"
+        / "data"
+        / "imagery.json"
+    ).read_text()
+)
+# The WMS hosts the roof step loads, from the engine's own list of them: the
+# mu-plugin's allowlist and this assertion read the same source of truth.
+IMAGERY_WMS = " ".join(
+    sorted(
+        {
+            f"https://{urlsplit(state['wms']).hostname}"
+            for state in IMAGERY["states"].values()
+        }
+    )
+)
+LOCAL_SOURCES = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'"
+
+
 def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
     stack: Stack,
 ) -> None:
     home = request(stack.instance("pytesta").port, "/")
 
+    # Outside the machine, a page reaches only what the site itself puts on it:
+    # the theme's template scripts (CDNs the snapshot's pages enqueue) and the
+    # states' official aerial-image WMS the roof step shows, by fetch and as
+    # images (services/engine/data/imagery.json).
     assert home.headers["Content-Security-Policy"] == (
-        "default-src 'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval';"
-        " form-action 'self'"
+        f"default-src {LOCAL_SOURCES}; "
+        f"script-src {LOCAL_SOURCES} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com; "
+        f"img-src {LOCAL_SOURCES} {IMAGERY_WMS}; "
+        f"connect-src {LOCAL_SOURCES} {IMAGERY_WMS}; "
+        "form-action 'self'"
     )
     assert home.headers["X-Robots-Tag"] == "noindex, nofollow"
 

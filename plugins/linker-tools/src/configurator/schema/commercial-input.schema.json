@@ -1,0 +1,178 @@
+{
+	"$defs": {
+		"Site": {
+			"additionalProperties": false,
+			"properties": {
+				"installation": {
+					"default": "unknown",
+					"enum": [
+						"indoor",
+						"outdoor",
+						"unknown"
+					],
+					"title": "Installation",
+					"type": "string"
+				},
+				"notes": {
+					"default": "",
+					"maxLength": 500,
+					"title": "Notes",
+					"type": "string"
+				}
+			},
+			"title": "Site",
+			"type": "object"
+		}
+	},
+	"additionalProperties": false,
+	"properties": {
+		"locale": {
+			"default": "en",
+			"enum": [
+				"en",
+				"de"
+			],
+			"title": "Locale",
+			"type": "string"
+		},
+		"plz": {
+			"description": "German postcode (PLZ)",
+			"pattern": "^\\d{5}$",
+			"title": "Plz",
+			"type": "string"
+		},
+		"grid_connection_kva": {
+			"exclusiveMinimum": 0,
+			"maximum": 10000,
+			"title": "Grid Connection Kva",
+			"type": "number"
+		},
+		"annual_kwh": {
+			"exclusiveMinimum": 0,
+			"maximum": 100000000,
+			"title": "Annual Kwh",
+			"type": "number"
+		},
+		"goals": {
+			"items": {
+				"enum": [
+					"peak_shaving",
+					"self_consumption",
+					"backup"
+				],
+				"type": "string"
+			},
+			"minItems": 1,
+			"title": "Goals",
+			"type": "array"
+		},
+		"peak_kw": {
+			"anyOf": [
+				{
+					"exclusiveMinimum": 0,
+					"maximum": 10000,
+					"type": "number"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"title": "Peak Kw"
+		},
+		"target_peak_kw": {
+			"anyOf": [
+				{
+					"exclusiveMinimum": 0,
+					"maximum": 10000,
+					"type": "number"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"title": "Target Peak Kw"
+		},
+		"pv_kwp": {
+			"anyOf": [
+				{
+					"exclusiveMinimum": 0,
+					"maximum": 10000,
+					"type": "number"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"title": "Pv Kwp"
+		},
+		"backup_load_kw": {
+			"anyOf": [
+				{
+					"exclusiveMinimum": 0,
+					"maximum": 10000,
+					"type": "number"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"title": "Backup Load Kw"
+		},
+		"backup_hours": {
+			"anyOf": [
+				{
+					"exclusiveMinimum": 0,
+					"maximum": 72,
+					"type": "number"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"title": "Backup Hours"
+		},
+		"load_profile_csv": {
+			"anyOf": [
+				{
+					"maxLength": 4000000,
+					"type": "string"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"description": "15-minute load profile: one value per line, optionally after a timestamp",
+			"title": "Load Profile Csv"
+		},
+		"load_profile_unit": {
+			"default": "kW",
+			"enum": [
+				"kW",
+				"kWh"
+			],
+			"title": "Load Profile Unit",
+			"type": "string"
+		},
+		"site": {
+			"$ref": "#/$defs/Site",
+			"default": {
+				"installation": "unknown",
+				"notes": ""
+			}
+		}
+	},
+	"required": [
+		"plz",
+		"grid_connection_kva",
+		"annual_kwh",
+		"goals"
+	],
+	"title": "CommercialInput",
+	"type": "object"
+}

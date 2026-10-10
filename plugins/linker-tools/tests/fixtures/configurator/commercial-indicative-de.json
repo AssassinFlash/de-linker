@@ -1,0 +1,25 @@
+{
+	"status": "indicative",
+	"load": null,
+	"options": [],
+	"power_kw_range": {
+		"low": 85.0,
+		"high": 220.0
+	},
+	"energy_kwh_range": {
+		"low": 170.0,
+		"high": 220.0
+	},
+	"basis": [
+		"Spitzenkappung um 50 kW, mit Energie für ein bis zwei Stunden bei dieser Leistung (Intilion: etwa 1C für Spitzenkappung, 0,5C für Eigenverbrauch)",
+		"Eigenverbrauch: etwa 1 kWh nutzbarer Speicher je kWp PV, also 120 kWh für 120 kWp (Voltfang)",
+		"Dies sind Richtwerte. Senden Sie uns Ihren 15-Minuten-Lastgang, dann legen wir die Anlage aus."
+	],
+	"systems": [],
+	"warnings": [
+		"Über 30 kVA verlangt die VDE-AR-N 4105 einen zentralen NA-Schutz.",
+		"Über 135 kW richtet sich der Netzanschluss nach VDE-AR-N 4110.",
+		"Ab 100.000 kWh im Jahr misst Ihr Netzbetreiber einen 15-Minuten-Lastgang; fordern Sie die Daten des Vorjahres bei ihm an."
+	],
+	"inquiry": "mailto:sales@de-linker.com?subject=Anfrage%20Gewerbespeicher%2080538"
+}

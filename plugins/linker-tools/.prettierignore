@@ -4,3 +4,7 @@ node_modules
 package-lock.json
 storybook-static
 vendor
+# Written by services/engine (scripts/export_schemas.py, tests/test_ui_fixtures.py)
+# and compared byte for byte there; formatting them here would make them stale.
+src/configurator/schema
+tests/fixtures/configurator

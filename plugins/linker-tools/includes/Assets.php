@@ -14,8 +14,10 @@ namespace Linker\Tools;
  *
  * An entry builds to build/<entry>.js plus build/<entry>.asset.php, which lists
  * the WordPress script handles it needs and a content hash used as the version.
- * Registering does not load anything: the code that prints an app's mount point
- * enqueues its handle, linker-tools-<entry>.
+ * An entry that imports CSS also builds build/<entry>.css (and its right-to-left
+ * twin), registered as the style of the same handle. Registering does not load
+ * anything: the code that prints an app's mount point enqueues its handle,
+ * linker-tools-<entry>.
  */
 final class Assets {
 
@@ -27,7 +29,8 @@ final class Assets {
 	public function __construct( private readonly string $plugin_file ) {}
 
 	/**
-	 * Registers every built entry as a script with its translations.
+	 * Registers every built entry as a script with its translations, and its
+	 * stylesheet when it has one.
 	 */
 	public function register(): void {
 		$plugin_dir  = plugin_dir_path( $this->plugin_file );
@@ -49,6 +52,16 @@ final class Assets {
 				array( 'in_footer' => true )
 			);
 			wp_set_script_translations( $handle, 'linker-tools', $plugin_dir . 'languages' );
+
+			if ( file_exists( $plugin_dir . 'build/' . $entry . '.css' ) ) {
+				wp_register_style(
+					$handle,
+					plugin_dir_url( $this->plugin_file ) . 'build/' . $entry . '.css',
+					array(),
+					$asset['version']
+				);
+				wp_style_add_data( $handle, 'rtl', 'replace' );
+			}
 		}
 	}
 }
