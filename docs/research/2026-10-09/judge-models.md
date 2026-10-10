@@ -7,7 +7,7 @@
 1. **`system.ai.openjev-qwen35-4b`（Databricks）：权重不可得。** Databricks 只把它列为 Unity Gateway 上按 token 计费的托管模型服务，走 TypeSafe 的 System One API；适用条款一栏写的是 Qwen3.5-4B 的 Apache 2.0。Hugging Face 上 `author=databricks` 没有模型，按 "typesafe" 搜索只有无关项目，TypeSafe 也没有发布权重。叫 OpenJev 的开源项目有三个，都没有文档说明它就是 Databricks 那份：TheoLeeCJ 的 OpenJev（已改名 SemIf，是在未改动的 Qwen3.5-4B 上做读出的方法，代码 MIT，JevBench Intelligence 27.1）、`AlexWortega/openjev`（MIT，只声明英语，4B v5 为 9.1 GB 的 bf16 交叉编码器）、`openjev/openjev`（27B，CC BY-NC 4.0，不可商用）。
 2. **这一类的开源模型可以直接替换 Jev。** llama.cpp 从 2026-10-02 起在服务器里原生提供 `/v1/systemone`（PR #29818），请求与响应和 Jev API 相同，换 base URL 即可；ggml-org 把可用的决策模型整理成 GGUF 合集。我们的评测脚本因此用同一个客户端调 Jev 和本地开源决策模型。
 3. **VPS 的硬约束决定了能纳入谁。** 业主的门槛是单次判定 p95 ≤ 30 s、RSS ≤ 2 GB、与引擎和 Genie 共存时内存余量 ≥ 500 MB。4B 级决策模型的 Q4_K_M 文件本身已超 3 GB；生成式评审模型（3.8B–8B）在 1 个 vCPU 上逐 token 写评语，Q4 文件也多在 2.4 GB 以上。能上 VPS 的只有 ≤ 2B 的模型。
-4. **纳入评测**：Julia-1（144M，多语，决策模型）、Laya（0.4B，英语，决策模型）、lev（4B，决策模型；JevBench 上能用 llama.cpp 跑的 ≤ 4B 开源决策模型里分数最高，只在 Mac 上作质量上限参照，不上 VPS）；通用开源 LLM 对照 Qwen3-1.7B（Q4_K_M，按同一评审提示词输出 JSON）。另有 Jev API 与三个闭源 LLM 评审（deepseek-v4.1-flash、claude-haiku-5-5、gemini-3.8-flash）。
+4. **纳入评测**：Julia-1（144M，多语，决策模型）、Laya（0.4B，英语，决策模型）、lev（4B，决策模型；JevBench 上能用 llama.cpp 跑的 ≤ 4B 开源决策模型里分数最高，只在 Mac 上作质量上限参照，不上 VPS）；通用开源 LLM 对照 Qwen3-1.7B（Q4_K_M，按同一评审提示词输出 JSON）。另有 Jev API 与闭源 LLM 评审（deepseek 直连、claude-haiku-5-5 经 aihubmix；原列的 gemini-3.8-flash 为被封会话自拟候选，业主裁定 2026-10-11 清除）。
 
 ## 候选清单
 

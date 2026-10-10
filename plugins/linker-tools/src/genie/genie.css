@@ -1,0 +1,157 @@
+/*
+ * Genie app chrome: the panel, thread and composer. Product cards keep the
+ * shared card's classes; colours come from the site's tokens with fallbacks.
+ */
+.linker-genie-app {
+	border: 1px solid var(--proto-color-line, #e2e5e5);
+	border-radius: var(--proto-radius-lg, 12px);
+	background: var(--proto-color-surface, #fff);
+	color: var(--proto-color-ink, #0c0f0f);
+	overflow: hidden;
+}
+
+.linker-genie-app__bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1rem;
+}
+
+.linker-genie-app__title {
+	margin: 0;
+	font-weight: 700;
+}
+
+.linker-genie-app__panel {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: 0 1rem 1rem;
+}
+
+.linker-genie-app__disclosure {
+	margin: 0;
+	font-size: 0.875rem;
+	color: var(--proto-color-muted, #5a6363);
+}
+
+.linker-genie-app__thread {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.linker-genie-app__message {
+	max-width: 92%;
+	padding: 0.5rem 0.75rem;
+	border-radius: var(--proto-radius-md, 8px);
+	background: var(--proto-neutral-50, #f7f8f8);
+	overflow-wrap: anywhere;
+}
+
+.linker-genie-app__message--user {
+	align-self: flex-end;
+	background: color-mix(
+		in srgb,
+		var(--proto-teal-700, #0a665c) 12%,
+		transparent
+	);
+}
+
+.linker-genie-app__text {
+	margin: 0;
+}
+
+.linker-genie-app__ask,
+.linker-genie-app__prompts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.linker-genie-app__chip,
+.linker-genie-app__prompt {
+	border: 1px solid var(--proto-color-line, #e2e5e5);
+	border-radius: var(--proto-radius-round, 999px);
+	background: none;
+	padding: 0.25rem 0.75rem;
+	cursor: pointer;
+	font: inherit;
+}
+
+.linker-genie-app__composer {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.linker-genie-app__input {
+	flex: 1;
+	border: 1px solid var(--proto-color-line, #e2e5e5);
+	border-radius: var(--proto-radius-md, 8px);
+	padding: 0.5rem 0.75rem;
+	font: inherit;
+}
+
+.linker-genie-app__send {
+	border: none;
+	border-radius: var(--proto-radius-md, 8px);
+	background: var(--proto-teal-700, #0a665c);
+	color: #fff;
+	padding: 0.5rem 1rem;
+	cursor: pointer;
+	font: inherit;
+}
+
+.linker-genie-app__cards {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.linker-genie-app__error {
+	margin: 0;
+	color: var(--proto-sem-danger, #b85a45);
+}
+
+.linker-genie-app__missing {
+	margin: 0;
+	font-size: 0.875rem;
+	color: var(--proto-color-muted, #5a6363);
+}
+
+.linker-genie-app__handoff {
+	margin: 0;
+}
+
+/*
+ * The votes under an assistant message. Both buttons always render and keep
+ * one row: a message's height never changes when a vote is cast.
+ */
+.linker-genie-app__votes {
+	display: flex;
+	gap: 0.25rem;
+	margin-top: 0.25rem;
+}
+
+.linker-genie-app__vote {
+	border: none;
+	background: none;
+	padding: 0;
+	font-size: 0.875rem;
+	line-height: 1.4;
+	cursor: pointer;
+	opacity: 0.6;
+}
+
+.linker-genie-app__vote[aria-pressed="true"] {
+	opacity: 1;
+}
+
+.linker-genie-app__vote:disabled:not([aria-pressed="true"]) {
+	opacity: 0.3;
+	cursor: default;
+}

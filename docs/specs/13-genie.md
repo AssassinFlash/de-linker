@@ -9,7 +9,7 @@
 ### A. Abilities（`plugins/linker-commerce`，`wp-abilities/v1`，命名空间 `Linker\Commerce\Abilities\`，一类一文件一 schema 一测试）
 | ability | 输入 | 输出 |
 |---|---|---|
-| `linker/search-products` | `{device_class?, application?, phase?, pv_kwp?, kwh_min?, kwh_max?, brand?, series?, future?:['battery'], text?, with_pairings?:bool, lang, limit≤12}` | `{qualified:[{product_id, title, url, why:[{field,value,match:true|'unknown'}], facts:SelectionFactSet, commerce:{price_visible, price?, in_stock:bool, rfq_only:bool}, pairings?:[{product_id,verdict,conditions[]}]}], excluded:{by_reason:{...}}, unknown_fields:[...]}`。资格：device_class、application、phase、`pv_input_kw ≥ pv_kwp`、kWh 范围、已发布且在售；unknown 保留。排序：全匹配 > 含 unknown；再按 `|ac_power_kw − pv_kwp|`；再价格。 |
+| `linker/search-products` | `{device_class?, application?, phase?, pv_kwp?, kwh_min?, kwh_max?, brand?, series?, future?:['battery'], text?, with_pairings?:bool, lang, limit≤12}` | `{qualified:[{product_id, title, url, why:[{field,value,match:true|'unknown'}], facts:SelectionFactSet, commerce:{price_visible, price?, in_stock:bool, rfq_only:bool}, pairings?:[{product_id,verdict,conditions[],documents[]}]}], excluded:{by_reason:{...}}, unknown_fields:[...]}`。资格：device_class、application、phase、`pv_input_kw ≥ pv_kwp`、kWh 范围、已发布且在售；unknown 保留。排序：全匹配 > 含 unknown；再按 `|ac_power_kw − pv_kwp|`；再价格。 |
 | `linker/get-product` | `{product_id, lang}` | 商品记录（图值、参数表、FAQ、文档 URL） |
 | `linker/compare-products` | `{product_ids[2..4], lang}` | 维度行 × 商品列（电池能量与逆变器输出不混） |
 | `linker/check-compatibility` | `{inverter_id, battery_id}` 或 `{product_ids}` | `{verdict: released|released_with_accessory|not_released|unknown, conditions[], documents[]}`（#8 的 compatibility.json） |
@@ -24,7 +24,7 @@
 - Agent：工具 = A 的 ability（HTTP，服务令牌只用于 inquiry-status 的用户上下文透传，不持 WP 写权限）；每轮 ≤4 次工具调用；strict 结构化输出 `{language, blocks:[{type:'text', text, refs:[fact_id]} | {type:'ask', field, options[]} | {type:'cards', product_ids[]} | {type:'compare', product_ids[]} | {type:'action', name, args} | {type:'handoff', summary}]}`；文本不含数字，写 `{fact:ID}` 占位。
 - 运行时只有两个机制，都复刻自对标物：① **结构化输出**——模型只能产出带商品/事实 ID 的结构（Pydantic AI strict schema；非法结构由库拒绝并重答一次，再不行回退为"只列 qualified 卡 + 一个追问"的模板）；② **服务端填数（hydration，Rufus 的做法）**——文本里的数值由服务端从本轮工具结果填入。**没有文本改写，没有正则，没有审查层。** 范围外意图由模型按 schema 选择 handoff 块（提示词定义），不由代码判词。
 - 水合：服务端把占位符替换为工具结果里的值与单位；卡片数据由壳按 product_id 再取。
-- 模型：默认 DeepSeek（OpenAI 兼容 strict），`GENIE_PROVIDER=anthropic` 可切；实测核验失败率 ≥5% 则默认切 Anthropic（写入 PR）。
+- 模型：唯一对话模型 deepseek-flash，直连 DeepSeek 官方 API（`https://api.deepseek.com`，`DEEPSEEK_BASE_URL`/`GENIE_BASE_URL` 可覆盖；密钥 `DEEPSEEK_API_KEY`，`GENIE_API_KEY` 可覆盖，缺省从 `~/.config/terravolt-builder/deepseek.env` 回填；代码常量 `agent.py::CHAT_PROVIDER`，无供应商开关——业主裁定 2026-10-11 连同 Anthropic 选项一并删除）。aihubmix 密钥只用于 Jev 评审级联与 gemini-embedding-2 索引（#33/#10），与 Genie 对话无关。历史口径：deepseek-chat 在 2026-10-10 面板实测核验失败率 80%（R1/R2 流），修复提示词后 20–40%（claude-haiku-4-5）；deepseek-flash 直连的复跑口径见 `docs/acceptance/2026-10-11/13/deepseek-flash/`。
 - 提示词 `prompts/{en,de}/system.md`：范围、口径、追问顺序、"每轮最多一个追问"、"不写数字"。
 - 日志：每轮工具调用、核验结果、模型元数据、用户点赞/点踩（SQLite）。发布：`ops/release.sh`（版本目录 + current 软链 + 回滚）。
 
@@ -57,4 +57,6 @@
 - [ ] 视觉验收：四入口 + 常驻 × 状态 × EN/DE × 1440/390。
 
 ## 变更记录
+- 2026-10-11（#13 供应商收口，PR #61：6c271ce + 6224b4b + 本条）：**业主裁定落地——Genie 唯一对话模型 deepseek-flash，直连 DeepSeek 官方 API；Anthropic 选项连同 `GENIE_PROVIDER` 开关整个删除**（`agent.py::CHAT_PROVIDER` 常量，测试锁死陈旧变量无效），aihubmix 密钥只留 Jev 评审级联与 gemini-embedding-2 索引（#33/#10）。端点适配实测：思考型模型（`reasoning_content` 回传）、`json_object` 支持无栅栏、`json_schema` 400、强制 `tool_choice` 400（`build_model` 以 DeepSeekProvider + profile 声明降级为 auto）。复跑 11 行（新增 R1 原句）全 grounded、零回退，存档 `docs/acceptance/2026-10-11/13/deepseek-flash/`；**核验失败率：行级（§B 口径）0/11 = 0% < 5%，默认成立**；生成级 3/14 ≈ 21% 并列记录（失败原因按设计不落盘）。Jev 级联首次真跑（jev-1.13 首道 + deepseek-flash 直连升级，gemini-3.8-flash 按裁定全部清除）：11 轮 30 问与确定性核验一致 29/30 ≈ 96.7%，唯一分歧为试点构造歧义（R5），判据与驱动进仓库（`eval/judges/turns.py`/`pilot.py`/`tests/test_turns.py`），报告 `docs/acceptance/2026-10-11/13/jev-pilot.md`。DE 截图因旧 shot 含旧模型回答重拍（`.scratch/t13-shots/home-de-{1440,390}-panel-ds.png`）。收口检查：`just check` exit 0、`just test` exit 0（php 124+21、vitest 61、e2e 10、pytest 139+112+87+21+103）。Leftovers 不变（同上条，归 #16）。
+- 2026-10-11（#13 收口）：评审修复轮完成（PR #61：工程项 4541bd7 + Spec 必改 1–4 2b39746）。§B 默认模型已切 Anthropic 并落代码（`provider_name()`；依据：DeepSeek 实测核验失败 80%、提示词修复后 20–40%，超 §B 的 5% 线）。范围外轮次先调 handoff-team，邮箱句以 `{fact:handoff.sentence_*}` 进 handoff 块并水合。pairing 问句走逆变器侧 `with_pairings` 搜索（pairings 载荷含 documents[]）。复跑 10 行（R2 EN/DE 含 cards、R5 七放行电池+文件、R8/R14 邮箱句、R10 加装链、r3/r4/r11/r13 拼写数字类）全部过线，存档 `docs/acceptance/2026-10-11/13/`；DE 截图重拍归档。**Leftovers（按 PR #61 评审裁定归类）**：R12 回退可接受（不再排队）；R7 登录路径与知识索引导入归 #16；消息持久化 reload 行为归 #16；服务令牌/用户上下文透传归 #16（完成前 AbilityClient 保持匿名、不配 token）；面板 ≥30 问的端到端持续套件归 #16；复跑残余核验失败率（13/23）记 PR，作为 §B 默认模型的持续依据。
 - 2026-10-09（#5）：Genie 服务的地址在选项 `linker_genie_url`：本地由 `just serve <name>` 写入 `http://127.0.0.1:<端口>`，线上由切换（#17）写入 VPS 地址；壳的 Proxy 从这个选项读。

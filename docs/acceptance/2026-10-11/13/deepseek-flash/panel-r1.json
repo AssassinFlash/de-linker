@@ -1,0 +1,4 @@
+{
+  "conversation_id": "ds-panel2-1",
+  "stream": "event: meta\ndata: {\"turn_id\": 177, \"grounded\": true, \"fallback\": false, \"attempts\": 2, \"failures\": [], \"language\": \"en\"}\n\nevent: block\ndata: {\"type\": \"text\", \"text\": \"These hybrid inverters fit a home with a future battery and the PV size you gave, and each of them carries a documented battery pairing. The cards carry the technical figures; the PV input headroom of the leading match reads 20.\", \"refs\": [\"4107\", \"1182\", \"2199\", \"3555\", \"3556\", \"6514\"]}\n\nevent: block\ndata: {\"type\": \"cards\", \"product_ids\": [4107, 1182, 2199, 3555, 3556, 6514]}\n\nevent: block\ndata: {\"type\": \"ask\", \"field\": \"backup\", \"options\": [\"No backup needed\", \"Backup needed\", \"Backup is fine with a matching accessory\"]}\n\nevent: done\ndata: {\"ok\": true}\n\n"
+}

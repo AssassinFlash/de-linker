@@ -58,6 +58,11 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         subprocess.run(
             [str(uv), "sync", "--locked", "--project", str(project)], check=True
         )
+        # Genie calls this instance's WordPress back (the abilities); without
+        # the explicit address its default `http://127.0.0.1` hits whatever
+        # answers on port 80 of this Mac and every ability call fails.
+        env = dict(os.environ)
+        env["GENIE_WP_URL"] = instance.url
         service.process(instance).restart(
             [
                 str(uv),
@@ -72,7 +77,7 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
                 "--port",
                 str(port),
             ],
-            dict(os.environ),
+            env,
             port,
             START_TIMEOUT,
         )

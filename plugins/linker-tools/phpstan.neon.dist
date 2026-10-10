@@ -8,3 +8,6 @@ parameters:
 		- linker-tools.php
 		- includes
 		- tests/php
+	excludePaths:
+		# Stand-ins for WordPress classes; PHPStan reads the real ones from the stubs.
+		- tests/php/Doubles

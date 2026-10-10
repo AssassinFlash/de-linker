@@ -5,7 +5,7 @@
 ## 候选
 - **Jev**：TypeSafe `jev-1.13`，经 aihubmix `POST {AIHUBMIX_BASE_URL}/v1/systemone`（Bearer，密钥在 `~/.config/terravolt-builder/aihubmix.env`，永不进仓库）。请求：`{"model":"jev-1.13","state":<文本或 JSON>,"questions":{<name>:{"type":"noul|choice|score","instructions":"…","criteria":{…}|[…]}}}`；返回每问的概率与 confidence（已实测 EN/DE 均可，代理延迟 3–6 s，652 输入 token 一次）。
 - **开源评审模型（业主 2026-10-09：Jev 只是让我们认识这一类；能用开源解决就用开源）**：用 Apify 调研 2026 年开源权重、许可可商用、能在 Apple Silicon Mac 上量化运行（≤8–14B）的专用评审/判断/奖励模型（Prometheus 系列、Flow-Judge、Atla Selene、Skywork-Reward、`openjev-qwen35-4b` 及 2026 年新出的同类，以调研为准），选 2–3 个纳入；另加一个通用开源 LLM（如 Qwen3 8B/14B 量化）作评审对照。调研结论：`docs/research/2026-10-09/judge-models.md`。
-- **LLM 评审**（经 aihubmix，OpenAI 兼容）：`deepseek-v4.1-flash`、`claude-haiku-5-5`、`gemini-3.8-flash`；各用同一评审提示词，输出 JSON 判定与理由。
+- **LLM 评审**：升级判定直连 DeepSeek 官方 API（`deepseek-flash`，密钥 `~/.config/terravolt-builder/deepseek.env`，业主裁定 2026-10-11）；对照评审 `claude-haiku-5-5` 经 aihubmix。各用同一评审提示词，输出 JSON 判定与理由。`gemini-3.8-flash` 是被封会话自拟的候选、业主从未认可，已从本规格与工具链整个清除。
 - **人工裁定**：本线逐条裁定（盲审，不看模型结果），作为真值。
 
 ## 数据集（≥300 对，EN/DE 各半）

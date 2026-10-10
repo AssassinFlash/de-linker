@@ -1,0 +1,1 @@
+{"conversation_id":6602,"stream":"event: meta\ndata: {\"grounded\": true, \"fallback\": false, \"attempts\": 2, \"failures\": [], \"language\": \"en\"}\n\nevent: block\ndata: {\"type\": \"handoff\", \"summary\": \"Customer asking about stock availability and pricing for the HS three K inverter.\"}\n\nevent: done\ndata: {\"ok\": true}\n\n"}

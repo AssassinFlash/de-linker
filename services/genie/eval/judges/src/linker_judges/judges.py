@@ -14,11 +14,13 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-from .http import HttpError, aihubmix_credentials, post_json
+from .http import HttpError, aihubmix_credentials, deepseek_credentials, post_json
 from .rubric import Question, chat_messages
 
 Kind = Literal["system_one", "chat"]
 AIHUBMIX = "aihubmix"
+DEEPSEEK = "deepseek"
+REMOTES = (AIHUBMIX, DEEPSEEK)
 
 
 @dataclass(frozen=True)
@@ -27,9 +29,11 @@ class Judge:
     kind: Kind
     model: str
     endpoint: str
-    """`AIHUBMIX`, or the base URL of a local llama.cpp server."""
+    """`AIHUBMIX`, `DEEPSEEK` (owner ruling 2026-10-11: the escalation judge goes
+    direct to the official API), or the base URL of a local llama.cpp server."""
     price_in: float = 0.0
-    """USD per million input tokens (aihubmix billing config, data/prices.json)."""
+    """USD per million input tokens (aihubmix billing config, data/prices.json; for
+    DEEPSEEK the official pricing page, api-docs.deepseek.com/quick_start/pricing)."""
     price_out: float = 0.0
     temperature: float | None = None
     json_mode: bool = False
@@ -39,7 +43,7 @@ class Judge:
 
     @property
     def local(self) -> bool:
-        return self.endpoint != AIHUBMIX
+        return self.endpoint not in REMOTES
 
 
 @dataclass(frozen=True)
@@ -72,6 +76,8 @@ def call(
     started = time.time()
     if judge.local:
         base, key = judge.endpoint.rstrip("/"), None
+    elif judge.endpoint == DEEPSEEK:
+        base, key = deepseek_credentials()
     else:
         base, key = aihubmix_credentials()
     try:

@@ -1,0 +1,47 @@
+# German (formal) translations of linker-tools' PHP strings: the dock button
+# and the page chips of includes/Genie/Entries.php. Wordings match the JED
+# file (linker-tools-de_DE_formal-linker-tools-genie.json) and the explicit
+# German prompts in Entries::prompts(); AGENTS.md §3: Sie form.
+# Compile: msgfmt -o linker-tools-de_DE_formal.mo linker-tools-de_DE_formal.po
+msgid ""
+msgstr ""
+"Project-Id-Version: linker-tools 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-10 00:00+0200\n"
+"PO-Revision-Date: 2026-10-10 00:00+0200\n"
+"Last-Translator: Linker Technology GmbH\n"
+"Language-Team: de_DE_formal\n"
+"Language: de_DE_formal\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: hand-written, reviewed\n"
+
+#: includes/Genie/Entries.php
+msgid "Ask Genie"
+msgstr "Genie fragen"
+
+#: includes/Genie/Entries.php
+msgid "What pairs with this model?"
+msgstr "Was passt zu diesem Modell?"
+
+#: includes/Genie/Entries.php
+msgid "Compare with…"
+msgstr "Vergleichen mit …"
+
+#: includes/Genie/Entries.php
+msgid "Documents"
+msgstr "Unterlagen"
+
+#: includes/Genie/Entries.php
+msgid "Check my draft"
+msgstr "Meinen Entwurf prüfen"
+
+#: includes/Genie/Entries.php
+msgid "What happens next?"
+msgstr "Wie geht es weiter?"
+
+#: includes/Genie/Entries.php
+msgid "Where is my Proforma?"
+msgstr "Wo steht meine Proforma?"

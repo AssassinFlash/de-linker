@@ -1,0 +1,69 @@
+<?php
+/**
+ * Tests for linker/size-hint.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Tests\Unit\Abilities;
+
+use Linker\Commerce\Abilities\SizeHint;
+use WP_Mock;
+use WP_Mock\Tools\TestCase;
+
+/**
+ * Tests for SizeHint: the configurator URL, not a second engine.
+ *
+ * @covers \Linker\Commerce\Abilities\SizeHint
+ */
+final class SizeHintTest extends TestCase {
+
+	/**
+	 * Home URL and query arguments behave as WordPress does for these values.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::passthruFunction( '__' );
+		WP_Mock::userFunction(
+			'home_url',
+			array(
+				'return' => static fn ( string $path = '' ): string => 'https://de-linker.com' . $path,
+			)
+		);
+		WP_Mock::userFunction(
+			'add_query_arg',
+			array(
+				'return' => static function ( array $query, string $url ): string {
+					return $url . '?' . http_build_query( $query );
+				},
+			)
+		);
+	}
+
+	/**
+	 * Pre-fills the Solution Configurator; does not call the engine.
+	 */
+	public function test_builds_the_configurator_url(): void {
+		$result = ( new SizeHint() )->execute(
+			array(
+				'pv_kwp'          => 10,
+				'annual_load_kwh' => 4000,
+				'phase'           => 3,
+				'backup'          => 'needed',
+				'plz'             => '80538',
+			)
+		);
+
+		$this->assertStringContainsString( '/linker-planner/', $result['configurator_url'] );
+		$this->assertStringContainsString( 'pv_kwp=10', $result['configurator_url'] );
+		$this->assertStringContainsString( 'annual_kwh=4000', $result['configurator_url'] );
+		$this->assertStringContainsString( 'phase=3', $result['configurator_url'] );
+		$this->assertStringContainsString( 'plz=80538', $result['configurator_url'] );
+		$this->assertStringContainsString( '10 kWp PV', $result['summary'] );
+		$this->assertTrue( ( new SizeHint() )->can_execute() );
+		$schema = ( new SizeHint() )->args()['output_schema'];
+		$this->assertSame( array( 'summary', 'configurator_url' ), $schema['required'] );
+	}
+}
