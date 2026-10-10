@@ -16,6 +16,7 @@ import { expect, test } from 'vitest';
  * Internal dependencies
  */
 import german from '../../languages/linker-tools-de_DE_formal-linker-tools-configurator.json';
+import germanGenie from '../../languages/linker-tools-de_DE_formal-linker-tools-genie.json';
 
 // A string literal in single or double quotes; prettier picks double quotes
 // only for a text that contains an apostrophe.
@@ -45,12 +46,13 @@ function sources( dir: string ): string[] {
 	} );
 }
 
-function used(): Map< string, number > {
+function used( dirs: string[] ): Map< string, number > {
 	const out = new Map< string, number >();
-	for ( const file of [
-		...sources( 'src/configurator' ),
-		'src/shared/ProductCard.tsx',
-	] ) {
+	for ( const file of dirs
+		.flatMap( ( dir ) => [ ...sources( dir ) ] )
+		.concat(
+			dirs.includes( 'src/genie' ) ? [] : [ 'src/shared/ProductCard.tsx' ]
+		) ) {
 		const text = readFileSync( file, 'utf8' );
 		for ( const match of text.matchAll( SINGLE ) ) {
 			out.set( literal( match ), 1 );
@@ -65,21 +67,21 @@ function used(): Map< string, number > {
 const messages = german.locale_data.messages as Record< string, unknown >;
 
 test( 'every configurator text has a German translation', () => {
-	const missing = [ ...used().keys() ].filter(
+	const missing = [ ...used( [ 'src/configurator' ] ).keys() ].filter(
 		( id ) => ! ( id in messages )
 	);
 	expect( missing ).toEqual( [] );
 } );
 
 test( 'plural texts carry both German forms', () => {
-	const wrong = [ ...used() ].filter(
+	const wrong = [ ...used( [ 'src/configurator' ] ) ].filter(
 		( [ id, forms ] ) => ( messages[ id ] as string[] ).length !== forms
 	);
 	expect( wrong ).toEqual( [] );
 } );
 
 test( 'the translation file holds only texts the code uses', () => {
-	const ids = used();
+	const ids = used( [ 'src/configurator' ] );
 	const unused = Object.keys( messages ).filter(
 		( id ) => id && ! ids.has( id )
 	);
@@ -94,4 +96,34 @@ test( 'German uses the formal address and the agreed terms', () => {
 		'Alles zum Lösungsentwurf hinzufügen',
 	] );
 	expect( messages[ 'Save solution' ] ).toEqual( [ 'Lösung speichern' ] );
+} );
+
+const genieMessages = germanGenie.locale_data.messages as Record<
+	string,
+	unknown
+>;
+
+test( 'every genie text has a German translation', () => {
+	const missing = [
+		...used( [ 'src/genie', 'src/shared' ] )
+			.keys()
+			.filter( ( id ) => 'Linker Tools' !== id ),
+	].filter( ( id ) => ! ( id in genieMessages ) && ! ( id in messages ) );
+	expect( missing ).toEqual( [] );
+} );
+
+test( 'the genie translation file holds only texts the code uses', () => {
+	const ids = used( [ 'src/genie', 'src/shared' ] );
+	const unused = Object.keys( genieMessages ).filter(
+		( id ) => id && ! ids.has( id )
+	);
+	expect( unused ).toEqual( [] );
+} );
+
+test( 'genie German keeps the naming and the formal address', () => {
+	const text = JSON.stringify( genieMessages );
+	expect( text ).not.toMatch( /\b(du|dein|deine|dich|dir)\b/i );
+	expect( genieMessages[ "Genie - Linker's AI assistant" ] ).toEqual( [
+		'Genie – der KI-Assistent von Linker',
+	] );
 } );

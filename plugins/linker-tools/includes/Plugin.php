@@ -9,6 +9,10 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools;
 
+use Linker\Tools\Genie\Conversations;
+use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\Proxy;
+
 /**
  * Hooks Linker Tools into WordPress.
  */
@@ -17,14 +21,20 @@ final class Plugin {
 	/**
 	 * Sets up the plugin.
 	 *
-	 * @param Assets     $assets      Registers the built apps as scripts.
-	 * @param Redirects  $redirects   Retires the tool entry addresses that moved.
-	 * @param SiteChrome $site_chrome The chrome's scripts (menu images, hover).
+	 * @param Assets        $assets        Registers the built apps as scripts.
+	 * @param Redirects     $redirects     Retires the tool entry addresses that moved.
+	 * @param SiteChrome    $site_chrome   The chrome's scripts (menu images, hover).
+	 * @param Conversations $conversations Conversation posts for Genie.
+	 * @param Proxy         $proxy         REST proxy to the Genie service.
+	 * @param Entries       $entries       Chips, dock and disclosure.
 	 */
 	public function __construct(
 		private readonly Assets $assets,
 		private readonly Redirects $redirects,
-		private readonly SiteChrome $site_chrome
+		private readonly SiteChrome $site_chrome,
+		private readonly Conversations $conversations,
+		private readonly Proxy $proxy,
+		private readonly Entries $entries
 	) {}
 
 	/**
@@ -32,7 +42,11 @@ final class Plugin {
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this->assets, 'register' ) );
+		add_action( 'init', array( $this->assets, 'load_text_domain' ) );
+		add_action( 'init', array( $this->conversations, 'register' ) );
+		add_action( 'rest_api_init', array( $this->proxy, 'register' ) );
 		$this->redirects->register();
 		$this->site_chrome->register();
+		$this->entries->register();
 	}
 }

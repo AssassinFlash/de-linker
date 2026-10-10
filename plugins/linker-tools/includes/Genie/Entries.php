@@ -1,0 +1,371 @@
+<?php
+/**
+ * Four page chip groups, the standing dock, and the AI disclosure sentence.
+ *
+ * @package Linker\Tools
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Tools\Genie;
+
+/**
+ * Prints the opening prompts per page type and the dock on every page. The
+ * chips and the dock only print markup; the React app is loaded on the first
+ * click (docs/specs/13-genie.md).
+ */
+class Entries {
+
+	/**
+	 * Script handle of the Genie entry (registered by Assets on init).
+	 */
+	public const HANDLE = 'linker-tools-genie';
+
+	/**
+	 * Hooks the chips and the dock; runs during plugin registration.
+	 */
+	public function register(): void {
+		add_action( 'wp_footer', array( $this, 'dock' ) );
+		add_action( 'woocommerce_before_shop_loop', array( $this, 'shop_chip' ) );
+		add_action( 'woocommerce_single_product_summary', array( $this, 'product_chips' ), 35 );
+		add_action( 'woocommerce_before_cart', array( $this, 'draft_chips' ) );
+		add_action( 'woocommerce_account_dashboard', array( $this, 'account_chips' ) );
+	}
+
+	/**
+	 * Standing dock: the open button and the hidden mount the app renders into.
+	 */
+	public function dock(): void {
+		if ( is_admin() ) {
+			return;
+		}
+		$locale  = $this->locale();
+		$page    = $this->page_context();
+		$mount   = 'linker-genie-mount';
+		$payload = array(
+			'src'          => $this->script_src(),
+			'deps'         => $this->script_deps(),
+			'translations' => $this->script_translations(),
+		);
+		echo '<div class="linker-genie">';
+		printf(
+			'<button type="button" class="linker-genie-open" data-linker-genie-open aria-expanded="false" aria-controls="%1$s">%2$s</button>',
+			esc_attr( $mount ),
+			esc_html__( 'Ask Genie', 'linker-tools' )
+		);
+		printf(
+			'<div id="%1$s" class="linker-genie-panel" data-linker-genie-mount hidden>',
+			esc_attr( $mount )
+		);
+		printf(
+			'<div data-linker-app="genie" data-locale="%1$s" data-page-type="%2$s" data-turn-url="%3$s" data-vote-url="%4$s" data-rest-url="%5$s" data-rest-nonce="%6$s" data-disclosure="%7$s" data-account-url="%8$s" data-prompts=\'%9$s\'></div>',
+			esc_attr( $locale ),
+			esc_attr( $page['type'] ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url() ) ),
+			esc_attr( wp_create_nonce( 'wp_rest' ) ),
+			esc_attr( $this->disclosure( $locale ) ),
+			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
+			esc_attr( (string) wp_json_encode( $this->prompts( $page, $locale ) ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already inside esc_attr; the cast silences a false positive on (string).
+		);
+		echo '</div>';
+		if ( '' !== $payload['src'] ) {
+			// The loader: on the first open/chip click it injects the entry's
+			// WordPress dependencies, the script translations, and the built
+			// app, then reveals the panel. This is the whole of the "first
+			// click loads the JS" mechanism. The payload rides in a data
+			// attribute: attribute values are entity-decoded by the HTML
+			// parser, so getAttribute() yields the clean JSON (script text
+			// would keep the esc_html entities).
+			wp_print_inline_script_tag(
+				<<<'JS'
+(function () {
+	var payload = null;
+	try {
+		payload = JSON.parse(
+			document
+				.querySelector('[data-linker-genie-loader]')
+				.getAttribute('data-linker-genie-boot-payload')
+		);
+	} catch (error) {
+		return;
+	}
+	var loaded = false;
+	function boot() {
+		if (loaded) {
+			return;
+		}
+		loaded = true;
+		var finish = function () {
+			(payload.translations || []).forEach(function (js) {
+				var data = document.createElement('script');
+				data.text = js;
+				document.body.appendChild(data);
+			});
+			var app = document.createElement('script');
+			app.src = payload.src;
+			app.async = false;
+			document.body.appendChild(app);
+		};
+		var deps = payload.deps;
+		if (deps.length === 0) {
+			finish();
+			return;
+		}
+		// An inline script runs the moment it is inserted, so the
+		// translations may only be inserted once the dependencies have
+		// executed — they call wp.i18n. Classic scripts with async=false
+		// execute in insertion order, and "load" fires after execution;
+		// the last dependency's load is therefore the signal. "error"
+		// proceeds too: the app fails on the missing global anyway, and
+		// the panel must still open.
+		var proceeded = false;
+		var proceed = function () {
+			if (proceeded) {
+				return;
+			}
+			proceeded = true;
+			finish();
+		};
+		deps.forEach(function (url, index) {
+			var dep = document.createElement('script');
+			dep.src = url;
+			dep.async = false;
+			if (index === deps.length - 1) {
+				dep.addEventListener('load', proceed);
+				dep.addEventListener('error', proceed);
+			}
+			document.body.appendChild(dep);
+		});
+	}
+	document.addEventListener(
+		'click',
+		function (event) {
+			var trigger = event.target.closest(
+				'[data-linker-genie-open]'
+			);
+			if (!trigger) {
+				return;
+			}
+			boot();
+			var panel = document.querySelector(
+				'[data-linker-genie-mount]'
+			);
+			if (panel) {
+				panel.hidden = false;
+			}
+			document
+				.querySelectorAll('[data-linker-genie-open]')
+				.forEach(function (button) {
+					button.setAttribute('aria-expanded', 'true');
+				});
+		},
+		true
+	);
+})();
+JS,
+				array(
+					'data-linker-genie-loader'       => true,
+					'data-linker-genie-boot-payload' => (string) wp_json_encode( $payload ),
+				)
+			);
+		}
+		echo '</div>';
+	}
+
+	/**
+	 * Shop chip: opens Genie over the catalogue.
+	 */
+	public function shop_chip(): void {
+		$this->chip( __( 'Ask Genie', 'linker-tools' ), 'category' );
+	}
+
+	/**
+	 * Product page chips.
+	 */
+	public function product_chips(): void {
+		$this->chip( __( 'What pairs with this model?', 'linker-tools' ), 'product' );
+		$this->chip( __( 'Compare with…', 'linker-tools' ), 'product' );
+		$this->chip( __( 'Documents', 'linker-tools' ), 'product' );
+	}
+
+	/**
+	 * Solution draft chips.
+	 */
+	public function draft_chips(): void {
+		$this->chip( __( 'Check my draft', 'linker-tools' ), 'draft' );
+		$this->chip( __( 'What happens next?', 'linker-tools' ), 'draft' );
+	}
+
+	/**
+	 * Account chips.
+	 */
+	public function account_chips(): void {
+		$this->chip( __( 'Where is my Proforma?', 'linker-tools' ), 'account' );
+	}
+
+	/**
+	 * One chip that opens the dock with a starting question.
+	 *
+	 * @param string $label Chip label.
+	 * @param string $type  Page type.
+	 */
+	public function chip( string $label, string $type ): void {
+		printf(
+			'<button type="button" class="linker-genie-chip" data-linker-genie-open data-page-type="%1$s">%2$s</button>',
+			esc_attr( $type ),
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * The opening prompts of one page type in its language.
+	 *
+	 * @param array{type: string} $page   Page context.
+	 * @param string              $locale `en` or `de`.
+	 * @return list<string>
+	 */
+	public function prompts( array $page, string $locale ): array {
+		$de = 'de' === $locale;
+		switch ( $page['type'] ) {
+			case 'product':
+				return array(
+					$de ? 'Was passt zu diesem Modell?' : 'What pairs with this model?',
+					$de ? 'Vergleichen mit …' : 'Compare with…',
+					$de ? 'Unterlagen' : 'Documents',
+				);
+			case 'draft':
+				return array(
+					$de ? 'Meinen Entwurf prüfen' : 'Check my draft',
+					$de ? 'Wie geht es weiter?' : 'What happens next?',
+				);
+			case 'account':
+				return array(
+					$de ? 'Wo steht meine Proforma?' : 'Where is my Proforma?',
+					$de ? 'Wie geht es weiter?' : 'What happens next?',
+				);
+			case 'category':
+				return array(
+					__( 'Ask Genie', 'linker-tools' ),
+					$de
+						? 'Ich brauche einen dreiphasigen Hybridwechselrichter für ein Wohngebäude mit 10 kWp PV.'
+						: 'I need a three-phase hybrid inverter for a home with 10 kWp PV.',
+				);
+			default:
+				return array(
+					__( 'Ask Genie', 'linker-tools' ),
+					$de
+						? 'Ich brauche einen Hybridwechselrichter für ein Wohngebäude.'
+						: 'I need a hybrid inverter for a home.',
+				);
+		}
+	}
+
+	/**
+	 * Page context from the current query.
+	 *
+	 * @return array{type: string, product_id?: int}
+	 */
+	public function page_context(): array {
+		if ( function_exists( 'is_product' ) && is_product() ) {
+			return array(
+				'type'       => 'product',
+				'product_id' => (int) get_queried_object_id(),
+			);
+		}
+		if ( function_exists( 'is_cart' ) && is_cart() ) {
+			return array( 'type' => 'draft' );
+		}
+		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+			return array( 'type' => 'account' );
+		}
+		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+			return array( 'type' => 'category' );
+		}
+		return array( 'type' => 'other' );
+	}
+
+	/**
+	 * The AI disclosure, spoken once at the start of the thread
+	 * (docs/specs/13-genie.md; naming per AGENTS.md §1).
+	 *
+	 * @param string $locale `en` or `de`.
+	 */
+	public function disclosure( string $locale ): string {
+		return 'de' === $locale
+			? 'Hallo, ich bin Genie, der KI-Assistent von Linker. Sie chatten mit einem KI-System.'
+			: "Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.";
+	}
+
+	/**
+	 * `en` or `de` from the page's language.
+	 *
+	 * @return 'en'|'de'
+	 */
+	private function locale(): string {
+		$lang = function_exists( 'determine_locale' ) ? determine_locale() : 'en_US';
+		return str_starts_with( strtolower( $lang ), 'de' ) ? 'de' : 'en';
+	}
+
+	/**
+	 * URL of the built Genie script, empty when Assets has not registered it.
+	 */
+	private function script_src(): string {
+		$script = wp_scripts()->query( self::HANDLE );
+		return ( $script && is_string( $script->src ) ) ? $script->src : '';
+	}
+
+	/**
+	 * URLs of the entry's WordPress dependencies, in registration order.
+	 *
+	 * @return list<string>
+	 */
+	private function script_deps(): array {
+		$urls = array();
+		$walk = function ( string $handle ) use ( &$urls, &$walk ): void {
+			$script = wp_scripts()->query( $handle );
+			if ( ! $script || ! is_string( $script->src ) ) {
+				return;
+			}
+			foreach ( $script->deps as $dep ) {
+				$walk( (string) $dep );
+			}
+			$url = (string) $script->src;
+			if ( '' !== $url && ! in_array( $url, $urls, true ) ) {
+				$urls[] = $url;
+			}
+		};
+		$walk( self::HANDLE );
+		return $urls;
+	}
+
+	/**
+	 * Translation data of the entry and its dependencies, in dependency
+	 * order — what a regular enqueue would print with
+	 * WP_Scripts::print_translations() before each script. A normal enqueue
+	 * never runs here (the boot loader appends the tags itself), so the
+	 * content rides in the boot payload and the loader inserts it after the
+	 * dependencies, before the app.
+	 *
+	 * @return list<string>
+	 */
+	private function script_translations(): array {
+		$scripts = array();
+		$walk    = function ( string $handle ) use ( &$scripts, &$walk ): void {
+			$script = wp_scripts()->query( $handle );
+			if ( ! $script || ! is_string( $script->src ) ) {
+				return;
+			}
+			foreach ( $script->deps as $dep ) {
+				$walk( (string) $dep );
+			}
+			$js = wp_scripts()->print_translations( $handle, false );
+			if ( is_string( $js ) && '' !== $js ) {
+				$scripts[] = $js;
+			}
+		};
+		$walk( self::HANDLE );
+		return $scripts;
+	}
+}

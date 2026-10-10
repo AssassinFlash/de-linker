@@ -9,8 +9,16 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Abilities;
 
+use Linker\Commerce\Abilities\CheckCompatibility;
+use Linker\Commerce\Abilities\CompareProducts;
 use Linker\Commerce\Abilities\GetCommerceVersion;
+use Linker\Commerce\Abilities\GetProduct;
+use Linker\Commerce\Abilities\HandoffTeam;
+use Linker\Commerce\Abilities\InquiryStatus;
 use Linker\Commerce\Abilities\Registrar;
+use Linker\Commerce\Abilities\SearchKnowledge;
+use Linker\Commerce\Abilities\SearchProducts;
+use Linker\Commerce\Abilities\SizeHint;
 use Mockery;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -23,6 +31,23 @@ use WP_Mock\Tools\TestCase;
 final class RegistrarTest extends TestCase {
 
 	private const FILE = '/srv/www/wp-content/plugins/linker-commerce/linker-commerce.php';
+
+	/**
+	 * The eight Genie abilities plus the version probe, in registration order.
+	 *
+	 * @return list<string>
+	 */
+	private const NAMES = array(
+		GetCommerceVersion::NAME,
+		SearchProducts::NAME,
+		GetProduct::NAME,
+		CompareProducts::NAME,
+		CheckCompatibility::NAME,
+		SizeHint::NAME,
+		InquiryStatus::NAME,
+		HandoffTeam::NAME,
+		SearchKnowledge::NAME,
+	);
 
 	/**
 	 * The category carries a label and a description.
@@ -50,24 +75,33 @@ final class RegistrarTest extends TestCase {
 
 	/**
 	 * Each ability is registered with its own arguments, inside the category.
+	 * Write actions are not abilities.
 	 */
 	public function test_registers_each_ability_in_the_category(): void {
 		WP_Mock::passthruFunction( '__' );
-		$expected = array( 'category' => Registrar::CATEGORY ) + ( new GetCommerceVersion( self::FILE ) )->args();
+		$registrar = new Registrar( self::FILE );
+		$this->assertSame( self::NAMES, array_keys( $registrar->abilities() ) );
+		foreach ( $registrar->abilities() as $ability ) {
+			$args = $ability->args();
+			$this->assertArrayHasKey( 'output_schema', $args );
+			$this->assertTrue( $args['meta']['show_in_rest'] );
+			$this->assertTrue( $args['meta']['annotations']['readonly'] );
+		}
 		WP_Mock::userFunction(
 			'wp_register_ability',
 			array(
-				'times' => 1,
+				'times' => count( self::NAMES ),
 				'args'  => array(
-					GetCommerceVersion::NAME,
+					Mockery::type( 'string' ),
 					Mockery::on(
-						static fn ( array $args ): bool => $args == $expected // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- the callbacks belong to another, equal instance.
+						static fn ( array $args ): bool => Registrar::CATEGORY === ( $args['category'] ?? null )
+							&& isset( $args['output_schema'] )
 					),
 				),
 			)
 		);
 
-		( new Registrar( self::FILE ) )->register_abilities();
+		$registrar->register_abilities();
 
 		$this->assertConditionsMet();
 	}

@@ -1,0 +1,1 @@
+{"conversation_id":6667,"stream":"event: meta\ndata: {\"grounded\": true, \"fallback\": false, \"attempts\": 1, \"failures\": [], \"language\": \"de\"}\n\nevent: block\ndata: {\"type\": \"handoff\", \"summary\": \"Kundin\/Kunde fragt nach Installationsdienstleistungen.\"}\n\nevent: done\ndata: {\"ok\": true}\n\n"}

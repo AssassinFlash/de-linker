@@ -19,8 +19,20 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools;
 
+use Linker\Tools\Genie\Conversations;
+use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\Proxy;
+
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-( new Plugin( new Assets( __FILE__ ), new Redirects(), new SiteChrome( __FILE__ ) ) )->register();
+$conversations = new Conversations(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
+( new Plugin(
+	new Assets( __FILE__ ),
+	new Redirects(),
+	new SiteChrome( __FILE__ ),
+	$conversations,
+	new Proxy( $conversations ),
+	new Entries()
+) )->register();

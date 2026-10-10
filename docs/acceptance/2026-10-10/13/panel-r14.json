@@ -1,0 +1,1 @@
+{"conversation_id":6605,"stream":"event: meta\ndata: {\"grounded\": true, \"fallback\": false, \"attempts\": 1, \"failures\": [], \"language\": \"en\"}\n\nevent: block\ndata: {\"type\": \"handoff\", \"summary\": \"Customer asking about delivery time.\"}\n\nevent: done\ndata: {\"ok\": true}\n\n"}

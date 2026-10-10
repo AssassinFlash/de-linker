@@ -31,7 +31,7 @@ export interface ProductCardProps {
 	/** What the item is in the proposal ("Hybrid inverter"). */
 	role: string;
 	title: string;
-	/** Already worded, for example "Model GW10K-ETA-G20". */
+	/** Already worded, for example "Model GW10K-ETA-G20"; empty hides the line. */
 	model: string;
 	url?: string;
 	image?: { src: string; alt: string };
@@ -77,14 +77,16 @@ export function ProductCard( {
 				<h3 className="linker-card__title" id={ titleId }>
 					{ url ? <a href={ url }>{ title }</a> : title }
 				</h3>
-				<p className="linker-card__model">
-					{ model }
-					{ quantity ? (
-						<span className="linker-card__quantity">
-							{ quantity }
-						</span>
-					) : null }
-				</p>
+				{ model || quantity ? (
+					<p className="linker-card__model">
+						{ model }
+						{ quantity ? (
+							<span className="linker-card__quantity">
+								{ quantity }
+							</span>
+						) : null }
+					</p>
+				) : null }
 				{ badges.length > 0 ? (
 					<ul className="linker-card__badges">
 						{ badges.map( ( badge ) => (

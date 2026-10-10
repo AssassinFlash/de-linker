@@ -2,11 +2,20 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
+import { createRoot } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { mountApp } from '../shared/mount';
 import { App } from './App';
+import { readConfig } from './config';
 
-domReady( () => mountApp( 'genie', App ) );
+domReady( () => {
+	document
+		.querySelectorAll< HTMLElement >( '[data-linker-app="genie"]' )
+		.forEach( ( element ) =>
+			createRoot( element ).render(
+				<App config={ readConfig( element ) } />
+			)
+		);
+} );

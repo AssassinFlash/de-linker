@@ -1,0 +1,233 @@
+<?php
+/**
+ * Tests for the REST proxy to the Genie service.
+ *
+ * @package Linker\Tools
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Tools\Tests\Unit;
+
+use Linker\Tools\Genie\Conversations;
+use Linker\Tools\Genie\Proxy;
+use WP_Mock;
+use WP_Mock\Tools\TestCase;
+use WP_REST_Request;
+use WP_REST_Response;
+use WP_Error;
+
+/**
+ * Tests for Proxy.
+ *
+ * @covers \Linker\Tools\Genie\Proxy
+ */
+final class ProxyTest extends TestCase {
+
+	/**
+	 * Without the option there is no service to talk to.
+	 */
+	public function test_turn_fails_closed_without_a_service_url(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => '' ) );
+
+		$result = $this->proxy()->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_unconfigured', $result->get_error_code() );
+		$this->assertSame( 503, $result->get_error_data( 'linker_genie_unconfigured' )['status'] );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The turn carries the conversation, the normalized locale and the page
+	 * context; the service's SSE comes back with the conversation ID.
+	 */
+	public function test_turn_posts_the_context_and_returns_the_stream(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		// The URL and body the fetch double received.
+		$caught  = array( '', array() );
+		$fetch   = static function ( string $url, array $body ) use ( &$caught ) {
+			$caught = array( $url, $body );
+			return "event: meta\ndata: {}\n\n";
+		};
+		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param(
+			'messages',
+			array(
+				array(
+					'role'    => 'user',
+					'content' => 'hi',
+				),
+			)
+		);
+		$request->set_param( 'locale', 'de-DE' );
+		$request->set_param(
+			'page',
+			array(
+				'type'       => 'product',
+				'product_id' => 3555,
+			)
+		);
+
+		$result = $this->proxy( $fetch )->turn( $request );
+
+		$this->assertNotInstanceOf( WP_Error::class, $result );
+		$raw  = $result->get_data();
+		$data = is_array( $raw ) ? $raw : array();
+		$this->assertSame( 'http://127.0.0.1:8890/assistant/turn', $caught[0] );
+		$this->assertSame( '51', $caught[1]['conversation_id'] );
+		$this->assertSame( 'de', $caught[1]['locale'] );
+		$this->assertSame(
+			array(
+				'type'       => 'product',
+				'product_id' => 3555,
+			),
+			$caught[1]['page_context']
+		);
+		$this->assertFalse( $caught[1]['user']['logged_in'] );
+		$this->assertSame( "event: meta\ndata: {}\n\n", $data['stream'] );
+		$this->assertSame( 51, $data['conversation_id'] );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * An upstream failure maps to a 502, not to the raw service error.
+	 */
+	public function test_turn_maps_an_upstream_error(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$fetch = static fn() => new WP_Error( 'http_request_failed', 'timed out' );
+
+		$result = $this->proxy( $fetch )->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_upstream', $result->get_error_code() );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * `en` when nothing says German.
+	 */
+	public function test_locale_defaults_to_english(): void {
+		$proxy  = new Proxy(
+			new class() extends Conversations {
+				/**
+				 * Always the same conversation.
+				 */
+				public function current_id(): int {
+					return 1;
+				}
+			}
+		);
+		$method = new \ReflectionMethod( $proxy, 'locale' );
+		$method->setAccessible( true );
+
+		$this->assertSame( 'en', $method->invoke( $proxy, null ) );
+		$this->assertSame( 'de', $method->invoke( $proxy, 'de_DE_formal' ) );
+	}
+
+	/**
+	 * A vote is forwarded to the service's log of the same turn.
+	 */
+	public function test_vote_forwards_to_the_service(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$caught  = array( '', array() );
+		$fetch   = static function ( string $url, array $body ) use ( &$caught ): int {
+			$caught = array( $url, $body );
+			return 200;
+		};
+		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn/41/vote' );
+		$request->set_param( 'id', 41 );
+		$request->set_param( 'vote', -1 );
+
+		$result = $this->proxy( $fetch )->vote( $request );
+
+		$this->assertNotInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'http://127.0.0.1:8890/turn/41/vote', $caught[0] );
+		$this->assertSame( array( 'vote' => -1 ), $caught[1] );
+		$this->assertSame( array( 'ok' => true ), $result->get_data() );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * An unknown turn maps to 404, an unreachable service to 502.
+	 */
+	public function test_vote_maps_the_upstream_statuses(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn/41/vote' );
+		$request->set_param( 'id', 41 );
+		$request->set_param( 'vote', 1 );
+
+		$missing = $this->proxy( static fn(): int => 404 )->vote( $request );
+		$this->assertInstanceOf( WP_Error::class, $missing );
+		$this->assertSame( 'linker_genie_turn', $missing->get_error_code() );
+		$this->assertSame( 404, $missing->get_error_data( 'linker_genie_turn' )['status'] );
+
+		$dead = $this->proxy( static fn() => new WP_Error( 'http_request_failed', 'timed out' ) )->vote( $request );
+		$this->assertInstanceOf( WP_Error::class, $dead );
+		$this->assertSame( 'linker_genie_upstream', $dead->get_error_code() );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Without the option there is no service to talk to.
+	 */
+	public function test_vote_fails_closed_without_a_service_url(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => '' ) );
+
+		$result = $this->proxy()->vote( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn/41/vote' ) );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_unconfigured', $result->get_error_code() );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * WordPress functions every test path touches.
+	 */
+	private function wp_functions(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction(
+			'is_wp_error',
+			array(
+				'return' => static fn( $thing ): bool => $thing instanceof \WP_Error,
+			)
+		);
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+				WP_Mock::userFunction(
+					'register_rest_route',
+					array(
+						'return' => static function (): void {},
+					)
+				);
+	}
+
+	/**
+	 * A proxy whose conversations always answer 51.
+	 *
+	 * @param callable|null $fetch HTTP client.
+	 */
+	private function proxy( ?callable $fetch = null ): Proxy {
+		$conversations = new class() extends Conversations {
+			/**
+			 * Always the same conversation.
+			 */
+			public function current_id(): int {
+				return 51;
+			}
+		};
+		return new Proxy( $conversations, $fetch );
+	}
+}

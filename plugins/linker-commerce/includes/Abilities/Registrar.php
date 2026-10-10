@@ -53,7 +53,28 @@ final class Registrar {
 			return;
 		}
 
-		$ability = new GetCommerceVersion( $this->plugin_file );
-		wp_register_ability( GetCommerceVersion::NAME, array( 'category' => self::CATEGORY ) + $ability->args() );
+		foreach ( $this->abilities() as $ability ) {
+			wp_register_ability( $ability::NAME, array( 'category' => self::CATEGORY ) + $ability->args() );
+		}
+	}
+
+	/**
+	 * Every ability of this plugin, name => instance. One class per ability
+	 * (docs/specs/13-genie.md). Write actions are not in this list.
+	 *
+	 * @return array<string, CheckCompatibility|CompareProducts|GetCommerceVersion|GetProduct|HandoffTeam|InquiryStatus|SearchKnowledge|SearchProducts|SizeHint>
+	 */
+	public function abilities(): array {
+		return array(
+			GetCommerceVersion::NAME => new GetCommerceVersion( $this->plugin_file ),
+			SearchProducts::NAME     => new SearchProducts(),
+			GetProduct::NAME         => new GetProduct(),
+			CompareProducts::NAME    => new CompareProducts(),
+			CheckCompatibility::NAME => new CheckCompatibility(),
+			SizeHint::NAME           => new SizeHint(),
+			InquiryStatus::NAME      => new InquiryStatus(),
+			HandoffTeam::NAME        => new HandoffTeam(),
+			SearchKnowledge::NAME    => new SearchKnowledge(),
+		);
 	}
 }

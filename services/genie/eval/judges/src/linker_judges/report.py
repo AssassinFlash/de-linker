@@ -19,7 +19,7 @@ CLASSES = (
     "wrong_model",
     "out_of_scope_answered",
 )
-CLOSED_LLMS = ("deepseek", "haiku", "gemini")
+CLOSED_LLMS = ("deepseek", "haiku")
 
 
 def _pct(value: float | None) -> str:

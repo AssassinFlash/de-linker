@@ -15,8 +15,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-# docs/specs/33-judge-bakeoff.md: the key lives here and never enters the repository.
+# docs/specs/33-judge-bakeoff.md: keys live in these files and never enter the
+# repository — aihubmix for the Jev first pass, deepseek for the direct escalation.
 CREDENTIALS_FILE = Path("~/.config/terravolt-builder/aihubmix.env").expanduser()
+DEEPSEEK_FILE = Path("~/.config/terravolt-builder/deepseek.env").expanduser()
 
 # A transient failure is retried at most three times, as in the JEV-as-a-Judge protocol
 # (arXiv:2609.26550 §4); every attempt is kept in the record.
@@ -36,21 +38,42 @@ class Response:
     started_at: float
 
 
-def aihubmix_credentials() -> tuple[str, str]:
+def _credentials(
+    env_key: str, env_base: str, default_base: str, file: Path
+) -> tuple[str, str]:
     """(base URL, key) from the environment, else from the owner's credentials file."""
     values = dict(os.environ)
-    if "AIHUBMIX_API_KEY" not in values and CREDENTIALS_FILE.exists():
-        for line in CREDENTIALS_FILE.read_text().splitlines():
+    if env_key not in values and file.exists():
+        for line in file.read_text().splitlines():
             line = line.strip()
             if line and not line.startswith("#") and "=" in line:
                 name, value = line.split("=", 1)
                 name = name.strip().removeprefix("export ").strip()
                 values.setdefault(name, value.strip().strip("'\""))
-    key = values.get("AIHUBMIX_API_KEY", "")
+    key = values.get(env_key, "")
     if not key:
-        raise HttpError(f"AIHUBMIX_API_KEY is not set and {CREDENTIALS_FILE} has none")
-    base = values.get("AIHUBMIX_BASE_URL", "https://aihubmix.com").rstrip("/")
-    return base, key
+        raise HttpError(f"{env_key} is not set and {file} has none")
+    return values.get(env_base, default_base).rstrip("/"), key
+
+
+def aihubmix_credentials() -> tuple[str, str]:
+    """(base URL, key) for the aihubmix gateway (the Jev first pass)."""
+    return _credentials(
+        "AIHUBMIX_API_KEY",
+        "AIHUBMIX_BASE_URL",
+        "https://aihubmix.com",
+        CREDENTIALS_FILE,
+    )
+
+
+def deepseek_credentials() -> tuple[str, str]:
+    """(base URL, key) for the official DeepSeek API (the escalation judge)."""
+    return _credentials(
+        "DEEPSEEK_API_KEY",
+        "DEEPSEEK_BASE_URL",
+        "https://api.deepseek.com",
+        DEEPSEEK_FILE,
+    )
 
 
 def post_json(

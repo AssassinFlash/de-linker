@@ -1,0 +1,4 @@
+{
+  "conversation_id": "ds-panel2-6",
+  "stream": "event: meta\ndata: {\"turn_id\": 182, \"grounded\": true, \"fallback\": false, \"attempts\": 1, \"failures\": [], \"language\": \"de\"}\n\nevent: block\ndata: {\"type\": \"handoff\", \"summary\": \"Unser Team beantwortet das unter sales@de-linker.com.\"}\n\nevent: done\ndata: {\"ok\": true}\n\n"
+}

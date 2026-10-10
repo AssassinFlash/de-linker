@@ -1,0 +1,1 @@
+{"conversation_id": 6694, "stream": "event: meta\ndata: {\"turn_id\": 162, \"grounded\": true, \"fallback\": false, \"attempts\": 1, \"failures\": [], \"language\": \"en\"}\n\nevent: block\ndata: {\"type\": \"ask\", \"field\": \"application\", \"options\": []}\n\nevent: done\ndata: {\"ok\": true}\n\n"}

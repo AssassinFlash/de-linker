@@ -13,7 +13,22 @@ defined( 'MINUTE_IN_SECONDS' ) || define( 'MINUTE_IN_SECONDS', 60 );
 defined( 'HOUR_IN_SECONDS' ) || define( 'HOUR_IN_SECONDS', 60 * MINUTE_IN_SECONDS );
 defined( 'DAY_IN_SECONDS' ) || define( 'DAY_IN_SECONDS', 24 * HOUR_IN_SECONDS );
 
-if ( ! class_exists( 'WP_Error' ) ) {
+	if ( ! class_exists( 'wpdb' ) ) {
+		class wpdb {
+			public $prefix = 'wp_';
+			public function prepare( $query, ...$args ) {
+				return $query;
+			}
+			public function get_col( $query = null, $x = 0 ) {
+				return array();
+			}
+			public function get_results( $query = null, $output = OBJECT ) {
+				return array();
+			}
+		}
+	}
+
+	if ( ! class_exists( 'WP_Error' ) ) {
 	class WP_Error {
 		/** @var array<string, list<string>> */
 		public $errors = array();

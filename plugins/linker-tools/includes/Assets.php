@@ -64,4 +64,17 @@ final class Assets {
 			}
 		}
 	}
+
+	/**
+	 * Loads the plugin's PHP translations (`languages/linker-tools-<locale>.mo`)
+	 * for the chips and dock of includes/Genie/Entries.php; runs on init.
+	 * Just-in-time loading covers only plugins on wordpress.org, not this one.
+	 */
+	public function load_text_domain(): void {
+		load_plugin_textdomain(
+			'linker-tools',
+			false,
+			dirname( plugin_basename( $this->plugin_file ) ) . '/languages'
+		);
+	}
 }

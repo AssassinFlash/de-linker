@@ -1,0 +1,99 @@
+<?php
+/**
+ * Tests for linker/check-compatibility.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Tests\Unit\Abilities;
+
+use Linker\Commerce\Abilities\CheckCompatibility;
+use Linker\Commerce\Tests\Support\MocksCatalogue;
+use WP_Mock;
+use WP_Mock\Tools\TestCase;
+
+/**
+ * Three-valued pairing against data/compatibility.json.
+ *
+ * @covers \Linker\Commerce\Abilities\CheckCompatibility
+ */
+final class CheckCompatibilityTest extends TestCase {
+
+	use MocksCatalogue;
+
+	/**
+	 * Translation returns its source.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::passthruFunction( '__' );
+	}
+
+	/**
+	 * OPTIONS can show the four-value verdict, including unknown.
+	 */
+	public function test_output_schema_has_the_four_verdicts(): void {
+		$schema = ( new CheckCompatibility() )->args()['output_schema'];
+
+		$this->assertSame(
+			array( 'released', 'released_with_accessory', 'not_released', 'unknown' ),
+			$schema['properties']['verdict']['enum']
+		);
+		$this->assertTrue( ( new CheckCompatibility() )->can_execute() );
+	}
+
+	/**
+	 * A documented pair of product IDs returns the contract's verdict.
+	 *
+	 * @dataProvider documented_pairs
+	 *
+	 * @param int    $inverter Inverter product ID.
+	 * @param int    $battery  Battery product ID.
+	 * @param string $verdict  Expected verdict.
+	 */
+	public function test_documented_pairs( int $inverter, int $battery, string $verdict ): void {
+		$this->mock_catalogue( array( $inverter, $battery ) );
+		$ability = new CheckCompatibility();
+
+		$named   = $ability->execute(
+			array(
+				'inverter_id' => $inverter,
+				'battery_id'  => $battery,
+			)
+		);
+		$swapped = $ability->execute( array( 'product_ids' => array( $battery, $inverter ) ) );
+
+		$this->assertSame( $verdict, $named['verdict'] );
+		$this->assertSame( $verdict, $swapped['verdict'] );
+		if ( 'unknown' !== $verdict ) {
+			$this->assertNotSame( array(), $named['documents'] );
+			$this->assertNotSame( array(), $named['conditions'] );
+		}
+	}
+
+	/**
+	 * Known product pairs: released, released_with_accessory, not_released, unknown.
+	 *
+	 * @return list<array{int, int, string}>
+	 */
+	public function documented_pairs(): array {
+		return array(
+			array( 3556, 6519, 'released' ),
+			array( 4107, 1832, 'released_with_accessory' ),
+			array( 1182, 6519, 'not_released' ),
+		);
+	}
+
+	/**
+	 * Missing IDs, or two inverters, are unknown: the contract does not infer.
+	 */
+	public function test_unknown_when_the_contract_has_no_pair(): void {
+		$this->assertSame( 'unknown', ( new CheckCompatibility() )->execute( array() )['verdict'] );
+		$this->mock_catalogue( array( 4107, 3556 ) );
+		$two_inverters = ( new CheckCompatibility() )->execute( array( 'product_ids' => array( 4107, 3556 ) ) );
+		$this->assertSame( 'unknown', $two_inverters['verdict'] );
+		$this->assertSame( array(), $two_inverters['documents'] );
+	}
+}
