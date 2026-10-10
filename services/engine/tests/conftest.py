@@ -20,8 +20,8 @@ from fastapi.testclient import TestClient
 from linker_engine.app import Settings, create_app
 from linker_engine.catalog import Catalog
 from linker_engine.compatibility import Compatibility
+from linker_engine.products import Engine
 from linker_engine.pvgis import Pvgis
-from linker_engine.residential import Engine
 from linker_engine.roof import lod2
 
 FIXTURES = Path(__file__).parent / "fixtures"

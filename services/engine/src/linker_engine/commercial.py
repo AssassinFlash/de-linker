@@ -17,23 +17,24 @@ import math
 import re
 from dataclasses import dataclass
 
-from . import rules, stacking
+from . import htw, rules, stacking
 from .catalog import Product
 from .compatibility import Accessory
 from .models import (
     CommercialInput,
     CommercialResult,
     CommercialSystem,
-    Doc,
     Line,
     LoadSummary,
     Range,
     Role,
     ShavingOption,
 )
-from .residential import Engine, ref, release
+from .products import Engine, documents_of, ref, release
 from .texts import Locale, t
 
+# Company and service questions go to the team address (owner ruling,
+# AGENTS.md section 2, 2026-10-05).
 TEAM_EMAIL = "sales@de-linker.com"
 INVERTER_CLASSES = ("inverters", "all-in-one-systems")
 BATTERY_CLASSES = ("battery-systems", "home-storage")
@@ -266,7 +267,7 @@ def _line(product: Product, quantity: int, role: Role, locale: Locale) -> Line:
         unit="pcs",
         label=t(_LABELS[role], locale),
         basis=[],
-        documents=[Doc(url=d.url) for d in product.documents if d.type == "datasheet"],
+        documents=documents_of(product, "datasheet", locale),
     )
 
 
@@ -287,11 +288,7 @@ def _controller_lines(
                     unit="pcs",
                     label=t("line.controller", locale),
                     basis=[],
-                    documents=[
-                        Doc(url=d.url)
-                        for d in matches[0].documents
-                        if d.type == "datasheet"
-                    ],
+                    documents=documents_of(matches[0], "datasheet", locale),
                 )
             )
     return lines
@@ -317,11 +314,8 @@ def design(
     basis: list[str] = []
     reserve = 0.0
     if "backup" in request.goals and request.backup_load_kw and request.backup_hours:
-        reserve = (
-            request.backup_load_kw
-            * request.backup_hours
-            / rules.HTW_DISCHARGE_EFFICIENCY.value
-        )
+        # The same reserve the residential path holds back (htw.backup_reserve).
+        reserve = htw.backup_reserve(request.backup_load_kw, request.backup_hours)
         basis.append(
             t(
                 "ci.basis.backup",

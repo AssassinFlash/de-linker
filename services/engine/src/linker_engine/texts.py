@@ -51,10 +51,6 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Battery released by the manufacturers",
         "Batterie von den Herstellern freigegeben",
     ),
-    "rule.existing_inverter": (
-        "Existing inverter in our product range",
-        "Vorhandener Wechselrichter in unserem Sortiment",
-    ),
     "rule.htw_min_pv": (
         "PV at least 0.5 kWp per MWh of annual consumption (HTW Berlin)",
         "PV-Leistung mindestens 0,5 kWp je MWh Jahresverbrauch (HTW Berlin)",
@@ -395,7 +391,7 @@ _TEXTS: dict[str, tuple[str, str]] = {
     "report.next": ("Next steps", "Nächste Schritte"),
     "report.warnings": ("Notes", "Hinweise"),
     "row.postcode": ("Postcode", "Postleitzahl"),
-    "row.position": ("Position", "Position"),
+    "row.position": ("Position", "Koordinaten"),
     "row.consumption": ("Annual consumption", "Jahresverbrauch"),
     "row.consumption_range": (
         "Annual consumption with additions",

@@ -37,23 +37,6 @@ class YieldProfile:
     annual_kwh_per_kwp: dict[int, float]
     monthly_kwh_per_kwp: list[float]
 
-    @property
-    def years(self) -> tuple[int, int]:
-        return min(self.annual_kwh_per_kwp), max(self.annual_kwh_per_kwp)
-
-    @property
-    def low(self) -> float:
-        return min(self.annual_kwh_per_kwp.values())
-
-    @property
-    def high(self) -> float:
-        return max(self.annual_kwh_per_kwp.values())
-
-    @property
-    def mean(self) -> float:
-        values = list(self.annual_kwh_per_kwp.values())
-        return sum(values) / len(values)
-
     def to_json(self) -> dict[str, Any]:
         data = asdict(self)
         data["annual_kwh_per_kwp"] = {

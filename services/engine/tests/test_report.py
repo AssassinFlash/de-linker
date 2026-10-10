@@ -5,9 +5,10 @@ import io
 import pytest
 from pypdf import PdfReader
 
-from linker_engine import pdf, report, residential
+from linker_engine import pdf, report, residential, rules
 from linker_engine.models import Report, ResidentialInput
-from linker_engine.residential import Engine
+from linker_engine.products import Engine
+from linker_engine.roof.service import ROOF_ASSUMPTIONS
 
 # A 2 x 1 px PNG, written by hand so the test needs no image tool.
 PNG = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAEElEQVR4nGNgYGD4z8DAwMAAAAf/Af5gV1sAAAAASUVORK5CYII="
@@ -26,6 +27,19 @@ def text_of(document: bytes) -> str:
     return "\n".join(
         page.extract_text() for page in PdfReader(io.BytesIO(document)).pages
     )
+
+
+def test_every_rule_without_a_source_is_disclosed_somewhere() -> None:
+    """A rule the report's assumptions do not name is either operational or
+    disclosed with the roof planes; nothing unverified is silent."""
+    reported = {rule.id for rule in report.UNVERIFIED}
+    for rule in rules.ALL:
+        if rule.verified:
+            assert rule.id not in reported, rule.id
+        else:
+            assert rule.id in reported or rule.id in report.NOT_REPORTED, rule.id
+    # The exclusions are the roof step's own disclosure and the one operational limit.
+    assert set(report.NOT_REPORTED) == {"pvgis_timeout", *ROOF_ASSUMPTIONS}
 
 
 def test_sections_follow_the_ticket(engine: Engine) -> None:

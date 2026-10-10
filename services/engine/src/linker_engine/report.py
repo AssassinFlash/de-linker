@@ -15,14 +15,16 @@ from . import rules
 from .models import Line, Report, ReportRow, ReportSection, ReportTable, RuleResult
 from .residential import Design
 from .roof import lod2
+from .roof.service import ROOF_ASSUMPTIONS
 from .texts import Locale, fmt, t, tn
 
-# Rules whose value the report can state without a source; listed under assumptions.
+# Rules whose value the report can state without a source, listed under
+# assumptions. Two kinds are consciously not listed: the PVGIS timeout is an
+# operational limit of the yield source, and the roof-step rules are disclosed
+# with the roof planes themselves (roof.service.ROOF_ASSUMPTIONS).
+NOT_REPORTED = {"pvgis_timeout", *ROOF_ASSUMPTIONS}
 UNVERIFIED = [
-    rules.STRING_T_MIN_C,
-    rules.STRING_T_CELL_MAX_C,
-    rules.DC_CABLE_M_PER_STRING,
-    rules.CONNECTOR_PAIRS_PER_STRING,
+    rule for rule in rules.ALL if not rule.verified and rule.id not in NOT_REPORTED
 ]
 
 

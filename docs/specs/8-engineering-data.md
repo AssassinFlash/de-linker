@@ -34,3 +34,6 @@
 - [ ] `pa_series` 覆盖全部已发布商品。
 - [ ] feed 对本地实例返回与旧 materials 等价的字段集合（映射表附 PR）；`?since=` 增量正确。
 - [ ] PHPUnit：合同 pattern 匹配对 10 对已知配对（含 released_with_accessory 与 not_released）给出正确裁决。
+
+## 变更记录
+- 2026-10-10（#14，评审线 Spec 裁定登记）：`data/compatibility.json` 的形状在规格 3 条（pairs 之外）新增第 4 份必填键 `requirements`，pair 内新增可选 `modules`（`{min,max}` 堆叠数区间）与 `accessories`（`[{model, quantity, per}]` 放行条件所需配件）；引擎（`services/engine/tests/fixtures/compatibility.json` 与 `src/linker_engine/compatibility.py` 的 schema）已按此消费——`requirements` 按逆变器型号给出 meter/backup/parallel-controller 所需件与 `max_units`（并联台数上限，取自控制器数据手册）。#8 落地时必须产出此形状；引擎侧 schema 即契约。

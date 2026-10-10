@@ -379,3 +379,11 @@ CI_KWP_PER_MWH_HIGH = Rule(
     CI_KWP_PER_MWH_LOW.source,
     CI_KWP_PER_MWH_LOW.evidence,
 )
+
+
+def _all() -> tuple[Rule, ...]:
+    """Every Rule this module defines, in definition order."""
+    return tuple(value for value in globals().values() if isinstance(value, Rule))
+
+
+ALL = _all()

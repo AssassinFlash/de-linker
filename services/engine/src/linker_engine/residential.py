@@ -17,9 +17,6 @@ from . import eligibility, geo, htw, rules, stacking, strings
 from .catalog import Catalog, Product
 from .compatibility import (
     Accessory,
-    Compatibility,
-    DocumentRef,
-    PairResult,
     Requirement,
 )
 from .explain import value_text
@@ -27,14 +24,12 @@ from .models import (
     BatteryChoice,
     CandidateInverter,
     Candidates,
-    Doc,
     Excluded,
     Line,
     MetricsResult,
     PlaneInput,
     ProductRef,
     Range,
-    Release,
     Report,
     ResidentialInput,
     ResidentialResult,
@@ -46,6 +41,7 @@ from .models import (
     StringLayoutResult,
     YieldResult,
 )
+from .products import Engine, docs, documents_of, ref, release
 from .pvgis import Pvgis
 from .texts import Locale, fmt, t, tn
 
@@ -61,27 +57,6 @@ class DesignInputError(ValueError):
         self.field = field
 
 
-@dataclass(frozen=True)
-class Engine:
-    catalog: Catalog
-    compatibility: Compatibility
-    pvgis: Pvgis
-
-
-def ref(product: Product) -> ProductRef:
-    return ProductRef(
-        id=product.id,
-        sku=product.sku,
-        model=product.model,
-        brand=product.brand,
-        device_class=product.device_class,
-    )
-
-
-def docs(items: tuple[DocumentRef, ...]) -> list[Doc]:
-    return [Doc(url=d.url, page=d.page) for d in items]
-
-
 def rule_result(check: eligibility.Check, locale: Locale) -> RuleResult:
     return RuleResult(
         id=check.id,
@@ -90,14 +65,6 @@ def rule_result(check: eligibility.Check, locale: Locale) -> RuleResult:
         limit=check.limit,
         label=t(f"rule.{check.id}", locale),
         text=value_text(check.id, check.value, check.limit, locale),
-    )
-
-
-def release(pair: PairResult, locale: Locale) -> Release:
-    return Release(
-        verdict=pair.verdict,
-        conditions=[condition.get(locale) for condition in pair.conditions],
-        documents=docs(pair.documents),
     )
 
 
@@ -374,9 +341,7 @@ def stueckliste(
                     if requirement.included
                     for condition in requirement.conditions
                 ],
-                documents=[
-                    Doc(url=d.url) for d in inverter.documents if d.type == "datasheet"
-                ],
+                documents=documents_of(inverter, "datasheet", locale),
             )
         )
     if fit:
@@ -514,9 +479,7 @@ def installer_lines(
             mppts=", ".join(str(g.mppt) for g in fused),
         ),
     ]
-    module_docs = [Doc(url=d.url) for d in module.documents if d.lang == locale] or [
-        Doc(url=d.url) for d in module.documents
-    ]
+    module_docs = documents_of(module, "datasheet", locale)
     cable_m = rules.DC_CABLE_M_PER_STRING.value
     pairs = rules.CONNECTOR_PAIRS_PER_STRING.value
     lines = [
@@ -845,7 +808,8 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
             lines=stueckliste(engine, chosen, fit, request, sizing.high_kwh, existing),
         )
         usable = fit.config.usable_kwh if fit else 0.0
-        # The backup reserve is held back in daily operation (HTW Berlin, Stromspeicher-Inspektion 2025).
+        # A backup reserve is held back in daily operation (HTW Berlin's storage
+        # sizing recommendations, rules.HTW_PAPER; planner-methods.md section 2.2(b)).
         cycling = max(0.0, usable - sizing.reserve_kwh)
         figures = htw.metrics(request.pv_kwp, use, cycling)
         outside = (

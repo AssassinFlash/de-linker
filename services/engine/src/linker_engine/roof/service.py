@@ -27,6 +27,16 @@ from .packing import pack
 # selects the building: LoD2 footprints follow the walls, roofs reach beyond them.
 CLICK_TOLERANCE_M = 3.0
 
+# The rules the roof step's own assumptions paragraph discloses (they describe
+# the packing of planes, not the design of a household).
+ROOF_ASSUMPTIONS = (
+    "roof_flat",
+    "roof_max_tilt",
+    "roof_north",
+    "roof_edge_inset",
+    "module_gap",
+)
+
 # WGS84 coordinates are rounded to 7 decimals (about 1 cm): the projection
 # library's last bits differ between platforms, and a map has no use for more.
 COORD_DECIMALS = 7
@@ -74,16 +84,7 @@ class RoofService:
         module = self._module
         name = f"{module.brand} {module.model}"
         source = f"LoD2 {place.state}"
-        assumptions = [
-            t(f"assume.{key}", locale)
-            for key in (
-                "roof_flat",
-                "roof_max_tilt",
-                "roof_north",
-                "roof_edge_inset",
-                "module_gap",
-            )
-        ]
+        assumptions = [t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS]
         if best is None:
             return RoofResult(
                 found=False,

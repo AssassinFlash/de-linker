@@ -32,7 +32,14 @@ were read byte for byte by runs `PDwkAtxn2VEMg6Wq3` and `DzDiCEbTQb4QgEh6M` (and
 interpolation follows the calculator's own `js/unabhaengig.js` (run `zH9d2xlHVeRGC2dOj`; the
 calculator's network traffic in `GEFXmU6AgcPuQtsgV`). HTW Berlin states no licence for the
 tables (imprint, run `uXO2gxODb6sUm6kIQ`); the report credits HTW Berlin wherever a value from
-them appears. Open item, see the PR.
+them appears.
+
+**Open item (tracked, does not block this delivery):** whether the byte-exact lookup tables may
+ship in our engine, or must be re-derived into our own numbers, is not settled by anything HTW
+publishes. Action: ask HTW Berlin through the contact on the calculator page for written
+permission, or verify a licence statement through Apify before the cutover (#17); until then
+the tables stay in `data/htw/` with this record. The delivery of #14 is not blocked: the tables
+are cited with their origin in every report.
 
 ## Grid code (VDE-AR-N 4105)
 

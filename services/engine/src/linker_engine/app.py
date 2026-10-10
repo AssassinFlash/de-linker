@@ -37,6 +37,7 @@ from .models import (
     RoofRequest,
     RoofResult,
 )
+from .products import Engine
 from .pvgis import Pvgis, YieldUnavailable
 from .roof import service as roof_service
 from .roof.lod2 import Lod2Unavailable
@@ -74,8 +75,8 @@ class Services:
         self.settings = settings
 
     @cached_property
-    def engine(self) -> residential.Engine:
-        return residential.Engine(
+    def engine(self) -> Engine:
+        return Engine(
             catalog=Catalog.load(self.settings.feed),
             compatibility=Compatibility.load(self.settings.compatibility),
             pvgis=Pvgis(self.settings.cache / "pvgis"),

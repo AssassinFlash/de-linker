@@ -4,7 +4,7 @@ import pytest
 
 from linker_engine import residential
 from linker_engine.models import ResidentialInput
-from linker_engine.residential import Engine
+from linker_engine.products import Engine
 
 # planner-methods.md section 4.1: the eight typical households (kWp, kWh per year).
 HOUSEHOLDS = [
