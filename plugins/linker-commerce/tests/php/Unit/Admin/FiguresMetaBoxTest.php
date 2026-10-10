@@ -137,6 +137,73 @@ final class FiguresMetaBoxTest extends TestCase {
 	}
 
 	/**
+	 * A page of zero is no citation: the row keeps its previous entry.
+	 */
+	public function test_a_page_below_one_is_refused(): void {
+		$this->row(
+			'comms',
+			array(
+				'value'    => 'LAN',
+				'document' => 'https://de-linker.com/wp-content/uploads/2026/09/datasheet.pdf',
+				'page'     => '0',
+			)
+		);
+		$written = array();
+		$this->mock_write( $written );
+		WP_Mock::userFunction(
+			'get_current_user_id',
+			array(
+				'return' => 7,
+			)
+		);
+		WP_Mock::userFunction(
+			'update_user_meta',
+			array(
+				'times' => 1,
+				'args'  => array( 7, 'linker_commerce_figures_refused', 'comms' ),
+			)
+		);
+
+		( new FiguresMetaBox() )->save( self::PRODUCT );
+
+		$this->assertSame( 'Wi-Fi', $written['figures']['comms']['value'] );
+	}
+
+	/**
+	 * A document that is not one of this product's documents is no citation.
+	 */
+	public function test_a_document_outside_the_products_list_is_refused(): void {
+		$this->row(
+			'comms',
+			array(
+				'value'    => 'LAN',
+				'document' => 'https://de-linker.com/wp-content/uploads/2099/01/someone-elses.pdf',
+				'page'     => '3',
+			)
+		);
+		$written = array();
+		$this->mock_write( $written );
+		WP_Mock::userFunction(
+			'get_current_user_id',
+			array(
+				'return' => 7,
+			)
+		);
+		WP_Mock::userFunction(
+			'update_user_meta',
+			array(
+				'times' => 1,
+				'args'  => array( 7, 'linker_commerce_figures_refused', 'comms' ),
+			)
+		);
+
+		( new FiguresMetaBox() )->save( self::PRODUCT );
+
+		$this->assertSame( 'Wi-Fi', $written['figures']['comms']['value'] );
+		$this->assertArrayNotHasKey( 'citation', $written['figures']['comms'] );
+	}
+
+	/**
 	 * An unchanged value without a citation stays as it is: the box does not
 	 * invent one.
 	 */

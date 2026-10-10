@@ -84,27 +84,45 @@
 - `lang` 由标题机械推导：含 DE 标记（`\bDE\b`、Datenblatt、Handbuch、`(DE`、`-DE-`、`_DE_`、Kompatibilit…）→ `de`；ES 标记 → `es`；其余 → `en`（170 en / 7 de / 18 无标记按 en，无标记多为 GoodWe 英文保修文档）。规则保守：德语标记显式才判 de。
 - 这是 feed `documents[]` 与后台元箱"文档下拉"的唯一来源。
 
-## 6. compatibility.json 的翻译
+## 6. compatibility.json 的翻译（#14 引擎 schema 形状）
 
-228 格 → 248 对（20 条型号级 model_constraints 拆为独立条目并排在家族条目之前，首条命中即裁决）：
+形状由 `services/engine/schemas/compatibility.schema.json` 定（#14 契约）：顶层 `{schema_version: 1, version, pairs, requirements}`，`additionalProperties: false`（旧文件的 `verified_on`/`match` 说明移到本文件）。`version` = 对 `{schema_version, pairs, requirements}` 规范 JSON 的 sha256（自指字段外的内容哈希；feed 的 `compatibility_version` 报告它，实测两者相等）。当前值 `bcc9b39bb427…`（64 hex）。
+
+228 格 → 248 对（20 条型号级 model_constraints 拆为独立条目；型号级条目排在家族条目之前**仅为可读性**——引擎语义是多命中合并）：
 
 | 旧状态 | 新 verdict | 数量（基条目） | 条件 |
 |---|---|---|---|
 | `listed` | `released` | 29 | constraint（+model_constraints 拆分） |
 | `listed`（配对须经另行销售的部件） | `released_with_accessory` | 2 | 附件要求为第一条条件 |
 | `one_way` | `released` | 7 | 单边列名 + 另一家保修范围为条件 |
-| `not_listed` | `190` → `not_released` | 190 | "所引文档未列此配对，不构成不兼容论断，也不对未查文档作任何主张" + warranty 文本（如有） |
+| `not_listed`（190） | `not_released` | 190 | "所引文档未列此配对，不构成不兼容论断，也不对未查文档作任何主张" + warranty 文本（如有） |
+
+`conditions` 是 `[{en, de}]` 折叠对象（schema 的 text 形状）；`documents` 是 `[{url, page?}]`（title 不保留——schema 如此，需要保留须先与 #14 改契约）；旧 `stack_range`（7 格）按 schema 的 `modules {min,max}` 保留。
+
+**匹配语义 = 引擎语义**：pattern 对商品型号（**pa_model term name，即无品牌前缀**）做搜索式匹配——旧模式带品牌前缀（`^GoodWe GW5K-ET$`），生成时统一剥离（含 model_constraints 与附件模式，`^GW5K-ET$`）；多模式家族合并为 `(?:p1|p2)`，各保留自己的锚（`^BU2-` 前缀语义不变）；**全部命中条目合并：verdict 取最严（not_released < released_with_accessory < released），conditions/documents/accessories 去重合并，modules 区间相交；无命中 = 无记录放行（null）**。`Compatibility::for_models()` 实现同一语义。评审线实测 707 个在售组合（24 逆变器 × 在售电池型号）上"首条命中"与"多命中取最严"零分歧；差异只可能出现在同格多命中且 verdict 不同时，本数据集无此情形，语义仍按契约实现。
 
 `released_with_accessory` 的两格（判据：文件的原话使配对本身经由一个单独售卖、且不在任一配对商品交付清单里的部件）：
 
-- `eco-po|eco-ocean2-bat`（H2 格同理由）→ 实为 `saj-h2-t3|saj-bat` 与 `eco-po|eco-po-b`：
-  - **SAJ H2 + B2/BU2**：B2 只能作为"1-5 个 BU2-5.0 模块 + 1 个 BC2-HV1 控制模块"的整套使用（B2 手册 V1.2 p5），BC2-HV1 是单独商品；
-  - **EcoFlow PowerOcean（单相）+ EF BD-5.1-S1**：单相手册 p1 写塔 = "EF BD-5.1-S1 × N **with EF BD-B-S1 × 1**"，底座是单独商品（1990）且电池本体交付清单不含它。
-- EcoFlow OCEAN 2 三相 + 电池的 EF BD-JC-S2 接线盒只是多塔级联才需要 → 记为 `released` + 条件，不改 verdict；ESA 的"电池扩展件"同理。
+- **SAJ H2 + B2/BU2**：B2 只能作为"1-5 个 BU2-5.0 模块 + 1 个 BC2-HV1 控制模块"的整套使用（B2 手册 V1.2 p5）→ `accessories: [{model: "^SAJ BC2-HV1$", quantity: 1, per: "system"}]`；
+- **EcoFlow PowerOcean（单相）+ EF BD-5.1-S1**：单相手册 p1 写塔 = "EF BD-5.1-S1 × N **with EF BD-B-S1 × 1**"，底座是单独商品（1990）且电池本体交付清单不含它 → `accessories: [{model: "^EcoFlow EF BD-B-S1$", quantity: 1, per: "stack"}]`。
 
-保留而未迁移的旧字段：`stack_range`/`stack_source`（电池商品自身的 `modules_per_stack_min/max` 图值承担）、`battery_label(_de)`、家族 `delivery_contents`/`meter_documentated`（电表问题属 #13/#14 的配件加购规则，来自旧合同的家族级数据，届时从旧仓库同一只读来源再取）。`constraint`/`constraint_de`/`warranty`/`warranty_de` 全部保留为 `conditions`/`conditions_de`（并行数组）。
+EcoFlow OCEAN 2 三相 + 电池的 EF BD-JC-S2 接线盒只是多塔级联才需要 → 记为 `released` + 条件，不改 verdict；ESA 的"电池扩展件"同理。
 
-模式语义：旧匹配是对每个 pattern 做**不带外层锚点的 preg_match**（模式自带 `^`/`$`）；新文件多模式家族合并为 `(?:p1|p2)`，每个模式保留自己的锚（`^SAJ BU2-` 前缀语义不变）。匹配对象是 `"<brand> <model>"`（pa_brand 与 pa_model 的 term name）。37 份文档的 URL 全部是我们托管的（对 host-map 校验，37/37）。
+**requirements（7 条）**，来源=旧合同家族级 `delivery_contents`/`meter_documentated` 与 ETR 格内并行条款：
+
+| inverter 家族 | kind | included | 说明 |
+|---|---|---|---|
+| gw-et-75-100 | meter | true | ET 80-100 单机系统随附 GM330；CT 另购（G9） |
+| saj-h2-t3 | meter | true | H2 T3 随附电表 + 3 CT + 10 m 通信线（S6） |
+| saj-h2-t3 | meter | false, phase 3 | SAJ 配置说明设置 Chint DTSU666 为三相电表（S2）；accessories: `^Chint DTSU666$` ×1/system |
+| saj-hs2 | meter | false, phase 3 | 同上（S2） |
+| saj-hs3 | meter | true | 随附 Chint DTSU666/iDM411 三相电表（S13） |
+| gw-esa-g20 | meter | true | ETA 内置电表 + 随附 CT（120 A:40 mA）；不够时加装 GM330/GMK330（G5，条件文本） |
+| gw-etr-80-124 + gw-etr-125k | parallel_controller | false | 并行系统需 SEC3000C（手册 V7.8.19+，G8）；accessories: `^GoodWe SEC3000C$` ×1/system。旧文档无数值上限，`max_units` 不填（schema 可选） |
+
+**per-pair source 短键**（建议项）：schema 的 `additionalProperties: false` 不允许 per-pair `source` 键，按"改契约不得单边"原则未加；旧 family|cell 追溯 = 上表的家族清单 × 旧 `contracts/compatibility-lists.json` 的 `cells` 键（生成器 `combined(家族 patterns)` 与格键一一对应）。若 #14 愿在 schema 加可选 `source`，生成器可即时补上——已在 PR 记录。
+
+未迁移：`battery_label(_de)`（展示层，#13/#14 届时取）。
 
 ## 7. 与 #7 的次序
 
@@ -117,17 +135,19 @@
 - `mat_trina_solar_tsm_450neg9r_28`（450 W 上代）2026-08-10 已弃（德国渠道无货）；
 - `mat_linker_svc_ac_board_01`（现场定制的并网/开关箱占位）无任何规格与文档，不属工程数据。
 
-## 9. feed 的实现决定
+## 9. feed 的实现决定（形状 = `services/engine/schemas/feed.schema.json`）
 
-- `figures` 只含带"我们托管 URL"引用的条目（验收"无引用的值不进 feed"）；每条只发 `{value, unit, citation}`（存储侧的 `evidence_refs`/`value_de` 不进 feed）。
-- `?since=` 在服务端把时刻归一化为 **GMT 朴素串**再进 date_query：WP 会把带偏移/Z 的时刻按站点时区（本站 +08:00）再解释一次，对 `post_modified_gmt` 列比出错误窗口（实测 `2026-10-10T02:40:00Z` 曾返回 0 条）。不可解析的 `since` 是 400（validate_callback）。
-- 顶层 `compatibility_version` = `data/compatibility.json` 的 sha256；`overlay` 为 overlay 文件内容原样。
+- 顶层 `{schema_version: 1, generated_at, compatibility_version, products, overlay}`，`additionalProperties: false`；`compatibility_version` = compatibility.json 自述的 `version` 字段值（见 §6）。商品级无 `modified_gmt`（schema 拒绝；`?since=` 仍按 `post_modified_gmt` 服务端过滤）。
+- 每件商品带 #7 SelectionFactSet 的五个事实 `ac_power_kw`/`pv_input_kw`/`usable_kwh`/`nominal_kwh`/`kwh_range`（`kwh_range` 无区间时为 `null`；`ac_apparent_kva` 不在 feed schema，不发送——#7 的 REST 路由仍提供它）。
+- `figures` 是对象（键 → 条目），**空集序列化为 `{}` 而非 `[]`**（PHP 空数组的 JSON 陷阱；构建处 `(object)` 强制）；只含带"我们托管 URL"引用的条目（验收"无引用的值不进 feed"），每条 `{value, unit, citation{url,page?}}`（存储侧的 `evidence_refs` 不进 feed）。
+- overlay 条目 `{id, kind: "pv_module", brand, model, figures, documents[{url,title,type,lang}]}`（无 series/device_class；lang 规则同 §5）。
+- `?since=` 在服务端把时刻归一化为 **GMT 朴素串**再进 date_query：WP 会把带偏移/Z 的时刻按站点时区（本站 +08:00）再解释一次，对 `post_modified_gmt` 列比出错误窗口（实测 `2026-10-10T02:40:00Z` 曾返回 0 条）。不可解析的 `since` 是 400（validate_callback）。商品查询后 `update_post_meta_cache` + `update_object_term_cache` 预热（免无对象缓存主机逐商品查询）。
 - 实例依赖注意：Polylang 启用但商品无语言时，语言过滤会把全部商品从查询里剔除（`0=1`）——这是 #9 的 setup（`wp linker-i18n setup --assign`）负责赋语言之后才成立的状态；本票演练时按 #9 的工具补齐。
 
 ## 10. 后台图值引用元箱
 
 - 标准产品编辑的一个元箱，每个图值一行（键只读、值、单位下拉、本商品文档下拉、页码）；无引用的行有警告图标。
-- 改值/单位而未同时给出文档+页码 → 拒绝该行（保持原条目），重定向参数带被拒键名并出错误通知；给全引用的改动照常写入。元箱不改键名、不增删键。
+- 改值/单位而未同时给出**本商品文档清单成员 + ≥1 的页码** → 拒绝该行（保持原条目），被拒键名记入该用户的 user meta（`linker_commerce_figures_refused`），下一个后台屏以错误通知显示后清除（Woo 11 的新商品表单经 REST 保存，没有经典重定向可搭）。给全引用的改动照常写入。元箱不改键名、不增删键。
 
 ## 11. 本票不做（复核规格"不做"）
 

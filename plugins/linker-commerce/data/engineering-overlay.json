@@ -1,12 +1,11 @@
 {
- "source": "plugins/terravolt-b2b-core/data/material-registry.json (chain tip f007a9dd), material mat_trina_solar_tsm_460neg9r_28 — the only engineering component without a Woo product (owner ruling 2026-08-10: de-linker does not sell PV modules; a stored-energy design still sizes strings against a real module)",
+ "source": "plugins/terravolt-b2b-core/data/material-registry.json (chain tip f007a9dd), material mat_trina_solar_tsm_460neg9r_28 — the only engineering component without a Woo product (owner ruling 2026-08-10: de-linker does not sell PV modules; a stored-energy design still sizes strings against a real module). The overlay items follow services/engine/schemas/feed.schema.json overlayItem; this file-level key is provenance only and does not enter the feed.",
  "overlay": [
   {
    "id": "mat_trina_solar_tsm_460neg9r_28",
-   "model": "TSM-460NEG9R.28",
+   "kind": "pv_module",
    "brand": "Trina Solar",
-   "series": "trina-vertex-s-plus-neg9r-28",
-   "device_class": "pv-modules",
+   "model": "TSM-460NEG9R.28",
    "figures": {
     "alpha_isc_pct_per_c": {
      "value": "0.04",
@@ -272,12 +271,14 @@
     {
      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
      "title": "Trina Solar Vertex S+ NEG9R.28 Datasheet (EN, 2024)",
-     "type": "datasheet"
+     "type": "datasheet",
+     "lang": "en"
     },
     {
      "url": "https://de-linker.com/wp-content/uploads/2026/09/240916_Datasheet_Vertex-S_NEG9R.28_DE_2024_C_web.pdf",
      "title": "Trina Solar Vertex S+ NEG9R.28 Datenblatt (DE, 2024)",
-     "type": "datasheet"
+     "type": "datasheet",
+     "lang": "de"
     }
    ]
   }

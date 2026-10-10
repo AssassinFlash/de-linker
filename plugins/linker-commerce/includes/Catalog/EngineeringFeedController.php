@@ -112,20 +112,55 @@ final class EngineeringFeedController extends WP_REST_Controller {
 			$this->schema = array(
 				'$schema'     => 'http://json-schema.org/draft-04/schema#',
 				'title'       => 'engineering-feed',
-				'description' => __( 'The engineering data of every published product, the overlay components and the compatibility version (docs/specs/8-engineering-data.md).', 'linker-commerce' ),
+				'description' => __( 'The engineering data of every published product, the overlay components and the compatibility version (docs/specs/8-engineering-data.md, target shape 5; the binding contract is services/engine/schemas/feed.schema.json).', 'linker-commerce' ),
 				'type'        => 'object',
 				'properties'  => array(
+					'schema_version'        => array(
+						'type'        => 'integer',
+						'description' => __( 'The feed schema version, the contract with the engine (#14).', 'linker-commerce' ),
+					),
 					'generated_at'          => array(
 						'type'   => 'string',
 						'format' => 'date-time',
 					),
 					'compatibility_version' => array(
 						'type'        => 'string',
-						'description' => __( 'sha256 of data/compatibility.json.', 'linker-commerce' ),
+						'description' => __( 'The version stated by data/compatibility.json.', 'linker-commerce' ),
 					),
 					'overlay'               => array(
 						'type'        => 'array',
 						'description' => __( 'Engineering components that are not products (data/engineering-overlay.json).', 'linker-commerce' ),
+						'items'       => array(
+							'type'       => 'object',
+							'properties' => array(
+								'id'        => array( 'type' => 'string' ),
+								'kind'      => array(
+									'type' => 'string',
+									'enum' => array( 'pv_module' ),
+								),
+								'brand'     => array( 'type' => 'string' ),
+								'model'     => array( 'type' => 'string' ),
+								'figures'   => array(
+									'type'                 => 'object',
+									'additionalProperties' => true,
+								),
+								'documents' => array(
+									'type'  => 'array',
+									'items' => array(
+										'type'       => 'object',
+										'properties' => array(
+											'url'   => array(
+												'type'   => 'string',
+												'format' => 'uri',
+											),
+											'title' => array( 'type' => 'string' ),
+											'type'  => array( 'type' => 'string' ),
+											'lang'  => array( 'type' => 'string' ),
+										),
+									),
+								),
+							),
+						),
 					),
 					'products'              => array(
 						'type'        => 'array',
@@ -141,6 +176,26 @@ final class EngineeringFeedController extends WP_REST_Controller {
 								'device_class' => array( 'type' => 'string' ),
 								'application'  => array( 'type' => 'string' ),
 								'phase'        => array( 'type' => array( 'integer', 'string' ) ),
+								'ac_power_kw'  => array(
+									'type'        => array( 'number', 'string' ),
+									'description' => __( 'Rated AC power in kW, or unknown (#7 SelectionFactSet).', 'linker-commerce' ),
+								),
+								'pv_input_kw'  => array(
+									'type'        => array( 'number', 'string' ),
+									'description' => __( 'Maximum PV input power in kW, or unknown.', 'linker-commerce' ),
+								),
+								'usable_kwh'   => array(
+									'type'        => array( 'number', 'string' ),
+									'description' => __( 'Usable energy in kWh, or unknown.', 'linker-commerce' ),
+								),
+								'nominal_kwh'  => array(
+									'type'        => array( 'number', 'string' ),
+									'description' => __( 'Nominal energy in kWh, or unknown.', 'linker-commerce' ),
+								),
+								'kwh_range'    => array(
+									'type'        => array( 'object', 'null' ),
+									'description' => __( 'Energy range in kWh the product data states; null when it states none.', 'linker-commerce' ),
+								),
 								'figures'      => array(
 									'type'                 => 'object',
 									'description'          => __( 'Figure entries with a citation of a hosted document; a value without one is not in the feed.', 'linker-commerce' ),
@@ -160,10 +215,6 @@ final class EngineeringFeedController extends WP_REST_Controller {
 											'lang'  => array( 'type' => 'string' ),
 										),
 									),
-								),
-								'modified_gmt' => array(
-									'type'   => 'string',
-									'format' => 'date-time',
 								),
 							),
 						),

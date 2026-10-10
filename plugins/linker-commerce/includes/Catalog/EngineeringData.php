@@ -43,33 +43,43 @@ final class EngineeringData {
 		if ( isset( $cache[ $file ] ) ) {
 			return $cache[ $file ];
 		}
-		$path = self::path( $file );
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a data file of this plugin.
-		$bytes = is_readable( $path ) ? file_get_contents( $path ) : false;
-		if ( false === $bytes ) {
-			$cache[ $file ] = null;
-			return null;
-		}
-		$decoded = json_decode( $bytes, true );
-		if ( ! is_array( $decoded ) ) {
-			$cache[ $file ] = null;
-			return null;
-		}
+		$decoded        = self::json_from( self::path( $file ) );
 		$cache[ $file ] = $decoded;
 		return $decoded;
 	}
 
 	/**
-	 * The version of a data file: the sha256 of its bytes, or "missing".
+	 * The decoded JSON of a file path: null when it is unreadable or not a
+	 * JSON object — a broken data file fails as absent, never as half-read.
 	 *
-	 * @param string $file One of the file constants.
-	 * @return string 64 hex characters, or "missing" when the file is unreadable.
+	 * @param string $path Absolute path.
+	 * @return array<string, mixed>|null
 	 */
-	public static function version( string $file ): string {
-		$path = self::path( $file );
-		$hash = is_readable( $path ) ? hash_file( 'sha256', $path ) : false;
+	public static function json_from( string $path ): ?array {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a data file of this plugin.
+		$bytes = is_readable( $path ) ? file_get_contents( $path ) : false;
+		if ( false === $bytes ) {
+			return null;
+		}
+		$decoded = json_decode( $bytes, true );
+		// A JSON list is not a data file of this plugin; only an object reads.
+		if ( ! is_array( $decoded ) || array_is_list( $decoded ) ) {
+			return null;
+		}
 
-		return is_string( $hash ) ? $hash : 'missing';
+		return $decoded;
+	}
+
+	/**
+	 * The compatibility contract's version: the `version` the file itself
+	 * states, or "missing" when the file is unreadable. The feed reports this
+	 * value as its compatibility_version (docs/specs/8-engineering-data.md
+	 * target shape 5, feed.schema.json).
+	 */
+	public static function compatibility_version(): string {
+		$data = self::json( self::COMPATIBILITY_FILE );
+
+		return is_string( $data['version'] ?? null ) && '' !== $data['version'] ? $data['version'] : 'missing';
 	}
 
 	/**

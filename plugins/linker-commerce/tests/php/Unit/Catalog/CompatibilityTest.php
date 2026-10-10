@@ -15,8 +15,10 @@ use WP_Mock\Tools\TestCase;
 
 /**
  * Tests for Compatibility: the shipped data/compatibility.json decides the
- * known pairs the way the old contract's cells did (docs/specs/
- * 8-engineering-data.md, decisions in docs/specs/8-decisions.md).
+ * known pairs the way the old contract's cells did, with the #14 engine's
+ * join semantics — every matching pair applies, the verdict is the most
+ * restrictive one (docs/specs/8-engineering-data.md, decisions in
+ * docs/specs/8-decisions.md §6).
  *
  * @covers \Linker\Commerce\Catalog\Compatibility
  */
@@ -29,8 +31,8 @@ final class CompatibilityTest extends TestCase {
 	 *
 	 * @dataProvider known_pairs
 	 *
-	 * @param string      $inverter "<brand> <model>" of the inverter.
-	 * @param string      $battery "<brand> <model>" of the battery.
+	 * @param string      $inverter The inverter model (pa_model).
+	 * @param string      $battery  The battery model (pa_model).
 	 * @param string|null $verdict  The verdict, null when no entry matches.
 	 */
 	public function test_known_pairs_decide_their_verdict( string $inverter, string $battery, ?string $verdict ): void {
@@ -45,7 +47,6 @@ final class CompatibilityTest extends TestCase {
 		$this->assertSame( $verdict, $answer['verdict'] );
 		$this->assertNotSame( array(), $answer['conditions'] );
 		$this->assertNotSame( array(), $answer['documents'] );
-		$this->assertSame( count( $answer['conditions'] ), count( $answer['conditions_de'] ) );
 	}
 
 	/**
@@ -56,85 +57,145 @@ final class CompatibilityTest extends TestCase {
 	public function known_pairs(): array {
 		return array(
 			// gw-et-5-10|pyl-fh2: one_way -> released with the one-way condition.
-			array( 'GoodWe GW10K-ET', 'Pylontech FH9637M', 'released' ),
+			array( 'GW10K-ET', 'FH9637M', 'released' ),
 			// gw-et-5-10|gw-lynx-d: listed.
-			array( 'GoodWe GW10K-ET', 'GoodWe LX D5.0-10', 'released' ),
+			array( 'GW10K-ET', 'LX D5.0-10', 'released' ),
 			// gw-et-5-10|pyl-fh1: not_listed -> not_released.
-			array( 'GoodWe GW10K-ET', 'Pylontech FH48074', 'not_released' ),
+			array( 'GW10K-ET', 'FH48074', 'not_released' ),
 			// saj-h2-t3|saj-bat: the B2 set runs through the BC2-HV1 control module.
-			array( 'SAJ H2-10K-T3', 'SAJ B2-10.0-HV1', 'released_with_accessory' ),
-			array( 'SAJ H2-10K-T3', 'SAJ BU2-5.0-HV1', 'released_with_accessory' ),
+			array( 'H2-10K-T3', 'B2-10.0-HV1', 'released_with_accessory' ),
+			array( 'H2-10K-T3', 'BU2-5.0-HV1', 'released_with_accessory' ),
 			// eco-po|eco-po-b: every tower takes the battery base article.
-			array( 'EcoFlow EF HD-P1-5K-S1', 'EcoFlow EF BD-5.1-S1', 'released_with_accessory' ),
+			array( 'EF HD-P1-5K-S1', 'EF BD-5.1-S1', 'released_with_accessory' ),
 			// eco-ocean2-p3|eco-ocean2-bat: listed; the junction box is a condition of cascading.
-			array( 'EcoFlow EF HD-P3-10K0-S2', 'EcoFlow EF BD-5-S2', 'released' ),
+			array( 'EF HD-P3-10K0-S2', 'EF BD-5-S2', 'released' ),
 			// gw-etr-125k: listed and one_way.
-			array( 'GoodWe GW125K-ETR-G10', 'GoodWe GW261.2-BAT-LCD-G10', 'released' ),
-			array( 'GoodWe GW125K-ETR-G10', 'GoodWe GW208.9-BAT-LCD-G10', 'released' ),
+			array( 'GW125K-ETR-G10', 'GW261.2-BAT-LCD-G10', 'released' ),
+			array( 'GW125K-ETR-G10', 'GW208.9-BAT-LCD-G10', 'released' ),
 			// saj-ek90-hs5|saj-ek90-bu5: the EK90 box is in the model names themselves.
-			array( 'SAJ EK90 HS5-8K-T3-X', 'SAJ EK90 BU5-6.0-TV', 'released' ),
+			array( 'EK90 HS5-8K-T3-X', 'EK90 BU5-6.0-TV', 'released' ),
 			// saj-hs2|saj-bat, scoped to BU2-5.0-HV1/5.
-			array( 'SAJ HS2-10K-T2-X', 'SAJ BU2-5.0-HV1', 'released' ),
+			array( 'HS2-10K-T2-X', 'BU2-5.0-HV1', 'released' ),
 			// saj-hs2 with a battery family no cell releases for it.
-			array( 'SAJ HS2-10K-T2-X', 'Pylontech FH9637M', 'not_released' ),
+			array( 'HS2-10K-T2-X', 'FH9637M', 'not_released' ),
 			// gw-esa-eha|gw-esa-bat-g20: the ESA's own modules.
-			array( 'GoodWe GW5K-ETA-G20', 'GoodWe GW6.0-BAT-D-G20', 'released' ),
+			array( 'GW5K-ETA-G20', 'GW6.0-BAT-D-G20', 'released' ),
 			// An inverter the contract does not know answers nothing.
-			array( 'Fronius GEN24 5.0', 'Pylontech FH9637M', null ),
+			array( 'GEN24 5.0', 'FH9637M', null ),
 		);
 	}
 
 	/**
-	 * A model-level entry decides before its family entry: the OCEAN 2
-	 * three-phase battery-model condition, not the family constraint, is the
-	 * first condition.
+	 * Conditions are bilingual objects (the file folds the old parallel
+	 * arrays), and documents are the slim {url, page?} references.
 	 */
-	public function test_the_model_level_entry_decides_before_its_family_entry(): void {
-		$answer = Compatibility::for_models( 'EcoFlow EF HD-P3-10K0-S2', 'EcoFlow EF BD-5-S2' );
+	public function test_conditions_are_bilingual_and_documents_are_slim(): void {
+		$answer = Compatibility::for_models( 'GW10K-ET', 'FH9637M' );
 
 		$this->assertNotNull( $answer );
-		$this->assertSame( 'The OCEAN 2 three-phase datasheet (p. 3) lists EF BD-5-S2 for its battery system.', $answer['conditions'][0] );
+		foreach ( $answer['conditions'] as $condition ) {
+			$this->assertNotSame( '', $condition['en'] );
+			$this->assertNotSame( '', $condition['de'] );
+		}
+		foreach ( $answer['documents'] as $document ) {
+			$this->assertStringStartsWith( 'https://de-linker.com/', $document['url'] );
+			$keys = array_keys( $document );
+			$this->assertNotContains( 'title', $keys, 'documents carry no titles' );
+			$this->assertNotContains( 'title_de', $keys, 'documents carry no German titles' );
+		}
 	}
 
 	/**
-	 * The one-module B2-5.0 stays inside the H2 cell's release only with its
-	 * voltage caveat stated, as the old constraint did.
+	 * A released_with_accessory answer names the accessory the documents
+	 * require: model pattern, quantity and what it is per.
 	 */
-	public function test_the_one_module_b2_carries_its_voltage_caveat(): void {
-		$answer = Compatibility::for_models( 'SAJ H2-10K-T3', 'SAJ B2-5.0-HV1' );
+	public function test_released_with_accessory_names_its_accessory(): void {
+		$answer = Compatibility::for_models( 'H2-10K-T3', 'B2-10.0-HV1' );
+
+		$this->assertNotNull( $answer );
+		$this->assertSame(
+			array(
+				'model'    => '^BC2-HV1$',
+				'quantity' => 1,
+				'per'      => 'system',
+			),
+			$answer['accessories'][0]
+		);
+		$ecoflow = Compatibility::for_models( 'EF HD-P1-5K-S1', 'EF BD-5.1-S1' );
+		$this->assertNotNull( $ecoflow );
+		$this->assertSame( '^EF BD-B-S1$', $ecoflow['accessories'][0]['model'] );
+		$this->assertSame( 'stack', $ecoflow['accessories'][0]['per'] );
+	}
+
+	/**
+	 * The model-level entry joins with its family entry, the way the engine
+	 * reads the file: the OCEAN 2 battery-model condition is part of the
+	 * answer beside the family constraint.
+	 */
+	public function test_the_model_level_entry_joins_its_family_entry(): void {
+		$answer = Compatibility::for_models( 'EF HD-P3-10K0-S2', 'EF BD-5-S2' );
+
+		$this->assertNotNull( $answer );
+		$joined = implode( "\n", array_column( $answer['conditions'], 'en' ) );
+		$this->assertStringContainsString( 'The OCEAN 2 three-phase datasheet (p. 3) lists EF BD-5-S2 for its battery system.', $joined );
+		$this->assertStringContainsString( 'junction box EF BD-JC-S2', $joined );
+	}
+
+	/**
+	 * When entries that match disagree, the most restrictive verdict wins
+	 * (not_released < released_with_accessory < released): the one-module
+	 * B2-5.0 answers released_with_accessory even though a model-level
+	 * entry repeats the family release.
+	 */
+	public function test_the_most_restrictive_verdict_wins(): void {
+		$answer = Compatibility::for_models( 'H2-10K-T3', 'B2-5.0-HV1' );
 
 		$this->assertNotNull( $answer );
 		$this->assertSame( 'released_with_accessory', $answer['verdict'] );
-		$joined = implode( "\n", $answer['conditions'] );
+		// The one-module voltage caveat is part of the joined conditions.
+		$joined = implode( "\n", array_column( $answer['conditions'], 'en' ) );
 		$this->assertStringContainsString( 'B2-5.0', $joined );
 		$this->assertStringContainsString( '115.2 V', $joined );
 	}
 
 	/**
-	 * Every verdict the file states is one of the three, and every pair names
-	 * its documents as our hosted URLs.
+	 * Every pattern of the file compiles: a malformed pattern would be loud
+	 * in production (PHP warns) and match nothing here, so it must be seen.
 	 */
-	public function test_the_file_states_known_verdicts_and_hosted_documents(): void {
+	public function test_every_pattern_of_the_file_compiles(): void {
+		$patterns = array();
+		foreach ( Compatibility::pairs() as $pair ) {
+			$patterns[] = (string) $pair['inverter'];
+			$patterns[] = (string) $pair['battery'];
+		}
+		$this->assertNotEmpty( $patterns );
+		foreach ( $patterns as $index => $pattern ) {
+			// The point is the compile failure; the silencer hides PHP's warning so it can be asserted instead.
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$result = @preg_match( '{' . $pattern . '}', 'anything' );
+			$this->assertNotFalse( $result, "pattern #{$index} of the file does not compile: {$pattern}" );
+		}
+	}
+
+	/**
+	 * Every verdict the file states is one of the three.
+	 */
+	public function test_the_file_states_known_verdicts(): void {
 		$verdicts = array();
 		foreach ( Compatibility::pairs() as $pair ) {
 			$verdicts[ $pair['verdict'] ] = true;
-			foreach ( $pair['documents'] as $document ) {
-				$this->assertStringStartsWith( 'https://de-linker.com/', (string) $document['url'] );
-			}
 		}
 		$this->assertSame( array(), array_values( array_diff( array_keys( $verdicts ), Compatibility::VERDICTS ) ) );
 		$this->assertSame( array( 'released', 'not_released', 'released_with_accessory' ), array_keys( $verdicts ) );
 	}
 
 	/**
-	 * Two products decide through their pa_brand and pa_model terms, the way
-	 * the feed names them.
+	 * Two products decide through their pa_model terms, the way the feed
+	 * names them.
 	 */
-	public function test_for_products_reads_the_brand_and_model_terms(): void {
-		$this->mock_terms( 4107, 'pa_model', 'H2-10K-T3' );
-		$this->mock_terms( 4107, 'pa_brand', 'SAJ' );
-		$this->mock_terms( 2067, 'pa_model', 'B2-10.0-HV1' );
-		$this->mock_terms( 2067, 'pa_brand', 'SAJ' );
+	public function test_for_products_reads_the_model_terms(): void {
+		$this->mock_model( 4107, 'H2-10K-T3' );
+		$this->mock_model( 2067, 'B2-10.0-HV1' );
 
 		$answer = Compatibility::for_products( 4107, 2067 );
 
@@ -146,8 +207,7 @@ final class CompatibilityTest extends TestCase {
 	 * A product without a model term answers nothing.
 	 */
 	public function test_for_products_without_a_model_answers_nothing(): void {
-		$this->mock_terms( 4107, 'pa_model', 'H2-10K-T3' );
-		$this->mock_terms( 4107, 'pa_brand', 'SAJ' );
+		$this->mock_model( 4107, 'H2-10K-T3' );
 		WP_Mock::userFunction(
 			'get_the_terms',
 			array(
@@ -160,20 +220,19 @@ final class CompatibilityTest extends TestCase {
 	}
 
 	/**
-	 * Mocks the product's single term of a taxonomy.
+	 * Mocks the product's single pa_model term.
 	 *
-	 * @param int    $id       Product ID.
-	 * @param string $taxonomy Taxonomy.
-	 * @param string $name     The term's name.
+	 * @param int    $id   Product ID.
+	 * @param string $name The term's name.
 	 */
-	private function mock_terms( int $id, string $taxonomy, string $name ): void {
+	private function mock_model( int $id, string $name ): void {
 		$term       = new \stdClass();
 		$term->slug = strtolower( (string) preg_replace( '/[^a-z0-9]+/i', '-', $name ) );
 		$term->name = $name;
 		WP_Mock::userFunction(
 			'get_the_terms',
 			array(
-				'args'   => array( $id, $taxonomy ),
+				'args'   => array( $id, 'pa_model' ),
 				'return' => array( $term ),
 			)
 		);

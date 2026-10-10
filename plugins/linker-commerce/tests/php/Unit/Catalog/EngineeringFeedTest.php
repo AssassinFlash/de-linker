@@ -73,6 +73,13 @@ final class EngineeringFeedTest extends TestCase {
 	 * only the figure entries with a citation of a hosted document.
 	 */
 	public function test_the_item_carries_names_facts_cited_figures_and_documents(): void {
+		WP_Mock::userFunction(
+			'wp_json_encode',
+			array(
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- standing in for wp_json_encode, which WordPress is not here to provide.
+				'return' => static fn( $data ): string => (string) json_encode( $data ),
+			)
+		);
 		$this->mock_query();
 		$this->mock_meta(
 			4107,
@@ -109,9 +116,17 @@ final class EngineeringFeedTest extends TestCase {
 		$this->assertSame( 'inverters', $item['device_class'] );
 		$this->assertSame( 'home', $item['application'] );
 		$this->assertSame( 3, $item['phase'] );
+		// The five #7 facts the feed schema requires (feed.schema.json); the
+		// mocked figures state ac_output_kw_nominal 10 kW, the rest is unknown.
+		$this->assertSame( 10.0, $item['ac_power_kw'] );
+		$this->assertSame( 'unknown', $item['pv_input_kw'] );
+		$this->assertSame( 'unknown', $item['usable_kwh'] );
+		$this->assertSame( 'unknown', $item['nominal_kwh'] );
+		$this->assertNull( $item['kwh_range'] );
+		$this->assertArrayNotHasKey( 'modified_gmt', $item, 'the product carries no modified_gmt (feed.schema.json)' );
 		$this->assertSame(
 			array( 'mppt_voltage_range_v' ),
-			array_keys( $item['figures'] ),
+			array_keys( get_object_vars( $item['figures'] ) ),
 			'the uncited entry and the entry citing another site stay out of the feed'
 		);
 		$this->assertSame(
@@ -123,22 +138,55 @@ final class EngineeringFeedTest extends TestCase {
 			),
 			$item['documents'][0]
 		);
-		$this->assertSame( '2026-10-10T00:00:00+00:00', $item['modified_gmt'] );
+		// The figures serialize as an object, also when the set is empty ({} never []).
+		$this->assertSame( '{"mppt_voltage_range_v":{"value":"180~900","unit":"V","citation":{"url":"https:\/\/de-linker.com\/wp-content\/uploads\/2026\/09\/H2-10-30K-T2T3-datasheet-EN-BEU.pdf","page":2}}}', (string) wp_json_encode( $item['figures'] ) );
+	}
+
+	/**
+	 * A product without cited figures carries figures as an empty JSON
+	 * object, never an empty list (feed.schema.json; the PHP empty-array
+	 * trap).
+	 */
+	public function test_figures_without_a_cited_entry_serialize_as_an_empty_object(): void {
+		WP_Mock::userFunction(
+			'wp_json_encode',
+			array(
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- standing in for wp_json_encode, which WordPress is not here to provide.
+				'return' => static fn( $data ): string => (string) json_encode( $data ),
+			)
+		);
+		$this->mock_query();
+		$this->mock_meta(
+			4107,
+			array(
+				'comms' => array( 'value' => 'Wi-Fi' ),
+			)
+		);
+
+		$item = EngineeringFeed::item( 4107 );
+
+		$this->assertNotNull( $item );
+		$this->assertSame( array(), get_object_vars( $item['figures'] ) );
+		$this->assertSame( '{}', (string) wp_json_encode( $item['figures'] ) );
 	}
 
 	/**
 	 * The envelope carries the versions of the data files and the overlay.
 	 */
-	public function test_the_envelope_carries_the_data_versions_and_the_overlay(): void {
+	public function test_the_envelope_carries_the_schema_version_the_compatibility_version_and_the_overlay(): void {
 		$this->mock_query();
 		$this->mock_meta( 4107, array() );
 
 		$feed = EngineeringFeed::feed();
 
-		$this->assertSame( EngineeringData::version( EngineeringData::COMPATIBILITY_FILE ), $feed['compatibility_version'] );
-		$this->assertSame( 64, strlen( $feed['compatibility_version'] ) );
+		$this->assertSame( 1, $feed['schema_version'] );
+		$this->assertSame( EngineeringData::compatibility_version(), $feed['compatibility_version'] );
+		$this->assertSame( 64, strlen( $feed['compatibility_version'] ), 'the version the data file states' );
 		$this->assertIsArray( $feed['overlay'] );
 		$this->assertSame( 'mat_trina_solar_tsm_460neg9r_28', $feed['overlay'][0]['id'] );
+		$this->assertSame( 'pv_module', $feed['overlay'][0]['kind'] );
+		$this->assertArrayNotHasKey( 'series', $feed['overlay'][0] );
+		$this->assertSame( 'en', $feed['overlay'][0]['documents'][0]['lang'] );
 		$this->assertNotEmpty( $feed['generated_at'] );
 	}
 

@@ -27,8 +27,9 @@ linker/v1/materials route and the new linker/v1/engineering-feed of the same
 site, compares every engine field of every bound material key by key against
 the mapping table (docs/specs/8-engineering-data.md) and lists each
 difference with its class. It fails on a difference that is not one of the
-decided classes. There is no --reverse: the write only ever adds (keys,
-citations, terms, meta), and rollback is the site backup of #17.
+decided classes. There is no --reverse: the write adds keys, citations,
+terms and meta and removes the plan's four orphan pa_series terms; rollback
+is the site backup of #17.
 
 The WordPress side is 8-engineering.php, which WP-CLI evaluates
 (wp eval-file -).

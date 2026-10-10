@@ -10,15 +10,20 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Catalog;
 
 /**
- * The engineering feed of docs/specs/8-engineering-data.md: every published
- * product with the model, brand and series the product data states, the
- * selection facts of #7 (the same reading the category filters and the
- * assistants use), the figure entries that carry a citation of a document we
- * host, and the product's documents — plus the engineering overlay and the
- * version of the compatibility contract. The Solution Configurator's engine
- * reads nothing else.
+ * The engineering feed of docs/specs/8-engineering-data.md (target shape 5,
+ * services/engine/schemas/feed.schema.json): every published product with the
+ * model, brand and series the product data states, the five selection facts
+ * of #7, the figure entries that carry a citation of a document we host, and
+ * the product's documents — plus the engineering overlay and the version of
+ * the compatibility contract. The Solution Configurator's engine reads
+ * nothing else.
  */
 final class EngineeringFeed {
+
+	/**
+	 * The feed's schema version, the contract with the engine (#14).
+	 */
+	private const SCHEMA_VERSION = 1;
 
 	/**
 	 * The taxonomies the feed names an item by: one term each, by name.
@@ -39,8 +44,9 @@ final class EngineeringFeed {
 	 */
 	public static function feed( ?string $since = null ): array {
 		$feed = array(
+			'schema_version'        => self::SCHEMA_VERSION,
 			'generated_at'          => gmdate( 'c' ),
-			'compatibility_version' => EngineeringData::version( EngineeringData::COMPATIBILITY_FILE ),
+			'compatibility_version' => EngineeringData::compatibility_version(),
 			'overlay'               => EngineeringData::json( EngineeringData::OVERLAY_FILE )['overlay'] ?? array(),
 			'products'              => array(),
 		);
@@ -72,9 +78,14 @@ final class EngineeringFeed {
 			'device_class' => $facts['device_class'],
 			'application'  => $facts['application'],
 			'phase'        => $facts['phase'],
-			'figures'      => self::figures( $product_id ),
+			// The five #7 facts the feed schema requires; kwh_range is null when the figures state no range.
+			'ac_power_kw'  => $facts['ac_power_kw'],
+			'pv_input_kw'  => $facts['pv_input_kw'],
+			'usable_kwh'   => $facts['usable_kwh'],
+			'nominal_kwh'  => $facts['nominal_kwh'],
+			'kwh_range'    => $facts['kwh_range'] ?? null,
+			'figures'      => (object) self::figures( $product_id ),
 			'documents'    => self::documents( $product_id ),
-			'modified_gmt' => get_post_modified_time( 'c', true, $product_id ),
 		);
 		foreach ( self::NAME_TAXONOMIES as $field => $taxonomy ) {
 			$item[ $field ] = self::term_name( $product_id, $taxonomy );
@@ -89,7 +100,7 @@ final class EngineeringFeed {
 	 * the feed). Everything else about the entry travels as it is stored.
 	 *
 	 * @param int $product_id Product ID.
-	 * @return array<string, array<string, mixed>>
+	 * @return array<string, array<string, mixed>> Keyed by figure key; the item casts it so an empty set serializes as {} (feed.schema.json), never [].
 	 */
 	private static function figures( int $product_id ): array {
 		$figures = get_post_meta( $product_id, SelectionFacts::FIGURES_META_KEY, true );

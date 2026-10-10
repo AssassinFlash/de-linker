@@ -165,6 +165,12 @@ final class FiguresMetaBox {
 		if ( array() === $figures ) {
 			return;
 		}
+		$documents = array();
+		foreach ( $this->documents( $post_id ) as $document ) {
+			if ( is_string( $document['url'] ?? null ) ) {
+				$documents[] = $document['url'];
+			}
+		}
 		$refused = array();
 		foreach ( $rows as $key => $row ) {
 			if ( ! array_key_exists( $key, $figures ) || ! is_array( $figures[ $key ] ) ) {
@@ -174,7 +180,9 @@ final class FiguresMetaBox {
 			$entry          = $old;
 			$entry['value'] = $row['value'];
 			$entry['unit']  = $row['unit'];
-			if ( '' === $row['document'] || '' === $row['page'] ) {
+			// A citation names one of this product's documents and a page of it; anything else is no citation.
+			$citable = in_array( $row['document'], $documents, true ) && ctype_digit( $row['page'] ) && (int) $row['page'] >= 1;
+			if ( ! $citable ) {
 				if ( (string) ( $old['value'] ?? '' ) === $row['value'] && (string) ( $old['unit'] ?? '' ) === $row['unit'] ) {
 					// Nothing changed: the old citation, or its absence, stays.
 					continue;
@@ -205,9 +213,10 @@ final class FiguresMetaBox {
 	}
 
 	/**
-	 * Prints the refused-rows notice on the screen the save redirected back
-	 * to; the keys travel in the location's query. Registered once at
-	 * register(), silent without the parameter.
+	 * Prints the refused-rows notice on the next admin screen: the save left
+	 * the refused keys in the user's meta (the new product form saves through
+	 * REST, with no classic redirect to ride along on). Registered once at
+	 * register(); silent when no keys wait.
 	 */
 	public function notice_refused(): void {
 		$keys = (string) get_user_meta( get_current_user_id(), self::REFUSED_META, true );

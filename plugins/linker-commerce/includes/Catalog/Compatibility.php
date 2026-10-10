@@ -12,51 +12,96 @@ namespace Linker\Commerce\Catalog;
 /**
  * Pairing an inverter with a battery against data/compatibility.json
  * (docs/specs/8-engineering-data.md): pairs of model patterns with a verdict,
- * conditions and documents. A pair matches when both patterns match the
- * "<brand> <model>" of the products asked about; the first matching entry
- * decides, so the model-level entries sit before their family entry in the
- * file.
+ * bilingual conditions, documents and accessories. A pattern matches the
+ * product model (pa_model) with search semantics, carrying its own anchors.
+ *
+ * Every pair that matches a combination applies, the way the #14 engine
+ * reads the same file: the verdict is the most restrictive one
+ * (not_released < released_with_accessory < released), conditions, documents
+ * and accessories are joined; a combination no pair matches has no
+ * documented release (null).
  */
 final class Compatibility {
 
 	/**
-	 * The three verdicts the contract states.
+	 * The three verdicts the contract states, from the most restrictive to
+	 * the least.
 	 */
-	public const VERDICTS = array( 'released', 'released_with_accessory', 'not_released' );
+	public const VERDICTS = array( 'not_released', 'released_with_accessory', 'released' );
 
 	/**
-	 * The verdict of an inverter and a battery, as the contract states it.
+	 * The verdict of an inverter and a battery model, joined from every pair
+	 * that matches them.
 	 *
-	 * @param string $inverter "<brand> <model>" of the inverter.
-	 * @param string $battery "<brand> <model>" of the battery.
-	 * @return array{verdict: string, conditions: list<string>, conditions_de: list<string>, documents: list<array<string, mixed>>}|null The first matching pair, null when the contract has none.
+	 * @param string $inverter The inverter model (pa_model).
+	 * @param string $battery  The battery model (pa_model).
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{model: string, quantity: int, per: string}>}|null Null when no pair matches.
 	 */
 	public static function for_models( string $inverter, string $battery ): ?array {
+		$conditions  = array();
+		$documents   = array();
+		$accessories = array();
+		$verdict     = null;
 		foreach ( self::pairs() as $pair ) {
-			if ( self::matches( $pair['inverter'] ?? '', $inverter ) && self::matches( $pair['battery'] ?? '', $battery ) ) {
-				return array(
-					'verdict'       => (string) ( $pair['verdict'] ?? '' ),
-					'conditions'    => array_values( array_filter( array_map( 'strval', $pair['conditions'] ?? array() ) ) ),
-					'conditions_de' => array_values( array_filter( array_map( 'strval', $pair['conditions_de'] ?? array() ) ) ),
-					'documents'     => array_values( array_filter( is_array( $pair['documents'] ?? null ) ? $pair['documents'] : array(), 'is_array' ) ),
-				);
+			if ( ! self::matches( $pair['inverter'] ?? '', $inverter )
+				|| ! self::matches( $pair['battery'] ?? '', $battery )
+			) {
+				continue;
+			}
+			$verdict = self::most_restrictive( $verdict, (string) ( $pair['verdict'] ?? '' ) );
+			foreach ( (array) ( $pair['conditions'] ?? array() ) as $condition ) {
+				if ( is_array( $condition ) && is_string( $condition['en'] ?? null ) ) {
+					$conditions[ $condition['en'] ] = array(
+						'en' => $condition['en'],
+						'de' => is_string( $condition['de'] ?? null ) ? $condition['de'] : $condition['en'],
+					);
+				}
+			}
+			foreach ( (array) ( $pair['documents'] ?? array() ) as $document ) {
+				if ( is_array( $document ) && is_string( $document['url'] ?? null ) ) {
+					$page = $document['page'] ?? null;
+					$documents[ $document['url'] . ':' . (string) $page ] = array_filter(
+						array(
+							'url'  => $document['url'],
+							'page' => is_int( $page ) ? $page : null,
+						),
+						static fn( $value ): bool => null !== $value
+					);
+				}
+			}
+			foreach ( (array) ( $pair['accessories'] ?? array() ) as $accessory ) {
+				if ( is_array( $accessory ) && is_string( $accessory['model'] ?? null ) ) {
+					$accessories[ $accessory['model'] . ':' . (string) ( $accessory['per'] ?? '' ) ] = array(
+						'model'    => $accessory['model'],
+						'quantity' => (int) ( $accessory['quantity'] ?? 1 ),
+						'per'      => (string) ( $accessory['per'] ?? 'system' ),
+					);
+				}
 			}
 		}
+		if ( null === $verdict ) {
+			return null;
+		}
 
-		return null;
+		return array(
+			'verdict'     => $verdict,
+			'conditions'  => array_values( $conditions ),
+			'documents'   => array_values( $documents ),
+			'accessories' => array_values( $accessories ),
+		);
 	}
 
 	/**
-	 * The verdict for two products: their "<brand> <model>" strings read the
-	 * way the feed names them.
+	 * The verdict for two products: their pa_model terms, the way the feed
+	 * names them.
 	 *
 	 * @param int $inverter_id Inverter product ID.
 	 * @param int $battery_id  Battery product ID.
-	 * @return array{verdict: string, conditions: list<string>, conditions_de: list<string>, documents: list<array<string, mixed>>}|null
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{model: string, quantity: int, per: string}>}|null
 	 */
 	public static function for_products( int $inverter_id, int $battery_id ): ?array {
-		$inverter = self::brand_model( $inverter_id );
-		$battery  = self::brand_model( $battery_id );
+		$inverter = self::model( $inverter_id );
+		$battery  = self::model( $battery_id );
 		if ( null === $inverter || null === $battery ) {
 			return null;
 		}
@@ -65,7 +110,7 @@ final class Compatibility {
 	}
 
 	/**
-	 * The pairs of the contract, in file order.
+	 * The pairs of the contract, usable ones only: a known verdict.
 	 *
 	 * @return list<array<string, mixed>>
 	 */
@@ -83,48 +128,51 @@ final class Compatibility {
 	}
 
 	/**
-	 * The date the contract states it was verified on, or "".
+	 * The more restrictive of two verdicts; a verdict that is not in the
+	 * vocabulary loses to the one held.
+	 *
+	 * @param string|null $held   The verdict held so far, null before the first.
+	 * @param string      $joined The verdict that joined it.
 	 */
-	public static function verified_on(): string {
-		$data = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+	private static function most_restrictive( ?string $held, string $joined ): string {
+		$held_at   = null === $held ? PHP_INT_MAX : array_search( $held, self::VERDICTS, true );
+		$joined_at = array_search( $joined, self::VERDICTS, true );
+		if ( false === $joined_at ) {
+			return (string) $held;
+		}
 
-		return is_string( $data['verified_on'] ?? null ) ? $data['verified_on'] : '';
+		return self::VERDICTS[ min( (int) $held_at, (int) $joined_at ) ];
 	}
 
 	/**
-	 * The subject the patterns are written against: "<brand> <model>", or
-	 * null when the product states neither.
+	 * The product's model (its pa_model term name), null without one.
 	 *
 	 * @param int $product_id Product ID.
 	 */
-	private static function brand_model( int $product_id ): ?string {
+	private static function model( int $product_id ): ?string {
 		$terms = get_the_terms( $product_id, 'pa_model' );
 		if ( ! is_array( $terms ) || 1 !== count( $terms ) ) {
 			return null;
 		}
-		$model = reset( $terms )->name;
-		$brand = '';
-		$terms = get_the_terms( $product_id, 'pa_brand' );
-		if ( is_array( $terms ) && 1 === count( $terms ) ) {
-			$brand = (string) reset( $terms )->name;
-		}
+		$name = reset( $terms )->name;
 
-		return trim( "{$brand} {$model}" );
+		return '' === $name ? null : $name;
 	}
 
 	/**
-	 * Whether a pattern of the contract matches a subject. The patterns are
-	 * anchored regular expressions; a malformed one is loud (PHP warns) and
-	 * matches nothing, so a broken data file is seen, not silently ignored.
+	 * Whether a pattern of the contract matches a model. The patterns carry
+	 * their own anchors and are tested with search semantics, the way the
+	 * engine tests them; a malformed one is loud (PHP warns) and matches
+	 * nothing, so a broken data file is seen, not silently ignored.
 	 *
 	 * @param string $pattern The pattern of a pair entry.
-	 * @param string $subject "<brand> <model>".
+	 * @param string $model   The product model.
 	 */
-	private static function matches( string $pattern, string $subject ): bool {
-		if ( '' === $pattern || '' === $subject ) {
+	private static function matches( string $pattern, string $model ): bool {
+		if ( '' === $pattern || '' === $model ) {
 			return false;
 		}
 
-		return 1 === preg_match( '{' . $pattern . '}', $subject );
+		return 1 === preg_match( '{' . $pattern . '}', $model );
 	}
 }

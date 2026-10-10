@@ -25,11 +25,13 @@ feed products: 106, old materials: 279, bound pairs checked: 99
 | `technical.specifications[k].value/unit` | `figures[k].value/unit` | 键名同名，除 `max_input_current_per_mppt_a`→`mppt_max_current_a`、`max_isc_per_mppt_a`→`mppt_max_isc_a` |
 | `technical.specifications[k].citation`（旧公开路由不出） | `figures[k].citation{url,page}` | feed 只带我们托管 URL 的引用；无引用值不进 feed |
 | `technical.documents[{title,kind,url}]` | `documents[{title,type,url,lang}]` | kind→type；lang 由标题推导（8-decisions §5） |
+| —（#7 的 SelectionFactSet） | `ac_power_kw`/`pv_input_kw`/`usable_kwh`/`nominal_kwh`/`kwh_range` | feed schema（feed.schema.json）要求的五个 #7 事实；`kwh_range` 无区间时 `null` |
 | `identity.deliverable_type`、`delivery.*`、`supply.*`、`bindings.component_codes/legacy_tokens` | — | 供货与交付属商务链（#11），不在工程 feed |
-| — | `overlay`、`compatibility_version`、`modified_gmt`、`sku`、`generated_at` | 新增：非商品工程元件、兼容合同版本、增量游标 |
+| — | `schema_version`、`overlay`、`compatibility_version`、`sku`、`generated_at` | 新增：feed 契约版本、非商品工程元件、兼容合同 version、信封 |
 
 ## 键集合差异（按 verify 逐键行走的口径）
 
 - 旧路由的 498 个规格键里，feed 只承诺 19 个引擎键 + 引用可达的其余键；不在 feed 的键：无引用的展示键（ip_rating、comms 等，留在 Woo 商品 meta 供展示层读）。
 - 站内有、注册表无的引擎键值（站内来源）原样进 feed（引用来自 components-db 或保持无引用不进）。
-- `?since=` 增量：`GET …/engineering-feed?since=<时刻>` 只回 `modified_gmt` 晚于该时刻的商品；删除不传播（调用方定期全量，#14 的职责）。
+- `figures` 是对象形状，空集序列化为 `{}`（feed.schema.json；PHP 空数组陷阱在构建处消除）。
+- `?since=` 增量：`GET …/engineering-feed?since=<时刻>` 只回修改晚于该时刻的商品（服务端按 `post_modified_gmt` 过滤；商品条目本身不带 modified_gmt——schema 拒绝）；删除不传播（调用方定期全量，#14 的职责）。
