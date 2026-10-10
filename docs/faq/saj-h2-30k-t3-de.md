@@ -7,8 +7,8 @@
 
 ## 1. What are the rated AC power and the maximum apparent power of the H2-30K-T3-DE?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What are the rated AC power and the maximum apparent power of the H2-30K-T3-DE?
 
@@ -37,8 +37,8 @@ Die Auspackliste gilt für die H2-Serie, nicht nur für den H2-30K-T3-DE. Sie ne
 
 ## 3. Which circuit breaker and AC cable does the H2-30K-T3-DE need?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which circuit breaker and AC cable does the H2-30K-T3-DE need?
 

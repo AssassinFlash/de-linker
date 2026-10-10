@@ -22,8 +22,8 @@ Im Datenblatt wird der GW125K-STS-G10 mit dem GoodWe ET 80/99,99/100 kW Hybrid-W
 
 ## 2. What does the wall position need to allow for?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What does the wall position need to allow for?
 
@@ -52,15 +52,15 @@ Ja. Das Datenblatt nennt Dieselgenerator-Steuerung und die Unterstützung des An
 
 ## 4. How does the switch communicate with the inverter?
 
-**Status:** reject
-**Review:** reject — The cited datasheet passage only states 'Communication | RS485'; the COM-1/COM-2 ports, RS485-A/B terminals and STS_TX1/STS_TX2 signals come from a different document (installation guide) than the cited datasheet page, so the citation does not carry the claim.
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How does the switch communicate with the inverter?
 
-Communication is via RS485. The installation guide shows the COM-1 and COM-2 ports with RS485-A and RS485-B terminals and the STS_TX1/STS_TX2 signals to the inverter.
+The datasheet lists the communication method of the GW125K-STS-G10 as RS485.
 
 **DE Q:** Wie kommuniziert der Schalter mit dem Wechselrichter?
 
-Die Kommunikation erfolgt über RS485. Die Installationsanleitung zeigt die Ports COM-1 und COM-2 mit den Klemmen RS485-A und RS485-B sowie die Signale STS_TX1/STS_TX2 zum Wechselrichter.
+Im Datenblatt ist die Kommunikationsmethode des GW125K-STS-G10 mit RS485 angegeben.
 
 **Citation:** GoodWe STS Series GW125K-STS-G10 datasheet (EMEA, EN) · p.2 · https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf

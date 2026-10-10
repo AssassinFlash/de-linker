@@ -22,16 +22,16 @@ Der B2-25.0-HV1 kann nur als Set mit dem H2-Hochvolt-Speicherwechselrichter von 
 
 ## 2. How tall and how heavy is the assembled B2-25.0-HV1?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How tall and how heavy is the assembled B2-25.0-HV1?
 
-The assembled B2-25.0-HV1 (battery control unit plus battery unit) is 1505 mm high and weighs 273.5 kg.
+The assembled B2-25.0-HV1 (Battery Control Unit + Battery Unit) is 1505*626*365 mm (H*W*D) and weighs 263.5 kg.
 
 **DE Q:** Wie hoch und wie schwer ist der montierte B2-25.0-HV1?
 
-Der montierte B2-25.0-HV1 (Batterie-Steuereinheit plus Batterieeinheit) ist 1505 mm hoch und wiegt 273,5 kg.
+Der montierte B2-25.0-HV1 (Batterie-Steuereinheit + Batterieeinheit) ist 1505*626*365 mm (H*B*T) groß und wiegt 263,5 kg.
 
 **Citation:** SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English) · p.10 · https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf
 

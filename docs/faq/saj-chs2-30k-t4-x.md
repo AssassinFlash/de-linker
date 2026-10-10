@@ -22,16 +22,16 @@ Das X gibt die Nennspannung, Nennkapazität und nutzbare Energie der Batterie an
 
 ## 2. Which grid-connection certificate is on file for the CHS2-30K-T4-X?
 
-**Status:** reject
-**Review:** reject — The question asks for a grid-connection certificate on file, but the answer lists the full standards table including EMC and safety standards (IEC62109, EN61000 series); the cited passage is a 'Standard' row, not a certificate, and the answer overstates it as a certificate.
+**Status:** withdrawn
+**Review:** withdrawn — The passages carry a "Standard" row for the CHS2-30K-T4-X (manual, page 12) and further standards text on datasheet pages 2 and 3, but no passage names a grid-connection certificate or a certificate document on file. The standards list also mixes grid-connection, safety and EMC standards, so it cannot be reported as a grid-connection certificate.
 
 **EN Q:** Which grid-connection certificate is on file for the CHS2-30K-T4-X?
 
-The manual lists the following standards for the CHS2-30K-T4-X: VDE4105, IEC61727/62116, VDE0126, AS4777.2, CEI 0 21, EN50549-1, G98, G99, C10-11, UNE217002, NBR16149/NBR16150, IEC62109-1/-2, NBT32004-2018, EN61000-6-1, EN61000-6-2, EN61000-6-3, EN61000-6-4.
+The retrieved passages do not name a grid-connection certificate for the CHS2-30K-T4-X. The manual lists a "Standard" row for the model, with VDE4105, IEC61727/62116, VDE0126, AS4777.2, CEI 0 21, EN50549-1, G98, G99, C10-11, UNE217002, NBR16149/NBR16150, IEC62109-1/-2, NBT32004-2018, EN61000-6-1, EN61000-6-2, EN61000-6-3 and EN61000-6-4. That row is a standards list, not a certificate document.
 
 **DE Q:** Welches Netzanschluss-Zertifikat liegt für den CHS2-30K-T4-X vor?
 
-Das Handbuch listet für den CHS2-30K-T4-X folgende Normen auf: VDE4105, IEC61727/62116, VDE0126, AS4777.2, CEI 0 21, EN50549-1, G98, G99, C10-11, UNE217002, NBR16149/NBR16150, IEC62109-1/-2, NBT32004-2018, EN61000-6-1, EN61000-6-2, EN61000-6-3, EN61000-6-4.
+Die abgerufenen Passagen nennen kein Netzanschluss-Zertifikat für den CHS2-30K-T4-X. Das Handbuch führt für das Modell eine Zeile "Standard" mit VDE4105, IEC61727/62116, VDE0126, AS4777.2, CEI 0 21, EN50549-1, G98, G99, C10-11, UNE217002, NBR16149/NBR16150, IEC62109-1/-2, NBT32004-2018, EN61000-6-1, EN61000-6-2, EN61000-6-3 und EN61000-6-4. Diese Zeile ist eine Normenliste, kein Zertifikat.
 
 **Citation:** SAJ CHS2 29.9-50K user manual, English, V0.2 (covers the CHS2-29.9K-T4-X) · p.12 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf
 

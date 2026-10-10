@@ -22,16 +22,16 @@ Ja. Das System unterstützt die Erweiterung der Batteriekapazität, und die Gesa
 
 ## 2. What backup load can the GW8K-ETA-G20 design support?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What backup load can the GW8K-ETA-G20 design support?
 
-For the GW8K-ETA-G20, the BACK-UP port off-grid load capacity is specified as follows: rated power of a single inductive load is 1.1 kVA single-phase and 3.3 kVA three-phase; total rated power of multiple inductive loads is 0.4*Pn/3 single-phase and 0.4*Pn three-phase; capacitive load is 0.33*Pn/3 single-phase and 0.33*Pn three-phase; half-wave load is 2 kW single-phase. For whole-home backup scenarios, the recommended rated current is 63A for the GW8K-ETA-G20.
+The BACK-UP port off-grid load capacity table lists the GW8K-ETA-G20 in its first model group, together with the GW5K-ETA-G20, GW6K-ETA-G20, GW9.999K-ETA-G20, GW10K-ETA-G20, GW12K-ETA-G20, GW15K-ETA-G20 and GW20K-ETA-G20, and the GW5K-BTA-G20 to GW20K-BTA-G20 models. For this group the table gives: rated power of a single inductive load 1.1 kVA single-phase and 3.3 kVA three-phase; total rated power of multiple inductive loads 0.4*Pn/3 single-phase and 0.4*Pn three-phase; capacitive load 0.33*Pn/3 single-phase and 0.33*Pn three-phase; half-wave load 2 kW single-phase, with no value for three-phase.
 
 **DE Q:** Welche Notstromlast trägt die Auslegung mit GW8K-ETA-G20?
 
-Für den GW8K-ETA-G20 ist die Off-Grid-Lastkapazität des BACK-UP-Anschlusses wie folgt angegeben: Die Nennleistung einer einzelnen induktiven Last beträgt 1,1 kVA einphasig und 3,3 kVA dreiphasig; die gesamte Nennleistung mehrerer induktiver Lasten beträgt 0,4*Pn/3 einphasig und 0,4*Pn dreiphasig; die kapazitive Last beträgt 0,33*Pn/3 einphasig und 0,33*Pn dreiphasig; die Halbwellenlast beträgt 2 kW einphasig. Für Szenarien mit Hausvollabsicherung beträgt der empfohlene Nennstrom 63A für den GW8K-ETA-G20.
+Die Tabelle zur Off-Grid-Lastkapazität des BACK-UP-Anschlusses führt das GW8K-ETA-G20 in ihrer ersten Modellgruppe, zusammen mit GW5K-ETA-G20, GW6K-ETA-G20, GW9.999K-ETA-G20, GW10K-ETA-G20, GW12K-ETA-G20, GW15K-ETA-G20 und GW20K-ETA-G20 sowie den Modellen GW5K-BTA-G20 bis GW20K-BTA-G20. Für diese Gruppe nennt die Tabelle: Nennleistung einer einzelnen induktiven Last 1,1 kVA einphasig und 3,3 kVA dreiphasig; gesamte Nennleistung mehrerer induktiver Lasten 0,4*Pn/3 einphasig und 0,4*Pn dreiphasig; kapazitive Last 0,33*Pn/3 einphasig und 0,33*Pn dreiphasig; Halbwellenlast 2 kW einphasig, ohne Wert für dreiphasig.
 
 **Citation:** GoodWe ESA Series 5–30 kW user manual (EN, V1.5) · p.29 · https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf
 

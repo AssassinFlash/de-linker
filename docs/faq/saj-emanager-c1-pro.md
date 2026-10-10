@@ -37,8 +37,8 @@ Der eManager-C1 Pro wird für die Parallelschaltungsanwendung von 2 bis 10 Einhe
 
 ## 3. How is the eManager-C1 Pro supplied and mounted?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How is the eManager-C1 Pro supplied and mounted?
 

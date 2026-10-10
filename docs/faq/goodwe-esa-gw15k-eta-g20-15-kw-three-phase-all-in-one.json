@@ -35,17 +35,17 @@
     },
     {
       "question": "What backup load can the GW15K-ETA-G20 design support?",
-      "answer": "The GW15K-ETA-G20 is listed in the BACK-UP port off-grid load capacity table. For inductive loads, the rated power of a single inductive load is 1.1 kVA single-phase or 3.3 kVA three-phase. The total rated power of multiple inductive loads is 0.4*Pn/3 single-phase or 0.4*Pn three-phase. Capacitive load is 0.33*Pn/3 single-phase or 0.33*Pn three-phase. Half-wave load is 2 kW single-phase.",
+      "answer": "The GW15K-ETA-G20 belongs to the first model group of the BACK-UP port off-grid load capacity table, together with the GW5K-ETA-G20, GW6K-ETA-G20, GW8K-ETA-G20, GW9.999K-ETA-G20, GW10K-ETA-G20, GW12K-ETA-G20 and GW20K-ETA-G20, and the GW5K-BTA-G20 to GW20K-BTA-G20 models. For this group the table gives: rated power of a single inductive load 1.1 kVA single-phase and 3.3 kVA three-phase; total rated power of multiple inductive loads 0.4*Pn/3 single-phase and 0.4*Pn three-phase; capacitive load 0.33*Pn/3 single-phase and 0.33*Pn three-phase; half-wave load 2 kW single-phase, with no value given for three-phase.",
       "question_de": "Welche Notstromlast trägt die Auslegung mit GW15K-ETA-G20?",
-      "answer_de": "Der GW15K-ETA-G20 ist in der Tabelle zur Notstromlast am BACK-UP-Anschluss aufgeführt. Für induktive Lasten beträgt die Nennleistung einer einzelnen induktiven Last 1,1 kVA einphasig oder 3,3 kVA dreiphasig. Die gesamte Nennleistung mehrerer induktiver Lasten beträgt 0,4*Pn/3 einphasig oder 0,4*Pn dreiphasig. Die kapazitive Last beträgt 0,33*Pn/3 einphasig oder 0,33*Pn dreiphasig. Die Halbwellenlast beträgt 2 kW einphasig.",
+      "answer_de": "Der GW15K-ETA-G20 gehört zur ersten Modellgruppe der Tabelle zur Notstromlast am BACK-UP-Anschluss, zusammen mit den Modellen GW5K-ETA-G20, GW6K-ETA-G20, GW8K-ETA-G20, GW9.999K-ETA-G20, GW10K-ETA-G20, GW12K-ETA-G20 und GW20K-ETA-G20 sowie den Modellen GW5K-BTA-G20 bis GW20K-BTA-G20. Für diese Gruppe nennt die Tabelle: Nennleistung einer einzelnen induktiven Last 1,1 kVA einphasig und 3,3 kVA dreiphasig; gesamte Nennleistung mehrerer induktiver Lasten 0,4*Pn/3 einphasig und 0,4*Pn dreiphasig; kapazitive Last 0,33*Pn/3 einphasig und 0,33*Pn dreiphasig; Halbwellenlast 2 kW einphasig, für dreiphasig ist kein Wert angegeben.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
         "page": 29,
         "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

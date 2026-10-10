@@ -8,7 +8,7 @@
 ## 1. What must the site accommodate for the 261.2 kWh cabinet?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 2.5, 2,5
 
 **EN Q:** What must the site accommodate for the 261.2 kWh cabinet?
 
@@ -22,8 +22,8 @@ Der Schrank GW261.2-BAT-LCD-G10 misst 1050 × 2025 × 1565 mm (B × H × T) und 
 
 ## 2. What does the ETR pairing require?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What does the ETR pairing require?
 

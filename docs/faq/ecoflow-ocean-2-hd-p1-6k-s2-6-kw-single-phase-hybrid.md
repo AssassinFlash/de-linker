@@ -8,7 +8,7 @@
 ## 1. Which circuits receive power through the HD-P1-6K-S2 BACKUP connection?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 3
 
 **EN Q:** Which circuits receive power through the HD-P1-6K-S2 BACKUP connection?
 
@@ -42,10 +42,10 @@ Es können maximal drei EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 kaskadiert werden. 
 
 **EN Q:** Is the IOT dongle required?
 
-Yes. The EcoFlow IOT-Dongle ESS is listed as "Muss konfiguriert werden" (must be configured) in the system overview and in the installation section. The 4G dongle is listed separately as an option.
+The installation guide lists the EcoFlow IOT-Dongle ESS as "Muss konfiguriert werden" (must be configured) in the system overview and in the table of contents for the installation section. The EcoFlow 4G-Dongle ESS (EU) is listed separately as an option.
 
 **DE Q:** Ist der IOT-Dongle Pflicht?
 
-Ja. Der EcoFlow IOT-Dongle ESS ist in der Systemübersicht und im Installationsabschnitt mit "Muss konfiguriert werden" angegeben. Der 4G-Dongle ist separat als Option aufgeführt.
+Der EcoFlow IOT-Dongle ESS ist in der Systemübersicht und im Inhaltsverzeichnis zum Installationsabschnitt mit "Muss konfiguriert werden" angegeben. Der EcoFlow 4G-Dongle ESS (EU) ist separat als Option aufgeführt.
 
 **Citation:** OCEAN 2 Single-Phase Installation Guide V1.7 (DE) · p.12 · https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-installation-guide-de-v1-7.pdf

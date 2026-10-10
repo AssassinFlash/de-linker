@@ -7,8 +7,8 @@
 
 ## 1. Which CT version is included in this GMK330 order?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which CT version is included in this GMK330 order?
 

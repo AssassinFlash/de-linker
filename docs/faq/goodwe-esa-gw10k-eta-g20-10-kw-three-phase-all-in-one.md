@@ -7,31 +7,31 @@
 
 ## 1. How many BAT-D modules can one GW10K-ETA-G20 column take?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How many BAT-D modules can one GW10K-ETA-G20 column take?
 
-A single column can stack up to 6 batteries. For floor installation, up to 4 batteries can be stacked away from the wall and up to 6 batteries can be stacked against the wall.
+A single column can stack up to 6 batteries. For single-column stacked installations, the maximum number of parallel units is 6. If there is more energy demand, or other scenarios requiring capacity expansion such as reducing the stacking height of a single column due to installation conditions, contact GoodWe or a dealer to purchase a battery expansion kit.
 
 **DE Q:** Wie viele BAT-D-Module passen in eine GW10K-ETA-G20-Säule?
 
-Pro Reihe können maximal 6 Batterien gestapelt werden. Bei der Bodenmontage ist eine Stapelung von maximal 4 Batterien von der Wand entfernt möglich; an der Wand ist eine Stapelung von maximal 6 Batterien möglich.
+Pro Reihe können maximal 6 Batterien gestapelt werden. Für einreihige gestapelte Installationen beträgt die maximale Anzahl paralleler Einheiten 6. Bei höherem Energiebedarf oder Szenarien, in denen die Stapelhöhe pro Reihe aufgrund von Installationsbedingungen reduziert werden muss, kontaktieren Sie GoodWe oder Ihren Händler, um das Batterieerweiterungskit zu erwerben.
 
 **Citation:** GoodWe ESA Series 5–30 kW user manual (EN, V1.5) · p.80 · https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf
 
 ## 2. What backup load can the GW10K-ETA-G20 design support?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What backup load can the GW10K-ETA-G20 design support?
 
-The manual lists the GW10K-ETA-G20 in the BACK-UP port off-grid load capacity table. For a single inductive load the rated power is 1.1 kVA single-phase and 3.3 kVA three-phase; for multiple inductive loads the total rated power is 0.4*Pn/3 single-phase and 0.4*Pn three-phase. Capacitive load is 0.33*Pn/3 single-phase and 0.33*Pn three-phase, and the half-wave load is 2 kW.
+The BACK-UP port off-grid load capacity table in the manual lists the GW10K-ETA-G20 in the model group GW5K-ETA-G20, GW6K-ETA-G20, GW8K-ETA-G20, GW9.999K-ETA-G20, GW10K-ETA-G20, GW12K-ETA-G20, GW15K-ETA-G20, GW20K-ETA-G20 and the GW5K-BTA-G20 to GW20K-BTA-G20 models. For this group the table states: rated power of a single inductive load 1.1 kVA single-phase and 3.3 kVA three-phase; total rated power of multiple inductive loads 0.4*Pn/3 single-phase and 0.4*Pn three-phase; capacitive load 0.33*Pn/3 single-phase and 0.33*Pn three-phase; half-wave load 2 kW single-phase, with no value given for three-phase.
 
 **DE Q:** Welche Notstromlast trägt die Auslegung mit GW10K-ETA-G20?
 
-Das Handbuch führt den GW10K-ETA-G20 in der Tabelle zur Off-Grid-Lastkapazität des BACK-UP-Anschlusses. Für eine einzelne induktive Last beträgt die Nennleistung 1,1 kVA einphasig und 3,3 kVA dreiphasig; für mehrere induktive Lasten beträgt die gesamte Nennleistung 0,4*Pn/3 einphasig und 0,4*Pn dreiphasig. Die kapazitive Last beträgt 0,33*Pn/3 einphasig und 0,33*Pn dreiphasig, die Halbwellenlast 2 kW.
+Die Tabelle zur Off-Grid-Lastkapazität des BACK-UP-Anschlusses im Handbuch führt den GW10K-ETA-G20 in der Modellgruppe GW5K-ETA-G20, GW6K-ETA-G20, GW8K-ETA-G20, GW9.999K-ETA-G20, GW10K-ETA-G20, GW12K-ETA-G20, GW15K-ETA-G20, GW20K-ETA-G20 sowie den Modellen GW5K-BTA-G20 bis GW20K-BTA-G20 auf. Für diese Gruppe nennt die Tabelle: Nennleistung einer einzelnen induktiven Last 1,1 kVA einphasig und 3,3 kVA dreiphasig; gesamte Nennleistung mehrerer induktiver Lasten 0,4*Pn/3 einphasig und 0,4*Pn dreiphasig; kapazitive Last 0,33*Pn/3 einphasig und 0,33*Pn dreiphasig; Halbwellenlast 2 kW einphasig, ohne Wert für dreiphasig.
 
 **Citation:** GoodWe ESA Series 5–30 kW user manual (EN, V1.5) · p.29 · https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf
 

@@ -35,12 +35,12 @@
     },
     {
       "question": "Is the IOT dongle required?",
-      "answer": "Yes. The EcoFlow IOT Dongle ESS must be configured.",
+      "answer": "The installation guide lists the EcoFlow IOT Dongle ESS with the note \"Muss konfiguriert werden\" (must be configured). The guide's system overview also marks the IOT Dongle ESS as \"Muss konfiguriert werden\", while the 4G-Dongle ESS (EU) is listed as an option.",
       "question_de": "Ist der IOT-Dongle Pflicht?",
-      "answer_de": "Ja. Der EcoFlow IOT-Dongle ESS muss konfiguriert werden.",
+      "answer_de": "Der Installationsleitfaden führt den EcoFlow IOT-Dongle ESS mit dem Hinweis \"Muss konfiguriert werden\" auf. Auch in der Systemübersicht des Leitfadens ist der IOT-Dongle ESS mit \"Muss konfiguriert werden\" gekennzeichnet, während der 4G-Dongle ESS (EU) als Option aufgeführt ist.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-installation-guide-de-v1-7.pdf",
-        "page": 11,
+        "page": 29,
         "title": "OCEAN 2 Single-Phase Installation Guide V1.7 (DE)"
       },
       "status": "pass",

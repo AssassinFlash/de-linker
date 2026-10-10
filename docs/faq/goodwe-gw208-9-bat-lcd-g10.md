@@ -8,7 +8,7 @@
 ## 1. Which documents list this LCD cabinet with an inverter?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 52, 57
 
 **EN Q:** Which documents list this LCD cabinet with an inverter?
 

@@ -23,7 +23,7 @@ Das CB2-Batteriesystem kann nur als Set mit dem Hochvolt-Speicherwechselrichter 
 ## 2. What are the dimensions and the weight of the cabinet?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 1035
 
 **EN Q:** What are the dimensions and the weight of the cabinet?
 
@@ -37,15 +37,15 @@ Die Abmessungen des CB2-Batterieschranks betragen 1065 mm, 650 mm, 1221 mm, 988 
 
 ## 3. Can storage be added to an existing CB2 system later?
 
-**Status:** reject
-**Review:** reject — Question asks about adding storage later (retrofit/expansion), but the answer only states the four-system maximum and equal rated energy — it does not answer whether later expansion is possible, and the cited passage does not address retrofit timing.
+**Status:** withdrawn
+**Review:** withdrawn — The retrieved passages state the maximum of four CB2 battery systems per CH2 inverter, the requirement that all CB2 systems have the same rated energy, and the meaning of the rated energy in the model name. They contain no statement about adding storage to an existing CB2 system later, so the retrofit question cannot be answered from these passages.
 
 **EN Q:** Can storage be added to an existing CB2 system later?
 
-One CH2 inverter can be integrated with four CB2 battery systems at maximum. All the CB2 systems are required to have the same rated energy.
+The passages do not state whether a CB2 system can be expanded after installation. They state that one CH2 inverter can be integrated with four CB2 battery systems at maximum, and that all CB2 systems must have the same rated energy. The rated energy is part of the model designation, for example 57.3 means 57.3 kWh.
 
 **DE Q:** Lässt sich ein bestehendes CB2-System später erweitern?
 
-Ein CH2-Wechselrichter kann mit maximal vier CB2-Batteriesystemen integriert werden. Alle CB2-Systeme müssen die gleiche Nennenergie aufweisen.
+Die Passagen geben nicht an, ob ein CB2-System nach der Installation erweitert werden kann. Sie geben an, dass ein CH2-Wechselrichter mit maximal vier CB2-Batteriesystemen integriert werden kann und dass alle CB2-Systeme die gleiche Nennenergie aufweisen müssen. Die Nennenergie ist Teil der Modellbezeichnung, zum Beispiel bedeutet 57.3 57,3 kWh.
 
 **Citation:** SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5) · p.8 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf

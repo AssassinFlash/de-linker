@@ -22,8 +22,8 @@ Die Verpackungsliste enthält den H2-Wechselrichter, eine Sechskant-Philips-Bolz
 
 ## 2. Which circuit breaker and AC cable does the H2-15K-T3 need?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which circuit breaker and AC cable does the H2-15K-T3 need?
 
@@ -37,15 +37,15 @@ Für den H2-(10K-20K)-(T2,T3) beträgt die empfohlene Schalter-Spezifikation 50 
 
 ## 3. Which battery connection does the H2-15K-T3 have?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which battery connection does the H2-15K-T3 have?
 
-The battery connection is a quick connector. The battery type is LiFePO4, the battery voltage range is 180～800 V, the maximum charging/discharging current is 50/50 A, and the number of battery connections is 2.
+The H2-15K-T3 has a quick connector for the battery connection.
 
 **DE Q:** Welchen Batterieanschluss hat der H2-15K-T3?
 
-Der Akku-Anschluss ist eine Schnellsteckverbindung. Der Akkutyp ist LiFePO4, der Akku-Spannungsbereich beträgt 180～800 V, der maximale Lade-/Entladestrom beträgt 50/50 A und die Anzahl der BAT beträgt 2.
+Der H2-15K-T3 hat eine Schnellsteckverbindung als Akku-Anschluss.
 
 **Citation:** SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p.37 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf

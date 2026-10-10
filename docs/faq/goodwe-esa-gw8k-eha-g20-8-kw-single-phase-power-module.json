@@ -35,17 +35,17 @@
     },
     {
       "question": "Which battery modules stack with this power module?",
-      "answer": "The system supports these battery modules: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20, and GW9.0-BAT-D-G20. Battery modules of different models support mixed use. The system supports 5-108 kWh.",
-      "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?",
-      "answer_de": "Das System unterstützt diese Batteriemodule: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20. Batteriemodule verschiedener Modelle können gemischt verwendet werden. Das System unterstützt 5-108 kWh.",
+      "answer": "The system uses these battery modules: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW6.0-BAT-D-G20, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21 and GW9.0-BAT-D-G20. Battery modules of different models support mixed use. For bracket installation, the maximum stacking quantity per group is: GW5.1-BAT-D-G20 and GW5.1-BAT-D-G21 up to 3 units; GW8.3-BAT-D-G20 and GW8.3-BAT-D-G21 up to 2 pcs; GW6.0-BAT-D-G20 up to 3 units; GW9.0-BAT-D-G20 max. 2 units. When GW5.1-BAT-D-G20, GW5.1-BAT-D-G21 and GW6.0-BAT-D-G20 are mixed and stacked, each group supports up to 3 modules. When GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW9.0-BAT-D-G20 and models stacked in a mixed configuration with them are used, the system supports a maximum of 2 units per group. With base-mounted installation, stacking up to 6 batteries is supported.",
+      "question_de": "Welche Batteriemodule lassen sich mit diesem Leistungsmodul stapeln?",
+      "answer_de": "Das System verwendet diese Batteriemodule: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW6.0-BAT-D-G20, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21 und GW9.0-BAT-D-G20. Batteriemodule unterschiedlicher Modelle können gemischt verwendet werden. Bei Wandmontage beträgt die maximale Stapelmenge je Gruppe: GW5.1-BAT-D-G20 und GW5.1-BAT-D-G21 bis zu 3 Einheiten; GW8.3-BAT-D-G20 und GW8.3-BAT-D-G21 bis zu 2 Stück; GW6.0-BAT-D-G20 bis zu 3 Einheiten; GW9.0-BAT-D-G20 max. 2 Einheiten. Werden GW5.1-BAT-D-G20, GW5.1-BAT-D-G21 und GW6.0-BAT-D-G20 gemischt gestapelt, unterstützt jede Gruppe bis zu 3 Module. Werden GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW9.0-BAT-D-G20 und mit ihnen gemischt gestapelte Modelle verwendet, unterstützt das System maximal 2 Einheiten je Gruppe. Bei bodenmontierter Installation wird die Stapelung von bis zu 6 Batterien unterstützt.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
-        "page": 42,
+        "page": 91,
         "title": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8)"
       },
-      "status": "reject",
-      "review": "reject",
-      "reason": "The cited p42 passage lists the six battery models and 'mixed use' and '5-108kWh', but the answer's phrasing 'Battery modules of different models support mixed use' is a near-verbatim lift and the claim 'The system supports 5-108 kWh' is stated as a system capability without the qualifier; more importantly the answer omits the cited caveat that battery heating is unavailable when these models are used together, making the answer misleading about mixed use. Also 'stack with this power module' is not directly supported—the passage describes coupling scenario, not stacking compatibility."
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

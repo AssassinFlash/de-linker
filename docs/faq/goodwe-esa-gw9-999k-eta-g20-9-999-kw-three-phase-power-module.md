@@ -22,8 +22,8 @@ Auf der AC-Seite (Back-up-Anschluss) hat der GW9.999K-ETA-G20 eine Nennscheinlei
 
 ## 2. How many MPPTs does GW9.999K-ETA-G20 have?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How many MPPTs does GW9.999K-ETA-G20 have?
 

@@ -7,8 +7,8 @@
 
 ## 1. What is in the BC2-HV1 package?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What is in the BC2-HV1 package?
 
@@ -22,18 +22,18 @@ Das Paket der Batterie-Steuereinheit enthält: Batterie-Steuereinheit (1), Seite
 
 ## 2. Which battery systems use the BC2-HV1?
 
-**Status:** reject
-**Review:** reject — The answer claims the BC2-HV1 is used in the SAJ B2 system and that B2 is applied to residential photovoltaic storage systems — the cited passage (page 8) describes the B2 battery application scope but does not mention BC2-HV1 at all. The claim that BC2-HV1 is used in these systems is not carried by the citation.
+**Status:** withdrawn
+**Review:** withdrawn — The passages carry the B2 model list and the meaning of the HV1 code, but they do not mention the BC2-HV1 at all, so no battery system can be attributed to it.
 
 **EN Q:** Which battery systems use the BC2-HV1?
 
-The BC2-HV1 is used in the SAJ B2 high-voltage battery system, which is applied to residential photovoltaic storage systems. The B2 battery is a high-voltage battery system with a modular design for easy installation and wiring.
+The retrieved passages do not state which battery systems use the BC2-HV1. The user manual lists the B2 models B2-5.0-HV1, B2-10.0-HV1, B2-15.0-HV1, B2-20.0-HV1 and B2-25.0-HV1, and explains that HV1 in the model code stands for a battery cell manufacturer. The passages do not name the BC2-HV1 or describe its use in any battery system.
 
 **DE Q:** In welchen Batteriesystemen wird das BC2-HV1 eingesetzt?
 
-Das BC2-HV1 wird im SAJ B2-Hochvoltbatteriesystem eingesetzt, das in privaten Photovoltaik-Speichersystemen verwendet wird. Die B2-Batterie ist ein Hochvoltbatteriesystem mit modularem Design für einfache Installation und Verkabelung.
+Die abgerufenen Passagen geben nicht an, in welchen Batteriesystemen das BC2-HV1 eingesetzt wird. Das Benutzerhandbuch listet die B2-Modelle B2-5.0-HV1, B2-10.0-HV1, B2-15.0-HV1, B2-20.0-HV1 und B2-25.0-HV1 auf und erläutert, dass HV1 im Modellcode für einen Batteriezellenhersteller steht. Die Passagen nennen das BC2-HV1 nicht und beschreiben seinen Einsatz in keinem Batteriesystem.
 
-**Citation:** SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English) · p.8 · https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf
+**Citation:** SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English) · p.4 · https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf
 
 ## 3. How is the BC2-HV1 connected to the inverter?
 

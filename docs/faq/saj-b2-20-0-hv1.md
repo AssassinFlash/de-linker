@@ -22,16 +22,16 @@ Der Akku B2 kann nur als Set mit dem Hochspannungs-Speicherwechselrichter der H2
 
 ## 2. How tall and how heavy is the assembled B2-20.0-HV1?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How tall and how heavy is the assembled B2-20.0-HV1?
 
-For the B2-20.0-HV1 the dimension (H*W*D) is 1044*626*365 mm and the weight is 202 kg.
+Assembled from the Battery Control Unit and the Battery Unit, the B2-20.0-HV1 measures 1244*626*365 mm (H*W*D) and weighs 213 kg. The Battery Unit alone measures 1044*626*365 mm and weighs 202 kg; the Battery Control Unit alone measures 200*626*365 mm and weighs 11 kg.
 
 **DE Q:** Wie hoch und wie schwer ist der montierte B2-20.0-HV1?
 
-Für den B2-20.0-HV1 betragen die Abmessungen (H*B*T) 1044*626*365 mm und das Gewicht 202 kg.
+Montiert aus Battery Control Unit und Battery Unit misst der B2-20.0-HV1 1244*626*365 mm (H*B*T) und wiegt 213 kg. Die Battery Unit allein misst 1044*626*365 mm und wiegt 202 kg; die Battery Control Unit allein misst 200*626*365 mm und wiegt 11 kg.
 
 **Citation:** SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English) · p.10 · https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf
 

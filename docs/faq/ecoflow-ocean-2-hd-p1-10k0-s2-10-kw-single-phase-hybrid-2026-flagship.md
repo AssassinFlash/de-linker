@@ -7,8 +7,8 @@
 
 ## 1. How many PV strings can be routed to the 10K0-S2 inputs?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How many PV strings can be routed to the 10K0-S2 inputs?
 

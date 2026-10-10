@@ -35,17 +35,17 @@
     },
     {
       "question": "Can storage be added to an existing CB2 system later?",
-      "answer": "One CH2 inverter can be integrated with four CB2 battery systems at maximum. All the CB2 systems are required to have the same rated energy.",
+      "answer": "The manual does not state whether storage can be added to an existing CB2 system later. It states that one CH2 inverter can be integrated with four CB2 battery systems at maximum, and that all CB2 systems must have the same rated energy. It also states that the CB2 battery system can only be used as a set with SAJ's CH2 high voltage series storage inverter.",
       "question_de": "Lässt sich ein bestehendes CB2-System später erweitern?",
-      "answer_de": "Ein CH2-Wechselrichter kann mit maximal vier CB2-Batteriesystemen integriert werden. Alle CB2-Systeme müssen die gleiche Nennenergie aufweisen.",
+      "answer_de": "Das Handbuch sagt nicht, ob ein bestehendes CB2-System später erweitert werden kann. Es nennt, dass ein CH2-Wechselrichter mit maximal vier CB2-Batteriesystemen integriert werden kann und dass alle CB2-Systeme die gleiche Nennenergie aufweisen müssen. Es nennt außerdem, dass das CB2-Batteriesystem nur als Set mit dem Hochvolt-Speicherwechselrichter der CH2-Serie von SAJ verwendet werden kann.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
         "page": 8,
         "title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5)"
       },
-      "status": "reject",
-      "review": "reject",
-      "reason": "Question asks about adding storage later; answer instead states the four-system maximum and equal rated energy rule, which does not answer expandability and is a mismatched, interchangeable statement."
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "The passages state the maximum of four CB2 battery systems per CH2 inverter, the requirement that all CB2 systems have the same rated energy, and that the CB2 battery system can only be used as a set with SAJ's CH2 high voltage series storage inverter. They do not state whether storage can be added to an existing CB2 system later, so the question cannot be answered from these passages."
     }
   ]
 }

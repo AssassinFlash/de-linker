@@ -38,7 +38,7 @@ _(zurückgezogen)_
 ## 3. How is the cabinet moved and secured?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 1.2, 1,2
 
 **EN Q:** How is the cabinet moved and secured?
 

@@ -29,9 +29,9 @@
         "page": 2,
         "title": "SAJ HS2 three-phase all-in-one datasheet, HS2-5K to HS2-10K-T2-X (EN)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "What does the AC side of the HS2-10K-T2-X need at installation?",
@@ -43,9 +43,9 @@
         "page": 25,
         "title": "SAJ HS2/AS2 user manual V0.3, HS2-5K to HS2-10K-T2 (DE)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

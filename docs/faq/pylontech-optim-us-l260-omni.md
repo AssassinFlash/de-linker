@@ -7,8 +7,8 @@
 
 ## 1. What are the physical dimensions and weight of the L260-OMNI station?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What are the physical dimensions and weight of the L260-OMNI station?
 

@@ -31,21 +31,21 @@
       },
       "status": "withdrawn",
       "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "reason": "a number is not in the cited passage — the cited page does not contain: 1035"
     },
     {
       "question": "Can storage be added to an existing CB2 system later?",
-      "answer": "One CH2 inverter can be integrated with four CB2 battery systems at maximum. All the CB2 systems are required to have the same rated energy.",
+      "answer": "The passages do not state whether a CB2 system can be expanded after installation. They state that one CH2 inverter can be integrated with four CB2 battery systems at maximum, and that all CB2 systems must have the same rated energy. The rated energy is part of the model designation, for example 57.3 means 57.3 kWh.",
       "question_de": "Lässt sich ein bestehendes CB2-System später erweitern?",
-      "answer_de": "Ein CH2-Wechselrichter kann mit maximal vier CB2-Batteriesystemen integriert werden. Alle CB2-Systeme müssen die gleiche Nennenergie aufweisen.",
+      "answer_de": "Die Passagen geben nicht an, ob ein CB2-System nach der Installation erweitert werden kann. Sie geben an, dass ein CH2-Wechselrichter mit maximal vier CB2-Batteriesystemen integriert werden kann und dass alle CB2-Systeme die gleiche Nennenergie aufweisen müssen. Die Nennenergie ist Teil der Modellbezeichnung, zum Beispiel bedeutet 57.3 57,3 kWh.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
         "page": 8,
         "title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5)"
       },
-      "status": "reject",
-      "review": "reject",
-      "reason": "Question asks about adding storage later (retrofit/expansion), but the answer only states the four-system maximum and equal rated energy — it does not answer whether later expansion is possible, and the cited passage does not address retrofit timing."
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "The retrieved passages state the maximum of four CB2 battery systems per CH2 inverter, the requirement that all CB2 systems have the same rated energy, and the meaning of the rated energy in the model name. They contain no statement about adding storage to an existing CB2 system later, so the retrofit question cannot be answered from these passages."
     }
   ]
 }

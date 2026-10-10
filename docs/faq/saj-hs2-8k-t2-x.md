@@ -8,7 +8,7 @@
 ## 1. Which battery modules does the HS2-8K-T2-X take, and how many?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 102.4, 102,4
 
 **EN Q:** Which battery modules does the HS2-8K-T2-X take, and how many?
 
@@ -22,8 +22,8 @@ Der HS2-8K-T2-X verwendet Batteriemodule BU2-5.0-HV1/5 (1P32S, 102,4 V, 50 Ah), 
 
 ## 2. What does the backup output of the HS2-8K-T2-X deliver when the grid fails?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What does the backup output of the HS2-8K-T2-X deliver when the grid fails?
 
@@ -33,12 +33,12 @@ The backup output of the HS2-8K-T2-X delivers a maximum output power of 8000 VA 
 
 Der Notstromausgang des HS2-8K-T2-X liefert eine maximale Ausgangsleistung von 8000 VA und einen maximalen Ausgangsstrom von 12,8 A. Die Spitzenausgangsleistung beträgt 16000 VA für 60 s.
 
-**Citation:** SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE) · p.2 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf
+**Citation:** saj_hs2_5_10k_t2_x_datasheet_en · p.2 · https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf
 
 ## 3. What does the AC side of the HS2-8K-T2-X need at installation?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What does the AC side of the HS2-8K-T2-X need at installation?
 
@@ -48,4 +48,4 @@ The AC side is rated for 3L+N+PE, 220/380, 230/400, 240/415 V with a range of 18
 
 Die AC-Seite ist für 3L+N+PE, 220/380, 230/400, 240/415 V mit einem Bereich von 180～280/312～485 V ausgelegt. Der maximale AC-Überstromschutz beträgt 33,3 A.
 
-**Citation:** SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE) · p.2 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf
+**Citation:** saj_hs2_5_10k_t2_x_datasheet_en · p.2 · https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf

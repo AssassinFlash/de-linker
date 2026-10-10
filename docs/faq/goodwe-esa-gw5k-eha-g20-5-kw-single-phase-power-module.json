@@ -15,9 +15,9 @@
         "page": 2,
         "title": "GoodWe ESA Series 3–10 kW datasheet (EN, EMEA V1.1)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "How many MPPTs does GW5K-EHA-G20 have?",
@@ -29,9 +29,9 @@
         "page": 270,
         "title": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "Which battery modules stack with this power module?",

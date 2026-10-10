@@ -17,7 +17,7 @@
       },
       "status": "withdrawn",
       "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "reason": "a number is not in the cited passage — the cited page does not contain: 102.4, 102,4"
     },
     {
       "question": "What does the backup output of the HS2-8K-T2-X deliver when the grid fails?",
@@ -25,13 +25,13 @@
       "question_de": "Was liefert der Notstromausgang des HS2-8K-T2-X bei Netzausfall?",
       "answer_de": "Der Notstromausgang des HS2-8K-T2-X liefert eine maximale Ausgangsleistung von 8000 VA und einen maximalen Ausgangsstrom von 12,8 A. Die Spitzenausgangsleistung beträgt 16000 VA für 60 s.",
       "citation": {
-        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
         "page": 2,
-        "title": "SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE)"
+        "title": "saj_hs2_5_10k_t2_x_datasheet_en"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "What does the AC side of the HS2-8K-T2-X need at installation?",
@@ -39,13 +39,13 @@
       "question_de": "Was braucht die AC-Seite des HS2-8K-T2-X bei der Installation?",
       "answer_de": "Die AC-Seite ist für 3L+N+PE, 220/380, 230/400, 240/415 V mit einem Bereich von 180～280/312～485 V ausgelegt. Der maximale AC-Überstromschutz beträgt 33,3 A.",
       "citation": {
-        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
         "page": 2,
-        "title": "SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE)"
+        "title": "saj_hs2_5_10k_t2_x_datasheet_en"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

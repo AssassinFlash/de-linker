@@ -251,6 +251,17 @@ def generate_items(
     return items
 
 
+def review_projection(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """What the reviewer may see: question, answers, citation.
+
+    Underscore-prefixed fields (`_gate`, `_gate_reason`) and any prior status
+    or reason are internal; leaking them would tell the "independent" reviewer
+    what to think (PR #58 review, S4).
+    """
+    keep = ("question_en", "question_de", "answer_en", "answer_de", "citation")
+    return [{k: item[k] for k in keep if k in item} for item in items]
+
+
 def review_items(
     key: str,
     endpoint: str,
@@ -267,7 +278,7 @@ def review_items(
                 "slug": product["slug"],
                 "model": product.get("model"),
             },
-            "items": items,
+            "items": review_projection(items),
             "passages": hits,
         },
         ensure_ascii=False,

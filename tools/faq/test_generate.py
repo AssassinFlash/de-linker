@@ -84,3 +84,22 @@ def test_retrieve_ships_the_full_chunk_text() -> None:
     four indexed chunks carry unit-bearing figures only beyond that cut."""
     assert "[1800]" not in inspect.getsource(gen.retrieve)
     assert "[:1800]" not in inspect.getsource(gen.retrieve)
+
+
+def test_review_input_hides_gate_status_and_reasons() -> None:
+    """The reviewer judges grounding, not the gate's or a previous verdict's opinion."""
+    items = [
+        {
+            "question_en": "Q",
+            "answer_en": "A",
+            "answer_de": "A",
+            "citation": {"url": "u", "page": 1},
+            "_gate": "pass",
+            "_gate_reason": "x",
+            "status": "withdrawn",
+            "review": "withdrawn",
+            "reason": "old",
+        }
+    ]
+    projected = gen.review_projection(items)
+    assert set(projected[0]) == {"question_en", "answer_en", "answer_de", "citation"}

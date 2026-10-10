@@ -35,17 +35,17 @@
     },
     {
       "question": "Can storage be added to an existing CB2 system later?",
-      "answer": "One CH2 inverter can be integrated with four CB2 battery systems at maximum. All the CB2 systems are required to have the same rated energy.",
+      "answer": "The manual does not describe adding a CB2 battery system to an existing installation at a later date. It states that one CH2 inverter can be integrated with four CB2 battery systems at maximum, and that all the CB2 systems are required to have the same rated energy. The connection guideline and procedure for multiple clusters are similar, and the described procedure covers the connection of a four-cluster system.",
       "question_de": "Lässt sich ein bestehendes CB2-System später erweitern?",
-      "answer_de": "Ein CH2-Wechselrichter kann mit maximal vier CB2-Batteriesystemen integriert werden. Alle CB2-Systeme müssen die gleiche Nennenergie haben.",
+      "answer_de": "Das Handbuch beschreibt nicht, wie ein CB2-Batteriesystem später zu einer bestehenden Installation hinzugefügt wird. Es gibt an, dass ein CH2-Wechselrichter mit maximal vier CB2-Batteriesystemen integriert werden kann und dass alle CB2-Systeme die gleiche Nennenergie haben müssen. Die Anschlussrichtlinie und das Verfahren für mehrere Cluster sind ähnlich, und das beschriebene Verfahren behandelt den Anschluss eines Systems mit vier Clustern.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
-        "page": 8,
+        "page": 20,
         "title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5)"
       },
-      "status": "reject",
-      "review": "reject",
-      "reason": "Question asks about adding storage later, but the answer only restates the max four systems and equal rated energy rule; it does not address retrofit/expansion, so it is not an answer to the question asked."
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "The retrieved passages state the maximum of four CB2 battery systems per CH2 inverter, the requirement that all CB2 systems have the same rated energy, and that the multi-cluster procedure is described for a four-cluster system. They do not state whether a CB2 battery system can be added to an existing installation later, so the retrofit question is not answered by these passages."
     }
   ]
 }

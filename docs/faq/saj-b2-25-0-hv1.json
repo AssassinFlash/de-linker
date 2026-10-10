@@ -21,17 +21,17 @@
     },
     {
       "question": "How tall and how heavy is the assembled B2-25.0-HV1?",
-      "answer": "The assembled B2-25.0-HV1 (battery control unit plus battery unit) is 1505 mm high and weighs 273.5 kg.",
+      "answer": "The assembled B2-25.0-HV1 (Battery Control Unit + Battery Unit) is 1505*626*365 mm (H*W*D) and weighs 263.5 kg.",
       "question_de": "Wie hoch und wie schwer ist der montierte B2-25.0-HV1?",
-      "answer_de": "Der montierte B2-25.0-HV1 (Batterie-Steuereinheit plus Batterieeinheit) ist 1505 mm hoch und wiegt 273,5 kg.",
+      "answer_de": "Der montierte B2-25.0-HV1 (Batterie-Steuereinheit + Batterieeinheit) ist 1505*626*365 mm (H*B*T) groß und wiegt 263,5 kg.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
         "page": 10,
         "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "Where and how is the stack installed?",
