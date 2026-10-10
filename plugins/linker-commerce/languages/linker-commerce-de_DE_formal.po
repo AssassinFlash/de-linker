@@ -3,30 +3,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
+"POT-Creation-Date: 2026-10-10T13:21:17+00:00\n"
+"PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE_formal\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-09T15:29:23+00:00\n"
-"PO-Revision-Date: 2026-10-09 00:00+0000\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
-
-#. The confirmation link of the email a guest opens: WooCommerce asks for a
-#. login naming the order.
-msgid "Please log in to your account to view this inquiry."
-msgstr "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen."
-
-msgid ""
-"This inquiry is being issued a Proforma invoice right now; please reload the "
-"page in a moment."
-msgstr ""
-"Diese Anfrage wird gerade mit einer Proformarechnung versehen; bitte laden "
-"Sie die Seite in einem Moment neu."
 
 #. Plugin Name of the plugin
 #: linker-commerce.php
@@ -75,7 +63,8 @@ msgid "This document is not available."
 msgstr "Dieses Dokument ist nicht verfügbar."
 
 #: includes/Account/DocumentDownload.php:91
-#: includes/Account/DocumentDownload.php:136
+#: includes/Account/DocumentDownload.php:136 includes/Admin/FaqsMetaBox.php:73
+#: includes/Admin/FiguresMetaBox.php:78
 #: templates/myaccount/linker-documents.php:23
 #: templates/myaccount/linker-documents.php:31
 msgid "Document"
@@ -139,7 +128,7 @@ msgstr "Ansehen"
 msgid "Proforma invoice (PDF)"
 msgstr "Proformarechnung (PDF)"
 
-#: includes/Account/InquiryList.php:74 includes/Vocabulary/Terms.php:107
+#: includes/Account/InquiryList.php:74 includes/Vocabulary/Terms.php:109
 msgid "Request again"
 msgstr "Erneut anfragen"
 
@@ -153,7 +142,7 @@ msgstr "Übersicht"
 
 #: includes/Account/Menu.php:47 includes/Account/Menu.php:73
 #: includes/Inquiry/OrderAdmin.php:30 includes/Inquiry/OrderAdmin.php:32
-#: includes/Settings/SettingsTab.php:33 includes/Vocabulary/Terms.php:113
+#: includes/Settings/SettingsTab.php:41 includes/Vocabulary/Terms.php:115
 #: templates/emails/linker-proforma-issued.php:47
 msgid "Inquiries"
 msgstr "Anfragen"
@@ -181,7 +170,7 @@ msgid "Log out"
 msgstr "Abmelden"
 
 #. translators: %s: inquiry number.
-#: includes/Account/Menu.php:80 includes/Vocabulary/Terms.php:112
+#: includes/Account/Menu.php:80 includes/Vocabulary/Terms.php:114
 #, php-format
 msgid "Inquiry #%s"
 msgstr "Anfrage #%s"
@@ -206,6 +195,215 @@ msgid "The design report must be a PDF file within the upload size limit."
 msgstr ""
 "Der Auslegungsbericht muss eine PDF-Datei sein und darf die maximale Upload-"
 "Größe nicht überschreiten."
+
+#: includes/Admin/FaqsMetaBox.php:50
+msgid "FAQ"
+msgstr "FAQ"
+
+#: includes/Admin/FaqsMetaBox.php:67
+msgid ""
+"Each answer needs the document and the page it is printed on. A row without "
+"a question is dropped."
+msgstr ""
+"Jede Antwort braucht das Dokument und die Seite, auf der sie steht. Eine "
+"Zeile ohne Frage wird verworfen."
+
+#: includes/Admin/FaqsMetaBox.php:69
+msgid "Question"
+msgstr "Frage"
+
+#: includes/Admin/FaqsMetaBox.php:70
+msgid "Answer"
+msgstr "Antwort"
+
+#: includes/Admin/FaqsMetaBox.php:71
+msgid "Question (German)"
+msgstr "Frage (Deutsch)"
+
+#: includes/Admin/FaqsMetaBox.php:72
+msgid "Answer (German)"
+msgstr "Antwort (Deutsch)"
+
+#: includes/Admin/FaqsMetaBox.php:74 includes/Admin/FiguresMetaBox.php:79
+msgid "Page"
+msgstr "Seite"
+
+#. translators: %s: list of row numbers.
+#: includes/Admin/FaqsMetaBox.php:174
+#, php-format
+msgid ""
+"FAQ rows %s kept their previous content: an answer needs the document and "
+"the page it is printed on."
+msgstr ""
+"Die FAQ-Zeilen %s behalten ihren bisherigen Inhalt: Eine Antwort braucht "
+"das Dokument und die Seite, auf der sie gedruckt ist."
+
+#: includes/Admin/FaqsMetaBox.php:228 includes/Admin/FiguresMetaBox.php:116
+msgid "— none —"
+msgstr "— keines —"
+
+#: includes/Admin/FiguresMetaBox.php:48
+msgid "Figures and citations"
+msgstr "Kenndaten und Quellenangaben"
+
+#: includes/Admin/FiguresMetaBox.php:69
+msgid "This product states no figures."
+msgstr "Dieses Produkt hat keine Kenndaten."
+
+#: includes/Admin/FiguresMetaBox.php:73
+msgid ""
+"Changing a value or a unit requires the citation to be given again: the "
+"document and the page it is printed on."
+msgstr ""
+"Wenn Sie einen Wert oder eine Einheit ändern, muss die Quellenangabe erneut "
+"angegeben werden: das Dokument und die Seite, auf der er steht."
+
+#: includes/Admin/FiguresMetaBox.php:75
+msgid "Key"
+msgstr "Schlüssel"
+
+#: includes/Admin/FiguresMetaBox.php:76
+msgid "Value"
+msgstr "Wert"
+
+#: includes/Admin/FiguresMetaBox.php:77
+msgid "Unit"
+msgstr "Einheit"
+
+#: includes/Admin/FiguresMetaBox.php:140
+msgid "No citation"
+msgstr "Keine Quellenangabe"
+
+#. translators: %s: list of figure keys.
+#: includes/Admin/FiguresMetaBox.php:232
+#, php-format
+msgid ""
+"Figures %s kept their previous value: a changed value needs the document and "
+"the page it is printed on."
+msgstr ""
+"Die Kenndaten %s behalten ihren bisherigen Wert: Ein geänderter Wert "
+"benötigt das Dokument und die Seite, auf der er steht."
+
+#: includes/Catalog/EngineeringFeedController.php:72
+msgid ""
+"GMT timestamp or ISO-8601 moment; only products modified after it are "
+"returned."
+msgstr ""
+"GMT-Zeitstempel oder ISO-8601-Zeitpunkt; zurückgegeben werden nur Produkte, "
+"die danach geändert wurden."
+
+#: includes/Catalog/EngineeringFeedController.php:115
+#, fuzzy
+msgid ""
+"The engineering data of every published product, the overlay components and "
+"the compatibility version (docs/specs/8-engineering-data.md, target shape 5; "
+"the binding contract is services/engine/schemas/feed.schema.json)."
+msgstr ""
+"Die technischen Daten aller veröffentlichten Produkte, die Overlay-"
+"Komponenten und die Version des Kompatibilitätsvertrags (docs/specs/8-"
+"engineering-data.md)."
+
+#: includes/Catalog/EngineeringFeedController.php:120
+msgid "The feed schema version, the contract with the engine (#14)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:128
+#, fuzzy
+msgid "The version stated by data/compatibility.json."
+msgstr "sha256 von data/compatibility.json."
+
+#: includes/Catalog/EngineeringFeedController.php:132
+msgid ""
+"Engineering components that are not products (data/engineering-overlay.json)."
+msgstr ""
+"Technische Komponenten, die keine Produkte sind (data/engineering-"
+"overlay.json)."
+
+#: includes/Catalog/EngineeringFeedController.php:167
+msgid "One entry per published product."
+msgstr "Ein Eintrag je veröffentlichtem Produkt."
+
+#: includes/Catalog/EngineeringFeedController.php:181
+msgid "Rated AC power in kW, or unknown (#7 SelectionFactSet)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:185
+#, fuzzy
+msgid "Maximum PV input power in kW, or unknown."
+msgstr "Maximale PV-Eingangsleistung in kW."
+
+#: includes/Catalog/EngineeringFeedController.php:189
+#, fuzzy
+msgid "Usable energy in kWh, or unknown."
+msgstr "Nutzbare Energie in kWh."
+
+#: includes/Catalog/EngineeringFeedController.php:193
+#, fuzzy
+msgid "Nominal energy in kWh, or unknown."
+msgstr "Nennenergie in kWh."
+
+#: includes/Catalog/EngineeringFeedController.php:197
+#, fuzzy
+msgid "Energy range in kWh the product data states; null when it states none."
+msgstr ""
+"Energiebereich in kWh, den die Produktdaten angeben; nur dann vorhanden."
+
+#: includes/Catalog/EngineeringFeedController.php:201
+msgid ""
+"Figure entries with a citation of a hosted document; a value without one is "
+"not in the feed."
+msgstr ""
+"Kenndaten mit Quellenangabe eines von uns gehosteten Dokuments; ein Wert "
+"ohne Quellenangabe ist nicht im Feed."
+
+#. translators: %d: most product IDs per request.
+#: includes/Catalog/SelectionFactsController.php:76
+#, php-format
+msgid "Product IDs, at most %d."
+msgstr "Produkt-IDs, höchstens %d."
+
+#: includes/Catalog/SelectionFactsController.php:130
+msgid "Selection facts of the requested published products, by product ID."
+msgstr ""
+"Auswahlfakten der angeforderten veröffentlichten Produkte, nach Produkt-ID."
+
+#: includes/Catalog/SelectionFactSet.php:86
+msgid "Product category the product is selected in."
+msgstr "Produktkategorie, in der das Produkt ausgewählt wird."
+
+#: includes/Catalog/SelectionFactSet.php:91
+msgid "Application (attribute pa_application)."
+msgstr "Einsatzbereich (Attribut pa_application)."
+
+#: includes/Catalog/SelectionFactSet.php:96
+msgid "Number of grid phases."
+msgstr "Anzahl der Netzphasen."
+
+#: includes/Catalog/SelectionFactSet.php:105
+msgid "Rated AC power in kW."
+msgstr "Nennleistung (AC) in kW."
+
+#: includes/Catalog/SelectionFactSet.php:106
+msgid "Maximum PV input power in kW."
+msgstr "Maximale PV-Eingangsleistung in kW."
+
+#: includes/Catalog/SelectionFactSet.php:107
+msgid "Usable energy in kWh."
+msgstr "Nutzbare Energie in kWh."
+
+#: includes/Catalog/SelectionFactSet.php:108
+msgid "Nominal energy in kWh."
+msgstr "Nennenergie in kWh."
+
+#: includes/Catalog/SelectionFactSet.php:110
+msgid "Energy range in kWh the product data states; present only then."
+msgstr ""
+"Energiebereich in kWh, den die Produktdaten angeben; nur dann vorhanden."
+
+#: includes/Catalog/SelectionFactSet.php:120
+msgid "Rated AC power the product data states in kVA; present only then."
+msgstr ""
+"Nennleistung (AC) in kVA, die die Produktdaten angeben; nur dann vorhanden."
 
 #: includes/Gating/DraftSummary.php:44
 msgid ""
@@ -241,12 +439,12 @@ msgstr "Angebot pro Projekt"
 msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
-#: includes/Inquiry/Checkout.php:46 includes/Inquiry/Checkout.php:55
+#: includes/Inquiry/Checkout.php:46 includes/Inquiry/Checkout.php:70
 #: templates/emails/linker-inquiry-received.php:34
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
 
-#: includes/Inquiry/Checkout.php:56
+#: includes/Inquiry/Checkout.php:71
 #: templates/emails/linker-inquiry-received.php:34
 msgid ""
 "Your Proforma invoice will be in your account under Inquiries, and we will "
@@ -257,7 +455,7 @@ msgstr ""
 
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:33
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:53
-#: includes/Vocabulary/Terms.php:104
+#: includes/Vocabulary/Terms.php:106
 msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
@@ -334,7 +532,7 @@ msgstr "Liste der Anfragen"
 
 #: includes/Inquiry/ProformaGateway.php:46
 #: includes/Inquiry/ProformaGateway.php:61 includes/Proforma/AdminBox.php:47
-#: includes/Settings/SettingsTab.php:113 includes/Vocabulary/Terms.php:74
+#: includes/Settings/SettingsTab.php:132 includes/Vocabulary/Terms.php:74
 #: templates/proforma/proforma.php:72
 msgid "Proforma invoice"
 msgstr "Proformarechnung"
@@ -403,6 +601,72 @@ msgstr "HTML"
 msgid "Queued emails"
 msgstr "E-Mails in der Warteschlange"
 
+#: includes/Presentation/LoginGate.php:50
+msgid "Empty solution draft"
+msgstr "Leerer Lösungsentwurf"
+
+#: includes/Presentation/LoginGate.php:51
+msgid "Nothing to submit yet."
+msgstr "Noch nichts zum Absenden."
+
+#: includes/Presentation/LoginGate.php:52
+msgid ""
+"Your solution draft is empty. Add matched systems, then come back for your "
+"Proforma."
+msgstr ""
+"Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie "
+"dann für Ihre Proformarechnung zurück."
+
+#: includes/Presentation/LoginGate.php:54
+#: includes/Presentation/LoginGate.php:66 includes/Vocabulary/Terms.php:37
+msgid "Browse products"
+msgstr "Zu den Produkten"
+
+#: includes/Presentation/LoginGate.php:59
+msgid "Proforma request sign-in"
+msgstr "Anmeldung zur Proforma-Anfrage"
+
+#: includes/Presentation/LoginGate.php:60
+msgid "Get your Proforma"
+msgstr "Proformarechnung anfordern"
+
+#: includes/Presentation/LoginGate.php:61
+msgid ""
+"Sign in with your partner account, add matched systems, and your Proforma is "
+"one step away."
+msgstr ""
+"Melden Sie sich mit Ihrem Partnerkonto an, fügen Sie passende Systeme hinzu, "
+"und Ihre Proformarechnung ist nur noch einen Schritt entfernt."
+
+#: includes/Presentation/LoginGate.php:62
+msgid ""
+"The Proforma request is reserved for Linker partner accounts. Register, add "
+"your systems, and return here — VAT and delivery are ours to handle."
+msgstr ""
+"Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren Sie "
+"sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — "
+"Umsatzsteuer und Lieferung übernehmen wir."
+
+#: includes/Presentation/LoginGate.php:64
+msgid "Sign in or register"
+msgstr "Anmelden oder registrieren"
+
+#: includes/Presentation/Shortcodes.php:165
+msgid "Product questions"
+msgstr "Produktfragen"
+
+#. translators: 1: document title, 2: page number.
+#: includes/Presentation/Shortcodes.php:174
+#, php-format
+msgid "%1$s, p. %2$d"
+msgstr "%1$s, S. %2$d"
+
+#. translators: %d: page number.
+#: includes/Presentation/Shortcodes.php:180
+#, php-format
+msgid "p. %d"
+msgstr "S. %d"
+
 #. translators: %s: date.
 #: includes/Proforma/AdminBox.php:68
 #, php-format
@@ -454,27 +718,27 @@ msgstr "Ihre Proformarechnung {proforma_number} zur Anfrage #{order_number}"
 msgid "Your Proforma invoice is ready"
 msgstr "Ihre Proformarechnung liegt bereit"
 
-#: includes/Proforma/Issuer.php:74
+#: includes/Proforma/Issuer.php:82
 msgid "This inquiry already has a Proforma invoice."
 msgstr "Für diese Anfrage ist bereits eine Proformarechnung ausgestellt."
 
-#: includes/Proforma/Issuer.php:77
+#: includes/Proforma/Issuer.php:85
 msgid "Only a received inquiry gets a Proforma invoice."
 msgstr ""
 "Eine Proformarechnung lässt sich nur für eine eingegangene Anfrage "
 "ausstellen."
 
-#: includes/Proforma/Issuer.php:80
+#: includes/Proforma/Issuer.php:88
 msgid "The inquiry has no products."
 msgstr "Die Anfrage enthält keine Produkte."
 
-#: includes/Proforma/Issuer.php:83
+#: includes/Proforma/Issuer.php:91
 msgid "Set a price for every product before issuing the Proforma invoice."
 msgstr ""
 "Setzen Sie für jedes Produkt einen Preis, bevor Sie die Proformarechnung "
 "ausstellen."
 
-#: includes/Proforma/Issuer.php:86
+#: includes/Proforma/Issuer.php:94
 msgid ""
 "Enter the bank account under WooCommerce → Settings → Inquiries before "
 "issuing a Proforma invoice."
@@ -482,13 +746,21 @@ msgstr ""
 "Tragen Sie unter WooCommerce → Einstellungen → Anfragen die Bankverbindung "
 "ein, bevor Sie eine Proformarechnung ausstellen."
 
+#: includes/Proforma/Issuer.php:115
+msgid ""
+"This inquiry is being issued a Proforma invoice right now; please reload the "
+"page in a moment."
+msgstr ""
+"Diese Anfrage wird gerade mit einer Proformarechnung versehen; bitte laden "
+"Sie die Seite in einem Moment neu."
+
 #. translators: %s: Proforma number.
-#: includes/Proforma/Issuer.php:120
+#: includes/Proforma/Issuer.php:148
 #, php-format
 msgid "Proforma invoice %s issued."
 msgstr "Proformarechnung %s ausgestellt."
 
-#: includes/Proforma/Issuer.php:126
+#: includes/Proforma/Issuer.php:154
 msgid "No Proforma number could be reserved; please try again."
 msgstr ""
 "Es konnte keine Proforma-Nummer vergeben werden. Bitte versuchen Sie es "
@@ -626,11 +898,29 @@ msgstr "Keine USt-IdNr. angegeben"
 msgid "Not checked yet"
 msgstr "Noch nicht geprüft"
 
-#: includes/Settings/SettingsTab.php:59 includes/Settings/SettingsTab.php:65
+#. translators: %d: number of emails.
+#: includes/Settings/SettingsTab.php:55
+#, php-format
+msgid ""
+"%d email could not be delivered. The attempts are in WooCommerce → Status → "
+"Logs (linker-mail); the message stays queued under its post id."
+msgid_plural ""
+"%d emails could not be delivered. The attempts are in WooCommerce → Status → "
+"Logs (linker-mail); each message stays queued under its post id."
+msgstr[0] ""
+"%d E-Mail konnte nicht zugestellt werden. Die Versuche stehen unter "
+"WooCommerce → Status → Logs (linker-mail); die Nachricht bleibt unter ihrer "
+"Beitrags-ID in der Warteschlange."
+msgstr[1] ""
+"%d E-Mails konnten nicht zugestellt werden. Die Versuche stehen unter "
+"WooCommerce → Status → Logs (linker-mail); jede Nachricht bleibt unter ihrer "
+"Beitrags-ID in der Warteschlange."
+
+#: includes/Settings/SettingsTab.php:78 includes/Settings/SettingsTab.php:84
 msgid "Team mailbox"
 msgstr "Team-Postfach"
 
-#: includes/Settings/SettingsTab.php:61
+#: includes/Settings/SettingsTab.php:80
 msgid ""
 "Every company notification (new customer, new inquiry, VAT check) is one "
 "message to the team mailbox, with a blind copy to each address below."
@@ -639,19 +929,19 @@ msgstr ""
 "IdNr.-Prüfung) ist eine Nachricht an das Team-Postfach, mit einer Blindkopie "
 "an jede Adresse unten."
 
-#: includes/Settings/SettingsTab.php:73
+#: includes/Settings/SettingsTab.php:92
 msgid "Blind copies"
 msgstr "Blindkopien"
 
-#: includes/Settings/SettingsTab.php:74
+#: includes/Settings/SettingsTab.php:93
 msgid "One address per line."
 msgstr "Eine Adresse pro Zeile."
 
-#: includes/Settings/SettingsTab.php:85
+#: includes/Settings/SettingsTab.php:104
 msgid "Contact person"
 msgstr "Ansprechperson"
 
-#: includes/Settings/SettingsTab.php:87
+#: includes/Settings/SettingsTab.php:106
 msgid ""
 "Shown to customers at the top of their account. Without an email address the "
 "team mailbox is shown."
@@ -659,21 +949,21 @@ msgstr ""
 "Wird Kunden oben in ihrem Konto angezeigt. Ohne E-Mail-Adresse erscheint das "
 "Team-Postfach."
 
-#: includes/Settings/SettingsTab.php:91
+#: includes/Settings/SettingsTab.php:110
 #: templates/emails/linker-new-customer.php:24
 msgid "Name"
 msgstr "Name"
 
-#: includes/Settings/SettingsTab.php:97
+#: includes/Settings/SettingsTab.php:116
 #: templates/emails/linker-new-customer.php:25
 msgid "Email"
 msgstr "E-Mail"
 
-#: includes/Settings/SettingsTab.php:103
+#: includes/Settings/SettingsTab.php:122
 msgid "Phone"
 msgstr "Telefon"
 
-#: includes/Settings/SettingsTab.php:115
+#: includes/Settings/SettingsTab.php:134
 msgid ""
 "Printed on every Proforma invoice. The seller address is the store address "
 "under General."
@@ -681,59 +971,132 @@ msgstr ""
 "Steht auf jeder Proformarechnung. Die Anschrift des Verkäufers ist die Shop-"
 "Adresse unter „Allgemein“."
 
-#: includes/Settings/SettingsTab.php:119
+#: includes/Settings/SettingsTab.php:138
 msgid "Number prefix"
 msgstr "Nummernpräfix"
 
-#: includes/Settings/SettingsTab.php:120
+#: includes/Settings/SettingsTab.php:139
 msgid "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year."
 msgstr ""
 "Nummern lauten PRÄFIX-JAHR-NNNN und beginnen in jedem Kalenderjahr bei 1."
 
-#: includes/Settings/SettingsTab.php:128
+#: includes/Settings/SettingsTab.php:147
 msgid "Seller"
 msgstr "Verkäufer"
 
-#: includes/Settings/SettingsTab.php:135
+#: includes/Settings/SettingsTab.php:154
 msgid "Seller VAT ID"
 msgstr "USt-IdNr. des Verkäufers"
 
-#: includes/Settings/SettingsTab.php:141 templates/proforma/proforma.php:169
+#: includes/Settings/SettingsTab.php:160 templates/proforma/proforma.php:169
 msgid "Account holder"
 msgstr "Kontoinhaber"
 
-#: includes/Settings/SettingsTab.php:147 templates/proforma/proforma.php:171
+#: includes/Settings/SettingsTab.php:166 templates/proforma/proforma.php:171
 msgid "Bank"
 msgstr "Bank"
 
-#: includes/Settings/SettingsTab.php:153 templates/proforma/proforma.php:173
+#: includes/Settings/SettingsTab.php:172 templates/proforma/proforma.php:173
 msgid "IBAN"
 msgstr "IBAN"
 
-#: includes/Settings/SettingsTab.php:159 templates/proforma/proforma.php:175
+#: includes/Settings/SettingsTab.php:178 templates/proforma/proforma.php:175
 msgid "BIC"
 msgstr "BIC"
 
 #. translators: %s: the addresses that were left out, comma-separated.
-#: includes/Settings/SettingsTab.php:192
+#: includes/Settings/SettingsTab.php:211
 #, php-format
 msgid "Not an email address, left out: %s"
 msgstr "Keine E-Mail-Adresse, nicht übernommen: %s"
 
-#: includes/Settings/SettingsTab.php:208
+#: includes/Settings/SettingsTab.php:227
 msgid ""
 "The IBAN is not valid (check digits do not match); the previous IBAN is kept."
 msgstr ""
 "Die IBAN ist ungültig (Prüfziffern stimmen nicht); die bisherige IBAN bleibt."
 
-#: includes/Settings/SettingsTab.php:223
+#: includes/Settings/SettingsTab.php:242
 msgid "The BIC is not valid (8 or 11 characters); the previous BIC is kept."
 msgstr "Der BIC ist ungültig (8 oder 11 Zeichen); der bisherige BIC bleibt."
 
-#: includes/Vocabulary/Labels.php:33 includes/Vocabulary/Terms.php:42
+#. translators: %d: number of grid phases.
+#: includes/Storefront/CatalogFilters.php:278
+#, php-format
+msgid "%d-phase"
+msgid_plural "%d-phase"
+msgstr[0] "%d-phasig"
+msgstr[1] "%d-phasig"
+
+#: includes/Storefront/CatalogFilters.php:339
+msgid "Up to 6 kW"
+msgstr "Bis 6 kW"
+
+#: includes/Storefront/CatalogFilters.php:340
+msgid "6 to 15 kW"
+msgstr "6 bis 15 kW"
+
+#: includes/Storefront/CatalogFilters.php:341
+msgid "15 to 30 kW"
+msgstr "15 bis 30 kW"
+
+#: includes/Storefront/CatalogFilters.php:342
+msgid "Over 30 kW"
+msgstr "Über 30 kW"
+
+#: includes/Storefront/ProductView.php:65
+msgid "In stock"
+msgstr "Auf Lager"
+
+#: includes/Storefront/ProductView.php:65
+msgid "Currently unavailable"
+msgstr "Derzeit nicht verfügbar"
+
+#: includes/Storefront/ProductView.php:67 includes/Vocabulary/Labels.php:33
+#: includes/Vocabulary/Terms.php:42
 #: templates/myaccount/linker-saved-solutions.php:54
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
+
+#: includes/Storefront/ProductView.php:68
+msgid "Sign in for partner pricing"
+msgstr "Für Partnerpreise anmelden"
+
+#: includes/Storefront/ProductView.php:192
+#: templates/storefront-archive-product.php:90
+msgid "Application"
+msgstr "Anwendung"
+
+#: includes/Storefront/ProductView.php:193
+msgid "Home"
+msgstr "Privat"
+
+#: includes/Storefront/ProductView.php:193
+msgid "Commercial"
+msgstr "Gewerbe"
+
+#: includes/Storefront/ProductView.php:196
+msgid "Grid phases"
+msgstr "Netzphasen"
+
+#: includes/Storefront/ProductView.php:200
+#: templates/storefront-archive-product.php:121
+msgid "AC power"
+msgstr "AC-Leistung"
+
+#: includes/Storefront/ProductView.php:206
+msgid "Energy capacity"
+msgstr "Nutzbare Energie"
+
+#: includes/Storefront/ProductView.php:233
+msgid "Net price after partner sign-in"
+msgstr "Nettopreis nach Partner-Anmeldung"
+
+#: includes/Storefront/ProductView.php:511
+#: templates/myaccount/linker-saved-solutions.php:29
+#: templates/myaccount/linker-saved-solutions.php:41
+msgid "Products"
+msgstr "Produkte"
 
 #: includes/Vocabulary/Labels.php:40 includes/Vocabulary/Terms.php:88
 msgid "Request Proforma"
@@ -812,10 +1175,6 @@ msgstr "Lösungsentwurf aktualisiert."
 #: includes/Vocabulary/Terms.php:36
 msgid "Your solution draft is empty."
 msgstr "Ihr Lösungsentwurf ist leer."
-
-#: includes/Vocabulary/Terms.php:37
-msgid "Browse products"
-msgstr "Zu den Produkten"
 
 #: includes/Vocabulary/Terms.php:38
 msgid "View solution draft"
@@ -927,6 +1286,7 @@ msgid "Quantity"
 msgstr "Menge"
 
 #: includes/Vocabulary/Terms.php:67
+#: templates/storefront-archive-product.php:176
 msgid "Sort products"
 msgstr "Produkte sortieren"
 
@@ -954,7 +1314,7 @@ msgstr "Sie haben bereits ein Konto?"
 msgid "Register"
 msgstr "Registrieren"
 
-#: includes/Vocabulary/Terms.php:81 includes/Vocabulary/Terms.php:123
+#: includes/Vocabulary/Terms.php:81 includes/Vocabulary/Terms.php:125
 msgid "Company details"
 msgstr "Unternehmensdaten"
 
@@ -1035,61 +1395,65 @@ msgstr ""
 "Schaltfläche &bdquo;Proforma anfordern&ldquo; unten auf der Seite."
 
 #: includes/Vocabulary/Terms.php:105
+msgid "Please log in to your account to view this inquiry."
+msgstr "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen."
+
+#: includes/Vocabulary/Terms.php:107
 msgid "Inquiry no.:"
 msgstr "Anfrage-Nr.:"
 
-#: includes/Vocabulary/Terms.php:106
+#: includes/Vocabulary/Terms.php:108
 msgid "Inquiry details"
 msgstr "Details der Anfrage"
 
 #. translators: 1: inquiry number, 2: date, 3: status.
-#: includes/Vocabulary/Terms.php:109
+#: includes/Vocabulary/Terms.php:111
 #, php-format
 msgid "Inquiry #%1$s was sent on %2$s. Status: %3$s."
 msgstr "Anfrage #%1$s wurde am %2$s gesendet. Status: %3$s."
 
-#: includes/Vocabulary/Terms.php:110
+#: includes/Vocabulary/Terms.php:112
 msgid "Updates"
 msgstr "Mitteilungen"
 
 #. translators: %d: page number.
-#: includes/Vocabulary/Terms.php:115
+#: includes/Vocabulary/Terms.php:117
 #, php-format
 msgid "Inquiries (page %d)"
 msgstr "Anfragen (Seite %d)"
 
-#: includes/Vocabulary/Terms.php:116
+#: includes/Vocabulary/Terms.php:118
 msgid "You have not sent an inquiry yet."
 msgstr "Sie haben noch keine Anfrage gesendet."
 
 #. translators: %s: inquiry number.
-#: includes/Vocabulary/Terms.php:118
+#: includes/Vocabulary/Terms.php:120
 #, php-format
 msgid "View inquiry %s"
 msgstr "Anfrage %s ansehen"
 
 #. translators: %s: inquiry number.
-#: includes/Vocabulary/Terms.php:120
+#: includes/Vocabulary/Terms.php:122
 #, php-format
 msgid "View inquiry number %s"
 msgstr "Anfrage Nummer %s ansehen"
 
 #. translators: 1: "View" or a similar word, 2: inquiry number.
-#: includes/Vocabulary/Terms.php:122
+#: includes/Vocabulary/Terms.php:124
 #, php-format
 msgid "%1$s: inquiry number %2$s"
 msgstr "%1$s: Anfrage Nummer %2$s"
 
-#: includes/Vocabulary/Terms.php:124
+#: includes/Vocabulary/Terms.php:126
 msgid "These details are pre-filled on the Proforma request page."
 msgstr "Diese Angaben werden auf der Seite „Proforma-Anfrage“ vorausgefüllt."
 
-#: includes/Vocabulary/Terms.php:125
+#: includes/Vocabulary/Terms.php:127
 msgid "Save company details"
 msgstr "Unternehmensdaten speichern"
 
 #. translators: 1: link to the inquiries, 2: link to the company details, 3: link to the account details.
-#: includes/Vocabulary/Terms.php:127 includes/Vocabulary/Terms.php:129
+#: includes/Vocabulary/Terms.php:129 includes/Vocabulary/Terms.php:131
 #, php-format
 msgid ""
 "In your account you can follow your <a href=\"%1$s\">inquiries</a>, keep "
@@ -1100,13 +1464,13 @@ msgstr ""
 "<a href=\"%2$s\">Unternehmensdaten</a> aktuell und <a href=\"%3$s\">ändern "
 "Ihr Passwort und Ihre Kontodetails</a>."
 
-#: includes/Vocabulary/Terms.php:132
+#: includes/Vocabulary/Terms.php:134
 msgid "In your account you can follow your inquiries and change your password:"
 msgstr ""
 "In Ihrem Konto können Sie Ihre Anfragen verfolgen und Ihr Passwort ändern:"
 
 #. translators: 1: site name, 2: username, 3: link to the account. The sentence follows the salutation "Hi %s,".
-#: includes/Vocabulary/Terms.php:134
+#: includes/Vocabulary/Terms.php:136
 #, php-format
 msgid ""
 "Thank you for creating an account on %1$s. Your username is %2$s. In your "
@@ -1116,17 +1480,17 @@ msgstr ""
 "Ihrem Konto können Sie Ihre Anfragen verfolgen und Ihr Passwort ändern: %3$s"
 
 #. translators: %s: inquiry number.
-#: includes/Vocabulary/Terms.php:136
+#: includes/Vocabulary/Terms.php:138
 #, php-format
 msgid "[Inquiry #%s]"
 msgstr "[Anfrage #%s]"
 
-#: includes/Vocabulary/Terms.php:137
+#: includes/Vocabulary/Terms.php:139
 msgid "Inquiry summary"
 msgstr "Zusammenfassung der Anfrage"
 
 #. translators: %s: product names.
-#: includes/Vocabulary/Terms.php:158
+#: includes/Vocabulary/Terms.php:160
 #, php-format
 msgid "%s has been added to your solution draft."
 msgid_plural "%s have been added to your solution draft."
@@ -1134,7 +1498,7 @@ msgstr[0] "%s wurde Ihrem Lösungsentwurf hinzugefügt."
 msgstr[1] "%s wurden Ihrem Lösungsentwurf hinzugefügt."
 
 #. translators: %d: number of products.
-#: includes/Vocabulary/Terms.php:160
+#: includes/Vocabulary/Terms.php:162
 #, php-format
 msgid ""
 "%d product of the earlier inquiry is not available and could not be added to "
@@ -1150,7 +1514,7 @@ msgstr[1] ""
 "Ihren Lösungsentwurf übernommen werden."
 
 #. translators: 1: amount, 2: number of units (quantities added up).
-#: includes/Vocabulary/Terms.php:162
+#: includes/Vocabulary/Terms.php:164
 #, php-format
 msgid "%1$s (%2$s unit)"
 msgid_plural "%1$s (%2$s units)"
@@ -1258,11 +1622,6 @@ msgstr "Lösung"
 msgid "Saved on"
 msgstr "Gespeichert am"
 
-#: templates/myaccount/linker-saved-solutions.php:29
-#: templates/myaccount/linker-saved-solutions.php:41
-msgid "Products"
-msgstr "Produkte"
-
 #: templates/myaccount/linker-saved-solutions.php:57
 msgid "Design report (PDF)"
 msgstr "Auslegungsbericht (PDF)"
@@ -1342,343 +1701,97 @@ msgstr ""
 msgid "Reference"
 msgstr "Verwendungszweck"
 
-#: includes/Settings/SettingsTab.php
-msgid ""
-"%d email could not be delivered. The attempts are in WooCommerce → Status → "
-"Logs (linker-mail); the message stays queued under its post id."
-msgid_plural ""
-"%d emails could not be delivered. The attempts are in WooCommerce → Status → "
-"Logs (linker-mail); each message stays queued under its post id."
-msgstr[0] ""
-"%d E-Mail konnte nicht zugestellt werden. Die Versuche stehen unter "
-"WooCommerce → Status → Logs (linker-mail); die Nachricht bleibt unter ihrer "
-"Beitrags-ID in der Warteschlange."
-msgstr[1] ""
-"%d E-Mails konnten nicht zugestellt werden. Die Versuche stehen unter "
-"WooCommerce → Status → Logs (linker-mail); jede Nachricht bleibt unter ihrer "
-"Beitrags-ID in der Warteschlange."
+#: templates/storefront-archive-product.php:49
+msgid "Recommended"
+msgstr "Empfohlen"
 
-msgid "FAQ"
-msgstr "FAQ"
+#: templates/storefront-archive-product.php:50
+msgid "Newest first"
+msgstr "Neueste zuerst"
 
-msgid ""
-"Each answer needs the document and the page it is printed on. A row without "
-"a question is dropped."
-msgstr ""
-"Jede Antwort braucht das Dokument und die Seite, auf der sie steht. Eine "
-"Zeile ohne Frage wird verworfen."
+#: templates/storefront-archive-product.php:51
+msgid "Name A-Z"
+msgstr "Name A-Z"
 
-msgid "Question"
-msgstr "Frage"
+#: templates/storefront-archive-product.php:52
+msgid "Power high-low"
+msgstr "Leistung hoch-niedrig"
 
-msgid "Answer"
-msgstr "Antwort"
+#: templates/storefront-archive-product.php:53
+msgid "Power low-high"
+msgstr "Leistung niedrig-hoch"
 
-msgid "Question (German)"
-msgstr "Frage (Deutsch)"
+#: templates/storefront-archive-product.php:59
+msgid "Product filters"
+msgstr "Produktfilter"
 
-msgid "Answer (German)"
-msgstr "Antwort (Deutsch)"
+#: templates/storefront-archive-product.php:60
+msgid "Close filters"
+msgstr "Filter schließen"
 
-msgid "Figures and citations"
-msgstr "Kenndaten und Quellenangaben"
-
-msgid "This product states no figures."
-msgstr "Dieses Produkt hat keine Kenndaten."
-
-msgid ""
-"Changing a value or a unit requires the citation to be given again: the "
-"document and the page it is printed on."
-msgstr ""
-"Wenn Sie einen Wert oder eine Einheit ändern, muss die Quellenangabe erneut "
-"angegeben werden: das Dokument und die Seite, auf der er steht."
-
-msgid "Key"
-msgstr "Schlüssel"
-
-msgid "Value"
-msgstr "Wert"
-
-msgid "Unit"
-msgstr "Einheit"
-
-msgid "Page"
-msgstr "Seite"
-
-msgid "— none —"
-msgstr "— keines —"
-
-msgid "No citation"
-msgstr "Keine Quellenangabe"
-
-#. translators: %s: list of figure keys.
+#. translators: %d: number of selected filters.
+#: templates/storefront-archive-product.php:62
 #, php-format
-msgid ""
-"Figures %s kept their previous value: a changed value needs the document and "
-"the page it is printed on."
-msgstr ""
-"Die Kenndaten %s behalten ihren bisherigen Wert: Ein geänderter Wert "
-"benötigt das Dokument und die Seite, auf der er steht."
-
-msgid ""
-"GMT timestamp or ISO-8601 moment; only products modified after it are "
-"returned."
-msgstr ""
-"GMT-Zeitstempel oder ISO-8601-Zeitpunkt; zurückgegeben werden nur Produkte, "
-"die danach geändert wurden."
-
-msgid ""
-"The engineering data of every published product, the overlay components and "
-"the compatibility version (docs/specs/8-engineering-data.md)."
-msgstr ""
-"Die technischen Daten aller veröffentlichten Produkte, die Overlay-"
-"Komponenten und die Version des Kompatibilitätsvertrags (docs/specs/8-"
-"engineering-data.md)."
-
-msgid "sha256 of data/compatibility.json."
-msgstr "sha256 von data/compatibility.json."
-
-msgid ""
-"Engineering components that are not products (data/engineering-overlay.json)."
-msgstr ""
-"Technische Komponenten, die keine Produkte sind (data/engineering-"
-"overlay.json)."
-
-msgid "One entry per published product."
-msgstr "Ein Eintrag je veröffentlichtem Produkt."
-
-msgid ""
-"Figure entries with a citation of a hosted document; a value without one is "
-"not in the feed."
-msgstr ""
-"Kenndaten mit Quellenangabe eines von uns gehosteten Dokuments; ein Wert "
-"ohne Quellenangabe ist nicht im Feed."
-
-#. translators: %d: most product IDs per request.
-#, php-format
-msgid "Product IDs, at most %d."
-msgstr "Produkt-IDs, höchstens %d."
-
-msgid "Selection facts of the requested published products, by product ID."
-msgstr ""
-"Auswahlfakten der angeforderten veröffentlichten Produkte, nach Produkt-ID."
-
-msgid "Product category the product is selected in."
-msgstr "Produktkategorie, in der das Produkt ausgewählt wird."
-
-msgid "Application (attribute pa_application)."
-msgstr "Einsatzbereich (Attribut pa_application)."
-
-msgid "Number of grid phases."
-msgstr "Anzahl der Netzphasen."
-
-msgid "Rated AC power in kW."
-msgstr "Nennleistung (AC) in kW."
-
-msgid "Maximum PV input power in kW."
-msgstr "Maximale PV-Eingangsleistung in kW."
-
-msgid "Usable energy in kWh."
-msgstr "Nutzbare Energie in kWh."
-
-msgid "Nominal energy in kWh."
-msgstr "Nennenergie in kWh."
-
-msgid "Energy range in kWh the product data states; present only then."
-msgstr ""
-"Energiebereich in kWh, den die Produktdaten angeben; nur dann vorhanden."
-
-msgid "Rated AC power the product data states in kVA; present only then."
-msgstr ""
-"Nennleistung (AC) in kVA, die die Produktdaten angeben; nur dann vorhanden."
-
-msgid "Filters"
-msgstr "Filter"
-
 msgid "Filters (%d)"
 msgid_plural "Filters (%d)"
 msgstr[0] "Filter (%d)"
 msgstr[1] "Filter (%d)"
 
-msgid "product"
-msgid_plural "products"
-msgstr[0] "Produkt"
-msgstr[1] "Produkte"
+#: templates/storefront-archive-product.php:64
+msgid "Filters"
+msgstr "Filter"
 
+#: templates/storefront-archive-product.php:78
 msgid "Category"
 msgstr "Kategorie"
 
+#: templates/storefront-archive-product.php:80
 msgid "All products"
 msgstr "Alle Produkte"
 
+#: templates/storefront-archive-product.php:91
 msgid "Brand"
 msgstr "Marke"
 
-msgid "Application"
-msgstr "Anwendung"
+#: templates/storefront-archive-product.php:92
+#, fuzzy
+msgid "Phase"
+msgstr "%d-phasig"
 
-msgid "Home"
-msgstr "Privat"
-
-msgid "Commercial"
-msgstr "Gewerbe"
-
-msgid "%d-phase"
-msgid_plural "%d-phase"
-msgstr[0] "%d-phasig"
-msgstr[1] "%d-phasig"
-
-msgid "AC power"
-msgstr "AC-Leistung"
-
+#: templates/storefront-archive-product.php:93
 msgid "Power"
 msgstr "Leistung"
 
-msgid "Up to 6 kW"
-msgstr "Bis 6 kW"
-
-msgid "6 to 15 kW"
-msgstr "6 bis 15 kW"
-
-msgid "15 to 30 kW"
-msgstr "15 bis 30 kW"
-
-msgid "Over 30 kW"
-msgstr "Über 30 kW"
-
-msgid "Usable energy"
-msgstr "Nutzbare Energie"
-
-msgid "Set"
-msgstr "Übernehmen"
-
-msgid "Plan with the Solution Configurator"
-msgstr "Mit dem Lösungskonfigurator planen"
-
-msgid "Open the Solution Configurator"
-msgstr "Lösungskonfigurator öffnen"
-
-msgid "Clear"
-msgstr "Zurücksetzen"
-
-msgid "Show products"
-msgstr "Produkte anzeigen"
-
-msgid "Item no."
-msgstr "Artikelnr."
-
-msgid "View product"
-msgstr "Produkt ansehen"
-
-msgid "No product matches these filters. Clear one to see more."
-msgstr ""
-"Kein Produkt passt zu dieser Filterauswahl. Setzen Sie einen Filter zurück, "
-"um mehr zu sehen."
-
-msgid "Close filters"
-msgstr "Filter schließen"
-
-msgid "Product filters"
-msgstr "Produktfilter"
-
+#: templates/storefront-archive-product.php:129
 msgid "Minimum AC power in kilowatts"
 msgstr "Minimale AC-Leistung in Kilowatt"
 
+#: templates/storefront-archive-product.php:130
 msgid "Maximum AC power in kilowatts"
 msgstr "Maximale AC-Leistung in Kilowatt"
 
+#: templates/storefront-archive-product.php:131
+#: templates/storefront-archive-product.php:148
+msgid "Set"
+msgstr "Übernehmen"
+
+#: templates/storefront-archive-product.php:138
+msgid "Usable energy"
+msgstr "Nutzbare Energie"
+
+#: templates/storefront-archive-product.php:146
 msgid "Minimum usable energy in kilowatt hours"
 msgstr "Minimale nutzbare Energie in Kilowattstunden"
 
+#: templates/storefront-archive-product.php:147
 msgid "Maximum usable energy in kilowatt hours"
 msgstr "Maximale nutzbare Energie in Kilowattstunden"
 
-msgid "Recommended"
-msgstr "Empfohlen"
+#: templates/storefront-archive-product.php:157
+msgid "Plan with the Solution Configurator"
+msgstr "Mit dem Lösungskonfigurator planen"
 
-msgid "Newest first"
-msgstr "Neueste zuerst"
-
-msgid "Name A-Z"
-msgstr "Name A-Z"
-
-msgid "Power low-high"
-msgstr "Leistung niedrig-hoch"
-
-msgid "Power high-low"
-msgstr "Leistung hoch-niedrig"
-
-msgid "Breadcrumb"
-msgstr "Brotkrumen"
-
-msgid "Product image"
-msgstr "Produktbild"
-
-msgid "Product photography for this model is in preparation."
-msgstr "Die Produktfotografie für dieses Modell wird vorbereitet."
-
-msgid "Item number:"
-msgstr "Artikelnummer:"
-
-msgid "Net price after partner sign-in"
-msgstr "Nettopreis nach Partner-Anmeldung"
-
-msgid "In stock"
-msgstr "Auf Lager"
-
-msgid "Currently unavailable"
-msgstr "Derzeit nicht verfügbar"
-
-msgid "Sign in for partner pricing"
-msgstr "Für Partnerpreise anmelden"
-
-msgid "Ask about this product"
-msgstr "Produkt anfragen"
-
-msgid "Product sections"
-msgstr "Produktbereiche"
-
-msgid "Description"
-msgstr "Beschreibung"
-
-msgid "Technical data"
-msgstr "Technische Daten"
-
-msgid "Specifications"
-msgstr "Spezifikationen"
-
-msgid ""
-"The specification table for this product is in preparation. Ask us for the "
-"datasheet."
-msgstr ""
-"Die Spezifikationstabelle für dieses Produkt wird vorbereitet. Fragen Sie "
-"uns nach dem Datenblatt."
-
-msgid ""
-"No documents are attached to this product yet. Ask us and we will add them."
-msgstr ""
-"Für dieses Produkt sind noch keine Dokumente hinterlegt. Fragen Sie uns, wir "
-"ergänzen sie."
-
-msgid "FAQs"
-msgstr "Produktfragen"
-
-msgid "Compatible products"
-msgstr "Kompatible Produkte"
-
-msgid "Close image viewer"
-msgstr "Bildbetrachter schließen"
-
-msgid "Key product data"
-msgstr "Produktdaten"
-
-msgid "Grid phases"
-msgstr "Netzphasen"
-
-msgid "Energy capacity"
-msgstr "Nutzbare Energie"
-
-#: templates/storefront-archive-product.php
+#: templates/storefront-archive-product.php:158
 msgid ""
 "Configure a storage system from your site data; the result is a solution "
 "draft you can send as an inquiry."
@@ -1686,7 +1799,79 @@ msgstr ""
 "Konfigurieren Sie aus Ihren Standortdaten ein Speichersystem; das Ergebnis "
 "ist ein Lösungsentwurf, den Sie als Anfrage senden können."
 
-#: templates/storefront-single-product.php
+#: templates/storefront-archive-product.php:159
+msgid "Open the Solution Configurator"
+msgstr "Lösungskonfigurator öffnen"
+
+#: templates/storefront-archive-product.php:163
+msgid "Clear"
+msgstr "Zurücksetzen"
+
+#: templates/storefront-archive-product.php:164
+msgid "Show products"
+msgstr "Produkte anzeigen"
+
+#: templates/storefront-archive-product.php:171
+msgid "product"
+msgid_plural "products"
+msgstr[0] "Produkt"
+msgstr[1] "Produkte"
+
+#: templates/storefront-archive-product.php:229
+msgid "Item no."
+msgstr "Artikelnr."
+
+#: templates/storefront-archive-product.php:233
+msgid "Key product data"
+msgstr "Produktdaten"
+
+#: templates/storefront-archive-product.php:248
+msgid "View product"
+msgstr "Produkt ansehen"
+
+#: templates/storefront-archive-product.php:255
+msgid "No product matches these filters. Clear one to see more."
+msgstr ""
+"Kein Produkt passt zu dieser Filterauswahl. Setzen Sie einen Filter zurück, "
+"um mehr zu sehen."
+
+#: templates/storefront-single-product.php:31
+msgid "Breadcrumb"
+msgstr "Brotkrumen"
+
+#: templates/storefront-single-product.php:87
+msgid "Product photography for this model is in preparation."
+msgstr "Die Produktfotografie für dieses Modell wird vorbereitet."
+
+#: templates/storefront-single-product.php:108
+msgid "Item number:"
+msgstr "Artikelnummer:"
+
+#: templates/storefront-single-product.php:135
+msgid "Ask about this product"
+msgstr "Produkt anfragen"
+
+#: templates/storefront-single-product.php:138
+#: templates/storefront-single-product.php:147
+#: templates/storefront-single-product.php:226
+msgctxt "product attachments"
+msgid "Documents"
+msgstr "Dokumente"
+
+#: templates/storefront-single-product.php:144
+msgid "Product sections"
+msgstr "Produktbereiche"
+
+#: templates/storefront-single-product.php:145
+msgid "Description"
+msgstr "Beschreibung"
+
+#: templates/storefront-single-product.php:146
+#: templates/storefront-single-product.php:181
+msgid "Technical data"
+msgstr "Technische Daten"
+
+#: templates/storefront-single-product.php:160
 msgid ""
 "Introduction in preparation. The specification below carries the values from "
 "the datasheet on file."
@@ -1694,67 +1879,37 @@ msgstr ""
 "Die Einleitung wird vorbereitet. Die Spezifikation darunter enthält die "
 "Werte des hinterlegten Datenblatts."
 
-#. The account menu's Documents (Unterlagen, #11) and the product page's
-#. attachments (Dokumente) share the msgid; this context takes the storefront.
-#: templates/storefront-single-product.php
-msgctxt "product attachments"
-msgid "Documents"
-msgstr "Dokumente"
+#: templates/storefront-single-product.php:208
+msgid "Specifications"
+msgstr "Spezifikationen"
 
-#: includes/Presentation/LoginGate.php
-msgid "Empty solution draft"
-msgstr "Leerer Lösungsentwurf"
-
-#: includes/Presentation/LoginGate.php
-msgid "Nothing to submit yet."
-msgstr "Noch nichts zum Absenden."
-
-#: includes/Presentation/LoginGate.php
+#: templates/storefront-single-product.php:221
 msgid ""
-"Your solution draft is empty. Add matched systems, then come back for your "
-"Proforma."
+"The specification table for this product is in preparation. Ask us for the "
+"datasheet."
 msgstr ""
-"Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie "
-"dann für Ihre Proformarechnung zurück."
+"Die Spezifikationstabelle für dieses Produkt wird vorbereitet. Fragen Sie "
+"uns nach dem Datenblatt."
 
-#: includes/Presentation/LoginGate.php
-msgid "Proforma request sign-in"
-msgstr "Anmeldung zur Proforma-Anfrage"
-
-#: includes/Presentation/LoginGate.php
-msgid "Get your Proforma"
-msgstr "Proformarechnung anfordern"
-
-#: includes/Presentation/LoginGate.php
+#: templates/storefront-single-product.php:235
 msgid ""
-"Sign in with your partner account, add matched systems, and your Proforma is "
-"one step away."
+"No documents are attached to this product yet. Ask us and we will add them."
 msgstr ""
-"Melden Sie sich mit Ihrem Partnerkonto an, fügen Sie passende Systeme hinzu, "
-"und Ihre Proformarechnung ist nur noch einen Schritt entfernt."
+"Für dieses Produkt sind noch keine Dokumente hinterlegt. Fragen Sie uns, wir "
+"ergänzen sie."
 
-#: includes/Presentation/LoginGate.php
-msgid ""
-"The Proforma request is reserved for Linker partner accounts. Register, add "
-"your systems, and return here — VAT and delivery are ours to handle."
-msgstr ""
-"Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren Sie "
-"sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — "
-"Umsatzsteuer und Lieferung übernehmen wir."
-
-#: includes/Presentation/LoginGate.php
-msgid "Sign in or register"
-msgstr "Anmelden oder registrieren"
-
-msgid "Product questions"
+#: templates/storefront-single-product.php:241
+msgid "FAQs"
 msgstr "Produktfragen"
 
-#. translators: 1: document title, 2: page number.
-#, php-format
-msgid "%1$s, p. %2$d"
-msgstr "%1$s, S. %2$d"
+#: templates/storefront-single-product.php:255
+msgid "Compatible products"
+msgstr "Kompatible Produkte"
 
-#. translators: %d: page number.
-#, php-format
-msgid "p. %d"
-msgstr "S. %d"
+#: templates/storefront-single-product.php:272
+msgid "Product image"
+msgstr "Produktbild"
+
+#: templates/storefront-single-product.php:273
+msgid "Close image viewer"
+msgstr "Bildbetrachter schließen"

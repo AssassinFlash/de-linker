@@ -8,8 +8,8 @@ mod build "tools/build.just"
 # Composer projects: the plugins, and tools/local for its mu-plugins and router.
 php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tools tools/local"
 
-# uv projects: the services, tools/local (linker-local), and the data migrations (tools/migrate).
-py_projects := "services/genie services/engine tools/local tools/migrate"
+# uv projects: the services, tools/local (linker-local), the data migrations (tools/migrate), and the FAQ tooling.
+py_projects := "services/genie services/engine tools/local tools/migrate tools/faq"
 
 # `just pull` takes a snapshot of the live site; `just pull load|diff|scan|…`
 # (tools/pull/pull.just, docs/specs/6-live-pull.md).

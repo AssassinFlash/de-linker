@@ -20,7 +20,9 @@ from typing import Any
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 DOCS = ROOT / "docs" / "faq"
-INDEX_DEFAULT = Path.home() / "de-linker-data/index/builds/20261010T082155Z/index.sqlite"
+INDEX_DEFAULT = (
+    Path.home() / "de-linker-data/index/builds/20261010T082155Z/index.sqlite"
+)
 DEEPSEEK_JSON = Path.home() / ".config/terravolt-builder/deepseek.json"
 AIHUBMIX_ENV = Path.home() / ".config/terravolt-builder/aihubmix.env"
 
@@ -29,7 +31,7 @@ NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 # Their digits are identifiers, not figures to prove in the cited passage.
 MODELISH = re.compile(
     r"\b(?=[A-Z0-9./-]*[A-Z])(?=[A-Z0-9./-]*\d)[A-Z0-9][A-Z0-9./-]{1,}\b",
-    re.I,
+    re.IGNORECASE,
 )
 AI_EN = (
     re.compile(r"\bnot\s+\w[\w\s-]{0,40}\s+but\b", re.I),
@@ -42,7 +44,7 @@ AI_DE = (
 )
 DU_FORM = re.compile(
     r"(?:^|[^\w])(du|dich|dir|dein|deine|deinen|deinem|deiner|deines|euch|euer|eure)\b",
-    re.I,
+    re.IGNORECASE,
 )
 
 
@@ -99,15 +101,21 @@ def chat(key: str, endpoint: str, model: str, system: str, user: str) -> dict[st
         method="POST",
     )
     last_error: Exception | None = None
-    for attempt in range(3):
+    for _attempt in range(3):
         try:
             with urllib.request.urlopen(request, timeout=120) as response:
                 payload = json.load(response)
             content = payload["choices"][0]["message"]["content"]
             if not content:
                 raise RuntimeError("DeepSeek returned empty content")
-            return json.loads(content)
-        except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError, RuntimeError) as exc:
+            data: dict[str, Any] = json.loads(content)
+            return data
+        except (
+            urllib.error.HTTPError,
+            urllib.error.URLError,
+            json.JSONDecodeError,
+            RuntimeError,
+        ) as exc:
             last_error = exc
             if isinstance(exc, urllib.error.HTTPError):
                 last_error = RuntimeError(
@@ -120,13 +128,13 @@ def chat(key: str, endpoint: str, model: str, system: str, user: str) -> dict[st
 _INDEX = None
 
 
-def document_index():
+def document_index() -> Any:
     """One read-only index for the run (sqlite-vec allows check_same_thread=False)."""
     global _INDEX
     if _INDEX is None:
         sys.path.insert(0, str(ROOT / "services/genie/src"))
         sys.path.insert(0, str(ROOT / "services/genie"))
-        from linker_genie.retrieval import DocumentIndex  # noqa: PLC0415
+        from linker_genie.retrieval import DocumentIndex  # type: ignore[import-not-found]
 
         load_aihubmix()
         path = Path(os.environ.get("GENIE_INDEX", str(INDEX_DEFAULT)))
@@ -247,7 +255,7 @@ def generate_items(
     data = chat(key, endpoint, model, GENERATE_SYSTEM, user)
     items = data.get("items")
     if not isinstance(items, list):
-        raise RuntimeError("generate: no items[]")
+        raise TypeError("generate: no items[]")
     return items
 
 
@@ -286,7 +294,7 @@ def review_items(
     data = chat(key, endpoint, model, REVIEW_SYSTEM, user)
     verdicts = data.get("items")
     if not isinstance(verdicts, list):
-        raise RuntimeError("review: no items[]")
+        raise TypeError("review: no items[]")
     return verdicts
 
 
@@ -317,7 +325,8 @@ def gate_item(
     status = str(item.get("status") or "")
     if status == "withdrawn":
         return "withdrawn", str(item.get("withdraw_reason") or "unsupported")
-    citation = item.get("citation") if isinstance(item.get("citation"), dict) else {}
+    raw_citation = item.get("citation")
+    citation = raw_citation if isinstance(raw_citation, dict) else {}
     url = str(citation.get("url") or "")
     try:
         page = int(citation.get("page") or 0)
@@ -350,7 +359,8 @@ def to_record(
     item: dict[str, Any], status: str, review: str, reason: str
 ) -> dict[str, Any]:
     """The stored shape import.py writes."""
-    citation = item.get("citation") if isinstance(item.get("citation"), dict) else {}
+    raw_citation = item.get("citation")
+    citation = raw_citation if isinstance(raw_citation, dict) else {}
     return {
         "question": str(item.get("question_en") or ""),
         "answer": str(item.get("answer_en") or ""),
@@ -389,7 +399,8 @@ def markdown(product: dict[str, Any], records: list[dict[str, Any]]) -> str:
                 f"## {i}. {rec['question'] or '(withdrawn)'}",
                 "",
                 f"**Status:** {rec['status']}",
-                f"**Review:** {rec['review']}" + (f" — {rec['reason']}" if rec["reason"] else ""),
+                f"**Review:** {rec['review']}"
+                + (f" — {rec['reason']}" if rec["reason"] else ""),
                 "",
                 f"**EN Q:** {rec['question']}",
                 "",
@@ -406,9 +417,13 @@ def markdown(product: dict[str, Any], records: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
-def run_product(product: dict[str, Any], key: str, endpoint: str, model: str) -> dict[str, Any]:
+def run_product(
+    product: dict[str, Any], key: str, endpoint: str, model: str
+) -> dict[str, Any]:
     """Generate + review one product; write json and md."""
-    questions = [q["question_en"] for q in product.get("questions") or [] if q.get("question_en")]
+    questions = [
+        q["question_en"] for q in product.get("questions") or [] if q.get("question_en")
+    ]
     records: list[dict[str, Any]] = []
     if questions:
         hits = retrieve(product["id"], questions)
@@ -434,10 +449,7 @@ def run_product(product: dict[str, Any], key: str, endpoint: str, model: str) ->
             int(v["index"]): v
             for v in verdicts
             if isinstance(v, dict)
-            and (
-                isinstance(v.get("index"), int)
-                or str(v.get("index", "")).isdigit()
-            )
+            and (isinstance(v.get("index"), int) or str(v.get("index", "")).isdigit())
         }
         for i, item in enumerate(gated):
             gate_status, gate_reason = item["_gate"], item["_gate_reason"]

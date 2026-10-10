@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 		throw new RuntimeException( 'FAQ WP-CLI request has no marker.' );
 	}
 
-	$acf_faqs = static function ( string $raw, string $question_key ): array {
+	$acf_faqs = static function ( string $raw ): array {
 		if ( '' === $raw ) {
 			return array();
 		}
@@ -35,7 +35,7 @@ defined( 'ABSPATH' ) || exit;
 			if ( ! is_array( $item ) ) {
 				continue;
 			}
-			$question = trim( (string) ( $item[ $question_key ] ?? $item['faq_question'] ?? '' ) );
+			$question = trim( (string) ( $item['faq_question'] ?? '' ) );
 			if ( '' === $question ) {
 				continue;
 			}
@@ -75,15 +75,21 @@ defined( 'ABSPATH' ) || exit;
 			}
 			$en_raw    = (string) get_post_meta( $product_id, '_tv_legacy_acf_json', true );
 			$de_raw    = (string) get_post_meta( $product_id, '_linker_de_acf_json', true );
-			$en_faqs   = $acf_faqs( $en_raw, 'faq_question' );
-			$de_faqs   = $acf_faqs( $de_raw, 'faq_question' );
+			$en_faqs   = $acf_faqs( $en_raw );
+			$de_faqs   = $acf_faqs( $de_raw );
 			$questions = array();
+			// The legacy ACF rows share no key across languages, so the German
+			// question can only follow the English position — and only while
+			// both lists ran through the same editor. Lists of different
+			// length do not pair; exporting the English question alone beats
+			// pairing a German question onto the wrong topic.
+			$paired = count( $en_faqs ) === count( $de_faqs );
 			foreach ( $en_faqs as $i => $en ) {
 				$questions[] = array(
 					'index'       => $en['index'],
 					'category'    => $en['category'],
 					'question_en' => $en['question'],
-					'question_de' => $de_faqs[ $i ]['question'] ?? '',
+					'question_de' => $paired ? ( $de_faqs[ $i ]['question'] ?? '' ) : '',
 				);
 			}
 			$series  = '';
@@ -110,39 +116,11 @@ defined( 'ABSPATH' ) || exit;
 	if ( 'import' !== $action ) {
 		throw new RuntimeException( 'Unknown FAQ WP-CLI action.' );
 	}
-
-	$normalize = static function ( array $items ): array {
-		$out = array();
-		foreach ( $items as $item ) {
-			if ( ! is_array( $item ) ) {
-				continue;
-			}
-			$question = trim( (string) ( $item['question'] ?? '' ) );
-			$citation = is_array( $item['citation'] ?? null ) ? $item['citation'] : array();
-			$url      = trim( (string) ( $citation['url'] ?? '' ) );
-			$page     = $citation['page'] ?? 0;
-			$page     = is_numeric( $page ) ? (int) $page : 0;
-			if ( '' === $question || '' === $url || $page < 1 ) {
-				continue;
-			}
-			$row   = array(
-				'question'    => $question,
-				'answer'      => (string) ( $item['answer'] ?? '' ),
-				'question_de' => (string) ( $item['question_de'] ?? '' ),
-				'answer_de'   => (string) ( $item['answer_de'] ?? '' ),
-				'citation'    => array(
-					'url'  => $url,
-					'page' => $page,
-				),
-			);
-			$title = trim( (string) ( $citation['title'] ?? '' ) );
-			if ( '' !== $title ) {
-				$row['citation']['title'] = $title;
-			}
-			$out[] = $row;
-		}
-		return $out;
-	};
+	if ( ! class_exists( \Linker\Commerce\Catalog\Faqs::class ) ) {
+		// The shape the import writes is the plugin's rule; without the
+		// plugin the eval'd script would drift from it.
+		throw new RuntimeException( 'linker-commerce must be active on the import target.' );
+	}
 
 	$written = array();
 	foreach ( $request['products'] as $row ) {
@@ -151,24 +129,23 @@ defined( 'ABSPATH' ) || exit;
 		if ( ! $product instanceof WC_Product ) {
 			throw new RuntimeException( esc_html( "No product {$product_id}." ) );
 		}
-		$items = $normalize( is_array( $row['items'] ?? null ) ? $row['items'] : array() );
-		$json  = (string) wp_json_encode( $items, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-		update_post_meta( $product_id, '_linker_faqs', wp_slash( $json ) );
-		if ( function_exists( 'pll_get_post_language' ) && function_exists( 'pll_get_post' ) ) {
-			$language = pll_get_post_language( $product_id );
-			$twin_of  = 'en' === $language ? 'de' : ( 'de' === $language ? 'en' : '' );
-			if ( '' !== $twin_of ) {
-				$twin = pll_get_post( $product_id, $twin_of );
-				if ( $twin > 0 && (int) $twin !== $product_id ) {
-					update_post_meta( (int) $twin, '_linker_faqs', wp_slash( $json ) );
-				}
-			}
+		// The record names the product it was written for: an id that now
+		// belongs to another slug would put the answers on the wrong product.
+		$expected = (string) ( $row['slug'] ?? '' );
+		if ( '' !== $expected && $product->get_slug() !== $expected ) {
+			throw new RuntimeException(
+				esc_html( "Slug mismatch for {$product_id}: the record says '{$expected}', the product is '" . $product->get_slug() . "'." )
+			);
 		}
-		$read      = (string) get_post_meta( $product_id, '_linker_faqs', true );
+		$items = is_array( $row['items'] ?? null ) ? $row['items'] : array();
+		$json  = \Linker\Commerce\Catalog\Faqs::encode( $items );
+		update_post_meta( $product_id, \Linker\Commerce\Catalog\Faqs::META_KEY, wp_slash( $json ) );
+		\Linker\Commerce\Catalog\Faqs::mirror_to_twin( $product_id, $json );
+		$read      = (string) get_post_meta( $product_id, \Linker\Commerce\Catalog\Faqs::META_KEY, true );
 		$written[] = array(
 			'id'    => $product_id,
 			'slug'  => $product->get_slug(),
-			'count' => count( $items ),
+			'count' => count( \Linker\Commerce\Catalog\Faqs::normalize( $items ) ),
 			'done'  => $read === $json,
 		);
 	}

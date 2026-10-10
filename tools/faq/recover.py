@@ -30,13 +30,13 @@ import sqlite3
 import sys
 from collections import Counter
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 DOCS = ROOT / "docs" / "faq"
 sys.path.insert(0, str(HERE))
-import generate as gen
+import generate as gen  # noqa: E402 — the sibling script is the import target.
 
 GATE_REASON = "a number is not in the cited passage"
 
@@ -142,7 +142,7 @@ def load_corpus() -> list[dict[str, Any]]:
 
 
 def item_of(payload: dict[str, Any], index: int) -> dict[str, Any]:
-    return payload["items"][index]
+    return cast(dict[str, Any], payload["items"][index])
 
 
 def to_model_item(rec: dict[str, Any]) -> dict[str, Any]:
@@ -259,7 +259,7 @@ def rewrite(
         ensure_ascii=False,
     )
     tell = ""
-    for attempt in range(3):
+    for _attempt in range(3):
         extra = (
             f"Your previous wording was rejected by the deterministic copy check: {tell}. Rephrase."
             if tell
@@ -275,9 +275,8 @@ def rewrite(
         # Gate against the whole page the answer cites: retrieval may have
         # sliced only some chunks of that page, and judging the numbers on a
         # slice re-creates the original defect inside the recovery itself.
-        item_cite = (
-            item.get("citation") if isinstance(item.get("citation"), dict) else cite
-        )
+        raw_citation = item.get("citation")
+        item_cite = raw_citation if isinstance(raw_citation, dict) else cite
         try:
             item_page = int(item_cite.get("page") or 0)
         except (TypeError, ValueError):

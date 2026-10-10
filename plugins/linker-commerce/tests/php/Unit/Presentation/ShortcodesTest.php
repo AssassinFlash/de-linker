@@ -326,6 +326,45 @@ final class ShortcodesTest extends TestCase {
 		unset( $GLOBALS['product'] );
 	}
 
+	/**
+	 * A German request with an empty German answer falls back to the English
+	 * answer: the paragraph is never empty.
+	 */
+	public function test_faqs_falls_back_to_the_english_answer_when_the_german_one_is_empty(): void {
+		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( 1178 );
+		$GLOBALS['product'] = $product; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce's global.
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 1178, '_linker_faqs', true ),
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WP's wrapper is not loaded in the unit tests.
+				'return' => (string) json_encode(
+					array(
+						array(
+							'question'    => 'What current does the ATS1-T63-A carry?',
+							'answer'      => 'Rated current is 50 A.',
+							'question_de' => 'Welchen Strom führt die ATS1-T63-A?',
+							'answer_de'   => '',
+							'citation'    => array(
+								'url'  => 'https://de-linker.com/manual.pdf',
+								'page' => 31,
+							),
+						),
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::passthruFunction( 'wpautop' );
+
+		$html = $this->shortcodes()->faqs();
+
+		$this->assertStringContainsString( 'Welchen Strom führt die ATS1-T63-A?', $html );
+		$this->assertStringContainsString( 'Rated current is 50 A.', $html );
+		unset( $GLOBALS['product'] );
+	}
+
 		/**
 		 * Documents reuse the account template.
 		 */
