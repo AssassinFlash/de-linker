@@ -17,6 +17,9 @@ parameters:
 	excludePaths:
 		# Stand-ins for WordPress and WooCommerce classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
+		# WP-CLI is not in the WordPress stubs; the command is covered by unit tests.
+		- includes/Cli
+		- tests/php/Unit/Cli
 	scanFiles:
 		# Action Scheduler (as_schedule_single_action()), bundled with WooCommerce.
 		- vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php

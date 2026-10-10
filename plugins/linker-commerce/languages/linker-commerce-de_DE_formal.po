@@ -1469,3 +1469,35 @@ msgstr ""
 msgid "Rated AC power the product data states in kVA; present only then."
 msgstr ""
 "Nennleistung (AC) in kVA, die die Produktdaten angeben; nur dann vorhanden."
+
+#: includes/Presentation/LoginGate.php
+msgid "Empty solution draft"
+msgstr "Leerer Lösungsentwurf"
+
+#: includes/Presentation/LoginGate.php
+msgid "Nothing to submit yet."
+msgstr "Noch nichts zum Absenden."
+
+#: includes/Presentation/LoginGate.php
+msgid "Your solution draft is empty. Add matched systems, then come back for your Proforma."
+msgstr "Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie dann für Ihre Proformarechnung zurück."
+
+#: includes/Presentation/LoginGate.php
+msgid "Proforma request sign-in"
+msgstr "Anmeldung zur Proforma-Anfrage"
+
+#: includes/Presentation/LoginGate.php
+msgid "Get your Proforma"
+msgstr "Proformarechnung anfordern"
+
+#: includes/Presentation/LoginGate.php
+msgid "Sign in with your partner account, add matched systems, and your Proforma is one step away."
+msgstr "Melden Sie sich mit Ihrem Partnerkonto an, fügen Sie passende Systeme hinzu, und Ihre Proformarechnung ist nur noch einen Schritt entfernt."
+
+#: includes/Presentation/LoginGate.php
+msgid "The Proforma request is reserved for Linker partner accounts. Register, add your systems, and return here — VAT and delivery are ours to handle."
+msgstr "Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren Sie sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — Umsatzsteuer und Lieferung übernehmen wir."
+
+#: includes/Presentation/LoginGate.php
+msgid "Sign in or register"
+msgstr "Anmelden oder registrieren"
