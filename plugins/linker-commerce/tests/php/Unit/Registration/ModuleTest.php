@@ -1,0 +1,98 @@
+<?php
+/**
+ * Tests for the registration module's hooks.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Tests\Unit\Registration;
+
+use Linker\Commerce\Registration\AddressForm;
+use Linker\Commerce\Registration\BillingVatField;
+use Linker\Commerce\Registration\Emails\NewCustomerEmail;
+use Linker\Commerce\Registration\Emails\VatReviewEmail;
+use Linker\Commerce\Registration\Fields;
+use Linker\Commerce\Registration\Module;
+use Linker\Commerce\Registration\VatProfile;
+use Linker\Commerce\Registration\ViesClient;
+use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Tests\TestCase;
+use WP_Mock;
+
+/**
+ * Tests for Module.
+ *
+ * @covers \Linker\Commerce\Registration\Module
+ */
+final class ModuleTest extends TestCase {
+
+	/**
+	 * The module under test.
+	 *
+	 * @var Module
+	 */
+	private Module $module;
+
+	/**
+	 * Its field classes.
+	 *
+	 * @var array{0: Fields, 1: BillingVatField, 2: AddressForm}
+	 */
+	private array $parts;
+
+	/**
+	 * A module with real parts.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		$vat          = new VatProfile( new ViesClient() );
+		$this->parts  = array( new Fields( $vat ), new BillingVatField( $vat ), new AddressForm() );
+		$this->module = new Module( '/plugin/linker-commerce.php', new Options(), $this->parts[0], $this->parts[1], $this->parts[2] );
+	}
+
+	/**
+	 * The form, the VAT ID field, the address rules and the two notifications are hooked.
+	 */
+	public function test_register_adds_the_hooks(): void {
+		[ $fields, $vat_field, $address ] = $this->parts;
+
+		WP_Mock::expectActionAdded( 'woocommerce_register_form_start', array( $fields, 'render' ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_process_registration_errors', array( $fields, 'validate' ) );
+		WP_Mock::expectActionAdded( 'woocommerce_created_customer', array( $fields, 'save' ), 5 );
+		WP_Mock::expectFilterAdded( 'woocommerce_billing_fields', array( $vat_field, 'billing_fields' ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_admin_billing_fields', array( $vat_field, 'admin_billing_fields' ) );
+		WP_Mock::expectActionAdded( 'woocommerce_admin_order_data_after_billing_address', array( $vat_field, 'admin_order_verdict' ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_customer_meta_fields', array( $vat_field, 'profile_fields' ) );
+		WP_Mock::expectActionAdded( 'woocommerce_customer_save_address', array( $vat_field, 'after_address_saved' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order', array( $vat_field, 'on_inquiry' ) );
+		WP_Mock::expectActionAdded( 'woocommerce_before_customer_object_save', array( $vat_field, 'normalize' ) );
+		WP_Mock::expectFilterAdded( 'option_woocommerce_default_country', array( $address, 'base_location' ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_get_country_locale', array( $address, 'country_locale' ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_actions', array( $this->module, 'email_actions' ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $this->module, 'add_emails' ) );
+
+		$this->module->register();
+
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * WooCommerce sends the notifications on the registration and verdict-change actions; the
+	 * actions fired in code carry the same names.
+	 */
+	public function test_email_actions_and_classes(): void {
+		$this->assertSame( array( 'other', 'linker_commerce_customer_registered', 'linker_commerce_vat_status_changed' ), $this->module->email_actions( array( 'other' ) ) );
+		$this->assertSame( 'linker_commerce_customer_registered', Fields::REGISTERED_ACTION );
+		$this->assertSame( 'linker_commerce_vat_status_changed', VatProfile::CHANGED_ACTION );
+
+		$this->plain_text();
+		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
+		$this->expect_action_on_any( Fields::REGISTERED_ACTION . '_notification', NewCustomerEmail::class, 'trigger' );
+		$this->expect_action_on_any( VatProfile::CHANGED_ACTION . '_notification', VatReviewEmail::class, 'trigger', 10, 3 );
+		$emails = $this->module->add_emails( array() );
+		$this->assertInstanceOf( NewCustomerEmail::class, $emails[ NewCustomerEmail::class ] );
+		$this->assertInstanceOf( VatReviewEmail::class, $emails[ VatReviewEmail::class ] );
+	}
+}

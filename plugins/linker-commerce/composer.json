@@ -4,7 +4,8 @@
 	"type": "wordpress-plugin",
 	"license": "proprietary",
 	"require": {
-		"php": ">=8.3"
+		"php": ">=8.3",
+		"dompdf/dompdf": "^3.1"
 	},
 	"require-dev": {
 		"10up/wp_mock": "^1.1",
@@ -12,10 +13,12 @@
 		"php-stubs/wordpress-stubs": "~7.1.0",
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"phpstan/phpstan": "^2.1",
+		"phpstan/phpstan-mockery": "^2.0",
 		"phpunit/phpunit": "^9.6",
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"woocommerce/woocommerce-sniffs": "^2.0",
-		"wp-coding-standards/wpcs": "^3.4"
+		"wp-coding-standards/wpcs": "^3.4",
+		"wpsyntex/polylang-stubs": "^3.7"
 	},
 	"autoload": {
 		"psr-4": {

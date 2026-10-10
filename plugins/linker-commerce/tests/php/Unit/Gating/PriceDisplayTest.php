@@ -1,0 +1,182 @@
+<?php
+/**
+ * Tests for prices hidden at their source and the texts shown instead.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Tests\Unit\Gating;
+
+use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Gating\PriceDisplay;
+use Linker\Commerce\Tests\TestCase;
+use Mockery;
+use WC_Order;
+use WC_Order_Item_Product;
+use WC_Product;
+use WP_Mock;
+
+/**
+ * Tests for PriceDisplay, with the real price rule.
+ *
+ * @covers \Linker\Commerce\Gating\PriceDisplay
+ */
+final class PriceDisplayTest extends TestCase {
+
+	/**
+	 * Whether a customer is logged in, in the current step of a test.
+	 *
+	 * @var bool
+	 */
+	private bool $logged_in = false;
+
+	/**
+	 * Product mode of the products, in the current step of a test.
+	 *
+	 * @var string
+	 */
+	private string $mode = 'orderable';
+
+	/**
+	 * Translation and escaping return their input; the account page is /my-account/; login state and mode follow the properties.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		$this->plain_text();
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => fn (): bool => $this->logged_in ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => fn (): string => $this->mode ) );
+	}
+
+	/**
+	 * A simple product with a stored price and mode.
+	 *
+	 * @param string $price Stored price.
+	 * @return WC_Product&\Mockery\MockInterface
+	 */
+	private function product( string $price = '1680' ) {
+		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( 4107 );
+		$product->allows( 'get_parent_id' )->andReturn( 0 );
+		$product->allows( 'get_price' )->with( 'edit' )->andReturn( $price );
+		return $product;
+	}
+
+	/**
+	 * The visitor state of a test.
+	 *
+	 * @param bool   $logged_in Whether a customer is logged in.
+	 * @param string $mode      Product mode.
+	 */
+	private function visitor( bool $logged_in, string $mode = 'orderable' ): PriceDisplay {
+		$this->logged_in = $logged_in;
+		$this->mode      = $mode;
+		return new PriceDisplay( new CommerceState() );
+	}
+
+	/**
+	 * A guest's request has no price at all; a customer's has the stored one.
+	 */
+	public function test_price_at_the_source(): void {
+		$this->assertSame( '', $this->visitor( false )->price( '1680', $this->product() ) );
+		$this->assertSame( '1680', $this->visitor( true )->price( '1680', $this->product() ) );
+		$this->assertSame( '', $this->visitor( true, 'rfq_only' )->price( '22350', $this->product( '22350' ) ) );
+	}
+
+	/**
+	 * The variation price cache differs between visitors with and without prices.
+	 */
+	public function test_variation_price_hash(): void {
+		$this->assertSame(
+			array(
+				'x',
+				'linker_prices_visible' => false,
+			),
+			$this->visitor( false )->variation_prices_hash( array( 'x' ) )
+		);
+	}
+
+	/**
+	 * A published simple product stays addable without a visible price; drafts, grouped products and WooCommerce's yes stay as they are.
+	 */
+	public function test_purchasable(): void {
+		$display = $this->visitor( false );
+		$product = $this->product();
+		$product->allows( 'exists' )->andReturn( true );
+		$product->allows( 'is_type' )->with( array( 'simple', 'variation' ) )->andReturn( true );
+		WP_Mock::userFunction( 'get_post_status', array( 'return_in_order' => array( 'publish', 'draft' ) ) );
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => false ) );
+
+		$this->assertTrue( $display->purchasable( false, $product ) );
+		$this->assertFalse( $display->purchasable( false, $product ) );
+		$this->assertTrue( $display->purchasable( true, $product ) );
+
+		$grouped = $this->product();
+		$grouped->allows( 'exists' )->andReturn( true );
+		$grouped->allows( 'is_type' )->andReturn( false );
+		$this->assertFalse( $display->purchasable( false, $grouped ) );
+	}
+
+	/**
+	 * The three texts: log in (guest), quoted per project, price on request (no stored price).
+	 */
+	public function test_texts_instead_of_prices(): void {
+		$this->assertSame( '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>', $this->visitor( false )->empty_price_html( '', $this->product() ) );
+		$this->assertSame( '<span class="linker-price-note">Quoted per project</span>', $this->visitor( true, 'rfq_only' )->empty_price_html( '', $this->product( '22350' ) ) );
+		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $this->visitor( true )->empty_price_html( '', $this->product( '' ) ) );
+		$this->assertSame( 'WooCommerce', $this->visitor( true )->empty_price_html( 'WooCommerce', $this->product() ) );
+	}
+
+	/**
+	 * Solution draft lines show the text in their price and subtotal cells.
+	 */
+	public function test_draft_lines(): void {
+		$display = $this->visitor( true );
+
+		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $display->cart_item_price( '€0.00', array( 'data' => $this->product( '' ) ) ) );
+		$this->assertSame( '€1,680.00', $display->cart_item_price( '€1,680.00', array( 'data' => $this->product() ) ) );
+		$this->assertSame( '€1.00', $display->cart_item_price( '€1.00', array() ) );
+	}
+
+	/**
+	 * A guest's draft subtotal says that prices come with logging in, as plain text; a customer's stays.
+	 */
+	public function test_draft_subtotal(): void {
+		$display = new PriceDisplay( new CommerceState() );
+
+		$this->assertSame( '<span class="linker-price-note">Log in for prices</span>', $display->cart_subtotal( '€0.00' ) );
+		$this->logged_in = true;
+		$this->assertSame( '€3,360.00', $display->cart_subtotal( '€3,360.00' ) );
+	}
+
+	/**
+	 * Inquiry lines remember why they had no price; staff see the missing price as the line's 0, not the bookkeeping key.
+	 */
+	public function test_inquiry_lines(): void {
+		$display = $this->visitor( true );
+		$item    = Mockery::mock( WC_Order_Item_Product::class );
+		$item->expects( 'add_meta_data' )->with( PriceDisplay::ITEM_REASON_META, 'unpriced', true );
+		$display->remember_line_reason( $item, 'key', array( 'data' => $this->product( '' ) ) );
+
+		$unpriced = Mockery::mock( WC_Order_Item_Product::class );
+		$unpriced->allows( 'get_meta' )->with( PriceDisplay::ITEM_REASON_META )->andReturn( 'unpriced' );
+		$unpriced->allows( 'get_total' )->andReturn( '0' );
+		$priced = Mockery::mock( WC_Order_Item_Product::class );
+		$priced->allows( 'get_meta' )->with( PriceDisplay::ITEM_REASON_META )->andReturn( 'unpriced' );
+		$priced->allows( 'get_total' )->andReturn( '680' );
+
+		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $display->order_line_subtotal( '€0.00', $unpriced ) );
+		$this->assertSame( '€680.00', $display->order_line_subtotal( '€680.00', $priced ) );
+
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_items' )->andReturn( array( $priced, $unpriced ) );
+		$this->assertTrue( $display->has_unpriced_lines( $order ) );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_items' )->andReturn( array( $priced ) );
+		$this->assertFalse( $display->has_unpriced_lines( $order ) );
+
+		$this->assertSame( array( '_reduced_stock', PriceDisplay::ITEM_REASON_META ), $display->hidden_item_meta( array( '_reduced_stock' ) ) );
+	}
+}

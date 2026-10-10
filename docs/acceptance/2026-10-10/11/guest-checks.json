@@ -1,0 +1,49 @@
+{
+  "what": "Guest scan the 2026-10-10 review required: the emailed confirmation link (order key) opened by a NOT-logged-in browser, EN and DE, both viewports. Earlier replays ran logged in, so this state was never scanned (review comment on PR #50, item 1).",
+  "when": "2026-10-10T08:08-08:09Z",
+  "instance": "t11 (http://127.0.0.1:8909, worktree 373cc7a, plugins symlinked)",
+  "links": {
+    "en": "http://127.0.0.1:8909/proforma-request/inquiry-received/7065/?key=wc_order_oqoHJTwhQrBpq",
+    "de": "http://127.0.0.1:8909/de/proforma-anfrage/inquiry-received/7067/?key=wc_order_yWy7ixlwPX7Kh"
+  },
+  "pages": [
+    {
+      "shot": "confirmation-1440-en-guest.png",
+      "url": "http://127.0.0.1:8909/proforma-request/inquiry-received/7065/?key=wc_order_oqoHJTwhQrBpq",
+      "title": "Inquiry received – Linker",
+      "lang": "en",
+      "logged_in": false,
+      "body_text": "Proforma request / Thank you. Your inquiry has been received. / Please log in to your account to view this inquiry. / Username or email * / Password * / Remember me / Log in / Lost your password?",
+      "banned_words_whole_page": [],
+      "expected_strings": ["Thank you. Your inquiry has been received.", "Please log in to your account to view this inquiry."]
+    },
+    {
+      "shot": "confirmation-390-en-guest.png",
+      "url": "http://127.0.0.1:8909/proforma-request/inquiry-received/7065/?key=wc_order_oqoHJTwhQrBpq",
+      "title": "Inquiry received – Linker",
+      "lang": "en",
+      "logged_in": false,
+      "same_text_as": "confirmation-1440-en-guest.png"
+    },
+    {
+      "shot": "confirmation-1440-de-guest.png",
+      "url": "http://127.0.0.1:8909/de/proforma-anfrage/inquiry-received/7067/?key=wc_order_yWy7ixlwPX7Kh",
+      "title": "Anfrage eingegangen – Linker",
+      "lang": "de",
+      "logged_in": false,
+      "body_text": "Proforma-Anfrage / Vielen Dank. Ihre Anfrage ist eingegangen. / Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen. / Benutzername oder E-Mail-Adresse * / Passwort * / Angemeldet bleiben / Anmelden / Passwort vergessen?",
+      "banned_words_whole_page": [],
+      "expected_strings": ["Vielen Dank. Ihre Anfrage ist eingegangen.", "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen."]
+    },
+    {
+      "shot": "confirmation-390-de-guest.png",
+      "url": "http://127.0.0.1:8909/de/proforma-anfrage/inquiry-received/7067/?key=wc_order_yWy7ixlwPX7Kh",
+      "title": "Anfrage eingegangen – Linker",
+      "lang": "de",
+      "logged_in": false,
+      "same_text_as": "confirmation-1440-de-guest.png"
+    }
+  ],
+  "banned_list": ["order", "Bestellung", "checkout", "payment", "shipping", "Versand", "Kasse", "Bezahlen", "Warenkorb"],
+  "verdict": "clean: the login notice names the inquiry in both languages (Terms.php + de_DE_formal .mo of 373cc7a); no banned word appears anywhere on the page."
+}

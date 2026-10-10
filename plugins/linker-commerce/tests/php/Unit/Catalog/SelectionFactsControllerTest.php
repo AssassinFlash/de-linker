@@ -12,7 +12,6 @@ namespace Linker\Commerce\Tests\Unit\Catalog;
 use Linker\Commerce\Catalog\SelectionFactSet;
 use Linker\Commerce\Catalog\SelectionFactsController;
 use Linker\Commerce\Tests\Support\MocksProducts;
-use LogicException;
 use Mockery;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -152,14 +151,10 @@ final class SelectionFactsControllerTest extends TestCase {
 	 *
 	 * @param int[] $ids Product IDs.
 	 * @return WP_REST_Request<array<string, mixed>>
-	 * @throws LogicException When the mock is not a WP_REST_Request.
 	 */
 	private static function request( array $ids ): WP_REST_Request {
 		$request = Mockery::mock( WP_REST_Request::class );
 		$request->allows( 'get_param' )->with( 'ids' )->andReturns( $ids );
-		if ( ! $request instanceof WP_REST_Request ) {
-			throw new LogicException( 'Mockery did not extend WP_REST_Request.' );
-		}
 
 		return $request;
 	}

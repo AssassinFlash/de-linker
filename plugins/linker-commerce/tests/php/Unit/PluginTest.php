@@ -27,8 +27,9 @@ final class PluginTest extends TestCase {
 	private const FILE = '/srv/www/wp-content/plugins/linker-commerce/linker-commerce.php';
 
 	/**
-	 * The plugin hooks text domain loading, both Abilities API registration
-	 * points, both REST routes and the figure meta box.
+	 * The plugin hooks text domain loading (first thing on init), both Abilities
+	 * API registration points, both REST routes, the figure meta box and the
+	 * inquiry chain (once all plugins are loaded).
 	 */
 	public function test_register_adds_the_hooks(): void {
 		$abilities       = new Registrar( self::FILE );
@@ -37,10 +38,11 @@ final class PluginTest extends TestCase {
 		$figures         = new FiguresMetaBox();
 		$plugin          = new Plugin( self::FILE, $abilities, $selection_facts, $engineering, $figures );
 
-		WP_Mock::expectActionAdded( 'init', array( $plugin, 'load_textdomain' ) );
+		WP_Mock::expectActionAdded( 'init', array( $plugin, 'load_textdomain' ), 0 );
 		WP_Mock::expectActionAdded( 'wp_abilities_api_categories_init', array( $abilities, 'register_category' ) );
 		WP_Mock::expectActionAdded( 'wp_abilities_api_init', array( $abilities, 'register_abilities' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $selection_facts, 'register_routes' ) );
+		WP_Mock::expectActionAdded( 'plugins_loaded', array( $plugin, 'register_commerce' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $engineering, 'register_routes' ) );
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $figures, 'register' ) );
 		WP_Mock::expectActionAdded( 'save_post_product', array( $figures, 'save' ) );
@@ -49,6 +51,16 @@ final class PluginTest extends TestCase {
 		$plugin->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Without WooCommerce the inquiry chain adds nothing (WP_Mock's strict mode would fail on any hook).
+	 * The full chain is wired against a real WooCommerce in tests/php/Integration.
+	 */
+	public function test_register_commerce_needs_woocommerce(): void {
+		( new Plugin( self::FILE, new Registrar( self::FILE ), new SelectionFactsController(), new EngineeringFeedController(), new FiguresMetaBox() ) )->register_commerce();
+
+		$this->assertFalse( class_exists( 'WooCommerce' ) );
 	}
 
 	/**

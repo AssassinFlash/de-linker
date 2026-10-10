@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!--
+	Integration tests: the plugin inside a real WordPress with WooCommerce, a
+	local instance of `just up` (docs/specs/5-local-stack.md) whose
+	plugins/linker-commerce is this checkout. LINKER_WP_ROOT names the
+	instance's WordPress directory; `just test` runs this suite when it is set.
+	The tests write customers, products and inquiries into that instance and
+	remove them again; they never reach the live site (the instance's
+	isolation mu-plugin keeps mail and HTTP local).
+-->
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="tests/php/integration-bootstrap.php"
+	colors="true"
+	failOnRisky="true"
+	failOnWarning="true"
+	convertDeprecationsToExceptions="false"
+	convertNoticesToExceptions="false"
+>
+	<php>
+		<!-- dompdf renders a Proforma in memory; PHP's 128M default fatals there
+			(the phpstan memory note of the root justfile is the same measure). -->
+		<ini name="memory_limit" value="2048M"/>
+		<env name="LINKER_INTEGRATION" value="1"/>
+	</php>
+	<testsuites>
+		<testsuite name="integration">
+			<directory>tests/php/Integration</directory>
+			<!-- In-process tests only: SelectionFactsRestTest is a WP_Mock test of
+				HTTP requests to LINKER_COMMERCE_TEST_SITE and runs in the unit suite. -->
+			<exclude>tests/php/Integration/SelectionFactsRestTest.php</exclude>
+		</testsuite>
+	</testsuites>
+</phpunit>

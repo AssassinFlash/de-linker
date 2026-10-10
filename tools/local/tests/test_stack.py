@@ -272,6 +272,10 @@ def test_a_form_mails_into_the_instance_instead_of_sending(
 
 def test_mail_that_cannot_be_written_is_reported_as_failed(stack: Stack) -> None:
     a = stack.instance("pytesta")
+    # The isolation layer's own failure reporting; the mail queue of
+    # plugins/linker-commerce (#11) deliberately answers wp_mail() true for a
+    # send it has queued for retry, so it steps aside for this check.
+    stack.wp(a.name, "plugin", "deactivate", "linker-commerce")
     a.mail_dir.chmod(0o500)
     try:
         sent = stack.wp(
@@ -279,6 +283,7 @@ def test_mail_that_cannot_be_written_is_reported_as_failed(stack: Stack) -> None
         )
     finally:
         a.mail_dir.chmod(0o755)
+        stack.wp(a.name, "plugin", "activate", "linker-commerce")
 
     assert sent == "false"
 
