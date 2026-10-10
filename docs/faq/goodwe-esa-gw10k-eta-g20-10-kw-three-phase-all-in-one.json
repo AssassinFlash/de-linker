@@ -1,0 +1,51 @@
+{
+  "id": 3556,
+  "slug": "goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one",
+  "sku": "DLK-GOODWE-GW10KETAG20",
+  "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+  "model": "GW10K-ETA-G20",
+  "items": [
+    {
+      "question": "How many BAT-D modules can one GW10K-ETA-G20 column take?",
+      "answer": "A single column can stack up to 6 batteries. For floor installation, up to 4 batteries can be stacked away from the wall and up to 6 batteries can be stacked against the wall.",
+      "question_de": "Wie viele BAT-D-Module passen in eine GW10K-ETA-G20-Säule?",
+      "answer_de": "Pro Reihe können maximal 6 Batterien gestapelt werden. Bei der Bodenmontage ist eine Stapelung von maximal 4 Batterien von der Wand entfernt möglich; an der Wand ist eine Stapelung von maximal 6 Batterien möglich.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 80,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    },
+    {
+      "question": "What backup load can the GW10K-ETA-G20 design support?",
+      "answer": "The manual lists the GW10K-ETA-G20 in the BACK-UP port off-grid load capacity table. For a single inductive load the rated power is 1.1 kVA single-phase and 3.3 kVA three-phase; for multiple inductive loads the total rated power is 0.4*Pn/3 single-phase and 0.4*Pn three-phase. Capacitive load is 0.33*Pn/3 single-phase and 0.33*Pn three-phase, and the half-wave load is 2 kW.",
+      "question_de": "Welche Notstromlast trägt die Auslegung mit GW10K-ETA-G20?",
+      "answer_de": "Das Handbuch führt den GW10K-ETA-G20 in der Tabelle zur Off-Grid-Lastkapazität des BACK-UP-Anschlusses. Für eine einzelne induktive Last beträgt die Nennleistung 1,1 kVA einphasig und 3,3 kVA dreiphasig; für mehrere induktive Lasten beträgt die gesamte Nennleistung 0,4*Pn/3 einphasig und 0,4*Pn dreiphasig. Die kapazitive Last beträgt 0,33*Pn/3 einphasig und 0,33*Pn dreiphasig, die Halbwellenlast 2 kW.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 29,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    },
+    {
+      "question": "Which meter and CT arrangement must be planned for this inverter?",
+      "answer": "The inverter has a built-in meter; use the CT provided with the inverter, CT ratio 120A:40mA. If the built-in meter does not meet the usage requirements, a GMK330 or GM330 Smart Meter can be purchased from a dealer. GMK330: CT is not replaceable, CT ratio 120A:40mA. GM330: the CT can be purchased from GoodWe or separately, CT ratio requirement nA/5A, where nA is the CT primary input current with n from 200 to 5000 and 5A is the CT secondary output current. If more than 2 inverters are paralleled, or the wire diameter or measuring range of the standard CT does not meet the total current requirements of the on-site parallel system, use the GM330 Smart Meter.",
+      "question_de": "Welche Zähler- und Stromwandleranordnung ist für diesen Wechselrichter einzuplanen?",
+      "answer_de": "Der Wechselrichter hat einen integrierten Zähler; verwenden Sie den mitgelieferten CT zum Anschluss an den Wechselrichter, CT-Übersetzungsverhältnis 120A:40mA. Wenn der integrierte Zähler des Wechselrichters für den Einsatz nicht ausreicht, können Sie über den Händler den intelligenten Zähler GMK330 oder GM330 erwerben. GMK330: CT nicht austauschbar, CT-Übersetzungsverhältnis 120A:40mA. GM330: Der CT kann von GoodWe oder selbst gekauft werden, erforderliches CT-Übersetzungsverhältnis nA/5A, dabei ist nA der Primärstrom des CT mit n-Bereich 200-5000 und 5A der Sekundärstrom des CT. Wenn die Anzahl der parallel geschalteten Wechselrichter 2 übersteigt oder der Leiterquerschnitt oder Messbereich des Standard-CTs die Anforderungen an den gesamten Parallelstrom vor Ort nicht erfüllt, verwenden Sie den intelligenten Zähler GM330.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 35,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

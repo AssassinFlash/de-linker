@@ -1,0 +1,65 @@
+{
+  "id": 3581,
+  "slug": "ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2",
+  "sku": "DLK-ECOFLOW-EFBD5S2",
+  "title": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+  "model": "EF BD-5-S2",
+  "items": [
+    {
+      "question": "How many EF BD-5-S2 modules fit one floor or wall tower?",
+      "answer": "Floor-standing: a stack of maximum 6 batteries. Wall mounting: a stack of maximum 3 batteries.",
+      "question_de": "Wie viele EF BD-5-S2-Module passen in einen Boden- oder Wandturm?",
+      "answer_de": "Bodenstehend: ein Stapel von maximal 6 Batterien. Wandmontage: ein Stapel von maximal 3 Batterien.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+        "page": 64,
+        "title": "OCEAN 2 LFP Battery 5 kWh user manual V1.0 (EN, DE, FR, IT, ES, NL, SV)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Can an existing EF BD-5.1-S1 tower be extended with EF BD-5-S2?",
+      "answer": "The battery system supports hybrid use of old and new batteries.",
+      "question_de": "Kann ich einen vorhandenen EF-BD-5.1-S1-Turm mit EF BD-5-S2 erweitern?",
+      "answer_de": "Das Batteriesystem unterstützt den hybriden Einsatz von alten und neuen Batterien.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+        "page": 20,
+        "title": "OCEAN 2 LFP Battery 5 kWh user manual V1.0 (EN, DE, FR, IT, ES, NL, SV)"
+      },
+      "status": "reject",
+      "review": "reject",
+      "reason": "Question asks about extending an EF BD-5.1-S1 tower with EF BD-5-S2, but the cited passage only states generic hybrid use of old and new batteries; it does not confirm compatibility of these specific models, so the answer overreaches the citation."
+    },
+    {
+      "question": "What should I record when planning an older tower extension?",
+      "answer": "The battery system supports hybrid use of old and new batteries. The battery system supports isolation of failed battery modules to ensure that the energy storage system can still operate normally.",
+      "question_de": "Welche Angaben halte ich bei der Planung einer Erweiterung des alten Turms fest?",
+      "answer_de": "Das Batteriesystem unterstützt den hybriden Einsatz von alten und neuen Batterien. Das Batteriesystem unterstützt die Isolierung von ausgefallenen Batteriemodulen, um sicherzustellen, dass das Energiespeichersystem weiterhin normal arbeiten kann.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+        "page": 20,
+        "title": "OCEAN 2 LFP Battery 5 kWh user manual V1.0 (EN, DE, FR, IT, ES, NL, SV)"
+      },
+      "status": "reject",
+      "review": "reject",
+      "reason": "Question asks what data to record when planning an older tower extension, but the answer merely repeats generic scalability boilerplate (hybrid use, failed-module isolation) and never names any data to record; it is not an answer to the question."
+    },
+    {
+      "question": "What warranty applies to the EF BD-5-S2?",
+      "answer": "",
+      "question_de": "Welche Garantie gilt für das EF BD-5-S2?",
+      "answer_de": "",
+      "citation": {
+        "url": "",
+        "page": 0,
+        "title": ""
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "The retrieved passages do not contain any warranty information for the EF BD-5-S2."
+    }
+  ]
+}

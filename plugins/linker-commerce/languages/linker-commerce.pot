@@ -1250,6 +1250,32 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
+#: includes/Admin/FaqsMetaBox.php:42
+msgid "FAQ"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:58
+msgid ""
+"Each answer needs the document and the page it is printed on. A row without "
+"a question is dropped."
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:60
+msgid "Question"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:61
+msgid "Answer"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:62
+msgid "Question (German)"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:63
+msgid "Answer (German)"
+msgstr ""
+
 #: includes/Admin/FiguresMetaBox.php:48
 msgid "Figures and citations"
 msgstr ""
@@ -1371,4 +1397,20 @@ msgstr ""
 
 #: includes/Catalog/SelectionFactSet.php:120
 msgid "Rated AC power the product data states in kVA; present only then."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Product questions"
+msgstr ""
+
+#. translators: 1: document title, 2: page number.
+#: includes/Presentation/Shortcodes.php
+#, php-format
+msgid "%1$s, p. %2$d"
+msgstr ""
+
+#. translators: %d: page number.
+#: includes/Presentation/Shortcodes.php
+#, php-format
+msgid "p. %d"
 msgstr ""

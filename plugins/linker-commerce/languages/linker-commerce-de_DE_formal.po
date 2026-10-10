@@ -1358,6 +1358,28 @@ msgstr[1] ""
 "WooCommerce → Status → Logs (linker-mail); jede Nachricht bleibt unter ihrer "
 "Beitrags-ID in der Warteschlange."
 
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid ""
+"Each answer needs the document and the page it is printed on. A row without "
+"a question is dropped."
+msgstr ""
+"Jede Antwort braucht das Dokument und die Seite, auf der sie steht. Eine "
+"Zeile ohne Frage wird verworfen."
+
+msgid "Question"
+msgstr "Frage"
+
+msgid "Answer"
+msgstr "Antwort"
+
+msgid "Question (German)"
+msgstr "Frage (Deutsch)"
+
+msgid "Answer (German)"
+msgstr "Antwort (Deutsch)"
+
 msgid "Figures and citations"
 msgstr "Kenndaten und Quellenangaben"
 
@@ -1723,3 +1745,16 @@ msgstr ""
 #: includes/Presentation/LoginGate.php
 msgid "Sign in or register"
 msgstr "Anmelden oder registrieren"
+
+msgid "Product questions"
+msgstr "Produktfragen"
+
+#. translators: 1: document title, 2: page number.
+#, php-format
+msgid "%1$s, p. %2$d"
+msgstr "%1$s, S. %2$d"
+
+#. translators: %d: page number.
+#, php-format
+msgid "p. %d"
+msgstr "S. %d"

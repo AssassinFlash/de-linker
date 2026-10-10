@@ -1,0 +1,23 @@
+{
+  "id": 2003,
+  "slug": "pylontech-optim-us-l260-omni",
+  "sku": "DLK-PYLONTECH-OPTIMUSL260OMNI",
+  "title": "Pylontech OPTIM US L260-OMNI",
+  "model": "L260-OMNI",
+  "items": [
+    {
+      "question": "What are the physical dimensions and weight of the L260-OMNI station?",
+      "answer": "Dimensions (W*D*H) are 950*1300*2480 mm, without inverter. Weight is 2.9 tons.",
+      "question_de": "Welche Abmessungen und welches Gewicht hat die L260-OMNI-Station?",
+      "answer_de": "Die Abmessungen (B*T*H) betragen 950*1300*2480 mm, ohne Wechselrichter. Das Gewicht beträgt 2,9 Tonnen.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/07/optim_us_l260_omni.pdf",
+        "page": 2,
+        "title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet (dimensions without inverter) (EN)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    }
+  ]
+}

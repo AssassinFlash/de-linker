@@ -1,0 +1,51 @@
+{
+  "id": 2063,
+  "slug": "saj-h2-15k-t3",
+  "sku": "DLK-SAJ-H215KT3",
+  "title": "SAJ H2-15K-T3",
+  "model": "H2-15K-T3",
+  "items": [
+    {
+      "question": "What does the H2-15K-T3 package contain?",
+      "answer": "The packaging list includes the H2 inverter, a hexagon Philips bolt group M5*12 screw (5 pieces), PV connectors T3*6 (2 pieces) and T2*4 (2 pieces), pluggable terminal blocks (2-pin x2, 3-pin x1, 6-pin x1), a waterproof communication terminal cover, a mounting bracket, positive battery connectors (2 pieces), negative battery connectors (2 pieces), an AC terminal, an M6*50 screw suite (4 pieces), an eSolar AIO3, a waterproof AC terminal cover, a smart meter, current transformers (3 pieces), a meter COMM cable (10 m), documents, and RJ45 plugs (10 pieces). The documents include the user manual, quick installation guide, warranty card and packaging list.",
+      "question_de": "Was gehört zum Lieferumfang des H2-15K-T3?",
+      "answer_de": "Die Verpackungsliste enthält den H2-Wechselrichter, eine Sechskant-Philips-Bolzengruppe M5 x 12 (5 Schrauben), PV-Steckverbinder T3*6 (2 Stück) und T2*4 (2 Stück), steckbare Klemmleisten (2-polig x2, 3-polig x1, 6-polig x1), eine wasserdichte Abdeckung für Kommunikationsklemmen, einen Befestigungswinkel, Plus-Akku-Steckverbindungen (2 Stück), Minus-Akku-Steckverbindungen (2 Stück), eine AC-Klemme, einen M6 x 50 Schraubensatz (4 Stück), ein eSolar AIO3, eine wasserdichte AC-Klemmenabdeckung, eine intelligente Messuhr, Stromwandler (3 Stück), ein Messuhr-COMM-Kabel (10 m), Dokumente und RJ45-Stecker (10 Stück). Zu den Dokumenten gehören das Handbuch, die Kurzanleitung zur Installation, die Garantiekarte und die Verpackungsliste.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+        "page": 36,
+        "title": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Which circuit breaker and AC cable does the H2-15K-T3 need?",
+      "answer": "For the H2-(10K-20K)-(T2,T3) the recommended breaker specification is 50 A. Do not connect multiple inverters to one AC circuit breaker. The AC cable cross-sectional area range is 10 - 16 mm², recommended 16 mm². The additional grounding cable cross-sectional area is 8 mm².",
+      "question_de": "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-15K-T3?",
+      "answer_de": "Für den H2-(10K-20K)-(T2,T3) beträgt die empfohlene Schalter-Spezifikation 50 A. Schließen Sie nicht mehrere Wechselrichter an einen AC-Schutzschalter an. Der Kabel-Querschnittsbereich für AC beträgt 10 - 16 mm², empfohlen 16 mm². Die zusätzliche Querschnittsfläche des Erdungskabels beträgt 8 mm².",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+        "page": 43,
+        "title": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    },
+    {
+      "question": "Which battery connection does the H2-15K-T3 have?",
+      "answer": "The battery connection is a quick connector. The battery type is LiFePO4, the battery voltage range is 180～800 V, the maximum charging/discharging current is 50/50 A, and the number of battery connections is 2.",
+      "question_de": "Welchen Batterieanschluss hat der H2-15K-T3?",
+      "answer_de": "Der Akku-Anschluss ist eine Schnellsteckverbindung. Der Akkutyp ist LiFePO4, der Akku-Spannungsbereich beträgt 180～800 V, der maximale Lade-/Entladestrom beträgt 50/50 A und die Anzahl der BAT beträgt 2.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+        "page": 37,
+        "title": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": 6522,
+  "slug": "goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh",
+  "sku": "DLK-GOODWE-GW83BATDG21",
+  "title": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+  "model": "GW8.3-BAT-D-G21",
+  "items": [
+    {
+      "question": "Does GW8.3-BAT-D-G21 include heating?",
+      "answer": "No. The datasheet lists the GW8.3-BAT-D-G21 with aerosol fire extinguishing (integrated) only; heating is not listed for this model. Heating is optional on the GW8.3-BAT-D-G20.",
+      "question_de": "Hat GW8.3-BAT-D-G21 eine Heizung?",
+      "answer_de": "Nein. Im Datenblatt ist für GW8.3-BAT-D-G21 nur die Aerosol-Brandlöschung (integriert) aufgeführt; eine Heizung ist für dieses Modell nicht genannt. Beim GW8.3-BAT-D-G20 ist die Heizung optional.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "page": 3,
+        "title": "GoodWe ESA Series 5–30 kW datasheet (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many modules in one column?",
+      "answer": "A single column can stack up to 6 batteries. For single-column stacked installations, the maximum number of parallel units is 6.",
+      "question_de": "Wie viele Module in einer Säule?",
+      "answer_de": "Eine einzelne Säule kann bis zu 6 Batterien aufnehmen. Für gestapelte Installationen in einer Säule beträgt die maximale Anzahl paralleler Einheiten 6.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 80,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

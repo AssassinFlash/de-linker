@@ -1,0 +1,51 @@
+{
+  "id": 4105,
+  "slug": "saj-cb2-85-9-hv5",
+  "sku": "DLK-SAJ-CB2859HV5",
+  "title": "SAJ CB2-85.9-HV5 (85.9 kWh C&amp;I battery cabinet)",
+  "model": "CB2-85.9-HV5",
+  "items": [
+    {
+      "question": "Which inverters work with the CB2-85.9-HV5?",
+      "answer": "The CB2 battery system can only be used as a set with SAJ's CH2 high voltage series storage inverter. The CB2 battery systems support integration with SAJ CH2 series inverters to work as a commercial & industrial (C&I) energy storage system (ESS).",
+      "question_de": "Welche Wechselrichter arbeiten mit dem CB2-85.9-HV5?",
+      "answer_de": "Das CB2-Batteriesystem kann nur als Set mit dem SAJ CH2 Hochvolt-Speicherwechselrichter verwendet werden. Die CB2-Batteriesysteme unterstützen die Integration mit Wechselrichtern der SAJ CH2-Serie für den Betrieb als gewerbliches und industrielles (C&I) Energiespeichersystem (ESS).",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+        "page": 5,
+        "title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "What are the dimensions and the weight of the cabinet?",
+      "answer": "The cabinet dimensions are 1980 mm (H) x 988 mm (W) x 1065 mm (D). The weight is 1255 kg for the 85.9 kWh model.",
+      "question_de": "Welche Abmessungen und welches Gewicht hat der Schrank?",
+      "answer_de": "Die Abmessungen des Schranks betragen 1980 mm (H) x 988 mm (B) x 1065 mm (T). Das Gewicht beträgt 1255 kg für das Modell mit 85,9 kWh.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+        "page": 2,
+        "title": "SAJ CHS2 30-50K datasheet with the CB2 battery table, English (covers the CB2-100.3-HV5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Can storage be added to an existing CB2 system later?",
+      "answer": "One CH2 inverter can be integrated with four CB2 battery systems at maximum. All the CB2 systems are required to have the same rated energy.",
+      "question_de": "Lässt sich ein bestehendes CB2-System später erweitern?",
+      "answer_de": "Ein CH2-Wechselrichter kann mit maximal vier CB2-Batteriesystemen integriert werden. Alle CB2-Systeme müssen die gleiche Nennenergie aufweisen.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+        "page": 8,
+        "title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5)"
+      },
+      "status": "reject",
+      "review": "reject",
+      "reason": "Question asks about adding storage later; answer instead states the four-system maximum and equal rated energy rule, which does not answer expandability and is a mismatched, interchangeable statement."
+    }
+  ]
+}

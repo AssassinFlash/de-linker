@@ -1,0 +1,51 @@
+{
+  "id": 6512,
+  "slug": "goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module",
+  "sku": "DLK-GOODWE-GW5KETAG20",
+  "title": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+  "model": "GW5K-ETA-G20",
+  "items": [
+    {
+      "question": "What backup rating does GW5K-ETA-G20 have?",
+      "answer": "The AC side backup port of the GW5K-ETA-G20 has a rated apparent power of 5 kVA.",
+      "question_de": "Welche Notstromwerte hat der GW5K-ETA-G20?",
+      "answer_de": "Die AC-seitige Notstromschnittstelle des GW5K-ETA-G20 hat eine Nennscheinleistung von 5 kVA.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "page": 2,
+        "title": "GoodWe ESA Series 5–30 kW datasheet (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many MPPTs does GW5K-ETA-G20 have?",
+      "answer": "The GW5K-ETA-G20 has 3 MPPTs.",
+      "question_de": "Wie viele MPPTs hat der GW5K-ETA-G20?",
+      "answer_de": "Der GW5K-ETA-G20 hat 3 MPPTs.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 281,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Which battery modules stack with this power module?",
+      "answer": "The battery modules that stack with this power module are GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20, and GW9.0-BAT-D-G20. Battery modules of different models can be mixed.",
+      "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?",
+      "answer_de": "Die Batteriemodule, die mit diesem Leistungsmodul gestapelt werden, sind GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20. Batteriemodule verschiedener Modelle können gemischt werden.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 45,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "reject",
+      "review": "reject",
+      "reason": "The cited passage (page 45) lists the battery models and the mixing statement, but the answer's framing 'battery modules that stack with this power module' is not carried by the citation; the stacking limits and conditions (page 98) are omitted, and the claim is a generic list applicable to the whole ESA series rather than specific to GW5K-ETA-G20."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": 4109,
+  "slug": "saj-hs2-5k-t2-x",
+  "sku": "DLK-SAJ-HS25KT2X",
+  "title": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+  "model": "HS2-5K-T2-X",
+  "items": [
+    {
+      "question": "Which battery modules does the HS2-5K-T2-X take, and how many?",
+      "answer": "The HS2-5K-T2-X uses BU2-5.0-HV1/5 battery modules (1P32S, 102.4 V, 50 Ah). The number of modules ranges from 2 to 5.",
+      "question_de": "Welche Batteriemodule passen zum HS2-5K-T2-X, und wie viele?",
+      "answer_de": "Der HS2-5K-T2-X verwendet BU2-5.0-HV1/5-Batteriemodule (1P32S, 102,4 V, 50 Ah). Die Anzahl der Module reicht von 2 bis 5.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+        "page": 13,
+        "title": "SAJ HS2/AS2 user manual V0.3, HS2-5K to HS2-10K-T2 (DE)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "What does the backup output of the HS2-5K-T2-X deliver when the grid fails?",
+      "answer": "The backup output of the HS2-5K-T2-X delivers a maximum output power of 5000 VA and a maximum output current of 8.0 A. The peak output apparent power is 10000 VA for 60 s.",
+      "question_de": "Was liefert der Notstromausgang des HS2-5K-T2-X bei Netzausfall?",
+      "answer_de": "Der Notstromausgang des HS2-5K-T2-X liefert eine maximale Ausgangsleistung von 5000 VA und einen maximalen Ausgangsstrom von 8,0 A. Die Spitzenausgangsscheinleistung beträgt 10000 VA für 60 s.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+        "page": 12,
+        "title": "SAJ HS2/AS2 user manual V0.3, HS2-5K to HS2-10K-T2 (DE)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    },
+    {
+      "question": "What does the AC side of the HS2-5K-T2-X need at installation?",
+      "answer": "For safety and compliance, install a 63 A air circuit breaker or higher between the grid and the inverter. Do not connect multiple inverters to one AC circuit breaker in parallel operation.",
+      "question_de": "Was braucht die AC-Seite des HS2-5K-T2-X bei der Installation?",
+      "answer_de": "Installieren Sie aus Sicherheitsgründen und zur Einhaltung der Vorschriften einen 63-A-Luftleistungsschalter oder höher zwischen dem Netz und dem Wechselrichter. Schließen Sie in einem Parallelbetrieb NICHT mehrere Wechselrichter an einen Wechselstrom-Leistungsschalter an.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+        "page": 25,
+        "title": "SAJ HS2/AS2 user manual V0.3, HS2-5K to HS2-10K-T2 (DE)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    }
+  ]
+}

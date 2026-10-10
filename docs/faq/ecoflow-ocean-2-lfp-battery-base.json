@@ -1,0 +1,37 @@
+{
+  "id": 3608,
+  "slug": "ecoflow-ocean-2-lfp-battery-base",
+  "sku": "DLK-ECOFLOW-OCEAN2-BASE",
+  "title": "EcoFlow OCEAN 2 LFP Battery Base",
+  "model": "OCEAN 2 LFP Battery Base",
+  "items": [
+    {
+      "question": "How many OCEAN 2 floor bases does one battery tower use?",
+      "answer": "One battery tower uses one battery base. The installation guide lists the battery base as C1 ×1.",
+      "question_de": "Wie viele OCEAN-2-Bodensockel braucht ein Batterieturm?",
+      "answer_de": "Ein Batterieturm verwendet einen Batteriesockel. Die Installationsanleitung führt den Batteriesockel als C1 ×1 auf.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-installation-guide-v1-5.pdf",
+        "page": 11,
+        "title": "OCEAN 2 three-phase installation guide V1.5 (EN, DE, FR, IT, ES, NL, SV)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Can this floor base be used for a wall-mounted tower?",
+      "answer": "No. For wall-mounted installation, use the EcoFlow Wall-Mounted Battery Base, which is sold separately and supports stacking of up to three batteries. The floor-mounted method is separate.",
+      "question_de": "Kann dieser Bodensockel für einen Wandturm verwendet werden?",
+      "answer_de": "Nein. Für die Wandmontage verwenden Sie den EcoFlow Wand-Batteriesockel, der separat erhältlich ist und das Stapeln von bis zu drei Batterien unterstützt. Die Bodenmontage ist eine separate Methode.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-installation-guide-v1-5.pdf",
+        "page": 17,
+        "title": "OCEAN 2 three-phase installation guide V1.5 (EN, DE, FR, IT, ES, NL, SV)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

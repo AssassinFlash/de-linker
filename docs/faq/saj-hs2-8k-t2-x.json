@@ -1,0 +1,51 @@
+{
+  "id": 1184,
+  "slug": "saj-hs2-8k-t2-x",
+  "sku": "DLK-SAJ-HS28KT2X",
+  "title": "SAJ HS2-8K-T2-X",
+  "model": "HS2-8K-T2-X",
+  "items": [
+    {
+      "question": "Which battery modules does the HS2-8K-T2-X take, and how many?",
+      "answer": "The HS2-8K-T2-X uses BU2-5.0-HV1/5 battery modules (1P32S, 102.4 V, 50 Ah), up to 5 modules.",
+      "question_de": "Welche Batteriemodule passen zum HS2-8K-T2-X, und wie viele?",
+      "answer_de": "Der HS2-8K-T2-X verwendet Batteriemodule BU2-5.0-HV1/5 (1P32S, 102,4 V, 50 Ah), bis zu 5 Akkumodule.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf",
+        "page": 2,
+        "title": "SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    },
+    {
+      "question": "What does the backup output of the HS2-8K-T2-X deliver when the grid fails?",
+      "answer": "The backup output of the HS2-8K-T2-X delivers a maximum output power of 8000 VA and a maximum output current of 12.8 A. Peak output apparent power is 16000 VA for 60 s.",
+      "question_de": "Was liefert der Notstromausgang des HS2-8K-T2-X bei Netzausfall?",
+      "answer_de": "Der Notstromausgang des HS2-8K-T2-X liefert eine maximale Ausgangsleistung von 8000 VA und einen maximalen Ausgangsstrom von 12,8 A. Die Spitzenausgangsleistung beträgt 16000 VA für 60 s.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf",
+        "page": 2,
+        "title": "SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    },
+    {
+      "question": "What does the AC side of the HS2-8K-T2-X need at installation?",
+      "answer": "The AC side is rated for 3L+N+PE, 220/380, 230/400, 240/415 V with a range of 180～280/312～485 V. The maximum AC over current protection is 33.3 A.",
+      "question_de": "Was braucht die AC-Seite des HS2-8K-T2-X bei der Installation?",
+      "answer_de": "Die AC-Seite ist für 3L+N+PE, 220/380, 230/400, 240/415 V mit einem Bereich von 180～280/312～485 V ausgelegt. Der maximale AC-Überstromschutz beträgt 33,3 A.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf",
+        "page": 2,
+        "title": "SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    }
+  ]
+}

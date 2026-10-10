@@ -12,13 +12,14 @@ namespace Linker\Commerce\Presentation;
 use Linker\Commerce\Account\DocumentDownload;
 use Linker\Commerce\Account\Documents;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Catalog\Faqs;
 use Linker\Commerce\Proforma\Issuer;
 use WC_Order;
 use WC_Product;
 
 /**
- * Price gating, the empty Proforma-request gate, inquiry status, PI download
- * and the account lists: each shortcode reads an existing #11 class.
+ * Price gating, the empty Proforma-request gate, inquiry status, PI download,
+ * the account lists and the product FAQ: each shortcode reads an existing class.
  */
 final class Shortcodes {
 
@@ -45,6 +46,7 @@ final class Shortcodes {
 		add_shortcode( 'linker_proforma', array( $this, 'proforma' ) );
 		add_shortcode( 'linker_saved_solutions', array( $this, 'saved_solutions' ) );
 		add_shortcode( 'linker_documents', array( $this, 'documents' ) );
+		add_shortcode( 'linker_faqs', array( $this, 'faqs' ) );
 	}
 
 	/**
@@ -137,6 +139,59 @@ final class Shortcodes {
 		ob_start();
 		$this->documents->render();
 		return (string) ob_get_clean();
+	}
+
+	/**
+	 * The current product's FAQ from `_linker_faqs` (docs/specs/15-faq.md).
+	 * German requests (Polylang `de`) use question_de / answer_de.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function faqs( $atts = array() ): string {
+		unset( $atts );
+		$product = $GLOBALS['product'] ?? null;
+		if ( ! $product instanceof WC_Product ) {
+			return '';
+		}
+		$items = Faqs::of( $product->get_id() );
+		if ( array() === $items ) {
+			return '';
+		}
+		$german = function_exists( 'pll_current_language' ) && 'de' === pll_current_language();
+		$html   = sprintf(
+			'<section class="pdp-block pdp-faqs linker-faqs" id="faq" data-faq-count="%d">',
+			count( $items )
+		);
+		$html  .= '<h2 class="pdp-section-title">' . esc_html__( 'Product questions', 'linker-commerce' ) . '</h2>';
+		foreach ( $items as $item ) {
+			$question = $german && '' !== $item['question_de'] ? $item['question_de'] : $item['question'];
+			$answer   = $german && '' !== $item['answer_de'] ? $item['answer_de'] : $item['answer'];
+			$page     = (int) $item['citation']['page'];
+			$title    = (string) ( $item['citation']['title'] ?? '' );
+			$cite     = '' !== $title
+				? sprintf(
+					/* translators: 1: document title, 2: page number. */
+					__( '%1$s, p. %2$d', 'linker-commerce' ),
+					$title,
+					$page
+				)
+				: sprintf(
+					/* translators: %d: page number. */
+					__( 'p. %d', 'linker-commerce' ),
+					$page
+				);
+			$html .= '<details class="linker-faq border-b border-neutral-200 py-3">';
+			$html .= '<summary class="cursor-pointer font-semibold text-[#15352f]">' . esc_html( $question ) . '</summary>';
+			$html .= '<div class="mt-2 leading-relaxed text-neutral-700">' . wp_kses_post( wpautop( $answer ) );
+			$html .= sprintf(
+				'<p class="mt-2 text-sm text-neutral-500"><a href="%1$s">%2$s</a></p>',
+				esc_url( $item['citation']['url'] . '#page=' . $page ),
+				esc_html( $cite )
+			);
+			$html .= '</div></details>';
+		}
+		$html .= '</section>';
+		return $html;
 	}
 
 	/**

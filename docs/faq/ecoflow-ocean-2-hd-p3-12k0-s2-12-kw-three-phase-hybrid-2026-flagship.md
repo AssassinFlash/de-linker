@@ -1,0 +1,21 @@
+# EcoFlow OCEAN 2 HD-P3-12K0-S2 (12 kW three-phase hybrid)
+
+- id: 3576
+- slug: `ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship`
+- sku: `DLK-ECOFLOW-EFHDP312K0S2`
+- model: EF HD-P3-12K0-S2
+
+## 1. Which circuits does the 12K0-S2 BACKUP output actually serve?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which circuits does the 12K0-S2 BACKUP output actually serve?
+
+The BACKUP output serves the backup loads connected to the AC-BACKUP terminal. The terminal provides L1 (LOAD-L1, a-phase line 1), L2 (LOAD-L2, b-phase line 2), L3 (LOAD-L3, c-phase line 3), N (LOAD-N, neutral wire) and P (LOAD-PE, ground wire). During a utility grid outage, the integrated bypass contactor opens and these backup loads are supplied by the battery and the PV modules connected directly to the inverter. Do not connect loads that require an uninterrupted energy supply, and do not connect loads whose total capacity is greater than the maximum Back-Up capacity.
+
+**DE Q:** Welche Stromkreise versorgt der BACKUP-Ausgang des 12K0-S2?
+
+Der BACKUP-Ausgang versorgt die an der AC-BACKUP-Klemme angeschlossenen Backup-Lasten. Die Klemme stellt L1 (LOAD-L1, Phase a, Leitung 1), L2 (LOAD-L2, Phase b, Leitung 2), L3 (LOAD-L3, Phase c, Leitung 3), N (LOAD-N, Neutralleiter) und P (LOAD-PE, Erdungsleiter) bereit. Bei einem Ausfall des Stromnetzes öffnet das integrierte Bypass-Schütz, und diese Backup-Lasten werden durch die Batterie und die direkt an den Wechselrichter angeschlossenen PV-Module versorgt. Schließen Sie keine Verbraucher an, die eine unterbrechungsfreie Energieversorgung benötigen, und schließen Sie keine Lasten an, deren Gesamtkapazität größer ist als die maximale Backup-Kapazität.
+
+**Citation:** OCEAN 2 three-phase installation guide V1.5 (EN, DE, FR, IT, ES, NL, SV) · p.28 · https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-installation-guide-v1-5.pdf

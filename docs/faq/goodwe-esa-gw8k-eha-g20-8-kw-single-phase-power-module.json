@@ -1,0 +1,51 @@
+{
+  "id": 6527,
+  "slug": "goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module",
+  "sku": "DLK-GOODWE-GW8KEHAG20",
+  "title": "GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)",
+  "model": "GW8K-EHA-G20",
+  "items": [
+    {
+      "question": "What backup rating does GW8K-EHA-G20 have?",
+      "answer": "The GW8K-EHA-G20 has a nominal backup output apparent power of 8 kVA. Its maximum backup output apparent power is 8.0 kVA for 10 seconds, and the maximum bypass output apparent power is 14.5 kVA. The maximum backup output current is 36.4 A at 220 V, 34.8 A at 230 V, and 33.4 A at 240 V.",
+      "question_de": "Welche Notstromwerte hat der GW8K-EHA-G20?",
+      "answer_de": "Der GW8K-EHA-G20 hat eine nominale Notstrom-Ausgangsscheinleistung von 8 kVA. Die maximale Notstrom-Ausgangsscheinleistung beträgt 8,0 kVA für 10 Sekunden, und die maximale Bypass-Ausgangsscheinleistung beträgt 14,5 kVA. Der maximale Notstrom-Ausgangsstrom beträgt 36,4 A bei 220 V, 34,8 A bei 230 V und 33,4 A bei 240 V.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+        "page": 281,
+        "title": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many MPPTs does GW8K-EHA-G20 have?",
+      "answer": "The GW8K-EHA-G20 has 4 MPPTs. Each MPPT has 1 string.",
+      "question_de": "Wie viele MPPTs hat der GW8K-EHA-G20?",
+      "answer_de": "Der GW8K-EHA-G20 hat 4 MPPTs. Jeder MPPT hat 1 String.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+        "page": 278,
+        "title": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Which battery modules stack with this power module?",
+      "answer": "The system supports these battery modules: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20, and GW9.0-BAT-D-G20. Battery modules of different models support mixed use. The system supports 5-108 kWh.",
+      "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?",
+      "answer_de": "Das System unterstützt diese Batteriemodule: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20. Batteriemodule verschiedener Modelle können gemischt verwendet werden. Das System unterstützt 5-108 kWh.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+        "page": 42,
+        "title": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8)"
+      },
+      "status": "reject",
+      "review": "reject",
+      "reason": "The cited p42 passage lists the six battery models and 'mixed use' and '5-108kWh', but the answer's phrasing 'Battery modules of different models support mixed use' is a near-verbatim lift and the claim 'The system supports 5-108 kWh' is stated as a system capability without the qualifier; more importantly the answer omits the cited caveat that battery heating is unavailable when these models are used together, making the answer misleading about mixed use. Also 'stack with this power module' is not directly supported—the passage describes coupling scenario, not stacking compatibility."
+    }
+  ]
+}

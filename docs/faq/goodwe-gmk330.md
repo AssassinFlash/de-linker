@@ -1,0 +1,36 @@
+# GoodWe GMK330
+
+- id: 2397
+- slug: `goodwe-gmk330`
+- sku: `DLK-GOODWE-GMK330`
+- model: GMK330
+
+## 1. Which CT version is included in this GMK330 order?
+
+**Status:** withdrawn
+**Review:** withdrawn — a number is not in the cited passage
+
+**EN Q:** Which CT version is included in this GMK330 order?
+
+The GMK330 ships with 3 current transformers. The datasheet lists 120A CTs included, and the current transformer ratio is 120A:40mA; the previous 200A:50mA version is phased out after June 2026.
+
+**DE Q:** Welche Stromwandlerversion ist in dieser GMK330-Bestellung enthalten?
+
+Der GMK330 wird mit 3 Stromwandlern geliefert. Im Datenblatt sind 120-A-Stromwandler enthalten, und das Stromwandlerverhältnis beträgt 120 A:40 mA; die frühere Version mit 200 A:50 mA wird nach Juni 2026 auslaufen.
+
+**Citation:** GoodWe GMK330 Datasheet (EMEA, EN) · p.1 · https://de-linker.com/wp-content/uploads/2026/10/GW_GMK330_Datasheet_EMEA-EN_V1.0.pdf
+
+## 2. Can these GMK330 readings be used for utility billing?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Can these GMK330 readings be used for utility billing?
+
+No. The smart meter is intended for grid-tie point power control. Its generation and consumption readings are reference only and not for billing. The utility company's meter is the sole basis for billing.
+
+**DE Q:** Dürfen die GMK330-Messwerte zur Stromabrechnung genutzt werden?
+
+Nein. Der Smart Meter ist für die Leistungsregelung am Netzanschlusspunkt vorgesehen. Seine Erzeugungs- und Verbrauchswerte dienen nur als Referenz und nicht zur Abrechnung. Der Zähler des Energieversorgers ist die alleinige Grundlage für die Abrechnung.
+
+**Citation:** GoodWe Smart Meter User Manual: GM330 / GMK330 / GMK360 (EN) · p.6 · https://de-linker.com/wp-content/uploads/2026/09/GW_Smart-Meter-EU_User-Manual-EN_V1.5.pdf

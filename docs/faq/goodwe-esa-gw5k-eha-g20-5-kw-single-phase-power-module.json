@@ -1,0 +1,51 @@
+{
+  "id": 6525,
+  "slug": "goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module",
+  "sku": "DLK-GOODWE-GW5KEHAG20",
+  "title": "GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)",
+  "model": "GW5K-EHA-G20",
+  "items": [
+    {
+      "question": "What backup rating does GW5K-EHA-G20 have?",
+      "answer": "The GW5K-EHA-G20 has a nominal output apparent power of 5.0 kVA on the backup side. Its maximum output apparent power is 5.0 kVA for 10 seconds, and the maximum output apparent power in bypass mode is 10.0 kVA. The maximum output current is 22.8 A at 220 V and 21.8 A at 230 V.",
+      "question_de": "Welche Notstromwerte hat der GW5K-EHA-G20?",
+      "answer_de": "Der GW5K-EHA-G20 hat eine nominale Ausgangsscheinleistung von 5,0 kVA auf der Notstromseite. Die maximale Ausgangsscheinleistung beträgt 5,0 kVA für 10 Sekunden, und die maximale Ausgangsscheinleistung im Bypass-Modus beträgt 10,0 kVA. Der maximale Ausgangsstrom beträgt 22,8 A bei 220 V und 21,8 A bei 230 V.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+        "page": 2,
+        "title": "GoodWe ESA Series 3–10 kW datasheet (EN, EMEA V1.1)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    },
+    {
+      "question": "How many MPPTs does GW5K-EHA-G20 have?",
+      "answer": "The GW5K-EHA-G20 has 2 MPPTs. Each MPPT has 1 string.",
+      "question_de": "Wie viele MPPTs hat der GW5K-EHA-G20?",
+      "answer_de": "Der GW5K-EHA-G20 hat 2 MPPTs. Jeder MPPT hat 1 String.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+        "page": 270,
+        "title": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage"
+    },
+    {
+      "question": "Which battery modules stack with this power module?",
+      "answer": "The following battery modules can be used with the GW5K-EHA-G20: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW6.0-BAT-D-G20, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, and GW9.0-BAT-D-G20. Battery modules of different models support mixed use.",
+      "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?",
+      "answer_de": "Folgende Batteriemodule können mit dem GW5K-EHA-G20 verwendet werden: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW6.0-BAT-D-G20, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21 und GW9.0-BAT-D-G20. Batteriemodule unterschiedlicher Modelle unterstützen den Mischbetrieb.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+        "page": 42,
+        "title": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

@@ -28,5 +28,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 	new Abilities\Registrar( __FILE__ ),
 	new Catalog\SelectionFactsController(),
 	new Catalog\EngineeringFeedController(),
-	new Admin\FiguresMetaBox()
+	new Admin\FiguresMetaBox(),
+	new Admin\FaqsMetaBox()
 ) )->register();

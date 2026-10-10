@@ -1,0 +1,51 @@
+# SAJ CHS2-50K-T6-X
+
+- id: 1961
+- slug: `saj-chs2-50k-t6-x`
+- sku: `DLK-SAJ-CHS250KT6X`
+- model: CHS2-50K-T6-X
+
+## 1. What does the X in CHS2-50K-T6-X stand for?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** What does the X in CHS2-50K-T6-X stand for?
+
+The X indicates the battery rated voltage, rated capacity, and usable energy. The value of X includes 204.8V/280Ah/51.5kWh, 256.0V/280Ah/64.4kWh, 307.2V/280Ah/77.3kWh, and 358.4V/280Ah/90.2kWh.
+
+**DE Q:** Wofür steht das X in CHS2-50K-T6-X?
+
+Das X gibt die Nennspannung, die Nennkapazität und die nutzbare Energie der Batterie an. Der Wert von X umfasst 204,8V/280Ah/51,5kWh, 256,0V/280Ah/64,4kWh, 307,2V/280Ah/77,3kWh und 358,4V/280Ah/90,2kWh.
+
+**Citation:** SAJ CHS2 29.9-50K user manual, English, V0.2 (covers the CHS2-29.9K-T4-X) · p.9 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf
+
+## 2. Which grid-connection certificate is on file for the CHS2-50K-T6-X?
+
+**Status:** withdrawn
+**Review:** withdrawn — The retrieved passages list standards (e.g., VDE4105, IEC61727/62116, VDE0126, AS4777.2, CEI 0 21, EN50549-1, G98, G99, C10-11, UNE217002, NBR16149/NBR16150, IEC62109-1/-2, NBT32004-2018, EN61000-6-1, EN61000-6-2, EN61000-6-3, EN61000-6-4) but do not state which grid-connection certificate is on file for this model.
+
+**EN Q:** Which grid-connection certificate is on file for the CHS2-50K-T6-X?
+
+_(withdrawn)_
+
+**DE Q:** Welches Netzanschluss-Zertifikat liegt für den CHS2-50K-T6-X vor?
+
+_(zurückgezogen)_
+
+**Citation:**  · p.0 · 
+
+## 3. How is the cabinet moved and secured?
+
+**Status:** withdrawn
+**Review:** withdrawn — a number is not in the cited passage
+
+**EN Q:** How is the cabinet moved and secured?
+
+Move and place the cabinet to the installation location with a forklift or crane. For a forklift, the load capacity must be greater than two tons and the fork blades must be longer than 1.2 meters. For a crane, a force greater than two tons is required and the height between the sling and the top surface must be greater than or equal to 1.5 meters. Secure the cabinet either with screw bolts or with mounting brackets. For screw bolts, drill six holes on the floor at the depth of 80-90 mm, put an M12*80 expansion tube in each hole, and tighten the M12*80 expansion bolts at the bottom. For mounting brackets, place the four mounting brackets at the four corners, drill four holes at the depth of 80-90 mm, put an M12*80 expansion tube in each hole, and secure the brackets to the floor with M8*25 at 13 N·m and M12*80 at 47 N·m.
+
+**DE Q:** Wie wird der Schrank bewegt und befestigt?
+
+Bewegen und platzieren Sie den Schrank mit einem Gabelstapler oder Kran am Installationsort. Für einen Gabelstapler muss die Tragfähigkeit größer als zwei Tonnen sein und die Gabelzinken müssen länger als 1,2 Meter sein. Für einen Kran ist eine Kraft von mehr als zwei Tonnen erforderlich und der Abstand zwischen dem Gehänge und der Oberseite muss größer oder gleich 1,5 Meter sein. Befestigen Sie den Schrank entweder mit Schraubbolzen oder mit Montagewinkeln. Für Schraubbolzen bohren Sie sechs Löcher mit einer Tiefe von 80-90 mm in den Boden, setzen Sie in jedes Loch ein M12*80-Dehnrohr ein und ziehen Sie die M12*80-Dehnbolzen am Boden fest. Für Montagewinkel platzieren Sie die vier Montagewinkel an den vier Ecken, bohren Sie vier Löcher mit einer Tiefe von 80-90 mm, setzen Sie in jedes Loch ein M12*80-Dehnrohr ein und befestigen Sie die Winkel mit M8*25 bei 13 N·m und M12*80 bei 47 N·m am Boden.
+
+**Citation:** SAJ CHS2 29.9-50K user manual, English, V0.2 (covers the CHS2-29.9K-T4-X) · p.19 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf

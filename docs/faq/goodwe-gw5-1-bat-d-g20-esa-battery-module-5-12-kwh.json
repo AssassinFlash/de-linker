@@ -1,0 +1,37 @@
+{
+  "id": 6519,
+  "slug": "goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh",
+  "sku": "DLK-GOODWE-GW51BATDG20",
+  "title": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+  "model": "GW5.1-BAT-D-G20",
+  "items": [
+    {
+      "question": "Does GW5.1-BAT-D-G20 include heating?",
+      "answer": "Heating is optional for the GW5.1-BAT-D-G20. The datasheet lists 'Heating (Optional)' for this model. The user manual states that the battery heating film is optional and that the 'Battery Heating' function can be enabled only on models configured with the heating film. Do not use batteries without a heating film at low temperatures; otherwise, the equipment may fail to operate.",
+      "question_de": "Hat GW5.1-BAT-D-G20 eine Heizung?",
+      "answer_de": "Die Heizung ist für das GW5.1-BAT-D-G20 optional. Das Datenblatt führt für dieses Modell 'Heating (Optional)' auf. Das Benutzerhandbuch gibt an, dass die Batterieheizfolie optional ist und die Funktion 'Batterieheizung' nur bei Modellen mit Heizfolie aktiviert werden kann. Batterien ohne Heizfolie sollten nicht bei niedrigen Temperaturen verwendet werden, da das Gerät sonst ausfallen kann.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "page": 3,
+        "title": "GoodWe ESA Series 5–30 kW datasheet (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many modules in one column?",
+      "answer": "A single column can stack up to 6 batteries. For single-column stacked installations, the maximum number of parallel units is 6.",
+      "question_de": "Wie viele Module in einer Säule?",
+      "answer_de": "Eine einzelne Säule kann bis zu 6 Batterien stapeln. Für einspaltige gestapelte Installationen beträgt die maximale Anzahl paralleler Einheiten 6.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 80,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

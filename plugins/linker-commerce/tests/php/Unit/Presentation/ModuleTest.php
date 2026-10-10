@@ -36,7 +36,7 @@ final class ModuleTest extends TestCase {
 		$windpress  = new WindPress();
 		$module     = new Module( $shortcodes, $gate, $windpress );
 
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 6 ) );
+			WP_Mock::userFunction( 'add_shortcode', array( 'times' => 7 ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::expectFilterAdded( 'body_class', array( $module, 'body_class' ) );

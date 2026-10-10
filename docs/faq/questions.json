@@ -1,0 +1,2799 @@
+{
+  "products": [
+    {
+      "id": 1178,
+      "slug": "saj-ats1-t63-a",
+      "sku": "DLK-SAJ-ATS1T63A",
+      "title": "SAJ ATS1-T63-A",
+      "brand": "SAJ",
+      "model": "ATS1-T63-A",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "What current does the ATS1-T63-A carry?",
+          "question_de": "Welchen Strom führt die ATS1-T63-A?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "Which circuit breakers does the installation need?",
+          "question_de": "Welche Leitungsschutzschalter braucht die Installation?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Where can the panel be installed?",
+          "question_de": "Wo kann die Einheit montiert werden?"
+        }
+      ]
+    },
+    {
+      "id": 1179,
+      "slug": "saj-h2-25k-t3",
+      "sku": "DLK-SAJ-H225KT3",
+      "title": "SAJ H2-25K-T3",
+      "brand": "SAJ",
+      "model": "H2-25K-T3",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Package",
+          "question_en": "What does the H2-25K-T3 package contain?",
+          "question_de": "Was gehört zum Lieferumfang des H2-25K-T3?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "Which circuit breaker and AC cable does the H2-25K-T3 need?",
+          "question_de": "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-25K-T3?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery connection does the H2-25K-T3 have?",
+          "question_de": "Welchen Batterieanschluss hat der H2-25K-T3?"
+        }
+      ]
+    },
+    {
+      "id": 1181,
+      "slug": "saj-h2-30k-t3-de",
+      "sku": "DLK-SAJ-H230KT3DE",
+      "title": "SAJ H2-30K-T3-DE",
+      "brand": "SAJ",
+      "model": "H2-30K-T3-DE",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Specification",
+          "question_en": "What are the rated AC power and the maximum apparent power of the H2-30K-T3-DE?",
+          "question_de": "Welche AC-Nennleistung und welche maximale Scheinleistung hat der H2-30K-T3-DE?"
+        },
+        {
+          "index": 1,
+          "category": "Package",
+          "question_en": "What does the H2-30K-T3-DE package contain?",
+          "question_de": "Was gehört zum Lieferumfang des H2-30K-T3-DE?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Which circuit breaker and AC cable does the H2-30K-T3-DE need?",
+          "question_de": "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-30K-T3-DE?"
+        }
+      ]
+    },
+    {
+      "id": 1182,
+      "slug": "saj-hs2-10k-t2-x",
+      "sku": "DLK-SAJ-HS210KT2X",
+      "title": "SAJ HS2-10K-T2-X",
+      "brand": "SAJ",
+      "model": "HS2-10K-T2-X",
+      "series": "HS2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which battery modules does the HS2-10K-T2-X take, and how many?",
+          "question_de": "Welche Batteriemodule passen zum HS2-10K-T2-X, und wie viele?"
+        },
+        {
+          "index": 1,
+          "category": "Backup",
+          "question_en": "What does the backup output of the HS2-10K-T2-X deliver when the grid fails?",
+          "question_de": "Was liefert der Notstromausgang des HS2-10K-T2-X bei Netzausfall?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "What does the AC side of the HS2-10K-T2-X need at installation?",
+          "question_de": "Was braucht die AC-Seite des HS2-10K-T2-X bei der Installation?"
+        }
+      ]
+    },
+    {
+      "id": 1183,
+      "slug": "saj-hs2-6k-t2-x",
+      "sku": "DLK-SAJ-HS26KT2X",
+      "title": "SAJ HS2-6K-T2-X",
+      "brand": "SAJ",
+      "model": "HS2-6K-T2-X",
+      "series": "HS2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which battery modules does the HS2-6K-T2-X take, and how many?",
+          "question_de": "Welche Batteriemodule passen zum HS2-6K-T2-X, und wie viele?"
+        },
+        {
+          "index": 1,
+          "category": "Backup",
+          "question_en": "What does the backup output of the HS2-6K-T2-X deliver when the grid fails?",
+          "question_de": "Was liefert der Notstromausgang des HS2-6K-T2-X bei Netzausfall?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "What does the AC side of the HS2-6K-T2-X need at installation?",
+          "question_de": "Was braucht die AC-Seite des HS2-6K-T2-X bei der Installation?"
+        }
+      ]
+    },
+    {
+      "id": 1184,
+      "slug": "saj-hs2-8k-t2-x",
+      "sku": "DLK-SAJ-HS28KT2X",
+      "title": "SAJ HS2-8K-T2-X",
+      "brand": "SAJ",
+      "model": "HS2-8K-T2-X",
+      "series": "HS2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which battery modules does the HS2-8K-T2-X take, and how many?",
+          "question_de": "Welche Batteriemodule passen zum HS2-8K-T2-X, und wie viele?"
+        },
+        {
+          "index": 1,
+          "category": "Backup",
+          "question_en": "What does the backup output of the HS2-8K-T2-X deliver when the grid fails?",
+          "question_de": "Was liefert der Notstromausgang des HS2-8K-T2-X bei Netzausfall?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "What does the AC side of the HS2-8K-T2-X need at installation?",
+          "question_de": "Was braucht die AC-Seite des HS2-8K-T2-X bei der Installation?"
+        }
+      ]
+    },
+    {
+      "id": 1185,
+      "slug": "saj-hs3-12k-t2-w-p",
+      "sku": "DLK-SAJ-HS312KT2WP",
+      "title": "SAJ HS3-12K-T2-W/G-PX",
+      "brand": "SAJ",
+      "model": "HS3-12K-T2-W/G-PX",
+      "series": "HS3",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery",
+          "question_en": "How many BU3 battery modules does the HS3-12K-T2-W/G-PX take, and how are they stacked?",
+          "question_de": "Wie viele Batteriemodule BU3 nimmt der HS3-12K-T2-W/G-PX auf, und wie werden sie gestapelt?"
+        },
+        {
+          "index": 1,
+          "category": "Package",
+          "question_en": "What does the HS3-12K-T2-W/G-PX package contain?",
+          "question_de": "Was gehört zum Lieferumfang des HS3-12K-T2-W/G-PX?"
+        },
+        {
+          "index": 2,
+          "category": "Warranty",
+          "question_en": "Which warranty applies to the HS3 inverter?",
+          "question_de": "Welche Garantie gilt für den HS3-Wechselrichter?"
+        }
+      ]
+    },
+    {
+      "id": 1186,
+      "slug": "saj-hs3-6k-t2-w-p",
+      "sku": "DLK-SAJ-HS36KT2WP",
+      "title": "SAJ HS3-6K-T2-W/G-PX",
+      "brand": "SAJ",
+      "model": "HS3-6K-T2-W/G-PX",
+      "series": "HS3",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery",
+          "question_en": "How many BU3 battery modules does the HS3-6K-T2-W/G-PX take, and how are they stacked?",
+          "question_de": "Wie viele Batteriemodule BU3 nimmt der HS3-6K-T2-W/G-PX auf, und wie werden sie gestapelt?"
+        },
+        {
+          "index": 1,
+          "category": "Package",
+          "question_en": "What does the HS3-6K-T2-W/G-PX package contain?",
+          "question_de": "Was gehört zum Lieferumfang des HS3-6K-T2-W/G-PX?"
+        },
+        {
+          "index": 2,
+          "category": "Warranty",
+          "question_en": "Which warranty applies to the HS3 inverter?",
+          "question_de": "Welche Garantie gilt für den HS3-Wechselrichter?"
+        }
+      ]
+    },
+    {
+      "id": 1187,
+      "slug": "saj-hs3-8k-t2-w-p",
+      "sku": "DLK-SAJ-HS38KT2WP",
+      "title": "SAJ HS3-8K-T2-W/G-PX",
+      "brand": "SAJ",
+      "model": "HS3-8K-T2-W/G-PX",
+      "series": "HS3",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery",
+          "question_en": "How many BU3 battery modules does the HS3-8K-T2-W/G-PX take, and how are they stacked?",
+          "question_de": "Wie viele Batteriemodule BU3 nimmt der HS3-8K-T2-W/G-PX auf, und wie werden sie gestapelt?"
+        },
+        {
+          "index": 1,
+          "category": "Package",
+          "question_en": "What does the HS3-8K-T2-W/G-PX package contain?",
+          "question_de": "Was gehört zum Lieferumfang des HS3-8K-T2-W/G-PX?"
+        },
+        {
+          "index": 2,
+          "category": "Warranty",
+          "question_en": "Which warranty applies to the HS3 inverter?",
+          "question_de": "Welche Garantie gilt für den HS3-Wechselrichter?"
+        }
+      ]
+    },
+    {
+      "id": 1832,
+      "slug": "saj-b2-5-0-hv1",
+      "sku": "DLK-SAJ-B250HV1",
+      "title": "SAJ B2-5.0-HV1",
+      "brand": "SAJ",
+      "model": "B2-5.0-HV1",
+      "series": "SAJ BU2-HV1",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which inverter does the B2-5.0-HV1 work with?",
+          "question_de": "Mit welchem Wechselrichter arbeitet der B2-5.0-HV1?"
+        },
+        {
+          "index": 1,
+          "category": "Dimensions",
+          "question_en": "How tall and how heavy is the assembled B2-5.0-HV1?",
+          "question_de": "Wie hoch und wie schwer ist der montierte B2-5.0-HV1?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Where and how is the stack installed?",
+          "question_de": "Wo und wie wird der Stapel montiert?"
+        }
+      ]
+    },
+    {
+      "id": 1946,
+      "slug": "goodwe-gw80k-et-g10",
+      "sku": "DLK-GOODWE-GW80KETG10",
+      "title": "GoodWe GW80K-ET-G10",
+      "brand": "GoodWe",
+      "model": "GW80K-ET-G10",
+      "series": "ET Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "How many PV string positions are available per MPPT on GW80K-ET-G10?",
+          "question_de": "Wie viele PV-Stringanschlüsse stehen je MPP-Tracker beim GW80K-ET-G10 zur Verfügung?"
+        },
+        {
+          "index": 1,
+          "category": "Grid connection",
+          "question_en": "Does GW80K-ET-G10 hold a German unit certificate for medium-voltage connection?",
+          "question_de": "Hat der GW80K-ET-G10 ein deutsches Einheitenzertifikat für den Mittelspannungsanschluss?"
+        }
+      ]
+    },
+    {
+      "id": 1947,
+      "slug": "goodwe-gw99-99k-et-g10",
+      "sku": "DLK-GOODWE-GW9999KETG10",
+      "title": "GoodWe GW99.99K-ET-G10",
+      "brand": "GoodWe",
+      "model": "GW99.99K-ET-G10",
+      "series": "ET Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Which model figure should the grid application use for GW99.99K-ET-G10?",
+          "question_de": "Welcher Modellwert gehört für den GW99.99K-ET-G10 in die Netzanmeldung?"
+        },
+        {
+          "index": 1,
+          "category": "Grid connection",
+          "question_en": "Does GW99.99K-ET-G10 hold a German unit certificate for medium-voltage connection?",
+          "question_de": "Hat der GW99.99K-ET-G10 ein deutsches Einheitenzertifikat für den Mittelspannungsanschluss?"
+        }
+      ]
+    },
+    {
+      "id": 1948,
+      "slug": "goodwe-gw100k-et-g10",
+      "sku": "DLK-GOODWE-GW100KETG10",
+      "title": "GoodWe GW100K-ET-G10",
+      "brand": "GoodWe",
+      "model": "GW100K-ET-G10",
+      "series": "ET Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Can a GW100K-ET-G10 PV string operate continuously near the 1,000 V maximum?",
+          "question_de": "Kann ein PV-String am GW100K-ET-G10 dauerhaft nahe der 1.000-V-Grenze laufen?"
+        },
+        {
+          "index": 1,
+          "category": "Grid connection",
+          "question_en": "Does GW100K-ET-G10 hold a German unit certificate for medium-voltage connection?",
+          "question_de": "Hat der GW100K-ET-G10 ein deutsches Einheitenzertifikat für den Mittelspannungsanschluss?"
+        }
+      ]
+    },
+    {
+      "id": 1954,
+      "slug": "goodwe-gw61-4-bat-ac-g10",
+      "sku": "DLK-GOODWE-GW614BATACG10",
+      "title": "GoodWe GW61.4-BAT-AC-G10",
+      "brand": "GoodWe",
+      "model": "GW61.4-BAT-AC-G10",
+      "series": "GoodWe BAT-C",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Inverter fit",
+          "question_en": "Which ET inverter ranges are documented for this 61.4 kWh BAT-C cabinet?",
+          "question_de": "Welche ET-Wechselrichterbereiche sind für diesen BAT-C-Schrank mit 61,4 kWh dokumentiert?"
+        }
+      ]
+    },
+    {
+      "id": 1955,
+      "slug": "goodwe-gw112-6-bat-ac-g10",
+      "sku": "DLK-GOODWE-GW1126BATACG10",
+      "title": "GoodWe GW112.6-BAT-AC-G10",
+      "brand": "GoodWe",
+      "model": "GW112.6-BAT-AC-G10",
+      "series": "GoodWe BAT-C",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Site access",
+          "question_en": "What site access must be allowed for the 112.6 kWh BAT-C cabinet?",
+          "question_de": "Welche Einbringung ist für den BAT-C-Schrank mit 112,6 kWh einzuplanen?"
+        }
+      ]
+    },
+    {
+      "id": 1956,
+      "slug": "goodwe-gw208-9-bat-lc-g10",
+      "sku": "DLK-GOODWE-GW2089BATLCG10",
+      "title": "GoodWe GW208.9-BAT-LC-G10",
+      "brand": "GoodWe",
+      "model": "GW208.9-BAT-LC-G10",
+      "series": "GoodWe BAT-C",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Electrical fit",
+          "question_en": "Which LC system voltage and current limits matter for the inverter design?",
+          "question_de": "Welche Systemspannung und Stromgrenze sind für die LC-Auslegung wichtig?"
+        },
+        {
+          "index": 1,
+          "category": "Inverter fit",
+          "question_en": "Is this LC cabinet listed for GoodWe ETR inverters?",
+          "question_de": "Ist dieser LC-Schrank für GoodWe-ETR-Wechselrichter gelistet?"
+        }
+      ]
+    },
+    {
+      "id": 1957,
+      "slug": "goodwe-gw208-9-bat-lcd-g10",
+      "sku": "DLK-GOODWE-GW2089BATLCDG10",
+      "title": "GoodWe GW208.9-BAT-LCD-G10",
+      "brand": "GoodWe",
+      "model": "GW208.9-BAT-LCD-G10",
+      "series": "GoodWe BAT-C",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Inverter pairing",
+          "question_en": "Which documents list this LCD cabinet with an inverter?",
+          "question_de": "In welchen Unterlagen ist dieser LCD-Schrank mit einem Wechselrichter aufgeführt?"
+        }
+      ]
+    },
+    {
+      "id": 1958,
+      "slug": "goodwe-gw261-2-bat-lcd-g10",
+      "sku": "DLK-GOODWE-GW2612BATLCDG10",
+      "title": "GoodWe GW261.2-BAT-LCD-G10",
+      "brand": "GoodWe",
+      "model": "GW261.2-BAT-LCD-G10",
+      "series": "GoodWe BAT-C",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Site access",
+          "question_en": "What must the site accommodate for the 261.2 kWh cabinet?",
+          "question_de": "Welche Maße und Masse muss der Standort für den 261,2-kWh-Schrank aufnehmen?"
+        },
+        {
+          "index": 1,
+          "category": "Inverter fit",
+          "question_en": "What does the ETR pairing require?",
+          "question_de": "Was setzt die Kombination mit dem ETR voraus?"
+        }
+      ]
+    },
+    {
+      "id": 1959,
+      "slug": "saj-chs2-29-9k-t4-x",
+      "sku": "DLK-SAJ-CHS2299KT4X",
+      "title": "SAJ CHS2-29.9K-T4-X",
+      "brand": "SAJ",
+      "model": "CHS2-29.9K-T4-X",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "What does the X in CHS2-29.9K-T4-X stand for?",
+          "question_de": "Wofür steht das X in CHS2-29.9K-T4-X?"
+        },
+        {
+          "index": 1,
+          "category": "Certification",
+          "question_en": "Which grid-connection certificate is on file for the CHS2-29.9K-T4-X?",
+          "question_de": "Welches Netzanschluss-Zertifikat liegt für den CHS2-29.9K-T4-X vor?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "How is the cabinet moved and secured?",
+          "question_de": "Wie wird der Schrank bewegt und befestigt?"
+        }
+      ]
+    },
+    {
+      "id": 1960,
+      "slug": "saj-chs2-30k-t4-x",
+      "sku": "DLK-SAJ-CHS230KT4X",
+      "title": "SAJ CHS2-30K-T4-X",
+      "brand": "SAJ",
+      "model": "CHS2-30K-T4-X",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "What does the X in CHS2-30K-T4-X stand for?",
+          "question_de": "Wofür steht das X in CHS2-30K-T4-X?"
+        },
+        {
+          "index": 1,
+          "category": "Certification",
+          "question_en": "Which grid-connection certificate is on file for the CHS2-30K-T4-X?",
+          "question_de": "Welches Netzanschluss-Zertifikat liegt für den CHS2-30K-T4-X vor?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "How is the cabinet moved and secured?",
+          "question_de": "Wie wird der Schrank bewegt und befestigt?"
+        }
+      ]
+    },
+    {
+      "id": 1961,
+      "slug": "saj-chs2-50k-t6-x",
+      "sku": "DLK-SAJ-CHS250KT6X",
+      "title": "SAJ CHS2-50K-T6-X",
+      "brand": "SAJ",
+      "model": "CHS2-50K-T6-X",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "What does the X in CHS2-50K-T6-X stand for?",
+          "question_de": "Wofür steht das X in CHS2-50K-T6-X?"
+        },
+        {
+          "index": 1,
+          "category": "Certification",
+          "question_en": "Which grid-connection certificate is on file for the CHS2-50K-T6-X?",
+          "question_de": "Welches Netzanschluss-Zertifikat liegt für den CHS2-50K-T6-X vor?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "How is the cabinet moved and secured?",
+          "question_de": "Wie wird der Schrank bewegt und befestigt?"
+        }
+      ]
+    },
+    {
+      "id": 1973,
+      "slug": "saj-emanager-c1-pro",
+      "sku": "DLK-SAJ-EMANAGERC1PRO",
+      "title": "SAJ eManager-C1 Pro",
+      "brand": "SAJ",
+      "model": "eManager-C1 Pro",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "What does the eManager-C1 Pro contain?",
+          "question_de": "Was enthält der eManager-C1 Pro?"
+        },
+        {
+          "index": 1,
+          "category": "Selection",
+          "question_en": "For how many CHS2 systems is the eManager-C1 Pro meant?",
+          "question_de": "Für wie viele CHS2-Systeme ist der eManager-C1 Pro gedacht?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "How is the eManager-C1 Pro supplied and mounted?",
+          "question_de": "Wie wird der eManager-C1 Pro versorgt und montiert?"
+        }
+      ]
+    },
+    {
+      "id": 2003,
+      "slug": "pylontech-optim-us-l260-omni",
+      "sku": "DLK-PYLONTECH-OPTIMUSL260OMNI",
+      "title": "Pylontech OPTIM US L260-OMNI",
+      "brand": "Pylontech",
+      "model": "L260-OMNI",
+      "series": "Pylontech OPTIM US",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "What are the physical dimensions and weight of the L260-OMNI station?",
+          "question_de": "Welche Abmessungen und welches Gewicht hat die L260-OMNI-Station?"
+        }
+      ]
+    },
+    {
+      "id": 2063,
+      "slug": "saj-h2-15k-t3",
+      "sku": "DLK-SAJ-H215KT3",
+      "title": "SAJ H2-15K-T3",
+      "brand": "SAJ",
+      "model": "H2-15K-T3",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Package",
+          "question_en": "What does the H2-15K-T3 package contain?",
+          "question_de": "Was gehört zum Lieferumfang des H2-15K-T3?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "Which circuit breaker and AC cable does the H2-15K-T3 need?",
+          "question_de": "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-15K-T3?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery connection does the H2-15K-T3 have?",
+          "question_de": "Welchen Batterieanschluss hat der H2-15K-T3?"
+        }
+      ]
+    },
+    {
+      "id": 2064,
+      "slug": "saj-h2-20k-t3",
+      "sku": "DLK-SAJ-H220KT3",
+      "title": "SAJ H2-20K-T3",
+      "brand": "SAJ",
+      "model": "H2-20K-T3",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Package",
+          "question_en": "What does the H2-20K-T3 package contain?",
+          "question_de": "Was gehört zum Lieferumfang des H2-20K-T3?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "Which circuit breaker and AC cable does the H2-20K-T3 need?",
+          "question_de": "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-20K-T3?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery connection does the H2-20K-T3 have?",
+          "question_de": "Welchen Batterieanschluss hat der H2-20K-T3?"
+        }
+      ]
+    },
+    {
+      "id": 2067,
+      "slug": "saj-b2-10-0-hv1",
+      "sku": "DLK-SAJ-B2100HV1",
+      "title": "SAJ B2-10.0-HV1",
+      "brand": "SAJ",
+      "model": "B2-10.0-HV1",
+      "series": "SAJ BU2-HV1",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which inverter does the B2-10.0-HV1 work with?",
+          "question_de": "Mit welchem Wechselrichter arbeitet der B2-10.0-HV1?"
+        },
+        {
+          "index": 1,
+          "category": "Dimensions",
+          "question_en": "How tall and how heavy is the assembled B2-10.0-HV1?",
+          "question_de": "Wie hoch und wie schwer ist der montierte B2-10.0-HV1?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Where and how is the stack installed?",
+          "question_de": "Wo und wie wird der Stapel montiert?"
+        }
+      ]
+    },
+    {
+      "id": 2068,
+      "slug": "saj-b2-15-0-hv1",
+      "sku": "DLK-SAJ-B2150HV1",
+      "title": "SAJ B2-15.0-HV1",
+      "brand": "SAJ",
+      "model": "B2-15.0-HV1",
+      "series": "SAJ BU2-HV1",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which inverter does the B2-15.0-HV1 work with?",
+          "question_de": "Mit welchem Wechselrichter arbeitet der B2-15.0-HV1?"
+        },
+        {
+          "index": 1,
+          "category": "Dimensions",
+          "question_en": "How tall and how heavy is the assembled B2-15.0-HV1?",
+          "question_de": "Wie hoch und wie schwer ist der montierte B2-15.0-HV1?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Where and how is the stack installed?",
+          "question_de": "Wo und wie wird der Stapel montiert?"
+        }
+      ]
+    },
+    {
+      "id": 2069,
+      "slug": "saj-b2-20-0-hv1",
+      "sku": "DLK-SAJ-B2200HV1",
+      "title": "SAJ B2-20.0-HV1",
+      "brand": "SAJ",
+      "model": "B2-20.0-HV1",
+      "series": "SAJ BU2-HV1",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which inverter does the B2-20.0-HV1 work with?",
+          "question_de": "Mit welchem Wechselrichter arbeitet der B2-20.0-HV1?"
+        },
+        {
+          "index": 1,
+          "category": "Dimensions",
+          "question_en": "How tall and how heavy is the assembled B2-20.0-HV1?",
+          "question_de": "Wie hoch und wie schwer ist der montierte B2-20.0-HV1?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Where and how is the stack installed?",
+          "question_de": "Wo und wie wird der Stapel montiert?"
+        }
+      ]
+    },
+    {
+      "id": 2070,
+      "slug": "saj-b2-25-0-hv1",
+      "sku": "DLK-SAJ-B2250HV1",
+      "title": "SAJ B2-25.0-HV1",
+      "brand": "SAJ",
+      "model": "B2-25.0-HV1",
+      "series": "SAJ BU2-HV1",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which inverter does the B2-25.0-HV1 work with?",
+          "question_de": "Mit welchem Wechselrichter arbeitet der B2-25.0-HV1?"
+        },
+        {
+          "index": 1,
+          "category": "Dimensions",
+          "question_en": "How tall and how heavy is the assembled B2-25.0-HV1?",
+          "question_de": "Wie hoch und wie schwer ist der montierte B2-25.0-HV1?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Where and how is the stack installed?",
+          "question_de": "Wo und wie wird der Stapel montiert?"
+        }
+      ]
+    },
+    {
+      "id": 2090,
+      "slug": "saj-bu2-5-0-hv1",
+      "sku": "DLK-SAJ-BU250HV1",
+      "title": "SAJ BU2-5.0-HV1",
+      "brand": "SAJ",
+      "model": "BU2-5.0-HV1",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which systems use the BU2-5.0-HV1?",
+          "question_de": "In welchen Systemen wird das BU2-5.0-HV1 eingesetzt?"
+        },
+        {
+          "index": 1,
+          "category": "Dimensions",
+          "question_en": "What are the dimensions and the weight of one module?",
+          "question_de": "Welche Abmessungen und welches Gewicht hat ein Modul?"
+        },
+        {
+          "index": 2,
+          "category": "Storage",
+          "question_en": "How is the module stored before installation?",
+          "question_de": "Wie wird das Modul vor der Installation gelagert?"
+        }
+      ]
+    },
+    {
+      "id": 2092,
+      "slug": "saj-bc2-hv1",
+      "sku": "DLK-SAJ-BC2HV1",
+      "title": "SAJ BC2-HV1",
+      "brand": "SAJ",
+      "model": "BC2-HV1",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Package",
+          "question_en": "What is in the BC2-HV1 package?",
+          "question_de": "Was enthält das Paket des BC2-HV1?"
+        },
+        {
+          "index": 1,
+          "category": "Compatibility",
+          "question_en": "Which battery systems use the BC2-HV1?",
+          "question_de": "In welchen Batteriesystemen wird das BC2-HV1 eingesetzt?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "How is the BC2-HV1 connected to the inverter?",
+          "question_de": "Wie wird das BC2-HV1 mit dem Wechselrichter verbunden?"
+        }
+      ]
+    },
+    {
+      "id": 2093,
+      "slug": "saj-bu3-5-0-tv2-pro",
+      "sku": "DLK-SAJ-BU350TV2PRO",
+      "title": "SAJ BU3-5.0-TV2-PRO",
+      "brand": "SAJ",
+      "model": "BU3-5.0-TV2-PRO",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which inverters does the BU3-5.0-TV2-PRO work with?",
+          "question_de": "Mit welchen Wechselrichtern arbeitet das BU3-5.0-TV2-PRO?"
+        },
+        {
+          "index": 1,
+          "category": "Dimensions",
+          "question_en": "What are the dimensions and the weight of a BU3 module?",
+          "question_de": "Welche Abmessungen und welches Gewicht hat ein BU3-Modul?"
+        },
+        {
+          "index": 2,
+          "category": "Warranty",
+          "question_en": "Which warranty applies to the BU3 battery?",
+          "question_de": "Welche Garantie gilt für die Batterie BU3?"
+        }
+      ]
+    },
+    {
+      "id": 2198,
+      "slug": "saj-hs3-5k-t2-w-p",
+      "sku": "DLK-SAJ-HS35KT2WP",
+      "title": "SAJ HS3-5K-T2-W/G-PX",
+      "brand": "SAJ",
+      "model": "HS3-5K-T2-W/G-PX",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery",
+          "question_en": "How many BU3 battery modules does the HS3-5K-T2-W/G-PX take, and how are they stacked?",
+          "question_de": "Wie viele Batteriemodule BU3 nimmt der HS3-5K-T2-W/G-PX auf, und wie werden sie gestapelt?"
+        },
+        {
+          "index": 1,
+          "category": "Package",
+          "question_en": "What does the HS3-5K-T2-W/G-PX package contain?",
+          "question_de": "Was gehört zum Lieferumfang des HS3-5K-T2-W/G-PX?"
+        },
+        {
+          "index": 2,
+          "category": "Warranty",
+          "question_en": "Which warranty applies to the HS3 inverter?",
+          "question_de": "Welche Garantie gilt für den HS3-Wechselrichter?"
+        }
+      ]
+    },
+    {
+      "id": 2199,
+      "slug": "saj-hs3-10k-t2-w-p",
+      "sku": "DLK-SAJ-HS310KT2WP",
+      "title": "SAJ HS3-10K-T2-W/G-PX",
+      "brand": "SAJ",
+      "model": "HS3-10K-T2-W/G-PX",
+      "series": "SAJ",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery",
+          "question_en": "How many BU3 battery modules does the HS3-10K-T2-W/G-PX take, and how are they stacked?",
+          "question_de": "Wie viele Batteriemodule BU3 nimmt der HS3-10K-T2-W/G-PX auf, und wie werden sie gestapelt?"
+        },
+        {
+          "index": 1,
+          "category": "Package",
+          "question_en": "What does the HS3-10K-T2-W/G-PX package contain?",
+          "question_de": "Was gehört zum Lieferumfang des HS3-10K-T2-W/G-PX?"
+        },
+        {
+          "index": 2,
+          "category": "Warranty",
+          "question_en": "Which warranty applies to the HS3 inverter?",
+          "question_de": "Welche Garantie gilt für den HS3-Wechselrichter?"
+        }
+      ]
+    },
+    {
+      "id": 2281,
+      "slug": "chint-dtsu666",
+      "sku": "DLK-CHINT-DTSU666",
+      "title": "Chint DTSU666",
+      "brand": "Chint",
+      "model": "DTSU666",
+      "series": "Chint",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "What is the maximum wire gauge accepted by the DTSU666 direct terminals?",
+          "question_de": "Welchen maximalen Leitungsquerschnitt akzeptieren die direkten Anschlussklemmen des DTSU666?"
+        }
+      ]
+    },
+    {
+      "id": 2394,
+      "slug": "goodwe-gm330",
+      "sku": "DLK-GOODWE-GM330",
+      "title": "GoodWe GM330",
+      "brand": "GoodWe",
+      "model": "GM330",
+      "series": "",
+      "questions": [
+        {
+          "index": 0,
+          "category": "CT selection",
+          "question_en": "Are current transformers included with GM330?",
+          "question_de": "Sind beim GM330 Stromwandler im Lieferumfang?"
+        },
+        {
+          "index": 1,
+          "category": "Application boundary",
+          "question_en": "Can GM330 replace the utility meter used for billing?",
+          "question_de": "Kann GM330 den abrechnungsrelevanten Zähler des Netzbetreibers ersetzen?"
+        },
+        {
+          "index": 2,
+          "category": "Compatibility",
+          "question_en": "Which GoodWe inverters are listed for GM330?",
+          "question_de": "Welche GoodWe-Wechselrichter sind für GM330 gelistet?"
+        }
+      ]
+    },
+    {
+      "id": 2397,
+      "slug": "goodwe-gmk330",
+      "sku": "DLK-GOODWE-GMK330",
+      "title": "GoodWe GMK330",
+      "brand": "GoodWe",
+      "model": "GMK330",
+      "series": "",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Order contents",
+          "question_en": "Which CT version is included in this GMK330 order?",
+          "question_de": "Welche Stromwandlerversion enthält diese GMK330-Bestellung?"
+        },
+        {
+          "index": 1,
+          "category": "Metering boundary",
+          "question_en": "Can these GMK330 readings be used for utility billing?",
+          "question_de": "Dürfen die GMK330-Messwerte zur Stromabrechnung genutzt werden?"
+        }
+      ]
+    },
+    {
+      "id": 2403,
+      "slug": "goodwe-gw125k-sts-g10",
+      "sku": "DLK-GOODWE-GW125KSTSG10",
+      "title": "GoodWe GW125K-STS-G10",
+      "brand": "GoodWe",
+      "model": "GW125K-STS-G10",
+      "series": "STS Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Which GoodWe inverters is this transfer switch paired with?",
+          "question_de": "Mit welchen GoodWe-Wechselrichtern wird dieser Transferschalter kombiniert?"
+        },
+        {
+          "index": 1,
+          "category": "Installation & wiring",
+          "question_en": "What does the wall position need to allow for?",
+          "question_de": "Was muss der Montageplatz an der Wand bieten?"
+        },
+        {
+          "index": 2,
+          "category": "Operation",
+          "question_en": "Can a generator or large loads be part of this backup design?",
+          "question_de": "Lassen sich ein Generator oder große Lasten in diese Notstromplanung einbinden?"
+        },
+        {
+          "index": 3,
+          "category": "Configuration",
+          "question_en": "How does the switch communicate with the inverter?",
+          "question_de": "Wie kommuniziert der Schalter mit dem Wechselrichter?"
+        }
+      ]
+    },
+    {
+      "id": 2409,
+      "slug": "goodwe-sec3000c-smart-energy-controller",
+      "sku": "DLK-GOODWE-SEC3000C",
+      "title": "GoodWe SEC3000C Smart Energy Controller",
+      "brand": "GoodWe",
+      "model": "SEC3000C",
+      "series": "",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Does the planned inverter count fit one SEC3000C?",
+          "question_de": "Passt die geplante Wechselrichterzahl an einen SEC3000C?"
+        },
+        {
+          "index": 1,
+          "category": "Selection",
+          "question_en": "What sits inside the cabinet, and which CTs does the meter take?",
+          "question_de": "Was steckt im Schrank, und welche Stromwandler braucht der Zähler?"
+        },
+        {
+          "index": 2,
+          "category": "Installation & wiring",
+          "question_en": "Where can the cabinet be installed?",
+          "question_de": "Wo lässt sich der Schrank montieren?"
+        }
+      ]
+    },
+    {
+      "id": 2415,
+      "slug": "goodwe-ezmanager3000-hems-gateway",
+      "sku": "DLK-GOODWE-EZMANAGER3000",
+      "title": "GoodWe EzManager3000 HEMS Gateway",
+      "brand": "GoodWe",
+      "model": "EzManager3000",
+      "series": "",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Will one EzManager3000 cover this inverter and device mix?",
+          "question_de": "Deckt ein EzManager3000 diese Wechselrichter- und Gerätekombination ab?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "What power supply does the gateway need?",
+          "question_de": "Welche Stromversorgung braucht das Gateway?"
+        },
+        {
+          "index": 2,
+          "category": "Operation",
+          "question_en": "Does the gateway work with dynamic tariffs and trading platforms?",
+          "question_de": "Arbeitet das Gateway mit dynamischen Tarifen und Handelsplattformen?"
+        },
+        {
+          "index": 3,
+          "category": "Configuration",
+          "question_en": "How do the inverters, meters and heat pump connect?",
+          "question_de": "Wie werden Wechselrichter, Zähler und Wärmepumpe angebunden?"
+        }
+      ]
+    },
+    {
+      "id": 3555,
+      "slug": "ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship",
+      "sku": "DLK-ECOFLOW-EFHDP310K0S2",
+      "title": "EcoFlow OCEAN 2 HD-P3-10K0-S2 (10 kW three-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P3-10K0-S2",
+      "series": "EcoFlow OCEAN 2 (Three-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "How many battery modules can the 10K0-S2 system take?",
+          "question_de": "Wie viele Batteriemodule sind beim 10K0-S2 vorgesehen?"
+        },
+        {
+          "index": 1,
+          "category": "Selection",
+          "question_en": "How do I specify a two-tower battery layout for a quote?",
+          "question_de": "Wie beschreibe ich zwei Batterietürme für ein Angebot?"
+        }
+      ]
+    },
+    {
+      "id": 3556,
+      "slug": "goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one",
+      "sku": "DLK-GOODWE-GW10KETAG20",
+      "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW10K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery configuration",
+          "question_en": "How many BAT-D modules can one GW10K-ETA-G20 column take?",
+          "question_de": "Wie viele BAT-D-Module passen in eine GW10K-ETA-G20-Säule?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "What backup load can the GW10K-ETA-G20 design support?",
+          "question_de": "Welche Notstromlast trägt die Auslegung mit GW10K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Installation & wiring",
+          "question_en": "Which meter and CT arrangement must be planned for this inverter?",
+          "question_de": "Welche Zähler- und Stromwandleranordnung ist für diesen Wechselrichter einzuplanen?"
+        }
+      ]
+    },
+    {
+      "id": 3557,
+      "slug": "goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger",
+      "sku": "DLK-GOODWE-GW11KHCA20",
+      "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+      "brand": "GoodWe",
+      "model": "GW11K-HCA-20",
+      "series": "GoodWe HCA G2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Protection",
+          "question_en": "Does the 11 kW charger still need an external Type A RCD?",
+          "question_de": "Braucht das 11-kW-Ladegerät noch einen externen FI Typ A?"
+        },
+        {
+          "index": 1,
+          "category": "Scope of delivery",
+          "question_en": "What comes with the charger?",
+          "question_de": "Was gehört zum Lieferumfang?"
+        },
+        {
+          "index": 2,
+          "category": "Grid connection",
+          "question_en": "Is GW11K-HCA-20 prepared for §14a EnWG?",
+          "question_de": "Ist GW11K-HCA-20 für §14a EnWG vorbereitet?"
+        }
+      ]
+    },
+    {
+      "id": 3573,
+      "slug": "saj-esolar-aio3-data-collector-wifi-lan-bluetooth",
+      "sku": "DLK-SAJ-ESOLAR-AIO3",
+      "title": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+      "brand": "SAJ",
+      "model": "eSolar AIO3",
+      "series": "SAJ Accessories",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which SAJ inverters take the eSolar AIO3?",
+          "question_de": "An welche SAJ-Wechselrichter passt der eSolar AIO3?"
+        },
+        {
+          "index": 1,
+          "category": "Commissioning",
+          "question_en": "What do the LEDs on the module show?",
+          "question_de": "Was zeigen die LEDs am Modul?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "How is the module installed and connected to the network?",
+          "question_de": "Wie wird das Modul montiert und mit dem Netzwerk verbunden?"
+        }
+      ]
+    },
+    {
+      "id": 3574,
+      "slug": "ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship",
+      "sku": "DLK-ECOFLOW-EFHDP36K0S2",
+      "title": "EcoFlow OCEAN 2 HD-P3-6K0-S2 (6 kW three-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P3-6K0-S2",
+      "series": "EcoFlow OCEAN 2 (Three-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Do the AC switches shown for the 6K0-S2 arrive in the inverter box?",
+          "question_de": "Liegen die im Anschlussplan gezeigten AC-Schalter dem 6K0-S2 bei?"
+        }
+      ]
+    },
+    {
+      "id": 3575,
+      "slug": "ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship",
+      "sku": "DLK-ECOFLOW-EFHDP38K0S2",
+      "title": "EcoFlow OCEAN 2 HD-P3-8K0-S2 (8 kW three-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P3-8K0-S2",
+      "series": "EcoFlow OCEAN 2 (Three-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which cables must be planned before the 8K0-S2 installation?",
+          "question_de": "Welche Leitungen sind vor der Montage des 8K0-S2 einzuplanen?"
+        }
+      ]
+    },
+    {
+      "id": 3576,
+      "slug": "ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship",
+      "sku": "DLK-ECOFLOW-EFHDP312K0S2",
+      "title": "EcoFlow OCEAN 2 HD-P3-12K0-S2 (12 kW three-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P3-12K0-S2",
+      "series": "EcoFlow OCEAN 2 (Three-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which circuits does the 12K0-S2 BACKUP output actually serve?",
+          "question_de": "Welche Stromkreise versorgt der BACKUP-Ausgang des 12K0-S2?"
+        }
+      ]
+    },
+    {
+      "id": 3577,
+      "slug": "ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship",
+      "sku": "DLK-ECOFLOW-EFHDP16K0S2",
+      "title": "EcoFlow OCEAN 2 Plus HD-P1-6K0-S2 (6 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-6K0-S2",
+      "series": "EcoFlow OCEAN 2 Plus Single-Phase",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which circuits receive power through the 6K0-S2 BACKUP connection?",
+          "question_de": "Welche Stromkreise hängen beim 6K0-S2 am BACKUP-Anschluss?"
+        }
+      ]
+    },
+    {
+      "id": 3578,
+      "slug": "ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship",
+      "sku": "DLK-ECOFLOW-EFHDP18K0S2",
+      "title": "EcoFlow OCEAN 2 Plus HD-P1-8K0-S2 (8 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-8K0-S2",
+      "series": "EcoFlow OCEAN 2 Plus Single-Phase",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Which physical parts complete the floor-standing 8K0-S2 storage layout?",
+          "question_de": "Welche Teile gehören zum bodenstehenden Speichersystem mit 8K0-S2?"
+        }
+      ]
+    },
+    {
+      "id": 3579,
+      "slug": "ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship",
+      "sku": "DLK-ECOFLOW-EFHDP110K0S2",
+      "title": "EcoFlow OCEAN 2 Plus HD-P1-10K0-S2 (10 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-10K0-S2",
+      "series": "EcoFlow OCEAN 2 Plus Single-Phase",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "How many PV strings can be routed to the 10K0-S2 inputs?",
+          "question_de": "Wie viele PV-Strings lassen sich an den 10K0-S2 führen?"
+        }
+      ]
+    },
+    {
+      "id": 3580,
+      "slug": "ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship",
+      "sku": "DLK-ECOFLOW-EFHDP112K0S2",
+      "title": "EcoFlow OCEAN 2 Plus HD-P1-12K0-S2 (12 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-12K0-S2",
+      "series": "EcoFlow OCEAN 2 Plus Single-Phase",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which cable cross-sections does the 12K0-S2 connection drawing show?",
+          "question_de": "Welche Leiterquerschnitte zeigt der Anschlussplan für den 12K0-S2?"
+        }
+      ]
+    },
+    {
+      "id": 3581,
+      "slug": "ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2",
+      "sku": "DLK-ECOFLOW-EFBD5S2",
+      "title": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+      "brand": "EcoFlow",
+      "model": "EF BD-5-S2",
+      "series": "EcoFlow OCEAN 2 (LFP Battery)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "How many EF BD-5-S2 modules fit one floor or wall tower?",
+          "question_de": "Wie viele EF BD-5-S2-Module passen in einen Boden- oder Wandturm?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "Can an existing EF BD-5.1-S1 tower be extended with EF BD-5-S2?",
+          "question_de": "Kann ich einen vorhandenen EF-BD-5.1-S1-Turm mit EF BD-5-S2 erweitern?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "What should I record when planning an older tower extension?",
+          "question_de": "Welche Angaben halte ich bei der Planung einer Erweiterung des alten Turms fest?"
+        },
+        {
+          "index": 3,
+          "category": "Warranty",
+          "question_en": "What warranty applies to the EF BD-5-S2?",
+          "question_de": "Welche Garantie gilt für das EF BD-5-S2?"
+        }
+      ]
+    },
+    {
+      "id": 3582,
+      "slug": "ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2",
+      "sku": "DLK-ECOFLOW-EFBD8S2",
+      "title": "EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2)",
+      "brand": "EcoFlow",
+      "model": "EF BD-8-S2",
+      "series": "EcoFlow OCEAN 2 (LFP Battery)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Can the OCEAN 2 5 kWh and EF BD-8-S2 modules share a tower?",
+          "question_de": "Dürfen OCEAN-2-Module mit 5 kWh und EF BD-8-S2 in denselben Turm?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "Is a battery base shown in the EF BD-8-S2 module box?",
+          "question_de": "Ist im Karton des EF-BD-8-S2-Moduls ein Batteriesockel aufgeführt?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "What site clearance matters for the 8 kWh module’s cooling?",
+          "question_de": "Welcher Freiraum ist für die Kühlung des 8-kWh-Moduls nötig?"
+        },
+        {
+          "index": 3,
+          "category": "Warranty",
+          "question_en": "What warranty applies to the EF BD-8-S2?",
+          "question_de": "Welche Garantie gilt für das EF BD-8-S2?"
+        }
+      ]
+    },
+    {
+      "id": 3583,
+      "slug": "goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one",
+      "sku": "DLK-GOODWE-GW8KETAG20",
+      "title": "GoodWe ESA GW8K-ETA-G20 (8 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW8K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery Interface",
+          "question_en": "Can an 8 kW ESA stack be extended with a different BAT-D capacity?",
+          "question_de": "Kann ein 8-kW-ESA-Stapel mit einer anderen BAT-D-Kapazität erweitert werden?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "What backup load can the GW8K-ETA-G20 design support?",
+          "question_de": "Welche Notstromlast trägt die Auslegung mit GW8K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Installation & wiring",
+          "question_en": "Which meter and CT arrangement must be planned for this inverter?",
+          "question_de": "Welche Zähler- und Stromwandleranordnung ist für diesen Wechselrichter einzuplanen?"
+        }
+      ]
+    },
+    {
+      "id": 3584,
+      "slug": "goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one",
+      "sku": "DLK-GOODWE-GW12KETAG20",
+      "title": "GoodWe ESA GW12K-ETA-G20 (12 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW12K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery Interface",
+          "question_en": "Does mixing BAT-D capacities change heating or firmware requirements on this 12 kW ESA?",
+          "question_de": "Ändert das Mischen von BAT-D-Kapazitäten Heizung oder Firmware-Anforderungen beim 12-kW-ESA?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "What backup load can the GW12K-ETA-G20 design support?",
+          "question_de": "Welche Notstromlast trägt die Auslegung mit GW12K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Installation & wiring",
+          "question_en": "Does the stacked battery need a separate DC cable run?",
+          "question_de": "Braucht die gestapelte Batterie eine separate DC-Leitung?"
+        }
+      ]
+    },
+    {
+      "id": 3585,
+      "slug": "goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one",
+      "sku": "DLK-GOODWE-GW15KETAG20",
+      "title": "GoodWe ESA GW15K-ETA-G20 (15 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW15K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Are the battery base and CT in the standard inverter kit, and are battery modules separate?",
+          "question_de": "Sind Batteriesockel und Stromwandler im Standardlieferumfang des Wechselrichters enthalten und die Batteriemodule separat?"
+        },
+        {
+          "index": 1,
+          "category": "Battery selection",
+          "question_en": "Which BAT-D module has the documented -20°C charging range?",
+          "question_de": "Welche BAT-D-Module haben den dokumentierten Ladebereich ab -20 °C?"
+        },
+        {
+          "index": 2,
+          "category": "Operation",
+          "question_en": "What backup load can the GW15K-ETA-G20 design support?",
+          "question_de": "Welche Notstromlast trägt die Auslegung mit GW15K-ETA-G20?"
+        }
+      ]
+    },
+    {
+      "id": 3586,
+      "slug": "goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger",
+      "sku": "DLK-GOODWE-GW7KHCA20",
+      "title": "GoodWe HCA G2 GW7K-HCA-20 (7 kW single-phase EV charger, 7.5 m cable)",
+      "brand": "GoodWe",
+      "model": "GW7K-HCA-20",
+      "series": "GoodWe HCA G2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Connection",
+          "question_en": "Can GW7K-HCA-20 be specified for a 230 V single-phase charge point?",
+          "question_de": "Passt GW7K-HCA-20 an einen einphasigen 230-V-Ladepunkt?"
+        },
+        {
+          "index": 1,
+          "category": "Scope of delivery",
+          "question_en": "What comes with the charger?",
+          "question_de": "Was gehört zum Lieferumfang?"
+        },
+        {
+          "index": 2,
+          "category": "Grid connection",
+          "question_en": "Is GW7K-HCA-20 prepared for §14a EnWG?",
+          "question_de": "Ist GW7K-HCA-20 für §14a EnWG vorbereitet?"
+        }
+      ]
+    },
+    {
+      "id": 3587,
+      "slug": "goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger",
+      "sku": "DLK-GOODWE-GW22KHCA20",
+      "title": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+      "brand": "GoodWe",
+      "model": "GW22K-HCA-20",
+      "series": "GoodWe HCA G2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Project specification",
+          "question_en": "What should be checked before ordering GW22K-HCA-20?",
+          "question_de": "Was ist vor der Bestellung von GW22K-HCA-20 zu prüfen?"
+        },
+        {
+          "index": 1,
+          "category": "Scope of delivery",
+          "question_en": "What comes with the charger?",
+          "question_de": "Was gehört zum Lieferumfang?"
+        },
+        {
+          "index": 2,
+          "category": "Grid connection",
+          "question_en": "Is GW22K-HCA-20 prepared for §14a EnWG?",
+          "question_de": "Ist GW22K-HCA-20 für §14a EnWG vorbereitet?"
+        }
+      ]
+    },
+    {
+      "id": 3595,
+      "slug": "goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v",
+      "sku": "DLK-GOODWE-ETR125",
+      "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+      "brand": "GoodWe",
+      "model": "GW125K-ETR-G10",
+      "series": "ETR Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery Interface",
+          "question_en": "Which BAT-C cabinet does the Battery Compatibility Overview list for the ETR, and how is GW208.9-BAT-LCD-G10 documented?",
+          "question_de": "Welchen BAT-C-Schrank listet die Batterie-Kompatibilitätsübersicht für den ETR, und wie ist GW208.9-BAT-LCD-G10 dokumentiert?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "Is an external STS needed for the ETR backup path?",
+          "question_de": "Ist für den ETR-Notstrompfad ein externer STS nötig?"
+        },
+        {
+          "index": 2,
+          "category": "PV Input",
+          "question_en": "Can PV strings operate in the 1000–1100 V band?",
+          "question_de": "Können PV-Strings im Bereich von 1000 bis 1100 V betrieben werden?"
+        }
+      ]
+    },
+    {
+      "id": 3608,
+      "slug": "ecoflow-ocean-2-lfp-battery-base",
+      "sku": "DLK-ECOFLOW-OCEAN2-BASE",
+      "title": "EcoFlow OCEAN 2 LFP Battery Base",
+      "brand": "EcoFlow",
+      "model": "OCEAN 2 LFP Battery Base",
+      "series": "EcoFlow OCEAN 2 LFP Battery",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "How many OCEAN 2 floor bases does one battery tower use?",
+          "question_de": "Wie viele OCEAN-2-Bodensockel braucht ein Batterieturm?"
+        },
+        {
+          "index": 1,
+          "category": "Selection",
+          "question_en": "Can this floor base be used for a wall-mounted tower?",
+          "question_de": "Kann dieser Bodensockel für einen Wandturm verwendet werden?"
+        }
+      ]
+    },
+    {
+      "id": 3609,
+      "slug": "ecoflow-battery-stack-bridge",
+      "sku": "DLK-ECOFLOW-STACK-BRIDGE",
+      "title": "EcoFlow Battery Stack Bridge",
+      "brand": "EcoFlow",
+      "model": "EcoFlow Battery Stack Bridge",
+      "series": "EcoFlow Battery Stack Bridge",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Can one bridge join different battery models?",
+          "question_de": "Darf eine Brücke zwei unterschiedliche Batteriemodelle verbinden?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "How many bridge kits should I order for two towers?",
+          "question_de": "Wie viele Brücken-Sets brauche ich für zwei Türme?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "What gap must I leave between the two tower bases?",
+          "question_de": "Welcher Abstand ist zwischen den beiden Turmsockeln einzuplanen?"
+        }
+      ]
+    },
+    {
+      "id": 3611,
+      "slug": "goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh",
+      "sku": "DLK-GOODWE-GW60BATDG20",
+      "title": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+      "brand": "GoodWe",
+      "model": "GW6.0-BAT-D-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Module configuration",
+          "question_en": "Is heating integrated in the GW6.0 ESA module?",
+          "question_de": "Ist die Heizung im GW6.0-ESA-Modul integriert?"
+        }
+      ]
+    },
+    {
+      "id": 3612,
+      "slug": "goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh",
+      "sku": "DLK-GOODWE-GW90BATDG20",
+      "title": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+      "brand": "GoodWe",
+      "model": "GW9.0-BAT-D-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation access",
+          "question_en": "What should the lifting route allow for this 9.0 kWh module?",
+          "question_de": "Was muss der Einbringungsweg für dieses 9,0-kWh-Modul leisten?"
+        }
+      ]
+    },
+    {
+      "id": 3618,
+      "slug": "saj-emanager-emanager-5-0-residential-energy-manager",
+      "sku": "DLK-SAJ-EMANAGER",
+      "title": "SAJ eManager (energy management system module)",
+      "brand": "SAJ",
+      "model": "eManager",
+      "series": "SAJ smart accessories",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "How many inverters does one eManager manage in a parallel system?",
+          "question_de": "Wie viele Wechselrichter verwaltet ein eManager in einem Parallelsystem?"
+        },
+        {
+          "index": 1,
+          "category": "Commissioning",
+          "question_en": "Which inverter firmware does the eManager need?",
+          "question_de": "Welche Wechselrichter-Firmware braucht der eManager?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "When does the eManager need external current transformers?",
+          "question_de": "Wann braucht der eManager externe Stromwandler?"
+        }
+      ]
+    },
+    {
+      "id": 4103,
+      "slug": "saj-cb2-57-3-hv5",
+      "sku": "DLK-SAJ-CB2573HV5",
+      "title": "SAJ CB2-57.3-HV5 (57.3 kWh C&amp;I battery cabinet)",
+      "brand": "SAJ",
+      "model": "CB2-57.3-HV5",
+      "series": "SAJ CB2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Which inverters work with the CB2-57.3-HV5?",
+          "question_de": "Welche Wechselrichter arbeiten mit dem CB2-57.3-HV5?"
+        },
+        {
+          "index": 1,
+          "category": "Selection",
+          "question_en": "What are the dimensions and the weight of the cabinet?",
+          "question_de": "Welche Abmessungen und welches Gewicht hat der Schrank?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Can storage be added to an existing CB2 system later?",
+          "question_de": "Lässt sich ein bestehendes CB2-System später erweitern?"
+        }
+      ]
+    },
+    {
+      "id": 4104,
+      "slug": "saj-cb2-71-6-hv5",
+      "sku": "DLK-SAJ-CB2716HV5",
+      "title": "SAJ CB2-71.6-HV5 (71.6 kWh C&amp;I battery cabinet)",
+      "brand": "SAJ",
+      "model": "CB2-71.6-HV5",
+      "series": "SAJ CB2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Which inverters work with the CB2-71.6-HV5?",
+          "question_de": "Welche Wechselrichter arbeiten mit dem CB2-71.6-HV5?"
+        },
+        {
+          "index": 1,
+          "category": "Selection",
+          "question_en": "What are the dimensions and the weight of the cabinet?",
+          "question_de": "Welche Abmessungen und welches Gewicht hat der Schrank?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Can storage be added to an existing CB2 system later?",
+          "question_de": "Lässt sich ein bestehendes CB2-System später erweitern?"
+        }
+      ]
+    },
+    {
+      "id": 4105,
+      "slug": "saj-cb2-85-9-hv5",
+      "sku": "DLK-SAJ-CB2859HV5",
+      "title": "SAJ CB2-85.9-HV5 (85.9 kWh C&amp;I battery cabinet)",
+      "brand": "SAJ",
+      "model": "CB2-85.9-HV5",
+      "series": "SAJ CB2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Which inverters work with the CB2-85.9-HV5?",
+          "question_de": "Welche Wechselrichter arbeiten mit dem CB2-85.9-HV5?"
+        },
+        {
+          "index": 1,
+          "category": "Selection",
+          "question_en": "What are the dimensions and the weight of the cabinet?",
+          "question_de": "Welche Abmessungen und welches Gewicht hat der Schrank?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Can storage be added to an existing CB2 system later?",
+          "question_de": "Lässt sich ein bestehendes CB2-System später erweitern?"
+        }
+      ]
+    },
+    {
+      "id": 4106,
+      "slug": "saj-cb2-100-3-hv5",
+      "sku": "DLK-SAJ-CB21003HV5",
+      "title": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+      "brand": "SAJ",
+      "model": "CB2-100.3-HV5",
+      "series": "SAJ CB2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Which inverters work with the CB2-100.3-HV5?",
+          "question_de": "Welche Wechselrichter arbeiten mit dem CB2-100.3-HV5?"
+        },
+        {
+          "index": 1,
+          "category": "Selection",
+          "question_en": "What are the dimensions and the weight of the cabinet?",
+          "question_de": "Welche Abmessungen und welches Gewicht hat der Schrank?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "Can storage be added to an existing CB2 system later?",
+          "question_de": "Lässt sich ein bestehendes CB2-System später erweitern?"
+        }
+      ]
+    },
+    {
+      "id": 4107,
+      "slug": "saj-h2-10k-t3",
+      "sku": "DLK-SAJ-H210KT3",
+      "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+      "brand": "SAJ",
+      "model": "H2-10K-T3",
+      "series": "SAJ H2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Package",
+          "question_en": "What does the H2-10K-T3 package contain?",
+          "question_de": "Was gehört zum Lieferumfang des H2-10K-T3?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "Which circuit breaker and AC cable does the H2-10K-T3 need?",
+          "question_de": "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-10K-T3?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery connection does the H2-10K-T3 have?",
+          "question_de": "Welchen Batterieanschluss hat der H2-10K-T3?"
+        }
+      ]
+    },
+    {
+      "id": 4108,
+      "slug": "saj-h2-12k-t3",
+      "sku": "DLK-SAJ-H212KT3",
+      "title": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+      "brand": "SAJ",
+      "model": "H2-12K-T3",
+      "series": "SAJ H2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Package",
+          "question_en": "What does the H2-12K-T3 package contain?",
+          "question_de": "Was gehört zum Lieferumfang des H2-12K-T3?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "Which circuit breaker and AC cable does the H2-12K-T3 need?",
+          "question_de": "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-12K-T3?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery connection does the H2-12K-T3 have?",
+          "question_de": "Welchen Batterieanschluss hat der H2-12K-T3?"
+        }
+      ]
+    },
+    {
+      "id": 4109,
+      "slug": "saj-hs2-5k-t2-x",
+      "sku": "DLK-SAJ-HS25KT2X",
+      "title": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+      "brand": "SAJ",
+      "model": "HS2-5K-T2-X",
+      "series": "HS2",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Compatibility",
+          "question_en": "Which battery modules does the HS2-5K-T2-X take, and how many?",
+          "question_de": "Welche Batteriemodule passen zum HS2-5K-T2-X, und wie viele?"
+        },
+        {
+          "index": 1,
+          "category": "Backup",
+          "question_en": "What does the backup output of the HS2-5K-T2-X deliver when the grid fails?",
+          "question_de": "Was liefert der Notstromausgang des HS2-5K-T2-X bei Netzausfall?"
+        },
+        {
+          "index": 2,
+          "category": "Installation",
+          "question_en": "What does the AC side of the HS2-5K-T2-X need at installation?",
+          "question_de": "Was braucht die AC-Seite des HS2-5K-T2-X bei der Installation?"
+        }
+      ]
+    },
+    {
+      "id": 6321,
+      "slug": "goodwe-esa-gw125-261-esa-lcn-g10",
+      "sku": "DLK-GOODWE-GW125261ESALCNG10",
+      "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+      "brand": "GoodWe",
+      "model": "GW125/261-ESA-LCN-G10",
+      "series": "GoodWe ESA 125 kW / 261 kWh",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "What does one GW125/261-ESA-LCN-G10 cabinet contain?",
+          "question_de": "Was enthält ein Schrank GW125/261-ESA-LCN-G10?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "How is the cabinet connected to the grid?",
+          "question_de": "Wie wird der Schrank ans Netz angeschlossen?"
+        },
+        {
+          "index": 2,
+          "category": "Grid connection",
+          "question_en": "Which VDE grid-connection certificates are available?",
+          "question_de": "Welche VDE-Netzanschlusszertifikate liegen vor?"
+        },
+        {
+          "index": 3,
+          "category": "System design",
+          "question_en": "What is needed for power limiting at the grid connection point and for several cabinets?",
+          "question_de": "Was wird für die Leistungsbegrenzung am Netzanschlusspunkt und für mehrere Schränke benötigt?"
+        },
+        {
+          "index": 4,
+          "category": "Backup",
+          "question_en": "Can the cabinet supply the site when the grid fails?",
+          "question_de": "Kann der Schrank den Standort bei Netzausfall versorgen?"
+        },
+        {
+          "index": 5,
+          "category": "Site planning",
+          "question_en": "What does the site need for delivery and installation?",
+          "question_de": "Was braucht der Standort für Anlieferung und Aufstellung?"
+        },
+        {
+          "index": 6,
+          "category": "Warranty",
+          "question_en": "What warranty applies to the cabinet?",
+          "question_de": "Welche Garantie gilt für den Schrank?"
+        }
+      ]
+    },
+    {
+      "id": 6480,
+      "slug": "ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP35K0S2",
+      "title": "EcoFlow OCEAN 2 HD-P3-5K0-S2 (5 kW three-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P3-5K0-S2",
+      "series": "EcoFlow OCEAN 2 (Three-Phase)",
+      "questions": []
+    },
+    {
+      "id": 6481,
+      "slug": "ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP315KG2",
+      "title": "EcoFlow OCEAN 2 HD-P3-15K-G2 (15 kW three-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P3-15K-G2",
+      "series": "EcoFlow OCEAN 2 (Three-Phase)",
+      "questions": []
+    },
+    {
+      "id": 6482,
+      "slug": "ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP315KG2F",
+      "title": "EcoFlow OCEAN 2 HD-P3-15K-G2F (15 kW three-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P3-15K-G2F",
+      "series": "EcoFlow OCEAN 2 (Three-Phase)",
+      "questions": []
+    },
+    {
+      "id": 6483,
+      "slug": "ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP13KS2",
+      "title": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-3K-S2",
+      "series": "EcoFlow OCEAN 2 (Single-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which circuits receive power through the 3K-S2 BACKUP connection?",
+          "question_de": "Welche Stromkreise hängen beim 3K-S2 am BACKUP-Anschluss?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "How many of these inverters can be cascaded?",
+          "question_de": "Wie viele dieser Wechselrichter können kaskadiert werden?"
+        },
+        {
+          "index": 2,
+          "category": "Communication",
+          "question_en": "Is the IOT dongle required?",
+          "question_de": "Ist der IOT-Dongle Pflicht?"
+        }
+      ]
+    },
+    {
+      "id": 6484,
+      "slug": "ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP13K68S2",
+      "title": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-3K68-S2",
+      "series": "EcoFlow OCEAN 2 (Single-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which circuits receive power through the HD-P1-3K68-S2 BACKUP connection?",
+          "question_de": "Welche Stromkreise hängen beim HD-P1-3K68-S2 am BACKUP-Anschluss?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "How many of these inverters can be cascaded?",
+          "question_de": "Wie viele dieser Wechselrichter können kaskadiert werden?"
+        },
+        {
+          "index": 2,
+          "category": "Communication",
+          "question_en": "Is the IOT dongle required?",
+          "question_de": "Ist der IOT-Dongle Pflicht?"
+        }
+      ]
+    },
+    {
+      "id": 6485,
+      "slug": "ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP14K6S2",
+      "title": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-4K6-S2",
+      "series": "EcoFlow OCEAN 2 (Single-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which circuits receive power through the HD-P1-4K6-S2 BACKUP connection?",
+          "question_de": "Welche Stromkreise hängen beim HD-P1-4K6-S2 am BACKUP-Anschluss?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "How many of these inverters can be cascaded?",
+          "question_de": "Wie viele dieser Wechselrichter können kaskadiert werden?"
+        },
+        {
+          "index": 2,
+          "category": "Communication",
+          "question_en": "Is the IOT dongle required?",
+          "question_de": "Ist der IOT-Dongle Pflicht?"
+        }
+      ]
+    },
+    {
+      "id": 6486,
+      "slug": "ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP15KS2",
+      "title": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-5K-S2",
+      "series": "EcoFlow OCEAN 2 (Single-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which circuits receive power through the HD-P1-5K-S2 BACKUP connection?",
+          "question_de": "Welche Stromkreise hängen beim HD-P1-5K-S2 am BACKUP-Anschluss?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "How many of these inverters can be cascaded?",
+          "question_de": "Wie viele dieser Wechselrichter können kaskadiert werden?"
+        },
+        {
+          "index": 2,
+          "category": "Communication",
+          "question_en": "Is the IOT dongle required?",
+          "question_de": "Ist der IOT-Dongle Pflicht?"
+        }
+      ]
+    },
+    {
+      "id": 6487,
+      "slug": "ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP15K75S2",
+      "title": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-5K75-S2",
+      "series": "EcoFlow OCEAN 2 (Single-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which circuits receive power through the HD-P1-5K75-S2 BACKUP connection?",
+          "question_de": "Welche Stromkreise hängen beim HD-P1-5K75-S2 am BACKUP-Anschluss?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "How many of these inverters can be cascaded?",
+          "question_de": "Wie viele dieser Wechselrichter können kaskadiert werden?"
+        },
+        {
+          "index": 2,
+          "category": "Communication",
+          "question_en": "Is the IOT dongle required?",
+          "question_de": "Ist der IOT-Dongle Pflicht?"
+        }
+      ]
+    },
+    {
+      "id": 6488,
+      "slug": "ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid",
+      "sku": "DLK-ECOFLOW-EFHDP16KS2",
+      "title": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+      "brand": "EcoFlow",
+      "model": "EF HD-P1-6K-S2",
+      "series": "EcoFlow OCEAN 2 (Single-Phase)",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Installation",
+          "question_en": "Which circuits receive power through the HD-P1-6K-S2 BACKUP connection?",
+          "question_de": "Welche Stromkreise hängen beim HD-P1-6K-S2 am BACKUP-Anschluss?"
+        },
+        {
+          "index": 1,
+          "category": "Installation",
+          "question_en": "How many of these inverters can be cascaded?",
+          "question_de": "Wie viele dieser Wechselrichter können kaskadiert werden?"
+        },
+        {
+          "index": 2,
+          "category": "Communication",
+          "question_en": "Is the IOT dongle required?",
+          "question_de": "Ist der IOT-Dongle Pflicht?"
+        }
+      ]
+    },
+    {
+      "id": 6506,
+      "slug": "goodwe-gw75k-et-g10",
+      "sku": "DLK-GOODWE-GW75KETG10",
+      "title": "GoodWe GW75K-ET-G10",
+      "brand": "GoodWe",
+      "model": "GW75K-ET-G10",
+      "series": "ET Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "How does GW75K-ET-G10 differ from GW80K-ET-G10?",
+          "question_de": "Worin unterscheidet sich der GW75K-ET-G10 vom GW80K-ET-G10?"
+        },
+        {
+          "index": 1,
+          "category": "Grid connection",
+          "question_en": "Does GW75K-ET-G10 hold a German unit certificate?",
+          "question_de": "Hat der GW75K-ET-G10 ein deutsches Einheitenzertifikat?"
+        }
+      ]
+    },
+    {
+      "id": 6507,
+      "slug": "goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter",
+      "sku": "DLK-GOODWE-GW80KETRG10",
+      "title": "GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)",
+      "brand": "GoodWe",
+      "model": "GW80K-ETR-G10",
+      "series": "ETR Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery Interface",
+          "question_en": "Which BAT-C cabinet is listed for GW80K-ETR-G10?",
+          "question_de": "Welchen BAT-C-Schrank listet die Übersicht für GW80K-ETR-G10?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "Is an external STS needed for the ETR backup path?",
+          "question_de": "Ist für den ETR-Notstrompfad ein externer STS nötig?"
+        },
+        {
+          "index": 2,
+          "category": "PV Input",
+          "question_en": "Can PV strings operate in the 1000–1100 V band?",
+          "question_de": "Können PV-Strings im Bereich von 1000 bis 1100 V betrieben werden?"
+        }
+      ]
+    },
+    {
+      "id": 6508,
+      "slug": "goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter",
+      "sku": "DLK-GOODWE-GW9999KETRG10",
+      "title": "GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)",
+      "brand": "GoodWe",
+      "model": "GW99.99K-ETR-G10",
+      "series": "ETR Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery Interface",
+          "question_en": "Which BAT-C cabinet is listed for GW99.99K-ETR-G10?",
+          "question_de": "Welchen BAT-C-Schrank listet die Übersicht für GW99.99K-ETR-G10?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "Is an external STS needed for the ETR backup path?",
+          "question_de": "Ist für den ETR-Notstrompfad ein externer STS nötig?"
+        },
+        {
+          "index": 2,
+          "category": "PV Input",
+          "question_en": "Can PV strings operate in the 1000–1100 V band?",
+          "question_de": "Können PV-Strings im Bereich von 1000 bis 1100 V betrieben werden?"
+        }
+      ]
+    },
+    {
+      "id": 6509,
+      "slug": "goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter",
+      "sku": "DLK-GOODWE-GW100KETRG10",
+      "title": "GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)",
+      "brand": "GoodWe",
+      "model": "GW100K-ETR-G10",
+      "series": "ETR Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery Interface",
+          "question_en": "Which BAT-C cabinet is listed for GW100K-ETR-G10?",
+          "question_de": "Welchen BAT-C-Schrank listet die Übersicht für GW100K-ETR-G10?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "Is an external STS needed for the ETR backup path?",
+          "question_de": "Ist für den ETR-Notstrompfad ein externer STS nötig?"
+        },
+        {
+          "index": 2,
+          "category": "PV Input",
+          "question_en": "Can PV strings operate in the 1000–1100 V band?",
+          "question_de": "Können PV-Strings im Bereich von 1000 bis 1100 V betrieben werden?"
+        }
+      ]
+    },
+    {
+      "id": 6510,
+      "slug": "goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter",
+      "sku": "DLK-GOODWE-GW110KETRG10",
+      "title": "GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)",
+      "brand": "GoodWe",
+      "model": "GW110K-ETR-G10",
+      "series": "ETR Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery Interface",
+          "question_en": "Which BAT-C cabinet is listed for GW110K-ETR-G10?",
+          "question_de": "Welchen BAT-C-Schrank listet die Übersicht für GW110K-ETR-G10?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "Is an external STS needed for the ETR backup path?",
+          "question_de": "Ist für den ETR-Notstrompfad ein externer STS nötig?"
+        },
+        {
+          "index": 2,
+          "category": "PV Input",
+          "question_en": "Can PV strings operate in the 1000–1100 V band?",
+          "question_de": "Können PV-Strings im Bereich von 1000 bis 1100 V betrieben werden?"
+        }
+      ]
+    },
+    {
+      "id": 6511,
+      "slug": "goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter",
+      "sku": "DLK-GOODWE-GW12499KETRG10",
+      "title": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+      "brand": "GoodWe",
+      "model": "GW124.99K-ETR-G10",
+      "series": "ETR Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Battery Interface",
+          "question_en": "Which BAT-C cabinet is listed for GW124.99K-ETR-G10?",
+          "question_de": "Welchen BAT-C-Schrank listet die Übersicht für GW124.99K-ETR-G10?"
+        },
+        {
+          "index": 1,
+          "category": "Operation",
+          "question_en": "Is an external STS needed for the ETR backup path?",
+          "question_de": "Ist für den ETR-Notstrompfad ein externer STS nötig?"
+        },
+        {
+          "index": 2,
+          "category": "PV Input",
+          "question_en": "Can PV strings operate in the 1000–1100 V band?",
+          "question_de": "Können PV-Strings im Bereich von 1000 bis 1100 V betrieben werden?"
+        }
+      ]
+    },
+    {
+      "id": 6512,
+      "slug": "goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module",
+      "sku": "DLK-GOODWE-GW5KETAG20",
+      "title": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW5K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW5K-ETA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW5K-ETA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW5K-ETA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW5K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6513,
+      "slug": "goodwe-esa-gw6k-eta-g20-6-kw-three-phase-power-module",
+      "sku": "DLK-GOODWE-GW6KETAG20",
+      "title": "GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW6K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW6K-ETA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW6K-ETA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW6K-ETA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW6K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6514,
+      "slug": "goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module",
+      "sku": "DLK-GOODWE-GW9999KETAG20",
+      "title": "GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW9.999K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW9.999K-ETA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW9.999K-ETA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW9.999K-ETA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW9.999K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6515,
+      "slug": "goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module",
+      "sku": "DLK-GOODWE-GW20KETAG20",
+      "title": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW20K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW20K-ETA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW20K-ETA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW20K-ETA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW20K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6516,
+      "slug": "goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module",
+      "sku": "DLK-GOODWE-GW25KETAG20",
+      "title": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW25K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW25K-ETA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW25K-ETA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW25K-ETA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW25K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6517,
+      "slug": "goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module",
+      "sku": "DLK-GOODWE-GW29999KETAG20",
+      "title": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW29.999K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW29.999K-ETA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW29.999K-ETA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW29.999K-ETA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW29.999K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6518,
+      "slug": "goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module",
+      "sku": "DLK-GOODWE-GW30KETAG20",
+      "title": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW30K-ETA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW30K-ETA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW30K-ETA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW30K-ETA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW30K-ETA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6519,
+      "slug": "goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh",
+      "sku": "DLK-GOODWE-GW51BATDG20",
+      "title": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+      "brand": "GoodWe",
+      "model": "GW5.1-BAT-D-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Module",
+          "question_en": "Does GW5.1-BAT-D-G20 include heating?",
+          "question_de": "Hat GW5.1-BAT-D-G20 eine Heizung?"
+        },
+        {
+          "index": 1,
+          "category": "Stack",
+          "question_en": "How many modules in one column?",
+          "question_de": "Wie viele Module in einer Säule?"
+        }
+      ]
+    },
+    {
+      "id": 6520,
+      "slug": "goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh",
+      "sku": "DLK-GOODWE-GW83BATDG20",
+      "title": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+      "brand": "GoodWe",
+      "model": "GW8.3-BAT-D-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Module",
+          "question_en": "Does GW8.3-BAT-D-G20 include heating?",
+          "question_de": "Hat GW8.3-BAT-D-G20 eine Heizung?"
+        },
+        {
+          "index": 1,
+          "category": "Stack",
+          "question_en": "How many modules in one column?",
+          "question_de": "Wie viele Module in einer Säule?"
+        }
+      ]
+    },
+    {
+      "id": 6521,
+      "slug": "goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh",
+      "sku": "DLK-GOODWE-GW51BATDG21",
+      "title": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)",
+      "brand": "GoodWe",
+      "model": "GW5.1-BAT-D-G21",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Module",
+          "question_en": "Does GW5.1-BAT-D-G21 include heating?",
+          "question_de": "Hat GW5.1-BAT-D-G21 eine Heizung?"
+        },
+        {
+          "index": 1,
+          "category": "Stack",
+          "question_en": "How many modules in one column?",
+          "question_de": "Wie viele Module in einer Säule?"
+        }
+      ]
+    },
+    {
+      "id": 6522,
+      "slug": "goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh",
+      "sku": "DLK-GOODWE-GW83BATDG21",
+      "title": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+      "brand": "GoodWe",
+      "model": "GW8.3-BAT-D-G21",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Module",
+          "question_en": "Does GW8.3-BAT-D-G21 include heating?",
+          "question_de": "Hat GW8.3-BAT-D-G21 eine Heizung?"
+        },
+        {
+          "index": 1,
+          "category": "Stack",
+          "question_en": "How many modules in one column?",
+          "question_de": "Wie viele Module in einer Säule?"
+        }
+      ]
+    },
+    {
+      "id": 6523,
+      "slug": "goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module",
+      "sku": "DLK-GOODWE-GW3KEHAG20",
+      "title": "GoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW3K-EHA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW3K-EHA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW3K-EHA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW3K-EHA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW3K-EHA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6524,
+      "slug": "goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module",
+      "sku": "DLK-GOODWE-GW36KEHAG20",
+      "title": "GoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW3.6K-EHA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW3.6K-EHA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW3.6K-EHA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW3.6K-EHA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW3.6K-EHA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6525,
+      "slug": "goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module",
+      "sku": "DLK-GOODWE-GW5KEHAG20",
+      "title": "GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW5K-EHA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW5K-EHA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW5K-EHA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW5K-EHA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW5K-EHA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6526,
+      "slug": "goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module",
+      "sku": "DLK-GOODWE-GW6KEHAG20",
+      "title": "GoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW6K-EHA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW6K-EHA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW6K-EHA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW6K-EHA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW6K-EHA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6527,
+      "slug": "goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module",
+      "sku": "DLK-GOODWE-GW8KEHAG20",
+      "title": "GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW8K-EHA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW8K-EHA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW8K-EHA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW8K-EHA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW8K-EHA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6528,
+      "slug": "goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module",
+      "sku": "DLK-GOODWE-GW10KEHAG20",
+      "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+      "brand": "GoodWe",
+      "model": "GW10K-EHA-G20",
+      "series": "ESA Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Backup",
+          "question_en": "What backup rating does GW10K-EHA-G20 have?",
+          "question_de": "Welche Notstromwerte hat der GW10K-EHA-G20?"
+        },
+        {
+          "index": 1,
+          "category": "PV input",
+          "question_en": "How many MPPTs does GW10K-EHA-G20 have?",
+          "question_de": "Wie viele MPPTs hat der GW10K-EHA-G20?"
+        },
+        {
+          "index": 2,
+          "category": "Battery",
+          "question_en": "Which battery modules stack with this power module?",
+          "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?"
+        }
+      ]
+    },
+    {
+      "id": 6529,
+      "slug": "goodwe-gw30k-sts-g10",
+      "sku": "DLK-GOODWE-GW30KSTSG10",
+      "title": "GoodWe GW30K-STS-G10",
+      "brand": "GoodWe",
+      "model": "GW30K-STS-G10",
+      "series": "STS Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Which inverters is GW30K-STS-G10 paired with?",
+          "question_de": "Mit welchen Wechselrichtern wird der GW30K-STS-G10 kombiniert?"
+        }
+      ]
+    },
+    {
+      "id": 6530,
+      "slug": "goodwe-gw60k-sts-g10",
+      "sku": "DLK-GOODWE-GW60KSTSG10",
+      "title": "GoodWe GW60K-STS-G10",
+      "brand": "GoodWe",
+      "model": "GW60K-STS-G10",
+      "series": "STS Series",
+      "questions": [
+        {
+          "index": 0,
+          "category": "Selection",
+          "question_en": "Is the inverter port of GW60K-STS-G10 also 60 kW?",
+          "question_de": "Ist der Wechselrichteranschluss des GW60K-STS-G10 ebenfalls 60 kW?"
+        }
+      ]
+    }
+  ]
+}

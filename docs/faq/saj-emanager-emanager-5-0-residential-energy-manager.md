@@ -1,0 +1,51 @@
+# SAJ eManager (energy management system module)
+
+- id: 3618
+- slug: `saj-emanager-emanager-5-0-residential-energy-manager`
+- sku: `DLK-SAJ-EMANAGER`
+- model: eManager
+
+## 1. How many inverters does one eManager manage in a parallel system?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** How many inverters does one eManager manage in a parallel system?
+
+The limit depends on the communication path. With LAN communication in parallel deployment, the eManager can be connected to a maximum of ten inverters. With RS485, a maximum of six inverters can be connected in parallel, and one pair of ports can be connected with two inverters at maximum.
+
+**DE Q:** Wie viele Wechselrichter verwaltet ein eManager in einem Parallelsystem?
+
+Das Limit hängt am Kommunikationsweg. Bei LAN-Kommunikation im Parallelbetrieb kann der eManager mit maximal zehn Wechselrichtern verbunden werden. Bei RS485 können maximal sechs Wechselrichter parallel angeschlossen werden, und ein Portpaar kann mit maximal zwei Wechselrichtern verbunden werden.
+
+**Citation:** SAJ eManager user manual (English) · p.25 · https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_manual_en_v3.pdf
+
+## 2. Which inverter firmware does the eManager need?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which inverter firmware does the eManager need?
+
+A firmware update is only applicable when the inverter firmware version is not compatible with the EMS firmware version. The manual lists the minimum DSP and ARM versions per inverter model, for example H2-(3K-6K)-S2: DSP V1.030, ARM V6.040; H2-(5K-10K)-T2: DSP V4.066, ARM V1.070; HS2-(5K-10K)-T2: DSP V4.066, ARM V1.070; HS2-(3K-6K)-S2: DSP V1.030, ARM V6.040; R6-(5K-10K)-(S2, S3): DSP V1.041, ARM V1.069; R6-(5K-15K)-T2: DSP V2.318, ARM V1.069; R6-(15K-50K)-(T2, T3, T4): DSP V2.580, ARM V6.196; R5-(0.7K-3K)-S1: DSP V1.234, ARM V3.100; R5-(3K-8K)-S2: DSP V1.524, ARM V3.100; H2-(10K-30K)-(T2, T3): DSP V3.061, ARM V8.035; HS3-(3K-6K)-S2: DSP V1.135, ARM V1.040; HS3-(5K-12K)-T2: DSP V2.103, ARM V2.030. Check whether your inverter firmware version (DSP version and ARM version) is earlier than the listed ones.
+
+**DE Q:** Welche Wechselrichter-Firmware braucht der eManager?
+
+Ein Firmware-Update ist nur dann anwendbar, wenn die Wechselrichter-Firmware-Version nicht mit der EMS-Firmware-Version kompatibel ist. Das Handbuch nennt die Mindestversionen für DSP und ARM je Wechselrichtermodell, zum Beispiel H2-(3K-6K)-S2: DSP V1.030, ARM V6.040; H2-(5K-10K)-T2: DSP V4.066, ARM V1.070; HS2-(5K-10K)-T2: DSP V4.066, ARM V1.070; HS2-(3K-6K)-S2: DSP V1.030, ARM V6.040; R6-(5K-10K)-(S2, S3): DSP V1.041, ARM V1.069; R6-(5K-15K)-T2: DSP V2.318, ARM V1.069; R6-(15K-50K)-(T2, T3, T4): DSP V2.580, ARM V6.196; R5-(0.7K-3K)-S1: DSP V1.234, ARM V3.100; R5-(3K-8K)-S2: DSP V1.524, ARM V3.100; H2-(10K-30K)-(T2, T3): DSP V3.061, ARM V8.035; HS3-(3K-6K)-S2: DSP V1.135, ARM V1.040; HS3-(5K-12K)-T2: DSP V2.103, ARM V2.030. Prüfen Sie, ob Ihre Wechselrichter-Firmware-Version (DSP-Version und ARM-Version) älter ist als die aufgeführten Versionen.
+
+**Citation:** SAJ eManager user manual (English) · p.45 · https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_manual_en_v3.pdf
+
+## 3. When does the eManager need external current transformers?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** When does the eManager need external current transformers?
+
+When the eManager works as a grid meter, either internal CT or external CT can be applied. The internal CT solution is available for current smaller than 63 A. To use external CTs, select the 50xN A/50 mA CT, wherein N is equal to or greater than 2. When the diameter of the grid AC cable is larger than 48 mm, order an additional DTSU666 (Dual RS485) grid meter from SAJ and prepare external CTs of N A/5 A, wherein the secondary current must be of 5 A.
+
+**DE Q:** Wann braucht der eManager externe Stromwandler?
+
+Wenn der eManager als Netzstromzähler arbeitet, kann entweder ein interner CT oder ein externer CT verwendet werden. Die interne CT-Lösung ist für Ströme kleiner als 63 A verfügbar. Für externe CTs wählen Sie den 50xN A/50 mA CT, wobei N gleich oder größer als 2 ist. Wenn der Durchmesser des Netz-AC-Kabels größer als 48 mm ist, bestellen Sie zusätzlich einen DTSU666 (Dual RS485) Netzstromzähler bei SAJ und bereiten Sie externe CTs von N A/5 A vor, wobei der Sekundärstrom 5 A betragen muss.
+
+**Citation:** SAJ eManager user manual (English) · p.25 · https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_manual_en_v3.pdf
