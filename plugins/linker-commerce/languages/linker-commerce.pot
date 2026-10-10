@@ -1,0 +1,166 @@
+# Copyright (C) 2026 Linker Technology GmbH
+# This file is distributed under the same license as the Linker Commerce plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Linker Commerce 0.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-10T05:36:15+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: linker-commerce\n"
+
+#. Plugin Name of the plugin
+#: linker-commerce.php
+msgid "Linker Commerce"
+msgstr ""
+
+#. Description of the plugin
+#: linker-commerce.php
+msgid "Inquiry chain, product facts and Abilities for de-linker.com."
+msgstr ""
+
+#. Author of the plugin
+#: linker-commerce.php
+msgid "Linker Technology GmbH"
+msgstr ""
+
+#: includes/Abilities/GetCommerceVersion.php:36
+msgid "Get Linker Commerce version"
+msgstr ""
+
+#: includes/Abilities/GetCommerceVersion.php:37
+msgid "Returns the version of the Linker Commerce plugin installed on this site."
+msgstr ""
+
+#: includes/Abilities/GetCommerceVersion.php:43
+msgid "Version from the plugin header."
+msgstr ""
+
+#: includes/Abilities/Registrar.php:42
+msgid "Linker"
+msgstr ""
+
+#: includes/Abilities/Registrar.php:43
+msgid "Products and inquiries of de-linker.com."
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:48
+msgid "Figures and citations"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:69
+msgid "This product states no figures."
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:73
+msgid "Changing a value or a unit requires the citation to be given again: the document and the page it is printed on."
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:75
+msgid "Key"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:76
+msgid "Value"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:77
+msgid "Unit"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:78
+msgid "Document"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:79
+msgid "Page"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:116
+msgid "— none —"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:140
+msgid "No citation"
+msgstr ""
+
+#. translators: %s: list of figure keys.
+#: includes/Admin/FiguresMetaBox.php:223
+#, php-format
+msgid "Figures %s kept their previous value: a changed value needs the document and the page it is printed on."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:72
+msgid "GMT timestamp or ISO-8601 moment; only products modified after it are returned."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:115
+msgid "The engineering data of every published product, the overlay components and the compatibility version (docs/specs/8-engineering-data.md)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:124
+msgid "sha256 of data/compatibility.json."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:128
+msgid "Engineering components that are not products (data/engineering-overlay.json)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:132
+msgid "One entry per published product."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:146
+msgid "Figure entries with a citation of a hosted document; a value without one is not in the feed."
+msgstr ""
+
+#. translators: %d: most product IDs per request.
+#: includes/Catalog/SelectionFactsController.php:76
+#, php-format
+msgid "Product IDs, at most %d."
+msgstr ""
+
+#: includes/Catalog/SelectionFactsController.php:130
+msgid "Selection facts of the requested published products, by product ID."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:86
+msgid "Product category the product is selected in."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:91
+msgid "Application (attribute pa_application)."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:96
+msgid "Number of grid phases."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:105
+msgid "Rated AC power in kW."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:106
+msgid "Maximum PV input power in kW."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:107
+msgid "Usable energy in kWh."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:108
+msgid "Nominal energy in kWh."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:110
+msgid "Energy range in kWh the product data states; present only then."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:120
+msgid "Rated AC power the product data states in kVA; present only then."
+msgstr ""
