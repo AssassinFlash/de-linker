@@ -1,15 +1,16 @@
 /**
- * The WooCommerce Store API: product display data and the solution draft (the cart).
+ * WooCommerce Store API: product display data and the solution draft (the cart).
  *
  * "Add all" adds each line, then reads the draft back and compares quantities:
  * a line counts as added only when the draft shows it (docs/specs/14 "走 Store
- * API 并读回").
+ * API 并读回"). Product display data is asked for in the page's language
+ * (`?lang=`, linker-i18n's RestLang; the default is English).
  */
 
 /**
  * Internal dependencies
  */
-import type { StoreProduct } from '../types';
+import type { Locale, StoreProduct } from '../types';
 
 type Fetch = typeof fetch;
 
@@ -26,7 +27,7 @@ interface Cart {
 }
 
 export interface StoreClient {
-	products: ( ids: number[] ) => Promise< StoreProduct[] >;
+	products: ( ids: number[], locale: Locale ) => Promise< StoreProduct[] >;
 	addAll: (
 		lines: DraftLine[],
 		onStatus: ( productId: number, status: AddStatus ) => void
@@ -62,11 +63,13 @@ export function storeClient(
 	}
 
 	return {
-		async products( ids ) {
+		async products( ids, locale ) {
 			if ( ids.length === 0 ) {
 				return [];
 			}
-			const query = `include=${ ids.join( ',' ) }&per_page=${ ids.length }`;
+			const query =
+				`include=${ ids.join( ',' ) }&per_page=${ ids.length }` +
+				`&lang=${ locale }`;
 			const response = await fetcher( `${ base }/products?${ query }`, {
 				credentials: 'same-origin',
 			} );

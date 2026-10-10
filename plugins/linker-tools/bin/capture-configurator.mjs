@@ -47,6 +47,17 @@ const VIEWPORTS = [
 	[ '390', { width: 390, height: 844 }, 2 ],
 ];
 
+// The theme's pages animate on scroll; a full-page screenshot scrolls, and a
+// half-finished animation shows as clipped or doubled content. The camera
+// freezes motion, so what it stitches is the settled page.
+async function freezeMotion( page ) {
+	await page.emulateMedia( { reducedMotion: 'reduce' } );
+	await page.addStyleTag( {
+		content:
+			'*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}',
+	} );
+}
+
 // Product images load lazily; a full-page photograph needs all of them, so
 // they are asked for at once and awaited.
 async function imagesLoaded( page ) {
@@ -125,9 +136,9 @@ const STATES = {
 	'solution-computing': {
 		page: 'solution',
 		async prepare( page ) {
-			await page.route( '**/design/residential', async ( route ) => {
-				await new Promise( ( resolve ) => setTimeout( resolve, 2500 ) );
-				await route.continue();
+			// The engine never answers, so the busy state cannot resolve mid-shot.
+			await page.route( '**/design/residential', () => {
+				// The handler never fulfills: the request stays pending.
 			} );
 			await fillResidential( page );
 			await submitResidential( page );
@@ -173,6 +184,26 @@ const STATES = {
 			await page.locator( '#linker-phase-1' ).check();
 			await submitResidential( page );
 			await page.locator( '.linker-empty--none' ).waitFor();
+		},
+	},
+	'solution-saved': {
+		page: 'solution',
+		async prepare( page ) {
+			await page.route( '**/linker/v1/solutions', ( route ) =>
+				route.fulfill( {
+					status: 201,
+					contentType: 'application/json',
+					body: JSON.stringify( {
+						id: 61,
+						url: '/my-account/solutions/61/',
+					} ),
+				} )
+			);
+			await STATES[ 'solution-proposal' ].prepare( page );
+			await page
+				.locator( '.linker-actions button.linker-button--secondary' )
+				.click();
+			await page.locator( '.linker-actions__status a' ).waitFor();
 		},
 	},
 	'solution-error': {
@@ -241,13 +272,28 @@ async function shot( browser, url, viewport, scale, file, state ) {
 	} );
 	const page = await context.newPage();
 	await page.goto( url, { waitUntil: 'networkidle' } );
+	await freezeMotion( page );
 	await page.locator( '.linker-configurator' ).waitFor();
 	await state.prepare( page );
 	await imagesLoaded( page );
+	// A page wider than its viewport would photograph a stretched canvas; that
+	// is a defect of the page (or of this script), never a state to archive.
+	const width = await page.evaluate(
+		() => document.scrollingElement.scrollWidth
+	);
+	if ( width > viewport.width ) {
+		throw new Error(
+			`${ file }: the page is ${ width } px wide at a ${ viewport.width } px viewport`
+		);
+	}
 	if ( state.part ) {
 		await page.locator( state.part ).screenshot( { path: file } );
 	} else {
-		await page.screenshot( { path: file, fullPage: true } );
+		await page.screenshot( {
+			path: file,
+			fullPage: true,
+			animations: 'disabled',
+		} );
 	}
 	await context.close();
 	process.stdout.write( `${ file }\n` );

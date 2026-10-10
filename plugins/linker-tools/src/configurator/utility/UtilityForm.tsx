@@ -14,6 +14,8 @@ import { __ } from '@wordpress/i18n';
  */
 import type { Config } from '../config';
 
+// Company and service questions go to the team address (owner ruling,
+// AGENTS.md section 2, 2026-10-05).
 export const TEAM_EMAIL = 'sales@de-linker.com';
 
 export function inquiryLink(

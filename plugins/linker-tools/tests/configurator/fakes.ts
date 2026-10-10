@@ -120,8 +120,10 @@ export function fakeStore(
 	outcome: 'added' | 'unverified' | 'retry' = 'added'
 ) {
 	const added: { productId: number; quantity: number }[] = [];
+	const langs: string[] = [];
 	const store: StoreClient = {
-		async products( ids ) {
+		async products( ids, locale ) {
+			langs.push( locale );
 			return fixtures.products.filter( ( product ) =>
 				ids.includes( product.id )
 			);
@@ -137,5 +139,5 @@ export function fakeStore(
 			return outcome === 'added';
 		},
 	};
-	return { store, added };
+	return { store, added, langs };
 }

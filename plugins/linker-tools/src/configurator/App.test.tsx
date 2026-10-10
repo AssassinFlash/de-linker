@@ -6,7 +6,7 @@
  * External dependencies
  */
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 
 /**
  * WordPress dependencies
@@ -18,7 +18,12 @@ import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
  */
 import german from '../../languages/linker-tools-de_DE_formal-linker-tools-configurator.json';
 import { fakeEngine, fakeStore } from '../../tests/configurator/fakes';
+import { saveSolution } from './api/solutions';
 import { App } from './App';
+
+// The account's route (#11) is mocked: these tests assert the states around
+// the save, not the request itself (solutions.test.ts holds that contract).
+vi.mock( './api/solutions', () => ( { saveSolution: vi.fn() } ) );
 import type { Config } from './config';
 import type { Locale } from './types';
 
@@ -231,12 +236,9 @@ test( 'inputs are checked against the engine schema before any request', async (
 test( 'German wording comes from the translation file', async () => {
 	setLocaleData( german.locale_data.messages, 'linker-tools' );
 	const { engine } = fakeEngine( { locale: 'de' } );
+	const { store, langs } = fakeStore();
 	render(
-		<App
-			config={ config( 'de' ) }
-			engine={ engine }
-			store={ fakeStore().store }
-		/>
+		<App config={ config( 'de' ) } engine={ engine } store={ store } />
 	);
 	expect( screen.getByRole( 'heading', { level: 1 } ) ).toHaveTextContent(
 		'Lösungskonfigurator'
@@ -256,5 +258,67 @@ test( 'German wording comes from the translation file', async () => {
 	).toBeInTheDocument();
 	expect(
 		screen.getByRole( 'heading', { name: 'Auslegungsbericht' } )
+	).toBeInTheDocument();
+	expect( langs ).toEqual( [ 'de' ] );
+} );
+
+test( 'a saved solution names the account and links to it', async () => {
+	const save = vi.mocked( saveSolution );
+	save.mockResolvedValue( { id: 61, url: '/my-account/solutions/61/' } );
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const saveButton = await screen.findByRole( 'button', {
+		name: 'Save solution',
+	} );
+	await act( async () => {
+		fireEvent.click( saveButton );
+	} );
+	expect(
+		await screen.findByText( 'Saved to your account.' )
+	).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'link', { name: 'Open saved solution' } )
+	).toHaveAttribute( 'href', '/my-account/solutions/61/' );
+	expect( save ).toHaveBeenCalledTimes( 1 );
+	expect( save.mock.calls[ 0 ][ 2 ] ).toEqual(
+		expect.objectContaining( { kind: 'residential' } )
+	);
+} );
+
+test( 'a refused save says so and can be tried again', async () => {
+	const save = vi.mocked( saveSolution );
+	save.mockRejectedValue( new Error( 'save 403' ) );
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const saveButton = await screen.findByRole( 'button', {
+		name: 'Save solution',
+	} );
+	await act( async () => {
+		fireEvent.click( saveButton );
+	} );
+	expect(
+		await screen.findByText( 'The solution could not be saved. Try again.' )
+	).toBeInTheDocument();
+	save.mockClear();
+	save.mockResolvedValue( { id: 62, url: '/my-account/solutions/62/' } );
+	await act( async () => {
+		fireEvent.click( saveButton );
+	} );
+	expect(
+		await screen.findByText( 'Saved to your account.' )
 	).toBeInTheDocument();
 } );

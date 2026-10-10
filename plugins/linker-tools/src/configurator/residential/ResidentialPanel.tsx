@@ -125,7 +125,9 @@ export function ResidentialPanel( {
 			const ids = ( answer.selected?.lines ?? [] )
 				.map( ( line ) => line.product?.id )
 				.filter( ( id ): id is number => id !== undefined );
-			const found = await store.products( ids ).catch( () => [] );
+			const found = await store
+				.products( ids, config.locale )
+				.catch( () => [] );
 			setProducts(
 				new Map( found.map( ( product ) => [ product.id, product ] ) )
 			);

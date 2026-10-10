@@ -158,7 +158,7 @@ export function CommercialPanel( {
 			setCap( input.target_peak_kw ?? null );
 			const ids = answer.systems.map( ( system ) => system.inverter.id );
 			const found = ids.length
-				? await store.products( ids ).catch( () => [] )
+				? await store.products( ids, config.locale ).catch( () => [] )
 				: [];
 			setProducts(
 				new Map( found.map( ( product ) => [ product.id, product ] ) )
