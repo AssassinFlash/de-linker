@@ -180,6 +180,7 @@ def render(
             f"{q} ≥ {t}" if t != metrics.NEVER else f"{q}: escalate all"
             for q, t in result.thresholds.items()
         )
+        jev_test_qa = [r for r in runs["jev"] if r["item"] in set(qa)]
         out += [
             "",
             f"Jev confidence cascade (fallback = {fallback}, the best LLM on the calibration split; "
@@ -187,7 +188,7 @@ def render(
             "",
             "| on the test split | factual agreement | items escalated | USD per 1,000 judgments |",
             "|---|---|---|---|",
-            f"| Jev alone | {_pct(result.first_agreement)} | 0% | {_usd(metrics.cost_per_thousand(runs['jev']))} |",
+            f"| Jev alone | {_pct(result.first_agreement)} | 0% | {_usd(metrics.cost_per_thousand(jev_test_qa))} |",
             f"| {fallback} alone | {_pct(result.fallback_agreement)} | 100% | {_usd(result.fallback_cost_per_thousand)} |",
             f"| cascade | {_pct(result.agreement)} | {_pct(result.escalated_items)} | {_usd(result.cost_per_thousand)} |",
             "",

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
@@ -66,7 +67,9 @@ class Verdict:
 def call(
     judge: Judge, state: dict[str, Any], questions: tuple[Question, ...]
 ) -> Verdict:
-    """One evaluation of one item; failures come back as a verdict with `error` set."""
+    """One evaluation of one item; failures come back as a verdict with `error` set
+    (and the wall-clock start time of the attempt, so outage windows stay provable)."""
+    started = time.time()
     if judge.local:
         base, key = judge.endpoint.rstrip("/"), None
     else:
@@ -103,7 +106,7 @@ def call(
             )
     except (HttpError, KeyError, IndexError, ValueError) as error:
         empty = {q.name: Answer(None) for q in questions}
-        return Verdict(empty, 0.0, 0, 0.0, 0, 0, 0.0, "", error=str(error)[:500])
+        return Verdict(empty, 0.0, 0, started, 0, 0, 0.0, "", error=str(error)[:500])
     cost = (tokens_in * judge.price_in + tokens_out * judge.price_out) / 1_000_000
     return Verdict(
         answers,

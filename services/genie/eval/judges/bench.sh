@@ -15,9 +15,12 @@ mkdir -p "$out"
 
 for judge in "$@"; do
     case $judge in
-        # One slot and a 4,096-token context, as the worker would run it: the longest
-        # item needs 1,643 prompt tokens (trial run 2026-10-09). Encoder models read a
-        # whole pass in one physical batch, so their batch sizes match the context.
+        # One slot and a 4,096-token context, as the worker would run it. Measured
+        # prompt tokens (runs/formal-20261010): the largest encoder input is p231 at
+        # 3,869 tokens (julia1; laya's largest is p288 at 3,545), leaving ~227 tokens
+        # of headroom; the largest chat prompt is p288 at 1,703 (qwen3-1.7b). Encoder
+        # models read a whole pass in one physical batch, so their batch sizes match
+        # the context.
         julia1) file=Julia-1-GGUF/Julia-1-Q8_0.gguf port=18081 args=(-c 4096 -np 1 -b 4096 -ub 4096) ;;
         laya) file=Laya-GGUF/Laya-Q8_0.gguf port=18082 args=(-c 4096 -np 1 -b 4096 -ub 4096) ;;
         lev) file=lev-GGUF/lev-Q4_K_M.gguf port=18083 args=(-c 4096 -np 1) ;;

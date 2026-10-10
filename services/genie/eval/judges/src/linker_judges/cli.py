@@ -17,7 +17,7 @@ from .dataset import (
 )
 from .registry import JUDGES
 from .report import render
-from .runner import run_judge
+from .runner import CircuitOpen, run_judge
 
 
 def _selected(
@@ -35,9 +35,14 @@ def _selected(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="judges", description="#33 judge bake-off")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser(
+    build_parser = sub.add_parser(
         "build",
         help="write pairs.jsonl and construction.jsonl from data/ and the hosted PDFs",
+    )
+    build_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="rebuild even when pairs.jsonl already holds human labels",
     )
     run = sub.add_parser(
         "run", help="call judges on items, append one JSON line per call"
@@ -83,7 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "build":
-        pairs, copy = build()
+        pairs, copy = build(force=args.force)
         print(f"pairs.jsonl: {pairs} answer pairs and {copy} copy items")
         return 0
     items = load_items()
@@ -91,9 +96,13 @@ def main(argv: list[str] | None = None) -> int:
         chosen = _selected(items, args.ids, args.labels)
         for name in args.judges.split(","):
             judge = JUDGES[name.strip()]
-            count = run_judge(
-                judge, chosen, args.runs, args.out / f"{judge.name}.jsonl"
-            )
+            try:
+                count = run_judge(
+                    judge, chosen, args.runs, args.out / f"{judge.name}.jsonl"
+                )
+            except CircuitOpen as stop:
+                print(f"{judge.name}: STOPPED — {stop}", file=sys.stderr)
+                return 1
             print(f"{judge.name}: {count} calls")
         return 0
     if args.command == "report":

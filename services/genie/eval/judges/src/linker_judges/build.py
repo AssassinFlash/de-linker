@@ -265,7 +265,20 @@ def expected_labels(
     return {"grounded": grounded, "appropriate": appropriate, "better_pick": better}
 
 
-def build() -> tuple[int, int]:
+def build(force: bool = False) -> tuple[int, int]:
+    """Writes the blind file and its key. Refuses to overwrite a file that already
+    carries human labels (the truth axis) unless `force` is set."""
+    if PAIRS.exists() and not force:
+        labelled = sum(
+            1
+            for line in PAIRS.read_text().splitlines()
+            if line.strip() and (json.loads(line).get("human_label") is not None)
+        )
+        if labelled:
+            raise SystemExit(
+                f"{PAIRS.name} already holds {labelled} human labels; "
+                "rebuilding would erase the truth axis. Pass --force to rebuild anyway."
+            )
     seeds = json.loads(SEEDS.read_text())
     documents = seeds["documents"]
     variants: list[Variant] = []

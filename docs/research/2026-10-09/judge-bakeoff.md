@@ -30,7 +30,8 @@
 - **五类答案**：correct（照抄参考）、paraphrase_correct（换单位、德式数字格式、极简、寒暄式、带出处四种风格）、numeric_tamper（数值按固定倍数改动，且避开表中任何一格的值）、wrong_model（同一行里另一个型号的值，最常见的"串列"错误）、out_of_scope_answered（正确数值加一句库存数量/交期/Incoterms/安装/送达日期，或直接回答范围外问题）。错误答案一半套上寒暄式外壳，用来测"写得更周到的错误答案"（论文中 Jev 差距最大的一类）。
 - **三类问题**：grounded（score，0 矛盾 / 1 无法核实 / 2 有依据）、appropriate（noul，是否在 Genie 的职责范围内）、better_pick（choice，A / B / equal；候选答案与一个正确答案配对，位置随机，正确对正确为 equal）。原文在 `rubric.py`，所有评审收到同一文字。
 - **文案质量 50 条**（英德各 25）：plain 14、只有 AI 句式 12、只有营销腔 12、两者都有 12；问题为 ai_phrasing 与 marketing（noul），无参考。
-- **盲审（2026-10-10 完成）**：`pairs.jsonl` 不含答案类别与预期标签；构造信息在 `construction.jsonl`，裁定时不要打开它与 `runs/`。拆分按基础问题做（同一问题的 5 类答案与两种语言同在一侧），校准集约三分之一。裁定方法：去重后的 52 份参考全文先读一遍建立行–列对照，再分 15 批逐条裁定（不看 `construction.jsonl` 与任何 `runs/`）；过程中发现并修正了一次列对齐错误（GW25K 充电电流在 9 列德语表按 11 列英语表对齐，p049/p063 两条随之更正）。`uv run judges labels` 0 问题。有效性信号：盲审标签的落点分布（grounded 2/0/1 = 152/120/76，appropriate no=76，better_pick equal/A/B = 152/92/104，EN/DE 逐类完全均衡；文案四格 14/12/12/12）与构造设计的比例一致，且无一条 grounded=1 而 appropriate=yes、grounded=0 而 better_pick=equal 的自相矛盾。
+- **盲审（2026-10-10 完成）**：`pairs.jsonl` 不含答案类别与预期标签；构造信息在 `construction.jsonl`，裁定时不要打开它与 `runs/`。拆分按基础问题做（同一问题的 5 类答案与两种语言同在一侧），校准集约三分之一。裁定方法：去重后的 52 份参考全文先读一遍建立行–列对照，再分 15 批逐条裁定（不看 `construction.jsonl` 与任何 `runs/`）；过程中发现并修正了一次列对齐错误（GW25K 充电电流在 9 列德语表按 11 列英语表对齐，p049/p063 两条随之更正）。`uv run judges labels` 0 问题。有效性信号：盲审标签的落点分布（grounded 2/0/1 = 152/120/76，appropriate no=76，文案四格 14/12/12/12）与构造设计的比例一致，且无一条 grounded=1 而 appropriate=yes、grounded=0 而 better_pick=equal 的自相矛盾。
+- **盲审后的两处修正（2026-10-10，双评审 R1）**：①p049/p063（见上）。②p210：GW110K 的 PV 输入在 R02 参考表是 220 kW，A（220）为正确答案，盲审误选了 B（200，GW99.99K/GW100K 列串列）；英文镜像 p319 判对。修正后 expected-vs-human 全量核对为 0 处不一致（构造期望只作旁证，真值仍是逐条裁定本身）。列误读共 3 条 / 398（0.8%），全部是德语表列数与英语表不同的行。
 
 ## 评测对象
 
@@ -111,7 +112,7 @@ Accepted from Jev per question: grounded 100.0%, appropriate 100.0%, better_pick
 | qwen3-1.7b | Q4_K_M（1.28 GB） | 28.92 s | 135.11 s | 135.11 s | 3 462.7 MiB | 0.1 MiB | 2 | 三条全不过（服务器最终被 OOM killer 杀掉；2 次连接错误） |
 | lev | Q4_K_M（3.01 GB） | — | — | — | — | — | — | 权重文件已超 2 GB，不上 VPS（只在 Mac 上作质量上限参照） |
 
-产物：`runs/bench-vps/<judge>.jsonl` 与 `.summary.json`；服务器日志在 VPS `/tmp/bench-20261009/out/`。
+产物：`runs/bench-vps/<judge>.jsonl` 与 `.summary.json`；服务器日志在 VPS `/tmp/bench-20261009/out/`。未来的 bench 应加内存护栏（MemAvailable 低于阈值即中止该候选）：本次 qwen3-1.7b 是跑到 MemAvailable 0.1 MiB 后由 OOM killer 收场的，靠运气没有伤到同机的引擎与代理进程。
 
 ## openjev-qwen35-4b
 
@@ -119,8 +120,9 @@ Databricks 文档里的 `system.ai.openjev-qwen35-4b` 只以按 token 计费的�
 
 ## 正式轮（2026-10-10，398 条 × 3 次 × 8 个评审）
 
-- 运行：`uv run judges run --judges jev,deepseek,haiku,gemini --runs 3 --out runs/formal-20261010`（API，6 并发）与逐个 llama.cpp 服务器上的 `julia1`、`laya`、`lev`、`qwen3-1.7b`（每次一个请求）。8 个评审全部 1 194/1 194 次判定成功，`metrics.latest` 按 (条目, 次) 取末次。
-- **中断记录**：deepseek 在 04:00–04:07 UTC 跑了 210 次后 aihubmix 余额耗尽（HTTP 403）；余额恢复后 05:36–05:54 续完其余 984 次。两次窗口都在 DeepSeek 双倍计费时段（01–04、06–10 UTC）之外；jev/haiku/gemini 在 01:15–02:10 UTC。API 实付合计约 $3.9。
+- 运行：`uv run judges run --judges jev,deepseek,haiku,gemini --runs 3 --out runs/formal-20261010`（API，6 并发）与逐个 llama.cpp 服务器上的 `julia1`、`laya`、`lev`、`qwen3-1.7b`（每次一个请求）。8 个评审全部 1 194/1 194 个 (条目, 次) 判定成功，`metrics.latest` 按 (条目, 次) 取末条。
+- **重复成功记录的成因**：deepseek 2 393 行、lev 1 884 行，多于 1 194——deepseek 是余额 403 中断后按 (条目, 次) 续跑重试的追加；lev 是一次会话中断造成的两个 runner 竞争（各自按启动时的快照跳过已完成对，重叠部分重复呼叫）。多出的行全部是成功重呼，`latest()` 取末条，报表口径不受影响。
+- **中断记录**：deepseek 在 04:00–04:07 UTC 跑了 210 次后 aihubmix 余额耗尽（HTTP 403）；余额恢复后 05:36–05:54 续完其余 984 次。DeepSeek 双倍计费窗口按整点界取 **[01:00, 04:00) 与 [06:00, 10:00) UTC**（04:00:00 起已单倍），两次成功窗口全部在窗外；jev/haiku/gemini 在 01:15–02:10 UTC。当时的 403 失败记录未带时间戳（异常路径返回 0，已在 `judges.py` 修复：失败记录保留尝试起始时间），窗口由成功记录与续跑日志证明。API 实付合计约 $3.9。runner 现已加连错熔断（20 次连续失败即停，`runner.py` `MAX_CONSECUTIVE_ERRORS`），同类余额耗尽不会再烧完整轮。
 - lev 与 qwen3-1.7b 的本地延迟是两服务器并行时测得的（竞争 Metal），只作参考；延迟判定以 VPS 实测为准。
 
 ### 结果（测试集 230 对问答；`uv run judges report --runs runs/formal-20261010 --split test`）
@@ -149,7 +151,7 @@ Databricks 文档里的 `system.ai.openjev-qwen35-4b` 只以按 token 计费的�
 | lev | 81.3% | 81.3% | 65.0% | 47.5% | 47.3% |
 | qwen3-1.7b | 42.7% | 40.0% | 46.7% | 40.8% | 48.0% |
 
-校准集（118 对）排序：gemini 99.7% > haiku 98.0% > deepseek 96.4% > jev 92.8%；开源 julia1 31.9%、laya 45.8%、lev 69.8%、qwen3-1.7b 45.2%（完整表 `uv run judges report --runs runs/formal-20261010 --split calibration`）。
+校准集（118 对）排序：gemini 100.0% > haiku 98.3% > deepseek 96.7% > jev 93.1%；开源 julia1 32.2%、laya 45.8%、lev 69.5%、qwen3-1.7b 44.9%（p210 修正后各家 +0.3 个百分点；完整表 `uv run judges report --runs runs/formal-20261010 --split calibration`）。
 
 ### 决策规则应用（规则在结果之前写定）
 
@@ -166,14 +168,16 @@ Databricks 文档里的 `system.ai.openjev-qwen35-4b` 只以按 token 计费的�
 
 | 测试集 | 事实类一致率 | 升级条目占比 | 每千次判定成本 |
 |---|---|---|---|
-| Jev 单独 | 94.4% | 0% | $0.0588 |
+| Jev 单独 | 94.4% | 0% | $0.0628 |
 | gemini 单独 | 100.0% | 100% | $2.2973 |
 | **级联（采用）** | **100.0%** | **37.8%** | **$0.9105** |
 
 Jev 各问题被直接采纳的比例：grounded 87.2%、appropriate 100.0%、better_pick 68.0%。
 重复性：Jev 跨 3 次运行标签稳定率 98.7%（grounded 方差 0.003）；级联中 gemini 稳定率 100%。
+区间下界：级联在测试集 2,070 个判定（230 条 × 3 问 × 3 次）全部与真值一致，Clopper–Pearson 95% 下界 99.85%（≈99.9%），不是"100% 无限置信"。
 日处理量（1 vCPU 队列工作进程，网络型负载）：平均每判定 ≈ 0.622 × 1.54 s + 0.378 × (1.54 + 7.11) s ≈ 4.2 s → 单工作进程约 2 万次判定/天。
-每千次判定成本对比：julia1 $0（但 30.6% 一致率，不可用）；Jev $0.059；级联 $0.91；haiku $0.30；deepseek $0.45；gemini $2.30。
+每千次判定成本对比（测试集问答口径）：julia1 $0（但 30.6% 一致率，不可用）；Jev $0.063；级联 $0.91；haiku $0.30；deepseek $0.45；gemini $2.30。
+**向业主注明的采用形态**：规格决策规则第 2 条写的是"没有达标的开源候选 → Jev API"；实际采用的是第 3 条的**级联形态**——Jev（jev-1.13，经 aihubmix）第一道，置信度不足升级 gemini-3.8-flash，不是 Jev API 单独使用。成本形态仍为 aihubmix 按量 API 费用，VPS 上不驻留任何模型。
 
 **Post-hoc 观察（非预先登记的决策，供 #13/#8 实施时权衡）**：若回退换成 haiku（校准集第二），同样的冻结网格选出 grounded ≥ 0.6、appropriate ≥ 0.5、better_pick ≥ 0.6，测试集一致率 99.6%（−0.4 个百分点对 gemini 级联）、升级 35.9%、每千次 $0.1665（再省 82%）。差距来自 haiku 自身 98.8% 的上限。预登记规则按校准集最优选了 gemini，故本票采用 gemini 级联；若面板上线后成本成为主要考量，jev→haiku 是有实测支撑的降价选项，换回退不需重跑真值。
 

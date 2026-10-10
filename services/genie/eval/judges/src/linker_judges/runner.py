@@ -18,6 +18,14 @@ from .rubric import questions_for
 # llama.cpp server is called one request at a time so its latency is not queueing.
 API_WORKERS = 6
 LOCAL_WORKERS = 1
+# Stop after this many consecutive failed calls: an outage (e.g. an emptied account
+# balance, as in the formal deepseek run) then fails fast instead of burning every
+# remaining item against the same error.
+MAX_CONSECUTIVE_ERRORS = 20
+
+
+class CircuitOpen(RuntimeError):
+    """Raised when MAX_CONSECUTIVE_ERRORS calls fail in a row."""
 
 
 def run_judge(
@@ -40,9 +48,10 @@ def run_judge(
     ]
     lock = threading.Lock()
     finished = 0
+    consecutive_errors = 0
 
     def one(task: tuple[dict[str, Any], int]) -> None:
-        nonlocal finished
+        nonlocal finished, consecutive_errors
         item, run = task
         verdict = call(judge, state(item), questions_for(item["set"]))
         record = {
@@ -55,9 +64,24 @@ def run_judge(
             with out.open("a") as handle:
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
             finished += 1
+            if verdict.error:
+                consecutive_errors += 1
+                if consecutive_errors >= MAX_CONSECUTIVE_ERRORS:
+                    raise CircuitOpen(
+                        f"{judge.name}: {MAX_CONSECUTIVE_ERRORS} consecutive failed "
+                        f"calls (last: {verdict.error}); stopping after {finished} "
+                        f"of {len(todo)} calls"
+                    )
+            else:
+                consecutive_errors = 0
             if progress and (finished % 20 == 0 or finished == len(todo)):
                 print(f"  {judge.name}: {finished}/{len(todo)}", flush=True)
 
     with ThreadPoolExecutor(LOCAL_WORKERS if judge.local else API_WORKERS) as pool:
-        list(pool.map(one, todo))
+        try:
+            list(pool.map(one, todo))
+        except CircuitOpen:
+            # Already-written records stay valid; a rerun resumes where they end.
+            pool.shutdown(wait=True, cancel_futures=True)
+            raise
     return len(todo)

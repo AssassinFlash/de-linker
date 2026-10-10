@@ -31,6 +31,18 @@ def test_agreement_is_the_mean_over_runs_and_invalid_counts_as_wrong() -> None:
     assert metrics.agreement(records, LABELS, ["i0", "i1"], ["grounded"]) == 0.5
 
 
+def test_latest_keeps_the_last_record_per_item_and_run() -> None:
+    # A failed call that was retried leaves two records for one (item, run); only
+    # the last one may count, in first-occurrence order, and other pairs stay.
+    repeated = [record("i0", 1, "0", 0.1), record("i0", 1, "2", 0.9)]
+    other = record("i1", 1, "2", 1)
+
+    kept = metrics.latest(repeated + [other])
+
+    assert kept == [repeated[1], other]
+    assert metrics.agreement(kept, LABELS, ["i0", "i1"], ["grounded"]) == 1.0
+
+
 def test_cascade_threshold_comes_from_calibration_and_escalates_unsure_items() -> None:
     # The first judge is right when confident and wrong when unsure; the fallback is always right.
     first = [record("i0", 1, "2", 0.95), record("i1", 1, "0", 0.4)]
