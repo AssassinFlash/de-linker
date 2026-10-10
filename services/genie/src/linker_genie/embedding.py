@@ -358,8 +358,19 @@ MODELS = (*OPEN_MODELS, GEMINI)
 
 
 def query_encoder(model: str) -> Embedder | None:
-    """The query encoder for an index built with `model`, if this host can run it."""
+    """The query encoder for an index built with `model`, if this host can run it.
+
+    BGE-M3's build encoder is sentence-transformers (`index.local_model.LocalEmbedder`,
+    the bake-off's control): the same class must encode its queries, or the index's
+    fingerprint check rejects the session. It needs PyTorch, so a host without the
+    `index` dependency group - the VPS - has no BGE-M3 encoder and searches it by
+    keywords only.
+    """
     try:
+        if model == BGE_M3:
+            from index.local_model import LocalEmbedder
+
+            return LocalEmbedder(OPEN_MODELS[BGE_M3])
         if model in OPEN_MODELS:
             return OnnxEmbedder(OPEN_MODELS[model])
         if model == GEMINI:
