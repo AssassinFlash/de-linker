@@ -27,9 +27,16 @@ from .packing import pack
 # selects the building: LoD2 footprints follow the walls, roofs reach beyond them.
 CLICK_TOLERANCE_M = 3.0
 
+# WGS84 coordinates are rounded to 7 decimals (about 1 cm): the projection
+# library's last bits differ between platforms, and a map has no use for more.
+COORD_DECIMALS = 7
+
 
 def _ring(zone: int, ring: list[list[float]]) -> list[tuple[float, float]]:
-    return [lod2.to_wgs84(zone, x, y) for x, y in ring]
+    return [
+        (round(lon, COORD_DECIMALS), round(lat, COORD_DECIMALS))
+        for lon, lat in (lod2.to_wgs84(zone, x, y) for x, y in ring)
+    ]
 
 
 def _shape(building: dict[str, Any]) -> BaseGeometry:
