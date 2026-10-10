@@ -48,4 +48,4 @@ Yes. According to the German EnWG 14a, all SteuVEs need to be subject to emergen
 
 Ja. Gemäß der deutschen EnWG 14a müssen alle SteuVEs einer Notabschaltung durch das Netz unterliegen. Der Netzbetreiber kann die maximale Netzbezugsleistung steuerbarer Lasten vorübergehend auf 4,2 kW reduzieren. Wenn nur DI4-EnWG 14a benötigt wird, müssen andere DI-Ports nicht verdrahtet werden.
 
-**Citation:** GoodWe HCA G2 User Manual (DE) · p.73 · https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_User-Manual-DE.pdf
+**Citation:** GoodWe HCA G2 User Manual (EN) · p.72 · https://de-linker.com/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf

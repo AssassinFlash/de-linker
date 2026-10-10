@@ -29,23 +29,23 @@
         "page": 43,
         "title": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "Which battery connection does the H2-15K-T3 have?",
-      "answer": "The battery connection is a quick connector. The battery type is LiFePO4, the battery voltage range is 180～800 V, the maximum charging/discharging current is 50/50 A, and the number of battery connections is 2.",
+      "answer": "The H2-15K-T3 has a quick connector for the battery connection.",
       "question_de": "Welchen Batterieanschluss hat der H2-15K-T3?",
-      "answer_de": "Der Akku-Anschluss ist eine Schnellsteckverbindung. Der Akkutyp ist LiFePO4, der Akku-Spannungsbereich beträgt 180～800 V, der maximale Lade-/Entladestrom beträgt 50/50 A und die Anzahl der BAT beträgt 2.",
+      "answer_de": "Der H2-15K-T3 hat eine Schnellsteckverbindung als Akku-Anschluss.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
         "page": 37,
         "title": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

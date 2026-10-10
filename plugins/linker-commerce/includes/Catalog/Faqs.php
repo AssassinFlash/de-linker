@@ -56,12 +56,38 @@ final class Faqs {
 	}
 
 	/**
-	 * JSON of a list of items, the form stored in post meta.
+	 * JSON of a list of items, the form stored in post meta. Rows that fail
+	 * `item()` are dropped, so the caller may hand a decoded list as-is.
 	 *
-	 * @param list<array<string, mixed>> $items Items already normalized or as posted.
+	 * @param array<int|string, mixed> $items Items already normalized or as posted.
 	 */
 	public static function encode( array $items ): string {
 		return (string) wp_json_encode( self::normalize( $items ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+	}
+
+	/**
+	 * Copies a written list onto the Polylang twin, so the German product
+	 * serves the same FAQ as the English one (docs/specs/15-faq.md: the
+	 * German object follows #9). The one mirror every writer rides: the
+	 * product edit box (FaqsMetaBox) and tools/faq/import.py. Silent without
+	 * Polylang, without a twin, or when the post is its own twin.
+	 *
+	 * @param int    $post_id English or German product ID.
+	 * @param string $json    Encoded list, as `encode()` returns it.
+	 */
+	public static function mirror_to_twin( int $post_id, string $json ): void {
+		if ( ! function_exists( 'pll_get_post_language' ) || ! function_exists( 'pll_get_post' ) ) {
+			return;
+		}
+		$language = pll_get_post_language( $post_id );
+		$twin_of  = 'en' === $language ? 'de' : ( 'de' === $language ? 'en' : '' );
+		if ( '' === $twin_of ) {
+			return;
+		}
+		$twin = pll_get_post( $post_id, $twin_of );
+		if ( $twin > 0 && (int) $twin !== $post_id ) {
+			update_post_meta( (int) $twin, self::META_KEY, wp_slash( $json ) );
+		}
 	}
 
 	/**

@@ -23,7 +23,7 @@ Das CB2-Batteriesystem kann nur als Set mit dem SAJ CH2 Hochvolt-Speicherwechsel
 ## 2. What are the dimensions and the weight of the cabinet?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 1365
 
 **EN Q:** What are the dimensions and the weight of the cabinet?
 
@@ -37,15 +37,15 @@ Die Abmessungen des CB2-Batterieschranks betragen 1065 mm, 650 mm, 1221 mm, 988 
 
 ## 3. Can storage be added to an existing CB2 system later?
 
-**Status:** reject
-**Review:** reject — Question asks about adding storage later, but the answer only states the four-system maximum and equal rated energy; it does not answer retrofit/expansion and is interchangeable with a general multi-cluster spec.
+**Status:** withdrawn
+**Review:** withdrawn — The passages carry the four-system maximum per CH2 inverter, the equal rated energy requirement, and the multi-cluster connection procedure for a four-cluster system. They do not state whether storage can be added to an existing CB2 system later, nor any retrofit or expansion procedure.
 
 **EN Q:** Can storage be added to an existing CB2 system later?
 
-One CH2 inverter can be integrated with four CB2 battery systems at maximum. All the CB2 systems are required to have the same rated energy.
+The manual does not describe adding storage to an existing CB2 system later. It states that one CH2 inverter can be integrated with four CB2 battery systems at maximum, and that all CB2 systems are required to have the same rated energy. The multi-cluster connection procedure describes a four-cluster system.
 
 **DE Q:** Lässt sich ein bestehendes CB2-System später erweitern?
 
-Ein CH2-Wechselrichter kann mit maximal vier CB2-Batteriesystemen integriert werden. Alle CB2-Systeme müssen die gleiche Nennenergie haben.
+Das Handbuch beschreibt nicht, wie ein bestehendes CB2-System später um Speicher erweitert wird. Es gibt an, dass ein CH2-Wechselrichter mit maximal vier CB2-Batteriesystemen integriert werden kann und dass alle CB2-Systeme die gleiche Nennenergie haben müssen. Das Verfahren für den Multi-Cluster-Anschluss beschreibt ein System mit vier Clustern.
 
 **Citation:** SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5) · p.8 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf

@@ -22,8 +22,8 @@ Der HS2-5K-T2-X verwendet BU2-5.0-HV1/5-Batteriemodule (1P32S, 102,4 V, 50 Ah). 
 
 ## 2. What does the backup output of the HS2-5K-T2-X deliver when the grid fails?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What does the backup output of the HS2-5K-T2-X deliver when the grid fails?
 
@@ -37,8 +37,8 @@ Der Notstromausgang des HS2-5K-T2-X liefert eine maximale Ausgangsleistung von 5
 
 ## 3. What does the AC side of the HS2-5K-T2-X need at installation?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What does the AC side of the HS2-5K-T2-X need at installation?
 

@@ -22,8 +22,8 @@ Die Verpackungsliste umfasst den H2-Wechselrichter, einen Befestigungswinkel, PV
 
 ## 2. Which circuit breaker and AC cable does the H2-20K-T3 need?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which circuit breaker and AC cable does the H2-20K-T3 need?
 
@@ -37,8 +37,8 @@ Für den H2-(10K-20K)-(T2,T3) beträgt die empfohlene Schalter-Spezifikation 50 
 
 ## 3. Which battery connection does the H2-20K-T3 have?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which battery connection does the H2-20K-T3 have?
 

@@ -29,9 +29,9 @@
         "page": 43,
         "title": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "Which battery connection does the H2-10K-T3 have?",

@@ -29,9 +29,9 @@
         "page": 1,
         "title": "GoodWe GW125K-STS-G10 quick installation guide (multilingual)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "Can a generator or large loads be part of this backup design?",
@@ -49,17 +49,17 @@
     },
     {
       "question": "How does the switch communicate with the inverter?",
-      "answer": "Communication is via RS485. The installation guide shows the COM-1 and COM-2 ports with RS485-A and RS485-B terminals and the STS_TX1/STS_TX2 signals to the inverter.",
+      "answer": "The datasheet lists the communication method of the GW125K-STS-G10 as RS485.",
       "question_de": "Wie kommuniziert der Schalter mit dem Wechselrichter?",
-      "answer_de": "Die Kommunikation erfolgt über RS485. Die Installationsanleitung zeigt die Ports COM-1 und COM-2 mit den Klemmen RS485-A und RS485-B sowie die Signale STS_TX1/STS_TX2 zum Wechselrichter.",
+      "answer_de": "Im Datenblatt ist die Kommunikationsmethode des GW125K-STS-G10 mit RS485 angegeben.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf",
         "page": 2,
         "title": "GoodWe STS Series GW125K-STS-G10 datasheet (EMEA, EN)"
       },
-      "status": "reject",
-      "review": "reject",
-      "reason": "The cited datasheet passage only states 'Communication | RS485'; the COM-1/COM-2 ports, RS485-A/B terminals and STS_TX1/STS_TX2 signals come from a different document (installation guide) than the cited datasheet page, so the citation does not carry the claim."
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

@@ -8,7 +8,7 @@
 ## 1. Which physical parts complete the floor-standing 8K0-S2 storage layout?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 12
 
 **EN Q:** Which physical parts complete the floor-standing 8K0-S2 storage layout?
 

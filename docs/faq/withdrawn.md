@@ -1,87 +1,53 @@
 # Withdrawn FAQ questions
 
-85 questions withdrawn (not written to `_linker_faqs`).
+51 questions withdrawn (not written to `_linker_faqs`).
 
 - `chint-dtsu666` (2281): What is the maximum wire gauge accepted by the DTSU666 direct terminals? — No retrieved passage states a maximum wire gauge for the direct terminals. The catalog passage gives only the current range 0.25-5(80)A, and the manual passage with the conductor cross-sectional area range for the current cable terminal is garbled and does not yield a readable value.
-- `ecoflow-battery-stack-bridge` (3609): How many bridge kits should I order for two towers? — a number is not in the cited passage
-- `ecoflow-battery-stack-bridge` (3609): What gap must I leave between the two tower bases? — a number is not in the cited passage
+- `ecoflow-battery-stack-bridge` (3609): What gap must I leave between the two tower bases? — a number is not in the cited passage — the cited page does not contain: 94.6, 104.5, 94,6, 104,5
+- `ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2` (3581): Can an existing EF BD-5.1-S1 tower be extended with EF BD-5-S2? — The passages carry only generic statements: hybrid use of old and new batteries, and compatibility of the OCEAN 2 LFP Battery 5 kWh with the EcoFlow PowerOcean LFP Battery for mixed stacking. They do not name the EF BD-5.1-S1 tower or the EF BD-5-S2, and do not confirm that a specific EF BD-5.1-S1 tower can be extended with EF BD-5-S2.
+- `ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2` (3581): What should I record when planning an older tower extension? — The retrieved passages carry scalability statements (power expansion, capacity expansion, hybrid use of old and new batteries, isolation of failed battery modules) and the parallel limits of 3 junction boxes with a maximum of 6 battery expansion modules per junction box. They do not carry any list of data to record when planning an extension of an older tower, so the question asked is not answered.
 - `ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2` (3581): What warranty applies to the EF BD-5-S2? — The retrieved passages do not contain any warranty information for the EF BD-5-S2.
 - `ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2` (3582): Is a battery base shown in the EF BD-8-S2 module box? — No retrieved passage lists the box contents of the EF BD-8-S2 module; the battery pack base appears only in a stacking diagram, not as a box item.
 - `ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2` (3582): What warranty applies to the EF BD-8-S2? — No retrieved passage states a warranty term or warranty conditions for the EF BD-8-S2.
-- `ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship` (3579): How many PV strings can be routed to the 10K0-S2 inputs? — a number is not in the cited passage
-- `ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship` (3580): Which cable cross-sections does the 12K0-S2 connection drawing show? — a number is not in the cited passage
-- `ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid` (6484): Which circuits receive power through the HD-P1-3K68-S2 BACKUP connection? — a number is not in the cited passage
-- `ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid` (6488): Which circuits receive power through the HD-P1-6K-S2 BACKUP connection? — a number is not in the cited passage
-- `ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship` (3578): Which physical parts complete the floor-standing 8K0-S2 storage layout? — a number is not in the cited passage
-- `goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one` (3556): How many BAT-D modules can one GW10K-ETA-G20 column take? — a number is not in the cited passage
-- `goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one` (3556): What backup load can the GW10K-ETA-G20 design support? — a number is not in the cited passage
+- `ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid` (6484): Which circuits receive power through the HD-P1-3K68-S2 BACKUP connection? — a number is not in the cited passage — the cited page does not contain: 3
+- `ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid` (6488): Which circuits receive power through the HD-P1-6K-S2 BACKUP connection? — a number is not in the cited passage — the cited page does not contain: 3
+- `ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship` (3578): Which physical parts complete the floor-standing 8K0-S2 storage layout? — a number is not in the cited passage — the cited page does not contain: 12
+- `goodwe-esa-gw125-261-esa-lcn-g10` (6321): What does one GW125/261-ESA-LCN-G10 cabinet contain? — The retrieved passages do not carry scope-of-supply or packing contents for the GW125/261-ESA-LCN-G10. They only list the model designation (datasheet page 2; quick installation guide pages 1 and 3), the model's rated output power, rated output voltage and available energy (user manual DE page 3), a cabinet door operation step (user manual EN page 41), and a notice that only the GW125/261-ESA-LCN-G10 requires installation of the MSD switch (user manual EN page 69). No passage names what is inside the cabinet or what is included in delivery, so the containment question cannot be answered from these passages.
 - `goodwe-esa-gw125-261-esa-lcn-g10` (6321): Which VDE grid-connection certificates are available? — The retrieved passages do not list any VDE grid-connection certificates for this model. The datasheet only refers to the GoodWe website for the latest certificates, and the manuals show a TÜV Rheinland mark without naming VDE certificates.
 - `goodwe-esa-gw125-261-esa-lcn-g10` (6321): What warranty applies to the cabinet? — The retrieved passages do not contain any warranty information for this model.
-- `goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one` (3584): What backup load can the GW12K-ETA-G20 design support? — a number is not in the cited passage
 - `goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one` (3584): Does the stacked battery need a separate DC cable run? — The retrieved passages describe battery expansion harnesses and blind-mate connectors for stacking, but none states whether a separate DC cable run is required for the stacked battery.
-- `goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one` (3585): What backup load can the GW15K-ETA-G20 design support? — a number is not in the cited passage
-- `goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module` (6525): What backup rating does GW5K-EHA-G20 have? — a number is not in the cited passage
-- `goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module` (6525): How many MPPTs does GW5K-EHA-G20 have? — a number is not in the cited passage
-- `goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one` (3583): What backup load can the GW8K-ETA-G20 design support? — a number is not in the cited passage
-- `goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module` (6514): How many MPPTs does GW9.999K-ETA-G20 have? — a number is not in the cited passage
-- `goodwe-ezmanager3000-hems-gateway` (2415): Will one EzManager3000 cover this inverter and device mix? — a number is not in the cited passage
-- `goodwe-ezmanager3000-hems-gateway` (2415): What power supply does the gateway need? — a number is not in the cited passage
+- `goodwe-ezmanager3000-hems-gateway` (2415): What power supply does the gateway need? — a number is not in the cited passage — the cited page does not contain: 100, 7
 - `goodwe-gm330` (2394): Which GoodWe inverters are listed for GM330? — The retrieved passages do not list specific GoodWe inverter models for the GM330. The datasheet mentions charge control of hybrid inverters and zero-feed applications, and the manual wiring diagram shows a grid-tied PV inverter and an AC-coupled inverter, but no model names are given.
-- `goodwe-gmk330` (2397): Which CT version is included in this GMK330 order? — a number is not in the cited passage
 - `goodwe-gw100k-et-g10` (1948): Does GW100K-ET-G10 hold a German unit certificate for medium-voltage connection? — The retrieved passages do not state a German unit certificate for medium-voltage connection for this model. The datasheet only refers to the GoodWe website for the latest certificates.
 - `goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter` (6509): Which BAT-C cabinet is listed for GW100K-ETR-G10? — The retrieved passages do not list any BAT-C cabinet for the GW100K-ETR-G10. The compatibility tables mention only BAT-S and BAT-LCD battery systems, and no BAT-C cabinet appears in any passage.
 - `goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter` (6510): Which BAT-C cabinet is listed for GW110K-ETR-G10? — No retrieved passage mentions a BAT-C cabinet; the accessory tables list GW208.9-BAT-LCD-G10 and GW261.2-BAT-LCD-G10 instead.
-- `goodwe-gw112-6-bat-ac-g10` (1955): What site access must be allowed for the 112.6 kWh BAT-C cabinet? — a number is not in the cited passage
+- `goodwe-gw112-6-bat-ac-g10` (1955): What site access must be allowed for the 112.6 kWh BAT-C cabinet? — a number is not in the cited passage — the cited page does not contain: 1400
 - `goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter` (6511): Which BAT-C cabinet is listed for GW124.99K-ETR-G10? — No retrieved passage lists a BAT-C cabinet for the GW124.99K-ETR-G10.
-- `goodwe-gw125k-sts-g10` (2403): What does the wall position need to allow for? — a number is not in the cited passage
-- `goodwe-gw208-9-bat-lc-g10` (1956): Is this LC cabinet listed for GoodWe ETR inverters? — a number is not in the cited passage
-- `goodwe-gw208-9-bat-lcd-g10` (1957): Which documents list this LCD cabinet with an inverter? — a number is not in the cited passage
-- `goodwe-gw261-2-bat-lcd-g10` (1958): What must the site accommodate for the 261.2 kWh cabinet? — a number is not in the cited passage
-- `goodwe-gw261-2-bat-lcd-g10` (1958): What does the ETR pairing require? — a number is not in the cited passage
+- `goodwe-gw208-9-bat-lcd-g10` (1957): Which documents list this LCD cabinet with an inverter? — a number is not in the cited passage — the cited page does not contain: 52, 57
+- `goodwe-gw261-2-bat-lcd-g10` (1958): What must the site accommodate for the 261.2 kWh cabinet? — a number is not in the cited passage — the cited page does not contain: 2.5, 2,5
 - `goodwe-gw30k-sts-g10` (6529): Which inverters is GW30K-STS-G10 paired with? — The retrieved passages state only that the STS is designed for the ESA Series All-in-One system and support single-phase and three-phase applications. No passage names a specific inverter model paired with the GW30K-STS-G10, so the question cannot be answered from this product's passages.
-- `goodwe-gw60k-sts-g10` (6530): Is the inverter port of the GW60K-STS-G10 also 60 kW? — a number is not in the cited passage
 - `goodwe-gw75k-et-g10` (6506): Does GW75K-ET-G10 hold a German unit certificate? — The retrieved passages do not mention a German unit certificate for the GW75K-ET-G10. The datasheet only refers to the GoodWe website for the latest certificates, and the manual shows a TÜV Rheinland mark without specifying a German unit certificate.
 - `goodwe-gw80k-et-g10` (1946): How many PV string positions are available per MPPT on GW80K-ET-G10? — The retrieved passages state 8 MPPTs and a table of 9 to 16 PV strings across MPPT1 to MPPT8, but no passage states the number of string positions per MPPT for the GW80K-ET-G10.
 - `goodwe-gw80k-et-g10` (1946): Does GW80K-ET-G10 hold a German unit certificate for medium-voltage connection? — No retrieved passage states a German unit certificate for medium-voltage connection for this model; the datasheet only points to the GoodWe website for the latest certificates.
 - `goodwe-gw99-99k-et-g10` (1947): Does GW99.99K-ET-G10 hold a German unit certificate for medium-voltage connection? — The retrieved passages do not mention a German unit certificate or medium-voltage connection for the GW99.99K-ET-G10. The datasheet note refers to the GoodWe website for the latest certificates, and the user manual shows a TÜV Rheinland mark, but no German unit certificate for medium-voltage connection is stated.
 - `goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter` (6508): Which BAT-C cabinet is listed for GW99.99K-ETR-G10? — The retrieved passages list the GW99.99K-ETR-G10 only as "Purchase from GoodWe" and do not name any BAT-C cabinet for this model.
 - `goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger` (3586): Is GW7K-HCA-20 prepared for §14a EnWG? — The retrieved passage describes EnWG 14a settings in general but does not state that GW7K-HCA-20 specifically supports or is prepared for §14a EnWG.
-- `pylontech-optim-us-l260-omni` (2003): What are the physical dimensions and weight of the L260-OMNI station? — a number is not in the cited passage
-- `saj-b2-10-0-hv1` (2067): How tall and how heavy is the assembled B2-10.0-HV1? — a number is not in the cited passage
-- `saj-b2-15-0-hv1` (2068): How tall and how heavy is the assembled B2-15.0-HV1? — a number is not in the cited passage
-- `saj-b2-20-0-hv1` (2069): How tall and how heavy is the assembled B2-20.0-HV1? — a number is not in the cited passage
-- `saj-b2-25-0-hv1` (2070): How tall and how heavy is the assembled B2-25.0-HV1? — a number is not in the cited passage
-- `saj-b2-5-0-hv1` (1832): How tall and how heavy is the assembled B2-5.0-HV1? — a number is not in the cited passage
-- `saj-bc2-hv1` (2092): What is in the BC2-HV1 package? — a number is not in the cited passage
-- `saj-bu2-5-0-hv1` (2090): How is the module stored before installation? — a number is not in the cited passage
+- `saj-bc2-hv1` (2092): Which battery systems use the BC2-HV1? — The passages carry the B2 model list and the meaning of the HV1 code, but they do not mention the BC2-HV1 at all, so no battery system can be attributed to it.
 - `saj-bu3-5-0-tv2-pro` (2093): Which warranty applies to the BU3 battery? — The retrieved passages state only "Refer to the warranty policy" and do not give a warranty period for the BU3-5.0-TV2-PRO, so no warranty length can be answered from this product's passages.
-- `saj-cb2-100-3-hv5` (4106): What are the dimensions and the weight of the cabinet? — a number is not in the cited passage
-- `saj-cb2-57-3-hv5` (4103): What are the dimensions and the weight of the cabinet? — a number is not in the cited passage
+- `saj-cb2-100-3-hv5` (4106): What are the dimensions and the weight of the cabinet? — a number is not in the cited passage — the cited page does not contain: 1365
+- `saj-cb2-100-3-hv5` (4106): Can storage be added to an existing CB2 system later? — The passages carry the four-system maximum per CH2 inverter, the equal rated energy requirement, and the multi-cluster connection procedure for a four-cluster system. They do not state whether storage can be added to an existing CB2 system later, nor any retrofit or expansion procedure.
+- `saj-cb2-57-3-hv5` (4103): What are the dimensions and the weight of the cabinet? — a number is not in the cited passage — the cited page does not contain: 1035
+- `saj-cb2-57-3-hv5` (4103): Can storage be added to an existing CB2 system later? — The retrieved passages state the maximum of four CB2 battery systems per CH2 inverter, the requirement that all CB2 systems have the same rated energy, and the meaning of the rated energy in the model name. They contain no statement about adding storage to an existing CB2 system later, so the retrofit question cannot be answered from these passages.
+- `saj-cb2-71-6-hv5` (4104): Can storage be added to an existing CB2 system later? — The retrieved passages state the maximum of four CB2 battery systems per CH2 inverter, the requirement that all CB2 systems have the same rated energy, and that the multi-cluster procedure is described for a four-cluster system. They do not state whether a CB2 battery system can be added to an existing installation later, so the retrofit question is not answered by these passages.
+- `saj-cb2-85-9-hv5` (4105): Can storage be added to an existing CB2 system later? — The passages state the maximum of four CB2 battery systems per CH2 inverter, the requirement that all CB2 systems have the same rated energy, and that the CB2 battery system can only be used as a set with SAJ's CH2 high voltage series storage inverter. They do not state whether storage can be added to an existing CB2 system later, so the question cannot be answered from these passages.
 - `saj-chs2-29-9k-t4-x` (1959): Which grid-connection certificate is on file for the CHS2-29.9K-T4-X? — The retrieved passage lists standards for the model but does not state which grid-connection certificate is on file.
-- `saj-chs2-29-9k-t4-x` (1959): How is the cabinet moved and secured? — a number is not in the cited passage
+- `saj-chs2-29-9k-t4-x` (1959): How is the cabinet moved and secured? — a number is not in the cited passage — the cited page does not contain: 1.2, 1,2
+- `saj-chs2-30k-t4-x` (1960): Which grid-connection certificate is on file for the CHS2-30K-T4-X? — The passages carry a "Standard" row for the CHS2-30K-T4-X (manual, page 12) and further standards text on datasheet pages 2 and 3, but no passage names a grid-connection certificate or a certificate document on file. The standards list also mixes grid-connection, safety and EMC standards, so it cannot be reported as a grid-connection certificate.
 - `saj-chs2-50k-t6-x` (1961): Which grid-connection certificate is on file for the CHS2-50K-T6-X? — The retrieved passages list standards (e.g., VDE4105, IEC61727/62116, VDE0126, AS4777.2, CEI 0 21, EN50549-1, G98, G99, C10-11, UNE217002, NBR16149/NBR16150, IEC62109-1/-2, NBT32004-2018, EN61000-6-1, EN61000-6-2, EN61000-6-3, EN61000-6-4) but do not state which grid-connection certificate is on file for this model.
-- `saj-chs2-50k-t6-x` (1961): How is the cabinet moved and secured? — a number is not in the cited passage
-- `saj-emanager-c1-pro` (1973): How is the eManager-C1 Pro supplied and mounted? — a number is not in the cited passage
-- `saj-esolar-aio3-data-collector-wifi-lan-bluetooth` (3573): What do the LEDs on the module show? — a number is not in the cited passage
-- `saj-esolar-aio3-data-collector-wifi-lan-bluetooth` (3573): How is the module installed and connected to the network? — a number is not in the cited passage
-- `saj-h2-10k-t3` (4107): Which circuit breaker and AC cable does the H2-10K-T3 need? — a number is not in the cited passage
-- `saj-h2-12k-t3` (4108): Which circuit breaker and AC cable does the H2-12K-T3 need? — a number is not in the cited passage
-- `saj-h2-15k-t3` (2063): Which circuit breaker and AC cable does the H2-15K-T3 need? — a number is not in the cited passage
-- `saj-h2-15k-t3` (2063): Which battery connection does the H2-15K-T3 have? — a number is not in the cited passage
-- `saj-h2-20k-t3` (2064): Which circuit breaker and AC cable does the H2-20K-T3 need? — a number is not in the cited passage
-- `saj-h2-20k-t3` (2064): Which battery connection does the H2-20K-T3 have? — a number is not in the cited passage
-- `saj-h2-25k-t3` (1179): Which circuit breaker and AC cable does the H2-25K-T3 need? — a number is not in the cited passage
-- `saj-h2-30k-t3-de` (1181): What are the rated AC power and the maximum apparent power of the H2-30K-T3-DE? — a number is not in the cited passage
-- `saj-h2-30k-t3-de` (1181): Which circuit breaker and AC cable does the H2-30K-T3-DE need? — a number is not in the cited passage
-- `saj-hs2-10k-t2-x` (1182): What does the backup output of the HS2-10K-T2-X deliver when the grid fails? — a number is not in the cited passage
-- `saj-hs2-10k-t2-x` (1182): What does the AC side of the HS2-10K-T2-X need at installation? — a number is not in the cited passage
-- `saj-hs2-5k-t2-x` (4109): What does the backup output of the HS2-5K-T2-X deliver when the grid fails? — a number is not in the cited passage
-- `saj-hs2-5k-t2-x` (4109): What does the AC side of the HS2-5K-T2-X need at installation? — a number is not in the cited passage
-- `saj-hs2-6k-t2-x` (1183): Which battery modules does the HS2-6K-T2-X take, and how many? — a number is not in the cited passage
-- `saj-hs2-6k-t2-x` (1183): What does the AC side of the HS2-6K-T2-X need at installation? — a number is not in the cited passage
-- `saj-hs2-8k-t2-x` (1184): Which battery modules does the HS2-8K-T2-X take, and how many? — a number is not in the cited passage
-- `saj-hs2-8k-t2-x` (1184): What does the backup output of the HS2-8K-T2-X deliver when the grid fails? — a number is not in the cited passage
-- `saj-hs2-8k-t2-x` (1184): What does the AC side of the HS2-8K-T2-X need at installation? — a number is not in the cited passage
+- `saj-chs2-50k-t6-x` (1961): How is the cabinet moved and secured? — a number is not in the cited passage — the cited page does not contain: 1.2, 1,2
+- `saj-h2-25k-t3` (1179): Which battery connection does the H2-25K-T3 have? — The retrieved passages do not state the battery connection type for the H2-25K-T3. The datasheet table that lists the H2-25K-T3 (page 38) covers battery type, voltage range and current, but not the connection type. The table that lists the battery connection type (page 37) covers only H2-10K-T3, H2-12K-T3, H2-15K-T2, H2-15K-T3 and H2-20K-T2, so no value can be attributed to the H2-25K-T3. The installation passages (pages 45 and 46) describe connecting cables to the BAT+ and BAT- ports and inserting cable ends into blue positive and negative battery connectors, but do not name a connection type for this model.
+- `saj-hs2-6k-t2-x` (1183): Which battery modules does the HS2-6K-T2-X take, and how many? — a number is not in the cited passage — the cited page does not contain: 102.4, 102,4
+- `saj-hs2-8k-t2-x` (1184): Which battery modules does the HS2-8K-T2-X take, and how many? — a number is not in the cited passage — the cited page does not contain: 102.4, 102,4
 - `saj-hs3-10k-t2-w-p` (2199): Which warranty applies to the HS3 inverter? — The retrieved passages state only 'Refer to the warranty policy' for the warranty period and do not specify a warranty duration or terms for the HS3-10K-T2-W/G-PX.
 - `saj-hs3-12k-t2-w-p` (1185): Which warranty applies to the HS3 inverter? — The retrieved passages only state 'Refer to the warranty policy' for the warranty duration and do not specify a warranty term for the HS3-12K-T2-W/G-PX.
 - `saj-hs3-5k-t2-w-p` (2198): Which warranty applies to the HS3 inverter? — The retrieved passages state only 'Refer to the warranty policy' and do not specify a warranty duration or terms for the HS3-5K-T2-W/G-PX.

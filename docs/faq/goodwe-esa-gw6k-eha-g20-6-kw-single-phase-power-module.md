@@ -37,15 +37,15 @@ Der GW6K-EHA-G20 hat 2 MPPTs, mit 1 String pro MPPT.
 
 ## 3. Which battery modules stack with this power module?
 
-**Status:** reject
-**Review:** reject — The cited page 42 lists the six battery models and mixed-use/5–108 kWh support, but the claim 'A single column can stack up to 6 batteries' comes from page 74, not the cited passage; unsupported by the citation.
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which battery modules stack with this power module?
 
-The following battery modules stack with the GW6K-EHA-G20: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW6.0-BAT-D-G20, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, and GW9.0-BAT-D-G20. These modules support mixed use. The system supports 5–108 kWh. A single column can stack up to 6 batteries.
+The battery modules listed for this system are GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW6.0-BAT-D-G20, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21 and GW9.0-BAT-D-G20. Battery modules of different models support mixed use, and the system supports 5-108 kWh.
 
 **DE Q:** Welche Batteriemodule gehören zu diesem Leistungsmodul?
 
-Folgende Batteriemodule gehören zum GW6K-EHA-G20: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW6.0-BAT-D-G20, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21 und GW9.0-BAT-D-G20. Diese Module unterstützen den gemischten Einsatz. Das System unterstützt 5–108 kWh. Eine einzelne Säule kann bis zu 6 Batterien stapeln.
+Für dieses System sind die Batteriemodule GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW6.0-BAT-D-G20, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21 und GW9.0-BAT-D-G20 aufgeführt. Batteriemodule unterschiedlicher Modelle unterstützen den gemischten Einsatz, und das System unterstützt 5-108 kWh.
 
 **Citation:** GoodWe ESA Series 3–10 kW user manual (EN, V1.8) · p.42 · https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf

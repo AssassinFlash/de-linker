@@ -55,6 +55,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'admin_notices', array( $figures, 'notice_refused' ) );
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $faqs, 'register' ) );
 		WP_Mock::expectActionAdded( 'save_post_product', array( $faqs, 'save' ) );
+		WP_Mock::expectActionAdded( 'admin_notices', array( $faqs, 'notice_refused' ) );
 		WP_Mock::expectActionAdded( 'cli_init', array( $plugin, 'register_cli' ) );
 
 		// AnyInstance matches the object the registration constructs.

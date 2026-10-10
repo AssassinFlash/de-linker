@@ -48,4 +48,4 @@ The manual describes an EnWG 14a setting: "EnWG 14a: According to the German EnW
 
 Das Handbuch beschreibt eine EnWG-14a-Einstellung: „EnWG 14a: According to the German EnWG (Energy Industry Act) 14a, all SteuVEs (controllable loads) need to be subject to emergency dimming by the grid. The grid operator can temporarily reduce the maximum grid-bought power consumption of controllable loads to 4.2 kW. If only need to use DI4-EnWG 14a, other DI ports no need to wire.“
 
-**Citation:** GoodWe HCA G2 User Manual (DE) · p.73 · https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_User-Manual-DE.pdf
+**Citation:** GoodWe HCA G2 User Manual (EN) · p.72 · https://de-linker.com/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf

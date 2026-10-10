@@ -7,18 +7,18 @@
 
 ## 1. What does one GW125/261-ESA-LCN-G10 cabinet contain?
 
-**Status:** pass
-**Review:** pass
+**Status:** withdrawn
+**Review:** withdrawn — The retrieved passages do not carry scope-of-supply or packing contents for the GW125/261-ESA-LCN-G10. They only list the model designation (datasheet page 2; quick installation guide pages 1 and 3), the model's rated output power, rated output voltage and available energy (user manual DE page 3), a cabinet door operation step (user manual EN page 41), and a notice that only the GW125/261-ESA-LCN-G10 requires installation of the MSD switch (user manual EN page 69). No passage names what is inside the cabinet or what is included in delivery, so the containment question cannot be answered from these passages.
 
 **EN Q:** What does one GW125/261-ESA-LCN-G10 cabinet contain?
 
-The GW125/261-ESA-LCN-G10 is an all-in-one energy storage cabinet with a rated output power of 125 kW, a rated output voltage of 400/380 V, 3L/N/PE, and an available energy of 261.25 kWh. It is part of the ESA Series Energy Storage System.
+_(withdrawn)_
 
 **DE Q:** Was enthält ein Schrank GW125/261-ESA-LCN-G10?
 
-Der GW125/261-ESA-LCN-G10 ist ein All-in-One-Energiespeicherschrank mit einer Nennausgangsleistung von 125 kW, einer Nennausgangsspannung von 400/380 V, 3L/N/PE und einer verfügbaren Energie von 261,25 kWh. Er gehört zur ESA Series Energy Storage System.
+_(zurückgezogen)_
 
-**Citation:** GoodWe ESA 261 kWh user manual, V1.6 (DE) · p.3 · https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-DE_V1.6.pdf
+**Citation:** GoodWe ESA 261 kWh user manual, V1.6 (EN) · p.69 · https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf
 
 ## 2. How is the cabinet connected to the grid?
 

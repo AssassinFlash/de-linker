@@ -20,7 +20,9 @@ from typing import Any
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 DOCS = ROOT / "docs" / "faq"
-INDEX_DEFAULT = Path.home() / "de-linker-data/index/builds/20261010T082155Z/index.sqlite"
+INDEX_DEFAULT = (
+    Path.home() / "de-linker-data/index/builds/20261010T082155Z/index.sqlite"
+)
 DEEPSEEK_JSON = Path.home() / ".config/terravolt-builder/deepseek.json"
 AIHUBMIX_ENV = Path.home() / ".config/terravolt-builder/aihubmix.env"
 
@@ -29,7 +31,7 @@ NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 # Their digits are identifiers, not figures to prove in the cited passage.
 MODELISH = re.compile(
     r"\b(?=[A-Z0-9./-]*[A-Z])(?=[A-Z0-9./-]*\d)[A-Z0-9][A-Z0-9./-]{1,}\b",
-    re.I,
+    re.IGNORECASE,
 )
 AI_EN = (
     re.compile(r"\bnot\s+\w[\w\s-]{0,40}\s+but\b", re.I),
@@ -42,7 +44,7 @@ AI_DE = (
 )
 DU_FORM = re.compile(
     r"(?:^|[^\w])(du|dich|dir|dein|deine|deinen|deinem|deiner|deines|euch|euer|eure)\b",
-    re.I,
+    re.IGNORECASE,
 )
 
 
@@ -99,15 +101,21 @@ def chat(key: str, endpoint: str, model: str, system: str, user: str) -> dict[st
         method="POST",
     )
     last_error: Exception | None = None
-    for attempt in range(3):
+    for _attempt in range(3):
         try:
             with urllib.request.urlopen(request, timeout=120) as response:
                 payload = json.load(response)
             content = payload["choices"][0]["message"]["content"]
             if not content:
                 raise RuntimeError("DeepSeek returned empty content")
-            return json.loads(content)
-        except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError, RuntimeError) as exc:
+            data: dict[str, Any] = json.loads(content)
+            return data
+        except (
+            urllib.error.HTTPError,
+            urllib.error.URLError,
+            json.JSONDecodeError,
+            RuntimeError,
+        ) as exc:
             last_error = exc
             if isinstance(exc, urllib.error.HTTPError):
                 last_error = RuntimeError(
@@ -120,13 +128,13 @@ def chat(key: str, endpoint: str, model: str, system: str, user: str) -> dict[st
 _INDEX = None
 
 
-def document_index():
+def document_index() -> Any:
     """One read-only index for the run (sqlite-vec allows check_same_thread=False)."""
     global _INDEX
     if _INDEX is None:
         sys.path.insert(0, str(ROOT / "services/genie/src"))
         sys.path.insert(0, str(ROOT / "services/genie"))
-        from linker_genie.retrieval import DocumentIndex  # noqa: PLC0415
+        from linker_genie.retrieval import DocumentIndex  # type: ignore[import-not-found]
 
         load_aihubmix()
         path = Path(os.environ.get("GENIE_INDEX", str(INDEX_DEFAULT)))
@@ -157,7 +165,7 @@ def retrieve(product_id: int, questions: list[str]) -> list[list[dict[str, Any]]
                     "url": hit.doc_url,
                     "page": hit.page,
                     "section": hit.section,
-                    "text": hit.text[:1800],
+                    "text": hit.text,
                 }
                 for hit in hits
             ]
@@ -247,8 +255,19 @@ def generate_items(
     data = chat(key, endpoint, model, GENERATE_SYSTEM, user)
     items = data.get("items")
     if not isinstance(items, list):
-        raise RuntimeError("generate: no items[]")
+        raise TypeError("generate: no items[]")
     return items
+
+
+def review_projection(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """What the reviewer may see: question, answers, citation.
+
+    Underscore-prefixed fields (`_gate`, `_gate_reason`) and any prior status
+    or reason are internal; leaking them would tell the "independent" reviewer
+    what to think (PR #58 review, S4).
+    """
+    keep = ("question_en", "question_de", "answer_en", "answer_de", "citation")
+    return [{k: item[k] for k in keep if k in item} for item in items]
 
 
 def review_items(
@@ -267,7 +286,7 @@ def review_items(
                 "slug": product["slug"],
                 "model": product.get("model"),
             },
-            "items": items,
+            "items": review_projection(items),
             "passages": hits,
         },
         ensure_ascii=False,
@@ -275,17 +294,26 @@ def review_items(
     data = chat(key, endpoint, model, REVIEW_SYSTEM, user)
     verdicts = data.get("items")
     if not isinstance(verdicts, list):
-        raise RuntimeError("review: no items[]")
+        raise TypeError("review: no items[]")
     return verdicts
 
 
 def flatten_passages(hits: list[list[dict[str, Any]]]) -> dict[tuple[str, int], str]:
-    """(url, page) -> text, last write wins."""
-    out: dict[tuple[str, int], str] = {}
+    """(url, page) -> every retrieved chunk of that page, first-seen order.
+
+    A dense page (spec tables) is indexed as several chunks; the gate must judge
+    an answer against the whole page the citation names. Last-write-wins kept
+    only one sibling chunk and withdrew answers whose figure sat in another
+    chunk of the same page — 44 of the 58 gate withdrawals were exactly this
+    (docs/faq/gate-defects-2026-10-10.md). Duplicate chunk texts are kept once.
+    """
+    out: dict[tuple[str, int], list[str]] = {}
     for group in hits:
         for hit in group:
-            out[(hit["url"], int(hit["page"]))] = hit["text"]
-    return out
+            texts = out.setdefault((hit["url"], int(hit["page"])), [])
+            if hit["text"] not in texts:
+                texts.append(hit["text"])
+    return {key: "\n".join(texts) for key, texts in out.items()}
 
 
 def gate_item(
@@ -297,7 +325,8 @@ def gate_item(
     status = str(item.get("status") or "")
     if status == "withdrawn":
         return "withdrawn", str(item.get("withdraw_reason") or "unsupported")
-    citation = item.get("citation") if isinstance(item.get("citation"), dict) else {}
+    raw_citation = item.get("citation")
+    citation = raw_citation if isinstance(raw_citation, dict) else {}
     url = str(citation.get("url") or "")
     try:
         page = int(citation.get("page") or 0)
@@ -330,7 +359,8 @@ def to_record(
     item: dict[str, Any], status: str, review: str, reason: str
 ) -> dict[str, Any]:
     """The stored shape import.py writes."""
-    citation = item.get("citation") if isinstance(item.get("citation"), dict) else {}
+    raw_citation = item.get("citation")
+    citation = raw_citation if isinstance(raw_citation, dict) else {}
     return {
         "question": str(item.get("question_en") or ""),
         "answer": str(item.get("answer_en") or ""),
@@ -369,7 +399,8 @@ def markdown(product: dict[str, Any], records: list[dict[str, Any]]) -> str:
                 f"## {i}. {rec['question'] or '(withdrawn)'}",
                 "",
                 f"**Status:** {rec['status']}",
-                f"**Review:** {rec['review']}" + (f" — {rec['reason']}" if rec["reason"] else ""),
+                f"**Review:** {rec['review']}"
+                + (f" — {rec['reason']}" if rec["reason"] else ""),
                 "",
                 f"**EN Q:** {rec['question']}",
                 "",
@@ -386,9 +417,13 @@ def markdown(product: dict[str, Any], records: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
-def run_product(product: dict[str, Any], key: str, endpoint: str, model: str) -> dict[str, Any]:
+def run_product(
+    product: dict[str, Any], key: str, endpoint: str, model: str
+) -> dict[str, Any]:
     """Generate + review one product; write json and md."""
-    questions = [q["question_en"] for q in product.get("questions") or [] if q.get("question_en")]
+    questions = [
+        q["question_en"] for q in product.get("questions") or [] if q.get("question_en")
+    ]
     records: list[dict[str, Any]] = []
     if questions:
         hits = retrieve(product["id"], questions)
@@ -414,10 +449,7 @@ def run_product(product: dict[str, Any], key: str, endpoint: str, model: str) ->
             int(v["index"]): v
             for v in verdicts
             if isinstance(v, dict)
-            and (
-                isinstance(v.get("index"), int)
-                or str(v.get("index", "")).isdigit()
-            )
+            and (isinstance(v.get("index"), int) or str(v.get("index", "")).isdigit())
         }
         for i, item in enumerate(gated):
             gate_status, gate_reason = item["_gate"], item["_gate_reason"]

@@ -16,7 +16,8 @@ use Linker\Commerce\Catalog\Faqs;
  * One row per FAQ of the product's `_linker_faqs`: the English question and
  * answer, the German pair, and the citation — a document of this product and
  * the page (docs/specs/15-faq.md). A row without a question is dropped; a
- * question without a document and page is refused and the previous row stays.
+ * question without a document and page is refused, the previous row stays,
+ * and the row is named in a notice on the next admin screen.
  */
 final class FaqsMetaBox {
 
@@ -31,6 +32,14 @@ final class FaqsMetaBox {
 	 */
 	private const NONCE_ACTION = 'linker_commerce_faqs';
 	private const NONCE_FIELD  = 'linker_commerce_faqs_nonce';
+
+	/**
+	 * The user meta that carries the refused rows to the next admin screen,
+	 * the same channel FiguresMetaBox rides: the new product form saves
+	 * through REST and never runs the classic redirect a notice could ride
+	 * along on.
+	 */
+	private const REFUSED_META = 'linker_commerce_faqs_refused';
 
 	/**
 	 * Adds the box; runs on add_meta_boxes.
@@ -72,9 +81,11 @@ final class FaqsMetaBox {
 	}
 
 	/**
-	 * Saves the FAQ list; runs on save_post_product. Rows the box did not send
-	 * are left as they are (another writer saved). A question without a
-	 * citation is refused and the previous item at that index stays.
+	 * Saves the FAQ list; runs on save_post_product. Rows beyond those the box
+	 * sent are kept: another writer may have appended rows after this box was
+	 * rendered, and the box did not see them. A row with a question but no
+	 * citation is refused — the previous item at that index stays and the row
+	 * waits in the user's meta for the notice on the next admin screen.
 	 *
 	 * @param int $post_id Product ID.
 	 */
@@ -91,15 +102,16 @@ final class FaqsMetaBox {
 		if ( null === $rows ) {
 			return;
 		}
-			$previous      = Faqs::of( $post_id );
-			$catalogue     = $this->documents( $post_id );
-			$document_urls = array();
+		$previous      = Faqs::of( $post_id );
+		$catalogue     = $this->documents( $post_id );
+		$document_urls = array();
 		foreach ( $catalogue as $document ) {
 			if ( is_string( $document['url'] ?? null ) ) {
 				$document_urls[] = $document['url'];
 			}
 		}
-		$items = array();
+		$items   = array();
+		$refused = array();
 		foreach ( $rows as $index => $row ) {
 			$question = $row['question'];
 			if ( '' === $question ) {
@@ -107,6 +119,7 @@ final class FaqsMetaBox {
 			}
 			$citable = in_array( $row['document'], $document_urls, true ) && ctype_digit( $row['page'] ) && (int) $row['page'] >= 1;
 			if ( ! $citable ) {
+				$refused[] = (string) ( $index + 1 );
 				if ( isset( $previous[ $index ] ) ) {
 					$items[] = $previous[ $index ];
 				}
@@ -128,31 +141,41 @@ final class FaqsMetaBox {
 			}
 			$items[] = $item;
 		}
-		$json = Faqs::encode( $items );
+		$last_sent = 0 === count( $rows ) ? -1 : max( array_keys( $rows ) );
+		$items     = array_merge( $items, array_slice( $previous, $last_sent + 1 ) );
+		$json      = Faqs::encode( $items );
 		update_post_meta( $post_id, Faqs::META_KEY, wp_slash( $json ) );
-		$this->mirror( $post_id, $json );
+		Faqs::mirror_to_twin( $post_id, $json );
+		if ( array() !== $refused ) {
+			// The new product form saves through REST and never runs the
+			// classic redirect, so the rows wait for the next admin screen
+			// of this user.
+			update_user_meta( get_current_user_id(), self::REFUSED_META, implode( ',', $refused ) );
+		}
 	}
 
 	/**
-	 * Copies the same JSON onto the German product when Polylang has a twin
-	 * (docs/specs/15-faq.md: the German object follows #9).
-	 *
-	 * @param int    $post_id English or German product ID.
-	 * @param string $json    Encoded list.
+	 * Prints the refused-rows notice on the next admin screen: the save left
+	 * the refused rows in the user's meta, the channel FiguresMetaBox rides.
+	 * Registered once at Plugin's hooks; silent when no rows wait. The row
+	 * numbers count the box's rows from 1.
 	 */
-	private function mirror( int $post_id, string $json ): void {
-		if ( ! function_exists( 'pll_get_post_language' ) || ! function_exists( 'pll_get_post' ) ) {
+	public function notice_refused(): void {
+		$rows = (string) get_user_meta( get_current_user_id(), self::REFUSED_META, true );
+		if ( '' === $rows ) {
 			return;
 		}
-		$language = pll_get_post_language( $post_id );
-		$twin_of  = 'en' === $language ? 'de' : ( 'de' === $language ? 'en' : '' );
-		if ( '' === $twin_of ) {
-			return;
-		}
-		$twin = pll_get_post( $post_id, $twin_of );
-		if ( $twin > 0 && (int) $twin !== $post_id ) {
-			update_post_meta( (int) $twin, Faqs::META_KEY, wp_slash( $json ) );
-		}
+		delete_user_meta( get_current_user_id(), self::REFUSED_META );
+		printf(
+			'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
+			esc_html(
+				sprintf(
+					/* translators: %s: list of row numbers. */
+					__( 'FAQ rows %s kept their previous content: an answer needs the document and the page it is printed on.', 'linker-commerce' ),
+					$rows
+				)
+			)
+		);
 	}
 
 	/**

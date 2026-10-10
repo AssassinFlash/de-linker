@@ -29,9 +29,9 @@
         "page": 29,
         "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "Does the stacked battery need a separate DC cable run?",

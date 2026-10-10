@@ -22,8 +22,8 @@ Nein. Beide Batterieeinheiten, die mit dieser Halterung verbunden werden, müsse
 
 ## 2. How many bridge kits should I order for two towers?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How many bridge kits should I order for two towers?
 
@@ -38,7 +38,7 @@ Sichern Sie beide Seiten jeder Batterieeinheit mit dieser Halterung für beide T
 ## 3. What gap must I leave between the two tower bases?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 94.6, 104.5, 94,6, 104,5
 
 **EN Q:** What gap must I leave between the two tower bases?
 

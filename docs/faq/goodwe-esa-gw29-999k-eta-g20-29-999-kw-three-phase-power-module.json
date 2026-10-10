@@ -35,17 +35,17 @@
     },
     {
       "question": "Which battery modules stack with this power module?",
-      "answer": "The battery system includes the models GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Battery modules of different models can be mixed. The system supports 5-108 kWh.",
-      "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?",
-      "answer_de": "Das Batteriesystem umfasst die Modelle GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20. Batteriemodule verschiedener Modelle können gemischt werden. Das System unterstützt 5-108 kWh.",
+      "answer": "The manual lists these battery modules for the ESA system: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. For stacking on a mounting bracket, the limits are: GW5.1-BAT-D-G20 and GW5.1-BAT-D-G21 up to 3 batteries; GW8.3-BAT-D-G20 and GW8.3-BAT-D-G21 up to 2 batteries; GW6.0-BAT-D-G20 up to 3 batteries; GW9.0-BAT-D-G20 up to 2 batteries. When GW5.1-BAT-D-G20, GW5.1-BAT-D-G21 and GW6.0-BAT-D-G20 are mixed and stacked, each system group supports up to 3 batteries. For floor installation, up to 4 batteries can be stacked away from the wall and up to 6 batteries against the wall.",
+      "question_de": "Welche Batteriemodule lassen sich mit diesem Leistungsmodul stapeln?",
+      "answer_de": "Das Handbuch nennt für das ESA-System diese Batteriemodule: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20. Für die Stapelung mit Halterung gelten diese Grenzen: GW5.1-BAT-D-G20 und GW5.1-BAT-D-G21 maximal 3 Batterien; GW8.3-BAT-D-G20 und GW8.3-BAT-D-G21 maximal 2 Batterien; GW6.0-BAT-D-G20 maximal 3 Batterien; GW9.0-BAT-D-G20 maximal 2 Batterien. Bei gemischter Stapelung von GW5.1-BAT-D-G20, GW5.1-BAT-D-G21 und GW6.0-BAT-D-G20 unterstützt jede Systemgruppe maximal 3 Batterien. Bei der Bodenmontage lassen sich maximal 4 Batterien von der Wand entfernt und maximal 6 Batterien an der Wand stapeln.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
-        "page": 45,
+        "page": 98,
         "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
       },
-      "status": "reject",
-      "review": "reject",
-      "reason": "The cited p45 passage lists the battery models and mixing/5-108kWh, but the question asks which modules stack with this power module; the answer's model list is drawn from a coupling-scenario table, not a stacking compatibility statement for this inverter, and the stacking limits (p98) are omitted, making the claim broader than the citation carries."
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

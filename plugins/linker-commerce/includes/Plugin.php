@@ -59,6 +59,7 @@ final class Plugin {
 		add_action( 'admin_notices', array( $this->figures, 'notice_refused' ) );
 		add_action( 'add_meta_boxes', array( $this->faqs, 'register' ) );
 		add_action( 'save_post_product', array( $this->faqs, 'save' ) );
+		add_action( 'admin_notices', array( $this->faqs, 'notice_refused' ) );
 		add_action( 'cli_init', array( $this, 'register_cli' ) );
 
 		$filters = new CatalogFilters();

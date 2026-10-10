@@ -37,6 +37,21 @@ final class FaqsMetaBoxTest extends TestCase {
 		),
 	);
 
+	private const STORED_EXTENDED = array(
+		self::STORED[0],
+		array(
+			'question'    => 'When does the datasheet apply?',
+			'answer'      => 'Added by another writer.',
+			'question_de' => 'Wann gilt das Datenblatt?',
+			'answer_de'   => 'Von einem anderen Schreiber ergänzt.',
+			'citation'    => array(
+				'url'   => 'https://de-linker.com/wp-content/uploads/2026/10/chs2.pdf',
+				'page'  => 3,
+				'title' => 'CHS2 datasheet',
+			),
+		),
+	);
+
 	/**
 	 * The escaping and sanitizing the box rides on; the nonce and permission
 	 * checks pass.
@@ -110,6 +125,14 @@ final class FaqsMetaBoxTest extends TestCase {
 		);
 		$written = array();
 		$this->mock_write( $written );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction(
+			'update_user_meta',
+			array(
+				'args'  => array( 7, 'linker_commerce_faqs_refused', '1' ),
+				'times' => 1,
+			)
+		);
 
 		( new FaqsMetaBox() )->save( self::PRODUCT );
 
@@ -184,6 +207,108 @@ final class FaqsMetaBoxTest extends TestCase {
 	}
 
 	/**
+	 * A row with a question but no citation is refused: the previous row
+	 * stays and the row number waits in the user's meta for the notice.
+	 */
+	public function test_a_refused_row_is_reported_in_user_meta(): void {
+		$this->row(
+			0,
+			array(
+				'question' => 'What does X stand for?',
+				'answer'   => 'Changed without a page.',
+				'document' => '',
+				'page'     => '',
+			)
+		);
+		$written = array();
+		$this->mock_write( $written );
+		WP_Mock::userFunction(
+			'get_current_user_id',
+			array(
+				'return' => 7,
+			)
+		);
+		WP_Mock::userFunction(
+			'update_user_meta',
+			array(
+				'args'  => array( 7, 'linker_commerce_faqs_refused', '1' ),
+				'times' => 1,
+			)
+		);
+
+		( new FaqsMetaBox() )->save( self::PRODUCT );
+
+		$this->assertSame( 'The battery option.', $written['faqs'][0]['answer'] );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The notice names the refused rows once and clears itself.
+	 */
+	public function test_the_notice_names_the_refused_rows_and_clears_itself(): void {
+		WP_Mock::userFunction(
+			'get_user_meta',
+			array(
+				'args'            => array( 7, 'linker_commerce_faqs_refused', true ),
+				'return_in_order' => array( '1,3', '' ),
+			)
+		);
+		WP_Mock::userFunction(
+			'delete_user_meta',
+			array(
+				'args'  => array( 7, 'linker_commerce_faqs_refused' ),
+				'times' => 1,
+			)
+		);
+		WP_Mock::passthruFunction( 'esc_html' );
+		WP_Mock::userFunction(
+			'__',
+			array(
+				'args'   => array( 'FAQ rows %s kept their previous content: an answer needs the document and the page it is printed on.', 'linker-commerce' ),
+				'return' => 'FAQ rows %s kept their previous content: an answer needs the document and the page it is printed on.',
+			)
+		);
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+
+		ob_start();
+		( new FaqsMetaBox() )->notice_refused();
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'notice-error', $html );
+		$this->assertStringContainsString( 'FAQ rows 1,3', $html );
+
+		ob_start();
+		( new FaqsMetaBox() )->notice_refused();
+		$this->assertSame( '', (string) ob_get_clean() );
+	}
+
+	/**
+	 * Rows beyond the ones the box sent are kept: another writer appended
+	 * them after this box was rendered.
+	 */
+	public function test_rows_beyond_the_ones_sent_are_kept(): void {
+		$this->row(
+			0,
+			array(
+				'question'    => 'What does X stand for?',
+				'answer'      => 'The battery option on the nameplate.',
+				'question_de' => 'Wofür steht X?',
+				'answer_de'   => 'Die Batterieoption auf dem Typenschild.',
+				'document'    => 'https://de-linker.com/wp-content/uploads/2026/10/chs2.pdf',
+				'page'        => '2',
+			)
+		);
+		$written = array();
+		$this->mock_write( $written, self::STORED_EXTENDED );
+
+		( new FaqsMetaBox() )->save( self::PRODUCT );
+
+		$this->assertCount( 2, $written['faqs'] );
+		$this->assertSame( 'Added by another writer.', $written['faqs'][1]['answer'] );
+		$this->assertSame( 3, $written['faqs'][1]['citation']['page'] );
+	}
+
+	/**
 	 * Puts one row into the request.
 	 *
 	 * @param int                   $index Row index.
@@ -198,8 +323,10 @@ final class FaqsMetaBoxTest extends TestCase {
 	/**
 	 * Mocks the reads: the permission, the revision checks, the stored list and
 	 * the documents.
+	 *
+	 * @param list<array<string, mixed>> $stored The stored list.
 	 */
-	private function mock_reads(): void {
+	private function mock_reads( array $stored = self::STORED ): void {
 		WP_Mock::userFunction(
 			'current_user_can',
 			array(
@@ -226,7 +353,7 @@ final class FaqsMetaBoxTest extends TestCase {
 			array(
 				'args'   => array( self::PRODUCT, '_linker_faqs', true ),
 				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WP's wrapper is not loaded in the unit tests.
-				'return' => (string) json_encode( self::STORED ),
+				'return' => (string) json_encode( $stored ),
 			)
 		);
 		WP_Mock::userFunction(
@@ -251,10 +378,11 @@ final class FaqsMetaBoxTest extends TestCase {
 	/**
 	 * Mocks the write: captures what is saved.
 	 *
-	 * @param array<string, mixed> $written Receives the saved list.
+	 * @param array<string, mixed>       $written Receives the saved list.
+	 * @param list<array<string, mixed>> $stored  The stored list.
 	 */
-	private function mock_write( array &$written ): void {
-		$this->mock_reads();
+	private function mock_write( array &$written, array $stored = self::STORED ): void {
+		$this->mock_reads( $stored );
 		WP_Mock::passthruFunction( 'wp_slash' );
 		WP_Mock::userFunction(
 			'wp_json_encode',

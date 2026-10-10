@@ -22,23 +22,23 @@ Das BU2-5.0-HV1 ist das Akku-Modul des B2-5.0-HV1. Der Akku B2 kann nur als Satz
 
 ## 2. What are the dimensions and the weight of one module?
 
-**Status:** reject
-**Review:** reject — The cited datasheet passage lists 261*626*365 mm and 50.5 kg for the B2-5.0-HV1 system (one module), but the answer attributes these to 'one module' as such; the passage gives no separate module-only dimension/weight, so the claim is not carried by the citation.
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What are the dimensions and the weight of one module?
 
-The datasheet lists the B2-5.0-HV1 with one module at 261*626*365 mm (H*W*D) and 50.5 kg.
+The datasheet does not list dimensions or weight for a module on its own. For the B2-5.0-HV1, which has 1 module, the datasheet gives 261*626*365 mm (H*W*D) and 50.5 kg; these figures are stated for the system with one module, not for the module alone.
 
 **DE Q:** Welche Abmessungen und welches Gewicht hat ein Modul?
 
-Im Datenblatt wird das B2-5.0-HV1 mit einem Modul mit 261*626*365 mm (H × B × T) und 50,5 kg angegeben.
+Das Datenblatt nennt keine Abmessungen und kein Gewicht für ein Modul allein. Für das B2-5.0-HV1 mit 1 Modul gibt das Datenblatt 261*626*365 mm (H × B × T) und 50,5 kg an; diese Werte gelten für das System mit einem Modul, nicht für das Modul allein.
 
 **Citation:** SAJ B2 high-voltage battery, B2-5.0 to B2-25.0 with BU2-5.0 and BC2-HV1: datasheet (English) · p.2 · https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf
 
 ## 3. How is the module stored before installation?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How is the module stored before installation?
 

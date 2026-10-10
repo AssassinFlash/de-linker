@@ -7,8 +7,8 @@
 
 ## 1. Is the inverter port of the GW60K-STS-G10 also 60 kW?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Is the inverter port of the GW60K-STS-G10 also 60 kW?
 

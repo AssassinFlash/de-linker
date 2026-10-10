@@ -22,8 +22,8 @@ Zum Lieferumfang gehören: H2-Wechselrichter x1, Sechskant-Philips-Bolzengruppe 
 
 ## 2. Which circuit breaker and AC cable does the H2-10K-T3 need?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which circuit breaker and AC cable does the H2-10K-T3 need?
 

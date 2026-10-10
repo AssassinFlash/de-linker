@@ -39,9 +39,9 @@
       "question_de": "Ist GW22K-HCA-20 für §14a EnWG vorbereitet?",
       "answer_de": "Ja. Gemäß der deutschen EnWG 14a müssen alle SteuVEs einer Notabschaltung durch das Netz unterliegen. Der Netzbetreiber kann die maximale Netzbezugsleistung steuerbarer Lasten vorübergehend auf 4,2 kW reduzieren. Wenn nur DI4-EnWG 14a benötigt wird, müssen andere DI-Ports nicht verdrahtet werden.",
       "citation": {
-        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_User-Manual-DE.pdf",
-        "page": 73,
-        "title": "GoodWe HCA G2 User Manual (DE)"
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
+        "page": 72,
+        "title": "GoodWe HCA G2 User Manual (EN)"
       },
       "status": "pass",
       "review": "pass",

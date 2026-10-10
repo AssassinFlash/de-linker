@@ -15,9 +15,9 @@
         "page": 1,
         "title": "GoodWe GMK330 Datasheet (EMEA, EN)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "Can these GMK330 readings be used for utility billing?",

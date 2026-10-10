@@ -42,10 +42,10 @@ Es können maximal drei EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 kaskadiert werden.
 
 **EN Q:** Is the IOT dongle required?
 
-Yes. The EcoFlow IOT Dongle ESS must be configured.
+The installation guide lists the EcoFlow IOT Dongle ESS with the note "Muss konfiguriert werden" (must be configured). The guide's system overview also marks the IOT Dongle ESS as "Muss konfiguriert werden", while the 4G-Dongle ESS (EU) is listed as an option.
 
 **DE Q:** Ist der IOT-Dongle Pflicht?
 
-Ja. Der EcoFlow IOT-Dongle ESS muss konfiguriert werden.
+Der Installationsleitfaden führt den EcoFlow IOT-Dongle ESS mit dem Hinweis "Muss konfiguriert werden" auf. Auch in der Systemübersicht des Leitfadens ist der IOT-Dongle ESS mit "Muss konfiguriert werden" gekennzeichnet, während der 4G-Dongle ESS (EU) als Option aufgeführt ist.
 
-**Citation:** OCEAN 2 Single-Phase Installation Guide V1.7 (DE) · p.11 · https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-installation-guide-de-v1-7.pdf
+**Citation:** OCEAN 2 Single-Phase Installation Guide V1.7 (DE) · p.29 · https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-installation-guide-de-v1-7.pdf

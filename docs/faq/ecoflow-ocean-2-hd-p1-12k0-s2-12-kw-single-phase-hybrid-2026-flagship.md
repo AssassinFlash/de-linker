@@ -7,8 +7,8 @@
 
 ## 1. Which cable cross-sections does the 12K0-S2 connection drawing show?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which cable cross-sections does the 12K0-S2 connection drawing show?
 

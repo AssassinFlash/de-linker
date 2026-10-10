@@ -15,9 +15,9 @@
         "page": 2,
         "title": "GoodWe STS Series 30/60 kW datasheet (EMEA, EN)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

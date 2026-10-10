@@ -17,7 +17,7 @@
       },
       "status": "withdrawn",
       "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "reason": "a number is not in the cited passage — the cited page does not contain: 2.5, 2,5"
     },
     {
       "question": "What does the ETR pairing require?",
@@ -29,9 +29,9 @@
         "page": 55,
         "title": "GoodWe BAT-C 208–261 kWh User Manual (EN)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     }
   ]
 }

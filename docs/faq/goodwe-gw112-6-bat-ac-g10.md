@@ -8,7 +8,7 @@
 ## 1. What site access must be allowed for the 112.6 kWh BAT-C cabinet?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 1400
 
 **EN Q:** What site access must be allowed for the 112.6 kWh BAT-C cabinet?
 

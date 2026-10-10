@@ -22,8 +22,8 @@ Der eSolar AIO3 wird über den Kommunikationsanschluss RS232 (USB-Anschlüsse) m
 
 ## 2. What do the LEDs on the module show?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What do the LEDs on the module show?
 
@@ -37,15 +37,15 @@ Das Modul hat eine grüne und eine blaue LED. Grünes Blinken bedeutet, dass Dat
 
 ## 3. How is the module installed and connected to the network?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How is the module installed and connected to the network?
 
-Turn the module hexagon nut to a horizontal position. Insert the module into the inverter USB interface and fasten the hexagon nut clockwise. Connect the RJ45 connector to the router. After installation, power on the inverter and wait 2 minutes; if the module signal light blinks slowly, the module is working normally. For network access, use the eSolar O&M APP: turn on Bluetooth on the phone, sign in, select My, Remote Configuration, Bluetooth, Next, search devices and select the Bluetooth device (e.g. BlueLink:00012). Then choose Wi-Fi or Ethernet to access the internet. If you choose Ethernet, make sure the cable is connected to the router. Module working modes are auto, WiFi and Ethernet.
+Turn the module hexagon nut to a horizontal position. Insert the module into the inverter USB interface and fasten the hexagon nut in clockwise direction. Connect the RJ45 connector to the router. After installation of the module, power on the inverter. Wait for 2 minutes; if the module signal light is blinking slowly, the module is working normally. For network access, turn on mobile phone Bluetooth connection. Sign in to the eSolar O&M APP, select "My", select "Remote Configuration", select "Bluetooth", "Next", search devices and select the Bluetooth device (such as BlueLink:00012). Then choose Wi-Fi or Ethernet to access the internet. If choosing Ethernet, make sure the cable is connected to the router.
 
 **DE Q:** Wie wird das Modul montiert und mit dem Netzwerk verbunden?
 
-Drehen Sie die Sechskantmutter des Moduls in eine horizontale Position. Stecken Sie das Modul in den USB-Anschluss des Wechselrichters und ziehen Sie die Sechskantmutter im Uhrzeigersinn fest. Verbinden Sie den RJ45-Stecker mit dem Router. Schalten Sie nach der Installation den Wechselrichter ein und warten Sie 2 Minuten; wenn die Signalleuchte des Moduls langsam blinkt, arbeitet das Modul normal. Für den Netzwerkzugang nutzen Sie die eSolar O&M APP: Bluetooth am Telefon einschalten, anmelden, My, Remote Configuration, Bluetooth, Next wählen, Geräte suchen und das Bluetooth-Gerät auswählen (z. B. BlueLink:00012). Wählen Sie dann WLAN oder Ethernet für den Internetzugang. Bei Ethernet muss das Kabel mit dem Router verbunden sein. Die Arbeitsmodi des Moduls sind auto, WiFi und Ethernet.
+Drehen Sie die Sechskantmutter des Moduls in eine horizontale Position. Stecken Sie das Modul in den USB-Anschluss des Wechselrichters und ziehen Sie die Sechskantmutter im Uhrzeigersinn fest. Verbinden Sie den RJ45-Stecker mit dem Router. Schalten Sie nach der Installation des Moduls den Wechselrichter ein. Warten Sie 2 Minuten; wenn die Signalleuchte des Moduls langsam blinkt, arbeitet das Modul normal. Für den Netzwerkzugang schalten Sie die Bluetooth-Verbindung des Mobiltelefons ein. Melden Sie sich in der eSolar O&M APP an, wählen Sie "My", wählen Sie "Remote Configuration", wählen Sie "Bluetooth", "Next", suchen Sie Geräte und wählen Sie das Bluetooth-Gerät (z. B. BlueLink:00012). Wählen Sie dann WLAN oder Ethernet für den Internetzugang. Bei Ethernet muss das Kabel mit dem Router verbunden sein.
 
 **Citation:** SAJ eSolar AIO3 quick installation guide (English) · p.1 · https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_quick-install-guide_en.pdf

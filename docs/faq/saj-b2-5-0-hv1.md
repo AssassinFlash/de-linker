@@ -22,8 +22,8 @@ Der Akku B2 kann nur als Set mit dem H2-Hochspannungsspeicher-Wechselrichter von
 
 ## 2. How tall and how heavy is the assembled B2-5.0-HV1?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How tall and how heavy is the assembled B2-5.0-HV1?
 

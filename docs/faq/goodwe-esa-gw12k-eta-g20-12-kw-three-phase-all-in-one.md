@@ -22,8 +22,8 @@ Das Mischen von Batteriemodulen verschiedener Modelle ist möglich. Die Batterie
 
 ## 2. What backup load can the GW12K-ETA-G20 design support?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What backup load can the GW12K-ETA-G20 design support?
 

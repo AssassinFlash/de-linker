@@ -29,11 +29,7 @@ def load_passed(directory: Path) -> list[dict[str, Any]]:
             continue
         data = json.loads(path.read_text())
         product_id = data.get("id")
-        items = [
-            item
-            for item in data.get("items", [])
-            if item.get("status") == "pass"
-        ]
+        items = [item for item in data.get("items", []) if item.get("status") == "pass"]
         if not isinstance(product_id, int):
             sys.exit(f"{path}: missing integer id")
         products.append(

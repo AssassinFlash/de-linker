@@ -29,9 +29,9 @@
         "page": 4,
         "title": "Battery Stack Bridge Installation Guide (EN)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "What gap must I leave between the two tower bases?",
@@ -45,7 +45,7 @@
       },
       "status": "withdrawn",
       "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "reason": "a number is not in the cited passage — the cited page does not contain: 94.6, 104.5, 94,6, 104,5"
     }
   ]
 }

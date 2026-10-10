@@ -7,17 +7,17 @@
   "items": [
     {
       "question": "Will one EzManager3000 cover this inverter and device mix?",
-      "answer": "The datasheet lists the device management limits per EzManager3000: hybrid inverter up to 4, grid-tied inverter up to 4, EV charger up to 2, heat pump 1 (SG-Ready), Shelly device up to 12. The user manual technical parameters state different figures: energy storage inverter maximum 1 unit, grid-tied inverter maximum 1 unit, charging pile maximum 2 units, heat pump maximum 1 unit (SG-Ready), Shelly device maximum 12. The manual also notes that the number of hybrid connections supported is subject to the actual model, and refers to the Inverter and IoT Device Compatibility List for supported inverter models and quantities. Check the compatibility list for your specific mix.",
+      "answer": "One EzManager3000 manages up to 4 hybrid inverters, up to 4 grid-tied inverters, up to 2 EV chargers, 1 heat pump (SG-Ready) and up to 12 Shelly devices. Compare your planned device mix against these figures.",
       "question_de": "Deckt ein EzManager3000 diese Wechselrichter- und Gerätekombination ab?",
-      "answer_de": "Das Datenblatt nennt die Gerätemanagement-Grenzen pro EzManager3000: Hybrid-Wechselrichter bis 4, Netzgekoppelter Wechselrichter bis 4, EV-Ladegerät bis 2, Wärmepumpe 1 (SG-Ready), Shelly-Gerät bis 12. Die technischen Parameter des Benutzerhandbuchs nennen abweichende Werte: Energiespeicher-Wechselrichter maximal 1 Einheit, netzgekoppelter Wechselrichter maximal 1 Einheit, Ladepunkt maximal 2 Einheiten, Wärmepumpe maximal 1 Einheit (SG-Ready), Shelly-Gerät maximal 12. Das Handbuch weist zudem darauf hin, dass die Anzahl der unterstützten Hybrid-Anbindungen vom tatsächlichen Modell abhängt, und verweist für unterstützte Wechselrichtermodelle und Stückzahlen auf die Inverter and IoT Device Compatibility List. Prüfen Sie die Kompatibilitätsliste für Ihre konkrete Kombination.",
+      "answer_de": "Ein EzManager3000 verwaltet bis zu 4 Hybrid-Wechselrichter, bis zu 4 netzgekoppelte Wechselrichter, bis zu 2 EV-Ladegeräte, 1 Wärmepumpe (SG-Ready) und bis zu 12 Shelly-Geräte. Vergleichen Sie Ihre geplante Gerätekombination mit diesen Angaben.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_EzManager3000_Datasheet_EMEA-EN_V1.1.pdf",
         "page": 1,
         "title": "GoodWe EzManager3000 Datasheet (EMEA, EN)"
       },
-      "status": "withdrawn",
-      "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
     },
     {
       "question": "What power supply does the gateway need?",
@@ -31,7 +31,7 @@
       },
       "status": "withdrawn",
       "review": "withdrawn",
-      "reason": "a number is not in the cited passage"
+      "reason": "a number is not in the cited passage — the cited page does not contain: 100, 7"
     },
     {
       "question": "Does the gateway work with dynamic tariffs and trading platforms?",

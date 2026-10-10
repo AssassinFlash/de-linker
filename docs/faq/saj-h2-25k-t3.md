@@ -22,8 +22,8 @@ Die Verpackungsliste umfasst den H2-Wechselrichter, einen Befestigungswinkel, PV
 
 ## 2. Which circuit breaker and AC cable does the H2-25K-T3 need?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** Which circuit breaker and AC cable does the H2-25K-T3 need?
 
@@ -37,15 +37,15 @@ Für den H2-(25K-30K)-T3 beträgt die empfohlene Schalter-Spezifikation 63 A. Sc
 
 ## 3. Which battery connection does the H2-25K-T3 have?
 
-**Status:** reject
-**Review:** reject — The cited page 38 datasheet chunk covers battery type, voltage range and current, but the 'quick connector' battery connection claim comes from page 37, which is not the cited passage.
+**Status:** withdrawn
+**Review:** withdrawn — The retrieved passages do not state the battery connection type for the H2-25K-T3. The datasheet table that lists the H2-25K-T3 (page 38) covers battery type, voltage range and current, but not the connection type. The table that lists the battery connection type (page 37) covers only H2-10K-T3, H2-12K-T3, H2-15K-T2, H2-15K-T3 and H2-20K-T2, so no value can be attributed to the H2-25K-T3. The installation passages (pages 45 and 46) describe connecting cables to the BAT+ and BAT- ports and inserting cable ends into blue positive and negative battery connectors, but do not name a connection type for this model.
 
 **EN Q:** Which battery connection does the H2-25K-T3 have?
 
-The battery connection is a quick connector. The battery type is LiFePO4, the battery voltage range is 180 - 800 V, and the max. charging/discharging current is 2*50 A.
+_(withdrawn)_
 
 **DE Q:** Welchen Batterieanschluss hat der H2-25K-T3?
 
-Der Akku-Anschluss ist eine Schnellsteckverbindung. Der Akkutyp ist LiFePO4, der Akku-Spannungsbereich liegt bei 180 - 800 V und der max. Lade-/Entladestrom beträgt 2*50 A.
+_(zurückgezogen)_
 
 **Citation:** SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p.38 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf

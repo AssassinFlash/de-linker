@@ -8,7 +8,7 @@
 ## 1. Which battery modules does the HS2-6K-T2-X take, and how many?
 
 **Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 102.4, 102,4
 
 **EN Q:** Which battery modules does the HS2-6K-T2-X take, and how many?
 
@@ -33,12 +33,12 @@ The backup output delivers a maximum output power of 6000 VA and a maximum outpu
 
 Der Notstromausgang liefert eine maximale Ausgangsleistung von 6000 VA und einen maximalen Ausgangsstrom von 9,6 A. Die Spitzenausgangsscheinleistung beträgt 12000 VA für 60 s. Die AC-Nennspannung ist 3L+N+PE, 220/380, 230/400, 240/415 V mit einem Bereich von 180–280/312–485 V.
 
-**Citation:** SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE) · p.2 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf
+**Citation:** saj_hs2_5_10k_t2_x_datasheet_en · p.2 · https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf
 
 ## 3. What does the AC side of the HS2-6K-T2-X need at installation?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What does the AC side of the HS2-6K-T2-X need at installation?
 

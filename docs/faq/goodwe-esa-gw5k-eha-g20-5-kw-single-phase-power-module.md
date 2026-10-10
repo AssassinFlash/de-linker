@@ -7,8 +7,8 @@
 
 ## 1. What backup rating does GW5K-EHA-G20 have?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** What backup rating does GW5K-EHA-G20 have?
 
@@ -22,8 +22,8 @@ Der GW5K-EHA-G20 hat eine nominale Ausgangsscheinleistung von 5,0 kVA auf der No
 
 ## 2. How many MPPTs does GW5K-EHA-G20 have?
 
-**Status:** withdrawn
-**Review:** withdrawn — a number is not in the cited passage
+**Status:** pass
+**Review:** pass
 
 **EN Q:** How many MPPTs does GW5K-EHA-G20 have?
 
