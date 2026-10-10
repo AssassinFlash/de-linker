@@ -1,0 +1,14 @@
+{
+ "judge": "qwen3-1.7b",
+ "weights": "Qwen3-1.7B Q4_K_M",
+ "host": "chesterjohn-2.local",
+ "machine": "arm64",
+ "calls": 20,
+ "errors": 0,
+ "p50_s": 1.537660062982468,
+ "p95_s": 2.029325208044611,
+ "max_s": 2.39193229196826,
+ "rss_peak_mib": 2341.375,
+ "rss_last_mib": 2124.84375,
+ "mem_available_min_mib": null
+}

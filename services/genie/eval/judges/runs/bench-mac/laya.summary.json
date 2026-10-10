@@ -1,0 +1,14 @@
+{
+ "judge": "laya",
+ "weights": "Laya (0.4B) Q8_0",
+ "host": "chesterjohn-2.local",
+ "machine": "arm64",
+ "calls": 20,
+ "errors": 0,
+ "p50_s": 0.6348432495142333,
+ "p95_s": 1.1463991249911487,
+ "max_s": 1.6333328749751672,
+ "rss_peak_mib": 1214.609375,
+ "rss_last_mib": 559.203125,
+ "mem_available_min_mib": null
+}

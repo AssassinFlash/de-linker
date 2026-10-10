@@ -1,0 +1,1334 @@
+{
+ "_about": "#33 judge bake-off seeds. Datasheet rows are read from our hosted PDFs (LINKER_DATA/pdf/<sha256>.pdf) by `judges build`; catalogue rows are the 2026-10-09 live facts in docs/research/2026-10-09/old-repo-live-catalogue-facts.md; out-of-scope questions follow AGENTS.md §2 (2026-10-05).",
+ "documents": {
+  "b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3": {
+   "title": "SAJ HS3 5-12K three-phase datasheet, English (covers the HS3-10K-T2-W/G-PX)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf",
+   "lang": "en"
+  },
+  "e00f9645d187c241570a4037afa6a1dd54c23cd3d41b189bc44a0e0b24e4f7b3": {
+   "title": "SAJ HS3 5-12K three-phase datasheet, German (covers the HS3-10K-T2-W/G-PX)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_5-12K-T2_Datasheet_DE.pdf",
+   "lang": "de"
+  },
+  "0abea746ac338562cfa63d7e4976ca1d8204271f6d7c2f1d08a8dc4a1ca04465": {
+   "title": "SAJ HS2 three-phase all-in-one datasheet, HS2-5K to HS2-10K-T2-X (EN)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+   "lang": "en"
+  },
+  "b00de688082b872ed224736ae8e0299d0267924348080289656ad5d65b902f8d": {
+   "title": "SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf",
+   "lang": "de"
+  },
+  "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7": {
+   "title": "SAJ H2 10-30K datasheet, English (covers the H2-10K-T3)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-datasheet.pdf",
+   "lang": "en"
+  },
+  "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752": {
+   "title": "SAJ H2 15-30K datasheet, German (covers the H2-15K-T3)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_15-30K-T3_Datasheet_DE.pdf",
+   "lang": "de"
+  },
+  "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3": {
+   "title": "SAJ CHS2 30-50K datasheet with the CB2 battery table, English (covers the CB2-100.3-HV5)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+   "lang": "en"
+  },
+  "6f3b2db569ccaadccad5dc4c2aef5801213f1586c3aee50db507bf4b04744c25": {
+   "title": "SAJ CHS2 30-50K datasheet with the CB2 battery table, German (covers the CB2-100.3-HV5)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_DE.pdf",
+   "lang": "de"
+  },
+  "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a": {
+   "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0 with BU2-5.0 and BC2-HV1: datasheet (English)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+   "lang": "en"
+  },
+  "7929125c85d1864409a0e9711c5126c4ae72468cbff5f2cbe058dcef3d1505f8": {
+   "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0 with BU2-5.0 and BC2-HV1: datasheet (German)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_B2_5-25kWh_HV1-HV5_Datasheet_DE.pdf",
+   "lang": "de"
+  },
+  "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f": {
+   "title": "GoodWe ESA Series 5–30 kW datasheet (EN)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+   "lang": "en"
+  },
+  "ce3e2552a6a21ff8b78988006f344619776c7cf01796cf172338040119569f9a": {
+   "title": "GoodWe ESA Serie 5–30 kW datasheet (DE)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Datasheet_EMEA-DE_V1.1.pdf",
+   "lang": "de"
+  },
+  "76df70ea8474531fb1f1d168b6faf3262cf2242358be9ba9d17b5f2fb5e75afd": {
+   "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+   "lang": "en"
+  },
+  "8ced72d8cec02f6b69f82f42097c8a206ed3a5bf298b52178849f74292090b81": {
+   "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, DE)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Datasheet_EMEA-DE_V1.1.pdf",
+   "lang": "de"
+  },
+  "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c": {
+   "title": "GoodWe BAT-C Series 61.4–112.6 kWh Datasheet (EMEA, EN, V1.1)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+   "lang": "en"
+  },
+  "2a76fb0815a2b6adbaee9159b958e24549e480d90b519cd5181209448cd45eb7": {
+   "title": "GoodWe BAT-C Series 61.4–112.6 kWh Datasheet (EMEA, DE, V1.1)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Datasheet_EMEA-DE_V1.1.pdf",
+   "lang": "de"
+  },
+  "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38": {
+   "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.1)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf",
+   "lang": "en"
+  },
+  "99bf87f76a1cebb85900970e37afe3b23cb581c4f9b198c7dfb88da4eef8b1d8": {
+   "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, DE, V1.1)",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf",
+   "lang": "de"
+  }
+ },
+ "datasheet": [
+  {
+   "id": "hs3-pv",
+   "category": "inverter",
+   "field": "max_pv_power",
+   "unit": "Wp",
+   "refs": {
+    "en": {
+     "doc": "b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3",
+     "page": 1,
+     "anchor": "Module",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. PV Array Power [Wp]@STC",
+     "after": 10,
+     "col": 3,
+     "alt_col": 2,
+     "model": "HS3-10K-T2-W/G-PX",
+     "alt_model": "HS3-8K-T2-W/G-PX"
+    },
+    "de": {
+     "doc": "e00f9645d187c241570a4037afa6a1dd54c23cd3d41b189bc44a0e0b24e4f7b3",
+     "page": 1,
+     "anchor": "Modul",
+     "occurrence": 1,
+     "above": 0,
+     "row": "Max. Leistung der PV-Anlage [Wp]@ STC",
+     "after": 10,
+     "col": 3,
+     "alt_col": 2,
+     "model": "HS3-10K-T2-W/G-P",
+     "alt_model": "HS3-8K-T2-W/G-P"
+    }
+   }
+  },
+  {
+   "id": "hs3-apparent",
+   "category": "inverter",
+   "field": "max_apparent_power",
+   "unit": "VA",
+   "refs": {
+    "en": {
+     "doc": "b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3",
+     "page": 1,
+     "anchor": "Module",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. Apparent Power [VA]",
+     "after": 6,
+     "col": 2,
+     "alt_col": 1,
+     "model": "HS3-8K-T2-W/G-PX",
+     "alt_model": "HS3-6K-T2-W/G-PX"
+    },
+    "de": {
+     "doc": "e00f9645d187c241570a4037afa6a1dd54c23cd3d41b189bc44a0e0b24e4f7b3",
+     "page": 1,
+     "anchor": "Modul",
+     "occurrence": 1,
+     "above": 0,
+     "row": "Max. Scheinleistung [VA]",
+     "after": 6,
+     "col": 2,
+     "alt_col": 1,
+     "model": "HS3-8K-T2-W/G-P",
+     "alt_model": "HS3-6K-T2-W/G-P"
+    }
+   }
+  },
+  {
+   "id": "hs3-ratedcur",
+   "category": "inverter",
+   "field": "rated_output_current",
+   "unit": "A",
+   "refs": {
+    "en": {
+     "doc": "b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3",
+     "page": 1,
+     "anchor": "Module",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Rated Output Current [A]@230Vac",
+     "after": 6,
+     "col": 1,
+     "alt_col": 2,
+     "model": "HS3-6K-T2-W/G-PX",
+     "alt_model": "HS3-8K-T2-W/G-PX"
+    },
+    "de": {
+     "doc": "e00f9645d187c241570a4037afa6a1dd54c23cd3d41b189bc44a0e0b24e4f7b3",
+     "page": 1,
+     "anchor": "Modul",
+     "occurrence": 1,
+     "above": 0,
+     "row": "Ausgangs-Nennstrom [A]@230 V AC",
+     "after": 6,
+     "col": 1,
+     "alt_col": 2,
+     "model": "HS3-6K-T2-W/G-P",
+     "alt_model": "HS3-8K-T2-W/G-P"
+    }
+   }
+  },
+  {
+   "id": "hs2-pv",
+   "category": "system",
+   "field": "max_pv_power",
+   "unit": "Wp",
+   "refs": {
+    "en": {
+     "doc": "0abea746ac338562cfa63d7e4976ca1d8204271f6d7c2f1d08a8dc4a1ca04465",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. PV Array Power [Wp]@ STC",
+     "after": 10,
+     "col": 1,
+     "alt_col": 2,
+     "model": "HS2-6K-T2-X",
+     "alt_model": "HS2-8K-T2-X"
+    },
+    "de": {
+     "doc": "b00de688082b872ed224736ae8e0299d0267924348080289656ad5d65b902f8d",
+     "page": 1,
+     "anchor": "Modell",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. Leistung der PV-Anlage [Wp]@ STC",
+     "after": 10,
+     "col": 0,
+     "alt_col": 1,
+     "model": "HS2-6K-T2-X",
+     "alt_model": "HS2-8K-T2-X"
+    }
+   }
+  },
+  {
+   "id": "hs2-inputcur",
+   "category": "system",
+   "field": "max_ac_input_current",
+   "unit": "A",
+   "refs": {
+    "en": {
+     "doc": "0abea746ac338562cfa63d7e4976ca1d8204271f6d7c2f1d08a8dc4a1ca04465",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. Input Current [A]@ 230Vac",
+     "after": 4,
+     "col": 2,
+     "alt_col": 3,
+     "model": "HS2-8K-T2-X",
+     "alt_model": "HS2-10K-T2-X"
+    },
+    "de": {
+     "doc": "b00de688082b872ed224736ae8e0299d0267924348080289656ad5d65b902f8d",
+     "page": 1,
+     "anchor": "Modell",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. Eingangsstrom [A]@230 V AC",
+     "after": 4,
+     "col": 1,
+     "alt_col": 2,
+     "model": "HS2-8K-T2-X",
+     "alt_model": "HS2-10K-T2-X"
+    }
+   }
+  },
+  {
+   "id": "h2-maxcur",
+   "category": "inverter",
+   "field": "max_output_current",
+   "unit": "A",
+   "refs": {
+    "en": {
+     "doc": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. Output Current [A]",
+     "after": 4,
+     "col": 3,
+     "alt_col": 5,
+     "model": "H2-15K-T3",
+     "alt_model": "H2-20K-T3"
+    },
+    "de": {
+     "doc": "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752",
+     "page": 1,
+     "anchor": "Modell",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. Ausgangsstrom [A]",
+     "after": 4,
+     "col": 0,
+     "alt_col": 1,
+     "model": "H2-15K-T3",
+     "alt_model": "H2-20K-T3"
+    }
+   }
+  },
+  {
+   "id": "h2-12k-apparent",
+   "category": "inverter",
+   "field": "max_apparent_power",
+   "unit": "VA",
+   "refs": {
+    "en": {
+     "doc": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max.Apparent Power [VA]",
+     "after": 4,
+     "col": 1,
+     "alt_col": 0,
+     "model": "H2-12K-T3",
+     "alt_model": "H2-10K-T3"
+    },
+    "de": {
+     "doc": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max.Apparent Power [VA]",
+     "after": 4,
+     "col": 1,
+     "alt_col": 0,
+     "model": "H2-12K-T3",
+     "alt_model": "H2-10K-T3"
+    }
+   }
+  },
+  {
+   "id": "chs2-pv",
+   "category": "system",
+   "field": "max_pv_power",
+   "unit": "Wp",
+   "refs": {
+    "en": {
+     "doc": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. PV Array Power [Wp]@STC",
+     "after": 10,
+     "col": 2,
+     "alt_col": 1,
+     "model": "CHS2-50K-T6-X",
+     "alt_model": "CHS2-30K-T4-X"
+    },
+    "de": {
+     "doc": "6f3b2db569ccaadccad5dc4c2aef5801213f1586c3aee50db507bf4b04744c25",
+     "page": 1,
+     "anchor": "Modell",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. Leistung der PV-Anlage [Wp]@ STC",
+     "after": 10,
+     "col": 2,
+     "alt_col": 1,
+     "model": "CHS2-50K-T6-X",
+     "alt_model": "CHS2-30K-T4-X"
+    }
+   }
+  },
+  {
+   "id": "chs2-apparent",
+   "category": "system",
+   "field": "max_apparent_power",
+   "unit": "VA",
+   "refs": {
+    "en": {
+     "doc": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max.Apparent Power[VA]",
+     "after": 4,
+     "col": 1,
+     "alt_col": 2,
+     "model": "CHS2-30K-T4-X",
+     "alt_model": "CHS2-50K-T6-X"
+    },
+    "de": {
+     "doc": "6f3b2db569ccaadccad5dc4c2aef5801213f1586c3aee50db507bf4b04744c25",
+     "page": 1,
+     "anchor": "Modell",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Max. Scheinleistung [VA]",
+     "after": 4,
+     "col": 1,
+     "alt_col": 2,
+     "model": "CHS2-30K-T4-X",
+     "alt_model": "CHS2-50K-T6-X"
+    }
+   }
+  },
+  {
+   "id": "cb2-usable",
+   "category": "battery",
+   "field": "usable_energy",
+   "unit": "kWh",
+   "refs": {
+    "en": {
+     "doc": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3",
+     "page": 3,
+     "anchor": "MODEL",
+     "occurrence": 1,
+     "above": 0,
+     "row": "Usable Energy [kWh]",
+     "after": 8,
+     "col": 2,
+     "alt_col": 1,
+     "model": "CB2-85.9-HV5",
+     "alt_model": "CB2-71.6-HV5"
+    },
+    "de": {
+     "doc": "6f3b2db569ccaadccad5dc4c2aef5801213f1586c3aee50db507bf4b04744c25",
+     "page": 3,
+     "anchor": "Modell",
+     "occurrence": 1,
+     "above": 0,
+     "row": "Nutzbare Energie [kWh]",
+     "after": 8,
+     "col": 2,
+     "alt_col": 1,
+     "model": "CB2-85.9-HV5",
+     "alt_model": "CB2-71.6-HV5"
+    }
+   }
+  },
+  {
+   "id": "cb2-weight",
+   "category": "battery",
+   "field": "weight",
+   "unit": "kg",
+   "refs": {
+    "en": {
+     "doc": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3",
+     "page": 3,
+     "anchor": "MODEL",
+     "occurrence": 1,
+     "above": 0,
+     "row": "Weight [kg]",
+     "after": 3,
+     "col": 1,
+     "alt_col": 2,
+     "model": "CB2-71.6-HV5",
+     "alt_model": "CB2-85.9-HV5"
+    },
+    "de": {
+     "doc": "6f3b2db569ccaadccad5dc4c2aef5801213f1586c3aee50db507bf4b04744c25",
+     "page": 3,
+     "anchor": "Modell",
+     "occurrence": 1,
+     "above": 0,
+     "row": "Gewicht [kg]",
+     "after": 3,
+     "col": 1,
+     "alt_col": 2,
+     "model": "CB2-71.6-HV5",
+     "alt_model": "CB2-85.9-HV5"
+    }
+   }
+  },
+  {
+   "id": "b2-weight",
+   "category": "battery",
+   "field": "weight",
+   "unit": "kg",
+   "refs": {
+    "en": {
+     "doc": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Weight [kg]",
+     "after": 4,
+     "col": 2,
+     "alt_col": 1,
+     "model": "B2-15.0-HV1",
+     "alt_model": "B2-10.0-HV1"
+    },
+    "de": {
+     "doc": "7929125c85d1864409a0e9711c5126c4ae72468cbff5f2cbe058dcef3d1505f8",
+     "page": 1,
+     "anchor": "Modell",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Gewicht [kg]",
+     "after": 4,
+     "col": 2,
+     "alt_col": 1,
+     "model": "B2-15.0-HV1",
+     "alt_model": "B2-10.0-HV1"
+    }
+   }
+  },
+  {
+   "id": "b2-voltage",
+   "category": "battery",
+   "field": "nominal_voltage",
+   "unit": "V",
+   "refs": {
+    "en": {
+     "doc": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+     "page": 1,
+     "anchor": "MODEL",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Nominal Voltage [V]",
+     "after": 4,
+     "col": 3,
+     "alt_col": 4,
+     "model": "B2-20.0-HV1",
+     "alt_model": "B2-25.0-HV1"
+    },
+    "de": {
+     "doc": "7929125c85d1864409a0e9711c5126c4ae72468cbff5f2cbe058dcef3d1505f8",
+     "page": 1,
+     "anchor": "Modell",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Nennspannung [V]",
+     "after": 4,
+     "col": 3,
+     "alt_col": 4,
+     "model": "B2-20.0-HV1",
+     "alt_model": "B2-25.0-HV1"
+    }
+   }
+  },
+  {
+   "id": "esa-pv",
+   "category": "inverter",
+   "field": "max_pv_input_power",
+   "unit": "kW",
+   "refs": {
+    "en": {
+     "doc": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+     "page": 2,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Max. Input Power (kW)",
+     "after": 6,
+     "col": 6,
+     "alt_col": 7,
+     "model": "GW15K-ETA-G20",
+     "alt_model": "GW20K-ETA-G20"
+    },
+    "de": {
+     "doc": "ce3e2552a6a21ff8b78988006f344619776c7cf01796cf172338040119569f9a",
+     "page": 2,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Max. Eingangsleistung (kW)",
+     "after": 6,
+     "col": 5,
+     "alt_col": 6,
+     "model": "GW15K-ETA-G20",
+     "alt_model": "GW20K-ETA-G20"
+    }
+   }
+  },
+  {
+   "id": "esa-chargecur",
+   "category": "inverter",
+   "field": "max_charge_current",
+   "unit": "A",
+   "refs": {
+    "en": {
+     "doc": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+     "page": 2,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Max. Continuous Charging Current (A)",
+     "after": 6,
+     "col": 8,
+     "alt_col": 7,
+     "model": "GW25K-ETA-G20",
+     "alt_model": "GW20K-ETA-G20"
+    },
+    "de": {
+     "doc": "ce3e2552a6a21ff8b78988006f344619776c7cf01796cf172338040119569f9a",
+     "page": 2,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Max. Dauerladestrom (A)",
+     "after": 6,
+     "col": 7,
+     "alt_col": 6,
+     "model": "GW25K-ETA-G20",
+     "alt_model": "GW20K-ETA-G20"
+    }
+   }
+  },
+  {
+   "id": "esa-bat-usable",
+   "category": "module",
+   "field": "usable_energy",
+   "unit": "kWh",
+   "refs": {
+    "en": {
+     "doc": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+     "page": 3,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Usable Energy (kWh)",
+     "after": 8,
+     "col": 5,
+     "alt_col": 1,
+     "model": "GW9.0-BAT-D-G20",
+     "alt_model": "GW8.3-BAT-D-G20"
+    },
+    "de": {
+     "doc": "ce3e2552a6a21ff8b78988006f344619776c7cf01796cf172338040119569f9a",
+     "page": 3,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Nutzbare Energie (kWh)",
+     "after": 8,
+     "col": 3,
+     "alt_col": 1,
+     "model": "GW9.0-BAT-D-G20",
+     "alt_model": "GW8.3-BAT-D-G20"
+    }
+   }
+  },
+  {
+   "id": "etr-pv",
+   "category": "inverter",
+   "field": "max_pv_input_power",
+   "unit": "kW",
+   "refs": {
+    "en": {
+     "doc": "76df70ea8474531fb1f1d168b6faf3262cf2242358be9ba9d17b5f2fb5e75afd",
+     "page": 2,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Max. Input Power (kW)",
+     "after": 6,
+     "col": 3,
+     "alt_col": 2,
+     "model": "GW110K-ETR-G10",
+     "alt_model": "GW100K-ETR-G10"
+    },
+    "de": {
+     "doc": "8ced72d8cec02f6b69f82f42097c8a206ed3a5bf298b52178849f74292090b81",
+     "page": 2,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Max. Eingangsleistung (kW)",
+     "after": 6,
+     "col": 3,
+     "alt_col": 2,
+     "model": "GW110K-ETR-G10",
+     "alt_model": "GW100K-ETR-G10"
+    }
+   }
+  },
+  {
+   "id": "etr-chargepower",
+   "category": "inverter",
+   "field": "max_charge_discharge_power",
+   "unit": "kW",
+   "refs": {
+    "en": {
+     "doc": "76df70ea8474531fb1f1d168b6faf3262cf2242358be9ba9d17b5f2fb5e75afd",
+     "page": 2,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Max. Charging / Discharging Power (kW)",
+     "after": 6,
+     "col": 2,
+     "alt_col": 1,
+     "model": "GW100K-ETR-G10",
+     "alt_model": "GW99.99K-ETR-G10"
+    },
+    "de": {
+     "doc": "8ced72d8cec02f6b69f82f42097c8a206ed3a5bf298b52178849f74292090b81",
+     "page": 2,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 1,
+     "row": "Max. Lade- / Entladeleistung (kW)",
+     "after": 6,
+     "col": 2,
+     "alt_col": 1,
+     "model": "GW100K-ETR-G10",
+     "alt_model": "GW99.99K-ETR-G10"
+    }
+   }
+  },
+  {
+   "id": "batc-usable",
+   "category": "battery",
+   "field": "usable_energy",
+   "unit": "kWh",
+   "refs": {
+    "en": {
+     "doc": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+     "page": 2,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Usable Energy (kWh)*1",
+     "after": 6,
+     "col": 1,
+     "alt_col": 0,
+     "model": "GW112.6-BAT-AC-G10",
+     "alt_model": "GW61.4-BAT-AC-G10"
+    },
+    "de": {
+     "doc": "2a76fb0815a2b6adbaee9159b958e24549e480d90b519cd5181209448cd45eb7",
+     "page": 2,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Nutzbare Energie (kWh)*1",
+     "after": 6,
+     "col": 1,
+     "alt_col": 0,
+     "model": "GW112.6-BAT-AC-G10",
+     "alt_model": "GW61.4-BAT-AC-G10"
+    }
+   }
+  },
+  {
+   "id": "batc-voltage",
+   "category": "battery",
+   "field": "nominal_voltage",
+   "unit": "V",
+   "refs": {
+    "en": {
+     "doc": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+     "page": 2,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Nominal Voltage (V)",
+     "after": 6,
+     "col": 0,
+     "alt_col": 1,
+     "model": "GW61.4-BAT-AC-G10",
+     "alt_model": "GW112.6-BAT-AC-G10"
+    },
+    "de": {
+     "doc": "2a76fb0815a2b6adbaee9159b958e24549e480d90b519cd5181209448cd45eb7",
+     "page": 2,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Nennspannung (V)",
+     "after": 6,
+     "col": 0,
+     "alt_col": 1,
+     "model": "GW61.4-BAT-AC-G10",
+     "alt_model": "GW112.6-BAT-AC-G10"
+    }
+   }
+  },
+  {
+   "id": "batc208-packs",
+   "category": "battery",
+   "field": "pack_count",
+   "unit": "",
+   "refs": {
+    "en": {
+     "doc": "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+     "page": 2,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Number of Packs",
+     "after": 6,
+     "col": 1,
+     "alt_col": 0,
+     "model": "GW261.2-BAT-LCD-G10",
+     "alt_model": "GW208.9-BAT-LC-G10"
+    },
+    "de": {
+     "doc": "99bf87f76a1cebb85900970e37afe3b23cb581c4f9b198c7dfb88da4eef8b1d8",
+     "page": 2,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Anzahl der Packs",
+     "after": 6,
+     "col": 1,
+     "alt_col": 0,
+     "model": "GW261.2-BAT-LCD-G10",
+     "alt_model": "GW208.9-BAT-LC-G10"
+    }
+   }
+  },
+  {
+   "id": "batc208-voltage",
+   "category": "battery",
+   "field": "nominal_voltage",
+   "unit": "V",
+   "refs": {
+    "en": {
+     "doc": "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+     "page": 2,
+     "anchor": "Technical Data",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Nominal Voltage (V)",
+     "after": 6,
+     "col": 0,
+     "alt_col": 1,
+     "model": "GW208.9-BAT-LC-G10",
+     "alt_model": "GW261.2-BAT-LCD-G10"
+    },
+    "de": {
+     "doc": "99bf87f76a1cebb85900970e37afe3b23cb581c4f9b198c7dfb88da4eef8b1d8",
+     "page": 2,
+     "anchor": "Technische Daten",
+     "occurrence": 0,
+     "above": 0,
+     "row": "Nennspannung (V)",
+     "after": 6,
+     "col": 0,
+     "alt_col": 1,
+     "model": "GW208.9-BAT-LC-G10",
+     "alt_model": "GW261.2-BAT-LCD-G10"
+    }
+   }
+  }
+ ],
+ "catalogue": [
+  {
+   "id": "cat-gw8k-pv",
+   "category": "inverter",
+   "field": "max_pv_input",
+   "model": "GW8K-ETA",
+   "value": "16 kW",
+   "alt_model": "GW10K-ETA",
+   "alt_value": "20 kW",
+   "results": [
+    {
+     "product_id": 6513,
+     "model": "GW6K-ETA",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "6 kW",
+     "max_pv_input": "12 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 3583,
+     "model": "GW8K-ETA",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "8 kW",
+     "max_pv_input": "16 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 3556,
+     "model": "GW10K-ETA",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "10 kW",
+     "max_pv_input": "20 kW",
+     "in_stock": true
+    }
+   ]
+  },
+  {
+   "id": "cat-hs2-8k-pv",
+   "category": "system",
+   "field": "max_pv_input",
+   "model": "HS2-8K",
+   "value": "12 kWp",
+   "alt_model": "HS2-10K",
+   "alt_value": "15 kWp",
+   "results": [
+    {
+     "product_id": 1183,
+     "model": "HS2-6K",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "6 kW",
+     "max_pv_input": "9 kWp",
+     "in_stock": true
+    },
+    {
+     "product_id": 1184,
+     "model": "HS2-8K",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "8 kW",
+     "max_pv_input": "12 kWp",
+     "in_stock": true
+    },
+    {
+     "product_id": 1182,
+     "model": "HS2-10K",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "10 kW",
+     "max_pv_input": "15 kWp",
+     "in_stock": true
+    }
+   ]
+  },
+  {
+   "id": "cat-hdp3-10k-ac",
+   "category": "inverter",
+   "field": "ac_power",
+   "model": "HD-P3-10K0",
+   "value": "10 kW",
+   "alt_model": "HD-P3-12K0",
+   "alt_value": "12 kW",
+   "results": [
+    {
+     "product_id": 3575,
+     "model": "HD-P3-8K0",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "8 kW",
+     "max_pv_input": "16 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 3555,
+     "model": "HD-P3-10K0",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "10 kW",
+     "max_pv_input": "20 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 3576,
+     "model": "HD-P3-12K0",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "12 kW",
+     "max_pv_input": "24 kW",
+     "in_stock": true
+    }
+   ]
+  },
+  {
+   "id": "cat-etr-124-ac",
+   "category": "inverter",
+   "field": "ac_power",
+   "model": "GW124.99K-ETR",
+   "value": "124.99 kW",
+   "alt_model": "GW125K-ETR",
+   "alt_value": "125 kW",
+   "results": [
+    {
+     "product_id": 6510,
+     "model": "GW110K-ETR",
+     "category": "hybrid inverter",
+     "application": "commercial",
+     "phase": "three-phase",
+     "ac_power": "110 kW",
+     "max_pv_input": "220 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 6511,
+     "model": "GW124.99K-ETR",
+     "category": "hybrid inverter",
+     "application": "commercial",
+     "phase": "three-phase",
+     "ac_power": "124.99 kW",
+     "max_pv_input": "250 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 3595,
+     "model": "GW125K-ETR",
+     "category": "hybrid inverter",
+     "application": "commercial",
+     "phase": "three-phase",
+     "ac_power": "125 kW",
+     "max_pv_input": "250 kW",
+     "in_stock": true
+    }
+   ]
+  },
+  {
+   "id": "cat-etr-99-pv",
+   "category": "inverter",
+   "field": "max_pv_input",
+   "model": "GW99.99K-ETR",
+   "value": "200 kW",
+   "alt_model": "GW80K-ETR",
+   "alt_value": "160 kW",
+   "results": [
+    {
+     "product_id": 6507,
+     "model": "GW80K-ETR",
+     "category": "hybrid inverter",
+     "application": "commercial",
+     "phase": "three-phase",
+     "ac_power": "80 kW",
+     "max_pv_input": "160 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 6508,
+     "model": "GW99.99K-ETR",
+     "category": "hybrid inverter",
+     "application": "commercial",
+     "phase": "three-phase",
+     "ac_power": "99.99 kW",
+     "max_pv_input": "200 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 6509,
+     "model": "GW100K-ETR",
+     "category": "hybrid inverter",
+     "application": "commercial",
+     "phase": "three-phase",
+     "ac_power": "100 kW",
+     "max_pv_input": "200 kW",
+     "in_stock": true
+    }
+   ]
+  },
+  {
+   "id": "cat-esa60-usable",
+   "category": "module",
+   "field": "usable_energy",
+   "model": "GW6.0-BAT-D-G20",
+   "value": "5.8 kWh",
+   "alt_model": "GW9.0-BAT-D-G20",
+   "alt_value": "8.7 kWh",
+   "results": [
+    {
+     "product_id": 6519,
+     "model": "GW5.1-BAT-D-G20",
+     "category": "battery module",
+     "application": "home",
+     "nominal_energy": "5.12 kWh",
+     "usable_energy": "5.0 kWh",
+     "in_stock": true
+    },
+    {
+     "product_id": 3611,
+     "model": "GW6.0-BAT-D-G20",
+     "category": "battery module",
+     "application": "home",
+     "nominal_energy": "6.0 kWh",
+     "usable_energy": "5.8 kWh",
+     "in_stock": true
+    },
+    {
+     "product_id": 6520,
+     "model": "GW8.3-BAT-D-G20",
+     "category": "battery module",
+     "application": "home",
+     "nominal_energy": "8.32 kWh",
+     "usable_energy": "8.0 kWh",
+     "in_stock": true
+    },
+    {
+     "product_id": 3612,
+     "model": "GW9.0-BAT-D-G20",
+     "category": "battery module",
+     "application": "home",
+     "nominal_energy": "9.0 kWh",
+     "usable_energy": "8.7 kWh",
+     "in_stock": true
+    }
+   ]
+  },
+  {
+   "id": "cat-esa83-nominal",
+   "category": "module",
+   "field": "nominal_energy",
+   "model": "GW8.3-BAT-D-G21",
+   "value": "8.32 kWh",
+   "alt_model": "GW9.0-BAT-D-G20",
+   "alt_value": "9.0 kWh",
+   "results": [
+    {
+     "product_id": 6521,
+     "model": "GW5.1-BAT-D-G21",
+     "category": "battery module",
+     "application": "home",
+     "nominal_energy": "5.12 kWh",
+     "usable_energy": "5.0 kWh",
+     "in_stock": true
+    },
+    {
+     "product_id": 6522,
+     "model": "GW8.3-BAT-D-G21",
+     "category": "battery module",
+     "application": "home",
+     "nominal_energy": "8.32 kWh",
+     "usable_energy": "8.0 kWh",
+     "in_stock": true
+    },
+    {
+     "product_id": 3612,
+     "model": "GW9.0-BAT-D-G20",
+     "category": "battery module",
+     "application": "home",
+     "nominal_energy": "9.0 kWh",
+     "usable_energy": "8.7 kWh",
+     "in_stock": true
+    }
+   ]
+  },
+  {
+   "id": "cat-gw12k-ac",
+   "category": "inverter",
+   "field": "ac_power",
+   "model": "GW12K-ETA",
+   "value": "12 kW",
+   "alt_model": "GW10K-ETA",
+   "alt_value": "10 kW",
+   "results": [
+    {
+     "product_id": 6514,
+     "model": "GW9.999K-ETA",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "9.999 kW",
+     "max_pv_input": "20 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 3556,
+     "model": "GW10K-ETA",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "10 kW",
+     "max_pv_input": "20 kW",
+     "in_stock": true
+    },
+    {
+     "product_id": 3584,
+     "model": "GW12K-ETA",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "12 kW",
+     "max_pv_input": "24 kW",
+     "in_stock": true
+    }
+   ]
+  }
+ ],
+ "out_of_scope": [
+  {
+   "id": "oos-delivery",
+   "reference": {
+    "seed": "hs3-pv"
+   },
+   "en": {
+    "question": "How fast can you deliver the HS3-10K-T2-W/G-PX to Munich?",
+    "correct": "For delivery times, please contact our team at sales@de-linker.com.",
+    "paraphrase": "Our team answers delivery questions directly: please write to sales@de-linker.com.",
+    "answered": "We can deliver the HS3-10K-T2-W/G-PX to Munich within 3 working days."
+   },
+   "de": {
+    "question": "Wie schnell können Sie den HS3-10K-T2-W/G-P nach München liefern?",
+    "correct": "Zu Lieferzeiten wenden Sie sich bitte an unser Team unter sales@de-linker.com.",
+    "paraphrase": "Lieferfragen beantwortet unser Team direkt: Schreiben Sie bitte an sales@de-linker.com.",
+    "answered": "Wir liefern den HS3-10K-T2-W/G-P innerhalb von 3 Werktagen nach München."
+   }
+  },
+  {
+   "id": "oos-stock",
+   "reference": {
+    "tool": "linker/get-product",
+    "result": {
+     "product_id": 3556,
+     "model": "GW10K-ETA",
+     "category": "hybrid inverter",
+     "application": "home",
+     "phase": "three-phase",
+     "ac_power": "10 kW",
+     "max_pv_input": "20 kW",
+     "in_stock": true
+    }
+   },
+   "en": {
+    "question": "How many GW10K-ETA units do you have in stock right now?",
+    "correct": "The GW10K-ETA is in stock. For quantities, please contact our team at sales@de-linker.com.",
+    "paraphrase": "It is in stock; our team at sales@de-linker.com can tell you how many units are available.",
+    "answered": "We currently have 42 units of the GW10K-ETA in stock."
+   },
+   "de": {
+    "question": "Wie viele GW10K-ETA haben Sie aktuell auf Lager?",
+    "correct": "Der GW10K-ETA ist auf Lager. Zu Stückzahlen wenden Sie sich bitte an unser Team unter sales@de-linker.com.",
+    "paraphrase": "Er ist auf Lager; wie viele Geräte verfügbar sind, sagt Ihnen unser Team unter sales@de-linker.com.",
+    "answered": "Wir haben derzeit 42 Stück des GW10K-ETA auf Lager."
+   }
+  },
+  {
+   "id": "oos-install",
+   "reference": {
+    "seed": "chs2-pv"
+   },
+   "en": {
+    "question": "Can your team install the CHS2-50K-T6-X on site for us?",
+    "correct": "For installation questions, please contact our team at sales@de-linker.com.",
+    "paraphrase": "Questions about installation are handled by our team directly at sales@de-linker.com.",
+    "answered": "Yes, our technicians can install the CHS2-50K-T6-X on site within two weeks."
+   },
+   "de": {
+    "question": "Kann Ihr Team das CHS2-50K-T6-X bei uns vor Ort installieren?",
+    "correct": "Zu Fragen der Installation wenden Sie sich bitte an unser Team unter sales@de-linker.com.",
+    "paraphrase": "Fragen zur Installation klärt unser Team direkt unter sales@de-linker.com.",
+    "answered": "Ja, unsere Techniker installieren das CHS2-50K-T6-X innerhalb von zwei Wochen bei Ihnen vor Ort."
+   }
+  },
+  {
+   "id": "oos-incoterms",
+   "reference": {
+    "seed": "batc-usable"
+   },
+   "en": {
+    "question": "Do you ship the GW112.6-BAT-AC-G10 DAP or EXW?",
+    "correct": "For shipping terms, please contact our team at sales@de-linker.com.",
+    "paraphrase": "Our team at sales@de-linker.com answers questions about shipping terms directly.",
+    "answered": "We ship the GW112.6-BAT-AC-G10 DAP to your site; EXW pickup is also possible."
+   },
+   "de": {
+    "question": "Liefern Sie das GW112.6-BAT-AC-G10 DAP oder EXW?",
+    "correct": "Zu Lieferbedingungen wenden Sie sich bitte an unser Team unter sales@de-linker.com.",
+    "paraphrase": "Fragen zu Lieferbedingungen beantwortet unser Team direkt unter sales@de-linker.com.",
+    "answered": "Wir liefern das GW112.6-BAT-AC-G10 DAP an Ihren Standort; eine Abholung EXW ist ebenfalls möglich."
+   }
+  },
+  {
+   "id": "oos-payment",
+   "reference": {
+    "seed": "h2-maxcur"
+   },
+   "en": {
+    "question": "What payment terms do you offer for 20 units of the H2-15K-T3?",
+    "correct": "For payment terms, please contact our team at sales@de-linker.com.",
+    "paraphrase": "Our team at sales@de-linker.com answers questions about payment terms directly.",
+    "answered": "For 20 units we offer 30 days net, with a 2% discount for payment within 10 days."
+   },
+   "de": {
+    "question": "Welche Zahlungsbedingungen bieten Sie für 20 Stück des H2-15K-T3 an?",
+    "correct": "Zu Zahlungsbedingungen wenden Sie sich bitte an unser Team unter sales@de-linker.com.",
+    "paraphrase": "Fragen zu Zahlungsbedingungen beantwortet unser Team direkt unter sales@de-linker.com.",
+    "answered": "Bei 20 Stück bieten wir 30 Tage netto an, mit 2 % Skonto bei Zahlung innerhalb von 10 Tagen."
+   }
+  },
+  {
+   "id": "oos-pickup",
+   "reference": {
+    "seed": "b2-weight"
+   },
+   "en": {
+    "question": "Where is your warehouse, and can I pick up the B2-15.0-HV1 myself?",
+    "correct": "For pickup and logistics, please contact our team at sales@de-linker.com.",
+    "paraphrase": "Our team at sales@de-linker.com answers questions about pickup and logistics directly.",
+    "answered": "Our warehouse is in Hamburg, and you can pick up the B2-15.0-HV1 there on weekdays."
+   },
+   "de": {
+    "question": "Wo ist Ihr Lager, und kann ich das B2-15.0-HV1 selbst abholen?",
+    "correct": "Zu Abholung und Logistik wenden Sie sich bitte an unser Team unter sales@de-linker.com.",
+    "paraphrase": "Fragen zu Abholung und Logistik beantwortet unser Team direkt unter sales@de-linker.com.",
+    "answered": "Unser Lager ist in Hamburg; dort können Sie das B2-15.0-HV1 werktags abholen."
+   }
+  },
+  {
+   "id": "oos-warranty",
+   "reference": {
+    "seed": "etr-pv"
+   },
+   "en": {
+    "question": "Who handles a warranty claim if my GW110K-ETR-G10 fails?",
+    "correct": "For warranty questions, please contact our team at sales@de-linker.com.",
+    "paraphrase": "Our team at sales@de-linker.com answers warranty questions directly.",
+    "answered": "We handle warranty claims ourselves and replace a failed GW110K-ETR-G10 within five working days."
+   },
+   "de": {
+    "question": "Wer bearbeitet einen Garantiefall, wenn mein GW110K-ETR-G10 ausfällt?",
+    "correct": "Zu Garantiefragen wenden Sie sich bitte an unser Team unter sales@de-linker.com.",
+    "paraphrase": "Garantiefragen beantwortet unser Team direkt unter sales@de-linker.com.",
+    "answered": "Garantiefälle bearbeiten wir selbst und tauschen einen defekten GW110K-ETR-G10 innerhalb von fünf Werktagen aus."
+   }
+  },
+  {
+   "id": "oos-commissioning",
+   "reference": {
+    "seed": "esa-pv"
+   },
+   "en": {
+    "question": "Can you commission our GW15K-ETA-G20 system next week?",
+    "correct": "For commissioning, please contact our team at sales@de-linker.com.",
+    "paraphrase": "Our team at sales@de-linker.com answers commissioning questions directly.",
+    "answered": "Yes, our technician can commission the GW15K-ETA-G20 next Tuesday."
+   },
+   "de": {
+    "question": "Können Sie unser System mit dem GW15K-ETA-G20 nächste Woche in Betrieb nehmen?",
+    "correct": "Zur Inbetriebnahme wenden Sie sich bitte an unser Team unter sales@de-linker.com.",
+    "paraphrase": "Fragen zur Inbetriebnahme beantwortet unser Team direkt unter sales@de-linker.com.",
+    "answered": "Ja, unser Techniker kann den GW15K-ETA-G20 am nächsten Dienstag in Betrieb nehmen."
+   }
+  }
+ ]
+}

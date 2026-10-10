@@ -1,0 +1,505 @@
+{
+ "_about": "#33 copy-quality items: FAQ-style answers without a reference. Construction class: plain, ai_phrasing, marketing or both; product facts are taken from our hosted datasheets.",
+ "items": [
+  {
+   "lang": "en",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "How many battery modules can the SAJ HS3 take?",
+   "answer": "The HS3 works with the BU3-5.0-TV2-PRO battery module, and one system takes up to eight modules. Each module adds 5.0 kWh of rated energy."
+  },
+  {
+   "lang": "en",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Can the GoodWe ESA be installed outdoors?",
+   "answer": "Yes. The ESA power module and its battery modules are rated IP66, so they can be installed outdoors. The datasheet gives an operating range of -20 °C to 55 °C."
+  },
+  {
+   "lang": "en",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "How is the SAJ B2 battery mounted?",
+   "answer": "The B2 can be wall-mounted or stood on the floor. The modules stack on top of each other, from 5 kWh up to 25 kWh in one stack."
+  },
+  {
+   "lang": "en",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Does the SAJ CHS2 have arc-fault protection?",
+   "answer": "Yes, AFCI is standard on the CHS2. The datasheet also lists type II surge protection on the AC and DC sides."
+  },
+  {
+   "lang": "en",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "What cooling does the GoodWe BAT-C 208.9 kWh cabinet use?",
+   "answer": "The BAT-C cabinets with 208.9 and 261.2 kWh are liquid-cooled. The datasheet lists a cycle life of at least 10,000 cycles."
+  },
+  {
+   "lang": "en",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "How many MPPTs does the GoodWe GW110K-ETR-G10 have?",
+   "answer": "The GW110K-ETR-G10 has 10 MPPTs with two strings each. Its maximum input voltage is 1100 V."
+  },
+  {
+   "lang": "en",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Is there an EV charger option for the SAJ HS3?",
+   "answer": "Yes. The HS3 can be combined with SAJ's 11 kW EV charger module, the CU2-11K-T-I."
+  },
+  {
+   "lang": "en",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "Why choose the SAJ HS3 for a home system?",
+   "answer": "The HS3 is not just an inverter, but a complete storage system. It brings the inverter, the battery and the EV charger together in one stack, with up to eight battery modules."
+  },
+  {
+   "lang": "en",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "How quiet is the GoodWe ESA?",
+   "answer": "Whether you're installing it in a garage or a hallway, the ESA keeps noise low: the 5 to 8 kW models run at about 30 dB at 25 °C."
+  },
+  {
+   "lang": "en",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "How does the B2 battery scale?",
+   "answer": "Scalable, stackable, flexible: the B2 grows from 5 kWh to 25 kWh in one stack, one 5 kWh module at a time."
+  },
+  {
+   "lang": "en",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "What protection does the CHS2 offer?",
+   "answer": "In today's energy landscape, safety matters. The CHS2 comes with AFCI as standard, CO and fire detection, and cabinet-level fire protection."
+  },
+  {
+   "lang": "en",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "How fast does the ESA switch to backup?",
+   "answer": "The ESA delivers seamless backup: it switches over in less than 4 ms, so connected loads keep running."
+  },
+  {
+   "lang": "en",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "What does the ETR series cover?",
+   "answer": "The ETR series is not only about power, but also about flexibility. It covers 80 to 125 kW with up to 10 MPPTs."
+  },
+  {
+   "lang": "en",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Is the SAJ H2 a good choice?",
+   "answer": "The H2 is the best hybrid inverter on the market. It handles 150% DC oversizing and switches to backup in 20 ms or less."
+  },
+  {
+   "lang": "en",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "How long does the BAT-C battery last?",
+   "answer": "The BAT-C is built to outlast every other battery in its class, with 6,000 cycles at 90% depth of discharge."
+  },
+  {
+   "lang": "en",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Why buy the GoodWe ESA?",
+   "answer": "The ESA is the perfect choice for any home. It offers unbeatable value and comes with IP66 protection."
+  },
+  {
+   "lang": "en",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "What is special about the CHS2?",
+   "answer": "The CHS2 is a revolutionary storage system for commercial sites, with 6 MPPTs on the 50 kW model."
+  },
+  {
+   "lang": "en",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "How efficient is the HS3?",
+   "answer": "With a maximum efficiency of 98.0%, the HS3 delivers best-in-class performance that no competitor can match."
+  },
+  {
+   "lang": "en",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Is the ETR suitable for large projects?",
+   "answer": "Absolutely. The ETR is the ultimate commercial hybrid inverter and guarantees maximum savings on every project up to 125 kW."
+  },
+  {
+   "lang": "en",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Why the SAJ HS3?",
+   "answer": "In today's fast-moving energy market, the HS3 is not just a storage system, but the smartest investment you can make. Elegant, powerful, future-proof."
+  },
+  {
+   "lang": "en",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "What does the ESA offer installers?",
+   "answer": "Whether you're an installer or an EPC, the ESA unlocks unbeatable efficiency and seamless installation, making it the perfect choice for every project."
+  },
+  {
+   "lang": "en",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Why the B2 battery?",
+   "answer": "The B2 isn't just a battery, it's a revolution in home storage: modular, robust and built to deliver the best performance on the market."
+  },
+  {
+   "lang": "en",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "What makes the CHS2 stand out?",
+   "answer": "Unlock the full potential of your site with the CHS2: cutting-edge technology, unmatched safety and the highest returns in its class."
+  },
+  {
+   "lang": "en",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Why choose the GoodWe ETR?",
+   "answer": "Elevate your commercial projects with the ETR. Powerful, reliable, unbeatable: it is simply the best choice for 80 to 125 kW."
+  },
+  {
+   "lang": "en",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Is the BAT-C worth it?",
+   "answer": "In today's world, energy storage is not a luxury but a necessity, and the BAT-C is the revolutionary, best-in-class answer."
+  },
+  {
+   "lang": "de",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Wie viele Batteriemodule passen an den SAJ HS3?",
+   "answer": "Der HS3 arbeitet mit dem Batteriemodul BU3-5.0-TV2-PRO; ein System nimmt bis zu acht Module auf. Jedes Modul bringt 5,0 kWh Nennenergie mit."
+  },
+  {
+   "lang": "de",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Darf die GoodWe ESA im Freien stehen?",
+   "answer": "Ja. Leistungsmodul und Batteriemodule der ESA haben die Schutzart IP66 und eignen sich damit für die Aufstellung im Freien. Das Datenblatt nennt einen Betriebsbereich von -20 °C bis 55 °C."
+  },
+  {
+   "lang": "de",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Wie wird der SAJ B2 montiert?",
+   "answer": "Der B2 lässt sich an der Wand oder auf dem Boden montieren. Die Module werden gestapelt, von 5 kWh bis 25 kWh in einem Stapel."
+  },
+  {
+   "lang": "de",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Hat das SAJ CHS2 einen Lichtbogenschutz?",
+   "answer": "Ja, AFCI ist beim CHS2 serienmäßig. Laut Datenblatt gibt es außerdem einen Überspannungsschutz Typ II auf der AC- und der DC-Seite."
+  },
+  {
+   "lang": "de",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Wie wird der GoodWe BAT-C mit 208,9 kWh gekühlt?",
+   "answer": "Die BAT-C-Schränke mit 208,9 und 261,2 kWh sind flüssigkeitsgekühlt. Das Datenblatt nennt mindestens 10.000 Zyklen."
+  },
+  {
+   "lang": "de",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Wie viele MPP-Tracker hat der GoodWe GW110K-ETR-G10?",
+   "answer": "Der GW110K-ETR-G10 hat 10 MPP-Tracker mit je zwei Strings. Die maximale Eingangsspannung beträgt 1100 V."
+  },
+  {
+   "lang": "de",
+   "construction": "plain",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "no"
+   },
+   "question": "Gibt es für den SAJ HS3 ein Ladegerät für Elektroautos?",
+   "answer": "Ja. Der HS3 lässt sich mit dem 11-kW-Lademodul CU2-11K-T-I von SAJ kombinieren."
+  },
+  {
+   "lang": "de",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "Warum den SAJ HS3 für ein Einfamilienhaus wählen?",
+   "answer": "Der HS3 ist nicht nur ein Wechselrichter, sondern ein komplettes Speichersystem. Wechselrichter, Batterie und Ladegerät sitzen in einem Stapel, mit bis zu acht Batteriemodulen."
+  },
+  {
+   "lang": "de",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "Wie leise ist die GoodWe ESA?",
+   "answer": "Ob in der Garage oder im Flur: Die ESA bleibt leise, die Modelle mit 5 bis 8 kW arbeiten bei 25 °C mit rund 30 dB."
+  },
+  {
+   "lang": "de",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "Wie lässt sich der B2 erweitern?",
+   "answer": "Skalierbar, stapelbar, flexibel: Der B2 wächst in einem Stapel von 5 kWh auf 25 kWh, Modul für Modul."
+  },
+  {
+   "lang": "de",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "Welche Schutzfunktionen hat das CHS2?",
+   "answer": "In der heutigen Energielandschaft zählt Sicherheit. Das CHS2 hat AFCI serienmäßig, CO- und Branderkennung sowie einen Brandschutz auf Schrankebene."
+  },
+  {
+   "lang": "de",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "Wie schnell schaltet die ESA auf Notstrom um?",
+   "answer": "Die ESA sorgt für eine nahtlose Notstromversorgung: Sie schaltet in weniger als 4 ms um, die angeschlossenen Verbraucher laufen weiter."
+  },
+  {
+   "lang": "de",
+   "construction": "ai_phrasing",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "no"
+   },
+   "question": "Was deckt die ETR-Serie ab?",
+   "answer": "Bei der ETR-Serie geht es nicht nur um Leistung, sondern auch um Flexibilität. Sie deckt 80 bis 125 kW ab, mit bis zu 10 MPP-Trackern."
+  },
+  {
+   "lang": "de",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Ist der SAJ H2 eine gute Wahl?",
+   "answer": "Der H2 ist der beste Hybrid-Wechselrichter auf dem Markt. Er verträgt 150 % DC-Überdimensionierung und schaltet in höchstens 20 ms auf Notstrom um."
+  },
+  {
+   "lang": "de",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Wie lange hält die BAT-C-Batterie?",
+   "answer": "Die BAT-C hält länger als jede andere Batterie ihrer Klasse und schafft 6000 Zyklen bei 90 % Entladetiefe."
+  },
+  {
+   "lang": "de",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Warum die GoodWe ESA kaufen?",
+   "answer": "Die ESA ist die perfekte Wahl für jedes Zuhause. Sie bietet ein unschlagbares Preis-Leistungs-Verhältnis und die Schutzart IP66."
+  },
+  {
+   "lang": "de",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Was ist besonders am CHS2?",
+   "answer": "Das CHS2 ist ein revolutionäres Speichersystem für Gewerbestandorte, mit 6 MPP-Trackern beim 50-kW-Modell."
+  },
+  {
+   "lang": "de",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Wie effizient ist der HS3?",
+   "answer": "Mit einem maximalen Wirkungsgrad von 98,0 % liefert der HS3 eine erstklassige Leistung, an die kein Wettbewerber herankommt."
+  },
+  {
+   "lang": "de",
+   "construction": "marketing",
+   "expected": {
+    "ai_phrasing": "no",
+    "marketing": "yes"
+   },
+   "question": "Eignet sich der ETR für große Projekte?",
+   "answer": "Auf jeden Fall. Der ETR ist der ultimative Hybrid-Wechselrichter für das Gewerbe und garantiert maximale Einsparungen bei jedem Projekt bis 125 kW."
+  },
+  {
+   "lang": "de",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Warum der SAJ HS3?",
+   "answer": "Im heutigen schnelllebigen Energiemarkt ist der HS3 nicht nur ein Speichersystem, sondern die klügste Investition, die Sie tätigen können. Elegant, leistungsstark, zukunftssicher."
+  },
+  {
+   "lang": "de",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Was bietet die ESA Installateuren?",
+   "answer": "Ob Installateur oder EPC: Die ESA erschließt unschlagbare Effizienz und eine nahtlose Installation und ist damit die perfekte Wahl für jedes Projekt."
+  },
+  {
+   "lang": "de",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Warum die B2-Batterie?",
+   "answer": "Der B2 ist nicht einfach eine Batterie, er ist eine Revolution im Heimspeicher: modular, robust und gebaut für die beste Leistung am Markt."
+  },
+  {
+   "lang": "de",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Was zeichnet das CHS2 aus?",
+   "answer": "Entfesseln Sie das volle Potenzial Ihres Standorts mit dem CHS2: modernste Technik, unübertroffene Sicherheit und die höchsten Renditen seiner Klasse."
+  },
+  {
+   "lang": "de",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Warum den GoodWe ETR wählen?",
+   "answer": "Heben Sie Ihre Gewerbeprojekte mit dem ETR auf ein neues Level. Leistungsstark, zuverlässig, unschlagbar: Er ist einfach die beste Wahl für 80 bis 125 kW."
+  },
+  {
+   "lang": "de",
+   "construction": "both",
+   "expected": {
+    "ai_phrasing": "yes",
+    "marketing": "yes"
+   },
+   "question": "Lohnt sich die BAT-C?",
+   "answer": "In der heutigen Welt ist Energiespeicherung kein Luxus, sondern eine Notwendigkeit, und die BAT-C ist die revolutionäre, erstklassige Antwort darauf."
+  }
+ ]
+}

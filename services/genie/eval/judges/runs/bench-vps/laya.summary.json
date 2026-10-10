@@ -1,0 +1,14 @@
+{
+ "judge": "laya",
+ "weights": "Laya (0.4B) Q8_0",
+ "host": "srv1791674",
+ "machine": "x86_64",
+ "calls": 20,
+ "errors": 0,
+ "p50_s": 20.04420871194452,
+ "p95_s": 37.14010039716959,
+ "max_s": 37.22430616617203,
+ "rss_peak_mib": 797.92578125,
+ "rss_last_mib": 797.92578125,
+ "mem_available_min_mib": 3026.4296875
+}

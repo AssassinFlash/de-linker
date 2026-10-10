@@ -1,0 +1,14 @@
+{
+ "judge": "julia1",
+ "weights": "Julia-1 (144M) Q8_0",
+ "host": "chesterjohn-2.local",
+ "machine": "arm64",
+ "calls": 20,
+ "errors": 0,
+ "p50_s": 0.15065681299893185,
+ "p95_s": 1.1629845419665799,
+ "max_s": 1.4686679589794949,
+ "rss_peak_mib": 973.859375,
+ "rss_last_mib": 426.5625,
+ "mem_available_min_mib": null
+}

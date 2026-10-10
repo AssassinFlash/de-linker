@@ -1,0 +1,14 @@
+{
+ "judge": "julia1",
+ "weights": "Julia-1 (144M) Q8_0",
+ "host": "srv1791674",
+ "machine": "x86_64",
+ "calls": 20,
+ "errors": 0,
+ "p50_s": 3.831867209635675,
+ "p95_s": 8.913609841838479,
+ "max_s": 9.849444629624486,
+ "rss_peak_mib": 1598.71875,
+ "rss_last_mib": 1598.71875,
+ "mem_available_min_mib": 1955.0859375
+}
