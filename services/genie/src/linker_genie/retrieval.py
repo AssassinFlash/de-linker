@@ -1,12 +1,14 @@
 """Document search: `search_documents` over the index that `services/genie/index` builds.
 
-Hybrid retrieval (docs/specs/10-knowledge-index.md, Retrieval): when product IDs are
-given, the search first narrows to the documents tagged with those products' models
-(the whole library when none are tagged, or when the narrowed search finds nothing);
-BM25 over FTS5 and vector KNN over sqlite-vec each return their best CANDIDATES chunks,
-fused by reciprocal rank fusion. Without a query encoder for the index's model on this
-host (no VOYAGE_API_KEY for a voyage-4 index; no local model for a BGE-M3 index, as on
-the VPS) the search is keyword-only.
+Document search over the built index (docs/specs/10-knowledge-index.md, Retrieval):
+when product IDs are given, the search first narrows to the documents tagged with
+those products' models (the whole library when none are tagged, or when the narrowed
+search finds nothing). The vector ranking (sqlite-vec KNN over the query encoded by
+the index's model) stands alone: the embedding bake-off measured that fusing it with
+BM25 loses 11.6 points of recall@5 (docs/research/2026-10-09/embedding-bakeoff.md).
+Without a query encoder for the index's model on this host (no API key for a
+gemini-embedding-2 index; no ONNX model files, as on the VPS) BM25 over FTS5 is the
+ranking.
 
 A hit is a chunk: its ID is what an answer cites, and `link` is the document URL with
 the page fragment the citation opens.
@@ -251,20 +253,33 @@ class DocumentIndex:
         doc_types: Sequence[str] | None = None,
         k: int = DEFAULT_K,
     ) -> list[DocumentHit]:
-        """The k best chunks for `query`; `lang` (en|de) picks the title language."""
+        """The k best chunks for `query`; `lang` (en|de) picks the title language.
+
+        The vector ranking stands alone when a query encoder is available: fusing it
+        with BM25 by reciprocal rank fusion cost the bake-off's best model 11.6 points
+        of recall@5 and 2.9 points of citation page accuracy (docs/research/
+        2026-10-09/embedding-bakeoff.md), because pages of other models' parameter
+        tables match the query's words just as well. BM25 is what remains when this
+        host has no encoder for the index's model, exactly the fallback the spec names.
+        """
         if lang not in LANGS:
             raise ValueError(f"lang must be one of {LANGS}, not {lang!r}")
-        scope = self.scope(product_ids, doc_types)
-        fused = rrf(
-            [self.keyword_ranking(query, scope), self.vector_ranking(query, scope)]
-        )
-        if not fused and product_ids:
-            # Nothing in the products' documents: search the whole library instead.
-            scope = self.scope(None, doc_types)
-            fused = rrf(
-                [self.keyword_ranking(query, scope), self.vector_ranking(query, scope)]
-            )
-        return self.hits(fused[:k], lang)
+        # First the products' documents, then - only when they hold nothing for the
+        # query - the whole library (spec, Retrieval).
+        scopes = (product_ids, None) if product_ids else (None,)
+        for scoped_ids in scopes:
+            scope = self.scope(scoped_ids, doc_types)
+            ranked = self.vector_ranking(query, scope)
+            if not ranked:
+                ranked = self.keyword_ranking(query, scope)
+            if ranked:
+                return self.hits(
+                    [(rowid, float(-position)) for position, rowid in enumerate(ranked)][
+                        :k
+                    ],
+                    lang,
+                )
+        return []
 
     def chunks(self, chunk_ids: Sequence[str], lang: str) -> list[DocumentHit]:
         """The chunks with these IDs, in the order given; unknown IDs are left out."""

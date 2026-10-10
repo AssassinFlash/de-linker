@@ -44,8 +44,12 @@ INDEX_FILE = "index.sqlite"
 # multilingual-e5, for every model: all models then embed identical chunks, which the
 # bake-off needs (docs/research/2026-10-09/embedding-bakeoff.md).
 CHUNK_TOKENIZER = "BAAI/bge-m3"
-# The model `just index` builds with: the bake-off's choice.
-DEFAULT_MODEL = "BAAI/bge-m3"
+# The model `just index` builds with: the bake-off's choice. gemini-embedding-2 beat
+# the best open model by 13.0 points of recall@5 (docs/research/2026-10-09/
+# embedding-bakeoff.md), so the index ships with API vectors (location A); building
+# needs AIHUBMIX_API_KEY and AIHUBMIX_BASE_URL. The open models remain one flag away
+# (--model) for a VPS-only index.
+DEFAULT_MODEL = "gemini-embedding-2"
 
 
 @dataclass
