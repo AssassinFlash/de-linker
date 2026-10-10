@@ -1,0 +1,14 @@
+{
+ "judge": "qwen3-1.7b",
+ "weights": "Qwen3-1.7B Q4_K_M",
+ "host": "srv1791674",
+ "machine": "x86_64",
+ "calls": 20,
+ "errors": 2,
+ "p50_s": 28.922704472206533,
+ "p95_s": 135.1066894903779,
+ "max_s": 135.1066894903779,
+ "rss_peak_mib": 3462.73046875,
+ "rss_last_mib": 3462.73046875,
+ "mem_available_min_mib": 0.13671875
+}
