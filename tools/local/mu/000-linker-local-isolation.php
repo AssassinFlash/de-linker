@@ -33,24 +33,25 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// each federal state (services/engine/data/imagery.json, open-licence WMS,
 	// credited on the map), which MapLibre loads by fetch (connect-src) and
 	// paints as images (img-src), not through WordPress's HTTP API.
+	// Sorted, unique, the same order the stack test derives from imagery.json.
 	$linker_local_imagery = implode(
 		' ',
 		array(
-			'https://www.wms.nrw.de',
-			'https://geoservices.bayern.de',
-			'https://owsproxy.lgl-bw.de',
-			'https://opendata.lgln.niedersachsen.de',
-			'https://www.gds-srv.hessen.de',
 			'https://geo4.service24.rlp.de',
-			'https://geodienste.sachsen.de',
-			'https://isk.geobasis-bb.de',
-			'https://service.gdi-sh.de',
-			'https://www.geoproxy.geoportal-th.de',
-			'https://www.geodatenportal.sachsen-anhalt.de',
 			'https://geodienste.bremen.de',
-			'https://www.geodaten-mv.de',
-			'https://geoportal.saarland.de',
 			'https://geodienste.hamburg.de',
+			'https://geodienste.sachsen.de',
+			'https://geoportal.saarland.de',
+			'https://geoservices.bayern.de',
+			'https://isk.geobasis-bb.de',
+			'https://opendata.lgln.niedersachsen.de',
+			'https://owsproxy.lgl-bw.de',
+			'https://service.gdi-sh.de',
+			'https://www.gds-srv.hessen.de',
+			'https://www.geodaten-mv.de',
+			'https://www.geodatenportal.sachsen-anhalt.de',
+			'https://www.geoproxy.geoportal-th.de',
+			'https://www.wms.nrw.de',
 		)
 	);
 	$linker_local_sources = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'";

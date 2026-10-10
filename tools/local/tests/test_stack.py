@@ -368,13 +368,24 @@ def test_a_redirect_cannot_lead_wordpress_off_this_machine(stack: Stack) -> None
     assert f"\tREDIRECT\t{target}\n" in b.isolation_log.read_text()
 
 
-IMAGERY_WMS = (
-    "https://www.wms.nrw.de https://geoservices.bayern.de https://owsproxy.lgl-bw.de "
-    "https://opendata.lgln.niedersachsen.de https://www.gds-srv.hessen.de "
-    "https://geo4.service24.rlp.de https://geodienste.sachsen.de https://isk.geobasis-bb.de "
-    "https://service.gdi-sh.de https://www.geoproxy.geoportal-th.de "
-    "https://www.geodatenportal.sachsen-anhalt.de https://geodienste.bremen.de "
-    "https://www.geodaten-mv.de https://geoportal.saarland.de https://geodienste.hamburg.de"
+IMAGERY = json.loads(
+    (
+        Path(__file__).resolve().parents[3]
+        / "services"
+        / "engine"
+        / "data"
+        / "imagery.json"
+    ).read_text()
+)
+# The WMS hosts the roof step loads, from the engine's own list of them: the
+# mu-plugin's allowlist and this assertion read the same source of truth.
+IMAGERY_WMS = " ".join(
+    sorted(
+        {
+            f"https://{urlsplit(state['wms']).hostname}"
+            for state in IMAGERY["states"].values()
+        }
+    )
 )
 LOCAL_SOURCES = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'"
 
