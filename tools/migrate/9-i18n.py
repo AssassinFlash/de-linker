@@ -125,6 +125,14 @@ ATTRIBUTE_TAXONOMIES = (
 SEO_KEYS = ("_seopress_titles_title", "_seopress_titles_desc")
 LEGACY_KEYS = ("_linker_de_title", "_linker_de_content", "_linker_de_excerpt")
 
+# A PHP diagnostic the WP-CLI phar printed into stdout: a severity word, a
+# message, a source file and a line number. Data lines never have this shape:
+# query output is tab-separated base64, JSON is one blob.
+PHP_DIAGNOSTIC = re.compile(
+    r"^(?:PHP )?(?:Deprecated|Warning|Notice|Fatal error|Parse error): "
+    r".+ in .+ on line \d+$"
+)
+
 
 class WP:
     """WP-CLI, as a command prefix."""
@@ -144,7 +152,12 @@ class WP:
             raise SystemExit(
                 f"wp {' '.join(args[:3])} failed:\n{result.stderr.strip()}"
             )
-        return result.stdout
+        # PHP prints deprecations of the WP-CLI phar's own vendors to stdout
+        # (react/promise on this machine's wp-cli 2.12 since 2026-10-10),
+        # ahead of the value; every reader here treats stdout as data, so the
+        # diagnostic lines - "Deprecated: … in phar://… on line N" - go.
+        lines = result.stdout.splitlines()
+        return "\n".join(line for line in lines if not PHP_DIAGNOSTIC.match(line))
 
     def json(self, *args: str, stdin: str | None = None, as_user: bool = False) -> Any:
         out = self.run(*args, stdin=stdin, as_user=as_user)
@@ -356,9 +369,14 @@ class Migration:
             slug = ""
             if row["kind"] in ("page", "post"):
                 english_slug = post.get("post_name", "")
+                # PAGE_BASES first: the old plugin served the curated bases of
+                # its data/slug-bases-de.json (about -> ueber-uns, solution ->
+                # loesung; live /de/ueber-uns/ and /de/loesung/ answer 200,
+                # the minted map's /de/anwendung/ 301s to /de/loesung/), and
+                # the minted slug_map alone is only the fallback routing.
                 slug = (
-                    slug_map.get(english_slug)
-                    or PAGE_BASES.get(english_slug)
+                    PAGE_BASES.get(english_slug)
+                    or slug_map.get(english_slug)
                     or english_slug
                 )
             items.append(
@@ -375,6 +393,12 @@ class Migration:
     # Steps 2–4.
     def apply(self, items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
+        # The LiveCanvas partial pairs first: an instance imported before
+        # Twins ensured the source's language has them unpaired or
+        # mislabelled, and import finds an existing German version through
+        # the translation group only - repairing after import would mint
+        # duplicates instead of updating the twins.
+        print(self.wp.run("linker-i18n", "repair-partials").strip())
         # 20 per batch: the small batches of the research's walkthrough
         # (docs/research/2026-10-09/i18n-opensource-replication.md §8.2) - one
         # JSON payload through WP-CLI's stdin stays small and a failed batch is
@@ -428,11 +452,19 @@ class Migration:
         """
         home = self.wp.run("option", "get", "home").strip().rstrip("/")
         listed = {re.sub(r"^https?://[^/]+", "", url) for url in urls}
-        german = {
-            re.sub(r"^https?://[^/]+", "", row["url"]): row
-            for row in self.status()
-            if row["german"] and row["url"] and row["kind"] in SITEMAP_KINDS
-        }
+        # The status query (a full walk of the translation groups) is needed
+        # only to check the German objects against a subset of the site; with
+        # require_all the listed URLs alone decide, and the walk - tens of
+        # seconds of WP-CLI under the shared Redis's load - is skipped.
+        german = (
+            {
+                re.sub(r"^https?://[^/]+", "", row["url"]): row
+                for row in self.status()
+                if row["german"] and row["url"] and row["kind"] in SITEMAP_KINDS
+            }
+            if not require_all
+            else {}
+        )
         ok = True
         checked = sorted(listed) if require_all else sorted(german)
         for path in checked:

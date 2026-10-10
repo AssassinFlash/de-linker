@@ -23,4 +23,4 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-( new Plugin( new Assets( __FILE__ ) ) )->register();
+( new Plugin( new Assets( __FILE__ ), new Redirects(), new SiteChrome( __FILE__ ) ) )->register();

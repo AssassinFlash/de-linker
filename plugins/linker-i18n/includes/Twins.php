@@ -113,8 +113,7 @@ final class Twins {
 				$postarr['post_date']     = $source->post_date;
 				$postarr['post_date_gmt'] = $source->post_date_gmt;
 				$twin                     = $this->insert( $postarr );
-				$this->languages->set_post_language( $twin, Languages::TARGET );
-				$this->languages->pair_posts( $source_id, $twin );
+				$this->ensure_post_pair( $source_id, $twin );
 				$this->update(
 					array(
 						'ID'        => $twin,
@@ -122,7 +121,16 @@ final class Twins {
 					)
 				);
 			} else {
-				$this->update( array( 'ID' => $twin ) + $postarr );
+				$update = array( 'ID' => $twin ) + $postarr;
+				if ( null !== $slug ) {
+					// An adopt() that names a slug renames the German version:
+					// the migration is the authority for it (a re-run after a
+					// slug correction must take, or the first run's slug stays
+					// forever). translate() passes none and keeps the slug.
+					$update['post_name'] = $slug;
+				}
+				$this->ensure_post_pair( $source_id, $twin );
+				$this->update( $update );
 			}
 			$this->meta( $source, $twin, $values );
 			$this->terms( $source, $twin );
@@ -198,10 +206,11 @@ final class Twins {
 					throw new \RuntimeException( esc_html( $created->get_error_message() ) );
 				}
 				$twin = (int) $created['term_id'];
-				$this->languages->set_term_language( $twin, Languages::TARGET );
-				$this->languages->pair_terms( $term_id, $twin );
+				$this->ensure_term_pair( $term_id, $twin );
 				$args['slug'] = $slug ?? sanitize_title( $args['name'] );
 				$this->assign_new_term( $source, $twin );
+			} else {
+				$this->ensure_term_pair( $term_id, $twin );
 			}
 			$updated = wp_update_term( $twin, $source->taxonomy, wp_slash( $args ) );
 			if ( is_wp_error( $updated ) ) {
@@ -246,6 +255,51 @@ final class Twins {
 			}
 		} finally {
 			$this->writing = false;
+		}
+	}
+
+	/**
+	 * Makes an English post and its German version a proper Polylang pair:
+	 * both carry their language and the translation group names them.
+	 *
+	 * A source without a language is the snapshot's LiveCanvas partial
+	 * (a header or footer arrives languageless); Polylang's
+	 * pll_save_post_translations() silently skips a languageless member,
+	 * which left the German partial unpaired and LiveCanvas's ID-ordered
+	 * partial lookup grabbing it for every language. The source is English,
+	 * so it says so before pairing, and an update of an already-written pair
+	 * repairs the languages the same way.
+	 *
+	 * @param int $source_id English post ID.
+	 * @param int $twin      German post ID.
+	 */
+	private function ensure_post_pair( int $source_id, int $twin ): void {
+		if ( Languages::SOURCE !== $this->languages->of_post( $source_id ) ) {
+			$this->languages->set_post_language( $source_id, Languages::SOURCE );
+		}
+		if ( Languages::TARGET !== $this->languages->of_post( $twin ) ) {
+			$this->languages->set_post_language( $twin, Languages::TARGET );
+		}
+		if ( null === $this->languages->post_translation( $source_id, Languages::TARGET ) ) {
+			$this->languages->pair_posts( $source_id, $twin );
+		}
+	}
+
+	/**
+	 * The terms' counterpart of ensure_post_pair().
+	 *
+	 * @param int $term_id English term ID.
+	 * @param int $twin    German term ID.
+	 */
+	private function ensure_term_pair( int $term_id, int $twin ): void {
+		if ( Languages::SOURCE !== $this->languages->of_term( $term_id ) ) {
+			$this->languages->set_term_language( $term_id, Languages::SOURCE );
+		}
+		if ( Languages::TARGET !== $this->languages->of_term( $twin ) ) {
+			$this->languages->set_term_language( $twin, Languages::TARGET );
+		}
+		if ( null === $this->languages->term_translation( $term_id, Languages::TARGET ) ) {
+			$this->languages->pair_terms( $term_id, $twin );
 		}
 	}
 

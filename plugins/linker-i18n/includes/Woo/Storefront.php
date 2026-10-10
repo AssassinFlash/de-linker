@@ -42,6 +42,19 @@ final class Storefront {
 	}
 
 	/**
+	 * The English product whose facts answer for a product (filter
+	 * `linker_commerce_facts_product_id`): the selection facts live on the
+	 * English record only, so a German product is asked through its English
+	 * twin — the same swap the cart makes, so it delegates to cart_product().
+	 *
+	 * @param int|string $product_id Product ID.
+	 * @return int|string
+	 */
+	public function facts_product_id( $product_id ) {
+		return $this->cart_product( $product_id );
+	}
+
+	/**
 	 * The same for the Store API (filter `woocommerce_store_api_add_to_cart_data`).
 	 *
 	 * @param array<string, mixed> $data Cart item data; `id` is the product.

@@ -123,6 +123,7 @@ final class Plugin {
 		}
 		$storefront = new Storefront( $languages );
 		add_filter( 'woocommerce_add_to_cart_product_id', array( $storefront, 'cart_product' ) );
+		add_filter( 'linker_commerce_facts_product_id', array( $storefront, 'facts_product_id' ) );
 		add_filter( 'woocommerce_store_api_add_to_cart_data', array( $storefront, 'store_cart_product' ) );
 		add_filter( 'woocommerce_product_get_name', array( $storefront, 'name' ), 10, 2 );
 		add_filter( 'woocommerce_add_to_cart_item_name_in_quotes', array( $storefront, 'quoted_item_name' ), 10, 2 );

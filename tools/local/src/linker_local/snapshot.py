@@ -11,10 +11,15 @@ Ticket #6 writes the snapshot; this module installs the files it holds, and
 
 Plugins and themes replace the instance's directories of the same name;
 uploads are merged in. Which theme is active is the database's business.
+Which plugins activate is the snapshot's site/plugins.json business: a
+plugin the live site ran is active locally too (the local instance must
+look like live, AGENTS.md 2026-10-10); without the file every snapshot
+plugin activates (a test fixture's default).
 """
 
 from __future__ import annotations
 
+import json
 import shutil
 from pathlib import Path
 
@@ -58,6 +63,9 @@ def install(instance: Instance, snapshot: Path, live_code: bool = False) -> list
         _replace(source, instance.wp_content / "plugins")
         for source in _directories(plugins)
     ]
+    active = _active_slugs(snapshot / "site" / "plugins.json")
+    if active is not None:
+        slugs = [slug for slug in slugs if slug in active]
     for source in _directories(themes):
         _replace(source, instance.wp_content / "themes")
     if uploads.is_dir():
@@ -70,6 +78,26 @@ def install(instance: Instance, snapshot: Path, live_code: bool = False) -> list
             snapshot / "live" / "mu-plugins", instance.wp_content / "mu-plugins"
         )
     return slugs
+
+
+def _active_slugs(manifest: Path) -> set[str] | None:
+    """The plugin slugs the snapshot's site ran active; None without the file.
+
+    plugins.json is what the live site's `wp plugin list --format=json`
+    answered (#6): each entry carries name/status/file, and the live-active
+    set is the parity set a local instance must run.
+    """
+    try:
+        entries = json.loads(manifest.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+    if not isinstance(entries, list):
+        return None
+    return {
+        entry["name"]
+        for entry in entries
+        if isinstance(entry, dict) and entry.get("status") == "active"
+    }
 
 
 def _directories(parent: Path) -> list[Path]:

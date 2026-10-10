@@ -124,6 +124,10 @@ def test_reads_the_installed_versions(instance: Instance) -> None:
         instance.wp_content / "plugins" / "polylang" / "polylang.php",
         "<?php\n/**\n * Plugin Name: Polylang\n * Version: 3.8.10\n */\n",
     )
+    write(
+        instance.wp_content / "plugins" / "livecanvas" / "livecanvas-plugin-index.php",
+        "<?php\n/**\n * Plugin Name: LiveCanvas\n * Version: 4.9.5\n */\n",
+    )
 
     assert wordpress.versions(instance) == wordpress.PINNED
 

@@ -56,6 +56,27 @@ final class StorefrontTest extends TestCase {
 	}
 
 	/**
+	 * A German product is asked for its selection facts through its English
+	 * twin; an English product answers itself, and a German product without
+	 * a twin keeps its ID.
+	 */
+	public function test_facts_answer_through_the_english_product(): void {
+		PolylangDouble::mock(
+			array(
+				5 => 'en',
+				7 => 'de',
+				9 => 'de',
+			),
+			array( 5 => 7 )
+		);
+		$storefront = $this->storefront();
+
+		$this->assertSame( 5, $storefront->facts_product_id( 7 ) );
+		$this->assertSame( 5, $storefront->facts_product_id( 5 ) );
+		$this->assertSame( 9, $storefront->facts_product_id( 9 ) );
+	}
+
+	/**
 	 * A German request names the German product in the add-to-cart notice's
 	 * quotes: the notice takes its name from get_the_title(), which the
 	 * get_name() filter does not reach.
