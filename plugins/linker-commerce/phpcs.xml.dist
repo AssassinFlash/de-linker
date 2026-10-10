@@ -5,6 +5,7 @@
 	<file>linker-commerce.php</file>
 	<file>includes</file>
 	<file>templates</file>
+	<file>content</file>
 	<file>tests</file>
 	<file>../../tools/php/bootstrap.php</file>
 	<!-- The data migrations of the products this plugin reads. -->

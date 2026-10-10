@@ -79,6 +79,11 @@ index *args:
 eval *args:
     uv run --locked --group index python -m index.eval.run {{ args }}
 
+# Install LiveCanvas templates and Additional CSS tokens into an instance (idempotent).
+[positional-arguments]
+present name:
+    PHP={{ php }} {{ linker_local }} wp "{{ name }}" linker-commerce present --user=1
+
 [private]
 php-install:
     #!/usr/bin/env bash

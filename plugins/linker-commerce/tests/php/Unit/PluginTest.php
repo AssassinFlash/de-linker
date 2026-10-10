@@ -28,8 +28,8 @@ final class PluginTest extends TestCase {
 
 	/**
 	 * The plugin hooks text domain loading (first thing on init), both Abilities
-	 * API registration points, both REST routes, the figure meta box and the
-	 * inquiry chain (once all plugins are loaded).
+	 * API registration points, both REST routes, the figure meta box, the
+	 * inquiry chain (once all plugins are loaded) and the presentation CLI.
 	 */
 	public function test_register_adds_the_hooks(): void {
 		$abilities       = new Registrar( self::FILE );
@@ -47,6 +47,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $figures, 'register' ) );
 		WP_Mock::expectActionAdded( 'save_post_product', array( $figures, 'save' ) );
 		WP_Mock::expectActionAdded( 'admin_notices', array( $figures, 'notice_refused' ) );
+		WP_Mock::expectActionAdded( 'cli_init', array( $plugin, 'register_cli' ) );
 
 		$plugin->register();
 

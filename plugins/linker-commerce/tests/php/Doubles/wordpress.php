@@ -67,7 +67,9 @@ if ( ! class_exists( 'WP_Post' ) ) {
 		public $post_type   = 'post';
 		public $post_author = '0';
 		public $post_title  = '';
-		public $post_status = 'publish';
+		public $post_status  = 'publish';
+		public $post_content = '';
+		public $post_name    = '';
 		public function __construct( $post ) {
 			foreach ( get_object_vars( $post ) as $key => $value ) {
 				$this->$key = $value;
@@ -116,8 +118,23 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 }
 
 // LocaleSwitch reloads the plugin's text domain (tests use the doubles, never WordPress's own).
-if ( ! function_exists( 'unload_textdomain' ) ) {
-	function unload_textdomain( $domain ) {
-		return true;
+	if ( ! function_exists( 'unload_textdomain' ) ) {
+		function unload_textdomain( $domain ) {
+			return true;
+		}
 	}
-}
+
+	if ( ! class_exists( 'WP_CLI' ) ) {
+		class WP_CLI {
+			public static function error( $message ) {
+				throw new \WP_CLI\ExitException( (string) $message );
+			}
+			public static function log( $message ) {}
+			public static function success( $message ) {}
+			public static function add_command( $name, $callable ) {}
+		}
+	}
+	if ( ! class_exists( 'WP_CLI\ExitException' ) ) {
+		class WP_CLI_ExitException extends \Exception {}
+		class_alias( WP_CLI_ExitException::class, 'WP_CLI\\ExitException' );
+	}

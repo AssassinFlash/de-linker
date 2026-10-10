@@ -51,6 +51,17 @@ final class Plugin {
 		add_action( 'add_meta_boxes', array( $this->figures, 'register' ) );
 		add_action( 'save_post_product', array( $this->figures, 'save' ) );
 		add_action( 'admin_notices', array( $this->figures, 'notice_refused' ) );
+		add_action( 'cli_init', array( $this, 'register_cli' ) );
+	}
+
+	/**
+	 * The presentation installer: LiveCanvas templates and Additional CSS.
+	 */
+	public function register_cli(): void {
+		if ( ! class_exists( 'WP_CLI' ) ) {
+			return;
+		}
+		\WP_CLI::add_command( 'linker-commerce present', new Cli\PresentCommand() );
 	}
 
 	/**
@@ -76,7 +87,7 @@ final class Plugin {
 	/**
 	 * The modules of the inquiry chain, with what they share.
 	 *
-	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module>
+	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module|Presentation\Module>
 	 */
 	private function commerce_modules(): array {
 		$templates = plugin_dir_path( $this->file ) . 'templates/';
@@ -88,6 +99,8 @@ final class Plugin {
 		$proformas = new Account\PrivateFiles( Proforma\Issuer::DIRECTORY );
 		$solutions = new Account\SavedSolutions( new Account\PrivateFiles( Account\SavedSolutions::REPORTS_DIRECTORY ), $templates );
 		$issuer    = new Proforma\Issuer( $options, new Proforma\Sequence(), new Proforma\Document( $options ), new Proforma\Renderer( $this->file ), $proformas, $prices );
+		$documents = new Account\Documents( $solutions, $templates );
+		$gate      = new Presentation\LoginGate();
 
 		return array(
 			new Settings\Module( new Settings\SettingsTab( $jobs ), new Settings\WooOptions() ),
@@ -97,7 +110,8 @@ final class Plugin {
 			new Registration\Module( $this->file, $options, new Registration\Fields( $vat ), new Registration\BillingVatField( $vat ), new Registration\AddressForm() ),
 			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), new Inquiry\Checkout(), new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
 			new Proforma\Module( $this->file, new Proforma\AdminBox( $issuer ) ),
-			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, new Account\Documents( $solutions, $templates ), new Account\DocumentDownload( $proformas, $solutions ), new Account\SolutionsRoute( $solutions ) ),
+			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $proformas, $solutions ), new Account\SolutionsRoute( $solutions ) ),
+			new Presentation\Module( new Presentation\Shortcodes( $gate, $solutions, $documents ), $gate, new Presentation\WindPress() ),
 		);
 	}
 }
