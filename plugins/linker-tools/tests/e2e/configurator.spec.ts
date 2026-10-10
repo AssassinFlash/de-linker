@@ -135,6 +135,43 @@ test( 'nothing overflows the phone width', async ( { page } ) => {
 	expect( await width() ).toBeLessThanOrEqual( 0 );
 } );
 
+test( 'a select never draws its text past its border on the phone', async ( {
+	page,
+} ) => {
+	// A native select's text overflow is not document overflow (the guard
+	// above cannot see it); the ellipsis rule is what keeps the ink inside.
+	await page.setViewportSize( { width: 390, height: 844 } );
+	await page.goto( story( 'app--solution', 'de' ) );
+	await expect( page.getByRole( 'article' ).first() ).toBeVisible();
+	const states = await page.evaluate( () =>
+		[ ...document.querySelectorAll( '.linker-configurator select' ) ].map(
+			( select ) => {
+				const style = getComputedStyle( select );
+				return {
+					id: select.id,
+					// Chromium reports a hidden-overflow select as clip.
+					overflow:
+						style.overflow === 'hidden' ||
+						style.overflow === 'clip',
+					ellipsis: style.textOverflow === 'ellipsis',
+					nowrap: style.whiteSpace === 'nowrap',
+					within: select.getBoundingClientRect().right <= 390,
+				};
+			}
+		)
+	);
+	expect( states.length ).toBeGreaterThan( 0 );
+	for ( const state of states ) {
+		expect( state, state.id ).toEqual( {
+			id: state.id,
+			overflow: true,
+			ellipsis: true,
+			nowrap: true,
+			within: true,
+		} );
+	}
+} );
+
 test( 'the keyboard reaches every input in reading order, each with a visible focus ring', async ( {
 	page,
 } ) => {

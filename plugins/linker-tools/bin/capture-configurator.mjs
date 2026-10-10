@@ -155,9 +155,11 @@ const STATES = {
 	},
 	'report-report': {
 		page: 'report',
-		part: 'section[aria-labelledby="linker-report-title"]',
 		async prepare( page ) {
 			await STATES[ 'solution-proposal' ].prepare( page );
+			await page
+				.locator( 'section[aria-labelledby="linker-report-title"]' )
+				.scrollIntoViewIfNeeded();
 		},
 	},
 	'solution-added': {
@@ -286,16 +288,18 @@ async function shot( browser, url, viewport, scale, file, state ) {
 			`${ file }: the page is ${ width } px wide at a ${ viewport.width } px viewport`
 		);
 	}
-	if ( state.part ) {
-		await page.locator( state.part ).screenshot( { path: file } );
-	} else {
-		await page.screenshot( {
-			path: file,
-			fullPage: true,
-			animations: 'disabled',
-		} );
-	}
+	await page.screenshot( {
+		path: file,
+		fullPage: true,
+		animations: 'disabled',
+	} );
 	await context.close();
+	const pixels = pngWidth( file );
+	if ( pixels !== viewport.width * scale ) {
+		throw new Error(
+			`${ file }: ${ pixels } px wide, expected ${ viewport.width * scale }`
+		);
+	}
 	process.stdout.write( `${ file }\n` );
 }
 
@@ -368,6 +372,16 @@ function logoPng() {
 
 // A PNG carries a CRC-32 of every chunk; its arithmetic is bitwise by definition.
 /* eslint-disable no-bitwise */
+/**
+ * The width a PNG file says it is (bytes 16-20 of its header).
+ *
+ * @param {string} file The PNG's path.
+ */
+function pngWidth( file ) {
+	const header = readFileSync( file ).subarray( 16, 24 );
+	return header.readUInt32BE( 0 );
+}
+
 const CRC_TABLE = Array.from( { length: 256 }, ( _, n ) => {
 	let c = n;
 	for ( let k = 0; k < 8; k++ ) {

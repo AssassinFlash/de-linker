@@ -231,6 +231,16 @@
 	padding-right: 3.5rem;
 }
 
+/* A native select draws its text past the border when the longest option does
+   not fit (a phone-width card): the three lines keep the ink inside and name
+   what was cut. Text overflow is not document overflow, so the phone-width
+   guard cannot see it; the e2e suite asserts the rule on every select. */
+.linker-configurator select {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
 /* A value the app sets (the PV array from the roof step) reads as set. */
 .linker-configurator input[readonly] {
 	background: var(--proto-neutral-50, #f7f8f8);
