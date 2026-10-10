@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import argparse
 import base64
-import hashlib
 import json
 import sys
 import tempfile
@@ -31,6 +30,7 @@ from pathlib import Path
 from typing import Any
 
 from index.paths import INVENTORY_PATH, PDF_DIR
+from linker_genie.embedding import sha256_of
 
 DEFAULT_REST_CONFIG = Path("~/.config/terravolt-builder/rest-de.json").expanduser()
 # WordPress caps per_page at 100 (WP_REST_Controller::get_collection_params).
@@ -267,14 +267,6 @@ def build_documents(
     return documents
 
 
-def _sha256_of(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
 def _download_one(
     item: Mapping[str, Any], pdf_dir: Path, cached: Mapping[str, Any]
 ) -> str:
@@ -288,7 +280,10 @@ def _download_one(
     ):
         return str(cached["sha256"])
     last_error: Exception | None = None
+    part: Path | None = None
     for attempt in range(DOWNLOAD_ATTEMPTS):
+        # A new temp file per attempt; `part` unbound would crash the cleanup below.
+        part = None
         try:
             with tempfile.NamedTemporaryFile(
                 dir=pdf_dir, suffix=".part", delete=False
@@ -305,12 +300,13 @@ def _download_one(
                 raise OSError(
                     f"{item['source_url']}: {part.stat().st_size} bytes, media says {size}"
                 )
-            sha = _sha256_of(part)
+            sha = sha256_of(part)
             part.replace(pdf_dir / f"{sha}.pdf")
             return sha
         except OSError as error:
             last_error = error
-            part.unlink(missing_ok=True)
+            if part is not None:
+                part.unlink(missing_ok=True)
             time.sleep(2**attempt)
     raise RuntimeError(f"download failed: {item['source_url']}") from last_error
 

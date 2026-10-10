@@ -5,6 +5,7 @@ import json
 import struct
 import sys
 import types
+import urllib.error
 from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
@@ -90,6 +91,28 @@ def test_a_document_without_title_is_marked_none() -> None:
     )
 
     assert api.requests[0]["input"] == ["title: none | text: t"]
+
+
+def test_gemini_retries_once_on_a_transport_error() -> None:
+    class FlakyApi:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        @contextmanager
+        def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
+            self.calls += 1
+            if self.calls == 1:
+                raise urllib.error.URLError("proxy 503")
+            yield io.BytesIO(
+                json.dumps({"data": [{"index": 0, "embedding": [1.0]}]}).encode()
+            )
+
+    api = FlakyApi()
+
+    vector = GeminiEmbedder("k", "https://a.example", urlopen=api).embed_query("q")
+
+    assert api.calls == 2
+    assert vector == pack([1.0])
 
 
 class FakeSession:

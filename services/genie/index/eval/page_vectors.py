@@ -41,7 +41,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     ]
     db.close()
     embedder = document_embedder(args.model)
-    cache = EmbeddingCache(INDEX_DIR / "embedding-cache.sqlite", embedder.model)
+    cache = EmbeddingCache(INDEX_DIR / "embedding-cache.sqlite")
     try:
         vectors = cache.embed(
             embedder, [Passage(titles.get(sha, ""), text) for sha, _, text in rows]

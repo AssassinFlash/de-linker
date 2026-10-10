@@ -33,7 +33,10 @@ from linker_genie.embedding import Embedder, query_encoder
 DEFAULT_INDEX = Path("/opt/linker-genie/index/current/index.sqlite")
 # The index layout this module reads; index/store.py writes the same number.
 SCHEMA_VERSION = 1
-# Spec (Retrieval): FTS5 and the vectors each contribute their top 30.
+# How deep each ranking reads: the vector ranking's KNN window, and BM25's when it
+# stands in for it. The spec's top-30 survived the bake-off's fusion experiments:
+# fusing the two at this depth still lost to the vector ranking alone
+# (docs/research/2026-10-09/embedding-bakeoff.md §2).
 CANDIDATES = 30
 # Reciprocal rank fusion constant. 60 is the value of the method's paper (Cormack,
 # Clarke and Büttcher, SIGIR 2009); LanceDB's RRF docs: "k = 60 was near-optimal, but
@@ -261,10 +264,12 @@ class DocumentIndex:
         of recall@5 and 3.2 points of citation page accuracy (docs/research/
         2026-10-09/embedding-bakeoff.md), because pages of other models' parameter
         tables match the query's words just as well. BM25 is what remains when this
-        host has no encoder for the index's model, exactly the fallback the spec names.
-        `query_vector` is `query` already encoded by the index's model (`index.eval`
-        encodes the golden set in batched requests instead of one request per
-        question).
+        host has no encoder for the index's model, exactly the fallback the spec names;
+        that fallback is silent by design here - a caller that must know which ranking
+        it got can check `encoder is None` (#13 decides whether search should ever
+        fail loudly instead). `query_vector` is `query` already encoded by the index's
+        model (`index.eval` encodes the golden set in batched requests instead of one
+        request per question).
         """
         if lang not in LANGS:
             raise ValueError(f"lang must be one of {LANGS}, not {lang!r}")

@@ -162,14 +162,20 @@ def test_a_complete_pdf_that_failed_to_parse_reports_the_parser_errors(
     assert failure_reason(pdf, ["layout: out of memory"]) == "layout: out of memory"
 
 
-def test_the_embedding_cache_reuses_vectors_per_model(tmp_path: Path) -> None:
+def test_the_embedding_cache_reuses_vectors_per_encoder_fingerprint(
+    tmp_path: Path,
+) -> None:
     passages = [Passage("t", "a"), Passage("t", "b")]
     embedder = CountingEmbedder()
-    cache = EmbeddingCache(tmp_path / "cache.sqlite", "model-a")
+    rebuilt = CountingEmbedder()
+    # The same model name under a new revision: a fingerprint the index would reject.
+    rebuilt.fingerprint = {**embedder.fingerprint, "revision": "new"}
+    cache = EmbeddingCache(tmp_path / "cache.sqlite")
     cache.embed(embedder, passages)
     cache.embed(embedder, passages)
-    other = EmbeddingCache(tmp_path / "cache.sqlite", "model-b")
-    other.embed(embedder, passages)
+    cache.embed(rebuilt, passages)
 
-    # Two passages for model-a (the second call is served from the cache), two for model-b.
-    assert embedder.embedded == 4
+    # Two passages for the original fingerprint (the second call is served from the
+    # cache); the rebuilt encoder recomputes instead of silently reusing its vectors.
+    assert embedder.embedded == 2
+    assert rebuilt.embedded == 2

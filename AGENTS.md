@@ -44,7 +44,7 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
 - Python 服务（VPS，Python 3.12）：uv + pyproject；FastAPI + Pydantic AI；ruff、mypy、pytest。
 - 多语言：Polylang 免费版做基座 + 我们自己的窄插件（同 slug、URL 段翻译、保存即翻译、REST lang、Woo 最小同步）。
 - 商品数据：Woo 商品是唯一手工源；兼容合同与约 3 条工程覆盖层是数据；引擎读生成的 feed。
-- 知识库：我们自己托管的 PDF 按页检索（Docling 解析 → SQLite FTS5 + sqlite-vec → 混合检索）；模型只能引用检索块 ID，数字由服务端填入。
+- 知识库：我们自己托管的 PDF 按页检索（Docling 解析；位置 A：块与向量进 MariaDB 的 VECTOR + FULLTEXT，查询向量经 API）；检索是 dense 单路、BM25 为无编码器时的回退（embedding-bakeoff.md §2）；模型只能引用检索块 ID，数字由服务端填入。
 - 邮件：Hostinger `mail()`（10 封/分钟、100 封/24 小时，四站共用），一封加 Bcc，重试覆盖 24 小时，生产环境禁止发信测试。
 - 模块化由框架约定定义（一个组件/类/模块一个文件、按功能分目录、每个模块有测试），不以行数为指标。每个数字与阈值必须有来源注释。
 

@@ -37,6 +37,7 @@ from linker_genie.embedding import (
     OnnxEmbedder,
     Passage,
     gemini_from_env,
+    sha256_of,
 )
 
 INDEX_FILE = "index.sqlite"
@@ -109,25 +110,31 @@ def failure_reason(pdf_path: Path, errors: Sequence[str]) -> str:
 
 
 class EmbeddingCache:
-    """Vectors already computed for a model and a text, kept across builds."""
+    """Vectors already computed for one encoder fingerprint and a text, across builds.
 
-    def __init__(self, path: Path, model: str) -> None:
-        self.model = model
+    The key carries the whole fingerprint (model, revision, ONNX and tokenizer hashes,
+    input format), the same identity `DocumentIndex` checks a query encoder against:
+    a rebuilt model under the same name - a new revision, a re-exported ONNX file -
+    never reuses the old vectors.
+    """
+
+    def __init__(self, path: Path) -> None:
         # Several builds may fill the cache at once (one per model): wait for the lock.
         self._db = sqlite3.connect(path, timeout=300)
         self._db.execute(
             "CREATE TABLE IF NOT EXISTS vectors (key TEXT PRIMARY KEY, vector BLOB NOT NULL)"
         )
 
-    def _key(self, passage: Passage) -> str:
+    def _key(self, fingerprint: str, passage: Passage) -> str:
         return hashlib.sha256(
-            f"{self.model}\0{passage.title}\0{passage.text}".encode()
+            f"{fingerprint}\0{passage.title}\0{passage.text}".encode()
         ).hexdigest()
 
     def embed(
         self, embedder: Embedder, passages: Sequence[Passage], batch: int = 256
     ) -> list[bytes]:
-        keys = [self._key(passage) for passage in passages]
+        fingerprint = json.dumps(embedder.fingerprint, sort_keys=True)
+        keys = [self._key(fingerprint, passage) for passage in passages]
         found: dict[str, bytes] = {}
         for start in range(0, len(keys), 900):
             part = keys[start : start + 900]
@@ -197,14 +204,6 @@ def _row(
     )
 
 
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
 @dataclass
 class Chunked:
     """Every document chunked, with what the manifest reports about the chunking."""
@@ -272,10 +271,13 @@ def chunk_all(
     return result
 
 
-def embed_corpus(source: Path, out_root: Path, embedder: Embedder) -> Path:
+def embed_corpus(
+    source: Path, out_root: Path, embedder: Embedder, mariadb_prefix: str | None = None
+) -> Path:
     """A new build from an earlier build's chunks, embedded with `embedder`.
 
     The bake-off builds every model from one chunking, so all models see identical chunks.
+    `--mariadb` exports the same SQL the full build writes.
     """
     meta = corpus.read_meta(source)
     documents = corpus.read_documents(source)
@@ -283,7 +285,7 @@ def embed_corpus(source: Path, out_root: Path, embedder: Embedder) -> Path:
     chunks = [chunk for chunk, _ in corpus.read_chunks(source)]
     started = time.monotonic()
     out_root.mkdir(parents=True, exist_ok=True)
-    cache = EmbeddingCache(out_root / "embedding-cache.sqlite", embedder.model)
+    cache = EmbeddingCache(out_root / "embedding-cache.sqlite")
     try:
         vectors = cache.embed(
             embedder, [passage(chunk, titles[chunk.doc_sha256]) for chunk in chunks]
@@ -306,6 +308,8 @@ def embed_corpus(source: Path, out_root: Path, embedder: Embedder) -> Path:
     corpus.write(corpus_dir, new_meta, documents, products, chunks, vectors)
     index_path = build_dir / INDEX_FILE
     store.export(corpus_dir, index_path)
+    if mariadb_prefix is not None:
+        mariadb.export(corpus_dir, build_dir / "index-mariadb.sql", mariadb_prefix)
     manifest = json.loads((source.parent / "manifest.json").read_text(encoding="utf-8"))
     manifest.update(
         version=version,
@@ -315,7 +319,7 @@ def embed_corpus(source: Path, out_root: Path, embedder: Embedder) -> Path:
         file={
             "name": INDEX_FILE,
             "bytes": index_path.stat().st_size,
-            "sha256": _sha256_file(index_path),
+            "sha256": sha256_of(index_path),
         },
     )
     manifest["seconds"] = {**manifest["seconds"], "embed": round(embedded - started, 1)}
@@ -350,7 +354,7 @@ def build(
     if embedder is not None:
         titles = {document.sha256: document.title_en for document in chunked.documents}
         out_root.mkdir(parents=True, exist_ok=True)
-        cache = EmbeddingCache(out_root / "embedding-cache.sqlite", embedder.model)
+        cache = EmbeddingCache(out_root / "embedding-cache.sqlite")
         try:
             vectors = cache.embed(
                 embedder,
@@ -388,7 +392,7 @@ def build(
         "file": {
             "name": INDEX_FILE,
             "bytes": index_path.stat().st_size,
-            "sha256": _sha256_file(index_path),
+            "sha256": sha256_of(index_path),
         },
         "embedding_model": meta.embedding_model,
         "dimensions": meta.dimensions,
@@ -474,7 +478,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.from_corpus:
         if args.model == "none":
             parser.error("--from-corpus needs a model")
-        embed_corpus(args.from_corpus, INDEX_DIR, document_embedder(args.model))
+        embed_corpus(
+            args.from_corpus,
+            INDEX_DIR,
+            document_embedder(args.model),
+            mariadb_prefix=args.mariadb,
+        )
         return 0
     if not args.skip_fetch:
         inventory.run(args.rest_config, INVENTORY_PATH, PDF_DIR)

@@ -22,10 +22,12 @@ import json
 import os
 import struct
 import threading
+import urllib.error
 import urllib.request
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Protocol
 
 ARCTIC_M = "Snowflake/snowflake-arctic-embed-m-v2.0"
@@ -66,7 +68,8 @@ class Embedder(Protocol):
         ...
 
 
-def _sha256(path: str) -> str:
+def sha256_of(path: str | Path) -> str:
+    """A file's sha256, in streaming blocks; the index build reuses it for its files."""
     digest = hashlib.sha256()
     with open(path, "rb") as handle:
         for block in iter(lambda: handle.read(1 << 20), b""):
@@ -183,8 +186,8 @@ class OnnxEmbedder:
             "model": spec.name,
             "revision": spec.revision,
             "onnx_file": spec.onnx_file,
-            "onnx_sha256": _sha256(onnx_path),
-            "tokenizer_sha256": _sha256(tokenizer_path),
+            "onnx_sha256": sha256_of(onnx_path),
+            "tokenizer_sha256": sha256_of(tokenizer_path),
             "query_prefix": spec.query_prefix,
             "passage_prefix": spec.passage_prefix,
             "pooling": spec.pooling,
@@ -307,8 +310,14 @@ class GeminiEmbedder:
                 "Content-Type": "application/json",
             },
         )
-        with self._urlopen(request, timeout=300) as response:
-            payload = json.load(response)
+        try:
+            with self._urlopen(request, timeout=300) as response:
+                payload = json.load(response)
+        except urllib.error.URLError:
+            # The Mac's egress and the endpoint both hiccup (a proxy 503 was seen
+            # mid-evaluation); one immediate retry has covered every such blip.
+            with self._urlopen(request, timeout=300) as response:
+                payload = json.load(response)
         rows = sorted(payload["data"], key=lambda row: int(row["index"]))
         if len(rows) != len(texts):
             raise RuntimeError(

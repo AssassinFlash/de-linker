@@ -12,24 +12,17 @@ files go up with rsync. The service reads `<root>/current/index.sqlite`.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import subprocess
 import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from index_release import _sha256
+
 RELEASE_SCRIPT = Path(__file__).with_name("index_release.py")
 # The VPS layout of the spec (Build 5); `linker_genie.retrieval.DEFAULT_INDEX` reads it.
 DEFAULT_ROOT = "/opt/linker-genie/index"
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def release(host: str | None, *args: str) -> dict[str, object]:
