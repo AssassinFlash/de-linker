@@ -51,10 +51,11 @@ select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
 [tool.mypy]
 strict = true
 
-# The `index` group (Docling, PDFium, sentence-transformers, py3langid, ocrmac) is installed on
-# the build Mac only; CI checks the code that imports it without its stubs.
+# The `index` group (Docling, PDFium, sentence-transformers and its torch, py3langid,
+# ocrmac) is installed on the build Mac only; CI checks the code that imports it
+# without its stubs.
 [[tool.mypy.overrides]]
-module = ["docling.*", "pypdfium2.*", "sentence_transformers.*", "py3langid.*", "ocrmac.*"]
+module = ["docling.*", "pypdfium2.*", "sentence_transformers.*", "torch", "torch.*", "py3langid.*", "ocrmac.*"]
 ignore_missing_imports = true
 
 # sqlite-vec and ONNX Runtime ship no type information (no py.typed).
