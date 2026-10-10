@@ -157,7 +157,7 @@ def retrieve(product_id: int, questions: list[str]) -> list[list[dict[str, Any]]
                     "url": hit.doc_url,
                     "page": hit.page,
                     "section": hit.section,
-                    "text": hit.text[:1800],
+                    "text": hit.text,
                 }
                 for hit in hits
             ]
@@ -280,12 +280,21 @@ def review_items(
 
 
 def flatten_passages(hits: list[list[dict[str, Any]]]) -> dict[tuple[str, int], str]:
-    """(url, page) -> text, last write wins."""
-    out: dict[tuple[str, int], str] = {}
+    """(url, page) -> every retrieved chunk of that page, first-seen order.
+
+    A dense page (spec tables) is indexed as several chunks; the gate must judge
+    an answer against the whole page the citation names. Last-write-wins kept
+    only one sibling chunk and withdrew answers whose figure sat in another
+    chunk of the same page — 44 of the 58 gate withdrawals were exactly this
+    (docs/faq/gate-defects-2026-10-10.md). Duplicate chunk texts are kept once.
+    """
+    out: dict[tuple[str, int], list[str]] = {}
     for group in hits:
         for hit in group:
-            out[(hit["url"], int(hit["page"]))] = hit["text"]
-    return out
+            texts = out.setdefault((hit["url"], int(hit["page"])), [])
+            if hit["text"] not in texts:
+                texts.append(hit["text"])
+    return {key: "\n".join(texts) for key, texts in out.items()}
 
 
 def gate_item(
