@@ -22,14 +22,17 @@ class DownloadError(RuntimeError):
     """A download failed or its content is not the expected one."""
 
 
-def fetch(url: str, cache: Path = CACHE, sha1: str | None = None) -> Path:
+def fetch(
+    url: str, cache: Path = CACHE, sha1: str | None = None, name: str | None = None
+) -> Path:
     """Return the cached copy of `url`, downloading it first when missing.
 
     With `sha1`, the file is checked on every call, cached or not, and a
     mismatch is an error: a release archive never changes, so a different hash
-    means a damaged or substituted file.
+    means a damaged or substituted file. `name` overrides the cache file's
+    name, for two URLs whose last path segment is the same file name.
     """
-    target = cache / Path(urlsplit(url).path).name
+    target = cache / (name or Path(urlsplit(url).path).name)
     if not target.exists():
         cache.mkdir(parents=True, exist_ok=True)
         partial = target.with_name(target.name + ".part")

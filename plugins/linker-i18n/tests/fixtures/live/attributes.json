@@ -1,0 +1,216 @@
+[
+	{
+		"has_archives": false,
+		"id": 6,
+		"name": "Application",
+		"order_by": "name",
+		"slug": "pa_application",
+		"terms": [
+			{
+				"description": "",
+				"id": 460,
+				"menu_order": 0,
+				"name": "Commercial",
+				"slug": "commercial"
+			},
+			{
+				"description": "",
+				"id": 459,
+				"menu_order": 0,
+				"name": "Home",
+				"slug": "home"
+			}
+		],
+		"type": "select"
+	},
+	{
+		"has_archives": true,
+		"id": 5,
+		"name": "Battery voltage",
+		"order_by": "name",
+		"slug": "pa_battery-voltage",
+		"terms": [
+			{
+				"description": "",
+				"id": 326,
+				"menu_order": 0,
+				"name": "High Voltage",
+				"slug": "high-voltage"
+			}
+		],
+		"type": "select"
+	},
+	{
+		"has_archives": true,
+		"id": 9,
+		"name": "Brand",
+		"order_by": "name",
+		"slug": "pa_brand",
+		"terms": [
+			{
+				"description": "",
+				"id": 208,
+				"menu_order": 0,
+				"name": "Chint",
+				"slug": "chint"
+			},
+			{
+				"description": "",
+				"id": 70,
+				"menu_order": 0,
+				"name": "GoodWe",
+				"slug": "goodwe"
+			},
+			{
+				"description": "",
+				"id": 94,
+				"menu_order": 0,
+				"name": "SAJ",
+				"slug": "saj"
+			}
+		],
+		"type": "select"
+	},
+	{
+		"has_archives": true,
+		"id": 8,
+		"name": "Installation type",
+		"order_by": "name",
+		"slug": "pa_installation-type",
+		"terms": [],
+		"type": "select"
+	},
+	{
+		"has_archives": false,
+		"id": 10,
+		"name": "Model",
+		"order_by": "name",
+		"slug": "pa_model",
+		"terms": [
+			{
+				"description": "",
+				"id": 406,
+				"menu_order": 0,
+				"name": "CB2-100.3-HV5",
+				"slug": "cb2-100-3-hv5"
+			},
+			{
+				"description": "",
+				"id": 247,
+				"menu_order": 0,
+				"name": "CHS2-29.9K-T4-X",
+				"slug": "chs2-29-9k-t4-x"
+			},
+			{
+				"description": "",
+				"id": 252,
+				"menu_order": 0,
+				"name": "DTSU666",
+				"slug": "dtsu666"
+			},
+			{
+				"description": "",
+				"id": 379,
+				"menu_order": 0,
+				"name": "eManager",
+				"slug": "emanager-emanager-5-0-residential-energy-manager"
+			},
+			{
+				"description": "",
+				"id": 493,
+				"menu_order": 0,
+				"name": "GW10K-EHA-G20",
+				"slug": "gw10k-eha-g20"
+			},
+			{
+				"description": "",
+				"id": 282,
+				"menu_order": 0,
+				"name": "GW208.9-BAT-LCD-G10",
+				"slug": "gw208-9-bat-lcd-g10"
+			},
+			{
+				"description": "",
+				"id": 389,
+				"menu_order": 0,
+				"name": "GW22K-HCA-20",
+				"slug": "gw22k-hca-20"
+			},
+			{
+				"description": "",
+				"id": 495,
+				"menu_order": 0,
+				"name": "GW60K-STS-G10",
+				"slug": "gw60k-sts-g10"
+			},
+			{
+				"description": "",
+				"id": 487,
+				"menu_order": 0,
+				"name": "GW8.3-BAT-D-G21",
+				"slug": "gw8-3-bat-d-g21"
+			}
+		],
+		"type": "select"
+	},
+	{
+		"has_archives": true,
+		"id": 7,
+		"name": "Monitoring / communication",
+		"order_by": "name",
+		"slug": "pa_monitoring-communication",
+		"terms": [],
+		"type": "select"
+	},
+	{
+		"has_archives": true,
+		"id": 4,
+		"name": "Phase",
+		"order_by": "name",
+		"slug": "pa_phase",
+		"terms": [
+			{
+				"description": "",
+				"id": 323,
+				"menu_order": 0,
+				"name": "Single-phase",
+				"slug": "single-phase"
+			},
+			{
+				"description": "",
+				"id": 324,
+				"menu_order": 0,
+				"name": "Three-phase",
+				"slug": "three-phase"
+			}
+		],
+		"type": "select"
+	},
+	{
+		"has_archives": true,
+		"id": 3,
+		"name": "Power range",
+		"order_by": "name",
+		"slug": "pa_power-range",
+		"terms": [],
+		"type": "select"
+	},
+	{
+		"has_archives": true,
+		"id": 1,
+		"name": "Product family",
+		"order_by": "menu_order",
+		"slug": "pa_product-family",
+		"terms": [],
+		"type": "select"
+	},
+	{
+		"has_archives": true,
+		"id": 2,
+		"name": "Series",
+		"order_by": "menu_order",
+		"slug": "pa_series",
+		"terms": [],
+		"type": "select"
+	}
+]

@@ -1,0 +1,26 @@
+{
+	"_source": "German terms the translator must use. Tool names, product/model/series, the solution draft, the bill of materials, the inquiry and its states come from AGENTS.md §1–§3 (owner rulings 2026-10-05 and 2026-10-09). The technical terms are the words the live German pages use for them (tests/fixtures/live, pulled 2026-10-09: Wechselrichter, Datenblatt, Eigenverbrauch, Lastspitzenkappung, Kompatibilitätsliste). An entry with enforce=true is checked: when the English text has the term, the German must have the German term; the others guide the model only. 'cart' maps to the solution draft: the customer's list is the Lösungsentwurf (AGENTS.md §3), the word Warenkorb is banned.",
+	"terms": [
+		{ "en": "Genie - Linker's AI assistant", "de": "Genie – der KI-Assistent von Linker", "enforce": true },
+		{ "en": "Solution Configurator", "de": "Lösungskonfigurator", "enforce": true },
+		{ "en": "Solution draft", "de": "Lösungsentwurf", "enforce": true },
+		{ "en": "Bill of materials", "de": "Stückliste", "enforce": true },
+		{ "en": "Proforma invoice issued", "de": "Proformarechnung ausgestellt", "enforce": true },
+		{ "en": "Proforma invoice", "de": "Proformarechnung", "enforce": true },
+		{ "en": "Inquiry received", "de": "Anfrage eingegangen", "enforce": true },
+		{ "en": "inquiry", "de": "Anfrage", "enforce": true },
+		{ "en": "enquiry", "de": "Anfrage", "enforce": true },
+		{ "en": "Product category", "de": "Produktkategorie", "enforce": true },
+		{ "en": "product", "de": "Produkt", "enforce": true },
+		{ "en": "model", "de": "Modell", "enforce": false },
+		{ "en": "series", "de": "Serie", "enforce": false },
+		{ "en": "cart", "de": "Lösungsentwurf", "enforce": false },
+		{ "en": "datasheet", "de": "Datenblatt", "enforce": true },
+		{ "en": "inverter", "de": "Wechselrichter", "enforce": true },
+		{ "en": "self-consumption", "de": "Eigenverbrauch", "enforce": true },
+		{ "en": "peak shaving", "de": "Lastspitzenkappung", "enforce": true },
+		{ "en": "compatibility list", "de": "Kompatibilitätsliste", "enforce": true }
+	],
+	"_keep_source": "Names that stay as they are: the company, its assistant, and the brands of the live product attributes (wc/v3/products/attributes/9/terms, 2026-10-09).",
+	"keep": [ "Linker", "Genie", "Chint", "DEHN", "EcoFlow", "GoodWe", "LAPP", "MBS", "Mersen", "Pylontech", "SAJ", "Stäubli", "Trina Solar" ]
+}

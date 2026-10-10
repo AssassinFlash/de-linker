@@ -1,0 +1,362 @@
+[
+	{
+		"description": "Hybrid inverters and power modules from GoodWe, SAJ and EcoFlow, single and three phase, 5 to 125 kW.",
+		"id": 449,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+				"description": "Hybrid-Wechselrichter und Leistungsmodule von GoodWe, SAJ und EcoFlow, ein- und dreiphasig, 5 bis 125 kW.",
+				"h1": "Wechselrichter",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+					"en": "https://de-linker.com/product-category/inverters/",
+					"x-default": "https://de-linker.com/product-category/inverters/"
+				},
+				"html_lang": "de-DE",
+				"title": "Wechselrichter | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/inverters/",
+				"description": "Hybrid inverters and power modules from GoodWe, SAJ and EcoFlow, single and three phase, 5 to 125 kW.",
+				"h1": "Inverters",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+					"en": "https://de-linker.com/product-category/inverters/",
+					"x-default": "https://de-linker.com/product-category/inverters/"
+				},
+				"html_lang": "en-US",
+				"title": "Inverters | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/inverters/"
+		},
+		"menu_order": 1,
+		"name": "Inverters",
+		"parent": 0,
+		"slug": "inverters"
+	},
+	{
+		"description": "Home batteries: LFP modules of 5 to 9 kWh, their controllers and SAJ B2 systems of 5 to 25 kWh; a GoodWe ESA system stacks up to 108 kWh.",
+		"id": 450,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/heimspeicher/",
+				"description": "Heimspeicher-Batterien: LFP-Module mit 5 bis 9 kWh, ihre Steuerungen und SAJ-B2-Systeme mit 5 bis 25 kWh; ein GoodWe-ESA-System lässt sich auf bis zu 108 kWh stapeln.",
+				"h1": "Heimspeicher",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/heimspeicher/",
+					"en": "https://de-linker.com/product-category/home-storage/",
+					"x-default": "https://de-linker.com/product-category/home-storage/"
+				},
+				"html_lang": "de-DE",
+				"title": "Heimspeicher | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/heimspeicher/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/home-storage/",
+				"description": "Home batteries: LFP modules of 5 to 9 kWh, their controllers and SAJ B2 systems of 5 to 25 kWh; a GoodWe ESA system stacks up to 108 kWh.",
+				"h1": "Home Storage",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/heimspeicher/",
+					"en": "https://de-linker.com/product-category/home-storage/",
+					"x-default": "https://de-linker.com/product-category/home-storage/"
+				},
+				"html_lang": "en-US",
+				"title": "Home Storage | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/home-storage/"
+		},
+		"menu_order": 2,
+		"name": "Home Storage",
+		"parent": 0,
+		"slug": "home-storage"
+	},
+	{
+		"description": "Commercial storage: all-in-one systems and battery systems of 57.3 to 261.2 kWh from GoodWe, SAJ and Pylontech.",
+		"id": 451,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/",
+				"description": "Gewerbespeicher: All-in-One-Systeme und Batteriesysteme mit 57,3 bis 261,2 kWh von GoodWe, SAJ und Pylontech.",
+				"h1": "Gewerbespeicher",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/",
+					"en": "https://de-linker.com/product-category/commercial-storage/",
+					"x-default": "https://de-linker.com/product-category/commercial-storage/"
+				},
+				"html_lang": "de-DE",
+				"title": "Gewerbespeicher | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/commercial-storage/",
+				"description": "Commercial storage: all-in-one systems and battery systems of 57.3 to 261.2 kWh from GoodWe, SAJ and Pylontech.",
+				"h1": "Commercial Storage",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/",
+					"en": "https://de-linker.com/product-category/commercial-storage/",
+					"x-default": "https://de-linker.com/product-category/commercial-storage/"
+				},
+				"html_lang": "en-US",
+				"title": "Commercial Storage | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/commercial-storage/"
+		},
+		"menu_order": 3,
+		"name": "Commercial Storage",
+		"parent": 0,
+		"slug": "commercial-storage"
+	},
+	{
+		"description": "All-in-one commercial storage systems: the SAJ CHS2 hybrid system with 29.9, 30 or 50 kW and the AC-coupled Pylontech OPTIM US L260-OMNI with an integrated PCS, 125 kW and 260 kWh per cabinet.",
+		"id": 452,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/",
+				"description": "All-in-One-Gewerbespeicher: das Hybridsystem SAJ CHS2 mit 29,9, 30 oder 50 kW und der AC-gekoppelte Pylontech OPTIM US L260-OMNI mit integriertem PCS, 125 kW und 260 kWh je Schrank.",
+				"h1": "All-in-One-Systeme",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/",
+					"en": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/",
+					"x-default": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/"
+				},
+				"html_lang": "de-DE",
+				"title": "All-in-One-Systeme | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/",
+				"description": "All-in-one commercial storage systems: the SAJ CHS2 hybrid system with 29.9, 30 or 50 kW and the AC-coupled Pylontech OPTIM US L260-OMNI with an integrated PCS, 125 kW and 260 kWh per cabinet.",
+				"h1": "All-in-One Systems",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/",
+					"en": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/",
+					"x-default": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/"
+				},
+				"html_lang": "en-US",
+				"title": "All-in-One Systems | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/"
+		},
+		"menu_order": 4,
+		"name": "All-in-One Systems",
+		"parent": 451,
+		"slug": "all-in-one-systems"
+	},
+	{
+		"description": "Battery systems for commercial storage: GoodWe BAT-C (61.4–261.2 kWh) and SAJ CB2 (57.3–100.3 kWh), for the GoodWe ET-100 or ETR and the SAJ CHS2.",
+		"id": 453,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+				"description": "Batteriesysteme für Gewerbespeicher: GoodWe BAT-C (61,4–261,2 kWh) und SAJ CB2 (57,3–100,3 kWh), für GoodWe ET-100 oder ETR und SAJ CHS2.",
+				"h1": "Batteriesysteme",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+					"en": "https://de-linker.com/product-category/commercial-storage/battery-systems/",
+					"x-default": "https://de-linker.com/product-category/commercial-storage/battery-systems/"
+				},
+				"html_lang": "de-DE",
+				"title": "Batteriesysteme | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/commercial-storage/battery-systems/",
+				"description": "Battery systems for commercial storage: GoodWe BAT-C (61.4–261.2 kWh) and SAJ CB2 (57.3–100.3 kWh), for the GoodWe ET-100 or ETR and the SAJ CHS2.",
+				"h1": "Battery Systems",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+					"en": "https://de-linker.com/product-category/commercial-storage/battery-systems/",
+					"x-default": "https://de-linker.com/product-category/commercial-storage/battery-systems/"
+				},
+				"html_lang": "en-US",
+				"title": "Battery Systems | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/commercial-storage/battery-systems/"
+		},
+		"menu_order": 5,
+		"name": "Battery Systems",
+		"parent": 451,
+		"slug": "battery-systems"
+	},
+	{
+		"description": "Energy managers and a data collector for home and commercial storage: the GoodWe SEC3000C and EzManager3000, the SAJ eManager and eManager-C1 Pro, and the SAJ eSolar AIO3.",
+		"id": 454,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/ems-monitoring/",
+				"description": "Energiemanager und ein Datenlogger für Heim- und Gewerbespeicher: GoodWe SEC3000C und EzManager3000, SAJ eManager und eManager-C1 Pro sowie SAJ eSolar AIO3.",
+				"h1": "EMS & Monitoring",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/ems-monitoring/",
+					"en": "https://de-linker.com/product-category/ems-monitoring/",
+					"x-default": "https://de-linker.com/product-category/ems-monitoring/"
+				},
+				"html_lang": "de-DE",
+				"title": "EMS & Monitoring | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/ems-monitoring/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/ems-monitoring/",
+				"description": "Energy managers and a data collector for home and commercial storage: the GoodWe SEC3000C and EzManager3000, the SAJ eManager and eManager-C1 Pro, and the SAJ eSolar AIO3.",
+				"h1": "EMS & Monitoring",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/ems-monitoring/",
+					"en": "https://de-linker.com/product-category/ems-monitoring/",
+					"x-default": "https://de-linker.com/product-category/ems-monitoring/"
+				},
+				"html_lang": "en-US",
+				"title": "EMS & Monitoring | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/ems-monitoring/"
+		},
+		"menu_order": 6,
+		"name": "EMS & Monitoring",
+		"parent": 0,
+		"slug": "ems-monitoring"
+	},
+	{
+		"description": "EV chargers: the GoodWe HCA G2 with 7 kW single-phase or 11 and 22 kW three-phase.",
+		"id": 455,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/ladestationen/",
+				"description": "Ladestationen: GoodWe HCA G2 mit 7 kW einphasig oder 11 und 22 kW dreiphasig.",
+				"h1": "Ladestationen",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/ladestationen/",
+					"en": "https://de-linker.com/product-category/ev-chargers/",
+					"x-default": "https://de-linker.com/product-category/ev-chargers/"
+				},
+				"html_lang": "de-DE",
+				"title": "Ladestationen | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/ladestationen/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/ev-chargers/",
+				"description": "EV chargers: the GoodWe HCA G2 with 7 kW single-phase or 11 and 22 kW three-phase.",
+				"h1": "EV Chargers",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/ladestationen/",
+					"en": "https://de-linker.com/product-category/ev-chargers/",
+					"x-default": "https://de-linker.com/product-category/ev-chargers/"
+				},
+				"html_lang": "en-US",
+				"title": "EV Chargers | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/ev-chargers/"
+		},
+		"menu_order": 7,
+		"name": "EV Chargers",
+		"parent": 0,
+		"slug": "ev-chargers"
+	},
+	{
+		"description": "Accessories for storage systems: smart meters and transfer switches.",
+		"id": 456,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+				"description": "Zubehör für Speichersysteme: Smart Meter und Umschalter.",
+				"h1": "Zubehör",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+					"en": "https://de-linker.com/product-category/accessories/",
+					"x-default": "https://de-linker.com/product-category/accessories/"
+				},
+				"html_lang": "de-DE",
+				"title": "Zubehör | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/accessories/",
+				"description": "Accessories for storage systems: smart meters and transfer switches.",
+				"h1": "Accessories",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+					"en": "https://de-linker.com/product-category/accessories/",
+					"x-default": "https://de-linker.com/product-category/accessories/"
+				},
+				"html_lang": "en-US",
+				"title": "Accessories | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/accessories/"
+		},
+		"menu_order": 8,
+		"name": "Accessories",
+		"parent": 0,
+		"slug": "accessories"
+	},
+	{
+		"description": "Smart meters from GoodWe and Chint.",
+		"id": 457,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+				"description": "Smart Meter von GoodWe und Chint.",
+				"h1": "Energiezähler & Stromwandler",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+					"en": "https://de-linker.com/product-category/accessories/meters-current-transformers/",
+					"x-default": "https://de-linker.com/product-category/accessories/meters-current-transformers/"
+				},
+				"html_lang": "de-DE",
+				"title": "Energiezähler & Stromwandler | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/accessories/meters-current-transformers/",
+				"description": "Smart meters from GoodWe and Chint.",
+				"h1": "Meters & Current Transformers",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+					"en": "https://de-linker.com/product-category/accessories/meters-current-transformers/",
+					"x-default": "https://de-linker.com/product-category/accessories/meters-current-transformers/"
+				},
+				"html_lang": "en-US",
+				"title": "Meters & Current Transformers | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/accessories/meters-current-transformers/"
+		},
+		"menu_order": 9,
+		"name": "Meters & Current Transformers",
+		"parent": 456,
+		"slug": "meters-current-transformers"
+	},
+	{
+		"description": "Transfer switches for backup power: the three-phase SAJ ATS1-T63-A and the GoodWe STS 125 kW static transfer switch.",
+		"id": 458,
+		"live": {
+			"de": {
+				"canonical": "https://de-linker.com/de/produkt-kategorie/zubehoer/notstrom/",
+				"description": "Umschalter für Notstrom: der dreiphasige SAJ ATS1-T63-A und der statische Transferschalter GoodWe STS 125 kW.",
+				"h1": "Notstrom",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/zubehoer/notstrom/",
+					"en": "https://de-linker.com/product-category/accessories/backup-power/",
+					"x-default": "https://de-linker.com/product-category/accessories/backup-power/"
+				},
+				"html_lang": "de-DE",
+				"title": "Notstrom | Linker"
+			},
+			"de_url": "https://de-linker.com/de/produkt-kategorie/zubehoer/notstrom/",
+			"en": {
+				"canonical": "https://de-linker.com/product-category/accessories/backup-power/",
+				"description": "Transfer switches for backup power: the three-phase SAJ ATS1-T63-A and the GoodWe STS 125 kW static transfer switch.",
+				"h1": "Backup Power",
+				"hreflang": {
+					"de": "https://de-linker.com/de/produkt-kategorie/zubehoer/notstrom/",
+					"en": "https://de-linker.com/product-category/accessories/backup-power/",
+					"x-default": "https://de-linker.com/product-category/accessories/backup-power/"
+				},
+				"html_lang": "en-US",
+				"title": "Backup Power | Linker"
+			},
+			"en_url": "https://de-linker.com/product-category/accessories/backup-power/"
+		},
+		"menu_order": 10,
+		"name": "Backup Power",
+		"parent": 456,
+		"slug": "backup-power"
+	}
+]

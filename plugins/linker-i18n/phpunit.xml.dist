@@ -12,10 +12,18 @@
 	convertDeprecationsToExceptions="true"
 	failOnRisky="true"
 	failOnWarning="true"
+	defaultTestSuite="unit"
 >
 	<testsuites>
 		<testsuite name="unit">
 			<directory>tests/php/Unit</directory>
+		</testsuite>
+		<!--
+			Against a running local site, never in `just test`: see
+			tests/php/Integration/SiteTestCase.php for the environment it needs.
+		-->
+		<testsuite name="integration">
+			<directory>tests/php/Integration</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>

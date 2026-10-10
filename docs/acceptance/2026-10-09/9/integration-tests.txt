@@ -1,0 +1,37 @@
+$ cd plugins/linker-i18n && LINKER_I18N_SITE=http://127.0.0.1:8897 LINKER_I18N_WP=/tmp/t9-wp.sh LINKER_I18N_STUB=http://127.0.0.1:8119/ vendor/bin/phpunit --testsuite integration --testdox   (site: the stack instance `just up t9`; LINKER_I18N_WP wraps `linker-local wp t9`)
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+Rest (Linker\I18n\Tests\Integration\Rest)
+ ✔ Store api lists one language
+ ✔ Store api german products
+ ✔ Store api product by slug
+ ✔ Categories and pages follow lang
+
+Term Translation (Linker\I18n\Tests\Integration\TermTranslation)
+ ✔ Category is translated on save
+
+Translate On Save (Linker\I18n\Tests\Integration\TranslateOnSave)
+ ✔ Without key the translation is pending
+ ✔ Translation makes the german product
+ ✔ Unchanged english is not translated again
+ ✔ Changed paragraph alone is translated again
+ ✔ Edited german is kept and reviewed
+ ✔ Rejected translation stores nothing
+
+Urls (Linker\I18n\Tests\Integration\Urls)
+ ✔ German urls are the live ones and german
+ ✔ English urls are english
+ ✔ Wrong language segments are 404
+ ✔ Sitemaps per language
+ ✔ No redirect by browser language
+ ✔ No hreflang on 404 and search
+
+Woo (Linker\I18n\Tests\Integration\Woo)
+ ✔ Stock pushed by sku reaches both languages
+ ✔ German add to cart notice names the german product
+ ✔ German inquiry
+
+Time: 00:50.890, Memory: 8.00 MB
+
+OK (20 tests, 798 assertions)
+exit 0

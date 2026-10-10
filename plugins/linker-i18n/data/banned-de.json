@@ -1,0 +1,4 @@
+{
+	"_source": "Words the German must not contain. AGENTS.md §3: the site says Produkt and Produktkategorie and never catalogue, article or basket/cart (Katalog, Warenkorb, Einkaufswagen); German is written in the Sie form (locale de_DE_formal), so the du/ihr forms are banned. 'Artikel' is not listed: German legal texts cite 'Artikel 6 DSGVO'. A word matches as a whole word, ignoring case; a word ending in * also matches its compounds and inflections.",
+	"words": [ "Warenkorb*", "Einkaufswagen*", "Katalog*", "du", "dich", "dir", "dein", "deine", "deinen", "deinem", "deiner", "deines", "euch", "euer", "eure", "euren", "eurem", "eurer", "eures" ]
+}

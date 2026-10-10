@@ -1,0 +1,11 @@
+{
+	"page_for_posts": 14,
+	"page_on_front": 13,
+	"show_on_front": "page",
+	"woocommerce_cart_page_id": "1035",
+	"woocommerce_checkout_page_id": "1036",
+	"woocommerce_currency": "EUR",
+	"woocommerce_default_country": "DE:DE-ST",
+	"woocommerce_myaccount_page_id": "1037",
+	"woocommerce_shop_page_id": "1034"
+}

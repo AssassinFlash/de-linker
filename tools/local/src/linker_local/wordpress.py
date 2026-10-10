@@ -38,11 +38,33 @@ WOOCOMMERCE_VERSION = "11.2.0"
 WOOCOMMERCE_ZIP = (
     f"https://downloads.wordpress.org/plugin/woocommerce.{WOOCOMMERCE_VERSION}.zip"
 )
+# Polylang, the i18n base the map decides on (#3, 2026-10-09): the free
+# edition, which linker-i18n names in its "Requires Plugins" header, so a
+# stack without it cannot activate linker-i18n. 3.8.10 is the release the
+# first #9 session installed from wordpress.org on 2026-10-09 (the t9
+# instance's plugin header). wordpress.org publishes no hash of a plugin
+# archive either; the files are checked against wordpress.org's checksums
+# (`wp plugin verify-checksums`) like WooCommerce's.
+POLYLANG_VERSION = "3.8.10"
+POLYLANG_ZIP = f"https://downloads.wordpress.org/plugin/polylang.{POLYLANG_VERSION}.zip"
+# The German (Formal) language packs: the site is English and German at equal
+# rank and German runs in the formal register (AGENTS.md §1 and §3), so every
+# instance carries de_DE_formal - WordPress core's pack and WooCommerce's,
+# from the translation API, pinned to the versions above. The translation API
+# publishes no hashes (like the plugin API); the archives arrive over HTTPS.
+# Polylang needs no pack: its settings screen is administrator-facing only.
+GERMAN_LOCALE = "de_DE_formal"
+CORE_GERMAN_ZIP = f"https://downloads.wordpress.org/translation/core/{WORDPRESS_VERSION}/{GERMAN_LOCALE}.zip"
+WOOCOMMERCE_GERMAN_ZIP = (
+    "https://downloads.wordpress.org/translation/plugin/woocommerce/"
+    f"{WOOCOMMERCE_VERSION}/{GERMAN_LOCALE}.zip"
+)
 
 # What versions() compares an instance with.
 PINNED = {
     "WordPress": WORDPRESS_VERSION,
     "WooCommerce": WOOCOMMERCE_VERSION,
+    "Polylang": POLYLANG_VERSION,
     "Redis Object Cache": objectcache.PLUGIN_VERSION,
 }
 
@@ -133,6 +155,15 @@ def provision(
     wp.run("plugin", "verify-checksums", "woocommerce")
     wp.run("plugin", "activate", "woocommerce")
 
+    say(f"Polylang {POLYLANG_VERSION}")
+    polylang = downloads.fetch(POLYLANG_ZIP)
+    wp.run("plugin", "install", str(polylang))
+    wp.run("plugin", "verify-checksums", "polylang")
+    wp.run("plugin", "activate", "polylang")
+
+    say(f"German language packs ({GERMAN_LOCALE})")
+    install_language_packs(instance)
+
     say(f"Redis object cache ({objectcache.PLUGIN} {objectcache.PLUGIN_VERSION})")
     objectcache.install(instance, wp)
 
@@ -176,6 +207,21 @@ def refresh(
     new = [name for name in linked if name not in known]
     if new:
         wp.run("plugin", "activate", *new)
+
+
+def install_language_packs(instance: Instance) -> None:
+    """Unpack de_DE_formal: core's files into languages/, the plugins' into languages/plugins/."""
+    languages = instance.wp_content / "languages"
+    with zipfile.ZipFile(
+        downloads.fetch(CORE_GERMAN_ZIP, name=f"wordpress-{GERMAN_LOCALE}.zip")
+    ) as pack:
+        pack.extractall(languages)
+    plugins = languages / "plugins"
+    plugins.mkdir(exist_ok=True)
+    with zipfile.ZipFile(
+        downloads.fetch(WOOCOMMERCE_GERMAN_ZIP, name=f"woocommerce-{GERMAN_LOCALE}.zip")
+    ) as pack:
+        pack.extractall(plugins)
 
 
 def install_snapshot(
@@ -223,6 +269,9 @@ def versions(instance: Instance) -> dict[str, str | None]:
         ),
         "WooCommerce": _first_match(
             plugins / "woocommerce" / "woocommerce.php", r"\* Version: (\S+)"
+        ),
+        "Polylang": _first_match(
+            plugins / "polylang" / "polylang.php", r"\* Version: (\S+)"
         ),
         "Redis Object Cache": _first_match(
             plugins / objectcache.PLUGIN / "redis-cache.php", r"\* Version: (\S+)"
@@ -280,6 +329,10 @@ def wp_config_constants(instance: Instance) -> str:
         f"define( 'WP_HOME', {_php_string(instance.url)} );",
         f"define( 'WP_SITEURL', {_php_string(instance.url)} );",
         "define( 'WP_ENVIRONMENT_TYPE', 'local' );",
+        # A cron spawn in the middle of a request races the work a session or
+        # its tests run explicitly (linker-i18n's queue is Action Scheduler,
+        # which WP-Cron carries): queued work runs when a session runs it.
+        "define( 'DISABLE_WP_CRON', true );",
         f"define( 'LINKER_LOCAL_MAIL_DIR', {_php_string(str(instance.mail_dir))} );",
         f"define( 'LINKER_LOCAL_ISOLATION_LOG', {_php_string(str(instance.isolation_log))} );",
         "",
