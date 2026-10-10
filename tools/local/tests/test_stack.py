@@ -368,14 +368,32 @@ def test_a_redirect_cannot_lead_wordpress_off_this_machine(stack: Stack) -> None
     assert f"\tREDIRECT\t{target}\n" in b.isolation_log.read_text()
 
 
+IMAGERY_WMS = (
+    "https://www.wms.nrw.de https://geoservices.bayern.de https://owsproxy.lgl-bw.de "
+    "https://opendata.lgln.niedersachsen.de https://www.gds-srv.hessen.de "
+    "https://geo4.service24.rlp.de https://geodienste.sachsen.de https://isk.geobasis-bb.de "
+    "https://service.gdi-sh.de https://www.geoproxy.geoportal-th.de "
+    "https://www.geodatenportal.sachsen-anhalt.de https://geodienste.bremen.de "
+    "https://www.geodaten-mv.de https://geoportal.saarland.de https://geodienste.hamburg.de"
+)
+LOCAL_SOURCES = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'"
+
+
 def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
     stack: Stack,
 ) -> None:
     home = request(stack.instance("pytesta").port, "/")
 
+    # Outside the machine, a page reaches only what the site itself puts on it:
+    # the theme's template scripts (CDNs the snapshot's pages enqueue) and the
+    # states' official aerial-image WMS the roof step shows, by fetch and as
+    # images (services/engine/data/imagery.json).
     assert home.headers["Content-Security-Policy"] == (
-        "default-src 'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval';"
-        " form-action 'self'"
+        f"default-src {LOCAL_SOURCES}; "
+        f"script-src {LOCAL_SOURCES} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com; "
+        f"img-src {LOCAL_SOURCES} {IMAGERY_WMS}; "
+        f"connect-src {LOCAL_SOURCES} {IMAGERY_WMS}; "
+        "form-action 'self'"
     )
     assert home.headers["X-Robots-Tag"] == "noindex, nofollow"
 
