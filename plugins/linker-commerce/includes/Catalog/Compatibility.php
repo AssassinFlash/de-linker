@@ -128,6 +128,32 @@ final class Compatibility {
 	}
 
 	/**
+	 * The requirements an inverter of one kind carries, the way the #14
+	 * engine reads the same file: every requirement entry whose kind equals
+	 * and whose inverter pattern matches the model (search semantics, own
+	 * anchors).
+	 *
+	 * @param string $inverter The inverter model (pa_model).
+	 * @param string $kind     The requirement kind (meter, parallel_controller).
+	 * @return list<array<string, mixed>> The matching entries, in file order.
+	 */
+	public static function requirements( string $inverter, string $kind ): array {
+		$data         = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+		$entries      = is_array( $data['requirements'] ?? null ) ? $data['requirements'] : array();
+		$requirements = array();
+		foreach ( $entries as $entry ) {
+			if ( is_array( $entry )
+				&& ( $entry['kind'] ?? '' ) === $kind
+				&& self::matches( (string) ( $entry['inverter'] ?? '' ), $inverter )
+			) {
+				$requirements[] = $entry;
+			}
+		}
+
+		return $requirements;
+	}
+
+	/**
 	 * The more restrictive of two verdicts; a verdict that is not in the
 	 * vocabulary loses to the one held.
 	 *

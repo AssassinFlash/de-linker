@@ -50,7 +50,12 @@ final class EngineeringFeed {
 			'overlay'               => EngineeringData::json( EngineeringData::OVERLAY_FILE )['overlay'] ?? array(),
 			'products'              => array(),
 		);
-		foreach ( self::product_ids( $since ) as $id ) {
+		$ids  = self::product_ids( $since );
+		// One bulk load each: the items below read every product's meta and
+		// taxonomy terms, not one database round-trip per item.
+		update_postmeta_cache( $ids );
+		update_object_term_cache( $ids, 'product' );
+		foreach ( $ids as $id ) {
 			$item = self::item( $id );
 			if ( null !== $item ) {
 				$feed['products'][] = $item;

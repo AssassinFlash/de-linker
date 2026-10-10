@@ -86,7 +86,7 @@
 
 ## 6. compatibility.json 的翻译（#14 引擎 schema 形状）
 
-形状由 `services/engine/schemas/compatibility.schema.json` 定（#14 契约）：顶层 `{schema_version: 1, version, pairs, requirements}`，`additionalProperties: false`（旧文件的 `verified_on`/`match` 说明移到本文件）。`version` = 对 `{schema_version, pairs, requirements}` 规范 JSON 的 sha256（自指字段外的内容哈希；feed 的 `compatibility_version` 报告它，实测两者相等）。当前值 `bcc9b39bb427…`（64 hex）。
+形状由 `services/engine/schemas/compatibility.schema.json` 定（#14 契约）：顶层 `{schema_version: 1, version, pairs, requirements}`，`additionalProperties: false`（旧文件的 `verified_on`/`match` 说明移到本文件）。`version` = 对 `{schema_version, pairs, requirements}` 规范 JSON 的 sha256（自指字段外的内容哈希；feed 的 `compatibility_version` 报告它，实测两者相等）。当前值 `81f8688f5d03…`（64 hex）。
 
 228 格 → 248 对（20 条型号级 model_constraints 拆为独立条目；型号级条目排在家族条目之前**仅为可读性**——引擎语义是多命中合并）：
 
@@ -103,8 +103,8 @@
 
 `released_with_accessory` 的两格（判据：文件的原话使配对本身经由一个单独售卖、且不在任一配对商品交付清单里的部件）：
 
-- **SAJ H2 + B2/BU2**：B2 只能作为"1-5 个 BU2-5.0 模块 + 1 个 BC2-HV1 控制模块"的整套使用（B2 手册 V1.2 p5）→ `accessories: [{model: "^SAJ BC2-HV1$", quantity: 1, per: "system"}]`；
-- **EcoFlow PowerOcean（单相）+ EF BD-5.1-S1**：单相手册 p1 写塔 = "EF BD-5.1-S1 × N **with EF BD-B-S1 × 1**"，底座是单独商品（1990）且电池本体交付清单不含它 → `accessories: [{model: "^EcoFlow EF BD-B-S1$", quantity: 1, per: "stack"}]`。
+- **SAJ H2 + B2/BU2**：B2 只能作为"1-5 个 BU2-5.0 模块 + 1 个 BC2-HV1 控制模块"的整套使用（B2 手册 V1.2 p5）→ `accessories: [{model: "^BC2-HV1$", quantity: 1, per: "system"}]`；
+- **EcoFlow PowerOcean（单相）+ EF BD-5.1-S1**：单相手册 p1 写塔 = "EF BD-5.1-S1 × N **with EF BD-B-S1 × 1**"，底座是单独商品（1990）且电池本体交付清单不含它 → `accessories: [{model: "^EF BD-B-S1$", quantity: 1, per: "stack"}]`。
 
 EcoFlow OCEAN 2 三相 + 电池的 EF BD-JC-S2 接线盒只是多塔级联才需要 → 记为 `released` + 条件，不改 verdict；ESA 的"电池扩展件"同理。
 
@@ -114,11 +114,11 @@ EcoFlow OCEAN 2 三相 + 电池的 EF BD-JC-S2 接线盒只是多塔级联才需
 |---|---|---|---|
 | gw-et-75-100 | meter | true | ET 80-100 单机系统随附 GM330；CT 另购（G9） |
 | saj-h2-t3 | meter | true | H2 T3 随附电表 + 3 CT + 10 m 通信线（S6） |
-| saj-h2-t3 | meter | false, phase 3 | SAJ 配置说明设置 Chint DTSU666 为三相电表（S2）；accessories: `^Chint DTSU666$` ×1/system |
+| saj-h2-t3 | meter | false, phase 3 | SAJ 配置说明设置 Chint DTSU666 为三相电表（S2）；accessories: `^DTSU666$` ×1/system |
 | saj-hs2 | meter | false, phase 3 | 同上（S2） |
 | saj-hs3 | meter | true | 随附 Chint DTSU666/iDM411 三相电表（S13） |
 | gw-esa-g20 | meter | true | ETA 内置电表 + 随附 CT（120 A:40 mA）；不够时加装 GM330/GMK330（G5，条件文本） |
-| gw-etr-80-124 + gw-etr-125k | parallel_controller | false | 并行系统需 SEC3000C（手册 V7.8.19+，G8）；accessories: `^GoodWe SEC3000C$` ×1/system。旧文档无数值上限，`max_units` 不填（schema 可选） |
+| gw-etr-80-124 + gw-etr-125k | parallel_controller | false | 并行系统需 SEC3000C（手册 V7.8.19+，G8）；accessories: `^SEC3000C$` ×1/system。旧文档无数值上限，`max_units` 不填（schema 可选） |
 
 **per-pair source 短键**（建议项）：schema 的 `additionalProperties: false` 不允许 per-pair `source` 键，按"改契约不得单边"原则未加；旧 family|cell 追溯 = 上表的家族清单 × 旧 `contracts/compatibility-lists.json` 的 `cells` 键（生成器 `combined(家族 patterns)` 与格键一一对应）。若 #14 愿在 schema 加可选 `source`，生成器可即时补上——已在 PR 记录。
 

@@ -190,6 +190,49 @@ final class CompatibilityTest extends TestCase {
 	}
 
 	/**
+	 * Every on-sale ETR model hits the parallel_controller requirement: one
+	 * SEC3000C per system. The pattern matches the bare pa_model name — a
+	 * brand prefix would leave all six without the requirement.
+	 *
+	 * @dataProvider on_sale_etr_models
+	 *
+	 * @param string $inverter The inverter model (pa_model).
+	 */
+	public function test_the_parallel_controller_requirement_hits_every_on_sale_etr( string $inverter ): void {
+		$answer = Compatibility::requirements( $inverter, 'parallel_controller' );
+
+		$this->assertCount( 1, $answer, "exactly one parallel_controller requirement for {$inverter}" );
+		$this->assertSame( 'parallel_controller', $answer[0]['kind'] );
+		$this->assertFalse( (bool) $answer[0]['included'] );
+		$this->assertSame(
+			array(
+				'model'    => '^SEC3000C$',
+				'quantity' => 1,
+				'per'      => 'system',
+			),
+			$answer[0]['accessories'][0]
+		);
+		$this->assertNotSame( array(), $answer[0]['conditions'] );
+		$this->assertNotSame( array(), $answer[0]['documents'] );
+	}
+
+	/**
+	 * The six on-sale ETR models, as the products' pa_model terms state them.
+	 *
+	 * @return list<list<string>>
+	 */
+	public function on_sale_etr_models(): array {
+		return array(
+			array( 'GW80K-ETR-G10' ),
+			array( 'GW99.99K-ETR-G10' ),
+			array( 'GW100K-ETR-G10' ),
+			array( 'GW110K-ETR-G10' ),
+			array( 'GW124.99K-ETR-G10' ),
+			array( 'GW125K-ETR-G10' ),
+		);
+	}
+
+	/**
 	 * Two products decide through their pa_model terms, the way the feed
 	 * names them.
 	 */

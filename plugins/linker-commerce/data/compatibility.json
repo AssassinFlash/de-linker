@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "version": "bcc9b39bb4278e52b0c3f554e43e1512222f9c1d5476fcd56e4cc00c07370016",
+ "version": "81f8688f5d0383bf275607b0aaaf4367963881f1b9c4c47f0450ac7b55f980e6",
  "pairs": [
   {
    "inverter": "^EF HD-P1-(3|3\\.68|4\\.6|5|5\\.75|6)K-S2$",
@@ -6017,7 +6017,7 @@
    ]
   },
   {
-   "inverter": "(?:^GoodWe GW(80K|99\\.99K|100K|110K|124\\.99K)-ETR-G10$|^GoodWe GW125K-ETR-G10$)",
+   "inverter": "(?:^GW(80K|99\\.99K|100K|110K|124\\.99K)-ETR-G10$|^GW125K-ETR-G10$)",
    "kind": "parallel_controller",
    "included": false,
    "accessories": [

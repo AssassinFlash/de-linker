@@ -289,14 +289,7 @@ def verify(siteurl: str, plan: dict[str, Any]) -> int:
     feed = http_json(f"{siteurl}/wp-json/linker/v1/engineering-feed")
     old = http_json(f"{siteurl}/wp-json/linker/v1/materials")
     old_by_material = {m["material_id"]: m for m in old["materials"]}
-    # A product without cited figures arrives with figures as an empty JSON list.
-    items = {
-        str(item["id"]): {
-            **item,
-            "figures": item["figures"] if isinstance(item["figures"], dict) else {},
-        }
-        for item in feed["products"]
-    }
+    items = {str(item["id"]): item for item in feed["products"]}
     differences: list[str] = []
     unknown = 0
     for material_id, product_id in bindings:

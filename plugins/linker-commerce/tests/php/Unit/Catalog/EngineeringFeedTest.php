@@ -174,6 +174,7 @@ final class EngineeringFeedTest extends TestCase {
 	 * The envelope carries the versions of the data files and the overlay.
 	 */
 	public function test_the_envelope_carries_the_schema_version_the_compatibility_version_and_the_overlay(): void {
+		$this->mock_cache_warming();
 		$this->mock_query();
 		$this->mock_meta( 4107, array() );
 
@@ -195,6 +196,7 @@ final class EngineeringFeedTest extends TestCase {
 	 * query carries the modified-after condition on the GMT column.
 	 */
 	public function test_since_narrows_the_product_query_to_the_modified(): void {
+		$this->mock_cache_warming();
 		$this->mock_meta( 4107, array() );
 		$seen = null;
 		$this->mock_query(
@@ -218,6 +220,7 @@ final class EngineeringFeedTest extends TestCase {
 	 * Without `since` the query carries no date condition.
 	 */
 	public function test_without_since_the_query_has_no_date_condition(): void {
+		$this->mock_cache_warming();
 		$this->mock_meta( 4107, array() );
 		$seen = null;
 		$this->mock_query(
@@ -232,6 +235,50 @@ final class EngineeringFeedTest extends TestCase {
 
 		$this->assertIsArray( $seen );
 		$this->assertArrayNotHasKey( 'date_query', $seen );
+	}
+
+	/**
+	 * The feed warms the post meta and product term caches in one bulk call
+	 * each before reading the products: no per-item meta or term queries.
+	 */
+	public function test_the_feed_warms_the_meta_and_term_caches_for_its_products(): void {
+		$this->mock_meta( 4107, array() );
+		$this->mock_query();
+		$warmed_meta  = null;
+		$warmed_terms = null;
+		WP_Mock::userFunction(
+			'update_postmeta_cache',
+			array(
+				'args'   => array( WP_Mock\Functions::type( 'array' ) ),
+				'times'  => 1,
+				'return' => static function ( array $ids ) use ( &$warmed_meta ): array {
+					$warmed_meta = $ids;
+
+					return array();
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'update_object_term_cache',
+			array(
+				'args'   => array( WP_Mock\Functions::type( 'array' ), 'product' ),
+				'times'  => 1,
+				'return' => static function ( array $ids, string $object_type ) use ( &$warmed_terms ): array {
+					$warmed_terms = array( $ids, $object_type );
+
+					return array();
+				},
+			)
+		);
+
+		EngineeringFeed::feed();
+
+		$this->assertSame( array( 4107 ), $warmed_meta, 'one bulk meta cache load with every product ID' );
+		$this->assertSame(
+			array( array( 4107 ), 'product' ),
+			$warmed_terms,
+			'one bulk term cache load with every product ID, for the product taxonomies'
+		);
 	}
 
 	/**
@@ -262,6 +309,26 @@ final class EngineeringFeedTest extends TestCase {
 					WP_Mock\Functions::type( 'array' ),
 				),
 				'return' => $capture ?? static fn(): array => array( 4107 ),
+			)
+		);
+	}
+
+	/**
+	 * Mocks the two cache warmings the feed issues for its product IDs.
+	 */
+	private function mock_cache_warming(): void {
+		WP_Mock::userFunction(
+			'update_postmeta_cache',
+			array(
+				'args'   => array( WP_Mock\Functions::type( 'array' ) ),
+				'return' => static fn(): array => array(),
+			)
+		);
+		WP_Mock::userFunction(
+			'update_object_term_cache',
+			array(
+				'args'   => array( WP_Mock\Functions::type( 'array' ), 'product' ),
+				'return' => static fn(): array => array(),
 			)
 		);
 	}
