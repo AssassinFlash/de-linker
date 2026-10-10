@@ -1,0 +1,286 @@
+{
+ "source": "plugins/terravolt-b2b-core/data/material-registry.json (chain tip f007a9dd), material mat_trina_solar_tsm_460neg9r_28 — the only engineering component without a Woo product (owner ruling 2026-08-10: de-linker does not sell PV modules; a stored-energy design still sizes strings against a real module). The overlay items follow services/engine/schemas/feed.schema.json overlayItem; this file-level key is provenance only and does not enter the feed.",
+ "overlay": [
+  {
+   "id": "mat_trina_solar_tsm_460neg9r_28",
+   "kind": "pv_module",
+   "brand": "Trina Solar",
+   "model": "TSM-460NEG9R.28",
+   "figures": {
+    "alpha_isc_pct_per_c": {
+     "value": "0.04",
+     "unit": "%/°C",
+     "value_de": "0,04",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "back_glass": {
+     "value": "1.6 mm heat-strengthened glass",
+     "unit": "",
+     "value_de": "1,6 mm hitzevorgespanntes Glas",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "beta_voc_pct_per_c": {
+     "value": "-0.24",
+     "unit": "%/°C",
+     "value_de": "-0,24",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "cable_mm2": {
+     "value": "4.0",
+     "unit": "mm²",
+     "value_de": "4,0",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "cell_technology": {
+     "value": "N-type i-TOPCon monocrystalline",
+     "unit": "",
+     "value_de": "N-Typ i-TOPCon, monokristallin",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "cells": {
+     "value": "144",
+     "unit": "cells",
+     "value_de": "144 Zellen",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "dc_connector": {
+     "value": "TS4 Plus / TS4 / MC4 EVO2",
+     "unit": "",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "dimensions_mm": {
+     "value": "1762 × 1134 × 30",
+     "unit": "mm",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "frame": {
+     "value": "30 mm anodized aluminium alloy, black",
+     "unit": "",
+     "value_de": "30 mm eloxierte Aluminiumlegierung, schwarz",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "front_glass": {
+     "value": "1.6 mm AR-coated heat-strengthened glass",
+     "unit": "",
+     "value_de": "1,6 mm anti-reflexbeschichtetes, hitzevorgespanntes Glas",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "gamma_pmax_pct_per_c": {
+     "value": "-0.29",
+     "unit": "%/°C",
+     "value_de": "-0,29",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "impp_a": {
+     "value": "10.14",
+     "unit": "A",
+     "value_de": "10,14",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "isc_a": {
+     "value": "10.81",
+     "unit": "A",
+     "value_de": "10,81",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "junction_box_ip": {
+     "value": "IP 68",
+     "unit": "",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "max_series_fuse_a": {
+     "value": "25",
+     "unit": "A",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "max_system_voltage_v": {
+     "value": "1500 V DC (IEC)",
+     "unit": "",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "module_efficiency_pct": {
+     "value": "23.0",
+     "unit": "%",
+     "value_de": "23,0",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "modules_per_pallet": {
+     "value": "36",
+     "unit": "pieces",
+     "value_de": "36 Stück",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "noct_c": {
+     "value": "43 (±2)",
+     "unit": "°C",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "noct_pmax_w": {
+     "value": "352",
+     "unit": "W",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "operating_temp_c": {
+     "value": "-40 to +85",
+     "unit": "°C",
+     "value_de": "-40 bis +85",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "pmax_w": {
+     "value": "460",
+     "unit": "W",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "power_tolerance_w": {
+     "value": "0/+5",
+     "unit": "W",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "power_warranty_years": {
+     "value": "30",
+     "unit": "years",
+     "value_de": "30 Jahre",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "product_warranty_years": {
+     "value": "25",
+     "unit": "years",
+     "value_de": "25 Jahre",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "snow_load_pa": {
+     "value": "5400",
+     "unit": "Pa",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "vmpp_v": {
+     "value": "45.4",
+     "unit": "V",
+     "value_de": "45,4",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "voc_v": {
+     "value": "53.8",
+     "unit": "V",
+     "value_de": "53,8",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "weight_kg": {
+     "value": "21.0",
+     "unit": "kg",
+     "value_de": "21,0",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    },
+    "wind_load_pa": {
+     "value": "4000",
+     "unit": "Pa",
+     "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "page": 2
+     }
+    }
+   },
+   "documents": [
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+     "title": "Trina Solar Vertex S+ NEG9R.28 Datasheet (EN, 2024)",
+     "type": "datasheet",
+     "lang": "en"
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/240916_Datasheet_Vertex-S_NEG9R.28_DE_2024_C_web.pdf",
+     "title": "Trina Solar Vertex S+ NEG9R.28 Datenblatt (DE, 2024)",
+     "type": "datasheet",
+     "lang": "de"
+    }
+   ]
+  }
+ ]
+}

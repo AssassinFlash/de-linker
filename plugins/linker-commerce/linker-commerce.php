@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Linker Commerce
  * Description:       Inquiry chain, product facts and Abilities for de-linker.com.
- * Version:           0.1.0
+ * Version:           0.2.0
  * Requires at least: 7.1
  * Requires PHP:      8.3
  * Author:            Linker Technology GmbH
@@ -23,4 +23,10 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-( new Plugin( __FILE__, new Abilities\Registrar( __FILE__ ), new Catalog\SelectionFactsController() ) )->register();
+( new Plugin(
+	__FILE__,
+	new Abilities\Registrar( __FILE__ ),
+	new Catalog\SelectionFactsController(),
+	new Catalog\EngineeringFeedController(),
+	new Admin\FiguresMetaBox()
+) )->register();
