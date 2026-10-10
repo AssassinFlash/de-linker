@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Snapshot manifest (linker-pull, docs/specs/6-live-pull.md)",
+  "description": "manifest.json at the top of ~/de-linker-data/<YYYYMMDD-HHMM>/: every file of the snapshot with its sha256 and size, every table of its database dump with its row count and the sha256 of its rows as written.",
+  "type": "object",
+  "required": ["format", "name", "created", "source", "database", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "format": {"const": 1},
+    "name": {
+      "description": "The snapshot directory's name: local date and time of the start.",
+      "type": "string",
+      "pattern": "^[0-9]{8}-[0-9]{4}$"
+    },
+    "created": {"description": "UTC, ISO 8601.", "type": "string", "format": "date-time"},
+    "source": {
+      "type": "object",
+      "required": ["host", "url", "wordpress"],
+      "additionalProperties": false,
+      "properties": {
+        "host": {"description": "The SSH host alias the snapshot was read from.", "type": "string"},
+        "url": {"type": "string"},
+        "wordpress": {"description": "`wp core version` on the host.", "type": "string"}
+      }
+    },
+    "database": {
+      "type": "object",
+      "required": ["file", "tables", "posts", "anonymization", "check"],
+      "additionalProperties": false,
+      "properties": {
+        "file": {"const": "db.sql.gz"},
+        "tables": {
+          "description": "Table name -> rows written and the sha256 of those rows, for every table of the dump; rows is 0 where none were written or the pseudonymization dropped them all.",
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/table"}
+        },
+        "posts": {
+          "description": "\"<post_type>/<post_status>\" -> number of wp_posts rows.",
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "anonymization": {
+          "description": "What the pseudonymization changed: counts and names, never values.",
+          "type": "object"
+        },
+        "check": {"$ref": "#/$defs/check"}
+      }
+    },
+    "files": {
+      "description": "Path relative to the snapshot (POSIX separators) -> sha256 and size of every file but manifest.json.",
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/file"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "count": {"type": "integer", "minimum": 0},
+    "table": {
+      "type": "object",
+      "required": ["rows", "sha256"],
+      "additionalProperties": false,
+      "properties": {"rows": {"$ref": "#/$defs/count"}, "sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "file": {
+      "type": "object",
+      "required": ["sha256", "bytes"],
+      "additionalProperties": false,
+      "properties": {"sha256": {"$ref": "#/$defs/sha256"}, "bytes": {"$ref": "#/$defs/count"}}
+    },
+    "check": {
+      "description": "The scan of the written dump; a snapshot is only kept when it is clean.",
+      "type": "object",
+      "required": [
+        "clean",
+        "password_hashes",
+        "application_passwords",
+        "secrets",
+        "payment_ids",
+        "emails",
+        "unexpected_email_domains"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "clean": {"const": true},
+        "password_hashes": {"type": "object", "maxProperties": 0},
+        "application_passwords": {"const": 0},
+        "secrets": {"type": "object", "maxProperties": 0},
+        "payment_ids": {"const": 0},
+        "emails": {
+          "description": "Addresses by why they may stay: staff account, example.test, a company domain.",
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/count"}
+        },
+        "unexpected_email_domains": {"type": "object", "maxProperties": 0}
+      }
+    }
+  }
+}

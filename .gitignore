@@ -17,3 +17,7 @@ dist/
 .phpunit.result.cache
 artifacts/
 storybook-static/
+
+# Snapshots of the live site stay outside the repository (~/de-linker-data, docs/specs/6-live-pull.md).
+*.sql.gz
+de-linker-data/

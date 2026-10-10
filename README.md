@@ -13,7 +13,7 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 | `plugins/linker-tools` | Genie 与 Solution Configurator：PHP 壳（`Linker\Tools\` → `includes/`）和 React 应用（`src/`，入口 `genie`、`configurator`、`shared`），构建产物提交在 `build/` |
 | `services/genie` | Genie 的代理循环服务（FastAPI，`linker_genie`；与 `linker-tools` 里转发请求的 PHP 代理不是一回事） |
 | `services/engine` | Solution Configurator 的引擎（FastAPI，`linker_engine`） |
-| `tools/` | just 模块（`build.just`）、PHP 项目共用的工具配置（`php/`：PHPCS 规则；PHPStan 设置，`phpstan.neon` 全部 PHP 项目共用，`phpstan-plugins.neon` 再加插件用的 WooCommerce stubs 与测试 bootstrap；插件的 PHPUnit bootstrap）、本地栈 `local/`（uv 项目 `linker-local`，见 `docs/local-stack.md`）、数据迁移 `migrate/`（每票一个 `<票号>-<名>.py` + 计划 `.json` + WordPress 侧 `.php`，经 WP-CLI 执行；uv 项目，PHP 由 `linker-commerce` 的 PHPCS/PHPStan 检查） |
+| `tools/` | just 模块（`build.just`、`pull.just`）、PHP 项目共用的工具配置（`php/`：PHPCS 规则；PHPStan 设置，`phpstan.neon` 全部 PHP 项目共用，`phpstan-plugins.neon` 再加插件用的 WooCommerce stubs 与测试 bootstrap；插件的 PHPUnit bootstrap）、本地栈 `local/`（uv 项目 `linker-local`，见 `docs/local-stack.md`）、数据迁移 `migrate/`（每票一个 `<票号>-<名>.py` + 计划 `.json` + WordPress 侧 `.php`，经 WP-CLI 执行；uv 项目，PHP 由 `linker-commerce` 的 PHPCS/PHPStan 检查）、线上只读快照 `pull/`（uv 项目 `linker-pull`） |
 | `docs/` | 验收协议、各票规格（`docs/specs/`）与研究证据 |
 
 PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插件的 `phpcs.xml.dist`、`phpstan.neon.dist`、`tests/php/bootstrap.php` 只写本插件的文件、文本域与前缀，其余引用 `tools/php/`；`phpunit.xml.dist` 每个插件一份，因为 PHPUnit 9.6 的配置文件之间不能共享根元素属性。JS 单测是 `src/` 与 `bin/` 下的 `*.test.ts(x)`，端到端测试在 `plugins/linker-tools/tests/e2e/`。Python 服务是 uv 的 src 布局：规格里写作 `services/genie/retrieval.py` 的模块就是 `services/genie/src/linker_genie/retrieval.py`；包外的脚本（如 `services/genie/index/`）同样受 Ruff 与 mypy 检查（两者都对整个服务目录运行）；测试在各服务的 `tests/`。`tools/local` 同时是 uv 项目（`src/linker_local/`、`tests/`）与只做静态检查的 Composer 项目（实例用的 mu-plugin `mu/` 与 PHP 服务器路由 `router.php`）。
@@ -68,11 +68,12 @@ brew install php@8.3
 
 | 命令 | 内容 |
 |---|---|
-| `just check` | 三个插件与 `tools/local` 的 PHPCS 与 PHPStan；ESLint、`tsc --noEmit`、Prettier；两个服务与 `tools/local`、`tools/migrate` 的 Ruff（lint + format）与 mypy（strict），都覆盖整个项目目录；最后 `build::check` |
-| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local`、`tools/migrate` 的 pytest（tools/local 含用真实 MySQL/Redis/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过） |
+| `just check` | 三个插件与 `tools/local` 的 PHPCS 与 PHPStan；`tools/pull` 的 Ruff（lint + format）与 mypy（strict）；ESLint、`tsc --noEmit`、Prettier；两个服务与 `tools/local`、`tools/migrate` 的 Ruff（lint + format）与 mypy（strict），都覆盖整个项目目录；最后 `build::check` |
+| `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local`、`tools/migrate` 的 pytest（tools/local 含用真实 MySQL/Redis/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过）；`tools/pull` 的 pytest（装入测试在本机建真实 WordPress，CI 没有 MySQL/WP-CLI 时跳过） |
 | `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
 | `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.2.0 + Redis 对象缓存，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
+| `just pull` | 线上只读快照到 `~/de-linker-data/<YYYYMMDD-HHMM>/`；`just pull load …` 等子命令见下文“线上快照” |
 
 每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），锁文件与清单不一致就失败（`composer validate`、`npm ci`、`uv --locked`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）运行 `just check` 与 `just test`，再运行 `just build`，重建出的 `build/` 必须与提交的逐字节相同。
 
@@ -93,3 +94,29 @@ brew install php@8.3
 ### Storybook 端口
 
 `npm run storybook` 不固定端口（Storybook 10.6 每次取空闲端口）；端到端测试由 `plugins/linker-tools/playwright.config.ts` 自己启动一个实例并固定在 6006（`--exact-port`，`reuseExistingServer: false`），所以开发中的 Storybook 与 `just test` 可以同时运行、互不占用。6006 只是 `storybook init` 的默认值，用作测试实例的已知地址。
+
+### 线上快照（`just pull`）
+
+`tools/pull`（命令 `linker-pull`，规格 `docs/specs/6-live-pull.md`）经 `ssh hostinger-de-linker` 只读地把线上站点拉成快照，放在仓库外的 `~/de-linker-data/<YYYYMMDD-HHMM>/`（`$LINKER_PULL_DATA` 可改）：
+
+| 路径 | 内容 |
+|---|---|
+| `db.sql.gz` | 数据库：主机上 mysqldump，到达本机时边读边伪名化，原始导出不落盘；写完再扫一遍（无密码哈希、应用密码、密钥、按名存放的凭据、Stripe 对象号；邮箱只剩员工账号、`example.test` 与公司自有域名），不过关就删掉并失败。规则见 `docs/specs/6-live-pull.md` |
+| `uploads/` | 媒体库年份目录、WooCommerce 占位图、WindPress 编译的 CSS；`wc-logs/`、`tv-b2b-private/` 留在主机 |
+| `plugins/<slug>/` | 四个许可插件，每个本地实例都装 |
+| `themes/<slug>/` | 当前主题与父主题 |
+| `live/plugins/`、`live/mu-plugins/` | 线上其余插件（含旧自定义代码）与 must-use 插件（主机平台的除外），只在 `--live-code` 时装，用来在本地得到线上站点的副本 |
+| `site/` | `options.json`（去掉临时项与密钥的 wp_options）、`plugins.json`、`themes.json`、`sitemaps/`（线上 robots.txt 声明的 sitemap） |
+| `manifest.json` | 每个文件的 sha256 与大小、每张表的行数与 sha256；结构见 `tools/pull/manifest.schema.json` |
+
+快照先写进 `.<名字>.partial/`，完整后才改名；没变的文件硬链接到上一份快照与中断留下的 `.partial/`（`rsync --link-dest`）。同一时间只拍一份（数据目录里有锁），各工作树共用 `~/de-linker-data`。旧快照随时可以删：没变的文件是硬链接，只要还有任何一份快照引用着某个数据，删除其中一份不会丢它；保留策略就是「最近的够用就删更早的」。
+
+| 命令 | 内容 |
+|---|---|
+| `just pull load <实例> <快照\|latest> [--port N] [--live-code]` | 装入本地实例（约定见下） |
+| `just pull diff <旧> <新> [--json]` | 两份快照的增量清单：文件增删改、表与文章数的变化 |
+| `just pull scan <快照>` | 重新检查快照的 SQL |
+| `just pull anonymize <源.sql[.gz]> <目标.sql.gz>` | 伪名化一个 mysqldump 文件并做同样的检查（规则同快照），不过关就删掉结果 |
+| `just pull check-urls <快照> --base http://127.0.0.1:<端口> [--sitemap de-sitemap.xml]` | 逐个请求快照里线上 sitemap 的地址，统计状态码 |
+
+`load` 的实例是 #5 的实例：按名字在 linker-local 的登记表里解析（`just up <实例>` 建立并登记；`--port` 覆盖写进数据库的地址），数据库 `linker_<实例>`，`wp-config.php` 必须指向它。装入前先拒绝：实例的 WordPress/WooCommerce 版本与快照不一致（线上会自动更新，被新版迁移过的库没有回退路径）、`db.sql.gz` 不可读或与 manifest 的 sha256 不符、`--live-code` 时实例的插件链接到某个检出。然后清空并导入 `wp_` 表（MariaDB 的 dump 原样导入），把线上地址的三种写法（原样、JSON 转义、URL 编码）换成 `http://127.0.0.1:<端口>`，清空对象缓存，文件全部用 #5 的 `snapshot.install` 装（插件与主题目录替换同名项，uploads 合并进去；`--live-code` 连 `live/` 两棵树也由它装），保留实例原来启用的插件再加上许可插件；`--live-code` 沿用线上的启用列表。Code Snippets 始终不启用。最后对照 manifest 报告已发布商品数、附件数、缺失的附件文件与残留的线上地址，不一致即失败。装入后用户来自快照：结果里列出员工登录名，用 `just login <实例> --user <员工登录名>` 进后台。实例必须把邮件与外发请求留在本机（#5 的隔离 mu-plugin）。
