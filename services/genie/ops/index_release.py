@@ -38,6 +38,9 @@ def _sha256(path: Path) -> str:
 
 def releases(root: Path) -> list[str]:
     """Published versions, oldest first (versions are UTC timestamps)."""
+    if not root.is_dir():
+        # A root nothing was ever published to (status of a fresh host).
+        return []
     return sorted(
         entry.name
         for entry in root.iterdir()

@@ -252,15 +252,19 @@ class DocumentIndex:
         product_ids: Sequence[int] | None = None,
         doc_types: Sequence[str] | None = None,
         k: int = DEFAULT_K,
+        query_vector: bytes | None = None,
     ) -> list[DocumentHit]:
         """The k best chunks for `query`; `lang` (en|de) picks the title language.
 
         The vector ranking stands alone when a query encoder is available: fusing it
         with BM25 by reciprocal rank fusion cost the bake-off's best model 11.6 points
-        of recall@5 and 2.9 points of citation page accuracy (docs/research/
+        of recall@5 and 3.2 points of citation page accuracy (docs/research/
         2026-10-09/embedding-bakeoff.md), because pages of other models' parameter
         tables match the query's words just as well. BM25 is what remains when this
         host has no encoder for the index's model, exactly the fallback the spec names.
+        `query_vector` is `query` already encoded by the index's model (`index.eval`
+        encodes the golden set in batched requests instead of one request per
+        question).
         """
         if lang not in LANGS:
             raise ValueError(f"lang must be one of {LANGS}, not {lang!r}")
@@ -269,14 +273,15 @@ class DocumentIndex:
         scopes = (product_ids, None) if product_ids else (None,)
         for scoped_ids in scopes:
             scope = self.scope(scoped_ids, doc_types)
-            ranked = self.vector_ranking(query, scope)
+            ranked = self.vector_ranking(query, scope, query_vector)
             if not ranked:
                 ranked = self.keyword_ranking(query, scope)
             if ranked:
                 return self.hits(
-                    [(rowid, float(-position)) for position, rowid in enumerate(ranked)][
-                        :k
-                    ],
+                    [
+                        (rowid, float(-position))
+                        for position, rowid in enumerate(ranked)
+                    ][:k],
                     lang,
                 )
         return []

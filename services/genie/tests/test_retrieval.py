@@ -1,4 +1,4 @@
-"""Hybrid search over an index written by index.store (FTS5 + sqlite-vec)."""
+"""Document search over an index written by index.store (FTS5 + sqlite-vec)."""
 
 from collections.abc import Sequence
 from pathlib import Path
@@ -218,6 +218,18 @@ def test_lang_picks_the_title_language(index_path: Path) -> None:
 def test_an_unsupported_lang_is_refused(index_path: Path) -> None:
     with pytest.raises(ValueError):
         DocumentIndex(index_path, encoder=None).search("x", "fr")
+
+
+def test_a_preencoded_query_vector_ranks_like_the_encoder_would(
+    index_path: Path,
+) -> None:
+    index = DocumentIndex(index_path, encoder=AxisEncoder())
+
+    preencoded = index.search(
+        "certificate grid code", "en", k=1, query_vector=pack(AXES["certificate"])
+    )
+
+    assert [hit.chunk_id for hit in preencoded] == ["cert-1"]
 
 
 def test_chunks_resolve_cited_ids_in_the_given_order(index_path: Path) -> None:

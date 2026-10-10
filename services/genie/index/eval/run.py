@@ -1,8 +1,8 @@
 """Evaluation (`just eval`): recall@5 and citation page accuracy of the golden set.
 
 Runs every golden question against a built index: the production path first (by
-product: narrowed to the products that sell the question's model, hybrid when the
-index has vectors), then the whole library, then keywords only. Prints a Markdown table
+product: narrowed to the products that sell the question's model, vectors when the
+index has them), then the whole library, then keywords only. Prints a Markdown table
 and writes `eval.json` next to the index. Fails when the production path misses a
 threshold of the ticket (recall@5 90 %, citation page accuracy 95 %).
 """
@@ -20,6 +20,7 @@ from pathlib import Path
 from index.eval.goldset import GOLDEN_PATH, Question, load
 from index.eval.metrics import Score, score
 from index.paths import INDEX_DIR
+from linker_genie.embedding import GeminiEmbedder
 from linker_genie.retrieval import DocumentIndex
 
 # Ticket #10 acceptance: recall@5 >= 90 %, citation page accuracy >= 95 %.
@@ -91,11 +92,22 @@ def evaluate(
     questions: Sequence[Question],
     products: dict[str, list[int]] | None,
 ) -> list[Score]:
+    # An API encoder encodes the whole golden set in batched requests (a minute)
+    # instead of one request per question (an hour); local encoders stay per query.
+    vectors: dict[str, bytes] = {}
+    if isinstance(index.encoder, GeminiEmbedder):
+        texts = list(dict.fromkeys(question.question for question in questions))
+        print(f"encoding {len(texts)} queries in batches…", file=sys.stderr, flush=True)
+        vectors = dict(zip(texts, index.encoder.embed_queries(texts), strict=True))
     scores = []
     for question in questions:
         ids = products.get(question.model.casefold()) if products is not None else None
         hits = index.search(
-            question.question, question.lang, product_ids=ids, k=RECALL_AT
+            question.question,
+            question.lang,
+            product_ids=ids,
+            k=RECALL_AT,
+            query_vector=vectors.get(question.question),
         )
         scores.append(score(hits, question.evidence))
     return scores
@@ -145,7 +157,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     # (docs/specs/13-genie.md, linker/search-knowledge takes product_ids), so the search
     # narrows to those products' documents; with vectors when the index has them.
     mode, index = (
-        ("hybrid", hybrid) if hybrid.encoder is not None else ("keywords", keyword)
+        ("vectors", hybrid) if hybrid.encoder is not None else ("keywords", keyword)
     )
     settings = [
         (f"{mode}, by product", index, products),
