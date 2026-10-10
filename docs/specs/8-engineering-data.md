@@ -37,3 +37,5 @@
 
 ## 变更记录
 - 2026-10-10（#14，评审线 Spec 裁定登记）：`data/compatibility.json` 的形状在规格 3 条（pairs 之外）新增第 4 份必填键 `requirements`，pair 内新增可选 `modules`（`{min,max}` 堆叠数区间）与 `accessories`（`[{model, quantity, per}]` 放行条件所需配件）；引擎（`services/engine/tests/fixtures/compatibility.json` 与 `src/linker_engine/compatibility.py` 的 schema）已按此消费——`requirements` 按逆变器型号给出 meter/backup/parallel-controller 所需件与 `max_units`（并联台数上限，取自控制器数据手册）。#8 落地时必须产出此形状；引擎侧 schema 即契约。
+
+- 2026-10-10（#8 实施）：逐件决定与来源见 `docs/specs/8-decisions.md`；feed 与旧 materials 的字段映射表见 `docs/specs/8-field-mapping.md`。规格的 19 键中 `mppt_max_current_a`/`mppt_max_isc_a` 是注册表 `max_input_current_per_mppt_a`/`max_isc_per_mppt_a` 的改名。overlay 实际为 1 条（Trina 460 参考组件；其余无绑定材料是已发布模块的组合或无规格占位，见 8-decisions §8）。数据文件落在 `plugins/linker-commerce/data/`（compatibility.json 248 对、engineering-overlay.json），feed 路由 `linker/v1/engineering-feed` 由 linker-commerce 提供。
