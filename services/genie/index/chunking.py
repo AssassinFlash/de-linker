@@ -1,0 +1,216 @@
+"""Chunking: the blocks of one document -> chunks of at most MAX_TOKENS tokens.
+
+Rules (docs/specs/10-knowledge-index.md, Build 2):
+- A chunk never spans two pages, so its page is the page every citation of it shows.
+- A heading closes the chunk before it and names the section of the chunks after it;
+  the section carries over page breaks until the next heading.
+- A table is a chunk of its own. A table too long for one chunk is cut between rows,
+  and every piece repeats the table's column-header rows.
+- Every chunk starts with a context header `brand | models | type | title | section | p. N`,
+  built from the inventory, never generated; header and text are both what BM25 and
+  the embedding see, and the header counts towards the limit.
+"""
+
+from __future__ import annotations
+
+import hashlib
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass
+from typing import Literal, Protocol
+
+from index.extract import Block, Page
+
+# Spec (docs/specs/10-knowledge-index.md, Build 2): at most 512 tokens per chunk.
+# Evidence behind it: arXiv 2605.27444 (2026-05, RAG over technical documents) found a
+# "preference for passages up to 512 tokens" (docs/research/2026-10-09/knowledge-audit.md B2).
+MAX_TOKENS = 512
+
+
+class Tokenizer(Protocol):
+    """The embedding model's tokenizer: the limit is counted in its tokens."""
+
+    def count(self, text: str) -> int:
+        """Tokens in `text`, without the model's special tokens."""
+        ...
+
+    def split(self, text: str, max_tokens: int) -> list[str]:
+        """`text` cut into pieces of at most `max_tokens` tokens each."""
+        ...
+
+
+@dataclass(frozen=True)
+class DocumentMeta:
+    """What the inventory knows about the document a chunk comes from."""
+
+    sha256: str
+    title_en: str
+    title_de: str
+    brands: tuple[str, ...]
+    models: tuple[str, ...]
+    doc_type: str
+    lang: str
+
+
+ChunkKind = Literal["text", "table"]
+
+
+@dataclass(frozen=True)
+class Chunk:
+    """One retrievable passage."""
+
+    id: str
+    doc_sha256: str
+    page: int
+    section: str
+    kind: ChunkKind
+    header: str
+    text: str
+    lang: str
+    tokens: int
+
+
+def context_header(meta: DocumentMeta, section: str, page: int) -> str:
+    """`brand | models | type | title | section | p. N`, empty parts left out."""
+    title = meta.title_en
+    if meta.title_de and meta.title_de != meta.title_en:
+        title = f"{meta.title_en} / {meta.title_de}"
+    parts = [
+        ", ".join(meta.brands),
+        ", ".join(meta.models),
+        meta.doc_type,
+        title,
+        section,
+    ]
+    return " | ".join([part for part in parts if part] + [f"p. {page}"])
+
+
+def table_lines(block: Block) -> tuple[list[str], list[str]]:
+    """A table as `| a | b |` lines: (column-header rows, the other rows)."""
+    lines = ["| " + " | ".join(row) + " |" for row in block.rows]
+    return lines[: block.header_rows], lines[block.header_rows :]
+
+
+class _Chunker:
+    """Packs the blocks of a document into chunks, page by page."""
+
+    def __init__(
+        self,
+        meta: DocumentMeta,
+        tokenizer: Tokenizer,
+        detect_lang: Callable[[str], str],
+        max_tokens: int,
+    ) -> None:
+        self.meta = meta
+        self.tokenizer = tokenizer
+        self.detect_lang = detect_lang
+        self.max_tokens = max_tokens
+        self.chunks: list[Chunk] = []
+        self._ids: set[str] = set()
+
+    def _tokens(self, header: str, lines: Sequence[str]) -> int:
+        return self.tokenizer.count(header + "\n" + "\n".join(lines))
+
+    def _emit(
+        self, page: int, section: str, kind: ChunkKind, lines: Sequence[str]
+    ) -> None:
+        header = context_header(self.meta, section, page)
+        text = "\n".join(lines)
+        lang = (
+            self.meta.lang if self.meta.lang in ("en", "de") else self.detect_lang(text)
+        )
+        digest = hashlib.sha256(f"{kind}\0{text}".encode()).hexdigest()[:8]
+        chunk_id = base = f"{self.meta.sha256[:12]}-p{page}-{digest}"
+        suffix = 1
+        while chunk_id in self._ids:
+            suffix += 1
+            chunk_id = f"{base}-{suffix}"
+        self._ids.add(chunk_id)
+        self.chunks.append(
+            Chunk(
+                id=chunk_id,
+                doc_sha256=self.meta.sha256,
+                page=page,
+                section=section,
+                kind=kind,
+                header=header,
+                text=text,
+                lang=lang,
+                tokens=self._tokens(header, lines),
+            )
+        )
+
+    def _pieces(self, header: str, fixed: Sequence[str], line: str) -> list[str]:
+        """`line` cut so that each piece fits a chunk after the header and `fixed`."""
+        room = self.max_tokens - self._tokens(header, [*fixed, ""])
+        if room < 1:
+            raise ValueError(f"no room left after the context header: {header}")
+        pieces = self.tokenizer.split(line, room)
+        # Token counts are not additive at the seams, so check each piece as placed.
+        while any(
+            self._tokens(header, [*fixed, piece]) > self.max_tokens for piece in pieces
+        ):
+            room -= 1
+            if room < 1:
+                raise ValueError(f"cannot fit a piece of: {line[:80]}")
+            pieces = self.tokenizer.split(line, room)
+        return pieces
+
+    def _pack(
+        self,
+        page: int,
+        section: str,
+        kind: ChunkKind,
+        fixed: list[str],
+        lines: list[str],
+    ) -> None:
+        """`lines` into as few chunks as fit; every chunk starts with the `fixed` lines."""
+        header = context_header(self.meta, section, page)
+        if fixed and self._tokens(header, fixed) >= self.max_tokens:
+            # Header rows that fill a chunk on their own are not repeated: they are rows.
+            fixed, lines = [], [*fixed, *lines]
+        current: list[str] = []
+        for line in lines:
+            for piece in self._pieces(header, fixed, line):
+                if (
+                    current
+                    and self._tokens(header, [*fixed, *current, piece])
+                    > self.max_tokens
+                ):
+                    self._emit(page, section, kind, [*fixed, *current])
+                    current = []
+                current.append(piece)
+        if current or fixed:
+            self._emit(page, section, kind, [*fixed, *current])
+
+    def add_page(self, page: Page, section: str) -> str:
+        """The chunks of one page; returns the section in force at its end."""
+        texts: list[str] = []
+        for block in page.blocks:
+            if block.kind != "text" and texts:
+                self._pack(page.number, section, "text", [], texts)
+                texts = []
+            if block.kind == "heading":
+                section = block.text
+            elif block.kind == "text":
+                texts.append(block.text)
+            else:
+                header_rows, rows = table_lines(block)
+                self._pack(page.number, section, "table", header_rows, rows)
+        if texts:
+            self._pack(page.number, section, "text", [], texts)
+        return section
+
+
+def chunk_document(
+    meta: DocumentMeta,
+    pages: Sequence[Page],
+    tokenizer: Tokenizer,
+    detect_lang: Callable[[str], str],
+    max_tokens: int = MAX_TOKENS,
+) -> list[Chunk]:
+    """Every chunk of one document, in page order."""
+    chunker = _Chunker(meta, tokenizer, detect_lang, max_tokens)
+    section = ""
+    for page in pages:
+        section = chunker.add_page(page, section)
+    return chunker.chunks

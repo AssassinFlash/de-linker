@@ -23,7 +23,8 @@
 VPS 为 1 vCPU、3.9 GB、无 GPU。查询时的向量编码只能是：① 在 1 核上实时可跑的文本模型（int8 后约 300M 参数以内，如 multilingual-e5-base；BGE-M3 int8 以实测延迟 ≤1.5 s 为准），或 ② API（aihubmix 的 gemini-embedding-2 等，由 bake-off 决定）。自托管重排器在 1 核上不可行：重排只用 API 或不做。内存预算：引擎 + Genie 服务 + 索引 + 模型合计 ≤ 3 GB，索引以 SQLite 文件按需读取。多模态页面向量：图像侧只在 Mac 离线构建；查询侧要么走 API，要么文本塔满足 ① 的约束。
 
 ## 检索（`services/genie/retrieval.py`）
-`search_documents(query, lang, product_ids=None, doc_types=None, k=8)`：先按 product_ids 对应的型号标签圈定文档（无则全库）；FTS5 与向量各取 top-30，RRF 融合；可选重排（bge-reranker，CPU）；返回 `[{chunk_id, doc_url, page, section, text, score}]`。向量不可用时退回纯 FTS。
+`search_documents(query, lang, product_ids=None, doc_types=None, k=8)`：先按 product_ids 对应的型号标签圈定文档（无则全库，圈定无果亦回全库）；FTS5 与向量各取 top-30，RRF 融合；可选重排（bge-reranker，CPU）；返回 `[{chunk_id, doc_url, page, section, text, score}]`。向量不可用时退回纯 FTS。
+> 2026-10-10 bake-off 实测修订（`embedding-bakeoff.md` §2）：本语料上等权 RRF 融合比向量单路低 11.6pp 召回@5、加权 2:1/3:1 更差，出厂检索改为**向量独立成序**，BM25 降为本机没有该索引模型查询编码器时的回退；按商品圈定、圈定空回全库的行为不变。
 
 ## 引用与核验（供 #13）
 模型只能引用 `chunk_id`；服务端渲染为"文档标题 · 第 N 页"并链接 `url#page=N`；答案里的数字必须出现在被引块文本中（确定性检查）。

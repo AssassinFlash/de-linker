@@ -6,21 +6,43 @@ description = "Genie - Linker's AI assistant: the agent service behind the site'
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.143.0",
+    # sqlite-vec is pre-v1 and its README says to expect breaking changes: pinned exactly.
+    "sqlite-vec==0.1.9",
     "uvicorn>=0.54.0",
 ]
 
 [dependency-groups]
 dev = [
+    # The page-extraction tests load real Docling output; the tokenizer tests build a
+    # small tokenizer. Both libraries are light; Docling itself is in `index`.
+    "docling-core>=2.101.1",
     "httpx2>=2.13.1",
     "mypy>=2.4.0",
     "pytest>=9.1.1",
     "ruff>=0.16.10",
+    "tokenizers>=0.23.3",
+]
+# The offline index build on the Mac (`just index`, `just eval`); the VPS never
+# installs it (docs/specs/10-knowledge-index.md: no parsing or models on the VPS).
+index = [
+    "docling>=2.136.0",
+    # Docling's automatic OCR picks Apple Vision through ocrmac on macOS, where the
+    # build runs; without it Docling finds no OCR engine at all.
+    "ocrmac>=1.0.1; sys_platform == 'darwin'",
+    "onnxruntime>=1.24.1",
+    "py3langid>=0.4.0",
+    "sentence-transformers>=6.1.0",
 ]
 
 [build-system]
 # Range written by `uv init --package` with uv 0.10.11.
 requires = ["uv_build>=0.10.11,<0.11.0"]
 build-backend = "uv_build"
+
+[tool.ruff]
+# First-party code: the package (src/), the index build (index/) and its release
+# scripts (ops/), which run as top-level modules.
+src = ["src", ".", "ops"]
 
 [tool.ruff.lint]
 # Ruff's defaults (E4, E7, E9, F) plus import sorting, bugbear and pyupgrade.
@@ -29,7 +51,21 @@ select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
 [tool.mypy]
 strict = true
 
+# The `index` group (Docling, PDFium, sentence-transformers and its torch, py3langid,
+# ocrmac) is installed on the build Mac only; CI checks the code that imports it
+# without its stubs.
+[[tool.mypy.overrides]]
+module = ["docling.*", "pypdfium2.*", "sentence_transformers.*", "torch", "torch.*", "py3langid.*", "ocrmac.*"]
+ignore_missing_imports = true
+
+# sqlite-vec and ONNX Runtime ship no type information (no py.typed).
+[[tool.mypy.overrides]]
+module = ["sqlite_vec", "onnxruntime", "onnxruntime.*"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# The index build (`index/`) and its release scripts (`ops/`) live beside the package.
+pythonpath = [".", "ops"]
 # A deprecation is fixed when it appears, not when the API is removed.
 filterwarnings = ["error"]
