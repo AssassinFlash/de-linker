@@ -1,0 +1,51 @@
+{
+  "id": 3584,
+  "slug": "goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one",
+  "sku": "DLK-GOODWE-GW12KETAG20",
+  "title": "GoodWe ESA GW12K-ETA-G20 (12 kW three-phase power module)",
+  "model": "GW12K-ETA-G20",
+  "items": [
+    {
+      "question": "Does mixing BAT-D capacities change heating or firmware requirements on this 12 kW ESA?",
+      "answer": "Mixing battery modules of different models is supported. The battery heating film is optional, and only models equipped with the heating film can enable the \"Battery Heating\" function. The battery heating function is unavailable when GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 are mixed. Do not use batteries without the heating film in low-temperature environments.",
+      "question_de": "Ändert das Mischen von BAT-D-Kapazitäten Heizung oder Firmware-Anforderungen beim 12-kW-ESA?",
+      "answer_de": "Das Mischen von Batteriemodulen verschiedener Modelle ist möglich. Die Batterieheizfolie ist optional, und nur Modelle mit Heizfolie können die Funktion \"Batterieheizung\" aktivieren. Bei gemischter Verwendung von GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 ist die Batterieheizfunktion nicht verfügbar. Batterien ohne Heizfolie dürfen nicht bei niedrigen Temperaturen verwendet werden.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 45,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "What backup load can the GW12K-ETA-G20 design support?",
+      "answer": "For the BACK-UP port, the rated power of a single inductive load is 1.1 kVA single-phase and 3.3 kVA three-phase. The total rated power of multiple inductive loads is 0.4*Pn/3 single-phase and 0.4*Pn three-phase. Capacitive load is 0.33*Pn/3 single-phase and 0.33*Pn three-phase. Half-wave load is 2 kW single-phase.",
+      "question_de": "Welche Notstromlast trägt die Auslegung mit GW12K-ETA-G20?",
+      "answer_de": "Für den BACK-UP-Anschluss beträgt die Nennleistung einer einzelnen induktiven Last 1,1 kVA einphasig und 3,3 kVA dreiphasig. Die gesamte Nennleistung mehrerer induktiver Lasten beträgt 0,4*Pn/3 einphasig und 0,4*Pn dreiphasig. Die kapazitive Last beträgt 0,33*Pn/3 einphasig und 0,33*Pn dreiphasig. Die Halbwellenlast beträgt 2 kW einphasig.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 29,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Does the stacked battery need a separate DC cable run?",
+      "answer": "",
+      "question_de": "Braucht die gestapelte Batterie eine separate DC-Leitung?",
+      "answer_de": "",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 101,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "The retrieved passages describe battery expansion harnesses and blind-mate connectors for stacking, but none states whether a separate DC cable run is required for the stacked battery."
+    }
+  ]
+}

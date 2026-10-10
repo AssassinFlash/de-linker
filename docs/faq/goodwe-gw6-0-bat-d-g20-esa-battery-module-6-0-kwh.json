@@ -1,0 +1,23 @@
+{
+  "id": 3611,
+  "slug": "goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh",
+  "sku": "DLK-GOODWE-GW60BATDG20",
+  "title": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+  "model": "GW6.0-BAT-D-G20",
+  "items": [
+    {
+      "question": "Is heating integrated in the GW6.0 ESA module?",
+      "answer": "Yes. The datasheet lists the GW6.0-BAT-D-G20 with Heating (Integrated) and Aerosol fire extinguishing (Integrated).",
+      "question_de": "Ist die Heizung im GW6.0-ESA-Modul integriert?",
+      "answer_de": "Ja. Im Datenblatt ist das GW6.0-BAT-D-G20 mit Heating (Integrated) und Aerosol fire extinguishing (Integrated) aufgeführt.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "page": 3,
+        "title": "GoodWe ESA Series 5–30 kW datasheet (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

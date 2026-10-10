@@ -1,0 +1,51 @@
+{
+  "id": 2070,
+  "slug": "saj-b2-25-0-hv1",
+  "sku": "DLK-SAJ-B2250HV1",
+  "title": "SAJ B2-25.0-HV1",
+  "model": "B2-25.0-HV1",
+  "items": [
+    {
+      "question": "Which inverter does the B2-25.0-HV1 work with?",
+      "answer": "The B2-25.0-HV1 can only be used as a set with SAJ's H2 high voltage series storage inverter.",
+      "question_de": "Mit welchem Wechselrichter arbeitet der B2-25.0-HV1?",
+      "answer_de": "Der B2-25.0-HV1 kann nur als Set mit dem H2-Hochvolt-Speicherwechselrichter von SAJ verwendet werden.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "page": 5,
+        "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How tall and how heavy is the assembled B2-25.0-HV1?",
+      "answer": "The assembled B2-25.0-HV1 (Battery Control Unit + Battery Unit) is 1505*626*365 mm (H*W*D) and weighs 263.5 kg.",
+      "question_de": "Wie hoch und wie schwer ist der montierte B2-25.0-HV1?",
+      "answer_de": "Der montierte B2-25.0-HV1 (Batterie-Steuereinheit + Batterieeinheit) ist 1505*626*365 mm (H*B*T) groß und wiegt 263,5 kg.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "page": 10,
+        "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Where and how is the stack installed?",
+      "answer": "The stack is installed either on the ground or on a wall. Mount it vertically; never install it tilted forwards, sideways, horizontally or upside down. For wall mounting, use a solid wall; cavity walls and timber walls are not allowed.",
+      "question_de": "Wo und wie wird der Stapel montiert?",
+      "answer_de": "Der Stapel wird entweder auf dem Boden oder an der Wand montiert. Montieren Sie ihn vertikal; installieren Sie ihn niemals nach vorne, seitlich, horizontal oder kopfüber geneigt. Für die Wandmontage verwenden Sie eine massive Wand; Hohlwände und Holzwände sind nicht zulässig.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "page": 13,
+        "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

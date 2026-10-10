@@ -1,0 +1,51 @@
+{
+  "id": 6515,
+  "slug": "goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module",
+  "sku": "DLK-GOODWE-GW20KETAG20",
+  "title": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+  "model": "GW20K-ETA-G20",
+  "items": [
+    {
+      "question": "What backup rating does GW20K-ETA-G20 have?",
+      "answer": "The GW20K-ETA-G20 has a rated apparent power of 20 kVA on the AC side (Back-up Port).",
+      "question_de": "Welche Notstromwerte hat der GW20K-ETA-G20?",
+      "answer_de": "Der GW20K-ETA-G20 hat eine Nennscheinleistung von 20 kVA auf der AC-Seite (Back-up Port).",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "page": 2,
+        "title": "GoodWe ESA Series 5–30 kW datasheet (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many MPPTs does GW20K-ETA-G20 have?",
+      "answer": "The GW20K-ETA-G20 has 4 MPPTs.",
+      "question_de": "Wie viele MPPTs hat der GW20K-ETA-G20?",
+      "answer_de": "Der GW20K-ETA-G20 hat 4 MPPTs.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 297,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Which battery modules stack with this power module?",
+      "answer": "The battery modules that can be used are GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20, and GW9.0-BAT-D-G20. Battery modules of different models can be mixed.",
+      "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?",
+      "answer_de": "Die verwendbaren Batteriemodule sind GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20. Batteriemodule unterschiedlicher Modelle können gemischt werden.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 45,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

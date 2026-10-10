@@ -1,0 +1,51 @@
+{
+  "id": 6487,
+  "slug": "ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid",
+  "sku": "DLK-ECOFLOW-EFHDP15K75S2",
+  "title": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+  "model": "EF HD-P1-5K75-S2",
+  "items": [
+    {
+      "question": "Which circuits receive power through the HD-P1-5K75-S2 BACKUP connection?",
+      "answer": "The BACKUP output supplies the backup loads. In the three-inverter cascade diagram the BACKUP terminals of each EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 feed the backup loads, while non-controllable loads are shown separately.",
+      "question_de": "Welche Stromkreise hängen beim HD-P1-5K75-S2 am BACKUP-Anschluss?",
+      "answer_de": "Der BACKUP-Ausgang versorgt die Backup-Lasten. Im Kaskadenschaltplan für drei Wechselrichter speisen die BACKUP-Klemmen jedes EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 die Backup-Lasten; nicht steuerbare Lasten sind getrennt dargestellt.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-installation-guide-de-v1-7.pdf",
+        "page": 15,
+        "title": "OCEAN 2 Single-Phase Installation Guide V1.7 (DE)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many of these inverters can be cascaded?",
+      "answer": "A maximum of three EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 can be cascaded. In the OCEAN 2 cascade both the primary and the secondary inverter are EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2.",
+      "question_de": "Wie viele dieser Wechselrichter können kaskadiert werden?",
+      "answer_de": "Es können maximal drei EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 kaskadiert werden. Bei der OCEAN 2 Kaskadierung sind sowohl der primäre als auch der sekundäre Wechselrichter EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-installation-guide-de-v1-7.pdf",
+        "page": 13,
+        "title": "OCEAN 2 Single-Phase Installation Guide V1.7 (DE)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Is the IOT dongle required?",
+      "answer": "The installation guide lists the EcoFlow IOT Dongle ESS with the note \"Muss konfiguriert werden\" (must be configured).",
+      "question_de": "Ist der IOT-Dongle Pflicht?",
+      "answer_de": "Der Installationsleitfaden führt den EcoFlow IOT-Dongle ESS mit dem Hinweis \"Muss konfiguriert werden\" auf.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-installation-guide-de-v1-7.pdf",
+        "page": 29,
+        "title": "OCEAN 2 Single-Phase Installation Guide V1.7 (DE)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

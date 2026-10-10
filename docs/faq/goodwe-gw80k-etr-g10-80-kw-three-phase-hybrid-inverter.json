@@ -1,0 +1,51 @@
+{
+  "id": 6507,
+  "slug": "goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter",
+  "sku": "DLK-GOODWE-GW80KETRG10",
+  "title": "GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)",
+  "model": "GW80K-ETR-G10",
+  "items": [
+    {
+      "question": "Which BAT-C cabinet is listed for GW80K-ETR-G10?",
+      "answer": "The datasheet lists the GoodWe BAT-C 261kWh battery system as compatible with the ETR series, which includes the GW80K-ETR-G10.",
+      "question_de": "Welcher BAT-C-Schrank ist für GW80K-ETR-G10 gelistet?",
+      "answer_de": "Das Datenblatt listet das GoodWe BAT-C 261kWh-Batteriesystem als kompatibel mit der ETR-Serie, zu der auch der GW80K-ETR-G10 gehört.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+        "page": 1,
+        "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Is an external STS needed for the ETR backup path?",
+      "answer": "Yes, the inverter can only use the BACK-UP function when paired with an STS.",
+      "question_de": "Ist für den ETR-Notstrompfad ein externer STS nötig?",
+      "answer_de": "Ja, der Wechselrichter kann die BACK-UP-Funktion nur in Verbindung mit einem STS nutzen.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+        "page": 57,
+        "title": "GoodWe ETR 50–125 kW User Manual (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Can PV strings operate in the 1000–1100 V band?",
+      "answer": "No, for the GW80K-ETR-G10, when the input voltage ranges from 1000V to 1100V, the inverter will enter standby mode, and the voltage returns to 1000V to enter the normal operation state.",
+      "question_de": "Können PV-Strings im Bereich von 1000 bis 1100 V betrieben werden?",
+      "answer_de": "Nein, für den GW80K-ETR-G10 wechselt der Wechselrichter in den Standby-Modus, wenn die Eingangsspannung zwischen 1000V und 1100V liegt; bei Rückkehr auf 1000 V wird der Normalbetrieb wieder aufgenommen.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+        "page": 3,
+        "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

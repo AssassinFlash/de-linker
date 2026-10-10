@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce;
 
 use Linker\Commerce\Abilities\Registrar;
+use Linker\Commerce\Admin\FaqsMetaBox;
 use Linker\Commerce\Admin\FiguresMetaBox;
 use Linker\Commerce\Catalog\EngineeringFeedController;
 use Linker\Commerce\Catalog\SelectionFactsController;
@@ -30,13 +31,15 @@ final class Plugin {
 	 * @param SelectionFactsController  $selection_facts REST route of the selection facts.
 	 * @param EngineeringFeedController $engineering     REST route of the engineering feed (#8).
 	 * @param FiguresMetaBox            $figures         The figure-citation meta box of the product edit screen (#8).
+	 * @param FaqsMetaBox               $faqs            The FAQ meta box of the product edit screen (#15).
 	 */
 	public function __construct(
 		private readonly string $file,
 		private readonly Registrar $abilities,
 		private readonly SelectionFactsController $selection_facts,
 		private readonly EngineeringFeedController $engineering,
-		private readonly FiguresMetaBox $figures
+		private readonly FiguresMetaBox $figures,
+		private readonly FaqsMetaBox $faqs
 	) {}
 
 	/**
@@ -54,6 +57,9 @@ final class Plugin {
 		add_action( 'add_meta_boxes', array( $this->figures, 'register' ) );
 		add_action( 'save_post_product', array( $this->figures, 'save' ) );
 		add_action( 'admin_notices', array( $this->figures, 'notice_refused' ) );
+		add_action( 'add_meta_boxes', array( $this->faqs, 'register' ) );
+		add_action( 'save_post_product', array( $this->faqs, 'save' ) );
+		add_action( 'admin_notices', array( $this->faqs, 'notice_refused' ) );
 		add_action( 'cli_init', array( $this, 'register_cli' ) );
 
 		$filters = new CatalogFilters();

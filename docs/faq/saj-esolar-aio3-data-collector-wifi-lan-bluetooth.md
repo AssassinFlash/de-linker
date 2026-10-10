@@ -1,0 +1,51 @@
+# SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)
+
+- id: 3573
+- slug: `saj-esolar-aio3-data-collector-wifi-lan-bluetooth`
+- sku: `DLK-SAJ-ESOLAR-AIO3`
+- model: eSolar AIO3
+
+## 1. Which SAJ inverters take the eSolar AIO3?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which SAJ inverters take the eSolar AIO3?
+
+The eSolar AIO3 connects to one inverter via the RS232 (USB joints) communication port. The datasheet lists the inverter communication port as RS232 (USB joints) and the number of connecting inverters as 1. The quick installation guide shows the module inserted into the inverter USB interface. The guide example shows a device type H1-3.6K-S2, but the datasheet does not list specific inverter models.
+
+**DE Q:** An welche SAJ-Wechselrichter passt der eSolar AIO3?
+
+Der eSolar AIO3 wird über den Kommunikationsanschluss RS232 (USB-Anschlüsse) mit einem Wechselrichter verbunden. Im Datenblatt sind der Wechselrichter-Kommunikationsanschluss als RS232 (USB-Anschlüsse) und die Anzahl der anschließbaren Wechselrichter mit 1 angegeben. Die Kurzinstallationsanleitung zeigt das Modul im USB-Anschluss des Wechselrichters. In der Anleitung ist beispielhaft der Gerätetyp H1-3.6K-S2 aufgeführt; konkrete Wechselrichtermodelle nennt das Datenblatt nicht.
+
+**Citation:** SAJ eSolar AIO3 datasheet (English) · p.1 · https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf
+
+## 2. What do the LEDs on the module show?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** What do the LEDs on the module show?
+
+The module has a green LED and a blue LED. Green blinking means sending data to router, green solid means the module is connected to router, green off means the module is not connected to router. Blue slow blink means Wi-Fi is working, blue fast blink means Bluetooth is connected. Slow blink is 1s on, 1s off; fast blink is 200ms on, 200ms off. The RJ45 connector has its own LED indicators: green (Ethernet) slow blink means Ethernet is working, fast blink means firmware is upgrading, solid means the module is not connected to server, off means no power supply or program fault.
+
+**DE Q:** Was zeigen die LEDs am Modul?
+
+Das Modul hat eine grüne und eine blaue LED. Grünes Blinken bedeutet, dass Daten an den Router gesendet werden; grün dauerhaft bedeutet, dass das Modul mit dem Router verbunden ist; grün aus bedeutet, dass das Modul nicht mit dem Router verbunden ist. Blaues langsames Blinken bedeutet, dass WLAN arbeitet; blaues schnelles Blinken bedeutet, dass Bluetooth verbunden ist. Langsames Blinken ist 1 s an, 1 s aus; schnelles Blinken ist 200 ms an, 200 ms aus. Der RJ45-Anschluss hat eigene LED-Anzeigen: grün (Ethernet) langsames Blinken bedeutet, dass Ethernet arbeitet; schnelles Blinken bedeutet, dass die Firmware aktualisiert wird; dauerhaft bedeutet, dass das Modul nicht mit dem Server verbunden ist; aus bedeutet keine Stromversorgung oder Programmfehler.
+
+**Citation:** SAJ eSolar AIO3 quick installation guide (English) · p.1 · https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_quick-install-guide_en.pdf
+
+## 3. How is the module installed and connected to the network?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** How is the module installed and connected to the network?
+
+Turn the module hexagon nut to a horizontal position. Insert the module into the inverter USB interface and fasten the hexagon nut in clockwise direction. Connect the RJ45 connector to the router. After installation of the module, power on the inverter. Wait for 2 minutes; if the module signal light is blinking slowly, the module is working normally. For network access, turn on mobile phone Bluetooth connection. Sign in to the eSolar O&M APP, select "My", select "Remote Configuration", select "Bluetooth", "Next", search devices and select the Bluetooth device (such as BlueLink:00012). Then choose Wi-Fi or Ethernet to access the internet. If choosing Ethernet, make sure the cable is connected to the router.
+
+**DE Q:** Wie wird das Modul montiert und mit dem Netzwerk verbunden?
+
+Drehen Sie die Sechskantmutter des Moduls in eine horizontale Position. Stecken Sie das Modul in den USB-Anschluss des Wechselrichters und ziehen Sie die Sechskantmutter im Uhrzeigersinn fest. Verbinden Sie den RJ45-Stecker mit dem Router. Schalten Sie nach der Installation des Moduls den Wechselrichter ein. Warten Sie 2 Minuten; wenn die Signalleuchte des Moduls langsam blinkt, arbeitet das Modul normal. Für den Netzwerkzugang schalten Sie die Bluetooth-Verbindung des Mobiltelefons ein. Melden Sie sich in der eSolar O&M APP an, wählen Sie "My", wählen Sie "Remote Configuration", wählen Sie "Bluetooth", "Next", suchen Sie Geräte und wählen Sie das Bluetooth-Gerät (z. B. BlueLink:00012). Wählen Sie dann WLAN oder Ethernet für den Internetzugang. Bei Ethernet muss das Kabel mit dem Router verbunden sein.
+
+**Citation:** SAJ eSolar AIO3 quick installation guide (English) · p.1 · https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_quick-install-guide_en.pdf

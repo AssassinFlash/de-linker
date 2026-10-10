@@ -1,0 +1,21 @@
+# EcoFlow OCEAN 2 Plus HD-P1-12K0-S2 (12 kW single-phase hybrid)
+
+- id: 3580
+- slug: `ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship`
+- sku: `DLK-ECOFLOW-EFHDP112K0S2`
+- model: EF HD-P1-12K0-S2
+
+## 1. Which cable cross-sections does the 12K0-S2 connection drawing show?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which cable cross-sections does the 12K0-S2 connection drawing show?
+
+The connection drawing legend lists a 10 mm² ground cable, a shielded twisted pair cable of 2×0.5 mm², a backup load power cable of 16 mm², a battery power cable of 6–10 mm² with a rated voltage of at least 1000 V DC, and a PV input cable of 4–6 mm² with a rated voltage of at least 1000 V DC. The grid power cable is 16 mm². For the grid and backup load cables, select the conductor size based on the grid service current, local electrical code, and inverter specifications.
+
+**DE Q:** Welche Leiterquerschnitte zeigt der Anschlussplan für den 12K0-S2?
+
+Die Legende des Anschlussplans nennt ein Erdungskabel mit 10 mm², ein geschirmtes Twisted-Pair-Kabel mit 2×0,5 mm², ein Backup-Last-Stromkabel mit 16 mm², ein Batteriestromkabel mit 6–10 mm² und einer Nennspannung von mindestens 1000 V DC sowie ein PV-Eingangskabel mit 4–6 mm² und einer Nennspannung von mindestens 1000 V DC. Das Netzstromkabel beträgt 16 mm². Für Netz- und Backup-Lastkabel wählen Sie den Leiterquerschnitt anhand des Netzanschlussstroms, der örtlichen Elektrovorschriften und der Wechselrichter-Spezifikationen.
+
+**Citation:** OCEAN 2 Plus Single-Phase Installation Guide (EN) · p.17 · https://de-linker.com/wp-content/uploads/2026/05/EcoFlow-OCEAN-2-Plus-Single-Phase_Installation-Guide.pdf

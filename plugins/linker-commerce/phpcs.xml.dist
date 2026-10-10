@@ -10,6 +10,8 @@
 	<file>../../tools/php/bootstrap.php</file>
 	<!-- The data migrations of the products this plugin reads. -->
 	<file>../../tools/migrate</file>
+	<!-- The FAQ field import of ticket #15. -->
+	<file>../../tools/faq/wordpress.php</file>
 
 	<rule ref="../../tools/php/phpcs.xml"/>
 

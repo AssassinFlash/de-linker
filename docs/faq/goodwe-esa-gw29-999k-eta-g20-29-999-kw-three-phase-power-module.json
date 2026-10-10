@@ -1,0 +1,51 @@
+{
+  "id": 6517,
+  "slug": "goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module",
+  "sku": "DLK-GOODWE-GW29999KETAG20",
+  "title": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+  "model": "GW29.999K-ETA-G20",
+  "items": [
+    {
+      "question": "What backup rating does GW29.999K-ETA-G20 have?",
+      "answer": "The AC Side (Back-up Port) of the GW29.999K-ETA-G20 has a rated apparent power of 30 kVA. The maximum apparent power is 33 kVA off-grid (45.0 kVA for 10 s) and 55.2 kVA on-grid.",
+      "question_de": "Welche Notstromwerte hat der GW29.999K-ETA-G20?",
+      "answer_de": "Die AC-Seite (Back-up-Port) des GW29.999K-ETA-G20 hat eine Nennscheinleistung von 30 kVA. Die maximale Scheinleistung beträgt 33 kVA im Off-Grid-Betrieb (45,0 kVA für 10 s) und 55,2 kVA im On-Grid-Betrieb.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 306,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many MPPTs does GW29.999K-ETA-G20 have?",
+      "answer": "The GW29.999K-ETA-G20 has 4 MPPTs. The number of strings per MPPT is 1/1/2/2.",
+      "question_de": "Wie viele MPPTs hat der GW29.999K-ETA-G20?",
+      "answer_de": "Der GW29.999K-ETA-G20 hat 4 MPPTs. Die Anzahl der Stränge pro MPPT beträgt 1/1/2/2.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 305,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Which battery modules stack with this power module?",
+      "answer": "The manual lists these battery modules for the ESA system: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. For stacking on a mounting bracket, the limits are: GW5.1-BAT-D-G20 and GW5.1-BAT-D-G21 up to 3 batteries; GW8.3-BAT-D-G20 and GW8.3-BAT-D-G21 up to 2 batteries; GW6.0-BAT-D-G20 up to 3 batteries; GW9.0-BAT-D-G20 up to 2 batteries. When GW5.1-BAT-D-G20, GW5.1-BAT-D-G21 and GW6.0-BAT-D-G20 are mixed and stacked, each system group supports up to 3 batteries. For floor installation, up to 4 batteries can be stacked away from the wall and up to 6 batteries against the wall.",
+      "question_de": "Welche Batteriemodule lassen sich mit diesem Leistungsmodul stapeln?",
+      "answer_de": "Das Handbuch nennt für das ESA-System diese Batteriemodule: GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20. Für die Stapelung mit Halterung gelten diese Grenzen: GW5.1-BAT-D-G20 und GW5.1-BAT-D-G21 maximal 3 Batterien; GW8.3-BAT-D-G20 und GW8.3-BAT-D-G21 maximal 2 Batterien; GW6.0-BAT-D-G20 maximal 3 Batterien; GW9.0-BAT-D-G20 maximal 2 Batterien. Bei gemischter Stapelung von GW5.1-BAT-D-G20, GW5.1-BAT-D-G21 und GW6.0-BAT-D-G20 unterstützt jede Systemgruppe maximal 3 Batterien. Bei der Bodenmontage lassen sich maximal 4 Batterien von der Wand entfernt und maximal 6 Batterien an der Wand stapeln.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 98,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

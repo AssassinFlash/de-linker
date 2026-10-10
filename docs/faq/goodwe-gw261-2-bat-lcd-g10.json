@@ -1,0 +1,37 @@
+{
+  "id": 1958,
+  "slug": "goodwe-gw261-2-bat-lcd-g10",
+  "sku": "DLK-GOODWE-GW2612BATLCDG10",
+  "title": "GoodWe GW261.2-BAT-LCD-G10",
+  "model": "GW261.2-BAT-LCD-G10",
+  "items": [
+    {
+      "question": "What must the site accommodate for the 261.2 kWh cabinet?",
+      "answer": "The GW261.2-BAT-LCD-G10 cabinet measures 1050 × 2025 × 1565 mm (W × H × D) and weighs up to 2440 kg. The site must also provide the clearances shown in the manual: at least 2.5 m front and rear spacing when using a forklift, and the installation space must meet ventilation, heat dissipation and operational space requirements.",
+      "question_de": "Welche Maße und Masse muss der Standort für den 261,2-kWh-Schrank aufnehmen?",
+      "answer_de": "Der Schrank GW261.2-BAT-LCD-G10 misst 1050 × 2025 × 1565 mm (B × H × T) und wiegt bis zu 2440 kg. Der Standort muss außerdem die im Handbuch angegebenen Abstände bieten: mindestens 2,5 m Abstand vorne und hinten bei Verwendung eines Gabelstaplers, und der Installationsraum muss die Anforderungen an Belüftung, Wärmeabgabe und Betriebsraum erfüllen.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+        "page": 77,
+        "title": "GoodWe BAT-C 208–261 kWh User Manual (EN)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage — the cited page does not contain: 2.5, 2,5"
+    },
+    {
+      "question": "What does the ETR pairing require?",
+      "answer": "When the ETR125 boost converter is paired with a battery system, the PV side voltage must be higher than 650 V; otherwise, it will trigger voltage difference current limiting.",
+      "question_de": "Was setzt die Kombination mit dem ETR voraus?",
+      "answer_de": "Wird der ETR125-Boost-Konverter mit einem Batteriesystem kombiniert, muss die Spannung auf der PV-Seite über 650 V liegen; andernfalls wird eine Differenzstrombegrenzung ausgelöst.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+        "page": 55,
+        "title": "GoodWe BAT-C 208–261 kWh User Manual (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": 3609,
+  "slug": "ecoflow-battery-stack-bridge",
+  "sku": "DLK-ECOFLOW-STACK-BRIDGE",
+  "title": "EcoFlow Battery Stack Bridge",
+  "model": "EcoFlow Battery Stack Bridge",
+  "items": [
+    {
+      "question": "Can one bridge join different battery models?",
+      "answer": "No. Both battery units interconnected by this bracket must be of identical model specifications. The bracket is designed for the EcoFlow PowerOcean LFP Battery (EF BD-5.1-S1), the EcoFlow OCEAN 2 LFP Battery 5kWh (EF BD-5-S2) and the EcoFlow OCEAN 2 LFP Battery 8kWh (EF BD-8-S2).",
+      "question_de": "Darf eine Brücke zwei unterschiedliche Batteriemodelle verbinden?",
+      "answer_de": "Nein. Beide Batterieeinheiten, die mit dieser Halterung verbunden werden, müssen identische Modellspezifikationen aufweisen. Die Halterung ist für die EcoFlow PowerOcean LFP Battery (EF BD-5.1-S1), die EcoFlow OCEAN 2 LFP Battery 5kWh (EF BD-5-S2) und die EcoFlow OCEAN 2 LFP Battery 8kWh (EF BD-8-S2) ausgelegt.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf",
+        "page": 3,
+        "title": "Battery Stack Bridge Installation Guide (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many bridge kits should I order for two towers?",
+      "answer": "Secure both sides of each battery unit with this bracket for both towers. If each tower consists of 6 battery units, a total of 12 brackets are required.",
+      "question_de": "Wie viele Brücken-Sets brauche ich für zwei Türme?",
+      "answer_de": "Sichern Sie beide Seiten jeder Batterieeinheit mit dieser Halterung für beide Türme. Wenn jeder Turm aus 6 Batterieeinheiten besteht, sind insgesamt 12 Halterungen erforderlich.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf",
+        "page": 4,
+        "title": "Battery Stack Bridge Installation Guide (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "What gap must I leave between the two tower bases?",
+      "answer": "For dual-tower battery systems using the EcoFlow PowerOcean LFP Battery Base, keep the installation spacing between two bases within 95.4-105.4 mm. For dual-tower battery systems using the EcoFlow OCEAN 2 LFP Battery Base, keep the installation spacing between two bases within 94.6-104.5 mm.",
+      "question_de": "Welcher Abstand ist zwischen den beiden Turmsockeln einzuplanen?",
+      "answer_de": "Bei Doppelturm-Batteriesystemen mit der EcoFlow PowerOcean LFP Battery Base ist der Installationsabstand zwischen zwei Sockeln innerhalb von 95,4-105,4 mm einzuhalten. Bei Doppelturm-Batteriesystemen mit der EcoFlow OCEAN 2 LFP Battery Base ist der Installationsabstand zwischen zwei Sockeln innerhalb von 94,6-104,5 mm einzuhalten.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf",
+        "page": 4,
+        "title": "Battery Stack Bridge Installation Guide (EN)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage — the cited page does not contain: 94.6, 104.5, 94,6, 104,5"
+    }
+  ]
+}

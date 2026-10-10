@@ -1,0 +1,37 @@
+{
+  "id": 3555,
+  "slug": "ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship",
+  "sku": "DLK-ECOFLOW-EFHDP310K0S2",
+  "title": "EcoFlow OCEAN 2 HD-P3-10K0-S2 (10 kW three-phase hybrid)",
+  "model": "EF HD-P3-10K0-S2",
+  "items": [
+    {
+      "question": "How many battery modules can the 10K0-S2 system take?",
+      "answer": "The 10K0-S2 supports up to 12 battery modules, with up to 6 battery modules per tower.",
+      "question_de": "Wie viele Batteriemodule sind beim 10K0-S2 vorgesehen?",
+      "answer_de": "Der 10K0-S2 unterstützt bis zu 12 Batteriemodule, mit bis zu 6 Batteriemodulen pro Turm.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-user-manual-v1-1.pdf",
+        "page": 32,
+        "title": "OCEAN 2 three-phase user manual V1.1 (EN, DE, FR, IT, ES, NL, SV)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How do I specify a two-tower battery layout for a quote?",
+      "answer": "The technical parameters of the EF HD-P3-10K0-S2 state a battery capacity of up to 12 battery modules, with up to 6 battery modules per tower. A two-tower layout therefore carries up to 6 modules per tower.",
+      "question_de": "Wie beschreibe ich zwei Batterietürme für ein Angebot?",
+      "answer_de": "Die technischen Parameter des EF HD-P3-10K0-S2 nennen eine Batteriekapazität von bis zu 12 Batteriemodulen, mit bis zu 6 Batteriemodulen pro Turm. Ein Aufbau mit zwei Türmen trägt demnach bis zu 6 Module pro Turm.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-user-manual-v1-1.pdf",
+        "page": 32,
+        "title": "EcoFlow OCEAN 2 three-phase user manual V1.1"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

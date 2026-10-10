@@ -1,0 +1,51 @@
+# SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)
+
+- id: 4106
+- slug: `saj-cb2-100-3-hv5`
+- sku: `DLK-SAJ-CB21003HV5`
+- model: CB2-100.3-HV5
+
+## 1. Which inverters work with the CB2-100.3-HV5?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which inverters work with the CB2-100.3-HV5?
+
+The CB2 battery system can only be used as a set with SAJ's CH2 high voltage series storage inverter. Otherwise, it cannot function normally. The CB2 battery systems support integration with SAJ CH2 series inverters to work as a commercial & industrial (C&I) energy storage system (ESS).
+
+**DE Q:** Welche Wechselrichter arbeiten mit dem CB2-100.3-HV5?
+
+Das CB2-Batteriesystem kann nur als Set mit dem SAJ CH2 Hochvolt-Speicherwechselrichter verwendet werden. Andernfalls kann es nicht normal funktionieren. Die CB2-Batteriesysteme unterstützen die Integration mit SAJ CH2-Serie-Wechselrichtern, um als gewerbliches und industrielles (C&I) Energiespeichersystem (ESS) zu arbeiten.
+
+**Citation:** SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5) · p.5 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf
+
+## 2. What are the dimensions and the weight of the cabinet?
+
+**Status:** withdrawn
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 1365
+
+**EN Q:** What are the dimensions and the weight of the cabinet?
+
+The dimensions of the CB2 battery cabinet are 1065 mm, 650 mm, 1221 mm, 988 mm, and 1980 mm. The weight is 1365 kg for the 100.3 kWh model.
+
+**DE Q:** Welche Abmessungen und welches Gewicht hat der Schrank?
+
+Die Abmessungen des CB2-Batterieschranks betragen 1065 mm, 650 mm, 1221 mm, 988 mm und 1980 mm. Das Gewicht beträgt 1365 kg für das Modell mit 100,3 kWh.
+
+**Citation:** SAJ CB2 57.3-100.3-HV5 quick installation guide, English (covers the CB2-100.3-HV5) · p.1 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_Quick-Installation-Guide_EN.pdf
+
+## 3. Can storage be added to an existing CB2 system later?
+
+**Status:** withdrawn
+**Review:** withdrawn — The passages carry the four-system maximum per CH2 inverter, the equal rated energy requirement, and the multi-cluster connection procedure for a four-cluster system. They do not state whether storage can be added to an existing CB2 system later, nor any retrofit or expansion procedure.
+
+**EN Q:** Can storage be added to an existing CB2 system later?
+
+The manual does not describe adding storage to an existing CB2 system later. It states that one CH2 inverter can be integrated with four CB2 battery systems at maximum, and that all CB2 systems are required to have the same rated energy. The multi-cluster connection procedure describes a four-cluster system.
+
+**DE Q:** Lässt sich ein bestehendes CB2-System später erweitern?
+
+Das Handbuch beschreibt nicht, wie ein bestehendes CB2-System später um Speicher erweitert wird. Es gibt an, dass ein CH2-Wechselrichter mit maximal vier CB2-Batteriesystemen integriert werden kann und dass alle CB2-Systeme die gleiche Nennenergie haben müssen. Das Verfahren für den Multi-Cluster-Anschluss beschreibt ein System mit vier Clustern.
+
+**Citation:** SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5) · p.8 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf

@@ -1,0 +1,51 @@
+{
+  "id": 6518,
+  "slug": "goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module",
+  "sku": "DLK-GOODWE-GW30KETAG20",
+  "title": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+  "model": "GW30K-ETA-G20",
+  "items": [
+    {
+      "question": "What backup rating does GW30K-ETA-G20 have?",
+      "answer": "On the AC side (Back-up Port) the rated apparent power is 30 kVA. The maximum apparent power is 33 kVA off-grid (45.0 kVA for 10 s) and 55.2 kVA on-grid.",
+      "question_de": "Welche Notstromwerte hat der GW30K-ETA-G20?",
+      "answer_de": "Auf der AC-Seite (Back-up-Anschluss) beträgt die Nennscheinleistung 30 kVA. Die maximale Scheinleistung beträgt 33 kVA im Off-Grid-Betrieb (45,0 kVA für 10 s) und 55,2 kVA im On-Grid-Betrieb.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 306,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How many MPPTs does GW30K-ETA-G20 have?",
+      "answer": "The GW30K-ETA-G20 has 4 MPPTs, with 1/1/2/2 strings per MPPT.",
+      "question_de": "Wie viele MPPTs hat der GW30K-ETA-G20?",
+      "answer_de": "Der GW30K-ETA-G20 hat 4 MPPTs, mit 1/1/2/2 Strängen pro MPPT.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 305,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Which battery modules stack with this power module?",
+      "answer": "The battery system models are GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Battery modules of different models can be mixed. The system supports 5-108kWh.",
+      "question_de": "Welche Batteriemodule gehören zu diesem Leistungsmodul?",
+      "answer_de": "Die Batteriesystem-Modelle sind GW5.1-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G20, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20. Batteriemodule unterschiedlicher Modelle können gemischt werden. Das System unterstützt 5-108kWh.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 45,
+        "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

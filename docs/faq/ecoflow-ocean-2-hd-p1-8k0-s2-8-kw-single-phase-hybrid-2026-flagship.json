@@ -1,0 +1,23 @@
+{
+  "id": 3578,
+  "slug": "ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship",
+  "sku": "DLK-ECOFLOW-EFHDP18K0S2",
+  "title": "EcoFlow OCEAN 2 Plus HD-P1-8K0-S2 (8 kW single-phase hybrid)",
+  "model": "EF HD-P1-8K0-S2",
+  "items": [
+    {
+      "question": "Which physical parts complete the floor-standing 8K0-S2 storage layout?",
+      "answer": "The floor-mounted layout uses the EcoFlow OCEAN 2 Plus Hybrid Inverter Single-Phase (A1) and the EcoFlow OCEAN 2 LFP Battery (B1). The battery base C1 is included as 1 piece. The battery is fixed with the T-shaped/L-shaped mounting piece (B2, 2 pieces), expansion bolt M6*60 (B3, 2 pieces) and screw M5*12 (B4, 4 pieces). The marking-off template A11 is used for the 8-hole floor mounting. Up to 6 batteries can be stacked.",
+      "question_de": "Welche Teile gehören zum bodenstehenden Speichersystem mit 8K0-S2?",
+      "answer_de": "Der bodenstehende Aufbau verwendet den EcoFlow OCEAN 2 Plus Hybrid Inverter Single-Phase (A1) und die EcoFlow OCEAN 2 LFP Battery (B1). Die Battery Base C1 ist mit 1 Stück enthalten. Die Batterie wird mit dem T-förmigen/L-förmigen Montageteil (B2, 2 Stück), der Expansion Bolt M6*60 (B3, 2 Stück) und der Schraube M5*12 (B4, 4 Stück) befestigt. Die Marking-off Template A11 dient zur 8-Loch-Bodenmontage. Bis zu 6 Batterien können gestapelt werden.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/05/EcoFlow-OCEAN-2-Plus-Single-Phase_Installation-Guide.pdf",
+        "page": 12,
+        "title": "OCEAN 2 Plus Single-Phase Installation Guide (EN)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "a number is not in the cited passage — the cited page does not contain: 12"
+    }
+  ]
+}

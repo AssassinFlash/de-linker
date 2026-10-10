@@ -42,14 +42,15 @@ final class ShortcodesTest extends TestCase {
 	public function test_register_adds_the_shortcodes(): void {
 		$codes = $this->shortcodes();
 		foreach (
-			array(
-				'linker_price'           => 'price',
-				'linker_checkout'        => 'checkout',
-				'linker_inquiry_status'  => 'inquiry_status',
-				'linker_proforma'        => 'proforma',
-				'linker_saved_solutions' => 'saved_solutions',
-				'linker_documents'       => 'documents',
-			) as $tag => $method
+				array(
+					'linker_price'           => 'price',
+					'linker_checkout'        => 'checkout',
+					'linker_inquiry_status'  => 'inquiry_status',
+					'linker_proforma'        => 'proforma',
+					'linker_saved_solutions' => 'saved_solutions',
+					'linker_documents'       => 'documents',
+					'linker_faqs'            => 'faqs',
+				) as $tag => $method
 		) {
 			WP_Mock::userFunction(
 				'add_shortcode',
@@ -243,9 +244,130 @@ final class ShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'linker-empty', $this->shortcodes()->saved_solutions() );
 	}
 
+		/**
+		 * The product FAQ lists the English question, answer and citation.
+		 */
+	public function test_faqs_lists_the_english_question_and_citation(): void {
+		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( 1178 );
+		$GLOBALS['product'] = $product; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce's global.
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 1178, '_linker_faqs', true ),
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WP's wrapper is not loaded in the unit tests.
+				'return' => (string) json_encode(
+					array(
+						array(
+							'question'    => 'What current does the ATS1-T63-A carry?',
+							'answer'      => 'Rated current is 50 A.',
+							'question_de' => 'Welchen Strom führt die ATS1-T63-A?',
+							'answer_de'   => 'Der Nennstrom beträgt 50 A.',
+							'citation'    => array(
+								'url'   => 'https://de-linker.com/manual.pdf',
+								'page'  => 31,
+								'title' => 'ATS1 manual',
+							),
+						),
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::passthruFunction( 'wpautop' );
+
+		$html = $this->shortcodes()->faqs();
+
+		$this->assertStringContainsString( 'data-faq-count="1"', $html );
+		$this->assertStringContainsString( 'What current does the ATS1-T63-A carry?', $html );
+		$this->assertStringContainsString( 'Rated current is 50 A.', $html );
+		$this->assertStringContainsString( 'manual.pdf#page=31', $html );
+		$this->assertStringContainsString( 'ATS1 manual, p. 31', $html );
+		$this->assertStringNotContainsString( 'Welchen Strom', $html );
+		unset( $GLOBALS['product'] );
+	}
+
+		/**
+		 * A German request uses the German question and answer.
+		 */
+	public function test_faqs_uses_german_on_a_german_request(): void {
+		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( 1178 );
+		$GLOBALS['product'] = $product; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce's global.
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 1178, '_linker_faqs', true ),
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WP's wrapper is not loaded in the unit tests.
+				'return' => (string) json_encode(
+					array(
+						array(
+							'question'    => 'What current does the ATS1-T63-A carry?',
+							'answer'      => 'Rated current is 50 A.',
+							'question_de' => 'Welchen Strom führt die ATS1-T63-A?',
+							'answer_de'   => 'Der Nennstrom beträgt 50 A.',
+							'citation'    => array(
+								'url'  => 'https://de-linker.com/manual.pdf',
+								'page' => 31,
+							),
+						),
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::passthruFunction( 'wpautop' );
+
+		$html = $this->shortcodes()->faqs();
+
+		$this->assertStringContainsString( 'Welchen Strom führt die ATS1-T63-A?', $html );
+		$this->assertStringContainsString( 'Der Nennstrom beträgt 50 A.', $html );
+		$this->assertStringNotContainsString( 'What current', $html );
+		unset( $GLOBALS['product'] );
+	}
+
 	/**
-	 * Documents reuse the account template.
+	 * A German request with an empty German answer falls back to the English
+	 * answer: the paragraph is never empty.
 	 */
+	public function test_faqs_falls_back_to_the_english_answer_when_the_german_one_is_empty(): void {
+		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( 1178 );
+		$GLOBALS['product'] = $product; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce's global.
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 1178, '_linker_faqs', true ),
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WP's wrapper is not loaded in the unit tests.
+				'return' => (string) json_encode(
+					array(
+						array(
+							'question'    => 'What current does the ATS1-T63-A carry?',
+							'answer'      => 'Rated current is 50 A.',
+							'question_de' => 'Welchen Strom führt die ATS1-T63-A?',
+							'answer_de'   => '',
+							'citation'    => array(
+								'url'  => 'https://de-linker.com/manual.pdf',
+								'page' => 31,
+							),
+						),
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::passthruFunction( 'wpautop' );
+
+		$html = $this->shortcodes()->faqs();
+
+		$this->assertStringContainsString( 'Welchen Strom führt die ATS1-T63-A?', $html );
+		$this->assertStringContainsString( 'Rated current is 50 A.', $html );
+		unset( $GLOBALS['product'] );
+	}
+
+		/**
+		 * Documents reuse the account template.
+		 */
 	public function test_documents(): void {
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array() ) );

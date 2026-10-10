@@ -1,0 +1,21 @@
+# GoodWe GW208.9-BAT-LCD-G10
+
+- id: 1957
+- slug: `goodwe-gw208-9-bat-lcd-g10`
+- sku: `DLK-GOODWE-GW2089BATLCDG10`
+- model: GW208.9-BAT-LCD-G10
+
+## 1. Which documents list this LCD cabinet with an inverter?
+
+**Status:** withdrawn
+**Review:** withdrawn — a number is not in the cited passage — the cited page does not contain: 52, 57
+
+**EN Q:** Which documents list this LCD cabinet with an inverter?
+
+The user manual shows the cabinet with an inverter in the cable entry sections. Page 52 of the EN manual, section "Introduction to Internal Cable Entry Holes in the Cabinet", labels the entry "Inverter" with "Power", "COM", "→Battery", "PRG", "PWR COM P+/P-". Page 52 of the same manual, section "Introduction to Side Cable Entry Holes in the Cabinet", shows "-Inverter" and "Power" on the left view and "→Battery P+/P- COM" on the right view. The DE manual, page 57, section "Einführung der Kabeldurchführung im Schaltschrank", shows the same layout with "Inverter", "Power", "COM", "→Battery", "PWR COM P+/P-".
+
+**DE Q:** In welchen Unterlagen ist dieser LCD-Schrank mit einem Wechselrichter aufgeführt?
+
+Das Benutzerhandbuch zeigt den Schrank mit einem Wechselrichter in den Abschnitten zu den Kabeleinführungen. Seite 52 des EN-Handbuchs, Abschnitt „Introduction to Internal Cable Entry Holes in the Cabinet“, kennzeichnet den Durchgang mit „Inverter“ sowie „Power“, „COM“, „→Battery“, „PRG“, „PWR COM P+/P-“. Seite 52 desselben Handbuchs, Abschnitt „Introduction to Side Cable Entry Holes in the Cabinet“, zeigt in der linken Ansicht „-Inverter“ und „Power“ und in der rechten Ansicht „→Battery P+/P- COM“. Das DE-Handbuch, Seite 57, Abschnitt „Einführung der Kabeldurchführung im Schaltschrank“, zeigt dieselbe Anordnung mit „Inverter“, „Power“, „COM“, „→Battery“, „PWR COM P+/P-“.
+
+**Citation:** GoodWe BAT-C 208–261 kWh User Manual (EN) · p.52 · https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf

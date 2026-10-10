@@ -1,0 +1,66 @@
+# EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2)
+
+- id: 3582
+- slug: `ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2`
+- sku: `DLK-ECOFLOW-EFBD8S2`
+- model: EF BD-8-S2
+
+## 1. Can the OCEAN 2 5 kWh and EF BD-8-S2 modules share a tower?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Can the OCEAN 2 5 kWh and EF BD-8-S2 modules share a tower?
+
+Yes. The 8 kWh battery is compatible with the OCEAN 2 LFP Battery 5 kWh and the PowerOcean LFP Battery. Both the OCEAN 2 Battery and the PowerOcean Battery support power expansion, capacity scaling, and mixed stacking installation.
+
+**DE Q:** Dürfen OCEAN-2-Module mit 5 kWh und EF BD-8-S2 in denselben Turm?
+
+Ja. Die 8-kWh-Batterie ist mit der EcoFlow OCEAN 2 LFP-Batterie mit 5 kWh und der EcoFlow PowerOcean LFP-Batterie kompatibel. Sowohl die OCEAN 2 Batterie als auch die PowerOcean Batterie unterstützen die Leistungserweiterung, die Kapazitätsskalierung und die gemischte Stapelinstallation.
+
+**Citation:** OCEAN 2 EF BD-8-S2 User Manual V1.1 (EN) · p.10 · https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf
+
+## 2. Is a battery base shown in the EF BD-8-S2 module box?
+
+**Status:** withdrawn
+**Review:** withdrawn — No retrieved passage lists the box contents of the EF BD-8-S2 module; the battery pack base appears only in a stacking diagram, not as a box item.
+
+**EN Q:** Is a battery base shown in the EF BD-8-S2 module box?
+
+The retrieved passages do not list the contents of the EF BD-8-S2 module box. Page 10 shows a battery pack base in the stacking diagram, but no passage states that a base is included in the module box.
+
+**DE Q:** Ist im Karton des EF-BD-8-S2-Moduls ein Batteriesockel aufgeführt?
+
+Die abgerufenen Passagen führen den Lieferumfang des EF-BD-8-S2-Modulkartons nicht auf. Seite 10 zeigt einen Batteriepack-Sockel in der Stapel-Darstellung, aber keine Passage nennt einen Sockel als Bestandteil des Modulkartons.
+
+**Citation:** OCEAN 2 EF BD-8-S2 User Manual V1.1 (EN) · p.10 · https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf
+
+## 3. What site clearance matters for the 8 kWh module’s cooling?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** What site clearance matters for the 8 kWh module’s cooling?
+
+Reserve enough clearance around the equipment for installation and heat dissipation, and do not block the air exhausts during operation. Restricted airflow can cause overheating and activate power derating protection. Keep at least 300 mm between parallel battery stacks, and at least 1 m clearance from the battery system in corridors, hallways, or lobbies for safe egress.
+
+**DE Q:** Welcher Freiraum ist für die Kühlung des 8-kWh-Moduls nötig?
+
+Um die Geräte herum muss ausreichend Freiraum für Installation und Wärmeableitung vorhanden sein. Die Abluftöffnungen dürfen während des Betriebs nicht blockiert werden. Eingeschränkter Luftstrom kann zu Überhitzung führen und den Leistungsreduzierungsschutz aktivieren. Zwischen parallelen Batteriestapeln sind mindestens 300 mm einzuhalten, und bei in Korridoren, Fluren oder Lobbys installierten Batteriesystemen mindestens 1 m Abstand für einen sicheren Ausgang.
+
+**Citation:** OCEAN 2 EF BD-8-S2 User Manual V1.1 (EN) · p.37 · https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf
+
+## 4. What warranty applies to the EF BD-8-S2?
+
+**Status:** withdrawn
+**Review:** withdrawn — No retrieved passage states a warranty term or warranty conditions for the EF BD-8-S2.
+
+**EN Q:** What warranty applies to the EF BD-8-S2?
+
+The retrieved passages do not state a warranty term for the EF BD-8-S2. Page 5 covers the disclaimer and refers to the product documentation, without naming a warranty period.
+
+**DE Q:** Welche Garantie gilt für das EF BD-8-S2?
+
+Die abgerufenen Passagen nennen keine Garantielaufzeit für das EF BD-8-S2. Seite 5 enthält den Haftungsausschluss und verweist auf die Produktdokumentation, ohne eine Garantiezeit zu nennen.
+
+**Citation:** OCEAN 2 EF BD-8-S2 User Manual V1.1 (EN) · p.5 · https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf

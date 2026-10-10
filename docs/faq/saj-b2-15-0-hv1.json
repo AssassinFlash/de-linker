@@ -1,0 +1,51 @@
+{
+  "id": 2068,
+  "slug": "saj-b2-15-0-hv1",
+  "sku": "DLK-SAJ-B2150HV1",
+  "title": "SAJ B2-15.0-HV1",
+  "model": "B2-15.0-HV1",
+  "items": [
+    {
+      "question": "Which inverter does the B2-15.0-HV1 work with?",
+      "answer": "The B2 battery can only be used as a set with SAJ's H2 high voltage series storage inverter.",
+      "question_de": "Mit welchem Wechselrichter arbeitet der B2-15.0-HV1?",
+      "answer_de": "Der Akku B2 kann nur als Set mit dem H2-Hochvolt-Speicherwechselrichter von SAJ verwendet werden.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "page": 5,
+        "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "How tall and how heavy is the assembled B2-15.0-HV1?",
+      "answer": "For the B2-15.0-HV1 the dimension (H*W*D) is 783*626*365 mm and the weight is 151.5 kg.",
+      "question_de": "Wie hoch und wie schwer ist der montierte B2-15.0-HV1?",
+      "answer_de": "Für den B2-15.0-HV1 betragen die Abmessungen (H*B*T) 783*626*365 mm und das Gewicht 151.5 kg.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "page": 10,
+        "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Where and how is the stack installed?",
+      "answer": "The battery employs either ground mounting or wall mounting, and its position is determined by the drilled holes of the bracket. Mount vertically; never install the battery tilted forwards, sideways, horizontally or upside down. For wall mounting, a solid wall is recommended; cavity wall and timber wall are not allowed.",
+      "question_de": "Wo und wie wird der Stapel montiert?",
+      "answer_de": "Der Akku wird entweder am Boden oder an der Wand montiert, die Position ergibt sich aus den Bohrlöchern der Halterung. Vertikal montieren; den Akku niemals nach vorne, seitlich, horizontal oder kopfüber geneigt installieren. Für die Wandmontage wird eine massive Wand empfohlen; Hohlraumwände und Holzwände sind für die Installation des Akkusystems nicht zulässig.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "page": 14,
+        "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

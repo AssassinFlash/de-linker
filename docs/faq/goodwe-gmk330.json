@@ -1,0 +1,37 @@
+{
+  "id": 2397,
+  "slug": "goodwe-gmk330",
+  "sku": "DLK-GOODWE-GMK330",
+  "title": "GoodWe GMK330",
+  "model": "GMK330",
+  "items": [
+    {
+      "question": "Which CT version is included in this GMK330 order?",
+      "answer": "The GMK330 ships with 3 current transformers. The datasheet lists 120A CTs included, and the current transformer ratio is 120A:40mA; the previous 200A:50mA version is phased out after June 2026.",
+      "question_de": "Welche Stromwandlerversion ist in dieser GMK330-Bestellung enthalten?",
+      "answer_de": "Der GMK330 wird mit 3 Stromwandlern geliefert. Im Datenblatt sind 120-A-Stromwandler enthalten, und das Stromwandlerverhältnis beträgt 120 A:40 mA; die frühere Version mit 200 A:50 mA wird nach Juni 2026 auslaufen.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_GMK330_Datasheet_EMEA-EN_V1.0.pdf",
+        "page": 1,
+        "title": "GoodWe GMK330 Datasheet (EMEA, EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Can these GMK330 readings be used for utility billing?",
+      "answer": "No. The smart meter is intended for grid-tie point power control. Its generation and consumption readings are reference only and not for billing. The utility company's meter is the sole basis for billing.",
+      "question_de": "Dürfen die GMK330-Messwerte zur Stromabrechnung genutzt werden?",
+      "answer_de": "Nein. Der Smart Meter ist für die Leistungsregelung am Netzanschlusspunkt vorgesehen. Seine Erzeugungs- und Verbrauchswerte dienen nur als Referenz und nicht zur Abrechnung. Der Zähler des Energieversorgers ist die alleinige Grundlage für die Abrechnung.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Smart-Meter-EU_User-Manual-EN_V1.5.pdf",
+        "page": 6,
+        "title": "GoodWe Smart Meter User Manual: GM330 / GMK330 / GMK360 (EN)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    }
+  ]
+}

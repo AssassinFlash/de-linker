@@ -1,0 +1,80 @@
+{
+  "products": 106,
+  "questions_existing": 272,
+  "items_processed": 272,
+  "pass": 221,
+  "withdrawn": 51,
+  "reject": 0,
+  "products_with_at_least_one_pass": 100,
+  "products_with_no_pass": 6,
+  "products_with_reject": 0,
+  "empty_existing_questions": 3,
+  "imported_to": "linker_t6 _linker_faqs",
+  "samples": {
+    "pass": [
+      {
+        "slug": "ecoflow-battery-stack-bridge",
+        "question": "Can one bridge join different battery models?",
+        "reason": "",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf",
+          "page": 3,
+          "title": "Battery Stack Bridge Installation Guide (EN)"
+        }
+      },
+      {
+        "slug": "ecoflow-battery-stack-bridge",
+        "question": "How many bridge kits should I order for two towers?",
+        "reason": "",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf",
+          "page": 4,
+          "title": "Battery Stack Bridge Installation Guide (EN)"
+        }
+      },
+      {
+        "slug": "ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2",
+        "question": "How many EF BD-5-S2 modules fit one floor or wall tower?",
+        "reason": "",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+          "page": 64,
+          "title": "OCEAN 2 LFP Battery 5 kWh user manual V1.0 (EN, DE, FR, IT, ES, NL, SV)"
+        }
+      }
+    ],
+    "withdrawn": [
+      {
+        "slug": "chint-dtsu666",
+        "question": "What is the maximum wire gauge accepted by the DTSU666 direct terminals?",
+        "reason": "No retrieved passage states a maximum wire gauge for the direct terminals. The catalog passage gives only the current range 0.25-5(80)A, and the manual passage with the conductor cross-sectional area range for the current cable terminal is garbled and does not yield a readable value.",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf",
+          "page": 2,
+          "title": "Chint DTSU666 catalog (EN)"
+        }
+      },
+      {
+        "slug": "ecoflow-battery-stack-bridge",
+        "question": "What gap must I leave between the two tower bases?",
+        "reason": "a number is not in the cited passage — the cited page does not contain: 94.6, 104.5, 94,6, 104,5",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf",
+          "page": 4,
+          "title": "Battery Stack Bridge Installation Guide (EN)"
+        }
+      },
+      {
+        "slug": "ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2",
+        "question": "Can an existing EF BD-5.1-S1 tower be extended with EF BD-5-S2?",
+        "reason": "The passages carry only generic statements: hybrid use of old and new batteries, and compatibility of the OCEAN 2 LFP Battery 5 kWh with the EcoFlow PowerOcean LFP Battery for mixed stacking. They do not name the EF BD-5.1-S1 tower or the EF BD-5-S2, and do not confirm that a specific EF BD-5.1-S1 tower can be extended with EF BD-5-S2.",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+          "page": 10,
+          "title": "OCEAN 2 LFP Battery 5 kWh user manual V1.0 (EN, DE, FR, IT, ES, NL, SV)"
+        }
+      }
+    ],
+    "reject": []
+  }
+}

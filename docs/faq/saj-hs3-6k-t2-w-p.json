@@ -1,0 +1,51 @@
+{
+  "id": 1186,
+  "slug": "saj-hs3-6k-t2-w-p",
+  "sku": "DLK-SAJ-HS36KT2WP",
+  "title": "SAJ HS3-6K-T2-W/G-PX",
+  "model": "HS3-6K-T2-W/G-PX",
+  "items": [
+    {
+      "question": "How many BU3 battery modules does the HS3-6K-T2-W/G-PX take, and how are they stacked?",
+      "answer": "One inverter supports up to eight batteries. For ground-mounting, a maximum of four batteries can be installed in one stack. For wall-mounting, a maximum of three batteries can be installed in one stack.",
+      "question_de": "Wie viele BU3-Batteriemodule nimmt der HS3-6K-T2-W/G-PX auf, und wie werden sie gestapelt?",
+      "answer_de": "Ein Wechselrichter unterstützt bis zu acht Batterien. Bei Bodenmontage dürfen maximal vier Batterien in einem Stapel installiert werden. Bei Wandmontage dürfen maximal drei Batterien in einem Stapel installiert werden.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf",
+        "page": 39,
+        "title": "SAJ HS3 three-phase user manual, English, V4 (covers the BU3-5.0-TV2-PRO)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "What does the HS3-6K-T2-W/G-PX package contain?",
+      "answer": "The shipment contains: inverter, 24-pin communication cable connector, insulated terminals x22, PV connector x4, 1 backup load connector (blue) kit, 1 grid connector (black) kit, communication cable kit, 2 meter kit, 3 printed documents. Contents are order-dependent; not all packages listed may be in your shipment. In some configurations, the grid and backup load connector kits might be different. Meter kit A or B is included depending on shipments.",
+      "question_de": "Was gehört zum Lieferumfang des HS3-6K-T2-W/G-PX?",
+      "answer_de": "Zum Lieferumfang gehören: Wechselrichter, 24-poliger Kommunikationskabel-Stecker, isolierte Klemmen x22, PV-Stecker x4, 1 Backup-Last-Anschlusskit (blau), 1 Netzanschlusskit (schwarz), Kommunikationskabel-Kit, 2 Meter-Kit, 3 gedruckte Dokumente. Der Inhalt ist bestellabhängig; nicht alle aufgeführten Pakete müssen in Ihrer Lieferung enthalten sein. In einigen Konfigurationen können das Netz- und das Backup-Last-Anschlusskit abweichen. Meter-Kit A oder B ist je nach Lieferung enthalten.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf",
+        "page": 36,
+        "title": "SAJ HS3 three-phase user manual, English, V4 (covers the BU3-5.0-TV2-PRO)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Which warranty applies to the HS3 inverter?",
+      "answer": "",
+      "question_de": "Welche Garantie gilt für den HS3-Wechselrichter?",
+      "answer_de": "",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf",
+        "page": 114,
+        "title": "SAJ HS3 three-phase user manual, English, V4 (covers the BU3-5.0-TV2-PRO)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "The retrieved passages only state 'Refer to the warranty policy' for the warranty in years and do not give a warranty term or conditions for the HS3-6K-T2-W/G-PX."
+    }
+  ]
+}

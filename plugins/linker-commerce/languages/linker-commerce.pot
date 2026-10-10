@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Linker Commerce plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Linker Commerce 0.1.0\n"
-"Report-Msgid-Bugs-To: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"Project-Id-Version: Linker Commerce 0.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-09T15:29:23+00:00\n"
+"POT-Creation-Date: 2026-10-10T13:21:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -34,8 +34,7 @@ msgid "Get Linker Commerce version"
 msgstr ""
 
 #: includes/Abilities/GetCommerceVersion.php:37
-msgid ""
-"Returns the version of the Linker Commerce plugin installed on this site."
+msgid "Returns the version of the Linker Commerce plugin installed on this site."
 msgstr ""
 
 #: includes/Abilities/GetCommerceVersion.php:43
@@ -60,18 +59,19 @@ msgstr ""
 
 #: includes/Account/DocumentDownload.php:91
 #: includes/Account/DocumentDownload.php:136
+#: includes/Admin/FaqsMetaBox.php:73
+#: includes/Admin/FiguresMetaBox.php:78
 #: templates/myaccount/linker-documents.php:23
 #: templates/myaccount/linker-documents.php:31
 msgid "Document"
 msgstr ""
 
 #: includes/Account/DocumentDownload.php:132
-msgid ""
-"This document is available to the account it belongs to. Please log in with "
-"that account."
+msgid "This document is available to the account it belongs to. Please log in with that account."
 msgstr ""
 
-#: includes/Account/DocumentDownload.php:134 includes/Vocabulary/Terms.php:77
+#: includes/Account/DocumentDownload.php:134
+#: includes/Vocabulary/Terms.php:77
 #: includes/Vocabulary/Terms.php:78
 msgid "Log in"
 msgstr ""
@@ -88,8 +88,10 @@ msgstr ""
 msgid "Design report: %s"
 msgstr ""
 
-#: includes/Account/InquiryList.php:39 includes/Account/Menu.php:77
-#: includes/Inquiry/OrderAdmin.php:31 includes/Proforma/AdminBox.php:130
+#: includes/Account/InquiryList.php:39
+#: includes/Account/Menu.php:77
+#: includes/Inquiry/OrderAdmin.php:31
+#: includes/Proforma/AdminBox.php:130
 msgid "Inquiry"
 msgstr ""
 
@@ -121,7 +123,8 @@ msgstr ""
 msgid "Proforma invoice (PDF)"
 msgstr ""
 
-#: includes/Account/InquiryList.php:74 includes/Vocabulary/Terms.php:107
+#: includes/Account/InquiryList.php:74
+#: includes/Vocabulary/Terms.php:109
 msgid "Request again"
 msgstr ""
 
@@ -133,28 +136,35 @@ msgstr ""
 msgid "Overview"
 msgstr ""
 
-#: includes/Account/Menu.php:47 includes/Account/Menu.php:73
-#: includes/Inquiry/OrderAdmin.php:30 includes/Inquiry/OrderAdmin.php:32
-#: includes/Settings/SettingsTab.php:33 includes/Vocabulary/Terms.php:113
+#: includes/Account/Menu.php:47
+#: includes/Account/Menu.php:73
+#: includes/Inquiry/OrderAdmin.php:30
+#: includes/Inquiry/OrderAdmin.php:32
+#: includes/Settings/SettingsTab.php:41
+#: includes/Vocabulary/Terms.php:115
 #: templates/emails/linker-proforma-issued.php:47
 msgid "Inquiries"
 msgstr ""
 
-#: includes/Account/Menu.php:48 includes/Account/Menu.php:82
+#: includes/Account/Menu.php:48
+#: includes/Account/Menu.php:82
 #: includes/Account/SavedSolutions.php:74
 msgid "Saved solutions"
 msgstr ""
 
-#: includes/Account/Menu.php:49 includes/Account/Menu.php:84
+#: includes/Account/Menu.php:49
+#: includes/Account/Menu.php:84
 msgid "Documents"
 msgstr ""
 
-#: includes/Account/Menu.php:50 includes/Account/Menu.php:86
+#: includes/Account/Menu.php:50
+#: includes/Account/Menu.php:86
 #: templates/emails/linker-new-customer.php:22
 msgid "Company"
 msgstr ""
 
-#: includes/Account/Menu.php:51 includes/Account/Menu.php:88
+#: includes/Account/Menu.php:51
+#: includes/Account/Menu.php:88
 msgid "Account details"
 msgstr ""
 
@@ -163,7 +173,8 @@ msgid "Log out"
 msgstr ""
 
 #. translators: %s: inquiry number.
-#: includes/Account/Menu.php:80 includes/Vocabulary/Terms.php:112
+#: includes/Account/Menu.php:80
+#: includes/Vocabulary/Terms.php:114
 #, php-format
 msgid "Inquiry #%s"
 msgstr ""
@@ -186,10 +197,176 @@ msgstr ""
 msgid "The design report must be a PDF file within the upload size limit."
 msgstr ""
 
+#: includes/Admin/FaqsMetaBox.php:50
+msgid "FAQ"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:67
+msgid "Each answer needs the document and the page it is printed on. A row without a question is dropped."
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:69
+msgid "Question"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:70
+msgid "Answer"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:71
+msgid "Question (German)"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:72
+msgid "Answer (German)"
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:74
+#: includes/Admin/FiguresMetaBox.php:79
+msgid "Page"
+msgstr ""
+
+#. translators: %s: list of row numbers.
+#: includes/Admin/FaqsMetaBox.php:174
+#, php-format
+msgid "FAQ rows %s kept their previous content: an answer needs the document and the page it is printed on."
+msgstr ""
+
+#: includes/Admin/FaqsMetaBox.php:228
+#: includes/Admin/FiguresMetaBox.php:116
+msgid "— none —"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:48
+msgid "Figures and citations"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:69
+msgid "This product states no figures."
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:73
+msgid "Changing a value or a unit requires the citation to be given again: the document and the page it is printed on."
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:75
+msgid "Key"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:76
+msgid "Value"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:77
+msgid "Unit"
+msgstr ""
+
+#: includes/Admin/FiguresMetaBox.php:140
+msgid "No citation"
+msgstr ""
+
+#. translators: %s: list of figure keys.
+#: includes/Admin/FiguresMetaBox.php:232
+#, php-format
+msgid "Figures %s kept their previous value: a changed value needs the document and the page it is printed on."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:72
+msgid "GMT timestamp or ISO-8601 moment; only products modified after it are returned."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:115
+msgid "The engineering data of every published product, the overlay components and the compatibility version (docs/specs/8-engineering-data.md, target shape 5; the binding contract is services/engine/schemas/feed.schema.json)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:120
+msgid "The feed schema version, the contract with the engine (#14)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:128
+msgid "The version stated by data/compatibility.json."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:132
+msgid "Engineering components that are not products (data/engineering-overlay.json)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:167
+msgid "One entry per published product."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:181
+msgid "Rated AC power in kW, or unknown (#7 SelectionFactSet)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:185
+msgid "Maximum PV input power in kW, or unknown."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:189
+msgid "Usable energy in kWh, or unknown."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:193
+msgid "Nominal energy in kWh, or unknown."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:197
+msgid "Energy range in kWh the product data states; null when it states none."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:201
+msgid "Figure entries with a citation of a hosted document; a value without one is not in the feed."
+msgstr ""
+
+#. translators: %d: most product IDs per request.
+#: includes/Catalog/SelectionFactsController.php:76
+#, php-format
+msgid "Product IDs, at most %d."
+msgstr ""
+
+#: includes/Catalog/SelectionFactsController.php:130
+msgid "Selection facts of the requested published products, by product ID."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:86
+msgid "Product category the product is selected in."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:91
+msgid "Application (attribute pa_application)."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:96
+msgid "Number of grid phases."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:105
+msgid "Rated AC power in kW."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:106
+msgid "Maximum PV input power in kW."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:107
+msgid "Usable energy in kWh."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:108
+msgid "Nominal energy in kWh."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:110
+msgid "Energy range in kWh the product data states; present only then."
+msgstr ""
+
+#: includes/Catalog/SelectionFactSet.php:120
+msgid "Rated AC power the product data states in kVA; present only then."
+msgstr ""
+
 #: includes/Gating/DraftSummary.php:44
-msgid ""
-"Prices are shown after you log in. Then you can request a Proforma invoice "
-"for this solution draft."
+msgid "Prices are shown after you log in. Then you can request a Proforma invoice for this solution draft."
 msgstr ""
 
 #: includes/Gating/DraftSummary.php:46
@@ -200,12 +377,13 @@ msgstr ""
 msgid "No account yet? Register"
 msgstr ""
 
-#: includes/Gating/DraftSummary.php:63 includes/Gating/DraftSummary.php:81
-msgid ""
-"For products without a price, we state the price in your Proforma invoice."
+#: includes/Gating/DraftSummary.php:63
+#: includes/Gating/DraftSummary.php:81
+msgid "For products without a price, we state the price in your Proforma invoice."
 msgstr ""
 
-#: includes/Gating/PriceDisplay.php:116 includes/Gating/PriceDisplay.php:187
+#: includes/Gating/PriceDisplay.php:116
+#: includes/Gating/PriceDisplay.php:187
 msgid "Log in for prices"
 msgstr ""
 
@@ -217,21 +395,20 @@ msgstr ""
 msgid "Price on request"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:46 includes/Inquiry/Checkout.php:55
+#: includes/Inquiry/Checkout.php:46
+#: includes/Inquiry/Checkout.php:70
 #: templates/emails/linker-inquiry-received.php:34
 msgid "We reply within one business day."
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:56
+#: includes/Inquiry/Checkout.php:71
 #: templates/emails/linker-inquiry-received.php:34
-msgid ""
-"Your Proforma invoice will be in your account under Inquiries, and we will "
-"send you a link by email."
+msgid "Your Proforma invoice will be in your account under Inquiries, and we will send you a link by email."
 msgstr ""
 
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:33
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:53
-#: includes/Vocabulary/Terms.php:104
+#: includes/Vocabulary/Terms.php:106
 msgid "Inquiry received"
 msgstr ""
 
@@ -250,8 +427,7 @@ msgid "New inquiry"
 msgstr ""
 
 #: includes/Inquiry/Emails/NewInquiryEmail.php:37
-msgid ""
-"Sent to the team mailbox, with blind copies, when an inquiry is received."
+msgid "Sent to the team mailbox, with blind copies, when an inquiry is received."
 msgstr ""
 
 #. translators: {order_number}: inquiry number, {company}: customer's company.
@@ -305,8 +481,10 @@ msgid "Inquiries list"
 msgstr ""
 
 #: includes/Inquiry/ProformaGateway.php:46
-#: includes/Inquiry/ProformaGateway.php:61 includes/Proforma/AdminBox.php:47
-#: includes/Settings/SettingsTab.php:113 includes/Vocabulary/Terms.php:74
+#: includes/Inquiry/ProformaGateway.php:61
+#: includes/Proforma/AdminBox.php:47
+#: includes/Settings/SettingsTab.php:132
+#: includes/Vocabulary/Terms.php:74
 #: templates/proforma/proforma.php:72
 msgid "Proforma invoice"
 msgstr ""
@@ -316,12 +494,11 @@ msgid "We check your inquiry and send you a Proforma invoice."
 msgstr ""
 
 #: includes/Inquiry/ProformaGateway.php:68
-msgid ""
-"Sends the inquiry without payment. Staff issue the Proforma invoice from the "
-"inquiry. Always on: it is the only way to send an inquiry."
+msgid "Sends the inquiry without payment. Staff issue the Proforma invoice from the inquiry. Always on: it is the only way to send an inquiry."
 msgstr ""
 
-#: includes/Inquiry/Statuses.php:45 includes/Inquiry/Statuses.php:80
+#: includes/Inquiry/Statuses.php:45
+#: includes/Inquiry/Statuses.php:80
 #: includes/Inquiry/Statuses.php:84
 msgctxt "Inquiry status"
 msgid "Inquiry received"
@@ -335,7 +512,8 @@ msgid_plural "Inquiry received <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Inquiry/Statuses.php:57 includes/Inquiry/Statuses.php:81
+#: includes/Inquiry/Statuses.php:57
+#: includes/Inquiry/Statuses.php:81
 #: includes/Inquiry/Statuses.php:85
 msgctxt "Inquiry status"
 msgid "Proforma invoice issued"
@@ -364,12 +542,67 @@ msgctxt "Inquiry status"
 msgid "Cancelled"
 msgstr ""
 
-#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:101
+#: includes/Mail/CustomerOrderEmail.php:89
+#: includes/Mail/TeamEmail.php:101
 msgid "HTML"
 msgstr ""
 
 #: includes/Mail/JobStore.php:45
 msgid "Queued emails"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:50
+msgid "Empty solution draft"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:51
+msgid "Nothing to submit yet."
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:52
+msgid "Your solution draft is empty. Add matched systems, then come back for your Proforma."
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:54
+#: includes/Presentation/LoginGate.php:66
+#: includes/Vocabulary/Terms.php:37
+msgid "Browse products"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:59
+msgid "Proforma request sign-in"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:60
+msgid "Get your Proforma"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:61
+msgid "Sign in with your partner account, add matched systems, and your Proforma is one step away."
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:62
+msgid "The Proforma request is reserved for Linker partner accounts. Register, add your systems, and return here — VAT and delivery are ours to handle."
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:64
+msgid "Sign in or register"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php:165
+msgid "Product questions"
+msgstr ""
+
+#. translators: 1: document title, 2: page number.
+#: includes/Presentation/Shortcodes.php:174
+#, php-format
+msgid "%1$s, p. %2$d"
+msgstr ""
+
+#. translators: %d: page number.
+#: includes/Presentation/Shortcodes.php:180
+#, php-format
+msgid "p. %d"
 msgstr ""
 
 #. translators: %s: date.
@@ -389,9 +622,7 @@ msgid "Download PDF"
 msgstr ""
 
 #: includes/Proforma/AdminBox.php:83
-msgid ""
-"Save your changes to prices and quantities, then issue the Proforma invoice. "
-"The customer receives an email with the link."
+msgid "Save your changes to prices and quantities, then issue the Proforma invoice. The customer receives an email with the link."
 msgstr ""
 
 #: includes/Proforma/AdminBox.php:85
@@ -407,8 +638,7 @@ msgid "Proforma invoice issued"
 msgstr ""
 
 #: includes/Proforma/Emails/ProformaIssuedEmail.php:42
-msgid ""
-"Sent to the customer when staff issue the Proforma invoice of an inquiry."
+msgid "Sent to the customer when staff issue the Proforma invoice of an inquiry."
 msgstr ""
 
 #. translators: {proforma_number}: Proforma number, {order_number}: inquiry number.
@@ -420,35 +650,37 @@ msgstr ""
 msgid "Your Proforma invoice is ready"
 msgstr ""
 
-#: includes/Proforma/Issuer.php:74
+#: includes/Proforma/Issuer.php:82
 msgid "This inquiry already has a Proforma invoice."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:77
+#: includes/Proforma/Issuer.php:85
 msgid "Only a received inquiry gets a Proforma invoice."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:80
+#: includes/Proforma/Issuer.php:88
 msgid "The inquiry has no products."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:83
+#: includes/Proforma/Issuer.php:91
 msgid "Set a price for every product before issuing the Proforma invoice."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:86
-msgid ""
-"Enter the bank account under WooCommerce → Settings → Inquiries before "
-"issuing a Proforma invoice."
+#: includes/Proforma/Issuer.php:94
+msgid "Enter the bank account under WooCommerce → Settings → Inquiries before issuing a Proforma invoice."
+msgstr ""
+
+#: includes/Proforma/Issuer.php:115
+msgid "This inquiry is being issued a Proforma invoice right now; please reload the page in a moment."
 msgstr ""
 
 #. translators: %s: Proforma number.
-#: includes/Proforma/Issuer.php:120
+#: includes/Proforma/Issuer.php:148
 #, php-format
 msgid "Proforma invoice %s issued."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:126
+#: includes/Proforma/Issuer.php:154
 msgid "No Proforma number could be reserved; please try again."
 msgstr ""
 
@@ -457,7 +689,8 @@ msgstr ""
 #: includes/Registration/BillingVatField.php:86
 #: includes/Registration/Fields.php:67
 #: templates/emails/linker-new-customer.php:27
-#: templates/proforma/proforma.php:87 templates/proforma/proforma.php:102
+#: templates/proforma/proforma.php:87
+#: templates/proforma/proforma.php:102
 msgid "VAT ID"
 msgstr ""
 
@@ -516,9 +749,7 @@ msgid "VAT check changed"
 msgstr ""
 
 #: includes/Registration/Emails/VatReviewEmail.php:47
-msgid ""
-"Sent to the team mailbox, with blind copies, when the VIES verdict of a "
-"customer changes."
+msgid "Sent to the team mailbox, with blind copies, when the VIES verdict of a customer changes."
 msgstr ""
 
 #. translators: {company}: the customer's company.
@@ -535,9 +766,7 @@ msgid "Please choose"
 msgstr ""
 
 #: includes/Registration/Fields.php:69
-msgid ""
-"We check EU VAT IDs in the European Commission's VIES system. You can "
-"register without one."
+msgid "We check EU VAT IDs in the European Commission's VIES system. You can register without one."
 msgstr ""
 
 #. translators: %s: field name.
@@ -578,137 +807,215 @@ msgstr ""
 msgid "Not checked yet"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:59 includes/Settings/SettingsTab.php:65
+#. translators: %d: number of emails.
+#: includes/Settings/SettingsTab.php:55
+#, php-format
+msgid "%d email could not be delivered. The attempts are in WooCommerce → Status → Logs (linker-mail); the message stays queued under its post id."
+msgid_plural "%d emails could not be delivered. The attempts are in WooCommerce → Status → Logs (linker-mail); each message stays queued under its post id."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Settings/SettingsTab.php:78
+#: includes/Settings/SettingsTab.php:84
 msgid "Team mailbox"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:61
-msgid ""
-"Every company notification (new customer, new inquiry, VAT check) is one "
-"message to the team mailbox, with a blind copy to each address below."
+#: includes/Settings/SettingsTab.php:80
+msgid "Every company notification (new customer, new inquiry, VAT check) is one message to the team mailbox, with a blind copy to each address below."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:73
+#: includes/Settings/SettingsTab.php:92
 msgid "Blind copies"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:74
+#: includes/Settings/SettingsTab.php:93
 msgid "One address per line."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:85
+#: includes/Settings/SettingsTab.php:104
 msgid "Contact person"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:87
-msgid ""
-"Shown to customers at the top of their account. Without an email address the "
-"team mailbox is shown."
+#: includes/Settings/SettingsTab.php:106
+msgid "Shown to customers at the top of their account. Without an email address the team mailbox is shown."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:91
+#: includes/Settings/SettingsTab.php:110
 #: templates/emails/linker-new-customer.php:24
 msgid "Name"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:97
+#: includes/Settings/SettingsTab.php:116
 #: templates/emails/linker-new-customer.php:25
 msgid "Email"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:103
+#: includes/Settings/SettingsTab.php:122
 msgid "Phone"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:115
-msgid ""
-"Printed on every Proforma invoice. The seller address is the store address "
-"under General."
+#: includes/Settings/SettingsTab.php:134
+msgid "Printed on every Proforma invoice. The seller address is the store address under General."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:119
+#: includes/Settings/SettingsTab.php:138
 msgid "Number prefix"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:120
+#: includes/Settings/SettingsTab.php:139
 msgid "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:128
+#: includes/Settings/SettingsTab.php:147
 msgid "Seller"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:135
+#: includes/Settings/SettingsTab.php:154
 msgid "Seller VAT ID"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:141 templates/proforma/proforma.php:169
+#: includes/Settings/SettingsTab.php:160
+#: templates/proforma/proforma.php:169
 msgid "Account holder"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:147 templates/proforma/proforma.php:171
+#: includes/Settings/SettingsTab.php:166
+#: templates/proforma/proforma.php:171
 msgid "Bank"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:153 templates/proforma/proforma.php:173
+#: includes/Settings/SettingsTab.php:172
+#: templates/proforma/proforma.php:173
 msgid "IBAN"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:159 templates/proforma/proforma.php:175
+#: includes/Settings/SettingsTab.php:178
+#: templates/proforma/proforma.php:175
 msgid "BIC"
 msgstr ""
 
 #. translators: %s: the addresses that were left out, comma-separated.
-#: includes/Settings/SettingsTab.php:192
+#: includes/Settings/SettingsTab.php:211
 #, php-format
 msgid "Not an email address, left out: %s"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:208
-msgid ""
-"The IBAN is not valid (check digits do not match); the previous IBAN is kept."
+#: includes/Settings/SettingsTab.php:227
+msgid "The IBAN is not valid (check digits do not match); the previous IBAN is kept."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:223
+#: includes/Settings/SettingsTab.php:242
 msgid "The BIC is not valid (8 or 11 characters); the previous BIC is kept."
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:33 includes/Vocabulary/Terms.php:42
+#. translators: %d: number of grid phases.
+#: includes/Storefront/CatalogFilters.php:278
+#, php-format
+msgid "%d-phase"
+msgid_plural "%d-phase"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Storefront/CatalogFilters.php:339
+msgid "Up to 6 kW"
+msgstr ""
+
+#: includes/Storefront/CatalogFilters.php:340
+msgid "6 to 15 kW"
+msgstr ""
+
+#: includes/Storefront/CatalogFilters.php:341
+msgid "15 to 30 kW"
+msgstr ""
+
+#: includes/Storefront/CatalogFilters.php:342
+msgid "Over 30 kW"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:65
+msgid "In stock"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:65
+msgid "Currently unavailable"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:67
+#: includes/Vocabulary/Labels.php:33
+#: includes/Vocabulary/Terms.php:42
 #: templates/myaccount/linker-saved-solutions.php:54
 msgid "Add to solution draft"
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:40 includes/Vocabulary/Terms.php:88
+#: includes/Storefront/ProductView.php:68
+msgid "Sign in for partner pricing"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:192
+#: templates/storefront-archive-product.php:90
+msgid "Application"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:193
+msgid "Home"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:193
+msgid "Commercial"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:196
+msgid "Grid phases"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:200
+#: templates/storefront-archive-product.php:121
+msgid "AC power"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:206
+msgid "Energy capacity"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:233
+msgid "Net price after partner sign-in"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:511
+#: templates/myaccount/linker-saved-solutions.php:29
+#: templates/myaccount/linker-saved-solutions.php:41
+msgid "Products"
+msgstr ""
+
+#: includes/Vocabulary/Labels.php:40
+#: includes/Vocabulary/Terms.php:88
 msgid "Request Proforma"
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:47 includes/Vocabulary/Terms.php:103
+#: includes/Vocabulary/Labels.php:47
+#: includes/Vocabulary/Terms.php:103
 msgid "Thank you. Your inquiry has been received."
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:54 includes/Vocabulary/Terms.php:89
-msgid ""
-"Please log in to request a Proforma invoice. No account yet? Register on the "
-"account page."
+#: includes/Vocabulary/Labels.php:54
+#: includes/Vocabulary/Terms.php:89
+msgid "Please log in to request a Proforma invoice. No account yet? Register on the account page."
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:66
-msgid ""
-"We use your personal data to process your inquiry and for the other purposes "
-"described in our [privacy_policy]."
+msgid "We use your personal data to process your inquiry and for the other purposes described in our [privacy_policy]."
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:69
-msgid ""
-"We use your personal data to manage your account and for the other purposes "
-"described in our [privacy_policy]."
+msgid "We use your personal data to manage your account and for the other purposes described in our [privacy_policy]."
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:131
 msgid "Solution draft"
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:134 includes/Vocabulary/Terms.php:39
+#: includes/Vocabulary/Labels.php:134
+#: includes/Vocabulary/Terms.php:39
 msgid "Proforma request"
 msgstr ""
 
@@ -750,10 +1057,6 @@ msgstr ""
 msgid "Your solution draft is empty."
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:37
-msgid "Browse products"
-msgstr ""
-
 #: includes/Vocabulary/Terms.php:38
 msgid "View solution draft"
 msgstr ""
@@ -785,30 +1088,23 @@ msgid "&ldquo;%s&rdquo; has been removed from your solution draft"
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:49
-msgid ""
-"A product that is no longer available was removed from your solution draft."
+msgid "A product that is no longer available was removed from your solution draft."
 msgstr ""
 
 #. translators: %s: product name.
 #: includes/Vocabulary/Terms.php:51
 #, php-format
-msgid ""
-"%s has been removed from your solution draft because it is no longer "
-"available. Please contact us if you need help."
+msgid "%s has been removed from your solution draft because it is no longer available. Please contact us if you need help."
 msgstr ""
 
 #. translators: 1: product name, 2: link that adds it again.
 #: includes/Vocabulary/Terms.php:53
 #, php-format
-msgid ""
-"%1$s has been removed from your solution draft because the product has "
-"changed since you added it. You can <a href=\"%2$s\">add it again</a>."
+msgid "%1$s has been removed from your solution draft because the product has changed since you added it. You can <a href=\"%2$s\">add it again</a>."
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:54
-msgid ""
-"Your solution draft has been replaced with the products of the earlier "
-"inquiry."
+msgid "Your solution draft has been replaced with the products of the earlier inquiry."
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:55
@@ -816,8 +1112,7 @@ msgid "Please choose a product to add to your solution draft&hellip;"
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:56
-msgid ""
-"Please choose the quantity you want to add to your solution draft&hellip;"
+msgid "Please choose the quantity you want to add to your solution draft&hellip;"
 msgstr ""
 
 #. translators: %s: product name.
@@ -835,15 +1130,11 @@ msgstr ""
 #. translators: %s: product name.
 #: includes/Vocabulary/Terms.php:62
 #, php-format
-msgid ""
-"&ldquo;%s&rdquo; is not available at the moment and cannot be added to the "
-"solution draft."
+msgid "&ldquo;%s&rdquo; is not available at the moment and cannot be added to the solution draft."
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:63
-msgid ""
-"Some products in your solution draft need checking. Please go back to the "
-"solution draft before you request a Proforma invoice."
+msgid "Some products in your solution draft need checking. Please go back to the solution draft before you request a Proforma invoice."
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:64
@@ -851,6 +1142,7 @@ msgid "Quantity"
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:67
+#: templates/storefront-archive-product.php:176
 msgid "Sort products"
 msgstr ""
 
@@ -878,11 +1170,13 @@ msgstr ""
 msgid "Register"
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:81 includes/Vocabulary/Terms.php:123
+#: includes/Vocabulary/Terms.php:81
+#: includes/Vocabulary/Terms.php:125
 msgid "Company details"
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:82 includes/Vocabulary/Terms.php:86
+#: includes/Vocabulary/Terms.php:82
+#: includes/Vocabulary/Terms.php:86
 msgid "Notes"
 msgstr ""
 
@@ -925,112 +1219,106 @@ msgstr ""
 #. translators: 1: opening tag of the button, 2: closing tag.
 #: includes/Vocabulary/Terms.php:97
 #, php-format
-msgid ""
-"Your browser does not run JavaScript. Please click %1$sUpdate totals%2$s "
-"before sending your inquiry, so that the totals above are up to date."
+msgid "Your browser does not run JavaScript. Please click %1$sUpdate totals%2$s before sending your inquiry, so that the totals above are up to date."
 msgstr ""
 
 #. translators: %s: link to the inquiries in the account.
 #: includes/Vocabulary/Terms.php:99
 #, php-format
-msgid ""
-"Your inquiry could not be sent. Please check your <a href=\"%s\">inquiries</"
-"a> before sending it again."
+msgid "Your inquiry could not be sent. Please check your <a href=\"%s\">inquiries</a> before sending it again."
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:100
-msgid ""
-"The totals have been updated. Please confirm your inquiry with the "
-"&ldquo;Request Proforma&rdquo; button at the bottom of the page."
+msgid "The totals have been updated. Please confirm your inquiry with the &ldquo;Request Proforma&rdquo; button at the bottom of the page."
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:105
+msgid "Please log in to your account to view this inquiry."
+msgstr ""
+
+#: includes/Vocabulary/Terms.php:107
 msgid "Inquiry no.:"
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:106
+#: includes/Vocabulary/Terms.php:108
 msgid "Inquiry details"
 msgstr ""
 
 #. translators: 1: inquiry number, 2: date, 3: status.
-#: includes/Vocabulary/Terms.php:109
+#: includes/Vocabulary/Terms.php:111
 #, php-format
 msgid "Inquiry #%1$s was sent on %2$s. Status: %3$s."
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:110
+#: includes/Vocabulary/Terms.php:112
 msgid "Updates"
 msgstr ""
 
 #. translators: %d: page number.
-#: includes/Vocabulary/Terms.php:115
+#: includes/Vocabulary/Terms.php:117
 #, php-format
 msgid "Inquiries (page %d)"
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:116
-msgid "You have not sent an inquiry yet."
-msgstr ""
-
-#. translators: %s: inquiry number.
 #: includes/Vocabulary/Terms.php:118
-#, php-format
-msgid "View inquiry %s"
+msgid "You have not sent an inquiry yet."
 msgstr ""
 
 #. translators: %s: inquiry number.
 #: includes/Vocabulary/Terms.php:120
 #, php-format
+msgid "View inquiry %s"
+msgstr ""
+
+#. translators: %s: inquiry number.
+#: includes/Vocabulary/Terms.php:122
+#, php-format
 msgid "View inquiry number %s"
 msgstr ""
 
 #. translators: 1: "View" or a similar word, 2: inquiry number.
-#: includes/Vocabulary/Terms.php:122
+#: includes/Vocabulary/Terms.php:124
 #, php-format
 msgid "%1$s: inquiry number %2$s"
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:124
+#: includes/Vocabulary/Terms.php:126
 msgid "These details are pre-filled on the Proforma request page."
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:125
+#: includes/Vocabulary/Terms.php:127
 msgid "Save company details"
 msgstr ""
 
 #. translators: 1: link to the inquiries, 2: link to the company details, 3: link to the account details.
-#: includes/Vocabulary/Terms.php:127 includes/Vocabulary/Terms.php:129
+#: includes/Vocabulary/Terms.php:129
+#: includes/Vocabulary/Terms.php:131
 #, php-format
-msgid ""
-"In your account you can follow your <a href=\"%1$s\">inquiries</a>, keep "
-"your <a href=\"%2$s\">company details</a> up to date and <a "
-"href=\"%3$s\">change your password and account details</a>."
+msgid "In your account you can follow your <a href=\"%1$s\">inquiries</a>, keep your <a href=\"%2$s\">company details</a> up to date and <a href=\"%3$s\">change your password and account details</a>."
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:132
+#: includes/Vocabulary/Terms.php:134
 msgid "In your account you can follow your inquiries and change your password:"
 msgstr ""
 
 #. translators: 1: site name, 2: username, 3: link to the account. The sentence follows the salutation "Hi %s,".
-#: includes/Vocabulary/Terms.php:134
+#: includes/Vocabulary/Terms.php:136
 #, php-format
-msgid ""
-"Thank you for creating an account on %1$s. Your username is %2$s. In your "
-"account you can follow your inquiries and change your password: %3$s"
+msgid "Thank you for creating an account on %1$s. Your username is %2$s. In your account you can follow your inquiries and change your password: %3$s"
 msgstr ""
 
 #. translators: %s: inquiry number.
-#: includes/Vocabulary/Terms.php:136
+#: includes/Vocabulary/Terms.php:138
 #, php-format
 msgid "[Inquiry #%s]"
 msgstr ""
 
-#: includes/Vocabulary/Terms.php:137
+#: includes/Vocabulary/Terms.php:139
 msgid "Inquiry summary"
 msgstr ""
 
 #. translators: %s: product names.
-#: includes/Vocabulary/Terms.php:158
+#: includes/Vocabulary/Terms.php:160
 #, php-format
 msgid "%s has been added to your solution draft."
 msgid_plural "%s have been added to your solution draft."
@@ -1038,19 +1326,15 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of products.
-#: includes/Vocabulary/Terms.php:160
+#: includes/Vocabulary/Terms.php:162
 #, php-format
-msgid ""
-"%d product of the earlier inquiry is not available and could not be added to "
-"your solution draft."
-msgid_plural ""
-"%d products of the earlier inquiry are not available and could not be added "
-"to your solution draft."
+msgid "%d product of the earlier inquiry is not available and could not be added to your solution draft."
+msgid_plural "%d products of the earlier inquiry are not available and could not be added to your solution draft."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: 1: amount, 2: number of units (quantities added up).
-#: includes/Vocabulary/Terms.php:162
+#: includes/Vocabulary/Terms.php:164
 #, php-format
 msgid "%1$s (%2$s unit)"
 msgid_plural "%1$s (%2$s units)"
@@ -1092,8 +1376,7 @@ msgstr ""
 #. translators: 1: Proforma number, 2: inquiry number, 3: last day of validity. The sentence follows the salutation "Hello %s,".
 #: templates/emails/linker-proforma-issued.php:34
 #, php-format
-msgid ""
-"Your Proforma invoice %1$s for inquiry %2$s is ready and valid until %3$s."
+msgid "Your Proforma invoice %1$s for inquiry %2$s is ready and valid until %3$s."
 msgstr ""
 
 #: templates/emails/linker-proforma-issued.php:41
@@ -1103,9 +1386,7 @@ msgstr ""
 #. translators: %s: link to the inquiry in the account.
 #: templates/emails/linker-proforma-issued.php:46
 #, php-format
-msgid ""
-"You need to be logged in to open it. You can also find it in your account "
-"under %s."
+msgid "You need to be logged in to open it. You can also find it in your account under %s."
 msgstr ""
 
 #. translators: 1: company, 2: VAT ID.
@@ -1121,9 +1402,7 @@ msgid "Before: %1$s. Now: %2$s."
 msgstr ""
 
 #: templates/myaccount/linker-documents.php:15
-msgid ""
-"Your Proforma invoices and the design reports of your saved solutions will "
-"appear here."
+msgid "Your Proforma invoices and the design reports of your saved solutions will appear here."
 msgstr ""
 
 #: templates/myaccount/linker-documents.php:25
@@ -1135,9 +1414,7 @@ msgid "Download (PDF)"
 msgstr ""
 
 #: templates/myaccount/linker-saved-solutions.php:19
-msgid ""
-"Solutions you save in the Solution Configurator appear here, with their "
-"design report."
+msgid "Solutions you save in the Solution Configurator appear here, with their design report."
 msgstr ""
 
 #: templates/myaccount/linker-saved-solutions.php:27
@@ -1148,11 +1425,6 @@ msgstr ""
 #: templates/myaccount/linker-saved-solutions.php:28
 #: templates/myaccount/linker-saved-solutions.php:40
 msgid "Saved on"
-msgstr ""
-
-#: templates/myaccount/linker-saved-solutions.php:29
-#: templates/myaccount/linker-saved-solutions.php:41
-msgid "Products"
 msgstr ""
 
 #: templates/myaccount/linker-saved-solutions.php:57
@@ -1210,9 +1482,7 @@ msgid "This Proforma invoice is valid until %s."
 msgstr ""
 
 #: templates/proforma/proforma.php:157
-msgid ""
-"This document is not an invoice within the meaning of Section 14 of the "
-"German VAT Act (UStG). The invoice will be issued separately."
+msgid "This document is not an invoice within the meaning of Section 14 of the German VAT Act (UStG). The invoice will be issued separately."
 msgstr ""
 
 #: templates/proforma/proforma.php:161
@@ -1222,153 +1492,204 @@ msgstr ""
 #. translators: %s: Proforma number.
 #: templates/proforma/proforma.php:165
 #, php-format
-msgid ""
-"Please transfer the total to the account below and give %s as the reference."
+msgid "Please transfer the total to the account below and give %s as the reference."
 msgstr ""
 
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr ""
 
-#: includes/Vocabulary/Terms.php
-msgid "Please log in to your account to view this inquiry."
+#: templates/storefront-archive-product.php:49
+msgid "Recommended"
 msgstr ""
 
-#: includes/Proforma/Issuer.php
-msgid ""
-"This inquiry is being issued a Proforma invoice right now; please reload the "
-"page in a moment."
+#: templates/storefront-archive-product.php:50
+msgid "Newest first"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php
-msgid ""
-"%d email could not be delivered. The attempts are in WooCommerce → Status → "
-"Logs (linker-mail); the message stays queued under its post id."
-msgid_plural ""
-"%d emails could not be delivered. The attempts are in WooCommerce → Status → "
-"Logs (linker-mail); each message stays queued under its post id."
+#: templates/storefront-archive-product.php:51
+msgid "Name A-Z"
+msgstr ""
+
+#: templates/storefront-archive-product.php:52
+msgid "Power high-low"
+msgstr ""
+
+#: templates/storefront-archive-product.php:53
+msgid "Power low-high"
+msgstr ""
+
+#: templates/storefront-archive-product.php:59
+msgid "Product filters"
+msgstr ""
+
+#: templates/storefront-archive-product.php:60
+msgid "Close filters"
+msgstr ""
+
+#. translators: %d: number of selected filters.
+#: templates/storefront-archive-product.php:62
+#, php-format
+msgid "Filters (%d)"
+msgid_plural "Filters (%d)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin/FiguresMetaBox.php:48
-msgid "Figures and citations"
+#: templates/storefront-archive-product.php:64
+msgid "Filters"
 msgstr ""
 
-#: includes/Admin/FiguresMetaBox.php:69
-msgid "This product states no figures."
+#: templates/storefront-archive-product.php:78
+msgid "Category"
 msgstr ""
 
-#: includes/Admin/FiguresMetaBox.php:73
-msgid ""
-"Changing a value or a unit requires the citation to be given again: the "
-"document and the page it is printed on."
+#: templates/storefront-archive-product.php:80
+msgid "All products"
 msgstr ""
 
-#: includes/Admin/FiguresMetaBox.php:75
-msgid "Key"
+#: templates/storefront-archive-product.php:91
+msgid "Brand"
 msgstr ""
 
-#: includes/Admin/FiguresMetaBox.php:76
-msgid "Value"
+#: templates/storefront-archive-product.php:92
+msgid "Phase"
 msgstr ""
 
-#: includes/Admin/FiguresMetaBox.php:77
-msgid "Unit"
+#: templates/storefront-archive-product.php:93
+msgid "Power"
 msgstr ""
 
-#: includes/Admin/FiguresMetaBox.php:79
-msgid "Page"
+#: templates/storefront-archive-product.php:129
+msgid "Minimum AC power in kilowatts"
 msgstr ""
 
-#: includes/Admin/FiguresMetaBox.php:116
-msgid "— none —"
+#: templates/storefront-archive-product.php:130
+msgid "Maximum AC power in kilowatts"
 msgstr ""
 
-#: includes/Admin/FiguresMetaBox.php:140
-msgid "No citation"
+#: templates/storefront-archive-product.php:131
+#: templates/storefront-archive-product.php:148
+msgid "Set"
 msgstr ""
 
-#. translators: %s: list of figure keys.
-#: includes/Admin/FiguresMetaBox.php:223
-#, php-format
-msgid ""
-"Figures %s kept their previous value: a changed value needs the document and "
-"the page it is printed on."
+#: templates/storefront-archive-product.php:138
+msgid "Usable energy"
 msgstr ""
 
-#: includes/Catalog/EngineeringFeedController.php:72
-msgid ""
-"GMT timestamp or ISO-8601 moment; only products modified after it are "
-"returned."
+#: templates/storefront-archive-product.php:146
+msgid "Minimum usable energy in kilowatt hours"
 msgstr ""
 
-#: includes/Catalog/EngineeringFeedController.php:115
-msgid ""
-"The engineering data of every published product, the overlay components and "
-"the compatibility version (docs/specs/8-engineering-data.md)."
+#: templates/storefront-archive-product.php:147
+msgid "Maximum usable energy in kilowatt hours"
 msgstr ""
 
-#: includes/Catalog/EngineeringFeedController.php:124
-msgid "sha256 of data/compatibility.json."
+#: templates/storefront-archive-product.php:157
+msgid "Plan with the Solution Configurator"
 msgstr ""
 
-#: includes/Catalog/EngineeringFeedController.php:128
-msgid ""
-"Engineering components that are not products (data/engineering-overlay.json)."
+#: templates/storefront-archive-product.php:158
+msgid "Configure a storage system from your site data; the result is a solution draft you can send as an inquiry."
 msgstr ""
 
-#: includes/Catalog/EngineeringFeedController.php:132
-msgid "One entry per published product."
+#: templates/storefront-archive-product.php:159
+msgid "Open the Solution Configurator"
 msgstr ""
 
-#: includes/Catalog/EngineeringFeedController.php:146
-msgid ""
-"Figure entries with a citation of a hosted document; a value without one is "
-"not in the feed."
+#: templates/storefront-archive-product.php:163
+msgid "Clear"
 msgstr ""
 
-#. translators: %d: most product IDs per request.
-#: includes/Catalog/SelectionFactsController.php:76
-#, php-format
-msgid "Product IDs, at most %d."
+#: templates/storefront-archive-product.php:164
+msgid "Show products"
 msgstr ""
 
-#: includes/Catalog/SelectionFactsController.php:130
-msgid "Selection facts of the requested published products, by product ID."
+#: templates/storefront-archive-product.php:171
+msgid "product"
+msgid_plural "products"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/storefront-archive-product.php:229
+msgid "Item no."
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:86
-msgid "Product category the product is selected in."
+#: templates/storefront-archive-product.php:233
+msgid "Key product data"
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:91
-msgid "Application (attribute pa_application)."
+#: templates/storefront-archive-product.php:248
+msgid "View product"
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:96
-msgid "Number of grid phases."
+#: templates/storefront-archive-product.php:255
+msgid "No product matches these filters. Clear one to see more."
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:105
-msgid "Rated AC power in kW."
+#: templates/storefront-single-product.php:31
+msgid "Breadcrumb"
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:106
-msgid "Maximum PV input power in kW."
+#: templates/storefront-single-product.php:87
+msgid "Product photography for this model is in preparation."
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:107
-msgid "Usable energy in kWh."
+#: templates/storefront-single-product.php:108
+msgid "Item number:"
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:108
-msgid "Nominal energy in kWh."
+#: templates/storefront-single-product.php:135
+msgid "Ask about this product"
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:110
-msgid "Energy range in kWh the product data states; present only then."
+#: templates/storefront-single-product.php:138
+#: templates/storefront-single-product.php:147
+#: templates/storefront-single-product.php:226
+msgctxt "product attachments"
+msgid "Documents"
 msgstr ""
 
-#: includes/Catalog/SelectionFactSet.php:120
-msgid "Rated AC power the product data states in kVA; present only then."
+#: templates/storefront-single-product.php:144
+msgid "Product sections"
+msgstr ""
+
+#: templates/storefront-single-product.php:145
+msgid "Description"
+msgstr ""
+
+#: templates/storefront-single-product.php:146
+#: templates/storefront-single-product.php:181
+msgid "Technical data"
+msgstr ""
+
+#: templates/storefront-single-product.php:160
+msgid "Introduction in preparation. The specification below carries the values from the datasheet on file."
+msgstr ""
+
+#: templates/storefront-single-product.php:208
+msgid "Specifications"
+msgstr ""
+
+#: templates/storefront-single-product.php:221
+msgid "The specification table for this product is in preparation. Ask us for the datasheet."
+msgstr ""
+
+#: templates/storefront-single-product.php:235
+msgid "No documents are attached to this product yet. Ask us and we will add them."
+msgstr ""
+
+#: templates/storefront-single-product.php:241
+msgid "FAQs"
+msgstr ""
+
+#: templates/storefront-single-product.php:255
+msgid "Compatible products"
+msgstr ""
+
+#: templates/storefront-single-product.php:272
+msgid "Product image"
+msgstr ""
+
+#: templates/storefront-single-product.php:273
+msgid "Close image viewer"
 msgstr ""

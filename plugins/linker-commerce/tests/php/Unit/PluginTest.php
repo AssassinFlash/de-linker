@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit;
 
 use Linker\Commerce\Abilities\Registrar;
+use Linker\Commerce\Admin\FaqsMetaBox;
 use Linker\Commerce\Admin\FiguresMetaBox;
 use Linker\Commerce\Catalog\EngineeringFeedController;
 use Linker\Commerce\Catalog\SelectionFactsController;
@@ -32,15 +33,16 @@ final class PluginTest extends TestCase {
 
 	/**
 	 * The plugin hooks text domain loading (first thing on init), both Abilities
-	 * API registration points, both REST routes, the figure meta box, the
-	 * inquiry chain (once all plugins are loaded) and the presentation CLI.
+	 * API registration points, both REST routes, the figure and FAQ meta boxes,
+	 * the inquiry chain (once all plugins are loaded) and the presentation CLI.
 	 */
 	public function test_register_adds_the_hooks(): void {
 		$abilities       = new Registrar( self::FILE );
 		$selection_facts = new SelectionFactsController();
 		$engineering     = new EngineeringFeedController();
 		$figures         = new FiguresMetaBox();
-		$plugin          = new Plugin( self::FILE, $abilities, $selection_facts, $engineering, $figures );
+		$faqs            = new FaqsMetaBox();
+		$plugin          = new Plugin( self::FILE, $abilities, $selection_facts, $engineering, $figures, $faqs );
 
 		WP_Mock::expectActionAdded( 'init', array( $plugin, 'load_textdomain' ), 0 );
 		WP_Mock::expectActionAdded( 'wp_abilities_api_categories_init', array( $abilities, 'register_category' ) );
@@ -51,6 +53,9 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $figures, 'register' ) );
 		WP_Mock::expectActionAdded( 'save_post_product', array( $figures, 'save' ) );
 		WP_Mock::expectActionAdded( 'admin_notices', array( $figures, 'notice_refused' ) );
+		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $faqs, 'register' ) );
+		WP_Mock::expectActionAdded( 'save_post_product', array( $faqs, 'save' ) );
+		WP_Mock::expectActionAdded( 'admin_notices', array( $faqs, 'notice_refused' ) );
 		WP_Mock::expectActionAdded( 'cli_init', array( $plugin, 'register_cli' ) );
 
 		// AnyInstance matches the object the registration constructs.
@@ -69,7 +74,7 @@ final class PluginTest extends TestCase {
 	 * The full chain is wired against a real WooCommerce in tests/php/Integration.
 	 */
 	public function test_register_commerce_needs_woocommerce(): void {
-		( new Plugin( self::FILE, new Registrar( self::FILE ), new SelectionFactsController(), new EngineeringFeedController(), new FiguresMetaBox() ) )->register_commerce();
+		( new Plugin( self::FILE, new Registrar( self::FILE ), new SelectionFactsController(), new EngineeringFeedController(), new FiguresMetaBox(), new FaqsMetaBox() ) )->register_commerce();
 
 		$this->assertFalse( class_exists( 'WooCommerce' ) );
 	}
@@ -93,7 +98,7 @@ final class PluginTest extends TestCase {
 			)
 		);
 
-		( new Plugin( self::FILE, new Registrar( self::FILE ), new SelectionFactsController(), new EngineeringFeedController(), new FiguresMetaBox() ) )->load_textdomain();
+		( new Plugin( self::FILE, new Registrar( self::FILE ), new SelectionFactsController(), new EngineeringFeedController(), new FiguresMetaBox(), new FaqsMetaBox() ) )->load_textdomain();
 
 		$this->assertConditionsMet();
 	}

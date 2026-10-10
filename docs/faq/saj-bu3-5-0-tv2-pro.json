@@ -1,0 +1,51 @@
+{
+  "id": 2093,
+  "slug": "saj-bu3-5-0-tv2-pro",
+  "sku": "DLK-SAJ-BU350TV2PRO",
+  "title": "SAJ BU3-5.0-TV2-PRO",
+  "model": "BU3-5.0-TV2-PRO",
+  "items": [
+    {
+      "question": "Which inverters does the BU3-5.0-TV2-PRO work with?",
+      "answer": "The BU3-5.0-TV2-PRO is listed as the battery for the HS3 three-phase inverter series. The manual's inverter compatibility table covers HS3-3K-T2, HS3-4K-T2, HS3-5K-T2, HS3-6K-T2, HS3-8K-T2, HS3-10K-T2 and HS3-12K-T2 variants.",
+      "question_de": "Mit welchen Wechselrichtern arbeitet das BU3-5.0-TV2-PRO?",
+      "answer_de": "Das BU3-5.0-TV2-PRO ist als Batterie für die dreiphasige Wechselrichter-Serie HS3 aufgeführt. Die Kompatibilitätstabelle des Handbuchs umfasst die Varianten HS3-3K-T2, HS3-4K-T2, HS3-5K-T2, HS3-6K-T2, HS3-8K-T2, HS3-10K-T2 und HS3-12K-T2.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf",
+        "page": 114,
+        "title": "SAJ HS3 three-phase user manual, English, V4 (covers the BU3-5.0-TV2-PRO)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "What are the dimensions and the weight of a BU3 module?",
+      "answer": "For the BU3-5.0-TV2-PRO the dimensions are 370*695*170 mm (H*W*D) and the weight is 52 kg.",
+      "question_de": "Welche Abmessungen und welches Gewicht hat ein BU3-Modul?",
+      "answer_de": "Für das BU3-5.0-TV2-PRO betragen die Abmessungen 370*695*170 mm (H*B*T) und das Gewicht 52 kg.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+        "page": 2,
+        "title": "SAJ HS3 battery module datasheet, English, V2.1 (BU3-5.0-TV2-PRO, BC3-TV, BE3-TV)"
+      },
+      "status": "pass",
+      "review": "pass",
+      "reason": ""
+    },
+    {
+      "question": "Which warranty applies to the BU3 battery?",
+      "answer": "The manual's battery pack table lists the warranty as \"Refer to the warranty policy.\" No warranty period in years is stated for the BU3-5.0-TV2-PRO in the retrieved passages.",
+      "question_de": "Welche Garantie gilt für die Batterie BU3?",
+      "answer_de": "Die Batterietabelle des Handbuchs gibt für die Garantie \"Refer to the warranty policy.\" an. Eine Garantiedauer in Jahren ist für das BU3-5.0-TV2-PRO in den abgerufenen Passagen nicht genannt.",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf",
+        "page": 115,
+        "title": "SAJ HS3 three-phase user manual, English, V4 (covers the BU3-5.0-TV2-PRO)"
+      },
+      "status": "withdrawn",
+      "review": "withdrawn",
+      "reason": "The retrieved passages state only \"Refer to the warranty policy\" and do not give a warranty period for the BU3-5.0-TV2-PRO, so no warranty length can be answered from this product's passages."
+    }
+  ]
+}

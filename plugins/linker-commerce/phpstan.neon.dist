@@ -14,6 +14,8 @@ parameters:
 		- tests/fixtures
 		# The data migrations of the products this plugin reads (tools/migrate/*.php, run with `wp eval-file -`).
 		- ../../tools/migrate
+		# The FAQ field import of ticket #15.
+		- ../../tools/faq/wordpress.php
 	excludePaths:
 		# Stand-ins for WordPress and WooCommerce classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
