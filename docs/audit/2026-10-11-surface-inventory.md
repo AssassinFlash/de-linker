@@ -59,7 +59,7 @@
 | （新增） | `linker/v1/selection-facts` | 新面（#7 契约） |
 | 旧 store-api-gate.php（wc/store/v1 价格门） | Gating/StoreApiPrices.php | 重建 |
 
-**命名沿用裁定（来自第二路全拆审计，2026-10-11）**：新树出现旧 `tv-woo-b2b-catalog`/`tv-storefront-pdp` DOM id、`--dlk-radius` 变量、`linker/v1`+`linker-ai/v1` REST 命名空间、`~/.config/terravolt-builder/` 凭据路径。裁定：**全部保留**——DOM id 服务"复刻线上设计"（逐区块对账的比对锚点），REST 命名空间保外部连续性，凭据路径是本机既定位置；随 #16 呈现层正规化自然消解，不为改名而改名。
+**命名沿用裁定（来自第二路全拆审计，2026-10-11）**：新树出现旧 `tv-woo-b2b-catalog`/`tv-storefront-pdp` DOM id、`--dlk-radius` 变量、`linker/v1`+`linker-ai/v1` REST 命名空间、`~/.config/terravolt-builder/` 凭据路径。裁定更新（业主 2026-10-11 推翻保留）：**概念词必须净化**——Article/Catalog 类概念与商城/产品身份不符，票 #82 执行改名（Catalog→Products 命名空间、card-exact-article 等类名重映射），豁免仅 Woo 原生 API 名与德语商业用语（Artikelnr.=货号）；REST 命名空间与凭据路径保留不变。
 
 ## 3. 邮件面
 
