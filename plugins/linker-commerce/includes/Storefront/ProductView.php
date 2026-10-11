@@ -75,6 +75,7 @@ final class ProductView {
 			'attributes'   => $this->attributes( $product ),
 			'figures'      => $this->figures( $product_id ),
 			'features'     => $this->features( $product_id ),
+			'benefits'     => $this->benefits( $product_id ),
 			'scenarios'    => $this->scenarios( $product_id ),
 			'downloads'    => $this->downloads( $product_id ),
 			'faqs'         => $this->faqs( $product_id ),
@@ -495,6 +496,25 @@ final class ProductView {
 	private function legacy_field( int $product_id, string $field ): string {
 		$decoded = Materials::acf( $product_id );
 		return isset( $decoded[ $field ] ) && \is_string( $decoded[ $field ] ) ? $decoded[ $field ] : '';
+	}
+
+	/**
+	 * The description panel's benefit bullets: the legacy `value_prop`
+	 * branch's `benefit_bullets`, in order (the live page's two cards).
+	 *
+	 * @param int $product_id The product.
+	 * @return list<string> The bullets.
+	 */
+	public function benefits( int $product_id ): array {
+		$prop = $this->legacy( $product_id, 'value_prop' );
+		$out  = array();
+		foreach ( \is_array( $prop['benefit_bullets'] ?? null ) ? $prop['benefit_bullets'] : array() as $bullet ) {
+			$line = \trim( (string) $bullet );
+			if ( '' !== $line ) {
+				$out[] = $line;
+			}
+		}
+		return $out;
 	}
 
 	/**

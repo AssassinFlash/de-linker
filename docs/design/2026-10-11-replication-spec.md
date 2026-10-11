@@ -203,14 +203,44 @@ must land, and section 4 marks the components its rules have to cover. The
 replacement is NOT done in this round; the files, their import lines and the
 compiled cache still hold the copied text.
 
-## 6. Open items
+## 6. State of the replacement and open items
 
-1. WindPress re-authoring (section 5) — not started beyond this decomposition.
-2. `data-faq-count` on the FAQ section (an internal counter of the live markup,
+**Authored so far (this round):** `content/windpress/pdp.css` — the product
+page's styles written fresh from the measurements above (desktop geometry plus
+the collapsing rules at 1100/900px), installed through `present` and compiled
+into the cache. It deliberately overlaps the copied `storefront.css` on the
+`pdp-*` selectors so the measured values win; the copied files still carry the
+catalog and remain the open part of the replacement.
+
+**Measured gaps still open (2026-10-11, paired captures in
+`.scratch/t16-closure/pairs/`, pixel comparison of the overlap):**
+
+1. The catalog pages' styles are still the copied live stylesheet, not a fresh
+   authoring; the shop and archive do not render at parity because of that and
+   because of item 3 below.
+2. Product page, 1440: about 45% of the overlap differs (it was ~80% before
+   `pdp.css`); the residual is concentrated in the purchase rail's fine
+   geometry, the pairing cards' inner layout and the below-the-fold blocks. At
+   390 the mobile page is ~1,270px taller than live and the mobile rules need
+   another pass.
+3. The live shop lists **65 product families** (24 per page, "1-24 / 65
+   product families") — a grouping the current shop query does not implement;
+   t16 lists 104 individual products, 16 per page. The shop's card grid, its
+   search chips ("Batch/item numbers", "Identify a device from a nameplate
+   photo") and the compare checkbox on each card are not built.
+4. The site chrome (header/footer partials) differs: the live header carries
+   the search icon, cart, account and the EN/DE switch; the t16 header does
+   not render those controls in the same place.
+5. The product page's style rules previously never reached the page at all —
+   the live PDP is styled by `terravolt-b2b-core`'s `product-page.css` (and
+   `commerce-ui.css`), which the earlier port did not carry; only the
+   `storefront.css` fragment (readings, chips) applied. That is why the
+   pre-existing captures showed the PDP largely unstyled.
+6. `data-faq-count` on the FAQ section (an internal counter of the live markup,
    no visual effect) is not replicated; the section carries the live classes.
-3. `data-compare-article` on a German page carries the German twin's id
+7. `data-compare-article` on a German page carries the German twin's id
    (the live page carries the English id); the comparison page resolves the
    products by id, and the German object is the one the German comparison page
    should show.
-4. The compare chip's icon and the `sf-compare-chip` behaviour need the compare
+8. The compare chip's icon and the `sf-compare-chip` behaviour need the compare
    page flow (#66) to be exercised end to end.

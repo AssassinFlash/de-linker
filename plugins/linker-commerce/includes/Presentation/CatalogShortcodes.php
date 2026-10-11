@@ -746,11 +746,7 @@ final class CatalogShortcodes {
 		unset( $atts );
 		$view  = $this->current_view();
 		$items = array();
-		foreach ( \is_array( $view['features'] ?? null ) ? $view['features'] : array() as $feature ) {
-			$line = trim( (string) $feature['body'] );
-			if ( '' === $line && '' !== (string) $feature['title'] ) {
-				$line = (string) $feature['title'];
-			}
+		foreach ( \is_array( $view['benefits'] ?? null ) ? $view['benefits'] : array() as $line ) {
 			if ( '' !== $line ) {
 				$items[] = '<li class="pdp-benefit">' . self::icon( 'check' ) . '<div><p>' . esc_html( $line ) . '</p></div></li>';
 			}
