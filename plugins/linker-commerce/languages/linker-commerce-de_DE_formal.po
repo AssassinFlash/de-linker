@@ -2181,3 +2181,51 @@ msgstr "Produktbild"
 #: templates/storefront-single-product.php:273
 msgid "Close image viewer"
 msgstr "Bildbetrachter schließen"
+
+#: includes/Health/Monitor.php:115
+msgid "Genie"
+msgstr "Genie"
+
+#: includes/Health/Monitor.php:115
+msgid "engine"
+msgstr "Engine"
+
+#: includes/Health/Monitor.php:120
+msgid "The Solution Configurator"
+msgstr "Der Lösungskonfigurator"
+
+#: includes/Health/Monitor.php:104
+#, php-format
+msgid "the address option %s is empty"
+msgstr "die Adressoption %s ist leer"
+
+#: includes/Health/Monitor.php:113
+#, php-format
+msgid "the service answered HTTP %d instead of 200"
+msgstr "der Dienst antwortete mit HTTP %d statt 200"
+
+#: includes/Health/Monitor.php:159
+#, php-format
+msgid "The %s service failed its health check"
+msgstr "Gesundheitsprüfung fehlgeschlagen: Dienst %s"
+
+#: includes/Health/Monitor.php:163
+#, php-format
+msgid ""
+"The daily health check could not reach the %1$s service.\n"
+"\n"
+"Address: %2$s\n"
+"Reason: %3$s\n"
+"Checked: %4$s UTC\n"
+"\n"
+"%5$s uses this service. The check runs once a day and repeats this message "
+"on every failure."
+msgstr ""
+"Die tägliche Gesundheitsprüfung hat den Dienst %1$s nicht erreicht.\n"
+"\n"
+"Adresse: %2$s\n"
+"Grund: %3$s\n"
+"Geprüft: %4$s UTC\n"
+"\n"
+"%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
+"diese Nachricht bei jedem Fehlschlag."

@@ -13,6 +13,7 @@ use Linker\Tools\Assets;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
+use Linker\Tools\Genie\Retention;
 use Linker\Tools\Plugin;
 use Linker\Tools\Redirects;
 use Linker\Tools\SiteChrome;
@@ -26,17 +27,21 @@ use WP_Mock\Tools\TestCase;
  */
 final class PluginTest extends TestCase {
 
+	private const FILE = '/srv/www/wp-content/plugins/linker-tools/linker-tools.php';
+
 	/**
 	 * The plugin registers its scripts, conversations, redirects and chrome,
-	 * the proxy on rest_api_init, and the entries' hooks during registration.
+	 * the proxy on rest_api_init, the entries' hooks and the retention's
+	 * hooks during registration.
 	 */
 	public function test_register_adds_the_hooks(): void {
-		$assets        = new Assets( '/srv/www/wp-content/plugins/linker-tools/linker-tools.php' );
+		$assets        = new Assets( self::FILE );
 		$redirects     = new Redirects();
-		$chrome        = new SiteChrome( '/srv/www/wp-content/plugins/linker-tools/linker-tools.php' );
+		$chrome        = new SiteChrome( self::FILE );
 		$conversations = new RecordingConversations();
 		$proxy         = new RecordingProxy( $conversations );
 		$entries       = new RecordingEntries();
+		$retention     = new Retention( self::FILE );
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -46,8 +51,12 @@ final class PluginTest extends TestCase {
 		// canonical redirects (Redirects::register()).
 		WP_Mock::expectActionAdded( 'template_redirect', WP_Mock\Functions::type( 'Closure' ), 1 );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $chrome, 'assets' ) );
+		WP_Mock::expectActionAdded( 'init', array( $retention, 'schedule' ) );
+		WP_Mock::expectActionAdded( Retention::HOOK, array( $retention, 'sweep' ) );
+		WP_Mock::expectActionAdded( Retention::DELETE_HOOK, array( $retention, 'delete' ) );
+		WP_Mock::userFunction( 'register_deactivation_hook' );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertConditionsMet();

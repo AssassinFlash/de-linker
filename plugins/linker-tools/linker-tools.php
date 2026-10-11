@@ -22,6 +22,7 @@ namespace Linker\Tools;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
+use Linker\Tools\Genie\Retention;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -34,5 +35,6 @@ $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConvention
 	new SiteChrome( __FILE__ ),
 	$conversations,
 	new Proxy( $conversations ),
-	new Entries()
+	new Entries(),
+	new Retention( __FILE__ )
 ) )->register();

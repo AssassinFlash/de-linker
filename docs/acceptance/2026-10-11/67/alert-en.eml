@@ -1,0 +1,16 @@
+Date: Sun, 11 Oct 2026 11:08:22 +0000
+From: WordPress <wordpress@example.test>
+Message-ID: <iFEbh45U1w8JjBFaaASP22crjMmRsYja2EOKdVZdgA@chesterjohn-2.local>
+X-Mailer: PHPMailer 7.1.1 (https://github.com/PHPMailer/PHPMailer)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+To: sales@de-linker.com
+Subject: The Genie service failed its health check
+
+The daily health check could not reach the Genie service.
+
+Address: http://127.0.0.1:9
+Reason: cURL error 7: Failed to connect to 127.0.0.1 port 9 after 0 ms: Could not connect to server
+Checked: 2026-10-11 11:08 UTC
+
+Genie uses this service. The check runs once a day and repeats this message on every failure.
