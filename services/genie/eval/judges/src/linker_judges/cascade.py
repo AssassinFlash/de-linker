@@ -1,12 +1,11 @@
 """The Jev -> DeepSeek cascade, over one item, as one function.
 
-`turns.py` owns the rule (the frozen #33 thresholds and which label stands);
-this module owns the two calls around it, so every caller runs the cascade the
-same way: the first judge answers every question, and only when one of its
-confidences falls short does the escalation judge get the item. The #13 pilot
-(`pilot.py`) drives it for the archived panel rows; #16's regression suite
-(`score.py`) drives it for the turns the suite just took, one item per
-question.
+`turns.py` owns the rule (the thresholds and which label stands); this module
+owns the two calls around it, so every caller runs the cascade the same way:
+the first judge answers every question, and only when one of its confidences
+falls short does the escalation judge get the item. The #13 pilot (`pilot.py`)
+drives it for the archived panel rows; #16's regression suite (`score.py`)
+drives it for the turns the suite just took, one item per question.
 """
 
 from __future__ import annotations
@@ -41,7 +40,7 @@ def run_cascade(
     thresholds: dict[str, float] | None = None,
 ) -> Cascade:
     """Judge one item: `first` for everything, `fallback` only where confidence
-    fell short of the question's frozen threshold.
+    fell short of the question's threshold.
 
     `item` is `turns_state()`'s shape: question, answer, reference, cards, and
     for items with candidates `answer_a`/`answer_b`.

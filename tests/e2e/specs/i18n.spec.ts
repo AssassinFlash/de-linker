@@ -1,8 +1,8 @@
 /**
  * i18n (docs/specs/9-i18n.md §验收): the German addresses answer, the German
  * pages are German on the server, English segments under /de/ 404, a product
- * and its German twin share their slug, the catalogue mirrors one stock, and
- * the Store API serves German behind `?lang=de`.
+ * and its German twin share their slug, the two languages mirror one stock,
+ * and the Store API serves German behind `?lang=de`.
  *
  * The German address list is the live site's own `de-sitemap.xml` from the
  * snapshot (`~/de-linker-data/<snapshot>/site/sitemaps/`, docs/specs/
@@ -105,12 +105,18 @@ test.describe('i18n', () => {
 			answered,
 			'every address of the live sitemap was requested'
 		).toBe(150);
-		// Two of the live site's German addresses are retired tool pages that
-		// this site's own chrome redirects to the configurator (docs/specs/
-		// 12-site-chrome.md item 2): /de/entwurfsflache/ (design canvas) and
-		// /de/angebots-konfigurator/ (quote configurator). A 200 there would
-		// mean the redirect was lost; anything else means a German page broke.
-		const retired = ['/de/entwurfsflache/', '/de/angebots-konfigurator/'];
+		// Three of the live site's German addresses are retired pages that this
+		// site's own chrome redirects on purpose: /de/entwurfsflache/ (design
+		// canvas) and /de/angebots-konfigurator/ (quote configurator) to the
+		// configurator (docs/specs/12-site-chrome.md item 2), and
+		// /de/linker-berater/ (the retired Adviser entry) to the products page
+		// (docs/specs/19-tool-pages.md). A 200 there would mean the redirect
+		// was lost; anything else means a German page broke.
+		const retired = [
+			'/de/entwurfsflache/',
+			'/de/angebots-konfigurator/',
+			'/de/linker-berater/',
+		];
 		const missing = summary.not_200 ?? [];
 		for (const entry of missing) {
 			const path = entry.replace(/^\d+\s+/, '');
@@ -142,7 +148,7 @@ test.describe('i18n', () => {
 				/<html[^>]*lang="de/i
 			);
 			expect(html, `${path} is served in German`).toMatch(
-				/\b(Startseite|Produkte|Warenkorb|Anfrage|Anmeldung|Konto|Lösung|Preise)\b/
+				/\b(Startseite|Produkte|Anfrage|Anmeldung|Konto|Lösung|Preise)\b/
 			);
 		}
 		for (const path of ['/de/about/', '/de/shop/', '/de/cart/']) {
@@ -291,7 +297,7 @@ test.describe('i18n', () => {
 				).toBe(flipped[index]);
 			}
 		} finally {
-			// Put the catalogue back the way the run found it.
+			// Put the products back the way the run found it.
 			wp([
 				'eval',
 				`foreach ( array(${ids}) as $i => $id ) { $p = wc_get_product( $id );` +

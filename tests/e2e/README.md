@@ -17,7 +17,7 @@ just e2e t16e --grep "commercial chain"
 The instance must be a real one: `just up` + a snapshot (`just pull load <name>
 <snapshot> --live-code`), the plugins from this checkout, `wp linker-i18n setup
 --assign`, `wp linker-commerce present`, `tools/migrate/9-i18n.py apply --write`
-(the English catalogue's German twins) and `tools/migrate/8-engineering.py
+(the English products' German twins) and `tools/migrate/8-engineering.py
 --write` (the engineering data the configurator sizes against — `just serve`
 reads the site's own `linker/v1/engineering-feed` into the engine, and the
 engine refuses a design without it).

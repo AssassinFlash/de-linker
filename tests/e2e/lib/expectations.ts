@@ -4,7 +4,7 @@
  * docs/research/2026-10-09/old-repo-live-catalogue-facts.md).
  *
  * The sets are the protocol's source of truth, not a reading of the
- * catalogue under test: a row fails when the answer leaves its set, and the
+ * products under test: a row fails when the answer leaves its set, and the
  * suite never derives the set from the instance it is judging. R1's German
  * wording is the protocol's R2.
  */

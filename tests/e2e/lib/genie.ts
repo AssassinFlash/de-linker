@@ -91,8 +91,8 @@ export interface TurnOptions {
 }
 
 /**
- * The ids the catalogue itself classifies as a device class (and, optionally,
- * an application).
+ * The ids the product data itself classifies as a device class (and,
+ * optionally, an application).
  *
  * Used to build a row's *superset* — which products are home inverters, which
  * are batteries — from the site's own engineering feed (`linker/v1/
@@ -100,7 +100,7 @@ export interface TurnOptions {
  * row is judged on (which of those were the right ones) stays in the row's
  * expectation and with the cascade judge.
  */
-export async function catalogueIds(query: {
+export async function productIds(query: {
 	device_class: string;
 	application?: string;
 	application_not?: string;

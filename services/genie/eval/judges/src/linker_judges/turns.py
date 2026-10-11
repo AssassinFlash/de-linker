@@ -9,9 +9,9 @@ wrong-pick variant as `answer_b`, so `better_pick` has a real choice and the
 real answer must win.
 
 The questions are the bake-off's own wording (`rubric.py`: one wording, every
-judge). The thresholds are the ones the #33 formal run calibrated on its
-calibration split and froze (docs/research/2026-10-09/judge-bakeoff.md
-§采用结论), applied unchanged here.
+judge). The thresholds started as the #33 formal run's calibration on its
+calibration split (docs/research/2026-10-09/judge-bakeoff.md §采用结论) and were
+recalibrated on the real-turn pilot (see `TURN_THRESHOLDS`).
 """
 
 from __future__ import annotations

@@ -155,8 +155,8 @@ test.describe('Solution Configurator', () => {
 	// per-input, never per-array (rules.py STRING_FUSE_*, IEC 60364-7-712).
 	// Two parallel strings of the reference module do not reach the reverse
 	// current that needs fuses, and the layout spreads a large array over the
-	// inverter's inputs rather than concentrating it, so the deployed
-	// catalogue tops out at two strings per input and every group reads 0.
+	// inverter's inputs rather than concentrating it, so the deployed products
+	// top out at two strings per input and every group reads 0.
 	// The counting branch itself is locked by the engine's own unit test
 	// (services/engine/tests/test_strings.py:33), which reaches four parallel
 	// strings directly; this case holds the deployed layout to the invariant.

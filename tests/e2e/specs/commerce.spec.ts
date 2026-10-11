@@ -19,11 +19,15 @@ import { expect, test, type Browser, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, loginLink, wp } from '../lib/instance';
+import { approveCustomer } from '../lib/approval';
 import { mark, messages, type Message } from '../lib/mail';
 
 const PASSWORD = 'local-Testpass-2026!';
 const STAFF = '857558227@qq.com';
 const TEAM = 'sales@de-linker.com';
+
+/** A currency amount, in either notation: 1.234,56 € or €1,234.56. */
+const PRICE = /(?:€|EUR)\s?\d|\d[.,]\d{2}\s?(?:€|EUR)/;
 
 /**
  * The team mail's blind copies are a settings fact (Settings → Bcc list,
@@ -297,19 +301,36 @@ test.describe('the commercial chain', () => {
 					.join('; ')})`
 			).toBe(true);
 
-			// 2. Prices are visible now, and the button is the draft's.
+			// 2. The account waits for the team: every registration starts
+			// pending (docs/specs/11-commerce.md §2), and a pending account
+			// reads the site like a guest — no price, no draft button.
+			await page.goto(url(PAGES[locale].product));
+			const pendingText = await page.locator('body').innerText();
+			expect(
+				pendingText,
+				'a pending account is shown no price'
+			).not.toMatch(PRICE);
+			expect(
+				pendingText,
+				'a pending account is not offered the draft'
+			).not.toMatch(PAGES[locale].draftButton);
+
+			// 3. The team approves the account in its own users list.
+			await approveCustomer(browser, email);
+
+			// 4. Prices are visible now, and the button is the draft's.
 			await page.goto(url(PAGES[locale].product));
 			const productText = await page.locator('body').innerText();
 			expect(
 				productText,
-				'a signed-in customer is no longer told to sign in for prices'
+				'an approved customer is no longer told to sign in for prices'
 			).not.toMatch(PAGES[locale].priceNote);
 			expect(
 				productText,
 				'the product page names the solution draft'
 			).toMatch(PAGES[locale].draftButton);
 
-			// 3. The draft holds the line.
+			// 5. The draft holds the line.
 			await addToDraft(page, locale);
 			await page.goto(url(PAGES[locale].draft));
 			const draftText = await page.locator('body').innerText();
@@ -318,7 +339,7 @@ test.describe('the commercial chain', () => {
 				/\b(Warenkorb|Shopping cart)\b/
 			);
 
-			// 4. The inquiry.
+			// 6. The inquiry.
 			const inquiryMark = mark();
 			await page.goto(url(PAGES[locale].request));
 			const placeOrder = page.locator('#place_order');
@@ -351,7 +372,7 @@ test.describe('the commercial chain', () => {
 				'the company, about the inquiry'
 			);
 
-			// 5. The Proforma, from the inquiry screen's own button.
+			// 7. The Proforma, from the inquiry screen's own button.
 			const proformaMark = mark();
 			const meta = await issueProforma(browser, orderId);
 			expect(meta, 'the Proforma is issued').toMatch(/PI-/);
@@ -363,7 +384,7 @@ test.describe('the commercial chain', () => {
 				`to ${email} with the Proforma`
 			);
 
-			// 6. The customer downloads it; a guest cannot.
+			// 8. The customer downloads it; a guest cannot.
 			await openInquiries(page, locale);
 			const download = page
 				.locator('a[href*="linker-document=proforma"]')

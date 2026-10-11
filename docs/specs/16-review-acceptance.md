@@ -25,7 +25,7 @@
 - `specs/configurator.spec.ts`：8 户型、3 合规、工商业两路、屋顶步、设计报告 PDF。
 - `specs/commerce.spec.ts`：注册→看价→Lösungsentwurf→询盘→后台出 PI→账户下载（EN/DE），邮件捕获断言。
 - `specs/i18n.spec.ts`：150 德语 URL（经 `just pull check-urls` 请求快照自己的德语 sitemap）、同 slug、库存镜像、`?lang=de` Store API。
-- `specs/catalogue.spec.ts`：分类页筛选、隐价、按钮文案（访客/登录）。
+- `specs/products.spec.ts`：分类页筛选、隐价、按钮文案（访客/登录）。
 - `specs/chrome.spec.ts`：页头页脚命名、301、sitemap、hreflang。
 
 **待主线终态的部分在套件里以 `pending-main` 标注**（运行时 skip 并写明原因），不静默删除：商品页 Genie 芯片（模板侧）与 hreflang 的旧站点残留（快照 SEOPress 数据）。

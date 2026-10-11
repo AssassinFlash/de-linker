@@ -104,6 +104,13 @@ def test_a_page_row_names_its_own_product_apart() -> None:
     )
 
 
+def test_a_page_row_without_recommendations_states_only_the_page() -> None:
+    """A page row whose only card is the page's own product: the page line
+    stands alone, without an empty "Recommended products" line."""
+    answer = answer_with_offers("The H2-10K-T3 is a 10 kW hybrid.", 4107, [4107])
+    assert answer == "The H2-10K-T3 is a 10 kW hybrid.\n\nThis page's product: 4107."
+
+
 def test_a_row_without_a_page_states_only_its_recommendations() -> None:
     answer = answer_with_offers("Here are batteries.", None, [2092, 2067])
     assert answer == "Here are batteries.\n\nRecommended products: 2092, 2067."

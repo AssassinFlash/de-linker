@@ -38,9 +38,9 @@ import {
 	answerText,
 	asks,
 	cards,
-	catalogueIds,
 	conversationId,
 	handoffs,
+	productIds,
 	turn,
 	type PageContext,
 	type Turn,
@@ -201,30 +201,30 @@ test.describe('Genie — the behaviour panel', () => {
 	// Two rows expect a *class* rather than a list: "a hybrid inverter for my
 	// home" may answer with single-phase and three-phase models, and a 48 V
 	// question may answer with any battery of the range. The classes come from
-	// the catalogue's own classifier — the same ability the turns read — while
-	// which models are the right ones stays the row's expectation and the
-	// cascade judge's business.
+	// the product data's own classifier — the same ability the turns read —
+	// while which models are the right ones stays the row's expectation and
+	// the cascade judge's business.
 	test.beforeAll(async () => {
 		// Every inverter that is not a commercial one: the range has home
 		// inverters whose application attribute is still unknown (the newest
 		// EcoFlow units — docs/research/2026-10-09/old-repo-live-catalogue-facts.md),
-		// and the catalogue offers them for a residential question.
-		const inverters = await catalogueIds({
+		// and the product range offers them for a residential question.
+		const inverters = await productIds({
 			device_class: 'inverters',
 			application_not: 'commercial',
 		});
 		expect(
 			inverters.length,
-			'the catalogue lists the home inverters'
+			'the product data lists the home inverters'
 		).toBeGreaterThan(10);
 		const batteries = [
-			...(await catalogueIds({ device_class: 'home-storage' })),
-			...(await catalogueIds({ device_class: 'battery-systems' })),
-			...(await catalogueIds({ device_class: 'all-in-one-systems' })),
+			...(await productIds({ device_class: 'home-storage' })),
+			...(await productIds({ device_class: 'battery-systems' })),
+			...(await productIds({ device_class: 'all-in-one-systems' })),
 		];
 		expect(
 			batteries.length,
-			'the catalogue lists the batteries'
+			'the product data lists the batteries'
 		).toBeGreaterThan(10);
 		for (const id of inverters) {
 			ROWS.find((one) => one.id === 'R4')!.allowed.add(id);

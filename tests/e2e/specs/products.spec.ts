@@ -1,7 +1,7 @@
 /**
  * The product pages of the review site (docs/specs/16-review-acceptance.md):
  * the category page's filters, the gated price, and the button copy, once as
- * a guest and once as a signed-in customer, in both languages.
+ * a guest and once as a signed-in, approved customer, in both languages.
  */
 
 /**
@@ -13,6 +13,7 @@ import { expect, test } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, loginLink, wp } from '../lib/instance';
+import { approveCustomer } from '../lib/approval';
 
 type Locale = 'en' | 'de';
 
@@ -34,7 +35,11 @@ const PRICE = /(?:€|EUR)\s?\d|\d[.,]\d{2}\s?(?:€|EUR)/;
 
 const CUSTOMER = 'e2e-catalogue@example.test';
 
-/** One customer account both locales can sign in as. */
+/**
+ * One customer account both locales can sign in as. Its approval is the
+ * team's own step (docs/specs/11-commerce.md §3), applied by the test through
+ * `approveCustomer`.
+ */
 function ensureCustomer(): void {
 	const existing = wp([
 		'user',
@@ -58,9 +63,9 @@ function signInLink(): string {
 	return loginLink(undefined, CUSTOMER);
 }
 
-test.describe('the catalogue', () => {
+test.describe('the products', () => {
 	for (const locale of ['en', 'de'] as Locale[]) {
-		test(`${locale}: the filters narrow the catalogue`, async ({
+		test(`${locale}: the filters narrow the product listing`, async ({
 			page,
 		}) => {
 			await page.goto(`${instance().url}${SHOP[locale]}`);
@@ -161,10 +166,12 @@ test.describe('the catalogue', () => {
 			).not.toMatch(DRAFT_BUTTON[locale]);
 		});
 
-		test(`${locale}: a signed-in customer sees the price and the draft button`, async ({
+		test(`${locale}: an approved customer sees the price and the draft button`, async ({
 			page,
+			browser,
 		}) => {
 			ensureCustomer();
+			await approveCustomer(browser, CUSTOMER);
 			await page.goto(signInLink());
 			await page.goto(`${instance().url}${PRODUCT[locale]}`);
 			const text = await page.locator('body').innerText();
