@@ -24,8 +24,20 @@
  * (measured on the live catalogue 2026-10-12 at 1440: 958×145.67, margin
  * 36/20, padding 26/30, radius 14, bg #f4f8f6, line #cfded9, gap 30; at 390:
  * column, padding 23, gap 20).
+ *
+ * Every rule is scoped to the catalogue root, because the copied live sheet
+ * carries its own link reset `#tv-woo-b2b-catalog a { color: inherit;
+ * text-decoration: none; }` (storefront.css). At (1,0,1) that reset beats an
+ * unscoped `.linker-contact-invitation .linker-contact-primary` (0,2,0), and
+ * the CTA rendered in the section's ink instead of the live's white-on-teal,
+ * the mail address without its underline (measured 2026-10-12: live CTA
+ * rgb(255,255,255) / mail rgb(18,102,79) underlined vs t16 rgb(32,58,50) /
+ * no underline, on all four catalogue pages). The root id puts these rules at
+ * (1,2,0) and the live's own look stands. Both mounts
+ * (content/livecanvas/shop_page.html, archive_product.html) render the band
+ * inside `#tv-woo-b2b-catalog`.
  */
-.linker-contact-invitation {
+#tv-woo-b2b-catalog .linker-contact-invitation {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -44,13 +56,13 @@
 	line-height: 1.55;
 }
 
-.linker-contact-invitation > div:first-child {
+#tv-woo-b2b-catalog .linker-contact-invitation > div:first-child {
 	flex: 1 1 280px;
 	min-width: 0;
 	max-width: 700px;
 }
 
-.linker-contact-invitation > div:last-child {
+#tv-woo-b2b-catalog .linker-contact-invitation > div:last-child {
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
@@ -60,14 +72,14 @@
 	max-width: 100%;
 }
 
-.linker-contact-invitation .linker-contact-eyebrow {
+#tv-woo-b2b-catalog .linker-contact-invitation .linker-contact-eyebrow {
 	font-size: 10px;
 	font-weight: 700;
 	letter-spacing: .13em;
 	line-height: 1.55;
 }
 
-.linker-contact-invitation h2 {
+#tv-woo-b2b-catalog .linker-contact-invitation h2 {
 	margin: 9px 0;
 	font-size: 23px;
 	font-weight: 700;
@@ -76,14 +88,14 @@
 	color: #0a0a0a;
 }
 
-.linker-contact-invitation p {
+#tv-woo-b2b-catalog .linker-contact-invitation p {
 	margin: 0;
 	font-size: 13px;
 	line-height: 1.7;
 	color: #536b62;
 }
 
-.linker-contact-invitation .linker-contact-primary {
+#tv-woo-b2b-catalog .linker-contact-invitation .linker-contact-primary {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -101,12 +113,12 @@
 	overflow-wrap: anywhere;
 }
 
-.linker-contact-invitation .linker-contact-primary:hover {
+#tv-woo-b2b-catalog .linker-contact-invitation .linker-contact-primary:hover {
 	background: #0e513f;
 	color: #fff;
 }
 
-.linker-contact-invitation .linker-contact-email {
+#tv-woo-b2b-catalog .linker-contact-invitation .linker-contact-email {
 	font-size: 13px;
 	line-height: 1.55;
 	color: #12664f;
@@ -115,26 +127,26 @@
 }
 
 @media (max-width: 760px) {
-	.linker-contact-invitation {
+	#tv-woo-b2b-catalog .linker-contact-invitation {
 		flex-direction: column;
 		align-items: stretch;
 		gap: 20px;
 		padding: 23px;
 	}
 
-	.linker-contact-invitation h2 {
+	#tv-woo-b2b-catalog .linker-contact-invitation h2 {
 		font-size: 22px;
 	}
 
-	.linker-contact-invitation > div:first-child {
+	#tv-woo-b2b-catalog .linker-contact-invitation > div:first-child {
 		flex: auto;
 	}
 
-	.linker-contact-invitation > div:last-child {
+	#tv-woo-b2b-catalog .linker-contact-invitation > div:last-child {
 		align-items: stretch;
 	}
 
-	.linker-contact-invitation a {
+	#tv-woo-b2b-catalog .linker-contact-invitation a {
 		text-align: center;
 	}
 }

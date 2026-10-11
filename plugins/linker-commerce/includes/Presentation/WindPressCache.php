@@ -45,14 +45,14 @@ final class WindPressCache {
 		// WindPress volume stylesheets, so a missing selector is the alarm for
 		// a volume file that never made it into the compile, or a shortcode
 		// parser that ate a class out of a template.
-		'sf-catalog'     => '.sf-catalog',
-		'catalog-grid'   => '.catalog-grid',
-		'sf-card'        => '.sf-card',
-		'wb-strip'       => '.wb-strip',
-		'pdp-layout'     => '.pdp-layout',
-		'pdp-purchase'   => '.pdp-purchase',
-		'pdp-scene-reel' => '.pdp-scene-reel',
-		'pdp-disclose'   => '.pdp-disclose',
+		'sf-catalog'            => '.sf-catalog',
+		'catalog-grid'          => '.catalog-grid',
+		'sf-card'               => '.sf-card',
+		'wb-strip'              => '.wb-strip',
+		'pdp-layout'            => '.pdp-layout',
+		'pdp-purchase'          => '.pdp-purchase',
+		'pdp-scene-reel'        => '.pdp-scene-reel',
+		'pdp-disclose'          => '.pdp-disclose',
 	);
 
 	/**

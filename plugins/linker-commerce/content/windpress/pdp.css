@@ -1075,6 +1075,7 @@ body:has(#tv-storefront-pdp) {
 	}
 
 	#tv-storefront-pdp .pdp-overview {
+		grid-template-areas: "copy image";
 		grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
 		gap: 56px;
 	}
@@ -1224,13 +1225,12 @@ body:has(#tv-storefront-pdp) {
 		gap: 24px;
 	}
 
-	#tv-storefront-pdp .pdp-info-tabs {
-		flex-wrap: wrap;
-	}
-
-	#tv-storefront-pdp .pdp-info-tabs [role="tab"] {
-		flex: 1 1 45%;
-	}
+	/* The live phone page keeps the three tabs on ONE row at every width
+	   (measured 2026-10-12 at 390/360/320: flex-wrap nowrap, each tab
+	   `1 1 0%` = 113/103/89px, the label wrapping inside its own tab). The
+	   former overrides here — `flex-wrap: wrap` plus `flex: 1 1 45%` — broke
+	   the row into two (t16: two rows, the third tab full width), so the base
+	   `flex: 1` stands at every width. */
 
 	#tv-storefront-pdp .pdp-stat-row {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1298,18 +1298,32 @@ body:has(#tv-storefront-pdp) {
 		min-height: 0;
 	}
 
+	/* The live phone picture box is a fixed 245px tall (product-page.css @≤860)
+	   — the former `aspect-ratio: 190 / 245` came out 245.4px at 390 and moved
+	   every element below by 0.4px. */
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-gallery-main-wrap {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		align-items: center;
-		height: auto;
-		aspect-ratio: 190 / 245;
+		place-items: center;
+		width: 100%;
+		height: 245px;
+		padding: 0;
+		border: 0;
+		background: transparent;
 	}
 
+	/* The product PNG carries a white studio background: the live phone page
+	   blends it away with `mix-blend-mode: multiply` (so the soft disc behind
+	   shows through), at a transparent element background and the fixed height
+	   (measured 2026-10-12: live blend multiply, t16 normal). */
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-gallery-main {
+		display: block;
+		width: 100%;
+		height: 245px;
 		padding: 0;
+		background: transparent;
 		border-radius: 0;
-		min-height: auto;
+		object-fit: contain;
+		mix-blend-mode: multiply;
 	}
 
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-thumbs {
@@ -1344,7 +1358,10 @@ body:has(#tv-storefront-pdp) {
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-avail { grid-area: auto / 1 / auto / -1; padding: 12px 0 0; margin: 0 0 18px; border-bottom: 0; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-avail-label { font-size: 11px; line-height: 17.6px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-avail-note { font-size: 11px; line-height: 17.6px; }
-	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-btn-dark { grid-area: auto / 2; margin: 0 0 18px; padding: 12px 14px; font-size: 12px; font-weight: 600; line-height: 18px; border-radius: 14px; }
+	/* The live phone page paints the sign-in button teal (the desktop keeps
+	   the ink) — measured 2026-10-12 at 390: live rgb(12,127,115), t16
+	   rgb(21,53,47). */
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-btn-dark { grid-area: auto / 2; margin: 0 0 18px; padding: 12px 14px; font-size: 12px; font-weight: 600; line-height: 18px; border-radius: 14px; background: var(--pdp-teal); border-color: var(--pdp-teal); }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-btn-secondary { grid-area: auto / 1 / auto / -1; margin: 12px 0 18px; padding: 12px 14px; color: var(--pdp-teal); font-size: 12px; font-weight: 600; line-height: 18px; border-radius: 14px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-product-tools { grid-area: auto / 1 / auto / -1; margin: 0 0 18px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-tool { flex-direction: column; gap: 7px; padding: 9px; font-size: 11px; font-weight: 500; line-height: 15.4px; border-radius: 14px; }
@@ -1414,7 +1431,17 @@ body:has(#tv-storefront-pdp) {
 
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-block { padding: 24px 0; }
 
-	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-overview { border-radius: 24px; }
+	/* The live phone page's own grid areas (product-page.css @≤860): the copy
+	   sits in the FIRST row and the empty image row collapses below it. Our
+	   copy is placed `grid-area: copy` by the copied live sheet, whose base
+	   template reads "image" first — without this area map the copy landed in
+	   the second row and the 18px row gap pushed the whole description block
+	   down (measured 2026-10-12: live copy y 1134.4 = card top 1112.4 + 22
+	   padding; t16 y 1153.8 = +40). */
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-overview {
+		grid-template-areas: "copy" "image";
+		border-radius: 24px;
+	}
 
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-benefits {
 		display: flex;

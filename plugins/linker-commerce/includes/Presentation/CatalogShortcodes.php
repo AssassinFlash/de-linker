@@ -190,7 +190,14 @@ final class CatalogShortcodes {
 			$html .= '<details class="filter-section fgroup rail-nav" open>';
 			$html .= '<summary class="filter-title">' . esc_html__( 'Category', 'linker-commerce' ) . '</summary>';
 			$html .= '<div class="filter-options">';
-			$html .= '<a class="family-link" href="' . esc_url( (string) wc_get_page_permalink( 'shop' ) ) . '"><span>' . esc_html__( 'All products', 'linker-commerce' ) . '</span></a>';
+			// The live rail marks the shelf the visitor is on: on the shop page
+			// the "All products" row carries aria-current="page" and the copied
+			// live rule `#tv-woo-b2b-catalog .family-link[aria-current="page"]`
+			// lifts it to 600; on a category page it stays plain (measured
+			// 2026-10-12: live "All products" aria-current=page fw 600 on
+			// /products/ and /de/produkte/, absent on the archives — t16 showed
+			// 400 everywhere because the attribute was never printed).
+			$html .= '<a class="family-link"' . ( $is_term ? '' : ' aria-current="page"' ) . ' href="' . esc_url( (string) wc_get_page_permalink( 'shop' ) ) . '"><span>' . esc_html__( 'All products', 'linker-commerce' ) . '</span></a>';
 			foreach ( $categories as $category ) {
 				$current = $is_term && $queried->term_id === $category->term_id;
 				$html   .= '<a class="family-link' . ( $current ? ' is-current' : '' ) . '" href="' . esc_url( $this->term_link( $category ) ) . '"' . ( $current ? ' aria-current="page"' : '' ) . '><span>' . esc_html( $category->name ) . '</span></a>';
@@ -741,8 +748,9 @@ final class CatalogShortcodes {
 				$ids[0],
 				'full',
 				array(
-					'class' => 'pdp-gallery-main',
-					'alt'   => (string) $view['title'],
+					'class'  => 'pdp-gallery-main',
+					'alt'    => (string) $view['title'],
+					'srcset' => null,
 				)
 			) . '</button>';
 		if ( isset( $ids[1] ) ) {
@@ -1734,9 +1742,10 @@ final class CatalogShortcodes {
 	 * An image tag with the live renderer's attribute set: class, src, srcset
 	 * and sizes, no width/height (the stylesheet sizes the box).
 	 *
-	 * @param int                   $image_id   The attachment.
-	 * @param string                $size       Registered size name.
-	 * @param array<string, string> $attributes Extra attributes.
+	 * @param int                        $image_id   The attachment.
+	 * @param string                     $size       Registered size name.
+	 * @param array<string, string|null> $attributes Extra attributes; `srcset => null`
+	 *                                               suppresses the generated candidates.
 	 */
 	private static function image_tag( int $image_id, string $size, array $attributes ): string {
 		$src    = wp_get_attachment_image_src( $image_id, $size );
@@ -1744,6 +1753,15 @@ final class CatalogShortcodes {
 		$sizes  = wp_get_attachment_image_sizes( $image_id, $size );
 		if ( ! \is_array( $src ) ) {
 			return '';
+		}
+		// A caller that names `srcset` replaces the generated candidates;
+		// `null` suppresses the attribute entirely. The live main picture
+		// carries no srcset, so the browser takes the full-size file (measured
+		// 2026-10-12 at 390: live currentSrc = the 1000px original, t16's
+		// generated candidates had it pick the 600×450).
+		if ( \array_key_exists( 'srcset', $attributes ) ) {
+			$srcset = $attributes['srcset'];
+			unset( $attributes['srcset'] );
 		}
 		// WordPress's canonical attribute order (width, height, src, then the
 		// rest, srcset last): measured 2026-10-11, the browser picks a
@@ -1755,11 +1773,14 @@ final class CatalogShortcodes {
 		}
 		$html .= ' src="' . esc_url( (string) $src[0] ) . '"';
 		foreach ( $attributes as $name => $value ) {
+			if ( null === $value ) {
+				continue;
+			}
 			$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 		}
 		// An explicit srcset (the thumbnails carry the live page's candidate)
-		// replaces the generated one.
-		if ( ! isset( $attributes['srcset'] ) && \is_string( $srcset ) && '' !== $srcset ) {
+		// replaces the generated one; null left none to print.
+		if ( \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
 		}
 		return $html . ' />';

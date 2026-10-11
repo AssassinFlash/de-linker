@@ -354,6 +354,14 @@ final class CatalogFilters {
 				'count' => 0,
 			);
 		}
+		// The rail's own order, not the order the products arrived in: the live
+		// rail prints Phase as 3-phase then 1-phase and Power from "Up to 6 kW"
+		// down to "Over 30 kW" (its $phase_labels / $power_labels arrays,
+		// catalogue-archive.php; measured on the live rail 2026-10-12 — t16
+		// listed 1-phase first and the power buckets descending, which is the
+		// first-encountered order of the archive list).
+		$counts['phase'] = $this->in_value_order( $counts['phase'], array( '3', '1' ) );
+		$counts['power'] = $this->in_value_order( $counts['power'], array_keys( self::POWER_BUCKETS ) );
 		// The brands read A-Z, as the live rail lists them (Chint / EcoFlow /
 		// GoodWe / Pylontech / SAJ — measured 2026-10-12).
 		uasort(
@@ -381,6 +389,25 @@ final class CatalogFilters {
 			)
 		);
 		return $facets;
+	}
+
+	/**
+	 * A facet's values in the order the live rail lists them: the values the
+	 * live names first, then whatever else was counted, in its own order.
+	 *
+	 * @param array<int|string, array{label: string, count: int}> $values The counted values.
+	 * @param string[]                                            $order  The live rail's value order.
+	 * @return array<int|string, array{label: string, count: int}> The values in that order.
+	 */
+	private function in_value_order( array $values, array $order ): array {
+		$ordered = array();
+		foreach ( $order as $value ) {
+			if ( isset( $values[ $value ] ) ) {
+				$ordered[ $value ] = $values[ $value ];
+			}
+		}
+
+		return $ordered + $values;
 	}
 
 	/**

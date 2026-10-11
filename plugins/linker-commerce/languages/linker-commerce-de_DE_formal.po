@@ -3092,8 +3092,8 @@ msgstr "Alle Modelle"
 msgid "Selected model"
 msgstr "Ausgewähltes Modell"
 
-#. German wording of the catalogue card labels, read from the live German
-#. catalogue's own cards (2026-10-12).
+#. German wording of the shop card labels, read from the live German
+#. pages' own cards (2026-10-12).
 #: includes/Catalog/Materials.php
 msgid "Rated AC power"
 msgstr "AC-Nennleistung"
@@ -3250,13 +3250,6 @@ msgstr "Max. Scheinleistung"
 msgid "Accessory option"
 msgstr "Zubehöroption"
 
-#. The catalogue head's breadcrumb first step (the live German page reads
-#. "STARTSEITE"); the application value "Home" stays "Privat".
-#: includes/Presentation/CatalogShortcodes.php
-msgctxt "breadcrumb"
-msgid "Home"
-msgstr "Startseite"
-
 #: includes/Presentation/CatalogShortcodes.php
 msgid "Category: %s"
 msgstr "Kategorie: %s"
@@ -3265,7 +3258,7 @@ msgstr "Kategorie: %s"
 msgid "Archives: %s"
 msgstr "Archiv: %s"
 
-#. The catalogue's contact invitation, verbatim from the live German pages.
+#. The shop pages' contact invitation, verbatim from the live German pages.
 #: includes/Presentation/CatalogShortcodes.php
 msgid "CONTACT LINKER"
 msgstr "KONTAKT ZU LINKER"

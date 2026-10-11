@@ -126,3 +126,21 @@ overlay 样式（脚本 `/tmp/t16-proposals.mjs`，CSS 原文见每项的"试验
 	}
 }
 ```
+
+---
+
+## 5. 侧栏工具卡（rail-help）：文案来自 #12 裁定改名，卡高 +20.1px 是其结果（不修，登记）
+
+- **位置**：目录页筛选栏（`.rail-help`）——live 卡文案 "Send a Project to Linker / Open Project Brief"，
+  t16 为 "Plan with the Solution Configurator / Open the Solution Configurator"。
+- **来源**：文案是 **#12 对抗评审批准的工具改名定稿**（业主工具命名裁定：
+  `docs/acceptance/2026-10-10/12/copy-review.md`；实现见 `CatalogShortcodes.php` 的 rail-help 段，
+  EN/DE 均入 .po/.pot 并 msgfmt 重编）。
+- **实测（2026-10-12，1440，`.rail-help` 卡）**：live 210×**178.7** @(100, 1846.9) 标题一行；
+  t16 210×**198.8** @(100, 1846.9) 标题两行——**卡高 +20.1px**，卡的位置逐值相同；标题由一行
+  变两行（"Plan with the Solution Configurator" 折行）是改名文案本身的排版结果，不是复刻缺陷。
+- **判定**：**登记为裁定改名，非复刻失败；不改回 live 文案**。像素对照中该卡的差异
+  （标题两行、卡高 +20.1px）为业主裁定豁免；若业主日后改回 "Send a Project to Linker"，
+  改 .po 串 + rail-help 段即可复位。
+- **证据**：`.scratch/t16-verdict/final4/crops/sidebar-3way.png`（live | t16 三栏对照）、
+  `.scratch/t16-verdict/final4/analysis/landmarks.json`（live 卡 178.7px 与 t16 卡几何）。
