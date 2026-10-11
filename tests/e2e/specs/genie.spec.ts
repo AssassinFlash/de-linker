@@ -46,10 +46,12 @@ import {
 	type Turn,
 	type TurnOptions,
 } from '../lib/genie';
-import { judgeItems, type JudgeItem } from '../lib/judge';
-
-/** Every answered question, in order; the cascade judges them at the end. */
-const judgeable: JudgeItem[] = [];
+import {
+	collectJudgeItem,
+	collectedJudgeItems,
+	judgeItems,
+	type JudgeItem,
+} from '../lib/judge';
 
 /** R1's German wording is the protocol's R2. */
 function label(row: Row, locale: Locale): string {
@@ -260,7 +262,7 @@ test.describe('Genie — the behaviour panel', () => {
 				expect(attempts, `${name}: ${attempts.join(' | ')}`).toEqual(
 					[]
 				);
-				judgeable.push(judgeItem(row, locale, result!, row.swapTo));
+				collectJudgeItem(judgeItem(row, locale, result!, row.swapTo));
 			});
 		}
 	}
@@ -306,7 +308,7 @@ test.describe('Genie — the behaviour panel', () => {
 			expect(measured, `R7-${locale}: ${measured.join(' | ')}`).toEqual(
 				[]
 			);
-			judgeable.push(judgeItem(row, locale, answered!));
+			collectJudgeItem(judgeItem(row, locale, answered!));
 		}
 	});
 
@@ -328,7 +330,7 @@ test.describe('Genie — the behaviour panel', () => {
 				'no product cards for an out-of-scope question'
 			).toEqual([]);
 			expect(text, 'the mailbox sentence').toContain(TEAM_MAIL);
-			judgeable.push({
+			collectJudgeItem({
 				id: `R14-${locale}`,
 				question: R14.question[locale],
 				answer: text,
@@ -340,7 +342,10 @@ test.describe('Genie — the behaviour panel', () => {
 
 	test('every question carries a judged score', async () => {
 		test.setTimeout(900_000);
-		const verdicts = judgeItems(judgeable);
+		// The items as collected on disk: a failed row restarts the worker
+		// (Playwright), so module state cannot carry them across the file.
+		const items = collectedJudgeItems();
+		const verdicts = judgeItems(items);
 
 		// Coverage is the gate: every question the run asked is judged, and
 		// every label the cascade settles on is a real one (an unresolved
@@ -351,10 +356,10 @@ test.describe('Genie — the behaviour panel', () => {
 		// not to fail on it — a stochastic judge over a stochastic model would
 		// otherwise make the suite's colour a coin toss.
 		expect(Object.keys(verdicts).length, 'every question was judged').toBe(
-			judgeable.length
+			items.length
 		);
 		const problems: string[] = [];
-		for (const item of judgeable) {
+		for (const item of items) {
 			const verdict = verdicts[item.id]!;
 			for (const [question, label] of Object.entries(verdict.labels)) {
 				if (label === null || label === undefined) {
@@ -379,7 +384,7 @@ test.describe('Genie — the behaviour panel', () => {
 				);
 			}
 		}
-		const report = judgeable
+		const report = items
 			.map((item) => {
 				const verdict = verdicts[item.id]!;
 				return (

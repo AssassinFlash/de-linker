@@ -12,9 +12,15 @@
  * External dependencies
  */
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+	appendFileSync,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+} from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 /**
  * Internal dependencies
@@ -74,6 +80,46 @@ export function judgeRunDir(when: Date = new Date()): string {
 		`${when.getFullYear()}${pad(when.getMonth() + 1)}${pad(when.getDate())}` +
 		`-${pad(when.getHours())}${pad(when.getMinutes())}${pad(when.getSeconds())}`;
 	return join(instance().dir, 'e2e-judge', stamp);
+}
+
+/**
+ * The items the run has collected, on disk.
+ *
+ * A failed test makes Playwright restart the worker process, which
+ * re-evaluates this module: an in-memory list would silently lose every row
+ * collected before the failure and the judging step would grade only the tail
+ * (measured 2026-10-12: a failure on R10-en left 8 of the run's 19 rows judged,
+ * and the coverage gate could not see it because it compared the verdicts
+ * against the same shortened list). The file is keyed by the runner process
+ * (`process.ppid`, stable across a worker restart), so every worker of one
+ * `playwright test` run appends to one list, and a fresh run starts clean.
+ */
+function collectedPath(): string {
+	return join(instance().dir, 'e2e-judge', `collected-${process.ppid}.jsonl`);
+}
+
+/** Records one collected item; the id is the key, a later record wins. */
+export function collectJudgeItem(item: JudgeItem): void {
+	const path = collectedPath();
+	mkdirSync(dirname(path), { recursive: true });
+	appendFileSync(path, JSON.stringify(item) + '\n');
+}
+
+/** Every collected item this run, keyed by id, in first-collection order. */
+export function collectedJudgeItems(): JudgeItem[] {
+	const path = collectedPath();
+	if (!existsSync(path)) {
+		return [];
+	}
+	const byId = new Map<string, JudgeItem>();
+	for (const line of readFileSync(path, 'utf8').split('\n')) {
+		if (line.trim() === '') {
+			continue;
+		}
+		const item = JSON.parse(line) as JudgeItem;
+		byId.set(item.id, item);
+	}
+	return [...byId.values()];
 }
 
 /**
