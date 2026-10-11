@@ -1,60 +1,38 @@
-<section class="bg-neutral-50 py-8 text-center">
-	<div class="mx-auto max-w-[1160px] px-4">
-		<nav aria-label="breadcrumb" class="lc-block mb-4">
-			<ol class="flex flex-wrap justify-center gap-2 text-sm">
-				<li><a class="text-[#15352f] no-underline" href="[lc_wc_get_page_url]">Home</a></li>
-				<li aria-current="page">[lc_the_archive_title strip_label="1"]</li>
-			</ol>
-		</nav>
-		<div class="lc-block">
-			<h1 class="text-4xl font-bold tracking-tight text-[#15352f]">[lc_the_archive_title strip_label="1"]</h1>
-		</div>
-		<div class="lc-block mx-auto mb-4 max-w-3xl text-neutral-500">
-			[lc_the_archive_description]
-		</div>
-	</div>
-</section>
-
 <div>
 	[lc_wc_notices]
 </div>
 
-<section class="py-12">
-	<div id="container-content-archive-product" class="mx-auto max-w-[1160px] px-4">
-		<div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-			<div>
-				[lc_wc_result_count]
-			</div>
-			<div>
-				[lc_wc_order_by form_class="woocommerce-ordering" class="orderby"]
+<div id="tv-woo-b2b-catalog" class="sf-catalog">
+	[linker_catalog_head]
+
+	<nav class="catalog-mobile-actions" aria-label="Catalog tools">
+		<button type="button" id="catalog-filter-open" aria-controls="sidebar-filters" aria-expanded="false"><span>Filters</span></button>
+		[linker_genie_chips page_type="category"]
+	</nav>
+
+	<section class="catalog-section">
+		<div class="container catalog-layout">
+			<aside class="sidebar-filters" id="sidebar-filters" data-linker-catalog-filter aria-label="Product filters">
+				[linker_catalog_filters]
+			</aside>
+
+			<div class="catalog-results">
+				<div class="wb-strip">
+					<div class="wbc"></div>
+					<span class="wbcount">[lc_wc_result_count]</span>
+					[linker_catalog_sort]
+				</div>
+
+				[linker_catalog_empty]
+
+				<div class="catalog-grid" id="catalog-grid">
+					[lc_loop]
+					[linker_catalog_card]
+					[/lc_loop]
+				</div>
+
+				<div class="wb-pages">[lc_the_pagination class="wb-page-links"]</div>
 			</div>
 		</div>
-		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-			[lc_loop]
-			<article class="flex h-full flex-col rounded-xl border border-neutral-200 bg-white">
-				<div class="relative">
-					<div class="lc-block">
-						[lc_the_thumbnail size="medium" placeholder_url="http://via.placeholder.com/600x600" class="w-full rounded-t-xl"]
-					</div>
-					<div class="lc-block absolute end-0 top-0 me-1 mt-1 opacity-75">
-						[lc_wc_on_sale_badge]
-					</div>
-				</div>
-				<div class="flex flex-1 flex-col gap-2 p-4">
-					<p class="text-sm text-neutral-500">
-						[lc_the_terms taxonomy="product_cat" class=" " link="0" parent=""]
-					</p>
-					<h2 class="text-lg font-semibold tracking-tight text-[#15352f]">[lc_the_title link="1" link_class="stretched-link"]</h2>
-					<div class="lc-block text-[#0c7f73] font-semibold">
-						[linker_price]
-					</div>
-				</div>
-				<div class="p-4 pt-0">
-					[lc_wc_add_to_cart class="inline-flex min-h-11 items-center rounded-lg border border-(--proto-accent) px-4 font-bold text-(--proto-accent)"]
-				</div>
-			</article>
-			[/lc_loop]
-		</div>
-		<div class="py-10 lc-block">[lc_the_pagination class="flex justify-center gap-2"]</div>
-	</div>
-</section>
+	</section>
+</div>

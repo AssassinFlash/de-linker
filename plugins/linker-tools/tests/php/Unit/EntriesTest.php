@@ -168,6 +168,34 @@ final class EntriesTest extends TestCase {
 	}
 
 	/**
+	 * The shortcode prints a page type's chip group: the LiveCanvas
+	 * templates' entry surface, whose pages never fire the Woo hooks.
+	 */
+	public function test_chips_shortcode_prints_the_group_of_its_page_type(): void {
+		WP_Mock::passthruFunction( '__' );
+		WP_Mock::passthruFunction( 'esc_html' );
+		WP_Mock::passthruFunction( 'esc_attr' );
+		WP_Mock::userFunction(
+			'shortcode_atts',
+			array(
+				'return' => static fn ( array $defaults, array $atts ): array => array_merge( $defaults, $atts ),
+			)
+		);
+
+		$html = ( new Entries( '/plugin/linker-tools.php' ) )->chips_shortcode( array( 'page_type' => 'product' ) );
+
+		$this->assertSame( 3, substr_count( $html, 'linker-genie-chip' ) );
+		$this->assertSame( 3, substr_count( $html, 'data-page-type="product"' ) );
+
+		// No attribute: the current query decides.
+		$this->frontend( 'en', array( 'type' => 'category' ) );
+		$html = ( new Entries( '/plugin/linker-tools.php' ) )->chips_shortcode( array( 'page_type' => '' ) );
+		$this->assertSame( 1, substr_count( $html, 'linker-genie-chip' ) );
+		$this->assertStringContainsString( 'data-page-type="category"', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * A frontend page in `locale`, outside wp-admin.
 	 *
 	 * @param string               $locale determine_locale()'s answer.

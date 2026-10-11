@@ -12,6 +12,7 @@ namespace Linker\Commerce\Cli;
 use Linker\Commerce\Presentation\Templates;
 use Linker\Commerce\Presentation\Tokens;
 use Linker\Commerce\Presentation\WindPressCache;
+use Linker\Commerce\Presentation\WindPressVolume;
 use WP_CLI;
 
 /**
@@ -95,6 +96,9 @@ final class PresentCommand {
 
 		( new Tokens() )->install();
 		WP_CLI::log( 'tokens: Additional CSS' );
+
+		( new WindPressVolume() )->install();
+		WP_CLI::log( 'windpress volume: storefront styles' );
 
 		if ( isset( $assoc_args['detach-partials'] ) ) {
 			$stripped = ( new Tokens() )->detach_from_partials();
@@ -268,7 +272,7 @@ final class PresentCommand {
 		if ( null !== $this->source_files ) {
 			return $this->source_files;
 		}
-		return array_merge( array_values( Templates::catalog() ), array( Tokens::path() ), Tokens::fonts() );
+		return array_merge( array_values( Templates::catalog() ), array( Tokens::path() ), Tokens::fonts(), WindPressVolume::files() );
 	}
 
 	/**

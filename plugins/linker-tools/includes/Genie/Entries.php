@@ -43,6 +43,7 @@ class Entries {
 		add_action( 'woocommerce_before_cart', array( $this, 'draft_chips' ) );
 		add_action( 'woocommerce_account_dashboard', array( $this, 'account_chips' ) );
 		add_shortcode( 'linker_genie_ask', array( $this, 'ask_shortcode' ) );
+		add_shortcode( 'linker_genie_chips', array( $this, 'chips_shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'search_assets' ) );
 	}
 
@@ -265,31 +266,81 @@ JS,
 	 * Shop chip: opens Genie over the catalogue.
 	 */
 	public function shop_chip(): void {
-		$this->chip( __( 'Ask Genie', 'linker-tools' ), 'category' );
+		$this->print_group( 'category' );
 	}
 
 	/**
 	 * Product page chips.
 	 */
 	public function product_chips(): void {
-		$this->chip( __( 'What pairs with this model?', 'linker-tools' ), 'product' );
-		$this->chip( __( 'Compare with…', 'linker-tools' ), 'product' );
-		$this->chip( __( 'Documents', 'linker-tools' ), 'product' );
+		$this->print_group( 'product' );
 	}
 
 	/**
 	 * Solution draft chips.
 	 */
 	public function draft_chips(): void {
-		$this->chip( __( 'Check my draft', 'linker-tools' ), 'draft' );
-		$this->chip( __( 'What happens next?', 'linker-tools' ), 'draft' );
+		$this->print_group( 'draft' );
 	}
 
 	/**
 	 * Account chips.
 	 */
 	public function account_chips(): void {
-		$this->chip( __( 'Where is my Proforma?', 'linker-tools' ), 'account' );
+		$this->print_group( 'account' );
+	}
+
+	/**
+	 * The chip groups of one page type: the one list the Woo hooks and the
+	 * LiveCanvas templates' shortcode both read.
+	 *
+	 * @return array<string, list<array{0: string, 1: string}>> Page type => chips (label, page type).
+	 */
+	private function chips_for(): array {
+		return array(
+			'category' => array(
+				array( __( 'Ask Genie', 'linker-tools' ), 'category' ),
+			),
+			'product'  => array(
+				array( __( 'What pairs with this model?', 'linker-tools' ), 'product' ),
+				array( __( 'Compare with…', 'linker-tools' ), 'product' ),
+				array( __( 'Documents', 'linker-tools' ), 'product' ),
+			),
+			'draft'    => array(
+				array( __( 'Check my draft', 'linker-tools' ), 'draft' ),
+				array( __( 'What happens next?', 'linker-tools' ), 'draft' ),
+			),
+			'account'  => array(
+				array( __( 'Where is my Proforma?', 'linker-tools' ), 'account' ),
+			),
+		);
+	}
+
+	/**
+	 * Echoes one page type's chips.
+	 *
+	 * @param string $type Page type.
+	 */
+	private function print_group( string $type ): void {
+		foreach ( $this->chips_for()[ $type ] ?? array() as $chip ) {
+			$this->chip( $chip[0], $chip[1] );
+		}
+	}
+
+	/**
+	 * The chips as a shortcode: the entries of the LiveCanvas-rendered page
+	 * types, whose templates do not fire WooCommerce's hook surfaces. With no
+	 * `page_type` attribute the current query decides.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function chips_shortcode( $atts = array() ): string {
+		$parsed = is_array( $atts ) ? $atts : shortcode_parse_atts( (string) $atts );
+		$atts   = shortcode_atts( array( 'page_type' => '' ), $parsed, 'linker_genie_chips' );
+		$type   = '' !== $atts['page_type'] ? (string) $atts['page_type'] : $this->page_context()['type'];
+		ob_start();
+		$this->print_group( $type );
+		return (string) ob_get_clean();
 	}
 
 	/**

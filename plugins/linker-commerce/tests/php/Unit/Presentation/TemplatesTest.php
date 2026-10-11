@@ -48,7 +48,10 @@ final class TemplatesTest extends TestCase {
 			$html = (string) file_get_contents( $path );
 			$this->assertNotSame( '', trim( $html ) );
 		}
-		$this->assertStringContainsString( '[linker_price]', (string) file_get_contents( $catalog['is_single_product'] ) );
+		$this->assertStringContainsString( '[linker_pdp_buy]', (string) file_get_contents( $catalog['is_single_product'] ) );
+		$this->assertStringContainsString( '[linker_catalog_card]', (string) file_get_contents( $catalog['is_shop_page'] ) );
+		$this->assertStringContainsString( 'id="tv-storefront-pdp"', (string) file_get_contents( $catalog['is_single_product'] ) );
+		$this->assertStringContainsString( 'id="tv-woo-b2b-catalog"', (string) file_get_contents( $catalog['is_shop_page'] ) );
 		$this->assertStringContainsString( '[woocommerce_cart]', (string) file_get_contents( $catalog['is_cart_page'] ) );
 		$this->assertStringContainsString( '[linker_checkout]', (string) file_get_contents( $catalog['is_checkout_page'] ) );
 		$this->assertStringContainsString( '[woocommerce_my_account]', (string) file_get_contents( $catalog['is_account_page'] ) );

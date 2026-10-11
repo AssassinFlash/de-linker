@@ -9,25 +9,31 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Storefront\CatalogFilters;
+use Linker\Commerce\Storefront\ProductView;
+
 /**
- * Shortcodes, the empty Proforma-request gate, the comparison page, the
- * document library page and WindPress.
+ * Shortcodes, the catalogue shortcodes, the empty Proforma-request gate, the
+ * comparison page, the document library page and WindPress.
  */
 final class Module {
 
 	/**
 	 * Sets up the module.
 	 *
-	 * @param Shortcodes  $shortcodes B2B shortcodes.
-	 * @param LoginGate   $gate       Empty Proforma-request page.
-	 * @param WindPress   $windpress  Compile provider.
-	 * @param ComparePage $compare    The comparison page and its chip (#66).
-	 * @param LibraryPage $library    The document library page (#66).
+	 * @param Shortcodes             $shortcodes B2B shortcodes.
+	 * @param LoginGate              $gate       Empty Proforma-request page.
+	 * @param WindPress              $windpress  Compile provider.
+	 * @param CatalogShortcodes|null $catalog    The replica catalogue shortcodes; built
+	 *                                           from the kept data layers when omitted.
+	 * @param ComparePage            $compare    The comparison page and its chip (#66).
+	 * @param LibraryPage            $library    The document library page (#66).
 	 */
 	public function __construct(
 		private readonly Shortcodes $shortcodes,
 		private readonly LoginGate $gate,
 		private readonly WindPress $windpress,
+		private readonly ?CatalogShortcodes $catalog = null,
 		private readonly ComparePage $compare = new ComparePage(),
 		private readonly LibraryPage $library = new LibraryPage()
 	) {}
@@ -37,9 +43,31 @@ final class Module {
 	 */
 	public function register(): void {
 		$this->shortcodes->register();
+		( $this->catalog ?? new CatalogShortcodes( new CatalogFilters(), new ProductView() ) )->register();
 		$this->gate->register();
 		$this->windpress->register();
 		$this->compare->register();
 		$this->library->register();
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
+	}
+
+	/**
+	 * The product page's interaction layer: the gallery viewer, the
+	 * specification tabs. The template renders the markup these scripts read;
+	 * the styles stay in the WindPress layer. The comparison selection (its
+	 * controls and its floating chip) is the comparison page's own module
+	 * (ComparePage), which loads on the surfaces that carry either.
+	 */
+	public function enqueue_product_scripts(): void {
+		$base = plugins_url( 'assets/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+			// The catalogue's family cards: the model picker switches the
+			// article a card shows (spec: the live shop's family grid).
+			wp_enqueue_script( 'tv-b2b-catalog-family', $base . 'catalog-family.js', array(), '1', true );
+		}
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+			return;
+		}
+		wp_enqueue_script( 'tv-b2b-pdp-ui', $base . 'pdp-ui.js', array(), '3', true );
 	}
 }

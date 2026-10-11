@@ -208,7 +208,7 @@ msgstr ""
 
 #: includes/Abilities/SearchKnowledge.php:65
 msgid "Search hosted documents"
-msgstr ""
+msgstr "Suchen"
 
 #: includes/Abilities/SearchKnowledge.php:66
 msgid ""
@@ -217,7 +217,7 @@ msgstr ""
 
 #: includes/Abilities/SearchProducts.php:118
 msgid "Search products"
-msgstr ""
+msgstr "Produkte suchen"
 
 #: includes/Abilities/SearchProducts.php:119
 msgid ""
@@ -629,7 +629,7 @@ msgstr "Ein Eintrag je veröffentlichtem Produkt."
 
 #: includes/Catalog/EngineeringFeedController.php:181
 msgid "Rated AC power in kW, or unknown (#7 SelectionFactSet)."
-msgstr ""
+msgstr "Übernehmen"
 
 #: includes/Catalog/EngineeringFeedController.php:185
 #, fuzzy
@@ -2908,3 +2908,43 @@ msgstr "Produktbild"
 #: templates/storefront-single-product.php:273
 msgid "Close image viewer"
 msgstr "Bildbetrachter schließen"
+
+#: includes/Abilities/ProductCommerce.php:41
+msgid "Whether the product is in stock. The site only ever says it is."
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:77
+msgid "Search products or filter by category and project requirements."
+msgstr "Suchen Sie Produkte oder filtern Sie nach Kategorie und Projektanforderungen."
+
+#: includes/Presentation/CatalogShortcodes.php:80
+msgid "Search model or item number"
+msgstr "Modell oder Artikelnummer suchen"
+
+#: includes/Presentation/CatalogShortcodes.php:81
+msgid "Search"
+msgstr "Suchen"
+
+#: includes/Presentation/CatalogShortcodes.php:108
+msgid "Product categories"
+msgstr "Produktkategorien"
+
+#: includes/Presentation/CatalogShortcodes.php:334
+msgid "Model"
+msgstr "Modell"
+
+#: includes/Presentation/CatalogShortcodes.php:353
+msgid "Add to cart"
+msgstr "In den Warenkorb"
+
+#: includes/Presentation/CatalogShortcodes.php:355
+msgid "Log in for pricing"
+msgstr "Für Preise anmelden"
+
+#: includes/Presentation/CatalogShortcodes.php:608
+msgid "See the applications"
+msgstr "Zu den Anwendungen"
+
+#: includes/Presentation/CatalogShortcodes.php:635
+msgid "Applications"
+msgstr "Anwendungen"

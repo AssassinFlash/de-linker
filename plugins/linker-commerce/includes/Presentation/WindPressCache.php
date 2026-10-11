@@ -41,6 +41,18 @@ final class WindPressCache {
 		'overflow-x-auto'       => '.overflow-x-auto',
 		'object-contain'        => '.object-contain',
 		'gap-8'                 => '.gap-8',
+		// The replica templates' anchors (#16): their rules live in the
+		// WindPress volume stylesheets, so a missing selector is the alarm for
+		// a volume file that never made it into the compile, or a shortcode
+		// parser that ate a class out of a template.
+		'sf-catalog'     => '.sf-catalog',
+		'catalog-grid'   => '.catalog-grid',
+		'sf-card'        => '.sf-card',
+		'wb-strip'       => '.wb-strip',
+		'pdp-layout'     => '.pdp-layout',
+		'pdp-purchase'   => '.pdp-purchase',
+		'pdp-scene-reel' => '.pdp-scene-reel',
+		'pdp-disclose'   => '.pdp-disclose',
 	);
 
 	/**
@@ -78,7 +90,7 @@ final class WindPressCache {
 		if ( null !== $this->source_files ) {
 			return $this->source_files;
 		}
-		return array_merge( array_values( Templates::catalog() ), array( Tokens::path() ) );
+		return array_merge( array_values( Templates::catalog() ), array( Tokens::path() ), WindPressVolume::files() );
 	}
 
 	/**

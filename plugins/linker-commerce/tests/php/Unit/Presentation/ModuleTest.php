@@ -41,15 +41,16 @@ final class ModuleTest extends TestCase {
 		$windpress  = new WindPress();
 		$compare    = new ComparePage();
 		$library    = new LibraryPage();
-		$module     = new Module( $shortcodes, $gate, $windpress, $compare, $library );
+		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library );
 
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 7 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 20 ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $windpress, 'render_raw' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $compare, 'canonical_address' ), 5 );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $compare, 'assets' ) );
 		WP_Mock::expectActionAdded( 'wp_footer', array( $compare, 'standing_chip' ) );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_product_scripts' ) );
 
 		$module->register();
 

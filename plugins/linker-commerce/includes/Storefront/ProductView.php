@@ -74,11 +74,50 @@ final class ProductView {
 			'attributes'   => $this->attributes( $product ),
 			'figures'      => $this->figures( $product_id ),
 			'features'     => $this->features( $product_id ),
+			'scenarios'    => $this->scenarios( $product_id ),
 			'downloads'    => $this->downloads( $product_id ),
 			'faqs'         => $this->faqs( $product_id ),
 			'pairings'     => $this->pairings( $product_id ),
 			'crumbs'       => $this->crumbs( $product_id ),
 		);
+	}
+
+	/**
+	 * The application scenarios: the legacy ACF JSON's application_scenarios
+	 * branch (#16 GAP-2: the live product page has the section, the new
+	 * template had no reader for it). Two record shapes exist in the data:
+	 * a rich one (situation, fit, verdict, checklist) and a plain one
+	 * (body, link). Both come back with the fields they carry.
+	 *
+	 * @param int $product_id The product.
+	 * @return list<array{title: string, situation: string, fit: string, verdict: string, checklist: list<string>, image: int, url: string}> The scenarios.
+	 */
+	public function scenarios( int $product_id ): array {
+		$parsed = array();
+		foreach ( $this->legacy( $product_id, 'application_scenarios' ) as $scenario ) {
+			if ( ! \is_array( $scenario ) || ! isset( $scenario['scenario_title'] ) ) {
+				continue;
+			}
+			$link     = \is_array( $scenario['scenario_link'] ?? null ) ? (string) ( $scenario['scenario_link']['url'] ?? '' ) : '';
+			$checks   = \array_values(
+				\array_filter(
+					\array_map(
+						static fn( $row ): string => \is_array( $row ) ? \trim( (string) ( $row['check_text'] ?? '' ) ) : \trim( (string) $row ),
+						\is_array( $scenario['scenario_checklist'] ?? null ) ? $scenario['scenario_checklist'] : array()
+					)
+				)
+			);
+			$parsed[] = array(
+				'title'     => (string) $scenario['scenario_title'],
+				'situation' => (string) ( $scenario['scenario_situation'] ?? $scenario['scenario_body'] ?? '' ),
+				'fit'       => (string) ( $scenario['scenario_fit'] ?? '' ),
+				'verdict'   => (string) ( $scenario['scenario_verdict'] ?? '' ),
+				'checklist' => $checks,
+				'image'     => (int) ( $scenario['scenario_image'] ?? 0 ),
+				'url'       => $link,
+			);
+		}
+		return $parsed;
 	}
 
 	/**
