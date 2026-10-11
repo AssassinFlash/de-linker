@@ -17,6 +17,7 @@ const BASE: GenieConfig = {
 	locale: 'en',
 	pageType: 'category',
 	turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+	threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
 	voteUrl: '/wp-json/linker-ai/v1/genie/turn',
 	restUrl: '/wp-json/',
 	restNonce: 'storybook',

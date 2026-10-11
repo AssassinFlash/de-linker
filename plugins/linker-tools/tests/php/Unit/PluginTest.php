@@ -14,6 +14,7 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\Retention;
+use Linker\Tools\Genie\UserContext;
 use Linker\Tools\Genie\WindPress;
 use Linker\Tools\Plugin;
 use Linker\Tools\Redirects;
@@ -32,8 +33,8 @@ final class PluginTest extends TestCase {
 
 	/**
 	 * The plugin registers its scripts, conversations, redirects and chrome,
-	 * the proxy on rest_api_init, and the entries', the retention's and the
-	 * scan provider's hooks during registration.
+	 * the proxy on rest_api_init, the entries' hooks, the retention's hooks, the
+	 * identity seam and the scan provider's hooks during registration.
 	 */
 	public function test_register_adds_the_hooks(): void {
 		$assets        = new Assets( self::FILE );
@@ -43,6 +44,21 @@ final class PluginTest extends TestCase {
 		$proxy         = new RecordingProxy( $conversations );
 		$entries       = new RecordingEntries( self::FILE );
 		$retention     = new Retention( self::FILE );
+		$user_context  = new class() extends UserContext {
+			/**
+			 * Records instead of hooking.
+			 *
+			 * @var bool
+			 */
+			public bool $registered = false;
+
+			/**
+			 * Records the call.
+			 */
+			public function register(): void {
+				$this->registered = true;
+			}
+		};
 		$windpress     = new WindPress();
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
@@ -59,9 +75,10 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::userFunction( 'register_deactivation_hook' );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $windpress ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
+		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );
 		$this->assertConditionsMet();
 	}
 }

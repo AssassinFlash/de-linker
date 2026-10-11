@@ -100,6 +100,15 @@ class PageContext(Strict):
 class UserContext(Strict):
     logged_in: bool = False
     partner: bool = False
+    context: str | None = Field(
+        default=None,
+        description=(
+            "The signed-in customer's short-lived identity token, minted by the "
+            "shell for this turn. The service sends it back on the one ability "
+            "that answers about this customer (linker/inquiry-status) and never "
+            "stores it."
+        ),
+    )
 
 
 class TurnMessage(Strict):

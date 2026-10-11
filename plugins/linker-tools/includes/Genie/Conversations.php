@@ -118,6 +118,35 @@ class Conversations {
 	}
 
 	/**
+	 * The conversation this request already has, 0 when it has none.
+	 *
+	 * `current_id()` opens one when there is none, which is what a turn needs
+	 * and a page view must not do: reading the thread back must never mint a
+	 * conversation post.
+	 */
+	public function existing_id(): int {
+		$id = $this->from_cookie();
+		if ( $id > 0 && $this->may_use( $id ) ) {
+			return $id;
+		}
+		if ( ! is_user_logged_in() ) {
+			return 0;
+		}
+		$owned = get_posts(
+			array(
+				'post_type'      => self::POST_TYPE,
+				'post_status'    => 'private',
+				'author'         => get_current_user_id(),
+				'posts_per_page' => 1,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'fields'         => 'ids',
+			)
+		);
+		return array() === $owned ? 0 : (int) $owned[0];
+	}
+
+	/**
 	 * A new conversation post, cookie set.
 	 */
 	public function open(): int {

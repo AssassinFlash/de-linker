@@ -121,6 +121,8 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 	class WP_REST_Response {
 		public $data;
 		public $status;
+		/** @var array<string, string> */
+		public $headers = array();
 		public function __construct( $data = null, $status = 200 ) {
 			$this->data   = $data;
 			$this->status = $status;
@@ -133,6 +135,14 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 		}
 		public function set_data( $data ) {
 			$this->data = $data;
+		}
+		public function header( $key, $value, $replace = true ) {
+			if ( $replace || ! isset( $this->headers[ $key ] ) ) {
+				$this->headers[ $key ] = $value;
+			}
+		}
+		public function get_headers() {
+			return $this->headers;
 		}
 	}
 }
