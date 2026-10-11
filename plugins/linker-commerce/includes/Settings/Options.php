@@ -50,23 +50,6 @@ final class Options {
 	public const DEFAULT_SELLER_NAME = 'Linker Technology GmbH';
 
 	/**
-	 * The test-mail switch: while it is set, every message of the site goes
-	 * out as one copy to this one address.
-	 *
-	 * So a test run reaches the tester and no customer mailbox, and a single
-	 * delivered message proves the pipeline (AGENTS.md, test-mail discipline
-	 * 2026-10-11). It is empty — off, the production routing — unless it is
-	 * set, and it is not a field of the settings tab. Set and unset it with
-	 * WP-CLI:
-	 *
-	 *     wp option update linker_commerce_test_recipient chester@de-linker.com
-	 *     wp option delete linker_commerce_test_recipient
-	 *
-	 * The tester is the owner (#17 turns it on for the cutover smoke).
-	 */
-	public const TEST_RECIPIENT = 'linker_commerce_test_recipient';
-
-	/**
 	 * Address of the team mailbox.
 	 */
 	public function team_to(): string {
@@ -89,16 +72,6 @@ final class Options {
 			}
 		}
 		return $valid;
-	}
-
-	/**
-	 * Where the test-mail switch sends every message, '' while it is off.
-	 * Anything that is not a deliverable address reads as off, so a stray
-	 * value cannot quietly redirect the site's mail.
-	 */
-	public function test_recipient(): string {
-		$address = sanitize_email( $this->text( self::TEST_RECIPIENT ) );
-		return '' !== $address && is_email( $address ) ? $address : '';
 	}
 
 	/**

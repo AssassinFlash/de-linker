@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Mail;
 
-use Linker\Commerce\Settings\Options;
 use WP_Error;
 
 /**
@@ -19,11 +18,6 @@ use WP_Error;
  * action. Retries follow RETRY_DELAYS, then the message is marked failed and
  * logged. Each attempt sends the message once, recipients and blind copies
  * together, so a retry never repeats a mailbox that already received it.
- *
- * The send itself is the one place the test-mail switch (Options::test_recipient)
- * applies: while it is set, the attempt delivers one copy to the tester's
- * address instead of the message's own recipients, and the message in the queue
- * keeps the routing it was built with.
  */
 final class Outbox {
 
@@ -64,14 +58,14 @@ final class Outbox {
 	/**
 	 * Sets up the outbox.
 	 *
-	 * @param JobStore $jobs     The queue.
-	 * @param Throttle $throttle The sending rate.
-	 * @param Options  $options  The plugin settings, for the test-mail switch.
+	 * @param JobStore $jobs      The queue.
+	 * @param Throttle $throttle  The sending rate.
+	 * @param TestMode $test_mode The test-mode switch of outgoing mail.
 	 */
 	public function __construct(
 		private readonly JobStore $jobs,
 		private readonly Throttle $throttle,
-		private readonly Options $options
+		private readonly TestMode $test_mode = new TestMode()
 	) {}
 
 	/**
@@ -131,9 +125,9 @@ final class Outbox {
 		$this->throttle->record( $now );
 		$this->delivering = true;
 		$this->error      = '';
-		// The test-mail switch rewrites the delivery only: the message in the
-		// queue keeps its own recipients, which is where the routing is read.
-		$delivery = $message->only_to( $this->options->test_recipient() );
+		// Test mode rewrites the recipients on the way out alone: what was queued
+		// keeps the recipients the routing data names (Mail\TestMode).
+		$delivery = $this->test_mode->redirect( $message );
 		try {
 			$sent = wp_mail( $delivery->to, $delivery->subject, $delivery->body, $delivery->headers, $delivery->attachments );
 		} finally {

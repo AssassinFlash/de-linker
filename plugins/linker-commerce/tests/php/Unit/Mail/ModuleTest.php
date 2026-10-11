@@ -15,7 +15,6 @@ use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Module;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
-use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
@@ -31,7 +30,7 @@ final class ModuleTest extends TestCase {
 	 */
 	public function test_register_adds_the_hooks(): void {
 		$jobs   = new JobStore();
-		$outbox = new Outbox( $jobs, new Throttle(), new Options() );
+		$outbox = new Outbox( $jobs, new Throttle() );
 		$locale = new EmailLocale();
 		$policy = new EmailPolicy();
 

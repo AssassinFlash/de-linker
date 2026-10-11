@@ -45,9 +45,7 @@ final class SettingsTabTest extends TestCase {
 	}
 
 	/**
-	 * Every option of Options has a field — the test-mail switch is the one
-	 * exception, set and unset with WP-CLI only — each section is opened and
-	 * closed, and output and save use the same fields.
+	 * Every option of Options has a field, each section is opened and closed, and output and save use the same fields.
 	 */
 	public function test_fields_cover_every_option(): void {
 		$tab           = new SettingsTab( new JobStore() );
@@ -58,12 +56,9 @@ final class SettingsTabTest extends TestCase {
 		$ids    = array_column( array_filter( $fields, static fn ( array $field ): bool => ! in_array( $field['type'], array( 'title', 'sectionend' ), true ) ), 'id' );
 
 		foreach ( ( new \ReflectionClass( Options::class ) )->getConstants() as $name => $value ) {
-			if ( str_starts_with( $name, 'DEFAULT_' ) || 'TEST_RECIPIENT' === $name ) {
-				// The test-mail switch is not on staff's screen: a stray click
-				// there would redirect every message of the site (Options).
-				continue;
+			if ( ! str_starts_with( $name, 'DEFAULT_' ) ) {
+				$this->assertContains( $value, $ids, $name );
 			}
-			$this->assertContains( $value, $ids, $name );
 		}
 		$types = array_column( $fields, 'type' );
 		$this->assertSame( count( array_keys( $types, 'title', true ) ), count( array_keys( $types, 'sectionend', true ) ) );

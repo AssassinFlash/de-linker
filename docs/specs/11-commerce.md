@@ -21,7 +21,7 @@
 - `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可购买性 = 已登录且已批准；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。
 - `Inquiry`（状态注册与颜色、网关类 `ProformaGateway extends WC_Payment_Gateway`、减库存关闭、订单标题与列表列；`Checkout::gateways` 对未批准账号返回空=服务端拦截点）。
 - `Proforma`（PDF：dompdf 或 mpdf（MIT/LGPL），模板 EN/DE，编号 `PI-YYYY-NNNN`（按年计数，选项存储），银行条款（设置页填写），有效期 30 天，税额行按 Woo 税设置显示；生成后存 `wp-content/uploads/proforma/<order>/` 私有目录，账户内经鉴权下载）。
-- `Mail`（`wp_mail` 统一：一封主信 To sales@ + Bcc 三个邮箱（设置页）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11）：`linker_commerce_test_recipient` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp option update|delete linker_commerce_test_recipient` 设与撤，不是设置页字段（#17 切换冒烟时开，验证后撤）。
+- `Mail`（`wp_mail` 统一：一封主信 To sales@ + Bcc 三个邮箱（设置页）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11；`Mail\TestMode`，与 #73/#94 同一实现）：选项 `linker_commerce_test_mail_to` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp linker-commerce test-mail on|off|status` 设与撤（默认收件人 chester@de-linker.com，`--to=` 可换），不是设置页字段（#17 切换冒烟时开，验证后撤）。
 - `Account`（端点注册、模板、对接人设置、再次询盘）。
 - `Vocabulary`（gettext 覆盖 Woo 自带字符串：Cart → Solution draft / Lösungsentwurf 等；全部通过 `.po`）。
 - `Settings`（后台一页：对接人、Bcc 列表、银行条款、PI 前缀）。
