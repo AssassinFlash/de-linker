@@ -5,7 +5,9 @@ configuration (`GET https://aihubmix.com/api/v1/models`, `pricing_lines`, defaul
 tier, read 2026-10-09); aihubmix itself bills twice that between 01:00-04:00 and
 06:00-10:00 UTC, and the report states the time of every call. The direct DeepSeek
 judge: the official pricing page (api-docs.deepseek.com/quick_start/pricing, read
-2026-10-11) at peak rates — off-peak halves them. Open models cost 0 per call
+2026-10-11) at peak rates — off-peak halves them. OpenRouter reports each call's
+true cost in `usage.cost` (its jev-router's backend varies per call), which
+overrides the fallback prices. Open models cost 0 per call
 (owner 2026-10-09: openjev and its kind are counted at 0).
 """
 
@@ -13,7 +15,7 @@ from __future__ import annotations
 
 import os
 
-from .judges import AIHUBMIX, DEEPSEEK, Judge
+from .judges import DEEPSEEK, OPENROUTER, Judge
 
 
 def _local(name: str, port: int) -> str:
@@ -27,9 +29,24 @@ def _local(name: str, port: int) -> str:
 JUDGES: dict[str, Judge] = {
     judge.name: judge
     for judge in (
-        # TypeSafe Jev through aihubmix's /v1/systemone; output tokens are free.
+        # TypeSafe Jev through OpenRouter's native /v1/systemone endpoint with
+        # the direct model id (owner ruling 2026-10-11: Jev runs on OpenRouter).
+        # The chat-completions route (typesafe/jev-router) is a meta-router that
+        # delegates per call to other backends (deepseek-v4.1-flash,
+        # gemini-3.8-flash and gpt-6-luna were all observed on 2026-10-11) and
+        # returns no calibrated probabilities; /v1/systemone with
+        # typesafe/jev-1.13 answers as typesafe/jev-1.13-20260917 itself, with
+        # the noul probabilities parse_system_one calibrates. 0.30/1.20 stay as
+        # the fallback formula's input when usage reports no cost.
         Judge(
-            "jev", "system_one", "jev-1.13", AIHUBMIX, price_in=0.0462, price_out=0.0
+            "jev",
+            "system_one",
+            "typesafe/jev-1.13",
+            OPENROUTER,
+            0.30,
+            1.20,
+            None,
+            True,
         ),
         # The cascade's escalation judge, direct on the official DeepSeek API
         # (owner ruling 2026-10-11: aihubmix serves only the Jev first pass and
@@ -39,9 +56,9 @@ JUDGES: dict[str, Judge] = {
         # temperature is sent; json_object is measured to work on the direct
         # endpoint (docs/acceptance/2026-10-11/13/).
         Judge("deepseek", "chat", "deepseek-flash", DEEPSEEK, 0.30, 1.20, None, True),
-        # Chat judges; temperature 0 where the model accepts it (claude-haiku-5-5 rejects
-        # the parameter, and aihubmix degrades its JSON mode, so it gets neither).
-        Judge("haiku", "chat", "claude-haiku-5-5", AIHUBMIX, 0.1, 0.5, None, False),
+        # (Removed 2026-10-11: the aihubmix chat judges are gone — the model
+        # routing law allows no aihubmix endpoint by default and no third-party
+        # models; the bake-off history lives in git.)
         # Open decision models (Apache-2.0, ggml-org GGUF conversions; judge-models.md).
         Judge(
             "julia1",

@@ -1,0 +1,106 @@
+[
+ {
+  "item": "panel-r1",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "better_pick_label": "A",
+  "grounded_source": "deepseek",
+  "appropriate_source": "jev",
+  "better_pick_source": "jev"
+ },
+ {
+  "item": "panel-r10",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "better_pick_label": "A",
+  "grounded_source": "deepseek",
+  "appropriate_source": "jev",
+  "better_pick_source": "jev"
+ },
+ {
+  "item": "panel-r11spell",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "better_pick_label": "A",
+  "grounded_source": "deepseek",
+  "appropriate_source": "jev",
+  "better_pick_source": "jev"
+ },
+ {
+  "item": "panel-r13spell",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "grounded_source": "jev",
+  "appropriate_source": "jev"
+ },
+ {
+  "item": "panel-r14de",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "grounded_source": "jev",
+  "appropriate_source": "jev"
+ },
+ {
+  "item": "panel-r2de",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "better_pick_label": "A",
+  "grounded_source": "deepseek",
+  "appropriate_source": "jev",
+  "better_pick_source": "jev"
+ },
+ {
+  "item": "panel-r2en",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "better_pick_label": "A",
+  "grounded_source": "deepseek",
+  "appropriate_source": "jev",
+  "better_pick_source": "jev"
+ },
+ {
+  "item": "panel-r3spell",
+  "agrees": false,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "better_pick_label": "equal",
+  "grounded_source": "deepseek",
+  "appropriate_source": "jev",
+  "better_pick_source": "jev"
+ },
+ {
+  "item": "panel-r4spell",
+  "agrees": false,
+  "grounded_label": "0",
+  "appropriate_label": "yes",
+  "better_pick_label": "A",
+  "grounded_source": "deepseek",
+  "appropriate_source": "jev",
+  "better_pick_source": "jev"
+ },
+ {
+  "item": "panel-r5",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "better_pick_label": "A",
+  "grounded_source": "deepseek",
+  "appropriate_source": "jev",
+  "better_pick_source": "jev"
+ },
+ {
+  "item": "panel-r8en",
+  "agrees": true,
+  "grounded_label": "2",
+  "appropriate_label": "yes",
+  "grounded_source": "jev",
+  "appropriate_source": "jev"
+ }
+]

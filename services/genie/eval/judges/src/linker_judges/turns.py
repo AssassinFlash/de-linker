@@ -21,7 +21,14 @@ from typing import Any
 from .rubric import QA_QUESTIONS, Question
 
 TURN_THRESHOLDS: dict[str, float] = {
-    "grounded": 0.85,
+    # Grounded 0.6 recalibrates the #33 formal calibration's frozen 0.85 on
+    # the real-turn pilot (ticket #16, 2026-10-11, runs/pilot-20261011-v4):
+    # on the archived panel turns jev's grounded confidence runs 0.0-0.95,
+    # every label at 0.6 or above was correct (11/11 in the offline cascade
+    # replay of the run's records), and the one wrong label sat at 0.0 — so
+    # 0.6 keeps that label out of the first pass and cuts the escalations
+    # from 9/11 to 3/11 at unchanged agreement.
+    "grounded": 0.6,
     "appropriate": 0.5,
     "better_pick": 0.6,
 }

@@ -1,4 +1,4 @@
-"""JSON over HTTP with timing, retries and the aihubmix credentials.
+"""JSON over HTTP with timing, retries and the remote judges' credentials.
 
 The key is read from the environment, or from the file the owner keeps it in, and is
 only ever placed in the Authorization header: it is not logged, returned or raised.
@@ -16,7 +16,10 @@ from pathlib import Path
 from typing import Any
 
 # docs/specs/33-judge-bakeoff.md: keys live in these files and never enter the
-# repository — aihubmix for the Jev first pass, deepseek for the direct escalation.
+# repository — OpenRouter for the Jev first pass since 2026-10-11 (owner ruling:
+# aihubmix's balance is depleted and drops to fallback), deepseek for the direct
+# escalation.
+OPENROUTER_FILE = Path("~/.config/terravolt-builder/openrouter.env").expanduser()
 CREDENTIALS_FILE = Path("~/.config/terravolt-builder/aihubmix.env").expanduser()
 DEEPSEEK_FILE = Path("~/.config/terravolt-builder/deepseek.env").expanduser()
 
@@ -56,8 +59,19 @@ def _credentials(
     return values.get(env_base, default_base).rstrip("/"), key
 
 
+def openrouter_credentials() -> tuple[str, str]:
+    """(base URL, key) for OpenRouter (the Jev first pass since 2026-10-11)."""
+    return _credentials(
+        "OPENROUTER_API_KEY",
+        "OPENROUTER_BASE_URL",
+        "https://openrouter.ai/api/v1",
+        OPENROUTER_FILE,
+    )
+
+
 def aihubmix_credentials() -> tuple[str, str]:
-    """(base URL, key) for the aihubmix gateway (the Jev first pass)."""
+    """(base URL, key) for the aihubmix gateway (the Jev first pass until
+    2026-10-11, now the fallback)."""
     return _credentials(
         "AIHUBMIX_API_KEY",
         "AIHUBMIX_BASE_URL",

@@ -172,7 +172,9 @@ COPY_QUESTIONS = (AI_PHRASING, MARKETING)
 SYSTEM_PROMPT = (
     "You are an evaluation judge. You receive a JSON state and numbered questions about it. "
     "Answer every question on its own, using only the state. Reply with one JSON object that "
-    'has a key for every question name and a key "reason" with one or two sentences.'
+    "has a key for every question name, calibrated probabilities for that answer's options "
+    '(either under a "probabilities" key or as the object\'s entries), and a key "reason" '
+    "with one or two sentences."
 )
 
 

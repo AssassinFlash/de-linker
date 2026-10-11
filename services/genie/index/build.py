@@ -48,7 +48,9 @@ CHUNK_TOKENIZER = "BAAI/bge-m3"
 # The model `just index` builds with: the bake-off's choice. gemini-embedding-2 beat
 # the best open model by 13.0 points of recall@5 (docs/research/2026-10-09/
 # embedding-bakeoff.md), so the index ships with API vectors (location A); building
-# needs AIHUBMIX_API_KEY and AIHUBMIX_BASE_URL. The open models remain one flag away
+# needs OPENROUTER_API_KEY/OPENROUTER_BASE_URL (the model routing law: aihubmix
+# serves only behind LINKER_EMBEDDING_PROVIDER=aihubmix, never as an automatic
+# fallback). The open models remain one flag away
 # (--model) for a VPS-only index.
 DEFAULT_MODEL = "gemini-embedding-2"
 
@@ -442,7 +444,9 @@ def document_embedder(model: str) -> Embedder:
     found = gemini_from_env()
     if found is None:
         raise SystemExit(
-            "gemini-embedding-2 needs AIHUBMIX_API_KEY and AIHUBMIX_BASE_URL"
+            "gemini-embedding-2 needs OPENROUTER_API_KEY/OPENROUTER_BASE_URL "
+            "(env or ~/.config/terravolt-builder/openrouter.env); AIHubMix serves "
+            "only behind LINKER_EMBEDDING_PROVIDER=aihubmix"
         )
     return found
 
