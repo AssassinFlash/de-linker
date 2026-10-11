@@ -10,7 +10,7 @@
 
 declare( strict_types = 1 );
 
-namespace Linker\Commerce\Storefront;
+namespace Linker\Commerce\Catalog;
 
 use WC_Product;
 
@@ -21,7 +21,7 @@ use WC_Product;
  * material-facts.php, material-compatibility.php, shipping.php of the live
  * plugin) so the same inputs print the same strings.
  */
-final class LiveCatalog {
+final class Materials {
 
 	/**
 	 * The registry, decoded once per request.
@@ -54,7 +54,7 @@ final class LiveCatalog {
 	/**
 	 * Whether the page is German.
 	 */
-	private static function is_de(): bool {
+	public static function is_de(): bool {
 		return \function_exists( 'linker_i18n_is_de' ) && linker_i18n_is_de()
 			|| ( \function_exists( 'get_locale' ) && \str_starts_with( (string) \get_locale(), 'de' ) && ! \function_exists( 'linker_i18n_is_de' ) );
 	}
@@ -62,7 +62,7 @@ final class LiveCatalog {
 	/**
 	 * The page's locale for localized registry text ('de' or 'en').
 	 */
-	private static function locale(): string {
+	public static function locale(): string {
 		return self::is_de() ? 'de' : 'en';
 	}
 
@@ -1183,5 +1183,61 @@ final class LiveCatalog {
 		}
 		$url = \preg_replace( '#/+$#', '', \trim( (string) ( $document['url'] ?? '' ) ) );
 		return '' === $url || ! isset( $own_urls[ $url ] );
+	}
+
+	/**
+	 * The key figures of a product's purchase panel: the product type's first
+	 * spec keys, in the type's own order, each with the symbol it shows. The
+	 * order and the symbol are type vocabulary, not page design.
+	 *
+	 * @param WC_Product $product The product.
+	 * @param int        $limit   How many rows the panel holds.
+	 * @return list<array{key: string, label: string, value: string, icon: string}>
+	 */
+	public static function key_stats( WC_Product $product, int $limit = 4 ): array {
+		$order = array(
+			'inverter'  => array( 'ac_power', 'phase', 'mppt', 'efficiency', 'batt_voltage', 'ip', 'weight', 'dimensions' ),
+			'system'    => array( 'ac_power', 'nominal_kwh', 'phase', 'chemistry', 'ip', 'temp', 'weight', 'dimensions' ),
+			'battery'   => array( 'usable_kwh', 'nominal_kwh', 'nom_voltage', 'chemistry', 'charge_a', 'discharge_a', 'ip', 'weight' ),
+			'meter'     => array( 'accuracy', 'ratio', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
+			'ct'        => array( 'ratio', 'accuracy', 'burden', 'temp', 'weight', 'dimensions' ),
+			'ems'       => array( 'devices', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
+			'accessory' => array( 'ac_power', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
+			'other'     => array( 'nom_voltage', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
+		);
+		$icons = array(
+			'phase' => 'grid', 'mppt' => 'grid',
+			'usable_kwh' => 'energy', 'nominal_kwh' => 'energy',
+			'efficiency' => 'gauge',
+		);
+		$kind  = (string) ( self::identity( $product )['kind'] ?? 'other' );
+		$specs = self::specs( $product );
+		$out   = array();
+		foreach ( $order[ $kind ] ?? $order['other'] as $key ) {
+			if ( ! isset( $specs[ $key ] ) ) {
+				continue;
+			}
+			$out[] = array(
+				'key'   => (string) $key,
+				'label' => (string) $specs[ $key ]['label'],
+				'value' => (string) $specs[ $key ]['value'],
+				'icon'  => (string) ( $icons[ $key ] ?? 'power' ),
+			);
+			if ( count( $out ) >= $limit ) {
+				break;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * A document kind's label as the document card prints it.
+	 */
+	public static function document_kind_label( string $kind ): string {
+		$labels = array(
+			'datasheet' => 'Datasheet', 'manual' => 'Manual', 'warranty' => 'Warranty',
+			'certificate' => 'Certificate', 'compatibility' => 'Compatibility list',
+		);
+		return $labels[ $kind ] ?? ( '' !== $kind ? ucfirst( $kind ) : '' );
 	}
 }
