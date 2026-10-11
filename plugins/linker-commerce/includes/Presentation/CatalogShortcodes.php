@@ -12,6 +12,7 @@ namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Catalog\Materials;
 use Linker\Commerce\Catalog\SelectionFacts;
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Storefront\CatalogFilters;
 use Linker\Commerce\Storefront\ProductView;
 use WC_Product;
@@ -55,6 +56,7 @@ final class CatalogShortcodes {
 		add_shortcode( 'linker_header_utilities', array( $this, 'header_utilities' ) );
 		add_shortcode( 'linker_catalog_family_count', array( $this, 'catalog_family_count' ) );
 		add_shortcode( 'linker_catalog_family_pagination', array( $this, 'catalog_family_pagination' ) );
+		add_shortcode( 'linker_catalog_contact', array( $this, 'catalog_contact' ) );
 		add_shortcode( 'linker_pdp_brand_class', array( $this, 'pdp_brand_class' ) );
 		add_shortcode( 'linker_pdp_brand', array( $this, 'pdp_brand' ) );
 		add_shortcode( 'linker_pdp_model', array( $this, 'pdp_model' ) );
@@ -95,8 +97,17 @@ final class CatalogShortcodes {
 		$action   = $is_term ? $this->term_link( $queried ) : $shop_url;
 		$q        = (string) ( $this->filters->requested()['q'] ?? '' );
 
-		$html  = '<div class="wb-head">';
-		$html .= '<div class="wb-metarow container"><span class="wbm-l"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Home', 'linker-commerce' ) . '</a> / <a href="' . esc_url( $shop_url ) . '">' . esc_html__( 'Products', 'linker-commerce' ) . '</a>' . ( $is_term ? ' / <b>' . esc_html( $queried->name ) . '</b>' : ' / <b>' . esc_html__( 'Products', 'linker-commerce' ) . '</b>' ) . '</span></div>';
+		$html = '<div class="wb-head">';
+		// The live page's own crumb: "HOME / PRODUCTS" on the shop (the
+		// second entry bold, not a link), "HOME / PRODUCTS / INVERTERS" on a
+		// category (the category linked, its name bold), all words uppercase
+		// as the live page prints them (measured 2026-10-12). The category's
+		// name is the English one on both language pages — the live German
+		// archive prints "STARTSEITE / PRODUKTE / INVERTERS" above its own
+		// "Wechselrichter" heading.
+		$html .= '<div class="wb-metarow container"><span class="wbm-l"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( self::upper( _x( 'Home', 'breadcrumb', 'linker-commerce' ) ) ) . '</a> / '
+			. ( $is_term ? '<a href="' . esc_url( $shop_url ) . '">' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</a> / <b>' . esc_html( self::upper( $this->category_crumb_name( $queried ) ) ) . '</b>' : '<b>' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</b>' )
+			. '</span></div>';
 		$html .= '<div class="wb-bar container">';
 		$html .= '<div class="wb-copy"><h1 class="wb-title">' . esc_html( $is_term ? $queried->name : __( 'Products', 'linker-commerce' ) ) . '</h1>';
 		// The live shop and archives both carry the generic subtitle; the
@@ -1246,8 +1257,13 @@ final class CatalogShortcodes {
 		$page = max( 1, min( $pages, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
 		$base = $this->archive_base_url();
 		$html = '<nav class="tv-woo-pagination" aria-label="' . esc_attr__( 'Product pagination', 'linker-commerce' ) . '">';
+		// The live page numbers every address, page one included, and adds the
+		// "Previous" step on the pages after it (measured 2026-10-12).
+		if ( $page > 1 ) {
+			$html .= '<a class="prev page-numbers" href="' . esc_url( add_query_arg( 'product-page', $page - 1, $base ) ) . '">' . esc_html__( 'Previous', 'linker-commerce' ) . '</a>';
+		}
 		for ( $i = 1; $i <= $pages; $i++ ) {
-			$url   = 1 === $i ? $base : add_query_arg( 'product-page', $i, $base );
+			$url   = add_query_arg( 'product-page', $i, $base );
 			$html .= $i === $page
 				? '<span aria-current="page" class="page-numbers current">' . esc_html( (string) $i ) . '</span>'
 				: '<a class="page-numbers" href="' . esc_url( $url ) . '">' . esc_html( (string) $i ) . '</a>';
@@ -1256,6 +1272,101 @@ final class CatalogShortcodes {
 			$html .= '<a class="next page-numbers" href="' . esc_url( add_query_arg( 'product-page', $page + 1, $base ) ) . '">' . esc_html__( 'Next', 'linker-commerce' ) . '</a>';
 		}
 		return $html . '</nav>';
+	}
+
+	/**
+	 * The catalogue's contact invitation: the live page's own
+	 * `section.linker-contact-invitation.linker-contact-catalog`, the last
+	 * block of the results column after the pagination. The words are the
+	 * live page's (verbatim, EN and DE, read off its four catalogue pages
+	 * 2026-10-12); the address carries this page as the request's context,
+	 * the contact page of the page's language as its target, the team
+	 * mailbox beneath (the live page's own shape).
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function catalog_contact( $atts = array() ): string {
+		unset( $atts );
+		$queried = get_queried_object();
+		$is_term = $queried instanceof WP_Term;
+		$shop_id = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : 0;
+		$source  = $is_term
+			? $this->term_link( $queried )
+			: ( $shop_id > 0 ? (string) get_permalink( $shop_id ) : (string) wc_get_page_permalink( 'shop' ) );
+		$name    = $is_term
+			? (string) $queried->name
+			: ( $shop_id > 0 ? (string) get_the_title( $shop_id ) : __( 'Products', 'linker-commerce' ) );
+		$title   = $is_term
+			/* translators: %s: product category name. */
+			? sprintf( __( 'Category: %s', 'linker-commerce' ), $name )
+			/* translators: %s: shop page title. */
+			: sprintf( __( 'Archives: %s', 'linker-commerce' ), $name );
+		$request = $this->filters->requested();
+		$search  = (string) ( $request['q'] ?? '' );
+		$filters = array();
+		foreach ( $request as $facet => $value ) {
+			if ( 'q' !== $facet ) {
+				$filters[ $facet ] = $value;
+			}
+		}
+		$contact = array(
+			'kind'    => 'catalogue',
+			'title'   => $title,
+			'url'     => $source,
+			'search'  => $search,
+			'filters' => $filters,
+			'intent'  => 'product',
+		);
+		$url     = (string) add_query_arg(
+			array(
+				'intent' => 'product',
+				'kind'   => 'catalogue',
+				'title'  => $title,
+				'search' => $search,
+				'source' => $source,
+			),
+			Shortcodes::contact_page_url()
+		);
+
+		$html  = '<section class="linker-contact-invitation linker-contact-catalog">';
+		$html .= '<div>';
+		$html .= '<span class="linker-contact-eyebrow">' . esc_html__( 'CONTACT LINKER', 'linker-commerce' ) . '</span>';
+		$html .= '<h2>' . esc_html__( 'Not sure which model to look for?', 'linker-commerce' ) . '</h2>';
+		$html .= '<p>' . esc_html__( 'Your question includes this page as context. You can remove it before sending.', 'linker-commerce' ) . '</p>';
+		$html .= '</div>';
+		$html .= '<div class="linker-contact-invitation-actions">';
+		$html .= '<a class="linker-contact-primary" href="' . esc_url( $url ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $contact ) ) . '">' . esc_html__( 'Need help choosing?', 'linker-commerce' ) . '</a>';
+		$html .= '<a class="linker-contact-email" href="mailto:' . esc_attr( ( new Options() )->team_to() ) . '">' . esc_html( ( new Options() )->team_to() ) . '</a>';
+		$html .= '</div>';
+		return $html . '</section>';
+	}
+
+	/**
+	 * A crumb word as the live page prints it: uppercase.
+	 *
+	 * @param string $word The word.
+	 */
+	private static function upper( string $word ): string {
+		return \function_exists( 'mb_strtoupper' ) ? \mb_strtoupper( $word ) : \strtoupper( $word );
+	}
+
+	/**
+	 * The category's name as the live crumb prints it: the English term's,
+	 * on the German page too (the live German archive reads "INVERTERS").
+	 *
+	 * @param WP_Term $term The queried category.
+	 */
+	private function category_crumb_name( WP_Term $term ): string {
+		if ( \function_exists( 'pll_get_term' ) ) {
+			$english = (int) pll_get_term( (int) $term->term_id, 'en' );
+			if ( $english > 0 ) {
+				$source = get_term( $english );
+				if ( $source instanceof WP_Term ) {
+					return (string) $source->name;
+				}
+			}
+		}
+		return (string) $term->name;
 	}
 
 	/**
@@ -1501,30 +1612,49 @@ final class CatalogShortcodes {
 	 * the language toggle — the four controls the live header carries in
 	 * `[data-tv-account-slot]` (measured 2026-10-12: 46 + 46 + 44 + 88 px in
 	 * one row). Markup only, with the live classes; the header partial's own
-	 * stylesheet lays them out.
+	 * stylesheet lays them out. `part="mobile-language"` renders only the
+	 * toggle the header shows beside the hamburger under 1280px.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
 	public function header_utilities( $atts = array() ): string {
-		unset( $atts );
+		$attributes = shortcode_atts( array( 'part' => 'all' ), (array) $atts );
+		if ( 'mobile-language' === $attributes['part'] ) {
+			return $this->language_toggle( 'lnk-lang-toggle--mobile' );
+		}
 		$cart_url    = function_exists( 'wc_get_cart_url' ) ? (string) wc_get_cart_url() : '';
 		$account     = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'my-account' ) : '';
 		$count       = function_exists( 'WC' ) && null !== WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
 		$shop        = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : home_url( '/' );
-		$en_url      = $this->language_url( 'en' );
-		$de_url      = $this->language_url( 'de' );
-		$is_de       = \function_exists( 'pll_current_language' ) && 'de' === pll_current_language();
 		$search_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
-		$cart_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l2.4 12.3a2 2 0 0 0 2 1.7h7.8a2 2 0 0 0 1.95-1.55L21 7H6"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 21h.01M18 21h.01"/></svg>';
+		$cart_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6L5 3H2"/></svg>';
 		$user_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path stroke-linecap="round" d="M5.2 19.4a7 7 0 0 1 13.6 0"/></svg>';
 		$html        = '<a href="' . esc_url( $shop . '#search-box' ) . '" class="tv-header-utility tv-header-search" data-tv-header-search aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">' . $search_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Search', 'linker-commerce' ) . '</span></a>';
-		$html       .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Cart', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Cart', 'linker-commerce' ) . '</span><span class="tv-b2b-acct-count">' . esc_html( (string) $count ) . '</span></a>';
-		$html       .= '<div class="tv-b2b-acct"><button type="button" class="tv-b2b-acct-btn" aria-expanded="false" aria-label="' . esc_attr__( 'Sign in', 'linker-commerce' ) . '">' . $user_icon . '</button>';
-		$html       .= '<div class="tv-b2b-acct-menu"><a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>';
-		$html       .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'My account', 'linker-commerce' ) . '</a></div></div>';
-		$html       .= '<span class="lnk-lang-toggle lnk-lang-toggle--desktop" role="group" aria-label="' . esc_attr__( 'Language', 'linker-commerce' ) . '">';
-		$html       .= '<a class="lnk-lang-half' . ( $is_de ? '' : ' is-active' ) . '" href="' . esc_url( $en_url ) . '" hreflang="en" data-linker-language-choice="en" title="English"' . ( $is_de ? '' : ' aria-current="true"' ) . '>EN</a>';
-		$html       .= '<a class="lnk-lang-half' . ( $is_de ? ' is-active' : '' ) . '" href="' . esc_url( $de_url ) . '" hreflang="de" data-linker-language-choice="de" title="Deutsch"' . ( $is_de ? ' aria-current="true"' : '' ) . '>DE</a>';
+		// The live header hides the badge at zero (its markup carries the
+		// counter with an inline display:none; an empty cart shows no pill).
+		$badge = $count > 0 ? '<span class="tv-b2b-acct-count">' . esc_html( (string) $count ) . '</span>' : '';
+		$html .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Cart', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Cart', 'linker-commerce' ) . '</span>' . $badge . '</a>';
+		$html .= '<div class="tv-b2b-acct"><button type="button" class="tv-b2b-acct-btn" aria-haspopup="true" aria-expanded="false" aria-label="' . esc_attr__( 'Sign in', 'linker-commerce' ) . '"><span class="tv-b2b-acct-avatar">' . $user_icon . '</span><span class="tv-header-utility-label">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</span><span class="tv-b2b-acct-chev"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>';
+		$html .= '<div class="tv-b2b-acct-menu"><a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>';
+		$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'My account', 'linker-commerce' ) . '</a></div></div>';
+		return $html . $this->language_toggle( 'lnk-lang-toggle--desktop' );
+	}
+
+	/**
+	 * The language toggle, as the live header and footer carry it: a globe
+	 * (hidden by the header's own stylesheet) beside the two halves, the
+	 * current language marked.
+	 *
+	 * @param string $variant The toggle's variant class.
+	 */
+	private function language_toggle( string $variant ): string {
+		$en_url = $this->language_url( 'en' );
+		$de_url = $this->language_url( 'de' );
+		$is_de  = \function_exists( 'pll_current_language' ) && 'de' === pll_current_language();
+		$globe  = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm6.9 6h-2.6a15.6 15.6 0 00-1.2-3.5A8 8 0 0118.9 8zM12 4c.7 1 1.3 2.4 1.7 4H10.3c.4-1.6 1-3 1.7-4zM4.3 14a8 8 0 010-4h3a19 19 0 000 4h-3zm.8 2h2.6c.3 1.3.7 2.5 1.2 3.5A8 8 0 015.1 16zm2.6-8H5.1a8 8 0 013.8-3.5A15.6 15.6 0 007.7 8zM12 20c-.7-1-1.3-2.4-1.7-4h3.4c-.4 1.6-1 3-1.7 4zm2.1-6H9.9a17 17 0 010-4h4.2a17 17 0 010 4zm.9 5.5c.5-1 .9-2.2 1.2-3.5h2.6a8 8 0 01-3.8 3.5zM16.7 14a19 19 0 000-4h3a8 8 0 010 4h-3z"/></svg>';
+		$html   = '<span class="lnk-lang-toggle ' . esc_attr( $variant ) . '" role="group" aria-label="' . esc_attr__( 'Language', 'linker-commerce' ) . '">' . $globe;
+		$html  .= '<a class="lnk-lang-half' . ( $is_de ? '' : ' is-active' ) . '" href="' . esc_url( $en_url ) . '" data-lnk-flang="en" hreflang="en" lang="en" data-linker-language-choice="en" title="English"' . ( $is_de ? '' : ' aria-current="true"' ) . '>EN</a>';
+		$html  .= '<a class="lnk-lang-half' . ( $is_de ? ' is-active' : '' ) . '" href="' . esc_url( $de_url ) . '" data-lnk-flang="de" hreflang="de" lang="de" data-linker-language-choice="de" title="Deutsch"' . ( $is_de ? ' aria-current="true"' : '' ) . '>DE</a>';
 		return $html . '</span>';
 	}
 

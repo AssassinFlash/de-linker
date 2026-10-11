@@ -45,6 +45,19 @@ class Entries {
 		add_shortcode( 'linker_genie_ask', array( $this, 'ask_shortcode' ) );
 		add_shortcode( 'linker_genie_chips', array( $this, 'chips_shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'search_assets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'dock_assets' ) );
+	}
+
+	/**
+	 * The dock's stylesheet: the standing bubble belongs to every front-end
+	 * page's chrome, so its registered style loads with the page. The app
+	 * script itself still waits for the first click (the dock's loader).
+	 */
+	public function dock_assets(): void {
+		if ( is_admin() ) {
+			return;
+		}
+		wp_enqueue_style( self::HANDLE );
 	}
 
 	/**
@@ -121,6 +134,11 @@ class Entries {
 
 	/**
 	 * Standing dock: the open button and the hidden mount the app renders into.
+	 * The button is the live page's resting Advisor bubble (50×50, bottom-right
+	 * 20/20, hidden under 861px — the live's own switch sits between 860 and
+	 * 865, measured 2026-10-12); the word rides in a label the stylesheet keeps
+	 * out of sight, as the live button's own label does. The dock adds no flow
+	 * height to the page (the live page's bubble is fixed).
 	 */
 	public function dock(): void {
 		if ( is_admin() ) {
@@ -136,7 +154,7 @@ class Entries {
 		);
 		echo '<div class="linker-genie">';
 		printf(
-			'<button type="button" class="linker-genie-open" data-linker-genie-open aria-expanded="false" aria-controls="%1$s">%2$s</button>',
+			'<button type="button" class="linker-genie-open" data-linker-genie-open aria-expanded="false" aria-controls="%1$s" aria-label="%2$s"><span class="linker-genie-open-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.4 5v10.9a1.8 1.8 0 0 0 1.8 1.8H17" stroke-width="3.1"/><path d="M8.8 8.4C11.8 4.5 16.4 3.1 19.6 3.5" stroke-width="1.5" opacity="0.62"/><circle cx="20.7" cy="4.9" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="linker-genie-open-label">%2$s</span></button>',
 			esc_attr( $mount ),
 			esc_html__( 'Ask Genie', 'linker-tools' )
 		);

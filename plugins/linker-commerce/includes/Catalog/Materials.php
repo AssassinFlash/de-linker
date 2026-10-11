@@ -260,6 +260,8 @@ final class Materials {
 			'phase'                            => 'phase',
 			'phases'                           => 'phase',
 			'mppt_count'                       => 'mppt',
+			'ac_nominal_voltage_v'             => 'ac_nom_voltage',
+			'system_energy_kwh_range'          => 'system_range',
 			'max_efficiency_pct'               => 'efficiency',
 			'battery_voltage_range_v'          => 'batt_voltage',
 			'system_operating_voltage_range_v' => 'batt_voltage',
@@ -278,9 +280,12 @@ final class Materials {
 			'cycle_life'                       => 'cycles',
 			'ratio'                            => 'ratio',
 			'accuracy_class'                   => 'accuracy',
+			'accuracy_class_active'            => 'accuracy',
+			'accuracy_class_voltage_current'   => 'accuracy',
 			'rated_burden_va'                  => 'burden',
 			'bms_comms'                        => 'interface',
 			'communication'                    => 'interface',
+			'protocol'                         => 'interface',
 			'ip_rating'                        => 'ip',
 			'operating_temp_c'                 => 'temp',
 			'weight_kg'                        => 'weight',
@@ -472,12 +477,16 @@ final class Materials {
 	 */
 	public static function phase_words( string $value, bool $de ): string {
 		$map = array(
-			'1'           => $de ? '1-phasig' : '1-phase',
-			'3'           => $de ? '3-phasig' : '3-phase',
-			'one'         => $de ? '1-phasig' : '1-phase',
-			'three'       => $de ? '3-phasig' : '3-phase',
-			'single'      => $de ? '1-phasig' : '1-phase',
-			'three_phase' => $de ? '3-phasig' : '3-phase',
+			'1'            => $de ? '1-phasig' : '1-phase',
+			'3'            => $de ? '3-phasig' : '3-phase',
+			'one'          => $de ? '1-phasig' : '1-phase',
+			'three'        => $de ? '3-phasig' : '3-phase',
+			'single'       => $de ? '1-phasig' : '1-phase',
+			'three_phase'  => $de ? '3-phasig' : '3-phase',
+			'three phase'  => $de ? 'Dreiphasig' : 'Three-phase',
+			'single phase' => $de ? 'Einphasig' : 'Single-phase',
+			'three-phase'  => $de ? 'Dreiphasig' : 'Three-phase',
+			'single-phase' => $de ? 'Einphasig' : 'Single-phase',
 		);
 		$key = \strtolower( \trim( $value ) );
 		return $map[ $key ] ?? $value;
@@ -707,14 +716,13 @@ final class Materials {
 			return null;
 		}
 		$label = 'WP' === $symbol ? 'kWp' : ( 'VA' === $symbol ? 'kVA' : 'kW' );
-		if ( ! $localise ) {
-			return \rtrim( \rtrim( \number_format( $kilo, 2, '.', '' ), '0' ), '.' ) . ' ' . $label;
-		}
-		$printed = \floor( $kilo ) === $kilo
-			? (string) (int) $kilo
-			: \number_format( $kilo, \ceil( $kilo * 10 ) / 10 === \round( $kilo, 1 ) ? 1 : 2, $de ? ',' : '.', '' );
-		if ( \str_contains( $printed, '.' ) ) {
-			$printed = \rtrim( \rtrim( $printed, '0' ), '.' );
+		// The live cards keep the figure's own precision: 5750 W prints
+		// "5.75 kW", 29999 W "29.999 kW" (measured on the live catalogue's
+		// GW29.999K-ETA-G20 and OCEAN 2 HD-P1-5K75 cards 2026-10-12); the
+		// separator is the page's, the trailing zeros are dropped.
+		$printed = \rtrim( \rtrim( \number_format( $kilo, 3, '.', '' ), '0' ), '.' );
+		if ( $de && $localise ) {
+			$printed = \str_replace( '.', ',', $printed );
 		}
 		return $printed . ' ' . $label;
 	}
@@ -738,6 +746,28 @@ final class Materials {
 			'usable_kwh'                      => __( 'Usable energy', 'linker-commerce' ),
 			'nominal_kwh'                     => __( 'Nominal energy', 'linker-commerce' ),
 			'nom_voltage'                     => __( 'Nominal voltage', 'linker-commerce' ),
+			'ac_nom_voltage'                  => __( 'Nominal AC voltage', 'linker-commerce' ),
+			'system_range'                    => __( 'System energy range', 'linker-commerce' ),
+			'ac_output_w_nominal'             => __( 'AC output w nominal', 'linker-commerce' ),
+			'ac_output_kw_max'                => __( 'Maximum AC output power', 'linker-commerce' ),
+			'anti_corrosion_class'            => __( 'Corrosion protection class', 'linker-commerce' ),
+			'box_material'                    => __( 'Enclosure material', 'linker-commerce' ),
+			'cooling_method'                  => __( 'Cooling method', 'linker-commerce' ),
+			'datalogger'                      => __( 'Data logger', 'linker-commerce' ),
+			'ev_chargers'                     => __( 'EV chargers', 'linker-commerce' ),
+			'power_consumption'               => __( 'Power consumption', 'linker-commerce' ),
+			'operating_temp_range'            => __( 'Operating temperature', 'linker-commerce' ),
+			'operating_temperature_range'     => __( 'Operating temperature', 'linker-commerce' ),
+			'measurement_accuracy'            => __( 'Measurement accuracy', 'linker-commerce' ),
+			'measuring_cycle'                 => __( 'Measuring cycle', 'linker-commerce' ),
+			'current_measurement'             => __( 'Current measurement', 'linker-commerce' ),
+			'ac_pf'                           => __( 'AC power factor', 'linker-commerce' ),
+			'rated_current_a'                 => __( 'Nominal current', 'linker-commerce' ),
+			'rated_voltage'                   => __( 'Supply', 'linker-commerce' ),
+			'dimensions_hwd'                  => __( 'Dimensions (H × W × D)', 'linker-commerce' ),
+			'communication_address_range'     => __( 'Communication address range', 'linker-commerce' ),
+			'max_pv_input_power_w'            => __( 'Maximum PV input power', 'linker-commerce' ),
+			'max_input_current_per_mppt_a'    => __( 'Maximum input current per MPPT', 'linker-commerce' ),
 			'chemistry'                       => __( 'Cell chemistry', 'linker-commerce' ),
 			'charge_a'                        => __( 'Max. charge current', 'linker-commerce' ),
 			'discharge_a'                     => __( 'Max. discharge current', 'linker-commerce' ),
@@ -748,6 +778,7 @@ final class Materials {
 			'devices'                         => __( 'Devices supported', 'linker-commerce' ),
 			'interface'                       => __( 'Communication', 'linker-commerce' ),
 			'ip'                              => __( 'Ingress protection', 'linker-commerce' ),
+			'ingress_protection'              => __( 'Ingress protection', 'linker-commerce' ),
 			'temp'                            => __( 'Operating temperature', 'linker-commerce' ),
 			'weight'                          => __( 'Weight', 'linker-commerce' ),
 			'dimensions'                      => __( 'Dimensions', 'linker-commerce' ),
@@ -1459,38 +1490,43 @@ final class Materials {
 
 	/**
 	 * The catalogue card's fact rows: the registry's figures in the card's own
-	 * order (measured on the live catalogue 2026-10-11: inverters read AC
-	 * power / phase / MPPT / efficiency, battery modules usable energy /
-	 * chemistry / ingress protection / system energy range, cabinets usable
-	 * energy / nominal voltage / chemistry / ingress protection, the
-	 * meter-and-accessory families communication / ingress protection /
-	 * weight / dimensions). Availability skips a missing row, so the count
-	 * follows the data.
+	 * order, per the material type the live catalogue renders it with. The
+	 * order table is read from the live card DOM (89 cards measured
+	 * 2026-10-12 across the shop's three pages and the inverter archive):
+	 * power modules read rated AC power / phase / MPPT / max. efficiency,
+	 * the single-phase ones add their nominal AC voltage, the ESA battery
+	 * modules usable energy / cell chemistry / ingress protection / system
+	 * energy range, the transfer switches communication / ingress protection /
+	 * weight / dimensions, the EcoFlow hybrid families phase / MPPT /
+	 * efficiency / AC output. A missing row is skipped, never swapped, so the
+	 * card's height follows its own data.
 	 *
 	 * @param WC_Product $product The product.
 	 * @param int        $limit   How many rows the card holds.
 	 * @return list<array{key: string, label: string, value: string}>
 	 */
 	public static function card_facts( WC_Product $product, int $limit = 4 ): array {
-		// The live page's own type schema, in its order: the first row a
-		// product really carries is the card's model line ("Class B / 1.0 ·
-		// DTSU666" for the meter, "RS485 · GW60K-STS-G10" for the inverter),
-		// then the rest of the four. Missing keys are skipped, never swapped
-		// (measured on the live shop 2026-10-12).
 		$order = array(
-			'inverter'  => array( 'ac_power', 'phase', 'mppt', 'efficiency', 'nom_voltage' ),
-			'system'    => array( 'ac_power', 'nominal_kwh', 'phase', 'ip', 'usable_kwh', 'nom_voltage', 'chemistry' ),
-			'battery'   => array( 'usable_kwh', 'nom_voltage', 'chemistry', 'ip', 'nominal_kwh', 'system_range' ),
-			'meter'     => array( 'accuracy', 'ratio', 'interface', 'ip', 'weight', 'dimensions' ),
-			'ct'        => array( 'ratio', 'accuracy', 'burden', 'temp', 'interface', 'ip', 'weight' ),
-			'ems'       => array( 'devices', 'interface', 'ip', 'temp', 'weight' ),
-			'accessory' => array( 'ac_power', 'interface', 'ip', 'weight', 'nom_voltage', 'temp' ),
-			'other'     => array( 'nom_voltage', 'interface', 'ip', 'weight', 'temp' ),
+			// The live's own material types first.
+			'fixed_system'    => array( 'ac_power', 'phase', 'mppt', 'efficiency', 'ac_nom_voltage', 'system_range' ),
+			'transfer_switch' => array( 'interface', 'ip', 'weight', 'dimensions', 'cooling_method' ),
+			'battery_module'  => array( 'usable_kwh', 'nom_voltage', 'chemistry', 'ip', 'nominal_kwh' ),
+			'ev_charger'      => array( 'ac_power', 'phase', 'rated_current_a', 'rated_voltage', 'ip', 'weight', 'nom_voltage', 'temp' ),
+			// Contract types (contract_type()) for the rest.
+			'inverter'        => array( 'ac_power', 'phase', 'mppt', 'efficiency', 'ac_output_kw_max', 'nom_voltage' ),
+			'system'          => array( 'ac_power', 'nominal_kwh', 'phase', 'ip', 'ingress_protection', 'altitude', 'altitude_m', 'interface', 'ac_pf', 'usable_kwh', 'nom_voltage', 'chemistry', 'dimensions' ),
+			'battery'         => array( 'usable_kwh', 'nom_voltage', 'chemistry', 'ip', 'system_range', 'nominal_kwh' ),
+			'meter'           => array( 'accuracy', 'interface', 'ip', 'accuracy_class_reactive', 'communication_address_range', 'ratio', 'weight', 'dimensions' ),
+			'ct'              => array( 'ratio', 'accuracy', 'burden', 'temp', 'interface', 'ip', 'weight' ),
+			'ems'             => array( 'current_measurement', 'measurement_accuracy', 'measuring_cycle', 'ev_chargers', 'ip', 'ingress_protection', 'temp', 'operating_temp_range', 'operating_temperature_range', 'datalogger', 'box_material', 'dimensions', 'dimensions_hwd', 'power_consumption', 'interface', 'weight' ),
+			'accessory'       => array( 'ac_power', 'phase', 'rated_current_a', 'rated_voltage', 'ip', 'ingress_protection', 'weight', 'accessory_option', 'altitude', 'interface', 'nom_voltage', 'temp' ),
+			'other'           => array( 'ac_power', 'nominal_kwh', 'phase', 'mppt', 'efficiency', 'ac_output_w_nominal', 'backup_power_kw', 'max_pv_input_power_w', 'max_input_current_per_mppt_a', 'ip', 'interface', 'weight', 'temp' ),
 		);
-		$kind  = self::contract_type( (string) self::identity( $product )['kind'] );
+		$type  = (string) self::identity( $product )['kind'];
+		$keys  = $order[ $type ] ?? $order[ self::contract_type( $type ) ] ?? $order['other'];
 		$specs = self::specs( $product );
 		$out   = array();
-		foreach ( $order[ $kind ] ?? $order['other'] as $key ) {
+		foreach ( $keys as $key ) {
 			if ( ! isset( $specs[ $key ] ) ) {
 				continue;
 			}

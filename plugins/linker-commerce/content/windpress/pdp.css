@@ -1260,11 +1260,30 @@ body:has(#tv-storefront-pdp) {
  * (docs/acceptance/2026-10-11/16/working/replica-r4/EVIDENCE.md §6-4).
  */
 @media (max-width: 860px) {
+	/* The phone page pads 12px at the top, not 20px (measured at 390). */
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp { padding: 12px 0 80px; }
+
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-layout {
 		position: relative;
+		isolation: isolate;
 		grid-template-columns: 45fr 55fr;
+		grid-template-rows: repeat(4, auto) minmax(0, 1fr);
 		gap: normal 12px;
 		padding-top: 22px;
+	}
+
+	/* The soft disc behind the picture (measured on the live phone page). */
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-layout::before {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		top: 22px;
+		right: 0;
+		width: 245px;
+		height: 245px;
+		max-width: 70%;
+		border-radius: 50%;
+		background: radial-gradient(circle at 40% 35%, #e5ede4, #f1f4ef);
 	}
 
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-gallery {
@@ -1316,7 +1335,7 @@ body:has(#tv-storefront-pdp) {
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-h1 { grid-area: 2 / 1; position: relative; font-family: var(--pdp-font); font-size: 24.57px; line-height: 28.5px; letter-spacing: -0.86px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-designation { grid-area: 3 / 1; position: relative; margin-top: 10px; font-size: 12px; line-height: 19.2px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-sku { grid-area: 4 / 1; position: relative; font-size: 10px; line-height: 16.5px; }
-	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-price { grid-area: auto / 1; margin: 0 0 18px; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-price { grid-area: auto / 1; align-self: center; margin: 0 0 18px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-price-login { color: var(--pdp-muted); font-size: 11px; line-height: 17.6px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-spec-list { grid-area: auto / 1 / auto / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 17px 0; margin: 12px 0 22px; border-bottom: 1px solid var(--pdp-line); }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-spec-list > div { flex-direction: column; gap: 5px; padding: 0; border-bottom: 0; }
@@ -1332,12 +1351,52 @@ body:has(#tv-storefront-pdp) {
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-tool:first-child { flex-direction: row; gap: 8px; padding: 10px 14px; font-size: 12px; line-height: 16.8px; }
 	/* The compare entry rides over the gallery's lower corner. */
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-tool:first-child { position: absolute; top: -52px; right: 0; }
-	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-project-check { grid-area: auto / 1 / auto / -1; margin: 0; border-radius: 14px; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-project-check { grid-area: auto / 1 / auto / -1; margin: 0; border-radius: 14px; background: #edf3eb; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-project-check summary { min-height: 48px; padding: 12px; font-size: 13px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-content { grid-area: auto / 1 / auto / -1; display: block; margin-top: 24px; }
 
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-section-nav { border-top: 1px solid var(--pdp-line); }
 
-	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-crumbs { margin-bottom: 8px; min-height: 44px; }
+	/* The phone crumb row is one back pill: the shop link, an arrow before it;
+	   the separators and the brand/model read-outs drop (measured on the live
+	   phone page 2026-10-12). */
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-crumbs { display: flex; margin: 0 0 8px; min-height: 44px; }
+
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-crumbs > span { display: none; }
+
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-crumbs > a {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		min-height: 44px;
+		min-width: 44px;
+		margin: 0;
+		padding: 10px 14px;
+		background: #fff;
+		border: 1px solid #e5ece5;
+		border-radius: 14px;
+		font-family: var(--pdp-font);
+		font-size: 12px;
+		font-weight: 600;
+		line-height: 1.4;
+		color: var(--pdp-ink);
+		text-decoration: none;
+	}
+
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-crumbs > a::before { content: '\2190'; font: 22px/1 system-ui; }
+
+	/* The purchase rail's phone order: key figures, then the price beside the
+	   action, then availability, the second action, the tool row and the
+	   project entry (the live phone page's own order values). */
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-spec-list { order: 2; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp :is(.pdp-price, .pdp-btn-dark) { order: 5; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-avail { order: 7; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-btn-secondary { order: 8; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-product-tools { order: 9; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-project-check { order: 10; }
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-content { order: 11; }
 
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-section-title { letter-spacing: -0.6px; }
 

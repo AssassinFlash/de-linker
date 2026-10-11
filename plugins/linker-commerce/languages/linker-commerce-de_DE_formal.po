@@ -3091,3 +3091,197 @@ msgstr "Alle Modelle"
 #: includes/Presentation/CatalogShortcodes.php:1305
 msgid "Selected model"
 msgstr "Ausgewähltes Modell"
+
+#. German wording of the catalogue card labels, read from the live German
+#. catalogue's own cards (2026-10-12).
+#: includes/Catalog/Materials.php
+msgid "Rated AC power"
+msgstr "AC-Nennleistung"
+
+#: includes/Catalog/Materials.php
+msgid "MPPT trackers"
+msgstr "MPPT-Tracker"
+
+#: includes/Catalog/Materials.php
+msgid "Max. efficiency"
+msgstr "Max. Wirkungsgrad"
+
+#: includes/Catalog/Materials.php
+msgid "Nominal AC voltage"
+msgstr "AC-Nennspannung"
+
+#: includes/Catalog/Materials.php
+msgid "Ingress protection"
+msgstr "Schutzart"
+
+#: includes/Catalog/Materials.php
+msgid "Weight"
+msgstr "Gewicht"
+
+#: includes/Catalog/Materials.php
+msgid "Dimensions"
+msgstr "Abmessungen"
+
+#: includes/Catalog/Materials.php
+msgid "Communication"
+msgstr "Kommunikation"
+
+#: includes/Catalog/Materials.php
+msgid "System energy range"
+msgstr "Energiebereich des Systems"
+
+#: includes/Catalog/Materials.php
+msgid "Maximum AC output power"
+msgstr "Maximale AC-Ausgangsleistung"
+
+#: includes/Catalog/Materials.php
+msgid "AC output w nominal"
+msgstr "AC-Ausgang w nominal"
+
+#: includes/Catalog/Materials.php
+msgid "Nominal voltage"
+msgstr "Nennspannung"
+
+#: includes/Catalog/Materials.php
+msgid "Backup power"
+msgstr "Notstromleistung"
+
+#: includes/Catalog/Materials.php
+msgid "Cooling method"
+msgstr "Kühlmethode"
+
+#: includes/Catalog/Materials.php
+msgid "Operating temperature"
+msgstr "Betriebstemperatur"
+
+#: includes/Catalog/Materials.php
+msgid "Altitude"
+msgstr "Betriebshöhe"
+
+#: includes/Catalog/Materials.php
+msgid "Data logger"
+msgstr "Datenlogger"
+
+#: includes/Catalog/Materials.php
+msgid "Dimensions (H × W × D)"
+msgstr "Abmessungen (H × B × T)"
+
+#: includes/Catalog/Materials.php
+msgid "Enclosure material"
+msgstr "Gehäusematerial"
+
+#: includes/Catalog/Materials.php
+msgid "Power consumption"
+msgstr "Leistungsaufnahme"
+
+#: includes/Catalog/Materials.php
+msgid "Corrosion protection class"
+msgstr "Korrosionsschutzklasse"
+
+#: includes/Catalog/Materials.php
+msgid "Accuracy class"
+msgstr "Genauigkeitsklasse"
+
+#: includes/Catalog/Materials.php
+msgid "Accuracy class, reactive"
+msgstr "Genauigkeitsklasse, Blindenergie"
+
+#: includes/Catalog/Materials.php
+msgid "Communication address range"
+msgstr "Kommunikationsadressbereich"
+
+#: includes/Catalog/Materials.php
+msgid "Modules per stack"
+msgstr "Module pro Stapel"
+
+#: includes/Catalog/Materials.php
+msgid "Nominal current"
+msgstr "Nennstrom"
+
+#: includes/Catalog/Materials.php
+msgid "Supply"
+msgstr "Anschluss"
+
+#: includes/Catalog/Materials.php
+msgid "Maximum PV input power"
+msgstr "Maximale PV-Eingangsleistung"
+
+#: includes/Catalog/Materials.php
+msgid "Maximum input current per MPPT"
+msgstr "Maximaler Eingangsstrom je MPPT"
+
+#: includes/Catalog/Materials.php
+msgid "Measurement accuracy"
+msgstr "Messgenauigkeit"
+
+#: includes/Catalog/Materials.php
+msgid "Measuring cycle"
+msgstr "Messzyklus"
+
+#: includes/Catalog/Materials.php
+msgid "Current measurement"
+msgstr "Strommessung"
+
+#: includes/Catalog/Materials.php
+msgid "EV chargers"
+msgstr "Wallboxen"
+
+#: includes/Catalog/Materials.php
+msgid "Inverters per module"
+msgstr "Wechselrichter je Modul"
+
+#: includes/Catalog/Materials.php
+msgid "Status display"
+msgstr "Statusanzeige"
+
+#: includes/Catalog/Materials.php
+msgid "Input voltage"
+msgstr "Eingangsspannung"
+
+#: includes/Catalog/Materials.php
+msgid "AC power factor"
+msgstr "AC-Leistungsfaktor"
+
+#: includes/Catalog/Materials.php
+msgid "Max. apparent power"
+msgstr "Max. Scheinleistung"
+
+#: includes/Catalog/Materials.php
+msgid "Accessory option"
+msgstr "Zubehöroption"
+
+#. The catalogue head's breadcrumb first step (the live German page reads
+#. "STARTSEITE"); the application value "Home" stays "Privat".
+#: includes/Presentation/CatalogShortcodes.php
+msgctxt "breadcrumb"
+msgid "Home"
+msgstr "Startseite"
+
+#: includes/Presentation/CatalogShortcodes.php
+msgid "Category: %s"
+msgstr "Kategorie: %s"
+
+#: includes/Presentation/CatalogShortcodes.php
+msgid "Archives: %s"
+msgstr "Archiv: %s"
+
+#. The catalogue's contact invitation, verbatim from the live German pages.
+#: includes/Presentation/CatalogShortcodes.php
+msgid "CONTACT LINKER"
+msgstr "KONTAKT ZU LINKER"
+
+#: includes/Presentation/CatalogShortcodes.php
+msgid "Not sure which model to look for?"
+msgstr "Noch nicht sicher, welches Modell passt?"
+
+#: includes/Presentation/CatalogShortcodes.php
+msgid "Your question includes this page as context. You can remove it before sending."
+msgstr "Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen."
+
+#: includes/Presentation/CatalogShortcodes.php
+msgid "Need help choosing?"
+msgstr "Hilfe bei der Auswahl?"
+
+#: includes/Presentation/CatalogShortcodes.php
+msgid "Previous"
+msgstr "Zurück"

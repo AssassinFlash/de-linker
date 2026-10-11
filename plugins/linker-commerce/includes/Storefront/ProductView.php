@@ -161,7 +161,14 @@ final class ProductView {
 				$rest = trim( (string) preg_replace( '/\b' . preg_quote( $token, '/' ) . '\b/u', ' ', $rest ) );
 			}
 		}
-		return trim( $rest, " \t-" );
+		$rest = trim( $rest, " \t-" );
+		// The name's own brackets are dropped: the live page reads "ESA battery
+		// module, 5.12 kWh" where the name says "(ESA battery module, 5.12
+		// kWh)" (measured 2026-10-12, EN and DE).
+		if ( \str_starts_with( $rest, '(' ) && \str_ends_with( $rest, ')' ) ) {
+			$rest = trim( \substr( $rest, 1, -1 ) );
+		}
+		return $rest;
 	}
 
 	/**

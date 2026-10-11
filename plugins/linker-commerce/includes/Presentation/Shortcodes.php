@@ -38,6 +38,22 @@ final class Shortcodes {
 	}
 
 	/**
+	 * The contact page in the page's language; every contact entry (the site
+	 * chrome's, the catalogue's invitation) resolves its target here.
+	 */
+	public static function contact_page_url(): string {
+		$page = get_page_by_path( 'contact' );
+		$id   = $page instanceof \WP_Post ? (int) $page->ID : 0;
+		if ( $id > 0 && function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
+			$twin = (int) pll_get_post( $id, 'de' );
+			if ( $twin > 0 ) {
+				$id = $twin;
+			}
+		}
+		return $id > 0 ? (string) get_permalink( $id ) : home_url( '/contact/' );
+	}
+
+	/**
 	 * The site chrome's contact entry: the contact page in the page's
 	 * language, carrying the product on display as the request's subject.
 	 * Placement selects the chrome's own class (header, mobile header,
@@ -56,15 +72,7 @@ final class Shortcodes {
 		$classes    = '' !== trim( (string) $attributes['class'] )
 			? trim( (string) $attributes['class'] )
 			: ( 'mobile' === $attributes['placement'] ? 'tv-header-cta tv-mobile-cta' : 'tv-header-cta' );
-		$page       = get_page_by_path( 'contact' );
-		$id         = $page instanceof \WP_Post ? (int) $page->ID : 0;
-		if ( $id > 0 && function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = (int) pll_get_post( $id, 'de' );
-			if ( $twin > 0 ) {
-				$id = $twin;
-			}
-		}
-		$url = $id > 0 ? (string) get_permalink( $id ) : home_url( '/contact/' );
+		$url        = self::contact_page_url();
 		if ( function_exists( 'is_product' ) && is_product() ) {
 			$product = wc_get_product( (int) get_the_ID() );
 			if ( $product instanceof WC_Product ) {
