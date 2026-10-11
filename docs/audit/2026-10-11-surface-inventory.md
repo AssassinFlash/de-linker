@@ -20,7 +20,7 @@
 | 博客（/blog/ + 11 文 ×2 语） | WP 内容 + LC 动态模板 | 数据携带；#9 翻译队列覆盖德语 | linker-i18n Jobs.php | — |
 | 产品分类页 10 个 + /products/ | 筛选 + **搜索框**（`id="search-box" type="search"`，线上实测）+ min/max 数字输入 | archive 模板 + CatalogFilters（GET 链接，无任何 `<input>`）+ Genie 芯片；**无搜索输入** | storefront-archive-product.php:59–77；Entries.php:29/180 | **GAP-1 → 票 A**（spec 13 本就写了搜索框识别问句出芯片，属漏建非新增） |
 | 产品页 105 ×2 语 | 图库/正文/参数/FAQ/文档/**场景段**/BOM 抽屉入口 | 图值 #7、参数 linker_specs、FAQ #15、文档、按钮价格 #11、Genie 芯片；**场景段无渲染** | 旧 product-scenarios.php:5–10；本轮线上实测 | **GAP-2 → #16 逐区块对账**（产品页裁定=复刻线上设计） |
-| compare 独立页 /compare-products/ | compare-products.php + compare-selection.js（线上 200，含 data-compare） | 页面随快照 200 但交互 JS 属旧插件，切换即死；新有 Genie ability + 产品页 Compare 芯片 | 旧 includes/compare-products.php；新 Abilities/CompareProducts.php | **GAP-3 → 票 B：301 至 /products/**（对比功能由 Genie 代偿；独立选择页留待有客户需求再议） |
+| compare 独立页 /compare-products/ | compare-products.php + compare-selection.js（线上 200，含 data-compare） | 页面随快照 200 但交互 JS 属旧插件，切换即死；新有 Genie ability + 产品页 Compare 芯片 | 旧 includes/compare-products.php；新 Abilities/CompareProducts.php | **GAP-3 → 票 #66：重建独立对比页（业主 2026-10-11 改裁定：301 作废，独立页设计逻辑成立）** |
 | FAQ 页 /faq-download/ | linker-ai 知识/文档工作台（线上实测 linker-ai-workspace）+ refdesk 问答 | 页面随快照 200，工作台 JS 属旧插件；#15 只做产品内 FAQ | 线上 GET；旧 reference-and-display.php:2500 | **GAP-4 → 票 B：改静态 FAQ/文档目录页**（Q&A 由 Genie search-knowledge 代偿，保 URL 与 SEO） |
 | /linker-advisor/ | Advisor 聊天整页（线上 linker-ai-assistant ×8） | Genie 为芯片+常驻 dock，无整页挂载，Redirects 无此路径 | Entries.php:29–32 | **GAP-5 → 票 B：301 至 /products/** |
 | /design-canvas/、/quote-configurator/ | 旧独立工具页 | 301 → /linker-planner/ 已重建 | Redirects.php:33–39 | — |
@@ -66,11 +66,11 @@
 | 旧邮件 | 新对应 | 状态 |
 |---|---|---|
 | 新客户 → 管理员 | NewCustomerEmail + 客户欢迎信（Woo 原生经队列） | 重建 |
-| 客户状态变更（审批通过/限制/拒绝）→ 客户 | 无 | 废弃-裁定（无审批） |
-| 公司资料变更 → 管理员 | 无 | **GAP-15 → 裁定：废弃**（变更即邮件属审批时代口径；当前量级不需要，事件驱动再加） |
+| 客户状态变更（审批通过/限制/拒绝）→ 客户 | 票 #73 三封原因邮件（对抗评审） | 重建（业主 2026-10-11 推翻无审批） |
+| 公司资料变更 → 管理员 | 无 | **GAP-15 → 票 #73：重建（业主 2026-10-11：审批三态恢复，限制/拒绝的原因邮件是与客户沟通的正式渠道）** |
 | VAT 校验失败 → 管理员 | VatReviewEmail（仅结论变化时） | 重建（口径收窄为裁定） |
 | 发票号分配 → 客户 | 无；ProformaIssuedEmail 替代 PI 事件 | 废弃+重建 |
-| 每日摘要（09:00 待审+待付） | 无 | **GAP-15 → 裁定：废弃**（审批/在线支付已废；每询盘即邮件已覆盖"未处理提醒"功能；量级变化再议） |
+| 每日摘要（09:00 待审+待付） | 无 | **GAP-15 → 票 #74：重建（业主 2026-10-11：摘要保留、内容改版四块——待审批/询盘>24h/PI>3天/邮件失败，空摘要照发）** |
 | contact 表单回执 + 团队 | 无 | GAP-8 → 票 A |
 | project 提交 ack（客户+团队） | InquiryReceivedEmail + NewInquiryEmail | 重建 |
 | project 评审结果 → 客户 | 无 | 废弃（人工评审流由 PI 流替代） |
@@ -132,9 +132,9 @@
 ## GAP 汇总（19 项终局处置）
 
 ### 已裁定（本轮，工程线按证据自裁，业主可一句话翻案）
-- GAP-3 compare 页、GAP-5 advisor 页 → **301 至 /products/**（Genie 代偿）。
+- GAP-3 compare 页 → **重建独立页（业主 2026-10-11 改裁定）**；GAP-5 advisor 页 → **301 至 /products/**（Genie 代偿）。
 - GAP-4 faq-download → **静态 FAQ/文档目录页**（保 URL/SEO；Q&A 由 Genie 代偿）。
-- GAP-10 funnel 计量、GAP-12 release-state、GAP-15 摘要+资料变更通知、weekly report、GAP-13 project 媒体上传 → **废弃**（理由各见对应行）。
+- GAP-10 funnel 计量、GAP-12 release-state、weekly report、GAP-13 project 媒体上传 → **废弃**（理由各见对应行）。GAP-15 摘要+状态变更通知 → **重建**（业主 2026-10-11，票 #73/#74）。
 - 命名沿用四类（tv-* id、--dlk-*、REST 命名空间、凭据路径）→ **保留**。
 
 ### C 类默认（证据支撑的默认路径，业主一句话可翻案）
