@@ -44,13 +44,18 @@ final class PolylangInstance {
 	public function __construct( public mixed $curlang ) {
 		$this->model       = new class() {
 			/**
-			 * A language by slug.
+			 * A language by slug or locale, like Polylang's model.
 			 *
-			 * @param string $slug Slug.
+			 * @param string $slug_or_locale Slug or WordPress locale.
 			 * @return \PLL_Language|false
 			 */
-			public function get_language( string $slug ) {
-				return in_array( $slug, array( 'en', 'de' ), true ) ? PolylangDouble::language( $slug ) : false;
+			public function get_language( string $slug_or_locale ) {
+				$locales   = array(
+					'en_US'        => 'en',
+					'de_DE_formal' => 'de',
+				);
+				$candidate = $locales[ $slug_or_locale ] ?? $slug_or_locale;
+				return in_array( $candidate, array( 'en', 'de' ), true ) ? PolylangDouble::language( $candidate ) : false;
 			}
 		};
 		$this->links_model = new class() {

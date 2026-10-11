@@ -127,7 +127,12 @@ final class PolylangDouble {
 	 * @param string $slug Language slug.
 	 */
 	public static function language( string $slug ): \PLL_Language {
-		self::$languages[ $slug ] ??= Mockery::mock( \PLL_Language::class );
+		if ( ! isset( self::$languages[ $slug ] ) ) {
+			$language = Mockery::mock( \PLL_Language::class );
+			// The slug is the object's own answer; a test can override the expectation.
+			$language->shouldReceive( 'get_prop' )->with( 'slug' )->andReturn( $slug )->byDefault();
+			self::$languages[ $slug ] = $language;
+		}
 		return self::$languages[ $slug ];
 	}
 

@@ -59,6 +59,24 @@ final class Languages {
 	}
 
 	/**
+	 * The slug of a WordPress locale, null when the site has no such language
+	 * (Polylang answers a slug, a locale or a term id; the locale is what the
+	 * order meta records).
+	 *
+	 * @param string $locale Locale such as de_DE_formal.
+	 */
+	public function slug_of_locale( string $locale ): ?string {
+		if ( ! function_exists( 'PLL' ) ) {
+			return null;
+		}
+		$language = PLL()->model->get_language( $locale );
+		if ( ! $language instanceof \PLL_Language ) {
+			return null;
+		}
+		return $language->get_prop( 'slug' );
+	}
+
+	/**
 	 * The language of a post, null when it has none.
 	 *
 	 * @param int $post_id Post ID.
