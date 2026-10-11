@@ -28,6 +28,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 	new Abilities\Registrar( __FILE__ ),
 	new Catalog\SelectionFactsController(),
 	new Catalog\EngineeringFeedController(),
+	new Catalog\CatalogSearchController(),
+	new Catalog\SearchScope(),
+	new Contact\Module( __FILE__, new Settings\Options() ),
 	new Admin\FiguresMetaBox(),
-	new Admin\FaqsMetaBox()
+	new Admin\FaqsMetaBox(),
+	new Admin\DocumentsMetaBox()
 ) )->register();

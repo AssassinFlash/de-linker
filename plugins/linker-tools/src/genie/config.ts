@@ -11,6 +11,10 @@
  * - `data-disclosure`: the AI disclosure sentence, spoken once;
  * - `data-account-url`: the account page (view_inquiry links here);
  * - `data-prompts`: JSON list of opening prompts for the page type.
+ *
+ * The catalogue search box's Ask Genie chip (assets/search-ask.js) leaves the
+ * text it was clicked for on this mount as `data-pending-ask` before it boots
+ * the app: the app picks it up on its first mount and clears it.
  */
 
 /**
@@ -28,10 +32,15 @@ export interface GenieConfig {
 	disclosure: string;
 	accountUrl: string;
 	prompts: string[];
+	pendingAsk: string;
 }
 
 export function readConfig( element: HTMLElement ): GenieConfig {
 	const data = element.dataset;
+	const pendingAsk = data.pendingAsk ?? '';
+	if ( '' !== pendingAsk ) {
+		delete element.dataset.pendingAsk;
+	}
 	return {
 		locale: data.locale === 'de' ? 'de' : 'en',
 		pageType: data.pageType ?? 'other',
@@ -42,5 +51,6 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		disclosure: data.disclosure ?? '',
 		accountUrl: data.accountUrl ?? '',
 		prompts: data.prompts ? JSON.parse( data.prompts ) : [],
+		pendingAsk,
 	};
 }

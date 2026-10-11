@@ -33,6 +33,17 @@ final class ComparisonLiveCatalogueTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		WP_Mock::passthruFunction( '__' );
+		// Another test class earlier in the run may already have mocked
+		// has_filter (WP_Mock defines the function for the rest of the
+		// process), which puts SelectionFacts' twin-swap branch on the
+		// path; the swap has no listener here.
+		WP_Mock::userFunction(
+			'has_filter',
+			array(
+				'return' => false,
+				'times'  => '0+',
+			)
+		);
 	}
 
 	/**

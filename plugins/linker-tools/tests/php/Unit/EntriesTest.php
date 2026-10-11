@@ -42,7 +42,7 @@ final class EntriesTest extends TestCase {
 		);
 
 		$GLOBALS['linker_tools_test_inline_scripts'] = array();
-		$html                                        = $this->capture( array( new Entries(), 'dock' ) );
+		$html                                        = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
 		$this->assertStringContainsString( 'data-linker-genie-open', $html );
 		$this->assertStringContainsString( 'Ask Genie', $html );
@@ -67,7 +67,7 @@ final class EntriesTest extends TestCase {
 			)
 		);
 
-		$html = $this->capture( array( new Entries(), 'dock' ) );
+		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
 		$this->assertStringContainsString( 'der KI-Assistent von Linker', $html );
 		$this->assertStringContainsString( 'Wo steht meine Proforma?', $html );
@@ -80,7 +80,7 @@ final class EntriesTest extends TestCase {
 	 */
 	public function test_prompts_per_page_type(): void {
 		WP_Mock::passthruFunction( '__' );
-		$entries = new Entries();
+		$entries = new Entries( '/plugin/linker-tools.php' );
 		$page    = static fn( string $type ): array => array( 'type' => $type );
 
 		$product = $entries->prompts( $page( 'product' ), 'en' );
@@ -111,7 +111,7 @@ final class EntriesTest extends TestCase {
 			)
 		);
 
-		$html = $this->capture( array( new Entries(), 'dock' ) );
+		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
 		$this->assertSame( array(), $GLOBALS['linker_tools_test_inline_scripts'] );
 		$this->assertConditionsMet();
@@ -132,7 +132,7 @@ final class EntriesTest extends TestCase {
 			)
 		);
 
-		$this->capture( array( new Entries(), 'dock' ) );
+		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
 		$inline  = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
 		$payload = json_decode(
@@ -160,7 +160,7 @@ final class EntriesTest extends TestCase {
 		WP_Mock::passthruFunction( 'esc_html' );
 		WP_Mock::passthruFunction( 'esc_attr' );
 		$html = $this->capture(
-			static fn() => ( new Entries() )->chip( 'Compare with…', 'product' )
+			static fn() => ( new Entries( '/plugin/linker-tools.php' ) )->chip( 'Compare with…', 'product' )
 		);
 		$this->assertStringContainsString( 'data-linker-genie-open', $html );
 		$this->assertStringContainsString( 'data-page-type="product"', $html );
@@ -254,6 +254,36 @@ final class EntriesTest extends TestCase {
 		WP_Mock::passthruFunction( 'esc_attr' );
 		WP_Mock::passthruFunction( 'esc_html' );
 		WP_Mock::passthruFunction( '__' );
+	}
+
+	/**
+	 * The search box's chip: hidden until the script shows it, opening the
+	 * dock on click, with the reviewed label (ticket #68).
+	 */
+	public function test_ask_chip_is_hidden_until_the_script_shows_it(): void {
+		$this->frontend( 'en', array( 'type' => 'category' ) );
+
+		$html = ( new Entries( '/plugin/linker-tools.php' ) )->ask_chip();
+
+		$this->assertStringContainsString( 'data-linker-ask-genie', $html );
+		$this->assertStringContainsString( 'data-linker-genie-open', $html );
+		$this->assertStringContainsString( ' hidden>', $html );
+		$this->assertStringContainsString( 'Ask Genie', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The shortcode prints the same chip, so a LiveCanvas template mounts it
+	 * where the search box stands.
+	 */
+	public function test_ask_shortcode_prints_the_chip(): void {
+		$this->frontend( 'de', array( 'type' => 'category' ) );
+
+		$html = ( new Entries( '/plugin/linker-tools.php' ) )->ask_shortcode( array( 'ignored' => 'yes' ) );
+
+		$this->assertStringContainsString( 'data-linker-ask-genie', $html );
+		$this->assertStringContainsString( 'Ask Genie', $html );
+		$this->assertConditionsMet();
 	}
 
 	/**

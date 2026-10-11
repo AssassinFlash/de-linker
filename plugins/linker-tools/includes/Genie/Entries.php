@@ -22,6 +22,18 @@ class Entries {
 	public const HANDLE = 'linker-tools-genie';
 
 	/**
+	 * Handle of the search box's script (a plain asset, not a built entry).
+	 */
+	public const SEARCH_HANDLE = 'linker-tools-search-ask';
+
+	/**
+	 * Sets up the entries.
+	 *
+	 * @param string $plugin_file Absolute path of the main plugin file.
+	 */
+	public function __construct( private readonly string $plugin_file ) {}
+
+	/**
 	 * Hooks the chips and the dock; runs during plugin registration.
 	 */
 	public function register(): void {
@@ -30,6 +42,80 @@ class Entries {
 		add_action( 'woocommerce_single_product_summary', array( $this, 'product_chips' ), 35 );
 		add_action( 'woocommerce_before_cart', array( $this, 'draft_chips' ) );
 		add_action( 'woocommerce_account_dashboard', array( $this, 'account_chips' ) );
+		add_shortcode( 'linker_genie_ask', array( $this, 'ask_shortcode' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'search_assets' ) );
+	}
+
+	/**
+	 * The Ask Genie chip of the catalogue search box, mountable in the
+	 * LiveCanvas templates that render the catalogue (ticket #68: the markup
+	 * of the search box itself belongs to those templates; this chip and its
+	 * script are the part the entries own). The chip is hidden until the
+	 * script's question detection shows it — without JavaScript the search
+	 * box is the plain form it always was.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function ask_shortcode( $atts = array() ): string {
+		unset( $atts );
+		return $this->ask_chip();
+	}
+
+	/**
+	 * The chip the search box shows for a question: it opens Genie with the
+	 * typed text (the dock's loader boots the app on the same click).
+	 */
+	public function ask_chip(): string {
+		return sprintf(
+			'<button type="button" class="linker-genie-ask min-h-11 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-[#0c7f73]" data-linker-genie-open data-linker-ask-genie hidden><span aria-hidden="true">&#10022;</span> %s</button>',
+			esc_html__( 'Ask Genie', 'linker-tools' )
+		);
+	}
+
+	/**
+	 * The search box's script: on the pages that carry the catalogue's search
+	 * box (the catalogue and its categories) and on pages that mount the chip
+	 * shortcode. The chip is markup of those pages; the script only binds to
+	 * what they carry.
+	 */
+	public function search_assets(): void {
+		if ( is_admin() || ! $this->has_search_surface() ) {
+			return;
+		}
+		$base = plugin_dir_path( $this->plugin_file );
+		wp_enqueue_script(
+			self::SEARCH_HANDLE,
+			plugins_url( 'assets/search-ask.js', $this->plugin_file ),
+			array(),
+			(string) filemtime( $base . 'assets/search-ask.js' ),
+			array( 'in_footer' => true )
+		);
+		$config = array(
+			'input'          => '#search-box',
+			'chip'           => '[data-linker-ask-genie]',
+			'endpoint'       => esc_url_raw( rest_url( 'linker/v1/catalog-search' ) ),
+			'lang'           => $this->locale(),
+			'questionLength' => 8,
+			'queryLength'    => 2,
+			'timeout'        => 1500,
+		);
+		wp_add_inline_script(
+			self::SEARCH_HANDLE,
+			'window.linkerSearchAsk = ' . wp_json_encode( $config ) . ';',
+			'before'
+		);
+	}
+
+	/**
+	 * Whether the page carries the catalogue's search box or mounts the chip.
+	 */
+	private function has_search_surface(): bool {
+		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+			return true;
+		}
+		$post = get_post();
+		return $post instanceof \WP_Post
+			&& has_shortcode( (string) $post->post_content, 'linker_genie_ask' );
 	}
 
 	/**
@@ -330,6 +416,13 @@ JS,
 			}
 			foreach ( $script->deps as $dep ) {
 				$walk( (string) $dep );
+			}
+			// The entry itself is not one of its dependencies: the loader
+			// appends the entry after these URLs, and a self-reference would
+			// execute the app twice (a second mount with an already-read
+			// config).
+			if ( self::HANDLE === $handle ) {
+				return;
 			}
 			$url = (string) $script->src;
 			if ( '' !== $url && ! in_array( $url, $urls, true ) ) {

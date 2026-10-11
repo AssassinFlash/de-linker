@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Catalog\CatalogSearch;
 use Linker\Commerce\Catalog\SelectionFactSet;
 use Linker\Commerce\Catalog\SelectionFacts;
 
@@ -80,9 +81,9 @@ final class CatalogFilters {
 	}
 
 	/**
-	 * The facets the request states.
+	 * The facets the request states, and the search box's `q`.
 	 *
-	 * @return array{application?: string, brand?: string, phase?: string, power?: string, kw_min?: float, kw_max?: float, kwh_min?: float, kwh_max?: float} The selected facet values.
+	 * @return array{application?: string, brand?: string, phase?: string, power?: string, kw_min?: float, kw_max?: float, kwh_min?: float, kwh_max?: float, q?: string} The selected facet values.
 	 */
 	public function requested(): array {
 		$selected = array();
@@ -99,6 +100,10 @@ final class CatalogFilters {
 			if ( $value > 0.0 ) {
 				$selected[ $bound ] = $value;
 			}
+		}
+		$q = isset( $get['q'] ) ? sanitize_text_field( (string) $get['q'] ) : '';
+		if ( '' !== $q ) {
+			$selected['q'] = $q;
 		}
 		return $selected;
 	}
@@ -140,6 +145,14 @@ final class CatalogFilters {
 	 * @param array<string, string|float> $selected   The selected facet values.
 	 */
 	private function matches( int $product_id, SelectionFactSet $facts, array $selected ): bool {
+		if ( isset( $selected['q'] ) ) {
+			$product = wc_get_product( $product_id );
+			// The search box's rule, one implementation for the archive and
+			// the instant lookup (CatalogSearch, ticket #68).
+			if ( ! $product instanceof \WC_Product || ! CatalogSearch::matches( $product, CatalogSearch::normalize( (string) $selected['q'] ) ) ) {
+				return false;
+			}
+		}
 		if ( isset( $selected['application'] ) && $facts->application !== (string) $selected['application'] ) {
 			return false;
 		}

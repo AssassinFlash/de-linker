@@ -348,10 +348,11 @@ final class FiguresMetaBoxTest extends TestCase {
 	 * @param array<string, string> $row   value/unit/document/page.
 	 */
 	private function row( string $key, array $row ): void {
-		$_POST[ "linker_figures[{$key}][value]" ]    = $row['value'] ?? '';
-		$_POST[ "linker_figures[{$key}][unit]" ]     = $row['unit'] ?? '';
-		$_POST[ "linker_figures[{$key}][document]" ] = $row['document'] ?? '';
-		$_POST[ "linker_figures[{$key}][page]" ]     = $row['page'] ?? '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- the request a save test builds; the box's own sanitizing is what is under test.
+		$_POST['linker_figures'] = is_array( $_POST['linker_figures'] ?? null ) ? $_POST['linker_figures'] : array();
+		foreach ( array( 'value', 'unit', 'document', 'page' ) as $field ) {
+			$_POST['linker_figures'][ $key ][ $field ] = $row[ $field ] ?? '';
+		}
 	}
 
 	/**

@@ -62,6 +62,7 @@ function config(): GenieConfig {
 		restNonce: 'n',
 		disclosure: "Hi, I'm Genie.",
 		accountUrl: '/my-account/',
+		pendingAsk: '',
 		prompts: [],
 	};
 }

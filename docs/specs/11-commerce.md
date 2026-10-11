@@ -21,7 +21,7 @@
 - `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可购买性 = 已登录且已批准；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。
 - `Inquiry`（状态注册与颜色、网关类 `ProformaGateway extends WC_Payment_Gateway`、减库存关闭、订单标题与列表列；`Checkout::gateways` 对未批准账号返回空=服务端拦截点）。
 - `Proforma`（PDF：dompdf 或 mpdf（MIT/LGPL），模板 EN/DE，编号 `PI-YYYY-NNNN`（按年计数，选项存储），银行条款（设置页填写），有效期 30 天，税额行按 Woo 税设置显示；生成后存 `wp-content/uploads/proforma/<order>/` 私有目录，账户内经鉴权下载）。
-- `Mail`（`wp_mail` 统一：一封主信 To sales@ + Bcc 三个邮箱（设置页）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。
+- `Mail`（`wp_mail` 统一：一封主信 To sales@ + Bcc 三个邮箱（设置页）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11；`Mail\TestMode`，与 #73/#94 同一实现）：选项 `linker_commerce_test_mail_to` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp linker-commerce test-mail on|off|status` 设与撤（默认收件人 chester@de-linker.com，`--to=` 可换），不是设置页字段（#17 切换冒烟时开，验证后撤）。
 - `Account`（端点注册、模板、对接人设置、再次询盘）。
 - `Vocabulary`（gettext 覆盖 Woo 自带字符串：Cart → Solution draft / Lösungsentwurf 等；全部通过 `.po`）。
 - `Settings`（后台一页：对接人、Bcc 列表、银行条款、PI 前缀）。
@@ -51,11 +51,35 @@
 - **后台入口**：用户列表与资料页是 WP 核心屏幕；扩展点全用核心的 `manage_users_columns` / `manage_users_custom_column` / `user_row_actions` / `edit_user_profile`；表单走核心 `admin-post.php` + `wp_nonce_field`；**零** `add_menu_page`、**零** `wp_ajax_*`。资料页 Woo 区块（`woocommerce_customer_meta_fields`）只能出输入框，三动作按钮用 `formaction` 指向 admin-post（WP 资料页自带 form，不可嵌套 form）。
 - **客户可见面**：价格位/目录/Store API 已有 `linker_price` 门（Woo 原生不做门——既有合格先例），审批只是给这一门加输入；未审批 gate 文案沿用既有 LoginGate 的类名与结构，零新站点 CSS、零新页面模板。
 
+## 联系表单（票 #68，GAP-8）
+
+`/contact/` 与 `/de/kontakt/` 的最小表单，接同一条 Mail 管线：
+
+- 组件：短代码 `[linker_contact_form]`（`Linker\Commerce\Contact\Form`），服务器端渲染
+  （无 JS 也能看与提交），语义 markup + Tailwind 类，样式经 WindPress 扫描（页面内容里
+  do_shortcode 的 LC provider 已覆盖）；挂载点=页面的 `[data-linker-contact-mount]`，
+  由 `tools/migrate/68-contact-form.py`（plan/apply --write/verify，幂等）把旧的
+  `cp-contact-fallback` 换成短代码并移除 `noscript` 行，EN #28 + DE 孪生。
+- 字段：message（问题，≤5000）、name、company（选填）、email、consent 勾选、蜜罐
+  `website`（`hidden` + `aria-hidden`，人不可见）、nonce、隐藏 `lang`（页面语言）与
+  回跳地址。校验在 `Contact\Submission`（服务端，与浏览器约束并行）。
+- 提交：`admin_post[_nopriv]_linker_contact`（`Contact\Handler`）：nonce 校验 → 蜜罐
+  （填了=当成功回应、不发送）→ 每连接限流（transient，3 次/小时；地址取 `REMOTE_ADDR`，
+  不信任转发头）→ 校验 → 发送 → 302 回页面带状态 `?contact=sent|invalid|throttled#contact-form`。
+- 邮件：客户回执（`Contact\Emails\ReceiptEmail`，收件人=访客，语言=提交语言）与团队信
+  （`Contact\Emails\TeamMessageEmail`，收件人=SettingsTab 的团队邮箱，Bcc=SettingsTab 的
+  盲抄列表，Reply-to=访客，语言=站点默认）——两封都是 `wp_mail()`，因此走既有 Outbox 队列/
+  重试/限速/日志。两封都注册进 `woocommerce_email_classes`，员工可在 WooCommerce →
+  Settings → Emails 看到并改主题。文案评审：docs/acceptance/2026-10-11/68/copy-review.md
+  （未把 Proforma 链的"一个工作日"承诺搬进本表单）。
+- 不做：旧表单的 workspace/项目绑定/回执查询会话（无对应物；回执不承诺"回来查进度"）。
+
+
 ## 删除/不存在
 运费与发货（Woo 运费区域清空、所有 "shipping" 文案隐藏）、报价、锁价、阈值、分组、发票、Stripe、下载产品、订单跟踪。审批**存在**（票据 73），旧系统的运营台不复活。
 
 ## 验收
-- [ ] 本地：注册 → pending → 团队邮件 → 行内一键通过 → 看价 → 加入 Lösungsentwurf → 提交询盘 → 后台出 PI → 客户账户下载 PI，EN 与 DE 各一次；本地邮件捕获里：欢迎信、公司提醒、审批邮件各一封，主信含 Bcc。
+- [ ] 本地：注册 → pending → 团队邮件 → 行内一键通过 → 看价 → 加入 Lösungsentwurf → 提交询盘 → 后台出 PI → 客户账户下载 PI，EN 与 DE 各一次；本地邮件捕获里每封信只有 tester 单地址（测试邮件开关开着），欢迎信、公司提醒、审批邮件、询盘确认、PI 邮件的路由（收件人/Bcc）以 Outbox 队列数据断言（AGENTS.md 测试邮件纪律，2026-10-11）。
 - [ ] 全站可见文案无 order/checkout/payment/shipping/Versand/Kasse/Bezahlen/Warenkorb（引语除外）。
 - [ ] PI 编号连续、PDF 含银行条款与 30 天有效期；未登录访问 PI 链接 403。
 - [ ] 重试队列测试：模拟 `wp_mail` 失败 3 次后成功，仅一封送达。
@@ -64,3 +88,4 @@
 
 ## 变更记录
 - 2026-10-11（#67，GAP-16）：新增 `Health` 模块（服务健康告警最小件）。WordPress/Woo 没有外部服务健康监视的原生能力，检查本身是本插件的；机制全部原生：调度 WP cron daily（`init` 懒登记 + 停用 `wp_clear_scheduled_hook`），HTTP 走 WP HTTP API，邮件走 `wp_mail` 即 #11 的 Outbox 队列（复用限流与重试）。验收：单元 `MonitorTest`（7 项）+ 实例集成 `HealthMonitorTest`（cron 钩子触发路径、失败一封 To 对接人+Bcc、健康零邮件、每日事件在排期），实例级 `wp cron event run linker_commerce_health_check` 健康/失败两跑实证。
+- 2026-10-11（#68）：联系表单（最小）落地并接 Mail 管线：短代码 `[linker_contact_form]`、admin-post 处理（nonce/蜜罐/限流/校验）、客户回执 + 团队信（Bcc 走 SettingsTab）；`tools/migrate/68-contact-form.py` 换挂载点；同轮修 Figures/FAQ meta box 的保存形态（浏览器实际提交的是嵌套数组，两个箱子此前对真实 POST 从不写入，证据与复现见 docs/acceptance/2026-10-11/68/README.md §3）。

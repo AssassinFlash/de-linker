@@ -13,6 +13,7 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\Retention;
+use Linker\Tools\Genie\WindPress;
 
 /**
  * Hooks Linker Tools into WordPress.
@@ -29,6 +30,7 @@ final class Plugin {
 	 * @param Proxy         $proxy         REST proxy to the Genie service.
 	 * @param Entries       $entries       Chips, dock and disclosure.
 	 * @param Retention     $retention     Deletes expired guest conversations.
+	 * @param WindPress     $windpress     Scan provider for the entries' Tailwind classes.
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -37,7 +39,8 @@ final class Plugin {
 		private readonly Conversations $conversations,
 		private readonly Proxy $proxy,
 		private readonly Entries $entries,
-		private readonly Retention $retention
+		private readonly Retention $retention,
+		private readonly WindPress $windpress
 	) {}
 
 	/**
@@ -52,5 +55,6 @@ final class Plugin {
 		$this->site_chrome->register();
 		$this->entries->register();
 		$this->retention->register();
+		$this->windpress->register();
 	}
 }
