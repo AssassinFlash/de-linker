@@ -55,7 +55,7 @@ final class Materials {
 	 * Whether the page is German.
 	 */
 	public static function is_de(): bool {
-		return \function_exists( 'linker_i18n_is_de' ) && linker_i18n_is_de()
+		return ( \function_exists( 'linker_i18n_is_de' ) && linker_i18n_is_de() )
 			|| ( \function_exists( 'get_locale' ) && \str_starts_with( (string) \get_locale(), 'de' ) && ! \function_exists( 'linker_i18n_is_de' ) );
 	}
 
@@ -77,7 +77,7 @@ final class Materials {
 		if ( ! \is_readable( $path ) ) {
 			return array();
 		}
-		$payload = \json_decode( (string) \file_get_contents( $path ), true );
+		$payload = \json_decode( (string) \file_get_contents( $path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin data file on disk, not a remote URL.
 		return \is_array( $payload ) ? $payload : array();
 	}
 
@@ -202,22 +202,24 @@ final class Materials {
 
 	/**
 	 * The page's contract type for a product kind (tv_woo_b2b_type's map).
+	 *
+	 * @param string $kind The kind.
 	 */
 	public static function contract_type( string $kind ): string {
 		$types = array(
-			'hybrid_inverter'    => 'inverter',
-			'string_inverter'    => 'inverter',
-			'inverter'           => 'inverter',
-			'battery_system'     => 'battery',
-			'battery_module'     => 'battery',
-			'storage_system'     => 'system',
-			'hybrid_system'      => 'system',
-			'all_in_one_system'  => 'system',
-			'energy_meter'       => 'meter',
+			'hybrid_inverter'     => 'inverter',
+			'string_inverter'     => 'inverter',
+			'inverter'            => 'inverter',
+			'battery_system'      => 'battery',
+			'battery_module'      => 'battery',
+			'storage_system'      => 'system',
+			'hybrid_system'       => 'system',
+			'all_in_one_system'   => 'system',
+			'energy_meter'        => 'meter',
 			'current_transformer' => 'ct',
-			'ems'                => 'ems',
-			'ev_charger'         => 'accessory',
-			'accessory'          => 'accessory',
+			'ems'                 => 'ems',
+			'ev_charger'          => 'accessory',
+			'accessory'           => 'accessory',
 		);
 		return $types[ $kind ] ?? 'other';
 	}
@@ -252,39 +254,57 @@ final class Materials {
 	 */
 	public static function fact_keys(): array {
 		return array(
-			'rated_ac_power_kw' => 'ac_power', 'rated_output_power_kw' => 'ac_power',
-			'nominal_ac_power_kw' => 'ac_power', 'phase' => 'phase', 'phases' => 'phase',
-			'mppt_count' => 'mppt', 'max_efficiency_pct' => 'efficiency',
-			'battery_voltage_range_v' => 'batt_voltage',
+			'rated_ac_power_kw'                => 'ac_power',
+			'rated_output_power_kw'            => 'ac_power',
+			'nominal_ac_power_kw'              => 'ac_power',
+			'phase'                            => 'phase',
+			'phases'                           => 'phase',
+			'mppt_count'                       => 'mppt',
+			'max_efficiency_pct'               => 'efficiency',
+			'battery_voltage_range_v'          => 'batt_voltage',
 			'system_operating_voltage_range_v' => 'batt_voltage',
-			'module_energy_kwh_usable' => 'usable_kwh',
-			'system_usable_energy_kwh' => 'usable_kwh',
-			'usable_energy_kwh' => 'usable_kwh',
-			'module_energy_kwh_nominal' => 'nominal_kwh',
-			'system_capacity_kwh_nominal' => 'nominal_kwh',
-			'system_nominal_energy_kwh' => 'nominal_kwh',
-			'system_energy_kwh_nominal' => 'nominal_kwh',
-			'module_voltage_v_nominal' => 'nom_voltage',
-			'system_nominal_voltage_v' => 'nom_voltage',
-			'system_voltage_v_nominal' => 'nom_voltage',
-			'chemistry' => 'chemistry', 'max_charge_current_a' => 'charge_a',
-			'max_discharge_current_a' => 'discharge_a', 'cycle_life' => 'cycles',
-			'ratio' => 'ratio', 'accuracy_class' => 'accuracy', 'rated_burden_va' => 'burden',
-			'bms_comms' => 'interface', 'communication' => 'interface',
-			'ip_rating' => 'ip', 'operating_temp_c' => 'temp',
-			'weight_kg' => 'weight', 'dimensions_mm' => 'dimensions',
-			'ac_output_kw_nominal' => 'ac_power', 'rated_ac_power' => 'ac_power',
-			'nominal_output_power' => 'ac_power', 'rated_power_kw' => 'ac_power',
-			'power_kw' => 'ac_power',
-			'n_mppt' => 'mppt', 'max_efficiency' => 'efficiency',
-			'usable_energy' => 'usable_kwh', 'rated_energy_kwh' => 'nominal_kwh',
-			'rated_energy' => 'nominal_kwh', 'energy_kwh' => 'nominal_kwh',
-			'battery_rated_energy' => 'nominal_kwh',
-			'max_ac_output_kw' => 'ac_output_kw_max',
-			'backup_power_kw' => 'backup_power_kw', 'ac_output_kw_max' => 'ac_output_kw_max',
-			'modules_per_stack_max' => 'modules_per_stack_max',
-			'nominal_voltage_v' => 'nominal_voltage_v', 'system_nominal_voltage_v' => 'system_nominal_voltage_v',
-			'system_voltage_vdc' => 'system_voltage_vdc', 'battery_type' => 'battery_type',
+			'module_energy_kwh_usable'         => 'usable_kwh',
+			'system_usable_energy_kwh'         => 'usable_kwh',
+			'usable_energy_kwh'                => 'usable_kwh',
+			'module_energy_kwh_nominal'        => 'nominal_kwh',
+			'system_capacity_kwh_nominal'      => 'nominal_kwh',
+			'system_nominal_energy_kwh'        => 'nominal_kwh',
+			'system_energy_kwh_nominal'        => 'nominal_kwh',
+			'module_voltage_v_nominal'         => 'nom_voltage',
+			'system_voltage_v_nominal'         => 'nom_voltage',
+			'chemistry'                        => 'chemistry',
+			'max_charge_current_a'             => 'charge_a',
+			'max_discharge_current_a'          => 'discharge_a',
+			'cycle_life'                       => 'cycles',
+			'ratio'                            => 'ratio',
+			'accuracy_class'                   => 'accuracy',
+			'rated_burden_va'                  => 'burden',
+			'bms_comms'                        => 'interface',
+			'communication'                    => 'interface',
+			'ip_rating'                        => 'ip',
+			'operating_temp_c'                 => 'temp',
+			'weight_kg'                        => 'weight',
+			'dimensions_mm'                    => 'dimensions',
+			'ac_output_kw_nominal'             => 'ac_power',
+			'rated_ac_power'                   => 'ac_power',
+			'nominal_output_power'             => 'ac_power',
+			'rated_power_kw'                   => 'ac_power',
+			'power_kw'                         => 'ac_power',
+			'n_mppt'                           => 'mppt',
+			'max_efficiency'                   => 'efficiency',
+			'usable_energy'                    => 'usable_kwh',
+			'rated_energy_kwh'                 => 'nominal_kwh',
+			'rated_energy'                     => 'nominal_kwh',
+			'energy_kwh'                       => 'nominal_kwh',
+			'battery_rated_energy'             => 'nominal_kwh',
+			'max_ac_output_kw'                 => 'ac_output_kw_max',
+			'backup_power_kw'                  => 'backup_power_kw',
+			'ac_output_kw_max'                 => 'ac_output_kw_max',
+			'modules_per_stack_max'            => 'modules_per_stack_max',
+			'nominal_voltage_v'                => 'nominal_voltage_v',
+			'system_nominal_voltage_v'         => 'system_nominal_voltage_v',
+			'system_voltage_vdc'               => 'system_voltage_vdc',
+			'battery_type'                     => 'battery_type',
 		);
 	}
 
@@ -312,30 +332,34 @@ final class Materials {
 		}
 		$facts = $system_facts + $other_facts;
 
-		$quantity         = array( 'nominal_kwh' => 'energy', 'usable_kwh' => 'energy', 'nom_voltage' => 'voltage' );
+		$quantity         = array(
+			'nominal_kwh' => 'energy',
+			'usable_kwh'  => 'energy',
+			'nom_voltage' => 'voltage',
+		);
 		$product_quantity = array();
 		foreach ( $facts as $field => $fact ) {
 			$key = $keys[ $field ] ?? (string) $field;
 			if ( isset( $quantity[ $key ] ) && ! \str_starts_with( (string) $field, 'module_' )
-				&& \is_array( $fact ) && \trim( (string) ( $fact['value'] ?? '' ) ) !== '' ) {
+				&& \trim( (string) ( $fact['value'] ?? '' ) ) !== '' ) {
 				$product_quantity[ $quantity[ $key ] ] = true;
 			}
 		}
 
 		$out = array();
 		foreach ( $facts as $field => $fact ) {
-			if ( ! \is_array( $fact ) || ! \array_key_exists( 'value', $fact ) ) {
+			if ( ! \array_key_exists( 'value', $fact ) ) {
 				continue;
 			}
 			$key = $keys[ $field ] ?? (string) $field;
 			if ( isset( $out[ $key ] ) ) {
 				continue;
 			}
-			if ( isset( $quantity[ $key], $product_quantity[ $quantity[ $key ] ] ) && \str_starts_with( (string) $field, 'module_' ) ) {
+			if ( isset( $quantity[ $key ], $product_quantity[ $quantity[ $key ] ] ) && \str_starts_with( (string) $field, 'module_' ) ) {
 				continue;
 			}
-			$text  = self::spec_text( $product, $key, (string) $field, $fact, $de );
-			$label = self::key_label( $text['label_key'], $text['unit'] );
+			$text        = self::spec_text( $product, $key, (string) $field, $fact, $de );
+			$label       = self::key_label( $text['label_key'], $text['unit'] );
 			$out[ $key ] = array(
 				'label'     => $label,
 				'value'     => $text['value'],
@@ -350,11 +374,11 @@ final class Materials {
 	 * One spec row's text: the German twin when the page is German, the unit
 	 * joined to the value, the power class, the qualifier note.
 	 *
-	 * @param WC_Product            $product The product.
-	 * @param string                $key     The vocabulary key.
-	 * @param string                $field   The registry field.
-	 * @param array<string, mixed>  $fact    The fact row.
-	 * @param bool                  $de      Whether the page is German.
+	 * @param WC_Product           $product The product.
+	 * @param string               $key     The vocabulary key.
+	 * @param string               $field   The registry field.
+	 * @param array<string, mixed> $fact    The fact row.
+	 * @param bool                 $de      Whether the page is German.
 	 * @return array{value: string, german: bool, label_key: string, unit: string}
 	 */
 	public static function spec_text( WC_Product $product, string $key, string $field, array $fact, bool $de ): array {
@@ -379,11 +403,11 @@ final class Materials {
 		if ( '' !== $note ) {
 			$value = \trim( (string) \preg_replace( '/\s*[*\x{2020}\x{2021}]+\s*$/u', '', $value ) );
 		}
-		$value       = self::value_with_unit( $value, $unit );
-		$label_key   = $key;
-		$base_unit   = self::unit_split( $raw_unit )[0];
-		$power_row   = self::is_power_field( $field . ' ' . (string) ( $fact['label'] ?? '' ), $base_unit );
-		$value       = self::customer_power( $value, $power_row, $german, $de );
+		$value     = self::value_with_unit( $value, $unit );
+		$label_key = $key;
+		$base_unit = self::unit_split( $raw_unit )[0];
+		$power_row = self::is_power_field( $field . ' ' . (string) ( $fact['label'] ?? '' ), $base_unit );
+		$value     = self::customer_power( $value, $power_row, $german, $de );
 		if ( '' !== $note ) {
 			$note = self::customer_power( $note, $power_row, $german, $de );
 		}
@@ -402,25 +426,30 @@ final class Materials {
 				$value .= ' (' . $qualifier . ')';
 			}
 		}
-		return array( 'value' => $value, 'german' => $german, 'label_key' => $label_key, 'unit' => $base_unit );
+		return array(
+			'value'     => $value,
+			'german'    => $german,
+			'label_key' => $label_key,
+			'unit'      => $base_unit,
+		);
 	}
 
 	/**
 	 * A value's German twin: the product's own value→value_de map first, then
 	 * the registry-wide map (tv_woo_b2b_spec_value_de).
+	 *
+	 * @param WC_Product $product The product.
+	 * @param string     $value The value.
 	 */
 	public static function spec_value_de( WC_Product $product, string $value ): string {
 		if ( '' === $value ) {
 			return $value;
 		}
 		static $maps = array();
-		$id = (int) $product->get_id();
+		$id          = (int) $product->get_id();
 		if ( ! isset( $maps[ $id ] ) ) {
 			$maps[ $id ] = array();
 			foreach ( self::facts( $product ) as $fact ) {
-				if ( ! \is_array( $fact ) ) {
-					continue;
-				}
 				$english = \trim( (string) ( $fact['value'] ?? '' ) );
 				$german  = \trim( (string) ( $fact['value_de'] ?? '' ) );
 				if ( '' !== $english && '' !== $german && \preg_match( '/\p{L}/u', $english ) ) {
@@ -437,12 +466,18 @@ final class Materials {
 
 	/**
 	 * The phase count as words in the page's language.
+	 *
+	 * @param string $value The value.
+	 * @param bool   $de Whether the page is German.
 	 */
 	public static function phase_words( string $value, bool $de ): string {
 		$map = array(
-			'1' => $de ? '1-phasig' : '1-phase', '3' => $de ? '3-phasig' : '3-phase',
-			'one' => $de ? '1-phasig' : '1-phase', 'three' => $de ? '3-phasig' : '3-phase',
-			'single' => $de ? '1-phasig' : '1-phase', 'three_phase' => $de ? '3-phasig' : '3-phase',
+			'1'           => $de ? '1-phasig' : '1-phase',
+			'3'           => $de ? '3-phasig' : '3-phase',
+			'one'         => $de ? '1-phasig' : '1-phase',
+			'three'       => $de ? '3-phasig' : '3-phase',
+			'single'      => $de ? '1-phasig' : '1-phase',
+			'three_phase' => $de ? '3-phasig' : '3-phase',
 		);
 		$key = \strtolower( \trim( $value ) );
 		return $map[ $key ] ?? $value;
@@ -451,6 +486,9 @@ final class Materials {
 	/**
 	 * The unit as printed: symbol units untouched, word units German on German
 	 * pages, label-like units dropped (tv_b2b_material_unit_label).
+	 *
+	 * @param string  $unit The unit.
+	 * @param ?string $locale The locale ('de' or 'en').
 	 */
 	public static function unit_label( string $unit, ?string $locale = null ): string {
 		$unit = \trim( $unit );
@@ -467,17 +505,49 @@ final class Materials {
 			return $unit;
 		}
 		$words = array(
-			'phase' => '', 'phases' => '', 'year' => 'Jahr', 'years' => 'Jahre',
-			'month' => 'Monat', 'months' => 'Monate', 'pack' => 'Pack', 'packs' => 'Packs',
-			'pc' => 'Stück', 'pcs' => 'Stück', 'piece' => 'Stück', 'pieces' => 'Stück',
-			'module' => 'Modul', 'modules' => 'Module', 'cycle' => 'Zyklus', 'cycles' => 'Zyklen',
-			'device' => 'Gerät', 'devices' => 'Geräte', 'inverter' => 'Wechselrichter', 'inverters' => 'Wechselrichter',
-			'tower' => 'Turm', 'towers' => 'Türme', 'unit' => 'Einheit', 'units' => 'Einheiten',
-			'set' => 'Satz', 'sets' => 'Sätze', 'string' => 'Strang', 'strings' => 'Stränge',
-			'group' => 'Gruppe', 'groups' => 'Gruppen', 'cell' => 'Zelle', 'cells' => 'Zellen',
-			'ton' => 'Tonne', 'tons' => 'Tonnen', 'tonne' => 'Tonne', 'tonnes' => 'Tonnen',
-			'rack' => 'Rack', 'racks' => 'Racks', 'channel' => 'Kanal', 'channels' => 'Kanäle',
-			'port' => 'Port', 'ports' => 'Ports', 'phase(s)' => '',
+			'phase'     => '',
+			'phases'    => '',
+			'year'      => 'Jahr',
+			'years'     => 'Jahre',
+			'month'     => 'Monat',
+			'months'    => 'Monate',
+			'pack'      => 'Pack',
+			'packs'     => 'Packs',
+			'pc'        => 'Stück',
+			'pcs'       => 'Stück',
+			'piece'     => 'Stück',
+			'pieces'    => 'Stück',
+			'module'    => 'Modul',
+			'modules'   => 'Module',
+			'cycle'     => 'Zyklus',
+			'cycles'    => 'Zyklen',
+			'device'    => 'Gerät',
+			'devices'   => 'Geräte',
+			'inverter'  => 'Wechselrichter',
+			'inverters' => 'Wechselrichter',
+			'tower'     => 'Turm',
+			'towers'    => 'Türme',
+			'unit'      => 'Einheit',
+			'units'     => 'Einheiten',
+			'set'       => 'Satz',
+			'sets'      => 'Sätze',
+			'string'    => 'Strang',
+			'strings'   => 'Stränge',
+			'group'     => 'Gruppe',
+			'groups'    => 'Gruppen',
+			'cell'      => 'Zelle',
+			'cells'     => 'Zellen',
+			'ton'       => 'Tonne',
+			'tons'      => 'Tonnen',
+			'tonne'     => 'Tonne',
+			'tonnes'    => 'Tonnen',
+			'rack'      => 'Rack',
+			'racks'     => 'Racks',
+			'channel'   => 'Kanal',
+			'channels'  => 'Kanäle',
+			'port'      => 'Port',
+			'ports'     => 'Ports',
+			'phase(s)'  => '',
 		);
 		return \array_key_exists( $key, $words ) ? $words[ $key ] : $unit;
 	}
@@ -486,6 +556,7 @@ final class Materials {
 	 * A unit split into its symbol and its qualifier note.
 	 *
 	 * @return array{0: string, 1: string}
+	 * @param string $unit The unit.
 	 */
 	public static function unit_split( string $unit ): array {
 		$unit = \trim( $unit );
@@ -501,6 +572,9 @@ final class Materials {
 	/**
 	 * The value with its unit joined as the live formatter joins them
 	 * (tv_b2b_material_value_with_unit).
+	 *
+	 * @param string $value The value.
+	 * @param string $unit The unit.
 	 */
 	public static function value_with_unit( string $value, string $unit ): string {
 		$value = \trim( $value );
@@ -512,7 +586,7 @@ final class Materials {
 		if ( \strpos( $value, ' / ' ) === false && \strpos( $value, '; ' ) === false && \preg_match( $lead_pattern, $value, $lead ) ) {
 			return $lead[1] . ' ' . $unit . ' ' . \trim( $lead[2] );
 		}
-		$symbol = \explode( ' ', $unit, 2 )[0];
+		$symbol     = \explode( ' ', $unit, 2 )[0];
 		$kilo_class = (bool) \preg_match( '/^(?:W|Wp|VA)$/', $symbol )
 			&& (bool) \preg_match( '/(?<![A-Za-z])[kM]' . \preg_quote( $symbol, '/' ) . '(?![A-Za-z])/u', $value );
 		if ( $kilo_class
@@ -558,11 +632,13 @@ final class Materials {
 	 * (tv_woo_b2b_is_power_field).
 	 *
 	 * @return string|false
+	 * @param string $name The field or unit name.
+	 * @param string $unit The unit.
 	 */
 	public static function is_power_field( string $name, string $unit ) {
 		$unit = \trim( $unit );
 		if ( '' !== $unit && \preg_match( '/^(?:W|kW|MW|Wp|kWp|VA|kVA|MVA|Watts?)$/i', $unit ) ) {
-			$family = \strtoupper( \preg_replace( '/^k/i', '', $unit ) );
+			$family = \strtoupper( (string) \preg_replace( '/^k/i', '', $unit ) );
 			return 'WATTS' === $family ? 'W' : $family;
 		}
 		$name = \strtolower( \trim( $name ) );
@@ -581,6 +657,11 @@ final class Materials {
 	/**
 	 * A power figure in its kilowatt class, as the customer-facing printer
 	 * writes it (tv_woo_b2b_customer_power).
+	 *
+	 * @param string $value The value.
+	 * @param mixed  $bare_unit The unit without its qualifier.
+	 * @param bool   $localise Whether to localise the number.
+	 * @param ?bool  $de Whether the page is German.
 	 */
 	public static function customer_power( string $value, $bare_unit = 'W', bool $localise = true, ?bool $de = null ): string {
 		if ( '' === $value ) {
@@ -609,13 +690,18 @@ final class Materials {
 
 	/**
 	 * One power figure in its kilowatt class name (tv_woo_b2b_customer_power_class).
+	 *
+	 * @param int    $watts The power in watts.
+	 * @param string $unit The unit.
+	 * @param bool   $localise Whether to localise the number.
+	 * @param bool   $de Whether the page is German.
 	 */
 	private static function power_class( int $watts, string $unit, bool $localise, bool $de ): ?string {
 		if ( $watts < 1000 ) {
 			return null;
 		}
-		$kilo = $watts / 1000.0;
-		$symbol = \strtoupper( \preg_replace( '/^k/i', '', $unit ) );
+		$kilo   = $watts / 1000.0;
+		$symbol = \strtoupper( (string) \preg_replace( '/^k/i', '', $unit ) );
 		$symbol = 'WATTS' === $symbol ? 'W' : $symbol;
 		if ( ! \in_array( $symbol, array( 'W', 'VA', 'WP' ), true ) ) {
 			return null;
@@ -624,7 +710,7 @@ final class Materials {
 		if ( ! $localise ) {
 			return \rtrim( \rtrim( \number_format( $kilo, 2, '.', '' ), '0' ), '.' ) . ' ' . $label;
 		}
-		$printed = $kilo === \floor( $kilo )
+		$printed = \floor( $kilo ) === $kilo
 			? (string) (int) $kilo
 			: \number_format( $kilo, \ceil( $kilo * 10 ) / 10 === \round( $kilo, 1 ) ? 1 : 2, $de ? ',' : '.', '' );
 		if ( \str_contains( $printed, '.' ) ) {
@@ -635,53 +721,57 @@ final class Materials {
 
 	/**
 	 * A spec row's label (tv_woo_b2b_key_label's map).
+	 *
+	 * @param string $key The vocabulary key.
+	 * @param string $unit The unit.
 	 */
 	public static function key_label( string $key, string $unit = '' ): string {
 		$base_unit = self::unit_split( $unit )[0];
 		$labels    = array(
-			'ac_power' => __( 'Rated AC power', 'linker-commerce' ),
-			'ac_apparent_power' => __( 'Nominal apparent power', 'linker-commerce' ),
-			'ac_apparent_power_max' => __( 'Max. apparent power', 'linker-commerce' ),
-			'phase' => __( 'Phase', 'linker-commerce' ),
-			'mppt' => __( 'MPPT trackers', 'linker-commerce' ),
-			'efficiency' => __( 'Max. efficiency', 'linker-commerce' ),
-			'batt_voltage' => __( 'Battery voltage', 'linker-commerce' ),
-			'usable_kwh' => __( 'Usable energy', 'linker-commerce' ),
-			'nominal_kwh' => __( 'Nominal energy', 'linker-commerce' ),
-			'nom_voltage' => __( 'Nominal voltage', 'linker-commerce' ),
-			'chemistry' => __( 'Cell chemistry', 'linker-commerce' ),
-			'charge_a' => __( 'Max. charge current', 'linker-commerce' ),
-			'discharge_a' => __( 'Max. discharge current', 'linker-commerce' ),
-			'cycles' => __( 'Cycle life', 'linker-commerce' ),
-			'ratio' => __( 'Transformer ratio', 'linker-commerce' ),
-			'accuracy' => __( 'Accuracy class', 'linker-commerce' ),
-			'burden' => __( 'Rated burden', 'linker-commerce' ),
-			'devices' => __( 'Devices supported', 'linker-commerce' ),
-			'interface' => __( 'Communication', 'linker-commerce' ),
-			'ip' => __( 'Ingress protection', 'linker-commerce' ),
-			'temp' => __( 'Operating temperature', 'linker-commerce' ),
-			'weight' => __( 'Weight', 'linker-commerce' ),
-			'dimensions' => __( 'Dimensions', 'linker-commerce' ),
-			'dod_pct' => 'DoD', 'dod' => 'DoD',
-			'ac_output_kw_nominal' => __( 'AC output (nominal)', 'linker-commerce' ),
-			'backup_power_kw' => __( 'Backup power', 'linker-commerce' ),
-			'system_voltage_vdc' => __( 'System voltage', 'linker-commerce' ),
-			'modules_per_stack_max' => __( 'Modules per stack', 'linker-commerce' ),
-			'cycle_life' => __( 'Cycle life', 'linker-commerce' ),
-			'role' => __( 'Role', 'linker-commerce' ),
-			'altitude' => __( 'Altitude', 'linker-commerce' ),
-			'altitude_m' => __( 'Altitude', 'linker-commerce' ),
-			'ambient_humidity' => __( 'Ambient humidity', 'linker-commerce' ),
-			'applicable_standard' => __( 'Applicable standards', 'linker-commerce' ),
-			'certification' => __( 'Certification', 'linker-commerce' ),
-			'cable' => __( 'Cable length', 'linker-commerce' ),
-			'accessory_option' => __( 'Accessory option', 'linker-commerce' ),
-			'ac_surge_protection' => __( 'AC surge protection', 'linker-commerce' ),
-			'accuracy_class_reactive' => __( 'Accuracy class, reactive', 'linker-commerce' ),
-			'battery_type' => __( 'Battery type', 'linker-commerce' ),
-			'nominal_voltage_v' => __( 'Nominal voltage', 'linker-commerce' ),
-			'system_nominal_voltage_v' => __( 'System nominal voltage', 'linker-commerce' ),
-			'backup_nominal_apparent_power' => __( 'Backup apparent power', 'linker-commerce' ),
+			'ac_power'                        => __( 'Rated AC power', 'linker-commerce' ),
+			'ac_apparent_power'               => __( 'Nominal apparent power', 'linker-commerce' ),
+			'ac_apparent_power_max'           => __( 'Max. apparent power', 'linker-commerce' ),
+			'phase'                           => __( 'Phase', 'linker-commerce' ),
+			'mppt'                            => __( 'MPPT trackers', 'linker-commerce' ),
+			'efficiency'                      => __( 'Max. efficiency', 'linker-commerce' ),
+			'batt_voltage'                    => __( 'Battery voltage', 'linker-commerce' ),
+			'usable_kwh'                      => __( 'Usable energy', 'linker-commerce' ),
+			'nominal_kwh'                     => __( 'Nominal energy', 'linker-commerce' ),
+			'nom_voltage'                     => __( 'Nominal voltage', 'linker-commerce' ),
+			'chemistry'                       => __( 'Cell chemistry', 'linker-commerce' ),
+			'charge_a'                        => __( 'Max. charge current', 'linker-commerce' ),
+			'discharge_a'                     => __( 'Max. discharge current', 'linker-commerce' ),
+			'cycles'                          => __( 'Cycle life', 'linker-commerce' ),
+			'ratio'                           => __( 'Transformer ratio', 'linker-commerce' ),
+			'accuracy'                        => __( 'Accuracy class', 'linker-commerce' ),
+			'burden'                          => __( 'Rated burden', 'linker-commerce' ),
+			'devices'                         => __( 'Devices supported', 'linker-commerce' ),
+			'interface'                       => __( 'Communication', 'linker-commerce' ),
+			'ip'                              => __( 'Ingress protection', 'linker-commerce' ),
+			'temp'                            => __( 'Operating temperature', 'linker-commerce' ),
+			'weight'                          => __( 'Weight', 'linker-commerce' ),
+			'dimensions'                      => __( 'Dimensions', 'linker-commerce' ),
+			'dod_pct'                         => 'DoD',
+			'dod'                             => 'DoD',
+			'ac_output_kw_nominal'            => __( 'AC output (nominal)', 'linker-commerce' ),
+			'backup_power_kw'                 => __( 'Backup power', 'linker-commerce' ),
+			'system_voltage_vdc'              => __( 'System voltage', 'linker-commerce' ),
+			'modules_per_stack_max'           => __( 'Modules per stack', 'linker-commerce' ),
+			'cycle_life'                      => __( 'Cycle life', 'linker-commerce' ),
+			'role'                            => __( 'Role', 'linker-commerce' ),
+			'altitude'                        => __( 'Altitude', 'linker-commerce' ),
+			'altitude_m'                      => __( 'Altitude', 'linker-commerce' ),
+			'ambient_humidity'                => __( 'Ambient humidity', 'linker-commerce' ),
+			'applicable_standard'             => __( 'Applicable standards', 'linker-commerce' ),
+			'certification'                   => __( 'Certification', 'linker-commerce' ),
+			'cable'                           => __( 'Cable length', 'linker-commerce' ),
+			'accessory_option'                => __( 'Accessory option', 'linker-commerce' ),
+			'ac_surge_protection'             => __( 'AC surge protection', 'linker-commerce' ),
+			'accuracy_class_reactive'         => __( 'Accuracy class, reactive', 'linker-commerce' ),
+			'battery_type'                    => __( 'Battery type', 'linker-commerce' ),
+			'nominal_voltage_v'               => __( 'Nominal voltage', 'linker-commerce' ),
+			'system_nominal_voltage_v'        => __( 'System nominal voltage', 'linker-commerce' ),
+			'backup_nominal_apparent_power'   => __( 'Backup apparent power', 'linker-commerce' ),
 			'backup_nominal_output_frequency' => __( 'Backup output frequency', 'linker-commerce' ),
 			'nominal_apparent_power_output_to_utility_grid' => __( 'Nominal apparent power to grid', 'linker-commerce' ),
 		);
@@ -704,7 +794,7 @@ final class Materials {
 			$language = pll_get_post_language( $product_id );
 			if ( 'en' !== $language ) {
 				$source = pll_get_post( $product_id, 'en' );
-				if ( \is_int( $source ) && $source > 0 ) {
+				if ( $source > 0 ) {
 					return $source;
 				}
 			}
@@ -761,6 +851,8 @@ final class Materials {
 
 	/**
 	 * The contract cell a relationship was expanded from.
+	 *
+	 * @param array<string, mixed> $relationship The registry relationship.
 	 */
 	public static function relationship_cell_id( array $relationship ): string {
 		$parts = \explode( ':', (string) ( $relationship['relationship_id'] ?? '' ) );
@@ -770,6 +862,10 @@ final class Materials {
 	/**
 	 * Localized registry text: the German twin when it exists, the English
 	 * authority text otherwise.
+	 *
+	 * @param array<string, mixed> $row The row.
+	 * @param string               $key The vocabulary key.
+	 * @param string               $locale The locale ('de' or 'en').
 	 */
 	public static function localized_text( array $row, string $key, string $locale ): string {
 		$en = \trim( (string) ( $row[ $key ] ?? '' ) );
@@ -787,6 +883,7 @@ final class Materials {
 	 * split cleanly).
 	 *
 	 * @return array{listing: string[], not_listing: string[]}|null
+	 * @param array<string, mixed> $row The row.
 	 */
 	public static function one_way_documents( array $row ): ?array {
 		$label = \trim( (string) ( $row['not_listed_by'] ?? '' ) );
@@ -798,7 +895,10 @@ final class Materials {
 			return null;
 		}
 		$brands = array();
-		$sides  = array( 'listing' => array(), 'not_listing' => array() );
+		$sides  = array(
+			'listing'     => array(),
+			'not_listing' => array(),
+		);
 		foreach ( (array) ( $row['document_refs'] ?? array() ) as $ref ) {
 			$ref = \trim( (string) $ref );
 			if ( '' === $ref || ! isset( $documents[ $ref ] ) || ! \is_array( $documents[ $ref ] ) ) {
@@ -818,6 +918,8 @@ final class Materials {
 	 * Customer-facing names of compatibility documents a relationship cites.
 	 *
 	 * @return list<string>
+	 * @param array<int|string, mixed> $refs The document references.
+	 * @param string                   $locale The locale ('de' or 'en').
 	 */
 	public static function document_names( array $refs, string $locale = 'en' ): array {
 		$documents = self::contract()['documents'] ?? array();
@@ -827,14 +929,14 @@ final class Materials {
 		$locale = 'de' === $locale ? 'de' : 'en';
 		$names  = array();
 		foreach ( $refs as $ref ) {
-			$ref = \trim( (string) $ref );
+			$ref      = \trim( (string) $ref );
 			$document = $documents[ $ref ] ?? null;
-			$title = \is_array( $document ) ? self::localized_text( $document, 'title', $locale ) : '';
+			$title    = \is_array( $document ) ? self::localized_text( $document, 'title', $locale ) : '';
 			if ( '' === $title ) {
 				continue;
 			}
-			$brand = \trim( (string) ( $document['brand'] ?? '' ) );
-			$name  = '' !== $brand && \stripos( $title, $brand ) === false ? $brand . ' ' . $title : $title;
+			$brand          = \trim( (string) ( $document['brand'] ?? '' ) );
+			$name           = '' !== $brand && \stripos( $title, $brand ) === false ? $brand . ' ' . $title : $title;
 			$names[ $name ] = $name;
 		}
 		return \array_values( $names );
@@ -845,6 +947,8 @@ final class Materials {
 	 * product's own shipping meta (tv_b2b_shipping_product_logistics).
 	 *
 	 * @return array<string, mixed>
+	 * @param int         $product_id The product ID.
+	 * @param ?WC_Product $product The product.
 	 */
 	public static function logistics( int $product_id, ?WC_Product $product = null ): array {
 		$material = self::material_for_product( $product_id );
@@ -852,30 +956,30 @@ final class Materials {
 			$logistics = $material['delivery']['logistics'] ?? array();
 			if ( \is_array( $logistics ) && ! empty( $logistics['mode'] ) && 'product_specific' !== $logistics['mode'] ) {
 				return array(
-					'product_id' => $product_id,
-					'mode' => \sanitize_key( (string) $logistics['mode'] ),
-					'adr_un3480' => ! empty( $logistics['adr_un3480'] ),
-					'weight_kg' => \is_numeric( $logistics['weight_kg'] ?? null ) ? (float) $logistics['weight_kg'] : 0.0,
+					'product_id'  => $product_id,
+					'mode'        => \sanitize_key( (string) $logistics['mode'] ),
+					'adr_un3480'  => ! empty( $logistics['adr_un3480'] ),
+					'weight_kg'   => \is_numeric( $logistics['weight_kg'] ?? null ) ? (float) $logistics['weight_kg'] : 0.0,
 					'weight_kind' => \sanitize_text_field( (string) ( $logistics['weight_kind'] ?? '' ) ),
 				);
 			}
 		}
-		$product = $product ?: \wc_get_product( $product_id );
+		$product = $product ? $product : \wc_get_product( $product_id );
 		$read    = static function ( string $key ) use ( $product, $product_id ) {
-			if ( $product && \method_exists( $product, 'get_meta' ) ) {
+			if ( $product ) {
 				return $product->get_meta( $key, true );
 			}
 			return \get_post_meta( $product_id, $key, true );
 		};
-		$weight = $read( '_delinker_shipping_weight_kg' );
+		$weight  = $read( '_delinker_shipping_weight_kg' );
 		if ( ! \is_numeric( $weight ) || (float) $weight <= 0 ) {
 			$weight = $product ? $product->get_weight() : $read( '_weight' );
 		}
 		return array(
-			'product_id' => $product_id,
-			'mode' => \sanitize_key( (string) $read( '_delinker_shipping_mode' ) ),
-			'adr_un3480' => \wc_string_to_bool( (string) $read( '_delinker_shipping_adr' ) ),
-			'weight_kg' => \is_numeric( $weight ) ? (float) $weight : 0.0,
+			'product_id'  => $product_id,
+			'mode'        => \sanitize_key( (string) $read( '_delinker_shipping_mode' ) ),
+			'adr_un3480'  => \wc_string_to_bool( (string) $read( '_delinker_shipping_adr' ) ),
+			'weight_kg'   => \is_numeric( $weight ) ? (float) $weight : 0.0,
 			'weight_kind' => \sanitize_text_field( (string) $read( '_delinker_shipping_weight_kind' ) ),
 		);
 	}
@@ -906,9 +1010,9 @@ final class Materials {
 
 		if ( 'confirmed_parcel' === $reason ) {
 			return array(
-				'kind' => 'exact',
+				'kind'     => 'exact',
 				'headline' => __( 'Delivery to Germany', 'linker-commerce' ),
-				'detail' => \sprintf(
+				'detail'   => \sprintf(
 					/* translators: %s: a money amount. */
 					__( 'Parcel rate for one eligible item within Germany: %s when you submit. Freight for multiple items is confirmed separately.', 'linker-commerce' ),
 					self::money( $parcel_cost )
@@ -916,13 +1020,21 @@ final class Materials {
 			);
 		}
 		if ( \in_array( $reason, array( 'cross_border', 'destination_unknown', 'empty_cart', 'logistics_incomplete', 'consolidation_confirmation' ), true ) ) {
-			return array( 'kind' => 'proforma', 'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ), 'detail' => '' );
+			return array(
+				'kind'     => 'proforma',
+				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'detail'   => '',
+			);
 		}
 
-		$mode         = \sanitize_key( (string) ( $fact['mode'] ?? '' ) );
-		$unit_weight  = \is_numeric( $fact['weight_kg'] ?? null ) ? (float) $fact['weight_kg'] : 0.0;
+		$mode        = \sanitize_key( (string) ( $fact['mode'] ?? '' ) );
+		$unit_weight = \is_numeric( $fact['weight_kg'] ?? null ) ? (float) $fact['weight_kg'] : 0.0;
 		if ( $unit_weight <= 0 || ! \in_array( $mode, array( 'half_pallet', 'pallet', 'multi_pallet' ), true ) ) {
-			return array( 'kind' => 'proforma', 'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ), 'detail' => '' );
+			return array(
+				'kind'     => 'proforma',
+				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'detail'   => '',
+			);
 		}
 		$total_weight = $unit_weight;
 		if ( 'multi_pallet' === $mode || $total_weight > 1000 ) {
@@ -939,31 +1051,45 @@ final class Materials {
 		$bands  = \is_array( $policy ) ? $policy['value']['domestic_guidance'] ?? array() : array();
 		$band   = \is_array( $bands[ $classification ] ?? null ) ? $bands[ $classification ] : null;
 		if ( ! \is_array( $band ) || ! \is_numeric( $band['min'] ?? null ) || ! \is_numeric( $band['max'] ?? null ) ) {
-			return array( 'kind' => 'proforma', 'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ), 'detail' => '' );
+			return array(
+				'kind'     => 'proforma',
+				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'detail'   => '',
+			);
 		}
 		$min = (float) $band['min'];
 		$max = (float) $band['max'];
 		if ( $min < 0 || $max < $min ) {
-			return array( 'kind' => 'proforma', 'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ), 'detail' => '' );
+			return array(
+				'kind'     => 'proforma',
+				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'detail'   => '',
+			);
 		}
 		if ( 'project_freight' === $classification ) {
-			return array( 'kind' => 'proforma', 'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ), 'detail' => '' );
+			return array(
+				'kind'     => 'proforma',
+				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'detail'   => '',
+			);
 		}
 		return array(
-			'kind' => 'estimate',
+			'kind'     => 'estimate',
 			'headline' => \sprintf(
 				/* translators: 1: minimum, 2: maximum money amounts. */
 				__( 'Germany delivery estimate: %1$s to %2$s', 'linker-commerce' ),
 				self::money( $min ),
 				self::money( $max )
 			),
-			'detail' => __( 'The final delivery charge is included in your Proforma.', 'linker-commerce' ),
+			'detail'   => __( 'The final delivery charge is included in your Proforma.', 'linker-commerce' ),
 		);
 	}
 
 	/**
 	 * A money amount written the way the page writes money
 	 * (tv_b2b_shipping_money: wc_price()'s text, entities decoded).
+	 *
+	 * @param float $amount The money amount.
 	 */
 	public static function money( float $amount ): string {
 		$markup = \wc_price( $amount );
@@ -974,14 +1100,17 @@ final class Materials {
 	/**
 	 * The availability text the live page prints
 	 * (tv_woo_b2b_availability_text over the stock mirror).
+	 *
+	 * @param WC_Product $product The product.
+	 * @param bool       $sellable Whether the product is sellable.
 	 */
 	public static function availability_text( WC_Product $product, bool $sellable ): string {
 		$de = self::is_de();
 		if ( ! $sellable ) {
 			return $de ? 'Derzeit nicht bestellbar' : 'Currently not orderable';
 		}
-		$id      = (int) $product->get_id();
-		$stamped = '' !== (string) \get_post_meta( $id, '_tv_b2b_stock_mirrored_at', true );
+		$id       = (int) $product->get_id();
+		$stamped  = '' !== (string) \get_post_meta( $id, '_tv_b2b_stock_mirrored_at', true );
 		$days_min = \get_post_meta( $id, '_tv_b2b_lead_time_days_min', true );
 		$days_max = \get_post_meta( $id, '_tv_b2b_lead_time_days_max', true );
 		if ( $stamped ) {
@@ -1024,10 +1153,12 @@ final class Materials {
 	 * gallery rows, feature cards, scenarios (tv_product_v5_gallery_ids).
 	 *
 	 * @return list<int>
+	 * @param WC_Product           $product The product.
+	 * @param array<string, mixed> $acf The decoded ACF JSON.
 	 */
 	public static function gallery_ids( WC_Product $product, array $acf ): array {
-		$ids          = array();
-		$featured_id  = (int) $product->get_image_id();
+		$ids         = array();
+		$featured_id = (int) $product->get_image_id();
 		if ( $featured_id && \wp_attachment_is_image( $featured_id ) ) {
 			$ids[] = $featured_id;
 		}
@@ -1060,6 +1191,7 @@ final class Materials {
 	 * (tv_woo_b2b_product_documents).
 	 *
 	 * @return list<array{kind: string, title: string, language: string, url: string}>
+	 * @param WC_Product $product The product.
 	 */
 	public static function documents( WC_Product $product ): array {
 		$out    = array();
@@ -1072,7 +1204,7 @@ final class Materials {
 				return;
 			}
 			$key      = \preg_replace( '#/+$#', '', $url );
-			$path     = (string) \parse_url( $url, \PHP_URL_PATH );
+			$path     = (string) \wp_parse_url( $url, \PHP_URL_PATH );
 			$file_key = '' !== $path ? \strtolower( \basename( $path ) ) : '';
 			$title    = \trim( (string) $title );
 			$language = \strtoupper( \trim( (string) $language ) );
@@ -1087,16 +1219,16 @@ final class Materials {
 			if ( $registry && isset( $titles[ $title_key ] ) ) {
 				return;
 			}
-			$seen[ $key ]        = true;
+			$seen[ $key ] = true;
 			if ( '' !== $file_key ) {
 				$seen[ $file_key ] = true;
 			}
 			$titles[ $title_key ] = true;
-			$out[] = array(
-				'kind' => $kind,
-				'title' => '' !== $title ? $title : \ucfirst( (string) $kind ),
-				'language' => $language,
-				'url' => $url,
+			$out[]                = array(
+				'kind'      => $kind,
+				'title'     => '' !== $title ? $title : \ucfirst( (string) $kind ),
+				'language'  => $language,
+				'url'       => $url,
 				'_sequence' => $seq++,
 			);
 		};
@@ -1141,15 +1273,22 @@ final class Materials {
 			);
 		}
 
-		$rank = array( 'datasheet' => 0, 'manual' => 1, 'warranty' => 2 );
-		\usort( $out, static function ( $left, $right ) use ( $rank ) {
-			$left_rank  = $rank[ $left['kind'] ] ?? 3;
-			$right_rank = $rank[ $right['kind'] ] ?? 3;
-			if ( $left_rank !== $right_rank ) {
-				return $left_rank < $right_rank ? -1 : 1;
+		$rank = array(
+			'datasheet' => 0,
+			'manual'    => 1,
+			'warranty'  => 2,
+		);
+		\usort(
+			$out,
+			static function ( $left, $right ) use ( $rank ) {
+				$left_rank  = $rank[ $left['kind'] ] ?? 3;
+				$right_rank = $rank[ $right['kind'] ] ?? 3;
+				if ( $left_rank !== $right_rank ) {
+					return $left_rank < $right_rank ? -1 : 1;
+				}
+				return $left['_sequence'] <=> $right['_sequence'];
 			}
-			return $left['_sequence'] <=> $right['_sequence'];
-		} );
+		);
 		foreach ( $out as &$document ) {
 			unset( $document['_sequence'] );
 		}
@@ -1158,33 +1297,47 @@ final class Materials {
 
 	/**
 	 * Whether a URL is one of our hosted document URLs.
+	 *
+	 * @param string $url The URL.
 	 */
 	public static function is_hosted_url( string $url ): bool {
 		$url = \trim( $url );
 		if ( '' === $url ) {
 			return false;
 		}
-		$scheme = \strtolower( (string) ( \parse_url( $url, \PHP_URL_SCHEME ) ?: '' ) );
+		$scheme = \strtolower( (string) ( \wp_parse_url( $url, \PHP_URL_SCHEME ) ? \wp_parse_url( $url, \PHP_URL_SCHEME ) : '' ) );
 		if ( 'https' !== $scheme && 'http' !== $scheme ) {
 			return false;
 		}
-		$host = \strtolower( (string) ( \parse_url( $url, \PHP_URL_HOST ) ?: '' ) );
-		$home = \strtolower( (string) ( \parse_url( (string) \home_url(), \PHP_URL_HOST ) ?: '' ) );
+		$host = \strtolower( (string) ( \wp_parse_url( $url, \PHP_URL_HOST ) ? \wp_parse_url( $url, \PHP_URL_HOST ) : '' ) );
+		$home = \strtolower( (string) ( \wp_parse_url( (string) \home_url(), \PHP_URL_HOST ) ? \wp_parse_url( (string) \home_url(), \PHP_URL_HOST ) : '' ) );
 		return $host === $home || \str_ends_with( $host, '.' . $home ) || 'de-linker.com' === $host || \str_ends_with( $host, '.de-linker.com' );
 	}
 
 	/**
 	 * A download row's kind (tv_woo_b2b_document_kind).
+	 *
+	 * @param string $role The document role.
+	 * @param string $type The document type.
 	 */
 	public static function document_kind( string $role, string $type = '' ): string {
 		$kinds = array(
-			'datasheet' => 'datasheet', 'datenblatt' => 'datasheet',
-			'manual' => 'manual', 'user_manual' => 'manual', 'handbuch' => 'manual', 'anleitung' => 'manual',
-			'warranty' => 'warranty', 'garantie' => 'warranty',
-			'certificate' => 'certificate', 'zertifikat' => 'certificate',
-			'compatibility' => 'compatibility', 'compatibility_list' => 'compatibility',
-			'kompatibilität' => 'compatibility', 'kompatibilitätsliste' => 'compatibility',
-			'document' => 'document', 'dokument' => 'document',
+			'datasheet'            => 'datasheet',
+			'datenblatt'           => 'datasheet',
+			'manual'               => 'manual',
+			'user_manual'          => 'manual',
+			'handbuch'             => 'manual',
+			'anleitung'            => 'manual',
+			'warranty'             => 'warranty',
+			'garantie'             => 'warranty',
+			'certificate'          => 'certificate',
+			'zertifikat'           => 'certificate',
+			'compatibility'        => 'compatibility',
+			'compatibility_list'   => 'compatibility',
+			'kompatibilität'       => 'compatibility',
+			'kompatibilitätsliste' => 'compatibility',
+			'document'             => 'document',
+			'dokument'             => 'document',
 		);
 		$lower = static fn( $value ): string => \mb_strtolower( \trim( (string) $value ), 'UTF-8' );
 		foreach ( array( $role, $type ) as $value ) {
@@ -1197,6 +1350,8 @@ final class Materials {
 
 	/**
 	 * The language tag a document title carries, '' when it carries none.
+	 *
+	 * @param string $title The title.
 	 */
 	public static function document_language_tag( string $title ): string {
 		if ( ! \preg_match( '/[\[(]\s*(DE|EN|ES|IT|PT|multilingual|mehrsprachig)\s*[\])]/i', $title, $m ) ) {
@@ -1207,15 +1362,18 @@ final class Materials {
 
 	/**
 	 * A document's language, read from its title or its file name.
+	 *
+	 * @param string $title The title.
+	 * @param string $url The URL.
 	 */
 	public static function document_language( string $title, string $url ): string {
 		$tag = self::document_language_tag( $title );
 		if ( '' !== $tag ) {
 			return $tag;
 		}
-		$file = \strtolower( (string) \parse_url( $url, \PHP_URL_PATH ) );
+		$file = \strtolower( (string) \wp_parse_url( $url, \PHP_URL_PATH ) );
 		$file = (string) \substr( $file, (int) \strrpos( $file, '/' ) );
-		if ( \preg_match( '/[-_.](de|en|es|it|pt)(?=[-_.]|$)/', \preg_replace( '/\.[a-z0-9]+$/', '', $file ), $m ) ) {
+		if ( \preg_match( '/[-_.](de|en|es|it|pt)(?=[-_.]|$)/', (string) \preg_replace( '/\.[a-z0-9]+$/', '', $file ), $m ) ) {
 			return \strtoupper( $m[1] );
 		}
 		if ( \preg_match( '/\b(datenblatt|handbuch|anleitung|bedienungsanleitung|garantie|deutsch|german)\b/iu', $title ) ) {
@@ -1227,6 +1385,10 @@ final class Materials {
 	/**
 	 * Whether a registry document belongs to another product
 	 * (tv_woo_b2b_registry_document_is_foreign).
+	 *
+	 * @param array<string, mixed> $document The document row.
+	 * @param int                  $product_id The product ID.
+	 * @param array<string, bool>  $own_urls The product's own document URLs.
 	 */
 	private static function registry_document_is_foreign( array $document, int $product_id, array $own_urls ): bool {
 		$refs = isset( $document['evidence_refs'] ) && \is_array( $document['evidence_refs'] ) ? $document['evidence_refs'] : array();
@@ -1266,11 +1428,13 @@ final class Materials {
 			'other'     => array( 'nom_voltage', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
 		);
 		$icons = array(
-			'phase' => 'grid', 'mppt' => 'grid',
-			'usable_kwh' => 'energy', 'nominal_kwh' => 'energy',
-			'efficiency' => 'gauge',
+			'phase'       => 'grid',
+			'mppt'        => 'grid',
+			'usable_kwh'  => 'energy',
+			'nominal_kwh' => 'energy',
+			'efficiency'  => 'gauge',
 		);
-		$kind  = self::contract_type( (string) ( self::identity( $product )['kind'] ?? 'other' ) );
+		$kind  = self::contract_type( (string) self::identity( $product )['kind'] );
 		$specs = self::specs( $product );
 		$out   = array();
 		foreach ( $order[ $kind ] ?? $order['other'] as $key ) {
@@ -1293,6 +1457,8 @@ final class Materials {
 	/**
 	 * A stat value in the page's language: German prints decimals with a comma
 	 * (the live German pages' own values read 5,0 kWh / 12,0 A).
+	 *
+	 * @param string $value The value.
 	 */
 	public static function de_number( string $value ): string {
 		if ( ! self::is_de() ) {
@@ -1303,11 +1469,16 @@ final class Materials {
 
 	/**
 	 * A document kind's label as the document card prints it.
+	 *
+	 * @param string $kind The kind.
 	 */
 	public static function document_kind_label( string $kind ): string {
 		$labels = array(
-			'datasheet' => 'Datasheet', 'manual' => 'Manual', 'warranty' => 'Warranty',
-			'certificate' => 'Certificate', 'compatibility' => 'Compatibility list',
+			'datasheet'     => 'Datasheet',
+			'manual'        => 'Manual',
+			'warranty'      => 'Warranty',
+			'certificate'   => 'Certificate',
+			'compatibility' => 'Compatibility list',
 		);
 		return $labels[ $kind ] ?? ( '' !== $kind ? ucfirst( $kind ) : '' );
 	}

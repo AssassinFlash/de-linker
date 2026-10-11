@@ -48,7 +48,12 @@ final class TemplatesTest extends TestCase {
 			$html = (string) file_get_contents( $path );
 			$this->assertNotSame( '', trim( $html ) );
 		}
-		$this->assertStringContainsString( '[linker_pdp_buy]', (string) file_get_contents( $catalog['is_single_product'] ) );
+		$single = (string) file_get_contents( $catalog['is_single_product'] );
+		$this->assertStringContainsString( 'class="pdp-layout"', $single );
+		$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $single );
+		$this->assertStringContainsString( '[linker_pdp_tools]', $single );
+		$this->assertStringContainsString( '[lc_if condition="linker_commerce_pdp_has_pairings"]', $single );
+		$this->assertStringNotContainsString( '[linker_pdp_buy]', $single );
 		$this->assertStringContainsString( '[linker_catalog_card]', (string) file_get_contents( $catalog['is_shop_page'] ) );
 		$this->assertStringContainsString( 'id="tv-storefront-pdp"', (string) file_get_contents( $catalog['is_single_product'] ) );
 		$this->assertStringContainsString( 'id="tv-woo-b2b-catalog"', (string) file_get_contents( $catalog['is_shop_page'] ) );

@@ -612,15 +612,27 @@ final class CatalogShortcodes {
 		$material   = Materials::material_for_product( $product_id );
 		$shared     = array(
 			'data-linker-project-product-prompt' => '',
-			'data-product-id' => (string) $product_id,
-			'data-material-id' => \is_array( $material ) ? (string) ( $material['material_id'] ?? '' ) : '',
-			'data-material-revision' => \is_array( $material ) ? (string) ( $material['revision'] ?? '' ) : '',
-			'data-product-model' => (string) $view['model'],
+			'data-product-id'                    => (string) $product_id,
+			'data-material-id'                   => \is_array( $material ) ? (string) ( $material['material_id'] ?? '' ) : '',
+			'data-material-revision'             => \is_array( $material ) ? (string) ( $material['revision'] ?? '' ) : '',
+			'data-product-model'                 => (string) $view['model'],
 		);
 		$stages     = array(
-			array( 'label' => __( 'New system', 'linker-commerce' ), 'lead' => __( 'I am planning a new system with %s.', 'linker-commerce' ) ),
-			array( 'label' => __( 'Extend an existing system', 'linker-commerce' ), 'lead' => __( 'I am extending an existing system with %s.', 'linker-commerce' ) ),
-			array( 'label' => __( 'Replace an existing unit', 'linker-commerce' ), 'lead' => __( 'I am replacing a unit in an existing system with %s.', 'linker-commerce' ) ),
+			array(
+				'label' => __( 'New system', 'linker-commerce' ),
+				/* translators: %s: product name with item number. */
+				'lead'  => __( 'I am planning a new system with %s.', 'linker-commerce' ),
+			),
+			array(
+				'label' => __( 'Extend an existing system', 'linker-commerce' ),
+				/* translators: %s: product name with item number. */
+				'lead'  => __( 'I am extending an existing system with %s.', 'linker-commerce' ),
+			),
+			array(
+				'label' => __( 'Replace an existing unit', 'linker-commerce' ),
+				/* translators: %s: product name with item number. */
+				'lead'  => __( 'I am replacing a unit in an existing system with %s.', 'linker-commerce' ),
+			),
 		);
 		$tail       = __( 'Then ask one question at a time for what you still need (existing model, quantity, installation postcode, installation date) and check compatibility, missing system components and delivery windows against current Linker data.', 'linker-commerce' );
 		$html       = '';
@@ -661,7 +673,14 @@ final class CatalogShortcodes {
 				. '</div></div>';
 		}
 		$html .= '<button type="button" class="pdp-gallery-main-wrap" data-pdp-image data-pdp-main data-src="' . esc_url( self::image_url( $ids[0] ) ) . '" data-caption="">'
-			. self::image_tag( $ids[0], 'full', array( 'class' => 'pdp-gallery-main', 'alt' => (string) $view['title'] ) ) . '</button>';
+			. self::image_tag(
+				$ids[0],
+				'full',
+				array(
+					'class' => 'pdp-gallery-main',
+					'alt'   => (string) $view['title'],
+				)
+			) . '</button>';
 		if ( isset( $ids[1] ) ) {
 			$html .= '<button type="button" class="pdp-gallery-secondary" data-pdp-image data-src="' . esc_url( self::image_url( $ids[1] ) ) . '" data-caption="" aria-label="' . esc_attr__( 'Product image 2', 'linker-commerce' ) . '">'
 				. self::image_tag( $ids[1], 'full', array( 'alt' => '' ) ) . '</button>';
@@ -789,7 +808,10 @@ final class CatalogShortcodes {
 					$body .= '</dd></div>';
 				}
 				$body   .= '</dl>';
-				$decks[] = array( 'title' => (string) $spec_group['title'], 'body' => $body );
+				$decks[] = array(
+					'title' => (string) $spec_group['title'],
+					'body'  => $body,
+				);
 			}
 		}
 		if ( array() === $decks ) {
@@ -800,7 +822,10 @@ final class CatalogShortcodes {
 					$body .= '<div class="pdp-stat-row"><dt>' . esc_html( $row['label'] ) . '</dt><dd>' . esc_html( $row['value'] ) . '</dd></div>';
 				}
 				$body   .= '</dl>';
-				$decks[] = array( 'title' => __( 'Specifications', 'linker-commerce' ), 'body' => $body );
+				$decks[] = array(
+					'title' => __( 'Specifications', 'linker-commerce' ),
+					'body'  => $body,
+				);
 			}
 		}
 		if ( array() === $decks ) {
@@ -836,14 +861,14 @@ final class CatalogShortcodes {
 		$html = '<p class="pdp-reading">' . esc_html(
 			sprintf(
 				/* translators: %s: product name. */
-				__("Scenarios that show which projects the %s belongs in, and the limits behind our engineers' recommendation.", 'linker-commerce' ),
+				__( "Scenarios that show which projects the %s belongs in, and the limits behind our engineers' recommendation.", 'linker-commerce' ),
 				(string) $view['title']
 			)
 		) . '</p>';
 		$index = 0;
 		foreach ( $scenarios as $scenario ) {
 			++$index;
-			$kind = 'application' === (string) ( $scenario['kind'] ?? '' ) ? __( 'Project scenario', 'linker-commerce' ) : __( 'Project note', 'linker-commerce' );
+			$kind  = 'application' === (string) ( $scenario['kind'] ?? '' ) ? __( 'Project scenario', 'linker-commerce' ) : __( 'Project note', 'linker-commerce' );
 			$html .= '<div class="fit-scn">';
 			$html .= '<header class="fit-head"><span class="fit-num">' . esc_html( sprintf( '%02d', $index ) ) . '</span>'
 				. '<div><span class="fit-kind">' . esc_html( $kind ) . '</span>'
@@ -868,7 +893,7 @@ final class CatalogShortcodes {
 				$html .= '</ul></div>';
 			}
 			if ( '' !== (string) $scenario['verdict'] ) {
-				$html .= '<aside class="fit-verdict"><span class="fit-label">' . esc_html__("Linker's read", 'linker-commerce' ) . '</span>'
+				$html .= '<aside class="fit-verdict"><span class="fit-label">' . esc_html__( "Linker's read", 'linker-commerce' ) . '</span>'
 					. '<p>' . esc_html( (string) $scenario['verdict'] ) . '</p></aside>';
 			}
 			$html .= '</div>';
@@ -894,7 +919,7 @@ final class CatalogShortcodes {
 		}
 		$html = '';
 		foreach ( $docs as $document ) {
-			$meta = array_filter(
+			$meta  = array_filter(
 				array(
 					Materials::document_kind_label( (string) $document['kind'] ),
 					'PDF',
@@ -904,11 +929,9 @@ final class CatalogShortcodes {
 			);
 			$html .= '<a class="pdp-doc" href="' . esc_url( (string) $document['url'] ) . '" target="_blank" rel="noopener">';
 			$html .= '<span class="pdp-doc-icon">' . self::icon( 'file' ) . '</span>';
-			$html .= '<span class="grow">' . esc_html( (string) $document['title'] );
-			if ( array() !== $meta ) {
-				$html .= '<span class="pdp-doc-meta">' . esc_html( implode( ' · ', $meta ) ) . '</span>';
-			}
-			$html .= '</span>' . self::icon( 'download' ) . '</a>';
+			$html .= '<span class="grow">' . esc_html( (string) $document['title'] )
+				. '<span class="pdp-doc-meta">' . esc_html( implode( ' · ', $meta ) ) . '</span>'
+				. '</span>' . self::icon( 'download' ) . '</a>';
 		}
 		return $html;
 	}
@@ -933,8 +956,8 @@ final class CatalogShortcodes {
 		foreach ( Materials::relationships( self::source_id( $product_id ) ) as $relationship ) {
 			$target_id = (int) ( $relationship['target_product_id'] ?? 0 );
 			if ( 'de' === $locale && \function_exists( 'pll_get_post' ) ) {
-				$twin = pll_get_post( $target_id, 'de' );
-				if ( \is_int( $twin ) && $twin > 0 ) {
+				$twin = (int) pll_get_post( $target_id, 'de' );
+				if ( $twin > 0 ) {
 					$target_id = $twin;
 				}
 			}
@@ -942,11 +965,19 @@ final class CatalogShortcodes {
 			if ( ! $target instanceof WC_Product || 'publish' !== $target->get_status() ) {
 				continue;
 			}
-			$status  = self::pairing_status( $relationship, $locale );
-			$cards[] = array(
+			$status     = self::pairing_status( $relationship, $locale );
+			$cards[]    = array(
 				'name' => (string) $target->get_name(),
 				'html' => '<a class="pdp-pairing" href="' . esc_url( (string) get_permalink( $target_id ) ) . '">'
-					. wp_get_attachment_image( (int) $target->get_image_id(), 'medium', false, array( 'alt' => $target->get_name(), 'loading' => 'lazy' ) )
+					. wp_get_attachment_image(
+						(int) $target->get_image_id(),
+						'medium',
+						false,
+						array(
+							'alt'     => $target->get_name(),
+							'loading' => 'lazy',
+						)
+					)
 					. '<span class="pdp-pairing-copy">'
 					. '<span class="pdp-pairing-name">' . esc_html( $target->get_name() ) . '</span>'
 					. '<span class="pdp-pairing-sku">' . esc_html__( 'Item number', 'linker-commerce' ) . ' ' . esc_html( (string) $target->get_sku() ) . '</span>'
@@ -1003,7 +1034,7 @@ final class CatalogShortcodes {
 	private static function delivery_note( WC_Product $product ): string {
 		$fact    = Materials::logistics( (int) $product->get_id(), $product );
 		$outcome = Materials::freight_outcome( $fact );
-		$parts   = array_filter( array( (string) ( $outcome['headline'] ?? '' ), (string) ( $outcome['detail'] ?? '' ) ) );
+		$parts   = array_filter( array( (string) $outcome['headline'], (string) $outcome['detail'] ) );
 		return implode( ' · ', $parts );
 	}
 
@@ -1018,8 +1049,8 @@ final class CatalogShortcodes {
 		}
 		$id = (int) $page->ID;
 		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = pll_get_post( $id, 'de' );
-			if ( \is_int( $twin ) && $twin > 0 ) {
+			$twin = (int) pll_get_post( $id, 'de' );
+			if ( $twin > 0 ) {
 				$id = $twin;
 			}
 		}
@@ -1086,7 +1117,7 @@ final class CatalogShortcodes {
 			'grid'     => '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
 			'gauge'    => '<path d="M4 18a9 9 0 1 1 16 0M12 12l5-5M5 18h14"/>',
 		);
-		$open = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+		$open  = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
 		if ( 'energy' === $name || 'power' === $name || 'grid' === $name || 'gauge' === $name ) {
 			// The purchase panel's figure icons carry no pixel size; the CSS
 			// sizes them in the row.

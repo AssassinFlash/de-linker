@@ -51,16 +51,16 @@ final class Shortcodes {
 				'placement' => 'header',
 				'class'     => '',
 			),
-			$atts
+			(array) $atts
 		);
-		$classes = '' !== trim( (string) $attributes['class'] )
+		$classes    = '' !== trim( (string) $attributes['class'] )
 			? trim( (string) $attributes['class'] )
 			: ( 'mobile' === $attributes['placement'] ? 'tv-header-cta tv-mobile-cta' : 'tv-header-cta' );
-		$page    = get_page_by_path( 'contact' );
-		$id      = $page instanceof \WP_Post ? (int) $page->ID : 0;
+		$page       = get_page_by_path( 'contact' );
+		$id         = $page instanceof \WP_Post ? (int) $page->ID : 0;
 		if ( $id > 0 && function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = pll_get_post( $id, 'de' );
-			if ( \is_int( $twin ) && $twin > 0 ) {
+			$twin = (int) pll_get_post( $id, 'de' );
+			if ( $twin > 0 ) {
 				$id = $twin;
 			}
 		}
