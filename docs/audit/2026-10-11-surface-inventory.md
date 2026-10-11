@@ -41,7 +41,7 @@
 |---|---|---|
 | `tv-b2b/v1/catalog-search` | 无 | GAP-1（随搜索框） |
 | `tvb2b/v1/contact-context` / `contact-receipt` / `contact-request` | 无 | GAP-8 → 票 A |
-| `tvb2b/v1/stock`（ADR-0031；TTL 2 天） | 无（读 Woo 原生库存） | **GAP-9 → C 类默认：按无 ERP 处理**。证据：2026-10-09 线上目录研究实测 material-runtime **overrides 为空**、与注册表一致；审计日志无外证；业主多次系统对话从未提及任何 ERP。一句话可翻案 |
+| `tvb2b/v1/stock`（ADR-0031；TTL 2 天） | 无（读 Woo 原生库存） | **GAP-9 → 票 #69（业主 2026-10-11 事实确认：真实 ERP 存在、待接入）**。审计时的"按无处理"默认被翻转：本地模拟 ERP 先行 → 新实现接入通道（Woo 原生库存为唯一权威，不抄旧代码、不携带旧 TTL）→ #17 随行休眠上线 → 真 ERP 到位即接 |
 | `tvb2b/v1/funnel`（10 事件粗粒度） | 无 | GAP-10 → **裁定废弃**（无消费方、无报表存在过；后续若做分析属新产品工作非对等项） |
 | `tvb2b/v1/storage-compatibility` | ability `linker/check-compatibility` | 重建 |
 | `linker/v1/materials` + `tvb2b/v1/material-runtime` | `linker/v1/engineering-feed` | 重建 |
@@ -138,7 +138,7 @@
 - 命名沿用四类（tv-* id、--dlk-*、REST 命名空间、凭据路径）→ **保留**。
 
 ### C 类默认（证据支撑的默认路径，业主一句话可翻案）
-- **GAP-9 ERP 推库存：按无处理**（overrides 空+零外证+业主从未提及）。
+- **GAP-9 ERP 推库存：已翻案（业主 2026-10-11：真实 ERP 存在、之后接入、细节未交付）→ 票 #69：本地模拟先行 + 新接入通道 + 切换随行。** 审计时的"按无"默认及证据保留在案说明当时推断依据。
 - **GAP-11 bulk order/CSV：不带**（未裁定项纠正为默认废弃；无使用证据）。
 - **GAP-14 vision 铭牌识别：切换不带，留待客户需求**（线上按钮存在但零使用证据）。
 
