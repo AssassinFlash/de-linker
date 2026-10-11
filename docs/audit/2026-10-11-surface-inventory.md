@@ -41,7 +41,7 @@
 |---|---|---|
 | `tv-b2b/v1/catalog-search` | 无 | GAP-1（随搜索框） |
 | `tvb2b/v1/contact-context` / `contact-receipt` / `contact-request` | 无 | GAP-8 → 票 A |
-| `tvb2b/v1/stock`（ADR-0031；TTL 2 天） | 无（读 Woo 原生库存） | **GAP-9 → 票 #69（业主 2026-10-11 事实确认：真实 ERP 存在、待接入）**。审计时的"按无处理"默认被翻转：本地模拟 ERP 先行 → 新实现接入通道（Woo 原生库存为唯一权威，不抄旧代码、不携带旧 TTL）→ #17 随行休眠上线 → 真 ERP 到位即接 |
+| `tvb2b/v1/stock`（旧系统的 SKU 推库存端点，设计上带两天 TTL） | 无（读 Woo 原生库存） | **GAP-9 → 票 #69（业主 2026-10-11 事实确认：真实 ERP 存在、待接入）**。审计时的"按无处理"默认被翻转：本地模拟 ERP 先行 → 新实现接入通道（Woo 原生库存为唯一权威，不抄旧代码、不携带旧 TTL）→ #17 随行休眠上线 → 真 ERP 到位即接 |
 | `tvb2b/v1/funnel`（10 事件粗粒度） | 无 | GAP-10 → **裁定废弃**（无消费方、无报表存在过；后续若做分析属新产品工作非对等项） |
 | `tvb2b/v1/storage-compatibility` | ability `linker/check-compatibility` | 重建 |
 | `linker/v1/materials` + `tvb2b/v1/material-runtime` | `linker/v1/engineering-feed` | 重建 |
