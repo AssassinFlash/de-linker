@@ -74,6 +74,8 @@ final class ComparePageTest extends TestCase {
 	/**
 	 * The language the mocked language layer answers; a test that reads the
 	 * German page sets it.
+	 *
+	 * @var string
 	 */
 	private string $language = 'en';
 
@@ -227,7 +229,7 @@ final class ComparePageTest extends TestCase {
 	 * Genie's table use.
 	 */
 	public function test_the_rows_follow_the_page_language(): void {
-		$_GET['ids']     = '4107,1832';
+		$_GET['ids']    = '4107,1832';
 		$this->language = 'de';
 
 		$german = ( new ComparePage() )->table();
