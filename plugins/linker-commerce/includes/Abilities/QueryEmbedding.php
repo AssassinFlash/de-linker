@@ -19,9 +19,22 @@ namespace Linker\Commerce\Abilities;
 final class QueryEmbedding {
 
 	/**
-	 * Model the #10 bake-off adopted.
+	 * Model the #10 bake-off adopted; the index fingerprint compares this name.
 	 */
 	public const MODEL = 'gemini-embedding-2';
+
+	/**
+	 * The same model as OpenRouter names it.
+	 */
+	private const OPENROUTER_MODEL = 'google/gemini-embedding-2';
+
+	/**
+	 * Credential file per provider.
+	 */
+	private const ENV_FILES = array(
+		'openrouter' => 'openrouter.env',
+		'aihubmix'   => 'aihubmix.env',
+	);
 
 	/**
 	 * Encodes `$query` as a JSON array of floats, or null when this host has no key.
@@ -30,37 +43,61 @@ final class QueryEmbedding {
 	 * @return list<float>|null
 	 */
 	public function vector( string $query ): ?array {
-		$key  = $this->api_key();
-		$base = $this->base_url();
+		$provider = $this->provider();
+		$key      = $this->credential( strtoupper( $provider ) . '_API_KEY' );
+		$default  = 'openrouter' === $provider ? 'https://openrouter.ai/api/v1' : '';
+		$base     = $this->credential( strtoupper( $provider ) . '_BASE_URL', $default );
 		if ( '' === $key || '' === $base ) {
 			return null;
 		}
-		$body = wp_json_encode(
+		$model = 'openrouter' === $provider ? self::OPENROUTER_MODEL : self::MODEL;
+		$body  = wp_json_encode(
 			array(
-				'model' => self::MODEL,
+				'model' => $model,
 				'input' => array( 'task: question answering | query: ' . $query ),
 			)
 		);
 		if ( ! is_string( $body ) ) {
 			return null;
 		}
-		$response = wp_remote_post(
-			rtrim( $base, '/' ) . '/v1/embeddings',
-			array(
-				'headers' => array(
-					'Authorization' => 'Bearer ' . $key,
-					'Content-Type'  => 'application/json',
-				),
-				'body'    => $body,
-				'timeout' => 15,
-			)
+		// Bases may carry their own /v1 (OpenRouter does); keep exactly one.
+		$base    = rtrim( (string) preg_replace( '~/v1$~', '', rtrim( $base, '/' ) ), '/' );
+		$url     = $base . '/v1/embeddings';
+		$headers = array(
+			'Authorization' => 'Bearer ' . $key,
+			'Content-Type'  => 'application/json',
 		);
-		if ( is_wp_error( $response ) ) {
+		$decoded = null;
+		for ( $attempt = 1; $attempt <= 3; $attempt++ ) {
+			$response = wp_remote_post(
+				$url,
+				array(
+					'headers' => $headers,
+					'body'    => $body,
+					'timeout' => 15,
+				)
+			);
+			$code     = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
+			if ( $code >= 200 && $code < 500 ) {
+				$decoded = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+				break;
+			}
+			// 5xx and transport errors retry; 4xx answers are final.
+			if ( $attempt < 3 ) {
+				usleep( 500000 * ( 2 ** ( $attempt - 1 ) ) );
+			}
+		}
+		if ( null === $decoded ) {
+			error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- the routing law demands loud failure
+				'[linker-embedding] query encoding failed on ' . $provider . ' after retries'
+			);
 			return null;
 		}
-		$decoded = json_decode( (string) wp_remote_retrieve_body( $response ), true );
-		$row     = $decoded['data'][0]['embedding'] ?? null;
+		$row = $decoded['data'][0]['embedding'] ?? null;
 		if ( ! is_array( $row ) ) {
+			error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- the routing law demands loud failure
+				'[linker-embedding] unexpected response shape from ' . $provider
+			);
 			return null;
 		}
 		$vector = array();
@@ -75,25 +112,20 @@ final class QueryEmbedding {
 	}
 
 	/**
-	 * AIHUBMIX_API_KEY from the environment, loading the config file once if needed.
+	 * The provider law: OpenRouter by default; AIHubMix only by explicit switch.
 	 */
-	private function api_key(): string {
-		return $this->credential( 'AIHUBMIX_API_KEY' );
+	private function provider(): string {
+		$switch = getenv( 'LINKER_EMBEDDING_PROVIDER' );
+		return ( is_string( $switch ) && 'aihubmix' === $switch ) ? 'aihubmix' : 'openrouter';
 	}
 
 	/**
-	 * AIHUBMIX_BASE_URL from the environment.
-	 */
-	private function base_url(): string {
-		return $this->credential( 'AIHUBMIX_BASE_URL' );
-	}
-
-	/**
-	 * One credential: process env first, then the aihubmix env file.
+	 * One credential: process env first, then the provider's env file.
 	 *
-	 * @param 'AIHUBMIX_API_KEY'|'AIHUBMIX_BASE_URL' $name Variable.
+	 * @param string $name Variable.
+	 * @param string $fallback Value when unset everywhere.
 	 */
-	private function credential( string $name ): string {
+	private function credential( string $name, string $fallback = '' ): string {
 		$from_env = getenv( $name );
 		if ( is_string( $from_env ) && '' !== $from_env ) {
 			return $from_env;
@@ -103,7 +135,8 @@ final class QueryEmbedding {
 			return $from_file;
 		}
 		$this->load_env_file();
-		return $this->env_value( $name );
+		$value = $this->env_value( $name );
+		return '' !== $value ? $value : $fallback;
 	}
 
 	/**
@@ -118,20 +151,24 @@ final class QueryEmbedding {
 	}
 
 	/**
-	 * Reads ~/.config/terravolt-builder/aihubmix.env into $_ENV when the
-	 * variables are not already set. The file is never opened from the repo.
+	 * Reads the active provider's env file into $_ENV when the variables are
+	 * not already set. The file is never opened from the repo.
 	 */
 	private function load_env_file(): void {
 		static $loaded = false;
 		if ( $loaded ) {
 			return;
 		}
-		$loaded = true;
-		$home   = getenv( 'HOME' );
+		$loaded  = true;
+		$home    = getenv( 'HOME' );
+		$allowed = array();
+		foreach ( array( 'OPENROUTER_API_KEY', 'OPENROUTER_BASE_URL', 'AIHUBMIX_API_KEY', 'AIHUBMIX_BASE_URL' ) as $variable ) {
+			$allowed[ $variable ] = true;
+		}
 		if ( ! is_string( $home ) || '' === $home ) {
 			return;
 		}
-		$path = $home . '/.config/terravolt-builder/aihubmix.env';
+		$path = $home . '/.config/terravolt-builder/' . self::ENV_FILES[ $this->provider() ];
 		if ( ! is_readable( $path ) ) {
 			return;
 		}
@@ -147,7 +184,7 @@ final class QueryEmbedding {
 			list( $name, $value ) = explode( '=', $line, 2 );
 			$name                 = trim( $name );
 			$value                = trim( $value, " \t\"'" );
-			if ( ( 'AIHUBMIX_API_KEY' === $name || 'AIHUBMIX_BASE_URL' === $name ) && ! isset( $_ENV[ $name ] ) ) {
+			if ( isset( $allowed[ $name ] ) && ! isset( $_ENV[ $name ] ) ) {
 				$_ENV[ $name ] = $value;
 			}
 		}
