@@ -11,12 +11,15 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 | `plugins/linker-commerce` | 商务链、产品事实与 Abilities。PHP，`Linker\Commerce\` → `includes/` |
 | `plugins/linker-i18n` | Polylang 伴侣插件。PHP，`Linker\I18n\` → `includes/` |
 | `plugins/linker-tools` | Genie 与 Solution Configurator：PHP 壳（`Linker\Tools\` → `includes/`）和 React 应用（`src/`，入口 `genie`、`configurator`、`shared`），构建产物提交在 `build/` |
+| `mu-plugins/` | 生产环境的 must-use 插件，部署到 `wp-content/mu-plugins/`（`linker-error-recorder.php`：PHP 错误写进 `wp-content/linker-errors/php.log`，256 KB 轮转）。自己的 Composer 项目（静态检查 + PHPUnit；冒烟测试对着实例跑，`LINKER_MU_WP`） |
 | `services/genie` | Genie 的代理循环服务（FastAPI，`linker_genie`；与 `linker-tools` 里转发请求的 PHP 代理不是一回事） |
 | `services/engine` | Solution Configurator 的引擎（FastAPI，`linker_engine`） |
 | `tools/` | just 模块（`build.just`、`pull.just`）、PHP 项目共用的工具配置（`php/`：PHPCS 规则；PHPStan 设置，`phpstan.neon` 全部 PHP 项目共用，`phpstan-plugins.neon` 再加插件用的 WooCommerce stubs 与测试 bootstrap；插件的 PHPUnit bootstrap）、本地栈 `local/`（uv 项目 `linker-local`，见 `docs/local-stack.md`）、数据迁移 `migrate/`（每票一个 `<票号>-<名>.py` + 计划 `.json` + WordPress 侧 `.php`，经 WP-CLI 执行；uv 项目，PHP 由 `linker-commerce` 的 PHPCS/PHPStan 检查）、线上只读快照 `pull/`（uv 项目 `linker-pull`） |
 | `docs/` | 验收协议、各票规格（`docs/specs/`）与研究证据 |
 
 PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插件的 `phpcs.xml.dist`、`phpstan.neon.dist`、`tests/php/bootstrap.php` 只写本插件的文件、文本域与前缀，其余引用 `tools/php/`；`phpunit.xml.dist` 每个插件一份，因为 PHPUnit 9.6 的配置文件之间不能共享根元素属性。JS 单测是 `src/` 与 `bin/` 下的 `*.test.ts(x)`，端到端测试在 `plugins/linker-tools/tests/e2e/`。Python 服务是 uv 的 src 布局：规格里写作 `services/genie/retrieval.py` 的模块就是 `services/genie/src/linker_genie/retrieval.py`；包外的脚本（如 `services/genie/index/`）同样受 Ruff 与 mypy 检查（两者都对整个服务目录运行）；测试在各服务的 `tests/`。`tools/local` 同时是 uv 项目（`src/linker_local/`、`tests/`）与只做静态检查的 Composer 项目（实例用的 mu-plugin `mu/` 与 PHP 服务器路由 `router.php`）。
+
+`mu-plugins/` 与 `tools/local` 一样是只做静态检查与 PHPUnit 的 Composer 项目；它的单元测试用 PHP 自己建临时目录，冒烟测试对着本地实例（`LINKER_MU_WP`）确认真实请求里的错误确实落进记录件。
 
 `tools/migrate` 是 uv 项目（测试在 `tools/migrate/tests/`）；它的 WordPress 侧 `*.php` 经 `wp eval-file` 运行，借用 `plugins/linker-commerce` 的 `phpcs.xml.dist`/`phpstan.neon.dist` 检查（迁移的是这个插件读的商品数据），不另设 Composer 项目。需要真实站点的测试——`linker-commerce` 的 `tests/php/Integration`（`LINKER_COMMERCE_TEST_SITE`，站点地址）与 `tools/migrate/tests/test_7_facts_wordpress.py`（`LINKER_MIGRATE_TEST_WP`，WP-CLI 命令）——在没有这两个环境变量时跳过，CI 上就是跳过。
 

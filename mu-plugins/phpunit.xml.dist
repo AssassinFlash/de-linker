@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+	PHPUnit 9.6 has no way to share these attributes between configuration
+	files, so each project carries this file; the bootstrap includes the
+	must-use plugin and defines what wp-settings.php would.
+-->
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="tests/php/bootstrap.php"
+	colors="true"
+	convertDeprecationsToExceptions="true"
+	failOnRisky="true"
+	failOnWarning="true"
+	defaultTestSuite="unit"
+>
+	<testsuites>
+		<testsuite name="unit">
+			<directory>tests/php/Unit</directory>
+		</testsuite>
+		<testsuite name="integration">
+			<directory>tests/php/Integration</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

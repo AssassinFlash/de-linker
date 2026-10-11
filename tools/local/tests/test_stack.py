@@ -242,6 +242,27 @@ def test_pretty_permalinks_and_files_are_served(stack: Stack) -> None:
     assert checkout.status == 200
 
 
+def test_the_checkout_endpoints_stay_where_the_checkout_page_is(
+    stack: Stack,
+) -> None:
+    """A site that never renamed its checkout page keeps its endpoints.
+
+    This instance's checkout page answers /checkout/ (it was never renamed),
+    and WooCommerce's endpoints live under it. The rule that sends the retired
+    /checkout/ slug to the renamed page's address must leave them alone: a
+    redirect there would 404 the shop's order links on such a site (#80).
+    """
+    a = stack.instance("pytesta")
+    assert (
+        path_of(stack.wp(a.name, "eval", "echo wc_get_checkout_url();")) == "/checkout/"
+    )
+    endpoint = "/checkout/order-received/4711/"
+    response = request(a.port, endpoint)
+    assert response.headers.get("Location", "") == "", (
+        f"{endpoint} redirects to {response.headers.get('Location')}"
+    )
+
+
 def test_a_form_mails_into_the_instance_instead_of_sending(
     stack: Stack,
 ) -> None:
