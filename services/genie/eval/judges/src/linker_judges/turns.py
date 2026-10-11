@@ -9,13 +9,14 @@ wrong-pick variant as `answer_b`, so `better_pick` has a real choice and the
 real answer must win.
 
 The questions are the bake-off's own wording (`rubric.py`: one wording, every
-judge). The thresholds are the ones the #33 formal run calibrated on its
-calibration split and froze (docs/research/2026-10-09/judge-bakeoff.md
-§采用结论), applied unchanged here.
+judge). The thresholds started as the #33 formal run's calibration on its
+calibration split (docs/research/2026-10-09/judge-bakeoff.md §采用结论) and were
+recalibrated on the real-turn pilot (see `TURN_THRESHOLDS`).
 """
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 from .rubric import QA_QUESTIONS, Question
@@ -39,6 +40,45 @@ def turns_questions(has_candidates: bool) -> tuple[Question, ...]:
     between; without them `better_pick` has nothing to choose between and the
     turn is judged on grounded and appropriate only."""
     return QA_QUESTIONS if has_candidates else QA_QUESTIONS[:2]
+
+
+def answer_with_offers(
+    answer: str,
+    page: int | None,
+    cards: Sequence[int],
+    swap: tuple[int, int] | None = None,
+) -> str:
+    """`answer` as the judge receives it: the customer's words plus the offers,
+    the page's own product named apart from the recommendations.
+
+    The R5 divergence of the 2026-10-11 pilot came from flattening the two roles
+    into one "Products offered" list, which read "documented pairing" as a claim
+    about the page's own product too. Every driver builds the judged answer's
+    offers here, so a pilot row and a regression-suite row read the same way:
+    `page` is the product page the turn ran on (`None` when it ran on none) and
+    `cards` are the ids the answer offered, the page's own product among them
+    when the page offers itself. A row with no products keeps the plain answer.
+
+    `swap` is the wrong-pick variant's `(from, to)`: the variant claims the
+    swapped-out card's role for another product — a recommendation offered in
+    its place, or, when the source is the page's own product, the page product
+    itself, which the variant then misattributes.
+    """
+    recommended = [pid for pid in cards if pid != page]
+    if swap is not None:
+        source, target = swap
+        if page is not None and source == page:
+            page = target
+        else:
+            recommended = [target if pid == source else pid for pid in recommended]
+    lines: list[str] = []
+    if page is not None:
+        lines.append(f"This page's product: {page}.")
+    if recommended:
+        lines.append(
+            f"Recommended products: {', '.join(str(pid) for pid in recommended)}."
+        )
+    return answer if not lines else answer + "\n\n" + "\n".join(lines)
 
 
 def turns_state(row: dict[str, Any]) -> dict[str, Any]:

@@ -171,7 +171,7 @@ def make_generate(
         budget = ToolBudget()
         tools = []
         for name in ABILITY_NAMES:
-            runner = _ability_runner(client, budget, name)
+            runner = _ability_runner(client, budget, name, request.user.context)
             doc = INPUT_DOCS.get(name)
             runner.__doc__ = f"Call the WordPress ability {name}." + (
                 f" Input object: {doc}" if doc else ""
@@ -208,13 +208,16 @@ def _tool_name(ability: str) -> str:
 
 
 def _ability_runner(
-    client: AbilityClient, budget: ToolBudget, name: str
+    client: AbilityClient,
+    budget: ToolBudget,
+    name: str,
+    user_context: str | None = None,
 ) -> Callable[[dict[str, Any] | None], Any]:
     def run(arguments: dict[str, Any] | None = None) -> Any:
         """Call a Linker commerce ability and return its JSON result."""
         if not budget.allow():
             return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
-        payload, gathered = client.record(name, arguments)
+        payload, gathered = client.record(name, arguments, user_context)
         budget.parts.append(gathered)
         return payload
 

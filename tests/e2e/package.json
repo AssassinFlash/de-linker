@@ -1,0 +1,24 @@
+{
+	"name": "linker-e2e",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "Regression suite of the review site (docs/specs/16-review-acceptance.md): Playwright over a local instance.",
+	"license": "UNLICENSED",
+	"engines": {
+		"node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+	},
+	"scripts": {
+		"test": "playwright test",
+		"test:list": "playwright test --list",
+		"lint:types": "tsc --noEmit",
+		"lint:format": "prettier --check ."
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.64.0",
+		"@types/node": "^22.20.0",
+		"@wordpress/prettier-config": "^4.56.0",
+		"prettier": "^3.6.2",
+		"typescript": "~6.0.3"
+	}
+}

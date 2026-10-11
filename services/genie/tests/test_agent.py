@@ -58,7 +58,10 @@ def test_the_runner_answers_the_fifth_call_with_an_error_object() -> None:
 
     class RecordingClient:
         def record(
-            self, name: str, arguments: dict[str, Any] | None
+            self,
+            name: str,
+            arguments: dict[str, Any] | None,
+            user_context: str | None = None,
         ) -> tuple[dict[str, Any], TurnFacts]:
             calls.append((name, arguments))
             facts = TurnFacts()

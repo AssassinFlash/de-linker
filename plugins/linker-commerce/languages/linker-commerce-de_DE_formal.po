@@ -2750,9 +2750,8 @@ msgid "Brand"
 msgstr "Marke"
 
 #: templates/storefront-archive-product.php:92
-#, fuzzy
 msgid "Phase"
-msgstr "%d-phasig"
+msgstr "Phase"
 
 #: templates/storefront-archive-product.php:93
 msgid "Power"

@@ -15,10 +15,15 @@ import { expect, test, vi } from 'vitest';
 import type { CardState } from '../shared/ProductCard';
 import type { storeClient } from '../configurator/api/store';
 
-vi.mock( './api/turn', () => ( {
-	sendTurn: vi.fn(),
-	sendVote: vi.fn( async () => true ),
-} ) );
+vi.mock( './api/turn', async ( importOriginal ) => {
+	const actual = await importOriginal< typeof import( './api/turn' ) >();
+	return {
+		assistantMessage: actual.assistantMessage,
+		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
+		sendTurn: vi.fn(),
+		sendVote: vi.fn( async () => true ),
+	};
+} );
 vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
@@ -57,6 +62,7 @@ function config(): GenieConfig {
 		locale: 'en',
 		pageType: 'category',
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
 		voteUrl: '/wp-json/linker-ai/v1/genie/turn',
 		restUrl: '/wp-json/',
 		restNonce: 'n',

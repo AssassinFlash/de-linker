@@ -23,14 +23,21 @@ import { expect, test, vi } from 'vitest';
 import type { GenieConfig } from './config';
 import { App } from './App';
 
-vi.mock( './api/turn', () => ( {
-	sendTurn: vi.fn(),
-	sendVote: vi.fn( async () => true ),
-} ) );
+vi.mock( './api/turn', async ( importOriginal ) => {
+	const actual = await importOriginal< typeof import( './api/turn' ) >();
+	return {
+		// The real message rule, so a restored thread is spelled the same way
+		// a live one is; the two calls around it are doubles.
+		assistantMessage: actual.assistantMessage,
+		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
+		sendTurn: vi.fn(),
+		sendVote: vi.fn( async () => true ),
+	};
+} );
 vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
-import { sendTurn, sendVote } from './api/turn';
+import { readThread, sendTurn, sendVote } from './api/turn';
 
 const GERMAN_STREAM =
 	'event: meta\n' +
@@ -47,6 +54,7 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		locale,
 		pageType: 'category',
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
 		voteUrl: '/wp-json/linker-ai/v1/genie/turn',
 		restUrl: '/wp-json/',
 		restNonce: 'n',
@@ -198,4 +206,60 @@ test( 'the assistant message carries the vote buttons and posts the vote', async
 	expect(
 		screen.getAllByRole( 'button', { name: 'Not helpful' } )
 	).toHaveLength( 1 );
+} );
+
+test( 'a reload opens with the thread and the last answer restored', async () => {
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{
+				role: 'user',
+				content: 'Which inverters fit a three-phase home?',
+			},
+			{ role: 'assistant', content: 'These three fit.' },
+		],
+		turn: {
+			meta: {
+				turn_id: 9,
+				grounded: true,
+				fallback: false,
+				attempts: 1,
+				failures: [],
+				language: 'en',
+			},
+			// Text only: a cards block would fetch the product from the
+			// Store API, which the card's own tests cover.
+			blocks: [
+				{ type: 'text', text: 'These three fit.', refs: [ '3556' ] },
+			],
+		},
+	} );
+
+	render( <App config={ config() } /> );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: /open|ask genie/i } )
+		);
+	} );
+
+	await waitFor( () =>
+		expect(
+			screen.getByText( 'Which inverters fit a three-phase home?' )
+		).toBeDefined()
+	);
+	// The answer shows twice on purpose — once in the thread, once as the
+	// restored turn's own text block, exactly as after a live turn.
+	expect( screen.getAllByText( 'These three fit.' ).length ).toBeGreaterThan(
+		0
+	);
+} );
+
+test( 'a first visit with no stored conversation opens empty', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: /open|ask genie/i } )
+		);
+	} );
+	expect( screen.queryByText( 'These three fit.' ) ).toBeNull();
 } );

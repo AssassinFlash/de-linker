@@ -144,10 +144,11 @@ class Entries {
 			esc_attr( $mount )
 		);
 		printf(
-			'<div data-linker-app="genie" data-locale="%1$s" data-page-type="%2$s" data-turn-url="%3$s" data-vote-url="%4$s" data-rest-url="%5$s" data-rest-nonce="%6$s" data-disclosure="%7$s" data-account-url="%8$s" data-prompts=\'%9$s\'></div>',
+			'<div data-linker-app="genie" data-locale="%1$s" data-page-type="%2$s" data-turn-url="%3$s" data-thread-url="%4$s" data-vote-url="%5$s" data-rest-url="%6$s" data-rest-nonce="%7$s" data-disclosure="%8$s" data-account-url="%9$s" data-prompts=\'%10$s\'></div>',
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::THREAD_ROUTE ) ) ),
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
 			esc_attr( esc_url_raw( rest_url() ) ),
 			esc_attr( wp_create_nonce( 'wp_rest' ) ),

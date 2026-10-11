@@ -13,6 +13,7 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\Retention;
+use Linker\Tools\Genie\UserContext;
 use Linker\Tools\Genie\WindPress;
 
 /**
@@ -30,6 +31,7 @@ final class Plugin {
 	 * @param Proxy         $proxy         REST proxy to the Genie service.
 	 * @param Entries       $entries       Chips, dock and disclosure.
 	 * @param Retention     $retention     Deletes expired guest conversations.
+	 * @param UserContext   $user_context  The customer-identity seam.
 	 * @param WindPress     $windpress     Scan provider for the entries' Tailwind classes.
 	 */
 	public function __construct(
@@ -40,6 +42,7 @@ final class Plugin {
 		private readonly Proxy $proxy,
 		private readonly Entries $entries,
 		private readonly Retention $retention,
+		private readonly UserContext $user_context,
 		private readonly WindPress $windpress
 	) {}
 
@@ -55,6 +58,9 @@ final class Plugin {
 		$this->site_chrome->register();
 		$this->entries->register();
 		$this->retention->register();
+		// Registered first in the bootstrap: `determine_current_user` must be
+		// listening before anything asks who is making the request.
+		$this->user_context->register();
 		$this->windpress->register();
 	}
 }

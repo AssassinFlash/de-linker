@@ -100,6 +100,16 @@ class PageContext(Strict):
 class UserContext(Strict):
     logged_in: bool = False
     partner: bool = False
+    context: str | None = Field(
+        default=None,
+        description=(
+            "The signed-in customer's identity token, minted by the shell and "
+            "valid for 120 seconds (nothing marks it used; the window is the "
+            "whole of its life). The service sends it back on the one ability "
+            "that answers about this customer (linker/inquiry-status) and never "
+            "stores it."
+        ),
+    )
 
 
 class TurnMessage(Strict):

@@ -217,9 +217,10 @@ final class ProxyTest extends TestCase {
 	/**
 	 * A proxy whose conversations always answer 51.
 	 *
-	 * @param callable|null $fetch HTTP client.
+	 * @param callable|null        $fetch  HTTP client.
+	 * @param RecordingThread|null $thread Conversation store; a recording one by default.
 	 */
-	private function proxy( ?callable $fetch = null ): Proxy {
+	private function proxy( ?callable $fetch = null, ?RecordingThread $thread = null ): Proxy {
 		$conversations = new class() extends Conversations {
 			/**
 			 * Always the same conversation.
@@ -227,7 +228,94 @@ final class ProxyTest extends TestCase {
 			public function current_id(): int {
 				return 51;
 			}
+
+			/**
+			 * The same id, and 0 without one — what the thread route reads.
+			 */
+			public function existing_id(): int {
+				return 51;
+			}
 		};
-		return new Proxy( $conversations, $fetch );
+		return new Proxy( $conversations, $fetch, $thread ?? new RecordingThread() );
+	}
+
+	/**
+	 * An answered turn is kept: the thread the browser sent, and the answer.
+	 */
+	public function test_turn_records_the_thread_and_the_answer(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$thread  = new RecordingThread();
+		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param(
+			'messages',
+			array(
+				array(
+					'role'    => 'user',
+					'content' => 'Which inverters fit?',
+				),
+			)
+		);
+
+		$this->proxy( static fn(): string => "event: meta\ndata: {}\n\n", $thread )
+			->turn( $request );
+
+		$this->assertNotNull( $thread->recorded );
+		$this->assertSame( 51, $thread->recorded['conversation'] );
+		$this->assertSame(
+			array(
+				array(
+					'role'    => 'user',
+					'content' => 'Which inverters fit?',
+				),
+			),
+			$thread->recorded['messages']
+		);
+		$this->assertSame( "event: meta\ndata: {}\n\n", $thread->recorded['stream'] );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * An upstream failure is not a turn: nothing is written.
+	 */
+	public function test_a_failed_turn_records_nothing(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$thread  = new RecordingThread();
+		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param( 'messages', array() );
+
+		$this->proxy( static fn() => new WP_Error( 'boom', 'nope' ), $thread )->turn( $request );
+
+		$this->assertNull( $thread->recorded );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The conversation route hands the stored thread back.
+	 */
+	public function test_conversation_returns_the_stored_thread(): void {
+		$this->wp_functions();
+		$thread         = new RecordingThread();
+		$thread->stored = array(
+			'messages' => array(
+				array(
+					'role'    => 'user',
+					'content' => 'Hello',
+				),
+			),
+			'stream'   => 'event: done\ndata: {}\n\n',
+		);
+		$response       = $this->proxy( null, $thread )->conversation();
+		$data           = $response->get_data();
+		$this->assertSame( 51, $data['conversation_id'] );
+		$this->assertSame( $thread->stored['messages'], $data['messages'] );
+		$this->assertSame( $thread->stored['stream'], $data['stream'] );
+		// The answer depends on the visitor's cookie: it is never cacheable.
+		$this->assertStringContainsString(
+			'no-store',
+			(string) $response->get_headers()['Cache-Control']
+		);
+		$this->assertConditionsMet();
 	}
 }

@@ -16,3 +16,18 @@
 
 ## 验收
 - [ ] 回归全绿、视觉验收无未修问题、本线 review 通过；#17 以此为前提。
+
+## 回归套件入口（2026-10-11，本段落地）
+`tests/e2e/`（Playwright，独立 npm 包）：`just e2e <实例名> [playwright 参数]`，实例先按 §环境 建好（`just up` + `just pull load … --live-code` + `just serve`）。套件连的是 `~/de-linker-local/instances.toml` 里登记的实例端口，`just check` 里的 `e2e-check` 跑它的类型与格式（跑不动实例的部分不进门）。
+
+- `specs/genie.spec.ts`：R1–R14（EN/DE，真模型 deepseek-flash）＋ Jev→DeepSeek 级联逐问判分（`services/genie/eval/judges/score.py`，判据即 #13 试点）。
+- `specs/genie-dock.spec.ts`：披露句、商品页芯片（R13，带 product_id）、登录客户的询盘（R7）、刷新后的线程恢复。
+- `specs/configurator.spec.ts`：8 户型、3 合规、工商业两路、屋顶步、设计报告 PDF。
+- `specs/commerce.spec.ts`：注册→看价→Lösungsentwurf→询盘→后台出 PI→账户下载（EN/DE），邮件捕获断言。
+- `specs/i18n.spec.ts`：150 德语 URL（经 `just pull check-urls` 请求快照自己的德语 sitemap）、同 slug、库存镜像、`?lang=de` Store API。
+- `specs/products.spec.ts`：分类页筛选、隐价、按钮文案（访客/登录）。
+- `specs/chrome.spec.ts`：页头页脚命名、301、sitemap、hreflang。
+
+**待主线终态的部分在套件里以 `pending-main` 标注**（运行时 skip 并写明原因），不静默删除：商品页 Genie 芯片（模板侧）与 hreflang 的旧站点残留（快照 SEOPress 数据）。
+
+**判分记录落盘**（2026-10-11 修复轮）：级联的逐问记录写在实例目录下（`~/de-linker-local/<实例>/e2e-judge/<本地时间戳>/`，与 `mail/` 同级），`run/summary.json`、`run/jev.jsonl`、`run/deepseek.jsonl`、`run/cascade.jsonl` 在跑完后仍可查阅；判分开始的路径会打印在运行输出里。判分答案里的商品按角色分列（`This page's product:` 与 `Recommended products:` 两行，`linker_judges.turns.answer_with_offers` 是唯一实现）——R5 分歧的根因正是把「本页产品」与「推荐产品」压成一张清单。

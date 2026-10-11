@@ -3,10 +3,15 @@
 Every ability is called anonymously, with no token and no Authorization
 header. A login-gated ability answers 401 and that maps to the
 `login_required` fact, so the model asks the customer to log in instead of
-failing the turn (docs/specs/13-genie.md R7). Attaching the browsing
-customer's identity is the user-context passthrough that #16 designs; do
-NOT configure a service token before that design exists — a token holding
-WordPress rights would let one anonymous visitor read another's inquiries.
+failing the turn (docs/specs/13-genie.md R7).
+
+The one exception is the customer's own inquiry list: the turn carries the
+shell's short-lived identity token (valid 120 seconds after it is minted; the
+browser never sees it, the service never stores it), and the service sends it
+on exactly one ability call — `linker/inquiry-status` — as
+`USER_CONTEXT_HEADER`. WordPress accepts it on `/wp-abilities/` requests only,
+verifies the signature and the expiry, and nothing else in the service can
+use it.
 """
 
 from __future__ import annotations
@@ -17,6 +22,11 @@ from urllib.parse import quote
 import httpx
 
 from linker_genie.facts import TurnFacts, collect, merge
+
+# The header the shell's token travels in; WordPress' UserContext accepts it.
+USER_CONTEXT_HEADER = "X-Linker-User-Context"
+# The one ability that answers about the browsing customer.
+USER_CONTEXT_ABILITY = "linker/inquiry-status"
 
 ABILITY_NAMES = (
     "linker/search-products",
@@ -57,7 +67,12 @@ class AbilityClient:
     def close(self) -> None:
         self._client.close()
 
-    def run(self, name: str, arguments: dict[str, Any] | None = None) -> Any:
+    def run(
+        self,
+        name: str,
+        arguments: dict[str, Any] | None = None,
+        user_context: str | None = None,
+    ) -> Any:
         if name not in ABILITY_NAMES:
             raise AbilityError(f"unknown ability {name}")
         path = f"/wp-json/wp-abilities/v1/abilities/{quote(name, safe='')}/run"
@@ -70,7 +85,12 @@ class AbilityClient:
                     params[f"input[{key}][{index}]"] = item
             else:
                 params[f"input[{key}]"] = value
-        response = self._client.get(path, params=params)
+        headers = (
+            {USER_CONTEXT_HEADER: user_context}
+            if user_context and name == USER_CONTEXT_ABILITY
+            else None
+        )
+        response = self._client.get(path, params=params, headers=headers)
         if response.status_code == 401:
             # A login-gated ability asked without a user: the caller must ask
             # for a login, not fail the turn (docs/specs/13-genie.md R7).
@@ -86,9 +106,12 @@ class AbilityClient:
         return body
 
     def record(
-        self, name: str, arguments: dict[str, Any] | None = None
+        self,
+        name: str,
+        arguments: dict[str, Any] | None = None,
+        user_context: str | None = None,
     ) -> tuple[Any, TurnFacts]:
-        payload = self.run(name, arguments)
+        payload = self.run(name, arguments, user_context)
         gathered = collect(name, payload)
         gathered.tool_calls.append(
             {"name": name, "arguments": arguments or {}, "ok": True}

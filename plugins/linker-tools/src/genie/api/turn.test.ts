@@ -13,7 +13,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 /**
  * Internal dependencies
  */
-import { parseStream, sendVote } from './turn';
+import { assistantMessage, parseStream, readThread, sendVote } from './turn';
 
 afterEach( () => {
 	vi.restoreAllMocks();
@@ -85,4 +85,88 @@ test( 'a failed vote is best effort, never an exception', async () => {
 	await expect(
 		sendVote( '/wp-json/linker-ai/v1/genie/turn', 'n', 7, 1, fetcher )
 	).resolves.toBe( false );
+} );
+
+test( 'a reload reads the stored thread back and re-adds the last answer', async () => {
+	const stream =
+		'event: meta\n' +
+		'data: {"turn_id":9,"grounded":true,"fallback":false,"attempts":1,"failures":[],"language":"en"}\n\n' +
+		'event: block\n' +
+		'data: {"type":"text","text":"Two of them fit.","refs":["3556"]}\n\n' +
+		'event: block\n' +
+		'data: {"type":"cards","product_ids":[3556]}\n\n' +
+		'event: done\n' +
+		'data: {"ok":true}\n\n';
+	const fetchDouble = vi.fn( async () => ( {
+		ok: true,
+		json: async () => ( {
+			conversation_id: 12,
+			messages: [ { role: 'user', content: 'Which inverters fit?' } ],
+			stream,
+		} ),
+	} ) ) as unknown as typeof fetch;
+
+	const thread = await readThread(
+		'/wp-json/linker-ai/v1/genie/conversation',
+		'n',
+		fetchDouble
+	);
+
+	expect( thread.messages.map( ( message ) => message.content ) ).toEqual( [
+		'Which inverters fit?',
+		'Two of them fit.',
+	] );
+	expect( thread.turn?.blocks ).toHaveLength( 2 );
+	expect( thread.messages[ 1 ].turnId ).toBe( 9 );
+} );
+
+test( 'a reload without a conversation answers empty, and a truncated stream keeps the words', async () => {
+	const empty = vi.fn( async () => ( {
+		ok: true,
+		json: async () => ( { conversation_id: 0, messages: [], stream: '' } ),
+	} ) ) as unknown as typeof fetch;
+	expect( await readThread( '/thread', 'n', empty ) ).toEqual( {
+		messages: [],
+		turn: null,
+	} );
+
+	const truncated = vi.fn( async () => ( {
+		ok: true,
+		json: async () => ( {
+			conversation_id: 12,
+			messages: [ { role: 'user', content: 'Hello' } ],
+			stream: 'event: meta\ndata: {"grounded":true}\n\n',
+		} ),
+	} ) ) as unknown as typeof fetch;
+	const thread = await readThread( '/thread', 'n', truncated );
+	expect( thread.messages ).toEqual( [ { role: 'user', content: 'Hello' } ] );
+	expect( thread.turn ).toBeNull();
+
+	const failing = vi.fn( async () => ( {
+		ok: false,
+	} ) ) as unknown as typeof fetch;
+	expect( await readThread( '/thread', 'n', failing ) ).toEqual( {
+		messages: [],
+		turn: null,
+	} );
+} );
+
+test( 'an assistant message is the turn text, wherever it came from', () => {
+	const turn = parseStream(
+		'event: meta\n' +
+			'data: {"turn_id":3,"grounded":true,"fallback":false,"attempts":1,"failures":[],"language":"en"}\n\n' +
+			'event: block\n' +
+			'data: {"type":"text","text":"First.","refs":[]}\n\n' +
+			'event: block\n' +
+			'data: {"type":"cards","product_ids":[3556]}\n\n' +
+			'event: block\n' +
+			'data: {"type":"text","text":"Second.","refs":[]}\n\n' +
+			'event: done\n' +
+			'data: {"ok":true}\n\n'
+	);
+	expect( assistantMessage( turn ) ).toEqual( {
+		role: 'assistant',
+		content: 'First. Second.',
+		turnId: 3,
+	} );
 } );

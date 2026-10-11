@@ -4,6 +4,8 @@
  *
  * The proxy answers `{ conversation_id, stream }` where `stream` is the
  * service's `text/event-stream` body: `meta`, one `block` per block, `done`.
+ * The same reader serves the stored conversation a reload reads back
+ * (`readThread`): an answer's text is this module's business in both cases.
  */
 
 /**
@@ -128,6 +130,90 @@ export async function sendTurn(
 	}
 	const body = ( await response.json() ) as { stream: string };
 	return parseStream( body.stream ?? '' );
+}
+
+/**
+ * One assistant message as the thread shows it: the turn's text.
+ *
+ * @param turn The parsed turn.
+ */
+export function assistantMessage( turn: Turn ): TurnMessage {
+	return {
+		role: 'assistant',
+		content: turn.blocks
+			.filter( ( block ): block is TextBlock => block.type === 'text' )
+			.map( ( block ) => block.text )
+			.join( ' ' ),
+		turnId: turn.meta?.turn_id,
+	};
+}
+
+/**
+ * The conversation this browser already has, as the proxy stored it.
+ *
+ * A reload (or arriving on another page, where the dock mounts again) must
+ * not throw the thread away: the proxy keeps the messages of the last
+ * answered turn and that turn's stream on the conversation post, and this
+ * reads them back in the same shapes a live turn uses.
+ *
+ * @param threadUrl Proxy route that answers `{ conversation_id, messages, stream }`.
+ * @param nonce     wp_rest nonce.
+ * @param fetcher   Fetch for tests.
+ */
+export async function readThread(
+	threadUrl: string,
+	nonce: string,
+	fetcher: Fetch = ( ...args ) => fetch( ...args )
+): Promise< { messages: TurnMessage[]; turn: Turn | null } > {
+	const empty = { messages: [], turn: null };
+	try {
+		const response = await fetcher( threadUrl, {
+			credentials: 'same-origin',
+			// A per-visitor answer: never from the browser's cache.
+			cache: 'no-store',
+			headers: { 'X-WP-Nonce': nonce },
+		} );
+		if ( ! response.ok ) {
+			return empty;
+		}
+		const stored = ( await response.json() ) as {
+			messages?: TurnMessage[];
+			stream?: string;
+		};
+		const messages = ( stored.messages ?? [] )
+			.filter(
+				( message ) =>
+					message &&
+					( message.role === 'user' ||
+						message.role === 'assistant' ) &&
+					typeof message.content === 'string'
+			)
+			.map( ( message ) => ( {
+				role: message.role,
+				content: message.content,
+			} ) );
+		if ( messages.length === 0 ) {
+			return empty;
+		}
+		let turn: Turn | null = null;
+		if ( stored.stream ) {
+			try {
+				turn = parseStream( stored.stream );
+			} catch {
+				// A stream the service never finished is not an answer: the
+				// thread's words stay, its blocks do not.
+				turn = null;
+			}
+		}
+		return {
+			messages: turn
+				? [ ...messages, assistantMessage( turn ) ]
+				: messages,
+			turn,
+		};
+	} catch {
+		return empty;
+	}
 }
 
 /**

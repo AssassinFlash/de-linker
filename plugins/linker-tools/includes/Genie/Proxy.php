@@ -17,6 +17,9 @@ use WP_REST_Response;
  * POST linker-ai/v1/genie/turn streams the service's SSE. Locale, page
  * context and conversation_id are filled here; the browser does not
  * pick them (docs/specs/13-genie.md).
+ *
+ * GET linker-ai/v1/genie/conversation reads the conversation back, so a
+ * reload restores the thread instead of starting over (Thread).
  */
 class Proxy {
 
@@ -25,6 +28,11 @@ class Proxy {
 	 */
 	public const NAMESPACE = 'linker-ai/v1';
 	public const ROUTE     = '/genie/turn';
+
+	/**
+	 * Route that reads the stored thread back.
+	 */
+	public const THREAD_ROUTE = '/genie/conversation';
 
 	/**
 	 * Option that holds the Genie service URL (`just serve` writes it).
@@ -36,11 +44,32 @@ class Proxy {
 	 *
 	 * @param Conversations                                                        $conversations Conversation posts.
 	 * @param callable( string, array<string, mixed> ): (string|int|WP_Error)|null $fetch         Optional HTTP client for tests: a body string (turn), an int status (vote), or WP_Error.
+	 * @param Thread|null                                                          $thread        Conversation store; a default one is built when omitted.
+	 * @param UserContext|null                                                     $user_context  Identity handed to the service; a default one is built when omitted.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
-		private $fetch = null
-	) {}
+		private $fetch = null,
+		?Thread $thread = null,
+		?UserContext $user_context = null
+	) {
+		$this->thread       = $thread ?? new Thread();
+		$this->user_context = $user_context ?? new UserContext();
+	}
+
+	/**
+	 * The conversation store.
+	 *
+	 * @var Thread
+	 */
+	private readonly Thread $thread;
+
+	/**
+	 * The customer-identity seam.
+	 *
+	 * @var UserContext
+	 */
+	private readonly UserContext $user_context;
 
 	/**
 	 * Registers the routes; runs on rest_api_init.
@@ -89,6 +118,41 @@ class Proxy {
 				),
 			)
 		);
+		register_rest_route(
+			self::NAMESPACE,
+			self::THREAD_ROUTE,
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'conversation' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+	}
+
+	/**
+	 * The stored thread of this request's conversation, empty when there is none.
+	 *
+	 * Read-only by design: a request without a conversation gets an empty
+	 * answer, never a new conversation post (`Conversations::existing_id`).
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function conversation(): WP_REST_Response {
+		$id    = $this->conversations->existing_id();
+		$store = $this->thread->read( $id );
+		$reply = new WP_REST_Response(
+			array(
+				'conversation_id' => $id,
+				'messages'        => $store['messages'],
+				'stream'          => $store['stream'],
+			)
+		);
+		// The answer depends on the visitor's cookie: it must never be reused
+		// from a cache. Without this a browser that read the thread once (empty,
+		// before the first turn) serves that empty copy to the reload, and the
+		// conversation looks lost (measured 2026-10-11).
+		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
+		return $reply;
 	}
 
 	/**
@@ -115,15 +179,25 @@ class Proxy {
 			'page_context'    => is_array( $page ) ? $page : array( 'type' => 'other' ),
 			// `partner` is deliberately absent: this shell cannot know the
 			// customer's partner status, and a fake value would lie to the
-			// service. The user-context passthrough belongs to #16.
+			// service. `context` is the signed-in customer's short-lived
+			// token, so the service can ask about *their* inquiries without
+			// holding a WordPress session (UserContext).
 			'user'            => array(
 				'logged_in' => is_user_logged_in(),
+				'context'   => $this->user_context->mint(),
 			),
 		);
 		$stream = $this->post( rtrim( $base, '/' ) . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}
+		// An answered turn is the conversation's record: the thread the
+		// browser sent plus the answer, kept so a reload restores both.
+		$this->thread->record(
+			$conversation,
+			is_array( $body['messages'] ) ? $body['messages'] : array(),
+			(string) $stream
+		);
 		return new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,

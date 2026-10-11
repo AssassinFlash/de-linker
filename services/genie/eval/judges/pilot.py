@@ -33,6 +33,7 @@ from linker_judges.registry import JUDGES
 from linker_judges.rubric import questions_for  # noqa: F401  (qa/copy sets)
 from linker_judges.turns import (
     TURN_THRESHOLDS,
+    answer_with_offers,
     cascade_answers,
     turns_questions,
     turns_state,
@@ -220,18 +221,10 @@ def main(argv: list[str] | None = None) -> int:
         swap = SWAPS.get(name)
         has_candidates = swap is not None
         page = PAGE_PRODUCT.get(name)
-        recommended = [pid for pid in cards if pid != page]
-
-        roles = f"This page's product: {page}.\n" if page is not None else ""
-
-        def offer_line(ids: list[int], roles: str = roles) -> str:
-            return (
-                roles + f"Recommended products: {', '.join(str(pid) for pid in ids)}."
-            )
 
         item = {
             "question": QUESTIONS[name],
-            "answer": answer_text + "\n\n" + offer_line(recommended),
+            "answer": answer_with_offers(answer_text, page, cards),
             # Both judges read the whole replays. The 2026-10-11 recalibration
             # run measured the alternative - the first pass on a reference cut
             # to the offered cards - and it failed its purpose: the first-pass
@@ -242,17 +235,13 @@ def main(argv: list[str] | None = None) -> int:
             # turns.TURN_THRESHOLDS).
             "reference": reference,
             "cards": cards,
-            "answer_a": answer_text + "\n\n" + offer_line(recommended),
+            "answer_a": answer_with_offers(answer_text, page, cards),
             # The wrong-pick variant: the swapped id takes the swapped-out
             # card's role (a recommendation replaced by an unreferenced
             # product; for panel-r3spell the page product itself, which the
             # variant then misattributes).
-            "answer_b": answer_text
-            + "\n\n"
-            + (
-                offer_line([swap[2] if pid == swap[1] else pid for pid in recommended])
-                if swap
-                else offer_line(recommended)
+            "answer_b": answer_with_offers(
+                answer_text, page, cards, (swap[1], swap[2]) if swap else None
             ),
         }
         questions = turns_questions(has_candidates)

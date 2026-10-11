@@ -18,11 +18,12 @@ import { saveSolution } from '../configurator/api/solutions';
 import type { CardState } from '../shared/ProductCard';
 import type { GenieConfig } from './config';
 import {
+	assistantMessage,
+	readThread,
 	sendTurn,
 	type Block,
 	type CardsBlock,
 	type CompareBlock,
-	type TextBlock,
 	type Turn,
 	type TurnMessage,
 } from './api/turn';
@@ -77,17 +78,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					next,
 					{ type: config.pageType }
 				);
-				const assistant: TurnMessage = {
-					role: 'assistant',
-					content: answer.blocks
-						.filter(
-							( block ): block is TextBlock =>
-								block.type === 'text'
-						)
-						.map( ( block ) => block.text )
-						.join( ' ' ),
-					turnId: answer.meta?.turn_id,
-				};
+				const assistant = assistantMessage( answer );
 				setThread( next.concat( assistant ) );
 				setTurn( answer );
 				setPhase( 'ask' );
@@ -99,6 +90,29 @@ export function App( { config }: { config: GenieConfig } ) {
 		},
 		[ config, thread ]
 	);
+
+	// The conversation the browser already has comes back on mount: a reload,
+	// or opening Genie on another page of the site, shows the thread instead
+	// of an empty panel (docs/specs/13-genie.md).
+	useEffect( () => {
+		let cancelled = false;
+		void ( async () => {
+			const stored = await readThread(
+				config.threadUrl,
+				config.restNonce
+			);
+			if ( cancelled || stored.messages.length === 0 ) {
+				return;
+			}
+			setThread( stored.messages );
+			if ( stored.turn ) {
+				setTurn( stored.turn );
+			}
+		} )();
+		return () => {
+			cancelled = true;
+		};
+	}, [ config.threadUrl, config.restNonce ] );
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
