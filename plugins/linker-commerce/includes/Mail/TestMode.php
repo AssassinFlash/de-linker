@@ -33,11 +33,18 @@ final class TestMode {
 	public const DEFAULT_TO = 'chester@de-linker.com';
 
 	/**
-	 * The address every message goes to; '' while test mode is off.
+	 * The address every message goes to; '' while test mode is off. The option
+	 * is read through WordPress's own address rule: a stored value that is not
+	 * an address is not a switch (review 2026-10-11) — whatever wrote the
+	 * option, a corrupt value must not route mail anywhere.
 	 */
 	public function address(): string {
 		$address = get_option( self::OPTION, '' );
-		return is_string( $address ) ? (string) sanitize_email( $address ) : '';
+		if ( ! is_string( $address ) ) {
+			return '';
+		}
+		$address = (string) sanitize_email( $address );
+		return is_email( $address ) ? $address : '';
 	}
 
 	/**

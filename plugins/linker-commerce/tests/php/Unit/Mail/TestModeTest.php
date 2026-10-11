@@ -54,6 +54,12 @@ final class TestModeTest extends TestCase {
 		);
 		// WordPress's own rule: what is not an address comes back empty.
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => str_contains( $email, '@' ) ? trim( $email ) : '' ) );
+		// WordPress's own rule, and the installed version's: a domain without a
+		// dot is not an address (probed on the local instance, 2026-10-12).
+		WP_Mock::userFunction(
+			'is_email',
+			array( 'return' => static fn ( string $email ): string|false => 1 === preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/', $email ) ? $email : false )
+		);
 	}
 
 	/**
@@ -106,6 +112,22 @@ final class TestModeTest extends TestCase {
 
 		$this->assertFalse( $test_mode->enable( 'not an address' ), 'A non-address is refused.' );
 		$this->assertFalse( $test_mode->enabled() );
+	}
+
+	/**
+	 * A stored value that is not an address is not a switch: the read side
+	 * refuses it (review 2026-10-11) and mail goes to the real recipients
+	 * rather than to a broken value.
+	 */
+	public function test_a_stored_non_address_is_not_a_switch(): void {
+		$test_mode = new TestMode();
+		$this->options[ TestMode::OPTION ] = 'not@an-address';
+
+		$this->assertSame( '', $test_mode->address() );
+		$this->assertFalse( $test_mode->enabled() );
+
+		$message = $this->message();
+		$this->assertSame( $message, $test_mode->redirect( $message ) );
 	}
 
 	/**

@@ -1,0 +1,47 @@
+# #80 迁移（含 #73 locale 回填）实例全周期实跑 — 2026-10-12 00:15:54 +0800
+
+实例: ~/de-linker-local/t80（live snapshot：10 客户、60 订单、无审批状态、无 locale）
+命令: python3 tools/migrate/80-customers.py --wp ~/de-linker-local/t80/wp.sh <plan|apply --write|verify|plan>
+
+== plan ==
+10 customers: none 10
+    customer-18 (none)
+    customer-2 (none)
+    customer-3 (none)
+    customer-30 (none)
+    customer-31 (none)
+    customer-32 (none)
+    customer-33 (none)
+    customer-34 (none)
+    customer-35 (none)
+    customer-36 (none)
+plan: every account above would be set to approved
+plan: empty locales the run would fill: 0
+
+== apply --write ==
+written: 10 accounts set to approved
+locales: 0 filled from the customers' latest inquiries
+now: approved 10
+
+== verify ==
+verify: 10 customers, all approved
+verify exit=0
+
+== plan（复跑，幂等）==
+10 customers: approved 10
+    customer-18 (approved)
+    customer-2 (approved)
+    customer-3 (approved)
+    customer-30 (approved)
+    customer-31 (approved)
+    customer-32 (approved)
+    customer-33 (approved)
+    customer-34 (approved)
+    customer-35 (approved)
+    customer-36 (approved)
+plan: every account above would be set to approved
+plan: empty locales the run would fill: 0
+
+== rollback --write（恢复实例到 as-found）==
+removed: the state of 10 accounts
+now: none 10

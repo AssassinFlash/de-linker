@@ -12,7 +12,7 @@ namespace Linker\Commerce\Registration\Emails;
 use Linker\Commerce\Registration\Approval;
 
 /**
- * Sent when the team restricts an account: the catalogue and the open inquiry
+ * Sent when the team restricts an account: the products and the open inquiry
  * stay open, net prices and the Proforma request are paused, and the team's
  * reason says why.
  */

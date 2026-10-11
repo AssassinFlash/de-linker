@@ -166,7 +166,7 @@ final class LoginGateTest extends TestCase {
 
 	/**
 	 * A pending account reads the review gate: no sign-in, no Proforma, the
-	 * catalogue stays open.
+	 * products stay open.
 	 */
 	public function test_pending_html(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );

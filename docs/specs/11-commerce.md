@@ -42,8 +42,9 @@
 | 语言 | WP 用户 `locale`（注册时写入请求语言；迁移回填最近一次询盘的 `_linker_locale`） |
 | 权威 | 只经 `Approval::status()/sees_prices()` 读；三重 Gating（PriceDisplay / CommerceState / StoreApiPrices）与请求页 gate、网关过滤读同一权威，无第二实现 |
 
-## 迁移（切换时执行，#80 ④ 的载体）
-`python3 tools/migrate/73-approval.py --wp <wp-cli> apply --write`：存量客户全部置 `approved`（只填缺失，幂等），并把最近一次询盘的 `_linker_locale` 回填进空的用户 `locale`；`plan` 干跑、`verify` 校验。
+## 迁移（切换时执行，载体=#80 ④ 的 `tools/migrate/80-customers.py`）
+审批与语言回填合为一个迁移（#73/#80 契约裁定③：一条载体，两条并行脚本作废；#73 的 `73-approval.py` 删除）：
+`python3 tools/migrate/80-customers.py --wp <wp-cli> apply --write` 把存量客户全部置 `approved`（幂等），并把最近一次询盘的 `_linker_locale` 回填进空的用户 `locale`（已有 locale 不动，无询盘者留站点默认语言）；`plan` 干跑并打出台账（状态 + 将回填的 locale）、`verify` 校验全量 approved、`rollback --write` 只撤审批状态（locale 是注册本该写下的值，不回撤）。WordPress 侧 `80-customers.php`（`wp eval-file -`）读最近询盘走 Woo 的 `wc_get_orders`，HPOS 与 posts 存储同一路径。
 
 ## 原生优先的穷尽证明（AGENTS §5，逐项）
 - **审批状态机**：Woo 无账号审批概念（角色只有 customer，无 pending 账号、无审批 UI）；WP 原生存储（user meta）+ 原生登录拦截点（`wp_authenticate_user`）+ 原生会话终结（`WP_Session_Tokens`）即全部所需，自定义 `Approval` 只做规则与数据装配，零设计决策。
