@@ -128,10 +128,14 @@ mock-erp name:
         }
         echo json_encode( array( "products" => $products ) );
     ')"
+    # The channel ships dormant and the mock's key was this run's alone:
+    # take it back out even when the mock fails, so the instance is left
+    # exactly as the cutover finds it.
+    cleanup() {
+        PHP={{ php }} {{ linker_local }} wp "$name" linker-commerce stock-key --clear --user="$admin"
+    }
+    trap cleanup EXIT
     python3 "{{ justfile_directory() }}/tools/mock_erp.py" --base "$base" --key "$key" --payload "$payload"
-    # The channel ships dormant and the mock's key was this run's alone: take
-    # it back out, so the instance is left exactly as the cutover finds it.
-    PHP={{ php }} {{ linker_local }} wp "$name" linker-commerce stock-key --clear --user="$admin"
 
 # docs/specs/10-knowledge-index.md; `just index --help` lists the options.
 # Build Genie's document index on this Mac: hosted PDFs, Docling, chunks, vectors, SQLite.

@@ -270,7 +270,7 @@ final class BatchTest extends TestCase {
 	/**
 	 * WooCommerce's own rule: a product that manages stock carries the
 	 * status its quantity derives. A state that contradicts it is a per-row
-	 * error, never a silent no-op — the ERP pulling a product the catalogue
+	 * error, never a silent no-op — the ERP pulling a product the shop
 	 * would still list is the failure this channel must not make.
 	 */
 	public function test_state_on_managed_product_must_match_the_derived_status(): void {

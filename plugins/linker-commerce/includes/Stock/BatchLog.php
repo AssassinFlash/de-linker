@@ -11,7 +11,7 @@ namespace Linker\Commerce\Stock;
 
 /**
  * Keeps one row per accepted stock push, as a private post, so every write
- * an outside system made to the catalogue is on record with what it asked
+ * an outside system made to the shop is on record with what it asked
  * for and what each SKU got (ticket #69). The persistence follows the mail
  * queue (Mail\JobStore): the payload lives in post meta, which no content
  * filter rewrites; the rows are not shown in any admin screen.

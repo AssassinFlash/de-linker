@@ -297,7 +297,7 @@ final class StockTest extends IntegrationTestCase {
 		$pushed = wc_get_product( $product->get_id() );
 		$this->assertInstanceOf( \WC_Product::class, $pushed );
 		$this->assertFalse( $pushed->is_in_stock() );
-		$this->assertFalse( $pushed->is_visible(), 'The catalogue hides what the ERP pushed out of stock.' );
+		$this->assertFalse( $pushed->is_visible(), 'The shop hides what the ERP pushed out of stock.' );
 
 		$this->as_user( $this->customer()->get_id() );
 		wc_load_cart();

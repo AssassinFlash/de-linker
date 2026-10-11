@@ -346,7 +346,7 @@ final class CatalogFilters {
 	/**
 	 * The archive's products before the facets and before pagination: the
 	 * list the rail's counts describe, also when the page shows one slice.
-	 * Products WooCommerce hides from the catalogue (out of stock, ticket
+	 * Products WooCommerce hides from the shop (out of stock, ticket
 	 * #69's "only show in stock") are not in the list, so the rail's counts
 	 * and the facet filtering describe what the page can show.
 	 *
@@ -366,7 +366,7 @@ final class CatalogFilters {
 		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
 			$outofstock = wc_get_product_visibility_term_ids()['outofstock'] ?? 0;
 			if ( $outofstock ) {
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the same exclusion WooCommerce's own catalogue query applies.
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the same exclusion WooCommerce's own shop query applies.
 				$tax_query[] = array(
 					'taxonomy' => 'product_visibility',
 					'field'    => 'term_taxonomy_id',

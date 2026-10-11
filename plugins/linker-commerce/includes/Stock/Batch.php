@@ -137,7 +137,7 @@ final class Batch {
 		// quantity rules managed products, and `state` is the word for
 		// products without managed stock. A state that contradicts what the
 		// quantity derives is a per-row error, never a silent no-op: the ERP
-		// pulling a product that the catalogue would still list is the
+		// pulling a product that the shop would still list is the
 		// failure this channel must not make.
 		if ( $product->managing_stock() ) {
 			$probe = wc_get_product( $product_id );
