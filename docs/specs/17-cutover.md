@@ -20,10 +20,8 @@
 ## 验收
 - [ ] 线上全部英文页面与 150 个德语 URL 200；`/design-canvas/` 301。
 - [ ] Genie R1/R2 线上通过；询盘流程线上通过；**测试邮件只发一封、只发 `chester@de-linker.com`**（AGENTS.md 测试邮件纪律，业主 2026-10-11：任何测试场景的 To/Cc/Bcc 一律重写为这一个人，一封送达即证明投递链路畅通）；多收件路由（客户副本、团队、Bcc）的正确性以 **Outbox 队列的收件人数据**断言——写在队列里即正确，不做多封实发。
-- [ ] `wp plugin list` 无旧插件；Snippets 表不存在或为空；插件目录无残留。
 - [ ] `wp plugin list` 无旧插件；Snippets 表不存在或为空；插件目录无残留；`wp-content/mu-plugins/` 只剩 LiveCanvas 自带、主机平台的两件与新记录件。
 - [ ] 旧地址 301 抽验通过（三张表各若干条 EN/DE，`data/legacy-redirects.json`）；存量客户全部为已通过（`tools/migrate/80-customers.py verify`）。
-- [ ] 测试邮件只发一封、只发 chester@de-linker.com（AGENTS.md 测试邮件纪律，业主 2026-10-11）；多收件路由（客户副本/团队/Bcc）以 Outbox 队列收件人数据断言，不做多封实发。
 - [ ] 视觉验收：首页、产品页、配置器、Genie、账户 × EN/DE × 1440/390（线上）。
 
 ## 变更记录

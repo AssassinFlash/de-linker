@@ -175,7 +175,7 @@ def deploy_mu_plugins(target: Target, *, repository: Path) -> list[str]:
     if not files:
         raise CutoverError(
             f"{source} carries no must-use plugin — the switch deploys the error "
-            "recorder #80 ships there"
+            "recorder PR #86 (ticket #80) ships there"
         )
     actions: list[str] = []
     for path in files:

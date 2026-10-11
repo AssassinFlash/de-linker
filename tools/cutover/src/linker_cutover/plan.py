@@ -89,8 +89,8 @@ LEGACY_MU_PLUGINS = ("linker-i18n-mu-loader.php",)
 # `linker-error-recorder.php` is NOT removed: the host runs with `log_errors`
 # off and no readable error log, so it is the only thing that answers "why did
 # the site break", and the switch replaces it in place instead — the current
-# file (mu-plugins/linker-error-recorder.php, #80) ships over the same name,
-# and only its own older backups go with the rest of the leftovers.
+# file (mu-plugins/linker-error-recorder.php, 票 #80 / PR #86) ships over the
+# same name, and only its own older backups go with the rest of the leftovers.
 
 # Dropped after the backup; nothing in the new tree reads them. The names are
 # relative to the site's own table prefix (read with `wp db prefix`), so the
