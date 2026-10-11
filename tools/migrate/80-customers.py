@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """#80 migration: the accounts that existed before the cutover are approved.
 
-The site's accounts carry an approval state, `linker_account_status`: what a
+The site's accounts carry an approval state, `linker_approval_status`: what a
 visitor becomes when they register is `pending`, and the three states the team
 sets on an account are `approved`, `restricted` and `rejected`. That state
 belongs to the account approval of the commerce chain; this migration is the
@@ -52,7 +52,7 @@ MARKER = "@@80-customers@@"
 # was already here gets. One place, because the writing of this state and the
 # reading of it (the account approval of the commerce chain) must not drift:
 # docs/specs/17-cutover.md step 4 names the same key.
-META_KEY = "linker_account_status"
+META_KEY = "linker_approval_status"
 APPROVED = "approved"
 
 # A PHP diagnostic the WP-CLI phar may print into stdout ahead of the value

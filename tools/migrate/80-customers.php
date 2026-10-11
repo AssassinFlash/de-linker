@@ -10,7 +10,7 @@
  * marker on stdout; a failure is an exception, which WP-CLI reports with a
  * non-zero exit status.
  *
- * The state is the user meta `linker_account_status`: the account approval of
+ * The state is the user meta `linker_approval_status`: the account approval of
  * the accounts, whose untaken state is `pending` for every registration the
  * site itself takes. The cutover run sets the accounts that were already here
  * to `approved` (docs/specs/17-cutover.md step 4), and `rollback` removes the
