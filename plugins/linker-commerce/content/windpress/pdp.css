@@ -1408,3 +1408,47 @@ body:has(#tv-storefront-pdp) {
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-pairing-chips .pdp-doc-meta { line-height: 16px; }
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-pairing { border-radius: 18px; }
 }
+
+/*
+ * Owner-approved optimizations (owner ruling 2026-10-11; ledger and trialled
+ * CSS: docs/acceptance/2026-10-11/16/working/proposals/README.md). The four
+ * accepted proposals, exactly as trialled there: where this file now differs
+ * from the live page it is a ratified exemption, not a replica defect.
+ *   P1: ≥1200px the technical-data section is one column and its summary two.
+ *   P2: ≥1200px the compatibility records fill the row (auto-fill 280px).
+ *   P3: ≥1200px the FAQ is two columns with its title across the top.
+ *   P4: ≤480px the phone key-figure strip is two columns of 174px.
+ */
+@media (min-width: 1200px) {
+	#tv-storefront-pdp .pdp-stats-layout {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 24px;
+	}
+
+	#tv-storefront-pdp .pdp-stats-summary {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 40px;
+	}
+
+	#tv-storefront-pdp .pdp-pairings {
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	}
+
+	#tv-storefront-pdp .pdp-faqs {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 24px;
+	}
+
+	#tv-storefront-pdp .pdp-faqs > .pdp-section-title {
+		grid-column: 1 / -1;
+	}
+}
+
+/* P4 must follow the ≤860px block above: same specificity, later wins. */
+@media (max-width: 480px) {
+	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-spec-list {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
