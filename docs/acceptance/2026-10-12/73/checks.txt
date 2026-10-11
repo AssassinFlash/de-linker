@@ -1,0 +1,43 @@
+# #73 修复轮（二）检查证据 — 2026-10-12 00:35:21 +0800
+
+## just check（/tmp/t73-check3.log 尾）
+Success: no issues found in 12 source files
+cd /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t73/plugins/linker-tools && npm run --silent build:check
+build/ matches its sources.
+check exit=0
+
+## just test（/tmp/t73-test3.log 汇总行）
+== plugins/linker-commerce: PHPUnit
+Tests: 727, Assertions: 3488, Skipped: 26.
+== plugins/linker-i18n: PHPUnit
+OK (129 tests, 286 assertions)
+== plugins/linker-tools: PHPUnit
+OK (50 tests, 1143 assertions)
+== mu-plugins: PHPUnit
+OK (6 tests, 23 assertions)
+ Test Files  14 passed (14)
+      Tests  61 passed (61)
+  10 passed (37.2s)
+== services/genie: pytest
+============================= 141 passed in 3.11s ==============================
+== services/engine: pytest
+============================= 112 passed in 8.80s ==============================
+== tools/local: pytest
+======================== 91 passed in 142.48s (0:02:22) ========================
+== tools/migrate: pytest
+======================== 21 passed, 8 skipped in 1.69s =========================
+== tools/faq: pytest
+============================== 9 passed in 0.02s ===============================
+============================= 103 passed in 48.05s =============================
+============================== 54 passed in 2.48s ==============================
+test exit=0
+
+## 集成套件（真实例 t73）
+命令: cd plugins/linker-commerce && LINKER_WP_ROOT=$HOME/de-linker-local/t73/wordpress /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit -c phpunit.integration.xml.dist
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+..................                                                18 / 18 (100%)
+
+Time: 00:09.665, Memory: 170.00 MB
+
+OK (18 tests, 274 assertions)

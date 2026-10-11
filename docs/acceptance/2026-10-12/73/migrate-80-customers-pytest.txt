@@ -1,4 +1,4 @@
-# 80-customers 真实例测试（LINKER_MIGRATE_TEST_WP=~/de-linker-local/t80/wp.sh）— 2026-10-12 00:16:03 +0800
+# 80-customers 真实例测试（LINKER_MIGRATE_TEST_WP=~/de-linker-local/t80/wp.sh）— 2026-10-12 00:34:56 +0800
 # 命令: LINKER_MIGRATE_TEST_WP=$HOME/de-linker-local/t80/wp.sh uv run --locked pytest tests/test_80_customers_wordpress.py -v -s
 
 ============================= test session starts ==============================
@@ -70,4 +70,4 @@ now: none 12
 
 PASSED
 
-============================== 3 passed in 20.58s ==============================
+============================== 3 passed in 20.71s ==============================

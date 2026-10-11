@@ -1,4 +1,4 @@
-# #80 迁移（含 #73 locale 回填）实例全周期实跑 — 2026-10-12 00:15:54 +0800
+# #80 迁移（含 #73 locale 回填）实例全周期实跑 — 2026-10-12 00:34:50 +0800
 
 实例: ~/de-linker-local/t80（live snapshot：10 客户、60 订单、无审批状态、无 locale）
 命令: python3 tools/migrate/80-customers.py --wp ~/de-linker-local/t80/wp.sh <plan|apply --write|verify|plan>
