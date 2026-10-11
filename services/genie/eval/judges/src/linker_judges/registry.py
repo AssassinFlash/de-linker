@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import os
 
-from .judges import AIHUBMIX, DEEPSEEK, OPENROUTER, Judge
+from .judges import DEEPSEEK, OPENROUTER, Judge
 
 
 def _local(name: str, port: int) -> str:
@@ -56,9 +56,9 @@ JUDGES: dict[str, Judge] = {
         # temperature is sent; json_object is measured to work on the direct
         # endpoint (docs/acceptance/2026-10-11/13/).
         Judge("deepseek", "chat", "deepseek-flash", DEEPSEEK, 0.30, 1.20, None, True),
-        # Chat judges; temperature 0 where the model accepts it (claude-haiku-5-5 rejects
-        # the parameter, and aihubmix degrades its JSON mode, so it gets neither).
-        Judge("haiku", "chat", "claude-haiku-5-5", AIHUBMIX, 0.1, 0.5, None, False),
+        # (Removed 2026-10-11: the aihubmix chat judges are gone — the model
+        # routing law allows no aihubmix endpoint by default and no third-party
+        # models; the bake-off history lives in git.)
         # Open decision models (Apache-2.0, ggml-org GGUF conversions; judge-models.md).
         Judge(
             "julia1",

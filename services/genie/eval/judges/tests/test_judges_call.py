@@ -34,7 +34,13 @@ def test_the_openrouter_jev_posts_to_systemone_as_jev_itself(
         return Response(
             {
                 "model": "typesafe/jev-1.13-20260917",
-                "answers": {"grounded": {"type": "score", "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}, "confidence": 0.95}},
+                "answers": {
+                    "grounded": {
+                        "type": "score",
+                        "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0},
+                        "confidence": 0.95,
+                    }
+                },
                 "usage": {"input_tokens": 314, "output_tokens": 23, "cost": 0.01},
             },
             1.0,
