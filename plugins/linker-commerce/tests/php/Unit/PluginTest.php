@@ -14,6 +14,7 @@ use Linker\Commerce\Admin\FaqsMetaBox;
 use Linker\Commerce\Admin\FiguresMetaBox;
 use Linker\Commerce\Catalog\EngineeringFeedController;
 use Linker\Commerce\Catalog\SelectionFactsController;
+use Linker\Commerce\Health\Monitor;
 use Linker\Commerce\Plugin;
 use Linker\Commerce\Storefront\CatalogFilters;
 use Linker\Commerce\Storefront\ProductSchema;
@@ -65,6 +66,9 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( new AnyInstance( Storefront::class ), 'assets' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( ProductSchema::class ), 'print_block' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'woocommerce_show_page_title', '__return_false' );
+		WP_Mock::expectActionAdded( 'init', array( new AnyInstance( Monitor::class ), 'schedule' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( Monitor::HOOK, array( new AnyInstance( Monitor::class ), 'run' ) ); // @phpstan-ignore argument.type
+		WP_Mock::userFunction( 'register_deactivation_hook' );
 
 		$plugin->register();
 

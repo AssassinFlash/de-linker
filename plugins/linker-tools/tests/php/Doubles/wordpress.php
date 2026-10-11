@@ -45,7 +45,26 @@ if ( ! class_exists( 'WP_Error' ) ) {
 
 if ( ! class_exists( 'WP_User' ) ) {
 	class WP_User {
-		public $ID = 0;
+		public $ID         = 0;
+		public $user_email = '';
+	}
+}
+
+if ( ! class_exists( 'WP_Post' ) ) {
+	class WP_Post {
+		public $ID            = 0;
+		public $post_type     = 'post';
+		public $post_author   = '0';
+		public $post_title    = '';
+		public $post_status   = 'publish';
+		public $post_content  = '';
+		public $post_name     = '';
+		public $post_date_gmt = '1970-01-01 00:00:00';
+		public function __construct( $post ) {
+			foreach ( get_object_vars( $post ) as $key => $value ) {
+				$this->$key = $value;
+			}
+		}
 	}
 }
 

@@ -14,6 +14,7 @@ use Linker\Commerce\Admin\FaqsMetaBox;
 use Linker\Commerce\Admin\FiguresMetaBox;
 use Linker\Commerce\Catalog\EngineeringFeedController;
 use Linker\Commerce\Catalog\SelectionFactsController;
+use Linker\Commerce\Health\Monitor;
 use Linker\Commerce\Storefront\CatalogFilters;
 use Linker\Commerce\Storefront\ProductSchema;
 use Linker\Commerce\Storefront\ProductView;
@@ -67,6 +68,7 @@ final class Plugin {
 		$filters->register();
 		( new Storefront( $this->file ) )->register();
 		( new ProductSchema() )->register();
+		( new Monitor( $this->file, new Settings\Options() ) )->register();
 	}
 
 	/**

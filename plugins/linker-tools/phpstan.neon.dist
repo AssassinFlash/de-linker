@@ -11,3 +11,7 @@ parameters:
 	excludePaths:
 		# Stand-ins for WordPress classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
+	scanFiles:
+		# Action Scheduler (as_schedule_single_action() and friends), bundled
+		# with WooCommerce; the retention and its tests schedule through it.
+		- vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php

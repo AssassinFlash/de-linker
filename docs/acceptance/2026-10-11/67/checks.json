@@ -1,0 +1,65 @@
+{
+  "ticket": 67,
+  "date": "2026-10-11",
+  "instance": {
+    "name": "t67",
+    "wordpress": "http://127.0.0.1:8936",
+    "engine": "http://127.0.0.1:8937",
+    "genie": "http://127.0.0.1:8938",
+    "assembly": "just up t67; snapshot 20261010-0033 via `just pull load t67 20261010-0033 --live-code` (ok:true, 106 published products, 2755 attachments, 0 missing files, 0 live-address leftovers); plugins per PR #62 form: linker-commerce/linker-i18n/linker-tools symlinked to this checkout and active, terravolt-b2b-core + linker-ai-assistant inactive on disk, polylang + redis-cache active; just serve t67"
+  },
+  "checks": [
+    {
+      "name": "unit: RetentionTest (linker-tools)",
+      "command": "cd plugins/linker-tools && php vendor/bin/phpunit --filter RetentionTest",
+      "result": "OK (10 tests, 222 assertions)"
+    },
+    {
+      "name": "unit: MonitorTest (linker-commerce)",
+      "command": "cd plugins/linker-commerce && php vendor/bin/phpunit --filter MonitorTest",
+      "result": "OK (7 tests, 27 assertions; the suite also picks the self-skipping integration HealthMonitorTest under the unit bootstrap)"
+    },
+    {
+      "name": "integration: ConversationRetentionTest (real instance t67)",
+      "command": "cd plugins/linker-tools && LINKER_WP_ROOT=~/de-linker-local/t67/wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist",
+      "result": "OK (2 tests, 17 assertions): cron hook fires the sweep; expired guest gets exactly one pending delete job; fresh and registered-user threads get none; ActionScheduler_QueueRunner runs the job and the expired thread is gone via wp_delete_post; claim-after-scan keeps the thread"
+    },
+    {
+      "name": "integration: HealthMonitorTest (real instance t67)",
+      "command": "cd plugins/linker-commerce && LINKER_WP_ROOT=~/de-linker-local/t67/wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist --filter HealthMonitorTest",
+      "result": "OK (1 test, 8 assertions): cron hook fires the check; dead genie address produces exactly one message out of the Outbox to the contact person with the settings' Bcc; healthy pair produces none; daily event on the schedule"
+    },
+    {
+      "name": "instance: cron events scheduled",
+      "command": "just wp t67 cron event list",
+      "result": "linker_commerce_health_check and linker_tools_conversation_sweep both listed with '1 day' recurrence (also visible: stale linker_ai_conversation_cleanup from the inactive old plugin, fires into the void, disappears with the old system at cutover)"
+    },
+    {
+      "name": "instance: healthy run via the WP-Cron CLI path",
+      "command": "just wp t67 cron event run linker_commerce_health_check && just wp t67 cron event run linker_tools_conversation_sweep",
+      "result": "both executed; mail file count unchanged (5 -> 5): healthy services send nothing"
+    },
+    {
+      "name": "instance: failure run via the WP-Cron CLI path",
+      "command": "just wp t67 option update linker_genie_url http://127.0.0.1:9 && just wp t67 cron event run linker_commerce_health_check (option restored afterwards)",
+      "result": "exactly one new .eml, To: sales@de-linker.com (the contact person's fallback with the snapshot's empty contact option), Subject: The Genie service failed its health check; captured as alert-en.eml"
+    },
+    {
+      "name": "instance: DE locale rendering of the alert",
+      "command": "just wp t67 eval 'switch_to_locale(\"de_DE_formal\"); …__(subject/body)…'",
+      "result": "subject 'Gesundheitsprüfung fehlgeschlagen: Dienst Genie', body fully German per the copy review's final wording (DE loads from the rebuilt .mo)"
+    },
+    {
+      "name": "gettext",
+      "command": "msgfmt --check-format -o linker-commerce-de_DE_formal.mo linker-commerce-de_DE_formal.po; msgfmt --check-format -o /dev/null linker-commerce.pot",
+      "result": "both pass; po and pot each carry the 7 new msgids (380 total)"
+    },
+    {
+      "name": "pre-existing integration failure found and fixed (not from this diff)",
+      "command": "ProformaTest::test_two_concurrent_issues_open_one_proforma failed; stashed this branch's diff and reran on clean base e2b7a25: same failure. Root cause probe (standalone issuer subprocess against t67): 'PHP Fatal error: Allowed memory size of 134217728 bytes exhausted … in object-cache.php' — the test's spawned processes read the CLI php.ini (128M) while the test process gets 2048M from phpunit.integration.xml.dist, so the winner died after taking the lock and its buffered stdout was lost (the pair read as '', 'REFUSED …').",
+      "result": "fixed in ProformaTest::issue_concurrently by spawning with '-d memory_limit=2048M' (same rationale as the integration xml's own comment); full commerce integration suite then OK (7 tests, 93 assertions); t67 restored (probe orders 6649/6650/6651 deleted via HPOS, probe proforma files removed, bank options deleted — the snapshot DB holds no linker_commerce options, verified against db.sql.gz)"
+    }
+  ],
+  "copy_review": "docs/acceptance/2026-10-11/67/copy-review.md",
+  "evidence_mail": "docs/acceptance/2026-10-11/67/alert-en.eml"
+}
