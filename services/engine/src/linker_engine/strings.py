@@ -14,7 +14,7 @@ import math
 from dataclasses import dataclass
 
 from . import rules
-from .catalog import Product, PvModule
+from .products import Product, PvModule
 
 
 @dataclass(frozen=True)

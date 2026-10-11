@@ -6,8 +6,8 @@ import pytest
 from pypdf import PdfReader
 
 from linker_engine import pdf, report, residential, rules
+from linker_engine.engine import Engine
 from linker_engine.models import Report, ResidentialInput
-from linker_engine.products import Engine
 from linker_engine.roof.service import ROOF_ASSUMPTIONS
 
 # A 2 x 1 px PNG, written by hand so the test needs no image tool.

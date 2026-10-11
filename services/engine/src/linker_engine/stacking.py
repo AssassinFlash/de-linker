@@ -13,8 +13,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from .catalog import Product
 from .compatibility import PairResult
+from .products import Product
 
 
 @dataclass(frozen=True)

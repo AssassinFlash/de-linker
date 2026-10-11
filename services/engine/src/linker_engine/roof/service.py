@@ -16,8 +16,8 @@ from shapely.geometry import Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from .. import geo
-from ..catalog import PvModule
 from ..models import RoofPackRequest, RoofPlaneResult, RoofRequest, RoofResult
+from ..products import PvModule
 from ..texts import t
 from . import lod2
 from .citygml import RoofPlane

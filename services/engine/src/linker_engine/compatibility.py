@@ -17,7 +17,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
 
-from .catalog import validate
+from .products import validate
 
 Verdict = Literal["released", "released_with_accessory", "not_released", "unknown"]
 _STRICTNESS: dict[str, int] = {
