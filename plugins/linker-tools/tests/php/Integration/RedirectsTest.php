@@ -142,6 +142,27 @@ final class RedirectsTest extends SiteTestCase {
 	}
 
 	/**
+	 * The Advisor's retired addresses go to the shop page of their own
+	 * language: the page was the old assistant as a full page, the assistant
+	 * is Genie now, and the shop is where its work starts (#66;
+	 * /de/linker-berater/ is the live sitemap's German address,
+	 * /de/linker-advisor/ the English slug under /de/ that the old plugin
+	 * resolved as well).
+	 */
+	public function test_the_retired_advisor_addresses_go_to_the_shop(): void {
+		$this->assertRedirects( '/linker-advisor/', '/products/' );
+		$this->assertRedirects( '/de/linker-berater/', '/de/produkte/' );
+		$this->assertRedirects( '/de/linker-advisor/', '/de/produkte/' );
+	}
+
+	/**
+	 * The compare page answers for itself: no retired address claims it.
+	 */
+	public function test_the_compare_page_answers_for_itself(): void {
+		$this->assertStays( '/compare-products/', 200 );
+	}
+
+	/**
 	 * Live addresses stay where they are, and an unknown address stays a 404
 	 * rather than becoming a redirect.
 	 */

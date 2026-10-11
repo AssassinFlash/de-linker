@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-11T11:27:07+00:00\n"
+"POT-Creation-Date: 2026-10-11T16:15:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -233,6 +233,8 @@ msgstr ""
 #: includes/Account/DocumentDownload.php:136
 #: includes/Admin/FaqsMetaBox.php:73
 #: includes/Admin/FiguresMetaBox.php:78
+#: includes/Catalog/DocumentLibrary.php:118
+#: includes/Presentation/LibraryPage.php:167
 #: templates/myaccount/linker-documents.php:23
 #: templates/myaccount/linker-documents.php:31
 msgid "Document"
@@ -443,6 +445,35 @@ msgstr ""
 msgid "Figures %s kept their previous value: a changed value needs the document and the page it is printed on."
 msgstr ""
 
+#: includes/Catalog/Comparison.php:221
+#: includes/Storefront/ProductView.php:233
+msgid "Net price after partner sign-in"
+msgstr ""
+
+#: includes/Catalog/Comparison.php:224
+#: includes/Storefront/ProductView.php:65
+msgid "In stock"
+msgstr ""
+
+#: includes/Catalog/Comparison.php:225
+#: includes/Storefront/ProductView.php:65
+msgid "Currently unavailable"
+msgstr ""
+
+#. translators: 1: document title, 2: page number.
+#: includes/Catalog/DocumentLibrary.php:207
+#: includes/Presentation/Shortcodes.php:104
+#, php-format
+msgid "%1$s, p. %2$d"
+msgstr ""
+
+#. translators: %d: page number.
+#: includes/Catalog/DocumentLibrary.php:213
+#: includes/Presentation/Shortcodes.php:110
+#, php-format
+msgid "p. %d"
+msgstr ""
+
 #: includes/Catalog/EngineeringFeedController.php:72
 msgid "GMT timestamp or ISO-8601 moment; only products modified after it are returned."
 msgstr ""
@@ -538,7 +569,7 @@ msgid "Rated AC power the product data states in kVA; present only then."
 msgstr ""
 
 #: includes/Digest/DigestEmail.php:45
-#: includes/Digest/DigestEmail.php:81
+#: includes/Digest/DigestEmail.php:82
 msgid "Daily digest"
 msgstr ""
 
@@ -546,7 +577,7 @@ msgstr ""
 msgid "Sent to the team mailbox, with blind copies, every morning at 9:00 (Berlin time)."
 msgstr ""
 
-#: includes/Digest/DigestEmail.php:74
+#: includes/Digest/DigestEmail.php:75
 msgid "Daily digest, {date}"
 msgstr ""
 
@@ -565,7 +596,7 @@ msgid "No email failed to send."
 msgstr ""
 
 #. translators: %d: number of hours.
-#: includes/Digest/Format.php:63
+#: includes/Digest/Format.php:64
 #, php-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
@@ -573,7 +604,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of days.
-#: includes/Digest/Format.php:67
+#: includes/Digest/Format.php:68
 #, php-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
@@ -584,25 +615,25 @@ msgstr[1] ""
 msgid "Inquiries waiting for a Proforma invoice"
 msgstr ""
 
-#: includes/Digest/InquiriesAwaitingProforma.php:83
+#: includes/Digest/InquiriesAwaitingProforma.php:88
 msgid "No inquiry is waiting for more than 24 hours."
 msgstr ""
 
 #. translators: 1: inquiry number, 2: customer's company.
-#: includes/Digest/InquiriesAwaitingProforma.php:98
-#: includes/Digest/ProformasAwaitingReply.php:103
+#: includes/Digest/InquiriesAwaitingProforma.php:102
+#: includes/Digest/ProformasAwaitingReply.php:100
 #, php-format
 msgid "Inquiry #%1$s – %2$s"
 msgstr ""
 
-#: includes/Digest/InquiriesAwaitingProforma.php:103
-#: includes/Digest/ProformasAwaitingReply.php:108
+#: includes/Digest/InquiriesAwaitingProforma.php:107
+#: includes/Digest/ProformasAwaitingReply.php:105
 #: templates/emails/linker-new-inquiry.php:33
 msgid "Open the inquiry"
 msgstr ""
 
 #. translators: 1: date, 2: time, 3: age.
-#: includes/Digest/InquiriesAwaitingProforma.php:106
+#: includes/Digest/InquiriesAwaitingProforma.php:110
 #, php-format
 msgid "Received on %1$s at %2$s (%3$s)"
 msgstr ""
@@ -611,12 +642,12 @@ msgstr ""
 msgid "Proforma invoices without a reply"
 msgstr ""
 
-#: includes/Digest/ProformasAwaitingReply.php:89
+#: includes/Digest/ProformasAwaitingReply.php:86
 msgid "No Proforma invoice has waited more than 3 days for a reply."
 msgstr ""
 
 #. translators: 1: Proforma number, 2: date, 3: time, 4: age.
-#: includes/Digest/ProformasAwaitingReply.php:111
+#: includes/Digest/ProformasAwaitingReply.php:108
 #, php-format
 msgid "Proforma invoice %1$s issued on %2$s at %3$s (%4$s)"
 msgstr ""
@@ -807,6 +838,132 @@ msgstr ""
 msgid "Queued emails"
 msgstr ""
 
+#. translators: %d: maximum number of products in a comparison.
+#: includes/Presentation/ComparePage.php:178
+#, php-format
+msgid "Only the first %d products are shown."
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:185
+msgid "Choose products to compare their specifications."
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:188
+msgid "Clear comparison"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:189
+msgid "Product comparison table"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:191
+#: includes/Storefront/ProductView.php:511
+#: templates/myaccount/linker-saved-solutions.php:29
+#: templates/myaccount/linker-saved-solutions.php:41
+msgid "Products"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:199
+msgid "Remove"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:204
+msgid "Item number"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:205
+msgid "Net price"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:206
+msgid "Availability"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:290
+msgid "Compare"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:332
+#: includes/Storefront/ProductView.php:193
+msgid "Home"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:333
+#: includes/Storefront/ProductView.php:193
+msgid "Commercial"
+msgstr ""
+
+#. translators: %d: number of documents of the brand.
+#: includes/Presentation/LibraryPage.php:66
+#, php-format
+msgid "%d document"
+msgid_plural "%d documents"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of answers of the brand.
+#: includes/Presentation/LibraryPage.php:98
+#, php-format
+msgid "%d answer"
+msgid_plural "%d answers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Presentation/LibraryPage.php:130
+#: templates/myaccount/linker-documents.php:25
+msgid "Download"
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/Presentation/LibraryPage.php:144
+#, php-format
+msgid "covers %s"
+msgstr ""
+
+#. translators: %d: number of products.
+#: includes/Presentation/LibraryPage.php:149
+#, php-format
+msgid "covers %d product"
+msgid_plural "covers %d products"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Presentation/LibraryPage.php:161
+msgid "Datasheet"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:162
+msgid "Manual"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:163
+msgid "Certificate"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:164
+msgid "Compatibility"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:165
+msgid "Warranty"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:166
+msgid "Brochure"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:180
+msgid "English"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:181
+msgid "German"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:182
+msgid "Multilingual"
+msgstr ""
+
 #: includes/Presentation/LoginGate.php:47
 msgid "Empty solution draft"
 msgstr ""
@@ -847,18 +1004,6 @@ msgstr ""
 
 #: includes/Presentation/Shortcodes.php:95
 msgid "Product questions"
-msgstr ""
-
-#. translators: 1: document title, 2: page number.
-#: includes/Presentation/Shortcodes.php:104
-#, php-format
-msgid "%1$s, p. %2$d"
-msgstr ""
-
-#. translators: %d: page number.
-#: includes/Presentation/Shortcodes.php:110
-#, php-format
-msgid "p. %d"
 msgstr ""
 
 #. translators: %s: date.
@@ -1188,14 +1333,6 @@ msgstr ""
 msgid "Over 30 kW"
 msgstr ""
 
-#: includes/Storefront/ProductView.php:65
-msgid "In stock"
-msgstr ""
-
-#: includes/Storefront/ProductView.php:65
-msgid "Currently unavailable"
-msgstr ""
-
 #: includes/Storefront/ProductView.php:67
 #: includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:42
@@ -1212,14 +1349,6 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-#: includes/Storefront/ProductView.php:193
-msgid "Home"
-msgstr ""
-
-#: includes/Storefront/ProductView.php:193
-msgid "Commercial"
-msgstr ""
-
 #: includes/Storefront/ProductView.php:196
 msgid "Grid phases"
 msgstr ""
@@ -1231,16 +1360,6 @@ msgstr ""
 
 #: includes/Storefront/ProductView.php:206
 msgid "Energy capacity"
-msgstr ""
-
-#: includes/Storefront/ProductView.php:233
-msgid "Net price after partner sign-in"
-msgstr ""
-
-#: includes/Storefront/ProductView.php:511
-#: templates/myaccount/linker-saved-solutions.php:29
-#: templates/myaccount/linker-saved-solutions.php:41
-msgid "Products"
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:40
@@ -1655,10 +1774,6 @@ msgstr ""
 
 #: templates/myaccount/linker-documents.php:15
 msgid "Your Proforma invoices and the design reports of your saved solutions will appear here."
-msgstr ""
-
-#: templates/myaccount/linker-documents.php:25
-msgid "Download"
 msgstr ""
 
 #: templates/myaccount/linker-documents.php:33

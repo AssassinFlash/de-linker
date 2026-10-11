@@ -14,10 +14,10 @@ use WP_Term;
 
 /**
  * Sends the addresses the site retired — the tool entries this site itself
- * retired (#12), and the addresses the site before it retired
- * (data/legacy-redirects.json, extracted 2026-10-11: 255 product slugs, 31
- * category slugs, 18 retired page paths, the /shop/ archive and the retired
- * /checkout/ slug) — to what answers them today.
+ * retired (#12; the Advisor page #66), and the addresses the site before it
+ * retired (data/legacy-redirects.json, extracted 2026-10-11: 255 product
+ * slugs, 31 category slugs, 18 retired page paths, the /shop/ archive and
+ * the retired /checkout/ slug) — to what answers them today.
  *
  * The maps are data, not code: the JSON file holds them, this class only
  * dispatches. Product and category requests are read from WordPress's own
