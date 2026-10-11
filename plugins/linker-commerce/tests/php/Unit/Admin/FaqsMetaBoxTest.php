@@ -315,8 +315,10 @@ final class FaqsMetaBoxTest extends TestCase {
 	 * @param array<string, string> $row   Fields.
 	 */
 	private function row( int $index, array $row ): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- the request a save test builds; the box's own sanitizing is what is under test.
+		$_POST['linker_faqs'] = is_array( $_POST['linker_faqs'] ?? null ) ? $_POST['linker_faqs'] : array();
 		foreach ( array( 'question', 'answer', 'question_de', 'answer_de', 'document', 'page' ) as $field ) {
-			$_POST[ "linker_faqs[{$index}][{$field}]" ] = $row[ $field ] ?? '';
+			$_POST['linker_faqs'][ $index ][ $field ] = $row[ $field ] ?? '';
 		}
 	}
 

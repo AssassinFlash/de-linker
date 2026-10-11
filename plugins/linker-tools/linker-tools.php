@@ -35,6 +35,6 @@ $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConvention
 	new SiteChrome( __FILE__ ),
 	$conversations,
 	new Proxy( $conversations ),
-	new Entries(),
+	new Entries( __FILE__ ),
 	new Retention( __FILE__ )
 ) )->register();

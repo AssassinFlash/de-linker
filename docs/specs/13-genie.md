@@ -28,10 +28,41 @@
 - 提示词 `prompts/{en,de}/system.md`：范围、口径、追问顺序、"每轮最多一个追问"、"不写数字"。
 - 日志：每轮工具调用、核验结果、模型元数据、用户点赞/点踩（SQLite）。发布：`ops/release.sh`（版本目录 + current 软链 + 回滚）。
 
+### C 之后：产品分类页的搜索框（票 #68）
+
+markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，三件各自可独立复核：
+
+- **芯片（可挂载部件）**：`[linker_genie_ask]`（`Linker\Tools\Genie\Entries::ask_chip()`）
+  打印一个 `hidden` 的 `button`（`data-linker-genie-open data-linker-ask-genie`，标签 "Ask Genie"
+  / "Genie fragen"）。挂载点=archive 模板里 `[linker_catalog_head]` 的 `.wb-bar`（搜索表单旁；
+  #16 集成）。不带 JS 时它一直隐藏，搜索框就是原生表单。
+- **JS**：`plugins/linker-tools/assets/search-ask.js`（纯 asset，无构建）。绑定 `#search-box`
+  （线上锚点）与芯片；问句判定=含 `?` 或问句/请求开头词（EN+DE 双方言，≥8 字符，型号与品号
+  不命中）；命中时显示芯片。芯片点击=把文本交给 Genie：写在 app 挂载点
+  `[data-linker-app="genie"]` 的 `data-pending-ask` 上（app 首挂读取即清），同时广播
+  `linker-genie-ask` 事件（已挂载的 app 走事件），并点击 dock 的开钮（装载器引导 app）。
+  app 侧：`src/genie/config.ts` 的 `pendingAsk` + `App.tsx` 的两个 effect。
+  提交路径：问句→与芯片同路（preventDefault）；其余查询→`linker/v1/catalog-search?q=&limit=2&lang=`
+  恰好一个命中则直达产品页，否则原生 GET 交回 archive（`q` 过滤，CatalogFilters）。
+  端点超时/失败一律回落到原生提交。
+- **数据端点**：`GET /wp-json/linker/v1/catalog-search?q=&limit=&lang=`（`Linker\Commerce\Catalog\CatalogSearch`
+  + `CatalogSearchController`，匿名可缓存）。匹配=型号/品号归一化（去 `- . /` 与空白、小写）后
+  对商品 name+SKU 做包含，集合=已发布且 catalog-visible 的商品（Woo 隐藏商品不可枚举），
+  顺序=目录顺序，limit 1..12（默认 8），q 最短 2 字符（`rest_invalid_param`/`rest_missing_callback_param`）。
+  返回 `{query, items:[{id,title,sku,url,facts}]}`，`facts` 即 #7 的 SelectionFactSet（同一天然层；
+  无价格——端点匿名且可缓存，价格在登录门后）。`?lang=en|de` 由 linker-i18n 的 RestLang 生效
+  （德语返回德语孪生与 `/de/…` 地址）。
+  archive 的 `q` 过滤与端点共用 `CatalogSearch::normalize()/matches()`（一条规则一处实现）。
+- **`?s=` 结果页范围（原 GAP-1 尾项，裁定落地）**：站内搜索的主查询若**未指名 post_type**，
+  限定为 `product` 与 `post`（`Linker\Commerce\Catalog\SearchScope`，`pre_get_posts`）。
+  依据：线上旧实现（i18n 的 search scope）为避免把页面与其他公开对象喂进文章模板，把隐式搜索
+  限定为文章；新站要搜索的两类内容=目录商品与博客文章，其余靠导航；显式指名 post_type 的请求
+  （集成、单类型搜索）不受影响。页面、LC 模板、attachment 等永不进结果。
+
 ### C. 壳与前端（`plugins/linker-tools`：PHP `Linker\Tools\Genie\{Proxy,Entries}`；React 入口 `genie`）
 - Proxy：`linker-ai/v1/genie/turn` → 服务（鉴权、locale、page_context、conversation_id、流式回传）；会话存储用 WP 原生：匿名以 cookie 绑定的自定义文章类型 `linker_conversation`，登录后归属用户（无自建表）。
 - 保留策略（`Retention`）：`linker_conversation` 无界增长的收口（issue #67，GAP-18）——匿名/无邮箱会话 90 天过期清理（90 为起步值，改它属策略决定），注册用户（有邮箱的账号）会话保留。WP cron daily 扫描（`init` 懒登记），过期者逐个交给 Action Scheduler 一次性 job，删除走 `wp_delete_post`，不裸 SQL；job 执行时重查规则（扫描与执行之间可能被登录认领）。WP_Query 无法按 `post_author = 0` 过滤（核心对 author=0 不建条件，t67 实测），故扫描按日期分批（批 100、至多 20 批/日）后在 PHP 侧套用唯一规则实现；批界是保留线程（每用户一条）不堵塞清理的保证。
-- Entries：产品分类页搜索框识别问句出现 "Ask Genie" 芯片；产品页芯片组（"What pairs with this model?" / "Was passt zu diesem Modell?"、"Compare with…"、"Documents"）；Lösungsentwurf 页（"Check my draft" / "Meinen Entwurf prüfen"、"What happens next?"）；账户页（"Where is my Proforma?" / "Wo steht meine Proforma?"）；常驻入口按页面类型给 2–3 条提示；首次点击才加载 JS。
+- Entries：产品分类页搜索框识别问句出现 "Ask Genie" 芯片（见下）；产品页芯片组（"What pairs with this model?" / "Was passt zu diesem Modell?"、"Compare with…"、"Documents"）；Lösungsentwurf 页（"Check my draft" / "Meinen Entwurf prüfen"、"What happens next?"）；账户页（"Where is my Proforma?" / "Wo steht meine Proforma?"）；常驻入口按页面类型给 2–3 条提示；首次点击才加载 JS。
 - 组件：线程、消息、追问芯片、ProductCard（加入 Lösungsentwurf 并读回数量；加入方案；状态 pending/added/unverified/retry 在卡内、高度稳定）、CompareTable、Handoff。
 - 文案：按 AGENTS.md 规则逐处写，EN/DE；对抗评审记录附 PR。
 
@@ -62,3 +93,4 @@
 - 2026-10-11（#13 收口）：评审修复轮完成（PR #61：工程项 4541bd7 + Spec 必改 1–4 2b39746）。§B 默认模型已切 Anthropic 并落代码（`provider_name()`；依据：DeepSeek 实测核验失败 80%、提示词修复后 20–40%，超 §B 的 5% 线）。范围外轮次先调 handoff-team，邮箱句以 `{fact:handoff.sentence_*}` 进 handoff 块并水合。pairing 问句走逆变器侧 `with_pairings` 搜索（pairings 载荷含 documents[]）。复跑 10 行（R2 EN/DE 含 cards、R5 七放行电池+文件、R8/R14 邮箱句、R10 加装链、r3/r4/r11/r13 拼写数字类）全部过线，存档 `docs/acceptance/2026-10-11/13/`；DE 截图重拍归档。**Leftovers（按 PR #61 评审裁定归类）**：R12 回退可接受（不再排队）；R7 登录路径与知识索引导入归 #16；消息持久化 reload 行为归 #16；服务令牌/用户上下文透传归 #16（完成前 AbilityClient 保持匿名、不配 token）；面板 ≥30 问的端到端持续套件归 #16；复跑残余核验失败率（13/23）记 PR，作为 §B 默认模型的持续依据。
 - 2026-10-09（#5）：Genie 服务的地址在选项 `linker_genie_url`：本地由 `just serve <name>` 写入 `http://127.0.0.1:<端口>`，线上由切换（#17）写入 VPS 地址；壳的 Proxy 从这个选项读。
 - 2026-10-11（#67，GAP-18）：新增 `Linker\Tools\Genie\Retention`。WordPress 核心对自定义文章类型没有过期机制（只有回收站按 `EMPTYTRASH_DAYS` 的另一套清理），扫描是本插件的；调度、队列、删除全部原生：WP cron daily + Action Scheduler 一次性 job + `wp_delete_post`。验收：单元 `RetentionTest`（10 项，含批界与认领竞争分支）+ 实例集成 `ConversationRetentionTest`（真实 `linker_conversation` 夹具：cron 钩子触发扫描，过期匿名被排 job 并经 `ActionScheduler_QueueRunner` 执行删除；新线与已认领线保留）。
+- 2026-10-11（#68，GAP-1）：搜索框收口——`[linker_genie_ask]` 芯片（#16 在 archive 模板挂载）、`assets/search-ask.js`（问句识别+直连/回落）、`linker/v1/catalog-search`（SelectionFacts 层、匿名可缓存、lang 感知）、`CatalogFilters` 增 `q`（与端点共用同一条匹配规则）、`SearchScope` 定 `?s=` 范围为 product+post（写进本规格 §C 之后）。顺带修 `Entries::script_deps()` 自引用（app 双载双挂）与 Genie app 的 pending-ask 通路。文案评审 docs/acceptance/2026-10-11/68/copy-review.md，验收 docs/acceptance/2026-10-11/68/README.md。

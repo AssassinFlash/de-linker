@@ -398,7 +398,7 @@ class Migration:
         # mislabelled, and import finds an existing German version through
         # the translation group only - repairing after import would mint
         # duplicates instead of updating the twins.
-        print(self.wp.run("linker-i18n", "repair-partials").strip())
+        print(self.wp.run("linker-i18n", "repair-partials", as_user=True).strip())
         # 20 per batch: the small batches of the research's walkthrough
         # (docs/research/2026-10-09/i18n-opensource-replication.md §8.2) - one
         # JSON payload through WP-CLI's stdin stays small and a failed batch is

@@ -25,6 +25,15 @@
 ## 后台
 标准产品编辑里增加"图值引用"元框：每个图值一行（键、值、单位下拉、文档下拉（本商品的文档）、页码）。改值即要求重填引用。
 
+## 文档维护入口（票 #68，GAP-17）
+
+商品编辑器的 "Documents" meta box（`Linker\Commerce\Admin\DocumentsMetaBox`）维护
+`_linker_documents`（`{url,title,type,lang}`，与迁移写入同形）：标题、URL、类型
+（datasheet|manual|warranty|document）、语言（en|de）逐行可改，行可删除，留 2 行空行供新增；
+保存走 `save_post_product` + nonce + `edit_post` 权限，只接受本机（本站域名）的 URL——
+外链一律拒绝并保留原值，空 URL 的行删除。box 顶部写明两条常设规则：文件在自家媒体库
+（无来源链接）与"内容改动逐项确认"（本票只做入口，不改内容）。
+
 ## 不做
 不改 SKU/名称/描述；不保留 `_delinker_type`、registry kind；不生成任何投影文件。
 
@@ -39,3 +48,4 @@
 - 2026-10-10（#14，评审线 Spec 裁定登记）：`data/compatibility.json` 的形状在规格 3 条（pairs 之外）新增第 4 份必填键 `requirements`，pair 内新增可选 `modules`（`{min,max}` 堆叠数区间）与 `accessories`（`[{model, quantity, per}]` 放行条件所需配件）；引擎（`services/engine/tests/fixtures/compatibility.json` 与 `src/linker_engine/compatibility.py` 的 schema）已按此消费——`requirements` 按逆变器型号给出 meter/backup/parallel-controller 所需件与 `max_units`（并联台数上限，取自控制器数据手册）。#8 落地时必须产出此形状；引擎侧 schema 即契约。
 
 - 2026-10-10（#8 实施）：逐件决定与来源见 `docs/specs/8-decisions.md`；feed 与旧 materials 的字段映射表见 `docs/specs/8-field-mapping.md`。规格的 19 键中 `mppt_max_current_a`/`mppt_max_isc_a` 是注册表 `max_input_current_per_mppt_a`/`max_isc_per_mppt_a` 的改名。overlay 实际为 1 条（Trina 460 参考组件；其余无绑定材料是已发布模块的组合或无规格占位，见 8-decisions §8）。数据文件落在 `plugins/linker-commerce/data/`（compatibility.json 248 对、engineering-overlay.json），feed 路由 `linker/v1/engineering-feed` 由 linker-commerce 提供。
+- 2026-10-11（#68）：`_linker_documents` 的后台维护入口（Documents meta box）落地：编辑标题/URL/类型/语言、删行、空行新增；只收本站 URL。入口只做维护，文档内容仍逐项确认。

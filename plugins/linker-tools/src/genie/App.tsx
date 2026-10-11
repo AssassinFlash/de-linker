@@ -7,7 +7,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useRef, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -102,6 +102,29 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
+
+	// The catalogue search box's chip: a question typed there becomes the
+	// thread's first message. A chip click before the app mounted left its
+	// text on the mount (config.pendingAsk, read once); a click after that
+	// arrives as the event (assets/search-ask.js).
+	useEffect( () => {
+		if ( '' !== config.pendingAsk ) {
+			void ask( config.pendingAsk );
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- the pending ask is read from the mount exactly once.
+	}, [] );
+
+	useEffect( () => {
+		function onAsk( event: Event ) {
+			const detail = ( event as CustomEvent< { message?: unknown } > )
+				.detail;
+			if ( detail && typeof detail.message === 'string' ) {
+				void ask( detail.message );
+			}
+		}
+		window.addEventListener( 'linker-genie-ask', onAsk );
+		return () => window.removeEventListener( 'linker-genie-ask', onAsk );
+	}, [ ask ] );
 
 	function onCardStatus( productId: number, state: CardState, text: string ) {
 		setCards( ( items ) => {

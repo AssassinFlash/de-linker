@@ -255,17 +255,17 @@ final class FaqsMetaBox {
 	 * @return array<int, array{question: string, answer: string, question_de: string, answer_de: string, document: string, page: string}>|null
 	 */
 	private function posted_rows(): ?array {
-		$rows = null;
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- save() verified the box's nonce before calling this.
-		foreach ( $_POST as $name => $value ) {
-			if ( ! is_string( $name )
-				|| 1 !== preg_match( '/^linker_faqs\[(\d+)\]\[(question|answer|question_de|answer_de|document|page)\]$/', $name, $match )
-			) {
+		// The box posts linker_faqs[index][field]; PHP parses that into a
+		// nested array (the flat "linker_faqs[index][field]" keys a naive
+		// reader looks for never occur in a browser post).
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- save() verified the box's nonce; each field is sanitized below, and the row list is unslashed once.
+		$posted = isset( $_POST['linker_faqs'] ) && is_array( $_POST['linker_faqs'] ) ? wp_unslash( $_POST['linker_faqs'] ) : array();
+		$rows   = array();
+		foreach ( $posted as $index => $fields ) {
+			if ( ! is_array( $fields ) ) {
 				continue;
 			}
-			$index                       = (int) $match[1];
-			$rows                        = $rows ?? array();
-			$rows[ $index ]            ??= array(
+			$row = array(
 				'question'    => '',
 				'answer'      => '',
 				'question_de' => '',
@@ -273,14 +273,19 @@ final class FaqsMetaBox {
 				'document'    => '',
 				'page'        => '',
 			);
-			$text                        = is_array( $value ) ? '' : $value;
-			$rows[ $index ][ $match[2] ] = 'answer' === $match[2] || 'answer_de' === $match[2]
-				? sanitize_textarea_field( wp_unslash( $text ) )
-				: sanitize_text_field( wp_unslash( $text ) );
+			foreach ( array_keys( $row ) as $field ) {
+				$value         = $fields[ $field ] ?? '';
+				$text          = is_scalar( $value ) ? (string) $value : '';
+				$row[ $field ] = 'answer' === $field || 'answer_de' === $field
+					? sanitize_textarea_field( $text )
+					: sanitize_text_field( $text );
+			}
+			$rows[ (int) $index ] = $row;
 		}
-		if ( null !== $rows ) {
-			ksort( $rows );
+		if ( array() === $rows ) {
+			return null;
 		}
+		ksort( $rows );
 
 		return $rows;
 	}

@@ -51,6 +51,30 @@
 - **后台入口**：用户列表与资料页是 WP 核心屏幕；扩展点全用核心的 `manage_users_columns` / `manage_users_custom_column` / `user_row_actions` / `edit_user_profile`；表单走核心 `admin-post.php` + `wp_nonce_field`；**零** `add_menu_page`、**零** `wp_ajax_*`。资料页 Woo 区块（`woocommerce_customer_meta_fields`）只能出输入框，三动作按钮用 `formaction` 指向 admin-post（WP 资料页自带 form，不可嵌套 form）。
 - **客户可见面**：价格位/目录/Store API 已有 `linker_price` 门（Woo 原生不做门——既有合格先例），审批只是给这一门加输入；未审批 gate 文案沿用既有 LoginGate 的类名与结构，零新站点 CSS、零新页面模板。
 
+## 联系表单（票 #68，GAP-8）
+
+`/contact/` 与 `/de/kontakt/` 的最小表单，接同一条 Mail 管线：
+
+- 组件：短代码 `[linker_contact_form]`（`Linker\Commerce\Contact\Form`），服务器端渲染
+  （无 JS 也能看与提交），语义 markup + Tailwind 类，样式经 WindPress 扫描（页面内容里
+  do_shortcode 的 LC provider 已覆盖）；挂载点=页面的 `[data-linker-contact-mount]`，
+  由 `tools/migrate/68-contact-form.py`（plan/apply --write/verify，幂等）把旧的
+  `cp-contact-fallback` 换成短代码并移除 `noscript` 行，EN #28 + DE 孪生。
+- 字段：message（问题，≤5000）、name、company（选填）、email、consent 勾选、蜜罐
+  `website`（`hidden` + `aria-hidden`，人不可见）、nonce、隐藏 `lang`（页面语言）与
+  回跳地址。校验在 `Contact\Submission`（服务端，与浏览器约束并行）。
+- 提交：`admin_post[_nopriv]_linker_contact`（`Contact\Handler`）：nonce 校验 → 蜜罐
+  （填了=当成功回应、不发送）→ 每连接限流（transient，3 次/小时；地址取 `REMOTE_ADDR`，
+  不信任转发头）→ 校验 → 发送 → 302 回页面带状态 `?contact=sent|invalid|throttled#contact-form`。
+- 邮件：客户回执（`Contact\Emails\ReceiptEmail`，收件人=访客，语言=提交语言）与团队信
+  （`Contact\Emails\TeamMessageEmail`，收件人=SettingsTab 的团队邮箱，Bcc=SettingsTab 的
+  盲抄列表，Reply-to=访客，语言=站点默认）——两封都是 `wp_mail()`，因此走既有 Outbox 队列/
+  重试/限速/日志。两封都注册进 `woocommerce_email_classes`，员工可在 WooCommerce →
+  Settings → Emails 看到并改主题。文案评审：docs/acceptance/2026-10-11/68/copy-review.md
+  （未把 Proforma 链的"一个工作日"承诺搬进本表单）。
+- 不做：旧表单的 workspace/项目绑定/回执查询会话（无对应物；回执不承诺"回来查进度"）。
+
+
 ## 删除/不存在
 运费与发货（Woo 运费区域清空、所有 "shipping" 文案隐藏）、报价、锁价、阈值、分组、发票、Stripe、下载产品、订单跟踪。审批**存在**（票据 73），旧系统的运营台不复活。
 
@@ -64,3 +88,4 @@
 
 ## 变更记录
 - 2026-10-11（#67，GAP-16）：新增 `Health` 模块（服务健康告警最小件）。WordPress/Woo 没有外部服务健康监视的原生能力，检查本身是本插件的；机制全部原生：调度 WP cron daily（`init` 懒登记 + 停用 `wp_clear_scheduled_hook`），HTTP 走 WP HTTP API，邮件走 `wp_mail` 即 #11 的 Outbox 队列（复用限流与重试）。验收：单元 `MonitorTest`（7 项）+ 实例集成 `HealthMonitorTest`（cron 钩子触发路径、失败一封 To 对接人+Bcc、健康零邮件、每日事件在排期），实例级 `wp cron event run linker_commerce_health_check` 健康/失败两跑实证。
+- 2026-10-11（#68）：联系表单（最小）落地并接 Mail 管线：短代码 `[linker_contact_form]`、admin-post 处理（nonce/蜜罐/限流/校验）、客户回执 + 团队信（Bcc 走 SettingsTab）；`tools/migrate/68-contact-form.py` 换挂载点；同轮修 Figures/FAQ meta box 的保存形态（浏览器实际提交的是嵌套数组，两个箱子此前对真实 POST 从不写入，证据与复现见 docs/acceptance/2026-10-11/68/README.md §3）。

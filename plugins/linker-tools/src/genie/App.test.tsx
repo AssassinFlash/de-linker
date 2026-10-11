@@ -53,6 +53,7 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		disclosure:
 			"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.",
 		accountUrl: '/my-account/',
+		pendingAsk: '',
 		prompts: [
 			'Ask Genie',
 			'I need a three-phase hybrid inverter for a home.',

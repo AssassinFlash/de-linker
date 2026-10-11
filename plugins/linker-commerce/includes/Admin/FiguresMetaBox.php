@@ -245,25 +245,30 @@ final class FiguresMetaBox {
 	 * @return array<string, array{value: string, unit: string, document: string, page: string}>|null
 	 */
 	private function posted_rows(): ?array {
-		$rows = null;
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- save() verified the box's nonce before calling this.
-		foreach ( $_POST as $name => $value ) {
-			if ( ! is_string( $name )
-				|| 1 !== preg_match( '/^linker_figures\[([^\]]+)\]\[(value|unit|document|page)\]$/', $name, $match )
-			) {
+		// The box posts linker_figures[key][field]; PHP parses that into a
+		// nested array (the flat "linker_figures[key][field]" keys a naive
+		// reader looks for never occur in a browser post).
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- save() verified the box's nonce; each field is sanitized below, and the row list is unslashed once.
+		$posted = isset( $_POST['linker_figures'] ) && is_array( $_POST['linker_figures'] ) ? wp_unslash( $_POST['linker_figures'] ) : array();
+		$rows   = array();
+		foreach ( $posted as $key => $fields ) {
+			if ( ! is_string( $key ) || ! is_array( $fields ) ) {
 				continue;
 			}
-			$rows                           = $rows ?? array();
-			$rows[ $match[1] ]            ??= array(
+			$row = array(
 				'value'    => '',
 				'unit'     => '',
 				'document' => '',
 				'page'     => '',
 			);
-			$rows[ $match[1] ][ $match[2] ] = sanitize_text_field( wp_unslash( is_array( $value ) ? '' : $value ) );
+			foreach ( array_keys( $row ) as $field ) {
+				$value         = $fields[ $field ] ?? '';
+				$row[ $field ] = sanitize_text_field( is_scalar( $value ) ? (string) $value : '' );
+			}
+			$rows[ $key ] = $row;
 		}
 
-		return $rows;
+		return array() === $rows ? null : $rows;
 	}
 
 	/**

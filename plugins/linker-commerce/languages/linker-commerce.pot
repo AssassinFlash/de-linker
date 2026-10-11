@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-11T16:15:32+00:00\n"
+"POT-Creation-Date: 2026-10-11T11:14:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -78,10 +78,12 @@ msgid "Returns one published product: facts, figures, attributes, documents and 
 msgstr ""
 
 #: includes/Abilities/GetProduct.php:48
+#: includes/Catalog/CatalogSearchController.php:162
 msgid "Product ID."
 msgstr ""
 
 #: includes/Abilities/GetProduct.php:69
+#: includes/Catalog/CatalogSearchController.php:178
 msgid "Selection facts of the product."
 msgstr ""
 
@@ -233,8 +235,6 @@ msgstr ""
 #: includes/Account/DocumentDownload.php:136
 #: includes/Admin/FaqsMetaBox.php:73
 #: includes/Admin/FiguresMetaBox.php:78
-#: includes/Catalog/DocumentLibrary.php:118
-#: includes/Presentation/LibraryPage.php:167
 #: templates/myaccount/linker-documents.php:23
 #: templates/myaccount/linker-documents.php:31
 msgid "Document"
@@ -328,11 +328,13 @@ msgstr ""
 
 #: includes/Account/Menu.php:49
 #: includes/Account/Menu.php:84
+#: includes/Admin/DocumentsMetaBox.php:52
 msgid "Documents"
 msgstr ""
 
 #: includes/Account/Menu.php:50
 #: includes/Account/Menu.php:86
+#: includes/Contact/Form.php:100
 #: templates/emails/linker-new-customer.php:22
 msgid "Company"
 msgstr ""
@@ -369,6 +371,39 @@ msgstr ""
 
 #: includes/Account/SolutionsRoute.php:174
 msgid "The design report must be a PDF file within the upload size limit."
+msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:68
+msgid "The documents shown on the product page and used as citations: datasheets, manuals and warranty terms of our own media library."
+msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:69
+msgid "The file itself is uploaded to the media library; the address here is the media file's URL. What a document may state is decided item by item — do not change a value or a claim without that confirmation."
+msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:71
+#: includes/Admin/DocumentsMetaBox.php:106
+msgid "Title"
+msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:72
+#: includes/Admin/DocumentsMetaBox.php:112
+msgid "URL"
+msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:73
+#: includes/Admin/DocumentsMetaBox.php:114
+msgid "Type"
+msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:74
+#: includes/Admin/DocumentsMetaBox.php:123
+msgid "Language"
+msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:75
+#: includes/Admin/DocumentsMetaBox.php:140
+msgid "Remove"
 msgstr ""
 
 #: includes/Admin/FaqsMetaBox.php:50
@@ -445,33 +480,42 @@ msgstr ""
 msgid "Figures %s kept their previous value: a changed value needs the document and the page it is printed on."
 msgstr ""
 
-#: includes/Catalog/Comparison.php:221
-#: includes/Storefront/ProductView.php:233
-msgid "Net price after partner sign-in"
+#: includes/Catalog/CatalogSearchController.php:87
+msgid "A model or item number."
 msgstr ""
 
-#: includes/Catalog/Comparison.php:224
-#: includes/Storefront/ProductView.php:65
-msgid "In stock"
-msgstr ""
-
-#: includes/Catalog/Comparison.php:225
-#: includes/Storefront/ProductView.php:65
-msgid "Currently unavailable"
-msgstr ""
-
-#. translators: 1: document title, 2: page number.
-#: includes/Catalog/DocumentLibrary.php:207
-#: includes/Presentation/Shortcodes.php:104
+#. translators: %d: most products per answer.
+#: includes/Catalog/CatalogSearchController.php:94
 #, php-format
-msgid "%1$s, p. %2$d"
+msgid "Most products to answer with, at most %d."
 msgstr ""
 
-#. translators: %d: page number.
-#: includes/Catalog/DocumentLibrary.php:213
-#: includes/Presentation/Shortcodes.php:110
-#, php-format
-msgid "p. %d"
+#: includes/Catalog/CatalogSearchController.php:101
+msgid "Language of the products and their addresses."
+msgstr ""
+
+#: includes/Catalog/CatalogSearchController.php:148
+msgid "The products of the catalogue whose name or item number holds the query."
+msgstr ""
+
+#: includes/Catalog/CatalogSearchController.php:152
+msgid "What was searched for."
+msgstr ""
+
+#: includes/Catalog/CatalogSearchController.php:156
+msgid "The hits, in catalogue order."
+msgstr ""
+
+#: includes/Catalog/CatalogSearchController.php:166
+msgid "Product name."
+msgstr ""
+
+#: includes/Catalog/CatalogSearchController.php:170
+msgid "Item number."
+msgstr ""
+
+#: includes/Catalog/CatalogSearchController.php:174
+msgid "The product page."
 msgstr ""
 
 #: includes/Catalog/EngineeringFeedController.php:72
@@ -568,88 +612,106 @@ msgstr ""
 msgid "Rated AC power the product data states in kVA; present only then."
 msgstr ""
 
-#: includes/Digest/DigestEmail.php:45
-#: includes/Digest/DigestEmail.php:82
-msgid "Daily digest"
+#: includes/Contact/Emails/ContactEmail.php:72
+#: includes/Mail/CustomerOrderEmail.php:89
+#: includes/Mail/TeamEmail.php:101
+msgid "HTML"
 msgstr ""
 
-#: includes/Digest/DigestEmail.php:46
-msgid "Sent to the team mailbox, with blind copies, every morning at 9:00 (Berlin time)."
+#: includes/Contact/Emails/ReceiptEmail.php:34
+msgid "Contact form receipt"
 msgstr ""
 
-#: includes/Digest/DigestEmail.php:75
-msgid "Daily digest, {date}"
+#: includes/Contact/Emails/ReceiptEmail.php:35
+msgid "Sent to the visitor when the contact form is sent."
 msgstr ""
 
-#: includes/Digest/FailedEmails.php:46
-msgid "Emails that could not be delivered"
+#: includes/Contact/Emails/ReceiptEmail.php:57
+#: includes/Contact/Emails/ReceiptEmail.php:64
+msgid "We received your message"
 msgstr ""
 
-#. translators: 1: the recipients of the email, 2: the error of the last attempt.
-#: includes/Digest/FailedEmails.php:63
-#, php-format
-msgid "To: %1$s – Error: %2$s"
+#: includes/Contact/Emails/TeamMessageEmail.php:45
+msgid "Contact form message"
 msgstr ""
 
-#: includes/Digest/FailedEmails.php:76
-msgid "No email failed to send."
+#: includes/Contact/Emails/TeamMessageEmail.php:46
+msgid "Sent to the team mailbox, with blind copies, when the contact form is sent."
 msgstr ""
 
-#. translators: %d: number of hours.
-#: includes/Digest/Format.php:64
-#, php-format
-msgid "%d hour ago"
-msgid_plural "%d hours ago"
-msgstr[0] ""
-msgstr[1] ""
-
-#. translators: %d: number of days.
-#: includes/Digest/Format.php:68
-#, php-format
-msgid "%d day ago"
-msgid_plural "%d days ago"
-msgstr[0] ""
-msgstr[1] ""
-
-#: includes/Digest/InquiriesAwaitingProforma.php:52
-msgid "Inquiries waiting for a Proforma invoice"
+#. translators: {name}: the visitor's name.
+#: includes/Contact/Emails/TeamMessageEmail.php:87
+msgid "New message from {name}"
 msgstr ""
 
-#: includes/Digest/InquiriesAwaitingProforma.php:88
-msgid "No inquiry is waiting for more than 24 hours."
+#: includes/Contact/Emails/TeamMessageEmail.php:94
+msgid "New message from the contact form"
 msgstr ""
 
-#. translators: 1: inquiry number, 2: customer's company.
-#: includes/Digest/InquiriesAwaitingProforma.php:102
-#: includes/Digest/ProformasAwaitingReply.php:100
-#, php-format
-msgid "Inquiry #%1$s – %2$s"
+#: includes/Contact/Form.php:95
+msgid "Your question"
 msgstr ""
 
-#: includes/Digest/InquiriesAwaitingProforma.php:107
-#: includes/Digest/ProformasAwaitingReply.php:105
-#: templates/emails/linker-new-inquiry.php:33
-msgid "Open the inquiry"
+#: includes/Contact/Form.php:98
+#: includes/Settings/SettingsTab.php:110
+#: templates/emails/linker-new-customer.php:24
+msgid "Name"
 msgstr ""
 
-#. translators: 1: date, 2: time, 3: age.
-#: includes/Digest/InquiriesAwaitingProforma.php:110
-#, php-format
-msgid "Received on %1$s at %2$s (%3$s)"
+#: includes/Contact/Form.php:100
+msgid "optional"
 msgstr ""
 
-#: includes/Digest/ProformasAwaitingReply.php:55
-msgid "Proforma invoices without a reply"
+#: includes/Contact/Form.php:103
+msgid "Reply email"
 msgstr ""
 
-#: includes/Digest/ProformasAwaitingReply.php:86
-msgid "No Proforma invoice has waited more than 3 days for a reply."
+#: includes/Contact/Form.php:108
+msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 
-#. translators: 1: Proforma number, 2: date, 3: time, 4: age.
-#: includes/Digest/ProformasAwaitingReply.php:108
-#, php-format
-msgid "Proforma invoice %1$s issued on %2$s at %3$s (%4$s)"
+#: includes/Contact/Form.php:110
+msgid "Privacy"
+msgstr ""
+
+#: includes/Contact/Form.php:114
+msgid "Website"
+msgstr ""
+
+#: includes/Contact/Form.php:116
+msgid "Send message"
+msgstr ""
+
+#: includes/Contact/Form.php:117
+msgid "Your message goes to the Linker team. We reply to the address you give here."
+msgstr ""
+
+#: includes/Contact/Form.php:129
+msgid "Thank you. Your message is with the Linker team."
+msgstr ""
+
+#: includes/Contact/Form.php:130
+msgid "Please check your entries and send the form again."
+msgstr ""
+
+#: includes/Contact/Form.php:131
+msgid "We received several messages from this connection. Please try again later or write to sales@de-linker.com."
+msgstr ""
+
+#: includes/Contact/Submission.php:69
+msgid "Please add your name."
+msgstr ""
+
+#: includes/Contact/Submission.php:72
+msgid "Please add an email address we can reply to."
+msgstr ""
+
+#: includes/Contact/Submission.php:75
+msgid "Please write your message."
+msgstr ""
+
+#: includes/Contact/Submission.php:78
+msgid "Please agree to the use of your details for the reply."
 msgstr ""
 
 #: includes/Gating/DraftSummary.php:44
@@ -829,139 +891,8 @@ msgctxt "Inquiry status"
 msgid "Cancelled"
 msgstr ""
 
-#: includes/Mail/CustomerOrderEmail.php:89
-#: includes/Mail/TeamEmail.php:101
-msgid "HTML"
-msgstr ""
-
 #: includes/Mail/JobStore.php:45
 msgid "Queued emails"
-msgstr ""
-
-#. translators: %d: maximum number of products in a comparison.
-#: includes/Presentation/ComparePage.php:178
-#, php-format
-msgid "Only the first %d products are shown."
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:185
-msgid "Choose products to compare their specifications."
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:188
-msgid "Clear comparison"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:189
-msgid "Product comparison table"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:191
-#: includes/Storefront/ProductView.php:511
-#: templates/myaccount/linker-saved-solutions.php:29
-#: templates/myaccount/linker-saved-solutions.php:41
-msgid "Products"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:199
-msgid "Remove"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:204
-msgid "Item number"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:205
-msgid "Net price"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:206
-msgid "Availability"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:290
-msgid "Compare"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:332
-#: includes/Storefront/ProductView.php:193
-msgid "Home"
-msgstr ""
-
-#: includes/Presentation/ComparePage.php:333
-#: includes/Storefront/ProductView.php:193
-msgid "Commercial"
-msgstr ""
-
-#. translators: %d: number of documents of the brand.
-#: includes/Presentation/LibraryPage.php:66
-#, php-format
-msgid "%d document"
-msgid_plural "%d documents"
-msgstr[0] ""
-msgstr[1] ""
-
-#. translators: %d: number of answers of the brand.
-#: includes/Presentation/LibraryPage.php:98
-#, php-format
-msgid "%d answer"
-msgid_plural "%d answers"
-msgstr[0] ""
-msgstr[1] ""
-
-#: includes/Presentation/LibraryPage.php:130
-#: templates/myaccount/linker-documents.php:25
-msgid "Download"
-msgstr ""
-
-#. translators: %s: product name.
-#: includes/Presentation/LibraryPage.php:144
-#, php-format
-msgid "covers %s"
-msgstr ""
-
-#. translators: %d: number of products.
-#: includes/Presentation/LibraryPage.php:149
-#, php-format
-msgid "covers %d product"
-msgid_plural "covers %d products"
-msgstr[0] ""
-msgstr[1] ""
-
-#: includes/Presentation/LibraryPage.php:161
-msgid "Datasheet"
-msgstr ""
-
-#: includes/Presentation/LibraryPage.php:162
-msgid "Manual"
-msgstr ""
-
-#: includes/Presentation/LibraryPage.php:163
-msgid "Certificate"
-msgstr ""
-
-#: includes/Presentation/LibraryPage.php:164
-msgid "Compatibility"
-msgstr ""
-
-#: includes/Presentation/LibraryPage.php:165
-msgid "Warranty"
-msgstr ""
-
-#: includes/Presentation/LibraryPage.php:166
-msgid "Brochure"
-msgstr ""
-
-#: includes/Presentation/LibraryPage.php:180
-msgid "English"
-msgstr ""
-
-#: includes/Presentation/LibraryPage.php:181
-msgid "German"
-msgstr ""
-
-#: includes/Presentation/LibraryPage.php:182
-msgid "Multilingual"
 msgstr ""
 
 #: includes/Presentation/LoginGate.php:47
@@ -1004,6 +935,18 @@ msgstr ""
 
 #: includes/Presentation/Shortcodes.php:95
 msgid "Product questions"
+msgstr ""
+
+#. translators: 1: document title, 2: page number.
+#: includes/Presentation/Shortcodes.php:104
+#, php-format
+msgid "%1$s, p. %2$d"
+msgstr ""
+
+#. translators: %d: page number.
+#: includes/Presentation/Shortcodes.php:110
+#, php-format
+msgid "p. %d"
 msgstr ""
 
 #. translators: %s: date.
@@ -1241,11 +1184,6 @@ msgstr ""
 msgid "Shown to customers at the top of their account. Without an email address the team mailbox is shown."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:110
-#: templates/emails/linker-new-customer.php:24
-msgid "Name"
-msgstr ""
-
 #: includes/Settings/SettingsTab.php:116
 #: templates/emails/linker-new-customer.php:25
 msgid "Email"
@@ -1310,27 +1248,35 @@ msgid "The BIC is not valid (8 or 11 characters); the previous BIC is kept."
 msgstr ""
 
 #. translators: %d: number of grid phases.
-#: includes/Storefront/CatalogFilters.php:278
+#: includes/Storefront/CatalogFilters.php:291
 #, php-format
 msgid "%d-phase"
 msgid_plural "%d-phase"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Storefront/CatalogFilters.php:339
+#: includes/Storefront/CatalogFilters.php:352
 msgid "Up to 6 kW"
 msgstr ""
 
-#: includes/Storefront/CatalogFilters.php:340
+#: includes/Storefront/CatalogFilters.php:353
 msgid "6 to 15 kW"
 msgstr ""
 
-#: includes/Storefront/CatalogFilters.php:341
+#: includes/Storefront/CatalogFilters.php:354
 msgid "15 to 30 kW"
 msgstr ""
 
-#: includes/Storefront/CatalogFilters.php:342
+#: includes/Storefront/CatalogFilters.php:355
 msgid "Over 30 kW"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:65
+msgid "In stock"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:65
+msgid "Currently unavailable"
 msgstr ""
 
 #: includes/Storefront/ProductView.php:67
@@ -1349,6 +1295,14 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
+#: includes/Storefront/ProductView.php:193
+msgid "Home"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:193
+msgid "Commercial"
+msgstr ""
+
 #: includes/Storefront/ProductView.php:196
 msgid "Grid phases"
 msgstr ""
@@ -1360,6 +1314,16 @@ msgstr ""
 
 #: includes/Storefront/ProductView.php:206
 msgid "Energy capacity"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:233
+msgid "Net price after partner sign-in"
+msgstr ""
+
+#: includes/Storefront/ProductView.php:511
+#: templates/myaccount/linker-saved-solutions.php:29
+#: templates/myaccount/linker-saved-solutions.php:41
+msgid "Products"
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:40
@@ -1716,11 +1680,55 @@ msgid_plural "%1$s (%2$s units)"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: %s: the visitor's name.
 #. translators: %s: the customer's full name.
+#: templates/emails/linker-contact-receipt.php:27
 #: templates/emails/linker-inquiry-received.php:25
 #: templates/emails/linker-proforma-issued.php:27
 #, php-format
 msgid "Hello %s,"
+msgstr ""
+
+#: templates/emails/linker-contact-receipt.php:30
+msgid "Thank you for your message. The Linker team will reply to this address."
+msgstr ""
+
+#: templates/emails/linker-contact-receipt.php:31
+msgid "Your message:"
+msgstr ""
+
+#: templates/emails/linker-contact-receipt.php:35
+msgid "If anything is missing, reply to this email and it reaches the same team."
+msgstr ""
+
+#. translators: 1: the visitor's name, 2: the visitor's company, empty when not given.
+#: templates/emails/linker-contact-team.php:28
+#, php-format
+msgid "%1$s (%2$s) sent a message through the contact form."
+msgstr ""
+
+#: templates/emails/linker-contact-team.php:30
+msgid "no company given"
+msgstr ""
+
+#. translators: %s: the visitor's email address.
+#: templates/emails/linker-contact-team.php:37
+#, php-format
+msgid "Reply address: %s"
+msgstr ""
+
+#. translators: %s: EN or DE, the language the visitor wrote in.
+#: templates/emails/linker-contact-team.php:43
+#, php-format
+msgid "Written in: %s"
+msgstr ""
+
+#: templates/emails/linker-contact-team.php:48
+msgid "Message:"
+msgstr ""
+
+#: templates/emails/linker-contact-team.php:52
+msgid "Answer this email to reply to the visitor directly."
 msgstr ""
 
 #. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
@@ -1742,6 +1750,10 @@ msgstr ""
 #: templates/emails/linker-new-inquiry.php:26
 #, php-format
 msgid "New inquiry %1$s from %2$s (%3$s)."
+msgstr ""
+
+#: templates/emails/linker-new-inquiry.php:33
+msgid "Open the inquiry"
 msgstr ""
 
 #. translators: 1: Proforma number, 2: inquiry number, 3: last day of validity. The sentence follows the salutation "Hello %s,".
@@ -1774,6 +1786,10 @@ msgstr ""
 
 #: templates/myaccount/linker-documents.php:15
 msgid "Your Proforma invoices and the design reports of your saved solutions will appear here."
+msgstr ""
+
+#: templates/myaccount/linker-documents.php:25
+msgid "Download"
 msgstr ""
 
 #: templates/myaccount/linker-documents.php:33
@@ -2059,44 +2075,4 @@ msgstr ""
 
 #: templates/storefront-single-product.php:273
 msgid "Close image viewer"
-msgstr ""
-
-#: includes/Health/Monitor.php:115
-msgid "Genie"
-msgstr ""
-
-#: includes/Health/Monitor.php:115
-msgid "engine"
-msgstr ""
-
-#: includes/Health/Monitor.php:120
-msgid "The Solution Configurator"
-msgstr ""
-
-#: includes/Health/Monitor.php:104
-#, php-format
-msgid "the address option %s is empty"
-msgstr ""
-
-#: includes/Health/Monitor.php:113
-#, php-format
-msgid "the service answered HTTP %d instead of 200"
-msgstr ""
-
-#: includes/Health/Monitor.php:159
-#, php-format
-msgid "The %s service failed its health check"
-msgstr ""
-
-#: includes/Health/Monitor.php:163
-#, php-format
-msgid ""
-"The daily health check could not reach the %1$s service.\n"
-"\n"
-"Address: %2$s\n"
-"Reason: %3$s\n"
-"Checked: %4$s UTC\n"
-"\n"
-"%5$s uses this service. The check runs once a day and repeats this message "
-"on every failure."
 msgstr ""

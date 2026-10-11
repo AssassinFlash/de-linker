@@ -40,7 +40,7 @@ final class PluginTest extends TestCase {
 		$chrome        = new SiteChrome( self::FILE );
 		$conversations = new RecordingConversations();
 		$proxy         = new RecordingProxy( $conversations );
-		$entries       = new RecordingEntries();
+		$entries       = new RecordingEntries( self::FILE );
 		$retention     = new Retention( self::FILE );
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
