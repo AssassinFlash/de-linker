@@ -57,6 +57,7 @@ final class TestMailCommandTest extends TestCase {
 		);
 		// WordPress's own rule: what is not an address comes back empty.
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => str_contains( $email, '@' ) ? trim( $email ) : '' ) );
+		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): string|false => 1 === preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/', $email ) ? $email : false ) );
 	}
 
 	/**

@@ -33,7 +33,7 @@ defined( 'ABSPATH' ) || exit;
 
 ( static function ( string $payload ): void {
 	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- base64 lets any request JSON sit in the single-quoted literal 80-customers.py writes into this file.
-	$request = json_decode( base64_decode( $payload ), true, 512, JSON_THROW_ON_ERROR );
+	$request      = json_decode( base64_decode( $payload ), true, 512, JSON_THROW_ON_ERROR );
 	$meta         = (string) $request['meta_key'];
 	$value        = (string) $request['value'];
 	$locale_meta  = (string) $request['locale_meta'];
@@ -69,7 +69,7 @@ defined( 'ABSPATH' ) || exit;
 				'order'       => 'DESC',
 			)
 		);
-		$order = reset( $orders );
+		$order  = reset( $orders );
 		if ( ! $order instanceof WC_Order ) {
 			return '';
 		}
@@ -88,9 +88,9 @@ defined( 'ABSPATH' ) || exit;
 			if ( false === $user ) {
 				continue;
 			}
-			$current = get_user_meta( $id, $meta, true );
-			$locale  = get_user_meta( $id, $locale_meta, true );
-			$locale  = is_string( $locale ) ? $locale : '';
+			$current         = get_user_meta( $id, $meta, true );
+			$locale          = get_user_meta( $id, $locale_meta, true );
+			$locale          = is_string( $locale ) ? $locale : '';
 			$accounts[ $id ] = array(
 				'id'      => $id,
 				'login'   => (string) $user->user_login,
@@ -133,7 +133,10 @@ defined( 'ABSPATH' ) || exit;
 					++$filled;
 				}
 			}
-			$answer = array( 'written' => $written, 'locales' => $filled ) + $by_state( $accounts() );
+			$answer = array(
+				'written' => $written,
+				'locales' => $filled,
+			) + $by_state( $accounts() );
 			break;
 
 		case 'rollback':

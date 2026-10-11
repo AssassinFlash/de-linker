@@ -120,7 +120,7 @@ final class TestModeTest extends TestCase {
 	 * rather than to a broken value.
 	 */
 	public function test_a_stored_non_address_is_not_a_switch(): void {
-		$test_mode = new TestMode();
+		$test_mode                         = new TestMode();
 		$this->options[ TestMode::OPTION ] = 'not@an-address';
 
 		$this->assertSame( '', $test_mode->address() );

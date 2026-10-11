@@ -157,6 +157,7 @@ final class OutboxTest extends TestCase {
 		WP_Mock::userFunction( 'get_bloginfo', array( 'return' => 'UTF-8' ) );
 		// Test mode reads the switch through WordPress's own address rule.
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => str_contains( $email, '@' ) ? trim( $email ) : '' ) );
+		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): string|false => 1 === preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/', $email ) ? $email : false ) );
 
 		$this->outbox = new Outbox( new JobStore(), new Throttle() );
 		WP_Mock::userFunction(

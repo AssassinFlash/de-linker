@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Integration;
 
 use ActionScheduler_QueueRunner;
 use ActionScheduler_Store;
+use Linker\Commerce\Digest\Block;
 use Linker\Commerce\Digest\Blocks;
 use Linker\Commerce\Digest\FailedEmails;
 use Linker\Commerce\Digest\InquiriesAwaitingProforma;
@@ -21,6 +22,7 @@ use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Proforma\Issuer;
+use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Settings\Options;
 use WC_DateTime;
 use WC_Order;
@@ -31,13 +33,13 @@ use WC_Order;
  * acceptance).
  *
  * Recipients are asserted as the settings hold them. The test-mail discipline
- * (AGENTS.md) puts ONE switch in the Mail layer that rewrites a test send to
- * chester@de-linker.com; ticket #73's lane carries it and has not landed it in
- * this tree yet, so this suite implements no rewrite of its own. On the day it
- * lands, the assertions about a delivered message — the wp_mail_succeeded
- * capture and the .eml — read chester@de-linker.com, while the queue
- * assertions (the JobStore rows, which keep the original recipients) do not
- * change.
+ * (AGENTS.md) puts ONE switch in the Mail layer (Mail\TestMode, ticket #73,
+ * landed with the approval ticket) that rewrites a test send to
+ * chester@de-linker.com; it is off unless a scenario turns it on, so these
+ * assertions read the real recipients. A scenario that turns it on reads its
+ * address in the assertions about a delivered message — the wp_mail_succeeded
+ * capture and the .eml — while the queue assertions (the JobStore rows, which
+ * keep the original recipients) do not change.
  *
  * @coversNothing
  */
@@ -197,7 +199,15 @@ final class DigestTest extends IntegrationTestCase {
 
 		remove_action( 'phpmailer_init', $fail, PHP_INT_MAX );
 		$blocks = ( new Blocks( new JobStore() ) )->all();
-		$fourth = $blocks[2];
+		// The approval ticket's pending-accounts block leads the digest (issue
+		// #73, the plug point of Blocks::all()); the digest's own three keep
+		// their order behind it, the failed emails closing the list — the
+		// fourth block here.
+		$this->assertSame(
+			array( PendingApprovals::ID, InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID ),
+			array_map( static fn ( Block $block ): string => $block->id(), $blocks )
+		);
+		$fourth = $blocks[3];
 		$this->assertSame( FailedEmails::ID, $fourth->id() );
 		$this->assertCount( 1, $fourth->entries() );
 		$this->assertStringContainsString( 'Daily digest', $fourth->entries()[0]['label'] );
