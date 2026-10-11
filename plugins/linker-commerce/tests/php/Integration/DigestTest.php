@@ -30,6 +30,15 @@ use WC_Order;
  * and the Outbox path the digest itself travels (docs/specs/74-daily-digest.md,
  * acceptance).
  *
+ * Recipients are asserted as the settings hold them. The test-mail discipline
+ * (AGENTS.md) puts ONE switch in the Mail layer that rewrites a test send to
+ * chester@de-linker.com; ticket #73's lane carries it and has not landed it in
+ * this tree yet, so this suite implements no rewrite of its own. On the day it
+ * lands, the assertions about a delivered message — the wp_mail_succeeded
+ * capture and the .eml — read chester@de-linker.com, while the queue
+ * assertions (the JobStore rows, which keep the original recipients) do not
+ * change.
+ *
  * @coversNothing
  */
 final class DigestTest extends IntegrationTestCase {
@@ -110,6 +119,8 @@ final class DigestTest extends IntegrationTestCase {
 
 		$this->assertCount( 1, $digests, 'One digest, empty or not.' );
 		[ $to, $subject, , $body ] = $digests[0];
+		// The settings' To: unrewritten, as long as the Mail layer's test switch
+		// is off (class docblock; the switch is the approval lane's).
 		$this->assertSame( array( 'digest-team@example.test' ), $to );
 		$this->assertStringStartsWith( 'Daily digest, ', $subject );
 		$this->assertStringContainsString( 'No inquiry is waiting for more than 24 hours.', $body );
@@ -118,6 +129,7 @@ final class DigestTest extends IntegrationTestCase {
 
 		// The blind copies are in the message the host's mail() would receive.
 		$raw = $this->latest_eml();
+		// The wire copy carries the same unrewritten To (class docblock).
 		$this->assertStringContainsString( 'To: digest-team@example.test', $raw );
 		$this->assertStringContainsString( 'Bcc: bcc-one@example.test, bcc-two@example.test', $raw );
 	}
@@ -152,6 +164,7 @@ final class DigestTest extends IntegrationTestCase {
 		$this->run_pending_action( $job_id );
 
 		$this->assertCount( 1, $digests, 'The retry delivers.' );
+		// Delivered, so the unrewritten To once more (class docblock).
 		$this->assertSame( array( 'sales@de-linker.com' ), $digests[0][0] );
 		$this->assertCount( 0, ( new JobStore() )->failed(), 'Delivered, so not failed.' );
 	}
@@ -177,6 +190,8 @@ final class DigestTest extends IntegrationTestCase {
 
 		$failed = ( new JobStore() )->failed();
 		$this->assertCount( 1, $failed, 'The digest itself is the failed message.' );
+		// Queue data: the original recipient, which a send-side rewrite never
+		// touches (class docblock).
 		$this->assertSame( array( 'sales@de-linker.com' ), $failed[0]['to'] );
 		$this->assertStringStartsWith( 'Daily digest, ', $failed[0]['subject'] );
 
