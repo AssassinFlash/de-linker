@@ -65,6 +65,17 @@ final class EngineeringFeedTest extends TestCase {
 		$this->mock_terms( 4107, 'pa_brand', array( 8 => 'SAJ' ) );
 		$this->mock_terms( 4107, 'pa_series', array( 9 => 'saj-h2' ) );
 		WP_Mock::userFunction( 'get_ancestors' )->never();
+		// Another test class may already have mocked has_filter (WP_Mock defines
+		// a mocked function for the rest of the run), which puts the language
+		// layer's twin-swap branch of SelectionFacts on the path; the swap has
+		// no listener here.
+		WP_Mock::userFunction(
+			'has_filter',
+			array(
+				'return' => false,
+				'times'  => '0+',
+			)
+		);
 	}
 
 	/**

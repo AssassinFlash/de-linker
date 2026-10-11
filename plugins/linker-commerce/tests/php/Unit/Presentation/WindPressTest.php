@@ -21,15 +21,46 @@ use WP_Mock;
 final class WindPressTest extends TestCase {
 
 	/**
-	 * The plugin registers on the official compile.providers filter.
+	 * The plugin registers on the official compile.providers filter, and on
+	 * LiveCanvas's own render filter (the dynamic templates are scanned as
+	 * source, see render_raw()).
 	 */
 	public function test_register_adds_the_provider(): void {
 		$windpress = new WindPress();
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
+		WP_Mock::expectFilterAdded( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $windpress, 'render_raw' ), 10, 2 );
 
 		$windpress->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A dynamic template is scanned as its own source: rendering it in the
+	 * scan request would put the WooCommerce template tags' markup
+	 * (`<h2>Additional information</h2>`) in front of the scan answer's JSON,
+	 * and the cache builder stops on an answer it cannot parse. Everything
+	 * else keeps the provider's own decision.
+	 */
+	public function test_render_raw_skips_the_dynamic_templates(): void {
+		$windpress = new WindPress();
+		$template  = new \WP_Post(
+			(object) array(
+				'ID'        => 6933,
+				'post_type' => 'lc_dynamic_template',
+			)
+		);
+		$page      = new \WP_Post(
+			(object) array(
+				'ID'        => 932,
+				'post_type' => 'page',
+			)
+		);
+
+		$this->assertFalse( $windpress->render_raw( true, $template ) );
+		$this->assertTrue( $windpress->render_raw( true, $page ) );
+		$this->assertFalse( $windpress->render_raw( false, $page ) );
+		$this->assertTrue( $windpress->render_raw( true, 'not a post' ) );
 	}
 
 	/**

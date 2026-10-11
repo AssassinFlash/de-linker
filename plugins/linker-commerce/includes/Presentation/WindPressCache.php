@@ -22,9 +22,11 @@ final class WindPressCache {
 	/**
 	 * Template classes the compiled CSS must contain, mapped to their compiled
 	 * selector prefix (Tailwind escapes [ ] # : ( ) inside class names). Each
-	 * class is used by the exported templates; the pair covers every template
-	 * file. text-(--proto-accent) exists only inside shortcode attributes, so a
-	 * missing rule is also the alarm for a shortcode parser eating the class.
+	 * class is used by the exported templates or by the shortcodes that feed
+	 * them, so a missing rule is the alarm for a template the compile did not
+	 * see. text-(--proto-accent) exists only inside shortcode attributes and
+	 * the last three only inside the tool-page fragments, which makes them the
+	 * same alarm for the comparison page and the document library.
 	 *
 	 * @var array<string, string>
 	 */
@@ -36,6 +38,9 @@ final class WindPressCache {
 		'text-[#0c7f73]'        => '.text-\\[\\#0c7f73\\]',
 		'lg:grid-cols-3'        => '.lg\\:grid-cols-3',
 		'text-(--proto-accent)' => '.text-\\(--proto-accent\\)',
+		'overflow-x-auto'       => '.overflow-x-auto',
+		'object-contain'        => '.object-contain',
+		'gap-8'                 => '.gap-8',
 	);
 
 	/**

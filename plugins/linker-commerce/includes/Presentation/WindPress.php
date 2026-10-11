@@ -9,18 +9,47 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use WP_Post;
+
 /**
  * Registers on f!windpress/core/cache:compile.providers the way picostrap does
  * (inc/windpress-support.php), so Tailwind classes in the new templates and in
- * this plugin's HTML enter the same compile surface.
+ * this plugin's HTML enter the same compile surface; and keeps LiveCanvas's own
+ * provider from rendering our dynamic templates into its scan answer (see
+ * render_raw()).
  */
 final class WindPress {
 
 	/**
-	 * Adds the provider.
+	 * Adds the provider, and the dynamic templates' scan rule.
 	 */
 	public function register(): void {
 		add_filter( 'f!windpress/core/cache:compile.providers', array( $this, 'providers' ) );
+		add_filter( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $this, 'render_raw' ), 10, 2 );
+	}
+
+	/**
+	 * LiveCanvas's provider scans a dynamic template by `do_shortcode()`-rendering
+	 * it, which is not what a template's classes need and is actively harmful
+	 * here: outside a product context the WooCommerce template tags of the
+	 * single-product template print their own markup — `[lc_wc_product_tab_additional_information]`
+	 * emits `<h2>Additional information</h2>` — into the scan REST answer,
+	 * before its JSON, so the WindPress cache builder fails to parse it and
+	 * the whole compile stops ("o.contents is not iterable" in the browser
+	 * worker). A template's Tailwind classes are in its own source, so the
+	 * provider reads that instead; the classes a shortcode prints at runtime are
+	 * covered by this plugin's provider, which scans the PHP that prints them.
+	 *
+	 * @param bool  $render Whether LiveCanvas's provider renders this post.
+	 * @param mixed $post   The post it is about to read.
+	 * @return bool False for this plugin's dynamic templates.
+	 */
+	public function render_raw( $render, $post ): bool {
+		if ( $post instanceof WP_Post && Templates::POST_TYPE === $post->post_type ) {
+			return false;
+		}
+
+		return (bool) $render;
 	}
 
 	/**

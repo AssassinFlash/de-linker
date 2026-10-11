@@ -26,7 +26,8 @@ final class WindPressCacheTest extends TestCase {
 	 */
 	private const COMPILED_ALL = '.py-10{padding-block:2.5rem}.px-4{padding-inline:1rem}.bg-white{background-color:#fff}'
 		. '.max-w-\\[1160px\\]{max-width:1160px}.text-\\[\\#0c7f73\\]{color:#0c7f73}.lg\\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}'
-		. '.text-\\(--proto-accent\\){color:var(--proto-accent)}';
+		. '.text-\\(--proto-accent\\){color:var(--proto-accent)}.overflow-x-auto{overflow-x:auto}'
+		. '.object-contain{object-fit:contain}.gap-8{gap:2rem}';
 
 	/**
 	 * The per-test compiled-cache file.
@@ -156,9 +157,9 @@ final class WindPressCacheTest extends TestCase {
 	public function test_missing_anchor_classes_matching(): void {
 		$cache = new WindPressCache( $this->cache_path );
 
-		$this->assertSame( array( 'py-10', 'px-4', 'bg-white', 'max-w-[1160px]', 'text-[#0c7f73]', 'lg:grid-cols-3', 'text-(--proto-accent)' ), $cache->missing_anchor_classes( '' ) );
-		// .py-100 does not stand in for .py-10; the other five classes are absent.
-		$this->assertSame( array( 'py-10', 'bg-white', 'max-w-[1160px]', 'text-[#0c7f73]', 'lg:grid-cols-3', 'text-(--proto-accent)' ), $cache->missing_anchor_classes( '.py-100{padding-block:25rem}.px-4{padding-inline:1rem}' ) );
+		$this->assertSame( array( 'py-10', 'px-4', 'bg-white', 'max-w-[1160px]', 'text-[#0c7f73]', 'lg:grid-cols-3', 'text-(--proto-accent)', 'overflow-x-auto', 'object-contain', 'gap-8' ), $cache->missing_anchor_classes( '' ) );
+		// .py-100 does not stand in for .py-10; the other classes are absent.
+		$this->assertSame( array( 'py-10', 'bg-white', 'max-w-[1160px]', 'text-[#0c7f73]', 'lg:grid-cols-3', 'text-(--proto-accent)', 'overflow-x-auto', 'object-contain', 'gap-8' ), $cache->missing_anchor_classes( '.py-100{padding-block:25rem}.px-4{padding-inline:1rem}' ) );
 		$this->assertSame( array(), $cache->missing_anchor_classes( self::COMPILED_ALL ) );
 	}
 }

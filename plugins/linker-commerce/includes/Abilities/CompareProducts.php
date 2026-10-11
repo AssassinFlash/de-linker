@@ -9,13 +9,17 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Catalog\SelectionFacts;
-use Linker\Commerce\Catalog\SelectionFactSet;
+use Linker\Commerce\Catalog\Comparison;
 
 /**
  * A comparison table of two to four published products. Battery energy and
  * inverter output are different rows, never one mixed "power" row
  * (docs/specs/13-genie.md).
+ *
+ * The table itself is built by Catalog\Comparison, which the standalone
+ * comparison page (/compare-products/) reads as well: this ability is the
+ * table as Genie sees it, the page is the table as a visitor sees it, and
+ * neither keeps a second derivation of it (docs/specs/19-tool-pages.md).
  */
 final class CompareProducts {
 
@@ -25,24 +29,20 @@ final class CompareProducts {
 	public const NAME = 'linker/compare-products';
 
 	/**
-	 * Inverter-side dimensions, in display order.
+	 * The comparison assembly.
+	 *
+	 * @var Comparison
 	 */
-	private const INVERTER_FIELDS = array( 'application', 'phase', 'ac_power_kw', 'pv_input_kw' );
+	private readonly Comparison $comparison;
 
 	/**
-	 * Battery-side dimensions, in display order.
+	 * Sets up the ability.
+	 *
+	 * @param Comparison|null $comparison Assembly override (tests).
 	 */
-	private const BATTERY_FIELDS = array( 'usable_kwh', 'nominal_kwh', 'kwh_range' );
-
-	/**
-	 * Device classes that show the inverter-side rows.
-	 */
-	private const INVERTER_CLASSES = array( 'inverters', 'all-in-one-systems' );
-
-	/**
-	 * Device classes that show the battery-side rows.
-	 */
-	private const BATTERY_CLASSES = array( 'home-storage', 'battery-systems', 'all-in-one-systems' );
+	public function __construct( ?Comparison $comparison = null ) {
+		$this->comparison = $comparison ?? new Comparison();
+	}
 
 	/**
 	 * Arguments for wp_register_ability(), apart from the category.
@@ -130,115 +130,30 @@ final class CompareProducts {
 	 * @return array{products: list<array<string, mixed>>, rows: list<array<string, mixed>>}
 	 */
 	public function execute( $input = array() ): array {
-		$input    = (array) $input;
-		$lang     = CatalogText::lang( $input['lang'] ?? null );
-		$ids      = array_values( array_unique( array_map( 'intval', (array) ( $input['product_ids'] ?? array() ) ) ) );
-		$ids      = array_values(
-			array_filter(
-				$ids,
-				static fn( int $id ): bool => $id > 0 && 'product' === get_post_type( $id ) && 'publish' === get_post_status( $id )
-			)
-		);
-		$products = array();
-		$classes  = array();
-		foreach ( $ids as $id ) {
-			$facts      = SelectionFacts::for_product( $id );
-			$classes[]  = $facts->device_class;
+		$input      = (array) $input;
+		$lang       = CatalogText::lang( $input['lang'] ?? null );
+		$ids        = array_values( array_unique( array_map( 'intval', (array) ( $input['product_ids'] ?? array() ) ) ) );
+		$comparison = $this->comparison->of( $ids, $lang );
+		$products   = array();
+		foreach ( $comparison['products'] as $column ) {
 			$products[] = array(
-				'product_id' => $id,
-				'title'      => CatalogText::title( $id, $lang ),
-				'url'        => CatalogText::url( $id, $lang ),
-				'facts'      => $facts->to_array(),
+				'product_id' => $column['product_id'],
+				'title'      => $column['title'],
+				'url'        => $column['url'],
+				'facts'      => $column['facts'],
 			);
 		}
-		$fields = $this->fields( $classes );
 
 		return array(
 			'products' => $products,
-			'rows'     => array_values(
-				array_map(
-					fn( string $field ): array => $this->row( $field, $products, $lang ),
-					$fields
-				)
+			'rows'     => array_map(
+				static fn( array $row ): array => array(
+					'field'  => $row['field'],
+					'label'  => $row['label'],
+					'values' => (object) $row['values'],
+				),
+				$comparison['rows']
 			),
 		);
-	}
-
-	/**
-	 * Dimension keys for the classes on the table: inverter rows, then battery
-	 * rows, never a shared "power" row.
-	 *
-	 * @param string[] $classes Device classes of the columns.
-	 * @return string[]
-	 */
-	private function fields( array $classes ): array {
-		$fields = array();
-		if ( array() !== array_intersect( $classes, self::INVERTER_CLASSES ) ) {
-			$fields = array_merge( $fields, self::INVERTER_FIELDS );
-		}
-		if ( array() !== array_intersect( $classes, self::BATTERY_CLASSES ) ) {
-			$fields = array_merge( $fields, self::BATTERY_FIELDS );
-		}
-		if ( array() === $fields ) {
-			$fields = array( 'device_class', 'application' );
-		}
-
-		return $fields;
-	}
-
-	/**
-	 * One dimension row: field, label, values keyed by product ID.
-	 *
-	 * @param string                     $field    Fact key.
-	 * @param list<array<string, mixed>> $products Columns.
-	 * @param 'en'|'de'                  $lang     Language of the labels.
-	 * @return array{field: string, label: string, values: object}
-	 */
-	private function row( string $field, array $products, string $lang ): array {
-		$values = array();
-		foreach ( $products as $product ) {
-			$facts                            = $product['facts'];
-			$values[ $product['product_id'] ] = $facts[ $field ] ?? SelectionFactSet::UNKNOWN;
-		}
-
-		return array(
-			'field'  => $field,
-			'label'  => $this->label( $field, $lang ),
-			'values' => (object) $values,
-		);
-	}
-
-	/**
-	 * Row label. English and German are both stored because the table is built
-	 * once per request language.
-	 *
-	 * @param string    $field Fact key.
-	 * @param 'en'|'de' $lang  Language.
-	 */
-	private function label( string $field, string $lang ): string {
-		$labels = array(
-			'en' => array(
-				'device_class' => 'Product category',
-				'application'  => 'Application',
-				'phase'        => 'Phases',
-				'ac_power_kw'  => 'Rated AC power (kW)',
-				'pv_input_kw'  => 'Maximum PV input (kW)',
-				'usable_kwh'   => 'Usable energy (kWh)',
-				'nominal_kwh'  => 'Nominal energy (kWh)',
-				'kwh_range'    => 'Energy range (kWh)',
-			),
-			'de' => array(
-				'device_class' => 'Produktkategorie',
-				'application'  => 'Anwendung',
-				'phase'        => 'Phasen',
-				'ac_power_kw'  => 'Bemessungsleistung AC (kW)',
-				'pv_input_kw'  => 'Maximale PV-Eingangsleistung (kW)',
-				'usable_kwh'   => 'Nutzbare Energie (kWh)',
-				'nominal_kwh'  => 'Nennenergie (kWh)',
-				'kwh_range'    => 'Energiebereich (kWh)',
-			),
-		);
-
-		return $labels[ $lang ][ $field ] ?? $field;
 	}
 }

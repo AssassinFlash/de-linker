@@ -249,7 +249,8 @@ final class RedirectsTest extends TestCase {
 
 	/**
 	 * Every table the plugin ships, loaded and shaped as the ticket's counts
-	 * state them.
+	 * state them (the Advisor's three entries joined the retired tools with
+	 * #66).
 	 */
 	public function test_the_maps_load_with_the_ticket_counts(): void {
 		$maps = Redirects::maps();
@@ -257,7 +258,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertCount( 255, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
 		$this->assertCount( 19, $maps['pages'] );
-		$this->assertCount( 5, $maps['retired_tools'] );
+		$this->assertCount( 8, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
 	}
@@ -717,6 +718,21 @@ final class RedirectsTest extends TestCase {
 	}
 
 	/**
+	 * The Advisor's addresses go to the product catalogue of their own
+	 * language: the page was the old assistant as a full page, the assistant
+	 * is Genie now, and the catalogue is where its work starts (#66;
+	 * /de/linker-advisor/ is the English slug under /de/ that the old plugin
+	 * resolved as well).
+	 */
+	public function test_retired_advisor_addresses_go_to_the_catalogue(): void {
+		$this->wordpress();
+
+		$this->assertSame( self::HOME . '/products/', ( new Redirects() )->target( '/linker-advisor/' ) );
+		$this->assertSame( self::HOME . '/de/produkte/', ( new Redirects() )->target( '/de/linker-berater/' ) );
+		$this->assertSame( self::HOME . '/de/produkte/', ( new Redirects() )->target( '/de/linker-advisor/' ) );
+	}
+
+	/**
 	 * Addresses that still exist stay: null means no redirect.
 	 */
 	public function test_live_addresses_stay(): void {
@@ -725,6 +741,9 @@ final class RedirectsTest extends TestCase {
 		$this->assertNull( ( new Redirects() )->target( '/linker-planner/' ) );
 		$this->assertNull( ( new Redirects() )->target( '/de/linker-planer/' ) );
 		$this->assertNull( ( new Redirects() )->target( '/design-canvas-exhibition/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/products/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/de/produkte/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/compare-products/' ) );
 		$this->assertNull( ( new Redirects() )->target( '/' ) );
 	}
 

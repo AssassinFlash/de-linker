@@ -294,7 +294,7 @@ final class PresentCommandTest extends TestCase {
 			$backup['settings']
 		);
 		$this->assertTrue( $backup['settings_existed'] );
-		$this->assertSame( array( 501, 502, 503, 504, 505 ), $backup['created_templates'], 'the five templates missing on this site joined the backup' );
+		$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509 ), $backup['created_templates'], 'the templates missing on this site joined the backup' );
 	}
 
 	/**
@@ -325,7 +325,7 @@ final class PresentCommandTest extends TestCase {
 		$backup = $this->options[ self::BACKUP ] ?? null;
 		$this->assertIsArray( $backup );
 		$this->assertSame( array( 6564 ), array_column( $backup['templates'], 'ID' ), 'the already-installed template is staged as an update' );
-		$this->assertSame( array( 501, 502, 503, 504, 505 ), $backup['created_templates'], 'the five missing templates are staged as creations' );
+		$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509 ), $backup['created_templates'], 'the missing templates are staged as creations' );
 		$this->assertFalse( $backup['settings_existed'] );
 		$this->assertSame( array(), $backup['settings'] );
 	}
@@ -387,15 +387,15 @@ final class PresentCommandTest extends TestCase {
 
 		$backup = $this->options[ self::BACKUP ] ?? null;
 		$this->assertIsArray( $backup );
-		$this->assertSame( array( 501, 502, 503, 504, 505, 506 ), $backup['created_templates'], 'the fresh install created all six templates' );
+		$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510 ), $backup['created_templates'], 'the fresh install created every template' );
 		$this->assertSame( array( 'enable-dynamic-templating' => 1 ), $this->options['lc_settings'], 'the run switched dynamic templating on' );
 
 		$this->rollback();
 
-		$this->assertSame( array( 501, 502, 503, 504, 505, 506 ), $deleted, 'the rollback deleted exactly the six created templates' );
+		$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510 ), $deleted, 'the rollback deleted exactly the created templates' );
 		$this->assertArrayNotHasKey( 'lc_settings', $this->options, 'the absent lc_settings is not resurrected as an empty option' );
 		$this->assertArrayNotHasKey( self::BACKUP, $this->options, 'the backup is consumed' );
-		$this->assertSame( 1, substr_count( $this->output(), 'wp-cli success: Rolled back 8 writes' ) );
+		$this->assertSame( 1, substr_count( $this->output(), 'wp-cli success: Rolled back 12 writes' ) );
 	}
 
 	/**
@@ -724,6 +724,17 @@ final class PresentCommandTest extends TestCase {
 					if ( 'lc_partial' === $args['post_type'] ) {
 						return self::wp_posts( $existing['partials'] ?? array() );
 					}
+					if ( 'page' === $args['post_type'] ) {
+						return self::wp_posts( $existing['pages'] ?? array(), 'page' );
+					}
+					if ( isset( $args['name'] ) ) {
+						foreach ( $existing['templates'] ?? array() as $row ) {
+							if ( ( $row['post_name'] ?? '' ) === $args['name'] ) {
+								return self::wp_posts( array( $row ) );
+							}
+						}
+						return array();
+					}
 					if ( isset( $args['meta_key'] ) ) {
 						$assigned = $existing['assigned'][ (string) $args['meta_key'] ] ?? null;
 						return null === $assigned ? array() : self::wp_posts( array( $assigned ) );
@@ -732,6 +743,7 @@ final class PresentCommandTest extends TestCase {
 				},
 			)
 		);
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction(
 			'get_post',
@@ -812,17 +824,19 @@ final class PresentCommandTest extends TestCase {
 	 * The stored rows as WP_Post objects, the shape get_posts returns.
 	 *
 	 * @param array<int, array<string, mixed>> $rows Stored rows.
+	 * @param string                           $type Post type of the fixtures.
 	 * @return list<WP_Post>
 	 */
-	private static function wp_posts( array $rows ): array {
+	private static function wp_posts( array $rows, string $type = 'lc_dynamic_template' ): array {
 		$posts = array();
 		foreach ( $rows as $row ) {
 			$posts[] = new WP_Post(
 				(object) array(
 					'ID'           => (int) $row['ID'],
 					'post_title'   => (string) ( $row['post_title'] ?? '' ),
+					'post_name'    => (string) ( $row['post_name'] ?? '' ),
 					'post_content' => (string) ( $row['post_content'] ?? '' ),
-					'post_type'    => 'lc_dynamic_template',
+					'post_type'    => (string) ( $row['post_type'] ?? $type ),
 					'post_status'  => (string) ( $row['post_status'] ?? 'publish' ),
 				)
 			);

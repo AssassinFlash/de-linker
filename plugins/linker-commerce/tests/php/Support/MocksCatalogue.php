@@ -131,6 +131,7 @@ trait MocksCatalogue {
 					$product->allows( 'get_parent_id' )->andReturn( 0 );
 					$product->allows( 'get_price' )->with( 'edit' )->andReturn( (string) $id );
 					$product->allows( 'get_sku' )->andReturn( '' );
+					$product->allows( 'get_price_html' )->andReturn( '<span class="woocommerce-Price-amount">' . $id . '</span>' );
 					$product->allows( 'is_in_stock' )->andReturn( true );
 
 					return $product;
@@ -138,6 +139,13 @@ trait MocksCatalogue {
 			)
 		);
 		WP_Mock::userFunction( 'get_ancestors', array( 'return' => array() ) );
+		WP_Mock::userFunction(
+			'get_the_post_thumbnail_url',
+			array(
+				'return' => '',
+				'times'  => '0+',
+			)
+		);
 	}
 
 	/**

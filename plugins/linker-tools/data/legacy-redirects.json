@@ -321,6 +321,9 @@
 		"/de/design-canvas/": "/de/linker-planer/?step=roof",
 		"/de/entwurfsflache/": "/de/linker-planer/?step=roof",
 		"/quote-configurator/": "/linker-planner/",
-		"/de/angebots-konfigurator/": "/de/linker-planer/"
+		"/de/angebots-konfigurator/": "/de/linker-planer/",
+		"/linker-advisor/": "/products/",
+		"/de/linker-berater/": "/de/produkte/",
+		"/de/linker-advisor/": "/de/produkte/"
 	}
 }
