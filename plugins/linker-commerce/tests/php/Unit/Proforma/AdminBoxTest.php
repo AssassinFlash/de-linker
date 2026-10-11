@@ -62,7 +62,7 @@ final class AdminBoxTest extends TestCase {
 	 */
 	private function box(): AdminBox {
 		$options = new Options();
-		return new AdminBox( new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( '/plugin/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( new CommerceState() ) ) );
+		return new AdminBox( new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( '/plugin/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( $this->approved_state() ) ) );
 	}
 
 	/**

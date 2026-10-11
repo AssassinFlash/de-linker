@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\LoginGate;
 use Linker\Commerce\Presentation\Shortcodes;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_Product;
@@ -87,6 +88,7 @@ final class ShortcodesTest extends TestCase {
 	public function test_checkout_of_an_empty_draft_is_the_login_gate(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
@@ -113,10 +115,14 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * A filled draft, or the confirmation, still uses WooCommerce's checkout shortcode.
+	 * A filled draft, or the confirmation, still uses WooCommerce's checkout
+	 * shortcode; a signed-in account without approval gets the gate instead.
 	 */
 	public function test_checkout_of_a_filled_draft_uses_woocommerce(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => fn (): int => $this->signed_in_user ) );
+		$this->signed_in( 0 );
+		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
 		$cart = new class() {
 			/**
 			 * Filled draft.
@@ -140,6 +146,15 @@ final class ShortcodesTest extends TestCase {
 		);
 
 		$this->assertSame( '<form class="checkout">pay</form>', $this->shortcodes()->checkout() );
+
+		$this->signed_in( 5 );
+		$this->approval_meta( array() );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		$html = $this->shortcodes()->checkout();
+		$this->assertStringContainsString( 'under review', $html );
+		$this->assertStringNotContainsString( 'woocommerce_checkout', $html );
 	}
 
 	/**
@@ -267,6 +282,6 @@ final class ShortcodesTest extends TestCase {
 	 * Shortcodes under test.
 	 */
 	private function shortcodes(): Shortcodes {
-		return new Shortcodes( new LoginGate() );
+		return new Shortcodes( new LoginGate( new Approval() ), new Approval() );
 	}
 }

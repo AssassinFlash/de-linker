@@ -9,13 +9,17 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Registration;
 
+use Linker\Commerce\Registration\Emails\ApprovedEmail;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
+use Linker\Commerce\Registration\Emails\RejectedEmail;
+use Linker\Commerce\Registration\Emails\RestrictedEmail;
 use Linker\Commerce\Registration\Emails\VatReviewEmail;
 use Linker\Commerce\Settings\Options;
 
 /**
  * The registration fields, the VAT ID as a billing field with its VIES check,
- * and the two team notifications about customers.
+ * the three approval actions in WordPress's own screens and the notifications
+ * about customers.
  */
 final class Module {
 
@@ -27,13 +31,17 @@ final class Module {
 	 * @param Fields          $fields      The registration fields.
 	 * @param BillingVatField $vat_field   The VAT ID billing field.
 	 * @param AddressForm     $address     The address form rules.
+	 * @param Approval        $approval    The account approval rule.
+	 * @param ApprovalAdmin   $admin       The approval actions in WordPress's screens.
 	 */
 	public function __construct(
 		private readonly string $plugin_file,
 		private readonly Options $options,
 		private readonly Fields $fields,
 		private readonly BillingVatField $vat_field,
-		private readonly AddressForm $address
+		private readonly AddressForm $address,
+		private readonly Approval $approval = new Approval(),
+		private readonly ApprovalAdmin $admin = new ApprovalAdmin( new Approval() )
 	) {}
 
 	/**
@@ -55,6 +63,9 @@ final class Module {
 		add_filter( 'option_woocommerce_default_country', array( $this->address, 'base_location' ) );
 		add_filter( 'woocommerce_get_country_locale', array( $this->address, 'country_locale' ) );
 
+		$this->approval->register();
+		$this->admin->register();
+
 		add_filter( 'woocommerce_email_actions', array( $this, 'email_actions' ) );
 		add_filter( 'woocommerce_email_classes', array( $this, 'add_emails' ) );
 	}
@@ -68,11 +79,12 @@ final class Module {
 	public function email_actions( array $actions ): array {
 		$actions[] = Fields::REGISTERED_ACTION;
 		$actions[] = VatProfile::CHANGED_ACTION;
+		$actions[] = Approval::CHANGED_ACTION;
 		return $actions;
 	}
 
 	/**
-	 * Adds the two notifications about customers.
+	 * Adds the notifications about customers.
 	 *
 	 * @param array<string, object> $emails Email objects by class.
 	 * @return array<string, object>
@@ -80,6 +92,9 @@ final class Module {
 	public function add_emails( array $emails ): array {
 		$emails[ NewCustomerEmail::class ] = new NewCustomerEmail( $this->plugin_file, $this->options );
 		$emails[ VatReviewEmail::class ]   = new VatReviewEmail( $this->plugin_file, $this->options );
+		$emails[ ApprovedEmail::class ]    = new ApprovedEmail( $this->plugin_file );
+		$emails[ RestrictedEmail::class ]  = new RestrictedEmail( $this->plugin_file );
+		$emails[ RejectedEmail::class ]    = new RejectedEmail( $this->plugin_file );
 		return $emails;
 	}
 }

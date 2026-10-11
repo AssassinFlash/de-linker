@@ -81,6 +81,10 @@ abstract class IntegrationTestCase extends TestCase {
 				wp_delete_user( $id );
 			}
 		);
+		// The fixture is an approved partner account: every journey in these
+		// tests runs with prices open. Ticket 73's own tests set the other
+		// states on top of this one.
+		update_user_meta( $id, \Linker\Commerce\Registration\Approval::STATUS_META, \Linker\Commerce\Registration\Approval::APPROVED );
 		$customer = new WC_Customer( $id );
 		$customer->set_billing_company( 'Linker Integration Test GmbH' );
 		$customer->set_billing_first_name( 'Maria' );

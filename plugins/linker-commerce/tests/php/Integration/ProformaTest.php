@@ -142,6 +142,9 @@ final class ProformaTest extends IntegrationTestCase {
 			<<<'LINKER_SCRIPT'
 <?php
 define( 'WP_USE_THEMES', false );
+// The PDF renders in this second process; the CLI default of 128 MB is the
+// one that fatals dompdf (see phpunit.integration.xml.dist).
+ini_set( 'memory_limit', '2048M' );
 $_SERVER['HTTP_HOST']   = getenv( 'WP_HOST' );
 $_SERVER['REQUEST_URI'] = '/';
 require getenv( 'WP_ROOT' ) . '/wp-load.php';

@@ -1,0 +1,2322 @@
+# Copyright (C) 2026 Linker Technology GmbH
+# This file is distributed under the same license as the Linker Commerce plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Linker Commerce 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
+"POT-Creation-Date: 2026-10-11T11:43:37+00:00\n"
+"PO-Revision-Date: 2026-10-09 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de_DE_formal\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: linker-commerce\n"
+
+#. Plugin Name of the plugin
+#: linker-commerce.php
+msgid "Linker Commerce"
+msgstr "Linker Commerce"
+
+#. Description of the plugin
+#: linker-commerce.php
+msgid "Inquiry chain, product facts and Abilities for de-linker.com."
+msgstr "Anfragekette, Produktfakten und Abilities für de-linker.com."
+
+#. Author of the plugin
+#: linker-commerce.php
+msgid "Linker Technology GmbH"
+msgstr "Linker Technology GmbH"
+
+#: includes/Abilities/CheckCompatibility.php:54
+msgid "Check inverter and battery compatibility"
+msgstr ""
+
+#: includes/Abilities/CheckCompatibility.php:55
+msgid ""
+"Returns the documented release of an inverter with a battery: released, "
+"released with an accessory, not released, or unknown when no file covers the "
+"pair."
+msgstr ""
+
+#: includes/Abilities/CheckCompatibility.php:62
+msgid "Inverter product ID."
+msgstr ""
+
+#: includes/Abilities/CheckCompatibility.php:67
+msgid "Battery product ID."
+msgstr ""
+
+#: includes/Abilities/CheckCompatibility.php:77
+msgid "Two product IDs: one inverter and one battery, in either order."
+msgstr ""
+
+#: includes/Abilities/CompareProducts.php:54
+msgid "Compare products"
+msgstr ""
+
+#: includes/Abilities/CompareProducts.php:55
+msgid ""
+"A table of two to four published products. Battery energy and inverter "
+"output are separate rows."
+msgstr ""
+
+#: includes/Abilities/GetCommerceVersion.php:36
+msgid "Get Linker Commerce version"
+msgstr "Version von Linker Commerce abfragen"
+
+#: includes/Abilities/GetCommerceVersion.php:37
+msgid ""
+"Returns the version of the Linker Commerce plugin installed on this site."
+msgstr ""
+"Gibt die Version des auf dieser Website installierten Plugins Linker "
+"Commerce zurück."
+
+#: includes/Abilities/GetCommerceVersion.php:43
+msgid "Version from the plugin header."
+msgstr "Version aus dem Plugin-Header."
+
+#: includes/Abilities/GetProduct.php:40
+msgid "Get a product"
+msgstr ""
+
+#: includes/Abilities/GetProduct.php:41
+msgid ""
+"Returns one published product: facts, figures, attributes, documents and FAQ."
+msgstr ""
+
+#: includes/Abilities/GetProduct.php:48
+msgid "Product ID."
+msgstr ""
+
+#: includes/Abilities/GetProduct.php:69
+msgid "Selection facts of the product."
+msgstr ""
+
+#: includes/Abilities/GetProduct.php:73
+msgid "Cited figure entries as stored."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:33
+msgid "Hand off to the Linker team"
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:34
+msgid ""
+"Returns the team-mailbox sentence in English and German, and a mailto link "
+"that carries the conversation summary."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:40
+msgid "Short summary of the conversation for the team."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:50
+msgid "English sentence naming the team mailbox."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:54
+msgid "German sentence naming the team mailbox."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:58
+msgid "mailto URL with the summary in the body."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:38
+msgid "Inquiry ID."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:42
+msgid "Inquiry number as the customer sees it."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:46
+msgid "Status slug without the wc- prefix."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:50
+msgid "Status name in the page language."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:54
+msgid "Date created, GMT."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:58
+msgid "Amount as stored on the inquiry."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:62
+msgid "Proforma number when one has been issued."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:70
+msgid "List my inquiries"
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:71
+msgid ""
+"Returns this account's inquiries and their status. Requires a logged-in "
+"customer."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:33
+msgid "Whether this visitor sees the stored price."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:37
+msgid "Stored price when it is visible."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:41
+msgid "Whether the product is in stock. The site only ever says it is."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:45
+msgid "Whether the product is quoted per project."
+msgstr ""
+
+#: includes/Abilities/Registrar.php:42
+msgid "Linker"
+msgstr "Linker"
+
+#: includes/Abilities/Registrar.php:43
+msgid "Products and inquiries of de-linker.com."
+msgstr "Produkte und Anfragen von de-linker.com."
+
+#: includes/Abilities/SearchKnowledge.php:42
+msgid "Chunk ID the answer may cite."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:46
+msgid "Hosted document URL."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:50
+msgid "Document title in the requested language."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:54
+msgid "1-based page of the chunk."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:65
+msgid "Search hosted documents"
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:66
+msgid ""
+"Returns chunks from the hosted PDF index. Cite only the returned chunk IDs."
+msgstr ""
+
+#: includes/Abilities/SearchProducts.php:118
+msgid "Search products"
+msgstr ""
+
+#: includes/Abilities/SearchProducts.php:119
+msgid ""
+"Qualifies published products against selection facts, sorts them, and "
+"explains each match."
+msgstr ""
+
+#: includes/Abilities/SizeHint.php:42
+msgid "Open the Solution Configurator with these inputs"
+msgstr ""
+
+#: includes/Abilities/SizeHint.php:43
+msgid ""
+"Returns a short summary and the Solution Configurator URL with the given "
+"fields pre-filled."
+msgstr ""
+
+#: includes/Abilities/SizeHint.php:75
+msgid "What will be pre-filled on the configurator."
+msgstr ""
+
+#: includes/Abilities/SizeHint.php:79
+msgid "Solution Configurator URL with the fields as query arguments."
+msgstr ""
+
+#: includes/Account/ContactCard.php:43
+msgid "Your contact person"
+msgstr "Ihre Ansprechperson"
+
+#: includes/Account/DocumentDownload.php:91
+msgid "This document is not available."
+msgstr "Dieses Dokument ist nicht verfügbar."
+
+#: includes/Account/DocumentDownload.php:91
+#: includes/Account/DocumentDownload.php:136 includes/Admin/FaqsMetaBox.php:73
+#: includes/Admin/FiguresMetaBox.php:78
+#: templates/myaccount/linker-documents.php:23
+#: templates/myaccount/linker-documents.php:31
+msgid "Document"
+msgstr "Dokument"
+
+#: includes/Account/DocumentDownload.php:132
+msgid ""
+"This document is available to the account it belongs to. Please log in with "
+"that account."
+msgstr ""
+"Dieses Dokument ist nur für das Konto abrufbar, zu dem es gehört. Bitte "
+"melden Sie sich mit diesem Konto an."
+
+#: includes/Account/DocumentDownload.php:134 includes/Vocabulary/Terms.php:77
+#: includes/Vocabulary/Terms.php:78
+msgid "Log in"
+msgstr "Anmelden"
+
+#. translators: 1: Proforma number, 2: inquiry number.
+#: includes/Account/Documents.php:52
+#, php-format
+msgid "Proforma invoice %1$s (inquiry #%2$s)"
+msgstr "Proformarechnung %1$s (Anfrage #%2$s)"
+
+#. translators: %s: name of the saved solution.
+#: includes/Account/Documents.php:63
+#, php-format
+msgid "Design report: %s"
+msgstr "Auslegungsbericht: %s"
+
+#: includes/Account/InquiryList.php:39 includes/Account/Menu.php:77
+#: includes/Inquiry/OrderAdmin.php:31 includes/Proforma/AdminBox.php:130
+msgid "Inquiry"
+msgstr "Anfrage"
+
+#: includes/Account/InquiryList.php:40
+#: templates/myaccount/linker-documents.php:24
+#: templates/myaccount/linker-documents.php:32
+#: templates/proforma/proforma.php:76
+msgid "Date"
+msgstr "Datum"
+
+#: includes/Account/InquiryList.php:41
+msgid "Status"
+msgstr "Status"
+
+#: includes/Account/InquiryList.php:42
+msgid "Amount"
+msgstr "Betrag"
+
+#: includes/Account/InquiryList.php:43
+#: templates/myaccount/linker-saved-solutions.php:30
+msgid "Actions"
+msgstr "Aktionen"
+
+#: includes/Account/InquiryList.php:58
+msgid "View"
+msgstr "Ansehen"
+
+#: includes/Account/InquiryList.php:64
+msgid "Proforma invoice (PDF)"
+msgstr "Proformarechnung (PDF)"
+
+#: includes/Account/InquiryList.php:74 includes/Vocabulary/Terms.php:109
+msgid "Request again"
+msgstr "Erneut anfragen"
+
+#: includes/Account/InquiryList.php:100
+msgid "Datasheet (PDF)"
+msgstr "Datenblatt (PDF)"
+
+#: includes/Account/Menu.php:46
+msgid "Overview"
+msgstr "Übersicht"
+
+#: includes/Account/Menu.php:47 includes/Account/Menu.php:73
+#: includes/Inquiry/OrderAdmin.php:30 includes/Inquiry/OrderAdmin.php:32
+#: includes/Settings/SettingsTab.php:41 includes/Vocabulary/Terms.php:115
+#: templates/emails/linker-proforma-issued.php:47
+msgid "Inquiries"
+msgstr "Anfragen"
+
+#: includes/Account/Menu.php:48 includes/Account/Menu.php:82
+#: includes/Account/SavedSolutions.php:74
+msgid "Saved solutions"
+msgstr "Gespeicherte Lösungen"
+
+#: includes/Account/Menu.php:49 includes/Account/Menu.php:84
+msgid "Documents"
+msgstr "Unterlagen"
+
+#: includes/Account/Menu.php:50 includes/Account/Menu.php:86
+#: templates/emails/linker-new-customer.php:23
+msgid "Company"
+msgstr "Unternehmen"
+
+#: includes/Account/Menu.php:51 includes/Account/Menu.php:88
+msgid "Account details"
+msgstr "Kontodetails"
+
+#: includes/Account/Menu.php:59
+msgid "Log out"
+msgstr "Abmelden"
+
+#. translators: %s: inquiry number.
+#: includes/Account/Menu.php:80 includes/Vocabulary/Terms.php:114
+#, php-format
+msgid "Inquiry #%s"
+msgstr "Anfrage #%s"
+
+#: includes/Account/SavedSolutions.php:261
+msgid "The products of the saved solution are in your solution draft."
+msgstr ""
+"Die Produkte der gespeicherten Lösung liegen jetzt in Ihrem Lösungsentwurf."
+
+#. translators: %d: product ID.
+#: includes/Account/SolutionsRoute.php:117
+#, php-format
+msgid "Product %d is not available."
+msgstr "Das Produkt %d ist nicht verfügbar."
+
+#: includes/Account/SolutionsRoute.php:149
+msgid "The solution could not be saved."
+msgstr "Die Lösung konnte nicht gespeichert werden."
+
+#: includes/Account/SolutionsRoute.php:174
+msgid "The design report must be a PDF file within the upload size limit."
+msgstr ""
+"Der Auslegungsbericht muss eine PDF-Datei sein und darf die maximale Upload-"
+"Größe nicht überschreiten."
+
+#: includes/Admin/FaqsMetaBox.php:50
+msgid "FAQ"
+msgstr "FAQ"
+
+#: includes/Admin/FaqsMetaBox.php:67
+msgid ""
+"Each answer needs the document and the page it is printed on. A row without "
+"a question is dropped."
+msgstr ""
+"Jede Antwort braucht das Dokument und die Seite, auf der sie steht. Eine "
+"Zeile ohne Frage wird verworfen."
+
+#: includes/Admin/FaqsMetaBox.php:69
+msgid "Question"
+msgstr "Frage"
+
+#: includes/Admin/FaqsMetaBox.php:70
+msgid "Answer"
+msgstr "Antwort"
+
+#: includes/Admin/FaqsMetaBox.php:71
+msgid "Question (German)"
+msgstr "Frage (Deutsch)"
+
+#: includes/Admin/FaqsMetaBox.php:72
+msgid "Answer (German)"
+msgstr "Antwort (Deutsch)"
+
+#: includes/Admin/FaqsMetaBox.php:74 includes/Admin/FiguresMetaBox.php:79
+msgid "Page"
+msgstr "Seite"
+
+#. translators: %s: list of row numbers.
+#: includes/Admin/FaqsMetaBox.php:174
+#, php-format
+msgid ""
+"FAQ rows %s kept their previous content: an answer needs the document and "
+"the page it is printed on."
+msgstr ""
+"Die FAQ-Zeilen %s behalten ihren bisherigen Inhalt: Eine Antwort braucht das "
+"Dokument und die Seite, auf der sie gedruckt ist."
+
+#: includes/Admin/FaqsMetaBox.php:228 includes/Admin/FiguresMetaBox.php:116
+msgid "— none —"
+msgstr "— keines —"
+
+#: includes/Admin/FiguresMetaBox.php:48
+msgid "Figures and citations"
+msgstr "Kenndaten und Quellenangaben"
+
+#: includes/Admin/FiguresMetaBox.php:69
+msgid "This product states no figures."
+msgstr "Dieses Produkt hat keine Kenndaten."
+
+#: includes/Admin/FiguresMetaBox.php:73
+msgid ""
+"Changing a value or a unit requires the citation to be given again: the "
+"document and the page it is printed on."
+msgstr ""
+"Wenn Sie einen Wert oder eine Einheit ändern, muss die Quellenangabe erneut "
+"angegeben werden: das Dokument und die Seite, auf der er steht."
+
+#: includes/Admin/FiguresMetaBox.php:75
+msgid "Key"
+msgstr "Schlüssel"
+
+#: includes/Admin/FiguresMetaBox.php:76
+msgid "Value"
+msgstr "Wert"
+
+#: includes/Admin/FiguresMetaBox.php:77
+msgid "Unit"
+msgstr "Einheit"
+
+#: includes/Admin/FiguresMetaBox.php:140
+msgid "No citation"
+msgstr "Keine Quellenangabe"
+
+#. translators: %s: list of figure keys.
+#: includes/Admin/FiguresMetaBox.php:232
+#, php-format
+msgid ""
+"Figures %s kept their previous value: a changed value needs the document and "
+"the page it is printed on."
+msgstr ""
+"Die Kenndaten %s behalten ihren bisherigen Wert: Ein geänderter Wert "
+"benötigt das Dokument und die Seite, auf der er steht."
+
+#: includes/Catalog/EngineeringFeedController.php:72
+msgid ""
+"GMT timestamp or ISO-8601 moment; only products modified after it are "
+"returned."
+msgstr ""
+"GMT-Zeitstempel oder ISO-8601-Zeitpunkt; zurückgegeben werden nur Produkte, "
+"die danach geändert wurden."
+
+#: includes/Catalog/EngineeringFeedController.php:115
+#, fuzzy
+msgid ""
+"The engineering data of every published product, the overlay components and "
+"the compatibility version (docs/specs/8-engineering-data.md, target shape 5; "
+"the binding contract is services/engine/schemas/feed.schema.json)."
+msgstr ""
+"Die technischen Daten aller veröffentlichten Produkte, die Overlay-"
+"Komponenten und die Version des Kompatibilitätsvertrags (docs/specs/8-"
+"engineering-data.md)."
+
+#: includes/Catalog/EngineeringFeedController.php:120
+msgid "The feed schema version, the contract with the engine (#14)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:128
+#, fuzzy
+msgid "The version stated by data/compatibility.json."
+msgstr "sha256 von data/compatibility.json."
+
+#: includes/Catalog/EngineeringFeedController.php:132
+msgid ""
+"Engineering components that are not products (data/engineering-overlay.json)."
+msgstr ""
+"Technische Komponenten, die keine Produkte sind (data/engineering-"
+"overlay.json)."
+
+#: includes/Catalog/EngineeringFeedController.php:167
+msgid "One entry per published product."
+msgstr "Ein Eintrag je veröffentlichtem Produkt."
+
+#: includes/Catalog/EngineeringFeedController.php:181
+msgid "Rated AC power in kW, or unknown (#7 SelectionFactSet)."
+msgstr ""
+
+#: includes/Catalog/EngineeringFeedController.php:185
+#, fuzzy
+msgid "Maximum PV input power in kW, or unknown."
+msgstr "Maximale PV-Eingangsleistung in kW."
+
+#: includes/Catalog/EngineeringFeedController.php:189
+#, fuzzy
+msgid "Usable energy in kWh, or unknown."
+msgstr "Nutzbare Energie in kWh."
+
+#: includes/Catalog/EngineeringFeedController.php:193
+#, fuzzy
+msgid "Nominal energy in kWh, or unknown."
+msgstr "Nennenergie in kWh."
+
+#: includes/Catalog/EngineeringFeedController.php:197
+#, fuzzy
+msgid "Energy range in kWh the product data states; null when it states none."
+msgstr ""
+"Energiebereich in kWh, den die Produktdaten angeben; nur dann vorhanden."
+
+#: includes/Catalog/EngineeringFeedController.php:201
+msgid ""
+"Figure entries with a citation of a hosted document; a value without one is "
+"not in the feed."
+msgstr ""
+"Kenndaten mit Quellenangabe eines von uns gehosteten Dokuments; ein Wert "
+"ohne Quellenangabe ist nicht im Feed."
+
+#. translators: %d: most product IDs per request.
+#: includes/Catalog/SelectionFactsController.php:76
+#, php-format
+msgid "Product IDs, at most %d."
+msgstr "Produkt-IDs, höchstens %d."
+
+#: includes/Catalog/SelectionFactsController.php:130
+msgid "Selection facts of the requested published products, by product ID."
+msgstr ""
+"Auswahlfakten der angeforderten veröffentlichten Produkte, nach Produkt-ID."
+
+#: includes/Catalog/SelectionFactSet.php:86
+msgid "Product category the product is selected in."
+msgstr "Produktkategorie, in der das Produkt ausgewählt wird."
+
+#: includes/Catalog/SelectionFactSet.php:91
+msgid "Application (attribute pa_application)."
+msgstr "Einsatzbereich (Attribut pa_application)."
+
+#: includes/Catalog/SelectionFactSet.php:96
+msgid "Number of grid phases."
+msgstr "Anzahl der Netzphasen."
+
+#: includes/Catalog/SelectionFactSet.php:105
+msgid "Rated AC power in kW."
+msgstr "Nennleistung (AC) in kW."
+
+#: includes/Catalog/SelectionFactSet.php:106
+msgid "Maximum PV input power in kW."
+msgstr "Maximale PV-Eingangsleistung in kW."
+
+#: includes/Catalog/SelectionFactSet.php:107
+msgid "Usable energy in kWh."
+msgstr "Nutzbare Energie in kWh."
+
+#: includes/Catalog/SelectionFactSet.php:108
+msgid "Nominal energy in kWh."
+msgstr "Nennenergie in kWh."
+
+#: includes/Catalog/SelectionFactSet.php:110
+msgid "Energy range in kWh the product data states; present only then."
+msgstr ""
+"Energiebereich in kWh, den die Produktdaten angeben; nur dann vorhanden."
+
+#: includes/Catalog/SelectionFactSet.php:120
+msgid "Rated AC power the product data states in kVA; present only then."
+msgstr ""
+"Nennleistung (AC) in kVA, die die Produktdaten angeben; nur dann vorhanden."
+
+#: includes/Gating/DraftSummary.php:44
+msgid ""
+"Prices are shown after you log in. Then you can request a Proforma invoice "
+"for this solution draft."
+msgstr ""
+"Preise sehen Sie nach der Anmeldung. Danach können Sie für diesen "
+"Lösungsentwurf eine Proformarechnung anfordern."
+
+#: includes/Gating/DraftSummary.php:46
+msgid "Log in and request a Proforma"
+msgstr "Anmelden und Proforma anfordern"
+
+#: includes/Gating/DraftSummary.php:48
+msgid "No account yet? Register"
+msgstr "Noch kein Konto? Registrieren"
+
+#: includes/Gating/DraftSummary.php:63 includes/Gating/DraftSummary.php:81
+msgid ""
+"For products without a price, we state the price in your Proforma invoice."
+msgstr ""
+"Für Produkte ohne Preisangabe nennen wir den Preis in Ihrer Proformarechnung."
+
+#: includes/Gating/PriceDisplay.php:191
+msgid "Log in for prices"
+msgstr "Preise nach Anmeldung"
+
+#: includes/Gating/PriceDisplay.php:197
+msgid "Not available for your account"
+msgstr "Für Ihr Konto nicht verfügbar"
+
+#: includes/Gating/PriceDisplay.php:198
+msgid "Prices after approval"
+msgstr "Preise nach Freigabe"
+
+#: includes/Gating/PriceDisplay.php:202
+msgid "Quoted per project"
+msgstr "Angebot pro Projekt"
+
+#: includes/Gating/PriceDisplay.php:203
+msgid "Price on request"
+msgstr "Preis auf Anfrage"
+
+#: includes/Inquiry/Checkout.php:61 includes/Inquiry/Checkout.php:85
+#: templates/emails/linker-inquiry-received.php:34
+msgid "We reply within one business day."
+msgstr "Wir antworten innerhalb eines Arbeitstags."
+
+#: includes/Inquiry/Checkout.php:86
+#: templates/emails/linker-inquiry-received.php:34
+msgid ""
+"Your Proforma invoice will be in your account under Inquiries, and we will "
+"send you a link by email."
+msgstr ""
+"Ihre Proformarechnung finden Sie dann in Ihrem Konto unter „Anfragen“; den "
+"Link schicken wir Ihnen auch per E-Mail."
+
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:33
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:53
+#: includes/Vocabulary/Terms.php:106
+msgid "Inquiry received"
+msgstr "Anfrage eingegangen"
+
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:34
+msgid "Sent to the customer when an inquiry is received."
+msgstr "Geht an den Kunden, wenn eine Anfrage eingegangen ist."
+
+#. translators: {order_number} is replaced by the inquiry number.
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:46
+msgid "Your inquiry #{order_number} has been received"
+msgstr "Ihre Anfrage #{order_number} ist eingegangen"
+
+#: includes/Inquiry/Emails/NewInquiryEmail.php:36
+#: includes/Inquiry/OrderAdmin.php:36
+msgid "New inquiry"
+msgstr "Neue Anfrage"
+
+#: includes/Inquiry/Emails/NewInquiryEmail.php:37
+msgid ""
+"Sent to the team mailbox, with blind copies, when an inquiry is received."
+msgstr ""
+"Geht an das Team-Postfach (mit Blindkopien), wenn eine Anfrage eingegangen "
+"ist."
+
+#. translators: {order_number}: inquiry number, {company}: customer's company.
+#: includes/Inquiry/Emails/NewInquiryEmail.php:68
+msgid "New inquiry #{order_number} from {company}"
+msgstr "Neue Anfrage #{order_number} von {company}"
+
+#. translators: {order_number}: inquiry number.
+#: includes/Inquiry/Emails/NewInquiryEmail.php:76
+msgid "New inquiry #{order_number}"
+msgstr "Neue Anfrage #{order_number}"
+
+#: includes/Inquiry/OrderAdmin.php:33
+msgid "Add inquiry"
+msgstr "Anfrage hinzufügen"
+
+#: includes/Inquiry/OrderAdmin.php:34
+msgid "Add new inquiry"
+msgstr "Neue Anfrage hinzufügen"
+
+#: includes/Inquiry/OrderAdmin.php:35
+msgid "Edit inquiry"
+msgstr "Anfrage bearbeiten"
+
+#: includes/Inquiry/OrderAdmin.php:37
+msgid "View inquiry"
+msgstr "Anfrage ansehen"
+
+#: includes/Inquiry/OrderAdmin.php:38
+msgid "Search inquiries"
+msgstr "Anfragen durchsuchen"
+
+#: includes/Inquiry/OrderAdmin.php:39
+msgid "No inquiries found"
+msgstr "Keine Anfragen gefunden"
+
+#: includes/Inquiry/OrderAdmin.php:40
+msgid "No inquiries found in trash"
+msgstr "Keine Anfragen im Papierkorb gefunden"
+
+#: includes/Inquiry/OrderAdmin.php:41
+msgid "Filter inquiries"
+msgstr "Anfragen filtern"
+
+#: includes/Inquiry/OrderAdmin.php:42
+msgid "Inquiries navigation"
+msgstr "Navigation der Anfragen"
+
+#: includes/Inquiry/OrderAdmin.php:43
+msgid "Inquiries list"
+msgstr "Liste der Anfragen"
+
+#: includes/Inquiry/ProformaGateway.php:46
+#: includes/Inquiry/ProformaGateway.php:61 includes/Proforma/AdminBox.php:47
+#: includes/Settings/SettingsTab.php:132 includes/Vocabulary/Terms.php:74
+#: templates/proforma/proforma.php:72
+msgid "Proforma invoice"
+msgstr "Proformarechnung"
+
+#: includes/Inquiry/ProformaGateway.php:54
+msgid "We check your inquiry and send you a Proforma invoice."
+msgstr "Wir prüfen Ihre Anfrage und senden Ihnen eine Proformarechnung."
+
+#: includes/Inquiry/ProformaGateway.php:68
+msgid ""
+"Sends the inquiry without payment. Staff issue the Proforma invoice from the "
+"inquiry. Always on: it is the only way to send an inquiry."
+msgstr ""
+"Sendet die Anfrage ohne Zahlung. Die Proformarechnung stellen die "
+"Mitarbeitenden in der Anfrage aus. Immer aktiv: Nur so lässt sich eine "
+"Anfrage senden."
+
+#: includes/Inquiry/Statuses.php:45 includes/Inquiry/Statuses.php:80
+#: includes/Inquiry/Statuses.php:84
+msgctxt "Inquiry status"
+msgid "Inquiry received"
+msgstr "Anfrage eingegangen"
+
+#. translators: %s: number of inquiries.
+#: includes/Inquiry/Statuses.php:51
+#, php-format
+msgid "Inquiry received <span class=\"count\">(%s)</span>"
+msgid_plural "Inquiry received <span class=\"count\">(%s)</span>"
+msgstr[0] "Anfrage eingegangen <span class=\"count\">(%s)</span>"
+msgstr[1] "Anfrage eingegangen <span class=\"count\">(%s)</span>"
+
+#: includes/Inquiry/Statuses.php:57 includes/Inquiry/Statuses.php:81
+#: includes/Inquiry/Statuses.php:85
+msgctxt "Inquiry status"
+msgid "Proforma invoice issued"
+msgstr "Proformarechnung ausgestellt"
+
+#. translators: %s: number of inquiries.
+#: includes/Inquiry/Statuses.php:63
+#, php-format
+msgid "Proforma invoice issued <span class=\"count\">(%s)</span>"
+msgid_plural "Proforma invoice issued <span class=\"count\">(%s)</span>"
+msgstr[0] "Proformarechnung ausgestellt <span class=\"count\">(%s)</span>"
+msgstr[1] "Proformarechnung ausgestellt <span class=\"count\">(%s)</span>"
+
+#: includes/Inquiry/Statuses.php:87
+msgctxt "Inquiry status"
+msgid "Not sent"
+msgstr "Nicht gesendet"
+
+#: includes/Inquiry/Statuses.php:88
+msgctxt "Inquiry status"
+msgid "Completed"
+msgstr "Abgeschlossen"
+
+#: includes/Inquiry/Statuses.php:89
+msgctxt "Inquiry status"
+msgid "Cancelled"
+msgstr "Storniert"
+
+#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:101
+#: includes/Registration/Emails/CustomerApprovalEmail.php:110
+msgid "HTML"
+msgstr "HTML"
+
+#: includes/Mail/JobStore.php:45
+msgid "Queued emails"
+msgstr "E-Mails in der Warteschlange"
+
+#: includes/Presentation/LoginGate.php:63
+msgid "Empty solution draft"
+msgstr "Leerer Lösungsentwurf"
+
+#: includes/Presentation/LoginGate.php:64
+msgid "Nothing to submit yet."
+msgstr "Noch nichts zum Absenden."
+
+#: includes/Presentation/LoginGate.php:65
+msgid ""
+"Your solution draft is empty. Add matched systems, then come back for your "
+"Proforma."
+msgstr ""
+"Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie "
+"dann für Ihre Proformarechnung zurück."
+
+#: includes/Presentation/LoginGate.php:67
+#: includes/Presentation/LoginGate.php:79
+#: includes/Presentation/LoginGate.php:108
+#: includes/Presentation/LoginGate.php:118 includes/Vocabulary/Terms.php:37
+#: templates/emails/linker-approval-approved.php:26
+msgid "Browse products"
+msgstr "Zu den Produkten"
+
+#: includes/Presentation/LoginGate.php:72
+msgid "Proforma request sign-in"
+msgstr "Anmeldung zur Proforma-Anfrage"
+
+#: includes/Presentation/LoginGate.php:73
+msgid "Get your Proforma"
+msgstr "Proformarechnung anfordern"
+
+#: includes/Presentation/LoginGate.php:74
+msgid ""
+"Sign in with your partner account, add matched systems, and your Proforma is "
+"one step away."
+msgstr ""
+"Melden Sie sich mit Ihrem Partnerkonto an, fügen Sie passende Systeme hinzu, "
+"und Ihre Proformarechnung ist nur noch einen Schritt entfernt."
+
+#: includes/Presentation/LoginGate.php:75
+msgid ""
+"The Proforma request is reserved for Linker partner accounts. Register, add "
+"your systems, and return here — VAT and delivery are ours to handle."
+msgstr ""
+"Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren Sie "
+"sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — "
+"Umsatzsteuer und Lieferung übernehmen wir."
+
+#: includes/Presentation/LoginGate.php:77
+msgid "Sign in or register"
+msgstr "Anmelden oder registrieren"
+
+#: includes/Presentation/LoginGate.php:96
+#: templates/emails/linker-approval-rejected.php:25
+#: templates/emails/linker-approval-restricted.php:26
+msgid "Our reason:"
+msgstr "Unser Grund:"
+
+#: includes/Presentation/LoginGate.php:102
+msgid "Account with limited access"
+msgstr "Konto mit eingeschränktem Zugriff"
+
+#: includes/Presentation/LoginGate.php:103
+msgid "Access currently limited"
+msgstr "Zugriff derzeit eingeschränkt"
+
+#: includes/Presentation/LoginGate.php:104
+msgid ""
+"Your partner account is limited for now: the products and your questions "
+"stay open, net prices and the Proforma request are paused."
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:106
+#: templates/emails/linker-approval-restricted.php:28
+msgid "Write to sales@de-linker.com and we will look at your account again."
+msgstr "Schreiben Sie an sales@de-linker.com, und wir sehen uns Ihr Konto erneut an."
+
+#: includes/Presentation/LoginGate.php:113
+msgid "Account under review"
+msgstr "Konto in Prüfung"
+
+#: includes/Presentation/LoginGate.php:114
+msgid "Your account is under review"
+msgstr "Ihr Konto wird geprüft"
+
+#: includes/Presentation/LoginGate.php:115
+msgid ""
+"We are reviewing your partner account. Net prices and the Proforma request "
+"open as soon as it is approved, and we will email you."
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:116
+msgid ""
+"Until then, browse the products and write to sales@de-linker.com with any "
+"question."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php:99
+msgid "Product questions"
+msgstr "Produktfragen"
+
+#. translators: 1: document title, 2: page number.
+#: includes/Presentation/Shortcodes.php:108
+#, php-format
+msgid "%1$s, p. %2$d"
+msgstr "%1$s, S. %2$d"
+
+#. translators: %d: page number.
+#: includes/Presentation/Shortcodes.php:114
+#, php-format
+msgid "p. %d"
+msgstr "S. %d"
+
+#. translators: %s: date.
+#: includes/Proforma/AdminBox.php:68
+#, php-format
+msgid "Issued %s"
+msgstr "Ausgestellt am %s"
+
+#. translators: %s: date.
+#: includes/Proforma/AdminBox.php:70
+#, php-format
+msgid "Valid until %s"
+msgstr "Gültig bis %s"
+
+#: includes/Proforma/AdminBox.php:72
+msgid "Download PDF"
+msgstr "PDF herunterladen"
+
+#: includes/Proforma/AdminBox.php:83
+msgid ""
+"Save your changes to prices and quantities, then issue the Proforma invoice. "
+"The customer receives an email with the link."
+msgstr ""
+"Speichern Sie zuerst Ihre Änderungen an Preisen und Mengen, dann stellen Sie "
+"die Proformarechnung aus. Der Kunde erhält eine E-Mail mit dem Link."
+
+#: includes/Proforma/AdminBox.php:85
+msgid "Issue Proforma"
+msgstr "Proforma ausstellen"
+
+#: includes/Proforma/AdminBox.php:132
+msgid "Proforma"
+msgstr "Proforma"
+
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:41
+msgid "Proforma invoice issued"
+msgstr "Proformarechnung ausgestellt"
+
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:42
+msgid ""
+"Sent to the customer when staff issue the Proforma invoice of an inquiry."
+msgstr ""
+"Geht an den Kunden, wenn die Proformarechnung einer Anfrage ausgestellt wird."
+
+#. translators: {proforma_number}: Proforma number, {order_number}: inquiry number.
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:72
+msgid "Your Proforma invoice {proforma_number} for inquiry #{order_number}"
+msgstr "Ihre Proformarechnung {proforma_number} zur Anfrage #{order_number}"
+
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:79
+msgid "Your Proforma invoice is ready"
+msgstr "Ihre Proformarechnung liegt bereit"
+
+#: includes/Proforma/Issuer.php:82
+msgid "This inquiry already has a Proforma invoice."
+msgstr "Für diese Anfrage ist bereits eine Proformarechnung ausgestellt."
+
+#: includes/Proforma/Issuer.php:85
+msgid "Only a received inquiry gets a Proforma invoice."
+msgstr ""
+"Eine Proformarechnung lässt sich nur für eine eingegangene Anfrage "
+"ausstellen."
+
+#: includes/Proforma/Issuer.php:88
+msgid "The inquiry has no products."
+msgstr "Die Anfrage enthält keine Produkte."
+
+#: includes/Proforma/Issuer.php:91
+msgid "Set a price for every product before issuing the Proforma invoice."
+msgstr ""
+"Setzen Sie für jedes Produkt einen Preis, bevor Sie die Proformarechnung "
+"ausstellen."
+
+#: includes/Proforma/Issuer.php:94
+msgid ""
+"Enter the bank account under WooCommerce → Settings → Inquiries before "
+"issuing a Proforma invoice."
+msgstr ""
+"Tragen Sie unter WooCommerce → Einstellungen → Anfragen die Bankverbindung "
+"ein, bevor Sie eine Proformarechnung ausstellen."
+
+#: includes/Proforma/Issuer.php:115
+msgid ""
+"This inquiry is being issued a Proforma invoice right now; please reload the "
+"page in a moment."
+msgstr ""
+"Diese Anfrage wird gerade mit einer Proformarechnung versehen; bitte laden "
+"Sie die Seite in einem Moment neu."
+
+#. translators: %s: Proforma number.
+#: includes/Proforma/Issuer.php:148
+#, php-format
+msgid "Proforma invoice %s issued."
+msgstr "Proformarechnung %s ausgestellt."
+
+#: includes/Proforma/Issuer.php:154
+msgid "No Proforma number could be reserved; please try again."
+msgstr ""
+"Es konnte keine Proforma-Nummer vergeben werden. Bitte versuchen Sie es "
+"erneut."
+
+#: includes/Registration/Approval.php:185
+msgid "Pending review"
+msgstr "In Prüfung"
+
+#: includes/Registration/Approval.php:186
+msgid "Approved"
+msgstr "Freigegeben"
+
+#: includes/Registration/Approval.php:187
+msgid "Restricted"
+msgstr "Eingeschränkt"
+
+#: includes/Registration/Approval.php:188
+msgid "Rejected"
+msgstr "Abgelehnt"
+
+#: includes/Registration/Approval.php:190
+msgid "No decision yet"
+msgstr "Noch nicht entschieden"
+
+#: includes/Registration/Approval.php:208
+msgid ""
+"This account is not approved for sign-in. We have emailed you the reason. "
+"Write to sales@de-linker.com and we will look at it again."
+msgstr ""
+
+#: includes/Registration/ApprovalAdmin.php:45
+#: includes/Registration/ApprovalAdmin.php:138
+msgid "Approve"
+msgstr "Freigeben"
+
+#: includes/Registration/ApprovalAdmin.php:49
+msgid "Restrict"
+msgstr "Einschränken"
+
+#: includes/Registration/ApprovalAdmin.php:53
+msgid "Reject"
+msgstr "Ablehnen"
+
+#: includes/Registration/ApprovalAdmin.php:94
+#: templates/emails/linker-new-customer.php:30
+msgid "Approval"
+msgstr "Freigabe"
+
+#: includes/Registration/ApprovalAdmin.php:161
+msgid "Linker approval"
+msgstr "Linker-Freigabe"
+
+#. translators: 1: date, 2: name of the staff member who set the state.
+#: includes/Registration/ApprovalAdmin.php:169
+#, php-format
+msgid "Last change %1$s by %2$s."
+msgstr "Letzte Änderung %1$s durch %2$s."
+
+#: includes/Registration/ApprovalAdmin.php:182
+msgid "Reason"
+msgstr "Grund"
+
+#: includes/Registration/ApprovalAdmin.php:185
+msgid ""
+"Required for restrict and reject; the customer reads it in the email about "
+"the change."
+msgstr ""
+
+#: includes/Registration/ApprovalAdmin.php:213
+msgid "You are not allowed to change this account."
+msgstr "Sie dürfen dieses Konto nicht ändern."
+
+#: includes/Registration/ApprovalAdmin.php:218
+msgid "Choose approve, restrict or reject."
+msgstr "Wählen Sie Freigeben, Einschränken oder Ablehnen."
+
+#: includes/Registration/ApprovalAdmin.php:223
+msgid ""
+"A restriction or rejection needs a reason; the customer reads it in the "
+"email."
+msgstr ""
+
+#: includes/Registration/BillingVatField.php:39
+#: includes/Registration/BillingVatField.php:55
+#: includes/Registration/BillingVatField.php:86
+#: includes/Registration/Fields.php:69
+#: templates/emails/linker-new-customer.php:28
+#: templates/proforma/proforma.php:87 templates/proforma/proforma.php:102
+msgid "VAT ID"
+msgstr "USt-IdNr."
+
+#: includes/Registration/BillingVatField.php:71
+msgid "VAT check:"
+msgstr "USt-IdNr.-Prüfung:"
+
+#: includes/Registration/BillingVatField.php:91
+msgid "Customer check"
+msgstr "Kundenprüfung"
+
+#: includes/Registration/BillingVatField.php:94
+#: includes/Registration/Fields.php:63
+#: templates/emails/linker-new-customer.php:24
+msgid "Business type"
+msgstr "Unternehmensart"
+
+#: includes/Registration/BillingVatField.php:99
+#: templates/emails/linker-new-customer.php:29
+msgid "VAT check"
+msgstr "USt-IdNr.-Prüfung"
+
+#: includes/Registration/BillingVatField.php:108
+msgid "Set by the VIES check; change it after a manual check."
+msgstr ""
+"Wird von der VIES-Prüfung gesetzt; nach einer manuellen Prüfung hier ändern."
+
+#: includes/Registration/CustomerRole.php:31
+msgid "Installer"
+msgstr "Installationsbetrieb"
+
+#: includes/Registration/CustomerRole.php:32
+msgid "EPC contractor"
+msgstr "EPC-Unternehmen"
+
+#: includes/Registration/CustomerRole.php:33
+msgid "Distributor"
+msgstr "Händler"
+
+#: includes/Registration/Emails/ApprovedEmail.php:32
+msgid "Account approved"
+msgstr "Konto freigegeben"
+
+#: includes/Registration/Emails/ApprovedEmail.php:33
+msgid "Sent to the customer when the team approves the account."
+msgstr "Geht an den Kunden, wenn das Team das Konto freigibt."
+
+#: includes/Registration/Emails/ApprovedEmail.php:50
+msgid "Your partner account is approved"
+msgstr "Ihr Partner-Konto ist freigegeben"
+
+#: includes/Registration/Emails/ApprovedEmail.php:57
+msgid "Partner account approved"
+msgstr "Partner-Konto freigegeben"
+
+#: includes/Registration/Emails/NewCustomerEmail.php:37
+#: includes/Registration/Emails/NewCustomerEmail.php:71
+msgid "New customer"
+msgstr "Neuer Kunde"
+
+#: includes/Registration/Emails/NewCustomerEmail.php:38
+msgid "Sent to the team mailbox, with blind copies, when a customer registers."
+msgstr ""
+"Geht an das Team-Postfach (mit Blindkopien), wenn sich ein Kunde registriert."
+
+#. translators: {company}: the customer's company.
+#: includes/Registration/Emails/NewCustomerEmail.php:64
+msgid "New customer: {company}"
+msgstr "Neuer Kunde: {company}"
+
+#: includes/Registration/Emails/RejectedEmail.php:32
+msgid "Account rejected"
+msgstr "Konto abgelehnt"
+
+#: includes/Registration/Emails/RejectedEmail.php:33
+msgid ""
+"Sent to the customer when the team rejects the account, with the reason."
+msgstr ""
+
+#: includes/Registration/Emails/RejectedEmail.php:50
+msgid "Your partner account was not approved"
+msgstr "Ihr Partner-Konto wurde nicht freigegeben"
+
+#: includes/Registration/Emails/RejectedEmail.php:57
+msgid "Account not approved"
+msgstr "Konto nicht freigegeben"
+
+#: includes/Registration/Emails/RestrictedEmail.php:33
+msgid "Account restricted"
+msgstr "Konto eingeschränkt"
+
+#: includes/Registration/Emails/RestrictedEmail.php:34
+msgid ""
+"Sent to the customer when the team restricts the account, with the reason."
+msgstr ""
+
+#: includes/Registration/Emails/RestrictedEmail.php:51
+msgid "Your partner account access is limited"
+msgstr "Der Zugriff Ihres Partner-Kontos ist derzeit eingeschränkt"
+
+#: includes/Registration/Emails/RestrictedEmail.php:58
+msgid "Access limited"
+msgstr "Zugriff eingeschränkt"
+
+#: includes/Registration/Emails/VatReviewEmail.php:46
+#: includes/Registration/Emails/VatReviewEmail.php:86
+msgid "VAT check changed"
+msgstr "USt-IdNr.-Prüfung geändert"
+
+#: includes/Registration/Emails/VatReviewEmail.php:47
+msgid ""
+"Sent to the team mailbox, with blind copies, when the VIES verdict of a "
+"customer changes."
+msgstr ""
+"Geht an das Team-Postfach (mit Blindkopien), wenn sich das VIES-Ergebnis "
+"eines Kunden ändert."
+
+#. translators: {company}: the customer's company.
+#: includes/Registration/Emails/VatReviewEmail.php:79
+msgid "VAT check changed: {company}"
+msgstr "USt-IdNr.-Prüfung geändert: {company}"
+
+#: includes/Registration/Fields.php:56
+msgid "Company name"
+msgstr "Firmenname"
+
+#: includes/Registration/Fields.php:65
+msgid "Please choose"
+msgstr "Bitte wählen"
+
+#: includes/Registration/Fields.php:71
+msgid ""
+"We check EU VAT IDs in the European Commission's VIES system. You can "
+"register without one."
+msgstr ""
+"Eine EU-USt-IdNr. prüfen wir im VIES-System der Europäischen Kommission. Sie "
+"können sich auch ohne USt-IdNr. registrieren."
+
+#. translators: %s: field name.
+#: includes/Registration/Fields.php:108
+#, php-format
+msgid "%s is a required field."
+msgstr "%s ist ein Pflichtfeld."
+
+#: includes/Registration/Fields.php:112
+msgid "Please choose a business type."
+msgstr "Bitte wählen Sie eine Unternehmensart."
+
+#: includes/Registration/Fields.php:115
+msgid "Please choose a country from the list."
+msgstr "Bitte wählen Sie ein Land aus der Liste."
+
+#: includes/Registration/Fields.php:119
+msgid "Please enter a valid postcode."
+msgstr "Bitte geben Sie eine gültige Postleitzahl ein."
+
+#: includes/Registration/VatProfile.php:121
+msgid "Valid (VIES)"
+msgstr "Gültig (VIES)"
+
+#: includes/Registration/VatProfile.php:122
+msgid "Not valid according to VIES – review"
+msgstr "Laut VIES ungültig – prüfen"
+
+#: includes/Registration/VatProfile.php:123
+msgid "Not checked (VIES unavailable or not an EU VAT ID) – review"
+msgstr "Nicht geprüft (VIES nicht erreichbar oder keine EU-USt-IdNr.) – prüfen"
+
+#: includes/Registration/VatProfile.php:124
+msgid "No VAT ID given"
+msgstr "Keine USt-IdNr. angegeben"
+
+#: includes/Registration/VatProfile.php:126
+msgid "Not checked yet"
+msgstr "Noch nicht geprüft"
+
+#. translators: %d: number of emails.
+#: includes/Settings/SettingsTab.php:55
+#, php-format
+msgid ""
+"%d email could not be delivered. The attempts are in WooCommerce → Status → "
+"Logs (linker-mail); the message stays queued under its post id."
+msgid_plural ""
+"%d emails could not be delivered. The attempts are in WooCommerce → Status → "
+"Logs (linker-mail); each message stays queued under its post id."
+msgstr[0] ""
+"%d E-Mail konnte nicht zugestellt werden. Die Versuche stehen unter "
+"WooCommerce → Status → Logs (linker-mail); die Nachricht bleibt unter ihrer "
+"Beitrags-ID in der Warteschlange."
+msgstr[1] ""
+"%d E-Mails konnten nicht zugestellt werden. Die Versuche stehen unter "
+"WooCommerce → Status → Logs (linker-mail); jede Nachricht bleibt unter ihrer "
+"Beitrags-ID in der Warteschlange."
+
+#: includes/Settings/SettingsTab.php:78 includes/Settings/SettingsTab.php:84
+msgid "Team mailbox"
+msgstr "Team-Postfach"
+
+#: includes/Settings/SettingsTab.php:80
+msgid ""
+"Every company notification (new customer, new inquiry, VAT check) is one "
+"message to the team mailbox, with a blind copy to each address below."
+msgstr ""
+"Jede Benachrichtigung an das Unternehmen (neuer Kunde, neue Anfrage, USt-"
+"IdNr.-Prüfung) ist eine Nachricht an das Team-Postfach, mit einer Blindkopie "
+"an jede Adresse unten."
+
+#: includes/Settings/SettingsTab.php:92
+msgid "Blind copies"
+msgstr "Blindkopien"
+
+#: includes/Settings/SettingsTab.php:93
+msgid "One address per line."
+msgstr "Eine Adresse pro Zeile."
+
+#: includes/Settings/SettingsTab.php:104
+msgid "Contact person"
+msgstr "Ansprechperson"
+
+#: includes/Settings/SettingsTab.php:106
+msgid ""
+"Shown to customers at the top of their account. Without an email address the "
+"team mailbox is shown."
+msgstr ""
+"Wird Kunden oben in ihrem Konto angezeigt. Ohne E-Mail-Adresse erscheint das "
+"Team-Postfach."
+
+#: includes/Settings/SettingsTab.php:110
+#: templates/emails/linker-new-customer.php:25
+msgid "Name"
+msgstr "Name"
+
+#: includes/Settings/SettingsTab.php:116
+#: templates/emails/linker-new-customer.php:26
+msgid "Email"
+msgstr "E-Mail"
+
+#: includes/Settings/SettingsTab.php:122
+msgid "Phone"
+msgstr "Telefon"
+
+#: includes/Settings/SettingsTab.php:134
+msgid ""
+"Printed on every Proforma invoice. The seller address is the store address "
+"under General."
+msgstr ""
+"Steht auf jeder Proformarechnung. Die Anschrift des Verkäufers ist die Shop-"
+"Adresse unter „Allgemein“."
+
+#: includes/Settings/SettingsTab.php:138
+msgid "Number prefix"
+msgstr "Nummernpräfix"
+
+#: includes/Settings/SettingsTab.php:139
+msgid "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year."
+msgstr ""
+"Nummern lauten PRÄFIX-JAHR-NNNN und beginnen in jedem Kalenderjahr bei 1."
+
+#: includes/Settings/SettingsTab.php:147
+msgid "Seller"
+msgstr "Verkäufer"
+
+#: includes/Settings/SettingsTab.php:154
+msgid "Seller VAT ID"
+msgstr "USt-IdNr. des Verkäufers"
+
+#: includes/Settings/SettingsTab.php:160 templates/proforma/proforma.php:169
+msgid "Account holder"
+msgstr "Kontoinhaber"
+
+#: includes/Settings/SettingsTab.php:166 templates/proforma/proforma.php:171
+msgid "Bank"
+msgstr "Bank"
+
+#: includes/Settings/SettingsTab.php:172 templates/proforma/proforma.php:173
+msgid "IBAN"
+msgstr "IBAN"
+
+#: includes/Settings/SettingsTab.php:178 templates/proforma/proforma.php:175
+msgid "BIC"
+msgstr "BIC"
+
+#. translators: %s: the addresses that were left out, comma-separated.
+#: includes/Settings/SettingsTab.php:211
+#, php-format
+msgid "Not an email address, left out: %s"
+msgstr "Keine E-Mail-Adresse, nicht übernommen: %s"
+
+#: includes/Settings/SettingsTab.php:227
+msgid ""
+"The IBAN is not valid (check digits do not match); the previous IBAN is kept."
+msgstr ""
+"Die IBAN ist ungültig (Prüfziffern stimmen nicht); die bisherige IBAN bleibt."
+
+#: includes/Settings/SettingsTab.php:242
+msgid "The BIC is not valid (8 or 11 characters); the previous BIC is kept."
+msgstr "Der BIC ist ungültig (8 oder 11 Zeichen); der bisherige BIC bleibt."
+
+#. translators: %d: number of grid phases.
+#: includes/Storefront/CatalogFilters.php:278
+#, php-format
+msgid "%d-phase"
+msgid_plural "%d-phase"
+msgstr[0] "%d-phasig"
+msgstr[1] "%d-phasig"
+
+#: includes/Storefront/CatalogFilters.php:339
+msgid "Up to 6 kW"
+msgstr "Bis 6 kW"
+
+#: includes/Storefront/CatalogFilters.php:340
+msgid "6 to 15 kW"
+msgstr "6 bis 15 kW"
+
+#: includes/Storefront/CatalogFilters.php:341
+msgid "15 to 30 kW"
+msgstr "15 bis 30 kW"
+
+#: includes/Storefront/CatalogFilters.php:342
+msgid "Over 30 kW"
+msgstr "Über 30 kW"
+
+#: includes/Storefront/ProductView.php:65
+msgid "In stock"
+msgstr "Auf Lager"
+
+#: includes/Storefront/ProductView.php:65
+msgid "Currently unavailable"
+msgstr "Derzeit nicht verfügbar"
+
+#: includes/Storefront/ProductView.php:67 includes/Vocabulary/Labels.php:33
+#: includes/Vocabulary/Terms.php:42
+#: templates/myaccount/linker-saved-solutions.php:54
+msgid "Add to solution draft"
+msgstr "Zum Lösungsentwurf hinzufügen"
+
+#: includes/Storefront/ProductView.php:68
+msgid "Sign in for partner pricing"
+msgstr "Für Partnerpreise anmelden"
+
+#: includes/Storefront/ProductView.php:192
+#: templates/storefront-archive-product.php:90
+msgid "Application"
+msgstr "Anwendung"
+
+#: includes/Storefront/ProductView.php:193
+msgid "Home"
+msgstr "Privat"
+
+#: includes/Storefront/ProductView.php:193
+msgid "Commercial"
+msgstr "Gewerbe"
+
+#: includes/Storefront/ProductView.php:196
+msgid "Grid phases"
+msgstr "Netzphasen"
+
+#: includes/Storefront/ProductView.php:200
+#: templates/storefront-archive-product.php:121
+msgid "AC power"
+msgstr "AC-Leistung"
+
+#: includes/Storefront/ProductView.php:206
+msgid "Energy capacity"
+msgstr "Nutzbare Energie"
+
+#: includes/Storefront/ProductView.php:233
+msgid "Net price after partner sign-in"
+msgstr "Nettopreis nach Partner-Anmeldung"
+
+#: includes/Storefront/ProductView.php:511
+#: templates/myaccount/linker-saved-solutions.php:29
+#: templates/myaccount/linker-saved-solutions.php:41
+msgid "Products"
+msgstr "Produkte"
+
+#: includes/Vocabulary/Labels.php:40 includes/Vocabulary/Terms.php:88
+msgid "Request Proforma"
+msgstr "Proforma anfordern"
+
+#: includes/Vocabulary/Labels.php:47 includes/Vocabulary/Terms.php:103
+msgid "Thank you. Your inquiry has been received."
+msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
+
+#: includes/Vocabulary/Labels.php:54 includes/Vocabulary/Terms.php:89
+msgid ""
+"Please log in to request a Proforma invoice. No account yet? Register on the "
+"account page."
+msgstr ""
+"Bitte melden Sie sich an, um eine Proformarechnung anzufordern. Noch kein "
+"Konto? Registrieren Sie sich auf der Kontoseite."
+
+#: includes/Vocabulary/Labels.php:66
+msgid ""
+"We use your personal data to process your inquiry and for the other purposes "
+"described in our [privacy_policy]."
+msgstr ""
+"Wir verwenden Ihre personenbezogenen Daten zur Bearbeitung Ihrer Anfrage und "
+"für die weiteren in unserer [privacy_policy] beschriebenen Zwecke."
+
+#: includes/Vocabulary/Labels.php:69
+msgid ""
+"We use your personal data to manage your account and for the other purposes "
+"described in our [privacy_policy]."
+msgstr ""
+"Wir verwenden Ihre personenbezogenen Daten zur Verwaltung Ihres Kontos und "
+"für die weiteren in unserer [privacy_policy] beschriebenen Zwecke."
+
+#: includes/Vocabulary/Labels.php:131
+msgid "Solution draft"
+msgstr "Lösungsentwurf"
+
+#: includes/Vocabulary/Labels.php:134 includes/Vocabulary/Terms.php:39
+msgid "Proforma request"
+msgstr "Proforma-Anfrage"
+
+#: includes/Vocabulary/LocaleFormat.php:26
+msgctxt "date format, see https://www.php.net/manual/datetime.format.php"
+msgid "j F Y"
+msgstr "j. F Y"
+
+#. translators: %s: VAT rate, e.g. 19.
+#: includes/Vocabulary/LocaleFormat.php:78
+#, php-format
+msgctxt "tax rate label"
+msgid "VAT %s%%"
+msgstr "USt. %s %%"
+
+#: includes/Vocabulary/Terms.php:30
+msgid "Totals"
+msgstr "Summen"
+
+#: includes/Vocabulary/Terms.php:31
+msgid "Update solution draft"
+msgstr "Lösungsentwurf aktualisieren"
+
+#: includes/Vocabulary/Terms.php:32
+msgid "Continue to Proforma request"
+msgstr "Weiter zur Proforma-Anfrage"
+
+#. translators: %s: product name.
+#: includes/Vocabulary/Terms.php:34
+#, php-format
+msgid "Remove %s from the solution draft"
+msgstr "%s aus dem Lösungsentwurf entfernen"
+
+#: includes/Vocabulary/Terms.php:35
+msgid "Solution draft updated."
+msgstr "Lösungsentwurf aktualisiert."
+
+#: includes/Vocabulary/Terms.php:36
+msgid "Your solution draft is empty."
+msgstr "Ihr Lösungsentwurf ist leer."
+
+#: includes/Vocabulary/Terms.php:38
+msgid "View solution draft"
+msgstr "Lösungsentwurf ansehen"
+
+#: includes/Vocabulary/Terms.php:40
+msgid "No products in the solution draft."
+msgstr "Keine Produkte im Lösungsentwurf."
+
+#: includes/Vocabulary/Terms.php:41
+msgid "Back to the solution draft"
+msgstr "Zurück zum Lösungsentwurf"
+
+#. translators: %s: product name.
+#: includes/Vocabulary/Terms.php:44
+#, php-format
+msgid "Add to solution draft: &ldquo;%s&rdquo;"
+msgstr "Zum Lösungsentwurf hinzufügen: &bdquo;%s&ldquo;"
+
+#. translators: %s: product name.
+#: includes/Vocabulary/Terms.php:46
+#, php-format
+msgid "&ldquo;%s&rdquo; has been added to your solution draft"
+msgstr "&bdquo;%s&ldquo; wurde Ihrem Lösungsentwurf hinzugefügt"
+
+#. translators: %s: product name.
+#: includes/Vocabulary/Terms.php:48
+#, php-format
+msgid "&ldquo;%s&rdquo; has been removed from your solution draft"
+msgstr "&bdquo;%s&ldquo; wurde aus Ihrem Lösungsentwurf entfernt"
+
+#: includes/Vocabulary/Terms.php:49
+msgid ""
+"A product that is no longer available was removed from your solution draft."
+msgstr ""
+"Ein nicht mehr verfügbares Produkt wurde aus Ihrem Lösungsentwurf entfernt."
+
+#. translators: %s: product name.
+#: includes/Vocabulary/Terms.php:51
+#, php-format
+msgid ""
+"%s has been removed from your solution draft because it is no longer "
+"available. Please contact us if you need help."
+msgstr ""
+"%s wurde aus Ihrem Lösungsentwurf entfernt, weil das Produkt nicht mehr "
+"verfügbar ist. Bei Fragen kontaktieren Sie uns bitte."
+
+#. translators: 1: product name, 2: link that adds it again.
+#: includes/Vocabulary/Terms.php:53
+#, php-format
+msgid ""
+"%1$s has been removed from your solution draft because the product has "
+"changed since you added it. You can <a href=\"%2$s\">add it again</a>."
+msgstr ""
+"%1$s wurde aus Ihrem Lösungsentwurf entfernt, weil sich das Produkt geändert "
+"hat, seit Sie es hinzugefügt haben. Sie können es <a href=\"%2$s\">erneut "
+"hinzufügen</a>."
+
+#: includes/Vocabulary/Terms.php:54
+msgid ""
+"Your solution draft has been replaced with the products of the earlier "
+"inquiry."
+msgstr ""
+"Ihr Lösungsentwurf wurde durch die Produkte der früheren Anfrage ersetzt."
+
+#: includes/Vocabulary/Terms.php:55
+msgid "Please choose a product to add to your solution draft&hellip;"
+msgstr "Bitte wählen Sie ein Produkt für Ihren Lösungsentwurf&hellip;"
+
+#: includes/Vocabulary/Terms.php:56
+msgid ""
+"Please choose the quantity you want to add to your solution draft&hellip;"
+msgstr "Bitte wählen Sie die Menge für Ihren Lösungsentwurf&hellip;"
+
+#. translators: %s: product name.
+#: includes/Vocabulary/Terms.php:58
+#, php-format
+msgid "Your solution draft can hold only one %s."
+msgstr "Ihr Lösungsentwurf kann %s nur einmal enthalten."
+
+#. translators: %s: product name.
+#: includes/Vocabulary/Terms.php:60
+#, php-format
+msgid "You cannot add another &ldquo;%s&rdquo; to your solution draft."
+msgstr ""
+"Sie können &bdquo;%s&ldquo; kein weiteres Mal zu Ihrem Lösungsentwurf "
+"hinzufügen."
+
+#. translators: %s: product name.
+#: includes/Vocabulary/Terms.php:62
+#, php-format
+msgid ""
+"&ldquo;%s&rdquo; is not available at the moment and cannot be added to the "
+"solution draft."
+msgstr ""
+"&bdquo;%s&ldquo; ist derzeit nicht verfügbar und kann nicht zum "
+"Lösungsentwurf hinzugefügt werden."
+
+#: includes/Vocabulary/Terms.php:63
+msgid ""
+"Some products in your solution draft need checking. Please go back to the "
+"solution draft before you request a Proforma invoice."
+msgstr ""
+"Einige Produkte in Ihrem Lösungsentwurf müssen geprüft werden. Bitte kehren "
+"Sie zum Lösungsentwurf zurück, bevor Sie eine Proformarechnung anfordern."
+
+#: includes/Vocabulary/Terms.php:64
+msgid "Quantity"
+msgstr "Menge"
+
+#: includes/Vocabulary/Terms.php:67
+#: templates/storefront-archive-product.php:176
+msgid "Sort products"
+msgstr "Produkte sortieren"
+
+#: includes/Vocabulary/Terms.php:69
+msgid "Sort by popularity"
+msgstr "Nach Beliebtheit sortieren"
+
+#: includes/Vocabulary/Terms.php:70
+msgid "Product no.:"
+msgstr "Produktnummer:"
+
+#: includes/Vocabulary/Terms.php:71
+msgid "Remove product"
+msgstr "Produkt entfernen"
+
+#: includes/Vocabulary/Terms.php:75
+msgid "Log in with your account."
+msgstr "Melden Sie sich mit Ihrem Konto an."
+
+#: includes/Vocabulary/Terms.php:76
+msgid "Already have an account?"
+msgstr "Sie haben bereits ein Konto?"
+
+#: includes/Vocabulary/Terms.php:80
+msgid "Register"
+msgstr "Registrieren"
+
+#: includes/Vocabulary/Terms.php:81 includes/Vocabulary/Terms.php:125
+msgid "Company details"
+msgstr "Unternehmensdaten"
+
+#: includes/Vocabulary/Terms.php:82 includes/Vocabulary/Terms.php:86
+msgid "Notes"
+msgstr "Anmerkungen"
+
+#: includes/Vocabulary/Terms.php:83
+msgid "Notes on your inquiry, e.g. your project name."
+msgstr "Anmerkungen zu Ihrer Anfrage, z. B. Ihre Projektbezeichnung."
+
+#: includes/Vocabulary/Terms.php:84
+msgid "Notes:"
+msgstr "Anmerkungen:"
+
+#: includes/Vocabulary/Terms.php:87
+msgid "Your inquiry"
+msgstr "Ihre Anfrage"
+
+#: includes/Vocabulary/Terms.php:90
+msgid "Please read and accept the terms and conditions to send your inquiry."
+msgstr ""
+"Bitte lesen und akzeptieren Sie die Geschäftsbedingungen, um Ihre Anfrage zu "
+"senden."
+
+#: includes/Vocabulary/Terms.php:91
+msgid "Your inquiry could not be sent. Please try again."
+msgstr ""
+"Ihre Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+
+#: includes/Vocabulary/Terms.php:92
+msgid "Your inquiry could not be saved. Please try again."
+msgstr ""
+"Ihre Anfrage konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
+
+#: includes/Vocabulary/Terms.php:93
+msgid "Your inquiry could not be sent. Please reload the page and try again."
+msgstr ""
+"Ihre Anfrage konnte nicht gesendet werden. Bitte laden Sie die Seite neu und "
+"versuchen Sie es erneut."
+
+#: includes/Vocabulary/Terms.php:94
+msgid "An inquiry cannot be sent at the moment. Please contact us."
+msgstr ""
+"Eine Anfrage kann gerade nicht gesendet werden. Bitte kontaktieren Sie uns."
+
+#: includes/Vocabulary/Terms.php:95
+msgid "Please fill in your details above."
+msgstr "Bitte füllen Sie Ihre Angaben oben aus."
+
+#. translators: 1: opening tag of the button, 2: closing tag.
+#: includes/Vocabulary/Terms.php:97
+#, php-format
+msgid ""
+"Your browser does not run JavaScript. Please click %1$sUpdate totals%2$s "
+"before sending your inquiry, so that the totals above are up to date."
+msgstr ""
+"Ihr Browser führt kein JavaScript aus. Bitte klicken Sie vor dem Senden "
+"Ihrer Anfrage auf %1$sGesamtbetrag aktualisieren%2$s, damit die Summen oben "
+"aktuell sind."
+
+#. translators: %s: link to the inquiries in the account.
+#: includes/Vocabulary/Terms.php:99
+#, php-format
+msgid ""
+"Your inquiry could not be sent. Please check your <a href=\"%s\">inquiries</"
+"a> before sending it again."
+msgstr ""
+"Ihre Anfrage konnte nicht gesendet werden. Bitte prüfen Sie Ihre <a "
+"href=\"%s\">Anfragen</a>, bevor Sie die Anfrage erneut senden."
+
+#: includes/Vocabulary/Terms.php:100
+msgid ""
+"The totals have been updated. Please confirm your inquiry with the "
+"&ldquo;Request Proforma&rdquo; button at the bottom of the page."
+msgstr ""
+"Die Summen wurden aktualisiert. Bitte bestätigen Sie Ihre Anfrage mit der "
+"Schaltfläche &bdquo;Proforma anfordern&ldquo; unten auf der Seite."
+
+#: includes/Vocabulary/Terms.php:105
+msgid "Please log in to your account to view this inquiry."
+msgstr "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen."
+
+#: includes/Vocabulary/Terms.php:107
+msgid "Inquiry no.:"
+msgstr "Anfrage-Nr.:"
+
+#: includes/Vocabulary/Terms.php:108
+msgid "Inquiry details"
+msgstr "Details der Anfrage"
+
+#. translators: 1: inquiry number, 2: date, 3: status.
+#: includes/Vocabulary/Terms.php:111
+#, php-format
+msgid "Inquiry #%1$s was sent on %2$s. Status: %3$s."
+msgstr "Anfrage #%1$s wurde am %2$s gesendet. Status: %3$s."
+
+#: includes/Vocabulary/Terms.php:112
+msgid "Updates"
+msgstr "Mitteilungen"
+
+#. translators: %d: page number.
+#: includes/Vocabulary/Terms.php:117
+#, php-format
+msgid "Inquiries (page %d)"
+msgstr "Anfragen (Seite %d)"
+
+#: includes/Vocabulary/Terms.php:118
+msgid "You have not sent an inquiry yet."
+msgstr "Sie haben noch keine Anfrage gesendet."
+
+#. translators: %s: inquiry number.
+#: includes/Vocabulary/Terms.php:120
+#, php-format
+msgid "View inquiry %s"
+msgstr "Anfrage %s ansehen"
+
+#. translators: %s: inquiry number.
+#: includes/Vocabulary/Terms.php:122
+#, php-format
+msgid "View inquiry number %s"
+msgstr "Anfrage Nummer %s ansehen"
+
+#. translators: 1: "View" or a similar word, 2: inquiry number.
+#: includes/Vocabulary/Terms.php:124
+#, php-format
+msgid "%1$s: inquiry number %2$s"
+msgstr "%1$s: Anfrage Nummer %2$s"
+
+#: includes/Vocabulary/Terms.php:126
+msgid "These details are pre-filled on the Proforma request page."
+msgstr "Diese Angaben werden auf der Seite „Proforma-Anfrage“ vorausgefüllt."
+
+#: includes/Vocabulary/Terms.php:127
+msgid "Save company details"
+msgstr "Unternehmensdaten speichern"
+
+#. translators: 1: link to the inquiries, 2: link to the company details, 3: link to the account details.
+#: includes/Vocabulary/Terms.php:129 includes/Vocabulary/Terms.php:131
+#, php-format
+msgid ""
+"In your account you can follow your <a href=\"%1$s\">inquiries</a>, keep "
+"your <a href=\"%2$s\">company details</a> up to date and <a "
+"href=\"%3$s\">change your password and account details</a>."
+msgstr ""
+"In Ihrem Konto verfolgen Sie Ihre <a href=\"%1$s\">Anfragen</a>, halten Ihre "
+"<a href=\"%2$s\">Unternehmensdaten</a> aktuell und <a href=\"%3$s\">ändern "
+"Ihr Passwort und Ihre Kontodetails</a>."
+
+#: includes/Vocabulary/Terms.php:134
+msgid "In your account you can follow your inquiries and change your password:"
+msgstr ""
+"In Ihrem Konto können Sie Ihre Anfragen verfolgen und Ihr Passwort ändern:"
+
+#. translators: 1: site name, 2: username, 3: link to the account. The sentence follows the salutation "Hi %s,".
+#: includes/Vocabulary/Terms.php:136
+#, php-format
+msgid ""
+"Thank you for creating an account on %1$s. Your username is %2$s. In your "
+"account you can follow your inquiries and change your password: %3$s"
+msgstr ""
+"vielen Dank für die Registrierung bei %1$s. Ihr Benutzername lautet %2$s. In "
+"Ihrem Konto können Sie Ihre Anfragen verfolgen und Ihr Passwort ändern: %3$s"
+
+#. translators: %s: inquiry number.
+#: includes/Vocabulary/Terms.php:138
+#, php-format
+msgid "[Inquiry #%s]"
+msgstr "[Anfrage #%s]"
+
+#: includes/Vocabulary/Terms.php:139
+msgid "Inquiry summary"
+msgstr "Zusammenfassung der Anfrage"
+
+#. translators: %s: product names.
+#: includes/Vocabulary/Terms.php:160
+#, php-format
+msgid "%s has been added to your solution draft."
+msgid_plural "%s have been added to your solution draft."
+msgstr[0] "%s wurde Ihrem Lösungsentwurf hinzugefügt."
+msgstr[1] "%s wurden Ihrem Lösungsentwurf hinzugefügt."
+
+#. translators: %d: number of products.
+#: includes/Vocabulary/Terms.php:162
+#, php-format
+msgid ""
+"%d product of the earlier inquiry is not available and could not be added to "
+"your solution draft."
+msgid_plural ""
+"%d products of the earlier inquiry are not available and could not be added "
+"to your solution draft."
+msgstr[0] ""
+"%d Produkt der früheren Anfrage ist nicht verfügbar und konnte nicht in "
+"Ihren Lösungsentwurf übernommen werden."
+msgstr[1] ""
+"%d Produkte der früheren Anfrage sind nicht verfügbar und konnten nicht in "
+"Ihren Lösungsentwurf übernommen werden."
+
+#. translators: 1: amount, 2: number of units (quantities added up).
+#: includes/Vocabulary/Terms.php:164
+#, php-format
+msgid "%1$s (%2$s unit)"
+msgid_plural "%1$s (%2$s units)"
+msgstr[0] "%1$s (%2$s Stück)"
+msgstr[1] "%1$s (%2$s Stück)"
+
+#: templates/emails/linker-approval-approved.php:23
+msgid "Your Linker partner account is approved."
+msgstr "Ihr Partner-Konto bei Linker ist freigegeben."
+
+#: templates/emails/linker-approval-approved.php:24
+msgid ""
+"Net prices are now shown with every product. Add the systems you need to "
+"your solution draft, and request the Proforma when the draft is ready."
+msgstr ""
+
+#: templates/emails/linker-approval-approved.php:28
+msgid "Your account"
+msgstr "Ihr Konto"
+
+#: templates/emails/linker-approval-rejected.php:23
+msgid ""
+"We cannot approve your Linker partner account. Signing in therefore stays "
+"closed."
+msgstr ""
+
+#: templates/emails/linker-approval-rejected.php:27
+msgid "If something about this was unclear, write to sales@de-linker.com."
+msgstr "Wenn dazu etwas unklar ist, schreiben Sie an sales@de-linker.com."
+
+#: templates/emails/linker-approval-restricted.php:23
+msgid "Your partner account has been limited for now."
+msgstr "Ihr Partner-Konto ist vorerst eingeschränkt."
+
+#: templates/emails/linker-approval-restricted.php:24
+msgid ""
+"You can keep browsing the products, and you can reach us any time at "
+"sales@de-linker.com. Net prices and the Proforma request are paused while "
+"the account is limited."
+msgstr ""
+
+#. translators: %s: the customer's full name.
+#: templates/emails/linker-inquiry-received.php:25
+#: templates/emails/linker-proforma-issued.php:27
+#, php-format
+msgid "Hello %s,"
+msgstr "Guten Tag %s,"
+
+#. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
+#: templates/emails/linker-inquiry-received.php:31
+#, php-format
+msgid "Thank you for your inquiry %s."
+msgstr "vielen Dank für Ihre Anfrage %s."
+
+#: templates/emails/linker-new-customer.php:27
+msgid "Address"
+msgstr "Anschrift"
+
+#: templates/emails/linker-new-customer.php:44
+#: templates/emails/linker-vat-review.php:44
+msgid "Open the customer"
+msgstr "Kunden öffnen"
+
+#. translators: 1: inquiry number, 2: company, 3: customer's full name.
+#: templates/emails/linker-new-inquiry.php:26
+#, php-format
+msgid "New inquiry %1$s from %2$s (%3$s)."
+msgstr "Neue Anfrage %1$s von %2$s (%3$s)."
+
+#: templates/emails/linker-new-inquiry.php:33
+msgid "Open the inquiry"
+msgstr "Anfrage öffnen"
+
+#. translators: 1: Proforma number, 2: inquiry number, 3: last day of validity. The sentence follows the salutation "Hello %s,".
+#: templates/emails/linker-proforma-issued.php:34
+#, php-format
+msgid ""
+"Your Proforma invoice %1$s for inquiry %2$s is ready and valid until %3$s."
+msgstr ""
+"Ihre Proformarechnung %1$s zur Anfrage %2$s liegt bereit und ist bis %3$s "
+"gültig."
+
+#: templates/emails/linker-proforma-issued.php:41
+msgid "Download the Proforma invoice (PDF)"
+msgstr "Proformarechnung herunterladen (PDF)"
+
+#. translators: %s: link to the inquiry in the account.
+#: templates/emails/linker-proforma-issued.php:46
+#, php-format
+msgid ""
+"You need to be logged in to open it. You can also find it in your account "
+"under %s."
+msgstr ""
+"Zum Öffnen müssen Sie angemeldet sein. Sie finden sie auch in Ihrem Konto "
+"unter %s."
+
+#. translators: 1: company, 2: VAT ID.
+#: templates/emails/linker-vat-review.php:28
+#, php-format
+msgid "The VAT check of %1$s (VAT ID %2$s) changed."
+msgstr "Die USt-IdNr.-Prüfung von %1$s (USt-IdNr. %2$s) hat sich geändert."
+
+#. translators: 1: verdict before, 2: verdict now.
+#: templates/emails/linker-vat-review.php:38
+#, php-format
+msgid "Before: %1$s. Now: %2$s."
+msgstr "Vorher: %1$s. Jetzt: %2$s."
+
+#: templates/myaccount/linker-documents.php:15
+msgid ""
+"Your Proforma invoices and the design reports of your saved solutions will "
+"appear here."
+msgstr ""
+"Hier erscheinen Ihre Proformarechnungen und die Auslegungsberichte Ihrer "
+"gespeicherten Lösungen."
+
+#: templates/myaccount/linker-documents.php:25
+msgid "Download"
+msgstr "Herunterladen"
+
+#: templates/myaccount/linker-documents.php:33
+msgid "Download (PDF)"
+msgstr "Herunterladen (PDF)"
+
+#: templates/myaccount/linker-saved-solutions.php:19
+msgid ""
+"Solutions you save in the Solution Configurator appear here, with their "
+"design report."
+msgstr ""
+"Lösungen, die Sie im Lösungskonfigurator speichern, erscheinen hier mit "
+"ihrem Auslegungsbericht."
+
+#: templates/myaccount/linker-saved-solutions.php:27
+#: templates/myaccount/linker-saved-solutions.php:39
+msgid "Solution"
+msgstr "Lösung"
+
+#: templates/myaccount/linker-saved-solutions.php:28
+#: templates/myaccount/linker-saved-solutions.php:40
+msgid "Saved on"
+msgstr "Gespeichert am"
+
+#: templates/myaccount/linker-saved-solutions.php:57
+msgid "Design report (PDF)"
+msgstr "Auslegungsbericht (PDF)"
+
+#: templates/proforma/proforma.php:74
+msgid "Proforma no."
+msgstr "Proforma-Nr."
+
+#: templates/proforma/proforma.php:75
+msgid "Inquiry no."
+msgstr "Anfrage-Nr."
+
+#: templates/proforma/proforma.php:77
+msgid "Valid until"
+msgstr "Gültig bis"
+
+#: templates/proforma/proforma.php:110
+msgid "Pos."
+msgstr "Pos."
+
+#: templates/proforma/proforma.php:111
+msgid "Product"
+msgstr "Produkt"
+
+#: templates/proforma/proforma.php:112
+msgid "Qty"
+msgstr "Menge"
+
+#: templates/proforma/proforma.php:113
+msgid "Unit price (net)"
+msgstr "Einzelpreis (netto)"
+
+#: templates/proforma/proforma.php:114
+msgid "Amount (net)"
+msgstr "Betrag (netto)"
+
+#: templates/proforma/proforma.php:124
+msgid "Product no."
+msgstr "Produktnummer"
+
+#: templates/proforma/proforma.php:145
+msgid "Subtotal (net)"
+msgstr "Zwischensumme (netto)"
+
+#: templates/proforma/proforma.php:149
+msgid "Total"
+msgstr "Gesamtbetrag"
+
+#. translators: %s: last day of validity.
+#: templates/proforma/proforma.php:155
+#, php-format
+msgid "This Proforma invoice is valid until %s."
+msgstr "Diese Proformarechnung ist gültig bis %s."
+
+#: templates/proforma/proforma.php:157
+msgid ""
+"This document is not an invoice within the meaning of Section 14 of the "
+"German VAT Act (UStG). The invoice will be issued separately."
+msgstr ""
+"Dieses Dokument ist keine Rechnung im Sinne des § 14 UStG. Die Rechnung wird "
+"gesondert ausgestellt."
+
+#: templates/proforma/proforma.php:161
+msgid "Bank transfer"
+msgstr "Überweisung"
+
+#. translators: %s: Proforma number.
+#: templates/proforma/proforma.php:165
+#, php-format
+msgid ""
+"Please transfer the total to the account below and give %s as the reference."
+msgstr ""
+"Bitte überweisen Sie den Gesamtbetrag auf das unten genannte Konto und geben "
+"Sie %s als Verwendungszweck an."
+
+#: templates/proforma/proforma.php:177
+msgid "Reference"
+msgstr "Verwendungszweck"
+
+#: templates/storefront-archive-product.php:49
+msgid "Recommended"
+msgstr "Empfohlen"
+
+#: templates/storefront-archive-product.php:50
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+#: templates/storefront-archive-product.php:51
+msgid "Name A-Z"
+msgstr "Name A-Z"
+
+#: templates/storefront-archive-product.php:52
+msgid "Power high-low"
+msgstr "Leistung hoch-niedrig"
+
+#: templates/storefront-archive-product.php:53
+msgid "Power low-high"
+msgstr "Leistung niedrig-hoch"
+
+#: templates/storefront-archive-product.php:59
+msgid "Product filters"
+msgstr "Produktfilter"
+
+#: templates/storefront-archive-product.php:60
+msgid "Close filters"
+msgstr "Filter schließen"
+
+#. translators: %d: number of selected filters.
+#: templates/storefront-archive-product.php:62
+#, php-format
+msgid "Filters (%d)"
+msgid_plural "Filters (%d)"
+msgstr[0] "Filter (%d)"
+msgstr[1] "Filter (%d)"
+
+#: templates/storefront-archive-product.php:64
+msgid "Filters"
+msgstr "Filter"
+
+#: templates/storefront-archive-product.php:78
+msgid "Category"
+msgstr "Kategorie"
+
+#: templates/storefront-archive-product.php:80
+msgid "All products"
+msgstr "Alle Produkte"
+
+#: templates/storefront-archive-product.php:91
+msgid "Brand"
+msgstr "Marke"
+
+#: templates/storefront-archive-product.php:92
+#, fuzzy
+msgid "Phase"
+msgstr "%d-phasig"
+
+#: templates/storefront-archive-product.php:93
+msgid "Power"
+msgstr "Leistung"
+
+#: templates/storefront-archive-product.php:129
+msgid "Minimum AC power in kilowatts"
+msgstr "Minimale AC-Leistung in Kilowatt"
+
+#: templates/storefront-archive-product.php:130
+msgid "Maximum AC power in kilowatts"
+msgstr "Maximale AC-Leistung in Kilowatt"
+
+#: templates/storefront-archive-product.php:131
+#: templates/storefront-archive-product.php:148
+msgid "Set"
+msgstr "Übernehmen"
+
+#: templates/storefront-archive-product.php:138
+msgid "Usable energy"
+msgstr "Nutzbare Energie"
+
+#: templates/storefront-archive-product.php:146
+msgid "Minimum usable energy in kilowatt hours"
+msgstr "Minimale nutzbare Energie in Kilowattstunden"
+
+#: templates/storefront-archive-product.php:147
+msgid "Maximum usable energy in kilowatt hours"
+msgstr "Maximale nutzbare Energie in Kilowattstunden"
+
+#: templates/storefront-archive-product.php:157
+msgid "Plan with the Solution Configurator"
+msgstr "Mit dem Lösungskonfigurator planen"
+
+#: templates/storefront-archive-product.php:158
+msgid ""
+"Configure a storage system from your site data; the result is a solution "
+"draft you can send as an inquiry."
+msgstr ""
+"Konfigurieren Sie aus Ihren Standortdaten ein Speichersystem; das Ergebnis "
+"ist ein Lösungsentwurf, den Sie als Anfrage senden können."
+
+#: templates/storefront-archive-product.php:159
+msgid "Open the Solution Configurator"
+msgstr "Lösungskonfigurator öffnen"
+
+#: templates/storefront-archive-product.php:163
+msgid "Clear"
+msgstr "Zurücksetzen"
+
+#: templates/storefront-archive-product.php:164
+msgid "Show products"
+msgstr "Produkte anzeigen"
+
+#: templates/storefront-archive-product.php:171
+msgid "product"
+msgid_plural "products"
+msgstr[0] "Produkt"
+msgstr[1] "Produkte"
+
+#: templates/storefront-archive-product.php:229
+msgid "Item no."
+msgstr "Artikelnr."
+
+#: templates/storefront-archive-product.php:233
+msgid "Key product data"
+msgstr "Produktdaten"
+
+#: templates/storefront-archive-product.php:248
+msgid "View product"
+msgstr "Produkt ansehen"
+
+#: templates/storefront-archive-product.php:255
+msgid "No product matches these filters. Clear one to see more."
+msgstr ""
+"Kein Produkt passt zu dieser Filterauswahl. Setzen Sie einen Filter zurück, "
+"um mehr zu sehen."
+
+#: templates/storefront-single-product.php:31
+msgid "Breadcrumb"
+msgstr "Brotkrumen"
+
+#: templates/storefront-single-product.php:87
+msgid "Product photography for this model is in preparation."
+msgstr "Die Produktfotografie für dieses Modell wird vorbereitet."
+
+#: templates/storefront-single-product.php:108
+msgid "Item number:"
+msgstr "Artikelnummer:"
+
+#: templates/storefront-single-product.php:135
+msgid "Ask about this product"
+msgstr "Produkt anfragen"
+
+#: templates/storefront-single-product.php:138
+#: templates/storefront-single-product.php:147
+#: templates/storefront-single-product.php:226
+msgctxt "product attachments"
+msgid "Documents"
+msgstr "Dokumente"
+
+#: templates/storefront-single-product.php:144
+msgid "Product sections"
+msgstr "Produktbereiche"
+
+#: templates/storefront-single-product.php:145
+msgid "Description"
+msgstr "Beschreibung"
+
+#: templates/storefront-single-product.php:146
+#: templates/storefront-single-product.php:181
+msgid "Technical data"
+msgstr "Technische Daten"
+
+#: templates/storefront-single-product.php:160
+msgid ""
+"Introduction in preparation. The specification below carries the values from "
+"the datasheet on file."
+msgstr ""
+"Die Einleitung wird vorbereitet. Die Spezifikation darunter enthält die "
+"Werte des hinterlegten Datenblatts."
+
+#: templates/storefront-single-product.php:208
+msgid "Specifications"
+msgstr "Spezifikationen"
+
+#: templates/storefront-single-product.php:221
+msgid ""
+"The specification table for this product is in preparation. Ask us for the "
+"datasheet."
+msgstr ""
+"Die Spezifikationstabelle für dieses Produkt wird vorbereitet. Fragen Sie "
+"uns nach dem Datenblatt."
+
+#: templates/storefront-single-product.php:235
+msgid ""
+"No documents are attached to this product yet. Ask us and we will add them."
+msgstr ""
+"Für dieses Produkt sind noch keine Dokumente hinterlegt. Fragen Sie uns, wir "
+"ergänzen sie."
+
+#: templates/storefront-single-product.php:241
+msgid "FAQs"
+msgstr "Produktfragen"
+
+#: templates/storefront-single-product.php:255
+msgid "Compatible products"
+msgstr "Kompatible Produkte"
+
+#: templates/storefront-single-product.php:272
+msgid "Product image"
+msgstr "Produktbild"
+
+#: templates/storefront-single-product.php:273
+msgid "Close image viewer"
+msgstr "Bildbetrachter schließen"

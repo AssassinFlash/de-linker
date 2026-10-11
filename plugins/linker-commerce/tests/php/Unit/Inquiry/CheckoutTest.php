@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Unit\Inquiry;
 use Linker\Commerce\Inquiry\Checkout;
 use Linker\Commerce\Inquiry\OrderLocale;
 use Linker\Commerce\Inquiry\ProformaGateway;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 use Mockery;
@@ -25,23 +26,35 @@ use WC_Order;
 final class CheckoutTest extends TestCase {
 
 	/**
-	 * Only the Proforma gateway is offered, even when other gateways are active.
+	 * Only the Proforma gateway is offered, even when other gateways are
+	 * active; an account whose prices are not open gets none at all.
 	 */
 	public function test_gateways(): void {
-		$checkout = new Checkout();
+		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
 		$proforma = new \stdClass();
+		$gateways = array(
+			'bacs'              => new \stdClass(),
+			ProformaGateway::ID => $proforma,
+			'stripe'            => new \stdClass(),
+		);
 
+		$approved = new Checkout( new Approval() );
 		$this->assertSame(
 			array( ProformaGateway::ID => $proforma ),
-			$checkout->gateways(
-				array(
-					'bacs'              => new \stdClass(),
-					ProformaGateway::ID => $proforma,
-					'stripe'            => new \stdClass(),
-				)
-			)
+			$approved->gateways( $gateways )
 		);
-		$this->assertSame( array(), $checkout->gateways( array( 'bacs' => new \stdClass() ) ) );
+		$this->assertSame( array(), $approved->gateways( array( 'bacs' => new \stdClass() ) ) );
+
+		$this->approval_meta( array() );
+		$this->assertSame( array(), ( new Checkout( new Approval() ) )->gateways( $gateways ), 'No send for a pending account.' );
+
+		$this->signed_in( 0 );
+		$guest = new Checkout( new Approval() );
+		$this->assertSame(
+			array( ProformaGateway::ID => $proforma ),
+			$guest->gateways( $gateways ),
+			'A guest reaches the checkout flow WooCommerce itself runs.'
+		);
 	}
 
 	/**

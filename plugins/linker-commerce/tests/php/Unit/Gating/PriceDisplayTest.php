@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Gating;
 
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Gating\PriceDisplay;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_Order;
@@ -39,6 +40,7 @@ final class PriceDisplayTest extends TestCase {
 	 */
 	private string $mode = 'orderable';
 
+
 	/**
 	 * Translation and escaping return their input; the account page is /my-account/; login state and mode follow the properties.
 	 */
@@ -48,6 +50,7 @@ final class PriceDisplayTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => fn (): bool => $this->logged_in ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => fn (): string => $this->mode ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 	}
 
 	/**
@@ -69,11 +72,13 @@ final class PriceDisplayTest extends TestCase {
 	 *
 	 * @param bool   $logged_in Whether a customer is logged in.
 	 * @param string $mode      Product mode.
+	 * @param bool   $approved  Whether the account's prices are open.
 	 */
-	private function visitor( bool $logged_in, string $mode = 'orderable' ): PriceDisplay {
+	private function visitor( bool $logged_in, string $mode = 'orderable', bool $approved = true ): PriceDisplay {
 		$this->logged_in = $logged_in;
 		$this->mode      = $mode;
-		return new PriceDisplay( new CommerceState() );
+		$this->approval_meta( $approved ? array( Approval::STATUS_META => Approval::APPROVED ) : array() );
+		return new PriceDisplay( new CommerceState( new Approval() ) );
 	}
 
 	/**
@@ -120,10 +125,12 @@ final class PriceDisplayTest extends TestCase {
 	}
 
 	/**
-	 * The three texts: log in (guest), quoted per project, price on request (no stored price).
+	 * The texts: log in (guest), the account's approval (signed in without
+	 * approval), quoted per project, price on request (no stored price).
 	 */
 	public function test_texts_instead_of_prices(): void {
 		$this->assertSame( '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>', $this->visitor( false )->empty_price_html( '', $this->product() ) );
+		$this->assertSame( '<span class="linker-price-note">Prices after approval</span>', $this->visitor( true, 'orderable', false )->empty_price_html( '', $this->product() ) );
 		$this->assertSame( '<span class="linker-price-note">Quoted per project</span>', $this->visitor( true, 'rfq_only' )->empty_price_html( '', $this->product( '22350' ) ) );
 		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $this->visitor( true )->empty_price_html( '', $this->product( '' ) ) );
 		$this->assertSame( 'WooCommerce', $this->visitor( true )->empty_price_html( 'WooCommerce', $this->product() ) );
@@ -141,14 +148,14 @@ final class PriceDisplayTest extends TestCase {
 	}
 
 	/**
-	 * A guest's draft subtotal says that prices come with logging in, as plain text; a customer's stays.
+	 * A visitor's draft subtotal names what opens the prices: "log in" for a
+	 * guest, the account's approval for a signed-in one; an approved
+	 * customer's subtotal stays.
 	 */
 	public function test_draft_subtotal(): void {
-		$display = new PriceDisplay( new CommerceState() );
-
-		$this->assertSame( '<span class="linker-price-note">Log in for prices</span>', $display->cart_subtotal( '€0.00' ) );
-		$this->logged_in = true;
-		$this->assertSame( '€3,360.00', $display->cart_subtotal( '€3,360.00' ) );
+		$this->assertSame( '<span class="linker-price-note"><a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a></span>', $this->visitor( false )->cart_subtotal( '€0.00' ) );
+		$this->assertSame( '<span class="linker-price-note">Prices after approval</span>', $this->visitor( true, 'orderable', false )->cart_subtotal( '€0.00' ) );
+		$this->assertSame( '€3,360.00', $this->visitor( true )->cart_subtotal( '€3,360.00' ) );
 	}
 
 	/**

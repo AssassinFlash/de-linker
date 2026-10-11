@@ -164,7 +164,7 @@ final class IssuerTest extends TestCase {
 	 */
 	private function issuer(): Issuer {
 		$options = new Options();
-		return new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( dirname( __DIR__, 4 ) . '/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( new CommerceState() ) );
+		return new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( dirname( __DIR__, 4 ) . '/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( $this->approved_state() ) );
 	}
 
 	/**

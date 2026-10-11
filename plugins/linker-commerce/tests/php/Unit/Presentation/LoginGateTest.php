@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\LoginGate;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
@@ -131,11 +132,12 @@ final class LoginGateTest extends TestCase {
 	 */
 	public function test_guest_html(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
 
-		$html = ( new LoginGate() )->html();
+		$html = ( new LoginGate( $this->approval() ) )->html();
 
 		$this->assertStringContainsString( 'Get your Proforma', $html );
 		$this->assertStringContainsString( 'Sign in with your partner account', $html );
@@ -150,14 +152,66 @@ final class LoginGateTest extends TestCase {
 	 */
 	public function test_customer_empty_html(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
 
-		$html = ( new LoginGate() )->html();
+		$html = ( new LoginGate( $this->approval( Approval::APPROVED ) ) )->html();
 
 		$this->assertStringContainsString( 'Nothing to submit yet', $html );
 		$this->assertStringContainsString( 'Browse products', $html );
 		$this->assertStringNotContainsString( 'Sign in with your partner account', $html );
+	}
+
+	/**
+	 * A pending account reads the review gate: no sign-in, no Proforma, the
+	 * catalogue stays open.
+	 */
+	public function test_pending_html(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
+
+		$html = ( new LoginGate( $this->approval( Approval::PENDING ) ) )->html();
+
+		$this->assertStringContainsString( 'under review', $html );
+		$this->assertStringContainsString( 'Browse products', $html );
+		$this->assertStringNotContainsString( 'Sign in with your partner account', $html );
+		$this->assertStringNotContainsString( 'Nothing to submit yet', $html );
+	}
+
+	/**
+	 * A restricted account reads its own gate with the team's reason.
+	 */
+	public function test_restricted_html_carries_the_reason(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
+
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		$this->approval_meta(
+			array(
+				Approval::STATUS_META => Approval::RESTRICTED,
+				Approval::REASON_META => 'Net prices are for businesses.',
+			)
+		);
+		$html = ( new LoginGate( new Approval() ) )->html();
+		$this->assertStringContainsString( 'limited', $html );
+		$this->assertStringContainsString( 'Net prices are for businesses.', $html );
+		$this->assertStringNotContainsString( 'Sign in with your partner account', $html );
+	}
+
+	/**
+	 * The approval rule of user 5 with the given state.
+	 *
+	 * @param string $state The state user 5 is in.
+	 */
+	private function approval( string $state = Approval::APPROVED ): Approval {
+		$this->approval_meta( array( Approval::STATUS_META => $state ) );
+		return new Approval();
 	}
 }

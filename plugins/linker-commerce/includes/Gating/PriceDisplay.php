@@ -13,12 +13,14 @@ use WC_Order;
 use WC_Order_Item;
 use WC_Order_Item_Product;
 use WC_Product;
+use Linker\Commerce\Registration\Approval;
 
 /**
  * Applies CommerceState: a product whose price the visitor may not see has no
  * price at all in that request (so no template, widget, feed or API can print
  * it), stays addable to the solution draft, and shows a text instead:
- * "Log in for prices", "Quoted per project" or "Price on request".
+ * "Log in for prices", a note about the account's approval, "Quoted per
+ * project" or "Price on request".
  */
 final class PriceDisplay {
 
@@ -103,8 +105,8 @@ final class PriceDisplay {
 
 	/**
 	 * The solution draft's subtotal where a theme shows it (the header, the
-	 * mini draft): a guest's draft has no prices to add up, so instead of 0 it
-	 * says that prices come with logging in. Plain text, as themes print it
+	 * mini draft): a visitor without prices has no prices to add up, so
+	 * instead of 0 it says what opens them. Plain text, as themes print it
 	 * inside their own link to the draft.
 	 *
 	 * @param string $subtotal Formatted subtotal.
@@ -113,7 +115,9 @@ final class PriceDisplay {
 		if ( $this->state->visitor_sees_prices() ) {
 			return $subtotal;
 		}
-		return '<span class="linker-price-note">' . esc_html__( 'Log in for prices', 'linker-commerce' ) . '</span>';
+		$reason = $this->state->visitor_reason();
+		$label  = $this->label( $reason );
+		return CommerceState::APPROVAL === $reason ? $label : '<span class="linker-price-note">' . $label . '</span>';
 	}
 
 	/**
@@ -186,6 +190,13 @@ final class PriceDisplay {
 				esc_url( wc_get_page_permalink( 'myaccount' ) ),
 				esc_html__( 'Log in for prices', 'linker-commerce' )
 			);
+		}
+		if ( CommerceState::APPROVAL === $reason ) {
+			$status = $this->state->current_approval_status();
+			$text   = Approval::APPROVED !== $status && Approval::PENDING !== $status
+				? __( 'Not available for your account', 'linker-commerce' )
+				: __( 'Prices after approval', 'linker-commerce' );
+			return '<span class="linker-price-note">' . esc_html( $text ) . '</span>';
 		}
 		$text = CommerceState::PROJECT === $reason
 			? __( 'Quoted per project', 'linker-commerce' )

@@ -73,6 +73,29 @@ if ( ! class_exists( 'WP_User' ) ) {
 		public $user_email   = '';
 		public $display_name = '';
 		public $user_login   = '';
+		/** @var list<string> */
+		public $roles = array();
+	}
+}
+
+if ( ! class_exists( 'WP_Session_Tokens' ) ) {
+	/**
+	 * The API WordPress signs sessions out with; the double records the
+	 * destroyed users so a test can assert the sign-out.
+	 */
+	class WP_Session_Tokens {
+		/** @var list<int> */
+		public static array $destroyed_all = array();
+
+		public static function get_instance( $user_id ): self {
+			return new self( (int) $user_id );
+		}
+
+		public function __construct( public readonly int $user_id ) {}
+
+		public function destroy_all(): void {
+			self::$destroyed_all[] = $this->user_id;
+		}
 	}
 }
 

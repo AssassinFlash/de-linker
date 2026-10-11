@@ -12,6 +12,7 @@
  * @var WC_Email $email              The email.
  */
 
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Registration\CustomerRole;
 use Linker\Commerce\Registration\VatProfile;
 
@@ -26,6 +27,7 @@ $linker_rows     = array(
 	__( 'Address', 'linker-commerce' )       => wp_strip_all_tags( str_replace( '<br/>', ', ', WC()->countries->get_formatted_address( $linker_customer->get_billing() ) ) ),
 	__( 'VAT ID', 'linker-commerce' )        => (string) $linker_customer->get_meta( VatProfile::VAT_META ),
 	__( 'VAT check', 'linker-commerce' )     => VatProfile::label( (string) get_user_meta( $customer->ID, VatProfile::STATUS_META, true ) ),
+	__( 'Approval', 'linker-commerce' )      => Approval::label( Approval::PENDING ),
 );
 
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */

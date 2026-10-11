@@ -29,7 +29,7 @@ final class ModuleTest extends TestCase {
 	 * Every price getter, the purchasable rule, the texts and the Store API filter are hooked.
 	 */
 	public function test_register_adds_the_hooks(): void {
-		$state   = new CommerceState();
+		$state   = $this->approved_state();
 		$display = new PriceDisplay( $state );
 		$summary = new DraftSummary( $state, $display );
 		$api     = new StoreApiPrices( $state );

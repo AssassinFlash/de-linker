@@ -110,7 +110,8 @@ final class Plugin {
 	private function commerce_modules(): array {
 		$templates = plugin_dir_path( $this->file ) . 'templates/';
 		$options   = new Settings\Options();
-		$state     = new Gating\CommerceState();
+		$approval  = new Registration\Approval();
+		$state     = new Gating\CommerceState( $approval );
 		$prices    = new Gating\PriceDisplay( $state );
 		$jobs      = new Mail\JobStore();
 		$vat       = new Registration\VatProfile( new Registration\ViesClient() );
@@ -118,7 +119,8 @@ final class Plugin {
 		$solutions = new Account\SavedSolutions( new Account\PrivateFiles( Account\SavedSolutions::REPORTS_DIRECTORY ), $templates );
 		$issuer    = new Proforma\Issuer( $options, new Proforma\Sequence(), new Proforma\Document( $options ), new Proforma\Renderer( $this->file ), $proformas, $prices );
 		$documents = new Account\Documents( $solutions, $templates );
-		$gate      = new Presentation\LoginGate();
+		$gate      = new Presentation\LoginGate( $approval );
+		$checkout  = new Inquiry\Checkout( $approval );
 
 		return array(
 			new Settings\Module( new Settings\SettingsTab( $jobs ), new Settings\WooOptions() ),
@@ -126,12 +128,16 @@ final class Plugin {
 			new Gating\Module( $prices, new Gating\DraftSummary( $state, $prices ), new Gating\StoreApiPrices( $state ), new Gating\CatalogSorting( $state ) ),
 			new Mail\Module( new Mail\Outbox( $jobs, new Mail\Throttle() ), $jobs, new Mail\EmailLocale(), new Mail\EmailPolicy() ),
 			new Digest\Module( $this->file, $jobs ),
-			new Registration\Module( $this->file, $options, new Registration\Fields( $vat ), new Registration\BillingVatField( $vat ), new Registration\AddressForm() ),
-			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), new Inquiry\Checkout(), new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
+			new Registration\Module( $this->file, $options, new Registration\Fields( $vat ), new Registration\BillingVatField( $vat ), new Registration\AddressForm(), $approval, new Registration\ApprovalAdmin( $approval ) ),
+			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), $checkout, new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
 			new Proforma\Module( $this->file, new Proforma\AdminBox( $issuer ) ),
 			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $proformas, $solutions ), new Account\SolutionsRoute( $solutions ) ),
+<<<<<<< HEAD
 			new Presentation\Module( new Presentation\Shortcodes( $gate ), $gate, new Presentation\WindPress() ),
 			new Stock\Module( new Stock\StockController(), new Stock\BatchLog(), new Stock\Retention( $this->file ) ),
+=======
+			new Presentation\Module( new Presentation\Shortcodes( $gate, $approval ), $gate, new Presentation\WindPress() ),
+>>>>>>> 85b4cf3 (- Registration\Approval：审批权威（pending/approved/restricted/rejected），meta)
 		);
 	}
 }
