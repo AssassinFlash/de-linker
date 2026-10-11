@@ -24,9 +24,12 @@ def _verdict(
     }
 
 
-def test_thresholds_are_the_formal_calibration_frozen() -> None:
+def test_thresholds_are_the_recibrated_pilot_values() -> None:
+    # Grounded 0.6: the #16 recalibration on the real-turn pilot (2026-10-11,
+    # runs/pilot-20261011-v4) — the frozen #33 value 0.85 escalated 9/11 turns
+    # on confidence alone; 0.6 keeps the same agreement at 3/11.
     assert TURN_THRESHOLDS == {
-        "grounded": 0.85,
+        "grounded": 0.6,
         "appropriate": 0.5,
         "better_pick": 0.6,
     }

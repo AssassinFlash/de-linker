@@ -49,9 +49,25 @@ SWAPS: dict[str, tuple[str, int, int]] = {
     "panel-r2de": ("3556", 3556, 6507),
     "panel-r5": ("2092", 2092, 3581),
     "panel-r10": ("3611", 3611, 3581),
-    "panel-r3spell": ("2198", 2198, 2199),
+    # The page product itself: the variant claims the page is the H2-10K-T3,
+    # which the reference's own get-product contradicts (the 2026-10-11
+    # recalibration run: the previous swapped-in 2199 is the same family's
+    # 10 kW model, and the judge read the misattribution as "equal").
+    "panel-r3spell": ("2198", 2198, 4107),
     "panel-r4spell": ("6483", 6483, 6507),
     "panel-r11spell": ("3581", 3581, 4107),
+}
+
+# The product page each turn ran on (docs/acceptance/genie-panel.md): the id
+# whose card is the page's own product, not a recommendation. The R5 divergence
+# of the 2026-10-11 pilot came from flattening the two roles into one
+# "Products offered" list, which read "documented pairing" as a claim about the
+# page's own product too; the rendered answer now names the roles apart.
+PAGE_PRODUCT: dict[str, int] = {
+    "panel-r5": 4107,  # the H2-10K-T3 product page
+    "panel-r10": 3556,  # the customer's GW10K-ET, the page the turn ran on
+    "panel-r13spell": 4107,
+    "panel-r3spell": 2198,  # the asked-about HS3-5K page
 }
 
 # The rows and their exact customer questions — the panel wording of
@@ -203,19 +219,41 @@ def main(argv: list[str] | None = None) -> int:
         reference = {"calls": replay(args.wp, calls)}
         swap = SWAPS.get(name)
         has_candidates = swap is not None
-        products = ", ".join(str(pid) for pid in cards)
-        variant = products
-        if swap:
-            variant = ", ".join(
-                str(swap[2]) if pid == swap[1] else str(pid) for pid in cards
+        page = PAGE_PRODUCT.get(name)
+        recommended = [pid for pid in cards if pid != page]
+
+        roles = f"This page's product: {page}.\n" if page is not None else ""
+
+        def offer_line(ids: list[int], roles: str = roles) -> str:
+            return (
+                roles + f"Recommended products: {', '.join(str(pid) for pid in ids)}."
             )
+
         item = {
             "question": QUESTIONS[name],
-            "answer": answer_text + f"\n\nProducts offered: {products}",
+            "answer": answer_text + "\n\n" + offer_line(recommended),
+            # Both judges read the whole replays. The 2026-10-11 recalibration
+            # run measured the alternative - the first pass on a reference cut
+            # to the offered cards - and it failed its purpose: the first-pass
+            # grounded labels degraded to "not verifiable" on rows whose
+            # answers state facts from the cut fields (r1/r2/r5), so a lower
+            # threshold would have shipped wrong labels. The escalation
+            # pressure is treated at the threshold instead (see
+            # turns.TURN_THRESHOLDS).
             "reference": reference,
             "cards": cards,
-            "answer_a": answer_text + f"\n\nProducts offered: {products}",
-            "answer_b": answer_text + f"\n\nProducts offered: {variant}",
+            "answer_a": answer_text + "\n\n" + offer_line(recommended),
+            # The wrong-pick variant: the swapped id takes the swapped-out
+            # card's role (a recommendation replaced by an unreferenced
+            # product; for panel-r3spell the page product itself, which the
+            # variant then misattributes).
+            "answer_b": answer_text
+            + "\n\n"
+            + (
+                offer_line([swap[2] if pid == swap[1] else pid for pid in recommended])
+                if swap
+                else offer_line(recommended)
+            ),
         }
         questions = turns_questions(has_candidates)
 
