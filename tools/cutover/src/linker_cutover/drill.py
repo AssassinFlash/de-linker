@@ -42,6 +42,11 @@ class Drill:
     home: Path | None = field(default=None)
     staging: Path | None = field(default=None)
     snippets: Path | None = field(default=None)
+    # Where the day's record goes (`docs/acceptance/<date>/17/`): the drill
+    # writes its own record there, and the removal step archives what it deletes
+    # from the mu directory under the same directory — the window's code, run
+    # against an instance, with one record.
+    acceptance: Path | None = field(default=None)
     administrator: str = ""
     steps: list[dict[str, object]] = field(default_factory=list)
 
@@ -126,6 +131,11 @@ class Drill:
             "published_products": products.strip(),
             "maintenance": maintenance,
             "answers": answers,
+            # The switch writes here (the recorder is installed over the live
+            # file, the old loader goes), so the rollback has to be able to put
+            # the directory back: the drill asserts that it did, not that the
+            # backup was asked to.
+            "must_use": sorted(self.target.tree(plan.MU_PLUGINS_DIR)),
         }
 
     def _require_pre_cutover(self, fingerprint: dict[str, object]) -> None:
@@ -146,6 +156,7 @@ class Drill:
     def _pass(self, *, number: int) -> Path:
         assert self.repository is not None and self.home is not None
         assert self.staging is not None and self.snippets is not None
+        assert self.acceptance is not None
         taken = backup_module.create(self.target, self.home)
         self._record(
             cutover.Result(
@@ -165,7 +176,9 @@ class Drill:
         )
         self._record(
             cutover.remove_legacy(
-                self.target, snippets=self.snippets / f"pass{number}" / "snippets.json"
+                self.target,
+                snippets=self.snippets / f"pass{number}" / "snippets.json",
+                acceptance=self.acceptance,
             )
         )
         self._record(

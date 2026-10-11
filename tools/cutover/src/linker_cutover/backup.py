@@ -2,8 +2,9 @@
 
 `create` writes a complete, restorable copy of the site to
 `~/de-linker-data/cutover-<date>/` (outside the repository, as every snapshot
-is): the database, `wp-content/uploads`, `wp-content/plugins`, `.htaccess`, an
-options export, and a sha256 manifest of everything it wrote.
+is): the database, `wp-content/uploads`, `wp-content/plugins`,
+`wp-content/mu-plugins`, `.htaccess`, an options export, and a sha256 manifest
+of everything it wrote.
 
 `restore` puts that copy back; the rollback runs it. The database comes back
 whole, so the plugin activation state comes back with it; the file trees come
@@ -39,6 +40,7 @@ from typing import IO
 
 from linker_cutover.target import (
     HTACCESS,
+    MU_PLUGINS,
     PLUGINS,
     UPLOADS,
     CutoverError,
@@ -206,9 +208,20 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
         print(f"backup: {relative}")
         target.copy_out(relative, directory / relative)
 
+    # The switch writes the mu directory too — the recorder is installed over
+    # the live file and the old i18n loader is deleted — so a rollback that
+    # could not put it back is not a rollback. A site without that directory is
+    # a legal site with nothing to put back, and the absence is recorded rather
+    # than fatal (the same treatment `.htaccess` gets below).
+    print(f"backup: {MU_PLUGINS}")
+    try:
+        target.copy_out(MU_PLUGINS, directory / MU_PLUGINS)
+    except CutoverError as error:
+        print(f"backup: no {MU_PLUGINS} ({error})")
+
     htaccess = directory / HTACCESS
     try:
-        target.copy_out(HTACCESS, htaccess)
+        target.copy_file_out(HTACCESS, htaccess)
     except CutoverError as error:
         # A site without .htaccess is legal — the rewrite rules then live in the
         # server config. The absence is recorded, not fatal.
@@ -255,12 +268,18 @@ def restore(target: Target, directory: Path) -> None:
     target.copy_in(directory / PLUGINS, PLUGINS)
     print(f"rollback: {UPLOADS}")
     target.copy_in(directory / UPLOADS, UPLOADS)
+    # Only when the backup holds one: a site that had no mu directory has
+    # nothing to restore, and creating an empty one would be a change of its
+    # own (the tree stays out of the archive for the same reason).
+    if (directory / MU_PLUGINS).is_dir():
+        print(f"rollback: {MU_PLUGINS}")
+        target.copy_in(directory / MU_PLUGINS, MU_PLUGINS)
     htaccess = directory / HTACCESS
     if htaccess.is_file() and htaccess.stat().st_size > 0:
         print(f"rollback: {HTACCESS}")
-        # `.htaccess` is one file, not a tree: rsync it through the same seam a
-        # directory copy uses, so both targets behave identically.
-        target.rsync(str(htaccess), target.path_of(HTACCESS))
+        # `.htaccess` is one file, not a tree, and it goes back the way it came
+        # out: one mechanism for a file, whichever end it is on.
+        target.copy_file_in(htaccess, HTACCESS)
     print("rollback: caches")
     target.wp("cache", "flush")
     target.wp("rewrite", "flush")

@@ -148,6 +148,10 @@ def main(argv: list[str] | None = None) -> int:
             if not args.write:
                 for slug in plan.NEW_PLUGINS:
                     print(f"deploy: would build and copy {slug}")
+                print(
+                    f"deploy: would install {plan.MU_PLUGINS_REPO}/*.php to "
+                    f"{plan.MU_PLUGINS_DIR} (step 3 needs that directory in the checkout)"
+                )
                 return 0
             _print(steps.deploy(target, repository=repository, staging=staging))
             return 0
@@ -157,7 +161,13 @@ def main(argv: list[str] | None = None) -> int:
             if not args.write:
                 print("plugins: dry run — nothing deactivated or deleted")
                 return 0
-            _print(steps.remove_legacy(target, snippets=snippets / "snippets.json"))
+            _print(
+                steps.remove_legacy(
+                    target,
+                    snippets=snippets / "snippets.json",
+                    acceptance=acceptance,
+                )
+            )
             return 0
         if args.command == "data":
             _print(
@@ -223,6 +233,7 @@ def _drill(args: argparse.Namespace, repository: Path, acceptance: Path) -> int:
         home=DATA_HOME,
         staging=args.staging or (workspace / "staging"),
         snippets=workspace / "snippets",
+        acceptance=acceptance,
         administrator=args.administrator,
     )
     record = rehearsal.run()
@@ -268,8 +279,22 @@ def _workspace() -> Path:
 
 
 def _newest() -> Path | None:
-    candidates = sorted(DATA_HOME.glob("cutover-*"), key=lambda path: path.name)
-    return candidates[-1] if candidates else None
+    """The newest backup under the data root, or None when there is none.
+
+    Two directories under `~/de-linker-data/` start with `cutover-`: a backup
+    and the tool's own work directory (`cutover-workspace`). Sorted by name the
+    work directory is last — `w` sorts after every digit — so "the newest
+    backup" used to be the workspace, which holds no backup at all. A candidate
+    is a directory that holds the dump, and nothing else is one.
+    """
+    from linker_cutover import backup as backup_module  # noqa: PLC0415 - config, not a dependency
+
+    candidates = [
+        path
+        for path in DATA_HOME.glob("cutover-*")
+        if (path / backup_module.DUMP).is_file()
+    ]
+    return max(candidates, key=lambda path: path.name) if candidates else None
 
 
 def _addresses() -> dict[str, str]:

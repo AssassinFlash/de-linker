@@ -35,11 +35,13 @@ class FakeTarget(Target):
         )
         self.calls: list[tuple[str, tuple[str, ...]]] = []
         self.shells: list[str] = []
+        self.rsyncs: list[tuple[str, str]] = []
         self.plugins: str = "name\tstatus\n"
         self.tables: str = "wp_posts,wp_options\n"
         self.options: str = "option_name\nsiteurl\n"
         self.shell_replies: dict[str, str] = {}
         self.eval_reply: str = "[]"
+        self.existing: set[str] = set()
 
     def wp(self, *args: str, check: bool = True) -> str:  # noqa: D102
         del check
@@ -87,8 +89,42 @@ class FakeTarget(Target):
                 return value
         return ""
 
+    def exists(self, relative: str) -> bool:  # noqa: D102 - a set, not a filesystem
+        return relative in self.existing
+
+    def rsync(  # noqa: D102 - records instead of copying
+        self, source: str, destination: str, *, extra: list[str] | None = None
+    ) -> str:
+        del extra
+        self.rsyncs.append((source, destination))
+        return ""
+
     def wp_json(self, *args: str) -> object:  # noqa: D102 - only `plugin list` is asked for JSON
         return json.loads(self.wp(*args, "--format=json"))
+
+
+class _Pages(FakeTarget):
+    """A target whose reads are a fixed map of path to (status, body)."""
+
+    def __init__(  # noqa: D107
+        self, root: Path, pages: dict[str, str], statuses: dict[str, int] | None = None
+    ) -> None:
+        super().__init__(root)
+        self.pages = pages
+        self.statuses = statuses or {}
+
+    def http(  # noqa: D102 - canned answers
+        self, path: str, *, cache_buster: str | None = None
+    ) -> tuple[int, str]:
+        del cache_buster
+        return self.statuses.get(path, 200), self.pages.get(
+            path, '<html lang="de">ok</html>'
+        )
+
+    @staticmethod
+    def redirects_are_served() -> dict[str, int]:
+        """The statuses the redirect subset expects, so only the body is under test."""
+        return dict(plan.VERIFY_REDIRECTS)
 
 
 def _fake(tmp_path: Path) -> FakeTarget:
@@ -101,14 +137,55 @@ def _fake(tmp_path: Path) -> FakeTarget:
     return target
 
 
+def _snippets(tmp_path: Path) -> Path:
+    """The export `remove_legacy` refuses to run without."""
+    snippets = tmp_path / "snippets.json"
+    snippets.write_text("[]", encoding="utf-8")
+    return snippets
+
+
+def _acceptance(tmp_path: Path) -> Path:
+    """The day's acceptance directory, where the mu archive lands."""
+    return tmp_path / "docs" / "acceptance" / "2026-10-11" / "17"
+
+
+def _repository(tmp_path: Path, *, recorder: bool = True) -> Path:
+    """A checkout with the three plugins, and the must-use directory #80 adds."""
+    repository = tmp_path / "repo"
+    for slug in plan.NEW_PLUGINS:
+        source = repository / plan.REPO / slug
+        source.mkdir(parents=True)
+        (source / f"{slug}.php").write_text("<?php", encoding="utf-8")
+    if recorder:
+        must_use = repository / plan.MU_PLUGINS_REPO
+        must_use.mkdir()
+        (must_use / "linker-error-recorder.php").write_text(
+            "<?php // the recorder", encoding="utf-8"
+        )
+    return repository
+
+
+def _product_page(*nodes: object) -> str:
+    """A page carrying one JSON-LD block per node given."""
+    blocks = "".join(
+        f'<script type="application/ld+json">{json.dumps(node)}</script>'
+        for node in nodes
+    )
+    return f'<html lang="de"><head>{blocks}</head><body></body></html>'
+
+
+_PRODUCT = {"@context": "https://schema.org", "@type": "Product", "name": "x"}
+_WEBSITE = {"@context": "https://schema.org", "@type": "WebSite"}
+
+
 def test_removal_deactivates_everything_before_deleting_anything(
     tmp_path: Path,
 ) -> None:
     """A plugin still active while its neighbour is deleted can fatal mid-window."""
     target = _fake(tmp_path)
-    snippets = tmp_path / "snippets.json"
-    snippets.write_text("[]", encoding="utf-8")
-    steps.remove_legacy(target, snippets=snippets)
+    steps.remove_legacy(
+        target, snippets=_snippets(tmp_path), acceptance=_acceptance(tmp_path)
+    )
     verbs = [
         call[1][1]
         for call in target.calls
@@ -133,7 +210,11 @@ def test_removal_refuses_to_delete_the_snippet_plugin_without_an_export(
     """The export is the evidence that the snippets' work has an owner; without it, stop."""
     target = _fake(tmp_path)
     with pytest.raises(CutoverError, match="export the snippets"):
-        steps.remove_legacy(target, snippets=tmp_path / "missing.json")
+        steps.remove_legacy(
+            target,
+            snippets=tmp_path / "missing.json",
+            acceptance=_acceptance(tmp_path),
+        )
     assert not [call for call in target.calls if call[1][0] == "plugin"]
 
 
@@ -142,15 +223,99 @@ def test_removal_keeps_the_plugin_that_shares_a_slug_with_the_new_tree(
 ) -> None:
     """linker-i18n is replaced in place: deleting it would delete the new plugin."""
     target = _fake(tmp_path)
-    snippets = tmp_path / "snippets.json"
-    snippets.write_text("[]", encoding="utf-8")
-    steps.remove_legacy(target, snippets=snippets)
+    snippets, acceptance = _snippets(tmp_path), _acceptance(tmp_path)
+    steps.remove_legacy(target, snippets=snippets, acceptance=acceptance)
     named = [arg for call in target.calls for arg in call[1]]
     assert "linker-i18n" not in named
     assert any(
         "linker-i18n" in action
-        for action in steps.remove_legacy(target, snippets=snippets).actions
+        for action in steps.remove_legacy(
+            target, snippets=snippets, acceptance=acceptance
+        ).actions
     )
+
+
+def test_the_must_use_cleanup_archives_before_it_deletes(tmp_path: Path) -> None:
+    """What the mu rule takes out exists nowhere else: archive it, then remove it.
+
+    The old i18n loader and the recorder's own `.bak-*` are the only copies of
+    what the site had (spec 17 §3), so the order of those two verbs is the
+    finding: a file removed before it is copied out is a file nothing can
+    produce again. The plugins directory gets the same rule without the
+    archive — a leftover of a plugin that is itself deleted.
+    """
+    target = _fake(tmp_path)
+    old_recorder_backup = "linker-error-recorder.php.bak-20260808T174655Z"
+    loader = "linker-i18n-mu-loader.php"
+    mu = target.path_of(plan.MU_PLUGINS_DIR)
+    # The real files, so the copy-out's own "is this a file" check runs; the
+    # copy itself is recorded instead of made.
+    (Path(mu)).mkdir(parents=True)
+    for name in (old_recorder_backup, loader):
+        (Path(mu) / name).write_text("<?php // the old file", encoding="utf-8")
+    target.existing |= {
+        f"{plan.MU_PLUGINS_DIR}/{loader}",
+        f"{plan.MU_PLUGINS_DIR}/{old_recorder_backup}",
+    }
+    target.shell_replies[f"find {mu}"] = f"{mu}/{old_recorder_backup}\n"
+
+    acceptance = _acceptance(tmp_path)
+    result = steps.remove_legacy(
+        target, snippets=_snippets(tmp_path), acceptance=acceptance
+    )
+
+    archive = acceptance / plan.MU_ARCHIVE
+    assert target.rsyncs == [
+        (f"{mu}/{old_recorder_backup}", str(archive / old_recorder_backup)),
+        (f"{mu}/{loader}", str(archive / loader)),
+    ]
+    assert [script for script in target.shells if script.startswith("rm ")] == [
+        f"rm -rf {mu}/{old_recorder_backup}",
+        f"rm -f {mu}/{loader}",
+    ]
+    assert 2 == sum("archived" in action for action in result.actions)
+
+
+def test_the_deploy_installs_the_recorder_over_the_live_file(tmp_path: Path) -> None:
+    """#80's recorder is the successor of the live file of the same name.
+
+    It goes first, before the plugins: it is the file whose job is to be
+    recording while the rest of the switch runs, and the live site's own copy
+    is the old version of it, not a different plugin.
+    """
+    target = _fake(tmp_path)
+    recorder = "linker-error-recorder.php"
+    target.existing.add(f"{plan.MU_PLUGINS_DIR}/{recorder}")
+    repository = _repository(tmp_path)
+
+    result = steps.deploy(target, repository=repository, staging=tmp_path / "staging")
+
+    source, destination = target.rsyncs[0]
+    assert Path(source).name == recorder
+    assert destination == f"{target.root}/{plan.MU_PLUGINS_DIR}/{recorder}"
+    assert len(target.rsyncs) == 4, "the recorder and the three plugins"
+    assert result.actions[0] == (
+        f"deployed {plan.MU_PLUGINS_REPO}/{recorder} to "
+        f"{plan.MU_PLUGINS_DIR}/{recorder} (replaced the live file)"
+    )
+
+
+def test_the_deploy_stops_when_the_checkout_has_no_must_use_directory(
+    tmp_path: Path,
+) -> None:
+    """Three plugins shipped, the recorder never arriving, and a success line.
+
+    The directory is an input of step 3 (#80 ships it); a checkout without it
+    is not a checkout that can run the window's file half.
+    """
+    target = _fake(tmp_path)
+    with pytest.raises(CutoverError, match="carries no must-use plugin"):
+        steps.deploy(
+            target,
+            repository=_repository(tmp_path, recorder=False),
+            staging=tmp_path / "staging",
+        )
+    assert target.rsyncs == []
 
 
 def test_a_legacy_table_rule_takes_the_old_tree_and_not_woocommerce() -> None:
@@ -316,6 +481,80 @@ def test_the_deploy_installs_polylang_and_activates_the_three() -> None:
     plan_plugins = plan.NEW_PLUGINS
     assert len(plan_plugins) == 3
     assert plan.INSTALLED_PLUGINS == ("polylang",)
+
+
+def test_the_product_pages_must_carry_exactly_one_product_node(tmp_path: Path) -> None:
+    """Both cases answer 200, so the status is not the check: the body is.
+
+    Two Product nodes — one of them claiming this company manufactures the
+    product — is what retiring the SEO plugin's own template exists to
+    prevent, and a `verify` that only counted entry points could not see it.
+    """
+    statuses = _Pages.redirects_are_served()
+    single = {
+        path: _product_page(_PRODUCT, _WEBSITE) for path in plan.VERIFY_PRODUCT_PATHS
+    }
+    result = steps.verify(_Pages(tmp_path, single, statuses), cache_buster="x")
+    assert result.notes == []
+    assert [action for action in result.actions if "node(s)" in action] == [
+        f"GET {path} -> 1 {plan.VERIFY_PRODUCT_TYPE} node(s) in ld+json"
+        for path in plan.VERIFY_PRODUCT_PATHS
+    ]
+
+    doubled = {
+        path: _product_page(_PRODUCT, _PRODUCT) for path in plan.VERIFY_PRODUCT_PATHS
+    }
+    result = steps.verify(_Pages(tmp_path, doubled, statuses), cache_buster="x")
+    assert result.notes == [
+        f"{path} carries 2 {plan.VERIFY_PRODUCT_TYPE} nodes, expected exactly 1"
+        for path in plan.VERIFY_PRODUCT_PATHS
+    ]
+
+
+def test_one_block_can_hold_two_product_nodes(tmp_path: Path) -> None:
+    """A `@graph` is one block; counting blocks would call that page a pass."""
+    graph = {"@context": "https://schema.org", "@graph": [_PRODUCT, _PRODUCT]}
+    assert steps.product_nodes(_product_page(graph)) == (2, 0)
+    assert steps.product_nodes(_product_page(_PRODUCT, _WEBSITE)) == (1, 0)
+    # The other nodes the site already emits are not the one under test.
+    assert steps.product_nodes(_product_page(_WEBSITE)) == (0, 0)
+    assert steps.product_nodes("<html lang='de'>no json-ld at all</html>") == (0, 0)
+
+
+def test_the_block_is_found_however_the_script_tag_is_written() -> None:
+    """The plugin writes the attribute; a check that assumed one spelling would miss it."""
+    node = json.dumps(_PRODUCT)
+    for tag in (
+        f'<script type="application/ld+json">{node}</script>',
+        f"<script class='x' type='application/ld+json'>{node}</script>",
+        f'<script TYPE="Application/LD+JSON" id="a">{node}</script>',
+        f'<script type="application/ld+json" class="a" data-x="1">{node}</script>',
+    ):
+        assert steps.product_nodes(tag) == (1, 0), tag
+
+
+def test_a_block_that_does_not_parse_is_reported_not_read_as_zero(
+    tmp_path: Path,
+) -> None:
+    """A block this cannot read is a check that did not run, not a page with no node."""
+    broken = (
+        '<html lang="de"><head><script type="application/ld+json">'
+        '{"@type": Product}</script></head></html>'
+    )
+    assert steps.product_nodes(broken) == (0, 1)
+    pages = dict.fromkeys(plan.VERIFY_PRODUCT_PATHS, broken)
+    result = steps.verify(
+        _Pages(tmp_path, pages, _Pages.redirects_are_served()), cache_buster="x"
+    )
+    assert result.notes == [
+        note
+        for path in plan.VERIFY_PRODUCT_PATHS
+        for note in (
+            f"{path} carries 0 {plan.VERIFY_PRODUCT_TYPE} nodes, expected exactly 1",
+            f"{path}: 1 JSON-LD block(s) did not parse — the count above is not "
+            "the whole page",
+        )
+    ]
 
 
 def test_a_step_describes_exactly_what_it_did() -> None:

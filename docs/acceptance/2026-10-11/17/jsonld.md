@@ -96,7 +96,8 @@ just wp t81 eval-file /tmp/rs2.php   # post 978 的 meta
 4. 因此按票面"补结构化数据输出"分支处理：产品页的 `Product` 节点收回 `linker-commerce`
    （`Storefront\ProductSchema`，语义与 §1 的今天一致：无价格、availability 取 Woo 原生库存、
    brand 取产品自己的 `pa_brand`、型号/SKU/图/文同样取产品自己的字段），SEO 插件模板库里那条
-   Product 模板随切换退役（`just cutover schema`，trash 不 delete）。`/products/` 的
+   Product 模板随切换退役（`just cutover schema`：`wp post update … --post_status=draft`——
+   该 CPT 不支持回收站，draft 同样不再被插件的查询取到，且可以手工放回）。`/products/` 的
    CollectionPage/BreadcrumbList 与首页的 WebSite/Organization 仍由它输出，未动。
 
 ## 5. 切换后的实测（本地演练的第二遍结束时）

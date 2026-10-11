@@ -15,6 +15,7 @@ that assumes one would quietly match nothing on a site that changed it.
 from __future__ import annotations
 
 import json
+import re
 import shlex
 import shutil
 import subprocess
@@ -118,7 +119,7 @@ def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:
 
 
 def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
-    """Step 3's file half: the three plugins and Polylang.
+    """Step 3's file half: the three plugins, the must-use recorder, and Polylang.
 
     The translations travel inside each plugin's `languages/` directory, so
     "new .po/.mo" needs no separate copy. Polylang is installed by WP-CLI from
@@ -129,6 +130,7 @@ def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
     and the instance's isolation layer blocks wordpress.org on purpose.
     """
     actions: list[str] = []
+    actions += deploy_mu_plugins(target, repository=repository)
     for slug in plan.NEW_PLUGINS:
         tree = stage_plugin(repository, slug, staging)
         target.copy_in(tree, f"{plan.PLUGINS_DIR}/{slug}")
@@ -153,6 +155,38 @@ def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
     target.wp("plugin", "activate", *plan.NEW_PLUGINS)
     actions.append("wp plugin activate " + " ".join(plan.NEW_PLUGINS))
     return Result("deploy", actions, [])
+
+
+def deploy_mu_plugins(target: Target, *, repository: Path) -> list[str]:
+    """The repository's must-use plugins, installed over the site's own directory.
+
+    The recorder goes first, before anything else moves: it is the file whose
+    job is to be recording while the rest of the switch runs, and it replaces
+    the live file of the same name rather than being added beside it.
+
+    The other must-use files on the site stay untouched — the theme's own and
+    the host platform's are not this repository's to deploy, and it has no copy
+    of them. The directory is an input of step 3, so a checkout without it stops
+    the step: shipping three plugins while reporting success and never
+    installing the recorder is a gap the step would be hiding.
+    """
+    source = Path(repository) / plan.MU_PLUGINS_REPO
+    files = sorted(source.glob("*.php")) if source.is_dir() else []
+    if not files:
+        raise CutoverError(
+            f"{source} carries no must-use plugin — the switch deploys the error "
+            "recorder #80 ships there"
+        )
+    actions: list[str] = []
+    for path in files:
+        relative = f"{plan.MU_PLUGINS_DIR}/{path.name}"
+        replaced = target.exists(relative)
+        target.copy_file_in(path, relative)
+        actions.append(
+            f"deployed {plan.MU_PLUGINS_REPO}/{path.name} to {relative}"
+            + (" (replaced the live file)" if replaced else "")
+        )
+    return actions
 
 
 def ensure_plugins(target: Target, slugs: tuple[str, ...]) -> list[str]:
@@ -207,12 +241,17 @@ def export_snippets(target: Target, directory: Path) -> Result:
     )
 
 
-def remove_legacy(target: Target, *, snippets: Path) -> Result:
+def remove_legacy(target: Target, *, snippets: Path, acceptance: Path) -> Result:
     """Step 3's removal half: deactivate, delete, and clear what is left behind.
 
     The order is the point. Every legacy plugin is deactivated before any of
     them is deleted, so no plugin is left calling into code that is already
     gone; the snippets are exported before `code-snippets` itself is deleted.
+
+    The must-use directory is cleaned with the same `*.bak-*` rule as the
+    plugins directory, and what goes from there is archived under the day's
+    acceptance record first (spec 17 §3): the old i18n loader and the
+    recorder's own backups are, by the time this step runs, the only copies.
     """
     actions: list[str] = []
     notes: list[str] = []
@@ -242,25 +281,56 @@ def remove_legacy(target: Target, *, snippets: Path) -> Result:
         if target.exists(path):
             target.shell(f"rm -rf {shlex.quote(target.path_of(path))}")
             actions.append(f"rm -rf {path}")
-    for pattern in plan.LEGACY_PLUGIN_GLOBS:
-        listing = target.shell(
-            f"find {shlex.quote(target.path_of(plan.PLUGINS_DIR))} -maxdepth 1 "
-            f"-name {shlex.quote(pattern)} -print -exec rm -rf {{}} +"
-        )
-        actions += [f"removed {name}" for name in listing.split() if name]
 
-    mu_plugins = "wp-content/mu-plugins"
+    archive = Path(acceptance) / plan.MU_ARCHIVE
+    actions += _remove_globs(target, plan.PLUGINS_DIR)
+    actions += _remove_globs(target, plan.MU_PLUGINS_DIR, archive=archive)
+
     for name in plan.LEGACY_MU_PLUGINS:
-        relative = f"{mu_plugins}/{name}"
-        if target.exists(relative):
-            target.shell(f"rm -f {shlex.quote(target.path_of(relative))}")
-            actions.append(f"rm -f {relative}")
+        relative = f"{plan.MU_PLUGINS_DIR}/{name}"
+        if not target.exists(relative):
+            continue
+        _archive(target, relative, archive, actions)
+        target.shell(f"rm -f {shlex.quote(target.path_of(relative))}")
+        actions.append(f"rm -f {relative}")
     actions.append(
         "deployed in place, so no removal: " + ", ".join(plan.REPLACED_PLUGINS)
     )
     if not notes:
         notes.append("every legacy plugin was installed and is gone")
     return Result("plugins", actions, notes)
+
+
+def _remove_globs(
+    target: Target, relative: str, *, archive: Path | None = None
+) -> list[str]:
+    """Remove the leftover `*.bak-*` files of one root-relative directory.
+
+    With `archive`, every match is copied there before it is removed. The mu
+    directory needs that and the plugins directory does not: what the rule takes
+    out of `wp-content/plugins` is a leftover of a plugin that is itself being
+    deleted, while the files it takes out of `wp-content/mu-plugins` are the
+    only remaining copy of the loader the old i18n plugin bootstrapped from.
+    """
+    actions: list[str] = []
+    for pattern in plan.LEGACY_GLOBS:
+        listing = target.shell(
+            f"find {shlex.quote(target.path_of(relative))} -maxdepth 1 "
+            f"-name {shlex.quote(pattern)} -print"
+        )
+        for name in listing.split():
+            path = f"{relative}/{Path(name).name}"
+            if archive is not None:
+                _archive(target, path, archive, actions)
+            target.shell(f"rm -rf {shlex.quote(name)}")
+            actions.append(f"rm -rf {path}")
+    return actions
+
+
+def _archive(target: Target, relative: str, archive: Path, actions: list[str]) -> None:
+    """Keep a copy of what the step is about to delete from the site."""
+    target.copy_file_out(relative, archive / Path(relative).name)
+    actions.append(f"archived {relative} to {archive}")
 
 
 def migrations(
@@ -456,7 +526,13 @@ def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Resul
 
 
 def verify(target: Target, *, cache_buster: str) -> Result:
-    """Step 7's read-only subset: the entry points of both languages answer."""
+    """Step 7's read-only subset: the entry points of both languages answer.
+
+    The product pages carry an assertion the status cannot make: exactly one
+    `Product` node in the page's JSON-LD. Two of them — one from this tree, one
+    from the schema template the switch retires — is the failure the retirement
+    exists to prevent, and both cases answer 200 (#81, GAP-7).
+    """
     actions: list[str] = []
     notes: list[str] = []
     for path in plan.VERIFY_PATHS:
@@ -470,12 +546,75 @@ def verify(target: Target, *, cache_buster: str) -> Result:
             notes.append(f"{path} answered {status}")
         if german and not language:
             notes.append(f"{path} is not German")
+        if path not in plan.VERIFY_PRODUCT_PATHS:
+            continue
+        products, unreadable = product_nodes(body)
+        actions.append(
+            f"GET {path} -> {products} {plan.VERIFY_PRODUCT_TYPE} node(s) in ld+json"
+        )
+        if products != 1:
+            notes.append(
+                f"{path} carries {products} {plan.VERIFY_PRODUCT_TYPE} nodes, "
+                "expected exactly 1"
+            )
+        if unreadable:
+            notes.append(
+                f"{path}: {unreadable} JSON-LD block(s) did not parse — the count "
+                "above is not the whole page"
+            )
     for path, expected in plan.VERIFY_REDIRECTS:
         status, _ = target.http(path, cache_buster=cache_buster)
         actions.append(f"GET {path} -> {status} (expected {expected})")
         if status != expected:
             notes.append(f"{path} answered {status}, expected {expected}")
     return Result("verify", actions, notes)
+
+
+# The blocks a page declares as JSON-LD. WordPress writes the `type` attribute
+# quoted and in either style, and not always first, so neither is assumed here.
+_LD_JSON = re.compile(
+    r"<script[^>]*type=[\"']?application/ld\+json[\"']?[^>]*>(.*?)</script>",
+    re.DOTALL | re.IGNORECASE,
+)
+
+
+def product_nodes(html: str) -> tuple[int, int]:
+    """(`Product` nodes, JSON-LD blocks that did not parse) in a page.
+
+    Blocks, not nodes, would be the easy count and the wrong one: a single
+    `@graph` holds two contradictory Product nodes as readily as two blocks do.
+    What could not be read is returned rather than skipped — a block this
+    cannot parse is a check that did not run, and a silent zero would read as
+    "the page has none".
+    """
+    products = 0
+    unreadable = 0
+    for block in _LD_JSON.findall(html):
+        try:
+            parsed = json.loads(block)
+        except json.JSONDecodeError:
+            unreadable += 1
+            continue
+        products += _product_count(parsed)
+    return products, unreadable
+
+
+def _product_count(node: object) -> int:
+    """How many schema.org Product nodes one parsed JSON-LD value holds."""
+    if isinstance(node, list):
+        return sum(_product_count(item) for item in node)
+    if not isinstance(node, dict):
+        return 0
+    count = 0
+    types = node.get("@type")
+    if types == plan.VERIFY_PRODUCT_TYPE or (
+        isinstance(types, list) and plan.VERIFY_PRODUCT_TYPE in types
+    ):
+        count += 1
+    graph = node.get("@graph")
+    if isinstance(graph, list):
+        count += sum(_product_count(item) for item in graph)
+    return count
 
 
 def rollback(target: Target, *, backup: Path) -> Result:

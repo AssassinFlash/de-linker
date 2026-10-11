@@ -26,8 +26,9 @@ import subprocess
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
+from http.client import HTTPMessage
 from pathlib import Path
-from typing import Any
+from typing import IO, Any
 
 # The production host and its WordPress root, as tools/pull/src/linker_pull/live.py
 # records them (both read from the host on 2026-10-09).
@@ -39,11 +40,44 @@ HOST_URL = "https://de-linker.com"
 # the two targets cannot drift.
 PLUGINS = "wp-content/plugins"
 UPLOADS = "wp-content/uploads"
+# The switch writes here too (`steps.deploy`, `steps.remove_legacy`), so the
+# backup carries it and the rollback puts it back (#81).
+MU_PLUGINS = "wp-content/mu-plugins"
 HTACCESS = ".htaccess"
 
 
 class CutoverError(RuntimeError):
     """A step could not run, or a check it makes failed."""
+
+
+class _NoRedirects(urllib.request.HTTPRedirectHandler):
+    """An opener part that refuses every redirect, so a 3xx stays a 3xx.
+
+    urllib follows redirects by default, and that is what made `verify`'s
+    redirect assertion unfalsifiable: the 301 it asked about came back as the
+    200 at the end of the chain, so the drill's record shows `/design-canvas/`
+    answering 200 on a site that answers 301. Refusing the redirect hands the
+    response to `HTTPDefaultErrorHandler`, which raises `HTTPError` — the
+    status `http` reports is then the one the address itself answered.
+    """
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: IO[bytes],
+        code: int,
+        msg: str,
+        headers: HTTPMessage,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        """Never build the follow-up request; see the class comment."""
+        del req, fp, code, msg, headers, newurl
+        return None
+
+
+# One opener for every read: it holds no state, and building one is not free.
+# `urllib.request.urlopen` is the redirect-following default and is not used here.
+OPENER = urllib.request.build_opener(_NoRedirects)
 
 
 def _run(command: list[str], *, cwd: Path | None = None) -> str:
@@ -104,7 +138,7 @@ class Target:
         return _run(command)
 
     def path_of(self, relative: str) -> str:
-        """Where a WordPress-root-relative path is on this target's machine.
+        """Where a WordPress-root-relative path is on the machine the site runs on.
 
         The guard is here and not in the remote branch alone: `Path(root) /
         "/etc/passwd"` is `/etc/passwd`, so a removal step handed an absolute
@@ -112,34 +146,65 @@ class Target:
         """
         if relative.startswith("/") or ".." in relative.split("/"):
             raise CutoverError(f"{relative!r} is not a path inside the WordPress root")
+        return str(Path(self.root) / relative)
+
+    def address(self, relative: str) -> str:
+        """The same path as rsync needs it: `host:path` when the site is remote.
+
+        This is not `path_of`. A shell script, an `-e` test and a `cd` run on
+        the machine the site runs on and want the bare path; rsync on this Mac
+        wants the host in front of it. Handing the `host:path` form to the
+        shell is a directory named after a host that no machine has: `[ -e ]`
+        answers no, so every removal guarded by it was silently skipped.
+        """
+        path = self.path_of(relative)
         if self.rsync_remote is None:
-            return str(Path(self.root) / relative)
-        return f"{self.rsync_remote}/{relative}"
+            return path
+        host = self.rsync_remote.split(":", 1)[0]
+        return f"{host}:{path}"
 
     def copy_out(self, relative: str, destination: Path) -> None:
-        """Copy a WordPress-root-relative path off the target into `destination`."""
+        """Copy a WordPress-root-relative directory off the target into `destination`."""
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        source = self.address(relative)
+        if self.rsync_remote is None and not Path(self.path_of(relative)).is_dir():
+            raise CutoverError(f"{relative} is not a directory on {self.label}")
+        # A trailing slash on the source copies the directory's contents, the
+        # same thing rsync does with `<host>:<dir>`.
+        self.rsync(f"{source.rstrip('/')}/", f"{destination}/")
+
+    def copy_file_out(self, relative: str, destination: Path) -> None:
+        """Copy one WordPress-root-relative file off the target to `destination`.
+
+        One file is not the directory case: rsync's trailing slash means "this
+        directory's contents", and on a file it is an error (`Not a directory`)
+        — which is how `.htaccess` came to be written into a backup as an empty
+        file instead of being taken. Same seam, same machine rules, the shape
+        the caller names.
+        """
         destination.parent.mkdir(parents=True, exist_ok=True)
         source = self.path_of(relative)
-        if self.rsync_remote is None:
-            if not Path(source).exists():
-                raise CutoverError(f"{relative} does not exist on {self.label}")
-            # A trailing slash on the source copies the directory's contents,
-            # the same thing rsync does with `<host>:<dir>`.
-            self.rsync(f"{source}/", f"{destination}/")
-            return
-        self.rsync(f"{source.rstrip('/')}/", f"{destination}/")
+        if self.rsync_remote is None and not Path(source).is_file():
+            raise CutoverError(f"{relative} is not a file on {self.label}")
+        self.rsync(self.address(relative), str(destination))
+
+    def copy_file_in(self, source: Path, relative: str) -> None:
+        """Copy one local file onto the target as the root-relative `relative`."""
+        if not source.is_file():
+            raise CutoverError(f"{source} is not a file")
+        self.rsync(str(source), self.address(relative))
 
     def copy_in(self, source: Path, relative: str) -> None:
         """Copy `source` onto the target as the WordPress-root-relative `relative`."""
         if not source.is_dir():
             raise CutoverError(f"{source} is not a directory")
-        destination = self.path_of(relative)
+        destination = self.address(relative)
         if self.rsync_remote is None:
             # `just up` leaves wp-content/plugins/linker-* as symlinks into the
             # checkout. rsync would follow one and write into the repository, so
             # the link is replaced by a directory first — which is what the
             # production copy is, and what a rollback restores.
-            path = Path(destination)
+            path = Path(self.path_of(relative))
             if path.is_symlink():
                 path.unlink()
             path.mkdir(parents=True, exist_ok=True)
@@ -168,6 +233,9 @@ class Target:
         Every request carries a cache-buster: production serves through
         LiteSpeed's full-page cache (docs/local-stack.md "与线上一致的部分"),
         and a cached answer is not evidence about the code under test.
+
+        Redirects are not followed (OPENER): a caller asking about a 301 is
+        asking about the address, not about where it points.
         """
         url = self.base_url.rstrip("/") + "/" + path.lstrip("/")
         if cache_buster:
@@ -175,11 +243,13 @@ class Target:
             url = f"{url}{separator}cbq={cache_buster}"
         request = urllib.request.Request(url, headers={"User-Agent": "linker-cutover"})
         try:
-            with urllib.request.urlopen(request, timeout=30) as response:
+            with OPENER.open(request, timeout=30) as response:
                 return response.status, response.read().decode(
                     "utf-8", errors="replace"
                 )
         except urllib.error.HTTPError as error:
+            # A 3xx lands here too, by design: `_NoRedirects` leaves it to the
+            # default error handler, which raises with the status and the body.
             return error.code, error.read().decode("utf-8", errors="replace")
         except OSError as error:  # a refused connection, a DNS failure, a timeout
             raise CutoverError(f"GET {url}: {error}") from error

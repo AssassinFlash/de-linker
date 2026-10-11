@@ -14,11 +14,19 @@ import os
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import IO
 
 import pytest
 
 from linker_cutover import backup
-from linker_cutover.target import CutoverError, Target
+from linker_cutover.target import (
+    HTACCESS,
+    MU_PLUGINS,
+    PLUGINS,
+    UPLOADS,
+    CutoverError,
+    Target,
+)
 
 
 def _target(root: Path) -> Target:
@@ -30,6 +38,116 @@ def _target(root: Path) -> Target:
         shell_prefix=None,
         rsync_remote=None,
     )
+
+
+class _Site(Target):
+    """A target on a real directory tree whose WP-CLI answers are canned.
+
+    `create` and `restore` are mostly file operations, and those should run for
+    real: what these tests are about is whether a file ends up in the archive
+    and whether it comes back.
+    """
+
+    def wp(self, *args: str, check: bool = True) -> str:  # noqa: D102 - canned answers
+        del args, check
+        return ""
+
+
+def _streams_a_stand_in_dump(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Let the file halves run without a database: the dump is a stand-in gzip."""
+
+    def fake(
+        target: Target,
+        script: str,
+        *,
+        stdin: IO[bytes] | None = None,
+        stdout: IO[bytes] | None = None,
+    ) -> None:
+        del target, script
+        if stdout is not None:
+            stdout.write(gzip.compress(b"select 1;\n"))
+        if stdin is not None:
+            stdin.read()
+
+    monkeypatch.setattr(backup, "_stream", fake)
+
+
+def _site(tmp_path: Path, *, must_use: bool = True) -> tuple[_Site, Path]:
+    """A site on disk, with the four shapes a cutover has to move."""
+    root = tmp_path / "root"
+    files = {
+        f"{UPLOADS}/2026/09/a.png": "png",
+        f"{PLUGINS}/linker-commerce/linker-commerce.php": "<?php // plugin",
+        f"{HTACCESS}": "# rules\n",
+    }
+    if must_use:
+        files |= {
+            f"{MU_PLUGINS}/linker-error-recorder.php": "<?php // recorder",
+            f"{MU_PLUGINS}/linker-error-recorder.php.bak-20260808T174655Z": "<?php // old",
+            f"{MU_PLUGINS}/livecanvas-must-use-plugin.php": "<?php // theme",
+        }
+    for relative, content in files.items():
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+    return _Site(
+        label="local:test",
+        root=str(root),
+        base_url="http://127.0.0.1:9999",
+        prefix=("php", "wp", f"--path={root}"),
+        shell_prefix=None,
+        rsync_remote=None,
+    ), root
+
+
+def test_the_backup_carries_the_must_use_directory_and_puts_it_back(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The switch writes the mu directory, so a rollback that cannot restore it is not one.
+
+    `.htaccess` is in the same test because it was the same defect from the
+    other side: a backup that reported "no .htaccess" for a site that has one,
+    because rsync was handed the directory form of a file.
+    """
+    _streams_a_stand_in_dump(monkeypatch)
+    target, root = _site(tmp_path)
+    home = tmp_path / "de-linker-data"
+
+    taken = backup.create(target, home)
+    recorded = backup.manifest_of(taken.directory)
+    assert f"{MU_PLUGINS}/linker-error-recorder.php" in recorded
+    assert HTACCESS in recorded
+    assert (taken.directory / HTACCESS).read_text(encoding="utf-8") == "# rules\n"
+
+    # The switch as it touches the site: the recorder is replaced, the old
+    # backups are deleted, and the rewrite rules are rewritten.
+    (root / MU_PLUGINS / "linker-error-recorder.php").write_text(
+        "<?php // the recorder, replaced", encoding="utf-8"
+    )
+    (root / MU_PLUGINS / "linker-error-recorder.php.bak-20260808T174655Z").unlink()
+    (root / HTACCESS).write_text("# rewritten\n", encoding="utf-8")
+
+    backup.restore(target, taken.directory)
+    assert (root / MU_PLUGINS / "linker-error-recorder.php").read_text(
+        encoding="utf-8"
+    ) == "<?php // recorder"
+    assert (
+        root / MU_PLUGINS / "linker-error-recorder.php.bak-20260808T174655Z"
+    ).is_file()
+    assert (root / HTACCESS).read_text(encoding="utf-8") == "# rules\n"
+
+
+def test_a_site_without_a_must_use_directory_is_backed_up_anyway(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A mu directory is optional; a backup that cannot run without one is a new failure."""
+    _streams_a_stand_in_dump(monkeypatch)
+    target, root = _site(tmp_path, must_use=False)
+
+    taken = backup.create(target, tmp_path / "de-linker-data")
+    assert not (taken.directory / MU_PLUGINS).exists()
+    backup.restore(target, taken.directory)
+    assert not (root / MU_PLUGINS).exists(), "restoring must not invent the directory"
 
 
 def test_the_dump_script_keeps_the_password_on_the_target() -> None:

@@ -41,9 +41,40 @@ def test_the_replaced_plugin_is_not_also_removed() -> None:
 
 
 def test_the_error_recorder_is_not_deleted() -> None:
-    """Removing the fatal recorder before anything carries it is a capability regression."""
+    """Removing the fatal recorder before anything carries it is a capability regression.
+
+    The switch replaces it in place instead: `mu-plugins/linker-error-recorder.php`
+    (#80) ships over the live file of the same name, and only the live file's own
+    `*.bak-*` backups go.
+    """
     assert "linker-error-recorder.php" not in plan.LEGACY_MU_PLUGINS
     assert "linker-i18n-mu-loader.php" in plan.LEGACY_MU_PLUGINS
+    assert plan.MU_PLUGINS_REPO == "mu-plugins"
+    assert plan.MU_PLUGINS_DIR == "wp-content/mu-plugins"
+    assert plan.LEGACY_GLOBS == ("*.bak-*",)
+    assert plan.MU_ARCHIVE == "mu"
+
+
+def test_the_two_names_for_a_site_directory_are_the_same_path() -> None:
+    """`plan` is the inventory and `target` is the transport; a drift here is silent."""
+    from linker_cutover import target
+
+    assert plan.PLUGINS_DIR == target.PLUGINS
+    assert plan.MU_PLUGINS_DIR == target.MU_PLUGINS
+
+
+def test_the_product_pages_are_entry_points_with_a_schema_assertion() -> None:
+    """A product page outside the subset would never have its node counted.
+
+    The count is the assertion the switch needs: retiring the retained SEO
+    plugin's Product template is only verifiable on the page itself.
+    """
+    assert plan.VERIFY_PRODUCT_PATHS
+    assert set(plan.VERIFY_PRODUCT_PATHS) <= set(plan.VERIFY_PATHS)
+    for language in ("/product/", "/de/produkt/"):
+        assert any(path.startswith(language) for path in plan.VERIFY_PRODUCT_PATHS), (
+            language
+        )
 
 
 def test_option_prefixes_cannot_match_a_new_option() -> None:
