@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Storefront;
 
 use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Registration\Approval;
 
 use Linker\Commerce\Catalog\SelectionFactSet;
 use Linker\Commerce\Catalog\SelectionFacts;
@@ -63,9 +64,7 @@ final class ProductView {
 			'stats'        => $this->key_numbers( $facts ),
 			'price'        => $this->price( $product ),
 			'availability' => $product->is_in_stock() ? __( 'In stock', 'linker-commerce' ) : __( 'Currently unavailable', 'linker-commerce' ),
-			'cta_label'    => $this->state->visitor_sees_prices()
-				? __( 'Add to solution draft', 'linker-commerce' )
-				: __( 'Sign in for partner pricing', 'linker-commerce' ),
+			'cta_label'    => $this->cta_label(),
 			'cta_url'      => $this->cta_url( $product ),
 			'ask_url'      => $this->ask_url( $product ),
 			'intro'        => '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ),
@@ -229,10 +228,39 @@ final class ProductView {
 				'url'  => '',
 			);
 		}
+		if ( CommerceState::APPROVAL === $this->state->visitor_reason() ) {
+			$status = $this->state->current_approval_status();
+			$text   = Approval::PENDING === $status
+				? __( 'Prices after approval', 'linker-commerce' )
+				: __( 'Not available for your account', 'linker-commerce' );
+			return array(
+				'html' => $text,
+				'url'  => '',
+			);
+		}
 		return array(
 			'html' => __( 'Net price after partner sign-in', 'linker-commerce' ),
 			'url'  => $this->login_url( (string) $product->get_permalink() ),
 		);
+	}
+
+	/**
+	 * The primary button's label: a partner adds to the draft, a guest signs
+	 * in, and an account waiting for approval hears its status (the guest's
+	 * live-sourced string stays for guests only).
+	 *
+	 * @return string The label.
+	 */
+	private function cta_label(): string {
+		if ( $this->state->visitor_sees_prices() ) {
+			return __( 'Add to solution draft', 'linker-commerce' );
+		}
+		if ( CommerceState::APPROVAL === $this->state->visitor_reason() ) {
+			return Approval::PENDING === $this->state->current_approval_status()
+				? __( 'Prices after approval', 'linker-commerce' )
+				: __( 'Not available for your account', 'linker-commerce' );
+		}
+		return __( 'Sign in for partner pricing', 'linker-commerce' );
 	}
 
 	/**
