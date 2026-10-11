@@ -10,6 +10,8 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import urllib.error
+import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -18,6 +20,16 @@ from linker_local.checkout import Checkout
 from linker_local.instance import HOST, Instance
 from linker_local.processes import Background, ProcessError
 from linker_local.wpcli import WpCli
+
+# The engine reads the site's data as two files, not over HTTP
+# (services/engine/src/linker_engine/app.py, Settings.from_environment): the
+# checkout's compatibility contract, and the feed the site itself serves
+# (linker-commerce's linker/v1/engineering-feed), which is fetched here so the
+# engine sizes against the same catalogue WordPress shows. Without them the
+# engine refuses every design request, which is a config error a `serve` must
+# not leave behind.
+ENGINE_FEED_PATH = "/wp-json/linker/v1/engineering-feed"
+ENGINE_FEED_TIMEOUT = 120.0
 
 # Seconds to wait for a service's port: uvicorn listened 0.55–0.7 s after
 # `uv run` on this Mac (measured 2026-10-09; the environment is synced before,
@@ -63,6 +75,8 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         # answers on port 80 of this Mac and every ability call fails.
         env = dict(os.environ)
         env["GENIE_WP_URL"] = instance.url
+        if service.name == "engine":
+            env.update(_engine_environment(instance, checkout))
         service.process(instance).restart(
             [
                 str(uv),
@@ -98,6 +112,35 @@ def running(instance: Instance) -> list[str]:
         for service in SERVICES
         if service.process(instance).pid() is not None
     ]
+
+
+def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str]:
+    """The two data paths the engine needs; the feed is fetched from the site.
+
+    The instance serves the feed itself (`linker/v1/engineering-feed`, public
+    and cacheable), so the file is a copy of what the running site's catalogue
+    holds — not a second source of products. A site that cannot answer is a
+    broken `serve`, not a silently data-less engine.
+    """
+    compatibility = checkout.root / "plugins/linker-commerce/data/compatibility.json"
+    if not compatibility.is_file():
+        raise ProcessError(f"{compatibility} is missing from this checkout")
+    directory = instance.dir / "engine"
+    directory.mkdir(exist_ok=True)
+    feed = directory / "feed.json"
+    url = instance.url + ENGINE_FEED_PATH
+    try:
+        with urllib.request.urlopen(url, timeout=ENGINE_FEED_TIMEOUT) as reply:
+            feed.write_bytes(reply.read())
+    except (urllib.error.URLError, OSError, TimeoutError) as error:
+        raise ProcessError(
+            f"could not read the engineering feed from {url}: {error}. "
+            "Is the instance up with linker-commerce active?"
+        ) from error
+    return {
+        "LINKER_ENGINE_FEED": str(feed),
+        "LINKER_ENGINE_COMPATIBILITY": str(compatibility),
+    }
 
 
 def _uv() -> Path:
