@@ -22,7 +22,6 @@ use Linker\Commerce\Health\Monitor;
 use Linker\Commerce\Storefront\CatalogFilters;
 use Linker\Commerce\Storefront\ProductSchema;
 use Linker\Commerce\Storefront\ProductView;
-use Linker\Commerce\Storefront\Storefront;
 
 /**
  * Hooks Linker Commerce into WordPress.
@@ -79,13 +78,33 @@ final class Plugin {
 		add_action( 'save_post_product', array( $this->documents, 'save' ) );
 		add_action( 'cli_init', array( $this, 'register_cli' ) );
 
+		add_action( 'plugins_loaded', array( $this, 'stand_down_legacy_template_preemption' ) );
+
 		$filters = new CatalogFilters();
 		$filters->register();
 		$this->search_scope->register();
 		$this->contact->register();
-		( new Storefront( $this->file ) )->register();
 		( new ProductSchema() )->register();
 		( new Monitor( $this->file, new Settings\Options() ) )->register();
+	}
+
+	/**
+	 * Stands down the legacy stack's template preemption.
+	 *
+	 * The presentation layer's one rule (owner rulings 2026-10-10 and
+	 * 2026-10-11, "LC 为基础"): the LiveCanvas dynamic templates are the only
+	 * rendering channel of the commerce page types. The legacy stack's
+	 * commerce renderer (terravolt-b2b-core's tv_b2b_template_include) still
+	 * takes the shop, the product archives, the single product, cart and
+	 * checkout away from them with a template_include filter at PHP_INT_MAX —
+	 * above LiveCanvas's own 99998 — for as long as that plugin is installed,
+	 * and the review instances are: their snapshot ships the live code. The
+	 * filter is removed on plugins_loaded, when every plugin's registrations
+	 * exist. The old plugin goes away whole at the production cutover; past
+	 * it this removal finds nothing and retires with the old code.
+	 */
+	public function stand_down_legacy_template_preemption(): void {
+		remove_filter( 'template_include', 'tv_b2b_template_include', PHP_INT_MAX );
 	}
 
 	/**
