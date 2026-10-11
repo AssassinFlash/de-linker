@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Catalog\Faqs;
+use Linker\Commerce\Registration\Approval;
 use WC_Product;
 
 /**
@@ -21,9 +22,10 @@ final class Shortcodes {
 	/**
 	 * Sets up the shortcodes.
 	 *
-	 * @param LoginGate $gate The empty Proforma-request page.
+	 * @param LoginGate $gate     The empty Proforma-request page.
+	 * @param Approval  $approval The account approval rule.
 	 */
-	public function __construct( private readonly LoginGate $gate ) {}
+	public function __construct( private readonly LoginGate $gate, private readonly Approval $approval = new Approval() ) {}
 
 	/**
 	 * Registers the shortcodes.
@@ -49,13 +51,15 @@ final class Shortcodes {
 	}
 
 	/**
-	 * The Proforma request: login gate when the draft is empty, otherwise WooCommerce's checkout.
+	 * The Proforma request: the gate when the draft is empty or the account
+	 * may not send, otherwise WooCommerce's checkout.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
 	public function checkout( $atts = array() ): string {
 		unset( $atts );
-		if ( $this->is_empty_request() ) {
+		$user_id = get_current_user_id();
+		if ( $this->is_empty_request() || ( $user_id > 0 && ! $this->approval->sees_prices( $user_id ) ) ) {
 			return $this->gate->html();
 		}
 		return do_shortcode( '[woocommerce_checkout]' );

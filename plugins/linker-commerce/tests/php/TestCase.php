@@ -9,13 +9,30 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests;
 
+use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Registration\Approval;
 use WP_Mock;
+use WP_User;
 
 /**
  * WP_Mock's test case with shortcuts for the WordPress functions most classes
  * call: translation and escaping return their argument unchanged.
  */
 abstract class TestCase extends WP_Mock\Tools\TestCase {
+
+	/**
+	 * The meta store of approval_meta().
+	 *
+	 * @var array<string, mixed>
+	 */
+	private array $user_meta = array();
+
+	/**
+	 * The user id get_current_user_id() answers while a test runs.
+	 *
+	 * @var int
+	 */
+	protected int $signed_in_user = 5;
 
 	/**
 	 * The plugin's own text domain loads again on every locale switch of the
@@ -84,6 +101,66 @@ abstract class TestCase extends WP_Mock\Tools\TestCase {
 			throw new \LogicException( 'WP_Mock::onFilter() answers with a Filter_Responder.' );
 		}
 		$responder->reply( $value );
+	}
+
+	/**
+	 * The meta of the signed-in customer 5 (user 6 is staff), read and written
+	 * by the Approval class for real.
+	 *
+	 * @param array<string, mixed> $store Meta key → value.
+	 */
+	protected function approval_meta( array $store ): void {
+		$this->user_meta = $store;
+		WP_Mock::userFunction(
+			'get_user_meta',
+			array(
+				'return' => fn ( int $user_id, string $key ) => 5 === $user_id ? ( $this->user_meta[ $key ] ?? '' ) : '',
+			)
+		);
+		WP_Mock::userFunction(
+			'update_user_meta',
+			array(
+				'return' => function ( int $user_id, string $key, $value ): bool {
+					if ( 5 !== $user_id ) {
+						return false;
+					}
+					$this->user_meta[ $key ] = $value;
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'get_userdata',
+			array(
+				'return' => static function ( int $user_id ): ?WP_User {
+					if ( ! in_array( $user_id, array( 5, 6 ), true ) ) {
+						return null;
+					}
+					$user        = new WP_User();
+					$user->ID    = $user_id;
+					$user->roles = 6 === $user_id ? array( 'shop_manager' ) : array( 'customer' );
+					return $user;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => fn (): int => $this->signed_in_user ) );
+	}
+
+	/**
+	 * Who get_current_user_id() answers for from now on.
+	 *
+	 * @param int $user_id User.
+	 */
+	protected function signed_in( int $user_id ): void {
+		$this->signed_in_user = $user_id;
+	}
+
+	/**
+	 * The price rule of an approved visitor, for tests that read it.
+	 */
+	protected function approved_state(): CommerceState {
+		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
+		return new CommerceState( new Approval() );
 	}
 
 	/**

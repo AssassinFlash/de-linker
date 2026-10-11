@@ -49,7 +49,7 @@ final class DraftSummaryTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 
 		ob_start();
-		( new DraftSummary( new CommerceState(), new PriceDisplay( new CommerceState() ) ) )->guest_totals();
+		( new DraftSummary( $this->approved_state(), new PriceDisplay( $this->approved_state() ) ) )->guest_totals();
 		$html = (string) ob_get_clean();
 
 		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Log in and request a Proforma</a>', $html );
@@ -64,7 +64,7 @@ final class DraftSummaryTest extends TestCase {
 		WP_Mock::userFunction( 'remove_action', array( 'times' => 0 ) );
 
 		ob_start();
-		( new DraftSummary( new CommerceState(), new PriceDisplay( new CommerceState() ) ) )->guest_totals();
+		( new DraftSummary( $this->approved_state(), new PriceDisplay( $this->approved_state() ) ) )->guest_totals();
 		$this->assertSame( '', ob_get_clean() );
 	}
 
@@ -95,7 +95,7 @@ final class DraftSummaryTest extends TestCase {
 		$woocommerce       = new \stdClass();
 		$woocommerce->cart = $cart;
 		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
-		$summary = new DraftSummary( new CommerceState(), new PriceDisplay( new CommerceState() ) );
+		$summary = new DraftSummary( $this->approved_state(), new PriceDisplay( $this->approved_state() ) );
 
 		ob_start();
 		$summary->unpriced_note();
@@ -115,7 +115,7 @@ final class DraftSummaryTest extends TestCase {
 		$open->allows( 'get_items' )->andReturn( array( $unpriced ) );
 		$priced = Mockery::mock( \WC_Order::class );
 		$priced->allows( 'get_items' )->andReturn( array() );
-		$summary = new DraftSummary( new CommerceState(), new PriceDisplay( new CommerceState() ) );
+		$summary = new DraftSummary( $this->approved_state(), new PriceDisplay( $this->approved_state() ) );
 
 		ob_start();
 		$summary->inquiry_note( $open );

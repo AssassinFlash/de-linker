@@ -9,22 +9,37 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Inquiry;
 
+use Linker\Commerce\Registration\Approval;
 use WC_Order;
 
 /**
  * The checkout page as the Proforma request page: one way to send (the
  * ProformaGateway), the reply promise above the button and on the
- * confirmation, and no payment method on the stored inquiry.
+ * confirmation, and no payment method on the stored inquiry. An account
+ * without approval (ticket 73) gets no gateway at all — the page's gate is the
+ * view, this is the send.
  */
 final class Checkout {
 
 	/**
-	 * Only the Proforma gateway is offered.
+	 * Sets up the page.
+	 *
+	 * @param Approval $approval The account approval rule.
+	 */
+	public function __construct( private readonly Approval $approval = new Approval() ) {}
+
+	/**
+	 * Only the Proforma gateway is offered, and only to accounts that may send;
+	 * runs on woocommerce_available_payment_gateways.
 	 *
 	 * @param array<string, mixed> $gateways Available gateways by id.
 	 * @return array<string, mixed>
 	 */
 	public function gateways( array $gateways ): array {
+		$user_id = get_current_user_id();
+		if ( $user_id > 0 && ! $this->approval->sees_prices( $user_id ) ) {
+			return array();
+		}
 		return isset( $gateways[ ProformaGateway::ID ] ) ? array( ProformaGateway::ID => $gateways[ ProformaGateway::ID ] ) : array();
 	}
 

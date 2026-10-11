@@ -46,7 +46,7 @@ final class CatalogSortingTest extends TestCase {
 			'price'      => 'Price: low to high',
 			'price-desc' => 'Price: high to low',
 		);
-		$sorting = new CatalogSorting( new CommerceState() );
+		$sorting = new CatalogSorting( $this->approved_state() );
 
 		$this->assertSame( array( 'menu_order', 'date' ), array_keys( $sorting->options( $options ) ) );
 		$this->logged_in = true;
@@ -62,7 +62,7 @@ final class CatalogSortingTest extends TestCase {
 			'order'    => 'ASC',
 			'meta_key' => '_price', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- WooCommerce's price order.
 		);
-		$sorting = new CatalogSorting( new CommerceState() );
+		$sorting = new CatalogSorting( $this->approved_state() );
 
 		$this->assertSame( 'menu_order title', $sorting->ordering( $price, 'price' )['orderby'] );
 		$this->assertSame( array( 'orderby' => 'date' ), $sorting->ordering( array( 'orderby' => 'date' ), 'date' ) );

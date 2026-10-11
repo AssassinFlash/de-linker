@@ -13,12 +13,14 @@ use WC_Order;
 use WC_Order_Item;
 use WC_Order_Item_Product;
 use WC_Product;
+use Linker\Commerce\Registration\Approval;
 
 /**
  * Applies CommerceState: a product whose price the visitor may not see has no
  * price at all in that request (so no template, widget, feed or API can print
  * it), stays addable to the solution draft, and shows a text instead:
- * "Log in for prices", "Quoted per project" or "Price on request".
+ * "Log in for prices", a note about the account's approval, "Quoted per
+ * project" or "Price on request".
  */
 final class PriceDisplay {
 
@@ -103,9 +105,11 @@ final class PriceDisplay {
 
 	/**
 	 * The solution draft's subtotal where a theme shows it (the header, the
-	 * mini draft): a guest's draft has no prices to add up, so instead of 0 it
-	 * says that prices come with logging in. Plain text, as themes print it
-	 * inside their own link to the draft.
+	 * mini draft): a visitor without prices has no prices to add up, so
+	 * instead of 0 it says what opens them. Plain text, as themes print it
+	 * inside their own link to the draft: only the approval note carries its
+	 * own markup, the guest's text stays unlinked (the theme's link around the
+	 * subtotal is already there, and a link inside a link is not valid HTML).
 	 *
 	 * @param string $subtotal Formatted subtotal.
 	 */
@@ -113,7 +117,11 @@ final class PriceDisplay {
 		if ( $this->state->visitor_sees_prices() ) {
 			return $subtotal;
 		}
-		return '<span class="linker-price-note">' . esc_html__( 'Log in for prices', 'linker-commerce' ) . '</span>';
+		$reason = $this->state->visitor_reason();
+		if ( CommerceState::APPROVAL === $reason ) {
+			return $this->label( $reason );
+		}
+		return '<span class="linker-price-note">' . $this->reason_text( $reason ) . '</span>';
 	}
 
 	/**
@@ -175,7 +183,33 @@ final class PriceDisplay {
 	}
 
 	/**
-	 * The text for a reason.
+	 * The text for a reason, escaped, without any markup: the one place each
+	 * reason's words come from, so label() and the draft's subtotal cannot
+	 * drift apart.
+	 *
+	 * @param string $reason One of the CommerceState reasons.
+	 */
+	private function reason_text( string $reason ): string {
+		if ( CommerceState::LOGIN === $reason ) {
+			return esc_html__( 'Log in for prices', 'linker-commerce' );
+		}
+		if ( CommerceState::APPROVAL === $reason ) {
+			$status = $this->state->current_approval_status();
+			$text   = Approval::APPROVED !== $status && Approval::PENDING !== $status
+				? __( 'Not available for your account', 'linker-commerce' )
+				: __( 'Prices after approval', 'linker-commerce' );
+			return esc_html( $text );
+		}
+		$text = CommerceState::PROJECT === $reason
+			? __( 'Quoted per project', 'linker-commerce' )
+			: __( 'Price on request', 'linker-commerce' );
+		return esc_html( $text );
+	}
+
+	/**
+	 * The text for a reason; runs on woocommerce_empty_price_html and the cart
+	 * cells. The guest's text links to the account page, every other text is a
+	 * plain note.
 	 *
 	 * @param string $reason One of the CommerceState reasons.
 	 */
@@ -184,12 +218,9 @@ final class PriceDisplay {
 			return sprintf(
 				'<a class="linker-price-login" href="%1$s">%2$s</a>',
 				esc_url( wc_get_page_permalink( 'myaccount' ) ),
-				esc_html__( 'Log in for prices', 'linker-commerce' )
+				$this->reason_text( $reason )
 			);
 		}
-		$text = CommerceState::PROJECT === $reason
-			? __( 'Quoted per project', 'linker-commerce' )
-			: __( 'Price on request', 'linker-commerce' );
-		return '<span class="linker-price-note">' . esc_html( $text ) . '</span>';
+		return '<span class="linker-price-note">' . $this->reason_text( $reason ) . '</span>';
 	}
 }

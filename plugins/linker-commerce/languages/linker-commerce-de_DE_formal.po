@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-11T16:15:32+00:00\n"
+"POT-Creation-Date: 2026-10-11T16:11:21+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -252,8 +252,6 @@ msgstr "Dieses Dokument ist nicht verfügbar."
 #: includes/Account/DocumentDownload.php:91
 #: includes/Account/DocumentDownload.php:136 includes/Admin/FaqsMetaBox.php:73
 #: includes/Admin/FiguresMetaBox.php:78
-#: includes/Catalog/DocumentLibrary.php:118
-#: includes/Presentation/LibraryPage.php:167
 #: templates/myaccount/linker-documents.php:23
 #: templates/myaccount/linker-documents.php:31
 msgid "Document"
@@ -345,8 +343,9 @@ msgstr "Gespeicherte Lösungen"
 msgid "Documents"
 msgstr "Unterlagen"
 
-#: includes/Account/Menu.php:50 includes/Account/Menu.php:86
-#: templates/emails/linker-new-customer.php:22
+#: includes/Account/Menu.php:50
+#: includes/Account/Menu.php:86
+#: templates/emails/linker-new-customer.php:23
 msgid "Company"
 msgstr "Unternehmen"
 
@@ -473,32 +472,6 @@ msgstr ""
 "Die Kenndaten %s behalten ihren bisherigen Wert: Ein geänderter Wert "
 "benötigt das Dokument und die Seite, auf der er steht."
 
-#: includes/Catalog/Comparison.php:221 includes/Storefront/ProductView.php:233
-msgid "Net price after partner sign-in"
-msgstr "Nettopreis nach Partner-Anmeldung"
-
-#: includes/Catalog/Comparison.php:224 includes/Storefront/ProductView.php:65
-msgid "In stock"
-msgstr "Auf Lager"
-
-#: includes/Catalog/Comparison.php:225 includes/Storefront/ProductView.php:65
-msgid "Currently unavailable"
-msgstr "Derzeit nicht verfügbar"
-
-#. translators: 1: document title, 2: page number.
-#: includes/Catalog/DocumentLibrary.php:207
-#: includes/Presentation/Shortcodes.php:104
-#, php-format
-msgid "%1$s, p. %2$d"
-msgstr "%1$s, S. %2$d"
-
-#. translators: %d: page number.
-#: includes/Catalog/DocumentLibrary.php:213
-#: includes/Presentation/Shortcodes.php:110
-#, php-format
-msgid "p. %d"
-msgstr "S. %d"
-
 #: includes/Catalog/EngineeringFeedController.php:72
 msgid ""
 "GMT timestamp or ISO-8601 moment; only products modified after it are "
@@ -620,7 +593,8 @@ msgid "Rated AC power the product data states in kVA; present only then."
 msgstr ""
 "Nennleistung (AC) in kVA, die die Produktdaten angeben; nur dann vorhanden."
 
-#: includes/Digest/DigestEmail.php:45 includes/Digest/DigestEmail.php:82
+#: includes/Digest/DigestEmail.php:45
+#: includes/Digest/DigestEmail.php:82
 msgid "Daily digest"
 msgstr "Tagesübersicht"
 
@@ -628,9 +602,7 @@ msgstr "Tagesübersicht"
 msgid ""
 "Sent to the team mailbox, with blind copies, every morning at 9:00 (Berlin "
 "time)."
-msgstr ""
-"Wird jeden Morgen um 9:00 Uhr (Ortszeit Berlin) an das Postfach des Teams "
-"gesendet, mit Blindkopien."
+msgstr "Wird jeden Morgen um 9:00 Uhr (Ortszeit Berlin) an das Postfach des Teams gesendet, mit Blindkopien."
 
 #: includes/Digest/DigestEmail.php:75
 msgid "Daily digest, {date}"
@@ -729,24 +701,33 @@ msgid ""
 msgstr ""
 "Für Produkte ohne Preisangabe nennen wir den Preis in Ihrer Proformarechnung."
 
-#: includes/Gating/PriceDisplay.php:116 includes/Gating/PriceDisplay.php:187
+#: includes/Gating/PriceDisplay.php:194
 msgid "Log in for prices"
 msgstr "Preise nach Anmeldung"
 
-#: includes/Gating/PriceDisplay.php:191
+#: includes/Gating/PriceDisplay.php:199
+msgid "Not available for your account"
+msgstr "Für Ihr Konto nicht verfügbar"
+
+#: includes/Gating/PriceDisplay.php:200
+msgid "Prices after approval"
+msgstr "Preise nach Freigabe"
+
+#: includes/Gating/PriceDisplay.php:204
 msgid "Quoted per project"
 msgstr "Angebot pro Projekt"
 
-#: includes/Gating/PriceDisplay.php:192
+#: includes/Gating/PriceDisplay.php:205
 msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
-#: includes/Inquiry/Checkout.php:46 includes/Inquiry/Checkout.php:70
+#: includes/Inquiry/Checkout.php:61
+#: includes/Inquiry/Checkout.php:85
 #: templates/emails/linker-inquiry-received.php:34
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
 
-#: includes/Inquiry/Checkout.php:71
+#: includes/Inquiry/Checkout.php:86
 #: templates/emails/linker-inquiry-received.php:34
 msgid ""
 "Your Proforma invoice will be in your account under Inquiries, and we will "
@@ -895,7 +876,9 @@ msgctxt "Inquiry status"
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:101
+#: includes/Mail/CustomerOrderEmail.php:89
+#: includes/Mail/TeamEmail.php:101
+#: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
 msgstr "HTML"
 
@@ -903,141 +886,15 @@ msgstr "HTML"
 msgid "Queued emails"
 msgstr "E-Mails in der Warteschlange"
 
-#. translators: %d: maximum number of products in a comparison.
-#: includes/Presentation/ComparePage.php:178
-#, php-format
-msgid "Only the first %d products are shown."
-msgstr "Nur die ersten %d Produkte werden angezeigt."
-
-#: includes/Presentation/ComparePage.php:185
-msgid "Choose products to compare their specifications."
-msgstr "Wählen Sie Produkte aus, um ihre technischen Daten zu vergleichen."
-
-#: includes/Presentation/ComparePage.php:188
-msgid "Clear comparison"
-msgstr "Vergleich leeren"
-
-#: includes/Presentation/ComparePage.php:189
-msgid "Product comparison table"
-msgstr "Vergleichstabelle der Produkte"
-
-#: includes/Presentation/ComparePage.php:191
-#: includes/Storefront/ProductView.php:511
-#: templates/myaccount/linker-saved-solutions.php:29
-#: templates/myaccount/linker-saved-solutions.php:41
-msgid "Products"
-msgstr "Produkte"
-
-#: includes/Presentation/ComparePage.php:199
-msgid "Remove"
-msgstr "Entfernen"
-
-#: includes/Presentation/ComparePage.php:204
-msgid "Item number"
-msgstr "Artikelnummer"
-
-#: includes/Presentation/ComparePage.php:205
-msgid "Net price"
-msgstr "Nettopreis"
-
-#: includes/Presentation/ComparePage.php:206
-msgid "Availability"
-msgstr "Verfügbarkeit"
-
-#: includes/Presentation/ComparePage.php:290
-msgid "Compare"
-msgstr "Vergleichen"
-
-#: includes/Presentation/ComparePage.php:332
-#: includes/Storefront/ProductView.php:193
-msgid "Home"
-msgstr "Privat"
-
-#: includes/Presentation/ComparePage.php:333
-#: includes/Storefront/ProductView.php:193
-msgid "Commercial"
-msgstr "Gewerbe"
-
-#. translators: %d: number of documents of the brand.
-#: includes/Presentation/LibraryPage.php:66
-#, php-format
-msgid "%d document"
-msgid_plural "%d documents"
-msgstr[0] "%d Dokument"
-msgstr[1] "%d Dokumente"
-
-#. translators: %d: number of answers of the brand.
-#: includes/Presentation/LibraryPage.php:98
-#, php-format
-msgid "%d answer"
-msgid_plural "%d answers"
-msgstr[0] "%d Antwort"
-msgstr[1] "%d Antworten"
-
-#: includes/Presentation/LibraryPage.php:130
-#: templates/myaccount/linker-documents.php:25
-msgid "Download"
-msgstr "Herunterladen"
-
-#. translators: %s: product name.
-#: includes/Presentation/LibraryPage.php:144
-#, php-format
-msgid "covers %s"
-msgstr "gilt für %s"
-
-#. translators: %d: number of products.
-#: includes/Presentation/LibraryPage.php:149
-#, php-format
-msgid "covers %d product"
-msgid_plural "covers %d products"
-msgstr[0] "gilt für %d Produkt"
-msgstr[1] "gilt für %d Produkte"
-
-#: includes/Presentation/LibraryPage.php:161
-msgid "Datasheet"
-msgstr "Datenblatt"
-
-#: includes/Presentation/LibraryPage.php:162
-msgid "Manual"
-msgstr "Handbuch"
-
-#: includes/Presentation/LibraryPage.php:163
-msgid "Certificate"
-msgstr "Zertifikat"
-
-#: includes/Presentation/LibraryPage.php:164
-msgid "Compatibility"
-msgstr "Kompatibilität"
-
-#: includes/Presentation/LibraryPage.php:165
-msgid "Warranty"
-msgstr "Garantie"
-
-#: includes/Presentation/LibraryPage.php:166
-msgid "Brochure"
-msgstr "Broschüre"
-
-#: includes/Presentation/LibraryPage.php:180
-msgid "English"
-msgstr "Englisch"
-
-#: includes/Presentation/LibraryPage.php:181
-msgid "German"
-msgstr "Deutsch"
-
-#: includes/Presentation/LibraryPage.php:182
-msgid "Multilingual"
-msgstr "Mehrsprachig"
-
-#: includes/Presentation/LoginGate.php:47
+#: includes/Presentation/LoginGate.php:63
 msgid "Empty solution draft"
 msgstr "Leerer Lösungsentwurf"
 
-#: includes/Presentation/LoginGate.php:48
+#: includes/Presentation/LoginGate.php:64
 msgid "Nothing to submit yet."
 msgstr "Noch nichts zum Absenden."
 
-#: includes/Presentation/LoginGate.php:49
+#: includes/Presentation/LoginGate.php:65
 msgid ""
 "Your solution draft is empty. Add matched systems, then come back for your "
 "Proforma."
@@ -1045,20 +902,24 @@ msgstr ""
 "Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie "
 "dann für Ihre Proformarechnung zurück."
 
-#: includes/Presentation/LoginGate.php:51
-#: includes/Presentation/LoginGate.php:63 includes/Vocabulary/Terms.php:37
+#: includes/Presentation/LoginGate.php:67
+#: includes/Presentation/LoginGate.php:79
+#: includes/Presentation/LoginGate.php:108
+#: includes/Presentation/LoginGate.php:118
+#: includes/Vocabulary/Terms.php:37
+#: templates/emails/linker-approval-approved.php:26
 msgid "Browse products"
 msgstr "Zu den Produkten"
 
-#: includes/Presentation/LoginGate.php:56
+#: includes/Presentation/LoginGate.php:72
 msgid "Proforma request sign-in"
 msgstr "Anmeldung zur Proforma-Anfrage"
 
-#: includes/Presentation/LoginGate.php:57
+#: includes/Presentation/LoginGate.php:73
 msgid "Get your Proforma"
 msgstr "Proformarechnung anfordern"
 
-#: includes/Presentation/LoginGate.php:58
+#: includes/Presentation/LoginGate.php:74
 msgid ""
 "Sign in with your partner account, add matched systems, and your Proforma is "
 "one step away."
@@ -1066,7 +927,7 @@ msgstr ""
 "Melden Sie sich mit Ihrem Partnerkonto an, fügen Sie passende Systeme hinzu, "
 "und Ihre Proformarechnung ist nur noch einen Schritt entfernt."
 
-#: includes/Presentation/LoginGate.php:59
+#: includes/Presentation/LoginGate.php:75
 msgid ""
 "The Proforma request is reserved for Linker partner accounts. Register, add "
 "your systems, and return here — VAT and delivery are ours to handle."
@@ -1075,13 +936,76 @@ msgstr ""
 "sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — "
 "Umsatzsteuer und Lieferung übernehmen wir."
 
-#: includes/Presentation/LoginGate.php:61
+#: includes/Presentation/LoginGate.php:77
 msgid "Sign in or register"
 msgstr "Anmelden oder registrieren"
 
-#: includes/Presentation/Shortcodes.php:95
+#: includes/Presentation/LoginGate.php:96
+#: templates/emails/linker-approval-rejected.php:25
+#: templates/emails/linker-approval-restricted.php:26
+msgid "Our reason:"
+msgstr "Unser Grund:"
+
+#: includes/Presentation/LoginGate.php:102
+msgid "Account with limited access"
+msgstr "Konto mit eingeschränktem Zugriff"
+
+#: includes/Presentation/LoginGate.php:103
+msgid "Access currently limited"
+msgstr "Zugriff derzeit eingeschränkt"
+
+#: includes/Presentation/LoginGate.php:104
+msgid ""
+"Your partner account is limited for now: the products and your questions "
+"stay open, net prices and the Proforma request are paused."
+msgstr ""
+"Ihr Partner-Konto ist vorerst eingeschränkt: Produkte und Ihre Fragen "
+"bleiben offen, Nettopreise und Proforma-Anfrage sind pausiert."
+
+#: includes/Presentation/LoginGate.php:106
+msgid "Write to sales@de-linker.com and we will look at your account again."
+msgstr ""
+"Schreiben Sie an sales@de-linker.com, und wir sehen uns Ihr Konto erneut an."
+
+#: includes/Presentation/LoginGate.php:113
+msgid "Account under review"
+msgstr "Konto in Prüfung"
+
+#: includes/Presentation/LoginGate.php:114
+msgid "Your account is under review"
+msgstr "Ihr Konto wird geprüft"
+
+#: includes/Presentation/LoginGate.php:115
+msgid ""
+"We are reviewing your partner account. Net prices and the Proforma request "
+"open as soon as it is approved, and we will email you."
+msgstr ""
+"Wir prüfen Ihr Partner-Konto. Nettopreise und die Proforma-Anfrage öffnen "
+"sich mit der Freigabe; wir melden uns per E-Mail."
+
+#: includes/Presentation/LoginGate.php:116
+msgid ""
+"Until then, browse the products and write to sales@de-linker.com with any "
+"question."
+msgstr ""
+"Bis dahin können Sie die Produkte ansehen und Ihre Fragen an "
+"sales@de-linker.com schreiben."
+
+#: includes/Presentation/Shortcodes.php:99
 msgid "Product questions"
 msgstr "Produktfragen"
+
+#. translators: 1: document title, 2: page number.
+#: includes/Presentation/Shortcodes.php:108
+#, php-format
+msgid "%1$s, p. %2$d"
+msgstr "%1$s, S. %2$d"
+
+#. translators: %d: page number.
+#: includes/Presentation/Shortcodes.php:114
+#, php-format
+msgid "p. %d"
+msgstr "S. %d"
 
 #. translators: %s: date.
 #: includes/Proforma/AdminBox.php:68
@@ -1182,12 +1106,98 @@ msgstr ""
 "Es konnte keine Proforma-Nummer vergeben werden. Bitte versuchen Sie es "
 "erneut."
 
+#: includes/Registration/Approval.php:186
+msgid "Pending review"
+msgstr "In Prüfung"
+
+#: includes/Registration/Approval.php:187
+msgid "Approved"
+msgstr "Freigegeben"
+
+#: includes/Registration/Approval.php:188
+msgid "Restricted"
+msgstr "Eingeschränkt"
+
+#: includes/Registration/Approval.php:189
+msgid "Rejected"
+msgstr "Abgelehnt"
+
+#: includes/Registration/Approval.php:191
+msgid "No decision yet"
+msgstr "Noch nicht entschieden"
+
+#: includes/Registration/Approval.php:209
+msgid ""
+"This account is not approved for sign-in. We have emailed you the reason. "
+"Write to sales@de-linker.com and we will look at it again."
+msgstr ""
+"Dieses Konto ist nicht zur Anmeldung freigegeben. Den Grund haben wir Ihnen "
+"per E-Mail geschickt. Schreiben Sie an sales@de-linker.com; wir sehen uns "
+"Ihr Konto erneut an."
+
+#: includes/Registration/ApprovalAdmin.php:45
+#: includes/Registration/ApprovalAdmin.php:138
+msgid "Approve"
+msgstr "Freigeben"
+
+#: includes/Registration/ApprovalAdmin.php:49
+msgid "Restrict"
+msgstr "Einschränken"
+
+#: includes/Registration/ApprovalAdmin.php:53
+msgid "Reject"
+msgstr "Ablehnen"
+
+#: includes/Registration/ApprovalAdmin.php:94
+#: templates/emails/linker-new-customer.php:30
+msgid "Approval"
+msgstr "Freigabe"
+
+#: includes/Registration/ApprovalAdmin.php:161
+msgid "Linker approval"
+msgstr "Linker-Freigabe"
+
+#. translators: 1: date, 2: name of the staff member who set the state.
+#: includes/Registration/ApprovalAdmin.php:169
+#, php-format
+msgid "Last change %1$s by %2$s."
+msgstr "Letzte Änderung %1$s durch %2$s."
+
+#: includes/Registration/ApprovalAdmin.php:182
+msgid "Reason"
+msgstr "Grund"
+
+#: includes/Registration/ApprovalAdmin.php:185
+msgid ""
+"Required for restrict and reject; the customer reads it in the email about "
+"the change."
+msgstr ""
+"Pflicht beim Einschränken und Ablehnen; der Kunde liest ihn in der E-Mail "
+"zur Änderung."
+
+#: includes/Registration/ApprovalAdmin.php:217
+msgid "You are not allowed to change this account."
+msgstr "Sie dürfen dieses Konto nicht ändern."
+
+#: includes/Registration/ApprovalAdmin.php:222
+msgid "Choose approve, restrict or reject."
+msgstr "Wählen Sie Freigeben, Einschränken oder Ablehnen."
+
+#: includes/Registration/ApprovalAdmin.php:226
+msgid ""
+"A restriction or rejection needs a reason; the customer reads it in the "
+"email."
+msgstr ""
+"Eine Einschränkung oder Ablehnung braucht einen Grund; der Kunde liest ihn "
+"in der E-Mail."
+
 #: includes/Registration/BillingVatField.php:39
 #: includes/Registration/BillingVatField.php:55
 #: includes/Registration/BillingVatField.php:86
-#: includes/Registration/Fields.php:67
-#: templates/emails/linker-new-customer.php:27
-#: templates/proforma/proforma.php:87 templates/proforma/proforma.php:102
+#: includes/Registration/Fields.php:73
+#: templates/emails/linker-new-customer.php:28
+#: templates/proforma/proforma.php:87
+#: templates/proforma/proforma.php:102
 msgid "VAT ID"
 msgstr "USt-IdNr."
 
@@ -1200,13 +1210,13 @@ msgid "Customer check"
 msgstr "Kundenprüfung"
 
 #: includes/Registration/BillingVatField.php:94
-#: includes/Registration/Fields.php:61
-#: templates/emails/linker-new-customer.php:23
+#: includes/Registration/Fields.php:67
+#: templates/emails/linker-new-customer.php:24
 msgid "Business type"
 msgstr "Unternehmensart"
 
 #: includes/Registration/BillingVatField.php:99
-#: templates/emails/linker-new-customer.php:28
+#: templates/emails/linker-new-customer.php:29
 msgid "VAT check"
 msgstr "USt-IdNr.-Prüfung"
 
@@ -1227,6 +1237,22 @@ msgstr "EPC-Unternehmen"
 msgid "Distributor"
 msgstr "Händler"
 
+#: includes/Registration/Emails/ApprovedEmail.php:32
+msgid "Account approved"
+msgstr "Konto freigegeben"
+
+#: includes/Registration/Emails/ApprovedEmail.php:33
+msgid "Sent to the customer when the team approves the account."
+msgstr "Geht an den Kunden, wenn das Team das Konto freigibt."
+
+#: includes/Registration/Emails/ApprovedEmail.php:50
+msgid "Your partner account is approved"
+msgstr "Ihr Partner-Konto ist freigegeben"
+
+#: includes/Registration/Emails/ApprovedEmail.php:57
+msgid "Partner account approved"
+msgstr "Partner-Konto freigegeben"
+
 #: includes/Registration/Emails/NewCustomerEmail.php:37
 #: includes/Registration/Emails/NewCustomerEmail.php:71
 msgid "New customer"
@@ -1241,6 +1267,42 @@ msgstr ""
 #: includes/Registration/Emails/NewCustomerEmail.php:64
 msgid "New customer: {company}"
 msgstr "Neuer Kunde: {company}"
+
+#: includes/Registration/Emails/RejectedEmail.php:32
+msgid "Account rejected"
+msgstr "Konto abgelehnt"
+
+#: includes/Registration/Emails/RejectedEmail.php:33
+msgid ""
+"Sent to the customer when the team rejects the account, with the reason."
+msgstr ""
+"Geht an den Kunden, wenn das Team das Konto ablehnt, mit dem Grund."
+
+#: includes/Registration/Emails/RejectedEmail.php:50
+msgid "Your partner account was not approved"
+msgstr "Ihr Partner-Konto wurde nicht freigegeben"
+
+#: includes/Registration/Emails/RejectedEmail.php:57
+msgid "Account not approved"
+msgstr "Konto nicht freigegeben"
+
+#: includes/Registration/Emails/RestrictedEmail.php:33
+msgid "Account restricted"
+msgstr "Konto eingeschränkt"
+
+#: includes/Registration/Emails/RestrictedEmail.php:34
+msgid ""
+"Sent to the customer when the team restricts the account, with the reason."
+msgstr ""
+"Geht an den Kunden, wenn das Team das Konto einschränkt, mit dem Grund."
+
+#: includes/Registration/Emails/RestrictedEmail.php:51
+msgid "Your partner account access is limited"
+msgstr "Der Zugriff Ihres Partner-Kontos ist derzeit eingeschränkt"
+
+#: includes/Registration/Emails/RestrictedEmail.php:58
+msgid "Access limited"
+msgstr "Zugriff eingeschränkt"
 
 #: includes/Registration/Emails/VatReviewEmail.php:46
 #: includes/Registration/Emails/VatReviewEmail.php:86
@@ -1260,15 +1322,15 @@ msgstr ""
 msgid "VAT check changed: {company}"
 msgstr "USt-IdNr.-Prüfung geändert: {company}"
 
-#: includes/Registration/Fields.php:54
+#: includes/Registration/Fields.php:60
 msgid "Company name"
 msgstr "Firmenname"
 
-#: includes/Registration/Fields.php:63
+#: includes/Registration/Fields.php:69
 msgid "Please choose"
 msgstr "Bitte wählen"
 
-#: includes/Registration/Fields.php:69
+#: includes/Registration/Fields.php:75
 msgid ""
 "We check EU VAT IDs in the European Commission's VIES system. You can "
 "register without one."
@@ -1277,22 +1339,29 @@ msgstr ""
 "können sich auch ohne USt-IdNr. registrieren."
 
 #. translators: %s: field name.
-#: includes/Registration/Fields.php:106
+#: includes/Registration/Fields.php:112
 #, php-format
 msgid "%s is a required field."
 msgstr "%s ist ein Pflichtfeld."
 
-#: includes/Registration/Fields.php:110
+#: includes/Registration/Fields.php:116
 msgid "Please choose a business type."
 msgstr "Bitte wählen Sie eine Unternehmensart."
 
-#: includes/Registration/Fields.php:113
+#: includes/Registration/Fields.php:119
 msgid "Please choose a country from the list."
 msgstr "Bitte wählen Sie ein Land aus der Liste."
 
-#: includes/Registration/Fields.php:117
+#: includes/Registration/Fields.php:123
 msgid "Please enter a valid postcode."
 msgstr "Bitte geben Sie eine gültige Postleitzahl ein."
+
+#. translators: %s: the day and time the account registered.
+#: includes/Registration/PendingApprovals.php:100
+#, php-format
+msgid "Registered on %s"
+msgstr ""
+"Registriert am %s"
 
 #: includes/Registration/VatProfile.php:121
 msgid "Valid (VIES)"
@@ -1366,12 +1435,12 @@ msgstr ""
 "Team-Postfach."
 
 #: includes/Settings/SettingsTab.php:110
-#: templates/emails/linker-new-customer.php:24
+#: templates/emails/linker-new-customer.php:25
 msgid "Name"
 msgstr "Name"
 
 #: includes/Settings/SettingsTab.php:116
-#: templates/emails/linker-new-customer.php:25
+#: templates/emails/linker-new-customer.php:26
 msgid "Email"
 msgstr "E-Mail"
 
@@ -1460,6 +1529,14 @@ msgstr "15 bis 30 kW"
 msgid "Over 30 kW"
 msgstr "Über 30 kW"
 
+#: includes/Storefront/ProductView.php:65
+msgid "In stock"
+msgstr "Auf Lager"
+
+#: includes/Storefront/ProductView.php:65
+msgid "Currently unavailable"
+msgstr "Derzeit nicht verfügbar"
+
 #: includes/Storefront/ProductView.php:67 includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:42
 #: templates/myaccount/linker-saved-solutions.php:54
@@ -1475,6 +1552,14 @@ msgstr "Für Partnerpreise anmelden"
 msgid "Application"
 msgstr "Anwendung"
 
+#: includes/Storefront/ProductView.php:193
+msgid "Home"
+msgstr "Privat"
+
+#: includes/Storefront/ProductView.php:193
+msgid "Commercial"
+msgstr "Gewerbe"
+
 #: includes/Storefront/ProductView.php:196
 msgid "Grid phases"
 msgstr "Netzphasen"
@@ -1487,6 +1572,16 @@ msgstr "AC-Leistung"
 #: includes/Storefront/ProductView.php:206
 msgid "Energy capacity"
 msgstr "Nutzbare Energie"
+
+#: includes/Storefront/ProductView.php:233
+msgid "Net price after partner sign-in"
+msgstr "Nettopreis nach Partner-Anmeldung"
+
+#: includes/Storefront/ProductView.php:511
+#: templates/myaccount/linker-saved-solutions.php:29
+#: templates/myaccount/linker-saved-solutions.php:41
+msgid "Products"
+msgstr "Produkte"
 
 #: includes/Vocabulary/Labels.php:40 includes/Vocabulary/Terms.php:88
 msgid "Request Proforma"
@@ -1911,6 +2006,53 @@ msgid_plural "%1$s (%2$s units)"
 msgstr[0] "%1$s (%2$s Stück)"
 msgstr[1] "%1$s (%2$s Stück)"
 
+#: templates/emails/linker-approval-approved.php:23
+msgid "Your Linker partner account is approved."
+msgstr "Ihr Partner-Konto bei Linker ist freigegeben."
+
+#: templates/emails/linker-approval-approved.php:24
+msgid ""
+"Net prices are now shown with every product. Add the systems you need to "
+"your solution draft, and request the Proforma when the draft is ready."
+msgstr ""
+"Die Nettopreise werden jetzt zu jedem Produkt angezeigt. Legen Sie die "
+"benötigten Systeme in Ihren Lösungsentwurf und fordern Sie die "
+"Proformarechnung an, wenn er fertig ist."
+
+#: templates/emails/linker-approval-approved.php:28
+msgid "Your account"
+msgstr "Ihr Konto"
+
+#: templates/emails/linker-approval-rejected.php:23
+msgid ""
+"We cannot approve your Linker partner account. Signing in therefore stays "
+"closed."
+msgstr ""
+"Wir können Ihr Partner-Konto bei Linker nicht freigeben. Die Anmeldung "
+"bleibt deshalb geschlossen."
+
+#: templates/emails/linker-approval-rejected.php:27
+msgid "If you have questions, write to sales@de-linker.com."
+msgstr "Bei Fragen schreiben Sie an sales@de-linker.com."
+
+#: templates/emails/linker-approval-restricted.php:23
+msgid "Your partner account has been limited for now."
+msgstr "Ihr Partner-Konto ist vorerst eingeschränkt."
+
+#: templates/emails/linker-approval-restricted.php:24
+msgid ""
+"You can keep browsing the products, and you can reach us any time at "
+"sales@de-linker.com. Net prices and the Proforma request are paused while "
+"the account is limited."
+msgstr ""
+"Sie können die Produkte weiterhin ansehen und uns jederzeit unter "
+"sales@de-linker.com erreichen. Nettopreise und Proforma-Anfrage sind "
+"pausiert, solange das Konto eingeschränkt ist."
+
+#: templates/emails/linker-approval-restricted.php:28
+msgid "Write to us and we will look at your account again."
+msgstr "Schreiben Sie uns, und wir sehen uns Ihr Konto erneut an."
+
 #. translators: %s: the customer's full name.
 #: templates/emails/linker-inquiry-received.php:25
 #: templates/emails/linker-proforma-issued.php:27
@@ -1924,11 +2066,22 @@ msgstr "Guten Tag %s,"
 msgid "Thank you for your inquiry %s."
 msgstr "vielen Dank für Ihre Anfrage %s."
 
-#: templates/emails/linker-new-customer.php:26
+#: templates/emails/linker-new-customer.php:27
 msgid "Address"
 msgstr "Anschrift"
 
-#: templates/emails/linker-new-customer.php:42
+#: includes/Registration/PendingApprovals.php:50
+msgid "Accounts waiting for approval"
+msgstr ""
+"Konten, die auf die Freigabe warten"
+
+#: includes/Registration/PendingApprovals.php:79
+msgid "No account is waiting for approval."
+msgstr ""
+"Kein Konto wartet auf die Freigabe."
+
+#: includes/Registration/PendingApprovals.php:97
+#: templates/emails/linker-new-customer.php:44
 #: templates/emails/linker-vat-review.php:44
 msgid "Open the customer"
 msgstr "Kunden öffnen"
@@ -1981,6 +2134,10 @@ msgid ""
 msgstr ""
 "Hier erscheinen Ihre Proformarechnungen und die Auslegungsberichte Ihrer "
 "gespeicherten Lösungen."
+
+#: templates/myaccount/linker-documents.php:25
+msgid "Download"
+msgstr "Herunterladen"
 
 #: templates/myaccount/linker-documents.php:33
 msgid "Download (PDF)"
@@ -2295,51 +2452,3 @@ msgstr "Produktbild"
 #: templates/storefront-single-product.php:273
 msgid "Close image viewer"
 msgstr "Bildbetrachter schließen"
-
-#: includes/Health/Monitor.php:115
-msgid "Genie"
-msgstr "Genie"
-
-#: includes/Health/Monitor.php:115
-msgid "engine"
-msgstr "Engine"
-
-#: includes/Health/Monitor.php:120
-msgid "The Solution Configurator"
-msgstr "Der Lösungskonfigurator"
-
-#: includes/Health/Monitor.php:104
-#, php-format
-msgid "the address option %s is empty"
-msgstr "die Adressoption %s ist leer"
-
-#: includes/Health/Monitor.php:113
-#, php-format
-msgid "the service answered HTTP %d instead of 200"
-msgstr "der Dienst antwortete mit HTTP %d statt 200"
-
-#: includes/Health/Monitor.php:159
-#, php-format
-msgid "The %s service failed its health check"
-msgstr "Gesundheitsprüfung fehlgeschlagen: Dienst %s"
-
-#: includes/Health/Monitor.php:163
-#, php-format
-msgid ""
-"The daily health check could not reach the %1$s service.\n"
-"\n"
-"Address: %2$s\n"
-"Reason: %3$s\n"
-"Checked: %4$s UTC\n"
-"\n"
-"%5$s uses this service. The check runs once a day and repeats this message "
-"on every failure."
-msgstr ""
-"Die tägliche Gesundheitsprüfung hat den Dienst %1$s nicht erreicht.\n"
-"\n"
-"Adresse: %2$s\n"
-"Grund: %3$s\n"
-"Geprüft: %4$s UTC\n"
-"\n"
-"%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
-"diese Nachricht bei jedem Fehlschlag."

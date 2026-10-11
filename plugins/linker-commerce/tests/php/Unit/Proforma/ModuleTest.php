@@ -35,7 +35,7 @@ final class ModuleTest extends TestCase {
 	 */
 	public function test_register_adds_the_hooks(): void {
 		$options = new Options();
-		$box     = new AdminBox( new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( '/plugin/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( new CommerceState() ) ) );
+		$box     = new AdminBox( new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( '/plugin/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( $this->approved_state() ) ) );
 		$module  = new Module( '/plugin/linker-commerce.php', $box );
 
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $box, 'add' ) );

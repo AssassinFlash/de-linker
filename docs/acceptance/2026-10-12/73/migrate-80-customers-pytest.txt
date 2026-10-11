@@ -1,0 +1,73 @@
+# 80-customers 真实例测试（LINKER_MIGRATE_TEST_WP=~/de-linker-local/t80/wp.sh）— 2026-10-12 00:34:56 +0800
+# 命令: LINKER_MIGRATE_TEST_WP=$HOME/de-linker-local/t80/wp.sh uv run --locked pytest tests/test_80_customers_wordpress.py -v -s
+
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t73/tools/migrate/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t73/tools/migrate
+configfile: pyproject.toml
+collecting ... collected 3 items
+
+tests/test_80_customers_wordpress.py::test_plan_reads_without_writing 10 customers: none 10
+    customer-18 (none)
+    customer-2 (none)
+    customer-3 (none)
+    customer-30 (none)
+    customer-31 (none)
+    customer-32 (none)
+    customer-33 (none)
+    customer-34 (none)
+    customer-35 (none)
+    customer-36 (none)
+plan: every account above would be set to approved
+plan: empty locales the run would fill: 0
+
+PASSED
+tests/test_80_customers_wordpress.py::test_apply_verify_and_rollback written: 10 accounts set to approved
+locales: 0 filled from the customers' latest inquiries
+now: approved 10
+
+verify: 10 customers, all approved
+
+removed: the state of 10 accounts
+now: none 10
+
+verify: FAILED — 10 customers are not approved:
+    customer-18 (none)
+    customer-2 (none)
+    customer-3 (none)
+    customer-30 (none)
+    customer-31 (none)
+    customer-32 (none)
+    customer-33 (none)
+    customer-34 (none)
+    customer-35 (none)
+    customer-36 (none)
+
+PASSED
+tests/test_80_customers_wordpress.py::test_apply_fills_an_empty_locale_from_the_latest_inquiry 12 customers: none 12
+    customer-18 (none)
+    customer-2 (none)
+    customer-3 (none)
+    customer-30 (none)
+    customer-31 (none)
+    customer-32 (none)
+    customer-33 (none)
+    customer-34 (none)
+    customer-35 (none)
+    customer-36 (none)
+    linker-migrate-locale-empty (none), locale <- en_US (its latest inquiry)
+    linker-migrate-locale-kept (none), locale fr_FR
+plan: every account above would be set to approved
+plan: empty locales the run would fill: 1
+
+written: 12 accounts set to approved
+locales: 1 filled from the customers' latest inquiries
+now: approved 12
+
+removed: the state of 12 accounts
+now: none 12
+
+PASSED
+
+============================== 3 passed in 20.71s ==============================

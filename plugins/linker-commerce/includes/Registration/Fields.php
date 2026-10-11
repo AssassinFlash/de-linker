@@ -9,14 +9,16 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Registration;
 
+use Linker\Commerce\Inquiry\OrderLocale;
 use WC_Customer;
 use WP_Error;
 
 /**
  * Adds company, business type, VAT ID, name and address to WooCommerce's own
  * registration form on the account page (docs/specs/11-commerce.md, journey
- * step 2). The account is usable at once; the VAT ID is checked with VIES, and
- * a failed check only flags the account. The team receives a notification.
+ * step 2). The account starts pending (Approval); the VAT ID is checked with
+ * VIES, and a failed check only flags the account. The team receives a
+ * notification.
  */
 final class Fields {
 
@@ -36,9 +38,13 @@ final class Fields {
 	/**
 	 * Sets up the fields.
 	 *
-	 * @param VatProfile $vat The VAT check.
+	 * @param VatProfile $vat      The VAT check.
+	 * @param Approval   $approval The account approval rule.
 	 */
-	public function __construct( private readonly VatProfile $vat ) {}
+	public function __construct(
+		private readonly VatProfile $vat,
+		private readonly Approval $approval = new Approval()
+	) {}
 
 	/**
 	 * The fields, in WooCommerce's form field format. Labels and rules of the
@@ -151,6 +157,18 @@ final class Fields {
 		$customer->update_meta_data( VatProfile::VAT_META, VatNumber::normalize( $values[ VatProfile::VAT_META ] ) );
 		$customer->update_meta_data( CustomerRole::META, $values[ CustomerRole::META ] );
 		$customer->save();
+
+		// Every account starts pending (ticket 73): the team approves it, and
+		// until then it reads the site like a guest. Written through the rule
+		// (Approval), the one writer of the approval state, so the state and its
+		// audit row have one owner; the state a fresh customer already defaults
+		// to is no change, so nothing is mailed from here.
+		if ( $this->approval->is_subject( $customer_id ) ) {
+			$this->approval->set( $customer_id, Approval::PENDING );
+		}
+		// The customer's own language, for every later email: WordPress's user
+		// locale, recorded the same way the inquiry records its language.
+		update_user_meta( $customer_id, 'locale', OrderLocale::current() );
 
 		$this->vat->update( $customer_id, $values[ VatProfile::VAT_META ], false );
 

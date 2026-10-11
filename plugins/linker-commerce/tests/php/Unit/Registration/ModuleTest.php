@@ -9,12 +9,19 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Registration;
 
+use Linker\Commerce\Digest\Block;
 use Linker\Commerce\Registration\AddressForm;
+use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Registration\ApprovalAdmin;
 use Linker\Commerce\Registration\BillingVatField;
+use Linker\Commerce\Registration\Emails\ApprovedEmail;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
+use Linker\Commerce\Registration\Emails\RejectedEmail;
+use Linker\Commerce\Registration\Emails\RestrictedEmail;
 use Linker\Commerce\Registration\Emails\VatReviewEmail;
 use Linker\Commerce\Registration\Fields;
 use Linker\Commerce\Registration\Module;
+use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Registration\ViesClient;
 use Linker\Commerce\Settings\Options;
@@ -70,8 +77,21 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'woocommerce_before_customer_object_save', array( $vat_field, 'normalize' ) );
 		WP_Mock::expectFilterAdded( 'option_woocommerce_default_country', array( $address, 'base_location' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_country_locale', array( $address, 'country_locale' ) );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectFilterAdded( 'wp_authenticate_user', array( new WP_Mock\Matcher\AnyInstance( Approval::class ), 'gate_login' ) );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectFilterAdded( 'manage_users_columns', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'column_header' ) );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectFilterAdded( 'manage_users_custom_column', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'column_cell' ), 10, 3 );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectFilterAdded( 'user_row_actions', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'row_action' ), 10, 2 );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectActionAdded( 'edit_user_profile', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'profile_block' ) );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectActionAdded( 'admin_post_linker_approval', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'handle' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_actions', array( $this->module, 'email_actions' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $this->module, 'add_emails' ) );
+		WP_Mock::expectFilterAdded( 'linker_commerce_digest_blocks', array( $this->module, 'digest_blocks' ) );
 
 		$this->module->register();
 
@@ -79,11 +99,67 @@ final class ModuleTest extends TestCase {
 	}
 
 	/**
+	 * The digest's assembly gets the waiting-accounts block in front of its own
+	 * blocks (docs/specs/74-daily-digest.md: the owner's approvals lead the email).
+	 */
+	public function test_digest_blocks_puts_the_waiting_accounts_first(): void {
+		$own    = array( $this->block( 'digest_one' ), $this->block( 'digest_two' ) );
+		$blocks = $this->module->digest_blocks( $own );
+
+		$this->assertInstanceOf( PendingApprovals::class, $blocks[0] ?? null );
+		$this->assertSame( $own, array_slice( $blocks, 1 ), 'The digest\'s own blocks keep their order behind it.' );
+	}
+
+	/**
+	 * A block of the digest's own, as its assembly builds them.
+	 *
+	 * @param string $id Block id.
+	 */
+	private function block( string $id ): Block {
+		return new class( $id ) implements Block {
+			/**
+			 * Sets up the stub.
+			 *
+			 * @param string $id Block id.
+			 */
+			public function __construct( private readonly string $id ) {}
+
+			/**
+			 * Stable identifier of the block.
+			 */
+			public function id(): string {
+				return $this->id;
+			}
+
+			/**
+			 * Heading of the block.
+			 */
+			public function title(): string {
+				return '';
+			}
+
+			/**
+			 * The open items.
+			 */
+			public function entries(): array {
+				return array();
+			}
+
+			/**
+			 * The sentence a block with no open items shows.
+			 */
+			public function empty_text(): string {
+				return '';
+			}
+		};
+	}
+
+	/**
 	 * WooCommerce sends the notifications on the registration and verdict-change actions; the
 	 * actions fired in code carry the same names.
 	 */
 	public function test_email_actions_and_classes(): void {
-		$this->assertSame( array( 'other', 'linker_commerce_customer_registered', 'linker_commerce_vat_status_changed' ), $this->module->email_actions( array( 'other' ) ) );
+		$this->assertSame( array( 'other', 'linker_commerce_customer_registered', 'linker_commerce_vat_status_changed', Approval::CHANGED_ACTION ), $this->module->email_actions( array( 'other' ) ) );
 		$this->assertSame( 'linker_commerce_customer_registered', Fields::REGISTERED_ACTION );
 		$this->assertSame( 'linker_commerce_vat_status_changed', VatProfile::CHANGED_ACTION );
 
@@ -91,8 +167,14 @@ final class ModuleTest extends TestCase {
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		$this->expect_action_on_any( Fields::REGISTERED_ACTION . '_notification', NewCustomerEmail::class, 'trigger' );
 		$this->expect_action_on_any( VatProfile::CHANGED_ACTION . '_notification', VatReviewEmail::class, 'trigger', 10, 3 );
+		$this->expect_action_on_any( Approval::CHANGED_ACTION . '_notification', ApprovedEmail::class, 'trigger', 10, 4 );
+		$this->expect_action_on_any( Approval::CHANGED_ACTION . '_notification', RestrictedEmail::class, 'trigger', 10, 4 );
+		$this->expect_action_on_any( Approval::CHANGED_ACTION . '_notification', RejectedEmail::class, 'trigger', 10, 4 );
 		$emails = $this->module->add_emails( array() );
 		$this->assertInstanceOf( NewCustomerEmail::class, $emails[ NewCustomerEmail::class ] );
 		$this->assertInstanceOf( VatReviewEmail::class, $emails[ VatReviewEmail::class ] );
+		$this->assertInstanceOf( ApprovedEmail::class, $emails[ ApprovedEmail::class ] );
+		$this->assertInstanceOf( RestrictedEmail::class, $emails[ RestrictedEmail::class ] );
+		$this->assertInstanceOf( RejectedEmail::class, $emails[ RejectedEmail::class ] );
 	}
 }

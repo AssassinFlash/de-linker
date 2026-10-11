@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Mail;
 
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
+use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
@@ -154,6 +155,9 @@ final class OutboxTest extends TestCase {
 		WP_Mock::userFunction( 'network_home_url', array( 'return' => 'https://de-linker.com' ) );
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn ( string $url, int $part ) => parse_url( $url, $part ) ) );
 		WP_Mock::userFunction( 'get_bloginfo', array( 'return' => 'UTF-8' ) );
+		// Test mode reads the switch through WordPress's own address rule.
+		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => str_contains( $email, '@' ) ? trim( $email ) : '' ) );
+		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): string|false => 1 === preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/', $email ) ? $email : false ) );
 
 		$this->outbox = new Outbox( new JobStore(), new Throttle() );
 		WP_Mock::userFunction(
@@ -284,6 +288,32 @@ final class OutboxTest extends TestCase {
 		$this->assertSame( 0, $this->calls );
 		$this->assertCount( 1, $this->posts );
 		$this->assertEqualsWithDelta( $now + 50, $this->scheduled[0][0], 2 );
+	}
+
+	/**
+	 * Test mode rewrites the message on the way out alone: the send reaches the
+	 * one test address with no copies, and a message that has to wait is queued
+	 * with the recipients it came in with — the routing data the test
+	 * discipline asserts on (AGENTS.md §5).
+	 */
+	public function test_test_mode_rewrites_at_send_time_only(): void {
+		$this->logger( 0, 0 );
+		$this->options[ TestMode::OPTION ] = TestMode::DEFAULT_TO;
+
+		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
+		$this->assertSame( array( TestMode::DEFAULT_TO ), $this->delivered[0][0], 'The one recipient is the test address.' );
+		$headers = (array) $this->delivered[0][3];
+		$this->assertNotContains( 'Bcc: a@example.test, b@example.test, c@example.test', $headers, 'No blind copy reaches the mailer.' );
+		$this->assertContains( 'Content-Type: text/html; charset=UTF-8', $headers, 'Everything else about the message stays.' );
+
+		$now                               = time();
+		$this->options[ Throttle::OPTION ] = array_fill( 0, Throttle::PER_MINUTE, $now - 10 );
+		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
+
+		$job    = (int) array_key_first( $this->posts );
+		$queued = json_decode( (string) $this->meta[ $job ]['_linker_mail_message'], true );
+		$this->assertSame( array( 'sales@de-linker.com' ), $queued['to'], 'The queue keeps the recipients the message came with.' );
+		$this->assertContains( 'Bcc: a@example.test, b@example.test, c@example.test', $queued['headers'] );
 	}
 
 	/**

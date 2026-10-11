@@ -54,7 +54,7 @@ final class StoreApiPricesTest extends TestCase {
 	 */
 	public function test_guests_get_null_prices(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
-		$filter = new StoreApiPrices( new CommerceState() );
+		$filter = new StoreApiPrices( $this->approved_state() );
 		$prices = array( 'price' => '0' );
 
 		$list = $filter->filter(
@@ -111,7 +111,7 @@ final class StoreApiPricesTest extends TestCase {
 	 */
 	public function test_customers_and_other_routes_are_untouched(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
-		$filter = new StoreApiPrices( new CommerceState() );
+		$filter = new StoreApiPrices( $this->approved_state() );
 		$data   = array(
 			array(
 				'id'     => 1,

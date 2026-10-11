@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Gating;
 
 use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_Product;
@@ -48,7 +49,8 @@ final class CommerceStateTest extends TestCase {
 				'return' => static fn ( int $id, string $key ): string => CommerceState::MODE_META === $key && 1957 === $id ? 'rfq_only' : 'orderable',
 			)
 		);
-		$state = new CommerceState();
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		$state = new CommerceState( new Approval() );
 
 		$this->assertTrue( $state->is_rfq_only( $this->product( 1957 ) ) );
 		$this->assertTrue( $state->is_rfq_only( $this->product( 9000, 1957 ) ) );
@@ -56,24 +58,47 @@ final class CommerceStateTest extends TestCase {
 	}
 
 	/**
-	 * Guests see no prices; customers see them except for products quoted per project.
+	 * Guests see no prices; approved customers see them except for products
+	 * quoted per project.
 	 *
-	 * @testWith [false, "orderable", "100", "login"]
-	 *           [true, "orderable", "", "unpriced"]
-	 *           [true, "rfq_only", "22350", "project"]
-	 *           [false, "rfq_only", "22350", "project"]
+	 * @testWith [false, true, "orderable", "100", "login"]
+	 *           [true, true, "orderable", "", "unpriced"]
+	 *           [true, true, "rfq_only", "22350", "project"]
+	 *           [true, false, "rfq_only", "22350", "project"]
 	 *
-	 * @param bool        $logged_in Whether a customer is logged in.
+	 * @param bool        $logged_in Whether a visitor is signed in.
+	 * @param bool        $approved  Whether the account's prices are open.
 	 * @param string      $mode      Product mode.
 	 * @param string      $price     Stored price.
 	 * @param string|null $reason    Expected reason.
 	 */
-	public function test_reason( bool $logged_in, string $mode, string $price, ?string $reason ): void {
+	public function test_reason( bool $logged_in, bool $approved, string $mode, string $price, ?string $reason ): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => $mode ) );
-		$state   = new CommerceState();
+		if ( $logged_in ) {
+			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
+		}
+		$this->approval_meta( $approved ? array( Approval::STATUS_META => Approval::APPROVED ) : array() );
+		$state   = new CommerceState( new Approval() );
 		$product = $this->product( 4107, 0, $price );
 
 		$this->assertSame( $reason, $state->reason( $product ) );
+	}
+
+	/**
+	 * A signed-in account whose prices are not open reads its own state: the
+	 * reason is the approval, not "log in".
+	 */
+	public function test_an_account_without_approval_reads_its_own_reason(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => 'orderable' ) );
+		$this->approval_meta( array() );
+		$state = new CommerceState( new Approval() );
+
+		$this->assertSame( CommerceState::APPROVAL, $state->reason( $this->product( 4107 ) ) );
+		$this->assertSame( CommerceState::APPROVAL, $state->visitor_reason() );
+		$this->assertFalse( $state->visitor_sees_prices() );
+		$this->assertSame( Approval::PENDING, $state->current_approval_status() );
 	}
 }
