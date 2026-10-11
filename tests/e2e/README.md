@@ -38,6 +38,11 @@ the command that fixes it — nothing is skipped silently.
 
 ## Shape
 
+- The cascade's records land under the instance, beside its mail:
+  `~/de-linker-local/<name>/e2e-judge/<stamp>/` — `run/summary.json` per
+  question, plus `run/jev.jsonl`, `run/deepseek.jsonl` and
+  `run/cascade.jsonl`. They stay there after the run, so a disagreement the
+  suite printed can be read back; the path is printed when judging starts.
 - `specs/` — one file per surface; the Genie rows are `genie.spec.ts`
   (service level, R1–R14 with the cascade judging every question) and
   `genie-dock.spec.ts` (the browser half: disclosure, chip, session, reload).

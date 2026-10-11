@@ -6,11 +6,12 @@ header. A login-gated ability answers 401 and that maps to the
 failing the turn (docs/specs/13-genie.md R7).
 
 The one exception is the customer's own inquiry list: the turn carries the
-shell's short-lived, single-purpose identity token (the browser never sees
-it, the service never stores it), and that token rides exactly one ability
-call — `linker/inquiry-status` — as `USER_CONTEXT_HEADER`. WordPress accepts
-it on `/wp-abilities/` requests only, verifies the signature and the two
-minute expiry, and nothing else in the service can use it.
+shell's short-lived identity token (valid 120 seconds after it is minted; the
+browser never sees it, the service never stores it), and the service sends it
+on exactly one ability call — `linker/inquiry-status` — as
+`USER_CONTEXT_HEADER`. WordPress accepts it on `/wp-abilities/` requests only,
+verifies the signature and the expiry, and nothing else in the service can
+use it.
 """
 
 from __future__ import annotations

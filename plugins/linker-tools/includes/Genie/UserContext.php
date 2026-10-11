@@ -11,10 +11,11 @@
  * call as `X-Linker-User-Context`; this class accepts it — on requests to
  * `/wp-abilities/` and no other route, and only while it is valid.
  *
- * The token is not a capability: it names a user for one request, expires two
- * minutes after it is minted, and grants nothing the ability itself does not
- * already allow (every ability here is read-only; the write actions are the
- * browser's own REST calls, which carry the customer's cookie).
+ * The token is not a capability: it names a user, is valid for 120 seconds
+ * after it is minted (`TTL`; nothing marks it used — the window is the whole
+ * of its life), and grants nothing the ability itself does not already allow
+ * (every ability here is read-only; the write actions are the browser's own
+ * REST calls, which carry the customer's cookie).
  *
  * @package Linker\Tools
  */

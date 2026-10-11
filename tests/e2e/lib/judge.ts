@@ -12,8 +12,8 @@
  * External dependencies
  */
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
-import { homedir, tmpdir } from 'node:os';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 /**
@@ -27,6 +27,8 @@ export interface JudgeItem {
 	question: string;
 	answer: string;
 	cards: number[];
+	/** The product page the row was asked from, when it ran on one. */
+	pageProduct?: number;
 	/** The service's logged turn; its tool_calls become the reference. */
 	turnId: number;
 	/** Replace one offered card with this id for the `better_pick` variant. */
@@ -58,13 +60,31 @@ export function turnLogPath(): string {
 }
 
 /**
+ * The run's own judge directory, beside the instance's mail: `<instance>/
+ * e2e-judge/<stamp>/` (the stamp is the local time the judging started).
+ *
+ * It is a persistent location, not a temp directory: the per-item records
+ * (`run/summary.json`, `run/jev.jsonl`, `run/deepseek.jsonl`,
+ * `run/cascade.jsonl`) stay readable after the run, so a disagreement the
+ * suite printed can be read back instead of dying with the process.
+ */
+export function judgeRunDir(when: Date = new Date()): string {
+	const pad = (value: number): string => String(value).padStart(2, '0');
+	const stamp =
+		`${when.getFullYear()}${pad(when.getMonth() + 1)}${pad(when.getDate())}` +
+		`-${pad(when.getHours())}${pad(when.getMinutes())}${pad(when.getSeconds())}`;
+	return join(instance().dir, 'e2e-judge', stamp);
+}
+
+/**
  * Judges every item in one `score.py` run; returns the verdicts by item id.
  */
 export function judgeItems(items: JudgeItem[]): Record<string, Verdict> {
 	if (items.length === 0) {
 		return {};
 	}
-	const directory = mkdtempSync(join(tmpdir(), 'linker-e2e-judge-'));
+	const directory = judgeRunDir();
+	mkdirSync(directory, { recursive: true });
 	const input = join(directory, 'items.jsonl');
 	const out = join(directory, 'run');
 	writeFileSync(
@@ -78,8 +98,16 @@ export function judgeItems(items: JudgeItem[]): Record<string, Verdict> {
 					cards: item.cards,
 					turn_id: item.turnId,
 				};
+				if (item.pageProduct !== undefined) {
+					row.page_product = item.pageProduct;
+				}
 				if (item.swapTo !== undefined) {
-					const from = item.cards.find((id) => id !== item.swapTo);
+					// The wrong pick replaces a recommended card: the page's own
+					// product is a role of its own (score.py's
+					// `answer_with_offers`), so it is never the swapped one.
+					const from = item.cards.find(
+						(id) => id !== item.swapTo && id !== item.pageProduct
+					);
 					if (from !== undefined) {
 						row.swap = { from, to: item.swapTo };
 					}
@@ -88,6 +116,7 @@ export function judgeItems(items: JudgeItem[]): Record<string, Verdict> {
 			})
 			.join('\n') + '\n'
 	);
+	console.log(`judge records: ${directory}`);
 
 	execFileSync(
 		'uv',

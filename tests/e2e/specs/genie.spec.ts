@@ -78,6 +78,7 @@ function judgeItem(
 		question: row.question[locale],
 		answer: answerText(result),
 		cards: cards(result),
+		pageProduct: row.entry === 'product' ? row.productId : undefined,
 		turnId: result.meta?.turn_id ?? 0,
 		swapTo,
 	};

@@ -1,10 +1,11 @@
-"""The pilot's cascade decision and per-turn question selection."""
+"""The pilot's cascade decision, per-turn question selection and offer form."""
 
 from typing import Any
 
 from linker_judges.rubric import APPROPRIATE, BETTER_PICK, GROUNDED, QA_QUESTIONS
 from linker_judges.turns import (
     TURN_THRESHOLDS,
+    answer_with_offers,
     cascade_answers,
     turns_questions,
     turns_state,
@@ -91,3 +92,40 @@ def test_missing_confidence_never_stands() -> None:
         _verdict("jev", "2", None), _verdict("deepseek", "2", 0.5), QA_QUESTIONS
     )
     assert sources["grounded"] == "deepseek"
+
+
+def test_a_page_row_names_its_own_product_apart() -> None:
+    """The R5 form: the page's product is not a recommendation."""
+    answer = answer_with_offers("The H2-10K-T3 pairs with these.", 4107, [4107, 2092])
+    assert answer == (
+        "The H2-10K-T3 pairs with these.\n\n"
+        "This page's product: 4107.\n"
+        "Recommended products: 2092."
+    )
+
+
+def test_a_row_without_a_page_states_only_its_recommendations() -> None:
+    answer = answer_with_offers("Here are batteries.", None, [2092, 2067])
+    assert answer == "Here are batteries.\n\nRecommended products: 2092, 2067."
+
+
+def test_a_row_without_products_keeps_the_plain_answer() -> None:
+    assert answer_with_offers("We do not install.", None, []) == "We do not install."
+
+
+def test_the_wrong_pick_replaces_a_recommendation() -> None:
+    real = answer_with_offers("These pair.", 4107, [4107, 2092, 2067])
+    variant = answer_with_offers("These pair.", 4107, [4107, 2092, 2067], (2092, 6507))
+    assert "This page's product: 4107." in variant
+    assert "Recommended products: 6507, 2067." in variant
+    assert variant != real
+
+
+def test_the_wrong_pick_on_the_page_product_misattributes_the_page() -> None:
+    """The source takes the role it displaces: a page-product swap claims the
+    page itself is another model, not a silent no-op."""
+    variant = answer_with_offers(
+        "This is the HS3-5K.", 2198, [2198, 2199], (2198, 4107)
+    )
+    assert "This page's product: 4107." in variant
+    assert "Recommended products: 2199." in variant

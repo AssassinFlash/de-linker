@@ -10,13 +10,17 @@ cascade behind every question it asks the live service:
 Each input line is one judged item:
 
     {"id": "R1-en", "question": "…", "answer": "…", "cards": [4107],
-     "turn_id": 202, "swap": {"from": 4107, "to": 6507}}
+     "page_product": 4107, "turn_id": 202, "swap": {"from": 4107, "to": 6507}}
 
 `turn_id` names the service's logged turn; the reference is rebuilt from that
 turn's own ability calls, replayed read-only against `--wp` (the same replay
-the pilot uses), so the judge sees what the turn actually read. `swap` is
-optional: when present the item also carries the wrong-pick variant
-`answer_b`, so `better_pick` has a real choice and the real answer must win.
+the pilot uses), so the judge sees what the turn actually read. `page_product`
+is the product page the row was asked from, when it ran on one: the judged
+answer names that page's own product apart from the recommendations
+(`turns.answer_with_offers`), the form the R5 divergence of the 2026-10-11
+pilot asked for. `swap` is optional: when present the item also carries the
+wrong-pick variant `answer_b`, so `better_pick` has a real choice and the real
+answer must win.
 
 Output in `--out`: `items.jsonl` (the resolved items), `jev.jsonl` and
 `deepseek.jsonl` (one record per call), `cascade.jsonl` (the final labels and
@@ -37,7 +41,7 @@ from typing import Any
 
 from linker_judges.cascade import run_cascade
 from linker_judges.registry import JUDGES
-from linker_judges.turns import turns_questions
+from linker_judges.turns import answer_with_offers, turns_questions
 from pilot import (
     record,
     write_jsonl,
@@ -115,9 +119,19 @@ def replay(
 
 
 def build_item(row: dict[str, Any], calls: list[dict[str, Any]]) -> dict[str, Any]:
-    """The judge's item for one input row (see `turns.turns_state`)."""
+    """The judge's item for one input row (see `turns.turns_state`).
+
+    The answer carries its offers through `turns.answer_with_offers` — the one
+    implementation of the role-separated form (the page's own product named
+    apart from the recommendations) that the R5 divergence of the 2026-10-11
+    pilot asked for. `page_product` is the product page the row was asked from
+    (the suite's own entry context); a row without one states its
+    recommendations alone.
+    """
     answer = str(row["answer"])
     cards = [int(pid) for pid in row.get("cards") or []]
+    page = row.get("page_product")
+    page_product = int(page) if page is not None else None
     if not calls:
         # No reference and no calls: the judge must be told the answer is not
         # backed by anything, not handed an empty state it would call fine.
@@ -126,20 +140,19 @@ def build_item(row: dict[str, Any], calls: list[dict[str, Any]]) -> dict[str, An
         reference = {"calls": calls}
     item: dict[str, Any] = {
         "question": str(row["question"]),
-        "answer": answer,
+        "answer": answer_with_offers(answer, page_product, cards),
         "reference": reference,
         "cards": cards,
     }
     swap = row.get("swap")
     if swap and cards:
-        variant = [
-            int(swap["to"]) if int(pid) == int(swap["from"]) else int(pid)
-            for pid in cards
-        ]
-        offered = ", ".join(str(pid) for pid in cards)
-        picked = ", ".join(str(pid) for pid in variant)
-        item["answer_a"] = f"{answer}\n\nProducts offered: {offered}"
-        item["answer_b"] = f"{answer}\n\nProducts offered: {picked}"
+        item["answer_a"] = answer_with_offers(answer, page_product, cards)
+        item["answer_b"] = answer_with_offers(
+            answer,
+            page_product,
+            cards,
+            (int(swap["from"]), int(swap["to"])),
+        )
     return item
 
 

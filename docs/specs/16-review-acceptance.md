@@ -29,3 +29,5 @@
 - `specs/chrome.spec.ts`：页头页脚命名、301、sitemap、hreflang。
 
 **待主线终态的部分在套件里以 `pending-main` 标注**（运行时 skip 并写明原因），不静默删除：商品页 Genie 芯片（模板侧）与 hreflang 的旧站点残留（快照 SEOPress 数据）。
+
+**判分记录落盘**（2026-10-11 修复轮）：级联的逐问记录写在实例目录下（`~/de-linker-local/<实例>/e2e-judge/<本地时间戳>/`，与 `mail/` 同级），`run/summary.json`、`run/jev.jsonl`、`run/deepseek.jsonl`、`run/cascade.jsonl` 在跑完后仍可查阅；判分开始的路径会打印在运行输出里。判分答案里的商品按角色分列（`This page's product:` 与 `Recommended products:` 两行，`linker_judges.turns.answer_with_offers` 是唯一实现）——R5 分歧的根因正是把「本页产品」与「推荐产品」压成一张清单。
