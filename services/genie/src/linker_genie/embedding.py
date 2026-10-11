@@ -281,7 +281,12 @@ GEMINI_WORKERS = 4
 
 
 class GeminiEmbedder:
-    """gemini-embedding-2 through AIHubMix's OpenAI-compatible endpoint."""
+    """gemini-embedding-2 through an OpenAI-compatible endpoint.
+
+    OpenRouter (the default) names the model google/gemini-embedding-2; the
+    fingerprint below keeps the bake-off's provider-neutral name because the
+    index was built with it and the fingerprint check compares names.
+    """
 
     model = GEMINI
     dimensions = GEMINI_DIMENSIONS
@@ -293,10 +298,17 @@ class GeminiEmbedder:
     }
 
     def __init__(
-        self, api_key: str, base_url: str, urlopen: UrlOpen = urllib.request.urlopen
+        self,
+        api_key: str,
+        base_url: str,
+        urlopen: UrlOpen = urllib.request.urlopen,
+        model: str = GEMINI,
     ) -> None:
         self._api_key = api_key
-        self._url = base_url.rstrip("/") + "/v1/embeddings"
+        self.model = model
+        # Bases may carry their own /v1 (OpenRouter does); keep exactly one.
+        stem = base_url.rstrip("/").removesuffix("/v1")
+        self._url = stem + "/v1/embeddings"
         self._urlopen = urlopen
         self._lock = threading.Lock()
         self.tokens = 0
@@ -357,10 +369,40 @@ class GeminiEmbedder:
         return self._embed([f"task: question answering | query: {text}"])[0]
 
 
+_OPENROUTER_FILE = Path(
+    "~/.config/terravolt-builder/openrouter.env"
+).expanduser()
+
+
+def _load_openrouter_env() -> None:
+    """The owner's OpenRouter credentials, when the process env has none."""
+    if not _OPENROUTER_FILE.exists():
+        return
+    for line in _OPENROUTER_FILE.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            name, value = line.split("=", 1)
+            os.environ.setdefault(name.strip(), value.strip().strip("\"'"))
+
+
 def gemini_from_env() -> GeminiEmbedder | None:
-    key = os.environ.get("AIHUBMIX_API_KEY", "")
-    base = os.environ.get("AIHUBMIX_BASE_URL", "")
-    return GeminiEmbedder(key, base) if key and base else None
+    """The gemini encoder per the model routing law: OpenRouter by default.
+
+    AIHubMix serves only behind LINKER_EMBEDDING_PROVIDER=aihubmix - an explicit
+    manual switch, never an automatic fallback (owner 2026-10-11).
+    """
+    if os.environ.get("LINKER_EMBEDDING_PROVIDER", "") == "aihubmix":
+        key = os.environ.get("AIHUBMIX_API_KEY", "")
+        base = os.environ.get("AIHUBMIX_BASE_URL", "")
+        return GeminiEmbedder(key, base) if key and base else None
+    _load_openrouter_env()
+    key = os.environ.get("OPENROUTER_API_KEY", "")
+    base = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+    return (
+        GeminiEmbedder(key, base, model="google/gemini-embedding-2")
+        if key
+        else None
+    )
 
 
 MODELS = (*OPEN_MODELS, GEMINI)

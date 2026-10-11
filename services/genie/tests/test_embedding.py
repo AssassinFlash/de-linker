@@ -8,10 +8,12 @@ import types
 import urllib.error
 from collections.abc import Iterator
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Any
 
 import pytest
 
+from linker_genie import embedding
 from linker_genie.embedding import (
     ARCTIC_M,
     E5_SMALL,
@@ -234,10 +236,47 @@ def test_mean_pooling_averages_the_tokens_the_mask_keeps(onnx_model: list[Any]) 
 
 def test_without_a_key_there_is_no_gemini_query_encoder(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
+    # No OpenRouter credentials anywhere: no key in the process env and no
+    # credentials file (the owner's real file must not leak into tests).
     monkeypatch.delenv("AIHUBMIX_API_KEY", raising=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setattr(embedding, "_OPENROUTER_FILE", tmp_path / "absent.env")
 
     assert query_encoder("gemini-embedding-2") is None
+
+
+def test_the_gemini_encoder_defaults_to_openrouter(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.delenv("LINKER_EMBEDDING_PROVIDER", raising=False)
+    monkeypatch.delenv("AIHUBMIX_API_KEY", raising=False)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "k")
+    monkeypatch.delenv("OPENROUTER_BASE_URL", raising=False)
+    monkeypatch.setattr(embedding, "_OPENROUTER_FILE", tmp_path / "absent.env")
+
+    encoder = query_encoder("gemini-embedding-2")
+
+    assert isinstance(encoder, embedding.GeminiEmbedder)
+    assert encoder.model == "google/gemini-embedding-2"
+    assert encoder._url == "https://openrouter.ai/api/v1/embeddings"
+    assert encoder.fingerprint["model"] == "gemini-embedding-2"
+
+
+def test_aihubmix_serves_only_behind_the_explicit_switch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("LINKER_EMBEDDING_PROVIDER", "aihubmix")
+    monkeypatch.setenv("AIHUBMIX_API_KEY", "k")
+    monkeypatch.setenv("AIHUBMIX_BASE_URL", "https://aihubmix.example")
+
+    encoder = query_encoder("gemini-embedding-2")
+
+    assert isinstance(encoder, embedding.GeminiEmbedder)
+    assert encoder.model == "gemini-embedding-2"
+    assert encoder._url == "https://aihubmix.example/v1/embeddings"
 
 
 def test_an_unknown_model_has_no_query_encoder() -> None:
