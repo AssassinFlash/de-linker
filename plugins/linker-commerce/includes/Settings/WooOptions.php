@@ -45,8 +45,12 @@ final class WooOptions {
 			'woocommerce_checkout_company_field'         => 'required',
 			// No product reviews or star ratings: the site's chain is products → inquiry (AGENTS.md §1).
 			'woocommerce_enable_reviews'                 => 'no',
-			// Stock is only ever "in stock", never a quantity (owner ruling 2026-10-02, AGENTS.md §2).
+			// Stock is only ever a state, never a quantity (owner ruling 2026-10-02, AGENTS.md §2).
 			'woocommerce_stock_format'                   => 'no_amount',
+			// The shop lists only what can be asked for: a product the ERP
+			// pushed out of stock leaves the shop and category pages (owner rule
+			// "only show in stock", ticket #69; WooCommerce's own hiding).
+			'woocommerce_hide_out_of_stock_items'        => 'yes',
 		);
 	}
 

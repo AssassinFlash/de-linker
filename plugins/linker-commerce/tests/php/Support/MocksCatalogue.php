@@ -131,6 +131,7 @@ trait MocksCatalogue {
 					$product->allows( 'get_parent_id' )->andReturn( 0 );
 					$product->allows( 'get_price' )->with( 'edit' )->andReturn( (string) $id );
 					$product->allows( 'get_sku' )->andReturn( '' );
+					$product->allows( 'is_in_stock' )->andReturn( true );
 
 					return $product;
 				},

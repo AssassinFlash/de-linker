@@ -1,0 +1,48 @@
+{
+  "ticket": 69,
+  "date": "2026-10-11",
+  "instance": {
+    "name": "t69",
+    "wordpress": "http://127.0.0.1:8955",
+    "wordpress_version": "7.1.3",
+    "assembly": "Just up t69; snapshot 20261010-0033 via `just pull load t69 20261010-0033 --live-code` per the PR #87 body. This round re-verified only what the checks below read: linker-commerce and linker-i18n symlinked to this checkout (checked out at the repair-round commit) and active, terravolt-b2b-core + linker-ai-assistant inactive on disk, polylang + redis-cache + woocommerce + livecanvas + windpress active (the integration bootstrap refuses any other linker-commerce). woocommerce_notify_no_stock_amount = 0 (the Woo default the spec's threshold note describes).",
+    "round": "repair round after the Spec/Standards review: the three required fixes (state docblock, AGENTS stock ruling, audit-row retention) and the four carried-along items (spec threshold note, this archive, mock-erp key cleanup) of the ask."
+  },
+  "checks": [
+    {
+      "name": "static checks: just check",
+      "command": "just check",
+      "result": "green (exit 0): PHPCS + PHPStan of linker-commerce/linker-i18n/linker-tools/tools-local, js lint/type/format, ruff + mypy of the six Python projects, pull check, build::check ('build/ matches its sources.')"
+    },
+    {
+      "name": "test suites: just test",
+      "command": "just test",
+      "result": "green (exit 0): linker-commerce PHPUnit 680 tests / 3457 assertions / 21 skipped (the integration tests, skipped without LINKER_WP_ROOT), linker-i18n 129, linker-tools 24, js unit 61 + e2e 10, pytest genie 139 / engine 112 / local 90 / migrate 21 (+5 skipped) / faq 9 / pull 103. The PR body recorded 673 commerce tests / 20 skipped before this round; the repair adds RetentionTest (6) and one integration test (1, counted among the skips in the unit run) — 673 + 7 = 680, 20 + 1 = 21."
+    },
+    {
+      "name": "real fixture: commerce integration suite against t69",
+      "command": "cd plugins/linker-commerce && LINKER_WP_ROOT=$HOME/de-linker-local/t69/wordpress /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit -c phpunit.integration.xml.dist",
+      "result": "OK (13 tests, 145 assertions). The PR body recorded 12 tests / 140 assertions before this round; the new test is test_audit_rows_are_swept_once_past_their_retention: the daily event is on the schedule, firing the real cron hook deletes an audit row backdated past 90 days and leaves a one-day-old row in place. The other 12 prove the push chain unchanged (batch apply + audit row, unknown SKU per-row error, idempotent re-push with zero stock actions, out-of-stock gate + recovery through the real cart, state_overridden/not_stock_managed, the three key states)."
+    },
+    {
+      "name": "retention: unit trio and sweep (WP_Mock)",
+      "command": "cd plugins/linker-commerce && php vendor/bin/phpunit --filter RetentionTest",
+      "result": "OK (6 tests, 155 assertions). The daily event is scheduled when missing; an event already on the schedule is left alone (no second daily event); deactivation clears it; the sweep deletes the expired rows oldest-first and keeps the fresh one, with the query asserted (private linker_stock_batch, IDs, page 1, date ASC, post_date_gmt before the 90-day cutoff, wp_delete_post with force); a full batch is followed by another and the walk stops at the short one; an empty window is asked once."
+    },
+    {
+      "name": "instance: the sweep on the real WP-Cron path",
+      "command": "just wp t69 cron event list --fields=hook,next_run_relative,recurrence; just wp t69 cron event run linker_commerce_stock_batch_sweep; row count of linker_stock_batch before/after",
+      "result": "linker_commerce_stock_batch_sweep listed with recurrence '1 day'; the event ran ('Executed the cron event … in 0.065s'), row count 69 before and 69 after — every row on the instance is younger than the retention, so the sweep deleted nothing and left the audit trail intact. (Also listed: tv_b2b_stock_mirror_nightly, the inactive old plugin's event, which fires into the void and disappears with the old system at cutover — same observation as the #67 archive.)"
+    },
+    {
+      "name": "key lifecycle (WP-CLI on t69)",
+      "command": "just wp t69 linker-commerce stock-key --set=<known key> --user=<admin>; read linker_stock_push_key_hash; printf %s '<known key>' | shasum -a 256; --clear; option list --search; --set without --user",
+      "result": "--set stored sha256('<known key>') byte for byte identical to shasum -a 256 (8aa432ab…60f85); --clear removed the option (COUNT=0) — the dormant state; a --set without --user is refused ('Run as an administrator: wp linker-commerce stock-key --user=<admin>.')."
+    },
+    {
+      "name": "mock ERP end to end, run twice (re-runnable)",
+      "command": "just mock-erp t69  (twice, after the recipe's new key cleanup was added)",
+      "result": "both runs: 21 assertions passed each (wrong key 401 → normal push badge/add-to-cart → out-of-stock leaves the catalogue, badge flips, draft gate shuts → unknown SKU per-row error without rollback → idempotent re-push unchanged → recovery) and both ended with 'Push key removed: the stock endpoint rejects every request until a key is set.' — the instance is left in the channel's dormant state; a keyless POST afterwards answers 401 linker_stock_unauthorized."
+    }
+  ]
+}
