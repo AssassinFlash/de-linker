@@ -235,4 +235,82 @@ final class DocumentsMetaBoxTest extends TestCase {
 		$_POST = array();
 		$this->assertConditionsMet();
 	}
+
+	/**
+	 * Rows beyond the ones the box sent are kept: another writer appended them
+	 * after this box was rendered, and the box did not see them. The save
+	 * writes the sent row and the appended one, in that order.
+	 */
+	public function test_rows_beyond_the_ones_sent_are_kept(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'wp_verify_nonce', array( 'return' => 1 ) );
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wp_is_post_revision', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_is_post_autosave', array( 'return' => false ) );
+		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn ( string $text ): string => trim( $text ) ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( $value ) => $value ) );
+		WP_Mock::userFunction( 'esc_url_raw', array( 'return' => static fn ( string $url ): string => $url ) );
+		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn (): string => '127.0.0.1' ) );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'http://127.0.0.1:8927' ) );
+		// The list as the save reads it: the box's row, then the row another
+		// writer appended after the box was rendered.
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => array(
+					array(
+						'url'   => 'http://127.0.0.1:8927/wp-content/uploads/2026/10/manual.pdf',
+						'title' => 'User Manual',
+						'type'  => 'manual',
+						'lang'  => 'de',
+					),
+					array(
+						'url'   => 'http://127.0.0.1:8927/wp-content/uploads/2026/10/appended.pdf',
+						'title' => 'Added by another writer',
+						'type'  => 'document',
+						'lang'  => 'en',
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'update_post_meta',
+			array(
+				'times' => 1,
+				'args'  => array(
+					6521,
+					EngineeringData::DOCUMENTS_META_KEY,
+					array(
+						array(
+							'url'   => 'http://127.0.0.1:8927/wp-content/uploads/2026/10/manual.pdf',
+							'title' => 'User Manual',
+							'type'  => 'manual',
+							'lang'  => 'de',
+						),
+						array(
+							'url'   => 'http://127.0.0.1:8927/wp-content/uploads/2026/10/appended.pdf',
+							'title' => 'Added by another writer',
+							'type'  => 'document',
+							'lang'  => 'en',
+						),
+					),
+				),
+			)
+		);
+
+		$_POST = array(
+			'linker_commerce_documents_nonce' => 'nonce',
+			'linker_documents'                => array(
+				0 => array(
+					'title' => 'User Manual',
+					'url'   => 'http://127.0.0.1:8927/wp-content/uploads/2026/10/manual.pdf',
+					'type'  => 'manual',
+					'lang'  => 'de',
+				),
+			),
+		);
+		( new DocumentsMetaBox() )->save( 6521 );
+		$_POST = array();
+		$this->assertConditionsMet();
+	}
 }

@@ -23,6 +23,7 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\Retention;
+use Linker\Tools\Genie\WindPress;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -36,5 +37,6 @@ $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConvention
 	$conversations,
 	new Proxy( $conversations ),
 	new Entries( __FILE__ ),
-	new Retention( __FILE__ )
+	new Retention( __FILE__ ),
+	new WindPress()
 ) )->register();

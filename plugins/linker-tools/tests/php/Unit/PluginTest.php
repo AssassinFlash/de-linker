@@ -14,6 +14,7 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\Retention;
+use Linker\Tools\Genie\WindPress;
 use Linker\Tools\Plugin;
 use Linker\Tools\Redirects;
 use Linker\Tools\SiteChrome;
@@ -31,8 +32,8 @@ final class PluginTest extends TestCase {
 
 	/**
 	 * The plugin registers its scripts, conversations, redirects and chrome,
-	 * the proxy on rest_api_init, the entries' hooks and the retention's
-	 * hooks during registration.
+	 * the proxy on rest_api_init, and the entries', the retention's and the
+	 * scan provider's hooks during registration.
 	 */
 	public function test_register_adds_the_hooks(): void {
 		$assets        = new Assets( self::FILE );
@@ -42,6 +43,7 @@ final class PluginTest extends TestCase {
 		$proxy         = new RecordingProxy( $conversations );
 		$entries       = new RecordingEntries( self::FILE );
 		$retention     = new Retention( self::FILE );
+		$windpress     = new WindPress();
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -54,9 +56,10 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'init', array( $retention, 'schedule' ) );
 		WP_Mock::expectActionAdded( Retention::HOOK, array( $retention, 'sweep' ) );
 		WP_Mock::expectActionAdded( Retention::DELETE_HOOK, array( $retention, 'delete' ) );
+		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::userFunction( 'register_deactivation_hook' );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $windpress ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertConditionsMet();

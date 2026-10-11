@@ -98,6 +98,27 @@ final class Message {
 	}
 
 	/**
+	 * The message as one copy to one address: every recipient — the To list
+	 * and the Cc and Bcc headers — is replaced, so the message leaves as a
+	 * single email to a single mailbox. '' returns the message unchanged; the
+	 * test-mail switch is the only caller (AGENTS.md, test-mail discipline).
+	 *
+	 * @param string $address The one address, '' to leave the message alone.
+	 */
+	public function only_to( string $address ): self {
+		if ( '' === $address ) {
+			return $this;
+		}
+		$headers = array();
+		foreach ( $this->headers as $header ) {
+			if ( 1 !== preg_match( '/^\s*(?:cc|bcc)\s*:/i', $header ) ) {
+				$headers[] = $header;
+			}
+		}
+		return new self( array( $address ), $this->subject, $this->body, $headers, $this->attachments );
+	}
+
+	/**
 	 * The message as a JSON-ready array, for the queue.
 	 *
 	 * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[]}

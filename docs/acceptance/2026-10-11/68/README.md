@@ -17,8 +17,11 @@ inactive，polylang/redis-cache/三插件激活）→ `wp linker-i18n setup --as
 | 端点（人工抽验） | `curl 'http://127.0.0.1:8927/wp-json/linker/v1/catalog-search?q=DLK-GOODWE-GW60KSTSG10&lang=de'` | 200，返回德语孪生 6573 与 `/de/produkt/goodwe-gw60k-sts-g10/` |
 | 迁移脚本 | `python3 tools/migrate/68-contact-form.py --wp ~/de-linker-local/t68/wp.sh plan / apply --write / verify` | plan 两页有改动；apply 写入 EN #28 + DE #6915；verify `form=True old-fallback=False`、`ok` |
 | 迁移幂等 | 同命令二跑 | `en #28: nothing to do`、`de #6915: nothing to do` |
-| 联系表单端到端（EN，匿名） | `curl -X POST .../wp-admin/admin-post.php`（页面新鲜 nonce） | 302 → `/contact/?contact=sent#contact-form`；`~/de-linker-local/t68/mail/` 两封：To `sales@de-linker.com`（主题 `New message from Test Buyer`）+ To `buyer@example.test`（`We received your message`） |
-| 联系表单端到端（DE + Bcc） | 同上，从 `/de/kontakt/`；`wp option update linker_commerce_team_bcc copy@example.test` | 302 → `/de/kontakt/?contact=sent#contact-form`；团队信 `Bcc: copy@example.test`，客户回执主题 `Wir haben Ihre Nachricht erhalten`，正文德语 |
+| 联系表单端到端（EN，测试邮件开关开） | `wp option update linker_commerce_test_recipient chester@de-linker.com` + `curl -X POST .../wp-admin/admin-post.php`（页面新鲜 nonce） | 302 → `/contact/?contact=sent#contact-form`；`mail/` 新增两封——团队信 `New message from Test Buyer` 与回执 `We received your message`——**每封只有单收件人 `To: chester@de-linker.com`**、无 Cc/Bcc；四个 `.eml` 已归档到本目录 `mail/` |
+| 联系表单端到端（DE） | 同上，从 `/de/kontakt/` | 302 → `/de/kontakt/?contact=sent#contact-form`；两封——回执 `Wir haben Ihre Nachricht erhalten`（正文德语）与团队信——同为单收件人 `chester@de-linker.com`、无 Cc/Bcc |
+| 多收件路由（队列收件人数据，AGENTS 测试邮件纪律） | 占满每分钟额度（`wp option update linker_commerce_mail_sends '[8×now]'`）→ 提交 EN 表单 → `wp post meta get <job> _linker_mail_message` | 两条队列消息保留生产路由：团队信 `to: [sales@de-linker.com]`、`Bcc: copy@example.test`（`linker_commerce_team_bcc` 当时的值），回执 `to: [buyer@example.test]`；限流在队列，0 封实发——路由写在队列里即正确，不做多封实发 |
+| 开关撤销 | `wp option delete linker_commerce_test_recipient`；`wp option get linker_commerce_test_recipient` | `Success: Deleted`；随后 `get` 报 `Could not get … option. Does it exist?`（exit 1）= 关闭，恢复生产路由 |
+| WindPress 编译与锚类 | `touch plugins/linker-commerce/content/tokens.css`（让缓存相对模板变旧；WindPress 在缓存已最新时不再 store）→ `just windpress-compile t68 --user=857558227@qq.com`（护栏设置见 §3 第 3 条） | `{"compiled":true,"last_generated":1791725451,"file_size":349875,"toast":false,"ms":27853}`；`cache recompiled (1791724905 -> 1791725451), anchor classes present`——检查已含 ask 芯片的 `min-h-11`/`rounded-xl`/`border-neutral-200`；两个 provider 的 `missing_anchor_classes()` 都返回 `[]`，产物里三个类的规则实存（`grep` 命中 `.min-h-11 {`、`.rounded-xl {`、`.border-neutral-200 {`） |
 | 搜索框端到端（浏览器） | Playwright：键入问句 → 芯片出现 → 点击 | 芯片 `✦ Ask Genie` 出现；点击后 dock 打开，Genie 以键入句为第一条消息并回答（EN 12 张卡；DE `✦ Genie fragen`，德语回答 5 张卡） |
 | 型号/品号搜索（浏览器） | 键入 `DLK-GOODWE-GW60KSTSG10` 回车 | 直接导航 `http://127.0.0.1:8927/product/goodwe-gw60k-sts-g10/`（恰好一个命中 → 直达产品页） |
 | ?s= 结果范围 | `SearchScope`（单元测试）+ 规格 13 变更记录 | 主查询、未指名 post_type 的搜索限定 `product,post`；显式 post_type 不动（见规格） |
@@ -26,17 +29,22 @@ inactive，polylang/redis-cache/三插件激活）→ `wp linker-i18n setup --as
 ## 2. 截图（1440 与 390，EN 与 DE）
 
 同一浏览器（Playwright 的 chromium，本机同视口、禁动画不适用——本页无动画门），
-文件在本目录：
+文件在本目录。评审补格的三张（`search-de-1440-question` / `search-en-390-answer` /
+`contact-de-1440-sent`）为**全页**截图，同一 Playwright（仓库 `plugins/linker-tools`
+的 chromium headless shell、`reducedMotion: reduce`、等字体与图片落地后拍摄）：
 
 | 文件 | 内容 |
 |---|---|
 | `search-en-1440-question.png` | EN 目录页，键入问句后芯片出现（1440） |
 | `search-en-1440-answer.png` | 同一页，点击芯片后 Genie 以该问句开线并给卡（1440） |
 | `search-en-390-question.png` | 同上，390 宽 |
+| `search-de-1440-question.png` | DE 页，键入德语问句后 `✦ Genie fragen` 芯片出现（1440，评审补格：全页） |
 | `search-de-1440-answer.png` | DE 页，`Genie fragen` 芯片 + 德语回答（1440） |
 | `search-de-390-question.png` | DE 页芯片状态（390） |
+| `search-en-390-answer.png` | EN 页，390 宽，点击芯片后 Genie 的答句与卡片（评审补格：全页） |
 | `contact-en-1440-idle.png` / `contact-en-1440-form.png` | EN 联系页与表单特写（1440） |
 | `contact-en-1440-sent.png` | EN 发送后状态（`?contact=sent`，1440） |
+| `contact-de-1440-sent.png` | DE 发送后状态 `?contact=sent`（`Vielen Dank. Ihre Nachricht liegt beim Linker-Team.`，1440，评审补格：全页） |
 | `contact-en-390-form.png` / `contact-de-1440-form.png` / `contact-de-390-form.png` | 390 / DE 对照 |
 
 **挂载说明（重要）**：搜索框的 markup 属 #16 正在重建的 archive 模板（本票不得修改那三份
@@ -46,7 +54,7 @@ inactive，polylang/redis-cache/三插件激活）→ `wp linker-i18n setup --as
 #16 在 `[linker_catalog_head]` 的 `.wb-bar` 里（表单旁）挂 `[linker_genie_ask]` 即可，
 JS 只绑定 `#search-box` 与 `[data-linker-ask-genie]`，与线上锚点同名。
 
-## 3. 本票顺带修的两个既有缺陷（发现于验收，含复现）
+## 3. 本票顺带修的既有缺陷（发现于验收，含复现）
 
 1. **商品编辑器 Figures/FAQ meta box 在真实浏览器里从不保存**（#8/#15 的箱子）。
    证据（实例 2286，有 `_tv_b2b_figures`）：
@@ -60,6 +68,25 @@ JS 只绑定 `#search-box` 与 `[data-linker-ask-genie]`，与线上锚点同名
    后果：`createRoot` 二次挂载、模块级副作用跑两遍——本票的 pending-ask 因此被第一次挂载读掉，
    芯片点击后 Genie 不发言。修复：`script_deps()` 跳过入口自身（`Self::HANDLE === $handle`）
    并留注释。修后浏览器实测 `genieScripts=1`，冷启动路径通。
+3. **ask 芯片的类不在 WindPress 扫描面**：芯片是 `Entries::ask_chip()` 打印的 PHP markup
+   （`min-h-11 rounded-xl border border-neutral-200 … text-[#0c7f73]`），没有模板承载它；
+   WindPress 的动态模板渲染扫描已关，页面挂载路径不再兜底，编译产物里因此没有
+   `.min-h-11` / `.border-neutral-200`（旧缓存实测两者皆无）——芯片会掉样式。
+   修复：`linker-tools` 注册最小 provider（`Linker\Tools\Genie\WindPress`，形态同
+   `Linker\Commerce\Presentation\WindPress`），扫 `includes/Genie/Entries.php`；同一类带
+   **锚类清单与 `missing_anchor_classes()`**，`just windpress-compile` 的收尾检查已把它与
+   commerce 的那份合并（回归即让配方失败）。
+   证据（实例 t68）：`wp eval-file` 列 provider → `linker-tools enabled=true files=1 bytes=19264`
+   （就是 Entries.php）；浏览器侧 `admin/settings/cache/providers/scan` 对 linker-tools 返回
+   `contents=array(1)`；`just windpress-compile t68` 通过（27.8 s，349,875 B 新缓存，见 §1 该行），
+   产物里 `.min-h-11`/`.rounded-xl`/`.border-neutral-200` 规则实存，两个 provider 的
+   `missing_anchor_classes()` 都返回 `[]`。
+   **编译护栏（本实例既有缺陷，与本票无关，单开一票）**：WindPress 自带的 LiveCanvas provider
+   扫到第 6 批时，响应体前被塞进渲染出的 `<h2>Additional information</h2>`（WooCommerce 模板片段），
+   浏览器侧 worker 在此抛 `TypeError: o.contents is not iterable` 并中止编译（修复前 5 次
+   `just windpress-compile` 全部 300 s 超时、缓存不落盘）。本轮为取得编译产物，编译期间把
+   WindPress 选项 `integration.livecanvas.compile.enabled` 临时置 false（只关这一个扫描步，
+   不动运行时与其它 provider；编译后已还原）。同理，切换后线上第一次编译也会被它中止。
 
 ## 4. 未做/留待后续
 

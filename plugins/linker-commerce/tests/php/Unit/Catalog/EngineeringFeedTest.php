@@ -29,10 +29,6 @@ final class EngineeringFeedTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		// SelectionFacts asks whether the language layer swaps the product;
-		// in these tests nothing listens (the function exists once any test
-		// in the process registered a WP_Mock double for it).
-		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(

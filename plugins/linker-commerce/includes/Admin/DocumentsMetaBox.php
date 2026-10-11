@@ -192,6 +192,11 @@ final class DocumentsMetaBox {
 			);
 			$documents[] = $document;
 		}
+		// Rows beyond the ones the box sent are kept: another writer may have
+		// appended them after this box was rendered, and the box speaks only
+		// for the rows it carried. FaqsMetaBox merges its list the same way.
+		$last_sent = 0 === count( $rows ) ? -1 : max( array_keys( $rows ) );
+		$documents = array_merge( $documents, array_slice( $previous, $last_sent + 1 ) );
 		update_post_meta( $post_id, EngineeringData::DOCUMENTS_META_KEY, $documents );
 	}
 

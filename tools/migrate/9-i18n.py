@@ -142,6 +142,8 @@ class WP:
         self.user = user
 
     def run(self, *args: str, stdin: str | None = None, as_user: bool = False) -> str:
+        """Run one command; as_user signs it in as the administrator, because the
+        plugin's commands check manage_options and refuse without a user."""
         command = [*self.prefix, *args]
         if as_user and self.user:
             command.append(f"--user={self.user}")

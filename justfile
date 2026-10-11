@@ -156,8 +156,9 @@ present name:
 # Recompile an instance's WindPress cache through its admin — the only compile
 # that exists (Tailwind v4 has no server-side build): one-time login, WindPress
 # → Settings → Performance → Generate, the stored cache must be newer than the
-# one from before, and the templates' anchor classes must be in the product.
-# `just windpress-compile <instance>` after every content-changing round.
+# one from before, and the templates' and the entries' anchor classes must be in
+# the product. `just windpress-compile <instance>` after every content-changing
+# round.
 [positional-arguments]
 windpress-compile name *options:
     #!/usr/bin/env bash
@@ -190,11 +191,12 @@ windpress-compile name *options:
         echo "windpress: the cache file did not get newer ($before -> $after)" >&2
         exit 1
     fi
-    # The anchor-class check is the plugin's own (WindPressCache::missing_anchor_classes),
-    # so the recipe fails on exactly the classes the templates need.
-    missing="$(PHP={{ php }} {{ linker_local }} wp "$name" eval 'echo json_encode( ( new Linker\Commerce\Presentation\WindPressCache() )->missing_anchor_classes( (string) @file_get_contents( wp_upload_dir()["basedir"] . "/windpress/cache/tailwind.css" ) ) );' | tail -n 1)"
+    # The anchor-class check is the plugins' own (WindPressCache::missing_anchor_classes
+    # for the templates, Linker\Tools\Genie\WindPress::missing_anchor_classes for the
+    # entries' ask chip), so the recipe fails on exactly the classes they need.
+    missing="$(PHP={{ php }} {{ linker_local }} wp "$name" eval '$css = (string) @file_get_contents( wp_upload_dir()["basedir"] . "/windpress/cache/tailwind.css" ); echo json_encode( array_merge( ( new Linker\Commerce\Presentation\WindPressCache() )->missing_anchor_classes( $css ), ( new Linker\Tools\Genie\WindPress() )->missing_anchor_classes( $css ) ) );' | tail -n 1)"
     if [ "$missing" != "[]" ]; then
-        echo "windpress: the compiled cache misses the templates' anchor classes: $missing" >&2
+        echo "windpress: the compiled cache misses the templates' or the entries' anchor classes: $missing" >&2
         exit 1
     fi
     echo "windpress: cache recompiled ($before -> $after), anchor classes present"

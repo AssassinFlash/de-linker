@@ -111,4 +111,24 @@ final class OptionsTest extends TestCase {
 		$this->assertSame( 'PI', $options->proforma_prefix() );
 		$this->assertSame( '', $options->bank()['iban'] );
 	}
+
+	/**
+	 * The test-mail switch is off — '' — unless it names a deliverable
+	 * address; a stray value does not redirect the site's mail. The unset case
+	 * is the production one and shows in every Outbox test that delivers to
+	 * the message's own recipients.
+	 */
+	public function test_the_test_mail_switch_is_off_without_a_deliverable_address(): void {
+		$this->options( array( Options::TEST_RECIPIENT => 'not-an-address' ) );
+		$this->assertSame( '', ( new Options() )->test_recipient() );
+	}
+
+	/**
+	 * Set, it names the one address a test run sends every message to
+	 * (WP-CLI: wp option update linker_commerce_test_recipient …).
+	 */
+	public function test_the_test_mail_switch_names_one_address(): void {
+		$this->options( array( Options::TEST_RECIPIENT => 'chester@de-linker.com' ) );
+		$this->assertSame( 'chester@de-linker.com', ( new Options() )->test_recipient() );
+	}
 }
