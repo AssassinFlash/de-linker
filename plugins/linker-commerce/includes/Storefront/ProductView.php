@@ -460,6 +460,7 @@ final class ProductView {
 			$parsed[] = array(
 				'title'    => (string) $card['feature_title'],
 				'body'     => (string) ( $card['feature_body'] ?? '' ),
+				'image'    => (int) ( $card['feature_image'] ?? 0 ),
 				'priority' => ! empty( $card['feature_priority'] ),
 			);
 		}

@@ -68,6 +68,7 @@ final class CatalogShortcodes {
 		add_shortcode( 'linker_pdp_downloads', array( $this, 'pdp_downloads' ) );
 		add_shortcode( 'linker_pdp_pairings', array( $this, 'pdp_pairings' ) );
 		add_shortcode( 'linker_pdp_disclosures', array( $this, 'pdp_disclosures' ) );
+		add_shortcode( 'linker_pdp_features', array( $this, 'pdp_features' ) );
 	}
 
 	/**
@@ -309,8 +310,9 @@ final class CatalogShortcodes {
 		if ( array() === $card ) {
 			return '';
 		}
-		$facts = SelectionFacts::for_product( $product_id );
-		$data  = array(
+		$product = wc_get_product( $product_id );
+		$facts   = SelectionFacts::for_product( $product_id );
+		$data    = array(
 			'data-product-id="' . esc_attr( (string) $product_id ) . '"',
 			'data-sku="' . esc_attr( $card['sku'] ) . '"',
 			'data-brand="' . esc_attr( $card['brand_slug'] ) . '"',
@@ -318,7 +320,7 @@ final class CatalogShortcodes {
 			'data-power="' . esc_attr( \is_float( $facts->ac_power_kw ) ? (string) $facts->ac_power_kw : '0' ) . '"',
 			'data-application="' . esc_attr( (string) $facts->application ) . '"',
 		);
-		$url   = (string) get_permalink( $product_id );
+		$url     = (string) get_permalink( $product_id );
 
 		$html  = '<article class="sf-card product-card" data-linker-product-card ' . implode( ' ', $data ) . '>';
 		$html .= '<div class="sf-card-media card-media">';
@@ -353,10 +355,11 @@ final class CatalogShortcodes {
 		if ( array() !== $stats ) {
 			$html .= '<span class="card-exact-article" data-linker-exact-article><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( ( $stats[0]['value'] ?? '' ) . ' · ' . $card['model'] ) . '</strong></span>';
 		}
-		if ( array() !== $stats ) {
+		$facts = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
+		if ( array() !== $facts ) {
 			$html .= '<dl class="card-facts" data-card-facts aria-label="' . esc_attr__( 'Key product data', 'linker-commerce' ) . '">';
-			foreach ( \array_slice( $card['stats'], 0, 4 ) as $stat ) {
-				$html .= '<div><dt>' . esc_html( $stat['label'] ) . '</dt><dd>' . esc_html( $stat['value'] ) . '</dd></div>';
+			foreach ( $facts as $fact ) {
+				$html .= '<div><dt>' . esc_html( $fact['label'] ) . '</dt><dd>' . esc_html( $fact['value'] ) . '</dd></div>';
 			}
 			$html .= '</dl>';
 		}
@@ -717,7 +720,17 @@ final class CatalogShortcodes {
 			$html .= '<button type="button" data-pdp-thumb data-src="' . esc_url( self::image_url( $id ) ) . '" data-caption=""'
 				. ' aria-label="' . esc_attr( sprintf( /* translators: %d: image number. */ __( 'Product image %d', 'linker-commerce' ), $index + 1 ) ) . '"'
 				. ' aria-pressed="' . ( 0 === $index ? 'true' : 'false' ) . '" class="pdp-thumb">'
-				. wp_get_attachment_image( $id, 'medium', false, array( 'sizes' => '72px' ) ) . '</button>';
+				. self::image_tag(
+					$id,
+					'medium',
+					array(
+						'class'    => 'attachment-medium size-medium',
+						'alt'      => '',
+						'sizes'    => '72px',
+						'decoding' => 'async',
+						'loading'  => 'lazy',
+					)
+				) . '</button>';
 		}
 		return $html . '</div>';
 	}
@@ -776,11 +789,46 @@ final class CatalogShortcodes {
 		}
 		$html = '';
 		foreach ( \is_array( $view['features'] ) ? $view['features'] : array() as $feature ) {
-			if ( '' === trim( (string) $feature['body'] ) ) {
+			if ( '' === trim( (string) $feature['body'] ) || (int) ( $feature['image'] ?? 0 ) > 0 ) {
 				continue;
 			}
 			$html .= '<details class="pdp-disclose"><summary>' . esc_html( (string) $feature['title'] ) . self::icon( 'chevron' ) . '</summary>'
 				. '<div class="pdp-disclose-body pdp-reading"><p>' . esc_html( (string) $feature['body'] ) . '</p></div></details>';
+		}
+		return $html;
+	}
+
+	/**
+	 * The description's feature sections: the feature cards that carry an
+	 * image, as the live page's `.pdp-feature` blocks (media beside the title
+	 * and body). The cards without an image render as disclosure rows.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_features( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$html = '';
+		foreach ( \is_array( $view['features'] ) ? $view['features'] : array() as $feature ) {
+			$image = (int) ( $feature['image'] ?? 0 );
+			if ( $image <= 0 ) {
+				continue;
+			}
+			$html .= '<section class="pdp-feature"><div class="pdp-feature-media">'
+				. self::image_tag(
+					$image,
+					'large',
+					array(
+						'class'   => 'pdp-feature-image',
+						'alt'     => (string) $feature['title'],
+						'loading' => 'lazy',
+					)
+				)
+				. '</div><div class="pdp-feature-copy"><h3 class="pdp-section-title">' . esc_html( (string) $feature['title'] ) . '</h3>'
+				. '<div class="pdp-reading pdp-muted pdp-feature-body"><p>' . esc_html( (string) $feature['body'] ) . '</p></div></div></section>';
 		}
 		return $html;
 	}
@@ -868,13 +916,22 @@ final class CatalogShortcodes {
 		) . '</p>';
 		$index = 0;
 		foreach ( $scenarios as $scenario ) {
-			++$index;
 			$kind  = 'application' === (string) ( $scenario['kind'] ?? '' ) ? __( 'Project scenario', 'linker-commerce' ) : __( 'Project note', 'linker-commerce' );
 			$html .= '<div class="fit-scn">';
-			$html .= '<header class="fit-head"><span class="fit-num">' . esc_html( sprintf( '%02d', $index ) ) . '</span>'
+			$html .= '<header class="fit-head"><span class="fit-num">' . esc_html( sprintf( '%02d', $index + 1 ) ) . '</span>'
 				. '<div><span class="fit-kind">' . esc_html( $kind ) . '</span>'
 				. '<h3>' . esc_html( (string) $scenario['title'] ) . '</h3></div></header>';
-			$html .= '<div class="fit-body">';
+			// The scenario's three parts are one deck, as the live page renders
+			// them: the tab strip stays hidden and every panel shows.
+			$tabs  = array( __( 'Project', 'linker-commerce' ), __( 'Checks', 'linker-commerce' ), __( 'Linker view', 'linker-commerce' ) );
+			$html .= '<div class="pdp-info-deck pdp-project-deck pdp-all-panels">';
+			$html .= '<div class="pdp-info-tabs" role="tablist" aria-label="' . esc_attr__( 'Project information', 'linker-commerce' ) . '" hidden>';
+			foreach ( $tabs as $position => $label ) {
+				$html .= '<button type="button" id="pdp-project-' . $index . '-tab-' . $position . '" role="tab" aria-controls="pdp-project-' . $index . '-panel-' . $position . '"'
+					. ' aria-selected="' . ( 0 === $position ? 'true' : 'false' ) . '" tabindex="' . ( 0 === $position ? '0' : '-1' ) . '">' . esc_html( $label ) . '</button>';
+			}
+			$html .= '</div>';
+			$html .= '<div class="pdp-info-panel" id="pdp-project-' . $index . '-panel-0"><div class="fit-body">';
 			if ( (int) $scenario['image'] > 0 ) {
 				$html .= '<figure>' . wp_get_attachment_image( (int) $scenario['image'], 'large', false, array( 'alt' => (string) $scenario['title'] ) ) . '</figure>';
 			}
@@ -885,19 +942,17 @@ final class CatalogShortcodes {
 			if ( '' !== (string) $scenario['fit'] ) {
 				$html .= '<div class="fit-prose pdp-reading">' . wp_kses_post( wpautop( (string) $scenario['fit'] ) ) . '</div>';
 			}
-			$html .= '</div></div>';
-			if ( array() !== (array) $scenario['checklist'] ) {
-				$html .= '<div class="fit-checkwrap"><span class="fit-label">' . esc_html__( 'Limits for the configuration', 'linker-commerce' ) . '</span><ul class="fit-check">';
-				foreach ( (array) $scenario['checklist'] as $check ) {
-					$html .= '<li>' . esc_html( (string) $check ) . '</li>';
-				}
-				$html .= '</ul></div>';
+			$html .= '</div></div></div>';
+			$html .= '<div class="pdp-info-panel" id="pdp-project-' . $index . '-panel-1"><div class="fit-checkwrap"><span class="fit-label">' . esc_html__( 'Limits for the configuration', 'linker-commerce' ) . '</span><ul class="fit-check">';
+			foreach ( (array) $scenario['checklist'] as $check ) {
+				$html .= '<li>' . esc_html( (string) $check ) . '</li>';
 			}
-			if ( '' !== (string) $scenario['verdict'] ) {
-				$html .= '<aside class="fit-verdict"><span class="fit-label">' . esc_html__( "Linker's read", 'linker-commerce' ) . '</span>'
-					. '<p>' . esc_html( (string) $scenario['verdict'] ) . '</p></aside>';
-			}
+			$html .= '</ul></div></div>';
+			$html .= '<div class="pdp-info-panel" id="pdp-project-' . $index . '-panel-2"><aside class="fit-verdict"><span class="fit-label">' . esc_html__( "Linker's read", 'linker-commerce' ) . '</span>'
+				. '<p>' . esc_html( (string) $scenario['verdict'] ) . '</p></aside></div>';
 			$html .= '</div>';
+			$html .= '</div>';
+			++$index;
 		}
 		return $html;
 	}
@@ -1089,6 +1144,9 @@ final class CatalogShortcodes {
 			$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 		}
 		$html .= ' src="' . esc_url( (string) $src[0] ) . '"';
+		if ( ! isset( $attributes['width'] ) && (int) $src[1] > 0 ) {
+			$html .= ' width="' . (int) $src[1] . '" height="' . (int) $src[2] . '"';
+		}
 		if ( \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
 		}

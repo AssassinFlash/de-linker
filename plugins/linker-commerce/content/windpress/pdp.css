@@ -400,10 +400,8 @@ body:has(#tv-storefront-pdp) {
 }
 
 #tv-storefront-pdp .pdp-project-check summary {
-	display: flex;
-	align-items: center;
-	min-height: 44px;
-	padding: 10px 16px;
+	display: list-item;
+	padding: 12px 16px;
 	cursor: pointer;
 	list-style: none;
 }
@@ -413,9 +411,11 @@ body:has(#tv-storefront-pdp) {
 }
 
 #tv-storefront-pdp .pdp-project-check summary h2 {
+	width: 100%;
 	margin: 0;
-	font-size: 14px;
+	font-size: 15px;
 	font-weight: 600;
+	line-height: 1.15;
 }
 
 #tv-storefront-pdp .pdp-project-check__body {
@@ -591,6 +591,11 @@ body:has(#tv-storefront-pdp) {
 
 #tv-storefront-pdp .pdp-benefit:first-child > svg {
 	color: #fff;
+}
+
+/* Feature sections */
+#tv-storefront-pdp .pdp-feature-copy .pdp-feature-body {
+	margin-top: 12px;
 }
 
 /* Disclosure rows */
@@ -828,7 +833,7 @@ body:has(#tv-storefront-pdp) {
 #tv-storefront-pdp #downloads.pdp-block {
 	display: grid;
 	grid-template-columns: repeat(2, 670px);
-	column-gap: 24px;
+	gap: 20px;
 }
 
 #tv-storefront-pdp #downloads > * {
@@ -844,7 +849,7 @@ body:has(#tv-storefront-pdp) {
 	align-items: center;
 	gap: 12px;
 	width: 100%;
-	margin-bottom: 12px;
+	margin: 0;
 	padding: 20px;
 	border: 1px solid var(--pdp-line);
 	border-radius: 18px;
@@ -866,13 +871,12 @@ body:has(#tv-storefront-pdp) {
 }
 
 #tv-storefront-pdp .pdp-doc .grow {
-	display: flex;
-	flex-direction: column;
-	gap: 1px;
+	display: block;
 	flex: 1;
 	min-width: 0;
 	font-size: 14px;
 	font-weight: 500;
+	line-height: 21px;
 }
 
 #tv-storefront-pdp .pdp-doc-meta {
@@ -880,6 +884,7 @@ body:has(#tv-storefront-pdp) {
 	color: var(--pdp-muted);
 	font-size: 12px;
 	font-weight: 400;
+	line-height: 18px;
 }
 
 /* FAQ */
@@ -912,18 +917,20 @@ body:has(#tv-storefront-pdp) {
 }
 
 #tv-storefront-pdp .pdp-pairing img {
-	grid-row: span 2;
+	grid-row: 1 / 5;
+	align-self: start;
 	width: 88px;
-	height: 88px;
+	height: 100px;
+	padding: 12px;
 	object-fit: contain;
 	border-radius: 12px;
-	background: var(--pdp-panel);
+	background: var(--pdp-soft);
 }
 
 #tv-storefront-pdp .pdp-pairing-copy {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: 4px;
 	min-width: 0;
 }
 
@@ -940,8 +947,14 @@ body:has(#tv-storefront-pdp) {
 }
 
 #tv-storefront-pdp .pdp-pairing-chips .pdp-doc-meta {
+	display: flex;
+	align-items: center;
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: var(--pdp-soft);
 	color: var(--pdp-muted);
 	font-size: 11px;
+	line-height: 16px;
 }
 
 #tv-storefront-pdp .pdp-pairing-footnote {

@@ -3066,3 +3066,19 @@ msgid ""
 msgstr ""
 "Paketpreis für einen lieferfähigen Artikel innerhalb Deutschlands: %s bei "
 "Absenden. Fracht für mehrere Artikel wird gesondert bestätigt."
+
+#: plugins/linker-commerce/includes/Presentation/CatalogShortcodes.php
+msgid "Project information"
+msgstr "Projektinformationen"
+
+#: plugins/linker-commerce/includes/Presentation/CatalogShortcodes.php
+msgid "Project"
+msgstr "Projekt"
+
+#: plugins/linker-commerce/includes/Presentation/CatalogShortcodes.php
+msgid "Checks"
+msgstr "Prüfpunkte"
+
+#: plugins/linker-commerce/includes/Presentation/CatalogShortcodes.php
+msgid "Linker view"
+msgstr "Linker-Einschätzung"

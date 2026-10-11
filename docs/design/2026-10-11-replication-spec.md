@@ -234,6 +234,34 @@ header partial already serves; `#wp-custom-css` is absent, `--proto-accent`
 count 3 = live) and the ETA documents (`Multilingual` instead of `MUL`, 13
 cards = live's 13).
 
+**Round-2 review items, repaired (2026-10-11, measured with
+`.scratch/t16-closure/r2-facts.mjs` and `/tmp/{pair,detail,panel,deck,rows}-probe.mjs`):**
+the pairing card (image chip 88×100 with 12px padding on `#f0f4ef`, the status
+chip a soft pill `2px 8px` radius 999 at 11px, the image spanning four grid rows
+exactly as the live card does — card 280×229.2 and the same four row tracks);
+the ETA documents (`Multilingual` instead of `MUL`, 13 cards with live's exact
+meta strings in order); the thumbnails (the live attribute set: `sizes="72px"`,
+width/height, empty alt, the 300-px candidate decoded rather than the original);
+the project entry (a `list-item` summary at `12px 16px`, a full-width 15px/1.15
+headline — row 41.3px = live); the documents block (one 20px gap, the copy a
+block, meta line-height 18px — card 85px = live); the catalogue card's fact rows
+now come from `Materials::card_facts()` (the card's own per-type order, measured
+from the live cards: inverter AC power / phase / MPPT / efficiency, battery
+module usable energy / chemistry / ingress protection / system energy range,
+cabinet usable energy / nominal voltage / chemistry / ingress protection, the
+meter-and-accessory families communication / ingress protection / weight /
+dimensions); the scenario blocks render as the live page's project deck
+(`.pdp-info-deck.pdp-project-deck.pdp-all-panels`, a hidden three-tab strip
+Project/Checks/Linker view, one panel per part) and the section opens only for a
+scenario that has both an image and a checklist; the feature cards split by
+image — the ones with an image render as `.pdp-feature` sections (live's
+markup), the ones without stay disclosure rows. Deck counts on the battery, the
+ETA, the BAT-AC cabinet and the SAJ now equal the live page's (2/10/5/11/25,
+2/10/5/11/25, 3/10/3/12, 2/9/9 in tablist/tab/disclosure order where measured).
+The WindPress compile driver (`tools/windpress-compile.mjs`) now dismisses the
+review prompt whose fixed notification viewport intercepted the Generate click;
+`just windpress-compile t16` completed on the first run afterwards (28.3s).
+
 **Further measured gaps (2026-10-11, `.scratch/t16-closure/review-facts.mjs`
 and `/tmp/deck-probe.mjs`, `/tmp/rows-probe.mjs`):** on the pages reviewed the
 battery (EN/DE, 1440/390) and the ETA (EN/DE, 1440/390) match live's deck

@@ -51,11 +51,12 @@ if ( ! function_exists( 'linker_commerce_pdp_has_pairings' ) ) {
 
 if ( ! function_exists( 'linker_commerce_pdp_has_scenes' ) ) {
 	/**
-	 * Whether the product carries application scenarios with a scene image.
-	 * Measured on the live pages 2026-10-11: a scenario without an image does
-	 * not open the section (the battery and the ETA inverter have one scenario
-	 * each, no image, and no `#fit` block; the BAT-AC cabinet's scenario has
-	 * one and the section renders).
+	 * Whether the product carries an application scenario the live page opens
+	 * the section for. Measured on the live pages 2026-10-11: the section
+	 * needs a scene image and a checklist — the battery and the ETA inverter
+	 * carry neither, the SAJ transfer switch carries an image but no checklist
+	 * (live renders no `#fit` block), while the BAT-AC cabinet and the
+	 * ETA/ETR inverters carry both and the section renders.
 	 */
 	function linker_commerce_pdp_has_scenes(): bool {
 		$id = linker_commerce_pdp_product_id();
@@ -63,7 +64,7 @@ if ( ! function_exists( 'linker_commerce_pdp_has_scenes' ) ) {
 			return false;
 		}
 		foreach ( ( new ProductView() )->scenarios( $id ) as $scenario ) {
-			if ( (int) $scenario['image'] > 0 ) {
+			if ( (int) $scenario['image'] > 0 && array() !== (array) $scenario['checklist'] ) {
 				return true;
 			}
 		}

@@ -1208,6 +1208,9 @@ final class Materials {
 			$file_key = '' !== $path ? \strtolower( \basename( $path ) ) : '';
 			$title    = \trim( (string) $title );
 			$language = \strtoupper( \trim( (string) $language ) );
+			if ( 'MUL' === $language ) {
+				$language = 'Multilingual';
+			}
 			if ( '' === $language || '' !== self::document_language_tag( $title ) ) {
 				$language = self::document_language( $title, $url );
 			}
@@ -1446,6 +1449,50 @@ final class Materials {
 				'label' => (string) $specs[ $key ]['label'],
 				'value' => self::de_number( (string) $specs[ $key ]['value'] ),
 				'icon'  => (string) ( $icons[ $key ] ?? 'power' ),
+			);
+			if ( count( $out ) >= $limit ) {
+				break;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The catalogue card's fact rows: the registry's figures in the card's own
+	 * order (measured on the live catalogue 2026-10-11: inverters read AC
+	 * power / phase / MPPT / efficiency, battery modules usable energy /
+	 * chemistry / ingress protection / system energy range, cabinets usable
+	 * energy / nominal voltage / chemistry / ingress protection, the
+	 * meter-and-accessory families communication / ingress protection /
+	 * weight / dimensions). Availability skips a missing row, so the count
+	 * follows the data.
+	 *
+	 * @param WC_Product $product The product.
+	 * @param int        $limit   How many rows the card holds.
+	 * @return list<array{key: string, label: string, value: string}>
+	 */
+	public static function card_facts( WC_Product $product, int $limit = 4 ): array {
+		$order = array(
+			'inverter'  => array( 'ac_power', 'phase', 'mppt', 'efficiency', 'nom_voltage' ),
+			'battery'   => array( 'usable_kwh', 'chemistry', 'ip', 'system_range', 'nominal_kwh' ),
+			'system'    => array( 'usable_kwh', 'nom_voltage', 'chemistry', 'ip' ),
+			'meter'     => array( 'interface', 'ip', 'weight', 'dimensions' ),
+			'ct'        => array( 'interface', 'ip', 'weight', 'dimensions' ),
+			'ems'       => array( 'interface', 'ip', 'weight', 'dimensions' ),
+			'accessory' => array( 'interface', 'ip', 'weight', 'dimensions' ),
+			'other'     => array( 'interface', 'ip', 'weight', 'dimensions' ),
+		);
+		$kind  = self::contract_type( (string) self::identity( $product )['kind'] );
+		$specs = self::specs( $product );
+		$out   = array();
+		foreach ( $order[ $kind ] ?? $order['other'] as $key ) {
+			if ( ! isset( $specs[ $key ] ) ) {
+				continue;
+			}
+			$out[] = array(
+				'key'   => (string) $key,
+				'label' => (string) $specs[ $key ]['label'],
+				'value' => self::de_number( (string) $specs[ $key ]['value'] ),
 			);
 			if ( count( $out ) >= $limit ) {
 				break;
