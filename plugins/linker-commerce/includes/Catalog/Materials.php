@@ -1209,7 +1209,7 @@ final class Materials {
 			$title    = \trim( (string) $title );
 			$language = \strtoupper( \trim( (string) $language ) );
 			if ( 'MUL' === $language ) {
-				$language = 'Multilingual';
+				$language = __( 'Multilingual', 'linker-commerce' );
 			}
 			if ( '' === $language || '' !== self::document_language_tag( $title ) ) {
 				$language = self::document_language( $title, $url );
@@ -1360,7 +1360,7 @@ final class Materials {
 		if ( ! \preg_match( '/[\[(]\s*(DE|EN|ES|IT|PT|multilingual|mehrsprachig)\s*[\])]/i', $title, $m ) ) {
 			return '';
 		}
-		return \strlen( $m[1] ) > 2 ? 'Multilingual' : \strtoupper( $m[1] );
+		return \strlen( $m[1] ) > 2 ? __( 'Multilingual', 'linker-commerce' ) : \strtoupper( $m[1] );
 	}
 
 	/**
@@ -1521,11 +1521,12 @@ final class Materials {
 	 */
 	public static function document_kind_label( string $kind ): string {
 		$labels = array(
-			'datasheet'     => 'Datasheet',
-			'manual'        => 'Manual',
-			'warranty'      => 'Warranty',
-			'certificate'   => 'Certificate',
-			'compatibility' => 'Compatibility list',
+			'datasheet'     => __( 'Datasheet', 'linker-commerce' ),
+			'manual'        => __( 'Manual', 'linker-commerce' ),
+			'warranty'      => __( 'Warranty', 'linker-commerce' ),
+			'certificate'   => __( 'Certificate', 'linker-commerce' ),
+			'compatibility' => __( 'Compatibility list', 'linker-commerce' ),
+			'document'      => __( 'Document', 'linker-commerce' ),
 		);
 		return $labels[ $kind ] ?? ( '' !== $kind ? ucfirst( $kind ) : '' );
 	}

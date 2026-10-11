@@ -346,7 +346,7 @@ msgstr "Gespeicherte Lösungen"
 #: includes/Account/Menu.php:49 includes/Account/Menu.php:84
 #: includes/Admin/DocumentsMetaBox.php:52
 msgid "Documents"
-msgstr "Unterlagen"
+msgstr "Dokumente"
 
 #: includes/Account/Menu.php:50 includes/Account/Menu.php:86
 #: includes/Contact/Form.php:100 templates/emails/linker-new-customer.php:23
@@ -1115,12 +1115,6 @@ msgstr ""
 "Mitarbeitenden in der Anfrage aus. Immer aktiv: Nur so lässt sich eine "
 "Anfrage senden."
 
-#: includes/Inquiry/Statuses.php:45 includes/Inquiry/Statuses.php:80
-#: includes/Inquiry/Statuses.php:84
-msgctxt "Inquiry status"
-msgid "Inquiry received"
-msgstr "Anfrage eingegangen"
-
 #. translators: %s: number of inquiries.
 #: includes/Inquiry/Statuses.php:51
 #, php-format
@@ -1423,10 +1417,6 @@ msgstr "Proforma ausstellen"
 #: includes/Proforma/AdminBox.php:132
 msgid "Proforma"
 msgstr "Proforma"
-
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:41
-msgid "Proforma invoice issued"
-msgstr "Proformarechnung ausgestellt"
 
 #: includes/Proforma/Emails/ProformaIssuedEmail.php:42
 msgid ""
@@ -2846,13 +2836,6 @@ msgstr "Artikelnummer:"
 msgid "Ask about this product"
 msgstr "Produkt anfragen"
 
-#: templates/storefront-single-product.php:138
-#: templates/storefront-single-product.php:147
-#: templates/storefront-single-product.php:226
-msgctxt "product attachments"
-msgid "Documents"
-msgstr "Dokumente"
-
 #: templates/storefront-single-product.php:144
 msgid "Product sections"
 msgstr "Produktbereiche"
@@ -3082,3 +3065,7 @@ msgstr "Prüfpunkte"
 #: plugins/linker-commerce/includes/Presentation/CatalogShortcodes.php
 msgid "Linker view"
 msgstr "Linker-Einschätzung"
+
+#: plugins/linker-commerce/includes/Catalog/Materials.php
+msgid "Compatibility list"
+msgstr "Kompatibilitätsliste"

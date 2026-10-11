@@ -250,15 +250,15 @@ body:has(#tv-storefront-pdp) {
 
 #tv-storefront-pdp .pdp-spec-list dt {
 	color: var(--pdp-muted);
-	font-size: 13px;
-	line-height: 1.6;
+	font-size: 14px;
+	line-height: 1.5;
 }
 
 #tv-storefront-pdp .pdp-spec-list dd {
 	margin: 0 0 0 auto;
 	color: var(--pdp-ink);
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: 500;
 	text-align: right;
 }
 
@@ -641,6 +641,36 @@ body:has(#tv-storefront-pdp) {
 	line-height: 1.8;
 }
 
+/* Technical data — the summary column */
+#tv-storefront-pdp .pdp-stats-summary > .pdp-kicker {
+	margin: 12px 0 0;
+}
+
+#tv-storefront-pdp .pdp-stats-summary .pdp-stat-wrap {
+	margin-top: 0;
+}
+
+#tv-storefront-pdp .pdp-stats-context {
+	margin-top: 16px;
+}
+
+#tv-storefront-pdp .pdp-stats-context summary {
+	cursor: pointer;
+	color: var(--pdp-muted);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+#tv-storefront-pdp .pdp-stats-context .pdp-section-title {
+	margin: 12px 0 0;
+	font-size: 20px;
+	letter-spacing: -0.3px;
+}
+
+#tv-storefront-pdp .pdp-stats-context .pdp-reading {
+	margin-top: 12px;
+}
+
 /* Technical data */
 #tv-storefront-pdp .pdp-stats-layout {
 	display: grid;
@@ -726,7 +756,7 @@ body:has(#tv-storefront-pdp) {
 #tv-storefront-pdp .pdp-stat-row dd {
 	margin: 0;
 	color: var(--pdp-ink);
-	font-weight: 600;
+	font-weight: 500;
 	text-align: right;
 }
 
@@ -875,7 +905,7 @@ body:has(#tv-storefront-pdp) {
 	flex: 1;
 	min-width: 0;
 	font-size: 14px;
-	font-weight: 500;
+	font-weight: 400;
 	line-height: 21px;
 }
 

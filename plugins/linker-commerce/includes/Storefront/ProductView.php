@@ -76,6 +76,7 @@ final class ProductView {
 			'figures'      => $this->figures( $product_id ),
 			'features'     => $this->features( $product_id ),
 			'benefits'     => $this->benefits( $product_id ),
+			'stats_claim'  => $this->stats_claim( $product_id ),
 			'scenarios'    => $this->scenarios( $product_id ),
 			'downloads'    => $this->downloads( $product_id ),
 			'faqs'         => $this->faqs( $product_id ),
@@ -516,6 +517,36 @@ final class ProductView {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * The technical-data summary of the live page: the legacy `stats_claim`
+	 * branch (a kicker label, a headline and a reading body) that sits beside
+	 * the specification deck. array() when the product carries none.
+	 *
+	 * @param int $product_id The product.
+	 * @return array{label?: string, title?: string, body?: string, cards?: list<array{label: string, value: string}>}
+	 */
+	public function stats_claim( int $product_id ): array {
+		$claim = $this->legacy( $product_id, 'stats_claim' );
+		if ( ! isset( $claim['label'] ) && ! isset( $claim['title'] ) ) {
+			return array();
+		}
+		$cards = array();
+		foreach ( \is_array( $claim['cards'] ?? null ) ? $claim['cards'] : array() as $card ) {
+			if ( \is_array( $card ) && '' !== trim( (string) ( $card['label'] ?? '' ) ) ) {
+				$cards[] = array(
+					'label' => (string) $card['label'],
+					'value' => trim( (string) ( $card['value'] ?? '' ) ),
+				);
+			}
+		}
+		return array(
+			'label' => (string) ( $claim['label'] ?? '' ),
+			'title' => (string) ( $claim['title'] ?? '' ),
+			'body'  => (string) ( $claim['body'] ?? '' ),
+			'cards' => $cards,
+		);
 	}
 
 	/**

@@ -717,6 +717,11 @@ final class CatalogShortcodes {
 		}
 		$html = '<div class="pdp-thumbs">';
 		foreach ( $ids as $index => $id ) {
+			// No srcset on the thumbnail: measured 2026-10-11, the browser on
+			// this page resolves a srcset to its largest candidate whatever
+			// `sizes` says (the live page loads the 300px variant), so the src
+			// pins the file the live page displays — the same image, rendered
+			// at 58px.
 			$html .= '<button type="button" data-pdp-thumb data-src="' . esc_url( self::image_url( $id ) ) . '" data-caption=""'
 				. ' aria-label="' . esc_attr( sprintf( /* translators: %d: image number. */ __( 'Product image %d', 'linker-commerce' ), $index + 1 ) ) . '"'
 				. ' aria-pressed="' . ( 0 === $index ? 'true' : 'false' ) . '" class="pdp-thumb">'
@@ -724,11 +729,11 @@ final class CatalogShortcodes {
 					$id,
 					'medium',
 					array(
-						'class'    => 'attachment-medium size-medium',
-						'alt'      => '',
-						'sizes'    => '72px',
-						'decoding' => 'async',
-						'loading'  => 'lazy',
+						'class'     => 'attachment-medium size-medium',
+						'alt'       => '',
+						'sizes'     => '72px',
+						'decoding'  => 'async',
+						'no_srcset' => '1',
 					)
 				) . '</button>';
 		}
@@ -880,7 +885,7 @@ final class CatalogShortcodes {
 		if ( array() === $decks ) {
 			return '<p class="tv-empty-state">' . esc_html__( 'The specification table for this product is in preparation. Ask us for the datasheet.', 'linker-commerce' ) . '</p>';
 		}
-		$html .= '<div class="pdp-stats-layout"><div class="pdp-stats-summary"></div><div class="pdp-info-deck pdp-spec-deck">';
+		$html .= '<div class="pdp-stats-layout">' . $this->stats_summary( $view, $group ) . '<div class="pdp-info-deck pdp-spec-deck">';
 		$html .= '<div class="pdp-info-tabs" role="tablist" aria-label="' . esc_attr__( 'Specification group', 'linker-commerce' ) . '">';
 		foreach ( $decks as $index => $deck ) {
 			$html .= '<button type="button" id="pdp-spec-tab-' . $index . '" role="tab" aria-controls="pdp-spec-panel-' . $index . '" aria-selected="' . ( 0 === $index ? 'true' : 'false' ) . '" tabindex="' . ( 0 === $index ? '0' : '-1' ) . '">' . esc_html( $deck['title'] ) . '</button>';
@@ -892,6 +897,45 @@ final class CatalogShortcodes {
 				. '<div class="pdp-disclose-body pdp-reading">' . $deck['body'] . '</div></details></div>';
 		}
 		return $html . '</div></div>';
+	}
+
+	/**
+	 * The technical data's summary column: the live page's `.pdp-stats-summary`
+	 * — the claim's kicker, the highlighted specification rows as a stat wrap,
+	 * and the "About these specifications" context. Empty as the live page
+	 * leaves it when the product carries no claim and no highlighted rows.
+	 *
+	 * @param array<string, mixed>|null $view  The product's replica fields.
+	 * @param array<mixed>              $group The spec groups.
+	 */
+	private function stats_summary( ?array $view, array $group ): string {
+		$claim = \is_array( $view['stats_claim'] ?? null ) ? $view['stats_claim'] : array();
+		$rows  = \is_array( $claim['cards'] ?? null ) ? $claim['cards'] : array();
+		if ( array() === $claim && array() === $group ) {
+			return '<div class="pdp-stats-summary"></div>';
+		}
+		$html = '<div class="pdp-stats-summary">';
+		if ( '' !== (string) ( $claim['label'] ?? '' ) ) {
+			$html .= '<p class="pdp-kicker">' . esc_html( (string) $claim['label'] ) . '</p>';
+		}
+		if ( array() !== $rows ) {
+			$html .= '<dl class="pdp-stat-wrap">';
+			foreach ( $rows as $row ) {
+				$html .= '<div class="pdp-stat-row"><dt>' . esc_html( (string) $row['label'] ) . '</dt><dd>' . esc_html( (string) $row['value'] ) . '</dd></div>';
+			}
+			$html .= '</dl>';
+		}
+		if ( '' !== (string) ( $claim['title'] ?? '' ) || '' !== (string) ( $claim['body'] ?? '' ) ) {
+			$html .= '<details class="pdp-stats-context"><summary>' . esc_html__( 'About these specifications', 'linker-commerce' ) . '</summary>';
+			if ( '' !== (string) $claim['title'] ) {
+				$html .= '<h3 class="pdp-section-title">' . esc_html( (string) $claim['title'] ) . '</h3>';
+			}
+			if ( '' !== (string) $claim['body'] ) {
+				$html .= '<div class="pdp-reading pdp-muted">' . wp_kses_post( $claim['body'] ) . '</div>';
+			}
+			$html .= '</details>';
+		}
+		return $html . '</div>';
 	}
 
 	/**
@@ -1139,19 +1183,20 @@ final class CatalogShortcodes {
 		if ( ! \is_array( $src ) ) {
 			return '';
 		}
+		// WordPress's canonical attribute order (width, height, src, then the
+		// rest, srcset last): measured 2026-10-11, the browser picks a
+		// different srcset candidate when sizes/src sit in another order, so
+		// the markup keeps the order the live page carries.
 		$html = '<img';
-		foreach ( $attributes as $name => $value ) {
-			$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
-		}
-		$html .= ' src="' . esc_url( (string) $src[0] ) . '"';
 		if ( ! isset( $attributes['width'] ) && (int) $src[1] > 0 ) {
 			$html .= ' width="' . (int) $src[1] . '" height="' . (int) $src[2] . '"';
 		}
-		if ( \is_string( $srcset ) && '' !== $srcset ) {
-			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
+		$html .= ' src="' . esc_url( (string) $src[0] ) . '"';
+		foreach ( $attributes as $name => $value ) {
+			$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 		}
-		if ( \is_string( $sizes ) && '' !== $sizes ) {
-			$html .= ' sizes="' . esc_attr( $sizes ) . '"';
+		if ( ! isset( $attributes['no_srcset'] ) && \is_string( $srcset ) && '' !== $srcset ) {
+			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
 		}
 		return $html . ' />';
 	}
