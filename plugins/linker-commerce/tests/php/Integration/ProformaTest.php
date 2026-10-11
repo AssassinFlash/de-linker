@@ -142,6 +142,9 @@ final class ProformaTest extends IntegrationTestCase {
 			<<<'LINKER_SCRIPT'
 <?php
 define( 'WP_USE_THEMES', false );
+// The suite runs with 2048M (phpunit.integration.xml.dist): dompdf renders a
+// Proforma in memory. A proc_open child does not inherit that ini.
+ini_set( 'memory_limit', '2048M' );
 $_SERVER['HTTP_HOST']   = getenv( 'WP_HOST' );
 $_SERVER['REQUEST_URI'] = '/';
 require getenv( 'WP_ROOT' ) . '/wp-load.php';

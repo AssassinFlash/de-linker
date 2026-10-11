@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-10T13:21:17+00:00\n"
+"POT-Creation-Date: 2026-10-11T11:27:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -29,6 +29,34 @@ msgstr ""
 msgid "Linker Technology GmbH"
 msgstr ""
 
+#: includes/Abilities/CheckCompatibility.php:54
+msgid "Check inverter and battery compatibility"
+msgstr ""
+
+#: includes/Abilities/CheckCompatibility.php:55
+msgid "Returns the documented release of an inverter with a battery: released, released with an accessory, not released, or unknown when no file covers the pair."
+msgstr ""
+
+#: includes/Abilities/CheckCompatibility.php:62
+msgid "Inverter product ID."
+msgstr ""
+
+#: includes/Abilities/CheckCompatibility.php:67
+msgid "Battery product ID."
+msgstr ""
+
+#: includes/Abilities/CheckCompatibility.php:77
+msgid "Two product IDs: one inverter and one battery, in either order."
+msgstr ""
+
+#: includes/Abilities/CompareProducts.php:54
+msgid "Compare products"
+msgstr ""
+
+#: includes/Abilities/CompareProducts.php:55
+msgid "A table of two to four published products. Battery energy and inverter output are separate rows."
+msgstr ""
+
 #: includes/Abilities/GetCommerceVersion.php:36
 msgid "Get Linker Commerce version"
 msgstr ""
@@ -41,12 +69,156 @@ msgstr ""
 msgid "Version from the plugin header."
 msgstr ""
 
+#: includes/Abilities/GetProduct.php:40
+msgid "Get a product"
+msgstr ""
+
+#: includes/Abilities/GetProduct.php:41
+msgid "Returns one published product: facts, figures, attributes, documents and FAQ."
+msgstr ""
+
+#: includes/Abilities/GetProduct.php:48
+msgid "Product ID."
+msgstr ""
+
+#: includes/Abilities/GetProduct.php:69
+msgid "Selection facts of the product."
+msgstr ""
+
+#: includes/Abilities/GetProduct.php:73
+msgid "Cited figure entries as stored."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:33
+msgid "Hand off to the Linker team"
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:34
+msgid "Returns the team-mailbox sentence in English and German, and a mailto link that carries the conversation summary."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:40
+msgid "Short summary of the conversation for the team."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:50
+msgid "English sentence naming the team mailbox."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:54
+msgid "German sentence naming the team mailbox."
+msgstr ""
+
+#: includes/Abilities/HandoffTeam.php:58
+msgid "mailto URL with the summary in the body."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:38
+msgid "Inquiry ID."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:42
+msgid "Inquiry number as the customer sees it."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:46
+msgid "Status slug without the wc- prefix."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:50
+msgid "Status name in the page language."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:54
+msgid "Date created, GMT."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:58
+msgid "Amount as stored on the inquiry."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:62
+msgid "Proforma number when one has been issued."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:70
+msgid "List my inquiries"
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:71
+msgid "Returns this account's inquiries and their status. Requires a logged-in customer."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:33
+msgid "Whether this visitor sees the stored price."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:37
+msgid "Stored price when it is visible."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:41
+msgid "Whether the product is in stock. The site only ever says it is."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:45
+msgid "Whether the product is quoted per project."
+msgstr ""
+
 #: includes/Abilities/Registrar.php:42
 msgid "Linker"
 msgstr ""
 
 #: includes/Abilities/Registrar.php:43
 msgid "Products and inquiries of de-linker.com."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:42
+msgid "Chunk ID the answer may cite."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:46
+msgid "Hosted document URL."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:50
+msgid "Document title in the requested language."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:54
+msgid "1-based page of the chunk."
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:65
+msgid "Search hosted documents"
+msgstr ""
+
+#: includes/Abilities/SearchKnowledge.php:66
+msgid "Returns chunks from the hosted PDF index. Cite only the returned chunk IDs."
+msgstr ""
+
+#: includes/Abilities/SearchProducts.php:118
+msgid "Search products"
+msgstr ""
+
+#: includes/Abilities/SearchProducts.php:119
+msgid "Qualifies published products against selection facts, sorts them, and explains each match."
+msgstr ""
+
+#: includes/Abilities/SizeHint.php:42
+msgid "Open the Solution Configurator with these inputs"
+msgstr ""
+
+#: includes/Abilities/SizeHint.php:43
+msgid "Returns a short summary and the Solution Configurator URL with the given fields pre-filled."
+msgstr ""
+
+#: includes/Abilities/SizeHint.php:75
+msgid "What will be pre-filled on the configurator."
+msgstr ""
+
+#: includes/Abilities/SizeHint.php:79
+msgid "Solution Configurator URL with the fields as query arguments."
 msgstr ""
 
 #: includes/Account/ContactCard.php:43
@@ -365,6 +537,90 @@ msgstr ""
 msgid "Rated AC power the product data states in kVA; present only then."
 msgstr ""
 
+#: includes/Digest/DigestEmail.php:45
+#: includes/Digest/DigestEmail.php:81
+msgid "Daily digest"
+msgstr ""
+
+#: includes/Digest/DigestEmail.php:46
+msgid "Sent to the team mailbox, with blind copies, every morning at 9:00 (Berlin time)."
+msgstr ""
+
+#: includes/Digest/DigestEmail.php:74
+msgid "Daily digest, {date}"
+msgstr ""
+
+#: includes/Digest/FailedEmails.php:46
+msgid "Emails that could not be delivered"
+msgstr ""
+
+#. translators: 1: the recipients of the email, 2: the error of the last attempt.
+#: includes/Digest/FailedEmails.php:63
+#, php-format
+msgid "To: %1$s – Error: %2$s"
+msgstr ""
+
+#: includes/Digest/FailedEmails.php:76
+msgid "No email failed to send."
+msgstr ""
+
+#. translators: %d: number of hours.
+#: includes/Digest/Format.php:63
+#, php-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of days.
+#: includes/Digest/Format.php:67
+#, php-format
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Digest/InquiriesAwaitingProforma.php:52
+msgid "Inquiries waiting for a Proforma invoice"
+msgstr ""
+
+#: includes/Digest/InquiriesAwaitingProforma.php:83
+msgid "No inquiry is waiting for more than 24 hours."
+msgstr ""
+
+#. translators: 1: inquiry number, 2: customer's company.
+#: includes/Digest/InquiriesAwaitingProforma.php:98
+#: includes/Digest/ProformasAwaitingReply.php:103
+#, php-format
+msgid "Inquiry #%1$s – %2$s"
+msgstr ""
+
+#: includes/Digest/InquiriesAwaitingProforma.php:103
+#: includes/Digest/ProformasAwaitingReply.php:108
+#: templates/emails/linker-new-inquiry.php:33
+msgid "Open the inquiry"
+msgstr ""
+
+#. translators: 1: date, 2: time, 3: age.
+#: includes/Digest/InquiriesAwaitingProforma.php:106
+#, php-format
+msgid "Received on %1$s at %2$s (%3$s)"
+msgstr ""
+
+#: includes/Digest/ProformasAwaitingReply.php:55
+msgid "Proforma invoices without a reply"
+msgstr ""
+
+#: includes/Digest/ProformasAwaitingReply.php:89
+msgid "No Proforma invoice has waited more than 3 days for a reply."
+msgstr ""
+
+#. translators: 1: Proforma number, 2: date, 3: time, 4: age.
+#: includes/Digest/ProformasAwaitingReply.php:111
+#, php-format
+msgid "Proforma invoice %1$s issued on %2$s at %3$s (%4$s)"
+msgstr ""
+
 #: includes/Gating/DraftSummary.php:44
 msgid "Prices are shown after you log in. Then you can request a Proforma invoice for this solution draft."
 msgstr ""
@@ -551,56 +807,56 @@ msgstr ""
 msgid "Queued emails"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:50
+#: includes/Presentation/LoginGate.php:47
 msgid "Empty solution draft"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:51
+#: includes/Presentation/LoginGate.php:48
 msgid "Nothing to submit yet."
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:52
+#: includes/Presentation/LoginGate.php:49
 msgid "Your solution draft is empty. Add matched systems, then come back for your Proforma."
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:54
-#: includes/Presentation/LoginGate.php:66
+#: includes/Presentation/LoginGate.php:51
+#: includes/Presentation/LoginGate.php:63
 #: includes/Vocabulary/Terms.php:37
 msgid "Browse products"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:59
+#: includes/Presentation/LoginGate.php:56
 msgid "Proforma request sign-in"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:60
+#: includes/Presentation/LoginGate.php:57
 msgid "Get your Proforma"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:61
+#: includes/Presentation/LoginGate.php:58
 msgid "Sign in with your partner account, add matched systems, and your Proforma is one step away."
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:62
+#: includes/Presentation/LoginGate.php:59
 msgid "The Proforma request is reserved for Linker partner accounts. Register, add your systems, and return here — VAT and delivery are ours to handle."
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:64
+#: includes/Presentation/LoginGate.php:61
 msgid "Sign in or register"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:165
+#: includes/Presentation/Shortcodes.php:95
 msgid "Product questions"
 msgstr ""
 
 #. translators: 1: document title, 2: page number.
-#: includes/Presentation/Shortcodes.php:174
+#: includes/Presentation/Shortcodes.php:104
 #, php-format
 msgid "%1$s, p. %2$d"
 msgstr ""
 
 #. translators: %d: page number.
-#: includes/Presentation/Shortcodes.php:180
+#: includes/Presentation/Shortcodes.php:110
 #, php-format
 msgid "p. %d"
 msgstr ""
@@ -1367,10 +1623,6 @@ msgstr ""
 #: templates/emails/linker-new-inquiry.php:26
 #, php-format
 msgid "New inquiry %1$s from %2$s (%3$s)."
-msgstr ""
-
-#: templates/emails/linker-new-inquiry.php:33
-msgid "Open the inquiry"
 msgstr ""
 
 #. translators: 1: Proforma number, 2: inquiry number, 3: last day of validity. The sentence follows the salutation "Hello %s,".

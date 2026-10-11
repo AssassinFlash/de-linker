@@ -100,7 +100,7 @@ final class Plugin {
 	/**
 	 * The modules of the inquiry chain, with what they share.
 	 *
-	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module|Presentation\Module>
+	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module|Presentation\Module|Digest\Module>
 	 */
 	private function commerce_modules(): array {
 		$templates = plugin_dir_path( $this->file ) . 'templates/';
@@ -120,6 +120,7 @@ final class Plugin {
 			new Vocabulary\Module( new Vocabulary\Overrides( new Vocabulary\Terms() ), new Vocabulary\Labels(), new Vocabulary\LocaleFormat() ),
 			new Gating\Module( $prices, new Gating\DraftSummary( $state, $prices ), new Gating\StoreApiPrices( $state ), new Gating\CatalogSorting( $state ) ),
 			new Mail\Module( new Mail\Outbox( $jobs, new Mail\Throttle() ), $jobs, new Mail\EmailLocale(), new Mail\EmailPolicy() ),
+			new Digest\Module( $this->file, $jobs ),
 			new Registration\Module( $this->file, $options, new Registration\Fields( $vat ), new Registration\BillingVatField( $vat ), new Registration\AddressForm() ),
 			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), new Inquiry\Checkout(), new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
 			new Proforma\Module( $this->file, new Proforma\AdminBox( $issuer ) ),

@@ -30,6 +30,13 @@ final class JobStoreTest extends TestCase {
 	private array $meta = array();
 
 	/**
+	 * Post meta per job id, for tests with more than one job.
+	 *
+	 * @var array<int, array<string, mixed>>
+	 */
+	private array $meta_by_id = array();
+
+	/**
 	 * Job 7 is a queued email; post meta lives in $meta.
 	 */
 	public function setUp(): void {
@@ -46,7 +53,7 @@ final class JobStoreTest extends TestCase {
 				},
 			)
 		);
-		WP_Mock::userFunction( 'get_post_meta', array( 'return' => fn ( int $id, string $key ) => $this->meta[ $key ] ?? '' ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => fn ( int $id, string $key ) => $this->meta_by_id[ $id ][ $key ] ?? $this->meta[ $key ] ?? '' ) );
 		WP_Mock::userFunction( 'get_post_type', array( 'return' => static fn ( int $id ) => 7 === $id ? JobStore::POST_TYPE : false ) );
 	}
 
@@ -144,5 +151,92 @@ final class JobStoreTest extends TestCase {
 		( new JobStore() )->register_post_type();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The failed() reader brings back the failed posts: recipients, subject and
+	 * last error,
+	 * oldest first; a job whose stored message is unreadable stays out.
+	 */
+	public function test_failed_reads_the_queue(): void {
+		$first            = new \stdClass();
+		$first->ID        = 7;
+		$second           = new \stdClass();
+		$second->ID       = 9;
+		$unreadable       = new \stdClass();
+		$unreadable->ID   = 11;
+		$this->meta_by_id = array(
+			7  => array(
+				'_linker_mail_message' => json_encode(
+					array(
+						'to'      => array( 'sales@de-linker.com', 'copy@example.test' ),
+						'subject' => 'New inquiry #20 from Solarbau GmbH',
+						'body'    => '<p>…</p>',
+						'headers' => array(),
+					)
+				),
+				'_linker_mail_error'   => 'Could not instantiate mail function.',
+			),
+			9  => array(
+				'_linker_mail_message' => json_encode(
+					array(
+						'to'      => array( 'maria@example.test' ),
+						'subject' => 'Your Proforma invoice is ready',
+						'body'    => '<p>…</p>',
+						'headers' => array(),
+					)
+				),
+				'_linker_mail_error'   => 'SMTP Error: data not accepted.',
+			),
+			11 => array(
+				'_linker_mail_message' => 'not json',
+				'_linker_mail_error'   => 'nobody reads this',
+			),
+		);
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'times'  => 1,
+				'args'   => array(
+					array(
+						'post_type'   => JobStore::POST_TYPE,
+						'post_status' => JobStore::FAILED_STATUS,
+						'numberposts' => -1,
+						'orderby'     => 'date',
+						'order'       => 'ASC',
+					),
+				),
+				'return' => array( $first, $second, $unreadable ),
+			)
+		);
+
+		$failed = ( new JobStore() )->failed();
+
+		$this->assertSame(
+			array(
+				array(
+					'id'      => 7,
+					'to'      => array( 'sales@de-linker.com', 'copy@example.test' ),
+					'subject' => 'New inquiry #20 from Solarbau GmbH',
+					'error'   => 'Could not instantiate mail function.',
+				),
+				array(
+					'id'      => 9,
+					'to'      => array( 'maria@example.test' ),
+					'subject' => 'Your Proforma invoice is ready',
+					'error'   => 'SMTP Error: data not accepted.',
+				),
+			),
+			$failed
+		);
+	}
+
+	/**
+	 * An empty queue reads as no failed messages.
+	 */
+	public function test_failed_of_an_empty_queue(): void {
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
+
+		$this->assertSame( array(), ( new JobStore() )->failed() );
 	}
 }

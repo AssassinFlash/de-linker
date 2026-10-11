@@ -1,0 +1,60 @@
+<?php
+/**
+ * Hooks of the digest module.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Digest;
+
+use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Settings\Options;
+
+/**
+ * The daily digest: its cron schedule, its email in WooCommerce's list, and
+ * the task that composes the blocks and sends.
+ */
+final class Module {
+
+	/**
+	 * Sets up the module.
+	 *
+	 * @param string   $plugin_file Absolute path of the main plugin file.
+	 * @param JobStore $jobs        The mail queue, for the failed-emails block.
+	 */
+	public function __construct(
+		private readonly string $plugin_file,
+		private readonly JobStore $jobs
+	) {}
+
+	/**
+	 * Adds the module's hooks.
+	 */
+	public function register(): void {
+		add_action( Scheduler::HOOK, array( $this, 'run' ) );
+		add_action( 'init', array( new Scheduler(), 'ensure' ) );
+		add_filter( 'woocommerce_email_classes', array( $this, 'add_email' ) );
+	}
+
+	/**
+	 * Adds the digest to the emails WooCommerce shows under Settings → Emails.
+	 *
+	 * @param array<string, object> $emails Email objects by class.
+	 * @return array<string, object>
+	 */
+	public function add_email( array $emails ): array {
+		$emails[ DigestEmail::class ] = new DigestEmail( $this->plugin_file, new Options() );
+		return $emails;
+	}
+
+	/**
+	 * The scheduled task: one digest — empty or not — then the next 09:00
+	 * Berlin (docs/specs/74-daily-digest.md).
+	 */
+	public function run(): void {
+		( new DigestEmail( $this->plugin_file, new Options() ) )->send_report( ( new Blocks( $this->jobs ) )->all() );
+		( new Scheduler() )->reschedule();
+	}
+}

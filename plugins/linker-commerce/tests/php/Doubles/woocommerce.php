@@ -26,6 +26,9 @@ if ( ! class_exists( 'WC_Data' ) ) {
 	class WC_Customer extends WC_Data {}
 	class WC_Cart {}
 }
+if ( ! class_exists( 'WC_DateTime' ) ) {
+	class WC_DateTime extends \DateTimeImmutable {}
+}
 
 if ( ! class_exists( 'WC_Settings_API' ) ) {
 	abstract class WC_Settings_API {
