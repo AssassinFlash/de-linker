@@ -97,7 +97,7 @@ CSS 同步要求（issue 原文）：改名后**必须重跑像素门**，选择
 | `tests/php/Unit/Catalog/SelectionFactsLiveCatalogueTest.php:22,23` | 同上 | 同上 | t68 改相邻面 | — |
 | `tests/fixtures/load-live-products.php:7` "reproduces the catalogue" | "reproduces the products" | 同上 | 无 | B |
 | `tests/php/Support/MocksCatalogue.php:3` "Live-catalogue products" | "Live-product products" → "The live products" | 同上 | t66/t69 改本文件 | B |
-| `tests/php/Unit/Catalog/CompatibilityTest.php:68` "every tower takes the battery base article" | "…the battery base module…"（英文散文里的 article ≠ 商品，见 3.5/3.8） | 同上 | 无 | B |
+| `tests/php/Unit/Catalog/CompatibilityTest.php:68` "every tower takes the battery base article" | "…the battery base module…"（英文散文里 article = 货件，改词不改义；同一数据的德文侧见 2.8 豁免） | 同上 | 无 | B |
 
 ### 2.5 语言文件
 
@@ -198,7 +198,7 @@ CSS 同步要求（issue 原文）：改名后**必须重跑像素门**，选择
 
 | 名字 | 为什么不改 |
 |---|---|
-| `docs/research/2026-10-09/old-repo-live-catalogue-facts.md`（被注释引用：`tests/php/Unit/Catalog/SelectionFactsLiveCatalogueTest.php:23`、`tests/php/Unit/Abilities/SearchProductsTest.php:31`、`includes/Gating/CommerceState.php:24`、`includes/Account/InquiryList.php:27`、`src/linker_engine/...` 无） | 证据文档的**标题即文件名**，是线上现状/旧系统行为的记录，不是代码概念；改文件名会断掉跨文件引用。全树 grep 断言只覆盖自有代码/模板/样式（第 4 节），文档不在此列 |
+| `docs/research/2026-10-09/old-repo-live-catalogue-facts.md`（被注释引用：`tests/php/Unit/Catalog/SelectionFactsLiveCatalogueTest.php:23`、`tests/php/Unit/Abilities/SearchProductsTest.php:31`、`includes/Gating/CommerceState.php:24`、`includes/Account/InquiryList.php:27`） | 证据文档的**标题即文件名**，是线上现状/旧系统行为的记录，不是代码概念；改文件名会断掉跨文件引用。全树 grep 断言只覆盖自有代码/模板/样式（第 4 节），文档不在此列 |
 | `chint_dtsu666_catalog_en.pdf`（托管厂商文档） | `services/engine/tests/fixtures/feed.json:8345,8354,8363,8380,8396,8405,8414,8422,8430,8439,8447,8456,8464,8472,8480,8488,8496,8504,8512,8520,8521`（21 行）；三树外 `tools/migrate/8-engineering.json:4164,4167,7781,7782` | 是我们自己托管的厂商文档原文件名，是**文件事实**（citations 指向它），不是代码概念；改名要连带改媒体 URL 与所有引用，属另一件事 |
 | `tests/fixtures/live-products-2026-10-09.json` | 文件名已无概念词（正面例子，无需处理） |
 
