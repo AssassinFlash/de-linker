@@ -31,7 +31,7 @@
 | 账户区 /my-account/ | orders/inquiries、documents、quotes、projects、bulk-order、payment-methods、settings | Inquiries、Saved solutions、Company、Documents + ContactCard + Request again | includes/Account/*（9 文件） | quotes/projects/payment-methods 已裁定废弃（spec 11）；bulk-order 见 GAP-11（C 类默认） |
 | legal 4 页 | 快照携带 | 数据携带 | page-sitemap1.xml | — |
 | 站内 `?s=` 搜索结果页 | 旧 i18n 把搜索限定为文章 | WP core 行为保留但无限定（结果混入产品/页面） | 旧 class-linker-i18n-search.php:6–10 | **并入 GAP-1 → 票 A**（搜索框重建时一并定结果页范围） |
-| Product JSON-LD / CollectionPage / BreadcrumbList | 旧 public-schema.php（源自旧 #26 brand guard） | 新插件零输出；SEOPress Pro 留用但其 schema 输出未核 | 本轮 grep 证实 | **GAP-7 → #17：先核 SEOPress，缺则补输出** |
+| Product JSON-LD / CollectionPage / BreadcrumbList | 被删插件里的 public-schema.php（内容为上一轮的品牌输出修正） | 产品页的 `Product` 节点：留用 SEO 插件的模板库确实输出一个，但那条模板写死了 `brand`/`manufacturer` = "Linker"、`category` = "Energy storage system"，且无 sku/model/image/description/availability；今天线上真正输出的那个节点来自切换要删的插件（sku、厂商品牌、model、category、description、image、offers{url,availability}、无价格） | 2026-10-11 本地实例 curl 断言（关掉任一 SEO 插件即 1 → 0）；线上只读 GET 对照（证据 `docs/acceptance/2026-10-11/17/`） | **GAP-7 已决（#81）**：产品页 `Product` 节点改由 `linker-commerce` 输出（`Storefront\ProductSchema`，无价格 / Woo 原生库存 / 产品自己的品牌），SEO 插件模板库里那条 Product 模板随切换退役；CollectionPage 与 BreadcrumbList 仍由它输出 |
 
 ## 2. REST 路由面
 
@@ -147,7 +147,7 @@
 - **票 B（旧工具页处置）**：GAP-3/5 两条 301 + GAP-4 静态页。
 - **票 C（生产观测小件）**：GAP-16 健康告警最小件 + GAP-18 会话保留策略。
 - **#16 追加**：GAP-2 场景段渲染（产品页=复刻线上裁定）+ Storefront 删除后重跑全拆审计（已登记）。
-- **#17 追加**：GAP-6 重定向 304 条迁移；GAP-7 先核 SEOPress schema 再定补否；GAP-19 错误记录；i18n-mu-loader 卫生删除；守卫测试升级（TokensTest 改规范化哈希对照，拦 CSS 整体搬运——本轮两路审计共同发现它拦不住）。
+- **#17 追加**：GAP-6 重定向 304 条迁移；~~GAP-7 先核 SEOPress schema 再定补否~~（**2026-10-11 已决，#81**：核过——留用插件输出的是一条写死品牌的模板，不等价于线上今天那个节点，故产品页节点收回 `linker-commerce`，模板随切换退役）；GAP-19 错误记录；i18n-mu-loader 卫生删除；守卫测试升级（TokensTest 改规范化哈希对照，拦 CSS 整体搬运——本轮两路审计共同发现它拦不住）。
 
 ## 审计方法局限
 
