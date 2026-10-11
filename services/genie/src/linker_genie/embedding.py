@@ -369,9 +369,7 @@ class GeminiEmbedder:
         return self._embed([f"task: question answering | query: {text}"])[0]
 
 
-_OPENROUTER_FILE = Path(
-    "~/.config/terravolt-builder/openrouter.env"
-).expanduser()
+_OPENROUTER_FILE = Path("~/.config/terravolt-builder/openrouter.env").expanduser()
 
 
 def _load_openrouter_env() -> None:
@@ -398,11 +396,7 @@ def gemini_from_env() -> GeminiEmbedder | None:
     _load_openrouter_env()
     key = os.environ.get("OPENROUTER_API_KEY", "")
     base = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-    return (
-        GeminiEmbedder(key, base, model="google/gemini-embedding-2")
-        if key
-        else None
-    )
+    return GeminiEmbedder(key, base, model="google/gemini-embedding-2") if key else None
 
 
 MODELS = (*OPEN_MODELS, GEMINI)
