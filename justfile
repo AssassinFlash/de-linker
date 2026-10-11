@@ -74,6 +74,61 @@ serve name:
 wp name *args:
     PHP={{ php }} {{ linker_local }} wp "$@"
 
+# The mock ERP (ticket #69, docs/specs/69-stock.md): sets a fresh push key on
+# the instance, picks two stock-managed products with SKUs, and drives the
+# scripted push sequence (normal / out of stock / recovery) at
+# linker/v1/stock, asserting the visible chain: the catalogue's in-stock
+# badge, the in-stock-only listing and the solution draft gate. Needs the
+# instance up with the live snapshot (`just pull load <name> … --live-code`).
+# Re-runnable; it leaves the products in stock.
+[positional-arguments]
+mock-erp name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    name="$1"
+    port="$(awk -v name="$name" '$0 == "[" name "]" { seen = 1; next } seen && $1 == "port" { print $3; exit }' "$HOME/de-linker-local/instances.toml")"
+    if [ -z "$port" ]; then
+        echo "no instance '$name' in ~/de-linker-local/instances.toml: just up $name first" >&2
+        exit 1
+    fi
+    base="http://127.0.0.1:${port}"
+    if ! curl -fsS -o /dev/null --max-time 5 "$base/wp-json/"; then
+        echo "$base does not answer: just up $name first" >&2
+        exit 1
+    fi
+    admin="$(PHP={{ php }} {{ linker_local }} wp "$name" user list --role=administrator --field=user_login | tail -n 1)"
+    key="$(openssl rand -hex 32)"
+    PHP={{ php }} {{ linker_local }} wp "$name" linker-commerce stock-key --set="$key" --user="$admin"
+    payload="$(PHP={{ php }} {{ linker_local }} wp "$name" eval '
+        // Bind two subjects of one small product category: the ERP pushes
+        // quantities, and WooCommerce carries quantities only on products
+        // with managed stock (the endpoint answers not_stock_managed
+        // otherwise). Local instance, so the write is the mock world'"'"'s
+        // own. The category is the assertion'"'"'s catalogue page: at most
+        // sixteen products, so the archive shows them all on one page.
+        $best = null;
+        foreach ( get_terms( array( "taxonomy" => "product_cat", "hide_empty" => true ) ) as $term ) {
+            if ( is_wp_error( $term ) || (int) $term->count < 2 || (int) $term->count > 16 ) { continue; }
+            if ( null === $best || (int) $term->count < (int) $best->count ) { $best = $term; }
+        }
+        if ( null === $best ) { echo json_encode( array( "products" => array() ) ); return; }
+        $listing = is_string( get_term_link( $best ) ) ? get_term_link( $best ) : wc_get_page_permalink( "shop" );
+        $products = array();
+        foreach ( get_posts( array( "post_type" => "product", "post_status" => "publish", "posts_per_page" => 2, "fields" => "ids", "orderby" => "menu_order title", "order" => "ASC", "tax_query" => array( array( "taxonomy" => "product_cat", "field" => "term_id", "terms" => $best->term_id ) ) ) ) as $product_id ) {
+            $product = wc_get_product( $product_id );
+            $sku = $product ? $product->get_sku() : "";
+            if ( "" === $sku ) { continue; }
+            if ( ! $product->managing_stock() ) {
+                $product->set_manage_stock( true );
+                $product->set_stock_quantity( 7 );
+                $product->save();
+            }
+            $products[ $sku ] = array( "id" => $product->get_id(), "url" => $product->get_permalink(), "listing" => $listing );
+        }
+        echo json_encode( array( "products" => $products ) );
+    ')"
+    python3 "{{ justfile_directory() }}/tools/mock_erp.py" --base "$base" --key "$key" --payload "$payload"
+
 # docs/specs/10-knowledge-index.md; `just index --help` lists the options.
 # Build Genie's document index on this Mac: hosted PDFs, Docling, chunks, vectors, SQLite.
 [working-directory("services/genie")]

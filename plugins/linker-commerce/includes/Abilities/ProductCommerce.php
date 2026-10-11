@@ -15,7 +15,9 @@ use WC_Product;
 /**
  * The commerce object of search-products and get-product. Price visibility
  * is CommerceState, the one rule every surface reads (docs/specs/11-commerce.md).
- * Stock is only ever "in stock" to the customer (owner 2026-10-02).
+ * Stock is the product's own (the ERP pushes it through linker/v1/stock,
+ * ticket #69); the site says only the state, never a quantity (owner ruling
+ * 2026-10-02).
  */
 final class ProductCommerce {
 
@@ -38,7 +40,7 @@ final class ProductCommerce {
 				),
 				'in_stock'      => array(
 					'type'        => 'boolean',
-					'description' => __( 'Whether the product is in stock. The site only ever says it is.', 'linker-commerce' ),
+					'description' => __( 'Whether the product is in stock (the stock the ERP pushed).', 'linker-commerce' ),
 				),
 				'rfq_only'      => array(
 					'type'        => 'boolean',
@@ -67,7 +69,7 @@ final class ProductCommerce {
 		$visible  = $product instanceof WC_Product && $state->shows_price( $product );
 		$commerce = array(
 			'price_visible' => $visible,
-			'in_stock'      => true,
+			'in_stock'      => $product instanceof WC_Product && $product->is_in_stock(),
 			'rfq_only'      => $rfq,
 		);
 		if ( $visible ) {

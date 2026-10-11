@@ -346,11 +346,36 @@ final class CatalogFilters {
 	/**
 	 * The archive's products before the facets and before pagination: the
 	 * list the rail's counts describe, also when the page shows one slice.
+	 * Products WooCommerce hides from the catalogue (out of stock, ticket
+	 * #69's "only show in stock") are not in the list, so the rail's counts
+	 * and the facet filtering describe what the page can show.
 	 *
 	 * @return int[] The product IDs.
 	 */
 	public function archive_product_ids(): array {
-		$args   = array(
+		$tax_query = array();
+		$object    = get_queried_object();
+		if ( $object instanceof \WP_Term ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the queried category's products, one query per archive render.
+			$tax_query[] = array(
+				'taxonomy' => $object->taxonomy,
+				'field'    => 'term_id',
+				'terms'    => $object->term_id,
+			);
+		}
+		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
+			$outofstock = wc_get_product_visibility_term_ids()['outofstock'] ?? 0;
+			if ( $outofstock ) {
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the same exclusion WooCommerce's own catalogue query applies.
+				$tax_query[] = array(
+					'taxonomy' => 'product_visibility',
+					'field'    => 'term_taxonomy_id',
+					'terms'    => array( (int) $outofstock ),
+					'operator' => 'NOT IN',
+				);
+			}
+		}
+		$args = array(
 			'post_type'      => 'product',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
@@ -358,16 +383,8 @@ final class CatalogFilters {
 			'orderby'        => 'menu_order title',
 			'order'          => 'ASC',
 		);
-		$object = get_queried_object();
-		if ( $object instanceof \WP_Term ) {
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the queried category's products, one query per archive render.
-			$args['tax_query'] = array(
-				array(
-					'taxonomy' => $object->taxonomy,
-					'field'    => 'term_id',
-					'terms'    => $object->term_id,
-				),
-			);
+		if ( array() !== $tax_query ) {
+			$args['tax_query'] = $tax_query; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- one query per archive render.
 		}
 		$ids = get_posts( $args );
 		return array_map( 'intval', $ids );
