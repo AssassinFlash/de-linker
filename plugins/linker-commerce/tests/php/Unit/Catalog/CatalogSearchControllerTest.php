@@ -76,7 +76,7 @@ final class CatalogSearchControllerTest extends TestCase {
 	}
 
 	/**
-	 * The answer holds one item per hit, in catalogue order.
+	 * The answer holds one item per hit, in shop order.
 	 */
 	public function test_answer_lists_the_hits(): void {
 		$this->plain_text();

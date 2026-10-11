@@ -49,7 +49,7 @@ final class CatalogSearchTest extends TestCase {
 	}
 
 	/**
-	 * The hits are the visible catalogue's, in catalogue order, at most $limit
+	 * The hits are the visible range's, in shop order, at most $limit
 	 * of them; a query shorter than two characters names nothing.
 	 */
 	public function test_matching_ids_walks_the_visible_catalogue(): void {

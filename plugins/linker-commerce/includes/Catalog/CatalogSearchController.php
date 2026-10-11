@@ -14,7 +14,7 @@ use WP_REST_Request;
 
 /**
  * GET /wp-json/linker/v1/catalog-search?q=<model or item number>&limit=<n>
- * answers the products of the catalogue whose name or SKU holds the query
+ * answers the products of the range whose name or SKU holds the query
  * (catalog-search, ticket #68): `{ "items": [{ id, title, sku, url, facts }] }`.
  *
  * It is the reader behind the catalogue's search box — the instant resolution
@@ -120,7 +120,7 @@ final class CatalogSearchController extends WP_REST_Controller {
 	 *
 	 * @param         WP_REST_Request $request Request with the validated `q` and `limit`.
 	 * @phpstan-param WP_REST_Request<array<string, mixed>> $request
-	 * @return        object A JSON object: the hits in catalogue order.
+	 * @return        object A JSON object: the hits in shop order.
 	 */
 	public function get_items( $request ): object {
 		$query = (string) $request->get_param( 'q' );
@@ -145,7 +145,7 @@ final class CatalogSearchController extends WP_REST_Controller {
 			$this->schema = array(
 				'$schema'     => 'http://json-schema.org/draft-04/schema#',
 				'title'       => 'catalog-search',
-				'description' => __( 'The products of the catalogue whose name or item number holds the query.', 'linker-commerce' ),
+				'description' => __( 'The products of the range whose name or item number holds the query.', 'linker-commerce' ),
 				'type'        => 'object',
 				'properties'  => array(
 					'query' => array(
@@ -153,7 +153,7 @@ final class CatalogSearchController extends WP_REST_Controller {
 						'type'        => 'string',
 					),
 					'items' => array(
-						'description' => __( 'The hits, in catalogue order.', 'linker-commerce' ),
+						'description' => __( 'The hits, in shop order.', 'linker-commerce' ),
 						'type'        => 'array',
 						'items'       => array(
 							'type'       => 'object',
