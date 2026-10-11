@@ -1357,7 +1357,7 @@ final class Materials {
 		if ( ! \preg_match( '/[\[(]\s*(DE|EN|ES|IT|PT|multilingual|mehrsprachig)\s*[\])]/i', $title, $m ) ) {
 			return '';
 		}
-		return \strlen( $m[1] ) > 2 ? 'MUL' : \strtoupper( $m[1] );
+		return \strlen( $m[1] ) > 2 ? 'Multilingual' : \strtoupper( $m[1] );
 	}
 
 	/**

@@ -212,6 +212,28 @@ into the cache. It deliberately overlaps the copied `storefront.css` on the
 `pdp-*` selectors so the measured values win; the copied files still carry the
 catalog and remain the open part of the replacement.
 
+**Round-1 review items, repaired (2026-10-11, measured live|t16 with
+`.scratch/t16-closure/review-facts.mjs`, `.scratch/t16-closure/verdict-probe.mjs`,
+`/tmp/detail-probe.mjs` and `/tmp/panel-probe.mjs`):** the layout's grid areas
+(the purchase column is row 1 only; the content spans all three), the gallery
+(the rounded soft box is the image: bg `#f0f4ef`, radius 26px; thumbnails fill
+their tiles 58×58/60×60 with `object-fit: contain`, the default tile border is
+1px transparent), the key figures (the live page hides `.pdp-app-stat-icon`,
+rows are flex 8px/16px), the disclosure rows of the tab deck (the deck's own
+summary is out of the flow at `details.pdp-tab-disclosure > summary`), the tab
+strip (active pill `#0c7f73`, 12px/500, 10px 8px), the content grid (668px ×
+668px, the two disclosure rows one per column), the benefit cards (13px, the
+first card's text `#d6e4d9`), the documents (grid `670px 670px`, card padding
+20px, height 85), the tab panel (the inner summary hidden, the stat wrap
+border-less at 15px/1.9), the page body (cream `#f7f7f1` through
+`body:has(#tv-storefront-pdp)`), the catalog card's compare checkbox (44×44,
+absolute 8/8, radius 50%, `aria-label="Compare: <name>"`), the archive/shop
+subtitle (the generic line in both languages, the live German wording), the
+tokens delivery (the presentation run now removes the Additional CSS copy the
+header partial already serves; `#wp-custom-css` is absent, `--proto-accent`
+count 3 = live) and the ETA documents (`Multilingual` instead of `MUL`, 13
+cards = live's 13).
+
 **Measured gaps still open (2026-10-11, paired captures in
 `.scratch/t16-closure/pairs/`, pixel comparison of the overlap):**
 

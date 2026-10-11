@@ -7,6 +7,10 @@
  * it from main.css; the compile ships it in the cache).
  */
 
+body:has(#tv-storefront-pdp) {
+	background: #f7f7f1;
+}
+
 #tv-storefront-pdp {
 	--pdp-ink: #15352f;
 	--pdp-muted: #596e67;
@@ -70,14 +74,21 @@
 #tv-storefront-pdp .pdp-layout {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-areas: "gallery gallery purchase" "content content content";
+	column-gap: 0;
 	row-gap: 44px;
 }
 
 #tv-storefront-pdp .pdp-gallery {
-	grid-column: span 2;
+	grid-area: gallery;
+	align-self: start;
 	display: grid;
 	grid-template-columns: 76px minmax(0, 1fr);
 	gap: 18px;
+}
+
+#tv-storefront-pdp .pdp-purchase {
+	grid-area: purchase;
 }
 
 #tv-storefront-pdp .pdp-gallery-pair {
@@ -91,9 +102,9 @@
 	width: 100%;
 	height: 640px;
 	padding: 0;
-	border: 1px solid var(--pdp-line);
-	border-radius: 20px;
-	background: #fff;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
 	cursor: zoom-in;
 }
 
@@ -108,7 +119,8 @@
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
-	border-radius: 20px;
+	border-radius: 26px;
+	background: var(--pdp-soft);
 }
 
 #tv-storefront-pdp .pdp-gallery-secondary {
@@ -123,38 +135,42 @@
 	gap: 12px;
 	width: 76px;
 	max-height: 640px;
+	margin-top: 0;
+	padding: 0;
 	overflow-y: auto;
 }
 
 #tv-storefront-pdp .pdp-thumb {
-	display: grid;
-	place-items: center;
+	display: block;
 	width: 72px;
 	height: 72px;
 	padding: 5px;
-	border: 2px solid var(--pdp-line);
+	border: 1px solid transparent;
 	border-radius: 16px;
 	background: #fff;
 	cursor: pointer;
 }
 
 #tv-storefront-pdp .pdp-thumb[aria-pressed="true"] {
-	border-color: var(--pdp-teal);
+	border: 2px solid var(--pdp-teal);
 }
 
 #tv-storefront-pdp .pdp-thumb img {
+	width: 100%;
+	height: 100%;
 	border-radius: 10px;
-	object-fit: cover;
+	object-fit: contain;
 }
 
 /* Purchase rail */
 #tv-storefront-pdp .pdp-purchase {
+	grid-area: purchase;
 	padding-left: 40px;
 }
 
 #tv-storefront-pdp .pdp-buy-inner {
 	position: sticky;
-	top: 24px;
+	top: 84px;
 	padding-bottom: 16px;
 }
 
@@ -220,12 +236,16 @@
 }
 
 #tv-storefront-pdp .pdp-spec-list > div {
-	display: grid;
-	grid-template-columns: 20px 1fr auto;
+	display: flex;
 	align-items: center;
-	gap: 10px;
-	padding: 10px 0;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 8px 0;
 	border-bottom: 1px solid var(--pdp-line);
+}
+
+#tv-storefront-pdp .pdp-spec-list .pdp-app-stat-icon {
+	display: none;
 }
 
 #tv-storefront-pdp .pdp-spec-list dt {
@@ -235,7 +255,7 @@
 }
 
 #tv-storefront-pdp .pdp-spec-list dd {
-	margin: 0;
+	margin: 0 0 0 auto;
 	color: var(--pdp-ink);
 	font-size: 14px;
 	font-weight: 600;
@@ -436,7 +456,18 @@
 
 /* Sections */
 #tv-storefront-pdp .pdp-content {
+	grid-area: content;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: 24px;
+}
+
+#tv-storefront-pdp .pdp-content > * {
 	grid-column: 1 / -1;
+}
+
+#tv-storefront-pdp .pdp-content > .pdp-disclose {
+	grid-column: auto;
 }
 
 #tv-storefront-pdp .pdp-section-nav {
@@ -544,13 +575,18 @@
 
 #tv-storefront-pdp .pdp-benefit p {
 	margin: 0;
-	font-size: 15px;
-	line-height: 1.6;
+	color: var(--pdp-muted);
+	font-size: 13px;
+	line-height: 1.9;
 }
 
 #tv-storefront-pdp .pdp-benefit:first-child {
 	background: var(--pdp-teal);
 	color: #fff;
+}
+
+#tv-storefront-pdp .pdp-benefit:first-child p {
+	color: #d6e4d9;
 }
 
 #tv-storefront-pdp .pdp-benefit:first-child > svg {
@@ -620,19 +656,20 @@
 #tv-storefront-pdp .pdp-info-tabs [role="tab"] {
 	flex: 1;
 	min-height: 48px;
-	padding: 10px 12px;
+	padding: 10px 8px;
 	border: 0;
 	border-radius: 12px;
 	background: transparent;
 	color: var(--pdp-muted);
 	font-family: inherit;
-	font-size: 13px;
-	font-weight: 600;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.4;
 	cursor: pointer;
 }
 
 #tv-storefront-pdp .pdp-info-tabs [role="tab"][aria-selected="true"] {
-	background: var(--pdp-ink);
+	background: var(--pdp-teal);
 	color: #fff;
 }
 
@@ -641,23 +678,26 @@
 }
 
 #tv-storefront-pdp .pdp-info-panel .pdp-disclose {
-	margin: 16px 0 0;
+	margin: 0;
 }
 
-#tv-storefront-pdp .pdp-tab-disclosure summary {
+#tv-storefront-pdp details.pdp-tab-disclosure > summary {
 	display: none;
 }
 
-#tv-storefront-pdp .pdp-tab-disclosure .pdp-disclose-body {
+#tv-storefront-pdp details.pdp-tab-disclosure > .pdp-disclose-body {
 	padding: 0;
 }
 
 #tv-storefront-pdp .pdp-stat-wrap {
 	margin: 0;
-	border: 1px solid var(--pdp-line);
+	border: 0;
 	border-radius: 16px;
 	background: #fff;
 	overflow: hidden;
+	color: var(--pdp-muted);
+	font-size: 15px;
+	line-height: 1.9;
 }
 
 #tv-storefront-pdp .pdp-stat-row {
@@ -688,8 +728,9 @@
 #tv-storefront-pdp .pdp-stat-row dd .pdp-muted {
 	margin-top: 2px;
 	color: var(--pdp-muted);
-	font-size: 12px;
+	font-size: 15px;
 	font-weight: 400;
+	line-height: 1.9;
 	text-align: right;
 }
 
@@ -784,11 +825,25 @@
 }
 
 /* Documents */
+#tv-storefront-pdp #downloads.pdp-block {
+	display: grid;
+	grid-template-columns: repeat(2, 670px);
+	column-gap: 24px;
+}
+
+#tv-storefront-pdp #downloads > * {
+	grid-column: 1 / -1;
+}
+
+#tv-storefront-pdp #downloads > .pdp-doc {
+	grid-column: auto;
+}
+
 #tv-storefront-pdp .pdp-doc {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	width: min(670px, 100%);
+	width: 100%;
 	margin-bottom: 12px;
 	padding: 20px;
 	border: 1px solid var(--pdp-line);
@@ -813,7 +868,7 @@
 #tv-storefront-pdp .pdp-doc .grow {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 1px;
 	flex: 1;
 	min-width: 0;
 	font-size: 14px;
@@ -942,11 +997,18 @@
 @media (max-width: 1100px) {
 	#tv-storefront-pdp .pdp-layout {
 		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas: "gallery" "purchase" "content";
 		row-gap: 24px;
 	}
 
-	#tv-storefront-pdp .pdp-gallery {
-		grid-column: auto;
+	#tv-storefront-pdp .pdp-content,
+	#tv-storefront-pdp #downloads.pdp-block {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	#tv-storefront-pdp .pdp-content > .pdp-disclose,
+	#tv-storefront-pdp #downloads > .pdp-doc {
+		grid-column: 1 / -1;
 	}
 
 	#tv-storefront-pdp .pdp-purchase {
@@ -974,6 +1036,7 @@
 	}
 
 	#tv-storefront-pdp .pdp-thumb {
+		display: block;
 		width: 60px;
 		height: 60px;
 		padding: 4px;

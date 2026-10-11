@@ -89,7 +89,9 @@ final class CatalogShortcodes {
 		$html .= '<div class="wb-metarow container"><span class="wbm-l"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Home', 'linker-commerce' ) . '</a> / <a href="' . esc_url( $shop_url ) . '">' . esc_html__( 'Products', 'linker-commerce' ) . '</a>' . ( $is_term ? ' / <b>' . esc_html( $queried->name ) . '</b>' : ' / <b>' . esc_html__( 'Products', 'linker-commerce' ) . '</b>' ) . '</span></div>';
 		$html .= '<div class="wb-bar container">';
 		$html .= '<div class="wb-copy"><h1 class="wb-title">' . esc_html( $is_term ? $queried->name : __( 'Products', 'linker-commerce' ) ) . '</h1>';
-		$html .= '<p class="wb-intro">' . esc_html( $is_term ? term_description( (int) $queried->term_id ) : __( 'Search products or filter by category and project requirements.', 'linker-commerce' ) ) . '</p></div>';
+		// The live shop and archives both carry the generic subtitle; the
+		// category's own description is not printed on the page.
+		$html .= '<p class="wb-intro">' . esc_html__( 'Search products or filter by category and project requirements.', 'linker-commerce' ) . '</p></div>';
 		$html .= '<form class="wb-search" method="get" action="' . esc_url( $action ) . '" role="search">';
 		$html .= '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
 		$html .= '<input id="search-box" name="q" type="search" placeholder="' . esc_attr__( 'Search model or item number', 'linker-commerce' ) . '" value="' . esc_attr( $q ) . '" aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">';
@@ -319,7 +321,10 @@ final class CatalogShortcodes {
 		$url   = (string) get_permalink( $product_id );
 
 		$html  = '<article class="sf-card product-card" data-linker-product-card ' . implode( ' ', $data ) . '>';
-		$html .= '<div class="sf-card-media card-media"><a data-card-media-link href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $card['title'] ) . '">';
+		$html .= '<div class="sf-card-media card-media">';
+		$html .= '<button type="button" class="card-compare-checkbox" data-compare-article="' . esc_attr( (string) $product_id ) . '" aria-pressed="false" aria-label="'
+			. esc_attr( sprintf( /* translators: %s: product name. */ __( 'Compare: %s', 'linker-commerce' ), (string) $card['title'] ) ) . '">+</button>';
+		$html .= '<a data-card-media-link href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $card['title'] ) . '">';
 		foreach ( \array_slice( (array) $card['gallery'], 0, 1 ) as $image_id ) {
 			$html .= wp_get_attachment_image(
 				(int) $image_id,

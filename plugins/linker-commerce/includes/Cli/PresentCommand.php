@@ -94,8 +94,8 @@ final class PresentCommand {
 		WP_CLI::log( sprintf( 'templates: created %d, updated %d, unchanged %d', $report['created'], $report['updated'], $report['unchanged'] ) );
 		$this->backfill_backup( $report['created_ids'] );
 
-		( new Tokens() )->install();
-		WP_CLI::log( 'tokens: Additional CSS' );
+		$removed = ( new Tokens() )->uninstall();
+		WP_CLI::log( $removed ? 'tokens: removed the Additional CSS copy (the header partial serves tokens.css)' : 'tokens: no Additional CSS copy to remove' );
 
 		( new WindPressVolume() )->install();
 		WP_CLI::log( 'windpress volume: storefront styles' );
