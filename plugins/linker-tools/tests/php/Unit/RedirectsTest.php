@@ -53,6 +53,13 @@ final class RedirectsTest extends TestCase {
 	private string $checkout = '/proforma-request/';
 
 	/**
+	 * Where the shop page itself answers (WooCommerce's own address).
+	 *
+	 * @var string
+	 */
+	private string $shop = '/products/';
+
+	/**
 	 * The product category terms that exist, by slug.
 	 *
 	 * @var array<string, WP_Term>
@@ -110,6 +117,13 @@ final class RedirectsTest extends TestCase {
 	private array $post_ids = array();
 
 	/**
+	 * A post's own address, get_permalink's answer, by post id.
+	 *
+	 * @var array<int, string>
+	 */
+	private array $permalinks = array();
+
+	/**
 	 * A post's twin id, by post id and language.
 	 *
 	 * @var array<int, array<string, int>>
@@ -136,7 +150,9 @@ final class RedirectsTest extends TestCase {
 				'category_rewrite_slug' => 'product-category',
 			)
 		);
-		WP_Mock::userFunction( 'wc_get_page_permalink' )->andReturn( self::HOME . '/products/' );
+		WP_Mock::userFunction( 'wc_get_page_permalink' )->andReturnUsing(
+			fn(): string => self::HOME . $this->shop
+		);
 		WP_Mock::userFunction( 'wc_get_checkout_url' )->andReturnUsing(
 			fn(): string => self::HOME . $this->checkout
 		);
@@ -177,6 +193,9 @@ final class RedirectsTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'url_to_postid' )->andReturnUsing(
 			fn( string $url ): int => $this->post_ids[ $url ] ?? 0
+		);
+		WP_Mock::userFunction( 'get_permalink' )->andReturnUsing(
+			fn( int $post_id ) => $this->permalinks[ $post_id ] ?? false
 		);
 	}
 
@@ -237,7 +256,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 255, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 18, $maps['pages'] );
+		$this->assertCount( 19, $maps['pages'] );
 		$this->assertCount( 5, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
@@ -274,10 +293,16 @@ final class RedirectsTest extends TestCase {
 	public function test_no_mapping_points_at_another_retired_address(): void {
 		$maps = Redirects::maps();
 		$this->assertNotNull( $maps );
+		// A /shop/ target is the shop page's own address and never a retired
+		// one: the dispatch resolves a /shop/ target to the address the retired
+		// /shop/ goes to as well, so a target naming it is the same one hop.
+		$products   = array_flip( $maps['products'] );
+		$categories = array_flip( $maps['categories'] );
+		unset( $products['/shop/'], $categories['/shop/'] );
 		foreach ( array( 'pages', 'retired_tools' ) as $table ) {
 			foreach ( $maps[ $table ] as $from => $to ) {
-				$this->assertArrayNotHasKey( $from, array_flip( $maps['products'] ), $from . ' is a target of a product entry' );
-				$this->assertArrayNotHasKey( $from, array_flip( $maps['categories'] ), $from . ' is a target of a category entry' );
+				$this->assertArrayNotHasKey( $from, $products, $from . ' is a target of a product entry' );
+				$this->assertArrayNotHasKey( $from, $categories, $from . ' is a target of a category entry' );
 			}
 		}
 		foreach ( $maps['products'] as $slug => $to ) {
@@ -354,6 +379,78 @@ final class RedirectsTest extends TestCase {
 			self::HOME . '/product-category/home-storage/',
 			( new Redirects() )->target( '/product/pylontech-force-h2-system-7-1/' )
 		);
+	}
+
+	/**
+	 * The retired slug under the legacy /produkt/ alias lands where its
+	 * /product/ sibling lands. WordPress resolves the alias only while the post
+	 * exists, so a retired slug arrives with no product query var at all
+	 * (measured: the request parses as an attachment) — the path is what is
+	 * left to read.
+	 */
+	public function test_the_legacy_alias_goes_to_the_shelf_of_the_products_line(): void {
+		$this->wordpress();
+		$this->shelf( 11, 'home-storage' );
+		$_SERVER['REQUEST_URI'] = '/produkt/pylontech-force-h2-system-7-1/';
+
+		$this->assertSame(
+			self::HOME . '/product-category/home-storage/',
+			( new Redirects() )->target( '/produkt/pylontech-force-h2-system-7-1/' )
+		);
+
+		unset( $_SERVER['REQUEST_URI'] );
+	}
+
+	/**
+	 * The alias carries the map's entry, not the slug's own shelf: a replaced
+	 * product goes to its replacement through it too.
+	 */
+	public function test_the_legacy_alias_carries_the_maps_entry(): void {
+		$this->wordpress();
+		$_SERVER['REQUEST_URI'] = '/produkt/saj-b2-5-0-hv5/';
+
+		$this->assertSame(
+			self::HOME . '/product/saj-b2-5-0-hv1/',
+			( new Redirects() )->target( '/produkt/saj-b2-5-0-hv5/' )
+		);
+
+		unset( $_SERVER['REQUEST_URI'] );
+	}
+
+	/**
+	 * A retired slug that sells again is served again through the alias as
+	 * well: the map never shadows a published product.
+	 */
+	public function test_a_product_that_comes_back_is_served_again_through_the_alias(): void {
+		$this->wordpress();
+		$this->published        = array( 481 );
+		$_SERVER['REQUEST_URI'] = '/produkt/saj-b2-5-0-hv5/';
+
+		$this->assertNull( ( new Redirects() )->target( '/produkt/saj-b2-5-0-hv5/' ) );
+
+		unset( $_SERVER['REQUEST_URI'] );
+	}
+
+	/**
+	 * The German alias address: the language prefix is folded away before the
+	 * path is read, and the target lands on the German shelf.
+	 */
+	public function test_a_german_alias_address_goes_to_the_german_shelf(): void {
+		$this->wordpress();
+		$this->shelf( 11, 'home-storage' );
+		$this->links[12]            = self::HOME . '/de/produkt-kategorie/heimspeicher/';
+		$this->current_language     = 'de';
+		$this->default_language     = 'en';
+		$this->languages            = array( 'en', 'de' );
+		$this->term_twins[11]['de'] = 12;
+		$_SERVER['REQUEST_URI']     = '/de/produkt/pylontech-force-h2-system-7-1/';
+
+		$this->assertSame(
+			self::HOME . '/de/produkt-kategorie/heimspeicher/',
+			( new Redirects() )->target( '/de/produkt/pylontech-force-h2-system-7-1/' )
+		);
+
+		unset( $_SERVER['REQUEST_URI'] );
 	}
 
 	/**
@@ -506,14 +603,92 @@ final class RedirectsTest extends TestCase {
 	}
 
 	/**
-	 * While the checkout page answers the old slug itself — a site where it
-	 * was never renamed — the address is the page, and nothing redirects.
+	 * While the checkout page answers the retired address itself — a site
+	 * where it was never renamed — nothing redirects: the page's own path, and
+	 * the addresses under it, which are the page's endpoints (WooCommerce's
+	 * received page with the order id among them).
 	 */
-	public function test_a_checkout_page_on_the_old_slug_is_not_redirected(): void {
+	public function test_a_checkout_page_on_the_retired_addresses_is_not_redirected(): void {
 		$this->wordpress();
 		$this->checkout = '/checkout/';
 
 		$this->assertNull( ( new Redirects() )->target( '/checkout/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/checkout/order-received/4711/' ) );
+	}
+
+	/**
+	 * A German shelf address is no product address, however its base starts:
+	 * the product bases are matched as whole path segments, never as prefixes.
+	 */
+	public function test_a_german_shelf_address_is_not_a_product_address(): void {
+		$this->wordpress();
+		$this->category         = 'heimspeicher';
+		$_SERVER['REQUEST_URI'] = '/de/produkt-kategorie/heimspeicher/';
+
+		$this->assertNull( ( new Redirects() )->target( '/de/produkt-kategorie/heimspeicher/' ) );
+
+		unset( $_SERVER['REQUEST_URI'] );
+	}
+
+	/**
+	 * A German request: WooCommerce answers the German checkout page, whose
+	 * prefix is the German one — the German endpoints stay too.
+	 */
+	public function test_a_german_checkout_pages_endpoints_are_not_redirected(): void {
+		$this->wordpress();
+		$this->checkout         = '/de/kasse/';
+		$this->current_language = 'de';
+		$this->default_language = 'en';
+		$this->languages        = array( 'en', 'de' );
+
+		$this->assertNull( ( new Redirects() )->target( '/de/kasse/order-received/4711/' ) );
+	}
+
+	/**
+	 * The retired shop archive goes to the shop page's own address — the
+	 * address the live site's rule sent it to, and the one the shop answers
+	 * today (measured 2026-10-11: /shop/ answers /products/). The map's target
+	 * is the dispatch-time one the category targets already use, so a site
+	 * that keeps its shop elsewhere answers there.
+	 */
+	public function test_the_retired_shop_archive_goes_to_the_shop_page(): void {
+		$this->wordpress();
+
+		$this->assertSame(
+			self::HOME . '/products/',
+			( new Redirects() )->target( '/shop/' )
+		);
+	}
+
+	/**
+	 * While the shop page answers /shop/ itself — a site where the archive
+	 * never moved — the address is the page: the target would be the request,
+	 * and the redirect would loop for good.
+	 */
+	public function test_a_shop_page_on_the_retired_address_is_not_redirected(): void {
+		$this->wordpress();
+		$this->shop = '/shop/';
+
+		$this->assertNull( ( new Redirects() )->target( '/shop/' ) );
+	}
+
+	/**
+	 * The German shop address lands on the German page's address, not the
+	 * English one.
+	 */
+	public function test_a_german_shop_address_lands_on_the_german_page(): void {
+		$this->wordpress();
+		$this->current_language                      = 'de';
+		$this->default_language                      = 'en';
+		$this->languages                             = array( 'en', 'de' );
+		$this->post_ids[ self::HOME . '/products/' ] = 61;
+		$this->post_twins[61]['de']                  = 62;
+		$this->permalinks[62]                        = self::HOME . '/de/produkte/';
+
+		$this->assertSame(
+			self::HOME . '/de/produkte/',
+			( new Redirects() )->target( '/de/shop/' )
+		);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 {
 	"schema_version": 1,
-	"_source": "The previous site's legacy 301 map, extracted 2026-10-11: 255 retired product slugs, 31 retired category slugs and 18 retired page paths, plus the retired /checkout/ slug rule (its commerce pages code). Targets are the routes the live site served them to; /shop/ and /product-category/<slug>/ are resolved at dispatch time (WooCommerce and the term).",
+	"_source": "The previous site's legacy 301 map, extracted 2026-10-11: 255 retired product slugs, 31 retired category slugs, 18 retired page paths and the retired /shop/ archive, plus the retired /checkout/ slug rule (its commerce pages code). Targets are the routes the live site served them to; /shop/ and /product-category/<slug>/ are resolved at dispatch time (WooCommerce and the term) — /shop/ as a target is the shop page's own address, wherever the site keeps it (measured 2026-10-11: /shop/ answers /products/).",
 	"products": {
 		"pylontech-force-h2-system-7-1": "/product-category/home-storage/",
 		"pylontech-force-h2-system-10-6": "/product-category/home-storage/",
@@ -309,7 +309,8 @@
 		"/for-project-developers/": "/for-epc/",
 		"/solution/for-distributor/": "/about/",
 		"/request-a-project/": "/linker-planner/",
-		"/product-category/uncategorized/": "/products/"
+		"/product-category/uncategorized/": "/products/",
+		"/shop/": "/shop/"
 	},
 	"checkout": {
 		"slugs": [ "checkout", "kasse" ],

@@ -90,11 +90,36 @@ final class RedirectsTest extends SiteTestCase {
 	}
 
 	/**
+	 * The legacy /produkt/ alias lands a withdrawn product where its /product/
+	 * sibling lands — the shelf of its line, or the replacement product.
+	 *
+	 * The landing points are the live site's, measured 2026-10-11:
+	 * /produkt/pylontech-force-h2-system-7-1/ 301s to
+	 * /product-category/home-storage/ and /produkt/saj-b2-5-0-hv5/ to
+	 * /product/saj-b2-5-0-hv1/. WordPress resolves the alias only while the
+	 * post exists, so for a retired slug it resolved nothing and the request
+	 * fell to a 404 while its sibling honoured the map.
+	 */
+	public function test_a_withdrawn_product_under_the_legacy_alias_lands_as_its_sibling(): void {
+		$this->assertRedirects( '/produkt/pylontech-force-h2-system-7-1/', '/product-category/home-storage/' );
+		$this->assertRedirects( '/produkt/saj-b2-5-0-hv5/', '/product/saj-b2-5-0-hv1/' );
+	}
+
+	/**
 	 * A retired page path goes to the page that answers it now.
 	 */
 	public function test_a_retired_page_goes_to_the_page_that_answers_it(): void {
 		$this->assertRedirects( '/application/residential-storage/', '/solution/residential-storage/' );
 		$this->assertRedirects( '/for-oem-odm/', '/for-installer/' );
+	}
+
+	/**
+	 * The retired shop archive — the address the catalogue moved away from —
+	 * goes to the shop page's own address, the landing point the live site
+	 * answers today (measured 2026-10-11: /shop/ 301s to /products/).
+	 */
+	public function test_the_retired_shop_archive_goes_to_the_shop_page(): void {
+		$this->assertRedirects( '/shop/', '/products/' );
 	}
 
 	/**

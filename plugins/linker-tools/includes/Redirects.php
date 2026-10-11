@@ -22,7 +22,10 @@ use WP_Term;
  * The maps are data, not code: the JSON file holds them, this class only
  * dispatches. Product and category requests are read from WordPress's own
  * routing (the `product` and `product_cat` query vars), so the German
- * product addresses carry the same slug as the English ones. Page paths are
+ * product addresses carry the same slug as the English ones — and a slug no
+ * post holds any more, which WordPress therefore resolves to nothing, is read
+ * from the path under the product bases (WooCommerce's own, and the
+ * `/produkt/` alias the site before this one served). Page paths are
  * matched with the language prefix folded away, and a redirect into the
  * German site asks Polylang for the German twin's own address.
  *
@@ -49,6 +52,16 @@ final class Redirects {
 	 * This site's own retired tool entries: request paths, exact match.
 	 */
 	private const RETIRED_TOOLS = 'retired_tools';
+
+	/**
+	 * The legacy alias of WooCommerce's product base: the site before this one
+	 * also served product addresses under /produkt/ (an English address
+	 * carrying the German base). WordPress canonicalises that alias while the
+	 * post exists — a retired slug there has nothing to resolve and parses as
+	 * an attachment request, which is why the path is read beside the query
+	 * vars.
+	 */
+	private const LEGACY_PRODUCT_BASE = 'produkt';
 
 	/**
 	 * Adds the plugin's hooks. Priority 1: ahead of WordPress's canonical
@@ -94,34 +107,60 @@ final class Redirects {
 			return null;
 		}
 
-		$path = trailingslashit( $path );
-		if ( isset( $maps[ self::RETIRED_TOOLS ][ $path ] ) ) {
-			return home_url( $maps[ self::RETIRED_TOOLS ][ $path ] );
+		$requested = trailingslashit( $path );
+		if ( isset( $maps[ self::RETIRED_TOOLS ][ $requested ] ) ) {
+			return home_url( $maps[ self::RETIRED_TOOLS ][ $requested ] );
 		}
 
 		$language = $this->request_language();
-		$path     = $this->without_language( $path );
+		$path     = $this->without_language( $requested );
 
 		$checkout = $this->checkout_target( $path, $maps['checkout'] );
 		if ( null !== $checkout ) {
-			return $this->url( $checkout, $language );
+			return $this->redirect_to( $checkout, $language, $requested );
 		}
 
 		if ( isset( $maps['pages'][ $path ] ) ) {
-			return $this->url( $this->resolve( $maps['pages'][ $path ] ), $language );
+			return $this->redirect_to( $this->resolve( $maps['pages'][ $path ] ), $language, $requested );
 		}
 
 		$category = $this->category_target( $maps['categories'], $language );
 		if ( null !== $category ) {
-			return $this->url( $this->resolve( $category ), $language );
+			return $this->redirect_to( $this->resolve( $category ), $language, $requested );
 		}
 
 		$product = $this->product_target( $maps['products'] );
 		if ( null !== $product ) {
-			return $this->url( $this->resolve( $product ), $language );
+			return $this->redirect_to( $this->resolve( $product ), $language, $requested );
 		}
 
 		return null;
+	}
+
+	/**
+	 * The redirect to a target: the target's address in the language of the
+	 * request, or null while that address is the request itself.
+	 *
+	 * A retired address whose target is the same address would send the
+	 * visitor to where they already are, forever — the previous site's shop
+	 * rule carried this guard by hand ("if the shop archive slug is itself
+	 * /shop/, the target would equal the source and loop"), and it is the same
+	 * question for every map entry: this site answers the address itself when
+	 * nothing moved it. Measured on the live site 2026-10-11: /shop/ is retired
+	 * and the shop page answers /products/, so the address redirects there.
+	 *
+	 * @param string      $target    Root-relative target, query string included.
+	 * @param string|null $language  Language of the request.
+	 * @param string      $requested The requested path, its language prefix still on it.
+	 */
+	private function redirect_to( string $target, ?string $language, string $requested ): ?string {
+		$url  = $this->url( $target, $language );
+		$path = (string) wp_parse_url( $url, PHP_URL_PATH );
+		if ( '' !== $path && trailingslashit( $path ) === $requested ) {
+			return null;
+		}
+
+		return $url;
 	}
 
 	/**
@@ -130,8 +169,11 @@ final class Redirects {
 	 * (WooCommerce's received page and its order links live under it).
 	 *
 	 * The rule answers the slug the checkout page *used* to have: while the
-	 * checkout page answers that address itself (a site where it was never
-	 * renamed), the address is the page and nothing redirects.
+	 * checkout page answers those addresses itself — a site where it was never
+	 * renamed — they are the page's own, and nothing redirects. Its own path
+	 * counts, and so does everything under it: the endpoints are the page's
+	 * addresses too (/checkout/order-received/<order>/ is the received page,
+	 * not a retired path).
 	 *
 	 * @param string                                     $path     The request path, its language prefix folded away.
 	 * @param array{slugs: list<string>, target: string} $checkout The map's checkout rule.
@@ -141,7 +183,7 @@ final class Redirects {
 		if ( array() === $segments || ! in_array( $segments[0], $checkout['slugs'], true ) ) {
 			return null;
 		}
-		if ( $path === $this->checkout_path() ) {
+		if ( $this->checkout_answers( $path ) ) {
 			return null;
 		}
 		$rest = array() === array_slice( $segments, 1 ) ? '' : implode( '/', array_slice( $segments, 1 ) ) . '/';
@@ -149,6 +191,27 @@ final class Redirects {
 		$query = isset( $_SERVER['QUERY_STRING'] ) ? wp_unslash( $_SERVER['QUERY_STRING'] ) : '';
 
 		return $checkout['target'] . $rest . ( '' === $query ? '' : '?' . $query );
+	}
+
+	/**
+	 * Whether the checkout page answers an address itself: its own path and
+	 * everything under it — WooCommerce's endpoints live there, its received
+	 * page (with the order id) among them. Both sides carry the trailing
+	 * slash, so the page's own path is a prefix of itself.
+	 *
+	 * The page's address is folded the same way the request path was: on a
+	 * German request WooCommerce answers the German page, and its prefix is
+	 * the German one.
+	 *
+	 * @param string $path The request path, its language prefix folded away.
+	 */
+	private function checkout_answers( string $path ): bool {
+		$checkout = $this->without_language( $this->checkout_path() );
+		if ( '' === $checkout || '/' === $checkout ) {
+			return false;
+		}
+
+		return str_starts_with( $path, $checkout );
 	}
 
 	/**
@@ -203,7 +266,10 @@ final class Redirects {
 	 * The product slug a request names: WordPress's parsed request holds it
 	 * as the `product` query var, or — WordPress resolves a slug that names
 	 * an existing product, in any status and language, to the post — as the
-	 * `name` of a product request.
+	 * `name` of a product request. A slug no post holds is resolved by nobody,
+	 * so the request parses as something else entirely (the snapshot measured
+	 * 2026-10-11: /produkt/<retired-slug>/ parses as an attachment request);
+	 * the path under the product bases is what is left to read.
 	 */
 	private function requested_product(): string {
 		$type = get_query_var( 'post_type' );
@@ -212,8 +278,41 @@ final class Redirects {
 			return $name;
 		}
 		$product = get_query_var( 'product' );
+		if ( is_string( $product ) && '' !== $product ) {
+			return $product;
+		}
 
-		return is_string( $product ) ? $product : '';
+		return $this->product_slug_in_path();
+	}
+
+	/**
+	 * The slug of a product address read from its path — the segment after the
+	 * base — or '' while the path carries no product base.
+	 *
+	 * Both bases count (the legacy alias is what a retired slug actually
+	 * arrives under, see LEGACY_PRODUCT_BASE), and the language prefix is
+	 * folded away first: the German address carries the same slug as its
+	 * English twin.
+	 */
+	private function product_slug_in_path(): string {
+		$segments = $this->segments( $this->without_language( $this->request_path() ) );
+		if ( array() === $segments || ! isset( $segments[1] ) || ! in_array( $segments[0], $this->product_bases(), true ) ) {
+			return '';
+		}
+
+		return $segments[1];
+	}
+
+	/**
+	 * The bases a product address carries: WooCommerce's own rewrite slug, and
+	 * the legacy /produkt/ alias of the site before this one.
+	 *
+	 * @return list<string>
+	 */
+	private function product_bases(): array {
+		$base = $this->permalink_slug( 'product_rewrite_slug' );
+
+		return array_values( array_unique( array( '' === $base ? 'product' : $base, self::LEGACY_PRODUCT_BASE ) ) );
 	}
 
 	/**
