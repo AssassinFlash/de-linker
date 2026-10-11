@@ -124,13 +124,17 @@ final class ErrorRecorderTest extends TestCase {
 	}
 
 	/**
-	 * A wp-content that cannot be written leaves PHP exactly as it was: the
-	 * recorder never makes the site's state worse.
+	 * A wp-content that cannot hold the directory leaves PHP exactly as it
+	 * was: the recorder never makes the site's state worse. The path here runs
+	 * through a file, so creating the directory fails on every platform (a
+	 * test that only works where a path is too long tests the platform).
 	 */
-	public function test_an_unwritable_content_directory_is_left_alone(): void {
+	public function test_a_content_path_that_cannot_be_a_directory_is_left_alone(): void {
+		$file = $this->content . '/not-a-directory';
+		file_put_contents( $file, 'x' );
 		ini_set( 'error_log', '/dev/null' );
 
-		ErrorRecorder::start( $this->content . '/' . str_repeat( 'nested/', 200 ) . 'deep' );
+		ErrorRecorder::start( $file . '/wp-content' );
 
 		$this->assertSame( '/dev/null', (string) ini_get( 'error_log' ) );
 	}
