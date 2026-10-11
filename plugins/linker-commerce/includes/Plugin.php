@@ -129,7 +129,7 @@ final class Plugin {
 			new Proforma\Module( $this->file, new Proforma\AdminBox( $issuer ) ),
 			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $proformas, $solutions ), new Account\SolutionsRoute( $solutions ) ),
 			new Presentation\Module( new Presentation\Shortcodes( $gate ), $gate, new Presentation\WindPress() ),
-			new Stock\Module( new Stock\StockController(), new Stock\BatchLog() ),
+			new Stock\Module( new Stock\StockController(), new Stock\BatchLog(), new Stock\Retention( $this->file ) ),
 		);
 	}
 }

@@ -31,6 +31,7 @@ X-Linker-Stock-Key: <推送密钥>
   - **对开启库存管理的商品，状态由数量决定**（WooCommerce 原生规则：每次保存都从数量重推状态，管理库存的商品后台也不显示状态选择）。`state` 只有与数量推导一致时才有意义：一致的行按数量处理；矛盾的行报错 `state_overridden`（拉下架就推 `qty: 0`）。
   - **对未开启库存管理的商品，`state` 是唯一的词**（数量对它无意义），经 `wc_update_product_stock_status()` 落库。
 - `qty` 与 `state` 至少给一个（否则 `missing_target`）。
+- **缺货阈值（Woo 原生选项）**：`woocommerce_notify_no_stock_amount` 参与状态推导——托管商品只有 `qty > 阈值` 才有货，`qty ≤ 阈值` 即缺货（WooCommerce 默认 0：`qty: 0` 即缺货，`qty ≥ 1` 即有货）。站点不改这个选项；接入方若见到数量 ≥ 1 仍缺货，先查实例上 `wp option get woocommerce_notify_no_stock_amount` 的实值。
 - 批量建议 ≤ 500 行/次；无服务器侧上限。
 
 ### 响应
@@ -65,6 +66,8 @@ X-Linker-Stock-Key: <推送密钥>
 
 每个被鉴权受理的批次写一行私有 post（类型 `linker_stock_batch`，复用邮件队列 `Mail\JobStore` 的持久化模式）：收到的行、逐行结果、时间（`current_time('mysql', true)`，UTC）、密钥指纹（存储哈希前 12 位，不存密钥本身）。审计行写不进 → 响应 500（宁可让 ERP 重推，不留一笔无账的写入）。
 
+审计行有保留期：**90 天**，`Stock\Retention` 的每日 WP-Cron 事件按批删除过期行（`wp_delete_post()`，不裸 SQL；每批 100 行、每日最多 20 批）。真 ERP 按约 15 分钟一批推送 ≈ 每天百行，稳态下 90 天 ≈ 9 000 行封顶——审计表随推送增长，但不永远增长。保留天数是政策（换数字是政策变更，不是代码变更），常量出自票 #69。
+
 ## 数据怎么走（推送之后）
 
 qty 经 `wc_update_product_stock()` 落库 → 商品 `save()` → WooCommerce 原生对齐（`validate_props`：qty > 0 → instock，否则 outofstock，站点不开 backorder）→ 库存状态变化时 Woo 自动维护 `product_visibility` 词项。此后全部由 Woo 原生机制承载：
@@ -79,7 +82,7 @@ qty 经 `wc_update_product_stock()` 落库 → 商品 `save()` → WooCommerce �
 
 ## 自定义代码的穷尽证明（三件套原生优先）
 
-自定义面只有**通道**（鉴权 + 批量 + 审计 + 密钥生命周期）；所有库存规则本身都是 Woo 原生。逐项：
+自定义面只有**通道**（鉴权 + 批量 + 审计 + 密钥生命周期 + 审计行的保留清扫）；所有库存规则本身都是 Woo 原生。逐项：
 
 1. **LC 原生 tag**：LC 的 `lc_*` 词汇是模板取数 tag，不提供任何外部写入通道。不适用。
 2. **Woo 原生写入通道（wc/v3 REST，`PUT /wc/v3/products/<id>` 改 `stock_quantity`）不用**，理由：
@@ -93,10 +96,11 @@ qty 经 `wc_update_product_stock()` 落库 → 商品 `save()` → WooCommerce �
 
 ## 怎么算做完
 
-- 单元：`Stock`（密钥、批次行、审计行、路由、模块、CLI）——`tests/php/Unit/Stock/`、`Unit/Cli/StockKeyCommandTest.php`。
-- 真实夹具（集成，`tests/php/Integration/StockTest.php`，对真实实例跑）：批量推送→库存断言→错 SKU 分支不回滚→幂等重推不触发库存动作→缺货关闸/恢复开闸（草案链）→密钥门。
-- 端到端：`just mock-erp <inst>` 对快照实例推序列，断言目录徽标、只显示有货、加车闸门；配方与脚本可重跑。
+- 单元：`Stock`（密钥、批次行、审计行、保留清扫、路由、模块、CLI）——`tests/php/Unit/Stock/`、`Unit/Cli/StockKeyCommandTest.php`。
+- 真实夹具（集成，`tests/php/Integration/StockTest.php`，对真实实例跑）：批量推送→库存断言→错 SKU 分支不回滚→幂等重推不触发库存动作→缺货关闸/恢复开闸（草案链）→密钥门→保留清扫（过期行删、年轻行留、每日事件在表上）。
+- 端到端：`just mock-erp <inst>` 对快照实例推序列，断言目录徽标、只显示有货、加车闸门；配方与脚本可重跑，收尾清除推送密钥（实例回到休眠态）。
 - 全套：`just check && just test` 绿。
 
 变更记录
 - 2026-10-11 初版（票据 #69）。
+- 2026-10-11 修复轮（评审必改）：审计行保留清扫（90 天、每日 cron 批量删，`Stock\Retention`）与缺货阈值（`woocommerce_notify_no_stock_amount`）说明。

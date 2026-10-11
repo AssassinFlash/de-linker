@@ -80,7 +80,8 @@ wp name *args:
 # linker/v1/stock, asserting the visible chain: the catalogue's in-stock
 # badge, the in-stock-only listing and the solution draft gate. Needs the
 # instance up with the live snapshot (`just pull load <name> … --live-code`).
-# Re-runnable; it leaves the products in stock.
+# Re-runnable; it leaves the products in stock and the channel dormant: the
+# key it set is removed again at the end.
 [positional-arguments]
 mock-erp name:
     #!/usr/bin/env bash
@@ -128,6 +129,9 @@ mock-erp name:
         echo json_encode( array( "products" => $products ) );
     ')"
     python3 "{{ justfile_directory() }}/tools/mock_erp.py" --base "$base" --key "$key" --payload "$payload"
+    # The channel ships dormant and the mock's key was this run's alone: take
+    # it back out, so the instance is left exactly as the cutover finds it.
+    PHP={{ php }} {{ linker_local }} wp "$name" linker-commerce stock-key --clear --user="$admin"
 
 # docs/specs/10-knowledge-index.md; `just index --help` lists the options.
 # Build Genie's document index on this Mac: hosted PDFs, Docling, chunks, vectors, SQLite.

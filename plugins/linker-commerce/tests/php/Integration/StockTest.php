@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Stock\BatchLog;
 use Linker\Commerce\Stock\PushKey;
+use Linker\Commerce\Stock\Retention;
 use WC_Product_Simple;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -157,6 +158,53 @@ final class StockTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * The audit rows have a retention: the daily sweep is on the schedule, and
+	 * firing its hook deletes the rows past their retention days while the
+	 * young ones stay.
+	 */
+	public function test_audit_rows_are_swept_once_past_their_retention(): void {
+		$this->assertNotFalse( wp_next_scheduled( Retention::HOOK ), 'The daily sweep is on the schedule.' );
+
+		$expired = $this->audit_row( gmdate( 'Y-m-d H:i:s', time() - ( Retention::RETENTION_DAYS + 1 ) * DAY_IN_SECONDS ) );
+		$fresh   = $this->audit_row( gmdate( 'Y-m-d H:i:s', time() - DAY_IN_SECONDS ) );
+
+		/** This hook is the retention's own daily event (Retention::HOOK), delivered by WP-Cron.
+		 *
+		 * @since 0.2.0
+		 */
+		do_action( Retention::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the retention's own hook constant.
+
+		$this->assertNull( get_post( $expired ), 'A row past its retention days is gone.' );
+		$this->assertInstanceOf( \WP_Post::class, get_post( $fresh ), 'A row inside its retention days stays.' );
+	}
+
+	/**
+	 * An audit row written at the given time (UTC), the way BatchLog writes
+	 * rows; removed again after the test.
+	 *
+	 * @param string $date_gmt The row's creation time (UTC).
+	 */
+	private function audit_row( string $date_gmt ): int {
+		$id = wp_insert_post(
+			array(
+				'post_type'     => BatchLog::POST_TYPE,
+				'post_status'   => 'private',
+				'post_title'    => 'Stock push ' . $date_gmt,
+				'post_date'     => $date_gmt,
+				'post_date_gmt' => $date_gmt,
+			),
+			true
+		);
+		$this->assertIsInt( $id );
+		$this->later(
+			static function () use ( $id ): void {
+				wp_delete_post( $id, true );
+			}
+		);
+		return $id;
+	}
+
+	/**
 	 * An unknown SKU is an error row; the known SKUs of the same batch still
 	 * apply — the batch is never rolled back.
 	 */
@@ -269,8 +317,9 @@ final class StockTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * An explicit state wins over what the quantity derives, and a broken
-	 * row errors without touching the others.
+	 * The quantity is the authority on a stock-managed product: a contradicting
+	 * state is refused per row, the state word only applies where no quantity
+	 * derives a status. Broken rows error without touching the others.
 	 */
 	public function test_explicit_state_and_broken_rows(): void {
 		$product   = $this->skued_product( 10 );
