@@ -234,6 +234,24 @@ header partial already serves; `#wp-custom-css` is absent, `--proto-accent`
 count 3 = live) and the ETA documents (`Multilingual` instead of `MUL`, 13
 cards = live's 13).
 
+**Further measured gaps (2026-10-11, `.scratch/t16-closure/review-facts.mjs`
+and `/tmp/deck-probe.mjs`, `/tmp/rows-probe.mjs`):** on the pages reviewed the
+battery (EN/DE, 1440/390) and the ETA (EN/DE, 1440/390) match live's deck
+counts exactly (the battery 2 tablists / 8 tabs / 3 panels / 7 discloses / 15
+stat rows; the ETA 2 / 10 / 5 / 11 / 25, tab labels included). Other products
+carry blocks we do not render yet, measured on the live page:
+the SAJ ATS1-T63-A description block has an `.pdp-overview-image` in the
+overview, a four-row highlight `.pdp-stat-wrap` after the intro (the
+`spec_is_highlight` rows), a `.pdp-overview-secondary` panel and
+`.pdp-feature` sections — ours renders the overview copy, the benefits (now all
+bullets; live renders every bullet, the earlier two-card cap was ours) and the
+feature cards as disclosure rows, so live shows 33 stat rows to our 29 and 9
+disclosures to our 10; and on the BAT-AC cabinet the live page renders the
+scene block as a third tab deck ("Project | Checks | Linker view", live 3
+tablists to our 2). The catalog cards' fact rows also still read the
+Application/Grid phases figures where live prints Communication / Weight /
+Ingress protection / Dimensions.
+
 **Measured gaps still open (2026-10-11, paired captures in
 `.scratch/t16-closure/pairs/`, pixel comparison of the overlap):**
 
