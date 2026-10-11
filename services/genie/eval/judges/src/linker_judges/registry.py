@@ -29,17 +29,19 @@ def _local(name: str, port: int) -> str:
 JUDGES: dict[str, Judge] = {
     judge.name: judge
     for judge in (
-        # TypeSafe Jev through OpenRouter's chat completions (owner ruling
-        # 2026-10-11: aihubmix's balance is depleted and drops to fallback). The
-        # router replies with calibrated probabilities and reports each call's
-        # true cost in usage.cost — which wins over these prices, because its
-        # backend varies per call (deepseek-v4.1-flash and openai/gpt-6-luna were
-        # both seen on 2026-10-11); 0.30/1.20 are the observed deepseek-flash
-        # backend's rates, kept as the fallback formula's input.
+        # TypeSafe Jev through OpenRouter's native /v1/systemone endpoint with
+        # the direct model id (owner ruling 2026-10-11: Jev runs on OpenRouter).
+        # The chat-completions route (typesafe/jev-router) is a meta-router that
+        # delegates per call to other backends (deepseek-v4.1-flash,
+        # gemini-3.8-flash and gpt-6-luna were all observed on 2026-10-11) and
+        # returns no calibrated probabilities; /v1/systemone with
+        # typesafe/jev-1.13 answers as typesafe/jev-1.13-20260917 itself, with
+        # the noul probabilities parse_system_one calibrates. 0.30/1.20 stay as
+        # the fallback formula's input when usage reports no cost.
         Judge(
             "jev",
-            "chat",
-            "typesafe/jev-router",
+            "system_one",
+            "typesafe/jev-1.13",
             OPENROUTER,
             0.30,
             1.20,

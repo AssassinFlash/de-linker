@@ -109,7 +109,8 @@ def call(
                 "state": state,
                 "questions": {q.name: q.system_one() for q in questions},
             }
-            response = post_json(base + "/v1/systemone", body, key)
+            systemone = base.removesuffix("/v1") + "/v1/systemone"
+            response = post_json(systemone, body, key)
             answers = parse_system_one(response.body.get("answers", {}), questions)
             usage = response.body.get("usage", {})
             tokens_in, tokens_out = (
