@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Registration;
 
+use Linker\Commerce\Digest\Block;
 use Linker\Commerce\Registration\AddressForm;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Registration\ApprovalAdmin;
@@ -20,6 +21,7 @@ use Linker\Commerce\Registration\Emails\RestrictedEmail;
 use Linker\Commerce\Registration\Emails\VatReviewEmail;
 use Linker\Commerce\Registration\Fields;
 use Linker\Commerce\Registration\Module;
+use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Registration\ViesClient;
 use Linker\Commerce\Settings\Options;
@@ -89,10 +91,67 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'admin_post_linker_approval', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'handle' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_actions', array( $this->module, 'email_actions' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $this->module, 'add_emails' ) );
+		WP_Mock::expectFilterAdded( 'linker_commerce_digest_blocks', array( $this->module, 'digest_blocks' ) );
 
 		$this->module->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The digest's assembly gets the waiting-accounts block in front of its own
+	 * blocks (docs/specs/74-daily-digest.md: the owner's approvals lead the email).
+	 */
+	public function test_digest_blocks_puts_the_waiting_accounts_first(): void {
+		$own    = array( $this->block( 'digest_one' ), $this->block( 'digest_two' ) );
+		$blocks = $this->module->digest_blocks( $own );
+
+		$this->assertInstanceOf( PendingApprovals::class, $blocks[0] ?? null );
+		$this->assertSame( $own, array_slice( $blocks, 1 ), 'The digest\'s own blocks keep their order behind it.' );
+	}
+
+	/**
+	 * A block of the digest's own, as its assembly builds them.
+	 *
+	 * @param string $id Block id.
+	 */
+	private function block( string $id ): Block {
+		return new class( $id ) implements Block {
+			/**
+			 * Sets up the stub.
+			 *
+			 * @param string $id Block id.
+			 */
+			public function __construct( private readonly string $id ) {}
+
+			/**
+			 * Stable identifier of the block.
+			 */
+			public function id(): string {
+				return $this->id;
+			}
+
+			/**
+			 * Heading of the block.
+			 */
+			public function title(): string {
+				return '';
+			}
+
+			/**
+			 * The open items.
+			 */
+			public function entries(): array {
+				return array();
+			}
+
+			/**
+			 * The sentence a block with no open items shows.
+			 */
+			public function empty_text(): string {
+				return '';
+			}
+		};
 	}
 
 	/**

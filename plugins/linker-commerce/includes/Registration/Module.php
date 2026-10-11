@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Registration;
 
+use Linker\Commerce\Digest\Block as DigestBlock;
 use Linker\Commerce\Registration\Emails\ApprovedEmail;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
 use Linker\Commerce\Registration\Emails\RejectedEmail;
@@ -26,13 +27,14 @@ final class Module {
 	/**
 	 * Sets up the module.
 	 *
-	 * @param string          $plugin_file Absolute path of the main plugin file.
-	 * @param Options         $options     The plugin settings.
-	 * @param Fields          $fields      The registration fields.
-	 * @param BillingVatField $vat_field   The VAT ID billing field.
-	 * @param AddressForm     $address     The address form rules.
-	 * @param Approval        $approval    The account approval rule.
-	 * @param ApprovalAdmin   $admin       The approval actions in WordPress's screens.
+	 * @param string           $plugin_file Absolute path of the main plugin file.
+	 * @param Options          $options     The plugin settings.
+	 * @param Fields           $fields      The registration fields.
+	 * @param BillingVatField  $vat_field   The VAT ID billing field.
+	 * @param AddressForm      $address     The address form rules.
+	 * @param Approval         $approval    The account approval rule.
+	 * @param ApprovalAdmin    $admin       The approval actions in WordPress's screens.
+	 * @param PendingApprovals $pending     The waiting accounts of the daily digest.
 	 */
 	public function __construct(
 		private readonly string $plugin_file,
@@ -41,7 +43,8 @@ final class Module {
 		private readonly BillingVatField $vat_field,
 		private readonly AddressForm $address,
 		private readonly Approval $approval = new Approval(),
-		private readonly ApprovalAdmin $admin = new ApprovalAdmin( new Approval() )
+		private readonly ApprovalAdmin $admin = new ApprovalAdmin( new Approval() ),
+		private readonly PendingApprovals $pending = new PendingApprovals()
 	) {}
 
 	/**
@@ -65,9 +68,24 @@ final class Module {
 
 		$this->approval->register();
 		$this->admin->register();
+		add_filter( 'linker_commerce_digest_blocks', array( $this, 'digest_blocks' ) );
 
 		add_filter( 'woocommerce_email_actions', array( $this, 'email_actions' ) );
 		add_filter( 'woocommerce_email_classes', array( $this, 'add_emails' ) );
+	}
+
+	/**
+	 * Puts the waiting accounts in front of the daily digest's own blocks: the
+	 * owner's approvals lead the email (docs/specs/74-daily-digest.md, the
+	 * block interface). The digest's assembly applies this filter; without the
+	 * digest the filter has no reader and this adds nothing.
+	 *
+	 * @param DigestBlock[] $blocks The digest's blocks.
+	 * @return DigestBlock[]
+	 */
+	public function digest_blocks( array $blocks ): array {
+		array_unshift( $blocks, $this->pending );
+		return $blocks;
 	}
 
 	/**

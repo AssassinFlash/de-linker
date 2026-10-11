@@ -1,12 +1,12 @@
-Date: Sun, 11 Oct 2026 12:52:27 +0000
+Date: Sun, 11 Oct 2026 13:31:49 +0000
 From: Linker <sales@de-linker.com>
 Reply-To: Linker <sales@de-linker.com>
-Message-ID: <bWd9yaYp0BKFYkL821OgDjRSjFwD6rSfpVqkH2iQmIs@chesterjohn-2.local>
+Message-ID: <Ggn24AYYAI8fXBMIRIAT6dxR0aXPiZa8tq4SIZISRME@chesterjohn-2.local>
 X-Mailer: PHPMailer 7.1.1 (https://github.com/PHPMailer/PHPMailer)
 MIME-Version: 1.0
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: linker-73-b31d8f59-en@example.test
+To: chester@de-linker.com
 Subject: Your partner account access is limited
 
 <!DOCTYPE html>
@@ -58,7 +58,7 @@ Subject: Your partner account access is limited
 																		<div id="body_content_inner" style='color: #4b4b4b; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 16px; line-height: 150%; text-align: left;' align="left">
 <p style="margin: 0 0 16px;">Your partner account has been limited for now.</p>
 <p style="margin: 0 0 16px;">You can keep browsing the products, and you can reach us any time at sales@de-linker.com. Net prices and the Proforma request are paused while the account is limited.</p>
-	<p style="margin: 0 0 16px;"><strong>Our reason:</strong><br>Net prices are for businesses with a VAT ID.</p>
+	<p style="margin: 0 0 16px;"><strong>Our reason:</strong><br>Net prices are for businesses.</p>
 <p style="margin: 0 0 16px;">Write to us and we will look at your account again.</p>
 																		</div>
 																	</td>

@@ -12,14 +12,17 @@ namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Inquiry\ProformaGateway;
+use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Registration\ApprovalAdmin;
 use Linker\Commerce\Registration\CustomerRole;
 use Linker\Commerce\Registration\Fields;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Registration\ViesClient;
 use WC_Customer;
 use WP_Error;
+use WP_User;
 use WP_REST_Request;
 
 /**
@@ -48,9 +51,18 @@ final class ApprovalTest extends IntegrationTestCase {
 	/**
 	 * Captured outgoing mail: recipient, subject, body.
 	 *
-	 * @var list<array{to: string, subject: string, body: string}>
+	 * @var list<array{to: string, recipients: list<string>, subject: string, body: string}>
 	 */
 	private array $sent = array();
+
+	/**
+	 * The collector registered on pre_wp_mail, once a test captured mail: it
+	 * reads the address of the moment, so capturing for a second customer must
+	 * not register a second one — the mail would be recorded twice.
+	 *
+	 * @var callable|null
+	 */
+	private $collector = null;
 
 	/**
 	 * The email address mail is captured for; set by capture_mail().
@@ -174,6 +186,147 @@ final class ApprovalTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * The users list's one-click approve is a link: the test follows the URL
+	 * row_action() renders as a GET request into the admin-post handler, the
+	 * way the staff member's click does, and the account is approved and the
+	 * customer mailed in one chain.
+	 */
+	public function test_the_inline_approve_link_changes_the_state(): void {
+		delete_option( Throttle::OPTION );
+		$customer = $this->customer();
+		update_user_meta( $customer->get_id(), 'locale', 'en_US' );
+		$this->capture_mail( (string) $customer->get_billing_email() );
+		$this->set_state( $customer, Approval::PENDING );
+
+		wp_set_current_user( 1 );
+		$this->assertTrue( current_user_can( 'edit_users' ), 'The fixture admin may approve.' );
+		$account = get_userdata( $customer->get_id() );
+		$this->assertInstanceOf( WP_User::class, $account );
+		$admin   = new ApprovalAdmin( new Approval() );
+		$link    = $admin->row_action( array(), $account )[ Approval::STATUS_META ];
+		$matches = array();
+		$this->assertSame( 1, preg_match( '/href="([^"]+)"/', $link, $matches ), 'The row action is a link.' );
+		parse_str( (string) parse_url( html_entity_decode( (string) ( $matches[1] ?? '' ) ), PHP_URL_QUERY ), $query );
+
+		// A clicked link is a GET request: the fields arrive in $_GET and
+		// $_REQUEST, $_POST stays empty.
+		$_GET                    = $query;
+		$_REQUEST                = $query;
+		$_POST                   = array();
+		$_SERVER['HTTP_REFERER'] = admin_url( 'users.php' );
+		// The handler ends in wp_safe_redirect(); the filter stops it there (the
+		// real redirect would end this test run) and PHPUnit reads the throw.
+		$stop = static function ( string $location ): string {
+			throw new \RuntimeException( 'redirect to ' . $location );
+		};
+		// The callback below throws instead of returning, which the redirect callback sniff cannot see.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WordPress's own hook, observed as the real redirect path (the handler ends in wp_safe_redirect()).
+		add_filter( 'wp_redirect', $stop ); // @phpstan-ignore return.missing
+		try {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WordPress's own hook, dispatched as admin-post.php dispatches it (the dynamic part is this plugin's constant).
+			do_action( 'admin_post_' . ApprovalAdmin::ACTION );
+			$this->fail( 'The handler ends in a redirect.' );
+		} catch ( \RuntimeException $exception ) {
+			$this->assertStringStartsWith( 'redirect to ', $exception->getMessage() );
+		} finally {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress's own hook.
+			remove_filter( 'wp_redirect', $stop );
+			unset( $_SERVER['HTTP_REFERER'] );
+			$_GET     = array();
+			$_REQUEST = array();
+			$_POST    = array();
+		}
+
+		$this->assertSame( Approval::APPROVED, ( new Approval() )->status( $customer->get_id() ), 'The click approved the account.' );
+		$captured = $this->to_address();
+		$this->assertCount( 1, $captured, 'The approval email went out.' );
+		$this->assertStringContainsString( 'Your Linker partner account is approved.', $captured[0]['body'] );
+	}
+
+	/**
+	 * The three customer emails speak the sentences the copy review finalized
+	 * (docs/acceptance/2026-10-11/73/copy-review.md, §4–§6), each in the
+	 * customer's own language: a German customer reads German bodies, an
+	 * English one English bodies. The .eml renders in the acceptance directory
+	 * are the same check on the instance's captured mail.
+	 */
+	public function test_the_customer_emails_speak_the_finalized_copy(): void {
+		$approved = $this->approval_mail_body( 'de_DE_formal', Approval::APPROVED );
+		$this->assertStringContainsString( 'Ihr Partner-Konto bei Linker ist freigegeben.', $approved );
+		$this->assertStringContainsString(
+			'Die Nettopreise werden jetzt zu jedem Produkt angezeigt. Legen Sie die benötigten Systeme in Ihren Lösungsentwurf und fordern Sie die Proformarechnung an, wenn er fertig ist.',
+			$approved
+		);
+		$this->assertStringContainsString( 'Zu den Produkten', $approved, 'The link reuses the existing term.' );
+		$this->assertStringNotContainsString( 'Net prices are now shown', $approved, 'No English sentence in a German body.' );
+
+		$restricted = $this->approval_mail_body( 'de_DE_formal', Approval::RESTRICTED, 'Net prices are for businesses.' );
+		$this->assertStringContainsString( 'Ihr Partner-Konto ist vorerst eingeschränkt.', $restricted );
+		$this->assertStringContainsString(
+			'Sie können die Produkte weiterhin ansehen und uns jederzeit unter sales@de-linker.com erreichen. Nettopreise und Proforma-Anfrage sind pausiert, solange das Konto eingeschränkt ist.',
+			$restricted
+		);
+		$this->assertStringContainsString( 'Unser Grund:', $restricted );
+		$this->assertStringContainsString( 'Schreiben Sie uns, und wir sehen uns Ihr Konto erneut an.', $restricted );
+
+		$rejected = $this->approval_mail_body( 'de_DE_formal', Approval::REJECTED, 'Das Konto konnte nicht verifiziert werden.' );
+		$this->assertStringContainsString( 'Wir können Ihr Partner-Konto bei Linker nicht freigeben. Die Anmeldung bleibt deshalb geschlossen.', $rejected );
+		$this->assertStringContainsString( 'Unser Grund:', $rejected );
+		$this->assertStringContainsString( 'Bei Fragen schreiben Sie an sales@de-linker.com.', $rejected );
+
+		$approved_en = $this->approval_mail_body( 'en_US', Approval::APPROVED );
+		$this->assertStringContainsString( 'Your Linker partner account is approved.', $approved_en );
+		$this->assertStringContainsString(
+			'Net prices are now shown with every product. Add the systems you need to your solution draft, and request the Proforma when the draft is ready.',
+			$approved_en
+		);
+
+		$restricted_en = $this->approval_mail_body( 'en_US', Approval::RESTRICTED, 'Net prices are for businesses.' );
+		$this->assertStringContainsString( 'Your partner account has been limited for now.', $restricted_en );
+		$this->assertStringContainsString(
+			'You can keep browsing the products, and you can reach us any time at sales@de-linker.com. Net prices and the Proforma request are paused while the account is limited.',
+			$restricted_en
+		);
+		$this->assertStringContainsString( 'Our reason:', $restricted_en );
+		$this->assertStringContainsString( 'Write to us and we will look at your account again.', $restricted_en );
+
+		$rejected_en = $this->approval_mail_body( 'en_US', Approval::REJECTED, 'We could not verify the business.' );
+		$this->assertStringContainsString( 'We cannot approve your Linker partner account. Signing in therefore stays closed.', $rejected_en );
+		$this->assertStringContainsString( 'If you have questions, write to sales@de-linker.com.', $rejected_en );
+	}
+
+	/**
+	 * Test mode (Mail\TestMode, AGENTS.md §5): with the switch on, one message
+	 * per action reaches the single test address — no customer mailbox — while
+	 * the mail chain still hands the message over for the customer's address.
+	 */
+	public function test_test_mode_delivers_to_one_address_only(): void {
+		delete_option( Throttle::OPTION );
+		$test_mode = new TestMode();
+		$before    = $test_mode->address();
+		$this->assertTrue( $test_mode->enable() );
+		$this->later(
+			static function () use ( $test_mode, $before ): void {
+				'' === $before ? $test_mode->disable() : $test_mode->enable( $before );
+			}
+		);
+
+		$customer = $this->customer();
+		update_user_meta( $customer->get_id(), 'locale', 'en_US' );
+		$this->capture_mail( (string) $customer->get_billing_email() );
+		$this->set_state( $customer, Approval::PENDING );
+		$this->set_state( $customer, Approval::APPROVED );
+
+		// The chain handed one message over for the customer, and the send
+		// reached the one test address (the delivery the switch rewrites).
+		$this->assertCount( 1, $this->to_address(), 'The message was handed over for the customer.' );
+		$delivered = $this->delivered();
+		$this->assertCount( 1, $delivered, 'One delivery.' );
+		$this->assertSame( array( TestMode::DEFAULT_TO ), $delivered[0]['recipients'], 'The delivery went to the one test address.' );
+		$this->assertStringContainsString( 'Your Linker partner account is approved.', $delivered[0]['body'] );
+	}
+
+	/**
 	 * A registration through the real form fields starts pending, and the
 	 * customer's language is recorded for the later emails.
 	 */
@@ -260,24 +413,35 @@ final class ApprovalTest extends IntegrationTestCase {
 	 * earlier test's message may land in the same window, so the assertions
 	 * read only the mail of this test's own address.
 	 *
+	 * A call made by the chain carries its recipient as the string WordPress
+	 * was handed; the outbox's own call — the delivery that actually reaches
+	 * the mailer — passes the recipients as a list, so the two are told apart.
+	 *
 	 * @param string $address The address to capture for.
 	 */
 	private function capture_mail( string $address ): void {
 		$this->sent    = array();
 		$this->address = $address;
-		$collector     = function ( $pre, array $atts ) {
+		if ( null !== $this->collector ) {
+			return;
+		}
+		$this->collector = function ( $pre, array $atts ) {
+			$to           = $atts['to'] ?? '';
 			$this->sent[] = array(
-				'to'      => ( is_string( $atts['to'] ?? null ) ? $atts['to'] : '' ),
-				'subject' => (string) ( $atts['subject'] ?? '' ),
-				'body'    => (string) ( $atts['message'] ?? '' ),
+				'to'         => ( is_string( $to ) ? $to : '' ),
+				'recipients' => is_array( $to ) ? array_values( array_filter( $to, 'is_string' ) ) : array(),
+				'subject'    => (string) ( $atts['subject'] ?? '' ),
+				'body'       => (string) ( $atts['message'] ?? '' ),
 			);
 			return $pre;
 		};
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WordPress's own hook, observed as the real mail path.
-		add_action( 'pre_wp_mail', $collector, 5, 2 );
+		add_action( 'pre_wp_mail', $this->collector, 5, 2 );
 		$this->later(
-			static function () use ( $collector ): void {
-				remove_action( 'pre_wp_mail', $collector, 5 );
+			function (): void {
+				if ( null !== $this->collector ) {
+					remove_action( 'pre_wp_mail', $this->collector, 5 );
+				}
 			}
 		);
 	}
@@ -285,7 +449,7 @@ final class ApprovalTest extends IntegrationTestCase {
 	/**
 	 * The captured mail of this test's own address, in send order.
 	 *
-	 * @return list<array{to: string, subject: string, body: string}>
+	 * @return list<array{to: string, recipients: list<string>, subject: string, body: string}>
 	 */
 	private function to_address(): array {
 		return array_values(
@@ -297,12 +461,49 @@ final class ApprovalTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * The deliveries of this test's captured mail: the sends the outbox made,
+	 * which are the ones a mailbox receives.
+	 *
+	 * @return list<array{to: string, recipients: list<string>, subject: string, body: string}>
+	 */
+	private function delivered(): array {
+		return array_values(
+			array_filter(
+				$this->sent,
+				static fn ( array $mail ): bool => array() !== $mail['recipients']
+			)
+		);
+	}
+
+	/**
+	 * The body of the one email an approval action sends a fresh customer, in
+	 * the language that customer reads. A pending account has no email of its
+	 * own, so the action is the only mail of the call.
+	 *
+	 * @param string $locale Customer's language.
+	 * @param string $status The state to set.
+	 * @param string $reason The team's reason, required for restrict and reject.
+	 */
+	private function approval_mail_body( string $locale, string $status, string $reason = '' ): string {
+		delete_option( Throttle::OPTION );
+		$customer = $this->customer();
+		update_user_meta( $customer->get_id(), 'locale', $locale );
+		$this->capture_mail( (string) $customer->get_billing_email() );
+		$this->set_state( $customer, Approval::PENDING );
+		$this->set_state( $customer, $status, $reason );
+
+		$captured = $this->to_address();
+		$this->assertCount( 1, $captured, "One email for the {$status} action: " . implode( ' | ', array_column( $captured, 'subject' ) ) );
+		return $captured[0]['body'];
+	}
+
+	/**
 	 * The mail speaks the state's subject, in English or — as on the instance,
 	 * where the captured .eml carries it — in the customer's German.
 	 *
-	 * @param array{to: string, subject: string, body: string} $mail     The mail.
-	 * @param string[]                                         $subjects The state's subjects.
-	 * @param string                                           $which    What the mail is, for the message.
+	 * @param array{to: string, recipients: list<string>, subject: string, body: string} $mail The mail.
+	 * @param string[]                                                                   $subjects The state's subjects.
+	 * @param string                                                                     $which    What the mail is, for the message.
 	 */
 	private function assertSubject( array $mail, array $subjects, string $which ): void {
 		$this->assertContains(

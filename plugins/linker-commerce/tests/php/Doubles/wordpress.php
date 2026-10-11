@@ -73,6 +73,8 @@ if ( ! class_exists( 'WP_User' ) ) {
 		public $user_email   = '';
 		public $display_name = '';
 		public $user_login   = '';
+		/** WordPress's signature: "Y-m-d H:i:s" in the site's own time. */
+		public $user_registered = '';
 		/** @var list<string> */
 		public $roles = array();
 	}

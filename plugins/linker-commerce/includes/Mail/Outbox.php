@@ -58,12 +58,14 @@ final class Outbox {
 	/**
 	 * Sets up the outbox.
 	 *
-	 * @param JobStore $jobs     The queue.
-	 * @param Throttle $throttle The sending rate.
+	 * @param JobStore $jobs      The queue.
+	 * @param Throttle $throttle  The sending rate.
+	 * @param TestMode $test_mode The test-mode switch of outgoing mail.
 	 */
 	public function __construct(
 		private readonly JobStore $jobs,
-		private readonly Throttle $throttle
+		private readonly Throttle $throttle,
+		private readonly TestMode $test_mode = new TestMode()
 	) {}
 
 	/**
@@ -123,8 +125,11 @@ final class Outbox {
 		$this->throttle->record( $now );
 		$this->delivering = true;
 		$this->error      = '';
+		// Test mode rewrites the recipients on the way out alone: what was queued
+		// keeps the recipients the routing data names (Mail\TestMode).
+		$delivery = $this->test_mode->redirect( $message );
 		try {
-			$sent = wp_mail( $message->to, $message->subject, $message->body, $message->headers, $message->attachments );
+			$sent = wp_mail( $delivery->to, $delivery->subject, $delivery->body, $delivery->headers, $delivery->attachments );
 		} finally {
 			$this->delivering = false;
 		}

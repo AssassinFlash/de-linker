@@ -1,12 +1,12 @@
-Date: Sun, 11 Oct 2026 12:52:27 +0000
+Date: Sun, 11 Oct 2026 13:31:50 +0000
 From: Linker <sales@de-linker.com>
 Reply-To: Linker <sales@de-linker.com>
-Message-ID: <sAMS4P65BZkIGM1HHyJ2HMLgVRHV5VGJMMM71gxLsSg@chesterjohn-2.local>
+Message-ID: <6KhcCpkjCisEIeQmrE7vbGuAmzwuU4tjiebyHxzUMY@chesterjohn-2.local>
 X-Mailer: PHPMailer 7.1.1 (https://github.com/PHPMailer/PHPMailer)
 MIME-Version: 1.0
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: linker-73-b31d8f59-de@example.test
+To: chester@de-linker.com
 Subject: Ihr Partner-Konto wurde nicht freigegeben
 
 <!DOCTYPE html>
@@ -56,8 +56,8 @@ Subject: Ihr Partner-Konto wurde nicht freigegeben
 																<tr>
 																	<td valign="top" id="body_content_inner_cell" style="padding: 20px 32px 32px;">
 																		<div id="body_content_inner" style='color: #4b4b4b; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 16px; line-height: 150%; text-align: left;' align="left">
-<p style="margin: 0 0 16px;">We cannot approve your Linker partner account. Signing in therefore stays closed.</p>
-	<p style="margin: 0 0 16px;"><strong>Unser Grund:</strong><br>Die Unternehmensdaten konnten nicht verifiziert werden.</p>
+<p style="margin: 0 0 16px;">Wir können Ihr Partner-Konto bei Linker nicht freigeben. Die Anmeldung bleibt deshalb geschlossen.</p>
+	<p style="margin: 0 0 16px;"><strong>Unser Grund:</strong><br>Das Konto konnte nicht verifiziert werden.</p>
 <p style="margin: 0 0 16px;">Bei Fragen schreiben Sie an sales@de-linker.com.</p>
 																		</div>
 																	</td>

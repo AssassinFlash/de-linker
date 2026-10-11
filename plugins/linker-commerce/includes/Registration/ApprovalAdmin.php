@@ -204,26 +204,43 @@ final class ApprovalAdmin {
 	}
 
 	/**
-	 * Applies the posted action; runs on admin_post_linker_approval.
+	 * Applies the requested action; runs on admin_post_linker_approval. The
+	 * users list's one-click link arrives as a GET request and the profile
+	 * block's buttons as a POST (their formaction sends WordPress's own form),
+	 * so the fields are read from the request as a whole — the nonce
+	 * check_admin_referer() performs reads its field from there too.
 	 */
 	public function handle(): void {
-		$user_id = isset( $_POST['user'] ) ? absint( wp_unslash( $_POST['user'] ) ) : 0;
+		$user_id = absint( $this->request( 'user' ) );
 		check_admin_referer( self::nonce_action( $user_id ), self::NONCE_FIELD );
 		if ( ! current_user_can( 'edit_users' ) || ! $this->approval->is_subject( $user_id ) ) {
 			wp_die( esc_html__( 'You are not allowed to change this account.', 'linker-commerce' ), '', array( 'response' => 403 ) );
 		}
-		$action = isset( $_POST['linker_approval_action'] ) ? sanitize_key( wp_unslash( $_POST['linker_approval_action'] ) ) : '';
+		$action = sanitize_key( $this->request( 'linker_approval_action' ) );
 		$status = ( self::actions()[ $action ] ?? null )['status'] ?? '';
 		if ( '' === $status ) {
 			wp_die( esc_html__( 'Choose approve, restrict or reject.', 'linker-commerce' ), '', array( 'response' => 400 ) );
 		}
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- sanitized as the free text it is.
-		$reason = isset( $_POST['linker_approval_reason'] ) ? sanitize_textarea_field( wp_unslash( (string) $_POST['linker_approval_reason'] ) ) : '';
+		$reason = sanitize_textarea_field( $this->request( 'linker_approval_reason' ) );
 		if ( ! $this->approval->set( $user_id, $status, $reason ) ) {
 			wp_die( esc_html__( 'A restriction or rejection needs a reason; the customer reads it in the email.', 'linker-commerce' ), '', array( 'response' => 400 ) );
 		}
 		wp_safe_redirect( $this->redirect_target( $user_id ) );
 		exit;
+	}
+
+	/**
+	 * A field of the current request (its GET part included: the list's
+	 * one-click link is a GET request) as sanitized text. An array or a
+	 * missing field reads as '', so a hand-built query cannot make a scalar
+	 * read fail.
+	 *
+	 * @param string $field Request field.
+	 */
+	private function request( string $field ): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- handle() checks the per-user nonce before it writes anything and this helper is its only caller; the caller sanitizes each field for its own kind (absint, sanitize_key, sanitize_textarea_field).
+		$value = wp_unslash( $_REQUEST[ $field ] ?? '' );
+		return is_scalar( $value ) ? trim( (string) $value ) : '';
 	}
 
 	/**

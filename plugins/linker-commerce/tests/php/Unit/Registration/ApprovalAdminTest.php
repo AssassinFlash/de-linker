@@ -223,15 +223,18 @@ final class ApprovalAdminTest extends TestCase {
 	}
 
 	/**
-	 * The handler applies the action and leads back to the list.
+	 * The handler applies the posted action (the profile block's buttons) and
+	 * leads back to the list.
 	 */
 	public function test_the_handler_applies_the_action(): void {
 		$admin = new ApprovalAdmin( new Approval() );
 		WP_Mock::expectAction( Approval::CHANGED_ACTION, 5, Approval::PENDING, Approval::APPROVED, '' );
-		$_POST = array(
-			'user'                     => '5',
-			'linker_approval_action'   => 'approve',
-			ApprovalAdmin::NONCE_FIELD => 't',
+		$this->request(
+			array(
+				'user'                     => '5',
+				'linker_approval_action'   => 'approve',
+				ApprovalAdmin::NONCE_FIELD => 't',
+			)
 		);
 
 		$this->expectException( \RuntimeException::class );
@@ -244,15 +247,53 @@ final class ApprovalAdminTest extends TestCase {
 	}
 
 	/**
+	 * The users list's one-click approve is a link, so the handler reads the
+	 * action out of a GET request: the test walks the URL row_action() renders
+	 * into the handler, exactly as the staff member's click does.
+	 */
+	public function test_the_inline_link_approves_through_the_get_path(): void {
+		$admin                                = new ApprovalAdmin( new Approval() );
+		$customer                             = new WP_User();
+		$customer->ID                         = 5;
+		$this->store[ Approval::STATUS_META ] = Approval::PENDING;
+		WP_Mock::userFunction( 'wp_nonce_url', array( 'return' => static fn ( string $url ): string => $url . '&_wpnonce=t' ) );
+
+		$link    = $admin->row_action( array(), $customer )[ Approval::STATUS_META ];
+		$matches = array();
+		$this->assertSame( 1, preg_match( '/href="([^"]+)"/', $link, $matches ), 'The row action is a link.' );
+		parse_str( (string) parse_url( html_entity_decode( (string) ( $matches[1] ?? '' ) ), PHP_URL_QUERY ), $query );
+		$this->assertSame( 'linker_approval', $query['action'] ?? '' );
+		$this->assertSame( 'approve', $query['linker_approval_action'] ?? '' );
+
+		// The link's own fields arrive as a GET request; $_POST stays empty.
+		$fields = array();
+		foreach ( array( 'action', 'user', 'linker_approval_action', ApprovalAdmin::NONCE_FIELD ) as $field ) {
+			$value            = $query[ $field ] ?? '';
+			$fields[ $field ] = is_string( $value ) ? $value : '';
+		}
+		$this->request( $fields, 'get' );
+		WP_Mock::expectAction( Approval::CHANGED_ACTION, 5, Approval::PENDING, Approval::APPROVED, '' );
+		try {
+			$admin->handle();
+			$this->fail( 'The handler ends in a redirect.' );
+		} catch ( \RuntimeException $exception ) {
+			$this->assertSame( 'redirect', $exception->getMessage() );
+		}
+		$this->assertSame( Approval::APPROVED, $this->store[ Approval::STATUS_META ] ?? '', 'The click approved the account.' );
+	}
+
+	/**
 	 * The handler refuses an unknown action and a reason-less restriction; the
 	 * nonce comes first.
 	 */
 	public function test_the_handler_refuses_bad_actions(): void {
 		$admin = new ApprovalAdmin( new Approval() );
-		$_POST = array(
-			'user'                     => '5',
-			'linker_approval_action'   => 'ban',
-			ApprovalAdmin::NONCE_FIELD => 't',
+		$this->request(
+			array(
+				'user'                     => '5',
+				'linker_approval_action'   => 'ban',
+				ApprovalAdmin::NONCE_FIELD => 't',
+			)
 		);
 		try {
 			$admin->handle();
@@ -261,8 +302,14 @@ final class ApprovalAdminTest extends TestCase {
 			$this->assertSame( 'die 400', $exception->getMessage() );
 		}
 
-		$_POST['linker_approval_action'] = 'restrict';
-		$_POST['linker_approval_reason'] = '';
+		$this->request(
+			array(
+				'user'                     => '5',
+				'linker_approval_action'   => 'restrict',
+				'linker_approval_reason'   => '',
+				ApprovalAdmin::NONCE_FIELD => 't',
+			)
+		);
 		try {
 			$admin->handle();
 			$this->fail( 'A restriction without a reason dies.' );
@@ -272,13 +319,32 @@ final class ApprovalAdminTest extends TestCase {
 		$this->assertSame( array(), $this->store, 'Nothing was written.' );
 
 		$this->nonce_ok = false;
-		$_POST['user']  = '5';
+		$this->request(
+			array(
+				'user'                     => '5',
+				'linker_approval_action'   => 'approve',
+				ApprovalAdmin::NONCE_FIELD => 't',
+			)
+		);
 		try {
 			$admin->handle();
 			$this->fail( 'A failed nonce dies first.' );
 		} catch ( \RuntimeException $exception ) {
 			$this->assertSame( 'die 0', $exception->getMessage() );
 		}
+	}
+
+	/**
+	 * A request as PHP hands it to WordPress: a submitted form carries its
+	 * fields in $_POST and $_REQUEST, a clicked link in $_GET and $_REQUEST.
+	 *
+	 * @param array<string, string> $fields Request fields.
+	 * @param string                $method 'post' for the profile block's buttons, 'get' for the list's link.
+	 */
+	private function request( array $fields, string $method = 'post' ): void {
+		$_GET     = 'get' === $method ? $fields : array();
+		$_POST    = 'post' === $method ? $fields : array();
+		$_REQUEST = $fields;
 	}
 
 	/**

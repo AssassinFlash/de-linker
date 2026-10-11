@@ -85,7 +85,7 @@ final class LoginGate {
 	 * account keeps, what is paused, and the way back.
 	 *
 	 * @param string $status   The account's approval state.
-	 * @param string $products The catalogue's address.
+	 * @param string $products The products page's address.
 	 */
 	private function approval_gate( string $status, string $products ): string {
 		if ( Approval::RESTRICTED === $status ) {

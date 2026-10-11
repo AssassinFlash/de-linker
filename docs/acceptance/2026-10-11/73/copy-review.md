@@ -80,4 +80,31 @@
 
 ## 11. 渲染证据
 
-`docs/acceptance/2026-10-11/73/email-render/`：EN/DE × approved/restricted/rejected 六封 `.eml`，真实实例同进程连发（EN 客户→DE 客户），主题与正文逐封核对为对应语言。过程发现并修复一个真实缺陷（`CustomerApprovalEmail::get_subject()/get_heading()` 重读 settings——Woo 的 settings 缓存会把同请求第一次渲染的语言冻结给后续客户）；修复前后对照见本目录 Git 历史（修复前 DE 客户收到 EN 主题 + DE 正文）。
+`docs/acceptance/2026-10-11/73/email-render/`：EN/DE × approved/restricted/rejected 六封 `.eml`，真实实例同进程连发（EN 客户先、DE 客户后，正是会暴露语言缓存缺陷的顺序），主题与正文逐封核对为对应语言，正文即上文 §1–§9 的定稿串（§14 给出逐条断言）。渲染在测试模式开关开启下进行（To 一律 `chester@de-linker.com`，AGENTS.md §5 测试邮件纪律）；收件人重写只发生在投递那一刻，消息进队列时仍带客户地址（单元 `OutboxTest::test_test_mode_rewrites_at_send_time_only` 断言队列与投递两面的数据）。
+
+过程发现并修复一个真实缺陷：`CustomerApprovalEmail::get_subject()/get_heading()` 重读存储 settings——Woo 的 settings 缓存会把同请求第一次渲染的语言冻结给后续客户（先发 EN 客户时，DE 客户收到 EN 主题 + DE 正文）。缺陷的防线是代码本身（每次渲染重读 settings）加集成测试 `ApprovalTest::test_the_customer_emails_speak_the_finalized_copy`（同一进程内 DE 客户读德语正文、EN 客户读英语正文）。修复前的 `.eml` 未归档——本票单提交，历史里没有可复核的修复前渲染，此前"对照见 Git 历史"的说法已删。
+
+## 12. 摘要第①块（#74 摘要的插拔块，staff 面，本次修复轮新增）
+
+`Registration\PendingApprovals`（`Digest\Block` 实现，随 `linker_commerce_digest_blocks` 过滤器进摘要第一块）：
+
+- 标题 EN：`Accounts waiting for approval`；DE 初稿：`Konten, die auf die Freigabe warten`
+  评审：`Freigabe` 词族与 §2/§8 一致（`Freigeben`/`Preise nach Freigabe`）；`Konto`/`Konten` 是 .po 既有词（`Ihr Konto`、`Konto freigegeben`）；德语是关系从句，非英文语序直译；无名词堆砌。**定稿**：同初稿。
+- 空态 EN：`No account is waiting for approval.`；DE 初稿：`Kein Konto wartet auf die Freigabe.`
+  评审：与摘要其他块的空态句同调（"No inquiry is waiting for more than 24 hours."），无防御腔。**定稿**：同初稿。
+- 行细节 EN：`Registered on %s`；DE 初稿：`Registriert am %s`
+  评审：`registrieren` 与 §2 注册语义一致；`%s` 处放不依赖站点日期格式的 `Y-m-d H:i`（摘要邮件说站点语言，站点 `date_format` 选项未必是该语言的格式——#74 规格同款理由）。**定稿**：同初稿。
+- 链接文案：**复用既有串** `Open the customer` / `Kunden öffnen`（团队新客户邮件与 VAT 邮件既有、已过评审）。评审：票面"后台直达链接"由这条既有链接名承载，零新公开面文案，术语一致性优先。**定稿**：复用，不改。
+- 条目结构：`label` = 公司名（无公司名时用显示名），`detail` = 注册时刻，`url` = `user-edit.php?user_id=…` 直达。口径 = spec 11：`role=customer` 且状态 ≠ approved。
+
+## 13. 补录：第三条 wp_die（§3 的功能性文本）
+
+§3 记录了三处 wp_die（权限 403、动作 400、缺原因 400）为功能性文本、无修订，但只给了前两条的德语字面量。缺原因那条的定稿补录于此：
+
+- EN：`A restriction or rejection needs a reason; the customer reads it in the email.`；DE 定稿：`Eine Einschränkung oder Ablehnung braucht einen Grund; der Kunde liest ihn in der E-Mail.`
+  评审：与 §3 的 `Einschränken`/`Ablehnen`/`Grund` 同术语；`der Kunde liest **ihn**`（Grund，阳性）指代正确；句式与前两条 wp_die 同为直述。**定稿**：如上。
+
+## 14. 定稿誊录与断言（本次修复轮）
+
+- §1–§9 里此前 `.po` msgstr 为空的 **11** 条定稿德文已逐条誊录进 `plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po`（引用源：`linker-approval-approved.php:24`、`linker-approval-rejected.php:23`、`linker-approval-restricted.php:24`、`LoginGate.php`（restricted P1 / pending P1、P2）、`Approval.php:209`、`ApprovalAdmin.php:185,223`、`RejectedEmail.php:33`、`RestrictedEmail.php:34`），`msgfmt --check-format` 通过，`.mo` 随之重编译。
+- 集成测试 `ApprovalTest::test_the_customer_emails_speak_the_finalized_copy` 按**定稿串**逐条断言六封正文（DE 三封全德语、EN 三封全英语），`docs/acceptance/2026-10-11/73/email-render/*.eml` 是同一次渲染的存档（§11）。

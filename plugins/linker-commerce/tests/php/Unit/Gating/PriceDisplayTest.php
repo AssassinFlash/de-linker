@@ -150,10 +150,14 @@ final class PriceDisplayTest extends TestCase {
 	/**
 	 * A visitor's draft subtotal names what opens the prices: "log in" for a
 	 * guest, the account's approval for a signed-in one; an approved
-	 * customer's subtotal stays.
+	 * customer's subtotal stays. The guest's text is plain: the theme prints
+	 * the subtotal inside its own link to the draft, so a link here would nest
+	 * one link in another.
 	 */
 	public function test_draft_subtotal(): void {
-		$this->assertSame( '<span class="linker-price-note"><a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a></span>', $this->visitor( false )->cart_subtotal( '€0.00' ) );
+		$guest = $this->visitor( false )->cart_subtotal( '€0.00' );
+		$this->assertSame( '<span class="linker-price-note">Log in for prices</span>', $guest );
+		$this->assertStringNotContainsString( '<a ', $guest, 'No link inside the theme\'s own link to the draft.' );
 		$this->assertSame( '<span class="linker-price-note">Prices after approval</span>', $this->visitor( true, 'orderable', false )->cart_subtotal( '€0.00' ) );
 		$this->assertSame( '€3,360.00', $this->visitor( true )->cart_subtotal( '€3,360.00' ) );
 	}

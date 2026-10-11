@@ -72,7 +72,7 @@ final class Plugin {
 	}
 
 	/**
-	 * The presentation installer and the stock push key.
+	 * The presentation installer, the stock push key, and the test-mode switch.
 	 */
 	public function register_cli(): void {
 		if ( ! class_exists( 'WP_CLI' ) ) {
@@ -80,6 +80,7 @@ final class Plugin {
 		}
 		\WP_CLI::add_command( 'linker-commerce', new Cli\PresentCommand() );
 		\WP_CLI::add_command( 'linker-commerce stock-key', new Cli\StockKeyCommand() );
+		\WP_CLI::add_command( 'linker-commerce test-mail', new Cli\TestMailCommand() );
 	}
 
 	/**
@@ -128,16 +129,12 @@ final class Plugin {
 			new Gating\Module( $prices, new Gating\DraftSummary( $state, $prices ), new Gating\StoreApiPrices( $state ), new Gating\CatalogSorting( $state ) ),
 			new Mail\Module( new Mail\Outbox( $jobs, new Mail\Throttle() ), $jobs, new Mail\EmailLocale(), new Mail\EmailPolicy() ),
 			new Digest\Module( $this->file, $jobs ),
-			new Registration\Module( $this->file, $options, new Registration\Fields( $vat ), new Registration\BillingVatField( $vat ), new Registration\AddressForm(), $approval, new Registration\ApprovalAdmin( $approval ) ),
+			new Registration\Module( $this->file, $options, new Registration\Fields( $vat, $approval ), new Registration\BillingVatField( $vat ), new Registration\AddressForm(), $approval, new Registration\ApprovalAdmin( $approval ), new Registration\PendingApprovals( $approval ) ),
 			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), $checkout, new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
 			new Proforma\Module( $this->file, new Proforma\AdminBox( $issuer ) ),
 			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $proformas, $solutions ), new Account\SolutionsRoute( $solutions ) ),
-<<<<<<< HEAD
-			new Presentation\Module( new Presentation\Shortcodes( $gate ), $gate, new Presentation\WindPress() ),
-			new Stock\Module( new Stock\StockController(), new Stock\BatchLog(), new Stock\Retention( $this->file ) ),
-=======
 			new Presentation\Module( new Presentation\Shortcodes( $gate, $approval ), $gate, new Presentation\WindPress() ),
->>>>>>> 85b4cf3 (- Registration\Approval：审批权威（pending/approved/restricted/rejected），meta)
+			new Stock\Module( new Stock\StockController(), new Stock\BatchLog(), new Stock\Retention( $this->file ) ),
 		);
 	}
 }
