@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Catalog\Materials;
 use Linker\Commerce\Catalog\SelectionFacts;
 use Linker\Commerce\Storefront\CatalogFilters;
 use Linker\Commerce\Storefront\ProductView;
@@ -46,10 +47,22 @@ final class CatalogShortcodes {
 		add_shortcode( 'linker_catalog_empty', array( $this, 'catalog_empty' ) );
 		add_shortcode( 'linker_catalog_card', array( $this, 'catalog_card' ) );
 		add_shortcode( 'linker_pdp_brand_class', array( $this, 'pdp_brand_class' ) );
-		add_shortcode( 'linker_pdp_crumbs', array( $this, 'pdp_crumbs' ) );
-		add_shortcode( 'linker_pdp_gallery', array( $this, 'pdp_gallery' ) );
-		add_shortcode( 'linker_pdp_buy', array( $this, 'pdp_buy' ) );
-		add_shortcode( 'linker_pdp_description', array( $this, 'pdp_description' ) );
+		add_shortcode( 'linker_pdp_brand', array( $this, 'pdp_brand' ) );
+		add_shortcode( 'linker_pdp_model', array( $this, 'pdp_model' ) );
+		add_shortcode( 'linker_pdp_brand_logo', array( $this, 'pdp_brand_logo' ) );
+		add_shortcode( 'linker_pdp_designation', array( $this, 'pdp_designation' ) );
+		add_shortcode( 'linker_pdp_sku', array( $this, 'pdp_sku' ) );
+		add_shortcode( 'linker_pdp_price', array( $this, 'pdp_price' ) );
+		add_shortcode( 'linker_pdp_key_stats', array( $this, 'pdp_key_stats' ) );
+		add_shortcode( 'linker_pdp_availability', array( $this, 'pdp_availability' ) );
+		add_shortcode( 'linker_pdp_cta', array( $this, 'pdp_cta' ) );
+		add_shortcode( 'linker_pdp_ask', array( $this, 'pdp_ask' ) );
+		add_shortcode( 'linker_pdp_tools', array( $this, 'pdp_tools' ) );
+		add_shortcode( 'linker_pdp_project_choices', array( $this, 'pdp_project_choices' ) );
+		add_shortcode( 'linker_pdp_gallery_pair', array( $this, 'pdp_gallery_pair' ) );
+		add_shortcode( 'linker_pdp_gallery_thumbs', array( $this, 'pdp_gallery_thumbs' ) );
+		add_shortcode( 'linker_pdp_intro', array( $this, 'pdp_intro' ) );
+		add_shortcode( 'linker_pdp_benefits', array( $this, 'pdp_benefits' ) );
 		add_shortcode( 'linker_pdp_specs', array( $this, 'pdp_specs' ) );
 		add_shortcode( 'linker_pdp_scenes', array( $this, 'pdp_scenes' ) );
 		add_shortcode( 'linker_pdp_downloads', array( $this, 'pdp_downloads' ) );
@@ -378,69 +391,260 @@ final class CatalogShortcodes {
 	}
 
 	/**
-	 * The product page's own scripts: the gallery viewer and thumbnails, the
-
-	 * specification tabs, the comparison selection. Enqueued once per page,
-	 * from whichever block renders first.
-	 */
-	private function pdp_scripts(): void {
-		$base = (string) plugin_dir_url( __DIR__ . '/../linker-commerce.php' ) . 'assets/';
-		wp_enqueue_script( 'tv-b2b-compare-selection', $base . 'compare-selection.js', array(), '3', true );
-		wp_localize_script(
-			'tv-b2b-compare-selection',
-			'tvB2bCompare',
-			array(
-				'storageKey' => 'linkerCompareIds',
-				'max' => 4,
-				'pageUrl' => self::compare_page_url(),
-				'strings' => array(
-					'compare' => __( 'Compare', 'linker-commerce' ),
-					'inComparison' => __( 'In comparison', 'linker-commerce' ),
-					'limitReached' => sprintf(
-						/* translators: %d: maximum number of products in a comparison. */
-						__( 'Up to %d products. Remove one to add another.', 'linker-commerce' ),
-						4
-					),
-					'compareArticle' => __( 'Compare: %s', 'linker-commerce' ),
-				),
-			)
-		);
-		wp_enqueue_script( 'tv-b2b-pdp-ui', $base . 'pdp-ui.js', array( 'tv-b2b-compare-selection' ), '3', true );
-	}
-
-	/**
-	 * The breadcrumb under the header: Products, the brand, the model.
+	 * The brand name: the breadcrumb's middle segment and the purchase
+	 * panel's plain-text fallback when the library holds no logo.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
-	public function pdp_crumbs( $atts = array() ): string {
+	public function pdp_brand( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		return null === $view ? '' : esc_html( (string) $view['brand'] );
+	}
+
+	/**
+	 * The model designation: the H1, the breadcrumb's tail and the project
+	 * entry's title.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_model( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		return null === $view ? '' : esc_html( (string) $view['model'] );
+	}
+
+	/**
+	 * The purchase panel's brand mark: the brand's light logo image, or the
+	 * brand's plain name when the library holds no logo file.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_brand_logo( $atts = array() ): string {
 		unset( $atts );
 		$view = $this->current_view();
 		if ( null === $view ) {
 			return '';
 		}
-		$crumbs = array();
-		$shop   = get_permalink( (int) wc_get_page_id( 'shop' ) );
-		if ( \is_string( $shop ) ) {
-			$crumbs[] = '<a href="' . esc_url( $shop ) . '">' . esc_html__( 'Products', 'linker-commerce' ) . '</a>';
+		if ( \is_array( $view['brand_logo'] ) ) {
+			$logo = $view['brand_logo'];
+			$html = '<div class="pdp-brand pdp-brand--logo"><img class="pdp-brand-logo" src="' . esc_url( (string) $logo['src'] ) . '"';
+			if ( '' !== (string) $logo['srcset'] ) {
+				$html .= ' srcset="' . esc_attr( (string) $logo['srcset'] ) . '"';
+			}
+			return $html . ' alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" fetchpriority="high" /></div>';
 		}
-		if ( '' !== $view['brand'] ) {
-			$crumbs[] = '<span>' . esc_html( $view['brand'] ) . '</span>';
+		if ( '' === (string) $view['brand'] ) {
+			return '';
 		}
-		$crumbs[] = '<span>' . esc_html( $view['model'] ) . '</span>';
-		return '<nav class="pdp-crumbs" aria-label="' . esc_attr__( 'Breadcrumb', 'linker-commerce' ) . '">'
-			. implode( '<span aria-hidden="true">/</span>', $crumbs ) . '</nav>';
+		return '<div class="pdp-brand"><span class="pdp-brand-text">' . esc_html( (string) $view['brand'] ) . '</span></div>';
 	}
 
 	/**
-	 * The gallery: the main and secondary image pair and the thumbnail
-	 * column, in the featured-first order the product data holds.
+	 * The line under the H1: what the product name says besides brand and
+	 * model.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
-	public function pdp_gallery( $atts = array() ): string {
+	public function pdp_designation( $atts = array() ): string {
 		unset( $atts );
-		$this->pdp_scripts();
+		$view = $this->current_view();
+		return null === $view ? '' : esc_html( (string) $view['designation'] );
+	}
+
+	/**
+	 * The bare item number (the template prints the "Item number:" label).
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_sku( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		return null === $view ? '' : esc_html( (string) $view['sku'] );
+	}
+
+	/**
+	 * The price area: the sign-in prompt and its link for a visitor without
+	 * prices, the product's net price for one with (the business gate is the
+	 * one authority on which of the two shows).
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_price( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		if ( '' !== (string) $view['price']['url'] ) {
+			return '<a class="pdp-price-login" href="' . esc_url( (string) $view['price']['url'] ) . '">' . esc_html( (string) $view['price']['html'] ) . '</a>';
+		}
+		return '<span class="pdp-price-net">' . wp_kses_post( (string) $view['price']['html'] ) . '</span>';
+	}
+
+	/**
+	 * The purchase panel's key figures, one row each: the registry's first
+	 * figures of the product type, in the type's own order.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_key_stats( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$product = wc_get_product( (int) $view['id'] );
+		if ( ! $product instanceof WC_Product ) {
+			return '';
+		}
+		$html = '';
+		foreach ( Materials::key_stats( $product, 4 ) as $stat ) {
+			$html .= '<div><span class="pdp-app-stat-icon" aria-hidden="true">' . self::icon( (string) $stat['icon'] ) . '</span>'
+				. '<dt>' . esc_html( (string) $stat['label'] ) . '</dt><dd>' . esc_html( (string) $stat['value'] ) . '</dd></div>';
+		}
+		return $html;
+	}
+
+	/**
+	 * The availability line: the state with its dot and the delivery
+	 * sentence the freight policy derives.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_availability( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$product = wc_get_product( (int) $view['id'] );
+		$html    = '<p class="pdp-avail-label"><span class="pdp-dot is-wait"></span>' . esc_html( (string) $view['availability'] ) . '</p>';
+		$note    = $product instanceof WC_Product ? self::delivery_note( $product ) : '';
+		if ( '' !== $note ) {
+			$html .= '<p class="pdp-avail-note">' . esc_html( $note ) . '</p>';
+		}
+		return $html;
+	}
+
+	/**
+	 * The purchase panel's primary action: sign in for partner pricing, or
+	 * the solution draft entry when the visitor sees prices.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_cta( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		return '<a class="pdp-btn pdp-btn-dark" href="' . esc_url( (string) $view['cta_url'] ) . '">' . esc_html( (string) $view['cta_label'] ) . '</a>';
+	}
+
+	/**
+	 * The purchase panel's secondary action: the contact request carrying the
+	 * product as its subject.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_ask( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$contact = array(
+			'kind'       => 'product',
+			'title'      => (string) $view['title'],
+			'url'        => (string) get_permalink( (int) $view['id'] ),
+			'source_id'  => (int) $view['id'],
+			'product_id' => (int) $view['id'],
+			'intent'     => 'product',
+		);
+		return '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( (string) $view['ask_url'] ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $contact ) ) . '">'
+			. esc_html__( 'Ask about this product', 'linker-commerce' ) . '</a>';
+	}
+
+	/**
+	 * The three product tools and the comparison chip (`tv_b2b_pdp_tools`):
+	 * compare, ask, documents.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_tools( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$product_id  = (int) $view['id'];
+		$ask_message = sprintf(
+			/* translators: %s: product name with item number. */
+			__( 'About %s: give me the key specs, which batteries or inverters it pairs with, and whether it fits my project.', 'linker-commerce' ),
+			trim( (string) $view['title'] . ' (' . (string) $view['sku'] . ')' )
+		);
+		$html  = '<button type="button" class="pdp-tool" data-compare-article="' . $product_id . '" aria-pressed="false">' . self::icon( 'compare' )
+			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span></button>';
+		$html .= '<button type="button" class="pdp-tool" data-pdp-ask data-ask-message="' . esc_attr( $ask_message ) . '">' . self::icon( 'ask' )
+			. esc_html__( 'Ask Linker Advisor', 'linker-commerce' ) . '</button>';
+		$html .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
+			. esc_html__( 'Documents', 'linker-commerce' ) . '</a>';
+		$html .= '<a class="sf-compare-chip" id="compare-chip" hidden href="' . esc_url( self::compare_page_url() ) . '" aria-label="' . esc_attr__( 'Compare', 'linker-commerce' ) . '">' . self::icon( 'compare' )
+			. '<span class="sf-compare-chip-label">' . esc_html__( 'Compare', 'linker-commerce' ) . '</span>'
+			. '<span class="sf-compare-chip-n" data-compare-count>0</span></a>';
+		return $html;
+	}
+
+	/**
+	 * The project entry's ways into the Advisor: one button per planning
+	 * stage, each with its own opening message, plus the nameplate entry.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_project_choices( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$product_id = (int) $view['id'];
+		$material   = Materials::material_for_product( $product_id );
+		$shared     = array(
+			'data-linker-project-product-prompt' => '',
+			'data-product-id' => (string) $product_id,
+			'data-material-id' => \is_array( $material ) ? (string) ( $material['material_id'] ?? '' ) : '',
+			'data-material-revision' => \is_array( $material ) ? (string) ( $material['revision'] ?? '' ) : '',
+			'data-product-model' => (string) $view['model'],
+		);
+		$stages     = array(
+			array( 'label' => __( 'New system', 'linker-commerce' ), 'lead' => __( 'I am planning a new system with %s.', 'linker-commerce' ) ),
+			array( 'label' => __( 'Extend an existing system', 'linker-commerce' ), 'lead' => __( 'I am extending an existing system with %s.', 'linker-commerce' ) ),
+			array( 'label' => __( 'Replace an existing unit', 'linker-commerce' ), 'lead' => __( 'I am replacing a unit in an existing system with %s.', 'linker-commerce' ) ),
+		);
+		$tail       = __( 'Then ask one question at a time for what you still need (existing model, quantity, installation postcode, installation date) and check compatibility, missing system components and delivery windows against current Linker data.', 'linker-commerce' );
+		$html       = '';
+		foreach ( $stages as $stage ) {
+			$message = sprintf( (string) $stage['lead'], trim( (string) $view['title'] . ' (' . (string) $view['sku'] . ')' ) ) . ' ' . $tail;
+			$html   .= '<button type="button" class="pdp-project-choice"';
+			foreach ( $shared as $attribute => $value ) {
+				$html .= ' ' . $attribute . '="' . esc_attr( $value ) . '"';
+			}
+			$html .= ' data-project-message="' . esc_attr( $message ) . '">' . esc_html( (string) $stage['label'] ) . '</button>';
+		}
+		$html .= '<button type="button" class="pdp-project-choice pdp-project-choice--nameplate" data-linker-assistant-open="nameplate">'
+			. esc_html__( 'Identify a device from a nameplate photo', 'linker-commerce' ) . '</button>';
+		return $html;
+	}
+
+	/**
+	 * The gallery's image pair: the featured image and the first gallery
+	 * image side by side, each opening the viewer.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_gallery_pair( $atts = array() ): string {
+		unset( $atts );
 		$view = $this->current_view();
 		if ( null === $view ) {
 			return '';
@@ -450,207 +654,97 @@ final class CatalogShortcodes {
 			return '';
 		}
 		$ids  = Materials::gallery_ids( $product, Materials::acf( (int) $view['id'] ) );
-		$html = '<div class="pdp-gallery">';
+		$html = '<div class="pdp-gallery-pair">';
 		if ( array() === $ids ) {
-			return $html . '<div class="pdp-gallery-pair"><div class="pdp-gallery-main-wrap pdp-gallery-empty">'
+			return $html . '<div class="pdp-gallery-main-wrap pdp-gallery-empty">'
 				. '<p class="tv-empty-state">' . esc_html__( 'Product photography for this model is in preparation.', 'linker-commerce' ) . '</p>'
-				. '</div></div></div>';
+				. '</div></div>';
 		}
-		$name = $view['title'];
-		$html .= '<div class="pdp-gallery-pair">';
 		$html .= '<button type="button" class="pdp-gallery-main-wrap" data-pdp-image data-pdp-main data-src="' . esc_url( self::image_url( $ids[0] ) ) . '" data-caption="">'
-			. self::image_tag( $ids[0], 'full', array( 'class' => 'pdp-gallery-main', 'alt' => $name ) ) . '</button>';
+			. self::image_tag( $ids[0], 'full', array( 'class' => 'pdp-gallery-main', 'alt' => (string) $view['title'] ) ) . '</button>';
 		if ( isset( $ids[1] ) ) {
 			$html .= '<button type="button" class="pdp-gallery-secondary" data-pdp-image data-src="' . esc_url( self::image_url( $ids[1] ) ) . '" data-caption="" aria-label="' . esc_attr__( 'Product image 2', 'linker-commerce' ) . '">'
 				. self::image_tag( $ids[1], 'full', array( 'alt' => '' ) ) . '</button>';
 		}
-		$html .= '</div>';
-		if ( \count( $ids ) > 1 ) {
-			$html .= '<div class="pdp-thumbs">';
-			foreach ( $ids as $index => $id ) {
-				$html .= '<button type="button" data-pdp-thumb data-src="' . esc_url( self::image_url( $id ) ) . '" data-caption=""'
-					. ' aria-label="' . esc_attr( sprintf( /* translators: %d: image number. */ __( 'Product image %d', 'linker-commerce' ), $index + 1 ) ) . '"'
-					. ' aria-pressed="' . ( 0 === $index ? 'true' : 'false' ) . '" class="pdp-thumb">'
-					. wp_get_attachment_image( $id, 'medium', false, array( 'sizes' => '72px' ) ) . '</button>';
-			}
-			$html .= '</div>';
-		}
 		return $html . '</div>';
 	}
 
 	/**
-	 * The purchase panel: brand, identity, price prompt, the key figures, the
-	 * availability line with its delivery note, the two calls to action, the
-	 * three tools and the project entry.
+	 * The gallery's thumbnail column: one button per image, the first pressed.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
-	public function pdp_buy( $atts = array() ): string {
+	public function pdp_gallery_thumbs( $atts = array() ): string {
 		unset( $atts );
 		$view = $this->current_view();
 		if ( null === $view ) {
 			return '';
 		}
-		$product_id = (int) $view['id'];
-		$product    = wc_get_product( $product_id );
-		$html       = '';
-		if ( \is_array( $view['brand_logo'] ) ) {
-			$logo  = $view['brand_logo'];
-			$html .= '<div class="pdp-brand pdp-brand--logo"><img class="pdp-brand-logo" src="' . esc_url( $logo['src'] ) . '" srcset="' . esc_attr( $logo['srcset'] ) . '" alt="' . esc_attr( $logo['alt'] ) . '" loading="eager" decoding="async" /></div>';
-		} elseif ( '' !== $view['brand'] ) {
-			$html .= '<div class="pdp-brand"><span class="pdp-brand-text">' . esc_html( $view['brand'] ) . '</span></div>';
-		}
-		$html .= '<h1 class="pdp-h1">' . esc_html( $view['model'] ) . '</h1>';
-		if ( '' !== $view['designation'] ) {
-			$html .= '<p class="pdp-designation">' . esc_html( $view['designation'] ) . '</p>';
-		}
-		if ( '' !== $view['sku'] ) {
-			$html .= '<p class="pdp-sku">' . esc_html__( 'Item number:', 'linker-commerce' ) . ' ' . esc_html( $view['sku'] ) . '</p>';
-		}
-		$html .= '<div class="pdp-price">';
-		if ( '' !== $view['price']['url'] ) {
-			$html .= '<a class="pdp-price-login" href="' . esc_url( $view['price']['url'] ) . '">' . esc_html( $view['price']['html'] ) . '</a>';
-		} else {
-			$html .= '<span class="pdp-price-net">' . wp_kses_post( $view['price']['html'] ) . '</span>';
-		}
-		$html .= '</div>';
-		$stats = $product instanceof WC_Product ? Materials::key_stats( $product, 4 ) : array();
-		if ( array() !== $stats ) {
-			$html .= '<dl class="pdp-spec-list">';
-			foreach ( $stats as $stat ) {
-				$html .= '<div><span class="pdp-app-stat-icon" data-icon="' . esc_attr( $stat['icon'] ) . '" aria-hidden="true"></span>'
-					. '<dt>' . esc_html( $stat['label'] ) . '</dt><dd>' . esc_html( $stat['value'] ) . '</dd></div>';
-			}
-			$html .= '</dl>';
-		}
-		$note = $product instanceof WC_Product ? self::delivery_note( $product ) : '';
-		$html .= '<div class="pdp-avail"><p class="pdp-avail-label"><span class="pdp-dot ' . ( $product instanceof WC_Product && $product->is_in_stock() ? 'is-ok' : 'is-wait' ) . '" aria-hidden="true"></span>' . esc_html( $view['availability'] ) . '</p>';
-		if ( '' !== $note ) {
-			$html .= '<p class="pdp-avail-note">' . esc_html( $note ) . '</p>';
-		}
-		$html .= '</div>';
-		$html .= '<a class="pdp-btn pdp-btn-dark" href="' . esc_url( (string) $view['cta_url'] ) . '">' . esc_html( $view['cta_label'] ) . '</a>';
-		$html .= '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( (string) $view['ask_url'] ) . '">' . esc_html__( 'Ask about this product', 'linker-commerce' ) . '</a>';
-		$html .= self::tools_row( $product_id, $view, $product );
-		$html .= self::project_check( $product_id, $view, $product );
-		return $html;
-	}
-
-	/**
-	 * The three product tools and the comparison chip
-	 * (`tv_b2b_pdp_tools`): compare, ask, documents.
-	 */
-	private static function tools_row( int $product_id, array $view, ?WC_Product $product ): string {
-		$ask_message = sprintf(
-			/* translators: %s: product name with item number. */
-			__( 'About %s: give me the key specs, which batteries or inverters it pairs with, and whether it fits my project.', 'linker-commerce' ),
-			trim( (string) $view['title'] . ' (' . (string) $view['sku'] . ')' )
-		);
-		$html  = '<div class="pdp-product-tools">';
-		$html .= '<button type="button" class="pdp-tool" data-compare-article="' . (int) $product_id . '" aria-pressed="false">'
-			. '<span class="pdp-tool-icon" data-icon="compare" aria-hidden="true"></span>'
-			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span></button>';
-		$html .= '<button type="button" class="pdp-tool" data-pdp-ask data-ask-message="' . esc_attr( $ask_message ) . '">'
-			. '<span class="pdp-tool-icon" data-icon="ask" aria-hidden="true"></span>'
-			. esc_html__( 'Ask Linker Advisor', 'linker-commerce' ) . '</button>';
-		$html .= '<a class="pdp-tool" href="#downloads">'
-			. '<span class="pdp-tool-icon" data-icon="file" aria-hidden="true"></span>'
-			. esc_html__( 'Documents', 'linker-commerce' ) . '</a>';
-		$html .= '<a class="sf-compare-chip" id="compare-chip" hidden href="' . esc_url( self::compare_page_url() ) . '" aria-label="' . esc_attr__( 'Compare', 'linker-commerce' ) . '">'
-			. '<span class="pdp-tool-icon" data-icon="compare" aria-hidden="true"></span>'
-			. '<span class="sf-compare-chip-label">' . esc_html__( 'Compare', 'linker-commerce' ) . '</span>'
-			. '<span class="sf-compare-chip-n" data-compare-count>0</span></a>';
-		return $html . '</div>';
-	}
-
-	/**
-	 * The project entry under the tools: "Plan with <model>" and the four
-	 * ways into the Advisor, each with its own opening message.
-	 *
-	 * @param array<string, mixed> $view    The product's replica fields.
-	 */
-	private static function project_check( int $product_id, array $view, ?WC_Product $product ): string {
+		$product = wc_get_product( (int) $view['id'] );
 		if ( ! $product instanceof WC_Product ) {
 			return '';
 		}
-		$model    = (string) $view['model'];
-		$name     = (string) $view['title'];
-		$sku      = (string) $view['sku'];
-		$material = Materials::material_for_product( $product_id );
-		$shared   = array(
-			'data-linker-project-product-prompt' => '',
-			'data-product-id' => (string) $product_id,
-			'data-material-id' => \is_array( $material ) ? (string) ( $material['material_id'] ?? '' ) : '',
-			'data-material-revision' => \is_array( $material ) ? (string) ( $material['revision'] ?? '' ) : '',
-			'data-product-model' => $model,
-		);
-		$stages   = array(
-			array( 'label' => __( 'New system', 'linker-commerce' ), 'lead' => __( 'I am planning a new system with %s.', 'linker-commerce' ) ),
-			array( 'label' => __( 'Extend an existing system', 'linker-commerce' ), 'lead' => __( 'I am extending an existing system with %s.', 'linker-commerce' ) ),
-			array( 'label' => __( 'Replace an existing unit', 'linker-commerce' ), 'lead' => __( 'I am replacing a unit in an existing system with %s.', 'linker-commerce' ) ),
-		);
-		$tail     = __( 'Then ask one question at a time for what you still need (existing model, quantity, installation postcode, installation date) and check compatibility, missing system components and delivery windows against current Linker data.', 'linker-commerce' );
-		$html     = '<details class="pdp-project-check" data-linker-project-product-context aria-label="' . esc_attr__( 'Check this model for the project', 'linker-commerce' ) . '">';
-		$html    .= '<summary><h2>' . esc_html( sprintf( /* translators: %s: product model. */ __( 'Plan with %s', 'linker-commerce' ), $model ) ) . '</h2></summary>';
-		$html    .= '<div class="pdp-project-check__body">';
-		$html    .= '<p>' . esc_html__( 'New system, extension or replacement? Linker Advisor starts from this model and asks only what is still missing.', 'linker-commerce' ) . '</p>';
-		$html    .= '<div class="pdp-project-choices">';
-		foreach ( $stages as $stage ) {
-			$message = sprintf( (string) $stage['lead'], trim( $name . ' (' . $sku . ')' ) ) . ' ' . $tail;
-			$html   .= '<button type="button" class="pdp-project-choice"';
-			foreach ( $shared as $attribute => $value ) {
-				$html .= ' ' . $attribute . '="' . esc_attr( $value ) . '"';
-			}
-			$html .= ' data-project-message="' . esc_attr( $message ) . '">' . esc_html( (string) $stage['label'] ) . '</button>';
+		$ids = Materials::gallery_ids( $product, Materials::acf( (int) $view['id'] ) );
+		if ( \count( $ids ) < 2 ) {
+			return '';
 		}
-		$html .= '<button type="button" class="pdp-project-choice pdp-project-choice--nameplate" data-linker-assistant-open="nameplate">'
-			. esc_html__( 'Identify a device from a nameplate photo', 'linker-commerce' ) . '</button>';
-		$html .= '</div><p data-linker-project-product-feedback aria-live="polite"></p></div></details>';
-		return $html;
+		$html = '<div class="pdp-thumbs">';
+		foreach ( $ids as $index => $id ) {
+			$html .= '<button type="button" data-pdp-thumb data-src="' . esc_url( self::image_url( $id ) ) . '" data-caption=""'
+				. ' aria-label="' . esc_attr( sprintf( /* translators: %d: image number. */ __( 'Product image %d', 'linker-commerce' ), $index + 1 ) ) . '"'
+				. ' aria-pressed="' . ( 0 === $index ? 'true' : 'false' ) . '" class="pdp-thumb">'
+				. wp_get_attachment_image( $id, 'medium', false, array( 'sizes' => '72px' ) ) . '</button>';
+		}
+		return $html . '</div>';
 	}
 
 	/**
-	 * The description section: the panel with the kicker, the title and the
-	 * introduction, the benefit cards and the disclosure rows.
+	 * The description panel's introduction paragraphs.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
-	public function pdp_description( $atts = array() ): string {
+	public function pdp_intro( $atts = array() ): string {
 		unset( $atts );
 		$view = $this->current_view();
 		if ( null === $view ) {
 			return '';
 		}
-		$html  = '<div class="pdp-overview"><div class="pdp-overview-copy">';
-		$html .= '<p class="pdp-kicker">' . esc_html__( 'Description', 'linker-commerce' ) . '</p>';
-		$html .= '<h2 class="pdp-section-title">' . esc_html( $view['title'] ) . '</h2>';
-		$html .= '<div class="pdp-overview-intro pdp-reading">';
-		if ( '' !== $view['intro'] ) {
-			$html .= wp_kses_post( $view['intro'] );
-		} elseif ( '' !== $view['body'] ) {
-			$html .= wp_kses_post( wpautop( $view['body'] ) );
-		} else {
-			$html .= '<p class="tv-empty-state">' . esc_html__( 'Introduction in preparation. The specification below carries the values from the datasheet on file.', 'linker-commerce' ) . '</p>';
+		if ( '' !== (string) $view['intro'] ) {
+			return wp_kses_post( wpautop( (string) $view['intro'] ) );
 		}
-		$html .= '</div></div></div>';
-		$cards = array();
-		foreach ( \is_array( $view['features'] ) ? $view['features'] : array() as $feature ) {
+		if ( '' !== (string) $view['body'] ) {
+			return wp_kses_post( wpautop( (string) $view['body'] ) );
+		}
+		return '<p class="tv-empty-state">' . esc_html__( 'Introduction in preparation. The specification below carries the values from the datasheet on file.', 'linker-commerce' ) . '</p>';
+	}
+
+	/**
+	 * The description panel's benefit cards, two at most.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_benefits( $atts = array() ): string {
+		unset( $atts );
+		$view  = $this->current_view();
+		$items = array();
+		foreach ( \is_array( $view['features'] ?? null ) ? $view['features'] : array() as $feature ) {
 			$line = trim( (string) $feature['body'] );
 			if ( '' === $line && '' !== (string) $feature['title'] ) {
 				$line = (string) $feature['title'];
 			}
 			if ( '' !== $line ) {
-				$cards[] = '<li class="pdp-benefit"><span class="pdp-benefit-icon" data-icon="check" aria-hidden="true"></span><div><p>' . esc_html( $line ) . '</p></div></li>';
+				$items[] = '<li class="pdp-benefit">' . self::icon( 'check' ) . '<div><p>' . esc_html( $line ) . '</p></div></li>';
 			}
 		}
-		if ( array() !== $cards ) {
-			$html .= '<ul class="pdp-benefits">' . implode( '', array_slice( $cards, 0, 2 ) ) . '</ul>';
+		if ( array() === $items ) {
+			return '';
 		}
-		return $html;
+		return '<ul class="pdp-benefits">' . implode( '', array_slice( $items, 0, 2 ) ) . '</ul>';
 	}
 
 	/**
-	 * The product's disclosure rows below the description panel.
+	 * The disclosure rows under the description panel: the product's feature
+	 * cards as closed rows.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -665,22 +759,20 @@ final class CatalogShortcodes {
 			if ( '' === trim( (string) $feature['body'] ) ) {
 				continue;
 			}
-			$html .= '<details class="pdp-disclose"><summary>' . esc_html( (string) $feature['title'] )
-				. '<span class="pdp-chevron" data-icon="chevron" aria-hidden="true"></span></summary>'
+			$html .= '<details class="pdp-disclose"><summary>' . esc_html( (string) $feature['title'] ) . self::icon( 'chevron' ) . '</summary>'
 				. '<div class="pdp-disclose-body pdp-reading"><p>' . esc_html( (string) $feature['body'] ) . '</p></div></details>';
 		}
 		return $html;
 	}
 
 	/**
-	 * The technical data: the spec groups as the disclosure rows the page's
-	 * script turns into the tab deck.
+	 * The technical data: the spec groups as the tab deck the page shows —
+	 * one tab per group, one panel per tab, the first one open.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
 	public function pdp_specs( $atts = array() ): string {
 		unset( $atts );
-		$this->pdp_scripts();
 		$view  = $this->current_view();
 		$html  = '';
 		$decks = array();
@@ -689,10 +781,8 @@ final class CatalogShortcodes {
 			foreach ( $group as $spec_group ) {
 				$body = '<dl class="pdp-stat-wrap">';
 				foreach ( $spec_group['rows'] as $row ) {
-					$body .= '<div class="pdp-stat-row"><dt>' . esc_html( $row['label'] ) . '</dt><dd>' . esc_html( $row['value'] );
-					if ( '' !== $row['unit'] ) {
-						$body .= '<span class="pdp-stat-unit">' . esc_html( $row['unit'] ) . '</span>';
-					}
+					$value = trim( (string) $row['value'] . ' ' . (string) $row['unit'] );
+					$body .= '<div class="pdp-stat-row"><dt>' . esc_html( $row['label'] ) . '</dt><dd>' . esc_html( $value );
 					if ( '' !== $row['note'] ) {
 						$body .= '<div class="pdp-reading pdp-muted">' . esc_html( $row['note'] ) . '</div>';
 					}
@@ -722,17 +812,72 @@ final class CatalogShortcodes {
 			$html .= '<button type="button" id="pdp-spec-tab-' . $index . '" role="tab" aria-controls="pdp-spec-panel-' . $index . '" aria-selected="' . ( 0 === $index ? 'true' : 'false' ) . '" tabindex="' . ( 0 === $index ? '0' : '-1' ) . '">' . esc_html( $deck['title'] ) . '</button>';
 		}
 		$html .= '</div>';
-		$html .= '<div class="pdp-info-panel" id="pdp-spec-panel-0" role="tabpanel" aria-labelledby="pdp-spec-tab-0" tabindex="0">';
 		foreach ( $decks as $index => $deck ) {
-			$html .= '<details class="pdp-disclose pdp-tab-disclosure"' . ( 0 === $index ? ' open' : '' ) . ' data-pdp-tab="' . $index . '">'
-				. '<summary>' . esc_html( $deck['title'] ) . '<span class="pdp-chevron" data-icon="chevron" aria-hidden="true"></span></summary>'
-				. '<div class="pdp-disclose-body pdp-reading">' . $deck['body'] . '</div></details>';
+			$html .= '<div class="pdp-info-panel" id="pdp-spec-panel-' . $index . '"' . ( 0 === $index ? '' : ' hidden' ) . ' role="tabpanel" aria-labelledby="pdp-spec-tab-' . $index . '" tabindex="0">'
+				. '<details class="pdp-disclose pdp-tab-disclosure" open><summary>' . esc_html( $deck['title'] ) . self::icon( 'chevron' ) . '</summary>'
+				. '<div class="pdp-disclose-body pdp-reading">' . $deck['body'] . '</div></details></div>';
 		}
 		return $html . '</div></div>';
 	}
 
 	/**
-	 * The documents: the file cards with their type and language.
+	 * The project-fit section's body (#16 GAP-2): the intra-page navigation
+	 * aside and one scenario block per `application_scenarios` entry.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_scenes( $atts = array() ): string {
+		unset( $atts );
+		$view      = $this->current_view();
+		$scenarios = \is_array( $view['scenarios'] ?? null ) ? $view['scenarios'] : array();
+		if ( array() === $scenarios ) {
+			return '';
+		}
+		$html = '<p class="pdp-reading">' . esc_html(
+			sprintf(
+				/* translators: %s: product name. */
+				__("Scenarios that show which projects the %s belongs in, and the limits behind our engineers' recommendation.", 'linker-commerce' ),
+				(string) $view['title']
+			)
+		) . '</p>';
+		$index = 0;
+		foreach ( $scenarios as $scenario ) {
+			++$index;
+			$kind = 'application' === (string) ( $scenario['kind'] ?? '' ) ? __( 'Project scenario', 'linker-commerce' ) : __( 'Project note', 'linker-commerce' );
+			$html .= '<div class="fit-scn">';
+			$html .= '<header class="fit-head"><span class="fit-num">' . esc_html( sprintf( '%02d', $index ) ) . '</span>'
+				. '<div><span class="fit-kind">' . esc_html( $kind ) . '</span>'
+				. '<h3>' . esc_html( (string) $scenario['title'] ) . '</h3></div></header>';
+			$html .= '<div class="fit-body">';
+			if ( (int) $scenario['image'] > 0 ) {
+				$html .= '<figure>' . wp_get_attachment_image( (int) $scenario['image'], 'large', false, array( 'alt' => (string) $scenario['title'] ) ) . '</figure>';
+			}
+			$html .= '<div class="fit-text">';
+			if ( '' !== (string) $scenario['situation'] ) {
+				$html .= '<p class="fit-lede">' . esc_html( (string) $scenario['situation'] ) . '</p>';
+			}
+			if ( '' !== (string) $scenario['fit'] ) {
+				$html .= '<div class="fit-prose pdp-reading">' . wp_kses_post( wpautop( (string) $scenario['fit'] ) ) . '</div>';
+			}
+			$html .= '</div></div>';
+			if ( array() !== (array) $scenario['checklist'] ) {
+				$html .= '<div class="fit-checkwrap"><span class="fit-label">' . esc_html__( 'Limits for the configuration', 'linker-commerce' ) . '</span><ul class="fit-check">';
+				foreach ( (array) $scenario['checklist'] as $check ) {
+					$html .= '<li>' . esc_html( (string) $check ) . '</li>';
+				}
+				$html .= '</ul></div>';
+			}
+			if ( '' !== (string) $scenario['verdict'] ) {
+				$html .= '<aside class="fit-verdict"><span class="fit-label">' . esc_html__("Linker's read", 'linker-commerce' ) . '</span>'
+					. '<p>' . esc_html( (string) $scenario['verdict'] ) . '</p></aside>';
+			}
+			$html .= '</div>';
+		}
+		return $html;
+	}
+
+	/**
+	 * The document cards: one card per hosted document of the product.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -758,20 +903,20 @@ final class CatalogShortcodes {
 				static fn( string $part ): bool => '' !== $part
 			);
 			$html .= '<a class="pdp-doc" href="' . esc_url( (string) $document['url'] ) . '" target="_blank" rel="noopener">';
-			$html .= '<span class="pdp-doc-icon" data-icon="file" aria-hidden="true"></span>';
+			$html .= '<span class="pdp-doc-icon">' . self::icon( 'file' ) . '</span>';
 			$html .= '<span class="grow">' . esc_html( (string) $document['title'] );
 			if ( array() !== $meta ) {
 				$html .= '<span class="pdp-doc-meta">' . esc_html( implode( ' · ', $meta ) ) . '</span>';
 			}
-			$html .= '</span>';
-			$html .= '<span class="pdp-doc-download" data-icon="download" aria-hidden="true"></span></a>';
+			$html .= '</span>' . self::icon( 'download' ) . '</a>';
 		}
 		return $html;
 	}
 
 	/**
 	 * The compatibility records: the pairing cards from the registry's
-	 * relationships and the contract's cells, with the footnote.
+	 * relationships, in the order of the paired products' names, and the
+	 * constraints the cited documents state.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -787,20 +932,27 @@ final class CatalogShortcodes {
 		$notes      = array();
 		foreach ( Materials::relationships( self::source_id( $product_id ) ) as $relationship ) {
 			$target_id = (int) ( $relationship['target_product_id'] ?? 0 );
-			$target    = $target_id ? wc_get_product( $target_id ) : null;
+			if ( 'de' === $locale && \function_exists( 'pll_get_post' ) ) {
+				$twin = pll_get_post( $target_id, 'de' );
+				if ( \is_int( $twin ) && $twin > 0 ) {
+					$target_id = $twin;
+				}
+			}
+			$target = $target_id ? wc_get_product( $target_id ) : null;
 			if ( ! $target instanceof WC_Product || 'publish' !== $target->get_status() ) {
 				continue;
 			}
-			$cell_id = Materials::relationship_cell_id( $relationship );
-			$cell    = '' !== $cell_id && isset( Materials::contract()['cells'][ $cell_id ] ) ? Materials::contract()['cells'][ $cell_id ] : null;
 			$status  = self::pairing_status( $relationship, $locale );
-			$cards[] = '<a class="pdp-pairing" href="' . esc_url( (string) get_permalink( $target_id ) ) . '">'
-				. wp_get_attachment_image( (int) $target->get_image_id(), 'medium', false, array( 'alt' => $target->get_name(), 'loading' => 'lazy' ) )
-				. '<span class="pdp-pairing-copy">'
-				. '<span class="pdp-pairing-name">' . esc_html( $target->get_name() ) . '</span>'
-				. '<span class="pdp-pairing-sku">' . esc_html__( 'Item number', 'linker-commerce' ) . ' ' . esc_html( (string) $target->get_sku() ) . '</span>'
-				. '<span class="pdp-pairing-chips"><span class="pdp-doc-meta">' . esc_html( $status ) . '</span></span>'
-				. '</span></a>';
+			$cards[] = array(
+				'name' => (string) $target->get_name(),
+				'html' => '<a class="pdp-pairing" href="' . esc_url( (string) get_permalink( $target_id ) ) . '">'
+					. wp_get_attachment_image( (int) $target->get_image_id(), 'medium', false, array( 'alt' => $target->get_name(), 'loading' => 'lazy' ) )
+					. '<span class="pdp-pairing-copy">'
+					. '<span class="pdp-pairing-name">' . esc_html( $target->get_name() ) . '</span>'
+					. '<span class="pdp-pairing-sku">' . esc_html__( 'Item number', 'linker-commerce' ) . ' ' . esc_html( (string) $target->get_sku() ) . '</span>'
+					. '<span class="pdp-pairing-chips"><span class="pdp-doc-meta">' . esc_html( $status ) . '</span></span>'
+					. '</span></a>',
+			);
 			$constraint = Materials::localized_text( $relationship, 'constraint', $locale );
 			if ( '' !== $constraint && ! isset( $notes[ $constraint ] ) ) {
 				$notes[ $constraint ] = true;
@@ -809,18 +961,20 @@ final class CatalogShortcodes {
 		if ( array() === $cards ) {
 			return '';
 		}
-		\usort( $cards, static fn( string $left, string $right ): int => strnatcasecmp( $left, $right ) );
-		$html = '<section class="pdp-block"><h2 class="pdp-section-title">' . esc_html__( 'Compatibility records', 'linker-commerce' ) . '</h2>';
-		$html .= '<div class="pdp-pairings">' . implode( '', $cards ) . '</div>';
+		\usort( $cards, static fn( array $left, array $right ): int => strnatcasecmp( $left['name'], $right['name'] ) );
+		$html = '<div class="pdp-pairings">' . implode( '', array_column( $cards, 'html' ) ) . '</div>';
 		foreach ( array_keys( $notes ) as $note ) {
 			$html .= '<div class="pdp-pairing-footnote pdp-reading pdp-muted"><p>' . esc_html( (string) $note ) . '</p></div>';
 		}
-		return $html . '</section>';
+		return $html;
 	}
 
 	/**
 	 * What the contract says about one relationship
 	 * (tv_b2b_pdp_pairing_status).
+	 *
+	 * @param array<string, mixed> $relationship The registry relationship.
+	 * @param string               $locale       'de' or 'en'.
 	 */
 	private static function pairing_status( array $relationship, string $locale ): string {
 		$by = trim( Materials::localized_text( $relationship, 'listed_by', $locale ) );
@@ -833,23 +987,18 @@ final class CatalogShortcodes {
 	/**
 	 * The product row an instance object belongs to: the German version's own
 	 * registry binding follows the English source (#9's translation group).
+	 *
+	 * @param int $product_id The product.
 	 */
 	private static function source_id( int $product_id ): int {
-		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_get_post_language' ) ) {
-			$language = pll_get_post_language( $product_id );
-			if ( 'en' !== $language ) {
-				$source = pll_get_post( $product_id, 'en' );
-				if ( \is_int( $source ) && $source > 0 ) {
-					return $source;
-				}
-			}
-		}
-		return $product_id;
+		return Materials::source_product_id( $product_id );
 	}
 
 	/**
 	 * The delivery sentence of the availability line, from the product's
 	 * freight outcome.
+	 *
+	 * @param WC_Product $product The product.
 	 */
 	private static function delivery_note( WC_Product $product ): string {
 		$fact    = Materials::logistics( (int) $product->get_id(), $product );
@@ -859,7 +1008,29 @@ final class CatalogShortcodes {
 	}
 
 	/**
+	 * The comparison page's address in the page's language, '' when the page
+	 * does not exist.
+	 */
+	public static function compare_page_url(): string {
+		$page = get_page_by_path( 'compare-products' );
+		if ( ! $page instanceof \WP_Post ) {
+			return '';
+		}
+		$id = (int) $page->ID;
+		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
+			$twin = pll_get_post( $id, 'de' );
+			if ( \is_int( $twin ) && $twin > 0 ) {
+				$id = $twin;
+			}
+		}
+		$link = get_permalink( $id );
+		return \is_string( $link ) ? $link : '';
+	}
+
+	/**
 	 * An attachment image URL, '' when the id holds none.
+	 *
+	 * @param int $image_id The attachment.
 	 */
 	private static function image_url( int $image_id ): string {
 		$url = wp_get_attachment_image_url( $image_id, 'full' );
@@ -870,6 +1041,8 @@ final class CatalogShortcodes {
 	 * An image tag with the live renderer's attribute set: class, src, srcset
 	 * and sizes, no width/height (the stylesheet sizes the box).
 	 *
+	 * @param int                   $image_id   The attachment.
+	 * @param string                $size       Registered size name.
 	 * @param array<string, string> $attributes Extra attributes.
 	 */
 	private static function image_tag( int $image_id, string $size, array $attributes ): string {
@@ -894,72 +1067,32 @@ final class CatalogShortcodes {
 	}
 
 	/**
-	 * The application scenarios (#16 GAP-2): the live product page's
-	 * `#fit` block, from the product's `application_scenarios`.
+	 * One of the page's line icons as the design draws it: a 20px stroke icon
+	 * from the page's own icon set. The name maps to the shape; the CSS sizes
+	 * and colors it.
 	 *
-	 * @param array<string, string>|string $atts Shortcode attributes.
+	 * @param string $name The icon name.
 	 */
-	public function pdp_scenes( $atts = array() ): string {
-		unset( $atts );
-		$view      = $this->current_view();
-		$scenarios = \is_array( $view['scenarios'] ?? null ) ? $view['scenarios'] : array();
-		if ( array() === $scenarios ) {
-			return '';
+	public static function icon( string $name ): string {
+		$paths = array(
+			'check'    => '<path d="m5 12 4 4L19 6"/>',
+			'chevron'  => '<path d="m6 9 6 6 6-6"/>',
+			'compare'  => '<path d="M5 4v16M12 4v16M19 4v16M3 8h4M10 15h4M17 10h4"/>',
+			'ask'      => '<path d="M21 15a4 4 0 0 1-4 4H8l-5 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>',
+			'file'     => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8ZM14 2v6h6M8 13h8M8 17h6"/>',
+			'download' => '<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
+			'energy'   => '<rect x="3" y="6" width="17" height="12" rx="3"/><path d="M22 10v4M7 10v4m4-4v4m4-4v4"/>',
+			'power'    => '<path d="m13 2-8 12h6l-1 8 9-12h-6z"/>',
+			'grid'     => '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+			'gauge'    => '<path d="M4 18a9 9 0 1 1 16 0M12 12l5-5M5 18h14"/>',
+		);
+		$open = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+		if ( 'energy' === $name || 'power' === $name || 'grid' === $name || 'gauge' === $name ) {
+			// The purchase panel's figure icons carry no pixel size; the CSS
+			// sizes them in the row.
+			$open = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">';
 		}
-		$reel  = '';
-		$cards = '';
-		foreach ( $scenarios as $scenario ) {
-			$text = '';
-			if ( '' !== $scenario['situation'] ) {
-				$text .= '<p>' . esc_html( $scenario['situation'] ) . '</p>';
-			}
-			if ( '' !== $scenario['fit'] ) {
-				$text .= '<p>' . esc_html( $scenario['fit'] ) . '</p>';
-			}
-			if ( '' !== $scenario['verdict'] ) {
-				$text .= '<p>' . esc_html( $scenario['verdict'] ) . '</p>';
-			}
-			if ( array() !== $scenario['checklist'] ) {
-				$text .= '<ul>';
-				foreach ( $scenario['checklist'] as $check ) {
-					$text .= '<li>' . esc_html( $check ) . '</li>';
-				}
-				$text .= '</ul>';
-			}
-			if ( ! $text ) {
-				continue;
-			}
-			$cards .= '<details class="pdp-disclose"><summary>' . esc_html( $scenario['title'] ) . '</summary>';
-			$cards .= '<div class="pdp-disclose-body pdp-reading">' . $text;
-			if ( '' !== $scenario['url'] ) {
-				$cards .= '<p><a href="' . esc_url( $scenario['url'] ) . '">' . esc_html__( 'See the applications', 'linker-commerce' ) . '</a></p>';
-			}
-			$cards .= '</div></details>';
-			if ( 0 !== $scenario['image'] ) {
-				$reel .= '<figure class="pdp-scene-card">';
-				$reel .= wp_get_attachment_image(
-					(int) $scenario['image'],
-					'large',
-					false,
-					array(
-						'loading' => 'lazy',
-						'alt'     => $scenario['title'],
-					)
-				);
-				$reel .= '<figcaption><span class="pdp-kicker">' . esc_html( $scenario['title'] ) . '</span>';
-				$reel .= '<p>' . esc_html( wp_strip_all_tags( $scenario['situation'] ) ) . '</p></figcaption>';
-				$reel .= '</figure>';
-			}
-		}
-		if ( '' === $cards && '' === $reel ) {
-			return '';
-		}
-		$html = '';
-		if ( '' !== $reel ) {
-			$html .= '<div class="pdp-scene-reel">' . $reel . '</div>';
-		}
-		$html .= $cards;
-		return '<section class="pdp-block pdp-scenes" id="fit"><h2 class="pdp-section-title">' . esc_html__( 'Applications', 'linker-commerce' ) . '</h2>' . $html . '</section>';
+		return $open . ( $paths[ $name ] ?? '' ) . '</svg>';
 	}
 
 	/**

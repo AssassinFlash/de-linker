@@ -12,6 +12,7 @@ namespace Linker\Commerce\Storefront;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Registration\Approval;
 
+use Linker\Commerce\Catalog\Materials;
 use Linker\Commerce\Catalog\SelectionFactSet;
 use Linker\Commerce\Catalog\SelectionFacts;
 
@@ -90,7 +91,7 @@ final class ProductView {
 	 * (body, link). Both come back with the fields they carry.
 	 *
 	 * @param int $product_id The product.
-	 * @return list<array{title: string, situation: string, fit: string, verdict: string, checklist: list<string>, image: int, url: string}> The scenarios.
+	 * @return list<array{kind: string, title: string, situation: string, fit: string, verdict: string, checklist: list<string>, image: int, url: string}> The scenarios.
 	 */
 	public function scenarios( int $product_id ): array {
 		$parsed = array();
@@ -108,6 +109,7 @@ final class ProductView {
 				)
 			);
 			$parsed[] = array(
+				'kind'      => (string) ( $scenario['scenario_kind'] ?? '' ),
 				'title'     => (string) $scenario['scenario_title'],
 				'situation' => (string) ( $scenario['scenario_situation'] ?? $scenario['scenario_body'] ?? '' ),
 				'fit'       => (string) ( $scenario['scenario_fit'] ?? '' ),
@@ -337,9 +339,12 @@ final class ProductView {
 		return esc_url_raw(
 			add_query_arg(
 				array(
-					'intent' => 'product',
-					'kind'   => 'product',
-					'title'  => rawurlencode( $product->get_name() ),
+					'intent'     => 'product',
+					'kind'       => 'product',
+					'title'      => rawurlencode( $product->get_name() ),
+					'source_id'  => $product->get_id(),
+					'product_id' => $product->get_id(),
+					'source'     => $product->get_permalink(),
 				),
 				home_url( '/contact/' )
 			)
@@ -469,8 +474,8 @@ final class ProductView {
 	 * @return mixed[] The branch's items.
 	 */
 	private function legacy( int $product_id, string $branch ): array {
-		$decoded = json_decode( (string) get_post_meta( $product_id, '_tv_legacy_acf_json', true ), true );
-		if ( ! \is_array( $decoded ) || ! isset( $decoded[ $branch ] ) || ! \is_array( $decoded[ $branch ] ) ) {
+		$decoded = Materials::acf( $product_id );
+		if ( ! isset( $decoded[ $branch ] ) || ! \is_array( $decoded[ $branch ] ) ) {
 			return array();
 		}
 		/** The branch's items.
@@ -488,8 +493,8 @@ final class ProductView {
 	 * @param string $field      The field name.
 	 */
 	private function legacy_field( int $product_id, string $field ): string {
-		$decoded = json_decode( (string) get_post_meta( $product_id, '_tv_legacy_acf_json', true ), true );
-		return \is_array( $decoded ) && isset( $decoded[ $field ] ) && \is_string( $decoded[ $field ] ) ? $decoded[ $field ] : '';
+		$decoded = Materials::acf( $product_id );
+		return isset( $decoded[ $field ] ) && \is_string( $decoded[ $field ] ) ? $decoded[ $field ] : '';
 	}
 
 	/**

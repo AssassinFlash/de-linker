@@ -4,14 +4,40 @@
 
 <div id="tv-storefront-pdp" class="sf-pdp [linker_pdp_brand_class]">
 	<div class="sf-container">
-		[linker_pdp_crumbs]
+		<nav class="pdp-crumbs" aria-label="Breadcrumb">
+			<a href="[lc_wc_get_page_url page="shop"]">Products</a>
+			<span aria-hidden="true">/</span>
+			<span>[linker_pdp_brand]</span>
+			<span aria-hidden="true">/</span>
+			<span>[linker_pdp_model]</span>
+		</nav>
 
 		<div class="pdp-layout">
-			[linker_pdp_gallery]
+			<div class="pdp-gallery">
+				[linker_pdp_gallery_pair]
+				[linker_pdp_gallery_thumbs]
+			</div>
 
 			<aside class="pdp-purchase">
 				<div class="pdp-buy-inner">
-					[linker_pdp_buy]
+					[linker_pdp_brand_logo]
+					<h1 class="pdp-h1">[linker_pdp_model]</h1>
+					<p class="pdp-designation">[linker_pdp_designation]</p>
+					<p class="pdp-sku">Item number: [linker_pdp_sku]</p>
+					<div class="pdp-price">[linker_pdp_price]</div>
+					<dl class="pdp-spec-list">[linker_pdp_key_stats]</dl>
+					<div class="pdp-avail">[linker_pdp_availability]</div>
+					[linker_pdp_cta]
+					[linker_pdp_ask]
+					<div class="pdp-product-tools">[linker_pdp_tools]</div>
+					<details class="pdp-project-check" data-linker-project-product-context aria-label="Check this model for the project">
+						<summary><h2>Plan with [linker_pdp_model]</h2></summary>
+						<div class="pdp-project-check__body">
+							<p>New system, extension or replacement? Linker Advisor starts from this model and asks only for what is still open (existing model, quantity, postcode, installation date).</p>
+							<div class="pdp-project-choices">[linker_pdp_project_choices]</div>
+							<p data-linker-project-product-feedback aria-live="polite"></p>
+						</div>
+					</details>
 				</div>
 			</aside>
 
@@ -23,7 +49,14 @@
 				</nav>
 
 				<section id="description" class="pdp-block">
-					[linker_pdp_description]
+					<div class="pdp-overview">
+						<div class="pdp-overview-copy">
+							<p class="pdp-kicker">Description</p>
+							<h2 class="pdp-section-title">[lc_the_title]</h2>
+							<div class="pdp-overview-intro pdp-reading">[linker_pdp_intro]</div>
+						</div>
+					</div>
+					[linker_pdp_benefits]
 				</section>
 
 				[linker_pdp_disclosures]
@@ -33,22 +66,33 @@
 					[linker_pdp_specs]
 				</section>
 
-				[linker_pdp_scenes]
+				[lc_if condition="linker_pdp_has_scenes"]<section class="pdp-block pdp-fit" id="fit">
+					<p class="pdp-kicker">Project fit</p>
+					<h2 class="pdp-section-title">Where this model fits.</h2>
+					[linker_pdp_scenes]
+				</section>[/lc_if]
 
 				<section id="downloads" class="pdp-block">
 					<h2 class="pdp-section-title">Documents</h2>
 					[linker_pdp_downloads]
 				</section>
 
-				[linker_faqs]
+				[lc_if condition="linker_pdp_has_faqs"]<section class="pdp-block pdp-faqs">
+					<h2 class="pdp-section-title">Product questions</h2>
+					[linker_faqs]
+				</section>[/lc_if]
 
-				[linker_pdp_pairings]
+				[lc_if condition="linker_pdp_has_pairings"]<section class="pdp-block">
+					<h2 class="pdp-section-title">Compatibility records</h2>
+					[linker_pdp_pairings]
+				</section>[/lc_if]
 			</div>
 		</div>
 	</div>
 
-	<dialog id="pdp-image-viewer" aria-label="Product image">
-		<button class="pdp-viewer-close" type="button" data-pdp-viewer-close aria-label="Close image viewer">&times;</button>
-		<img class="pdp-viewer-img" src="" alt="" />
+	<dialog id="pdp-image-viewer">
+		<button type="button" class="pdp-viewer-close" data-pdp-close-image aria-label="Close">&times;</button>
+		<img alt="" />
+		<p data-viewer-caption></p>
 	</dialog>
 </div>

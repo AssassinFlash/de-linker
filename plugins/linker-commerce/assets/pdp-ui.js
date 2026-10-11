@@ -45,7 +45,7 @@
 		});
 	});
 	if (viewer) {
-		var close = viewer.querySelector("[data-pdp-viewer-close]");
+		var close = viewer.querySelector("[data-pdp-close-image]");
 		if (close) {
 			close.addEventListener("click", function () {
 				viewer.close();
@@ -53,11 +53,10 @@
 		}
 	}
 
-	/* Specification deck: one disclosure is visible, the tabs select which. */
+	/* Specification deck: the tabs select which group's panel is visible. */
 	var tabs = Array.prototype.slice.call(root.querySelectorAll('.pdp-info-tabs [role="tab"]'));
-	var panels = Array.prototype.slice.call(root.querySelectorAll(".pdp-info-panel details[data-pdp-tab]"));
-	var panelBox = root.querySelector(".pdp-info-panel");
-	tabs.forEach(function (tab) {
+	var panels = Array.prototype.slice.call(root.querySelectorAll(".pdp-info-panel"));
+	tabs.forEach(function (tab, position) {
 		tab.addEventListener("click", function () {
 			var index = (tab.id || "").replace("pdp-spec-tab-", "");
 			tabs.forEach(function (other) {
@@ -65,15 +64,10 @@
 				other.setAttribute("aria-selected", active ? "true" : "false");
 				other.setAttribute("tabindex", active ? "0" : "-1");
 			});
-			panels.forEach(function (panel) {
-				var show = panel.getAttribute("data-pdp-tab") === index;
-				panel.open = show;
+			panels.forEach(function (panel, panelPosition) {
+				var show = (panel.id || "").replace("pdp-spec-panel-", "") === index || panelPosition === position;
 				panel.hidden = !show;
 			});
-			if (panelBox) {
-				panelBox.id = "pdp-spec-panel-" + index;
-				panelBox.setAttribute("aria-labelledby", "pdp-spec-tab-" + index);
-			}
 		});
 	});
 

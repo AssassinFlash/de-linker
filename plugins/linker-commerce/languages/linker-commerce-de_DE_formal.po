@@ -2948,3 +2948,121 @@ msgstr "Zu den Anwendungen"
 #: includes/Presentation/CatalogShortcodes.php:635
 msgid "Applications"
 msgstr "Anwendungen"
+
+msgid "Nominal energy"
+msgstr "Nennenergie"
+
+msgid "Cell chemistry"
+msgstr "Zellchemie"
+
+msgid "Max. charge current"
+msgstr "Max. Ladestrom"
+
+msgid "On %s's compatibility list"
+msgstr "In der Kompatibilitätsliste von %s"
+
+msgid "On the compatibility list on file"
+msgstr "In der hinterlegten Kompatibilitätsliste"
+
+msgid "Product image 2"
+msgstr "Produktbild 2"
+
+msgid "Product image %d"
+msgstr "Produktbild %d"
+
+msgid "Specification group"
+msgstr "Spezifikationsgruppe"
+
+msgid "In comparison"
+msgstr "Im Vergleich"
+
+msgid "Compare: %s"
+msgstr "Vergleichen: %s"
+
+msgid "Up to %d products. Remove one to add another."
+msgstr "Bis zu %d Produkte. Entfernen Sie eines, um ein weiteres hinzuzufügen."
+
+msgid "Ask Linker Advisor"
+msgstr "Linker Berater fragen"
+
+msgid "Contact Linker"
+msgstr "Linker kontaktieren"
+
+msgid "Check this model for the project"
+msgstr "Dieses Modell für das Projekt prüfen"
+
+msgid "New system"
+msgstr "Neues System"
+
+msgid "Extend an existing system"
+msgstr "Bestehendes System erweitern"
+
+msgid "Replace an existing unit"
+msgstr "Gerät ersetzen"
+
+msgid "Identify a device from a nameplate photo"
+msgstr "Gerät per Typenschild-Foto erkennen"
+
+msgid "I am planning a new system with %s."
+msgstr "Ich plane ein neues System mit %s."
+
+msgid "I am extending an existing system with %s."
+msgstr "Ich erweitere ein bestehendes System um %s."
+
+msgid "I am replacing a unit in an existing system with %s."
+msgstr "Ich ersetze ein Gerät in einem bestehenden System durch %s."
+
+msgid ""
+"Then ask one question at a time for what you still need (existing model, "
+"quantity, installation postcode, installation date) and check compatibility, "
+"missing system components and delivery windows against current Linker data."
+msgstr ""
+"Frage danach immer nur nach der nächsten fehlenden Angabe (Bestandsmodell, "
+"Menge, Installations-PLZ, Montagetermin) und prüfe Kompatibilität, fehlende "
+"Systemkomponenten und Lieferfenster anhand aktueller Linker-Daten."
+
+msgid ""
+"About %s: give me the key specs, which batteries or inverters it pairs with, "
+"and whether it fits my project."
+msgstr ""
+"Zum Produkt %s: Nenne mir die wichtigsten technischen Daten und die dazu "
+"passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt "
+"geeignet ist."
+
+msgid "Project scenario"
+msgstr "Projektszenario"
+
+msgid "Project note"
+msgstr "Projekthinweis"
+
+msgid "Limits for the configuration"
+msgstr "Grenzen für die Konfiguration"
+
+msgid "Linker's read"
+msgstr "Unsere Einschätzung"
+
+msgid ""
+"Scenarios that show which projects the %s belongs in, and the limits behind "
+"our engineers' recommendation."
+msgstr ""
+"Szenarien für %s: in welche Projekte das Produkt passt und welche Grenzen "
+"der Empfehlung unserer Ingenieure zugrunde liegen."
+
+msgid "Delivery to Germany"
+msgstr "Lieferung nach Deutschland"
+
+msgid "Germany delivery estimate: %1$s to %2$s"
+msgstr "Voraussichtliche Lieferung innerhalb Deutschlands: %1$s bis %2$s"
+
+msgid "The final delivery charge is included in your Proforma."
+msgstr "Die endgültigen Frachtkosten werden in Ihrer Proforma ausgewiesen."
+
+msgid "Delivery included in your Proforma"
+msgstr "Lieferung in Ihrer Proforma enthalten"
+
+msgid ""
+"Parcel rate for one eligible item within Germany: %s when you submit. "
+"Freight for multiple items is confirmed separately."
+msgstr ""
+"Paketpreis für einen lieferfähigen Artikel innerhalb Deutschlands: %s bei "
+"Absenden. Fracht für mehrere Artikel wird gesondert bestätigt."

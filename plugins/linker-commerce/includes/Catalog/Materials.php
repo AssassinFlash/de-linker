@@ -152,6 +152,12 @@ final class Materials {
 		}
 		$material_id = self::$product_index[ $product_id ] ?? '';
 		if ( '' === $material_id ) {
+			// A German twin carries no registry binding of its own: the
+			// English source row is the bound one.
+			$source      = self::source_product_id( $product_id );
+			$material_id = $source === $product_id ? '' : ( self::$product_index[ $source ] ?? '' );
+		}
+		if ( '' === $material_id ) {
 			return null;
 		}
 		$material = self::registry()['materials'][ $material_id ] ?? null;
@@ -230,7 +236,12 @@ final class Materials {
 			$specs = $material['technical']['specifications'] ?? array();
 			return \is_array( $specs ) ? $specs : array();
 		}
-		$own = \json_decode( (string) \get_post_meta( (int) $product->get_id(), '_tv_b2b_figures', true ), true );
+		$id  = (int) $product->get_id();
+		$own = \json_decode( (string) \get_post_meta( $id, '_tv_b2b_figures', true ), true );
+		if ( ! \is_array( $own ) ) {
+			$source = self::source_product_id( $id );
+			$own    = $source === $id ? null : \json_decode( (string) \get_post_meta( $source, '_tv_b2b_figures', true ), true );
+		}
 		return \is_array( $own ) ? $own : array();
 	}
 
@@ -677,9 +688,60 @@ final class Materials {
 		if ( isset( $labels[ $key ] ) ) {
 			return $labels[ $key ];
 		}
-		\unset( $base_unit );
 		$pretty = \str_replace( '_', ' ', $key );
 		return \mb_strtoupper( \mb_substr( $pretty, 0, 1 ) ) . \mb_substr( $pretty, 1 );
+	}
+
+	/**
+	 * The product row a translation belongs to: the English source product of
+	 * a German twin (the registry bindings and the German content overlays
+	 * hang off the English row).
+	 *
+	 * @param int $product_id The product ID.
+	 */
+	public static function source_product_id( int $product_id ): int {
+		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_get_post_language' ) ) {
+			$language = pll_get_post_language( $product_id );
+			if ( 'en' !== $language ) {
+				$source = pll_get_post( $product_id, 'en' );
+				if ( \is_int( $source ) && $source > 0 ) {
+					return $source;
+				}
+			}
+		}
+		return $product_id;
+	}
+
+	/**
+	 * The product's legacy ACF JSON in the page's language: the German overlay
+	 * (`_linker_de_acf_json`, stored on the English source row) on a German
+	 * page, the English JSON otherwise.
+	 *
+	 * @param int $product_id The product.
+	 * @return array<string, mixed>
+	 */
+	public static function acf( int $product_id ): array {
+		if ( self::is_de() ) {
+			$decoded = self::decode( \get_post_meta( $product_id, '_linker_de_acf_json', true ) );
+			if ( array() !== $decoded ) {
+				return $decoded;
+			}
+			$source  = self::source_product_id( $product_id );
+			$decoded = self::decode( \get_post_meta( $source, '_linker_de_acf_json', true ) );
+			return $decoded;
+		}
+		return self::decode( \get_post_meta( $product_id, '_tv_legacy_acf_json', true ) );
+	}
+
+	/**
+	 * One JSON meta value as an array, array() when it holds none.
+	 *
+	 * @param mixed $value The raw meta value.
+	 * @return array<string, mixed>
+	 */
+	private static function decode( $value ): array {
+		$decoded = \is_string( $value ) ? \json_decode( $value, true ) : ( \is_array( $value ) ? $value : null );
+		return \is_array( $decoded ) ? $decoded : array();
 	}
 
 	/**
@@ -958,17 +1020,6 @@ final class Materials {
 	}
 
 	/**
-	 * The product's legacy ACF JSON.
-	 *
-	 * @param int $product_id The product.
-	 * @return array<string, mixed>
-	 */
-	public static function acf( int $product_id ): array {
-		$decoded = \json_decode( (string) \get_post_meta( $product_id, '_tv_legacy_acf_json', true ), true );
-		return \is_array( $decoded ) ? $decoded : array();
-	}
-
-	/**
 	 * The gallery image ids in the live order: the featured image, the
 	 * gallery rows, feature cards, scenarios (tv_product_v5_gallery_ids).
 	 *
@@ -1021,13 +1072,15 @@ final class Materials {
 				return;
 			}
 			$key      = \preg_replace( '#/+$#', '', $url );
+			$path     = (string) \parse_url( $url, \PHP_URL_PATH );
+			$file_key = '' !== $path ? \strtolower( \basename( $path ) ) : '';
 			$title    = \trim( (string) $title );
 			$language = \strtoupper( \trim( (string) $language ) );
 			if ( '' === $language || '' !== self::document_language_tag( $title ) ) {
 				$language = self::document_language( $title, $url );
 			}
 			$title_key = \strtolower( $title ) . '|' . $language;
-			if ( isset( $seen[ $key ] ) ) {
+			if ( isset( $seen[ $key ] ) || ( '' !== $file_key && isset( $seen[ $file_key ] ) ) ) {
 				$titles[ $title_key ] = true;
 				return;
 			}
@@ -1035,6 +1088,9 @@ final class Materials {
 				return;
 			}
 			$seen[ $key ]        = true;
+			if ( '' !== $file_key ) {
+				$seen[ $file_key ] = true;
+			}
 			$titles[ $title_key ] = true;
 			$out[] = array(
 				'kind' => $kind,
@@ -1105,7 +1161,11 @@ final class Materials {
 	 */
 	public static function is_hosted_url( string $url ): bool {
 		$url = \trim( $url );
-		if ( '' === $url || ! \str_starts_with( $url, 'https://' ) ) {
+		if ( '' === $url ) {
+			return false;
+		}
+		$scheme = \strtolower( (string) ( \parse_url( $url, \PHP_URL_SCHEME ) ?: '' ) );
+		if ( 'https' !== $scheme && 'http' !== $scheme ) {
 			return false;
 		}
 		$host = \strtolower( (string) ( \parse_url( $url, \PHP_URL_HOST ) ?: '' ) );
@@ -1210,7 +1270,7 @@ final class Materials {
 			'usable_kwh' => 'energy', 'nominal_kwh' => 'energy',
 			'efficiency' => 'gauge',
 		);
-		$kind  = (string) ( self::identity( $product )['kind'] ?? 'other' );
+		$kind  = self::contract_type( (string) ( self::identity( $product )['kind'] ?? 'other' ) );
 		$specs = self::specs( $product );
 		$out   = array();
 		foreach ( $order[ $kind ] ?? $order['other'] as $key ) {
@@ -1220,7 +1280,7 @@ final class Materials {
 			$out[] = array(
 				'key'   => (string) $key,
 				'label' => (string) $specs[ $key ]['label'],
-				'value' => (string) $specs[ $key ]['value'],
+				'value' => self::de_number( (string) $specs[ $key ]['value'] ),
 				'icon'  => (string) ( $icons[ $key ] ?? 'power' ),
 			);
 			if ( count( $out ) >= $limit ) {
@@ -1228,6 +1288,17 @@ final class Materials {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * A stat value in the page's language: German prints decimals with a comma
+	 * (the live German pages' own values read 5,0 kWh / 12,0 A).
+	 */
+	public static function de_number( string $value ): string {
+		if ( ! self::is_de() ) {
+			return $value;
+		}
+		return (string) \preg_replace( '/(?<=\d)\.(?=\d)/', ',', $value );
 	}
 
 	/**
