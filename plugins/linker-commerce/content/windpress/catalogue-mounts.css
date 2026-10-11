@@ -1,0 +1,18 @@
+/*
+ * The catalogue's own styles. The two copied live sheets (storefront.css,
+ * catalogue.css) still carry the rest of the catalogue until the fresh
+ * authoring replaces them; this file holds only what the mounts of
+ * 2026-10-11 add, each value measured on the live page.
+ *
+ * The toolbar row: live's `.wb-acts` is content-sized by its three chips
+ * (measured 561.469px beside the 642.531px search form). Two of those chips
+ * are owner-ruled out (batch item numbers, nameplate photo), and the third
+ * is the delivered Ask Genie chip, hidden until the typed text reads as a
+ * question — so the column reserves live's width to keep the search box at
+ * live's geometry, and the chip takes live's AI entry position at its right
+ * end.
+ */
+#tv-woo-b2b-catalog .wb-acts {
+	min-width: 561.469px;
+	justify-content: flex-end;
+}

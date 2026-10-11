@@ -2623,3 +2623,25 @@ msgstr ""
 #: includes/Presentation/CatalogShortcodes.php:635
 msgid "Applications"
 msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:1225
+msgid "%d product family"
+msgid_plural "%d product families"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Presentation/CatalogShortcodes.php:1243
+msgid "Product pagination"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:1258
+msgid "Next"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:1300
+msgid "All models"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:1305
+msgid "Selected model"
+msgstr ""

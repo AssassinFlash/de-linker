@@ -251,6 +251,41 @@ final class CatalogFilters {
 	}
 
 	/**
+	 * The catalogue's default ("Recommended") order, the live page's own:
+	 * articles the visitor can act on first, newest within each group, name as
+	 * the stable tail (measured on the live shop 2026-10-12: the first card
+	 * is the newest invoicable model).
+	 *
+	 * @param int[] $ids The catalogue's product ids.
+	 * @return int[]
+	 */
+	private function recommended_order( array $ids ): array {
+		$rows = array();
+		foreach ( $ids as $id ) {
+			$product = wc_get_product( $id );
+			$rows[]  = array(
+				'id'        => (int) $id,
+				'can_order' => $product instanceof \WC_Product && $product->is_purchasable() && '' !== (string) $product->get_price() ? 1 : 0,
+				'ts'        => (int) get_post_time( 'U', true, (int) $id ),
+				'name'      => (string) get_the_title( (int) $id ),
+			);
+		}
+		usort(
+			$rows,
+			static function ( array $a, array $b ): int {
+				if ( $a['can_order'] !== $b['can_order'] ) {
+					return $b['can_order'] <=> $a['can_order'];
+				}
+				if ( $a['ts'] !== $b['ts'] ) {
+					return $b['ts'] <=> $a['ts'];
+				}
+				return strcasecmp( $a['name'], $b['name'] );
+			}
+		);
+		return array_map( static fn( array $row ): int => (int) $row['id'], $rows );
+	}
+
+	/**
 	 * The facets with the counts and labels the rail shows, for the
 	 * archive's products. A facet value no product answers is left out;
 	 * the power buckets stay listed, the empty one disabled, as the rail
@@ -319,6 +354,12 @@ final class CatalogFilters {
 				'count' => 0,
 			);
 		}
+		// The brands read A-Z, as the live rail lists them (Chint / EcoFlow /
+		// GoodWe / Pylontech / SAJ — measured 2026-10-12).
+		uasort(
+			$counts['brand'],
+			static fn( array $a, array $b ): int => strcasecmp( (string) $a['label'], (string) $b['label'] )
+		);
 		// The power buckets stay listed (the empty one disabled), as the rail
 		// the site serves today shows them; every other facet hides a value
 		// no product answers.
@@ -399,7 +440,19 @@ final class CatalogFilters {
 		if ( array() !== $tax_query ) {
 			$args['tax_query'] = $tax_query; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- one query per archive render.
 		}
+		// Woo's own catalogue visibility: a product excluded from the
+		// catalogue is not part of this set (the live shop omits it too).
+		$visibility = function_exists( 'wc_get_product_visibility_term_ids' ) ? wc_get_product_visibility_term_ids() : array();
+		$hidden     = (int) ( $visibility['exclude-from-catalog'] ?? 0 );
+		if ( $hidden > 0 ) {
+			$args['tax_query'][] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the catalogue's own visibility filter, one query per archive render.
+				'taxonomy' => 'product_visibility',
+				'field'    => 'term_taxonomy_id',
+				'terms'    => array( $hidden ),
+				'operator' => 'NOT IN',
+			);
+		}
 		$ids = get_posts( $args );
-		return array_map( 'intval', $ids );
+		return $this->recommended_order( array_map( 'intval', $ids ) );
 	}
 }

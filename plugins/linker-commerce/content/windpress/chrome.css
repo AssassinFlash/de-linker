@@ -1,0 +1,111 @@
+/*
+ * The site chrome's utilities — the header cluster the live header carries in
+ * `[data-tv-account-slot]`: search, cart (with its count), account and the
+ * EN|DE toggle, in one row (measured 2026-10-12 at 1440: slot x1013 w248,
+ * gap 8; each utility 44×44 with a 1px line; the toggle 88×44, its halves
+ * 44×44 at 0 11px padding). The header partial mounts them
+ * ([linker_header_utilities]); this sheet gives them their boxes.
+ */
+#lc-header .tv-desktop-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+#lc-header .tv-header-utility {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border: 1px solid #e2e5e5;
+	border-radius: 8px;
+	background: #fff;
+	color: #0c0f0f;
+	position: relative;
+}
+
+#lc-header .tv-header-utility-label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+#lc-header .tv-header-utility svg {
+	width: 18px;
+	height: 18px;
+}
+
+#lc-header .tv-b2b-acct {
+	position: relative;
+	width: 44px;
+	height: 44px;
+}
+
+#lc-header .tv-b2b-acct-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid #dfe7ec;
+	border-radius: 8px;
+	background: #fff;
+	color: #172636;
+	cursor: pointer;
+}
+
+#lc-header .tv-b2b-acct-btn svg {
+	width: 18px;
+	height: 18px;
+}
+
+#lc-header .tv-b2b-acct-menu {
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	z-index: 60;
+	display: none;
+	min-width: 200px;
+	padding: 8px;
+	border: 1px solid #e2e5e5;
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 0 10px 30px rgba(12, 15, 15, 0.08);
+}
+
+#lc-header .tv-b2b-acct-btn[aria-expanded="true"] + .tv-b2b-acct-menu {
+	display: grid;
+}
+
+#lc-header .tv-b2b-acct-link {
+	padding: 8px 10px;
+	border-radius: 8px;
+	color: #172636;
+	text-decoration: none;
+}
+
+#lc-header .lnk-lang-toggle--desktop {
+	display: flex;
+	width: 88px;
+	height: 44px;
+}
+
+#lc-header .lnk-lang-half {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	padding: 0 11px;
+	color: #64748b;
+	text-decoration: none;
+}
+
+#lc-header .lnk-lang-half.is-active {
+	color: #112b38;
+	font-weight: 500;
+}

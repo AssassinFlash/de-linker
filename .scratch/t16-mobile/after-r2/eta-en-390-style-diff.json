@@ -1,0 +1,506 @@
+[
+  {
+    "key": "h1.pdp-h1[1]",
+    "text": "GW5K-ETA-G20",
+    "style": {
+      "lineHeight": [
+        "28.5012px",
+        "28.5px"
+      ],
+      "letterSpacing": [
+        "-0.85995px",
+        "-0.86px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 210,
+        "w": 155.6875,
+        "h": 56.96875
+      },
+      "t16": {
+        "x": 16,
+        "y": 233.578125,
+        "w": 155.6875,
+        "h": 72.578125
+      }
+    }
+  },
+  {
+    "key": "button.pdp-tool[1]",
+    "text": "Compare",
+    "style": {
+      "fontWeight": [
+        "600",
+        "500"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 261.25,
+        "y": 93,
+        "w": 112.75,
+        "h": 44
+      },
+      "t16": {
+        "x": 261.46875,
+        "y": 101,
+        "w": 112.53125,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "summary. > h2[1]",
+    "text": "Plan with GW5K-ETA-G20",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "14.95px",
+        "17.25px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 29,
+        "y": 963.359375,
+        "w": 332,
+        "h": 14.9375
+      },
+      "t16": {
+        "x": 33,
+        "y": 957.765625,
+        "w": 324,
+        "h": 17.25
+      }
+    }
+  },
+  {
+    "key": "div.pdp-content[1]",
+    "text": "Description Technical data Documents Description GoodWe ESA GW5K-ETA-G20 (5 kW three-phase",
+    "style": {
+      "gap": [
+        "normal",
+        "normal 24px"
+      ],
+      "columnGap": [
+        "normal",
+        "24px"
+      ],
+      "gridTemplateColumns": [
+        "none",
+        "minmax(0px, 1fr)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1024.359375,
+        "w": 358,
+        "h": 4366.84375
+      },
+      "t16": {
+        "x": 16,
+        "y": 1012.015625,
+        "w": 358,
+        "h": 4475.59375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview-intro.pdp-reading > p[1]",
+    "text": "The GW5K-ETA-G20 is the 5 kW three-phase ESA G20 power module: 5 kVA rated backup, 10 kW P",
+    "style": {
+      "lineHeight": [
+        "23.1px",
+        "25.2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 38,
+        "y": 1283.015625,
+        "w": 314,
+        "h": 92.375
+      },
+      "t16": {
+        "x": 38,
+        "y": 1288.671875,
+        "w": 314,
+        "h": 100.8125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[4]",
+    "text": "Rated / max. power5 kWRated current at 400 V7.3 A7.6 A at 380 V; 3L/N/PE, 220/380 V or 230",
+    "style": {
+      "paddingRight": [
+        "0px",
+        "14px"
+      ],
+      "paddingBottom": [
+        "0px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "14px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2000.765625,
+        "w": 356,
+        "h": 562.3125
+      },
+      "t16": {
+        "x": 17,
+        "y": 2063.671875,
+        "w": 356,
+        "h": 601.8125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[1]",
+    "text": "Rated / max. power5 kW",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2000.765625,
+        "w": 356,
+        "h": 49.796875
+      },
+      "t16": {
+        "x": 31,
+        "y": 2063.671875,
+        "w": 328,
+        "h": 49.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[2]",
+    "text": "Rated current at 400 V7.3 A7.6 A at 380 V; 3L/N/PE, 220/380 V or 230/400 V, 50/60 Hz",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2050.5625,
+        "w": 356,
+        "h": 123.96875
+      },
+      "t16": {
+        "x": 31,
+        "y": 2113.46875,
+        "w": 328,
+        "h": 147.421875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[3]",
+    "text": "Max. apparent power from grid43.5 kVA63 A internal bypass",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2174.53125,
+        "w": 356,
+        "h": 77.1875
+      },
+      "t16": {
+        "x": 31,
+        "y": 2260.890625,
+        "w": 328,
+        "h": 77.203125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[4]",
+    "text": "Backup rated apparent power5 kVA",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2251.71875,
+        "w": 356,
+        "h": 70.59375
+      },
+      "t16": {
+        "x": 31,
+        "y": 2338.09375,
+        "w": 328,
+        "h": 70.59375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[5]",
+    "text": "Backup max. apparent power (off-grid)5.5 kVA (10.0, 10 s)on-grid backup uses the from-grid",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2322.3125,
+        "w": 356,
+        "h": 100.578125
+      },
+      "t16": {
+        "x": 31,
+        "y": 2408.6875,
+        "w": 328,
+        "h": 100.609375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[6]",
+    "text": "On/off-grid switching time<4 ms",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2422.890625,
+        "w": 356,
+        "h": 70.59375
+      },
+      "t16": {
+        "x": 31,
+        "y": 2509.296875,
+        "w": 328,
+        "h": 70.59375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[7]",
+    "text": "Power factor / THDi0.8 leading … 0.8 lagging / THDi <3%",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2493.484375,
+        "w": 356,
+        "h": 69.59375
+      },
+      "t16": {
+        "x": 31,
+        "y": 2579.890625,
+        "w": 328,
+        "h": 69.59375
+      }
+    }
+  },
+  {
+    "key": "section.pdp-block[3]",
+    "text": "Documents GoodWe ESA Series 5–30 kW datasheet (EN) Datasheet · PDF · EN GoodWe ESA Serie 5",
+    "style": {
+      "gridTemplateColumns": [
+        "none",
+        "minmax(0px, 1fr)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2598.078125,
+        "w": 358,
+        "h": 1250.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 2700.484375,
+        "w": 358,
+        "h": 1250.1875
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[14]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4322.203125,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4424.609375,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[15]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4494.765625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4596.171875,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[16]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4667.328125,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4767.734375,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[17]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4839.890625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4939.296875,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[18]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 5012.453125,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 5110.859375,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[19]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 5185.015625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 5282.421875,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  }
+]

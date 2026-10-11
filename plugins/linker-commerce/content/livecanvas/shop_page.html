@@ -6,7 +6,7 @@
 	[linker_catalog_head]
 
 	<nav class="catalog-mobile-actions" aria-label="Catalog tools">
-		<button type="button" id="catalog-filter-open" aria-controls="sidebar-filters" aria-expanded="false"><span>Filters</span></button>
+		<button type="button" id="catalog-filter-open" aria-controls="sidebar-filters" aria-expanded="false"><span>Filters</span> &middot; <span data-linker-applied-filter-count>0</span></button>
 		[linker_genie_chips page_type="category"]
 	</nav>
 
@@ -19,19 +19,17 @@
 			<div class="catalog-results">
 				<div class="wb-strip">
 					<div class="wbc"></div>
-					<span class="wbcount">[lc_wc_result_count]</span>
+					<span class="wbcount">[linker_catalog_family_count]</span>
 					[linker_catalog_sort]
 				</div>
 
 				[linker_catalog_empty]
 
 				<div class="catalog-grid" id="catalog-grid">
-					[lc_loop]
-					[linker_catalog_card]
-					[/lc_loop]
+					[linker_catalog_families]
 				</div>
 
-				<div class="wb-pages">[lc_the_pagination class="wb-page-links"]</div>
+				<div class="wb-pages">[linker_catalog_family_pagination]</div>
 			</div>
 		</div>
 	</section>

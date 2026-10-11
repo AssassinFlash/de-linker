@@ -1,0 +1,26 @@
+[
+  {
+    "key": "section.pdp-block[3]",
+    "text": "Dokumente GoodWe ESA Serie 5–30 kW Datenblatt (EN) Datenblatt · PDF · EN GoodWe ESA Serie ",
+    "style": {
+      "gridTemplateColumns": [
+        "none",
+        "minmax(0px, 1fr)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2674.65625,
+        "w": 358,
+        "h": 1250.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 2760.9375,
+        "w": 358,
+        "h": 1250.1875
+      }
+    }
+  }
+]

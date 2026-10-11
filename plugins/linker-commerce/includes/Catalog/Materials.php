@@ -1472,15 +1472,20 @@ final class Materials {
 	 * @return list<array{key: string, label: string, value: string}>
 	 */
 	public static function card_facts( WC_Product $product, int $limit = 4 ): array {
+		// The live page's own type schema, in its order: the first row a
+		// product really carries is the card's model line ("Class B / 1.0 ·
+		// DTSU666" for the meter, "RS485 · GW60K-STS-G10" for the inverter),
+		// then the rest of the four. Missing keys are skipped, never swapped
+		// (measured on the live shop 2026-10-12).
 		$order = array(
 			'inverter'  => array( 'ac_power', 'phase', 'mppt', 'efficiency', 'nom_voltage' ),
-			'battery'   => array( 'usable_kwh', 'chemistry', 'ip', 'system_range', 'nominal_kwh' ),
-			'system'    => array( 'usable_kwh', 'nom_voltage', 'chemistry', 'ip' ),
-			'meter'     => array( 'interface', 'ip', 'weight', 'dimensions' ),
-			'ct'        => array( 'interface', 'ip', 'weight', 'dimensions' ),
-			'ems'       => array( 'interface', 'ip', 'weight', 'dimensions' ),
-			'accessory' => array( 'interface', 'ip', 'weight', 'dimensions' ),
-			'other'     => array( 'interface', 'ip', 'weight', 'dimensions' ),
+			'system'    => array( 'ac_power', 'nominal_kwh', 'phase', 'ip', 'usable_kwh', 'nom_voltage', 'chemistry' ),
+			'battery'   => array( 'usable_kwh', 'nom_voltage', 'chemistry', 'ip', 'nominal_kwh', 'system_range' ),
+			'meter'     => array( 'accuracy', 'ratio', 'interface', 'ip', 'weight', 'dimensions' ),
+			'ct'        => array( 'ratio', 'accuracy', 'burden', 'temp', 'interface', 'ip', 'weight' ),
+			'ems'       => array( 'devices', 'interface', 'ip', 'temp', 'weight' ),
+			'accessory' => array( 'ac_power', 'interface', 'ip', 'weight', 'nom_voltage', 'temp' ),
+			'other'     => array( 'nom_voltage', 'interface', 'ip', 'weight', 'temp' ),
 		);
 		$kind  = self::contract_type( (string) self::identity( $product )['kind'] );
 		$specs = self::specs( $product );

@@ -1,0 +1,554 @@
+[
+  {
+    "key": "h1.pdp-h1[1]",
+    "text": "GW5.1-BAT-D-G21",
+    "style": {
+      "lineHeight": [
+        "28.5012px",
+        "28.5px"
+      ],
+      "letterSpacing": [
+        "-0.85995px",
+        "-0.86px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 210,
+        "w": 155.6875,
+        "h": 56.96875
+      },
+      "t16": {
+        "x": 16,
+        "y": 233.578125,
+        "w": 155.6875,
+        "h": 72.578125
+      }
+    }
+  },
+  {
+    "key": "button.pdp-tool[1]",
+    "text": "Compare",
+    "style": {
+      "fontWeight": [
+        "600",
+        "500"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 261.25,
+        "y": 93,
+        "w": 112.75,
+        "h": 44
+      },
+      "t16": {
+        "x": 261.46875,
+        "y": 101,
+        "w": 112.53125,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "summary. > h2[1]",
+    "text": "Plan with GW5.1-BAT-D-G21",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "14.95px",
+        "17.25px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 29,
+        "y": 963.359375,
+        "w": 332,
+        "h": 14.9375
+      },
+      "t16": {
+        "x": 33,
+        "y": 942.765625,
+        "w": 324,
+        "h": 17.25
+      }
+    }
+  },
+  {
+    "key": "div.pdp-content[1]",
+    "text": "Description Technical data Documents Description GoodWe GW5.1-BAT-D-G21 (ESA battery modul",
+    "style": {
+      "gap": [
+        "normal",
+        "normal 24px"
+      ],
+      "columnGap": [
+        "normal",
+        "24px"
+      ],
+      "gridTemplateColumns": [
+        "none",
+        "minmax(0px, 1fr)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1024.359375,
+        "w": 358,
+        "h": 4295.15625
+      },
+      "t16": {
+        "x": 16,
+        "y": 997.015625,
+        "w": 358,
+        "h": 4395.625
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview-intro.pdp-reading > p[1]",
+    "text": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the pri",
+    "style": {
+      "lineHeight": [
+        "23.1px",
+        "25.2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 38,
+        "y": 1283.015625,
+        "w": 314,
+        "h": 207.84375
+      },
+      "t16": {
+        "x": 38,
+        "y": 1273.671875,
+        "w": 314,
+        "h": 226.828125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[3]",
+    "text": "Rated energy5.12 kWhUsable energy5.0 kWh*1 100% DOD, cell 2.85–3.6 V, 0.2P, 25±2 °C, begin",
+    "style": {
+      "paddingRight": [
+        "0px",
+        "14px"
+      ],
+      "paddingBottom": [
+        "0px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "14px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2001.640625,
+        "w": 356,
+        "h": 323.140625
+      },
+      "t16": {
+        "x": 17,
+        "y": 2046.28125,
+        "w": 356,
+        "h": 362.625
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[1]",
+    "text": "Rated energy5.12 kWh",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2001.640625,
+        "w": 356,
+        "h": 49.796875
+      },
+      "t16": {
+        "x": 31,
+        "y": 2046.28125,
+        "w": 328,
+        "h": 49.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[2]",
+    "text": "Usable energy5.0 kWh*1 100% DOD, cell 2.85–3.6 V, 0.2P, 25±2 °C, beginning of life",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2051.4375,
+        "w": 356,
+        "h": 123.96875
+      },
+      "t16": {
+        "x": 31,
+        "y": 2096.078125,
+        "w": 328,
+        "h": 147.421875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[3]",
+    "text": "Battery chemistryLFP (LiFePO4)",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2175.40625,
+        "w": 356,
+        "h": 49.796875
+      },
+      "t16": {
+        "x": 31,
+        "y": 2243.5,
+        "w": 328,
+        "h": 49.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[4]",
+    "text": "Cycle life≥8000laboratory test conditions",
+    "style": {
+      "gridTemplateColumns": [
+        "152px 152px",
+        "138px 138px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2225.203125,
+        "w": 356,
+        "h": 99.578125
+      },
+      "t16": {
+        "x": 31,
+        "y": 2293.296875,
+        "w": 328,
+        "h": 99.609375
+      }
+    }
+  },
+  {
+    "key": "section.pdp-block[3]",
+    "text": "Documents GoodWe ESA Series 5–30 kW datasheet (EN) Datasheet · PDF · EN GoodWe ESA Series ",
+    "style": {
+      "gridTemplateColumns": [
+        "none",
+        "minmax(0px, 1fr)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2359.78125,
+        "w": 358,
+        "h": 440.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 2443.90625,
+        "w": 358,
+        "h": 440.1875
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[5]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3198.796875,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 3282.921875,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[6]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3390.25,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 3473.375,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[7]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3581.703125,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 3663.828125,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[8]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3773.15625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 3854.28125,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[9]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3964.609375,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4044.734375,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[10]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4156.0625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4235.1875,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[11]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4347.515625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4425.640625,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[12]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4538.96875,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4616.09375,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[13]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4730.421875,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4806.546875,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[14]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4921.875,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4997,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[15]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "lineHeight": [
+        "16px",
+        "15px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 5113.328125,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 5187.453125,
+        "w": 165.140625,
+        "h": 21
+      }
+    }
+  }
+]

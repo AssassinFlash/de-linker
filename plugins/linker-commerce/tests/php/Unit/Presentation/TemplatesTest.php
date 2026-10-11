@@ -54,7 +54,7 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( '[linker_pdp_tools]', $single );
 		$this->assertStringContainsString( '[lc_if condition="linker_commerce_pdp_has_pairings"]', $single );
 		$this->assertStringNotContainsString( '[linker_pdp_buy]', $single );
-		$this->assertStringContainsString( '[linker_catalog_card]', (string) file_get_contents( $catalog['is_shop_page'] ) );
+		$this->assertStringContainsString( '[linker_catalog_families]', (string) file_get_contents( $catalog['is_shop_page'] ) );
 		$this->assertStringContainsString( 'id="tv-storefront-pdp"', (string) file_get_contents( $catalog['is_single_product'] ) );
 		$this->assertStringContainsString( 'id="tv-woo-b2b-catalog"', (string) file_get_contents( $catalog['is_shop_page'] ) );
 		$this->assertStringContainsString( '[woocommerce_cart]', (string) file_get_contents( $catalog['is_cart_page'] ) );

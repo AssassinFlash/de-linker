@@ -27,6 +27,11 @@ use WP_Term;
 final class CatalogShortcodes {
 
 	/**
+	 * Product families one catalogue page shows (the live shop's 24).
+	 */
+	public const PER_PAGE_FAMILIES = 24;
+
+	/**
 	 * Sets up the shortcodes.
 	 *
 	 * @param CatalogFilters $filters The catalogue's facet data.
@@ -46,6 +51,10 @@ final class CatalogShortcodes {
 		add_shortcode( 'linker_catalog_sort', array( $this, 'catalog_sort' ) );
 		add_shortcode( 'linker_catalog_empty', array( $this, 'catalog_empty' ) );
 		add_shortcode( 'linker_catalog_card', array( $this, 'catalog_card' ) );
+		add_shortcode( 'linker_catalog_families', array( $this, 'catalog_families' ) );
+		add_shortcode( 'linker_header_utilities', array( $this, 'header_utilities' ) );
+		add_shortcode( 'linker_catalog_family_count', array( $this, 'catalog_family_count' ) );
+		add_shortcode( 'linker_catalog_family_pagination', array( $this, 'catalog_family_pagination' ) );
 		add_shortcode( 'linker_pdp_brand_class', array( $this, 'pdp_brand_class' ) );
 		add_shortcode( 'linker_pdp_brand', array( $this, 'pdp_brand' ) );
 		add_shortcode( 'linker_pdp_model', array( $this, 'pdp_model' ) );
@@ -98,6 +107,11 @@ final class CatalogShortcodes {
 		$html .= '<input id="search-box" name="q" type="search" placeholder="' . esc_attr__( 'Search model or item number', 'linker-commerce' ) . '" value="' . esc_attr( $q ) . '" aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">';
 		$html .= '<button type="submit" class="wb-go">' . esc_html__( 'Search', 'linker-commerce' ) . '</button>';
 		$html .= '</form>';
+		// The catalogue's AI entry, at the position the live page keeps its
+		// toolbar chips: the delivered chip shows itself when the typed text
+		// reads as a question (spec 13 §C); the live page's other two chips
+		// (batch item numbers, nameplate photo) are owner-ruled out.
+		$html .= '<div class="wb-acts">' . do_shortcode( '[linker_genie_chips page_type="category"]' ) . do_shortcode( '[linker_genie_ask]' ) . '</div>';
 		$html .= '</div>';
 		$html .= $this->scope_nav( $shop_url, $is_term ? $queried->term_id : 0 );
 		$html .= '</div>';
@@ -205,6 +219,17 @@ final class CatalogShortcodes {
 		$html .= $this->range_form( __( 'Usable energy', 'linker-commerce' ), 'kwh', __( 'Minimum usable energy in kilowatt hours', 'linker-commerce' ), __( 'Maximum usable energy in kilowatt hours', 'linker-commerce' ), 'kWh', $selected );
 
 		$html .= '</div></details>';
+		// The live page's sidebar tool card, at the same place (after the
+		// filter folds, before the actions), with the review's copy for the
+		// renamed tool (docs/acceptance/2026-10-10/12/copy-review.md).
+		$configurator = self::configurator_page_url();
+		if ( '' !== $configurator ) {
+			$html .= '<div class="rail-help">'
+				. '<b>' . esc_html__( 'Plan with the Solution Configurator', 'linker-commerce' ) . '</b>'
+				. '<p>' . esc_html__( 'Configure a storage system from your site data; the result is a solution draft you can send as an inquiry.', 'linker-commerce' ) . '</p>'
+				. '<a class="rail-help-btn" href="' . esc_url( $configurator ) . '">' . esc_html__( 'Open the Solution Configurator', 'linker-commerce' ) . '</a>'
+				. '</div>';
+		}
 		$html .= '<div class="catalog-filter-actions">';
 		$html .= '<a href="' . esc_url( $is_term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' ) ) . '">' . esc_html__( 'Clear', 'linker-commerce' ) . '</a>';
 		$html .= '<button type="button" id="catalog-filter-apply">' . esc_html__( 'Show products', 'linker-commerce' ) . '</button>';
@@ -299,12 +324,20 @@ final class CatalogShortcodes {
 	}
 
 	/**
-	 * The current product's catalogue card (inside [lc_loop]).
+	 * The current product's catalogue card (inside [lc_loop], or called by the
+	 * family grid with a family context).
 	 *
-	 * @param array<string, string>|string $atts Shortcode attributes.
+	 * With a `family` context (the catalogue's family view, spec: the live
+	 * shop lists one card per family) the card carries the live page's family
+	 * anatomy: `data-linker-family-card`, the family's article payload in a
+	 * `data-linker-articles` JSON script, the series label as the title and
+	 * the model picker in place of the single-article model row.
+	 *
+	 * @param array<string, mixed>|string $atts Shortcode attributes (`family`).
 	 */
 	public function catalog_card( $atts = array() ): string {
-		unset( $atts );
+		$parsed     = \is_array( $atts ) ? $atts : shortcode_parse_atts( (string) $atts );
+		$family     = isset( $parsed['family'] ) && \is_array( $parsed['family'] ) ? $parsed['family'] : null;
 		$product_id = (int) get_the_ID();
 		$card       = $this->views->fields( $product_id );
 		if ( array() === $card ) {
@@ -312,8 +345,13 @@ final class CatalogShortcodes {
 		}
 		$product = wc_get_product( $product_id );
 		$facts   = SelectionFacts::for_product( $product_id );
+		$series  = (string) ( $card['series'] ?? '' );
+		$multi   = null !== $family && \count( (array) $family['ids'] ) > 1;
+		$title   = $multi && '' !== $series ? $series : (string) $card['title'];
+		$gated   = '' !== (string) ( $card['price']['url'] ?? '' );
 		$data    = array(
 			'data-product-id="' . esc_attr( (string) $product_id ) . '"',
+			'data-can-order="' . ( $gated ? '0' : '1' ) . '"',
 			'data-sku="' . esc_attr( $card['sku'] ) . '"',
 			'data-brand="' . esc_attr( $card['brand_slug'] ) . '"',
 			'data-phase="' . esc_attr( (string) $facts->phase ) . '"',
@@ -322,38 +360,45 @@ final class CatalogShortcodes {
 		);
 		$url     = (string) get_permalink( $product_id );
 
-		$html  = '<article class="sf-card product-card" data-linker-product-card ' . implode( ' ', $data ) . '>';
+		$html = '<article class="sf-card product-card" data-linker-family-card ' . implode( ' ', $data ) . '>';
+		if ( null !== $family && \count( (array) $family['ids'] ) > 1 ) {
+			$html .= '<script type="application/json" data-linker-articles>' . wp_json_encode( $this->family_payload( (array) $family['ids'] ) ) . '</script>';
+		}
 		$html .= '<div class="sf-card-media card-media">';
 		$html .= '<button type="button" class="card-compare-checkbox" data-compare-article="' . esc_attr( (string) $product_id ) . '" aria-pressed="false" aria-label="'
 			. esc_attr( sprintf( /* translators: %s: product name. */ __( 'Compare: %s', 'linker-commerce' ), (string) $card['title'] ) ) . '">+</button>';
-		$html .= '<a data-card-media-link href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $card['title'] ) . '">';
+		$html .= '<a data-card-media-link href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $title ) . '">';
 		foreach ( \array_slice( (array) $card['gallery'], 0, 1 ) as $image_id ) {
-			$html .= wp_get_attachment_image(
-				(int) $image_id,
-				'medium',
-				false,
-				array(
-					'loading' => 'lazy',
-					'alt'     => $card['title'],
-				)
-			);
+			// The live card image's own attribute set: the stylesheet sizes
+			// the box, and the family picker switches src/alt through
+			// `data-card-image` (WordPress strips data-* from
+			// wp_get_attachment_image's attributes, so the tag is printed
+			// here).
+			$image_src = wp_get_attachment_image_url( (int) $image_id, 'medium' );
+			if ( \is_string( $image_src ) && '' !== $image_src ) {
+				$html .= '<img data-card-image src="' . esc_url( $image_src ) . '" alt="' . esc_attr( (string) $card['title'] ) . '" loading="lazy">';
+			}
 		}
 		$html .= '</a></div>';
 		$html .= '<div class="card-identity">';
 		if ( '' !== $card['brand'] ) {
 			$html .= '<p class="sf-card-brand">' . esc_html( $card['brand'] ) . '</p>';
 		}
-		$html .= '<a class="sf-card-title" data-card-title href="' . esc_url( $url ) . '">' . esc_html( $card['model'] ) . '</a>';
-		if ( '' !== $card['designation'] ) {
-			$html .= '<p class="sf-card-designation">' . esc_html( $card['designation'] ) . '</p>';
-		}
+		$html .= '<a class="sf-card-title" data-card-title data-card-series-title="' . esc_attr( $multi && '' !== $series ? $series : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>';
+		// The live catalogue card carries brand, title and item number only:
+		// no designation line (measured 2026-10-12, 0/65 cards).
 		if ( '' !== $card['sku'] ) {
 			$html .= '<p class="sf-card-sku">' . esc_html__( 'Item no.', 'linker-commerce' ) . ' <span data-card-sku>' . esc_html( $card['sku'] ) . '</span></p>';
 		}
-		$html .= '</div>';
-		$stats = \is_array( $card['stats'] ) ? $card['stats'] : array();
-		if ( array() !== $stats ) {
-			$html .= '<span class="card-exact-article" data-linker-exact-article><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( ( $stats[0]['value'] ?? '' ) . ' · ' . $card['model'] ) . '</strong></span>';
+		$html     .= '</div>';
+		$stats     = \is_array( $card['stats'] ) ? $card['stats'] : array();
+		$selection = $this->selection_line( $product, $card );
+		if ( $multi ) {
+			// The live page's family card: the model picker replaces the
+			// single-article model row.
+			$html .= $this->family_picker( (array) $family['ids'], $product_id, $card, $stats, $selection );
+		} elseif ( array() !== $stats ) {
+			$html .= '<span class="card-exact-article" data-linker-exact-article><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( $selection ) . '</strong></span>';
 		}
 		$facts = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 		if ( array() !== $facts ) {
@@ -598,9 +643,9 @@ final class CatalogShortcodes {
 			. esc_html__( 'Ask Linker Advisor', 'linker-commerce' ) . '</button>';
 		$html .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
 			. esc_html__( 'Documents', 'linker-commerce' ) . '</a>';
-		$html .= '<a class="sf-compare-chip" id="compare-chip" hidden href="' . esc_url( self::compare_page_url() ) . '" aria-label="' . esc_attr__( 'Compare', 'linker-commerce' ) . '">' . self::icon( 'compare' )
-			. '<span class="sf-compare-chip-label">' . esc_html__( 'Compare', 'linker-commerce' ) . '</span>'
-			. '<span class="sf-compare-chip-n" data-compare-count>0</span></a>';
+		// The floating comparison chip is not copied here: ComparePage prints
+		// it from the footer on every surface that carries a selection
+		// control (spec 19 §5, one implementation).
 		return $html;
 	}
 
@@ -717,25 +762,27 @@ final class CatalogShortcodes {
 		}
 		$html = '<div class="pdp-thumbs">';
 		foreach ( $ids as $index => $id ) {
-			// No srcset on the thumbnail: measured 2026-10-11, the browser on
-			// this page resolves a srcset to its largest candidate whatever
-			// `sizes` says (the live page loads the 300px variant), so the src
-			// pins the file the live page displays — the same image, rendered
-			// at 58px.
+			// The live page renders the 300w candidate at `sizes="72px"`, i.e.
+			// at density 300/72 — and that density is visible: the same file at
+			// density 1 rasterises differently on this strip. Measured
+			// 2026-10-11: with the full srcset the browser re-selects the
+			// original file (naturalWidth 72, as live's own re-selection does),
+			// so the tag offers exactly the candidate the live page renders —
+			// same decoded bitmap as live, strip 0/48640 pixels.
+			$medium     = wp_get_attachment_image_src( $id, 'medium' );
+			$attributes = array(
+				'class'    => 'attachment-medium size-medium',
+				'alt'      => '',
+				'sizes'    => '72px',
+				'decoding' => 'async',
+			);
+			if ( \is_array( $medium ) ) {
+				$attributes['srcset'] = $medium[0] . ' ' . (int) $medium[1] . 'w';
+			}
 			$html .= '<button type="button" data-pdp-thumb data-src="' . esc_url( self::image_url( $id ) ) . '" data-caption=""'
 				. ' aria-label="' . esc_attr( sprintf( /* translators: %d: image number. */ __( 'Product image %d', 'linker-commerce' ), $index + 1 ) ) . '"'
 				. ' aria-pressed="' . ( 0 === $index ? 'true' : 'false' ) . '" class="pdp-thumb">'
-				. self::image_tag(
-					$id,
-					'medium',
-					array(
-						'class'     => 'attachment-medium size-medium',
-						'alt'       => '',
-						'sizes'     => '72px',
-						'decoding'  => 'async',
-						'no_srcset' => '1',
-					)
-				) . '</button>';
+				. self::image_tag( $id, 'medium', $attributes ) . '</button>';
 		}
 		return $html . '</div>';
 	}
@@ -1139,11 +1186,396 @@ final class CatalogShortcodes {
 	}
 
 	/**
+	 * The catalogue's family grid: the live shop lists one card per family
+	 * (docs/acceptance/2026-10-11/16/working/replica-r4/EVIDENCE.md §6-2).
+	 *
+	 * The rows come from the same product set the filters scope
+	 * (archive_product_ids(): published, catalog-visible, the queried category
+	 * and the selected filters), grouped by the family the data defines.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function catalog_families( $atts = array() ): string {
+		unset( $atts );
+		$ids  = array_values( $this->filters->archive_product_ids() );
+		$rows = $this->family_rows( $ids );
+		$page = max( 1, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
+		$html = '';
+		foreach ( \array_slice( $rows, ( $page - 1 ) * self::PER_PAGE_FAMILIES, self::PER_PAGE_FAMILIES ) as $row ) {
+			$lead = get_post( (int) $row['lead'] );
+			if ( ! $lead instanceof \WP_Post ) {
+				continue;
+			}
+			// The card fragment reads the loop's post; set it to this family's
+			// lead article for the call.
+			$GLOBALS['post'] = $lead; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- the loop contract the card fragment reads.
+			setup_postdata( $lead );
+			$html .= $this->catalog_card( array( 'family' => $row ) );
+			wp_reset_postdata();
+		}
+		return $html;
+	}
+
+	/**
+	 * The result line of the family view: "1-24 / 65 product families".
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function catalog_family_count( $atts = array() ): string {
+		unset( $atts );
+		$total = \count( $this->family_rows( array_values( $this->filters->archive_product_ids() ) ) );
+		$page  = max( 1, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
+		$from  = $total > 0 ? ( $page - 1 ) * self::PER_PAGE_FAMILIES + 1 : 0;
+		$to    = min( $total, $page * self::PER_PAGE_FAMILIES );
+		return '<b>' . esc_html( $from . '-' . $to ) . '</b> / ' . esc_html( sprintf( /* translators: %d: number of product families. */ _n( '%d product family', '%d product families', $total, 'linker-commerce' ), $total ) );
+	}
+
+	/**
+	 * The family view's pagination: the live page's own `product-page`
+	 * addresses, one per family page.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function catalog_family_pagination( $atts = array() ): string {
+		unset( $atts );
+		$total = \count( $this->family_rows( array_values( $this->filters->archive_product_ids() ) ) );
+		$pages = (int) ceil( $total / self::PER_PAGE_FAMILIES );
+		if ( $pages < 2 ) {
+			return '';
+		}
+		$page = max( 1, min( $pages, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
+		$base = $this->archive_base_url();
+		$html = '<nav class="tv-woo-pagination" aria-label="' . esc_attr__( 'Product pagination', 'linker-commerce' ) . '">';
+		for ( $i = 1; $i <= $pages; $i++ ) {
+			$url   = 1 === $i ? $base : add_query_arg( 'product-page', $i, $base );
+			$html .= $i === $page
+				? '<span aria-current="page" class="page-numbers current">' . esc_html( (string) $i ) . '</span>'
+				: '<a class="page-numbers" href="' . esc_url( $url ) . '">' . esc_html( (string) $i ) . '</a>';
+		}
+		if ( $page < $pages ) {
+			$html .= '<a class="next page-numbers" href="' . esc_url( add_query_arg( 'product-page', $page + 1, $base ) ) . '">' . esc_html__( 'Next', 'linker-commerce' ) . '</a>';
+		}
+		return $html . '</nav>';
+	}
+
+	/**
+	 * The address of the current catalogue view without its page number.
+	 */
+	private function archive_base_url(): string {
+		$queried = get_queried_object();
+		$base    = $queried instanceof \WP_Term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
+		// The selected filters stay in the address; only the page number is
+		// rewritten per link.
+		return remove_query_arg( array( 'product-page' ), $base );
+	}
+
+	/**
+	 * The catalogue's family rows: one row per family, first row wins,
+	 * over the given product ids in their order.
+	 *
+	 * A product's family is the article list the product data carries
+	 * (`_tv_legacy_acf_json`'s `family_variants`, the same field the product
+	 * page's model selector reads) plus the product itself; products that
+	 * list no sibling are their own family. Measured on the live shop
+	 * 2026-10-11: 65 families over its 104 catalog-visible articles, 24 to a
+	 * page, the family card's payload carrying the member articles.
+	 *
+	 * @param array<int> $ids The catalogue's product ids, in display order.
+	 * @return array<int, array{lead: int, ids: array<int>}>
+	 */
+	private function family_rows( array $ids ): array {
+		$present = array_fill_keys( array_map( 'intval', $ids ), true );
+		$lists   = $this->family_lists( $ids );
+		$rows    = array();
+		$seen    = array();
+		foreach ( $ids as $id ) {
+			$id = (int) $id;
+			if ( isset( $seen[ $id ] ) ) {
+				continue;
+			}
+			$members = $this->family_members( $id, $present, $lists );
+			foreach ( $members as $member ) {
+				$seen[ $member ] = true;
+			}
+			$rows[] = array(
+				'lead' => $id,
+				'ids'  => $members,
+			);
+		}
+		return $rows;
+	}
+
+	/**
+	 * Every catalogue product's own family list, in the current language
+	 * (the English product carries the list; the German twin resolves through
+	 * the pair).
+	 *
+	 * @param array<int> $ids The catalogue's product ids.
+	 * @return array<int, array<int, array<string, mixed>>> Lists by product id.
+	 */
+	private function family_lists( array $ids ): array {
+		$lang  = \function_exists( 'pll_current_language' ) ? (string) pll_current_language() : '';
+		$lists = array();
+		foreach ( $ids as $id ) {
+			$id     = (int) $id;
+			$source = $id;
+			if ( '' !== $lang && \function_exists( 'pll_get_post' ) ) {
+				$english = (int) pll_get_post( $id, 'en' );
+				if ( $english > 0 ) {
+					$source = $english;
+				}
+			}
+			$legacy       = json_decode( (string) get_post_meta( $source, '_tv_legacy_acf_json', true ), true );
+			$variants     = \is_array( $legacy ) ? ( $legacy['family_variants'] ?? null ) : null;
+			$lists[ $id ] = \is_array( $variants ) ? array_values( $variants ) : array();
+		}
+		return $lists;
+	}
+
+	/**
+	 * Whether the sibling names the family back (in the current language).
+	 *
+	 * @param int                                          $sibling    The sibling id.
+	 * @param int                                          $product_id The product asking.
+	 * @param array<int, array<int, array<string, mixed>>> $lists      The catalogue's lists.
+	 * @param string                                       $lang       The current language.
+	 */
+	private function names_family( int $sibling, int $product_id, array $lists, string $lang ): bool {
+		foreach ( $lists[ $sibling ] ?? array() as $row ) {
+			$id = (int) ( $row['id'] ?? 0 );
+			if ( $id <= 0 ) {
+				continue;
+			}
+			if ( '' !== $lang && \function_exists( 'pll_get_post' ) ) {
+				$translated = (int) pll_get_post( $id, $lang );
+				if ( $translated > 0 ) {
+					$id = $translated;
+				}
+			}
+			if ( $id === $product_id ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * One product's family members, filtered to the catalogue's set: the
+	 * product plus the sibling ids its data lists, ordered as the data lists
+	 * them (the picker's order) with the product first only when it leads its
+	 * own list.
+	 *
+	 * @param int                                          $product_id The product.
+	 * @param array<int, true>                             $present    The ids the catalogue shows.
+	 * @param array<int, array<int, array<string, mixed>>> $lists      Every product's own family list.
+	 * @return array<int>
+	 */
+	private function family_members( int $product_id, array $present, array $lists ): array {
+		$lang = \function_exists( 'pll_current_language' ) ? (string) pll_current_language() : '';
+		// The family list lives on the English product; the German twin
+		// carries the same family through the translation pair of every
+		// member.
+		$source = $product_id;
+		if ( '' !== $lang && \function_exists( 'pll_get_post' ) ) {
+			$english = (int) pll_get_post( $product_id, 'en' );
+			if ( $english > 0 ) {
+				$source = $english;
+			}
+		}
+		$rows = $lists[ $product_id ] ?? array();
+		$ids  = array();
+		foreach ( $rows as $row ) {
+			$id = (int) ( $row['id'] ?? 0 );
+			if ( $id <= 0 ) {
+				continue;
+			}
+			if ( '' !== $lang && \function_exists( 'pll_get_post' ) ) {
+				$translated = (int) pll_get_post( $id, $lang );
+				if ( $translated > 0 ) {
+					$id = $translated;
+				}
+			}
+			// A sibling counts as family only when it names the family back:
+			// the live page renders the same list this way (the products that
+			// carry no list of their own stay single cards — EVIDENCE §6-2).
+			if ( isset( $present[ $id ] ) && $this->names_family( $id, $product_id, $lists, $lang ) ) {
+				$ids[] = $id;
+			}
+		}
+		if ( ! \in_array( $product_id, $ids, true ) ) {
+			$ids[] = $product_id;
+		}
+		$ids = \array_values( \array_unique( $ids ) );
+		if ( $product_id !== $ids[0] ) {
+			$ids = \array_values( \array_filter( $ids, static fn( int $id ): bool => $id !== $product_id ) );
+			\array_unshift( $ids, $product_id );
+		}
+		return $ids;
+	}
+
+	/**
+	 * The card's model line: the product's own first key figure plus the model
+	 * — live's `.card-exact-article` ("RS485 · GW60K-STS-G10",
+	 * "Class B / 1.0 · DTSU666").
+	 *
+	 * @param \WC_Product|false|null $product The product.
+	 * @param array<string, mixed>   $card    The card fields.
+	 */
+	private function selection_line( $product, array $card ): string {
+		$facts = $product instanceof \WC_Product ? Materials::card_facts( $product, 1 ) : array();
+		$first = (string) ( $facts[0]['value'] ?? '' );
+		if ( '' === $first ) {
+			$first = (string) ( \is_array( $card['stats'] ) ? ( $card['stats'][0]['value'] ?? '' ) : '' );
+		}
+		return '' !== $first ? $first . ' · ' . (string) $card['model'] : (string) $card['model'];
+	}
+
+	/**
+	 * The family card's article payload: the same keys the live page's
+	 * `data-linker-articles` JSON carries, one row per member.
+	 *
+	 * @param array<int> $ids The family's article ids.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private function family_payload( array $ids ): array {
+		$payload = array();
+		foreach ( $ids as $id ) {
+			$card = $this->views->fields( (int) $id );
+			if ( array() === $card ) {
+				continue;
+			}
+			$product   = wc_get_product( (int) $id );
+			$stats     = \is_array( $card['stats'] ) ? $card['stats'] : array();
+			$gated     = '' !== (string) ( $card['price']['url'] ?? '' );
+			$facts     = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
+			$factshtml = '';
+			foreach ( $facts as $fact ) {
+				$factshtml .= '<div><dt>' . esc_html( $fact['label'] ) . '</dt><dd>' . esc_html( $fact['value'] ) . '</dd></div>';
+			}
+			$payload[] = array(
+				'id'           => (int) $id,
+				'sku'          => (string) $card['sku'],
+				'name'         => (string) $card['title'],
+				'model'        => (string) $card['model'],
+				'url'          => (string) get_permalink( (int) $id ),
+				'image'        => (string) wp_get_attachment_image_url( (int) ( $card['gallery'][0] ?? 0 ), 'medium' ),
+				'priceHtml'    => $gated
+					? '<a class="sf-card-price-login" href="' . esc_url( (string) $card['price']['url'] ) . '">' . esc_html( (string) $card['price']['html'] ) . '</a>'
+					: '<span class="sf-card-price-net">' . esc_html( wp_strip_all_tags( (string) $card['price']['html'] ) ) . '</span>',
+				'availability' => (string) $card['availability'],
+				'canPurchase'  => ! $gated,
+				'addToCartUrl' => '',
+				'accountUrl'   => (string) $card['price']['url'],
+				'selection'    => $this->selection_line( $product, $card ),
+				'factsHtml'    => $factshtml,
+			);
+		}
+		return $payload;
+	}
+
+	/**
+	 * The family card's model picker: the live page's
+	 * `details.sf-card-variants.card-article-picker` with one button per
+	 * member article (the current one marked).
+	 *
+	 * @param array<int>                                      $ids        The family's article ids.
+	 * @param int                                             $current_id The article the card shows.
+	 * @param array<string, mixed>                            $card       The current card fields.
+	 * @param array<int, array{label: string, value: string}> $stats      The current key figures.
+	 * @param string                                          $selection  The card's model line.
+	 */
+	private function family_picker( array $ids, int $current_id, array $card, array $stats, string $selection ): string {
+		$heading = __( 'All models', 'linker-commerce' );
+		$html    = '<details class="sf-card-variants card-article-picker" data-picker-heading="' . esc_attr( $heading ) . '">';
+		$html   .= '<summary><span class="card-selection-copy"><small>' . esc_html__( 'Selected model', 'linker-commerce' ) . '</small> <strong data-card-selection>' . esc_html( $selection ) . '</strong></span> <span class="card-selection-action">' . esc_html( $heading ) . '</span></summary>';
+		$html   .= '<div class="card-article-picker__list" data-picker-heading="' . esc_attr( $heading ) . '">';
+		foreach ( $ids as $id ) {
+			$row   = $this->views->fields( (int) $id );
+			$html .= '<button type="button" class="sf-card-variant" data-linker-select-article="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $current_id ? ' aria-current="true"' : '' ) . '><span>' . esc_html( (string) ( $row['model'] ?? '' ) ) . '</span> <small>' . esc_html__( 'Item no.', 'linker-commerce' ) . ' ' . esc_html( (string) ( $row['sku'] ?? '' ) ) . '</small></button>';
+		}
+		return $html . '</div></details>';
+	}
+
+	/**
+	 * The header's utility cluster: search, cart (with its count), account and
+	 * the language toggle — the four controls the live header carries in
+	 * `[data-tv-account-slot]` (measured 2026-10-12: 46 + 46 + 44 + 88 px in
+	 * one row). Markup only, with the live classes; the header partial's own
+	 * stylesheet lays them out.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function header_utilities( $atts = array() ): string {
+		unset( $atts );
+		$cart_url    = function_exists( 'wc_get_cart_url' ) ? (string) wc_get_cart_url() : '';
+		$account     = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'my-account' ) : '';
+		$count       = function_exists( 'WC' ) && null !== WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
+		$shop        = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : home_url( '/' );
+		$en_url      = $this->language_url( 'en' );
+		$de_url      = $this->language_url( 'de' );
+		$is_de       = \function_exists( 'pll_current_language' ) && 'de' === pll_current_language();
+		$search_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+		$cart_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l2.4 12.3a2 2 0 0 0 2 1.7h7.8a2 2 0 0 0 1.95-1.55L21 7H6"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 21h.01M18 21h.01"/></svg>';
+		$user_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path stroke-linecap="round" d="M5.2 19.4a7 7 0 0 1 13.6 0"/></svg>';
+		$html        = '<a href="' . esc_url( $shop . '#search-box' ) . '" class="tv-header-utility tv-header-search" data-tv-header-search aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">' . $search_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Search', 'linker-commerce' ) . '</span></a>';
+		$html       .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Cart', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Cart', 'linker-commerce' ) . '</span><span class="tv-b2b-acct-count">' . esc_html( (string) $count ) . '</span></a>';
+		$html       .= '<div class="tv-b2b-acct"><button type="button" class="tv-b2b-acct-btn" aria-expanded="false" aria-label="' . esc_attr__( 'Sign in', 'linker-commerce' ) . '">' . $user_icon . '</button>';
+		$html       .= '<div class="tv-b2b-acct-menu"><a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>';
+		$html       .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'My account', 'linker-commerce' ) . '</a></div></div>';
+		$html       .= '<span class="lnk-lang-toggle lnk-lang-toggle--desktop" role="group" aria-label="' . esc_attr__( 'Language', 'linker-commerce' ) . '">';
+		$html       .= '<a class="lnk-lang-half' . ( $is_de ? '' : ' is-active' ) . '" href="' . esc_url( $en_url ) . '" hreflang="en" data-linker-language-choice="en" title="English"' . ( $is_de ? '' : ' aria-current="true"' ) . '>EN</a>';
+		$html       .= '<a class="lnk-lang-half' . ( $is_de ? ' is-active' : '' ) . '" href="' . esc_url( $de_url ) . '" hreflang="de" data-linker-language-choice="de" title="Deutsch"' . ( $is_de ? ' aria-current="true"' : '' ) . '>DE</a>';
+		return $html . '</span>';
+	}
+
+	/**
+	 * The current page in the given language, the shop when there is no twin.
+	 *
+	 * @param string $lang Language code.
+	 */
+	private function language_url( string $lang ): string {
+		$id = (int) get_queried_object_id();
+		if ( $id > 0 && \function_exists( 'pll_get_post' ) ) {
+			$twin = (int) pll_get_post( $id, $lang );
+			if ( $twin > 0 ) {
+				$link = get_permalink( $twin );
+				if ( \is_string( $link ) && '' !== $link ) {
+					return $link;
+				}
+			}
+		}
+		if ( 'de' === $lang && \function_exists( 'pll_home_url' ) ) {
+			return (string) pll_home_url( 'de' );
+		}
+		return home_url( '/' );
+	}
+
+	/**
 	 * The comparison page's address in the page's language, '' when the page
 	 * does not exist.
 	 */
 	public static function compare_page_url(): string {
 		$page = get_page_by_path( 'compare-products' );
+		if ( ! $page instanceof \WP_Post ) {
+			return '';
+		}
+		$id = (int) $page->ID;
+		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
+			$twin = (int) pll_get_post( $id, 'de' );
+			if ( $twin > 0 ) {
+				$id = $twin;
+			}
+		}
+		$link = get_permalink( $id );
+		return \is_string( $link ) ? $link : '';
+	}
+
+	/**
+	 * The solution configurator page's address in the page's language, ''
+	 * when the page does not exist (the sidebar tool card links here).
+	 */
+	public static function configurator_page_url(): string {
+		$page = get_page_by_path( 'linker-planner' );
 		if ( ! $page instanceof \WP_Post ) {
 			return '';
 		}
@@ -1195,7 +1627,9 @@ final class CatalogShortcodes {
 		foreach ( $attributes as $name => $value ) {
 			$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 		}
-		if ( ! isset( $attributes['no_srcset'] ) && \is_string( $srcset ) && '' !== $srcset ) {
+		// An explicit srcset (the thumbnails carry the live page's candidate)
+		// replaces the generated one.
+		if ( ! isset( $attributes['srcset'] ) && \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
 		}
 		return $html . ' />';

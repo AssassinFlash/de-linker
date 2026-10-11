@@ -3069,3 +3069,25 @@ msgstr "Linker-Einschätzung"
 #: plugins/linker-commerce/includes/Catalog/Materials.php
 msgid "Compatibility list"
 msgstr "Kompatibilitätsliste"
+
+#: includes/Presentation/CatalogShortcodes.php:1225
+msgid "%d product family"
+msgid_plural "%d product families"
+msgstr[0] "%d Produktfamilie"
+msgstr[1] "%d Produktfamilien"
+
+#: includes/Presentation/CatalogShortcodes.php:1243
+msgid "Product pagination"
+msgstr "Seitennavigation der Produkte"
+
+#: includes/Presentation/CatalogShortcodes.php:1258
+msgid "Next"
+msgstr "Weiter"
+
+#: includes/Presentation/CatalogShortcodes.php:1300
+msgid "All models"
+msgstr "Alle Modelle"
+
+#: includes/Presentation/CatalogShortcodes.php:1305
+msgid "Selected model"
+msgstr "Ausgewähltes Modell"

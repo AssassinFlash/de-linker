@@ -43,7 +43,7 @@ final class ModuleTest extends TestCase {
 		$library    = new LibraryPage();
 		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library );
 
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 36 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 40 ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $windpress, 'render_raw' ), 10, 2 );
