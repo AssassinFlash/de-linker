@@ -8,9 +8,14 @@ chunks; each formats them as its model card or documentation prescribes.
 - Open models (`OPEN_MODELS`) run their ONNX export through ONNX Runtime: the build
   embeds chunks on the Mac with all cores, the VPS encodes queries with one thread and
   no spinning (1 vCPU shared with the engine, no PyTorch there; owner, 2026-10-09).
-- `gemini-embedding-2` through AIHubMix's OpenAI-compatible `/v1/embeddings`
-  (AIHUBMIX_API_KEY, AIHUBMIX_BASE_URL), for chunks and queries alike.
-docs/research/2026-10-09/embedding-bakeoff.md compares them.
+- `gemini-embedding-2` through an OpenAI-compatible `/v1/embeddings`: OpenRouter
+  first (OPENROUTER_API_KEY, OPENROUTER_BASE_URL — the owner ruling of 2026-10-11,
+  after aihubmix's balance ran out; same model, same vector space, proven with
+  cosine 1.000000 against stored vectors that day), AIHubMix second
+  (AIHUBMIX_API_KEY, AIHUBMIX_BASE_URL) as the fallback. Either way one client
+  embeds chunks and queries alike. Keys come from the environment or the owner's
+  files under ~/.config/terravolt-builder/ and never enter the repository.
+docs/research/2026-10-09/embedding-bakeoff.md compares the models.
 
 Vectors travel as float32 little-endian bytes, the form sqlite-vec stores.
 """
@@ -370,6 +375,9 @@ class GeminiEmbedder:
 
 
 _OPENROUTER_FILE = Path("~/.config/terravolt-builder/openrouter.env").expanduser()
+# The escalation endpoint's key file, same rule as the file above; read by
+# whoever calls DeepSeek (index.eval.rerank) through `credentials` below.
+DEEPSEEK_FILE = Path("~/.config/terravolt-builder/deepseek.env").expanduser()
 
 
 def _load_openrouter_env() -> None:
@@ -381,6 +389,25 @@ def _load_openrouter_env() -> None:
         if line and not line.startswith("#") and "=" in line:
             name, value = line.split("=", 1)
             os.environ.setdefault(name.strip(), value.strip().strip("\"'"))
+
+
+def credentials(
+    env_key: str, env_base: str, default_base: str, file: Path
+) -> tuple[str, str] | None:
+    """(base URL, key) from the environment, else from the owner's file; None when
+    neither has a key."""
+    values = dict(os.environ)
+    if env_key not in values and file.exists():
+        for line in file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                name, value = line.split("=", 1)
+                name = name.strip().removeprefix("export ").strip()
+                values.setdefault(name, value.strip().strip("'\""))
+    key = values.get(env_key, "")
+    if not key:
+        return None
+    return values.get(env_base, default_base).rstrip("/"), key
 
 
 def gemini_from_env() -> GeminiEmbedder | None:

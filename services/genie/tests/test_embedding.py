@@ -2,6 +2,7 @@
 
 import io
 import json
+import pathlib
 import struct
 import sys
 import types
@@ -281,3 +282,35 @@ def test_aihubmix_serves_only_behind_the_explicit_switch(
 
 def test_an_unknown_model_has_no_query_encoder() -> None:
     assert query_encoder("voyage-4") is None
+
+
+def test_an_openrouter_base_already_carries_v1() -> None:
+    api = FakeApi()
+
+    GeminiEmbedder("k", "https://openrouter.example/api/v1/", urlopen=api).embed_query(
+        "q"
+    )
+
+    assert api.requests[0]["url"] == "https://openrouter.example/api/v1/embeddings"
+
+
+def _write_env(path: pathlib.Path, *lines: str) -> pathlib.Path:
+    path.write_text("\n".join(lines) + "\n")
+    return path
+
+
+def test_credentials_read_the_owner_file_when_the_env_has_none(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+) -> None:
+    # index.eval.rerank reads the DeepSeek escalation key through this helper:
+    # the environment first, the owner's file second (the 401 the file fixes).
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+
+    found = embedding.credentials(
+        "DEEPSEEK_API_KEY",
+        "DEEPSEEK_BASE_URL",
+        "https://api.deepseek.com",
+        _write_env(tmp_path / "deepseek.env", "DEEPSEEK_API_KEY=file-key"),
+    )
+
+    assert found == ("https://api.deepseek.com", "file-key")

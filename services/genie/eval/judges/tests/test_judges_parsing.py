@@ -1,5 +1,7 @@
 """Judge outputs become labels exactly as the metrics expect them."""
 
+import pytest
+
 from linker_judges.judges import parse_chat, parse_system_one
 from linker_judges.rubric import QA_QUESTIONS
 
@@ -48,3 +50,53 @@ def test_chat_reply_in_a_code_fence_is_read_and_off_schema_values_are_invalid() 
     assert answers["appropriate"].label == "yes"
     assert answers["better_pick"].label is None
     assert reason == "x"
+
+
+# The two shapes OpenRouter's typesafe/jev-router returned on 2026-10-11:
+# probabilities under their own key, or as the object's label-valued entries.
+def test_chat_score_probabilities_become_a_label_with_confidence() -> None:
+    reply = (
+        '{"grounded": {"probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}},'
+        ' "confidence": 1.0, "reason": "matches"}'
+    )
+
+    answers, reason = parse_chat(reply, QA_QUESTIONS)
+
+    assert answers["grounded"].label == "2"
+    assert answers["grounded"].confidence == 1.0
+    assert answers["grounded"].probabilities == {"0": 0.0, "1": 0.0, "2": 1.0}
+    assert reason == "matches"
+
+
+def test_chat_noul_probability_gets_the_typesafe_confidence() -> None:
+    reply = '{"appropriate": {"yes": 0.99, "no": 0.01}, "reason": "in remit"}'
+
+    answers, _ = parse_chat(reply, QA_QUESTIONS)
+
+    assert answers["appropriate"].label == "yes"
+    assert answers["appropriate"].confidence is not None
+    assert abs(answers["appropriate"].confidence - 0.98) < 1e-9
+    assert answers["appropriate"].probabilities == pytest.approx(
+        {"yes": 0.99, "no": 0.01}
+    )
+
+
+def test_chat_choice_probabilities_fall_back_to_the_top_probability() -> None:
+    reply = (
+        '{"better_pick": {"choice": "A", "probabilities":'
+        ' {"A": 0.7, "B": 0.1, "equal": 0.2}}, "reason": "a"}'
+    )
+
+    answers, _ = parse_chat(reply, QA_QUESTIONS)
+
+    assert answers["better_pick"].label == "A"
+    assert answers["better_pick"].confidence == 0.7
+
+
+def test_chat_probabilities_entirely_outside_the_options_are_invalid() -> None:
+    reply = '{"grounded": {"probabilities": {"3": 0.5, "4": 0.5}}, "reason": "x"}'
+
+    answers, _ = parse_chat(reply, QA_QUESTIONS)
+
+    assert answers["grounded"].label is None
+    assert answers["grounded"].confidence is None

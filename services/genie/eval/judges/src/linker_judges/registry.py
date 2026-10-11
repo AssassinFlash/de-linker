@@ -5,7 +5,9 @@ configuration (`GET https://aihubmix.com/api/v1/models`, `pricing_lines`, defaul
 tier, read 2026-10-09); aihubmix itself bills twice that between 01:00-04:00 and
 06:00-10:00 UTC, and the report states the time of every call. The direct DeepSeek
 judge: the official pricing page (api-docs.deepseek.com/quick_start/pricing, read
-2026-10-11) at peak rates — off-peak halves them. Open models cost 0 per call
+2026-10-11) at peak rates — off-peak halves them. OpenRouter reports each call's
+true cost in `usage.cost` (its jev-router's backend varies per call), which
+overrides the fallback prices. Open models cost 0 per call
 (owner 2026-10-09: openjev and its kind are counted at 0).
 """
 
@@ -13,7 +15,7 @@ from __future__ import annotations
 
 import os
 
-from .judges import AIHUBMIX, DEEPSEEK, Judge
+from .judges import AIHUBMIX, DEEPSEEK, OPENROUTER, Judge
 
 
 def _local(name: str, port: int) -> str:
@@ -27,9 +29,22 @@ def _local(name: str, port: int) -> str:
 JUDGES: dict[str, Judge] = {
     judge.name: judge
     for judge in (
-        # TypeSafe Jev through aihubmix's /v1/systemone; output tokens are free.
+        # TypeSafe Jev through OpenRouter's chat completions (owner ruling
+        # 2026-10-11: aihubmix's balance is depleted and drops to fallback). The
+        # router replies with calibrated probabilities and reports each call's
+        # true cost in usage.cost — which wins over these prices, because its
+        # backend varies per call (deepseek-v4.1-flash and openai/gpt-6-luna were
+        # both seen on 2026-10-11); 0.30/1.20 are the observed deepseek-flash
+        # backend's rates, kept as the fallback formula's input.
         Judge(
-            "jev", "system_one", "jev-1.13", AIHUBMIX, price_in=0.0462, price_out=0.0
+            "jev",
+            "chat",
+            "typesafe/jev-router",
+            OPENROUTER,
+            0.30,
+            1.20,
+            None,
+            True,
         ),
         # The cascade's escalation judge, direct on the official DeepSeek API
         # (owner ruling 2026-10-11: aihubmix serves only the Jev first pass and
