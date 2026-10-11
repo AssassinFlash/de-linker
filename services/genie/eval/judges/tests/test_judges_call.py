@@ -23,24 +23,19 @@ def test_a_bare_host_gets_the_v1_prefix() -> None:
     )
 
 
-def test_the_openrouter_judge_posts_to_the_router_and_bills_its_own_cost(
+def test_the_openrouter_jev_posts_to_systemone_as_jev_itself(
     monkeypatch: Any,
 ) -> None:
     seen: dict[str, Any] = {}
 
     def fake_post(url: str, body: dict[str, Any], key: str | None) -> Response:
         seen["url"], seen["key"], seen["auth_model"] = url, key, body["model"]
+        seen["state"], seen["questions"] = body.get("state"), body.get("questions")
         return Response(
             {
-                "model": "openai/gpt-6-luna",
-                "choices": [
-                    {
-                        "message": {
-                            "content": '{"grounded": {"probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}}, "reason": "r"}'
-                        }
-                    }
-                ],
-                "usage": {"prompt_tokens": 195, "completion_tokens": 162, "cost": 0.01},
+                "model": "typesafe/jev-1.13-20260917",
+                "answers": {"grounded": {"type": "score", "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}, "confidence": 0.95}},
+                "usage": {"input_tokens": 314, "output_tokens": 23, "cost": 0.01},
             },
             1.0,
             1,
@@ -59,10 +54,15 @@ def test_the_openrouter_judge_posts_to_the_router_and_bills_its_own_cost(
 
     verdict = call(jev, {"answer": "a"}, QA_QUESTIONS)
 
-    assert seen["url"] == "https://openrouter.example/api/v1" + CHAT_COMPLETIONS
+    # The hosted base keeps its /v1 suffix once: the join strips it first.
+    assert seen["url"] == "https://openrouter.example/api/v1/systemone"
     assert seen["key"] == "k"
-    assert seen["auth_model"] == "typesafe/jev-router"
-    assert verdict.model_reported == "openai/gpt-6-luna"
+    assert seen["auth_model"] == "typesafe/jev-1.13"
+    assert seen["questions"]["grounded"]["type"] == "score"
+    assert verdict.model_reported == "typesafe/jev-1.13-20260917"
     # The endpoint's own cost wins over the fallback price formula (0.30/1.20).
     assert abs(verdict.cost_usd - 0.01) < 1e-12
+    # A score's label is its most probable level; Jev reports its confidence.
     assert verdict.answers["grounded"].label == "2"
+    confidence = verdict.answers["grounded"].confidence
+    assert confidence is not None and abs(confidence - 0.95) < 1e-9
