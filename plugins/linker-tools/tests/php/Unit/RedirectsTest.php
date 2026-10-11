@@ -500,7 +500,7 @@ final class RedirectsTest extends TestCase {
 
 	/**
 	 * A category whose term is gone goes where its route goes now — here the
-	 * catalogue, the shop page's own address.
+	 * shop, the shop page's own address.
 	 */
 	public function test_a_deleted_category_goes_to_its_shelf(): void {
 		$this->wordpress();

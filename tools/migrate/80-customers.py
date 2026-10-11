@@ -51,7 +51,7 @@ MARKER = "@@80-customers@@"
 # The account approval state: the user meta, and the value every account that
 # was already here gets. One place, because the writing of this state and the
 # reading of it (the account approval of the commerce chain) must not drift:
-# docs/specs/17-cutover.md step 4 names the same key.
+# the key lives here and in the plugin's Approval implementation (issue #73 contract ruling).
 META_KEY = "linker_approval_status"
 APPROVED = "approved"
 

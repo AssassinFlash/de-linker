@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Tests\Integration;
 
 /**
- * The retired addresses of the live catalogue and of this site's own history,
+ * The retired addresses of the live product range and of this site's own history,
  * driven against a local instance carrying the live snapshot: real withdrawn
  * products, real retired shelves, the real checkout page — and the addresses
  * that must keep answering for themselves.
@@ -20,7 +20,7 @@ namespace Linker\Tools\Tests\Integration;
 final class RedirectsTest extends SiteTestCase {
 
 	/**
-	 * A withdrawn product of the live catalogue goes to the shelf of its line.
+	 * A withdrawn product of the live product range goes to the shelf of its line.
 	 */
 	public function test_a_withdrawn_product_goes_to_the_shelf_of_its_line(): void {
 		$this->assertRedirects( '/product/pylontech-force-h2-system-7-1/', '/product-category/home-storage/' );
@@ -44,15 +44,15 @@ final class RedirectsTest extends SiteTestCase {
 	}
 
 	/**
-	 * A product the catalogue sells is served again — the map never shadows a
+	 * A product the shop sells is served again — the map never shadows a
 	 * published product.
 	 */
-	public function test_a_product_the_catalogue_sells_is_served(): void {
+	public function test_a_product_the_shop_sells_is_served(): void {
 		$this->assertStays( '/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/', 200 );
 	}
 
 	/**
-	 * A retired shelf whose term is gone goes to the catalogue, and one that
+	 * A retired shelf whose term is gone goes to the shop page, and one that
 	 * was kept empty goes to the shelf that holds its products now — at that
 	 * shelf's own nested address, so the visitor does not meet the flat alias.
 	 */
@@ -114,7 +114,7 @@ final class RedirectsTest extends SiteTestCase {
 	}
 
 	/**
-	 * The retired shop archive — the address the catalogue moved away from —
+	 * The retired shop archive — the address the shop moved away from —
 	 * goes to the shop page's own address, the landing point the live site
 	 * answers today (measured 2026-10-11: /shop/ 301s to /products/).
 	 */

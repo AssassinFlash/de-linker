@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * The integration tests drive a local WordPress with WooCommerce, Polylang
  * and this plugin, loaded with the live fixture (a `linker-pull` snapshot, the
- * live catalogue's withdrawn products and retired shelves included), over
+ * live shop's withdrawn products and retired shelves included), over
  * HTTP and through WP-CLI:
  *
  *     LINKER_TOOLS_SITE=http://127.0.0.1:8942 \
