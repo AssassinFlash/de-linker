@@ -1,0 +1,1886 @@
+[
+  {
+    "key": "a.pdp-price-login[1]",
+    "text": "Nettopreis nach Partner-Anmeldung",
+    "style": {
+      "fontWeight": [
+        "500",
+        "600"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 313.515625,
+        "w": 312.53125,
+        "h": 23
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 313.390625,
+        "w": 316.046875,
+        "h": 23
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[1]",
+    "text": "Nutzbare Energie5,0 kWh",
+    "style": {
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 359.515625,
+        "w": 413.34375,
+        "h": 38
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 359.390625,
+        "w": 413.34375,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dd[1]",
+    "text": "5,0 kWh",
+    "style": {
+      "marginLeft": [
+        "0px",
+        "227.953px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1344.75,
+        "y": 367.515625,
+        "w": 55.25,
+        "h": 21
+      },
+      "t16": {
+        "x": 1344.75,
+        "y": 367.390625,
+        "w": 55.25,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[2]",
+    "text": "Nennenergie5,12 kWh",
+    "style": {
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 397.515625,
+        "w": 413.34375,
+        "h": 38
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 397.390625,
+        "w": 413.34375,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dd[2]",
+    "text": "5,12 kWh",
+    "style": {
+      "marginLeft": [
+        "0px",
+        "252.812px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1341.5,
+        "y": 405.515625,
+        "w": 58.5,
+        "h": 21
+      },
+      "t16": {
+        "x": 1341.5,
+        "y": 405.390625,
+        "w": 58.5,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[3]",
+    "text": "ZellchemieLFP (LiFePO4)",
+    "style": {
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 435.515625,
+        "w": 413.34375,
+        "h": 38
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 435.390625,
+        "w": 413.34375,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dd[3]",
+    "text": "LFP (LiFePO4)",
+    "style": {
+      "marginLeft": [
+        "0px",
+        "230.844px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1306.265625,
+        "y": 443.515625,
+        "w": 93.734375,
+        "h": 21
+      },
+      "t16": {
+        "x": 1306.265625,
+        "y": 443.390625,
+        "w": 93.734375,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[4]",
+    "text": "Max. Ladestrom12,0 A",
+    "style": {
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 473.515625,
+        "w": 413.34375,
+        "h": 38
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 473.390625,
+        "w": 413.34375,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dd[4]",
+    "text": "12,0 A",
+    "style": {
+      "marginLeft": [
+        "0px",
+        "251.969px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1360.109375,
+        "y": 481.515625,
+        "w": 39.890625,
+        "h": 21
+      },
+      "t16": {
+        "x": 1360.109375,
+        "y": 481.390625,
+        "w": 39.890625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "p.pdp-avail-label[1]",
+    "text": "Auf Lager",
+    "style": {
+      "fontWeight": [
+        "500",
+        "600"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 548.515625,
+        "w": 413.34375,
+        "h": 23.09375
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 548.390625,
+        "w": 413.34375,
+        "h": 23.09375
+      }
+    }
+  },
+  {
+    "key": "span.pdp-dot[1]",
+    "text": "",
+    "style": {
+      "fontWeight": [
+        "500",
+        "600"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 556.0625,
+        "w": 8,
+        "h": 8
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 555.9375,
+        "w": 8,
+        "h": 8
+      }
+    }
+  },
+  {
+    "key": "p.pdp-avail-note[1]",
+    "text": "Voraussichtliche Lieferung innerhalb Deutschlands: 85,00 € bis 205,00 € · Die endgültigen ",
+    "style": {
+      "fontSize": [
+        "12px",
+        "13px"
+      ],
+      "lineHeight": [
+        "19.8px",
+        "20.8px"
+      ],
+      "marginTop": [
+        "4px",
+        "6px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 575.609375,
+        "w": 413.34375,
+        "h": 59.390625
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 577.484375,
+        "w": 413.34375,
+        "h": 62.390625
+      }
+    }
+  },
+  {
+    "key": "a.pdp-btn.pdp-btn-secondary[1]",
+    "text": "Produkt anfragen",
+    "style": {
+      "display": [
+        "inline-flex",
+        "flex"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 732,
+        "w": 413.34375,
+        "h": 48
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 736.875,
+        "w": 413.34375,
+        "h": 48
+      }
+    }
+  },
+  {
+    "key": "div.pdp-project-check__body[1]",
+    "text": "Neues System, Erweiterung oder Austausch? Linker Berater startet direkt mit diesem Modell ",
+    "style": {
+      "paddingBottom": [
+        "14px",
+        "16px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 987.65625,
+        "y": 946.625,
+        "w": 411.34375,
+        "h": 198.5625
+      },
+      "t16": {
+        "x": 987.65625,
+        "y": 943.5,
+        "w": 411.34375,
+        "h": 207.1875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-content[1]",
+    "text": "Beschreibung Technische Daten Dokumente Beschreibung GoodWe GW5.1-BAT-D-G21 (ESA-Batteriem",
+    "style": {
+      "gap": [
+        "0px 24px",
+        "normal 24px"
+      ],
+      "rowGap": [
+        "0px",
+        "normal"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 987,
+        "w": 1360,
+        "h": 2789.96875
+      },
+      "t16": {
+        "x": 40,
+        "y": 987,
+        "w": 1360,
+        "h": 2814.28125
+      }
+    }
+  },
+  {
+    "key": "nav.pdp-section-nav[1]",
+    "text": "Beschreibung Technische Daten Dokumente",
+    "style": {
+      "marginTop": [
+        "0px",
+        "24px"
+      ],
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 987,
+        "w": 1360,
+        "h": 71
+      },
+      "t16": {
+        "x": 40,
+        "y": 1011,
+        "w": 1360,
+        "h": 71
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[1]",
+    "text": "Beschreibung",
+    "style": {
+      "lineHeight": [
+        "20px",
+        "19.6px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 999,
+        "w": 117.65625,
+        "h": 44
+      },
+      "t16": {
+        "x": 40,
+        "y": 1023,
+        "w": 117.65625,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[2]",
+    "text": "Technische Daten",
+    "style": {
+      "fontWeight": [
+        "400",
+        "500"
+      ],
+      "lineHeight": [
+        "20px",
+        "19.6px"
+      ],
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 161.65625,
+        "y": 999,
+        "w": 140.890625,
+        "h": 44
+      },
+      "t16": {
+        "x": 161.65625,
+        "y": 1023,
+        "w": 141.90625,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[3]",
+    "text": "Dokumente",
+    "style": {
+      "fontWeight": [
+        "400",
+        "500"
+      ],
+      "lineHeight": [
+        "20px",
+        "19.6px"
+      ],
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 306.546875,
+        "y": 999,
+        "w": 102.359375,
+        "h": 44
+      },
+      "t16": {
+        "x": 307.5625,
+        "y": 1023,
+        "w": 102.890625,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview[1]",
+    "text": "Beschreibung GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh) GW5.1-BAT-D-G21 ist das ",
+    "style": {
+      "gap": [
+        "56px",
+        "18px"
+      ],
+      "rowGap": [
+        "56px",
+        "18px"
+      ],
+      "columnGap": [
+        "56px",
+        "18px"
+      ],
+      "gridTemplateColumns": [
+        "673.188px 550.812px",
+        "1262px 0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1098,
+        "w": 1360,
+        "h": 300.4375
+      },
+      "t16": {
+        "x": 40,
+        "y": 1122,
+        "w": 1360,
+        "h": 300.4375
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[1]",
+    "text": "GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh)",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 80,
+        "y": 1173.09375,
+        "w": 1280,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 80,
+        "y": 1197.09375,
+        "w": 1280,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[1]",
+    "text": "5,0 kWh nutzbar im gedruckten Test; 57.5 ± 1 kg; IP66.",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1430.4375,
+        "w": 328,
+        "h": 97.375
+      },
+      "t16": {
+        "x": 40,
+        "y": 1454.4375,
+        "w": 328,
+        "h": 98.375
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[2]",
+    "text": "Aerosol-Feuerlöschung (integriert); ohne Heizung.",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 384,
+        "y": 1430.4375,
+        "w": 328,
+        "h": 97.375
+      },
+      "t16": {
+        "x": 384,
+        "y": 1454.4375,
+        "w": 328,
+        "h": 98.375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[1]",
+    "text": "57.5 ± 1 kg je ModulDas Modul wiegt 57.5 ± 1 kg und misst 800 × 326 × 270 mm. Montage: Bod",
+    "style": {
+      "paddingRight": [
+        "20px",
+        "0px"
+      ],
+      "paddingLeft": [
+        "20px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1583.8125,
+        "w": 668,
+        "h": 58
+      },
+      "t16": {
+        "x": 40,
+        "y": 1608.8125,
+        "w": 668,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[1]",
+    "text": "57.5 ± 1 kg je Modul",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1584.8125,
+        "w": 626,
+        "h": 56
+      },
+      "t16": {
+        "x": 41,
+        "y": 1609.8125,
+        "w": 666,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[1]",
+    "text": "Das Modul wiegt 57.5 ± 1 kg und misst 800 × 326 × 270 mm. Montage: Bodenstapelung / Wandmo",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1640.8125,
+        "w": 626,
+        "h": 73.5
+      },
+      "t16": {
+        "x": 41,
+        "y": 1665.8125,
+        "w": 666,
+        "h": 64.1875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[1]",
+    "text": "Das Modul wiegt 57.5 ± 1 kg und misst 800 × 326 × 270 mm. Montage: Bodenstapelung / Wandmo",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1640.8125,
+        "w": 626,
+        "h": 49.5
+      },
+      "t16": {
+        "x": 61,
+        "y": 1665.8125,
+        "w": 626,
+        "h": 46.1875
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[2]",
+    "text": "Funktionen im ModulAerosol-Feuerlöschung (integriert); ohne Heizung. IP66. Laden +2 ~ +55 ",
+    "style": {
+      "paddingRight": [
+        "20px",
+        "0px"
+      ],
+      "paddingLeft": [
+        "20px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 732,
+        "y": 1583.8125,
+        "w": 668,
+        "h": 58
+      },
+      "t16": {
+        "x": 732,
+        "y": 1608.8125,
+        "w": 668,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[2]",
+    "text": "Funktionen im Modul",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 753,
+        "y": 1584.8125,
+        "w": 626,
+        "h": 56
+      },
+      "t16": {
+        "x": 733,
+        "y": 1609.8125,
+        "w": 666,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[2]",
+    "text": "Aerosol-Feuerlöschung (integriert); ohne Heizung. IP66. Laden +2 ~ +55 °C.",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 753,
+        "y": 1640.8125,
+        "w": 626,
+        "h": 48.75
+      },
+      "t16": {
+        "x": 733,
+        "y": 1665.8125,
+        "w": 666,
+        "h": 41.09375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[2]",
+    "text": "Aerosol-Feuerlöschung (integriert); ohne Heizung. IP66. Laden +2 ~ +55 °C.",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 753,
+        "y": 1640.8125,
+        "w": 626,
+        "h": 24.75
+      },
+      "t16": {
+        "x": 753,
+        "y": 1665.8125,
+        "w": 626,
+        "h": 23.09375
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[2]",
+    "text": "Technische Daten",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1705.8125,
+        "w": 1360,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 40,
+        "y": 1730.8125,
+        "w": 1360,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stats-layout[1]",
+    "text": "ModulenergieElektrisch (Dreiphasensystem)HandhabungModulenergieNennenergie5,12 kWhNutzbare",
+    "style": {
+      "gridTemplateColumns": [
+        "627px 692.984px",
+        "627px 693px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1767.40625,
+        "w": 1360,
+        "h": 363.6875
+      },
+      "t16": {
+        "x": 40,
+        "y": 1792.40625,
+        "w": 1360,
+        "h": 347.6875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-info-panel[1]",
+    "text": "ModulenergieNennenergie5,12 kWhNutzbare Energie5,0 kWh*1 100 % DOD, Zelle 2,85–3,6 V, 0,2P",
+    "style": {
+      "marginTop": [
+        "14px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1839.40625,
+        "w": 692.984375,
+        "h": 291.6875
+      },
+      "t16": {
+        "x": 707,
+        "y": 1850.40625,
+        "w": 693,
+        "h": 289.6875
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose.pdp-tab-disclosure[1]",
+    "text": "ModulenergieNennenergie5,12 kWhNutzbare Energie5,0 kWh*1 100 % DOD, Zelle 2,85–3,6 V, 0,2P",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderBottomWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "0px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1839.40625,
+        "w": 692.984375,
+        "h": 291.6875
+      },
+      "t16": {
+        "x": 707,
+        "y": 1850.40625,
+        "w": 693,
+        "h": 289.6875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[3]",
+    "text": "Nennenergie5,12 kWhNutzbare Energie5,0 kWh*1 100 % DOD, Zelle 2,85–3,6 V, 0,2P, 25 ± 2 °C,",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1839.40625,
+        "w": 692.984375,
+        "h": 291.6875
+      },
+      "t16": {
+        "x": 708,
+        "y": 1851.40625,
+        "w": 691,
+        "h": 287.6875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[1]",
+    "text": "Nennenergie5,12 kWh",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1839.40625,
+        "w": 692.984375,
+        "h": 49.796875
+      },
+      "t16": {
+        "x": 708,
+        "y": 1851.40625,
+        "w": 691,
+        "h": 49.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[1]",
+    "text": "5,12 kWh",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 1853.40625,
+        "w": 320.5,
+        "h": 20.796875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 1865.40625,
+        "w": 319.5,
+        "h": 20.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[2]",
+    "text": "Nutzbare Energie5,0 kWh*1 100 % DOD, Zelle 2,85–3,6 V, 0,2P, 25 ± 2 °C, Beginn der Lebensd",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1889.203125,
+        "w": 692.984375,
+        "h": 110.796875
+      },
+      "t16": {
+        "x": 708,
+        "y": 1901.203125,
+        "w": 691,
+        "h": 108.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[2]",
+    "text": "5,0 kWh*1 100 % DOD, Zelle 2,85–3,6 V, 0,2P, 25 ± 2 °C, Beginn der Lebensdauer",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 1903.203125,
+        "w": 320.5,
+        "h": 81.796875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 1915.203125,
+        "w": 319.5,
+        "h": 79.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[1]",
+    "text": "*1 100 % DOD, Zelle 2,85–3,6 V, 0,2P, 25 ± 2 °C, Beginn der Lebensdauer",
+    "style": {
+      "fontWeight": [
+        "500",
+        "400"
+      ],
+      "marginTop": [
+        "4px",
+        "2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 1928,
+        "w": 320.5,
+        "h": 57
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 1938,
+        "w": 319.5,
+        "h": 57
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[3]",
+    "text": "ZellchemieLFP (LiFePO4)",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 2000,
+        "w": 692.984375,
+        "h": 49.796875
+      },
+      "t16": {
+        "x": 708,
+        "y": 2010,
+        "w": 691,
+        "h": 49.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[3]",
+    "text": "LFP (LiFePO4)",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2014,
+        "w": 320.5,
+        "h": 20.796875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2024,
+        "w": 319.5,
+        "h": 20.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[4]",
+    "text": "Zyklenlebensdauer≥8000Laborbedingungen",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 2049.796875,
+        "w": 692.984375,
+        "h": 81.296875
+      },
+      "t16": {
+        "x": 708,
+        "y": 2059.796875,
+        "w": 691,
+        "h": 79.296875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[4]",
+    "text": "≥8000Laborbedingungen",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2063.796875,
+        "w": 320.5,
+        "h": 53.296875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2073.796875,
+        "w": 319.5,
+        "h": 51.296875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[2]",
+    "text": "Laborbedingungen",
+    "style": {
+      "fontWeight": [
+        "500",
+        "400"
+      ],
+      "marginTop": [
+        "4px",
+        "2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2088.59375,
+        "w": 320.5,
+        "h": 28.5
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2096.59375,
+        "w": 319.5,
+        "h": 28.5
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[3]",
+    "text": "Dokumente",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2212.09375,
+        "w": 1360,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 40,
+        "y": 2221.09375,
+        "w": 1360,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[4]",
+    "text": "Produktfragen",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2544.6875,
+        "w": 1360,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 40,
+        "y": 2553.6875,
+        "w": 1360,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[3]",
+    "text": "Hat GW5.1-BAT-D-G21 eine Heizung?Aerosol-Feuerlöschung (integriert); ohne Heizung. Ladetem",
+    "style": {
+      "marginBottom": [
+        "0px",
+        "24px"
+      ],
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "0px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2586.28125,
+        "w": 1360,
+        "h": 57
+      },
+      "t16": {
+        "x": 40,
+        "y": 2595.28125,
+        "w": 1360,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[3]",
+    "text": "Hat GW5.1-BAT-D-G21 eine Heizung?",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2586.28125,
+        "w": 1360,
+        "h": 56
+      },
+      "t16": {
+        "x": 41,
+        "y": 2596.28125,
+        "w": 1358,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[6]",
+    "text": "Aerosol-Feuerlöschung (integriert); ohne Heizung. Ladetemperaturbereich +2 ~ +55 °C; Entla",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2642.28125,
+        "w": 1360,
+        "h": 48.75
+      },
+      "t16": {
+        "x": 41,
+        "y": 2652.28125,
+        "w": 1358,
+        "h": 87.28125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[3]",
+    "text": "Aerosol-Feuerlöschung (integriert); ohne Heizung. Ladetemperaturbereich +2 ~ +55 °C; Entla",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2642.28125,
+        "w": 1360,
+        "h": 24.75
+      },
+      "t16": {
+        "x": 61,
+        "y": 2652.28125,
+        "w": 1318,
+        "h": 69.28125
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[4]",
+    "text": "Wie viele Module in einer Säule?Bis zu sechs Module in einer Säule und zwölf im System. Un",
+    "style": {
+      "marginBottom": [
+        "0px",
+        "24px"
+      ],
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "0px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2643.28125,
+        "w": 1360,
+        "h": 57
+      },
+      "t16": {
+        "x": 40,
+        "y": 2677.28125,
+        "w": 1360,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[4]",
+    "text": "Wie viele Module in einer Säule?",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2643.28125,
+        "w": 1360,
+        "h": 56
+      },
+      "t16": {
+        "x": 41,
+        "y": 2678.28125,
+        "w": 1358,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[7]",
+    "text": "Bis zu sechs Module in einer Säule und zwölf im System. Unterschiedliche BAT-D-Modelle kön",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2699.28125,
+        "w": 1360,
+        "h": 73.5
+      },
+      "t16": {
+        "x": 41,
+        "y": 2734.28125,
+        "w": 1358,
+        "h": 64.1875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[4]",
+    "text": "Bis zu sechs Module in einer Säule und zwölf im System. Unterschiedliche BAT-D-Modelle kön",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2699.28125,
+        "w": 1360,
+        "h": 49.5
+      },
+      "t16": {
+        "x": 61,
+        "y": 2734.28125,
+        "w": 1318,
+        "h": 46.1875
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[5]",
+    "text": "Kompatibilitätsangaben",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2781.28125,
+        "w": 1360,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 40,
+        "y": 2840.28125,
+        "w": 1360,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[1]",
+    "text": "GoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW5KETAG20",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2838.875,
+        "w": 280,
+        "h": 245.234375
+      },
+      "t16": {
+        "x": 40,
+        "y": 2897.875,
+        "w": 280,
+        "h": 245.234375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[2]",
+    "text": "GoodWe ESA GW6K-ETA-G20 (6 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW6KETAG20",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 336,
+        "y": 2838.875,
+        "w": 280,
+        "h": 245.234375
+      },
+      "t16": {
+        "x": 336,
+        "y": 2897.875,
+        "w": 280,
+        "h": 245.234375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[3]",
+    "text": "GoodWe ESA GW8K-ETA-G20 (dreiphasiges 8-kW-Leistungsmodul)Artikelnr. DLK-GOODWE-GW8KETAG20",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 632,
+        "y": 2838.875,
+        "w": 280,
+        "h": 245.234375
+      },
+      "t16": {
+        "x": 632,
+        "y": 2897.875,
+        "w": 280,
+        "h": 245.234375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[4]",
+    "text": "GoodWe ESA GW9.999K-ETA-G20 (9,999 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 928,
+        "y": 2838.875,
+        "w": 280,
+        "h": 245.234375
+      },
+      "t16": {
+        "x": 928,
+        "y": 2897.875,
+        "w": 280,
+        "h": 245.234375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[5]",
+    "text": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)Artikelnr. DLK-GOODWE-GW10KETA",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3100.109375,
+        "w": 280,
+        "h": 245.234375
+      },
+      "t16": {
+        "x": 40,
+        "y": 3159.109375,
+        "w": 280,
+        "h": 245.234375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[6]",
+    "text": "GoodWe ESA GW12K-ETA-G20 (dreiphasiges 12-kW-Leistungsmodul)Artikelnr. DLK-GOODWE-GW12KETA",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 336,
+        "y": 3100.109375,
+        "w": 280,
+        "h": 245.234375
+      },
+      "t16": {
+        "x": 336,
+        "y": 3159.109375,
+        "w": 280,
+        "h": 245.234375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[7]",
+    "text": "GoodWe ESA GW15K-ETA-G20 (dreiphasiges 15-kW-Leistungsmodul)Artikelnr. DLK-GOODWE-GW15KETA",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 632,
+        "y": 3100.109375,
+        "w": 280,
+        "h": 245.234375
+      },
+      "t16": {
+        "x": 632,
+        "y": 3159.109375,
+        "w": 280,
+        "h": 245.234375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[8]",
+    "text": "GoodWe ESA GW20K-ETA-G20 (20 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW20KETA",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 928,
+        "y": 3100.109375,
+        "w": 280,
+        "h": 245.234375
+      },
+      "t16": {
+        "x": 928,
+        "y": 3159.109375,
+        "w": 280,
+        "h": 245.234375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[9]",
+    "text": "GoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW25KETA",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3361.34375,
+        "w": 280,
+        "h": 260.625
+      },
+      "t16": {
+        "x": 40,
+        "y": 3420.34375,
+        "w": 280,
+        "h": 260.625
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[10]",
+    "text": "GoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 336,
+        "y": 3361.34375,
+        "w": 280,
+        "h": 260.625
+      },
+      "t16": {
+        "x": 336,
+        "y": 3420.34375,
+        "w": 280,
+        "h": 260.625
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[11]",
+    "text": "GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW30KETA",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 632,
+        "y": 3361.34375,
+        "w": 280,
+        "h": 260.625
+      },
+      "t16": {
+        "x": 632,
+        "y": 3420.34375,
+        "w": 280,
+        "h": 260.625
+      }
+    }
+  },
+  {
+    "key": "div.pdp-pairing-footnote.pdp-reading.pdp-muted[1]",
+    "text": "Das GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt ei",
+    "style": {
+      "fontSize": [
+        "15px",
+        "13px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "20.8px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3637.96875,
+        "w": 640,
+        "h": 99
+      },
+      "t16": {
+        "x": 40,
+        "y": 3696.96875,
+        "w": 640,
+        "h": 64.3125
+      }
+    }
+  }
+]

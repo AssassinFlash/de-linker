@@ -205,7 +205,7 @@ def chat_messages(
         "",
         "Answer every question with its calibrated probabilities: one JSON object"
         " with a key for every question (" + keys + "), each question's value an"
-        ' object that maps that question\'s answer options to probabilities'
+        " object that maps that question's answer options to probabilities"
         ' ({"grounded": {"0": 0.05, "1": 0.15, "2": 0.8}},'
         ' {"appropriate": {"yes": 0.9, "no": 0.1}},'
         ' {"better_pick": {"A": 0.7, "B": 0.05, "equal": 0.25}}), plus one "reason"'
