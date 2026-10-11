@@ -152,6 +152,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         default="none",
         help="none: the pool ceiling only; deepseek: listwise re-rank, then score",
     )
+    parser.add_argument(
+        "--batch",
+        type=int,
+        default=0,
+        help="texts per embedding request (0: the embedder's default)",
+    )
     args = parser.parse_args(argv)
 
     questions = load(args.golden)
@@ -168,6 +174,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit(
             "gemini-embedding-2 needs AIHUBMIX_API_KEY and AIHUBMIX_BASE_URL"
         )
+    if args.batch:
+        from linker_genie import embedding as embedding_mod
+
+        embedding_mod.GEMINI_BATCH = args.batch
     index = DocumentIndex(args.index)
     # The production candidate stage stops at 30 chunks; the pool here measures
     # what a deeper first stage would hand the re-ranker, so the stage-1 limit
