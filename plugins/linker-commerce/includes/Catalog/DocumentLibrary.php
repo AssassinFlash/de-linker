@@ -75,7 +75,8 @@ final class DocumentLibrary {
 	}
 
 	/**
-	 * Every published product ID of the page's language, in catalogue order.
+	 * Every published product ID of the page's language, by title (A–Z) —
+	 * the brands of the register read in that order.
 	 *
 	 * @return list<int>
 	 */

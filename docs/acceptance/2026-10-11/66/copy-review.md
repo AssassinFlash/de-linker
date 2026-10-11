@@ -79,6 +79,19 @@ EN 先行、DE 独立撰写（不是翻译）；基准 = linker-copywriting Hard
 - 值 `home` / `commercial` → `Home` / `Commercial`（EN）、`Privat` / `Gewerblich`（DE）：站内既有（产品页关键数字、目录卡的同一词）。**定稿**：同既有。
 - 技术表的行标签与值来自产品自己的数据（线上同源，德语随产品数据），不改。
 
+### 2.5 清除链接
+
+- EN 初稿：`Clear comparison`
+  评审：线上原样——旧仓库当前交付版本的 `plugins/terravolt-b2b-core/includes/
+  compare-products.php:290` 是同一链接，"内容冻结"；动宾明确（清除 = 回不带
+  `ids` 的裸页），与每列里的 `Remove`（只去一个商品）分工不混。**定稿**：同线上。
+- DE 初稿：`Vergleich leeren`
+  评审：线上原样（同一版本 `plugins/terravolt-b2b-core/languages/
+  terravolt-b2b-core-de_DE.po` 的 `Clear comparison` → `Vergleich leeren` 逐字）；
+  `leeren` 是德语对"清空列表/容器"的常态动词（对比表是被清空的对象），不是
+  `zurücksetzen`（重置整个页面状态）；与 `Entfernen` 动宾分明；此句无主语，
+  Sie 体规则不涉及。**定稿**：同线上。
+
 ## 3. 文档库页 · 页面（`faq_page.html` 与 `de/` 孪生）
 
 ### 3.1 冻结内容（线上原样，不逐条重评）

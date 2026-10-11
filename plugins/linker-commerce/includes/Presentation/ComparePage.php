@@ -132,14 +132,19 @@ final class ComparePage {
 
 	/**
 	 * The page's address with a selection in it: `?ids=1,2,3`, and `capped=1`
-	 * when the address asked for more products than a comparison holds.
+	 * when the address asked for more products than a comparison holds. The
+	 * address is the request language's own page — the language layer swaps in
+	 * the page's twin, the route CatalogText::url takes for a product — so a
+	 * German visitor's chip, canonical redirect and Remove links all stay on
+	 * the German page.
 	 *
 	 * @param int[] $ids    Ordered product IDs.
 	 * @param bool  $capped Whether to mark the selection as shortened.
 	 */
 	public function page_url( array $ids = array(), bool $capped = false ): string {
 		$page = get_page_by_path( self::PAGE_SLUG );
-		$url  = $page instanceof \WP_Post ? (string) get_permalink( $page ) : home_url( '/' . self::PAGE_SLUG . '/' );
+		$id   = $page instanceof \WP_Post ? self::translated_page_id( (int) $page->ID ) : 0;
+		$url  = 0 < $id ? (string) get_permalink( $id ) : home_url( '/' . self::PAGE_SLUG . '/' );
 		$url  = trailingslashit( (string) preg_replace( '#\?.*$#', '', $url ) );
 		$ids  = array_values( array_filter( array_map( 'intval', $ids ) ) );
 		if ( array() === $ids ) {
@@ -151,6 +156,22 @@ final class ComparePage {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * The page as the request's language has it: the language layer's twin of
+	 * the page the slug resolved to — that page itself when it is already in
+	 * the language, has no twin, or there is no language layer.
+	 *
+	 * @param int $page_id The page ID the slug resolved to.
+	 */
+	private static function translated_page_id( int $page_id ): int {
+		if ( ! function_exists( 'pll_get_post' ) ) {
+			return $page_id;
+		}
+		$translated = (int) pll_get_post( $page_id, self::language() );
+
+		return 0 < $translated ? $translated : $page_id;
 	}
 
 	/**

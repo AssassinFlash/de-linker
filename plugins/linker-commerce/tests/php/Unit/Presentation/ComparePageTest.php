@@ -72,6 +72,11 @@ final class ComparePageTest extends TestCase {
 	private const PAGE_URL = 'https://de-linker.test/compare-products/';
 
 	/**
+	 * The German page's address, the twin of the page above.
+	 */
+	private const PAGE_URL_DE = 'https://de-linker.test/de/compare-products/';
+
+	/**
 	 * The language the mocked language layer answers; a test that reads the
 	 * German page sets it.
 	 *
@@ -112,12 +117,35 @@ final class ComparePageTest extends TestCase {
 				},
 			)
 		);
-		WP_Mock::userFunction( 'get_permalink', array( 'return' => self::PAGE_URL ) );
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'return' => static fn ( int $id ): string => match ( $id ) {
+					5385    => self::PAGE_URL,
+					6608    => self::PAGE_URL_DE,
+					default => 'https://de-linker.test/product/' . $id . '/',
+				},
+			)
+		);
 		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
 		WP_Mock::userFunction(
 			'pll_get_post',
 			array(
-				'return' => 0,
+				// The language layer's answer as the instance's Polylang gives it:
+				// the post itself in its own language, its twin in the other.
+				'return' => static function ( int $id, string $language = '' ): int {
+					$translations = array(
+						5385 => array(
+							'en' => 5385,
+							'de' => 6608,
+						),
+						6608 => array(
+							'en' => 5385,
+							'de' => 6608,
+						),
+					);
+					return $translations[ $id ][ $language ] ?? 0;
+				},
 				'times'  => '0+',
 			)
 		);
@@ -263,6 +291,41 @@ final class ComparePageTest extends TestCase {
 		$this->assertSame( self::PAGE_URL, $page->page_url() );
 		$this->assertSame( self::PAGE_URL . '?ids=7,9', $page->page_url( array( 7, 9 ) ) );
 		$this->assertSame( self::PAGE_URL . '?ids=7&capped=1', $page->page_url( array( 7 ), true ) );
+	}
+
+	/**
+	 * The page's address on a German request is the German page, selection
+	 * and all: the slug resolves to the page, the language layer's twin is
+	 * the address that follows.
+	 */
+	public function test_the_german_page_address_is_the_german_page(): void {
+		$this->language = 'de';
+		$page           = new ComparePage();
+
+		$this->assertSame( self::PAGE_URL_DE, $page->page_url() );
+		$this->assertSame( self::PAGE_URL_DE . '?ids=7,9', $page->page_url( array( 7, 9 ) ) );
+		$this->assertSame( self::PAGE_URL_DE . '?ids=7&capped=1', $page->page_url( array( 7 ), true ) );
+	}
+
+	/**
+	 * On the German page every address the fragment prints stays German: the
+	 * chip leads to the German page, and so do the Remove links and the Clear
+	 * link — the canonical redirect the page keeps is the same address.
+	 */
+	public function test_the_german_fragment_leads_to_the_german_page(): void {
+		$_GET['ids']    = '4107,1832';
+		$this->language = 'de';
+
+		$page  = new ComparePage();
+		$table = $page->table();
+		$chip  = $page->chip_shortcode();
+
+		$this->assertStringContainsString( 'data-compare-page="' . self::PAGE_URL_DE . '"', $chip );
+		$this->assertStringContainsString( 'href="' . self::PAGE_URL_DE . '"', $table );
+		$this->assertStringContainsString( 'href="' . self::PAGE_URL_DE . '?ids=1832"', $table );
+		$this->assertStringContainsString( 'href="' . self::PAGE_URL_DE . '?ids=4107"', $table );
+		$this->assertStringNotContainsString( self::PAGE_URL . '"', $table );
+		unset( $_GET['ids'] );
 	}
 
 	/**

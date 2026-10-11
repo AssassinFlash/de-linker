@@ -75,5 +75,6 @@ Advisor 整页是旧助手的整页形态；助手现在是 Genie（每页常驻
 - 2026-10-11：本规格随 #66 首次写入。证据与命令：
   - 线上对照（只读 GET）：`/compare-products/`、`/compare-products/?ids=6521,6522,6523`、`/de/compare-products/?ids=6521,6523`、`/faq-download/`、`/de/faq-download/`、`/linker-advisor/`（200）、`/de/linker-berater/`（200）、`/de/linker-advisor/`（200）——实施日期 2026-10-11。
   - LC 每页机制的来源：快照里的 LiveCanvas 4.9.3 `modules/templating.php`（singular 的 `lc_use_template_of_slug` 分支）与其 `post-specific-dynamic-template-choice-ux.php`（后台的同一选择）。
-  - 旧对比页的行为来源：旧仓库 `refs/landed/chain-tip` 的 `assets/compare-selection.js` 与 `includes/compare-products.php`（只作为"线上现状"中性证据：芯片、上限、sessionStorage、地址回写四项照旧；其行数据路径不继承）。
+  - 旧对比页的行为来源：旧仓库当前交付版本的 `plugins/terravolt-b2b-core/assets/compare-selection.js` 与 `includes/compare-products.php`（只作为"线上现状"中性证据：芯片、上限、sessionStorage、地址回写四项照旧；其行数据路径不继承）。
 - 2026-10-11（同日追加）：§6 的 WindPress 修复（`render_raw`）与 §7 的三条留档，均随本票一并交付。
+- 2026-10-11（评审轮追加）：§1 的页面地址改为按请求语言解析（`ComparePage::page_url()` 经 `pll_get_post` 取页面孪生，德语访客的芯片、规范化跳转与 Remove 链接留在 `/de/` 页），模板引导句落地 §1.2 定稿（EN/DE 都不含 catalogue/Katalog）。

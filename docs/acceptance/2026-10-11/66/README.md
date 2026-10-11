@@ -16,6 +16,12 @@
 | 芯片与选择态 | 浏览器 `sessionStorage.setItem('linkerCompareIds','["6521","6523"]')` 后打开 `/products/` | 芯片由隐藏变可见，计数 `2/4`，`href=…/compare-products/?ids=6521,6523` |
 | 真实夹具（装配层） | `php vendor/bin/phpunit --filter ComparisonLiveCatalogueTest` | 3 项通过：线上 89 件商品夹具的真实图值（4107 10 kW AC / 20 kW PV、1832 4.5/5.0 kWh、范围 5–25）经 `Comparison::of()` 与 ability 输出逐字段一致 |
 | 真实夹具（库） | `php vendor/bin/phpunit --filter 'DocumentLibraryTest|LibraryPageTest|ComparePageTest|ComparisonTest'` | 全部通过（装配、去重、类型/语言归一、德语标签、空态、上限提示、行渲染） |
+| 文案定稿落地（评审轮） | `grep -rn -i 'catalogue\|katalog' plugins/linker-commerce/content/livecanvas/{compare_page.html,de/compare_page.html}` | 无匹配（exit 1）：两文件的引导句都是 copy-review §1.2 定稿；模板文章 6933/6934 经 `wp post get` 读出同为定稿句（`Your selection stays…` / `Ihre Auswahl bleibt…`） |
+| 重装（评审轮） | `just windpress-compile t66` 后 `just present t66` | 编译 `cache recompiled (1791718500 -> 1791721819), anchor classes present`（本轮一次通过）；呈现 `created 0, updated 0, unchanged 10`，`windpress: cache is newer than the templates/tokens…`：模板改动已进库 |
+| 重装后的页面 | `curl -s http://127.0.0.1:8930/compare-products/ \| grep -o 'Tick up to four products[^<]*'`（DE 同法，`/de/compare-products/`） | EN/DE 各输出定稿句逐字（`just present t66` 之后） |
+| DE 地址一致（评审轮修复） | `curl -o /dev/null -w '%{redirect_url}' 'http://127.0.0.1:8930/de/compare-products/?ids=6521,6521,6523'` | 302 → `…/de/compare-products/?ids=6521,6523`（修复前落 `/compare-products/`）；EN 同法仍 → `/compare-products/?ids=6521,6523` |
+| DE 芯片与页内链接 | `curl -s http://127.0.0.1:8930/de/produkte/ \| grep -o 'data-compare-page="[^"]*"'`；DE 对比页 `grep -o 'href="[^"]*"[^>]*>\(Entfernen\|Vergleich leeren\)'` | 芯片 `data-compare-page="…/de/compare-products/"`；`Vergleich leeren` → 裸 `/de/compare-products/`，两条 `Entfernen` → `/de/compare-products/?ids=6523`、`?ids=6521` |
+| 单元测试（评审轮） | `php vendor/bin/phpunit --filter ComparePageTest` | OK (9 tests, 34 assertions)——新增德语地址、德语表片段两个用例（`page_url`、芯片 `data-compare-page`、清除/移除链接全在 `/de/`） |
 
 ## 2. 视觉验收（截图，1440/390 × EN/DE）
 
@@ -33,6 +39,12 @@
 | `faq-1440-de-answers-open.png` | 产品问答（DE，展开一条） | 按品牌分组、折叠列表；**问题文本为数据自带语言（本机只有英文 ACF 问答，#15 字段为空）**，见 §4 |
 | `faq-390-en-hero.png` / `faq-390-en-documents.png` | 文档库页 390 | 单列堆叠，行内五项折行，可读 |
 | `chip-1440-en-catalogue-selection.png` | 目录页 + 选择态芯片 | 左下浮动胶囊 `Compare 2/4`；目录页样式本身归 #16（本实例目录页是插件 PHP 模板，未在本票范围内） |
+| `faq-390-de-hero.png` / `faq-390-de-documents.png` | 文档库页 DE 390（补格） | 与 EN 390 同取景：页顶 hero（含页头、三个区锚点、四个承诺）；`#documents` 段起点（`DOKUMENTATION / Finden Sie das Dokument.` + Chint/GoodWe 行）。单列堆叠，`gilt für …`、`Herunterladen` 可读 |
+| `faq-1440-de-trade-rules.png` / `faq-390-de-trade-rules.png` | 下单前规则 DE，1440 / 390（补格） | 整段单幅（1440 1541 px、390 1841 px）：`BEVOR SIE BESTELLEN` + `Kaufmännische Regeln und Handelsbedingungen.`，5 类 16 条问句逐条可见（Bestellung & Lieferung 4 / Konten & Preise 2 / Versand & Logistik 3 / Garantie & Service 3 / Konformität & Dokumentation 4），末条与冻结内容一致（`über Genie verfügbar?`） |
+| `compare-1440-de-empty.png` | DE 对比页空态（补格） | 整页 1105 px：面包屑/标题/引导句（§1.2 定稿逐字）+ 空态一句 `Wählen Sie Produkte aus, um ihre technischen Daten zu vergleichen.` + `Weiter einkaufen`，无空表 |
+| `faq-1440-en-answers.png` | 产品问答区 EN（补格） | 整段单幅（13,914 px）：`PRODUCT ANSWERS` kicker + §3.3 定稿句（`…gathered by brand. For a question this list does not answer, ask Genie.`）+ 5 个品牌组 272 条折叠列表，首尾内容核对见下 |
+
+**整页栅格的边界（本轮实测）**：DE 文档库页在 390 宽下高 51,634 px，超出浏览器单幅栅格的成功范围——51,634 px 的 `fullPage` 截图在末段重复页顶内容（不是 trade-rules 与页脚），26,000 px 视口的截屏在页坐标 49,000–51,000 段显示问答区内容（该段实际是 trade-rules 段，`#before-you-order` 在 390 下位于页坐标 49,039）。故 DE 390 一格沿用 EN 390 的取景约定（页顶 hero + `#documents` 段起点各一屏），trade-rules 段另以整段单幅交付；`faq-1440-en-answers.png`（13,914 px）与两幅 trade-rules（1,541 / 1,841 px）首尾内容（首行 kicker、末条问句）经逐条核对成立。
 
 ## 3. 文案与规格
 
