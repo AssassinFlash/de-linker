@@ -26,7 +26,7 @@ from typing import Any
 from index.eval.goldset import GOLDEN_PATH, Question, load
 from index.eval.metrics import Score, score
 from linker_genie import retrieval
-from linker_genie.embedding import gemini_from_env
+from linker_genie.embedding import DEEPSEEK_FILE, credentials, gemini_from_env
 from linker_genie.retrieval import DocumentHit, DocumentIndex
 
 # The re-rank prompt: the pool as a numbered list, the answer as the five best
@@ -191,8 +191,23 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"encoding {len(texts)} queries…", file=sys.stderr, flush=True)
     vectors = dict(zip(texts, encoder.embed_queries(texts), strict=True))
 
-    key = os.environ.get("DEEPSEEK_API_KEY", "")
-    base = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/")
+    # The escalation endpoint's credentials: the environment, else the owner's
+    # file — the same rule, through the same reader, as the query encoder above.
+    auth = credentials(
+        "DEEPSEEK_API_KEY",
+        "DEEPSEEK_BASE_URL",
+        "https://api.deepseek.com",
+        DEEPSEEK_FILE,
+    )
+    if auth is None:
+        if args.judge == "deepseek":
+            raise SystemExit(
+                "DEEPSEEK_API_KEY is not set and "
+                "~/.config/terravolt-builder/deepseek.env has none"
+            )
+        base, key = "", ""
+    else:
+        base, key = auth
     model = os.environ.get("DEEPSEEK_MODEL", "deepseek-flash")
 
     pools: dict[str, list[DocumentHit]] = {}
