@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<ruleset name="Linker mu-plugins">
+	<description>The production must-use plugins: the shared plugin rules (tools/php/phpcs.xml) with this project's prefixes.</description>
+
+	<file>linker-error-recorder.php</file>
+	<file>tests</file>
+
+	<rule ref="../tools/php/phpcs.xml"/>
+
+	<!--
+		The deployment name of a must-use plugin is the plugin: one file named
+		after its purpose, not after the class in it.
+	-->
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>linker-error-recorder.php</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="Linker\Mu"/>
+				<element value="linker_error"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

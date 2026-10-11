@@ -5,8 +5,9 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 # `just build` and `just build::check`.
 mod build "tools/build.just"
 
-# Composer projects: the plugins, and tools/local for its mu-plugins and router.
-php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tools tools/local"
+# Composer projects: the plugins, the production mu-plugins, and tools/local for
+# its local mu-plugins and router.
+php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tools mu-plugins tools/local"
 
 # uv projects: the services, tools/local (linker-local), the data migrations (tools/migrate), and the FAQ tooling.
 py_projects := "services/genie services/engine tools/local tools/migrate tools/faq"
@@ -166,7 +167,8 @@ php-test: php-install
     set -euo pipefail
     for project in {{ php_projects }}; do
         # tools/local has no PHPUnit suite: its mu-plugins are tested on real
-        # instances by its pytest stack tests. Every other project must have one.
+        # instances by its pytest stack tests. Every other project must have one
+        # (mu-plugins' smoke test runs against an instance, LINKER_MU_WP).
         if [ "$project" = tools/local ]; then continue; fi
         echo "== $project: PHPUnit"
         cd "{{ justfile_directory() }}/$project"

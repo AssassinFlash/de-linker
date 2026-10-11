@@ -42,7 +42,9 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
 		WP_Mock::expectActionAdded( 'init', array( $conversations, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $proxy, 'register' ) );
-		WP_Mock::expectActionAdded( 'template_redirect', WP_Mock\Functions::type( 'Closure' ) );
+		// Priority 1: the retired addresses answer ahead of WordPress's own
+		// canonical redirects (Redirects::register()).
+		WP_Mock::expectActionAdded( 'template_redirect', WP_Mock\Functions::type( 'Closure' ), 1 );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $chrome, 'assets' ) );
 
 		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries ) )->register();

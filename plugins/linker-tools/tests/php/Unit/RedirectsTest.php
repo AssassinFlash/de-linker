@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for the retired tool entry addresses.
+ * Tests for the retired addresses.
  *
  * @package Linker\Tools
  */
@@ -12,9 +12,14 @@ namespace Linker\Tools\Tests\Unit;
 use Linker\Tools\Redirects;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
+use WP_Term;
+
+// phpcs:disable WordPress.WP.AlternativeFunctions -- this test runs outside WordPress: files, JSON and URL parsing through PHP itself.
 
 /**
- * Tests for Redirects.
+ * Tests for Redirects: the mapping tables load, and every kind of retired
+ * address goes where the map says — while a product or a shelf that is back
+ * stays with WordPress.
  *
  * @covers \Linker\Tools\Redirects
  */
@@ -26,27 +31,503 @@ final class RedirectsTest extends TestCase {
 	private const HOME = 'https://de-linker.test';
 
 	/**
-	 * WordPress functions target() reads.
+	 * The `product` query var of the request under test (WordPress's own
+	 * routing, which is what a product address is read from).
+	 *
+	 * @var string
+	 */
+	private string $product = '';
+
+	/**
+	 * The `product_cat` query var of the request under test.
+	 *
+	 * @var string
+	 */
+	private string $category = '';
+
+	/**
+	 * Where the checkout page itself answers (WooCommerce's own address).
+	 *
+	 * @var string
+	 */
+	private string $checkout = '/proforma-request/';
+
+	/**
+	 * The product category terms that exist, by slug.
+	 *
+	 * @var array<string, WP_Term>
+	 */
+	private array $terms = array();
+
+	/**
+	 * The ids a published-product query answers with.
+	 *
+	 * @var list<int>
+	 */
+	private array $published = array();
+
+	/**
+	 * The permalink a term answers with, by term id.
+	 *
+	 * @var array<int, string>
+	 */
+	private array $links = array();
+
+	/**
+	 * Polylang's answer to the language of the request, null while Polylang
+	 * does not answer.
+	 *
+	 * @var string|null
+	 */
+	private ?string $current_language = null;
+
+	/**
+	 * Polylang's default language, '' while Polylang does not answer.
+	 *
+	 * @var string
+	 */
+	private string $default_language = '';
+
+	/**
+	 * Polylang's language slugs, empty while Polylang does not answer.
+	 *
+	 * @var list<string>
+	 */
+	private array $languages = array();
+
+	/**
+	 * A term's twin id, by term id and language.
+	 *
+	 * @var array<int, array<string, int>>
+	 */
+	private array $term_twins = array();
+
+	/**
+	 * A post id for a URL, URL_to_postid's answer.
+	 *
+	 * @var array<string, int>
+	 */
+	private array $post_ids = array();
+
+	/**
+	 * A post's twin id, by post id and language.
+	 *
+	 * @var array<int, array<string, int>>
+	 */
+	private array $post_twins = array();
+
+	/**
+	 * The WordPress and WooCommerce functions the plugin reads, wired to the
+	 * properties above.
 	 */
 	private function wordpress(): void {
 		WP_Mock::userFunction( 'home_url' )->andReturnUsing(
 			static fn( string $path = '' ): string => self::HOME . $path
 		);
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnUsing(
+			static fn( string $value ): string => rtrim( $value, '/' ) . '/'
+		);
+		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing(
+			static fn( string $url, int $component = -1 ) => parse_url( $url, $component )
+		);
+		WP_Mock::userFunction( 'wc_get_permalink_structure' )->andReturn(
+			array(
+				'product_rewrite_slug'  => 'product',
+				'category_rewrite_slug' => 'product-category',
+			)
+		);
+		WP_Mock::userFunction( 'wc_get_page_permalink' )->andReturn( self::HOME . '/products/' );
+		WP_Mock::userFunction( 'wc_get_checkout_url' )->andReturnUsing(
+			fn(): string => self::HOME . $this->checkout
+		);
+		WP_Mock::userFunction( 'get_query_var' )->andReturnUsing(
+			fn( string $name ): string => $this->query_var( $name )
+		);
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
+			fn(): array => $this->published
+		);
+		WP_Mock::userFunction( 'get_terms' )->andReturnUsing(
+			function ( array $args ): array {
+				$term = $this->terms[ (string) $args['slug'] ] ?? null;
+				return null === $term ? array() : array( $term );
+			}
+		);
+		WP_Mock::userFunction( 'get_term_link' )->andReturnUsing(
+			fn( $term ) => $this->links[ $term instanceof WP_Term ? $term->term_id : (int) $term ] ?? new \WP_Error( 'invalid_term' )
+		);
+		WP_Mock::userFunction( 'wp_unslash' )->andReturnUsing(
+			static fn( string $value ): string => $value
+		);
+		// Polylang's API, wired to the properties above; without a request
+		// language it reads as Polylang not answering.
+		WP_Mock::userFunction( 'pll_current_language' )->andReturnUsing(
+			fn() => $this->current_language ?? false
+		);
+		WP_Mock::userFunction( 'pll_default_language' )->andReturnUsing(
+			fn(): string => $this->default_language
+		);
+		WP_Mock::userFunction( 'pll_languages_list' )->andReturnUsing(
+			fn(): array => $this->languages
+		);
+		WP_Mock::userFunction( 'pll_get_post' )->andReturnUsing(
+			fn( int $post_id, string $language ): int => $this->post_twins[ $post_id ][ $language ] ?? 0
+		);
+		WP_Mock::userFunction( 'pll_get_term' )->andReturnUsing(
+			fn( int $term_id, string $language ): int => $this->term_twins[ $term_id ][ $language ] ?? 0
+		);
+		WP_Mock::userFunction( 'url_to_postid' )->andReturnUsing(
+			fn( string $url ): int => $this->post_ids[ $url ] ?? 0
+		);
 	}
 
 	/**
-	 * Every retired design-canvas address goes to the configurator page of
+	 * One query var of the request under test; a product request carries the
+	 * slug as `product` and resolves it to `name`, as WordPress does.
+	 *
+	 * @param string $name Query var name.
+	 */
+	private function query_var( string $name ): string {
+		if ( 'product' === $name || 'name' === $name ) {
+			return $this->product;
+		}
+		if ( 'product_cat' === $name ) {
+			return $this->category;
+		}
+		if ( 'post_type' === $name && '' !== $this->product ) {
+			return 'product';
+		}
+
+		return '';
+	}
+
+	/**
+	 * A product category term, as WordPress builds one.
+	 *
+	 * @param int    $id   Term id.
+	 * @param string $slug Term slug.
+	 */
+	private static function term( int $id, string $slug ): WP_Term {
+		return new WP_Term(
+			(object) array(
+				'term_id'  => $id,
+				'slug'     => $slug,
+				'taxonomy' => 'product_cat',
+			)
+		);
+	}
+
+	/**
+	 * A category target's term, so that `/product-category/<slug>/` resolves
+	 * to the term's own permalink.
+	 *
+	 * @param int    $id   Term id.
+	 * @param string $slug Term slug.
+	 */
+	private function shelf( int $id, string $slug ): void {
+		$this->terms[ $slug ] = self::term( $id, $slug );
+		$this->links[ $id ]   = self::HOME . '/product-category/' . $slug . '/';
+	}
+
+	/**
+	 * Every table the plugin ships, loaded and shaped as the ticket's counts
+	 * state them.
+	 */
+	public function test_the_maps_load_with_the_ticket_counts(): void {
+		$maps = Redirects::maps();
+		$this->assertNotNull( $maps );
+		$this->assertCount( 255, $maps['products'] );
+		$this->assertCount( 31, $maps['categories'] );
+		$this->assertCount( 18, $maps['pages'] );
+		$this->assertCount( 5, $maps['retired_tools'] );
+		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
+		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
+	}
+
+	/**
+	 * Every map is a map of addresses: slugs without a slash for the product
+	 * and category tables, paths for the page tables, targets that name an
+	 * address of this site.
+	 */
+	public function test_every_mapping_is_an_address(): void {
+		$maps = Redirects::maps();
+		$this->assertNotNull( $maps );
+		foreach ( array( 'products', 'categories' ) as $table ) {
+			foreach ( $maps[ $table ] as $from => $to ) {
+				$this->assertSame( $from, strtolower( $from ) );
+				$this->assertStringNotContainsString( '/', $from );
+				$this->assertStringStartsWith( '/', $to );
+			}
+		}
+		foreach ( array( 'pages', 'retired_tools' ) as $table ) {
+			foreach ( $maps[ $table ] as $from => $to ) {
+				$this->assertStringStartsWith( '/', $from );
+				$this->assertStringStartsWith( '/', $to );
+			}
+		}
+	}
+
+	/**
+	 * No target is another retired address: the maps were written so that a
+	 * visitor reaches a live route in one hop, and a target that is itself a
+	 * key would put a second 301 in front of them.
+	 */
+	public function test_no_mapping_points_at_another_retired_address(): void {
+		$maps = Redirects::maps();
+		$this->assertNotNull( $maps );
+		foreach ( array( 'pages', 'retired_tools' ) as $table ) {
+			foreach ( $maps[ $table ] as $from => $to ) {
+				$this->assertArrayNotHasKey( $from, array_flip( $maps['products'] ), $from . ' is a target of a product entry' );
+				$this->assertArrayNotHasKey( $from, array_flip( $maps['categories'] ), $from . ' is a target of a category entry' );
+			}
+		}
+		foreach ( $maps['products'] as $slug => $to ) {
+			$segments = explode( '/', trim( (string) parse_url( $to, PHP_URL_PATH ), '/' ) );
+			if ( 'product' === $segments[0] && isset( $segments[1] ) ) {
+				$this->assertArrayNotHasKey( $segments[1], $maps['products'], $to . ' is itself a retired product address' );
+			}
+		}
+		foreach ( $maps['categories'] as $slug => $to ) {
+			$segments = explode( '/', trim( (string) parse_url( $to, PHP_URL_PATH ), '/' ) );
+			if ( 'product-category' === $segments[0] ) {
+				$this->assertArrayNotHasKey( (string) end( $segments ), $maps['categories'], $to . ' is itself a retired category address' );
+			}
+		}
+	}
+
+	/**
+	 * A file that is not a map reads as no maps at all (never half a file):
+	 * missing, not JSON, not an object, or an entry that is not a string.
+	 */
+	public function test_a_broken_data_file_reads_as_no_maps(): void {
+		$file = tempnam( sys_get_temp_dir(), 'linker-redirects' );
+		$this->assertIsString( $file );
+
+		$this->assertNull( Redirects::maps_from( $file . '.missing' ) );
+
+		file_put_contents( $file, 'not json' );
+		$this->assertNull( Redirects::maps_from( $file ) );
+
+		file_put_contents( $file, '[]' );
+		$this->assertNull( Redirects::maps_from( $file ) );
+
+		file_put_contents(
+			$file,
+			json_encode(
+				array(
+					'products'      => array( 'a' => 1 ),
+					'categories'    => array(),
+					'pages'         => array(),
+					'retired_tools' => array(),
+				)
+			)
+		);
+		$this->assertNull( Redirects::maps_from( $file ) );
+
+		file_put_contents(
+			$file,
+			json_encode(
+				array(
+					'products'      => array( 'a' => '/x/' ),
+					'categories'    => array(),
+					'pages'         => array(),
+					'retired_tools' => array(),
+					'checkout'      => array(
+						'slugs'  => 'checkout',
+						'target' => '/y/',
+					),
+				)
+			)
+		);
+		$this->assertNull( Redirects::maps_from( $file ) );
+		unlink( $file );
+	}
+
+	/**
+	 * A withdrawn product's address goes to the shelf it was filed under.
+	 */
+	public function test_a_withdrawn_product_goes_to_its_shelf(): void {
+		$this->wordpress();
+		$this->product = 'pylontech-force-h2-system-7-1';
+		$this->shelf( 11, 'home-storage' );
+
+		$this->assertSame(
+			self::HOME . '/product-category/home-storage/',
+			( new Redirects() )->target( '/product/pylontech-force-h2-system-7-1/' )
+		);
+	}
+
+	/**
+	 * The German product address, whose slug is the English one, lands on the
+	 * German shelf.
+	 */
+	public function test_a_german_product_address_goes_to_the_german_shelf(): void {
+		$this->wordpress();
+		$this->product = 'pylontech-force-h2-system-7-1';
+		$this->shelf( 11, 'home-storage' );
+		$this->links[12]            = self::HOME . '/de/produkt-kategorie/heimspeicher/';
+		$this->current_language     = 'de';
+		$this->default_language     = 'en';
+		$this->languages            = array( 'en', 'de' );
+		$this->term_twins[11]['de'] = 12;
+
+		$this->assertSame(
+			self::HOME . '/de/produkt-kategorie/heimspeicher/',
+			( new Redirects() )->target( '/de/produkt/pylontech-force-h2-system-7-1/' )
+		);
+	}
+
+	/**
+	 * A withdrawn product that sells again is served again: the map never
+	 * shadows a published product.
+	 */
+	public function test_a_product_that_comes_back_is_served_again(): void {
+		$this->wordpress();
+		$this->product   = 'pylontech-force-h2-system-7-1';
+		$this->published = array( 481 );
+
+		$this->assertNull( ( new Redirects() )->target( '/product/pylontech-force-h2-system-7-1/' ) );
+	}
+
+	/**
+	 * A withdrawn product that was replaced goes to its replacement.
+	 */
+	public function test_a_replaced_product_goes_to_its_replacement(): void {
+		$this->wordpress();
+		$this->product = 'saj-b2-5-0-hv5';
+
+		$this->assertSame(
+			self::HOME . '/product/saj-b2-5-0-hv1/',
+			( new Redirects() )->target( '/product/saj-b2-5-0-hv5/' )
+		);
+	}
+
+	/**
+	 * A category whose term is gone goes where its route goes now — here the
+	 * catalogue, the shop page's own address.
+	 */
+	public function test_a_deleted_category_goes_to_its_shelf(): void {
+		$this->wordpress();
+		$this->category = 'solar-modules';
+
+		$this->assertSame(
+			self::HOME . '/products/',
+			( new Redirects() )->target( '/product-category/solar-modules/' )
+		);
+	}
+
+	/**
+	 * A category target that names a term resolves to that term's own
+	 * permalink — the nested one, for a child shelf.
+	 */
+	public function test_a_category_target_resolves_to_the_terms_own_permalink(): void {
+		$this->wordpress();
+		$this->category                    = 'ci-all-in-one';
+		$this->terms['all-in-one-systems'] = self::term( 21, 'all-in-one-systems' );
+		$this->links[21]                   = self::HOME . '/product-category/commercial-storage/all-in-one-systems/';
+
+		$this->assertSame(
+			self::HOME . '/product-category/commercial-storage/all-in-one-systems/',
+			( new Redirects() )->target( '/product-category/ci-all-in-one/' )
+		);
+	}
+
+	/**
+	 * The German address of a retired shelf carries the same slug as the
+	 * English one and lands on the German shelf, not on the English one.
+	 */
+	public function test_a_german_address_of_a_retired_shelf_goes_to_the_german_shelf(): void {
+		$this->wordpress();
+		$this->category                    = 'ci-hybrid';
+		$this->current_language            = 'de';
+		$this->default_language            = 'en';
+		$this->languages                   = array( 'en', 'de' );
+		$this->terms['all-in-one-systems'] = self::term( 21, 'all-in-one-systems' );
+		$this->links[21]                   = self::HOME . '/product-category/commercial-storage/all-in-one-systems/';
+		$this->term_twins[21]['de']        = 22;
+		$this->links[22]                   = self::HOME . '/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/';
+
+		$this->assertSame(
+			self::HOME . '/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/',
+			( new Redirects() )->target( '/de/produkt-kategorie/ci-hybrid/' )
+		);
+	}
+
+	/**
+	 * A shelf that fills again is not retired, whatever the map says: its own
+	 * address answers.
+	 */
+	public function test_a_shelf_that_fills_again_is_not_retired(): void {
+		$this->wordpress();
+		$this->category               = 'res-batteries';
+		$this->terms['res-batteries'] = self::term( 31, 'res-batteries' );
+		$this->links[31]              = self::HOME . '/product-category/res-batteries/';
+		$this->published              = array( 512 );
+
+		$this->assertNull( ( new Redirects() )->target( '/product-category/res-batteries/' ) );
+	}
+
+	/**
+	 * A retired page path goes to the page that answers it now.
+	 */
+	public function test_a_retired_page_goes_to_the_page_that_answers_it(): void {
+		$this->wordpress();
+
+		$this->assertSame(
+			self::HOME . '/solution/residential-storage/',
+			( new Redirects() )->target( '/application/residential-storage/' )
+		);
+		$this->assertSame(
+			self::HOME . '/for-installer/',
+			( new Redirects() )->target( '/for-oem-odm/' )
+		);
+	}
+
+	/**
+	 * The retired checkout slug goes to the checkout page — with the rest of
+	 * the path and the query string, where WooCommerce's received page and
+	 * its order links live.
+	 */
+	public function test_the_retired_checkout_slug_goes_to_the_checkout_page(): void {
+		$this->wordpress();
+
+		$this->assertSame(
+			self::HOME . '/proforma-request/',
+			( new Redirects() )->target( '/checkout/' )
+		);
+
+		// WooCommerce's received page and its order links carry the order key
+		// in the query string, which the redirect passes on.
+		$_SERVER['QUERY_STRING'] = 'key=wc_order_abc';
+		$this->assertSame(
+			self::HOME . '/proforma-request/order-received/4711/?key=wc_order_abc',
+			( new Redirects() )->target( '/checkout/order-received/4711/' )
+		);
+		unset( $_SERVER['QUERY_STRING'] );
+	}
+
+	/**
+	 * While the checkout page answers the old slug itself — a site where it
+	 * was never renamed — the address is the page, and nothing redirects.
+	 */
+	public function test_a_checkout_page_on_the_old_slug_is_not_redirected(): void {
+		$this->wordpress();
+		$this->checkout = '/checkout/';
+
+		$this->assertNull( ( new Redirects() )->target( '/checkout/' ) );
+	}
+
+	/**
+	 * Every retired tool address of this site goes to the configurator page of
 	 * its own language, with the roof step (#12 item 2; /de/design-canvas/
 	 * is the old plugin's English-slug-under-/de/ alias, /de/entwurfsflache/
 	 * the German page slug).
 	 */
-	public function test_retired_canvas_addresses_go_to_the_configurators_roof_step(): void {
+	public function test_retired_tool_addresses_go_to_the_configurators_roof_step(): void {
 		$this->wordpress();
-		$redirects = new Redirects();
 
-		$this->assertSame( self::HOME . '/linker-planner/?step=roof', $redirects->target( '/design-canvas/' ) );
-		$this->assertSame( self::HOME . '/de/linker-planer/?step=roof', $redirects->target( '/de/design-canvas/' ) );
-		$this->assertSame( self::HOME . '/de/linker-planer/?step=roof', $redirects->target( '/de/entwurfsflache/' ) );
+		$this->assertSame( self::HOME . '/linker-planner/?step=roof', ( new Redirects() )->target( '/design-canvas/' ) );
+		$this->assertSame( self::HOME . '/de/linker-planer/?step=roof', ( new Redirects() )->target( '/de/design-canvas/' ) );
+		$this->assertSame( self::HOME . '/de/linker-planer/?step=roof', ( new Redirects() )->target( '/de/entwurfsflache/' ) );
 	}
 
 	/**
@@ -55,10 +536,9 @@ final class RedirectsTest extends TestCase {
 	 */
 	public function test_the_configurators_former_address_goes_to_the_page(): void {
 		$this->wordpress();
-		$redirects = new Redirects();
 
-		$this->assertSame( self::HOME . '/linker-planner/', $redirects->target( '/quote-configurator/' ) );
-		$this->assertSame( self::HOME . '/de/linker-planer/', $redirects->target( '/de/angebots-konfigurator/' ) );
+		$this->assertSame( self::HOME . '/linker-planner/', ( new Redirects() )->target( '/quote-configurator/' ) );
+		$this->assertSame( self::HOME . '/de/linker-planer/', ( new Redirects() )->target( '/de/angebots-konfigurator/' ) );
 	}
 
 	/**
@@ -66,11 +546,38 @@ final class RedirectsTest extends TestCase {
 	 */
 	public function test_live_addresses_stay(): void {
 		$this->wordpress();
-		$redirects = new Redirects();
 
-		$this->assertNull( $redirects->target( '/linker-planner/' ) );
-		$this->assertNull( $redirects->target( '/de/linker-planer/' ) );
-		$this->assertNull( $redirects->target( '/design-canvas-exhibition/' ) );
-		$this->assertNull( $redirects->target( '/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/linker-planner/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/de/linker-planer/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/design-canvas-exhibition/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/' ) );
+	}
+
+	/**
+	 * A product or category the map does not know is left to WordPress.
+	 */
+	public function test_addresses_outside_the_maps_stay(): void {
+		$this->wordpress();
+		$this->product  = 'goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh';
+		$this->category = 'heimspeicher';
+
+		$this->assertNull( ( new Redirects() )->target( '/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/product-category/heimspeicher/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/blog/' ) );
+	}
+
+	/**
+	 * Without Polylang there is no German site to localize into, and the map's
+	 * English target is what answers.
+	 */
+	public function test_a_german_address_without_polylang_goes_to_the_english_target(): void {
+		$this->wordpress();
+		$this->product = 'pylontech-force-h2-system-7-1';
+		$this->shelf( 11, 'home-storage' );
+
+		$this->assertSame(
+			self::HOME . '/product-category/home-storage/',
+			( new Redirects() )->target( '/de/produkt/pylontech-force-h2-system-7-1/' )
+		);
 	}
 }
