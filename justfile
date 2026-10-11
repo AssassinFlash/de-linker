@@ -31,10 +31,21 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check py-check pull::check cutover::check build::check
+check: php-check js-check e2e-check py-check pull::check cutover::check build::check
 
 # Unit tests of every chain and the end-to-end tests.
 test: php-test js-test py-test pull::test cutover::test
+
+# The regression suite of the review site (tests/e2e, docs/specs/16-review-acceptance.md):
+# Playwright over a running instance — `just e2e <name>` after `just up <name>`,
+# the snapshot and `just serve <name>`. Extra arguments go to `playwright test`.
+[positional-arguments]
+e2e name *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ justfile_directory() }}/tests/e2e"
+    if [ ! -d node_modules ]; then npm ci --no-audit --no-fund; fi
+    LINKER_E2E_INSTANCE="{{ name }}" npx playwright test "$@"
 
 # Local WordPress instances (docs/local-stack.md): `up` creates the instance on
 # first use, then (re)starts it with this checkout's plugins.
@@ -250,6 +261,17 @@ php-test: php-install
 [working-directory("plugins/linker-tools")]
 js-install:
     if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ]; then npm ci --no-audit --no-fund; fi
+
+# The regression suite's own package: types and formatting. Its tests need a
+# live instance, so they are not part of `just check`; this is what CI can run.
+[private]
+[working-directory("tests/e2e")]
+e2e-install:
+    if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ]; then npm ci --no-audit --no-fund; fi
+
+[private]
+e2e-check: e2e-install
+    cd "{{ justfile_directory() }}/tests/e2e" && npm run lint:types && npm run lint:format
 
 [private]
 [working-directory("plugins/linker-tools")]
