@@ -33,8 +33,8 @@ final class WindPressVolume {
 
 	/**
 	 * Copies each exported stylesheet into the volume directory and imports
-	 * it from `main.css`; a changed file keeps its previous copy beside it
-	 * (deploy law).
+	 * it from `main.css`; a changed file keeps its previous copy beside it,
+	 * so a rollback is one rename away.
 	 */
 	public function install(): void {
 		$data_dir = $this->data_dir();
