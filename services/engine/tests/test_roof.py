@@ -5,19 +5,19 @@ from pathlib import Path
 import pytest
 from conftest import TRIFTSTRASSE_5, munich_tile
 
-from linker_engine.catalog import Catalog
 from linker_engine.models import Location, RoofPackRequest, RoofRequest
+from linker_engine.products import Products
 from linker_engine.roof import lod2
 from linker_engine.roof.service import RoofService, pack_drawn
 
 
 @pytest.fixture
-def service(tmp_path: Path, catalog: Catalog) -> RoofService:
-    return RoofService(tmp_path, catalog.module, lod2.TileIndex(tmp_path, munich_tile))
+def service(tmp_path: Path, products: Products) -> RoofService:
+    return RoofService(tmp_path, products.module, lod2.TileIndex(tmp_path, munich_tile))
 
 
 def test_triftstrasse_5_has_an_outline_planes_and_modules(
-    service: RoofService, catalog: Catalog
+    service: RoofService, products: Products
 ) -> None:
     latitude, longitude = TRIFTSTRASSE_5
     result = service.outline(
@@ -35,7 +35,7 @@ def test_triftstrasse_5_has_an_outline_planes_and_modules(
     usable = [p for p in result.planes if p.usable]
     assert usable and all(p.modules == len(p.module_polygons) for p in result.planes)
     assert result.modules == sum(p.modules for p in result.planes) > 0
-    assert result.kwp == pytest.approx(result.modules * catalog.module.pmax_w / 1000)
+    assert result.kwp == pytest.approx(result.modules * products.module.pmax_w / 1000)
     north = [p for p in result.planes if p.excluded_reason == "roof_faces_north"]
     assert north and all(p.modules == 0 for p in north)
     assert result.licence.startswith("CC BY 4.0")
@@ -50,14 +50,14 @@ def test_a_click_beside_any_building_finds_nothing(service: RoofService) -> None
     assert not result.found and result.modules == 0
 
 
-def test_the_index_is_built_once(tmp_path: Path, catalog: Catalog) -> None:
+def test_the_index_is_built_once(tmp_path: Path, products: Products) -> None:
     calls: list[str] = []
 
     def counting(tile: lod2.Tile, target: Path) -> None:
         calls.append(tile.key)
         munich_tile(tile, target)
 
-    service = RoofService(tmp_path, catalog.module, lod2.TileIndex(tmp_path, counting))
+    service = RoofService(tmp_path, products.module, lod2.TileIndex(tmp_path, counting))
     request = RoofRequest(
         plz="80538",
         location=Location(latitude=TRIFTSTRASSE_5[0], longitude=TRIFTSTRASSE_5[1]),
@@ -104,7 +104,7 @@ def test_portal_states_fall_back_to_drawing() -> None:
         lod2.fetch(tile, Path("/nonexistent"))
 
 
-def test_a_hand_drawn_plane_gets_a_module_count(catalog: Catalog) -> None:
+def test_a_hand_drawn_plane_gets_a_module_count(products: Products) -> None:
     # About 10 m x 6 m around Triftstraße 5, facing south at 30°.
     polygon = [
         (11.58836, 48.14024),
@@ -113,7 +113,7 @@ def test_a_hand_drawn_plane_gets_a_module_count(catalog: Catalog) -> None:
         (11.58836, 48.14030),
     ]
     plane = pack_drawn(
-        RoofPackRequest(polygon=polygon, tilt_deg=30, azimuth_deg=180), catalog.module
+        RoofPackRequest(polygon=polygon, tilt_deg=30, azimuth_deg=180), products.module
     )
     assert plane.usable and plane.modules == len(plane.module_polygons) > 0
     assert plane.kwp == pytest.approx(plane.modules * 0.46)

@@ -14,8 +14,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 from . import rules
-from .catalog import Product
 from .compatibility import Compatibility, Requirement
+from .products import Product
 
 Backup = Literal["none", "needed", "needed_accessory_ok"]
 

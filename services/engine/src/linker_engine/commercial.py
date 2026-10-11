@@ -18,8 +18,8 @@ import re
 from dataclasses import dataclass
 
 from . import htw, rules, stacking
-from .catalog import Product
 from .compatibility import Accessory
+from .engine import Engine, documents_of, ref, release
 from .models import (
     CommercialInput,
     CommercialResult,
@@ -30,7 +30,7 @@ from .models import (
     Role,
     ShavingOption,
 )
-from .products import Engine, documents_of, ref, release
+from .products import Product
 from .texts import Locale, t
 
 # Company and service questions go to the team address (owner ruling,
@@ -170,7 +170,7 @@ def systems(
 ) -> list[CommercialSystem]:
     """Up to three systems of our range that reach the power and the energy, smallest first."""
     out: list[tuple[tuple[float, float, int], CommercialSystem]] = []
-    for inverter in engine.catalog.in_class(*INVERTER_CLASSES):
+    for inverter in engine.products.in_class(*INVERTER_CLASSES):
         if (
             inverter.application != "commercial"
             or inverter.phase != 3
@@ -205,7 +205,7 @@ def systems(
             )
             out.append(((system.power_kw, system.usable_kwh, inverter.id), system))
             continue
-        for battery in engine.catalog.in_class(*BATTERY_CLASSES):
+        for battery in engine.products.in_class(*BATTERY_CLASSES):
             pair = engine.compatibility.pair(inverter.model, battery.model)
             # Each inverter carries the same battery configuration, within the
             # stacking figures and the release; the smallest that reaches the energy.
@@ -222,7 +222,7 @@ def systems(
                 _line(battery, config.quantity * units, "battery", locale),
             ]
             for accessory in pair.accessories:
-                matches = engine.catalog.by_model_pattern(accessory.model)
+                matches = engine.products.by_model_pattern(accessory.model)
                 if matches:
                     per = {"system": 1, "stack": config.stacks, "unit": 1}[
                         accessory.per
@@ -278,7 +278,7 @@ def _controller_lines(
         return []
     lines = []
     for accessory in controller:
-        matches = engine.catalog.by_model_pattern(accessory.model)
+        matches = engine.products.by_model_pattern(accessory.model)
         if matches:
             lines.append(
                 Line(

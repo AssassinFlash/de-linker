@@ -23,8 +23,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
 from . import commercial, geo, imagery, pdf, report, residential
-from .catalog import Catalog
 from .compatibility import Compatibility
+from .engine import Engine
 from .models import (
     CommercialInput,
     CommercialResult,
@@ -37,7 +37,7 @@ from .models import (
     RoofRequest,
     RoofResult,
 )
-from .products import Engine
+from .products import Products
 from .pvgis import Pvgis, YieldUnavailable
 from .roof import service as roof_service
 from .roof.lod2 import Lod2Unavailable
@@ -77,7 +77,7 @@ class Services:
     @cached_property
     def engine(self) -> Engine:
         return Engine(
-            catalog=Catalog.load(self.settings.feed),
+            products=Products.load(self.settings.feed),
             compatibility=Compatibility.load(self.settings.compatibility),
             pvgis=Pvgis(self.settings.cache / "pvgis"),
         )
@@ -85,7 +85,7 @@ class Services:
     @cached_property
     def roof(self) -> roof_service.RoofService:
         return roof_service.RoofService(
-            self.settings.cache / "lod2", self.engine.catalog.module
+            self.settings.cache / "lod2", self.engine.products.module
         )
 
 
@@ -173,7 +173,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.post("/roof/pack")
     def roof_pack(request: RoofPackRequest) -> RoofPlaneResult:
         """Modules on a roof plane drawn by hand."""
-        return roof_service.pack_drawn(request, services().engine.catalog.module)
+        return roof_service.pack_drawn(request, services().engine.products.module)
 
     @app.post("/report/pdf")
     def report_pdf(request: ReportRequest) -> Response:

@@ -3,8 +3,8 @@
 import pytest
 
 from linker_engine import commercial
+from linker_engine.engine import Engine
 from linker_engine.models import CommercialInput
-from linker_engine.products import Engine
 
 INTERVALS_PER_DAY = 96
 

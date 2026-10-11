@@ -18,9 +18,9 @@ import pytest
 from fastapi.testclient import TestClient
 
 from linker_engine.app import Settings, create_app
-from linker_engine.catalog import Catalog
 from linker_engine.compatibility import Compatibility
-from linker_engine.products import Engine
+from linker_engine.engine import Engine
+from linker_engine.products import Products
 from linker_engine.pvgis import Pvgis
 from linker_engine.roof import lod2
 
@@ -37,8 +37,8 @@ def no_network(*_: Any) -> Any:
 
 
 @pytest.fixture(scope="session")
-def catalog() -> Catalog:
-    return Catalog.load(FIXTURES / "feed.json")
+def products() -> Products:
+    return Products.load(FIXTURES / "feed.json")
 
 
 @pytest.fixture(scope="session")
@@ -54,8 +54,8 @@ def pvgis(tmp_path: Path) -> Pvgis:
 
 
 @pytest.fixture
-def engine(catalog: Catalog, compatibility: Compatibility, pvgis: Pvgis) -> Engine:
-    return Engine(catalog=catalog, compatibility=compatibility, pvgis=pvgis)
+def engine(products: Products, compatibility: Compatibility, pvgis: Pvgis) -> Engine:
+    return Engine(products=products, compatibility=compatibility, pvgis=pvgis)
 
 
 def munich_tile(tile: lod2.Tile, target: Path) -> None:

@@ -1,10 +1,10 @@
-"""Residential designs: the ticket's acceptance cases on the real catalogue fixture."""
+"""Residential designs: the ticket's acceptance cases on the real product fixture."""
 
 import pytest
 
 from linker_engine import residential
+from linker_engine.engine import Engine
 from linker_engine.models import ResidentialInput
-from linker_engine.products import Engine
 
 # planner-methods.md section 4.1: the eight typical households (kWp, kWh per year).
 HOUSEHOLDS = [
@@ -59,7 +59,7 @@ def test_three_phase_ten_kwp_is_a_complete_released_system(engine: Engine) -> No
     result = design(engine)
     selected = result.selected
     assert selected is not None
-    inverter = engine.catalog.by_id[selected.inverter.id]
+    inverter = engine.products.by_id[selected.inverter.id]
     assert (inverter.application, inverter.phase) == ("home", 3)
     assert selected.battery is not None
     assert selected.battery.release.verdict in ("released", "released_with_accessory")
@@ -70,7 +70,7 @@ def test_three_phase_ten_kwp_is_a_complete_released_system(engine: Engine) -> No
     assert all(line.quantity >= 1 for line in ours)
     # Nothing commercial, nothing single-phase, nothing above the HTW limit was proposed.
     for candidate in result.candidates.inverters:
-        product = engine.catalog.by_id[candidate.product.id]
+        product = engine.products.by_id[candidate.product.id]
         assert (product.application, product.phase) == ("home", 3)
 
 
@@ -82,7 +82,7 @@ def test_single_phase_six_kw_is_excluded(engine: Engine) -> None:
     for model in ("EF HD-P1-6K0-S2", "GW6K-EHA-G20"):
         assert "single_phase_limit" in excluded[model]
     assert all(
-        (engine.catalog.by_id[c.product.id].ac_power_kw or 0) <= 4.6
+        (engine.products.by_id[c.product.id].ac_power_kw or 0) <= 4.6
         for c in result.candidates.inverters
     )
 

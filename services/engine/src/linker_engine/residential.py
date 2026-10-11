@@ -14,11 +14,11 @@ import math
 from dataclasses import dataclass
 
 from . import eligibility, geo, htw, rules, stacking, strings
-from .catalog import Catalog, Product
 from .compatibility import (
     Accessory,
     Requirement,
 )
+from .engine import Engine, docs, documents_of, ref, release
 from .explain import value_text
 from .models import (
     BatteryChoice,
@@ -41,7 +41,7 @@ from .models import (
     StringLayoutResult,
     YieldResult,
 )
-from .products import Engine, docs, documents_of, ref, release
+from .products import Product, Products
 from .pvgis import Pvgis
 from .texts import Locale, fmt, t, tn
 
@@ -145,7 +145,7 @@ def battery_options(
     fewer pieces, then the product id, so the order is stable.
     """
     fits: list[BatteryFit] = []
-    for battery in engine.catalog.in_class(*BATTERY_CLASSES):
+    for battery in engine.products.in_class(*BATTERY_CLASSES):
         pair = engine.compatibility.pair(inverter.model, battery.model)
         picked = stacking.pick(
             stacking.configurations(inverter, battery, pair), upper_kwh
@@ -226,7 +226,7 @@ def evaluate(
         if backup_check:
             checks.append(backup_check)
         result = strings.layout(
-            inverter, [p.kwp for p in planes_of(request)], engine.catalog.module
+            inverter, [p.kwp for p in planes_of(request)], engine.products.module
         )
         layout = result.layout
         checks.append(
@@ -294,7 +294,7 @@ def system_key(
 
 def find_existing(engine: Engine, model: str) -> Product | None:
     wanted = model.strip().upper().replace(" ", "")
-    for product in engine.catalog.in_class(*INVERTER_CLASSES):
+    for product in engine.products.in_class(*INVERTER_CLASSES):
         if product.model.upper().replace(" ", "") == wanted:
             return product
     return None
@@ -304,7 +304,7 @@ def find_existing(engine: Engine, model: str) -> Product | None:
 
 
 def _accessory_product(engine: Engine, accessory: Accessory) -> Product | None:
-    matches = engine.catalog.by_model_pattern(accessory.model)
+    matches = engine.products.by_model_pattern(accessory.model)
     return matches[0] if matches else None
 
 
@@ -349,7 +349,7 @@ def stueckliste(
     if not existing:
         lines += _requirement_lines(engine, inverter, request, evaluation.backup_parts)
         if evaluation.layout:
-            lines += installer_lines(evaluation.layout, engine.catalog, locale)
+            lines += installer_lines(evaluation.layout, engine.products, locale)
     return lines
 
 
@@ -454,10 +454,10 @@ def _requirement_lines(
 
 
 def installer_lines(
-    layout: strings.StringLayout, catalog: Catalog, locale: Locale
+    layout: strings.StringLayout, products: Products, locale: Locale
 ) -> list[Line]:
     """What the installer supplies, sized from the reference layout."""
-    module = catalog.module
+    module = products.module
     total = layout.total_strings
     fused = [g for g in layout.strings if g.fuses]
     module_basis = [
@@ -555,8 +555,10 @@ def installer_lines(
     return lines
 
 
-def string_result(layout: strings.StringLayout, catalog: Catalog) -> StringLayoutResult:
-    module = catalog.module
+def string_result(
+    layout: strings.StringLayout, products: Products
+) -> StringLayoutResult:
+    module = products.module
     return StringLayoutResult(
         module=f"{module.brand} {module.model}",
         module_wp=module.pmax_w,
@@ -736,9 +738,9 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
     if existing:
         pool = [existing_product] if existing_product else []
     else:
-        pool = engine.catalog.in_class(*INVERTER_CLASSES)
+        pool = engine.products.in_class(*INVERTER_CLASSES)
     if request.inverter_id is not None and not existing:
-        if request.inverter_id not in engine.catalog.by_id:
+        if request.inverter_id not in engine.products.by_id:
             raise DesignInputError(
                 "inverter_id", f"unknown product {request.inverter_id}"
             )
@@ -802,7 +804,7 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
             inverter=ref(chosen.inverter),
             inverter_rules=[rule_result(c, locale) for c in chosen.checks],
             battery=battery_choice(fit, locale) if fit else None,
-            strings=string_result(chosen.layout, engine.catalog)
+            strings=string_result(chosen.layout, engine.products)
             if chosen.layout
             else None,
             lines=stueckliste(engine, chosen, fit, request, sizing.high_kwh, existing),

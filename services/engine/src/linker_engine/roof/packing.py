@@ -17,7 +17,7 @@ from shapely import affinity
 from shapely.geometry import Polygon, box
 
 from .. import rules
-from ..catalog import PvModule
+from ..products import PvModule
 from .citygml import Ring2, RoofPlane
 
 
