@@ -1,0 +1,261 @@
+{
+  "schema": 1,
+  "revision": "ee6823f12a57ba1dcf4c3546f9aa2c3966e8008016cde2188af303fda06a756b",
+  "policies": {
+    "engineering_response": {
+      "policy_id": "engineering_response",
+      "value": {
+        "business_location": "Germany",
+        "response_within_hours": 24,
+        "scope": [
+          "design clarification",
+          "compatibility",
+          "commissioning support"
+        ]
+      },
+      "source_refs": [
+        "owner-ruling:2026-07-28"
+      ],
+      "effective_from": "2026-07-28",
+      "override_scopes": [
+        "project",
+        "quote",
+        "order"
+      ],
+      "public": false,
+      "legal_review_required": false
+    },
+    "freight": {
+      "policy_id": "freight",
+      "value": {
+        "automatic_country": "DE",
+        "parcel_amount_minor": 1490,
+        "parcel_safe_net_weight_kg": 28,
+        "automatic_unit_count": 1,
+        "domestic_guidance": {
+          "half_pallet": {
+            "min": 39,
+            "max": 90,
+            "suggested": 69
+          },
+          "pallet": {
+            "min": 65,
+            "max": 200,
+            "suggested": 129
+          },
+          "heavy_pallet": {
+            "min": 200,
+            "max": 370,
+            "suggested": 315
+          },
+          "adr_up_to_300kg": {
+            "min": 85,
+            "max": 205,
+            "suggested": 145
+          },
+          "adr_300_to_1000kg": {
+            "min": 205,
+            "max": 355,
+            "suggested": 315
+          },
+          "project_freight": {
+            "min": 600,
+            "max": 1600,
+            "suggested": null
+          }
+        },
+        "guidance_requires_confirmation": true,
+        "guidance_currency": "EUR",
+        "pending_reasons": [
+          "cross_border",
+          "dangerous_goods",
+          "logistics_incomplete",
+          "pallet_or_oversize",
+          "packed_weight_confirmation",
+          "consolidation_confirmation"
+        ],
+        "pending_document": "proforma"
+      },
+      "source_refs": [
+        "repository:plugins/terravolt-b2b-core/includes/shipping.php",
+        "test:tests/php/b2b-core-shipping-freight.php",
+        "owner-ruling:2026-10-02"
+      ],
+      "effective_from": "2026-10-02",
+      "override_scopes": [
+        "project",
+        "quote",
+        "order"
+      ],
+      "public": true,
+      "legal_review_required": false
+    },
+    "material_availability": {
+      "policy_id": "material_availability",
+      "value": {
+        "manufacturer_current_and_procureable": "orderable",
+        "orderable_default_public_state": "in_stock",
+        "stock_basis": "The brands Linker sells are in stock in its warehouse in Germany.",
+        "counted_inventory_requires_current_evidence": true,
+        "lead_time_range_requires_current_evidence": true,
+        "stale_fact_fallback": "orderable_confirm_lead_time",
+        "unavailable_requires_current_reason": true,
+        "public_stock_quantity": false,
+        "public_dispatch_days": false
+      },
+      "source_refs": [
+        "owner-ruling:2026-07-28",
+        "owner-ruling:2026-10-02",
+        "market-practice:2026-07-28"
+      ],
+      "effective_from": "2026-10-02",
+      "override_scopes": [
+        "project",
+        "quote",
+        "order"
+      ],
+      "public": true,
+      "legal_review_required": false
+    },
+    "partner_review_and_price_access": {
+      "policy_id": "partner_review_and_price_access",
+      "value": {
+        "audience": [
+          "installer",
+          "epc",
+          "reseller"
+        ],
+        "default_state": "pending_review",
+        "target_business_days": 2,
+        "net_price_visible_after_approval": true
+      },
+      "source_refs": [
+        "market-practice:2026-07-28",
+        "owner-ruling:2026-10-02"
+      ],
+      "effective_from": "2026-10-02",
+      "override_scopes": [
+        "account"
+      ],
+      "public": false,
+      "legal_review_required": false
+    },
+    "payment_terms": {
+      "policy_id": "payment_terms",
+      "value": {
+        "default_code": "prepayment",
+        "allowed_codes": [
+          "prepayment",
+          "net_days",
+          "individual"
+        ],
+        "default_due_days": null,
+        "default_credit_limit_cents": 0,
+        "individual_terms_require_account_approval": true
+      },
+      "source_refs": [
+        "market-practice:2026-07-28"
+      ],
+      "effective_from": "2026-07-28",
+      "override_scopes": [
+        "account",
+        "project",
+        "quote",
+        "order"
+      ],
+      "public": false,
+      "legal_review_required": true
+    },
+    "quote_validity": {
+      "policy_id": "quote_validity",
+      "value": {
+        "default_days": 14,
+        "price_recheck_after_expiry": true,
+        "price_revision_snapshotted": true
+      },
+      "source_refs": [
+        "market-practice:2026-07-28"
+      ],
+      "effective_from": "2026-07-28",
+      "override_scopes": [
+        "account",
+        "project",
+        "quote",
+        "order"
+      ],
+      "public": false,
+      "legal_review_required": true
+    },
+    "service_and_presence": {
+      "policy_id": "service_and_presence",
+      "value": {
+        "dispatch_country": "DE",
+        "warehouse_country": "DE",
+        "germany_based_engineering_support": true,
+        "pre_shipment_testing": true,
+        "authorised_distribution": true,
+        "commissioning_mode": "support",
+        "on_site_commissioning_support": "on request, across Europe",
+        "on_site_installation_execution": false,
+        "monitoring_platform_owned_by_linker": false
+      },
+      "source_refs": [
+        "owner-ruling:2026-07-27",
+        "owner-ruling:2026-07-28",
+        "owner-ruling:2026-10-02"
+      ],
+      "effective_from": "2026-10-02",
+      "override_scopes": [
+        "project",
+        "quote",
+        "order"
+      ],
+      "public": true,
+      "legal_review_required": false
+    },
+    "order_change_cancellation_returns_rma": {
+      "policy_id": "order_change_cancellation_returns_rma",
+      "value": {
+        "change_requires_review": true,
+        "cancellation_requires_review": true,
+        "returns_require_authorisation": true,
+        "rma_mode": "manufacturer_coordination",
+        "held_spares_position": false
+      },
+      "source_refs": [
+        "owner-ruling:2026-07-27",
+        "market-practice:2026-07-28"
+      ],
+      "effective_from": "2026-07-28",
+      "override_scopes": [
+        "project",
+        "quote",
+        "order"
+      ],
+      "public": false,
+      "legal_review_required": true
+    },
+    "vat_evidence": {
+      "policy_id": "vat_evidence",
+      "value": {
+        "default_tax_treatment": "standard_rate_until_supported",
+        "intra_community_requires_valid_vat_id": true,
+        "intra_community_requires_cross_border_dispatch_evidence": true,
+        "special_rate_requires_order_specific_evidence": true,
+        "automatic_zero_rate": false
+      },
+      "source_refs": [
+        "regulation:eu-vat-vies"
+      ],
+      "effective_from": "2026-07-28",
+      "override_scopes": [
+        "account",
+        "project",
+        "quote",
+        "order"
+      ],
+      "public": false,
+      "legal_review_required": true
+    }
+  }
+}

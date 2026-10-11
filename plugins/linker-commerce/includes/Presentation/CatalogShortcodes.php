@@ -53,6 +53,60 @@ final class CatalogShortcodes {
 		add_shortcode( 'linker_pdp_scenes', array( $this, 'pdp_scenes' ) );
 		add_shortcode( 'linker_pdp_downloads', array( $this, 'pdp_downloads' ) );
 		add_shortcode( 'linker_pdp_pairings', array( $this, 'pdp_pairings' ) );
+		add_shortcode( 'linker_pdp', array( $this, 'pdp_page' ) );
+	}
+
+	/**
+	 * The whole product page under #tv-storefront-pdp: the byte-faithful port
+	 * of the live renderer (ProductPage), with its scripts enqueued the way
+	 * the live page enqueues them.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_page( $atts = array() ): string {
+		unset( $atts );
+		$product = $GLOBALS['product'] ?? null;
+		if ( ! $product instanceof WC_Product ) {
+			$product = wc_get_product( (int) get_the_ID() );
+		}
+		if ( ! $product instanceof WC_Product ) {
+			return '';
+		}
+		$base = (string) plugin_dir_url( __DIR__ . '/../linker-commerce.php' ) . 'assets/';
+		wp_enqueue_script( 'tv-b2b-compare-selection', $base . 'compare-selection.js', array(), '2', true );
+		wp_localize_script(
+			'tv-b2b-compare-selection',
+			'tvB2bCompare',
+			array(
+				'storageKey' => 'linkerCompareIds',
+				'max' => 4,
+				'pageUrl' => self::compare_page_url(),
+				'strings' => array(
+					'compare' => __( 'Compare', 'linker-commerce' ),
+					'inComparison' => __( 'In comparison', 'linker-commerce' ),
+					'limitReached' => sprintf(
+						/* translators: %d: maximum number of products in a comparison. */
+						__( 'Up to %d products. Remove one to add another.', 'linker-commerce' ),
+						4
+					),
+					'compareArticle' => __( 'Compare: %s', 'linker-commerce' ),
+				),
+			)
+		);
+		wp_enqueue_script( 'tv-b2b-pdp-ui', $base . 'pdp-ui.js', array( 'tv-b2b-compare-selection' ), '2', true );
+		return ( new ProductPage() )->render( $product );
+	}
+
+	/**
+	 * The compare page's URL, /compare-products/ by name (#66 rebuilds the
+	 * page; the address is stable).
+	 */
+	private static function compare_page_url(): string {
+		$page = get_page_by_path( 'compare-products' );
+		$url = $page && isset( $page->ID )
+			? (string) get_permalink( (int) $page->ID )
+			: home_url( '/compare-products/' );
+		return trailingslashit( (string) preg_replace( '#\?.*$#', '', $url ) );
 	}
 
 	/**
@@ -636,7 +690,7 @@ final class CatalogShortcodes {
 	}
 
 	/**
-	 * The documents list: our media library files (ADR-0023).
+	 * The documents list: our media library files (every document we reference lives in our own media library under our own URL; nothing links out to a vendor site).
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
