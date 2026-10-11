@@ -759,7 +759,7 @@ final class CatalogShortcodes {
 		if ( array() === $items ) {
 			return '';
 		}
-		return '<ul class="pdp-benefits">' . implode( '', array_slice( $items, 0, 2 ) ) . '</ul>';
+		return '<ul class="pdp-benefits">' . implode( '', $items ) . '</ul>';
 	}
 
 	/**
