@@ -176,10 +176,8 @@ LINKER_SCRIPT
 			$pipes = array();
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- the concurrency under test needs a real second process.
 			$runs[ $i ] = proc_open(
-				// The spawned process reads the CLI php.ini, not the test's; it
-				// renders a Proforma in memory, so it needs the same raised
-				// limit phpunit.integration.xml.dist gives this process
-				// (128M died in shutdown on a snapshot-loaded instance).
+				// The Proforma renders in memory (the suite's 2048M ini exists
+				// for it); the second process needs the same measure.
 				array( PHP_BINARY, '-d', 'memory_limit=2048M', $script ),
 				array(
 					1 => array( 'pipe', 'w' ),
