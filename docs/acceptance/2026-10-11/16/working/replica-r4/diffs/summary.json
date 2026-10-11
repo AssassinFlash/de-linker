@@ -1,0 +1,114 @@
+[
+ {
+  "pair": "archive-de-1440",
+  "live": "1440x9264",
+  "t16": "1440x6540",
+  "overlap": "1440x6540",
+  "diff_pixels": 3915064,
+  "diff_percent": 41.57
+ },
+ {
+  "pair": "archive-de-390",
+  "live": "390x12671",
+  "t16": "390x8687",
+  "overlap": "390x8687",
+  "diff_pixels": 1852194,
+  "diff_percent": 54.67
+ },
+ {
+  "pair": "archive-en-1440",
+  "live": "1440x9264",
+  "t16": "1440x6494",
+  "overlap": "1440x6494",
+  "diff_pixels": 3187237,
+  "diff_percent": 34.08
+ },
+ {
+  "pair": "archive-en-390",
+  "live": "390x12322",
+  "t16": "390x8472",
+  "overlap": "390x8472",
+  "diff_pixels": 1545306,
+  "diff_percent": 46.77
+ },
+ {
+  "pair": "eta-de-1440",
+  "live": "1440x4941",
+  "t16": "1440x5044",
+  "overlap": "1440x4941",
+  "diff_pixels": 2724425,
+  "diff_percent": 38.29
+ },
+ {
+  "pair": "eta-en-1440",
+  "live": "1440x4847",
+  "t16": "1440x4947",
+  "overlap": "1440x4847",
+  "diff_pixels": 2193487,
+  "diff_percent": 31.43
+ },
+ {
+  "pair": "pdp-de-1440",
+  "live": "1440x4432",
+  "t16": "1440x4480",
+  "overlap": "1440x4432",
+  "diff_pixels": 1831819,
+  "diff_percent": 28.7
+ },
+ {
+  "pair": "pdp-de-390",
+  "live": "390x6187",
+  "t16": "390x7453",
+  "overlap": "390x6187",
+  "diff_pixels": 1673626,
+  "diff_percent": 69.36
+ },
+ {
+  "pair": "pdp-en-1440",
+  "live": "1440x4300",
+  "t16": "1440x4377",
+  "overlap": "1440x4300",
+  "diff_pixels": 1922838,
+  "diff_percent": 31.05
+ },
+ {
+  "pair": "pdp-en-390",
+  "live": "390x6068",
+  "t16": "390x7185",
+  "overlap": "390x6068",
+  "diff_pixels": 1593599,
+  "diff_percent": 67.34
+ },
+ {
+  "pair": "shop-de-1440",
+  "live": "1440x9238",
+  "t16": "1440x6611",
+  "overlap": "1440x6611",
+  "diff_pixels": 4236195,
+  "diff_percent": 44.5
+ },
+ {
+  "pair": "shop-de-390",
+  "live": "390x12642",
+  "t16": "390x8679",
+  "overlap": "390x8679",
+  "diff_pixels": 1676062,
+  "diff_percent": 49.52
+ },
+ {
+  "pair": "shop-en-1440",
+  "live": "1440x9238",
+  "t16": "1440x6582",
+  "overlap": "1440x6582",
+  "diff_pixels": 4116159,
+  "diff_percent": 43.43
+ },
+ {
+  "pair": "shop-en-390",
+  "live": "390x12304",
+  "t16": "390x8478",
+  "overlap": "390x8478",
+  "diff_pixels": 1638269,
+  "diff_percent": 49.55
+ }
+]
