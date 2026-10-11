@@ -1,16 +1,16 @@
-Date: Sun, 11 Oct 2026 12:31:46 +0000
+Date: Sun, 11 Oct 2026 18:00:12 +0000
 From: Linker <sales@de-linker.com>
-Reply-To: Linker <sales@de-linker.com>
-Message-ID: <aH4udZewm4rOFcoFOhHZQl1YBwGiobAE0b4d9DyADOU@127.0.0.1>
+Reply-To: Test Buyer <buyer@example.test>
+Message-ID: <a4Z6U2DEvGZM5V0afzHLreYNzXlgbjOQ5YcfBn5kJoE@127.0.0.1>
 X-Mailer: PHPMailer 7.1.1 (https://github.com/PHPMailer/PHPMailer)
 MIME-Version: 1.0
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To: chester@de-linker.com
-Subject: Wir haben Ihre Nachricht erhalten
+Subject: New message from Test Buyer
 
 <!DOCTYPE html>
-<html lang="de-DE" data-theme="light">
+<html lang="en-US" data-theme="light">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -38,7 +38,7 @@ Subject: Wir haben Ihre Nachricht erhalten
 												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_header" role="presentation" style='background-color: #fff; color: #1e1e1e; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; border-radius: 3px 3px 0 0;' bgcolor="#fff">
 													<tr>
 														<td id="header_wrapper" style="padding: 20px 32px 0; display: block;">
-															<h1 style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 120%; margin: 0; color: #1e1e1e; background-color: inherit; text-align: left;' bgcolor="inherit">Wir haben Ihre Nachricht erhalten</h1>
+															<h1 style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 120%; margin: 0; color: #1e1e1e; background-color: inherit; text-align: left;' bgcolor="inherit">New message from the contact form</h1>
 														</td>
 													</tr>
 												</table>
@@ -57,12 +57,14 @@ Subject: Wir haben Ihre Nachricht erhalten
 																	<td valign="top" id="body_content_inner_cell" style="padding: 20px 32px 32px;">
 																		<div id="body_content_inner" style='color: #4b4b4b; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 16px; line-height: 150%; text-align: left;' align="left">
 <p style="margin: 0 0 16px;">
-Guten Tag Test Buyer,</p>
-<p style="margin: 0 0 16px;">Vielen Dank für Ihre Nachricht. Das Linker-Team antwortet an diese Adresse.</p>
-<p style="margin: 0 0 16px;"><strong>Ihre Nachricht:</strong></p>
+Test Buyer (Test GmbH) sent a message through the contact form.</p>
+<p style="margin: 0 0 16px;">
+Reply address: buyer@example.test<br>
+Written in: EN</p>
+<p style="margin: 0 0 16px;"><strong>Message:</strong></p>
 <blockquote style="margin: 0 0 16px; padding: 12px 16px; border-left: 3px solid #0c7f73; color: #15372f;">
-Please confirm the GW5.1 battery ships with the mounting bracket.</blockquote>
-<p style="margin: 0 0 16px;">Falls etwas fehlt: Antworten Sie auf diese E-Mail, damit erreichen Sie dasselbe Team.</p>
+E2E probe of the unified test-mail switch (rebase integration round, EN).</blockquote>
+<p style="margin: 0 0 16px;">Answer this email to reply to the visitor directly.</p>
 																		</div>
 																	</td>
 																</tr>
@@ -86,7 +88,7 @@ Please confirm the GW5.1 battery ships with the mounting bracket.</blockquote>
 												<table border="0" cellpadding="10" cellspacing="0" width="100%" role="presentation">
 													<tr>
 														<td colspan="2" valign="middle" id="credit" style='border-radius: 0; border: 0; border-top: 1px solid rgba(0,0,0,.2); font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 12px; line-height: 140%; text-align: center; padding: 32px; color: #787c82;' align="center">
-															<p style="margin: 0;">Linker<br>Steinfeldstraße 3, 39179 Barleben, Deutschland</p>
+															<p style="margin: 0;">Linker<br>Steinfeldstraße 3, 39179 Barleben, Germany</p>
 														</td>
 													</tr>
 												</table>

@@ -1,7 +1,7 @@
-Date: Sun, 11 Oct 2026 12:31:45 +0000
+Date: Sun, 11 Oct 2026 18:22:40 +0000
 From: Linker <sales@de-linker.com>
 Reply-To: Test Buyer <buyer@example.test>
-Message-ID: <4GSxTpFEbSdtIR6rBFhkieFZC3YZHSeoWLlMOee99KE@127.0.0.1>
+Message-ID: <WkoFyDwAXZX8Ewxv5YeLYrVgo3GmzUOaWC137YuLj8@chesterjohn-2.local>
 X-Mailer: PHPMailer 7.1.1 (https://github.com/PHPMailer/PHPMailer)
 MIME-Version: 1.0
 Content-Type: text/html; charset=UTF-8
@@ -57,13 +57,13 @@ Subject: New message from Test Buyer
 																	<td valign="top" id="body_content_inner_cell" style="padding: 20px 32px 32px;">
 																		<div id="body_content_inner" style='color: #4b4b4b; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 16px; line-height: 150%; text-align: left;' align="left">
 <p style="margin: 0 0 16px;">
-Test Buyer (no company given) sent a message through the contact form.</p>
+Test Buyer (Test GmbH) sent a message through the contact form.</p>
 <p style="margin: 0 0 16px;">
 Reply address: buyer@example.test<br>
-Written in: EN</p>
+Written in: DE</p>
 <p style="margin: 0 0 16px;"><strong>Message:</strong></p>
 <blockquote style="margin: 0 0 16px; padding: 12px 16px; border-left: 3px solid #0c7f73; color: #15372f;">
-Please confirm the GW5.1 battery ships with the mounting bracket.</blockquote>
+E2E-Testlauf des vereinheitlichten Testschalters (Rebase-Integrationsrunde, DE).</blockquote>
 <p style="margin: 0 0 16px;">Answer this email to reply to the visitor directly.</p>
 																		</div>
 																	</td>

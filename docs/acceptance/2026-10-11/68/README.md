@@ -17,10 +17,10 @@ inactive，polylang/redis-cache/三插件激活）→ `wp linker-i18n setup --as
 | 端点（人工抽验） | `curl 'http://127.0.0.1:8927/wp-json/linker/v1/catalog-search?q=DLK-GOODWE-GW60KSTSG10&lang=de'` | 200，返回德语孪生 6573 与 `/de/produkt/goodwe-gw60k-sts-g10/` |
 | 迁移脚本 | `python3 tools/migrate/68-contact-form.py --wp ~/de-linker-local/t68/wp.sh plan / apply --write / verify` | plan 两页有改动；apply 写入 EN #28 + DE #6915；verify `form=True old-fallback=False`、`ok` |
 | 迁移幂等 | 同命令二跑 | `en #28: nothing to do`、`de #6915: nothing to do` |
-| 联系表单端到端（EN，测试邮件开关开） | `wp option update linker_commerce_test_recipient chester@de-linker.com` + `curl -X POST .../wp-admin/admin-post.php`（页面新鲜 nonce） | 302 → `/contact/?contact=sent#contact-form`；`mail/` 新增两封——团队信 `New message from Test Buyer` 与回执 `We received your message`——**每封只有单收件人 `To: chester@de-linker.com`**、无 Cc/Bcc；四个 `.eml` 已归档到本目录 `mail/` |
-| 联系表单端到端（DE） | 同上，从 `/de/kontakt/` | 302 → `/de/kontakt/?contact=sent#contact-form`；两封——回执 `Wir haben Ihre Nachricht erhalten`（正文德语）与团队信——同为单收件人 `chester@de-linker.com`、无 Cc/Bcc |
-| 多收件路由（队列收件人数据，AGENTS 测试邮件纪律） | 占满每分钟额度（`wp option update linker_commerce_mail_sends '[8×now]'`）→ 提交 EN 表单 → `wp post meta get <job> _linker_mail_message` | 两条队列消息保留生产路由：团队信 `to: [sales@de-linker.com]`、`Bcc: copy@example.test`（`linker_commerce_team_bcc` 当时的值），回执 `to: [buyer@example.test]`；限流在队列，0 封实发——路由写在队列里即正确，不做多封实发 |
-| 开关撤销 | `wp option delete linker_commerce_test_recipient`；`wp option get linker_commerce_test_recipient` | `Success: Deleted`；随后 `get` 报 `Could not get … option. Does it exist?`（exit 1）= 关闭，恢复生产路由 |
+| 联系表单端到端（EN，测试邮件开关开） | `wp linker-commerce test-mail on`（rebase 合一轮改用合一后的 `Mail\TestMode` 开关；旧 `wp option update linker_commerce_test_recipient` 形态随变体撤除）+ `curl -X POST .../wp-admin/admin-post.php`（页面新鲜 nonce） | 302 → `/contact/?contact=sent#contact-form`；团队信 `New message from Test Buyer` 与回执 `We received your message` 两封——**每封只有单收件人 `To: chester@de-linker.com`**、无 Cc/Bcc（From/Reply-to 保留）；本轮四封 `.eml` 已归档到本目录 `mail/`（EN 一对 02:00:12、DE 一对 02:22:40，替换旧变体轮的四封） |
+| 联系表单端到端（DE） | 同上，从 `/de/kontakt/` | 302 → `/de/kontakt/?contact=sent#contact-form`；两封——回执 `Wir haben Ihre Nachricht erhalten`（正文德语，与 .po/.mo 探针同串）与团队信——同为单收件人 `chester@de-linker.com`、无 Cc/Bcc |
+| 多收件路由（队列收件人数据，AGENTS 测试邮件纪律） | 本轮为真实场景版：集成套件占满每分钟额度后提交表单 → 邮件入 Outbox 队列等槽位 → `wp post meta get <job> _linker_mail_message` | 队列消息保留生产路由：回执 `to: [buyer@example.test]`（job 7300，德语正文完整）、团队信 `to: [sales@de-linker.com]`、`Bcc: copy@example.test`（`linker_commerce_team_bcc` 当时的值）；随后槽位到来（`wp action-scheduler run`）实发的每封都被开关重写成单收件人——路由写在队列里即正确，实发只到 tester |
+| 开关撤销 | `wp linker-commerce test-mail off`；`wp linker-commerce test-mail status` | `Success: Test mode is off: emails go to their recipients again.`；`status` 同句确认 = 关闭，恢复生产路由 |
 | WindPress 编译与锚类 | `touch plugins/linker-commerce/content/tokens.css`（让缓存相对模板变旧；WindPress 在缓存已最新时不再 store）→ `just windpress-compile t68 --user=857558227@qq.com`（护栏设置见 §3 第 3 条） | `{"compiled":true,"last_generated":1791725451,"file_size":349875,"toast":false,"ms":27853}`；`cache recompiled (1791724905 -> 1791725451), anchor classes present`——检查已含 ask 芯片的 `min-h-11`/`rounded-xl`/`border-neutral-200`；两个 provider 的 `missing_anchor_classes()` 都返回 `[]`，产物里三个类的规则实存（`grep` 命中 `.min-h-11 {`、`.rounded-xl {`、`.border-neutral-200 {`） |
 | 搜索框端到端（浏览器） | Playwright：键入问句 → 芯片出现 → 点击 | 芯片 `✦ Ask Genie` 出现；点击后 dock 打开，Genie 以键入句为第一条消息并回答（EN 12 张卡；DE `✦ Genie fragen`，德语回答 5 张卡） |
 | 型号/品号搜索（浏览器） | 键入 `DLK-GOODWE-GW60KSTSG10` 回车 | 直接导航 `http://127.0.0.1:8927/product/goodwe-gw60k-sts-g10/`（恰好一个命中 → 直达产品页） |
@@ -87,6 +87,10 @@ JS 只绑定 `#search-box` 与 `[data-linker-ask-genie]`，与线上锚点同名
    `just windpress-compile` 全部 300 s 超时、缓存不落盘）。本轮为取得编译产物，编译期间把
    WindPress 选项 `integration.livecanvas.compile.enabled` 临时置 false（只关这一个扫描步，
    不动运行时与其它 provider；编译后已还原）。同理，切换后线上第一次编译也会被它中止。
+   **注记（rebase 后，2026-10-11）**：此 workaround 已被 #66（PR #91，已并入 main）的
+   `Presentation\WindPress::render_raw()` 修复覆盖——LiveCanvas provider 对动态模板改读源文件，
+   不再 `do_shortcode()` 渲染，杂音不再进扫描响应。#17 切换线按 main 现状编译即可，
+   **不要**把"临时关 `integration.livecanvas.compile.enabled`"带进切换步骤。
 
 ## 4. 未做/留待后续
 
