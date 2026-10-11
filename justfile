@@ -16,6 +16,11 @@ py_projects := "services/genie services/engine tools/local tools/migrate tools/f
 # (tools/pull/pull.just, docs/specs/6-live-pull.md).
 mod pull "tools/pull/pull.just"
 
+# `just cutover …` is the one-time switch onto the new tree, and `just cutover
+# drill <instance>` rehearses it locally (tools/cutover/cutover.just,
+# docs/specs/17-cutover.md).
+mod cutover "tools/cutover/cutover.just"
+
 # The PHP tools run on PHP 8.3, the production host's version
 # (docs/research/2026-10-09/framework-choice.md §2): Homebrew's php@8.3 when it
 # is installed, otherwise `php` on PATH (CI). `PHP=/path/to/php just …` wins.
@@ -26,10 +31,10 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check py-check pull::check build::check
+check: php-check js-check py-check pull::check cutover::check build::check
 
 # Unit tests of every chain and the end-to-end tests.
-test: php-test js-test py-test pull::test
+test: php-test js-test py-test pull::test cutover::test
 
 # Local WordPress instances (docs/local-stack.md): `up` creates the instance on
 # first use, then (re)starts it with this checkout's plugins.

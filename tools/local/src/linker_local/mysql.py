@@ -80,12 +80,29 @@ class MySQL:
             self.query(f"SHOW DATABASES LIKE '{_like_literal(database)}'").strip()
         )
 
+    def grant_dump_privileges(self) -> None:
+        """Give `linker_local` what a consistent dump needs.
+
+        `GRANT ALL PRIVILEGES ON <database>.*` is not enough: since MySQL
+        8.0.32, mysqldump's `--single-transaction` — the flag that makes a dump
+        of a live site consistent, and the one tools/pull and tools/cutover both
+        use — starts with `FLUSH /*!40101 LOCAL */ TABLES`, and that is a global
+        privilege. Without it a local instance cannot be dumped the way the
+        production host is dumped, which is exactly what the cutover drill runs
+        (`docs/specs/17-cutover.md`, `tools/cutover`). Both of the privileges the
+        server names in its refusal are granted ("you need (at least one of) the
+        RELOAD or FLUSH_TABLES privilege(s)"), and re-granting is a no-op, so
+        this stays idempotent.
+        """
+        self.query(f"GRANT FLUSH_TABLES, RELOAD ON *.* TO '{USER}'@'localhost'")
+
     def create_database(self, database: str) -> None:
         """Create the database and grant it to linker_local; the name is check_name()-safe."""
         self.query(
             f"CREATE DATABASE `{database}`;"
             f" GRANT ALL PRIVILEGES ON `{database}`.* TO '{USER}'@'localhost'"
         )
+        self.grant_dump_privileges()
 
     def drop_database(self, database: str) -> None:
         self.query(f"DROP DATABASE IF EXISTS `{database}`")

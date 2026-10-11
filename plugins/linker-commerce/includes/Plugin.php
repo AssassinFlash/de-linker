@@ -15,6 +15,7 @@ use Linker\Commerce\Admin\FiguresMetaBox;
 use Linker\Commerce\Catalog\EngineeringFeedController;
 use Linker\Commerce\Catalog\SelectionFactsController;
 use Linker\Commerce\Storefront\CatalogFilters;
+use Linker\Commerce\Storefront\ProductSchema;
 use Linker\Commerce\Storefront\ProductView;
 use Linker\Commerce\Storefront\Storefront;
 
@@ -65,6 +66,7 @@ final class Plugin {
 		$filters = new CatalogFilters();
 		$filters->register();
 		( new Storefront( $this->file ) )->register();
+		( new ProductSchema() )->register();
 	}
 
 	/**

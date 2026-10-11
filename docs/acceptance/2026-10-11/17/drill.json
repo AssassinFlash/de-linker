@@ -1,0 +1,456 @@
+{
+ "after_first": {
+  "answers": {
+   "/": 200,
+   "/de/": 200,
+   "/de/mein-konto/": 404,
+   "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/": 200,
+   "/de/produkte/": 404,
+   "/de/proforma-anfrage/": 404,
+   "/my-account/": 200,
+   "/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/": 200,
+   "/products/": 200,
+   "/proforma-request/": 200
+  },
+  "maintenance": "Maintenance mode is not active.",
+  "plugins": [
+   "000-linker-local-isolation\tmust-use\t",
+   "001-linker-local-login\tmust-use\t",
+   "002-linker-local-rewrites\tmust-use\t",
+   "advanced-custom-fields-pro\tactive\t6.3.1",
+   "akismet\tinactive\t5.7.2",
+   "classic-editor\tactive\t1.7.0",
+   "hello\tinactive\t1.7.2",
+   "hostinger-reach\tinactive\t1.8.4",
+   "linker-commerce\tactive\t0.2.0",
+   "linker-error-recorder\tmust-use\t1.0.0",
+   "linker-i18n\tactive\t0.2.0",
+   "linker-tools\tactive\t0.1.0",
+   "livecanvas\tactive\t4.9.3",
+   "livecanvas-must-use-plugin\tmust-use\t1.1.2",
+   "name\tstatus\tversion",
+   "object-cache.php\tdropin\t",
+   "polylang\tactive\t3.8.10",
+   "redis-cache\tinactive\t3.0.0",
+   "windpress\tactive\t3.2.88",
+   "woocommerce\tactive\t11.2.0",
+   "wp-seopress\tactive\t10.3",
+   "wp-seopress-pro\tactive\t10.2.1"
+  ],
+  "published_products": "106"
+ },
+ "after_rollback": {
+  "answers": {
+   "/": 200,
+   "/de/": 200,
+   "/de/mein-konto/": 200,
+   "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/": 200,
+   "/de/produkte/": 200,
+   "/de/proforma-anfrage/": 200,
+   "/my-account/": 200,
+   "/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/": 200,
+   "/products/": 200,
+   "/proforma-request/": 200
+  },
+  "maintenance": "Maintenance mode is not active.",
+  "plugins": [
+   "000-linker-local-isolation\tmust-use\t",
+   "001-linker-local-login\tmust-use\t",
+   "002-linker-local-rewrites\tmust-use\t",
+   "advanced-custom-fields-pro\tactive\t6.3.1",
+   "akismet\tinactive\t5.7.2",
+   "classic-editor\tactive\t1.7.0",
+   "code-snippets\tinactive\t3.10.2",
+   "hello\tinactive\t1.7.2",
+   "hostinger-reach\tinactive\t1.8.4",
+   "linker-ai-assistant\tactive\t0.13.474",
+   "linker-error-recorder\tmust-use\t1.0.0",
+   "linker-i18n\tactive\t0.5.78",
+   "livecanvas\tactive\t4.9.3",
+   "livecanvas-must-use-plugin\tmust-use\t1.1.2",
+   "name\tstatus\tversion",
+   "object-cache.php\tdropin\t",
+   "polylang\tinactive\t3.8.10",
+   "redis-cache\tinactive\t3.0.0",
+   "terravolt-b2b-core\tactive\t0.12.413",
+   "windpress\tactive\t3.2.88",
+   "woocommerce\tactive\t11.2.0",
+   "woocommerce-gateway-stripe\tinactive\t11.0.0",
+   "wp-seopress\tactive\t10.3",
+   "wp-seopress-pro\tactive\t10.2.1"
+  ],
+  "published_products": "106"
+ },
+ "after_second": {
+  "answers": {
+   "/": 200,
+   "/de/": 200,
+   "/de/mein-konto/": 404,
+   "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/": 200,
+   "/de/produkte/": 404,
+   "/de/proforma-anfrage/": 404,
+   "/my-account/": 200,
+   "/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/": 200,
+   "/products/": 200,
+   "/proforma-request/": 200
+  },
+  "maintenance": "Maintenance mode is not active.",
+  "plugins": [
+   "000-linker-local-isolation\tmust-use\t",
+   "001-linker-local-login\tmust-use\t",
+   "002-linker-local-rewrites\tmust-use\t",
+   "advanced-custom-fields-pro\tactive\t6.3.1",
+   "akismet\tinactive\t5.7.2",
+   "classic-editor\tactive\t1.7.0",
+   "hello\tinactive\t1.7.2",
+   "hostinger-reach\tinactive\t1.8.4",
+   "linker-commerce\tactive\t0.2.0",
+   "linker-error-recorder\tmust-use\t1.0.0",
+   "linker-i18n\tactive\t0.2.0",
+   "linker-tools\tactive\t0.1.0",
+   "livecanvas\tactive\t4.9.3",
+   "livecanvas-must-use-plugin\tmust-use\t1.1.2",
+   "name\tstatus\tversion",
+   "object-cache.php\tdropin\t",
+   "polylang\tactive\t3.8.10",
+   "redis-cache\tinactive\t3.0.0",
+   "windpress\tactive\t3.2.88",
+   "woocommerce\tactive\t11.2.0",
+   "wp-seopress\tactive\t10.3",
+   "wp-seopress-pro\tactive\t10.2.1"
+  ],
+  "published_products": "106"
+ },
+ "backup": "/Users/chesterjohn/de-linker-data/cutover-20261011-1154",
+ "before": {
+  "answers": {
+   "/": 200,
+   "/de/": 200,
+   "/de/mein-konto/": 200,
+   "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/": 200,
+   "/de/produkte/": 200,
+   "/de/proforma-anfrage/": 200,
+   "/my-account/": 200,
+   "/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/": 200,
+   "/products/": 200,
+   "/proforma-request/": 200
+  },
+  "maintenance": "Maintenance mode is not active.",
+  "plugins": [
+   "000-linker-local-isolation\tmust-use\t",
+   "001-linker-local-login\tmust-use\t",
+   "002-linker-local-rewrites\tmust-use\t",
+   "advanced-custom-fields-pro\tactive\t6.3.1",
+   "akismet\tinactive\t5.7.2",
+   "classic-editor\tactive\t1.7.0",
+   "code-snippets\tinactive\t3.10.2",
+   "hello\tinactive\t1.7.2",
+   "hostinger-reach\tinactive\t1.8.4",
+   "linker-ai-assistant\tactive\t0.13.474",
+   "linker-error-recorder\tmust-use\t1.0.0",
+   "linker-i18n\tactive\t0.5.78",
+   "livecanvas\tactive\t4.9.3",
+   "livecanvas-must-use-plugin\tmust-use\t1.1.2",
+   "name\tstatus\tversion",
+   "object-cache.php\tdropin\t",
+   "polylang\tinactive\t3.8.10",
+   "redis-cache\tinactive\t3.0.0",
+   "terravolt-b2b-core\tactive\t0.12.413",
+   "windpress\tactive\t3.2.88",
+   "woocommerce\tactive\t11.2.0",
+   "woocommerce-gateway-stripe\tinactive\t11.0.0",
+   "wp-seopress\tactive\t10.3",
+   "wp-seopress-pro\tactive\t10.2.1"
+  ],
+  "published_products": "106"
+ },
+ "plan": {
+  "legacy_plugins": [
+   "terravolt-b2b-core",
+   "linker-ai-assistant",
+   "code-snippets",
+   "woocommerce-gateway-stripe"
+  ],
+  "migrations": [
+   {
+    "needs_admin": false,
+    "needs_backup_dir": true,
+    "options": [],
+    "script": "7-facts.py",
+    "subcommand": []
+   },
+   {
+    "needs_admin": false,
+    "needs_backup_dir": true,
+    "options": [],
+    "script": "8-engineering.py",
+    "subcommand": []
+   },
+   {
+    "needs_admin": true,
+    "needs_backup_dir": false,
+    "options": [],
+    "script": "9-i18n.py",
+    "subcommand": [
+     "apply"
+    ]
+   }
+  ],
+  "new_plugins": [
+   "linker-commerce",
+   "linker-i18n",
+   "linker-tools"
+  ]
+ },
+ "run_at": "2026-10-11T12:00:36.553838+00:00",
+ "steps": [
+  {
+   "actions": [
+    "36834 files, dump sha256 8f5658c372acc70d\u2026"
+   ],
+   "notes": [
+    "/Users/chesterjohn/de-linker-data/cutover-20261011-1154"
+   ],
+   "step": "backup"
+  },
+  {
+   "actions": [
+    "wp maintenance-mode activate (already active)"
+   ],
+   "notes": [
+    "status: Maintenance mode is not active."
+   ],
+   "step": "maintenance"
+  },
+  {
+   "actions": [
+    "deployed linker-commerce (458 files) from /Users/chesterjohn/de-linker-data/cutover-workspace/staging/linker-commerce",
+    "deployed linker-i18n (56 files) from /Users/chesterjohn/de-linker-data/cutover-workspace/staging/linker-i18n",
+    "deployed linker-tools (127 files) from /Users/chesterjohn/de-linker-data/cutover-workspace/staging/linker-tools",
+    "wp plugin activate polylang (already installed)",
+    "wp plugin activate linker-commerce linker-i18n linker-tools"
+   ],
+   "notes": [],
+   "step": "deploy"
+  },
+  {
+   "actions": [
+    "exported 4756 rows (2 active) to /Users/chesterjohn/de-linker-data/cutover-workspace/snippets/pass1"
+   ],
+   "notes": [
+    "code lands outside the repository; the repository records the confirmation"
+   ],
+   "step": "snippets"
+  },
+  {
+   "actions": [
+    "wp plugin deactivate terravolt-b2b-core linker-ai-assistant code-snippets woocommerce-gateway-stripe",
+    "wp plugin delete terravolt-b2b-core linker-ai-assistant code-snippets woocommerce-gateway-stripe",
+    "rm -rf wp-content/plugins/terravolt-b2b-core-broken-20260704",
+    "rm -rf wp-content/plugins/terravolt-b2b-core.zip",
+    "rm -rf wp-content/plugins/linker-runtime-backup-20260723-before-remediation.zip",
+    "deployed in place, so no removal: linker-i18n"
+   ],
+   "notes": [
+    "every legacy plugin was installed and is gone"
+   ],
+   "step": "plugins"
+  },
+  {
+   "actions": [
+    "7-facts.py (plan) exit 0",
+    "8-engineering.py (plan) exit 0",
+    "9-i18n.py (plan) exit 0"
+   ],
+   "notes": [],
+   "step": "data"
+  },
+  {
+   "actions": [
+    "6 schema templates, 1 carrying a Product node",
+    "row 978 (TerraVolt Product Entity Schema, publish)",
+    "wp post update 978 --post_status=draft"
+   ],
+   "notes": [],
+   "step": "schema"
+  },
+  {
+   "actions": [
+    "revisions: would delete 2108",
+    "object cache: wp-content/object-cache.php is in place",
+    "revisions: keep five: wp config set WP_POST_REVISIONS 5 --raw",
+    "cron: disable the loopback runner: wp config set DISABLE_WP_CRON true --raw",
+    "permalinks: flush: wp rewrite flush",
+    "object cache: flush: wp cache flush",
+    "tables: would drop wp_linker_ai_conversation, wp_linker_string, wp_snippets, wp_tv_b2b_audit_log, wp_tv_b2b_contact_request, wp_tv_b2b_project_artifact, wp_tv_b2b_project_event, wp_tv_b2b_project_request, wp_tv_b2b_vat_declarations",
+    "options: would delete 95 names",
+    "autoload: 213 options, 18768 bytes written to the backup for review"
+   ],
+   "notes": [
+    "hPanel: cron every minute runs `wp cron event run --due-now`",
+    "LiteSpeed: purge the whole cache (or `wp litespeed-purge all`) after the switch"
+   ],
+   "step": "hygiene"
+  },
+  {
+   "actions": [
+    "wp maintenance-mode deactivate (already not active)"
+   ],
+   "notes": [
+    "status: Maintenance mode is not active."
+   ],
+   "step": "maintenance"
+  },
+  {
+   "actions": [
+    "GET / -> 200",
+    "GET /de/ -> 200 lang=de True",
+    "GET /products/ -> 200",
+    "GET /de/produkte/ -> 404 lang=de True",
+    "GET /proforma-request/ -> 200",
+    "GET /de/proforma-anfrage/ -> 404 lang=de True",
+    "GET /my-account/ -> 200",
+    "GET /de/mein-konto/ -> 404 lang=de True",
+    "GET /product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/ -> 200",
+    "GET /de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/ -> 200 lang=de True",
+    "GET /design-canvas/ -> 200 (expected 301)"
+   ],
+   "notes": [
+    "/de/produkte/ answered 404",
+    "/de/proforma-anfrage/ answered 404",
+    "/de/mein-konto/ answered 404",
+    "/design-canvas/ answered 200, expected 301"
+   ],
+   "step": "verify"
+  },
+  {
+   "actions": [
+    "restored /Users/chesterjohn/de-linker-data/cutover-20261011-1154",
+    "plugins listed: 23",
+    "plugins the switch removes, back: 4/4"
+   ],
+   "notes": [],
+   "step": "rollback"
+  },
+  {
+   "actions": [
+    "36834 files, dump sha256 9c70769c8894a90a\u2026"
+   ],
+   "notes": [
+    "/Users/chesterjohn/de-linker-data/cutover-20261011-1157"
+   ],
+   "step": "backup"
+  },
+  {
+   "actions": [
+    "wp maintenance-mode activate (already active)"
+   ],
+   "notes": [
+    "status: Maintenance mode is not active."
+   ],
+   "step": "maintenance"
+  },
+  {
+   "actions": [
+    "deployed linker-commerce (458 files) from /Users/chesterjohn/de-linker-data/cutover-workspace/staging/linker-commerce",
+    "deployed linker-i18n (56 files) from /Users/chesterjohn/de-linker-data/cutover-workspace/staging/linker-i18n",
+    "deployed linker-tools (127 files) from /Users/chesterjohn/de-linker-data/cutover-workspace/staging/linker-tools",
+    "wp plugin activate polylang (already installed)",
+    "wp plugin activate linker-commerce linker-i18n linker-tools"
+   ],
+   "notes": [],
+   "step": "deploy"
+  },
+  {
+   "actions": [
+    "exported 4756 rows (2 active) to /Users/chesterjohn/de-linker-data/cutover-workspace/snippets/pass2"
+   ],
+   "notes": [
+    "code lands outside the repository; the repository records the confirmation"
+   ],
+   "step": "snippets"
+  },
+  {
+   "actions": [
+    "wp plugin deactivate terravolt-b2b-core linker-ai-assistant code-snippets woocommerce-gateway-stripe",
+    "wp plugin delete terravolt-b2b-core linker-ai-assistant code-snippets woocommerce-gateway-stripe",
+    "rm -rf wp-content/plugins/terravolt-b2b-core-broken-20260704",
+    "rm -rf wp-content/plugins/terravolt-b2b-core.zip",
+    "rm -rf wp-content/plugins/linker-runtime-backup-20260723-before-remediation.zip",
+    "deployed in place, so no removal: linker-i18n"
+   ],
+   "notes": [
+    "every legacy plugin was installed and is gone"
+   ],
+   "step": "plugins"
+  },
+  {
+   "actions": [
+    "7-facts.py (plan) exit 0",
+    "8-engineering.py (plan) exit 0",
+    "9-i18n.py (plan) exit 0"
+   ],
+   "notes": [],
+   "step": "data"
+  },
+  {
+   "actions": [
+    "6 schema templates, 1 carrying a Product node",
+    "row 978 (TerraVolt Product Entity Schema, publish)",
+    "wp post update 978 --post_status=draft"
+   ],
+   "notes": [],
+   "step": "schema"
+  },
+  {
+   "actions": [
+    "revisions: would delete 2108",
+    "object cache: wp-content/object-cache.php is in place",
+    "revisions: keep five: wp config set WP_POST_REVISIONS 5 --raw",
+    "cron: disable the loopback runner: wp config set DISABLE_WP_CRON true --raw",
+    "permalinks: flush: wp rewrite flush",
+    "object cache: flush: wp cache flush",
+    "tables: would drop wp_linker_ai_conversation, wp_linker_string, wp_snippets, wp_tv_b2b_audit_log, wp_tv_b2b_contact_request, wp_tv_b2b_project_artifact, wp_tv_b2b_project_event, wp_tv_b2b_project_request, wp_tv_b2b_vat_declarations",
+    "options: would delete 95 names",
+    "autoload: 213 options, 18768 bytes written to the backup for review"
+   ],
+   "notes": [
+    "hPanel: cron every minute runs `wp cron event run --due-now`",
+    "LiteSpeed: purge the whole cache (or `wp litespeed-purge all`) after the switch"
+   ],
+   "step": "hygiene"
+  },
+  {
+   "actions": [
+    "wp maintenance-mode deactivate (already not active)"
+   ],
+   "notes": [
+    "status: Maintenance mode is not active."
+   ],
+   "step": "maintenance"
+  },
+  {
+   "actions": [
+    "GET / -> 200",
+    "GET /de/ -> 200 lang=de True",
+    "GET /products/ -> 200",
+    "GET /de/produkte/ -> 404 lang=de True",
+    "GET /proforma-request/ -> 200",
+    "GET /de/proforma-anfrage/ -> 404 lang=de True",
+    "GET /my-account/ -> 200",
+    "GET /de/mein-konto/ -> 404 lang=de True",
+    "GET /product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/ -> 200",
+    "GET /de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/ -> 200 lang=de True",
+    "GET /design-canvas/ -> 200 (expected 301)"
+   ],
+   "notes": [
+    "/de/produkte/ answered 404",
+    "/de/proforma-anfrage/ answered 404",
+    "/de/mein-konto/ answered 404",
+    "/design-canvas/ answered 200, expected 301"
+   ],
+   "step": "verify"
+  }
+ ],
+ "target": "local:t81"
+}
