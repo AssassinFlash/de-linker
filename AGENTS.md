@@ -7,7 +7,7 @@
 
 de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPress + WooCommerce，英德同等。
 客户是安装商、EPC、经销商。链路只有一条：产品分类与产品 → 询盘（以 Proforma 呈现）→ 之后全部线下。
-网站没有订单、付款、发货、采购、分组、审批、发票和任何后续处理的概念。
+订单→询盘/Proforma 链、付款、发货、采购、分组、发票与任何后续处理不存在；**账号审批三态已于 2026-10-11 恢复**（票 #73：通过/限制/拒绝+原因邮件，WP 后台入口）。
 
 两个客户可见的工具：
 - **Genie - Linker's AI assistant**（德语 "Genie – der KI-Assistent von Linker"）：平台级 AI 助手，嵌在产品、询盘、账户各入口；首条消息明说这是 AI 系统。德语里不写 "Linker Genie" 连写；不注册商标。

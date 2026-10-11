@@ -3,7 +3,7 @@
  * The product archive template: the shop page and the product categories
  * (#12, docs/specs/12-site-chrome.md item 5). The rail's facets and the
  * cards' data derive from the selection facts (#7); the layout is the
- * catalogue the site serves today.
+ * product range the site serves today.
  *
  * @package Linker\Commerce
  */

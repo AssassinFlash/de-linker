@@ -498,7 +498,7 @@ msgid "Language of the products and their addresses."
 msgstr ""
 
 #: includes/Catalog/CatalogSearchController.php:148
-msgid "The products of the catalogue whose name or item number holds the query."
+msgid "The products of the range whose name or item number holds the query."
 msgstr ""
 
 #: includes/Catalog/CatalogSearchController.php:152
@@ -506,7 +506,7 @@ msgid "What was searched for."
 msgstr ""
 
 #: includes/Catalog/CatalogSearchController.php:156
-msgid "The hits, in catalogue order."
+msgid "The hits, in shop order."
 msgstr ""
 
 #: includes/Catalog/CatalogSearchController.php:166

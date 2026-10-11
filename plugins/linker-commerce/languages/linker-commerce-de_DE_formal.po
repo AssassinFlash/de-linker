@@ -538,17 +538,17 @@ msgstr "Sprache der Produkte und ihrer Adressen."
 
 #: includes/Catalog/CatalogSearchController.php:148
 msgid ""
-"The products of the catalogue whose name or item number holds the query."
+"The products of the range whose name or item number holds the query."
 msgstr ""
-"Die Produkte des Katalogs, deren Name oder Artikelnummer die Suche enthält."
+"Die Produkte des Sortiments, deren Name oder Artikelnummer die Suche enthält."
 
 #: includes/Catalog/CatalogSearchController.php:152
 msgid "What was searched for."
 msgstr "Danach wurde gesucht."
 
 #: includes/Catalog/CatalogSearchController.php:156
-msgid "The hits, in catalogue order."
-msgstr "Die Treffer in Katalogreihenfolge."
+msgid "The hits, in shop order."
+msgstr "Die Treffer in Shop-Reihenfolge."
 
 #: includes/Catalog/CatalogSearchController.php:166
 msgid "Product name."
