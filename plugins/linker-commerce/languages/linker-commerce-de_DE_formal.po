@@ -936,11 +936,11 @@ msgstr ""
 msgid "Log in for prices"
 msgstr "Preise nach Anmeldung"
 
-#: includes/Gating/PriceDisplay.php:199
+#: includes/Gating/PriceDisplay.php:199 includes/Storefront/ProductView.php:236 includes/Storefront/ProductView.php:266
 msgid "Not available for your account"
 msgstr "Für Ihr Konto nicht verfügbar"
 
-#: includes/Gating/PriceDisplay.php:200
+#: includes/Gating/PriceDisplay.php:200 includes/Storefront/ProductView.php:234 includes/Storefront/ProductView.php:264
 msgid "Prices after approval"
 msgstr "Preise nach Freigabe"
 
