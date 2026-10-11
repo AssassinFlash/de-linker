@@ -136,6 +136,42 @@ final class JobStore {
 	}
 
 	/**
+	 * The failed messages themselves, for the daily digest's fourth block
+	 * (docs/specs/74-daily-digest.md): recipient, subject and last error of
+	 * each message whose retries ran out, oldest first. One whose stored
+	 * message is unreadable stays out of the list; it still counts in
+	 * failed_count().
+	 *
+	 * @return list<array{id: int, to: list<string>, subject: string, error: string}>
+	 */
+	public function failed(): array {
+		$posts  = get_posts(
+			array(
+				'post_type'   => self::POST_TYPE,
+				'post_status' => self::FAILED_STATUS,
+				'numberposts' => -1,
+				'orderby'     => 'date',
+				'order'       => 'ASC',
+			)
+		);
+		$failed = array();
+		foreach ( $posts as $post ) {
+			$data = json_decode( (string) get_post_meta( (int) $post->ID, self::MESSAGE_META, true ), true );
+			if ( ! is_array( $data ) ) {
+				continue;
+			}
+			$message  = Message::from_array( $data );
+			$failed[] = array(
+				'id'      => (int) $post->ID,
+				'to'      => array_values( $message->to ),
+				'subject' => $message->subject,
+				'error'   => (string) get_post_meta( (int) $post->ID, self::ERROR_META, true ),
+			);
+		}
+		return $failed;
+	}
+
+	/**
 	 * Deletes a message that was sent.
 	 *
 	 * @param int $id Job id.

@@ -175,8 +175,10 @@ LINKER_SCRIPT
 		for ( $i = 0; $i < 2; ++$i ) {
 			$pipes = array();
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- the concurrency under test needs a real second process.
-			$runs[ $i ]    = proc_open(
-				array( PHP_BINARY, $script ),
+			$runs[ $i ] = proc_open(
+				// The Proforma renders in memory (the suite's 2048M ini exists
+				// for it); the second process needs the same measure.
+				array( PHP_BINARY, '-d', 'memory_limit=2048M', $script ),
 				array(
 					1 => array( 'pipe', 'w' ),
 					2 => array( 'pipe', 'w' ),
