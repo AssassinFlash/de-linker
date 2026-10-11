@@ -194,6 +194,12 @@ def main(argv: list[str] | None = None) -> int:
                     for name in cascade.first.answers
                 },
                 "reference_calls": [one.get("name") for one in calls],
+                # The judges' own words, so a finding a caller records carries
+                # why the judge said it.
+                "reasons": {
+                    "jev": cascade.first.reason,
+                    "deepseek": (cascade.fallback.reason if cascade.fallback else None),
+                },
                 "judged_at": time.time(),
             }
         )

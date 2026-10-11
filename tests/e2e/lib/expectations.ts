@@ -38,20 +38,24 @@ export const H2_10K_T3 = 4107;
 /** A commercial ETR unit: the wrong pick every swap offers. */
 export const WRONG_PICK = 6507;
 
-/** Words an answer may never carry: Incoterms and delivery terms. */
-export const FORBIDDEN_TERMS = [
-	'incoterm',
-	'dap ',
-	'fob',
-	'exw',
-	'cif',
-	'lieferzeit',
-	'delivery time',
-	'lead time',
-	'liefertermin',
-	'working days',
-	'werktage',
-	'business days',
+/**
+ * What an answer may never carry: Incoterms and delivery terms (protocol
+ * R9/R14; AGENTS.md §2, the owner ruling of 2026-10-05). Word boundaries, not
+ * substrings — "specific" carries "cif".
+ */
+export const FORBIDDEN_TERMS: RegExp[] = [
+	/\bincoterms?\b/i,
+	/\bdap\b/i,
+	/\bfob\b/i,
+	/\bexw\b/i,
+	/\bcif\b/i,
+	/\blieferzeit\b/i,
+	/\bliefertermin\w*\b/i,
+	/\bdelivery time\b/i,
+	/\blead time\b/i,
+	/\bworking days\b/i,
+	/\bwerktage?\b/i,
+	/\bbusiness days\b/i,
 ];
 
 /** The team mailbox every out-of-scope turn points at. */

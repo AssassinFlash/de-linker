@@ -41,6 +41,8 @@ export interface Verdict {
 	jev: Record<string, { label: string | null; confidence: number | null }>;
 	/** The abilities the judged turn actually called. */
 	referenceCalls: string[];
+	/** Each judge's own words, when it gave any. */
+	reasons: Record<string, string | null>;
 	turnId: number;
 }
 
@@ -123,6 +125,7 @@ export function judgeItems(items: JudgeItem[]): Record<string, Verdict> {
 			{ label: string | null; confidence: number | null }
 		>;
 		reference_calls: string[];
+		reasons?: Record<string, string | null>;
 	}>;
 
 	const verdicts: Record<string, Verdict> = {};
@@ -133,6 +136,7 @@ export function judgeItems(items: JudgeItem[]): Record<string, Verdict> {
 			sources: one.sources,
 			jev: one.jev,
 			referenceCalls: one.reference_calls,
+			reasons: one.reasons ?? {},
 			turnId: one.turn_id,
 		};
 	}
