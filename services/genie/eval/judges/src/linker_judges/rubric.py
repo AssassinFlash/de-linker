@@ -185,7 +185,13 @@ def questions_for(item_set: str) -> tuple[Question, ...]:
 def chat_messages(
     state: dict[str, Any], questions: tuple[Question, ...]
 ) -> list[dict[str, str]]:
-    """The LLM judge's messages: the same state and question text a decision model gets."""
+    """The LLM judge's messages: the same state and question text a decision model gets.
+
+    The closing line overrides the per-question "reply with" phrasing with the
+    calibrated-probabilities form the cascade needs: without per-question
+    probabilities a chat reply carries no confidence, and the first pass could
+    then never stand (owner ruling 2026-10-11: the wired jev-router first pass
+    answers with calibrated probabilities)."""
     lines = [
         "STATE:",
         json.dumps(state, ensure_ascii=False, indent=1),
@@ -195,7 +201,16 @@ def chat_messages(
     for number, question in enumerate(questions, 1):
         lines.extend(question.prompt_lines(number))
     keys = ", ".join(question.name for question in questions)
-    lines += ["", f"Return a JSON object with the keys {keys} and reason."]
+    lines += [
+        "",
+        "Answer every question with its calibrated probabilities: one JSON object"
+        " with a key for every question (" + keys + "), each question's value an"
+        ' object that maps that question\'s answer options to probabilities'
+        ' ({"grounded": {"0": 0.05, "1": 0.15, "2": 0.8}},'
+        ' {"appropriate": {"yes": 0.9, "no": 0.1}},'
+        ' {"better_pick": {"A": 0.7, "B": 0.05, "equal": 0.25}}), plus one "reason"'
+        " key with one or two sentences. Answer nothing else.",
+    ]
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": "\n".join(lines)},
