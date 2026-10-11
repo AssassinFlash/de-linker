@@ -9,12 +9,12 @@ chunks; each formats them as its model card or documentation prescribes.
   embeds chunks on the Mac with all cores, the VPS encodes queries with one thread and
   no spinning (1 vCPU shared with the engine, no PyTorch there; owner, 2026-10-09).
 - `gemini-embedding-2` through an OpenAI-compatible `/v1/embeddings`: OpenRouter
-  first (OPENROUTER_API_KEY, OPENROUTER_BASE_URL — the owner ruling of 2026-10-11,
-  after aihubmix's balance ran out; same model, same vector space, proven with
-  cosine 1.000000 against stored vectors that day), AIHubMix second
-  (AIHUBMIX_API_KEY, AIHUBMIX_BASE_URL) as the fallback. Either way one client
-  embeds chunks and queries alike. Keys come from the environment or the owner's
-  files under ~/.config/terravolt-builder/ and never enter the repository.
+  by default (OPENROUTER_API_KEY, OPENROUTER_BASE_URL — the owner's model routing
+  law of 2026-10-11); AIHubMix only behind the explicit
+  `LINKER_EMBEDDING_PROVIDER=aihubmix` switch (AIHUBMIX_API_KEY,
+  AIHUBMIX_BASE_URL), never as an automatic fallback. One client embeds chunks
+  and queries alike. Keys come from the environment or the owner's files under
+  ~/.config/terravolt-builder/ and never enter the repository.
 docs/research/2026-10-09/embedding-bakeoff.md compares the models.
 
 Vectors travel as float32 little-endian bytes, the form sqlite-vec stores.

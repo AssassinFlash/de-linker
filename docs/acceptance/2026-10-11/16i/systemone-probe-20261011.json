@@ -1,0 +1,91 @@
+{
+ "probe": "one live item through the eval/judges call path (registry Jev)",
+ "date": "2026-10-11",
+ "run_at_utc": "2026-10-11T15:50:00Z",
+ "item": "panel-r10",
+ "judge": {
+  "name": "jev",
+  "kind": "system_one",
+  "model_requested": "typesafe/jev-1.13",
+  "endpoint": "openrouter",
+  "url": "https://openrouter.ai/api/v1/systemone"
+ },
+ "response": {
+  "model": "typesafe/jev-1.13-20260917",
+  "answers": {
+   "grounded": {
+    "type": "score",
+    "score": 1.86,
+    "legend": {
+     "0": "Contradicted: at least one statement in `answer` conflicts with `reference`, for example a different value, the value of another model or a wrong unit.",
+     "1": "Not verifiable: nothing in `answer` conflicts with `reference`, but `answer` states facts that `reference` does not contain, such as stock levels, delivery times, services or company details.",
+     "2": "Supported: every factual statement about products in `answer` is stated in `reference`, or `answer` states no product facts."
+    },
+    "probabilities": {
+     "0": 0.04,
+     "1": 0.06,
+     "2": 0.9
+    },
+    "confidence": 0.79
+   },
+   "appropriate": {
+    "type": "noul",
+    "noul": 0.95
+   },
+   "better_pick": {
+    "type": "choice",
+    "choice": "A",
+    "probabilities": {
+     "A": 1,
+     "B": 0,
+     "equal": 0
+    },
+    "confidence": 1
+   }
+  },
+  "usage": {
+   "input_tokens": 8700,
+   "output_tokens": 71,
+   "cost": 0.0003654
+  }
+ },
+ "verdict": {
+  "answers": {
+   "grounded": {
+    "label": "2",
+    "confidence": 0.79,
+    "probabilities": {
+     "0": 0.04,
+     "1": 0.06,
+     "2": 0.9
+    }
+   },
+   "appropriate": {
+    "label": "yes",
+    "confidence": 0.8999999999999999,
+    "probabilities": {
+     "yes": 0.95,
+     "no": 0.050000000000000044
+    }
+   },
+   "better_pick": {
+    "label": "A",
+    "confidence": 1.0,
+    "probabilities": {
+     "A": 1.0,
+     "B": 0.0,
+     "equal": 0.0
+    }
+   }
+  },
+  "model_reported": "typesafe/jev-1.13-20260917",
+  "input_tokens": 8700,
+  "output_tokens": 71,
+  "cost_usd": 0.0003654,
+  "seconds": 3.351457999997365,
+  "attempts": 1,
+  "started_at": 1791733796.932011,
+  "reason": null,
+  "error": null
+ }
+}

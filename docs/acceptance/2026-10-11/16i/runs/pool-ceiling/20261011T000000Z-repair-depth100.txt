@@ -1,0 +1,11 @@
+encoding 200 queries…
+100/200 … ceiling 98.0%
+200/200 … ceiling 98.0%
+{
+ "index": "/Users/chesterjohn/de-linker-data/index/builds/20261011T000000Z-repair/index.sqlite",
+ "depth": 100,
+ "judge": "none",
+ "questions": 200,
+ "pool_ceiling": 0.98,
+ "seconds": 24.0
+}

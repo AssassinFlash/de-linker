@@ -173,8 +173,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     if encoder is None:
         raise SystemExit(
             "gemini-embedding-2 needs OPENROUTER_API_KEY/OPENROUTER_BASE_URL "
-            "(env or ~/.config/terravolt-builder/openrouter.env); the AIHUBMIX_* "
-            "pair works as the fallback"
+            "(env or ~/.config/terravolt-builder/openrouter.env); AIHubMix serves "
+            "only behind LINKER_EMBEDDING_PROVIDER=aihubmix"
         )
     if args.batch:
         from linker_genie import embedding as embedding_mod
