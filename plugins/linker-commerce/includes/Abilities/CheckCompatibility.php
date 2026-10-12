@@ -9,9 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Catalog\Compatibility;
-use Linker\Commerce\Catalog\SelectionFacts;
-use Linker\Commerce\Catalog\SelectionFactSet;
+use Linker\Commerce\Products\Compatibility;
+use Linker\Commerce\Products\SelectionFacts;
+use Linker\Commerce\Products\SelectionFactSet;
 
 /**
  * Pairing against data/compatibility.json (docs/specs/8-engineering-data.md).

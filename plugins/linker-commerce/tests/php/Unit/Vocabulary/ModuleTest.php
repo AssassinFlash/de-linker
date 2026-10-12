@@ -43,7 +43,11 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_must_be_logged_in_message', array( $labels, 'log_in_to_send' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_privacy_policy_text', array( $labels, 'privacy_text' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'the_title', array( $labels, 'page_title' ), 5, 2 );
-		WP_Mock::expectFilterAdded( 'document_title_parts', array( $labels, 'document_title' ) );
+			WP_Mock::expectFilterAdded( 'document_title_parts', array( $labels, 'document_title' ) );
+			WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $labels, 'seo_title' ) );
+			WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( $labels, 'seo_description' ) );
+			WP_Mock::expectFilterAdded( 'seopress_social_og_desc', array( $labels, 'seo_description' ) );
+			WP_Mock::expectFilterAdded( 'seopress_social_twitter_card_desc', array( $labels, 'seo_description' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_breadcrumb', array( $labels, 'breadcrumb' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_date_format', array( $formats, 'wc_date_format' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_price_decimal_separator', array( $formats, 'decimal_separator' ) );

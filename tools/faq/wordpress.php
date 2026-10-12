@@ -116,7 +116,7 @@ defined( 'ABSPATH' ) || exit;
 	if ( 'import' !== $action ) {
 		throw new RuntimeException( 'Unknown FAQ WP-CLI action.' );
 	}
-	if ( ! class_exists( \Linker\Commerce\Catalog\Faqs::class ) ) {
+	if ( ! class_exists( \Linker\Commerce\Products\Faqs::class ) ) {
 		// The shape the import writes is the plugin's rule; without the
 		// plugin the eval'd script would drift from it.
 		throw new RuntimeException( 'linker-commerce must be active on the import target.' );
@@ -138,14 +138,14 @@ defined( 'ABSPATH' ) || exit;
 			);
 		}
 		$items = is_array( $row['items'] ?? null ) ? $row['items'] : array();
-		$json  = \Linker\Commerce\Catalog\Faqs::encode( $items );
-		update_post_meta( $product_id, \Linker\Commerce\Catalog\Faqs::META_KEY, wp_slash( $json ) );
-		\Linker\Commerce\Catalog\Faqs::mirror_to_twin( $product_id, $json );
-		$read      = (string) get_post_meta( $product_id, \Linker\Commerce\Catalog\Faqs::META_KEY, true );
+		$json  = \Linker\Commerce\Products\Faqs::encode( $items );
+		update_post_meta( $product_id, \Linker\Commerce\Products\Faqs::META_KEY, wp_slash( $json ) );
+		\Linker\Commerce\Products\Faqs::mirror_to_twin( $product_id, $json );
+		$read      = (string) get_post_meta( $product_id, \Linker\Commerce\Products\Faqs::META_KEY, true );
 		$written[] = array(
 			'id'    => $product_id,
 			'slug'  => $product->get_slug(),
-			'count' => count( \Linker\Commerce\Catalog\Faqs::normalize( $items ) ),
+			'count' => count( \Linker\Commerce\Products\Faqs::normalize( $items ) ),
 			'done'  => $read === $json,
 		);
 	}

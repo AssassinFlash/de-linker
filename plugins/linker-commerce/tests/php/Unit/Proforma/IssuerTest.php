@@ -173,9 +173,10 @@ final class IssuerTest extends TestCase {
 	 * @param string $status Status.
 	 * @param string $number Proforma number already issued.
 	 * @param bool   $priced Whether the line has a price.
+	 * @param int    $id     Inquiry id.
 	 * @return WC_Order&\Mockery\MockInterface
 	 */
-	private function inquiry( string $status = Statuses::RECEIVED, string $number = '', bool $priced = true ) {
+	private function inquiry( string $status = Statuses::RECEIVED, string $number = '', bool $priced = true, int $id = 20 ) {
 		$line = Mockery::mock( WC_Order_Item_Product::class );
 		$line->allows( 'get_meta' )->with( '_linker_price_reason' )->andReturn( $priced ? '' : 'unpriced' );
 		$line->allows( 'get_total' )->andReturn( $priced ? '1680' : '0' );
@@ -183,10 +184,12 @@ final class IssuerTest extends TestCase {
 		$line->allows( 'get_name' )->andReturn( 'SAJ H2-10K-T3' );
 		$line->allows( 'get_quantity' )->andReturn( 1 );
 		$order = Mockery::mock( WC_Order::class );
-		$order->allows( 'get_id' )->andReturn( 20 );
+		$order->allows( 'get_id' )->andReturn( $id );
 		$order->allows( 'get_status' )->andReturn( $status );
 		$order->allows( 'get_items' )->andReturn( array( $line ) );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
+		$order->allows( 'get_meta' )->with( Issuer::FILE_META )->andReturn( '' );
+		$order->allows( 'has_status' )->andReturnUsing( static fn ( string $asked ): bool => $asked === $status );
 		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'de_DE_formal' );
 		$order->allows( 'get_meta' )->with( '_billing_vat_id' )->andReturn( '' );
 		$order->allows( 'get_currency' )->andReturn( 'EUR' );
@@ -194,7 +197,7 @@ final class IssuerTest extends TestCase {
 		$order->allows( 'get_fees' )->andReturn( array() );
 		$order->allows( 'get_tax_totals' )->andReturn( array() );
 		$order->allows( 'get_address' )->andReturn( array() );
-		$order->allows( 'get_order_number' )->andReturn( '20' );
+		$order->allows( 'get_order_number' )->andReturn( (string) $id );
 		$order->allows( 'get_billing_company' )->andReturn( 'Solarbau GmbH' );
 		$order->allows( 'get_formatted_billing_full_name' )->andReturn( 'Maria Beispiel' );
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
@@ -210,7 +213,8 @@ final class IssuerTest extends TestCase {
 		$issuer = $this->issuer();
 
 		$this->assertSame( '', $issuer->blocker( $this->inquiry() ) );
-		$this->assertSame( 'This inquiry already has a Proforma invoice.', $issuer->blocker( $this->inquiry( Statuses::PROFORMA, 'PI-2026-0001' ) ) );
+		$this->assertSame( 'This inquiry already has a Proforma invoice.', $issuer->blocker( $this->inquiry( Statuses::RECEIVED, 'PI-2026-0001' ) ) );
+		$this->assertSame( 'Only a received inquiry gets a Proforma invoice.', $issuer->blocker( $this->inquiry( Statuses::PROFORMA, 'PI-2026-0001' ) ) );
 		$this->assertSame( 'Only a received inquiry gets a Proforma invoice.', $issuer->blocker( $this->inquiry( 'completed' ) ) );
 		$this->assertSame( 'Set a price for every product before issuing the Proforma invoice.', $issuer->blocker( $this->inquiry( Statuses::RECEIVED, '', false ) ) );
 		$this->option_values = array();
@@ -230,13 +234,13 @@ final class IssuerTest extends TestCase {
 			}
 		);
 		$order->expects( 'calculate_totals' )->with( true )->once()->ordered();
-		$order->expects( 'update_status' )->with( Statuses::PROFORMA, "Proforma invoice PI-$year-0001 issued." )->ordered();
-		$this->expect_rendering();
+			$order->expects( 'update_status' )->with( Statuses::PROFORMA, "Proforma invoice DLK-PF-$year-0001 issued." )->ordered();
+			$this->expect_rendering();
 
-		$this->assertSame( "PI-$year-0001", $this->issuer()->issue( $order ) );
+			$this->assertSame( "DLK-PF-$year-0001", $this->issuer()->issue( $order ) );
 
-		$this->assertSame( "PI-$year-0001", $meta[ Issuer::NUMBER_META ] );
-		$this->assertMatchesRegularExpression( "#^20/PI-$year-0001-[0-9a-f]{16}\\.pdf$#", $meta[ Issuer::FILE_META ] );
+			$this->assertSame( "DLK-PF-$year-0001", $meta[ Issuer::NUMBER_META ] );
+			$this->assertMatchesRegularExpression( "#^20/DLK-PF-$year-0001-[0-9a-f]{16}\\.pdf$#", $meta[ Issuer::FILE_META ] );
 		$this->assertSame( '%PDF-', substr( (string) file_get_contents( $this->uploads . '/proforma/' . $meta[ Issuer::FILE_META ] ), 0, 5 ) );
 		$this->assertFileExists( $this->uploads . '/proforma/.htaccess' );
 		$this->assertStringContainsString( 'Require all denied', (string) file_get_contents( $this->uploads . '/proforma/.htaccess' ) );
@@ -254,7 +258,7 @@ final class IssuerTest extends TestCase {
 		$year = ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'Europe/Berlin' ) ) )->format( 'Y' );
 		$this->expect_rendering();
 
-		$this->assertSame( "PI-$year-0002", $this->issuer()->issue( $order ) );
+			$this->assertSame( "DLK-PF-$year-0002", $this->issuer()->issue( $order ) );
 		$pdfs = glob( $this->uploads . '/proforma/20/*.pdf' );
 		$this->assertIsArray( $pdfs );
 		$this->assertCount( 1, $pdfs, 'The PDF rendered with the lost number is gone.' );
@@ -301,7 +305,7 @@ final class IssuerTest extends TestCase {
 		$year = ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'Europe/Berlin' ) ) )->format( 'Y' );
 		$this->expect_rendering();
 
-		$this->assertSame( "PI-$year-0001", $this->issuer()->issue( $order ) );
+			$this->assertSame( "DLK-PF-$year-0001", $this->issuer()->issue( $order ) );
 	}
 
 	/**
@@ -320,5 +324,84 @@ final class IssuerTest extends TestCase {
 			$this->assertSame( 'body fails', $ignored->getMessage() );
 		}
 		$this->assertArrayNotHasKey( 'linker_proforma_claim_20', $this->option_values );
+	}
+
+	/**
+	 * A status set to "Proforma invoice issued" without the button still stores the number and the PDF.
+	 * The status is already the new one, so issuing must not move it again.
+	 */
+	public function test_status_issued_without_the_button_stores_the_number(): void {
+		$order = $this->inquiry( Statuses::PROFORMA );
+		$year  = ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'Europe/Berlin' ) ) )->format( 'Y' );
+		$meta  = array();
+		$order->allows( 'update_meta_data' )->andReturnUsing(
+			function ( string $key, $value ) use ( &$meta ): void {
+				$meta[ $key ] = $value;
+			}
+		);
+		$order->allows( 'calculate_totals' );
+		$order->allows( 'add_order_note' );
+		$order->expects( 'save' )->once();
+		$order->expects( 'update_status' )->never();
+		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
+		$this->expect_rendering();
+
+		$this->issuer()->ensure_issued( 20 );
+
+			$this->assertSame( "DLK-PF-$year-0001", $meta[ Issuer::NUMBER_META ] );
+			$this->assertMatchesRegularExpression( "#^20/DLK-PF-$year-0001-[0-9a-f]{16}\\.pdf$#", $meta[ Issuer::FILE_META ] );
+		$this->assertArrayHasKey( Issuer::ISSUED_META, $meta );
+	}
+
+	/**
+	 * An inquiry that already has a number is not issued a second time when the status hook runs.
+	 */
+	public function test_status_hook_leaves_an_issued_inquiry_alone(): void {
+		$order = $this->inquiry( Statuses::PROFORMA, 'PI-2026-0004' );
+		$order->expects( 'calculate_totals' )->never();
+		$order->expects( 'update_status' )->never();
+		$order->expects( 'save' )->never();
+		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
+
+		$this->issuer()->ensure_issued( 20 );
+
+		$this->assertArrayNotHasKey( 'linker_proforma_claim_20', $this->option_values );
+	}
+
+	/**
+	 * Without a bank account the status hook writes no number and records why. The account is never invented.
+	 */
+	public function test_status_hook_without_a_bank_account_writes_no_number(): void {
+		$this->option_values = array();
+		$order               = $this->inquiry( Statuses::PROFORMA );
+		$order->expects( 'update_meta_data' )->never();
+		$order->expects( 'update_status' )->never();
+		$order->expects( 'add_order_note' )->once()->with( Mockery::on( static fn ( string $note ): bool => str_starts_with( $note, 'Enter the bank account' ) ) );
+		$order->expects( 'save' )->once();
+		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
+
+		$this->issuer()->ensure_issued( 20 );
+
+			$this->assertSame( array(), $this->option_values, 'No number and no claim are written without a bank account.' );
+	}
+
+		/**
+		 * Two issues in one year take the next number. The second does not reuse the first.
+		 */
+	public function test_successive_issues_take_the_next_number(): void {
+		$year   = ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'Europe/Berlin' ) ) )->format( 'Y' );
+		$issuer = $this->issuer();
+		$this->expect_rendering();
+
+		foreach ( array(
+			20 => '0001',
+			21 => '0002',
+		) as $id => $sequence ) {
+			$order = $this->inquiry( Statuses::RECEIVED, '', true, $id );
+			$order->allows( 'update_meta_data' );
+			$order->allows( 'update_status' );
+			$order->allows( 'calculate_totals' );
+			$this->assertSame( "DLK-PF-$year-$sequence", $issuer->issue( $order ) );
+		}
 	}
 }

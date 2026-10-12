@@ -76,13 +76,14 @@ class CheckResult:
 
 
 def check(output: TurnOutput, facts: TurnFacts) -> CheckResult:
-    """Run the five anchoring checks. Empty failures means the turn is grounded."""
+    """Run the anchoring checks. Empty failures means the turn is grounded."""
     failures: list[str] = []
     failures.extend(_refs_and_placeholders(output, facts))
     failures.extend(_cards_and_qualified(output, facts))
     failures.extend(_actions(output, facts))
     failures.extend(_handoff_only_when_out_of_scope(output))
     failures.extend(_no_bare_numbers(output, facts))
+    failures.extend(_login_required_is_a_login_request(output, facts))
     return CheckResult(ok=not failures, failures=tuple(failures))
 
 
@@ -161,6 +162,35 @@ def _actions(output: TurnOutput, facts: TurnFacts) -> list[str]:
         if isinstance(url, str) and url and url not in fact_values:
             failures.append(f"action {block.name} url is not from this turn's tools")
     return failures
+
+
+def _login_required_is_a_login_request(
+    output: TurnOutput, facts: TurnFacts
+) -> list[str]:
+    """R7 unsigned-out: a guest inquiry fact may only ship the login sentence.
+
+    The fact is recorded by `facts._from_inquiry` when inquiry-status answers
+    401. The model has answered that turn with the team mailbox sentence
+    (PR #96, German "Wo steht meine Proforma?"); grounding refuses that shape
+    so the cycle falls back to `template.login_required` instead of hydrating
+    the mailbox sentence.
+    """
+    if "inquiry.login_required" not in facts.facts:
+        return []
+    from linker_genie.template import LOGIN_REQUIRED
+
+    expected = LOGIN_REQUIRED[output.language]
+    if (
+        len(output.blocks) == 1
+        and isinstance(output.blocks[0], TextBlock)
+        and output.blocks[0].text == expected
+        and not output.blocks[0].refs
+    ):
+        return []
+    return [
+        "a guest inquiry turn must be the login request and nothing else "
+        "(no team mailbox sentence, no inquiry data)"
+    ]
 
 
 def _handoff_only_when_out_of_scope(output: TurnOutput) -> list[str]:

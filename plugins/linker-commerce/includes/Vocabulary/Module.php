@@ -44,7 +44,15 @@ final class Module {
 		add_filter( 'woocommerce_checkout_must_be_logged_in_message', array( $this->labels, 'log_in_to_send' ) );
 		add_filter( 'woocommerce_get_privacy_policy_text', array( $this->labels, 'privacy_text' ), 10, 2 );
 		add_filter( 'the_title', array( $this->labels, 'page_title' ), 5, 2 );
-		add_filter( 'document_title_parts', array( $this->labels, 'document_title' ) );
+			add_filter( 'document_title_parts', array( $this->labels, 'document_title' ) );
+			// SEOPress replaces the document title from its own meta and does not
+			// read document_title_parts, so the stored "Your Cart | Linker" still
+			// reaches the tab, og:title and twitter:title. The social description
+			// is a second stored sentence (seopress_social_og_desc), same words.
+			add_filter( 'seopress_titles_title', array( $this->labels, 'seo_title' ) );
+			add_filter( 'seopress_titles_desc', array( $this->labels, 'seo_description' ) );
+			add_filter( 'seopress_social_og_desc', array( $this->labels, 'seo_description' ) );
+			add_filter( 'seopress_social_twitter_card_desc', array( $this->labels, 'seo_description' ) );
 		add_filter( 'woocommerce_get_breadcrumb', array( $this->labels, 'breadcrumb' ) );
 		add_action( 'woocommerce_before_cart', array( $this->labels, 'draft_heading' ), 0 );
 

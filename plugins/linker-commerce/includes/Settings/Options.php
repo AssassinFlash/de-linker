@@ -39,9 +39,12 @@ final class Options {
 	public const DEFAULT_TEAM_TO = 'sales@de-linker.com';
 
 	/**
-	 * Proforma numbers read PI-YYYY-NNNN (docs/specs/11-commerce.md, module Proforma).
+	 * Proforma numbers read DLK-PF-YYYY-NNNN when the settings leave the prefix
+	 * empty. Live de-linker.com prints DLK-PF-YYYY-<order id>
+	 * (tv_b2b_document_reference); this site counts within the year instead of
+	 * using the order id, and keeps the same prefix (docs/specs/11-commerce.md).
 	 */
-	public const DEFAULT_PROFORMA_PREFIX = 'PI';
+	public const DEFAULT_PROFORMA_PREFIX = 'DLK-PF';
 
 	/**
 	 * The seller named on the Proforma when the settings leave it empty

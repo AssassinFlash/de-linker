@@ -29,7 +29,7 @@ MAX_TOOL_CALLS = 4
 # introspection of an ability is permission-protected, so the shapes live here,
 # next to the only consumer. The source of truth is the `input_schema` each
 # ability class declares in plugins/linker-commerce/includes/Abilities/ (the
-# device-class enum: Catalog/SelectionFacts.php DEVICE_CLASSES; the
+# device-class enum: Products/SelectionFacts.php DEVICE_CLASSES; the
 # check-compatibility input: Abilities/CheckCompatibility.php);
 # tests/test_input_docs.py locks this table against those PHP sources.
 INPUT_DOCS: dict[str, str] = {
@@ -258,7 +258,12 @@ def _user_prompt(request: TurnRequest, retry_reason: str | None) -> str:
         "Every ID of a cards block must appear in the text block's refs. "
         "Out-of-scope turns: call handoff-team, then one handoff block "
         "summarized as {fact:handoff.sentence_en} or "
-        "{fact:handoff.sentence_de}. Ask at most one question and only "
+        "{fact:handoff.sentence_de}. A guest inquiry (inquiry-status "
+        "returned login_required, logged_in=false) is not out of scope: "
+        "do not call handoff-team; answer with exactly one text block, "
+        "'Please log in to your account to view this inquiry.' in English or "
+        "'Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.' "
+        "in German, and nothing else. Ask at most one question and only "
         f"with field in {'|'.join(ASK_FIELDS)}."
     )
     return "\n".join(lines)

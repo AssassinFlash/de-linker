@@ -80,12 +80,35 @@ final class WindPressVolume {
 				$missing[] = $rule;
 			}
 		}
-		if ( array() === $missing ) {
+		// A renamed volume file leaves its old import in main.css, and the
+		// compiler follows every import it finds. The previous names are the
+		// only ones removed: an instance compiled before the rename would
+		// otherwise ship both selector families.
+		$retired = array( './catalogue.css', './catalogue-mounts.css' );
+		$kept    = array();
+		$dropped = false;
+		$lines   = '' === $current ? array() : explode( "\n", str_replace( "\r\n", "\n", $current ) );
+		foreach ( $lines as $line ) {
+			$retires = false;
+			foreach ( $retired as $old ) {
+				if ( str_contains( $line, $old ) ) {
+					$retires = true;
+					break;
+				}
+			}
+			if ( $retires ) {
+				$dropped = true;
+				continue;
+			}
+			$kept[] = $line;
+		}
+		if ( array() === $missing && ! $dropped ) {
 			return;
 		}
 		if ( '' !== $current ) {
 			copy( $entry, $entry . '.bak' );
 		}
+		$current = implode( "\n", $kept );
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- local volume file on disk, not a remote URL.
 		file_put_contents( $entry, rtrim( $current ) . "\n" . implode( "\n", $missing ) . "\n" );
 	}

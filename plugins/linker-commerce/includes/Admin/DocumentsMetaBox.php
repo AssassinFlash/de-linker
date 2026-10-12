@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Admin;
 
-use Linker\Commerce\Catalog\EngineeringData;
+use Linker\Commerce\Products\EngineeringData;
 
 /**
  * One row per document of the product's `_linker_documents` — the list the

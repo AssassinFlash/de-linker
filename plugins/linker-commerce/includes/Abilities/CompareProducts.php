@@ -9,14 +9,14 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Catalog\Comparison;
+use Linker\Commerce\Products\Comparison;
 
 /**
  * A comparison table of two to four published products. Battery energy and
  * inverter output are different rows, never one mixed "power" row
  * (docs/specs/13-genie.md).
  *
- * The table itself is built by Catalog\Comparison, which the standalone
+ * The table itself is built by Products\Comparison, which the standalone
  * comparison page (/compare-products/) reads as well: this ability is the
  * table as Genie sees it, the page is the table as a visitor sees it, and
  * neither keeps a second derivation of it (docs/specs/19-tool-pages.md).
@@ -131,7 +131,7 @@ final class CompareProducts {
 	 */
 	public function execute( $input = array() ): array {
 		$input      = (array) $input;
-		$lang       = CatalogText::lang( $input['lang'] ?? null );
+		$lang       = ProductText::lang( $input['lang'] ?? null );
 		$ids        = array_values( array_unique( array_map( 'intval', (array) ( $input['product_ids'] ?? array() ) ) ) );
 		$comparison = $this->comparison->of( $ids, $lang );
 		$products   = array();

@@ -1837,9 +1837,23 @@ msgstr ""
 msgid "We use your personal data to manage your account and for the other purposes described in our [privacy_policy]."
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:131
-#: includes/Vocabulary/Labels.php:155
+#: includes/Vocabulary/Labels.php:96
+#: includes/Vocabulary/Labels.php:171
+#: includes/Vocabulary/Labels.php:195
+#: includes/Vocabulary/Terms.php:31
 msgid "Solution draft"
+msgstr ""
+
+#: includes/Vocabulary/Labels.php
+msgid "Review the lines in your solution draft, adjust quantities and check the totals. Approved partner accounts see net prices, tax and delivery terms before the Proforma request."
+msgstr ""
+
+#: includes/Vocabulary/Labels.php
+msgid "Review the lines in your basket, adjust quantities and check the totals. Approved partner accounts see net pricing, tax and delivery terms before checkout."
+msgstr ""
+
+#: includes/Vocabulary/Labels.php
+msgid "Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the Proforma request."
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:134
