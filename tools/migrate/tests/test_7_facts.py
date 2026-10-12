@@ -38,10 +38,17 @@ LOCAL = "http://127.0.0.1:8107"
 
 
 def site_holding(side: str, siteurl: str = LOCAL) -> dict[str, Any]:
-    """A site whose touched products hold the plan's "from" or "to" side."""
-    taxonomies = sorted({c["taxonomy"] for c in PLAN["attributes"]})
+    """A site whose touched products hold the default plan's "from" or "to" side."""
+    return site_holding_plan(PLAN, side, siteurl)
+
+
+def site_holding_plan(
+    plan: dict[str, Any], side: str, siteurl: str = LOCAL
+) -> dict[str, Any]:
+    """A site whose touched products hold one side of a facts plan."""
+    taxonomies = sorted({c["taxonomy"] for c in plan["attributes"]})
     products: dict[str, Any] = {}
-    for change in [*PLAN["attributes"], *PLAN["figures"]]:
+    for change in [*plan["attributes"], *plan["figures"]]:
         products.setdefault(
             str(change["product"]),
             {
@@ -53,16 +60,26 @@ def site_holding(side: str, siteurl: str = LOCAL) -> dict[str, Any]:
                 },
             },
         )
-    for change in PLAN["attributes"]:
+    for change in plan["attributes"]:
         terms = change[side]
         products[str(change["product"])]["attributes"][change["taxonomy"]] = {
             "terms": terms,
             "attached": terms or None,
         }
-    for change in PLAN["figures"]:
+    for change in plan["figures"]:
         product = products[str(change["product"])]
         figures = json.loads(product["figures"])
-        figures[change["key"]] = change[side]
+        side_value = change[side]
+        # A list of recorded "from" values is not one stored entry. The first
+        # is the one this helper plants; a test that needs another plants it.
+        if (
+            side == "from"
+            and isinstance(side_value, list)
+            and side_value
+            and isinstance(side_value[0], dict)
+        ):
+            side_value = side_value[0]
+        figures[change["key"]] = side_value
         # fake_wp.py stores figures the way 7-facts.php does: unescaped
         # Unicode (a value may hold "×").
         product["figures"] = json.dumps(figures, ensure_ascii=False)
@@ -205,6 +222,309 @@ def test_every_change_names_its_basis() -> None:
     for group in facts.GROUPS:
         for change in PLAN[group]:
             assert change["basis"] in PLAN["basis"], change
+
+
+def test_plan_selects_another_facts_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`--plan` is how c15-facts.json reaches a site. The default file must stay untouched."""
+    plan = {
+        "new_attribute": PLAN["new_attribute"],
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "inverter_side_rated_power_kw",
+                "from": [{"value": "60", "unit": "kW"}, {"value": "30", "unit": "kW"}],
+                "to": None,
+                "basis": "unverifiable",
+            }
+        ],
+        "basis": {"unverifiable": "p.2 does not name this column"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": json.dumps(
+                    {"inverter_side_rated_power_kw": {"value": "60", "unit": "kW"}}
+                ),
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    assert facts.main(["--plan", str(plan_path), "--wp", site.wp]) == 0
+
+    out = capsys.readouterr().out
+    assert "1 to apply, 0 done, 0 drifted." in out
+    assert site.state["writes"] == []
+
+
+def test_a_deleted_figure_also_drops_the_legacy_row(tmp_path: Path) -> None:
+    """The product page reads the legacy table. Deleting the figure and leaving the cited row is not done."""
+    plan = {
+        "new_attribute": {},
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "inverter_side_rated_power_kw",
+                "from": {"value": "30", "unit": "kW"},
+                "to": None,
+                "drop_legacy": {
+                    "titles": ["Inverter side", "Wechselrichterseite"],
+                    "labels": ["Rated power", "Nennleistung"],
+                },
+                "basis": "unverifiable",
+            }
+        ],
+        "basis": {"unverifiable": "not in the column"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    legacy = {
+        "spec_groups": [
+            {
+                "spec_group_title": "Inverter side",
+                "spec_rows": [
+                    {
+                        "spec_label": "Rated power",
+                        "spec_value": "30",
+                        "spec_note": "Printed for this Model on the datasheet.",
+                    }
+                ],
+            },
+            {
+                "spec_group_title": "Grid",
+                "spec_rows": [{"spec_label": "Rated power", "spec_value": "60"}],
+            },
+        ]
+    }
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": json.dumps(
+                    {"inverter_side_rated_power_kw": {"value": "30", "unit": "kW"}}
+                ),
+                "legacy": {"en": json.dumps(legacy), "de": "{}"},
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    assert (
+        facts.main(
+            [
+                "--plan",
+                str(plan_path),
+                "--wp",
+                site.wp,
+                "--write",
+                "--backup-dir",
+                str(tmp_path),
+            ]
+        )
+        == 0
+    )
+
+    stored = json.loads(site.state["products"]["6530"]["legacy"]["en"])
+    titles = [group["spec_group_title"] for group in stored["spec_groups"]]
+    assert "Inverter side" not in titles
+    assert "Grid" in titles
+
+
+def test_a_null_figure_is_deleted(tmp_path: Path) -> None:
+    """A cited 60 kW that the datasheet does not support has to leave the meta, not stay as null."""
+    plan = {
+        "new_attribute": {},
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "inverter_side_rated_power_kw",
+                "from": {
+                    "value": "60",
+                    "unit": "kW",
+                    "citation": {"url": "https://de-linker.com/x.pdf", "page": 2},
+                },
+                "to": None,
+                "basis": "unverifiable",
+            }
+        ],
+        "basis": {"unverifiable": "not in the column"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": json.dumps(
+                    {
+                        "rated_power_kw": {"value": "60", "unit": "kW"},
+                        "inverter_side_rated_power_kw": plan["figures"][0]["from"],
+                    }
+                ),
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    assert (
+        facts.main(
+            [
+                "--plan",
+                str(plan_path),
+                "--wp",
+                site.wp,
+                "--write",
+                "--backup-dir",
+                str(tmp_path),
+            ]
+        )
+        == 0
+    )
+
+    stored = json.loads(site.state["products"]["6530"]["figures"])
+    assert "inverter_side_rated_power_kw" not in stored
+    assert stored["rated_power_kw"]["value"] == "60"
+
+
+def test_the_uncited_30_kw_is_apply_not_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Production still holds the uncited 30 kW. Cutover must delete it, not stop on drift."""
+    plan = {
+        "new_attribute": {},
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "inverter_side_rated_power_kw",
+                "from": [
+                    {
+                        "value": "60",
+                        "unit": "kW",
+                        "citation": {"url": "https://de-linker.com/x.pdf", "page": 2},
+                    },
+                    {"value": "30", "unit": "kW"},
+                ],
+                "to": None,
+                "basis": "unverifiable",
+            }
+        ],
+        "basis": {"unverifiable": "not in the column"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": json.dumps(
+                    {"inverter_side_rated_power_kw": {"value": "30", "unit": "kW"}}
+                ),
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    assert facts.main(["--plan", str(plan_path), "--wp", site.wp]) == 0
+
+    line = next(
+        row
+        for row in capsys.readouterr().out.splitlines()
+        if "inverter_side_rated_power_kw" in row
+    )
+    assert line.startswith("apply")
+
+
+def test_a_gone_figure_with_the_legacy_row_still_applies(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """t110 already lost the 60 kW key. The cited legacy row is still apply, not drift."""
+    plan = {
+        "new_attribute": {},
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "inverter_side_rated_power_kw",
+                "from": [{"value": "60"}, {"value": "30"}],
+                "to": None,
+                "drop_legacy": {
+                    "titles": ["Inverter side"],
+                    "labels": ["Rated power"],
+                },
+                "basis": "unverifiable",
+            }
+        ],
+        "basis": {"unverifiable": "not in the column"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": "{}",
+                "legacy": {
+                    "en": json.dumps(
+                        {
+                            "spec_groups": [
+                                {
+                                    "spec_group_title": "Inverter side",
+                                    "spec_rows": [
+                                        {
+                                            "spec_label": "Rated power",
+                                            "spec_value": "30",
+                                        }
+                                    ],
+                                }
+                            ]
+                        }
+                    )
+                },
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    assert facts.main(["--plan", str(plan_path), "--wp", site.wp]) == 0
+
+    assert "1 to apply, 0 done, 0 drifted." in capsys.readouterr().out
+
+
+def test_the_c15_plan_drops_the_inverter_side_key() -> None:
+    """The plan the cutover runs must not write 60 kW for a column the page does not print."""
+    plan = json.loads((HERE.parent / "c15-facts.json").read_text())
+    change = next(
+        item
+        for item in plan["figures"]
+        if item["product"] == 6530 and item["key"] == "inverter_side_rated_power_kw"
+    )
+    assert change["to"] is None
+    assert change["basis"] in plan["basis"]
+    assert {item["value"] for item in change["from"]} == {"60", "30"}
 
 
 def test_a_failed_write_stops_before_the_read_back(

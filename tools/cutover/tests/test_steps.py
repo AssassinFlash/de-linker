@@ -468,8 +468,14 @@ def test_each_migration_gets_its_options_where_argparse_expects_them(
     facts = seen[0]
     assert facts[1].endswith("7-facts.py")
     assert "--backup-dir" in facts
+    assert "--plan" not in facts
     assert facts[-1] == "--write"
-    german = seen[2]
+    phase = seen[1]
+    assert phase[1].endswith("7-facts.py")
+    assert phase[phase.index("--plan") + 1].endswith("tools/migrate/c15-facts.json")
+    assert Path(phase[phase.index("--plan") + 1]).is_absolute()
+    assert phase[-1] == "--write"
+    german = seen[3]
     assert german[1].endswith("9-i18n.py")
     assert german.index("--user") < german.index("apply")
     assert german[german.index("--user") + 1] == "admin"

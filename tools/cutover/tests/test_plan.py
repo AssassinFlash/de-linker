@@ -96,15 +96,18 @@ def test_the_migrations_are_the_ones_spec_17_names_and_in_order() -> None:
     """A missing or reordered migration is the failure; the order is the requirement."""
     assert [migration.script for migration in plan.MIGRATIONS] == [
         "7-facts.py",
+        "7-facts.py",
         "8-engineering.py",
         "9-i18n.py",
     ]
     assert plan.MIGRATIONS[0].needs_backup_dir is True
     assert plan.MIGRATIONS[1].needs_backup_dir is True
-    assert plan.MIGRATIONS[2].subcommand == ("apply",)
+    assert plan.MIGRATIONS[1].options == ("--plan", "tools/migrate/c15-facts.json")
+    assert plan.MIGRATIONS[2].needs_backup_dir is True
+    assert plan.MIGRATIONS[3].subcommand == ("apply",)
     # argparse: an option after a subcommand belongs to the subcommand, so the
     # login has to precede `apply` and `--write` has to follow it.
-    assert plan.MIGRATIONS[2].options == ()
+    assert plan.MIGRATIONS[3].options == ()
 
 
 def test_the_verify_subset_is_absolute_paths_in_both_languages() -> None:

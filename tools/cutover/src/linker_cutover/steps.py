@@ -359,7 +359,13 @@ def migrations(
             command += ["--user", administrator]
         if migration.needs_backup_dir:
             command += ["--backup-dir", str(Path(backup) / "migrate")]
-        command += list(migration.options)
+        # A plan path in the options is repository-relative. The cutover is not
+        # run from the repository root, so the writer must get an absolute path.
+        options = list(migration.options)
+        if "--plan" in options:
+            index = options.index("--plan") + 1
+            options[index] = str((Path(repository) / options[index]).resolve())
+        command += options
         command += list(migration.subcommand)
         if writes:
             command.append("--write")

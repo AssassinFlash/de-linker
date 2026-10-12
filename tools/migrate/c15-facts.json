@@ -1,5 +1,5 @@
 {
-	"description": "C15 phase and power corrections for products 1178, 2409, 6482, 6529 and 6530. Same apply/done/drift contract as 7-facts.json. The Woo write is tools/migrate/7-facts.py pointed at this file is not how it is applied: 7-facts.py reads 7-facts.json only. Apply with the same PHP writer by substituting this plan, or re-run the C15 writer against a site that still holds \"from\". Read docs/debt/C15-phase-power-2026-10-13.md.",
+	"description": "C15 phase and power corrections for products 1178, 2409, 6482, 6529 and 6530. Same apply/done/drift contract as 7-facts.json. Applied by tools/migrate/7-facts.py --plan tools/migrate/c15-facts.json, which the cutover data step runs after 7-facts.json. A figure whose \"to\" is null is deleted. Read docs/debt/C15-phase-power-2026-10-13.md.",
 	"new_attribute": {
 		"_source": "As on the EcoFlow OCEAN 2 inverters already on the site (3555–3580, 2026-10-09): pa_phase at position 0, visible; pa_application at position 3, hidden.",
 		"pa_phase": {
@@ -148,27 +148,40 @@
 			"product": 6530,
 			"name": "GoodWe GW60K-STS-G10",
 			"key": "inverter_side_rated_power_kw",
-			"from": {
-				"value": "30",
-				"unit": "kW",
-				"evidence_refs": [
-					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
-				]
-			},
-			"to": {
-				"value": "60",
-				"unit": "kW",
-				"value_de": "60",
-				"note": "The Inverter side block on p.2 prints one column (30 kW / 63 A). That column sits under GW30K-STS-G10; GW60K-STS-G10 is 60 kW on Grid, Back-up and Smart Port.",
-				"evidence_refs": [
-					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
-				],
-				"citation": {
-					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
-					"page": 2
+			"from": [
+				{
+					"value": "60",
+					"unit": "kW",
+					"value_de": "60",
+					"note": "The Inverter side block on p.2 prints one column (30 kW / 63 A). That column sits under GW30K-STS-G10; GW60K-STS-G10 is 60 kW on Grid, Back-up and Smart Port.",
+					"evidence_refs": [
+						"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+					],
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+						"page": 2
+					}
+				},
+				{
+					"value": "30",
+					"unit": "kW",
+					"evidence_refs": [
+						"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+					]
 				}
-			},
-			"basis": "goodwe-sts-p2"
+			],
+			"to": null,
+			"basis": "unverifiable-inverter-side",
+			"drop_legacy": {
+				"titles": [
+					"Inverter side",
+					"Wechselrichterseite"
+				],
+				"labels": [
+					"Rated power",
+					"Nennleistung"
+				]
+			}
 		},
 		{
 			"product": 6482,
@@ -327,7 +340,7 @@
 			{
 				"document": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
 				"page": 2,
-				"states": "GW30K rated current 43.5 A at 400 V, max 63 A, rated power 30 kW. GW60K rated current 87.0 A at 400 V, max 100 A, rated power 60 kW. Inverter side prints one column (30 kW) under GW30K."
+				"states": "GW30K rated current 43.5 A at 400 V, max 63 A, rated power 30 kW. GW60K rated current 87.0 A at 400 V, max 100 A, rated power 60 kW. Those values sit in the GW30K and GW60K columns. The Inverter side block is not one of them."
 			}
 		],
 		"ecoflow-p3-15k-phase": [
@@ -335,6 +348,13 @@
 				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
 				"page": 2,
 				"states": "Column EF HD-P3-15K-G2F: Nominale Ausgangsleistung 15000 W; Nennspannung 3L+N+PE."
+			}
+		],
+		"unverifiable-inverter-side": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+				"page": 2,
+				"states": "Inverter side Rated Power (kW) prints one value, 30, centered across the table (word center x=396.9; GW30K column center x=318.9, GW60K column center x=474.8). The page does not put 60 kW, or 30 kW, in the GW60K column. The key is deleted; the value is unverifiable."
 			}
 		]
 	}
