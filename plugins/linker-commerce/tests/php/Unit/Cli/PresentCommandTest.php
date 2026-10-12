@@ -720,8 +720,12 @@ final class PresentCommandTest extends TestCase {
 		$this->assertSame( 0, substr_count( $this->output(), 'wp-cli success:' ) );
 		$backup = $this->options[ self::BACKUP ] ?? null;
 		$this->assertIsArray( $backup );
+		// Six Woo templates plus the six page templates (compare, FAQ and
+		// Genie, each in English and German). The two Genie ids joined when
+		// PR #123 added linker-advisor / linker-advisor-de to Templates::PAGES;
+		// this assertion was written on PR #119, whose catalog stopped at FAQ.
 		$this->assertSame(
-			array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510 ),
+			array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512 ),
 			$backup['created_templates'],
 			'templates inserted before the header refusal are registered for rollback'
 		);
