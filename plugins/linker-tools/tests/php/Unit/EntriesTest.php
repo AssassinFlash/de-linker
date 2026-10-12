@@ -105,9 +105,11 @@ final class EntriesTest extends TestCase {
 		$payload = json_decode( (string) ( $inline['data-linker-genie-boot-payload'] ?? '' ), true );
 		$this->assertTrue( $payload['open'] );
 		$script = (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' );
-		$this->assertStringContainsString( 'if (!panel)', $script );
-		$this->assertStringContainsString( 'shell(!!payload.open)', $script );
-		$this->assertStringNotContainsString( 'shell(false)', $script );
+			$this->assertStringContainsString( 'if (!panel)', $script );
+			$this->assertStringContainsString( 'shell(!!payload.open)', $script );
+			$this->assertStringNotContainsString( 'shell(false)', $script );
+			$this->assertStringContainsString( 'if (payload.open)', $script );
+			$this->assertMatchesRegularExpression( '/if \(payload\.open\) \{\s*pendingOpen = true;\s*boot\(\);/', $script );
 		$this->assertConditionsMet();
 	}
 

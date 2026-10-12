@@ -204,12 +204,13 @@ class Entries {
 		echo '</div>';
 	}
 
-		/**
-		 * The one boot loader. `$open` is the workspace: it has no bubble, so
-		 * the loader opens the mount once the app reports ready.
-		 *
-		 * @param bool $open Whether to open as soon as the app is ready.
-		 */
+			/**
+			 * The one boot loader. `$open` is the workspace: it has no bubble, so
+			 * the loader boots before the script is inserted and opens the mount
+			 * once the app reports ready. A click or ask is what boots a helper.
+			 *
+			 * @param bool $open Whether to boot now and open as soon as the app is ready.
+			 */
 	private function print_loader( bool $open ): void {
 		$payload = array(
 			'src'          => $this->script_src(),
@@ -222,9 +223,10 @@ class Entries {
 		if ( '' === $payload['src'] ) {
 			return;
 		}
-			// The loader owns entry delivery: an open click or ask boots once,
-		// waits for the App's ready event, then opens it with the first ask.
-		// The App reports Hide/Open back so the shell and mobile card agree.
+				// The loader owns entry delivery: an open click, an ask, or a
+			// workspace page (payload.open) boots once, waits for the App's
+			// ready event, then opens it with the first ask. The App reports
+			// Hide/Open back so the shell and mobile card agree.
 		// The payload rides in a data
 		// attribute: attribute values are entity-decoded by the HTML
 		// parser, so getAttribute() yields the clean JSON (script text
@@ -305,15 +307,15 @@ class Entries {
 		boot();
 		deliver();
 	}
-		window.addEventListener('linker-genie-ready', function () {
-			ready = true;
-			clearFailure();
-			if (payload.open) {
-				pendingOpen = true;
-			}
-			deliver();
-		});
-	window.addEventListener('linker-genie-state', function (event) {
+				window.addEventListener('linker-genie-ready', function () {
+					ready = true;
+					clearFailure();
+					if (payload.open) {
+						pendingOpen = true;
+					}
+					deliver();
+				});
+		window.addEventListener('linker-genie-state', function (event) {
 		shell(event.detail.open);
 	});
 	window.addEventListener('linker-genie-ask', function (event) {
@@ -381,10 +383,17 @@ class Entries {
 					finish();
 				}
 			});
-			append(dep);
-		});
-	}
-	document.addEventListener(
+				append(dep);
+			});
+		}
+		// A workspace page has no bubble. Setting pendingOpen and waiting
+		// for a click leaves the mount empty: nothing ever calls boot().
+		// Boot before any script is inserted; ready then delivers open.
+		if (payload.open) {
+			pendingOpen = true;
+			boot();
+		}
+		document.addEventListener(
 		'click',
 		function (event) {
 			var trigger = event.target.closest(

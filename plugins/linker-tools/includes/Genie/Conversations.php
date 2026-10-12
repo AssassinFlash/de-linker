@@ -336,12 +336,19 @@ class Conversations {
 	/**
 	 * Sets the guest cookie.
 	 *
+	 * The header is what the next request reads. PHP does not copy a
+	 * Set-Cookie back into `$_COOKIE`, so a select or open in this request
+	 * would still see the previous conversation (`existing_id()`,
+	 * `current_id()`, `list_for_visitor()`). The same key is written here
+	 * so those reads agree with the header for the rest of this request.
+	 *
 	 * @param int $id Conversation post ID.
 	 */
 	private function set_cookie( int $id ): void {
 		if ( $id < 1 ) {
 			return;
 		}
+		$_COOKIE[ self::COOKIE ] = (string) $id;
 		/**
 		 * Fires the guest-cookie write; the listener sends the header.
 		 *

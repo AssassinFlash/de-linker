@@ -440,9 +440,69 @@ final class ConversationsTest extends TestCase {
 			false
 		);
 
+			$conversations = $this->conversations();
+			$this->assertTrue( $conversations->activate( 51 ) );
+			$this->assertFalse( $conversations->activate( 99 ) );
+			$this->assertSame( 51, $conversations->existing_id() );
+			$this->assertConditionsMet();
+	}
+
+			/**
+			 * Selecting another owned conversation is visible in this request.
+			 * The header alone would leave existing_id() and the list on the
+			 * previous cookie until the browser came back.
+			 */
+	public function test_activate_is_visible_to_the_same_request(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+		$_COOKIE = array( 'linker_conversation' => '51' );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => static fn( int $id ): string => in_array( $id, array( 51, 52 ), true ) ? 'linker_conversation' : 'post',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'return' => static fn( string $field, int $id ): string => in_array( $id, array( 51, 52 ), true ) ? '7' : '0',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => array( 51 ),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static fn( int $id ): \WP_Post => self::post( $id, 'Conversation ' . $id ),
+			)
+		);
+		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction(
+			'linker_tools_set_conversation_cookie',
+			'52',
+			1000000,
+			'/',
+			'',
+			false
+		);
+
 		$conversations = $this->conversations();
-		$this->assertTrue( $conversations->activate( 51 ) );
-		$this->assertFalse( $conversations->activate( 99 ) );
+		$this->assertSame( 51, $conversations->existing_id() );
+		$this->assertTrue( $conversations->activate( 52 ) );
+		$this->assertSame( 52, $conversations->existing_id() );
+		$this->assertSame( 52, $conversations->current_id() );
+		$this->assertContains( 52, array_column( $conversations->list_for_visitor(), 'id' ) );
 		$this->assertConditionsMet();
 	}
 

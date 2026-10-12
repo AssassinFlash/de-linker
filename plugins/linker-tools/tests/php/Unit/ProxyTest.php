@@ -521,4 +521,87 @@ final class ProxyTest extends TestCase {
 		$this->assertSame( 52, $data['conversation_id'] );
 		$this->assertConditionsMet();
 	}
+
+			/**
+			 * After select, this request's thread read is the new conversation.
+			 * The cookie header alone would still name the previous one.
+			 */
+	public function test_select_is_the_conversation_the_same_request_reads(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction(
+			'is_wp_error',
+			array(
+				'return' => static fn( $thing ): bool => $thing instanceof \WP_Error,
+			)
+		);
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+		$_COOKIE = array( 'linker_conversation' => '51' );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => static fn( int $id ): string => in_array( $id, array( 51, 52 ), true ) ? 'linker_conversation' : 'post',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'return' => static fn( string $field, int $id ): string => in_array( $id, array( 51, 52 ), true ) ? '7' : '8',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => array( 51 ),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static fn( int $id ): \WP_Post => new \WP_Post(
+					(object) array(
+						'ID'                => $id,
+						'post_title'        => 'Conversation ' . $id,
+						'post_modified_gmt' => '2026-10-12 08:00:00',
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction(
+			'linker_tools_set_conversation_cookie',
+			'52',
+			1000000,
+			'/',
+			'',
+			false
+		);
+
+		$conversations = new class() extends Conversations {
+			/**
+			 * The fixed expiry second.
+			 */
+			protected function cookie_expire(): int {
+				return 1000000;
+			}
+		};
+			$proxy     = new Proxy( $conversations, null, new RecordingThread() );
+			$request   = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
+			$request->set_param( 'id', 52 );
+
+			$selected = $proxy->select_conversation( $request );
+
+			$this->assertInstanceOf( WP_REST_Response::class, $selected );
+			$this->assertSame( 52, $selected->get_data()['conversation_id'] );
+			$this->assertContains( 52, array_column( $selected->get_data()['conversations'], 'id' ) );
+			$this->assertSame( 52, $conversations->existing_id() );
+			$this->assertSame( 52, $proxy->conversation()->get_data()['conversation_id'] );
+			$this->assertConditionsMet();
+	}
 }
