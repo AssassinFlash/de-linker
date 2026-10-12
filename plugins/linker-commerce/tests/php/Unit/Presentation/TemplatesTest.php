@@ -465,6 +465,81 @@ final class TemplatesTest extends TestCase {
 	}
 
 	/**
+	 * A missing or empty header export stops sync() before any write: the
+	 * Woo templates and the header partials keep what they had.
+	 */
+	public function test_sync_refuses_a_missing_header_before_writing_templates(): void {
+		$dir     = sys_get_temp_dir() . '/linker-commerce-missing-header-' . getmypid();
+		$partial = $dir . '/partials';
+		mkdir( $partial . '/de', 0777, true );
+		$english = $partial . '/header.html';
+		$german  = $partial . '/de/header.html';
+		file_put_contents( $english, '<header>english</header>' );
+		file_put_contents( $german, '<header>deutsch</header>' );
+
+		$templates_written = 0;
+		$partials_written  = 0;
+		WP_Mock::userFunction(
+			'wp_insert_post',
+			array(
+				'return' => static function () use ( &$templates_written ): int {
+					++$templates_written;
+					return 1;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'return' => static function ( array $data ) use ( &$templates_written, &$partials_written ): int {
+					if ( isset( $data['post_title'] ) ) {
+						++$templates_written;
+					} else {
+						++$partials_written;
+					}
+					return (int) $data['ID'];
+				},
+			)
+		);
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
+
+		$templates = new Templates();
+		try {
+			try {
+				$templates->sync( array( $english, $dir . '/partials/missing-header.html' ) );
+				$this->fail( 'A missing header source should stop sync() before any write' );
+			} catch ( \RuntimeException $e ) {
+				$this->assertStringContainsString( 'missing or empty', $e->getMessage() );
+				$this->assertStringContainsString( 'missing-header.html', $e->getMessage() );
+			}
+			$this->assertSame( 0, $templates_written, 'templates must not be written when a header source is missing' );
+			$this->assertSame( 0, $partials_written, 'partials must not be written when a header source is missing' );
+
+			$templates_written = 0;
+			file_put_contents( $german, "   \n" );
+			try {
+				$templates->sync( array( $english, $german ) );
+				$this->fail( 'An empty header source should stop sync() before any write' );
+			} catch ( \RuntimeException $e ) {
+				$this->assertStringContainsString( 'missing or empty', $e->getMessage() );
+				$this->assertStringContainsString( 'de/header.html', $e->getMessage() );
+			}
+			$this->assertSame( 0, $templates_written );
+			$this->assertSame( 0, $partials_written );
+		} finally {
+			foreach ( array( $english, $german ) as $path ) {
+				if ( file_exists( $path ) ) {
+					unlink( $path );
+				}
+			}
+			rmdir( $partial . '/de' );
+			rmdir( $partial );
+			rmdir( $dir );
+		}
+	}
+
+	/**
 	 * The installed header and its German twin are written from the two
 	 * exports. The German export is already localized, so a repeat present
 	 * keeps the German addresses.

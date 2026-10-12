@@ -80,6 +80,10 @@ final class PresentCommand {
 			WP_CLI::error( 'Run as an administrator: wp linker-commerce present --user=<admin>.' );
 		}
 		$this->require_sources();
+		// The header partials are already in sources(). Re-check them here,
+		// on the write path's own gate, so a run cannot pass require_sources()
+		// and then reach backup/sync with a header that has since gone.
+		( new Templates() )->require_header_partials();
 
 		$this->backup( true );
 

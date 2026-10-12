@@ -1,0 +1,17 @@
+PAGE	STATUS	EN	DE
+http://127.0.0.1:8975/my-account/inquiries/?cbq=pr119fix	200	http://127.0.0.1:8975/my-account/inquiries/	http://127.0.0.1:8975/de/mein-konto/inquiries/
+http://127.0.0.1:8975/de/mein-konto/inquiries/?cbq=pr119fix	200	http://127.0.0.1:8975/my-account/inquiries/	http://127.0.0.1:8975/de/mein-konto/inquiries/
+http://127.0.0.1:8975/product-category/inverters/?cbq=pr119fix	200	http://127.0.0.1:8975/product-category/inverters/	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/
+http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?cbq=pr119fix	200	http://127.0.0.1:8975/product-category/inverters/	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/
+http://127.0.0.1:8975/linker-planner/?step=roof&cbq=pr119fix	200	http://127.0.0.1:8975/linker-planner/?step=roof	http://127.0.0.1:8975/de/linker-planer/?step=roof
+http://127.0.0.1:8975/de/linker-planer/?step=roof&cbq=pr119fix	200	http://127.0.0.1:8975/linker-planner/?step=roof	http://127.0.0.1:8975/de/linker-planer/?step=roof
+http://127.0.0.1:8975/my-account/inquiries/?step=roof&cbq=pr119fix	200	http://127.0.0.1:8975/my-account/inquiries/?step=roof	http://127.0.0.1:8975/de/mein-konto/inquiries/?step=roof
+FOLLOW
+200	http://127.0.0.1:8975/my-account/inquiries/?cbq=follow
+200	http://127.0.0.1:8975/de/mein-konto/inquiries/?cbq=follow
+200	http://127.0.0.1:8975/product-category/inverters/?cbq=follow
+200	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?cbq=follow
+200	http://127.0.0.1:8975/linker-planner/?step=roof&cbq=follow
+200	http://127.0.0.1:8975/de/linker-planer/?step=roof&cbq=follow
+200	http://127.0.0.1:8975/my-account/inquiries/?step=roof&cbq=follow
+200	http://127.0.0.1:8975/de/mein-konto/inquiries/?step=roof&cbq=follow

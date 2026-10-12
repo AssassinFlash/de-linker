@@ -1725,21 +1725,23 @@ final class CatalogShortcodes {
 	 * Polylang's switcher translates the page and the language segment
 	 * (`pll_translation_url`, which linker-i18n's UrlSegments filters) and
 	 * stops there: a page permalink has no WooCommerce endpoint and no query,
-	 * so `/my-account/inquiries/` and `?step=roof` would be lost. Both are part
-	 * of the request, not a second translation, so they are carried across on
-	 * the switcher's own URL.
+	 * so `/my-account/inquiries/` and `?step=roof` would be lost. The query is
+	 * part of the request, not a second translation, so it is carried across
+	 * on the switcher's own URL. An account endpoint is different: rewriting
+	 * the raw request only swaps the language segment and keeps the current
+	 * page slug (`/de/my-account/inquiries/`, `/mein-konto/inquiries/`), which
+	 * is not that language's account page. The endpoint is appended to the
+	 * translated account permalink instead.
 	 *
 	 * @param string $url  The switcher's URL.
 	 * @param string $lang Language code.
 	 */
 	private function with_request_context( string $url, string $lang ): string {
-		if ( '' !== $this->account_endpoint() && \function_exists( 'PLL' ) && isset( PLL()->links_model, PLL()->links ) ) {
-			$language = PLL()->model->get_language( $lang );
-			if ( \is_object( $language ) && \is_object( PLL()->links->curlang ) && PLL()->links->curlang->slug !== $language->slug ) {
-				// The request's own address, not the endpoint rebuilt in the current
-				// language: rebuilding and then switching the language segment
-				// doubles the segment (/de/de/...) or keeps the current one.
-				$url = PLL()->links_model->switch_language_in_link( $this->requested_url(), $language );
+		$endpoint = $this->account_endpoint_segment();
+		if ( '' !== $endpoint ) {
+			$account = $this->account_permalink( $lang );
+			if ( '' !== $account ) {
+				$url = $this->append_path_segment( $account, $endpoint );
 			}
 		}
 		// The request's own query, not the query vars WordPress rewrites:
@@ -1769,21 +1771,90 @@ final class CatalogShortcodes {
 	}
 
 	/**
-	 * The account endpoint of the request, '' when the request is not one.
+	 * The account endpoint segment of the request, '' when the request is not one.
 	 *
-	 * Read from the path, not from is_account_page(): that answers for the
-	 * account page of the current language only, so a German account page
+	 * The segment is the one in the address (`inquiries`), not the query var
+	 * it maps to (`orders`): WooOptions maps inquiries onto orders, and the
+	 * other language's account URL has to keep the segment the visitor asked
+	 * for. Read from the path, not from is_account_page(): that answers for
+	 * the account page of the current language only, so a German account page
 	 * would lose its endpoint on the way to English.
 	 */
-	private function account_endpoint(): string {
+	private function account_endpoint_segment(): string {
 		$path     = trim( (string) wp_parse_url( (string) wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ), '/' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a path, compared against known slugs only.
 		$segments = '' === $path ? array() : explode( '/', $path );
-		foreach ( WC()->query->get_query_vars() as $key => $slug ) {
+		foreach ( WC()->query->get_query_vars() as $slug ) {
 			if ( \is_string( $slug ) && '' !== $slug && \in_array( $slug, $segments, true ) ) {
-				return (string) $key;
+				return $slug;
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * The account page permalink in `$lang`, via the same Polylang post
+	 * translation the other page links use (`pll_get_post` + `get_permalink`).
+	 * '' when the page or its translation cannot be resolved — the caller
+	 * then keeps the switcher's URL rather than inventing a second one.
+	 *
+	 * @param string $lang Language code.
+	 */
+	private function account_permalink( string $lang ): string {
+		if ( ! \function_exists( 'wc_get_page_id' ) || ! \function_exists( 'pll_get_post' ) ) {
+			return '';
+		}
+		$page_id = (int) wc_get_page_id( 'myaccount' );
+		if ( $page_id <= 0 ) {
+			return '';
+		}
+		$translated = (int) pll_get_post( $page_id, $lang );
+		if ( $translated <= 0 ) {
+			return '';
+		}
+		$link = get_permalink( $translated );
+		return \is_string( $link ) ? $link : '';
+	}
+
+	/**
+	 * Appends one path segment to a permalink, keeping that permalink's own
+	 * query. The segment is the request's endpoint, already known to be a
+	 * WooCommerce query-var slug.
+	 *
+	 * @param string $permalink Account page permalink.
+	 * @param string $segment   Endpoint segment from the request path.
+	 */
+	private function append_path_segment( string $permalink, string $segment ): string {
+		$parts = wp_parse_url( $permalink );
+		if ( ! \is_array( $parts ) ) {
+			return user_trailingslashit( untrailingslashit( $permalink ) . '/' . $segment );
+		}
+		$path = untrailingslashit( (string) ( $parts['path'] ?? '' ) ) . '/' . $segment;
+		$path = user_trailingslashit( $path );
+		$url  = '';
+		if ( isset( $parts['scheme'] ) ) {
+			$url .= $parts['scheme'] . '://';
+		}
+		if ( isset( $parts['user'] ) ) {
+			$url .= $parts['user'];
+			if ( isset( $parts['pass'] ) ) {
+				$url .= ':' . $parts['pass'];
+			}
+			$url .= '@';
+		}
+		if ( isset( $parts['host'] ) ) {
+			$url .= $parts['host'];
+		}
+		if ( isset( $parts['port'] ) ) {
+			$url .= ':' . $parts['port'];
+		}
+		$url .= $path;
+		if ( isset( $parts['query'] ) && '' !== $parts['query'] ) {
+			$url .= '?' . $parts['query'];
+		}
+		if ( isset( $parts['fragment'] ) && '' !== $parts['fragment'] ) {
+			$url .= '#' . $parts['fragment'];
+		}
+		return $url;
 	}
 
 	/**

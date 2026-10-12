@@ -100,12 +100,21 @@ final class Templates {
 	/**
 	 * Creates or updates each template so the instance matches the files.
 	 *
+	 * @param list<string>|null $header_partials Header exports to install, the two
+	 *                                           files from header_partials() when null.
+	 *                                           Proved non-empty before any write.
 	 * @return array{created: int, updated: int, unchanged: int, created_ids: list<int>}
 	 *         The ids of the posts this sync created (a rollback deletes them;
 	 *         the ones it only updated keep their pre-run content in the backup).
-	 * @throws \RuntimeException When WordPress refuses a template insert.
+	 * @throws \RuntimeException When a header source is missing or empty, or WordPress refuses a template insert.
 	 */
-	public function sync(): array {
+	public function sync( ?array $header_partials = null ): array {
+		// Header sources are checked before any template write. present()
+		// also refuses them in require_sources(); this is the same gate on
+		// the write path, so a direct sync() cannot land templates and then
+		// discover a missing header with nothing to roll back. A test passes
+		// the missing export in; production passes nothing and reads the exports.
+		$this->require_header_partials( $header_partials );
 		$created     = 0;
 		$updated     = 0;
 		$unchanged   = 0;
@@ -157,7 +166,7 @@ final class Templates {
 			$created_ids = array_merge( $created_ids, $report['created_ids'] );
 		}
 		$this->assign_pages();
-		$updated += $this->sync_header_partials();
+		$updated += $this->sync_header_partials( $header_partials );
 
 		return array(
 			'created'     => $created,
@@ -168,23 +177,44 @@ final class Templates {
 	}
 
 	/**
-	 * Syncs the existing header and its Polylang twin from the LC exports.
-	 * Does not create substitute partials or change the theme's assignments.
+	 * Both header exports, after proving each is readable and non-empty.
 	 *
-	 * A missing or empty export is a refusal, not a write: writing '' would
-	 * blank the live header. The German export is already localized (its
-	 * links are German addresses), so the write is the file itself.
+	 * Called from present() before backup and from sync() before any
+	 * template write. A missing or empty export is a refusal, not a write:
+	 * writing '' would blank the live header, and discovering it after the
+	 * templates are written leaves nothing to roll back.
 	 *
-	 * @throws \RuntimeException When a source is missing or empty, or WordPress refuses the update.
+	 * @param list<string>|null $files Paths to prove, the two exports when null.
+	 *                                 A test passes a missing or empty export here
+	 *                                 and then calls sync(); sync() reads the same list.
+	 * @return list<string> Absolute paths, English then German.
+	 * @throws \RuntimeException When a source is missing or empty.
 	 */
-	private function sync_header_partials(): int {
-		$files = self::header_partials();
+	public function require_header_partials( ?array $files = null ): array {
+		$files = $files ?? self::header_partials();
 		foreach ( $files as $file ) {
 			if ( '' === trim( Tokens::read( $file ) ) ) {
 				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- an exception message for the operator log, not page output.
 				throw new \RuntimeException( sprintf( 'Header partial source is missing or empty: %s', $file ) );
 			}
 		}
+		return $files;
+	}
+
+	/**
+	 * Syncs the existing header and its Polylang twin from the LC exports.
+	 * Does not create substitute partials or change the theme's assignments.
+	 *
+	 * The sources are refused again here: sync() already refused them, and
+	 * a write that reached this point with a missing export must still stop
+	 * rather than blank the live header. The German export is already
+	 * localized (its links are German addresses), so the write is the file itself.
+	 *
+	 * @param list<string>|null $files Paths already proved by sync(), the exports when null.
+	 * @throws \RuntimeException When a source is missing or empty, or WordPress refuses the update.
+	 */
+	private function sync_header_partials( ?array $files = null ): int {
+		$files = $this->require_header_partials( $files );
 		$posts = get_posts(
 			array(
 				'post_type'      => 'lc_partial',
