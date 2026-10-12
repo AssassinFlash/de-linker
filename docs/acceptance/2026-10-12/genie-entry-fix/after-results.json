@@ -391,5 +391,6 @@
       "posts": [],
       "errors": []
     }
-  ]
+  ],
+  "historicalNote": "Initial DE objects absent; returned 404. Superseded by de-final-results.json after narrow local Twins import. EN rows remain implementation-head acceptance evidence."
 }

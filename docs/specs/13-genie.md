@@ -39,10 +39,12 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
   #16 集成）。不带 JS 时它一直隐藏，搜索框就是原生表单。
 - **JS**：`plugins/linker-tools/assets/search-ask.js`（纯 asset，无构建）。绑定 `#search-box`
   （线上锚点）与芯片；问句判定=含 `?` 或问句/请求开头词（EN+DE 双方言，≥8 字符，型号与品号
-  不命中）；命中时显示芯片。芯片点击=把文本交给 Genie：写在 app 挂载点
-  `[data-linker-app="genie"]` 的 `data-pending-ask` 上（app 首挂读取即清），同时广播
-  `linker-genie-ask` 事件（已挂载的 app 走事件），并点击 dock 的开钮（装载器引导 app）。
-  app 侧：`src/genie/config.ts` 的 `pendingAsk` + `App.tsx` 的两个 effect。
+  不命中）；命中时显示芯片。芯片点击只广播一次 `linker-genie-ask`，携带原问句；
+  与 PDP Ask 共用 `Entries.php` 的单一 dock loader。loader 保留待交付问句、只 boot 一次，
+  等 `App.tsx` 安装监听器并报告 `linker-genie-ready` 后，清空待交付状态并发出一次
+  `linker-genie-open`（含问句）。圆钮/商城开钮走同一 loader 的无问句打开，不主动发送消息。
+  App 先恢复已有对话，再将首问追加一次；Hide/open 通过 `linker-genie-state` 回传壳层，
+  同步 mount 的 hidden 与入口 aria-expanded。不再写 pending 属性或另点一次圆钮。
   提交路径：问句→与芯片同路（preventDefault）；其余查询→`linker/v1/catalog-search?q=&limit=2&lang=`
   恰好一个命中则直达产品页，否则原生 GET 交回 archive（`q` 过滤，CatalogFilters）。
   端点超时/失败一律回落到原生提交。

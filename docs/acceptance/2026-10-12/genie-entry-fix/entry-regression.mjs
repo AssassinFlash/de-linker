@@ -13,13 +13,14 @@ const base = process.env.GENIE_ENTRY_BASE || 'http://127.0.0.1:8984';
 assert.match(base, /^http:\/\/127\.0\.0\.1:\d+$/);
 const phase = process.argv[2] || 'after';
 const smoke = process.argv.includes('--smoke');
+const locales = process.env.GENIE_ENTRY_LOCALE ? [process.env.GENIE_ENTRY_LOCALE] : ['en', 'de'];
 const browser = await chromium.launch({channel: 'chromium'});
 const results = [];
 await mkdir(out, {recursive: true});
 
 const scenarios = smoke
   ? [{locale: 'en', width: 1440, entry: 'bubble'}, {locale: 'en', width: 1440, entry: 'pdp'}, {locale: 'en', width: 390, entry: 'shop'}]
-  : ['en', 'de'].flatMap(locale => [1440, 390].flatMap(width =>
+  : locales.flatMap(locale => [1440, 390].flatMap(width =>
       ['pdp', 'shop', 'search', ...(width === 1440 ? ['bubble'] : [])].map(entry => ({locale, width, entry}))));
 
 for (const scenario of scenarios) {
@@ -61,7 +62,9 @@ for (const scenario of scenarios) {
   try {
     const product = entry === 'pdp' || entry === 'bubble';
     const path = product ? `/${locale === 'de' ? 'produkt' : 'product'}/goodwe-gw60k-sts-g10/` : `/${locale === 'de' ? 'produkte' : 'products'}/`;
-    await page.goto(`${base}${locale === 'de' ? '/de' : ''}${path}?cbq=${Date.now()}`, {waitUntil: 'domcontentloaded'});
+    const response = await page.goto(`${base}${locale === 'de' ? '/de' : ''}${path}?cbq=${Date.now()}`, {waitUntil: 'domcontentloaded'});
+    assert.equal(response.status(), 200, 'real language page, not a 404 shell');
+    assert.match(await page.locator('html').getAttribute('lang'), locale === 'de' ? /^de/ : /^en/);
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await page.locator('.linker-genie-app').count(), 0, 'fresh page must be lazy');
     assert.equal(appLoads, 0);
