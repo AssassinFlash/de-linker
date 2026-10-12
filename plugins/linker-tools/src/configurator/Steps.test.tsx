@@ -132,6 +132,9 @@ test( 'the rail is vertical, the project type is cards, and the form stays expan
 			.getAllByRole( 'listitem' )
 			.map( ( item ) => item.textContent )
 	).toEqual( [ '01Inputs', '02Solution', '03Design report' ] );
+	expect( within( rail as HTMLElement ).getByText( 'Inputs' ) ).toHaveClass(
+		'linker-steps__label'
+	);
 	expect(
 		screen.getByRole( 'radio', { name: 'Residential' } )
 	).toBeChecked();
@@ -168,6 +171,7 @@ test( 'the narrow-viewport rule pins the shell and clears the measured rail', ()
 	expect( sticky ).not.toContain( '44px' );
 	// Desktop keeps the rail in the left column. Only the phone pins it.
 	expect( css ).toContain( 'grid-template-columns: 13.5rem minmax(0, 1fr);' );
+	expect( sticky ).toContain( '.linker-configurator .linker-shell' );
 	expect( css ).not.toMatch(
 		/@media \(min-width: 861px\)[\s\S]*\.linker-steps[\s\S]*position:\s*sticky/
 	);

@@ -338,6 +338,7 @@
    what was cut. Text overflow is not document overflow, so the phone-width
    guard cannot see it; the e2e suite asserts the rule on every select. */
 .linker-configurator select {
+	max-width: 100%;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -1004,7 +1005,8 @@
 
 @media (max-width: 48rem) {
 	.linker-form__grid,
-	.linker-roof__layout {
+	.linker-roof__layout,
+	.linker-cards-choice {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
@@ -1103,7 +1105,7 @@
  *       trialled and approved.
  */
 @media (min-width: 1200px) {
-	[data-linker-app="configurator"] .linker-report__rows {
+	.linker-configurator .linker-report__rows {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		column-gap: 56px;
@@ -1117,32 +1119,53 @@
 	   rail, pins under the 89px site header, because the project-type cards
 	   now sit beside it. Steps measures the shell; the section clears it by
 	   the sticky top plus that height plus the same 32px gap. */
-	[data-linker-app="configurator"] .linker-shell {
+	.linker-configurator .linker-shell {
 		position: sticky;
 		top: 89px;
 		z-index: 40;
 		display: block;
+		grid-template-columns: minmax(0, 1fr);
 		background: rgba(246, 249, 245, 0.94);
 		backdrop-filter: blur(6px);
 	}
 
-	[data-linker-app="configurator"] .linker-steps__cap,
-	[data-linker-app="configurator"] .linker-steps__foot {
+	.linker-configurator .linker-stage {
+		max-width: none;
+	}
+
+	.linker-configurator .linker-steps__cap,
+	.linker-configurator .linker-steps__foot {
 		display: none;
 	}
 
-	[data-linker-app="configurator"] .linker-steps__list {
+	.linker-configurator .linker-steps__list {
 		flex-direction: row;
 		gap: 4px;
 		padding-bottom: 10px;
 		border-bottom: 1px solid var(--linker-line);
 	}
 
-	[data-linker-app="configurator"] .linker-steps {
+	/* German step names do not fit three-across at 390px. The number stays;
+	   the name remains in the accessible name of the step. */
+	.linker-configurator .linker-steps__label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+
+	.linker-configurator .linker-block__head,
+	.linker-configurator .linker-group > legend {
+		overflow-wrap: anywhere;
+	}
+
+	.linker-configurator .linker-steps {
 		position: static;
 	}
 
-	[data-linker-app="configurator"] .linker-section {
+	.linker-configurator .linker-section {
 		scroll-margin-top: var(--linker-steps-scroll-offset, 32px);
 	}
 }

@@ -87,7 +87,7 @@ export function Steps( { current }: { current: 1 | 2 | 3 } ) {
 						>
 							{ String( index + 1 ).padStart( 2, '0' ) }
 						</span>
-						{ label }
+						<span className="linker-steps__label">{ label }</span>
 					</li>
 				) ) }
 			</ol>
