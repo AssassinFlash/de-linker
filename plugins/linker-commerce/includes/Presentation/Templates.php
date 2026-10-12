@@ -102,6 +102,20 @@ final class Templates {
 		return array( $dir . 'header.html', $dir . 'de/header.html' );
 	}
 
+		/**
+		 * The footer partials `present` installs, English then German.
+		 *
+		 * Same shape as the headers: the German file is already localized,
+		 * and the live twin is `pll_get_post` of the English `footer` partial
+		 * (slug `fuszeile` on the instances, not `footer`).
+		 *
+		 * @return list<string> Absolute paths.
+		 */
+	public static function footer_partials(): array {
+		$dir = dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/partials/';
+		return array( $dir . 'footer.html', $dir . 'de/footer.html' );
+	}
+
 	/**
 	 * Absolute paths of the exported HTML, keyed by LiveCanvas meta.
 	 *
@@ -187,15 +201,16 @@ final class Templates {
 				$unchanged        += $report['unchanged'];
 				$this->created_ids = array_merge( $this->created_ids, $report['created_ids'] );
 		}
-		$this->assign_pages();
-		$updated += $this->sync_header_partials( $header_partials );
+			$this->assign_pages();
+			$updated += $this->sync_header_partials( $header_partials );
+			$updated += $this->sync_footer_partials();
 
-		return array(
-			'created'     => $created,
-			'updated'     => $updated,
-			'unchanged'   => $unchanged,
-			'created_ids' => $this->created_ids,
-		);
+			return array(
+				'created'     => $created,
+				'updated'     => $updated,
+				'unchanged'   => $unchanged,
+				'created_ids' => $this->created_ids,
+			);
 	}
 
 	/**
@@ -309,10 +324,132 @@ final class Templates {
 				)
 			);
 		}
+			return array(
+				'en' => $english,
+				'de' => $german,
+			);
+	}
+
+		/**
+		 * Both footer exports, after proving each is readable and non-empty.
+		 *
+		 * A missing export is a refusal, not a write: writing '' would blank
+		 * the live footer. Called from sync() before the footer write.
+		 *
+		 * @return list<string> Absolute paths, English then German.
+		 * @throws \RuntimeException When a source is missing or empty.
+		 */
+	public function require_footer_partials(): array {
+		$files = self::footer_partials();
+		foreach ( $files as $file ) {
+			if ( '' === trim( Tokens::read( $file ) ) ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- an exception message for the operator log, not page output.
+				throw new \RuntimeException( sprintf( 'Footer partial source is missing or empty: %s', $file ) );
+			}
+		}
+		return $files;
+	}
+
+		/**
+		 * Syncs the existing English footer and its Polylang twin from the LC exports.
+		 *
+		 * The English partial is the anchor (`post_name` footer). The German
+		 * partial is that post's Polylang twin, not a second lookup by the
+		 * English slug: Twins derives the German slug from the German title,
+		 * so the live pair is footer/en and fuszeile/de. A site with an English
+		 * footer and no resolvable German twin is refused. A site with no
+		 * footer partial at all has nothing to sync.
+		 *
+		 * @throws \RuntimeException When a source is missing or empty, the German twin cannot be resolved, or WordPress refuses the update.
+		 */
+	private function sync_footer_partials(): int {
+		$ids = $this->footer_partial_ids();
+		if ( array() === $ids ) {
+			return 0;
+		}
+		$files   = $this->require_footer_partials();
+		$updated = 0;
+		foreach ( $ids as $lang => $id ) {
+			$html = Tokens::read( $files[ 'de' === $lang ? 1 : 0 ] );
+			$post = get_post( $id );
+			if ( $post instanceof WP_Post && $post->post_content === $html ) {
+				continue;
+			}
+			$result = wp_update_post(
+				array(
+					'ID'           => $id,
+					'post_content' => wp_slash( $html ),
+				),
+				true
+			);
+			if ( is_wp_error( $result ) ) {
+				throw new \RuntimeException( 'Footer partial update failed.' );
+			}
+			++$updated;
+		}
+		return $updated;
+	}
+
+		/**
+		 * The published English footer partial and its German Polylang twin.
+		 *
+		 * @return array{en?: int, de?: int} Partial ids, empty when the site has no footer partial.
+		 * @throws \RuntimeException When the English footer has no resolvable German twin.
+		 */
+	private function footer_partial_ids(): array {
+		$posts = get_posts(
+			array(
+				'post_type'      => 'lc_partial',
+				'post_status'    => 'publish',
+				'name'           => 'footer',
+				'lang'           => '',
+				'posts_per_page' => 1,
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
+			)
+		);
+		if ( ! isset( $posts[0] ) ) {
+			return array();
+		}
+		$english = (int) $posts[0]->ID;
+		$german  = $this->german_footer_twin( $english );
+		if ( $german <= 0 ) {
+			throw new \RuntimeException(
+				sprintf(
+					'German footer partial could not be resolved from English partial %d (pll_get_post de, fallback slug fuszeile): refusing to report a footer sync that skipped a language.',
+					$english // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator log, not page output.
+				)
+			);
+		}
 		return array(
 			'en' => $english,
 			'de' => $german,
 		);
+	}
+
+		/**
+		 * The German twin of the English footer partial.
+		 *
+		 * Polylang's translation group is the authority. The `fuszeile` slug
+		 * is only the fallback when that API is not loaded.
+		 *
+		 * @param int $english English footer partial id.
+		 */
+	private function german_footer_twin( int $english ): int {
+		if ( function_exists( 'pll_get_post' ) ) {
+			return (int) pll_get_post( $english, 'de' );
+		}
+		$posts = get_posts(
+			array(
+				'post_type'      => 'lc_partial',
+				'post_status'    => 'publish',
+				'name'           => 'fuszeile',
+				'posts_per_page' => 1,
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
+			)
+		);
+		return isset( $posts[0] ) ? (int) $posts[0]->ID : 0;
 	}
 
 		/**

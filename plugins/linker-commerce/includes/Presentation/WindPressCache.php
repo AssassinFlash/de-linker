@@ -90,7 +90,7 @@ final class WindPressCache {
 		if ( null !== $this->source_files ) {
 			return $this->source_files;
 		}
-			return array_merge( array_values( Templates::catalog() ), Templates::header_partials(), array( Tokens::path() ), WindPressVolume::files() );
+				return array_merge( array_values( Templates::catalog() ), Templates::header_partials(), Templates::footer_partials(), array( Tokens::path() ), WindPressVolume::files() );
 	}
 
 	/**

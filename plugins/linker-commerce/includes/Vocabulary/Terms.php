@@ -28,6 +28,7 @@ final class Terms {
 		return array(
 			// The solution draft (WooCommerce's cart).
 			'Cart totals'                                  => __( 'Totals', 'linker-commerce' ),
+			'Cart'                                         => __( 'Solution draft', 'linker-commerce' ),
 			'Update cart'                                  => __( 'Update solution draft', 'linker-commerce' ),
 			'Proceed to checkout'                          => __( 'Continue to Proforma request', 'linker-commerce' ),
 			/* translators: %s: product name. */

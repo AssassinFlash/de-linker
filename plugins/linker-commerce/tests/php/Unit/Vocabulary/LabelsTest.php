@@ -92,19 +92,40 @@ final class LabelsTest extends TestCase {
 		WP_Mock::userFunction( 'is_page', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 6 ) );
-		$this->assertSame(
-			array(
-				'title' => 'Solution draft',
-				'site'  => 'Linker',
-			),
-			$labels->document_title(
+			$this->assertSame(
 				array(
-					'title' => 'Cart',
+					'title' => 'Solution draft',
 					'site'  => 'Linker',
+				),
+				$labels->document_title(
+					array(
+						'title' => 'Cart',
+						'site'  => 'Linker',
+					)
 				)
-			)
-		);
-	}
+			);
+		}
+
+		/**
+		 * SEOPress stores the WooCommerce page name. The tab title and the
+		 * description use the site's words; other pages are left alone.
+		 */
+		public function test_seo_title_and_description_drop_cart_and_catalogue(): void {
+			$labels = new Labels();
+
+			$this->assertSame( 'Solution draft | Linker', $labels->seo_title( 'Your Cart | Linker' ) );
+			$this->assertSame( 'Solution draft | Linker', $labels->seo_title( 'Ihr Warenkorb | Linker' ) );
+			$this->assertSame( 'Products | Linker', $labels->seo_title( 'Products | Linker' ) );
+			$this->assertSame(
+				'Review the lines in your solution draft, adjust quantities and check the totals. Approved partner accounts see net prices, tax and delivery terms before the Proforma request.',
+				$labels->seo_description( 'Review the lines in your basket, adjust quantities and check the totals. Approved partner accounts see net pricing, tax and delivery terms before checkout.' )
+			);
+			$this->assertSame(
+				'Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the Proforma request.',
+				$labels->seo_description( 'Build a cart from catalog products or SKU rows. Approved partner accounts can review pricing, delivery, tax, and checkout details.' )
+			);
+			$this->assertSame( 'A page that does not name a cart.', $labels->seo_description( 'A page that does not name a cart.' ) );
+		}
 
 	/**
 	 * On the confirmation WooCommerce's crumb for the Proforma request page carries the stored title; it gets the page's name.

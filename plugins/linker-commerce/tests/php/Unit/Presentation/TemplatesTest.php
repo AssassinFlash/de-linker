@@ -610,8 +610,26 @@ final class TemplatesTest extends TestCase {
 		$this->assertSame( (string) file_get_contents( $files[1] ), $written[6919] );
 		$this->assertStringContainsString( 'href="/de/loesung/heimspeicher/"', $written[6919] );
 		$this->assertStringNotContainsString( 'href="/solution/', $written[6919] );
-		$this->assertSame( 35, substr_count( $written[17], '<rect x=' ) );
-	}
+			$this->assertSame( 35, substr_count( $written[17], '<rect x=' ) );
+		}
+
+		/**
+		 * The footer exports name the account route in the site's words.
+		 * present() writes these files onto the English footer and its twin.
+		 */
+		public function test_footer_exports_name_the_solution_draft(): void {
+			$files = Templates::footer_partials();
+
+			$english = (string) file_get_contents( $files[0] );
+			$german  = (string) file_get_contents( $files[1] );
+
+			$this->assertStringContainsString( '<span>Solution draft</span>', $english );
+			$this->assertStringContainsString( '<span>Lösungsentwurf</span>', $german );
+			$this->assertStringNotContainsString( '>Cart<', $english );
+			$this->assertStringNotContainsString( 'Warenkorb', $german );
+			$this->assertNotSame( '', trim( $english ) );
+			$this->assertNotSame( '', trim( $german ) );
+		}
 
 		/**
 		 * The German partial is not the same slug. A date-ordered same-slug

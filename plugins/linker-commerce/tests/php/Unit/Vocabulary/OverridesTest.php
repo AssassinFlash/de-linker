@@ -112,6 +112,9 @@ final class OverridesTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( 'Warenkorb', ( new Overrides( new Terms() ) )->gettext( 'Warenkorb', 'Cart' ) );
+			// 'Cart' is now one of our own source strings, and the test double of
+			// __() rewrites every one of them. A source string this plugin does
+			// not own still comes back as WooCommerce translated it.
+			$this->assertSame( 'Warenkorb', ( new Overrides( new Terms() ) )->gettext( 'Warenkorb', 'Basket' ) );
 	}
 }

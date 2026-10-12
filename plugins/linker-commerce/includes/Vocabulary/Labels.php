@@ -82,12 +82,53 @@ final class Labels {
 		return $this->title_of( (int) $post_id ) ?? $title;
 	}
 
-	/**
-	 * The same titles in the browser tab.
-	 *
-	 * @param array<string, string> $parts Parts of the document title.
-	 * @return array<string, string>
-	 */
+		/**
+		 * The solution-draft page's SEO title, when SEOPress has stored the
+		 * WooCommerce page name ("Your Cart | Linker" / "Ihr Warenkorb | Linker").
+		 *
+		 * SEOPress does not read document_title_parts. The replacement is the
+		 * page name this plugin already uses, plus the site suffix SEOPress
+		 * already appended. Any other title is returned unchanged.
+		 *
+		 * @param string $title SEOPress title.
+		 */
+	public function seo_title( string $title ): string {
+		$draft    = __( 'Solution draft', 'linker-commerce' );
+		$replaced = preg_replace( '/^(Your Cart|Ihr Warenkorb|Warenkorb|Cart)(?=\s*\|)/', $draft, $title, 1 );
+		return is_string( $replaced ) ? $replaced : $title;
+	}
+
+		/**
+		 * The solution-draft page's SEO description, when it still speaks of a
+		 * cart, a basket or a catalogue.
+		 *
+		 * The stored English and German descriptions name the basket and the
+		 * catalogue. This returns the same facts in the site's words. Any other
+		 * description is returned unchanged, so a page that does not carry those
+		 * sentences is not rewritten. The German sentence is the msgstr of the
+		 * stored English sentence, matched literally: a variable passed to __()
+		 * is not a translatable string.
+		 *
+		 * @param string $description SEOPress description.
+		 */
+	public function seo_description( string $description ): string {
+		$replacements = array(
+			'Review the lines in your basket, adjust quantities and check the totals. Approved partner accounts see net pricing, tax and delivery terms before checkout.' => __( 'Review the lines in your solution draft, adjust quantities and check the totals. Approved partner accounts see net prices, tax and delivery terms before the Proforma request.', 'linker-commerce' ),
+			'Build a cart from catalog products or SKU rows. Approved partner accounts can review pricing, delivery, tax, and checkout details.' => __( 'Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the Proforma request.', 'linker-commerce' ),
+			'Überprüfen Sie die Positionen in Ihrem Warenkorb, passen Sie die Mengen an und prüfen Sie die Gesamtsummen. Zugelassene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor dem Checkout.' => __( 'Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Proforma-Anfrage.', 'linker-commerce' ),
+			'Erstellen Sie einen Warenkorb aus Katalogprodukten oder SKU-Zeilen. Freigegebene Partnerkonten können Preise, Lieferung, Steuern und Checkout-Details prüfen.' => __( 'Stellen Sie einen Lösungsentwurf aus Produkten oder Produktnummern zusammen. Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die Proforma-Anfrage prüfen.', 'linker-commerce' ),
+		);
+			// seopress_titles_desc passes the sentence. seopress_social_og_desc
+			// passes the whole meta tag, so the sentence is replaced inside it.
+			return strtr( $description, $replacements );
+	}
+
+		/**
+		 * The same titles in the browser tab.
+		 *
+		 * @param array<string, string> $parts Parts of the document title.
+		 * @return array<string, string>
+		 */
 	public function document_title( array $parts ): array {
 		// On an endpoint (the confirmation) WooCommerce's own title stays.
 		if ( is_page() && ! is_wc_endpoint_url() ) {
