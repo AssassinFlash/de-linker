@@ -1,6 +1,6 @@
 # 本地栈
 
-`just up <name>` 在这台 Mac 上建出一个独立的 WordPress 实例：Homebrew 的 PHP 8.3、MySQL 与 Redis（对象缓存），WP-CLI，WordPress 7.1.3 + WooCommerce 11.2.0（线上版本），我们的三个插件以符号链接挂入当前检出。不用 Docker，不连线上。代码在 `tools/local/`（uv 项目 `linker-local`），规格是 `docs/specs/5-local-stack.md`。
+`just up <name>` 在这台 Mac 上建出一个独立的 WordPress 实例：Homebrew 的 PHP 8.3、MySQL 与 Redis（对象缓存），WP-CLI，WordPress 7.1.3 + WooCommerce 11.2.0（线上版本）+ Polylang 3.8.10（linker-i18n 在插件头声明的前置，装好即启用）+ LiveCanvas 4.9.5（#12 的修复版，从本机归档 `~/de-linker-data/livecanvas-4.9.5/` 安装，wordpress.org 上没有）+ `de_DE_formal` 的 WordPress 与 WooCommerce 语言包，我们的三个插件以符号链接挂入当前检出。不用 Docker，不连线上。代码在 `tools/local/`（uv 项目 `linker-local`），规格是 `docs/specs/5-local-stack.md`。
 
 ## 前提（一次性）
 
@@ -73,6 +73,7 @@ brew services start redis
 - PHP 的 `disable_functions` 等主机加固项不复制。
 - 插件的 `vendor/` 由 `just` 按 `composer install` 装（含开发依赖，`just check`/`just test` 要用），所以本地每个请求都会多加载 PHPUnit、Mockery 的全局函数；线上发布不带开发依赖。
 - 本地是干净安装：WooCommerce 用它自己的默认设置（美元、商店页对访客显示"即将开业"；线上是欧元、已开业），主题是 Twenty Twenty-Five。线上的主题（`picostrap5` / `picostrap5-child-base`）、插件（2026-10-09 经 SSH 只读读 `active_plugins` 与各插件头：启用的有 LiveCanvas 4.9.3、SEOPress 10.3、SEOPress PRO 10.2.1、WindPress 3.2.88、ACF PRO 6.3.1、Classic Editor 1.7.0 等）、页面、设置与内容都随 #6 的快照来；快照带哪些由 #6 定。
+- LiveCanvas 的版本有意分叉：`up` 的干净安装钉 4.9.5（修复线上 4.9.3 在 `/wp/v2/` 第二页响应里加 HTML 前缀的缺陷，`docs/specs/12-site-chrome.md` 第 3 条），从快照装入或重建的实例按快照回到线上的 4.9.3——漂移是故意的，`up` 的版本警告会报出它，等线上升级后由快照带走。
 
 ## 隔离（`tools/local/mu/`，每次 `up` 复制进实例）
 
@@ -112,7 +113,7 @@ brew services start redis
 
 ## 测试
 
-`just test` 跑 `tools/local` 的单元测试，并用真实的 MySQL、Redis、PHP 8.3 与 WP-CLI 建两个实例 `pytesta`、`pytestb` 验证：并存、版本、各自的 Redis 对象缓存、路由、改写、线上的 PHP 限额、邮件截获与 Bcc、写不了信时报失败、直接 `mail()` 失败、外联与重定向拦截、响应头、一次性登录与它的 10 分钟、快照装入、错误快照路径先被拒绝、服务、重复 reset（含清掉旧缓存、不动另一个实例的缓存）。共 17 个；2026-10-09 实测：机器空闲时约 90 秒，并行的工作窗口占满 CPU 时（load average 25–40）130–215 秒。
+`just test` 跑 `tools/local` 的单元测试，并用真实的 MySQL、Redis、PHP 8.3 与 WP-CLI 建两个实例 `pytesta`、`pytestb` 验证：并存、版本、各自的 Redis 对象缓存、路由、改写、结账端点留在结账页所在位置、线上的 PHP 限额、邮件截获与 Bcc、写不了信时报失败、直接 `mail()` 失败、外联与重定向拦截、响应头、一次性登录与它的 10 分钟、快照装入（只激活线上当时已激活的插件）、错误快照路径先被拒绝、服务、重复 reset（含清掉旧缓存、不动另一个实例的缓存）。共 19 个；2026-10-09 测得 17 个时的计时：机器空闲时约 90 秒，并行的工作窗口占满 CPU 时（load average 25–40）130–215 秒。
 
 - 这两个实例有自己的数据根（`LINKER_LOCAL_HOME`，结束后删除），但 MySQL、Redis、下载缓存和端口是全机共用的：同一时间只有一组在跑，其余检出的 `just test` 在锁 `~/de-linker-local/stack-test.lock` 上等候；分配端口时也避开 `~/de-linker-local/instances.toml` 里登记的端口。
 - 若真有实例叫 `pytesta` 或 `pytestb`，测试拒绝运行，免得删掉它的库。
