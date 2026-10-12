@@ -57,7 +57,7 @@ final class PendingGate {
 		}
 		if ( function_exists( 'is_wc_endpoint_url' ) && \is_wc_endpoint_url() ) {
 			\wp_safe_redirect( \wc_get_page_permalink( 'myaccount' ) );
-			return;
+			exit;
 		}
 		$this->close_workplace();
 		\add_action( 'woocommerce_account_content', array( $this, 'render' ), 1 );

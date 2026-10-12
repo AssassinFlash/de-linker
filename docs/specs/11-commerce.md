@@ -4,11 +4,12 @@
 
 ## 用户旅程（EN / DE 文案按 AGENTS.md 规则逐处写，此处只给语义）
 1. **访客**：看产品分类与产品，看不到价格（价格位显示 "Log in for prices" / "Preise nach Anmeldung"）；可用 Genie 与配置器；可把产品加入 Lösungsentwurf（按会话保存）。
-2. **注册**（Woo 原生 My Account 注册表单 + 字段）：公司名、增值税号（VIES 实时校验，失败可提交但标记）、地址、角色（安装商 / EPC / 经销商）、姓名、邮箱、密码。**注册即 pending（票据 73）**：账号在团队批准前读站如访客；客户语言随注册写入 WP 用户 `locale`（询盘同源的取语规则）。邮件：客户欢迎信（Woo 原生）+ 公司"新客户"提醒（含审批状态行与后台直达链接）。
+2. **注册**（Woo 原生 My Account 注册表单 + 字段）：公司名、增值税号（VIES 实时校验，失败可提交但标记）、地址、角色（安装商 / EPC / 经销商）、姓名、邮箱、密码。**注册即 pending（票据 73）**：账号在团队批准前读站如访客；客户语言随注册写入 WP 用户 `locale`（询盘同源的取语规则）。邮件：注册确认（RegistrationReceivedEmail，Woo 原生欢迎信已关）+ 公司"新客户"提醒（含审批状态行与后台直达链接）。
 3. **审批（票据 73）**：团队在 WP 后台两处操作——用户列表行内「Approve」一键（最高频）+ 用户资料页 Linker 区块（Approve / Restrict / Reject 三动作 + 原因 + 当前状态与最近一次变更的审计行）。全部可逆；Restrict / Reject 必须带原因，原因经邮件正式告知客户。权限=WP 自己的 `edit_users`（与资料页同一守门；shop_manager 默认无此权限，只见状态列）。
 4. **四态 × 界面**：
    - **approved**：看价；Lösungsentwurf 合并会话内容；产品页按钮 "Add to solution draft / Zum Lösungsentwurf hinzufügen"；可提交询盘。
-   - **pending / restricted**：与访客同视图——浏览无价目录、Genie 咨询（无价）、开放式询价走 /contact/ 通道；不可看价（价格位按状态显示 "Prices after approval / Preise nach Freigabe" 或 "Not available for your account / Für Ihr Konto nicht verfügbar"）、不可提交询盘（请求页显示各自的 gate 文案，网关对未批准账号一律不开放——视图与服务端同一权威）。
+   - **pending**：与访客同视图——浏览无价产品、Genie 咨询（无价）、开放式询价走 /contact/ 通道；不可看价（价格位 "Prices after approval / Preise nach Freigabe"）、不可进账户工作台（`PendingGate` 把账户端点送回审核页）、不可提交询盘（请求页显示审核 gate，网关对未批准账号一律不开放——视图与服务端同一权威）。
+   - **restricted**：保留工作台（询盘、资料、文件仍可读）；不可看价（价格位 "Not available for your account / Für Ihr Konto nicht verfügbar"）、不可提交询盘。Proforma request 显示 restricted gate，并写出限制原因（`LoginGate`，与工作台同一权威）。
    - **rejected**：登录被挡（`wp_authenticate_user`，登录表单显示状态与原因去向；拒绝同时终结该账号的全部登录会话）。
 5. **询盘提交**（原 checkout 页，地址 `/proforma-request/`、`/de/proforma-anfrage/` 不变）：显示 Lösungsentwurf 行、数量、价格（未知价显示 "Price on request / Preis auf Anfrage"）、公司资料、备注；唯一"支付方式"是自建的 `ProformaGateway extends WC_Payment_Gateway`（`has_fields=false`、不显示银行账户、`process_payment` 直接落 `inquiry-received`）；提交按钮 "Request Proforma / Proforma anfordern"；页面写明 "We reply within one business day / Wir antworten innerhalb eines Arbeitstags"（德语成品用 Arbeitstag，与本插件 `.po` 一致）。提交后订单状态 `wc-inquiry-received`，减库存关闭。
 6. **公司侧**（Woo 后台订单页，角色 shop_manager）：订单标题 "Inquiry #"；按钮 "Issue Proforma / Proforma ausstellen"：生成 PDF、状态改 `wc-proforma-issued`、给客户发邮件（附 PDF 链接，不附件）；之后手动 `completed` 或 `cancelled`。无其他动作。
@@ -27,9 +28,10 @@
 - `Settings`（后台一页：对接人、Bcc 列表、银行条款、PI 前缀）。
 - `Health`（`Monitor`：WP cron daily 依次 GET `linker_genie_url`/`linker_engine_url` 的 `/health`（实例配置，本地 `just serve` 写、切换 #17 写），非 200 或不可达或地址为空 → 经 `wp_mail`（即 Outbox 队列）发团队邮件，To 对接人（`Settings::contact()`，缺省回落团队邮箱）+ Bcc；两服务都健康不发。主题与正文 EN 先行、DE 独立撰写，对抗评审记录 `docs/acceptance/2026-10-11/67/copy-review.md`）。
 
-## 邮件（票据 73 起四封随审批走）
+## 邮件（票据 73 起四封随审批走，注册确认是第五封）
 - ① 注册 → 团队（`NewCustomerEmail`，含审批状态行与后台直达链接）。
 - ② 通过 → 客户（`ApprovedEmail`）③ 限制 → 客户（`RestrictedEmail`，原因段）④ 拒绝 → 客户（`RejectedEmail`，原因段）。三封经 `linker_commerce_approval_changed` 动作（Woo `_notification` 事务邮件机制 → Action Scheduler → Outbox 重试队列），客户语言=用户 `locale`。状态不变更不重发；限制/拒绝必须带原因才可写入。
+- ⑤ 注册确认 → 客户（`RegistrationReceivedEmail`，发到注册时留下的地址）。Woo 原生欢迎信（`customer_new_account`）已关：那封信说账号已可用，pending 账号不是。文案定稿：`docs/acceptance/2026-10-13/138/copy-review.md`。
 
 ## 审批状态契约（meta 键与取值，#74 每日摘要照此读）
 | 项 | 值 |
@@ -79,7 +81,7 @@
 运费与发货（Woo 运费区域清空、所有 "shipping" 文案隐藏）、报价、锁价、阈值、分组、发票、Stripe、下载产品、订单跟踪。审批**存在**（票据 73），旧系统的运营台不复活。
 
 ## 验收
-- [ ] 本地：注册 → pending → 团队邮件 → 行内一键通过 → 看价 → 加入 Lösungsentwurf → 提交询盘 → 后台出 PI → 客户账户下载 PI，EN 与 DE 各一次；本地邮件捕获里每封信只有 tester 单地址（测试邮件开关开着），欢迎信、公司提醒、审批邮件、询盘确认、PI 邮件的路由（收件人/Bcc）以 Outbox 队列数据断言（AGENTS.md 测试邮件纪律，2026-10-11）。
+- [ ] 本地：注册 → pending → 团队邮件 → 行内一键通过 → 看价 → 加入 Lösungsentwurf → 提交询盘 → 后台出 PI → 客户账户下载 PI，EN 与 DE 各一次；本地邮件捕获里每封信只有 tester 单地址（测试邮件开关开着），注册确认、公司提醒、审批邮件、询盘确认、PI 邮件的路由（收件人/Bcc）以 Outbox 队列数据断言（AGENTS.md 测试邮件纪律，2026-10-11）。
 - [ ] 全站可见文案无 order/checkout/payment/shipping/Versand/Kasse/Bezahlen/Warenkorb（引语除外）。
 - [ ] PI 编号连续、PDF 含银行条款与 30 天有效期；未登录访问 PI 链接 403。
 - [ ] 重试队列测试：模拟 `wp_mail` 失败 3 次后成功，仅一封送达。
@@ -87,5 +89,6 @@
 - [ ] 视觉验收：注册、产品页、Lösungsentwurf、提交页、账户 × EN/DE × 1440/390；以及访客提交后邮件确认链接（带 key）**未登录**打开的状态（评审 2026-10-10：此前重放全程登录态，该页漏扫）× EN/DE。
 
 ## 变更记录
+- 2026-10-13（#138）：注册邮件改为注册确认（`RegistrationReceivedEmail`；Woo 原生欢迎信仍关）。邮件清单补第 5 封。pending 停在审核页；restricted 保留工作台，Proforma request 显示限制原因。文案定稿 `docs/acceptance/2026-10-13/138/copy-review.md`。
 - 2026-10-11（#67，GAP-16）：新增 `Health` 模块（服务健康告警最小件）。WordPress/Woo 没有外部服务健康监视的原生能力，检查本身是本插件的；机制全部原生：调度 WP cron daily（`init` 懒登记 + 停用 `wp_clear_scheduled_hook`），HTTP 走 WP HTTP API，邮件走 `wp_mail` 即 #11 的 Outbox 队列（复用限流与重试）。验收：单元 `MonitorTest`（7 项）+ 实例集成 `HealthMonitorTest`（cron 钩子触发路径、失败一封 To 对接人+Bcc、健康零邮件、每日事件在排期），实例级 `wp cron event run linker_commerce_health_check` 健康/失败两跑实证。
 - 2026-10-11（#68）：联系表单（最小）落地并接 Mail 管线：短代码 `[linker_contact_form]`、admin-post 处理（nonce/蜜罐/限流/校验）、客户回执 + 团队信（Bcc 走 SettingsTab）；`tools/migrate/68-contact-form.py` 换挂载点；同轮修 Figures/FAQ meta box 的保存形态（浏览器实际提交的是嵌套数组，两个箱子此前对真实 POST 从不写入，证据与复现见 docs/acceptance/2026-10-11/68/README.md §3）。

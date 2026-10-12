@@ -3306,7 +3306,7 @@ msgstr "Zurück"
 
 #: includes/Registration/Emails/RegistrationReceivedEmail.php
 msgid "Registration received"
-msgstr "Anmeldung eingegangen"
+msgstr "Registrierung eingegangen"
 
 #: includes/Registration/Emails/RegistrationReceivedEmail.php
 msgid "Sent to the customer when the account is registered and waiting for review."
@@ -3314,8 +3314,8 @@ msgstr "Geht an den Kunden, wenn das Konto registriert ist und auf die Prüfung 
 
 #: includes/Registration/Emails/RegistrationReceivedEmail.php
 msgid "We received your partner registration"
-msgstr "Wir haben Ihre Partner-Anmeldung erhalten"
+msgstr "Wir haben Ihre Partner-Registrierung erhalten"
 
 #: templates/emails/linker-registration-received.php
 msgid "We received your partner registration."
-msgstr "Wir haben Ihre Partner-Anmeldung erhalten."
+msgstr "Wir haben Ihre Partner-Registrierung erhalten."

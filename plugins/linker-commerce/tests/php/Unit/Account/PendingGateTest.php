@@ -75,12 +75,20 @@ final class PendingGateTest extends TestCase {
 		WP_Mock::userFunction(
 			'wp_safe_redirect',
 			array(
-				'args'  => array( 'https://example.test/my-account/' ),
-				'times' => 1,
+				'args'   => array( 'https://example.test/my-account/' ),
+				'times'  => 1,
+				'return' => static function (): void {
+					throw new \RuntimeException( 'redirect' );
+				},
 			)
 		);
 
-		( new PendingGate( new Approval() ) )->redirect();
+		try {
+			( new PendingGate( new Approval() ) )->redirect();
+			$this->fail( 'The redirect must exit, the same as the plugin\'s other redirects.' );
+		} catch ( \RuntimeException $stopped ) {
+			$this->assertSame( 'redirect', $stopped->getMessage(), 'exit stops the request after the redirect.' );
+		}
 		$this->assertConditionsMet();
 	}
 
