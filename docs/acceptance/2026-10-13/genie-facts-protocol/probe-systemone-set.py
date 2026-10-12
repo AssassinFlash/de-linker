@@ -9,9 +9,13 @@ runs the same call path — `linker_judges.registry.JUDGES["jev"]` through
 `linker_judges.judges.call` — once over the archived behaviour-panel set
 (the 11 `panel-*.json` rows under the deepseek-flash archive).
 
-It is one pass. It is not an 11-round agreement rate: agreement in the pilot
-is a mean over repeated runs of the same items, and this probe does not
-repeat them. The JSON says so in `not_an_agreement_rate`.
+It is one pass of jev only. It is not the switched-path agreement rate.
+The pilot's 9/11 (`runs/pilot-20261011-t16i2/summary.json`) is also one
+pass per item, not a mean over repeated runs: `pilot.py` calls jev once,
+then deepseek when a confidence is under `TURN_THRESHOLDS`, and counts
+items whose cascade labels match the panel. This probe never calls that
+cascade. It records `would_escalate_at_0_6` and stops. The JSON says so
+in `not_an_agreement_rate`.
 
 The reference is the turn log's own `tool_calls` (what that turn's abilities
 returned and the model saw), not a live replay against a WordPress instance.
@@ -148,10 +152,14 @@ def main(argv: list[str] | None = None) -> int:
     record = {
         "probe": "one pass of the archived behaviour-panel set on /v1/systemone",
         "not_an_agreement_rate": (
-            "This is a single pass over the 11 archived panel items. "
-            "It is not an 11-round agreement rate: the pilot's agreement is a "
-            "mean over repeated runs of the same items, and this probe does not "
-            "repeat them. Do not read these labels as the switched-path agreement."
+            "One jev pass over the 11 archived panel items, not the "
+            "switched-path agreement. The pilot's 9/11 "
+            "(runs/pilot-20261011-t16i2/summary.json) is also one call per "
+            "item, not a mean of repeated runs: pilot.py calls jev once and "
+            "deepseek only when a confidence is under TURN_THRESHOLDS, then "
+            "counts cascade labels against the panel. This probe never calls "
+            "that cascade. would_escalate_at_0_6 is computed here and not acted "
+            "on; 7 of 11 items would escalate on grounded."
         ),
         "date": "2026-10-13",
         "run_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),

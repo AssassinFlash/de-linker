@@ -153,9 +153,8 @@ def test_template_handoff_uses_the_tool_sentence_when_present() -> None:
 
 
 def test_template_handoff_without_the_tool_declares_the_degradation() -> None:
-    """Nothing citable this turn: the handoff says so and offers the retry
-    and the team, in the turn's language, instead of reading as a normal
-    out-of-scope handoff."""
+    """Nothing citable, and handoff-team did not run: the degraded sentence.
+    The same empty facts with the login fact outrank that sentence."""
     english = fallback(TurnFacts(), "en")
     german = fallback(TurnFacts(), "de")
 
@@ -173,6 +172,14 @@ def test_template_handoff_without_the_tool_declares_the_degradation() -> None:
     )
     assert german_is_clean(german_handoff.summary)
     assert " the " not in f" {german_handoff.summary.lower()} "
+
+    # Login fact on otherwise empty facts: the login sentence, not DEGRADED,
+    # even though handoff-team did not run either.
+    guest = _guest_inquiry()
+    login = fallback(guest, "de")
+    assert isinstance(login.blocks[0], TextBlock)
+    assert login.blocks[0].text == LOGIN_REQUIRED["de"]
+    assert login.blocks[0].text != DEGRADED["de"]
 
 
 def _guest_inquiry() -> TurnFacts:
@@ -226,7 +233,7 @@ def test_anonymous_german_proforma_falls_back_to_the_login_request() -> None:
     block = result.output.blocks[0]
     assert isinstance(block, TextBlock)
     assert block.text == LOGIN_REQUIRED["de"]
-    assert "melden Sie sich an" in block.text
+    assert "melden Sie sich in Ihrem Konto an" in block.text
     assert "sales@" not in block.text
     assert "@" not in block.text
     assert german_is_clean(block.text)

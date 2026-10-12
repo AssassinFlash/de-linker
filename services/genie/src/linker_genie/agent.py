@@ -261,8 +261,8 @@ def _user_prompt(request: TurnRequest, retry_reason: str | None) -> str:
         "{fact:handoff.sentence_de}. A guest inquiry (inquiry-status "
         "returned login_required, logged_in=false) is not out of scope: "
         "do not call handoff-team; answer with exactly one text block, "
-        "'Please log in to see where your Proforma stands.' in English or "
-        "'Bitte melden Sie sich an, um zu sehen, wo Ihre Proforma steht.' "
+        "'Please log in to your account to view this inquiry.' in English or "
+        "'Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.' "
         "in German, and nothing else. Ask at most one question and only "
         f"with field in {'|'.join(ASK_FIELDS)}."
     )

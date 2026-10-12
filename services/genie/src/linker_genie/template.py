@@ -12,12 +12,13 @@ Three shapes, each inside the protocol set by construction
   German turn's text and ask options are German; an English turn's are
   English. The handoff mailbox sentence is not this shape.
 - With nothing citable (every ability call failed - an outage or a storm -
-  or the model produced no product structure twice): one handoff that says
-  so plainly instead of reading as a normal answer, and offers the retry
-  and the team. That sentence is the degraded declaration, not the
-  mailbox sentence: a German line carries no English fragment. The turn's
-  meta carries `fallback: true` with the failures for anything that reads
-  the stream programmatically; the schema has no separate degradation block.
+  or the model produced no product structure twice): the mailbox sentence
+  when handoff-team ran this turn, and the degraded declaration only when
+  it did not. The degraded sentence says the failure plainly and offers
+  the retry and the team; a German line carries no English fragment. The
+  turn's meta carries `fallback: true` with the failures for anything that
+  reads the stream programmatically; the schema has no separate
+  degradation block.
 """
 
 from __future__ import annotations
@@ -49,14 +50,18 @@ DEGRADED = {
     ),
 }
 
-# R7 unsigned-out (docs/acceptance/protocol.md §5, panel B7): a guest who
-# asks where the Proforma stands is asked to log in. The sentence is the
-# service's, not the model's, so a German turn cannot drift into the team
-# mailbox sentence (PR #96 pending-main, measured 2026-10-11). Functional
-# UI text, EN and DE written independently.
+# R7 unsigned-out (docs/acceptance/protocol.md §5): a guest who asks where
+# the Proforma stands is asked to log in. The sentence is the service's,
+# not the model's, so a German turn cannot drift into the team mailbox
+# sentence (PR #96 pending-main, measured 2026-10-11). Functional UI text.
+# Wording: docs/acceptance/2026-10-13/genie-facts-protocol/copy-review.md.
+# The same two sentences are quoted in prompts/en/system.md,
+# prompts/de/system.md and the per-turn reminder in agent.py — those three
+# copies have to stay byte-identical to this dict, because grounding
+# accepts only this text.
 LOGIN_REQUIRED = {
-    "en": "Please log in to see where your Proforma stands.",
-    "de": "Bitte melden Sie sich an, um zu sehen, wo Ihre Proforma steht.",
+    "en": "Please log in to your account to view this inquiry.",
+    "de": "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.",
 }
 
 # English function words that only appear in an English sentence. The e2e

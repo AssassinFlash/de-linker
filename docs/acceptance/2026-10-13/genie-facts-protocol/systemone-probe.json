@@ -1,6 +1,6 @@
 {
  "probe": "one pass of the archived behaviour-panel set on /v1/systemone",
- "not_an_agreement_rate": "This is a single pass over the 11 archived panel items. It is not an 11-round agreement rate: the pilot's agreement is a mean over repeated runs of the same items, and this probe does not repeat them. Do not read these labels as the switched-path agreement.",
+ "not_an_agreement_rate": "One jev pass over the 11 archived panel items, not the switched-path agreement. The pilot's 9/11 (runs/pilot-20261011-t16i2/summary.json) is also one call per item, not a mean of repeated runs: pilot.py calls jev once and deepseek only when a confidence is under TURN_THRESHOLDS, then counts cascade labels against the panel. This probe never calls that cascade. would_escalate_at_0_6 is computed here and not acted on; 7 of 11 items would escalate on grounded.",
  "date": "2026-10-13",
  "run_at_utc": "2026-10-12T17:40:02Z",
  "seconds": 29.8,

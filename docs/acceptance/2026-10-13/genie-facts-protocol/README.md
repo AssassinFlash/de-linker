@@ -16,7 +16,7 @@
 uv run --locked python ../../../../docs/acceptance/2026-10-13/genie-facts-protocol/probe-systemone-set.py
 ```
 
-结果：`systemone-probe.json`。11 条归档评测题各问一次，走 `JUDGES["jev"]` → OpenRouter `/v1/systemone`，模型自报 `typesafe/jev-1.13-20260917`，合计 29.8 秒，无错误。**这是单轮探针，不是 11 轮一致率。** 试点里的 agreement 是同一批题重复多轮后的均值；本探针不重复，不能当作切换后的一致率。
+结果：`systemone-probe.json`。11 条归档评测题各问一次，走 `JUDGES["jev"]` → OpenRouter `/v1/systemone`，模型自报 `typesafe/jev-1.13-20260917`，合计 29.8 秒，无错误。**这是单趟活调用，不是切换后的一致率。** 试点的 agreement 9/11（`runs/pilot-20261011-t16i2/summary.json`，`pilot.py` 每题只调一次 jev）也是单趟，不是三次平均。本探针不能当作切换后的一致率，是因为它只跑了 jev 一道：`probe-systemone-set.py` 对每题算了 `would_escalate_at_0_6`（置信度低于 `TURN_THRESHOLDS` 即为真），11 题里 7 题的 grounded 会升级，却没有调用 deepseek 级联。9/11 比的是级联终标签和面板确定性结果；这里没有级联终标签。
 
 参考取自轮次日志里该轮自己的 `tool_calls`，不是对一个活着的 WordPress 实例重放。重放需要当时服务这些轮次的实例；日志是还在的记录，也是探针可复现的条件。
 

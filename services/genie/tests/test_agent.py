@@ -100,7 +100,10 @@ def test_the_prompt_tells_a_guest_inquiry_to_ask_for_a_login() -> None:
     """C2-anon-de: the German system prompt and the per-turn reminder both
     name the login sentence and forbid the team handoff for this fact."""
     german = instructions("de")
-    assert "Bitte melden Sie sich an, um zu sehen, wo Ihre Proforma steht." in german
+    assert (
+        "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen."
+        in german
+    )
     assert "login_required" in german
     assert "handoff-team dafür nicht" in german
 
@@ -113,7 +116,10 @@ def test_the_prompt_tells_a_guest_inquiry_to_ask_for_a_login() -> None:
     reminder = _user_prompt(request, None)
     assert "logged_in=False" in reminder
     assert "login_required" in reminder
-    assert "Bitte melden Sie sich an" in reminder
+    assert (
+        "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen."
+        in reminder
+    )
     assert "do not call handoff-team" in reminder
 
 
