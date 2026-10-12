@@ -42,6 +42,18 @@ def test_each_instance_keeps_to_its_own_prefix() -> None:
     )
 
 
+def test_a_redis_storm_degrades_the_cache_instead_of_the_request() -> None:
+    """The drop-in dies on a failed cache read unless WP_REDIS_GRACEFUL is set:
+    its fail_gracefully flag defaults off, and the observed review-instance
+    failure was exactly that - a Predis connection exception per dead request.
+    Graceful mode logs the exception and serves the request without Redis."""
+    instance = Instance("a", 8888, 8889, 8890, Path("/data"))
+
+    assert "define( 'WP_REDIS_GRACEFUL', true );" in objectcache.wp_config_constants(
+        instance
+    )
+
+
 def test_forget_deletes_the_instances_keys_and_nothing_else(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

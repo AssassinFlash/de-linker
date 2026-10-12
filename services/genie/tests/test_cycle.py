@@ -1,5 +1,6 @@
 """Retry once, then the deterministic template."""
 
+from linker_genie.abilities import AbilityError
 from linker_genie.cycle import run
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.schema import (
@@ -99,6 +100,26 @@ def test_invalid_structure_counts_as_a_failed_attempt() -> None:
     assert result.output.blocks[0].type in {"handoff", "text", "cards"}
 
 
+def test_an_ability_that_stays_dead_falls_back_to_the_degradation() -> None:
+    """The storm, as the cycle sees it: every ability call of both attempts
+    fails (AbilityError after the client's retries), so the turn ships the
+    plain degraded handoff - never an exception out of the service."""
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        raise AbilityError("linker/search-products could not be reached: boom")
+
+    result = run(_request(), generate)
+
+    assert result.fallback is True
+    assert result.grounded is False
+    assert result.attempts == 2
+    handoff = result.output.blocks[0]
+    assert isinstance(handoff, HandoffBlock)
+    assert handoff.summary.startswith("I could not answer this time.")
+
+
 def test_template_lists_qualified_cards_and_one_ask() -> None:
     output = fallback(_facts(), "en")
     types = [block.type for block in output.blocks]
@@ -126,8 +147,22 @@ def test_template_handoff_uses_the_tool_sentence_when_present() -> None:
     )
 
 
-def test_template_handoff_without_the_tool_keeps_the_generic_sentence() -> None:
-    output = fallback(TurnFacts(), "en")
-    handoff = output.blocks[0]
-    assert isinstance(handoff, HandoffBlock)
-    assert handoff.summary == "Please contact our team."
+def test_template_handoff_without_the_tool_declares_the_degradation() -> None:
+    """Nothing citable this turn: the handoff says so and offers the retry
+    and the team, in the turn's language, instead of reading as a normal
+    out-of-scope handoff."""
+    english = fallback(TurnFacts(), "en")
+    german = fallback(TurnFacts(), "de")
+
+    english_handoff = english.blocks[0]
+    german_handoff = german.blocks[0]
+    assert isinstance(english_handoff, HandoffBlock)
+    assert isinstance(german_handoff, HandoffBlock)
+    assert english_handoff.summary == (
+        "I could not answer this time. Please try again in a moment, "
+        "or write to our team."
+    )
+    assert german_handoff.summary == (
+        "Ich konnte Ihre Frage diesmal nicht beantworten. Bitte versuchen Sie "
+        "es gleich noch einmal, oder wenden Sie sich an unser Team."
+    )

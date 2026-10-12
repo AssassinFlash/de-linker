@@ -1,7 +1,15 @@
 """Deterministic fallback when structured output or grounding fails twice.
 
-Only qualified cards from this turn's search-products plus one ask (or a
-handoff if there are no products). The model is not asked again.
+Two shapes, both protocol-compliant by construction:
+
+- With this turn's tool results (products survived the failed attempts):
+  the qualified cards plus one ask, cards cited by the text's refs.
+- With nothing citable (every ability call failed - an outage or a storm -
+  or the model produced no product structure twice): one handoff that says
+  so plainly instead of reading as a normal answer, and offers the retry
+  and the team. The turn's meta carries `fallback: true` with the failures
+  for anything that reads the stream programmatically; the schema has no
+  separate degradation block.
 """
 
 from __future__ import annotations
@@ -19,27 +27,34 @@ from linker_genie.schema import (
     TurnOutput,
 )
 
+# The degraded sentence, EN and DE. Functional UI text (a state the turn can
+# land in), owned here next to the only writer; its wording went through the
+# copy review of docs/acceptance/2026-10-12/103/copy-review.md.
+DEGRADED = {
+    "en": (
+        "I could not answer this time. Please try again in a moment, "
+        "or write to our team."
+    ),
+    "de": (
+        "Ich konnte Ihre Frage diesmal nicht beantworten. Bitte versuchen "
+        "Sie es gleich noch einmal, oder wenden Sie sich an unser Team."
+    ),
+}
+
 
 def fallback(facts: TurnFacts, locale: str) -> TurnOutput:
     """Cards of qualified products and at most one ask, in `locale`."""
     language: Locale = "de" if locale.startswith("de") else "en"
     qualified = sorted(facts.qualified_ids)
     if not qualified and not facts.product_ids:
-        # The handoff-team sentence when the tool ran this turn; the generic
-        # contact sentence only when it did not.
+        # The handoff-team sentence when the tool ran this turn; the degraded
+        # declaration only when it did not - the turn has nothing citable, so
+        # pretending to hand off normally would hide the outage.
         sentence_id = (
             "handoff.sentence_de" if language == "de" else "handoff.sentence_en"
         )
         sentence = facts.facts.get(sentence_id)
-        summary = (
-            sentence.value
-            if sentence is not None
-            else (
-                "Bitte wenden Sie sich an unser Team."
-                if language == "de"
-                else "Please contact our team."
-            )
-        )
+        summary = sentence.value if sentence is not None else DEGRADED[language]
         return TurnOutput(
             language=language,
             blocks=[HandoffBlock(summary=summary)],

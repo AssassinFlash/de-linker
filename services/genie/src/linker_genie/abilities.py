@@ -5,6 +5,17 @@ header. A login-gated ability answers 401 and that maps to the
 `login_required` fact, so the model asks the customer to log in instead of
 failing the turn (docs/specs/13-genie.md R7).
 
+A call that fails transiently - a 5xx, or the connection itself dropping -
+is retried before the turn gives up on it. The WordPress side reads through
+a Redis object cache, and when Redis hiccups mid-request the ability dies
+fast with a 500 (the review instance's PHP error log holds a burst of
+Predis connection exceptions, one per dead request; the instance now runs
+its object cache in graceful mode, and this retry covers whatever transient
+failure still slips through). Three attempts with an exponential backoff
+ride the blip out; a call that still fails raises `AbilityError`, which the
+turn cycle turns into the deterministic fallback - the failure is logged in
+the turn's meta, never swallowed.
+
 The one exception is the customer's own inquiry list: the turn carries the
 shell's short-lived identity token (valid 120 seconds after it is minted; the
 browser never sees it, the service never stores it), and the service sends it
@@ -16,6 +27,8 @@ use it.
 
 from __future__ import annotations
 
+import time
+from collections.abc import Callable
 from typing import Any
 from urllib.parse import quote
 
@@ -39,6 +52,12 @@ ABILITY_NAMES = (
     "linker/search-knowledge",
 )
 
+# Attempts per ability call, and the first backoff wait (doubled per retry).
+# Both stay small: the calls ride the loopback and one turn has the shell's
+# 60 s proxy budget, of which a single call may already spend 20 s.
+ABILITY_ATTEMPTS = 3
+ABILITY_BACKOFF = 0.25
+
 
 class AbilityError(RuntimeError):
     """The WordPress abilities endpoint refused or could not be reached."""
@@ -56,6 +75,8 @@ class AbilityClient:
         # most four calls (MAX_TOOL_CALLS) inside the shell's 60 s proxy
         # timeout, so a single call must stay well under both.
         timeout: float = 20.0,
+        # The clock of the retry backoff; injected so tests need no waiting.
+        sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         self._client = httpx.Client(
             base_url=base_url.rstrip("/"),
@@ -63,6 +84,7 @@ class AbilityClient:
             timeout=timeout,
             transport=transport,
         )
+        self._sleep = sleep
 
     def close(self) -> None:
         self._client.close()
@@ -90,7 +112,7 @@ class AbilityClient:
             if user_context and name == USER_CONTEXT_ABILITY
             else None
         )
-        response = self._client.get(path, params=params, headers=headers)
+        response = self._get(name, path, params, headers)
         if response.status_code == 401:
             # A login-gated ability asked without a user: the caller must ask
             # for a login, not fail the turn (docs/specs/13-genie.md R7).
@@ -104,6 +126,31 @@ class AbilityClient:
         if isinstance(body, dict) and "result" in body:
             return body["result"]
         return body
+
+    def _get(
+        self,
+        name: str,
+        path: str,
+        params: dict[str, Any],
+        headers: dict[str, str] | None,
+    ) -> httpx.Response:
+        """GET with the transient-failure retry (module docstring)."""
+        for attempt in range(1, ABILITY_ATTEMPTS + 1):
+            try:
+                response = self._client.get(path, params=params, headers=headers)
+            except httpx.TransportError as error:
+                if attempt == ABILITY_ATTEMPTS:
+                    raise AbilityError(
+                        f"{name} could not be reached: {error}"
+                    ) from error
+            else:
+                # 4xx answers are final: the 401 is the login_required fact
+                # and every other 4xx is the caller's mistake. Only a 5xx -
+                # the shape a dying ability call answers with - retries.
+                if response.status_code < 500 or attempt == ABILITY_ATTEMPTS:
+                    return response
+            self._sleep(ABILITY_BACKOFF * 2 ** (attempt - 1))
+        raise AbilityError(f"{name} did not answer after {ABILITY_ATTEMPTS} attempts")
 
     def record(
         self,
