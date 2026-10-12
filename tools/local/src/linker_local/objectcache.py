@@ -61,6 +61,15 @@ def wp_config_constants(instance: Instance) -> list[str]:
         f"define( 'WP_REDIS_PREFIX', '{prefix(instance)}' );",
         # wp_cache_flush() deletes this instance's keys only.
         "define( 'WP_REDIS_SELECTIVE_FLUSH', true );",
+        # A Redis hiccup must not kill the request. Without this constant the
+        # drop-in dies on the first failed cache read (its fail_gracefully
+        # flag defaults off; the review instance's PHP log carried a burst of
+        # Predis connection exceptions, each one a request that answered
+        # nothing). With it, the drop-in logs the exception, serves the rest
+        # of the request from its per-request cache, and the next command
+        # reconnects - the reads degrade to cache misses, the pages and the
+        # abilities keep answering.
+        "define( 'WP_REDIS_GRACEFUL', true );",
     ]
 
 

@@ -37,7 +37,7 @@ brew services start redis
 | 地址 | `http://127.0.0.1:<port>`，后台 `/wp-admin/`，用户 `local-admin`，口令在 `admin.txt` |
 | 端口 | 每个实例三个：WordPress、engine、Genie；从 8888（wp-env 的默认端口）起向上取空闲端口 |
 | 数据库 | `linker_<name>`，用户 `linker_local`（口令在 `~/de-linker-local/linker_local.my.cnf`，600） |
-| 对象缓存 | Homebrew 的 Redis（`127.0.0.1:6379`，各实例共用第 0 号库）+ Redis Object Cache 3.0.0；键前缀 `linker_<name>:`，`wp cache flush` 只清本实例的键 |
+| 对象缓存 | Homebrew 的 Redis（`127.0.0.1:6379`，各实例共用第 0 号库）+ Redis Object Cache 3.0.0；键前缀 `linker_<name>:`，`wp cache flush` 只清本实例的键；`WP_REDIS_GRACEFUL=true`——Redis 抖动时缓存读降级为请求内缓存（记日志），不杀请求 |
 | 目录 | `~/de-linker-local/<name>/` |
 
 ```text
