@@ -89,7 +89,22 @@ select 的自绘箭头（C 的 chevron data-URI，`appearance:none`）、空态/
 | 禁用词 | `just banned-words` | clean |
 | 空白符 | `git diff --check` | clean |
 | D2（浏览器内，复用 `Steps.test.tsx` 的规则） | `tools/cfg-c-fidelity.mjs` 的 d2 段 | rail `position: sticky`、`top: 89px`、rail bottom 130px，Solution 标题 top 181px → **间距 51px ≥ 32px**，标题完整可见（844 视口内），且标题/分区**没有** sticky 祖先 |
-| 全树检查 | `just check` / `just test` | 本机见 `/tmp/cfg-just-test.log`（记录在案）；CI 的 `check` 工作流跑完整 `just check` + `just test`，PR 上以 run 结果为准 |
+
+全树检查（`just check` / `just test` 的各条链，本机）：
+
+| 链 | 结果 |
+|---|---|
+| `just check`（php-check / js-check / e2e-check / py-check / pull::check / cutover::check / banned-words / build::check） | 全过（CI 上同样全过，见下） |
+| `just test` → `php-test` | 863 用例、**1 失败**：`linker-commerce` 的 `PresentCommandTest::test_a_missing_german_header_twin_refuses_present_without_writing_either_side`（`PresentCommandTest.php:723`）——**main 上就红**，见下 |
+| `just test` → `js-test`（`npm run test:unit` + `test:e2e`） | 绿（79 + 10） |
+| `just test` → `py-test` | 绿（154 / 112 / 92 / 27+8 skipped / 9） |
+| `just test` → `pull::test` / `cutover::test` | 绿（103 / 54） |
+
+那条红与本 diff 无关，证据两层：(a) 本机在**干净 main 检出**（`/Users/chesterjohn/Documents/de-linker`，
+`c51cb2d`）跑同一用例同样失败；(b) main 自己的 CI run `38275611927`（tip `c51cb2d`）就是这条失败
+（同一行、`863 tests / 1 failure`）。本 PR 的 CI run `38285552361`（dispatch）与 `38286255285`
+（pull_request，同一 SHA）都是 `just check` 绿、`just test` 红在这一条。该债属 `linker-commerce`
+（present 命令 + 德语页头 twin），不属本次配置器视觉移植，未在本 PR 修。
 
 D2 一句：390 上算出方案后再换型（"Other inverter" 选第二项），页面滚回 Solution 分区，
 标题不被钉住的步骤条盖住——`d2-after-model-change-390.png` 是那一刻的截图。
