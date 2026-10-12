@@ -1,0 +1,22 @@
+[
+  {
+    "mode": "app",
+    "pass": false,
+    "message": "locator.waitFor: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator('[data-linker-genie-load-error]') to be visible\n",
+    "errors": [],
+    "appLoads": 1,
+    "failures": 1,
+    "posts": []
+  },
+  {
+    "mode": "dependency",
+    "pass": false,
+    "message": "locator.waitFor: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator('[data-linker-genie-load-error]') to be visible\n",
+    "errors": [
+      "Cannot read properties of undefined (reading 'createRoot')"
+    ],
+    "appLoads": 1,
+    "failures": 1,
+    "posts": []
+  }
+]

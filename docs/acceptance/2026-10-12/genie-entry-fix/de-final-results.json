@@ -1,0 +1,323 @@
+{
+  "base": "http://127.0.0.1:8984",
+  "phase": "de-final",
+  "scope": "entry protocol only; REST fixtures, no model calls",
+  "results": [
+    {
+      "name": "de-1440-pdp",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [
+        {
+          "locale": "de",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Old fixture question"
+            },
+            {
+              "role": "user",
+              "content": "Zum Produkt GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): Nenne mir die wichtigsten technischen Daten und die dazu passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt geeignet ist."
+            }
+          ],
+          "page": {
+            "type": "product"
+          }
+        },
+        {
+          "locale": "de",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Old fixture question"
+            },
+            {
+              "role": "user",
+              "content": "Zum Produkt GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): Nenne mir die wichtigsten technischen Daten und die dazu passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt geeignet ist."
+            },
+            {
+              "role": "assistant",
+              "content": "Antwort der Eingangs-Testfixture."
+            },
+            {
+              "role": "user",
+              "content": "Zum Produkt GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): Nenne mir die wichtigsten technischen Daten und die dazu passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt geeignet ist."
+            }
+          ],
+          "page": {
+            "type": "product"
+          }
+        }
+      ],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "12px",
+        "maxHeight": "none",
+        "rect": [
+          1000,
+          317.4375,
+          420,
+          498.5625
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "surfaceToken": "",
+        "lineToken": ""
+      }
+    },
+    {
+      "name": "de-1440-shop",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "12px",
+        "maxHeight": "none",
+        "rect": [
+          1000,
+          499.421875,
+          420,
+          316.578125
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "surfaceToken": "",
+        "lineToken": ""
+      }
+    },
+    {
+      "name": "de-1440-search",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [
+        {
+          "locale": "de",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Welcher Wechselrichter passt zu meinem Haus?"
+            }
+          ],
+          "page": {
+            "type": "category"
+          }
+        },
+        {
+          "locale": "de",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Welcher Wechselrichter passt zu meinem Haus?"
+            },
+            {
+              "role": "assistant",
+              "content": "Antwort der Eingangs-Testfixture."
+            },
+            {
+              "role": "user",
+              "content": "Welcher Wechselrichter passt zu meinem Haus?"
+            }
+          ],
+          "page": {
+            "type": "category"
+          }
+        }
+      ],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "12px",
+        "maxHeight": "none",
+        "rect": [
+          1000,
+          461.4375,
+          420,
+          354.5625
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "surfaceToken": "",
+        "lineToken": ""
+      }
+    },
+    {
+      "name": "de-1440-bubble",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "12px",
+        "maxHeight": "none",
+        "rect": [
+          1000,
+          547.421875,
+          420,
+          268.578125
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "surfaceToken": "",
+        "lineToken": ""
+      }
+    },
+    {
+      "name": "de-390-pdp",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [
+        {
+          "locale": "de",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Old fixture question"
+            },
+            {
+              "role": "user",
+              "content": "Zum Produkt GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): Nenne mir die wichtigsten technischen Daten und die dazu passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt geeignet ist."
+            }
+          ],
+          "page": {
+            "type": "product"
+          }
+        },
+        {
+          "locale": "de",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Old fixture question"
+            },
+            {
+              "role": "user",
+              "content": "Zum Produkt GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): Nenne mir die wichtigsten technischen Daten und die dazu passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt geeignet ist."
+            },
+            {
+              "role": "assistant",
+              "content": "Antwort der Eingangs-Testfixture."
+            },
+            {
+              "role": "user",
+              "content": "Zum Produkt GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): Nenne mir die wichtigsten technischen Daten und die dazu passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt geeignet ist."
+            }
+          ],
+          "page": {
+            "type": "product"
+          }
+        }
+      ],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "14px",
+        "maxHeight": "607.68px",
+        "rect": [
+          20,
+          163.046875,
+          350,
+          596.953125
+        ],
+        "viewport": [
+          390,
+          844
+        ],
+        "surfaceToken": "",
+        "lineToken": ""
+      }
+    },
+    {
+      "name": "de-390-shop",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "14px",
+        "maxHeight": "607.68px",
+        "rect": [
+          20,
+          393.03125,
+          350,
+          366.96875
+        ],
+        "viewport": [
+          390,
+          844
+        ],
+        "surfaceToken": "",
+        "lineToken": ""
+      }
+    },
+    {
+      "name": "de-390-search",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [
+        {
+          "locale": "de",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Welcher Wechselrichter passt zu meinem Haus?"
+            }
+          ],
+          "page": {
+            "type": "category"
+          }
+        },
+        {
+          "locale": "de",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Welcher Wechselrichter passt zu meinem Haus?"
+            },
+            {
+              "role": "assistant",
+              "content": "Antwort der Eingangs-Testfixture."
+            },
+            {
+              "role": "user",
+              "content": "Welcher Wechselrichter passt zu meinem Haus?"
+            }
+          ],
+          "page": {
+            "type": "category"
+          }
+        }
+      ],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "14px",
+        "maxHeight": "607.68px",
+        "rect": [
+          20,
+          355.046875,
+          350,
+          404.953125
+        ],
+        "viewport": [
+          390,
+          844
+        ],
+        "surfaceToken": "",
+        "lineToken": ""
+      }
+    }
+  ]
+}

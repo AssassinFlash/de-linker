@@ -27,36 +27,14 @@ const CUSTOMER = 'e2e-catalogue@example.test';
 const DISCLOSURE =
 	/You're chatting with an AI system|Sie chatten mit einem KI-System/;
 
-/**
- * Opens the dock and the app's own panel.
- *
- * Two steps, because the shell has two: the standing button reveals the mount
- * and loads the app on the first click (Entries.php), and the app opens its
- * panel with its own toggle.
- */
+/** One standing-button click loads and opens the conversation. */
 async function openDock(page: Page): Promise<void> {
-	// The standing button, not one of the page's chips: both carry
-	// `data-linker-genie-open` and a page may have several chips.
 	await page.locator('.linker-genie-open').first().click();
 	await ensureOpen(page);
 }
 
-/** Opens the app's own panel once it is loaded (the dock may have done it). */
+/** Assert the actual entry result; never mask failure with a second click. */
 async function ensureOpen(page: Page): Promise<void> {
-	const toggle = page.locator('.linker-genie-app__toggle');
-	await expect(toggle, 'the app is loaded').toBeAttached({ timeout: 30_000 });
-	if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
-		// On the product page the app's closed bar hides (the resting bar
-		// covered the buy box's action row, so the page's entries are the
-		// standing bubble and the buy box's own ask button), and a loaded
-		// toggle inside that bar carries no box to click: there the buy box's
-		// ask button is what opens the panel.
-		if (await toggle.isVisible()) {
-			await toggle.click();
-		} else {
-			await page.locator('[data-pdp-ask]').first().click();
-		}
-	}
 	await expect(page.locator('.linker-genie-app__composer')).toBeVisible({
 		timeout: 30_000,
 	});
@@ -210,13 +188,6 @@ test.describe('the Genie dock', () => {
 		test.setTimeout(600_000);
 		await page.goto(`${instance().url}${PRODUCT}`);
 		await openDock(page);
-		// On the product page the panel opens through the buy box's own ask
-		// button, and the app drops a send while a turn is in flight: the
-		// opening turn's answer (its votes) must land before the suite's own
-		// question goes out.
-		await expect(
-			page.locator('.linker-genie-app__votes').first()
-		).toBeVisible({ timeout: 180_000 });
 		const question = 'Which hybrid inverters do you carry for homes?';
 		await ask(page, question);
 		const before = await page

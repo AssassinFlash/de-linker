@@ -151,6 +151,8 @@ class Entries {
 			'src'          => $this->script_src(),
 			'deps'         => $this->script_deps(),
 			'translations' => $this->script_translations(),
+			'error'        => __( 'Genie could not load.', 'linker-tools' ),
+			'retry'        => __( 'Try again', 'linker-tools' ),
 		);
 		echo '<div class="linker-genie">';
 		printf(
@@ -177,10 +179,10 @@ class Entries {
 		);
 		echo '</div>';
 		if ( '' !== $payload['src'] ) {
-			// The loader: on the first open/chip click it injects the entry's
-			// WordPress dependencies, the script translations, and the built
-			// app, then reveals the panel. This is the whole of the "first
-			// click loads the JS" mechanism. The payload rides in a data
+			// The loader owns entry delivery: an open click or ask boots once,
+			// waits for the App's ready event, then opens it with the first ask.
+			// The App reports Hide/Open back so the shell and mobile card agree.
+			// The payload rides in a data
 			// attribute: attribute values are entity-decoded by the HTML
 			// parser, so getAttribute() yields the clean JSON (script text
 			// would keep the esc_html entities).
@@ -198,51 +200,135 @@ class Entries {
 		return;
 	}
 	var loaded = false;
+	var ready = false;
+		var pendingOpen = false;
+		var pendingAsk = '';
+		var failure = null;
+		function clearFailure() {
+			if (failure) {
+				failure.remove();
+				failure = null;
+			}
+		}
+		function showFailure() {
+			clearFailure();
+			failure = document.createElement('section');
+			failure.className = 'linker-genie-app';
+			failure.setAttribute('data-linker-genie-load-error', '');
+			var message = document.createElement('p');
+			message.className = 'linker-genie-app__error';
+			message.setAttribute('role', 'alert');
+			message.textContent = payload.error;
+			var retry = document.createElement('button');
+			retry.type = 'button';
+			retry.className = 'linker-genie-app__toggle';
+			retry.setAttribute('data-linker-genie-open', '');
+			retry.textContent = payload.retry;
+			failure.appendChild(message);
+			failure.appendChild(retry);
+			document.querySelector('[data-linker-genie-mount]').appendChild(failure);
+			shell(true);
+		}
+		function shell(open) {
+		var panel = document.querySelector('[data-linker-genie-mount]');
+		if (panel) {
+			panel.hidden = !open;
+		}
+		document.querySelectorAll('[data-linker-genie-open]').forEach(function (button) {
+			button.setAttribute('aria-expanded', String(open));
+		});
+	}
+	function deliver() {
+		if (!ready || !pendingOpen) {
+			return;
+		}
+		var message = pendingAsk;
+		pendingOpen = false;
+		pendingAsk = '';
+		window.dispatchEvent(new CustomEvent('linker-genie-open', {
+			detail: { message: message }
+		}));
+	}
+	function open(message) {
+		pendingOpen = true;
+		// A plain reopen during loading must not erase the first question.
+		if (message && !pendingAsk) {
+			pendingAsk = message;
+		}
+		boot();
+		deliver();
+	}
+		window.addEventListener('linker-genie-ready', function () {
+			ready = true;
+			clearFailure();
+			deliver();
+	});
+	window.addEventListener('linker-genie-state', function (event) {
+		shell(event.detail.open);
+	});
+	window.addEventListener('linker-genie-ask', function (event) {
+		var detail = event.detail;
+		if (detail && typeof detail.message === 'string' && detail.message.trim()) {
+			open(detail.message);
+		}
+	});
 	function boot() {
 		if (loaded) {
 			return;
 		}
 		loaded = true;
-		var finish = function () {
+		clearFailure();
+		shell(false);
+		var failed = false;
+		var inserted = [];
+		function fail() {
+			if (failed) {
+				return;
+			}
+			failed = true;
+			loaded = false;
+			inserted.forEach(function (script) { script.remove(); });
+			// Keep pendingOpen/pendingAsk: retry delivers the original ask.
+			showFailure();
+		}
+		function append(script) {
+			inserted.push(script);
+			document.body.appendChild(script);
+		}
+		function finish() {
+			if (failed) {
+				return;
+			}
 			(payload.translations || []).forEach(function (js) {
 				var data = document.createElement('script');
 				data.text = js;
-				document.body.appendChild(data);
+				append(data);
 			});
 			var app = document.createElement('script');
 			app.src = payload.src;
 			app.async = false;
-			document.body.appendChild(app);
-		};
-		var deps = payload.deps;
-		if (deps.length === 0) {
+			app.addEventListener('error', fail);
+			append(app);
+		}
+		// Wait for every dependency, not merely the last one: any failed
+		// dependency aborts this batch before the app can execute broken.
+		var remaining = payload.deps.length;
+		if (remaining === 0) {
 			finish();
 			return;
 		}
-		// An inline script runs the moment it is inserted, so the
-		// translations may only be inserted once the dependencies have
-		// executed — they call wp.i18n. Classic scripts with async=false
-		// execute in insertion order, and "load" fires after execution;
-		// the last dependency's load is therefore the signal. "error"
-		// proceeds too: the app fails on the missing global anyway, and
-		// the panel must still open.
-		var proceeded = false;
-		var proceed = function () {
-			if (proceeded) {
-				return;
-			}
-			proceeded = true;
-			finish();
-		};
-		deps.forEach(function (url, index) {
+		payload.deps.forEach(function (url) {
 			var dep = document.createElement('script');
 			dep.src = url;
 			dep.async = false;
-			if (index === deps.length - 1) {
-				dep.addEventListener('load', proceed);
-				dep.addEventListener('error', proceed);
-			}
-			document.body.appendChild(dep);
+			dep.addEventListener('error', fail);
+			dep.addEventListener('load', function () {
+				remaining -= 1;
+				if (remaining === 0) {
+					finish();
+				}
+			});
+			append(dep);
 		});
 	}
 	document.addEventListener(
@@ -254,18 +340,7 @@ class Entries {
 			if (!trigger) {
 				return;
 			}
-			boot();
-			var panel = document.querySelector(
-				'[data-linker-genie-mount]'
-			);
-			if (panel) {
-				panel.hidden = false;
-			}
-			document
-				.querySelectorAll('[data-linker-genie-open]')
-				.forEach(function (button) {
-					button.setAttribute('aria-expanded', 'true');
-				});
+			open('');
 		},
 		true
 	);

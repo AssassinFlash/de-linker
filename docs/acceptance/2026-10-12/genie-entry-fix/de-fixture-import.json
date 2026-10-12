@@ -1,0 +1,10 @@
+{
+  "scope": "Local-only existing German snapshot fields + modern LC template twins via existing linker-i18n import; no model translation",
+  "sources": [
+    6530,
+    1034,
+    234,
+    6564
+  ],
+  "result": "[{\"kind\":\"post\",\"source\":6530,\"german\":\"6574\",\"status\":\"synced\"},{\"kind\":\"post\",\"source\":1034,\"german\":\"6575\",\"status\":\"pending\"},{\"kind\":\"post\",\"source\":234,\"german\":\"6577\",\"status\":\"synced\"},{\"kind\":\"post\",\"source\":6564,\"german\":\"6579\",\"status\":\"synced\"}]"
+}
