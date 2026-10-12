@@ -80,4 +80,55 @@ final class ProformaIssuedEmailTest extends TestCase {
 		$this->assertSame( '<p>ok</p>', $email->get_content_html() );
 		$this->assertConditionsMet();
 	}
+
+	/**
+	 * A status change into "Proforma invoice issued" that could not issue — no
+	 * bank account, an empty inquiry, a line without a price — leaves the number
+	 * empty. That transition must not send the customer an email with an empty
+	 * number, a validity of 1970 and a download that 404s.
+	 */
+	public function test_does_not_send_when_the_number_is_missing(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
+		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', ProformaIssuedEmail::class, 'trigger', 10, 2 );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
+		$order->allows( 'get_billing_email' )->never();
+		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->never();
+		WP_Mock::userFunction( 'switch_to_locale' )->never();
+
+		$email = new ProformaIssuedEmail( '/plugin/linker-commerce.php' );
+		$email->trigger( 20, $order );
+
+		$this->assertSame( '', $email->placeholders['{proforma_number}'] );
+		$this->assertSame( '', $email->recipient );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The notification carries only the inquiry id when the mailer reloads the
+	 * order. A reloaded inquiry that still has no number is the same refusal.
+	 */
+	public function test_does_not_send_when_a_reloaded_inquiry_has_no_number(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
+		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', ProformaIssuedEmail::class, 'trigger', 10, 2 );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
+		$order->allows( 'get_billing_email' )->never();
+		WP_Mock::userFunction(
+			'wc_get_order',
+			array(
+				'args'   => array( 20 ),
+				'return' => $order,
+			)
+		);
+		WP_Mock::userFunction( 'switch_to_locale' )->never();
+
+		$email = new ProformaIssuedEmail( '/plugin/linker-commerce.php' );
+		$email->trigger( 20, false );
+
+		$this->assertSame( '', $email->recipient );
+		$this->assertConditionsMet();
+	}
 }

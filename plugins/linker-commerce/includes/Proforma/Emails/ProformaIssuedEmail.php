@@ -50,7 +50,15 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 	}
 
 	/**
-	 * Sends the email about an inquiry.
+	 * Sends the email about an inquiry that already has a Proforma number.
+	 *
+	 * WooCommerce fires this on the status transition, before Issuer::ensure_issued()
+	 * writes the number (woocommerce_order_status_{to} runs first; the email action
+	 * is the from_to hook). A blocked inquiry — no bank account, an empty inquiry,
+	 * a line without a price — keeps the new status and never gets a number. Sending
+	 * then names an empty number, a validity of 1970-01-30 (issued meta 0 plus the
+	 * 30-day term) and a download that 404s. No number, no mail. The Issue button
+	 * writes the number before it changes the status, so that path still sends.
 	 *
 	 * @param int                $order_id Order id.
 	 * @param WC_Order|false|int $order    Order, when the caller has it.
@@ -60,7 +68,11 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
-		$this->placeholders['{proforma_number}'] = (string) $order->get_meta( Issuer::NUMBER_META );
+		$number = (string) $order->get_meta( Issuer::NUMBER_META );
+		if ( '' === $number ) {
+			return;
+		}
+		$this->placeholders['{proforma_number}'] = $number;
 		parent::trigger( $order_id, $order );
 	}
 
