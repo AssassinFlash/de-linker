@@ -73,7 +73,8 @@ final class TermsTest extends TestCase {
 	public function test_key_words(): void {
 		$singular = ( new Terms() )->singular();
 
-		$this->assertSame( 'Add to solution draft', $singular['Add to cart'] );
+			$this->assertSame( 'Add to solution draft', $singular['Add to cart'] );
+			$this->assertSame( 'Solution draft', $singular['Cart'] );
 		$this->assertSame( 'Request Proforma', $singular['Place order'] );
 		$this->assertSame( 'Request again', $singular['Order again'] );
 		$this->assertSame( 'Inquiries', $singular['Orders'] );
