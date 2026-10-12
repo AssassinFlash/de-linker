@@ -47,16 +47,37 @@
 		item.addEventListener( 'focusout', event => {
 			if ( ! item.contains( event.relatedTarget ) ) setOpen( item, false );
 		} );
-		item.addEventListener( 'keydown', event => {
-			const links = [ ...menu.querySelectorAll( 'a[href]' ) ];
-			if ( ! links.length || ! [ 'ArrowDown', 'ArrowUp', 'Home', 'End' ].includes( event.key ) ) return;
-			event.preventDefault();
-			closeOthers( item );
-			setOpen( item, true );
-			const at = links.indexOf( document.activeElement );
-			const next = event.key === 'Home' ? 0 : event.key === 'End' ? links.length - 1 : event.key === 'ArrowDown' ? ( at + 1 ) % links.length : ( at <= 0 ? links.length : at ) - 1;
-			links[ next ].focus();
-		} );
+			item.addEventListener( 'keydown', event => {
+				const links = [ ...menu.querySelectorAll( 'a[href]' ) ];
+				if ( ! links.length || ! [ 'ArrowDown', 'ArrowUp', 'Home', 'End' ].includes( event.key ) ) return;
+				event.preventDefault();
+				closeOthers( item );
+				const wasClosed = button.getAttribute( 'aria-expanded' ) !== 'true';
+				setOpen( item, true );
+				const at = links.indexOf( document.activeElement );
+				const next = event.key === 'Home' ? 0 : event.key === 'End' ? links.length - 1 : event.key === 'ArrowDown' ? ( at + 1 ) % links.length : ( at <= 0 ? links.length : at ) - 1;
+				// The mega menu fades in with a visibility transition. Focusing
+				// a link in the same turn as the open is dropped: the element
+				// is not yet visible. Wait until that transition ends, or one
+				// frame when the menu was already open (the account menu uses
+				// hidden and has no such transition).
+				const target = links[ next ];
+				if ( wasClosed && menu.classList.contains( 'tv-mega-menu' ) ) {
+					const focus = () => target.focus();
+					const onEnd = transition => {
+						if ( transition.target !== menu || transition.propertyName !== 'visibility' ) return;
+						menu.removeEventListener( 'transitionend', onEnd );
+						focus();
+					};
+					menu.addEventListener( 'transitionend', onEnd );
+					window.setTimeout( () => {
+						menu.removeEventListener( 'transitionend', onEnd );
+						if ( document.activeElement !== target ) focus();
+					}, 250 );
+					return;
+				}
+				target.focus();
+			} );
 	} );
 	function setPanel( open ) {
 		panel.dataset.open = String( open );

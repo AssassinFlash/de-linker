@@ -94,12 +94,19 @@ final class PresentCommand {
 		$settings['enable-dynamic-templating'] = 1;
 		update_option( 'lc_settings', $settings );
 
-		$report = ( new Templates() )->sync();
+		$templates = new Templates();
+		try {
+			$report = $templates->sync();
+		} finally {
+			// Header sync runs after the template inserts. A refusal there
+			// (a missing German twin) must still register the posts this
+			// run already created, or a rollback cannot delete them.
+			$this->backfill_backup( $templates->created_ids() );
+		}
 		WP_CLI::log( sprintf( 'templates: created %d, updated %d, unchanged %d', $report['created'], $report['updated'], $report['unchanged'] ) );
-		$this->backfill_backup( $report['created_ids'] );
 
 		$removed = ( new Tokens() )->uninstall();
-		WP_CLI::log( $removed ? 'tokens: removed the Additional CSS copy (the header partial serves tokens.css)' : 'tokens: no Additional CSS copy to remove' );
+		WP_CLI::log( $removed ? 'tokens: removed the Additional CSS copy (the WindPress volume serves content/windpress/tokens.css)' : 'tokens: no Additional CSS copy to remove' );
 
 		( new WindPressVolume() )->install();
 		WP_CLI::log( 'windpress volume: storefront styles' );
@@ -266,11 +273,14 @@ final class PresentCommand {
 
 	/**
 	 * The files this run installs from or serves: the LiveCanvas templates, the
-	 * two header partials, the tokens stylesheet, and the fonts its @font-face
-	 * rules point at (the visitor loads them straight from the plugin, so a
-	 * missing font file is the same broken presentation as an empty template).
-	 * A missing or empty header partial is refused here, before anything is
-	 * written.
+	 * two header partials, the tokens stylesheet (the same
+	 * content/windpress/tokens.css the volume publishes — not a second copy),
+	 * and the fonts its @font-face rules point at (the visitor loads them
+	 * straight from the plugin, so a missing font file is the same broken
+	 * presentation as an empty template). A missing or empty header partial
+	 * is refused here, before anything is written. The volume glob already
+	 * includes the tokens file; listing Tokens::path() beside it is the
+	 * named requirement, and a duplicate path is the same file.
 	 *
 	 * @return list<string>
 	 */
@@ -286,8 +296,9 @@ final class PresentCommand {
 	 * LiveCanvas templates (content, title and post status), Additional CSS,
 	 * lc_settings, and — for --detach-partials — the LiveCanvas partials.
 	 * Templates the run creates (they had no backup row) are added by
-	 * backfill_backup() after sync(), so a rollback both restores the updated
-	 * posts and deletes the created ones. `wp linker-commerce rollback`
+	 * backfill_backup() in the finally around sync(), including a sync that
+	 * throws after inserting templates, so a rollback both restores the
+	 * updated posts and deletes the created ones. `wp linker-commerce rollback`
 	 * restores it.
 	 *
 	 * @param bool $with_partials The run will strip the partials too.

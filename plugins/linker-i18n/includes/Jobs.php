@@ -46,11 +46,21 @@ final class Jobs {
 	 */
 	private const RETRY_MINUTES = 15;
 
-	/**
-	 * Post statuses whose German version is translated; any other status is
-	 * only passed on to the German version.
-	 */
+		/**
+		 * Post statuses whose German version is translated; any other status is
+		 * only passed on to the German version.
+		 */
 	private const LIVE = array( 'publish', 'future', 'private' );
+
+		/**
+		 * English LiveCanvas partial slugs whose German twin is a curated export,
+		 * not a machine translation. `present` writes both files itself
+		 * (header.html and de/header.html). Queuing the English save would
+		 * translate over the German file. The German slug is kopfzeile — Twins
+		 * derives it from the German title — so the exemption is the English
+		 * slug plus its Polylang twin, not a same-slug pair.
+		 */
+	private const CURATED_PARTIALS = array( 'header' );
 
 	/**
 	 * Sets up the jobs.
@@ -77,6 +87,9 @@ final class Jobs {
 	 */
 	public function post_saved( int $post_id, \WP_Post $post ): void {
 		if ( $this->twins->writing() || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) || ! $this->languages->translates_post_type( $post->post_type ) ) {
+			return;
+		}
+		if ( $this->curated_partial( $post_id, $post ) ) {
 			return;
 		}
 		$language = $this->languages->of_post( $post_id );
@@ -133,6 +146,40 @@ final class Jobs {
 	 * @param int    $id    English object ID.
 	 * @param bool   $force Translate every segment again, discarding edits.
 	 */
+		/**
+		 * Whether this save is the curated header partial or its German twin.
+		 *
+		 * The English partial is named `header`. Its twin is whatever
+		 * Polylang pairs with it (kopfzeile on the live instances). Saving
+		 * either side must not queue a translation: the German export is the
+		 * curated file, and a machine translation of the English save would
+		 * replace it.
+		 *
+		 * @param int      $post_id Post ID.
+		 * @param \WP_Post $post    Post.
+		 */
+	private function curated_partial( int $post_id, \WP_Post $post ): bool {
+		if ( 'lc_partial' !== $post->post_type ) {
+			return false;
+		}
+		if ( in_array( $post->post_name, self::CURATED_PARTIALS, true ) ) {
+			return true;
+		}
+		$english = $this->languages->post_translation( $post_id, Languages::SOURCE );
+		if ( null === $english ) {
+			return false;
+		}
+		$source = get_post( $english );
+		return $source instanceof \WP_Post && in_array( $source->post_name, self::CURATED_PARTIALS, true );
+	}
+
+		/**
+		 * Queues the translation of an English object.
+		 *
+		 * @param string $kind  State::POST or State::TERM.
+		 * @param int    $id    English object ID.
+		 * @param bool   $force Translate every segment again, discarding edits.
+		 */
 	public function queue( string $kind, int $id, bool $force = false ): void {
 		$this->state->set_status( $kind, $id, State::PENDING, 'queued' );
 		as_enqueue_async_action( self::HOOK, array( $kind, $id, $force, 1 ), self::GROUP, true );

@@ -23,6 +23,15 @@ final class Templates {
 	public const POST_TYPE = 'lc_dynamic_template';
 
 	/**
+	 * Template posts this instance has inserted and not yet reported.
+	 * present() reads this from a finally block: a header refusal after the
+	 * inserts must still be able to register those ids for rollback.
+	 *
+	 * @var list<int>
+	 */
+	private array $created_ids = array();
+
+	/**
 	 * Directory of the exported HTML, relative to this plugin.
 	 */
 	private const RELATIVE_DIR = 'content/livecanvas';
@@ -68,13 +77,24 @@ final class Templates {
 		'linker-faq-de'     => array( 'de/faq_page', 'FAQ & Dokumente', 'faq-download', 'de' ),
 	);
 
-	/**
-	 * The header partials `present` installs, English then German. Both
-	 * must be readable and non-empty before a run may write: an empty
-	 * source would blank the live header.
-	 *
-	 * @return list<string> Absolute paths.
-	 */
+		/**
+		 * Template post ids inserted by the current sync(), including a sync
+		 * that later refused the header twin. Empty before sync() and after a
+		 * sync that inserted nothing.
+		 *
+		 * @return list<int>
+		 */
+	public function created_ids(): array {
+			return $this->created_ids;
+	}
+
+		/**
+		 * The header partials `present` installs, English then German. Both
+		 * must be readable and non-empty before a run may write: an empty
+		 * source would blank the live header.
+		 *
+		 * @return list<string> Absolute paths.
+		 */
 	public static function header_partials(): array {
 		$dir = dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/partials/';
 		return array( $dir . 'header.html', $dir . 'de/header.html' );
@@ -115,10 +135,10 @@ final class Templates {
 		// discover a missing header with nothing to roll back. A test passes
 		// the missing export in; production passes nothing and reads the exports.
 		$this->require_header_partials( $header_partials );
-		$created     = 0;
-		$updated     = 0;
-		$unchanged   = 0;
-		$created_ids = array();
+		$created           = 0;
+		$updated           = 0;
+		$unchanged         = 0;
+		$this->created_ids = array();
 		foreach ( self::FILES as $meta => $file ) {
 			$html = Tokens::read( dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/' . $file . '.html' );
 			$id   = $this->existing_id( $meta );
@@ -137,9 +157,9 @@ final class Templates {
 					throw new \RuntimeException( sprintf( 'wp_insert_post refused the %s template: %s', $meta, $id->get_error_message() ) );
 				}
 				update_post_meta( (int) $id, $meta, '1' );
-				$this->assign_source_language( (int) $id );
-				$created_ids[] = (int) $id;
-				++$created;
+					$this->assign_source_language( (int) $id );
+					$this->created_ids[] = (int) $id;
+					++$created;
 				continue;
 			}
 			$post = get_post( $id );
@@ -159,11 +179,11 @@ final class Templates {
 			++$updated;
 		}
 		foreach ( self::PAGES as $slug => $page ) {
-			$report      = $this->sync_page_template( $slug, $page[0], $page[1] );
-			$created    += $report['created'];
-			$updated    += $report['updated'];
-			$unchanged  += $report['unchanged'];
-			$created_ids = array_merge( $created_ids, $report['created_ids'] );
+			$report                = $this->sync_page_template( $slug, $page[0], $page[1] );
+			$created              += $report['created'];
+			$updated              += $report['updated'];
+				$unchanged        += $report['unchanged'];
+				$this->created_ids = array_merge( $this->created_ids, $report['created_ids'] );
 		}
 		$this->assign_pages();
 		$updated += $this->sync_header_partials( $header_partials );
@@ -172,7 +192,7 @@ final class Templates {
 			'created'     => $created,
 			'updated'     => $updated,
 			'unchanged'   => $unchanged,
-			'created_ids' => $created_ids,
+			'created_ids' => $this->created_ids,
 		);
 	}
 
@@ -201,35 +221,30 @@ final class Templates {
 		return $files;
 	}
 
-	/**
-	 * Syncs the existing header and its Polylang twin from the LC exports.
-	 * Does not create substitute partials or change the theme's assignments.
-	 *
-	 * The sources are refused again here: sync() already refused them, and
-	 * a write that reached this point with a missing export must still stop
-	 * rather than blank the live header. The German export is already
-	 * localized (its links are German addresses), so the write is the file itself.
-	 *
-	 * English and German share the slug header. Each export is written to
-	 * the partial of that language, looked up on its own: taking the first
-	 * post of the slug and translating it writes the English export into
-	 * the German partial when the German one is newer.
-	 *
-	 * @param list<string>|null $files Paths already proved by sync(), the exports when null.
-	 * @throws \RuntimeException When a source is missing or empty, or WordPress refuses the update.
-	 */
+		/**
+		 * Syncs the existing English header and its Polylang twin from the LC exports.
+		 * Does not create substitute partials or change the theme's assignments.
+		 *
+		 * The sources are refused again here: sync() already refused them, and
+		 * a write that reached this point with a missing export must still stop
+		 * rather than blank the live header. The German export is already
+		 * localized (its links are German addresses), so the write is the file itself.
+		 *
+		 * The English partial is the anchor (`post_name` header). The German
+		 * partial is that post's Polylang twin (`pll_get_post`), not a second
+		 * lookup by the English slug: Twins derives the German slug from the
+		 * German title, so the live pair is header/en and kopfzeile/de. A site
+		 * with an English header and no resolvable German twin is refused —
+		 * skipping the language and reporting success would leave the German
+		 * header stale. A site with no header partial at all has nothing to
+		 * sync (LiveCanvas has not assigned one).
+		 *
+		 * @param list<string>|null $files Paths already proved by sync(), the exports when null.
+		 * @throws \RuntimeException When a source is missing or empty, the German twin cannot be resolved, or WordPress refuses the update.
+		 */
 	private function sync_header_partials( ?array $files = null ): int {
-		$files = $this->require_header_partials( $files );
-		$ids   = array();
-		foreach ( array( 'en', 'de' ) as $lang ) {
-			$id = $this->header_partial_id( $lang );
-			if ( $id > 0 ) {
-				$ids[ $lang ] = $id;
-			}
-		}
-		if ( array() === $ids ) {
-			return 0;
-		}
+		$files   = $this->require_header_partials( $files );
+		$ids     = $this->header_partial_ids();
 		$updated = 0;
 		foreach ( $ids as $lang => $id ) {
 			$html = Tokens::read( $files[ 'de' === $lang ? 1 : 0 ] );
@@ -252,31 +267,75 @@ final class Templates {
 		return $updated;
 	}
 
-	/**
-	 * The published header partial of one language, or 0 when it is absent.
-	 *
-	 * A query for one post by name is singular, and WordPress ignores
-	 * taxonomy conditions (the language) for singular queries, so the slug
-	 * is passed as post_name__in. The two languages share the slug, so the
-	 * first row by date is not the English one. Same shape as
-	 * SameSlug\Lookup::post().
-	 *
-	 * @param string $language `en` or `de`.
-	 */
-	private function header_partial_id( string $language ): int {
+		/**
+		 * The published English header partial and its German Polylang twin.
+		 *
+		 * The English row is the anchor: a name query for `header`. The German
+		 * row is `pll_get_post( $english, 'de' )`. Looking both languages up by
+		 * the English slug misses the twin — on the live instances the German
+		 * partial's slug is `kopfzeile`, derived from its German title, not
+		 * `header`. When Polylang is absent and a published `kopfzeile` partial
+		 * exists, that slug is the explicit fallback and is named as such; it
+		 * is not a same-slug query. An English header whose German twin cannot
+		 * be resolved is a refusal, not a skipped language.
+		 *
+		 * @return array{en?: int, de?: int} Partial ids, empty when the site has no header partial.
+		 * @throws \RuntimeException When the English header has no resolvable German twin.
+		 */
+	private function header_partial_ids(): array {
 		$posts = get_posts(
 			array(
-				'post_type'              => 'lc_partial',
-				'post_name__in'          => array( 'header' ),
-				'lang'                   => $language,
-				'post_status'            => 'publish',
-				'numberposts'            => 1,
-				'orderby'                => 'ID',
-				'order'                  => 'ASC',
-				'no_found_rows'          => true,
-				'suppress_filters'       => false,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
+				'post_type'      => 'lc_partial',
+				'post_status'    => 'publish',
+				'name'           => 'header',
+				'lang'           => '',
+				'posts_per_page' => 1,
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
+			)
+		);
+		if ( ! isset( $posts[0] ) ) {
+			return array();
+		}
+		$english = (int) $posts[0]->ID;
+		$german  = $this->german_header_twin( $english );
+		if ( $german <= 0 ) {
+			throw new \RuntimeException(
+				sprintf(
+					'German header partial could not be resolved from English partial %d (pll_get_post de, fallback slug kopfzeile): refusing to report a header sync that skipped a language.',
+					$english // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator log, not page output.
+				)
+			);
+		}
+		return array(
+			'en' => $english,
+			'de' => $german,
+		);
+	}
+
+		/**
+		 * The German twin of the English header partial.
+		 *
+		 * Polylang's translation group is the authority. The `kopfzeile` slug
+		 * is only the fallback when that API is not loaded: Twins names the
+		 * German partial from its German title, and a same-slug lookup would
+		 * miss it. A loaded Polylang that returns no twin is not papered over
+		 * with the slug — the caller refuses.
+		 *
+		 * @param int $english English header partial id.
+		 */
+	private function german_header_twin( int $english ): int {
+		if ( function_exists( 'pll_get_post' ) ) {
+			return (int) pll_get_post( $english, 'de' );
+		}
+		$posts = get_posts(
+			array(
+				'post_type'      => 'lc_partial',
+				'post_status'    => 'publish',
+				'name'           => 'kopfzeile',
+				'posts_per_page' => 1,
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
 			)
 		);
 		return isset( $posts[0] ) ? (int) $posts[0]->ID : 0;

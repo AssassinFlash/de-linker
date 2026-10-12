@@ -539,14 +539,16 @@ final class TemplatesTest extends TestCase {
 		}
 	}
 
-	/**
-	 * The installed header and its German twin are written from the two
-	 * exports. The German export is already localized, so a repeat present
-	 * keeps the German addresses.
-	 */
+		/**
+		 * The installed English header and its Polylang twin are written from
+		 * the two exports. The twin's slug is kopfzeile, the live German slug,
+		 * not header. The German export is already localized, so a repeat
+		 * present keeps the German addresses.
+		 */
 	public function test_sync_writes_the_localized_header_partials(): void {
 		$files   = Templates::header_partials();
 		$written = array();
+		$twins   = array();
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction( 'pll_default_language', array( 'return' => false ) );
 		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn( string $value ): string => $value ) );
@@ -554,14 +556,23 @@ final class TemplatesTest extends TestCase {
 			'get_posts',
 			array(
 				'return' => static function ( array $args ): array {
-					if ( 'lc_partial' !== ( $args['post_type'] ?? '' ) || array( 'header' ) !== ( $args['post_name__in'] ?? null ) ) {
-						return array();
+					if ( 'lc_partial' === ( $args['post_type'] ?? '' ) && 'header' === ( $args['name'] ?? '' ) ) {
+						return array( self::header_partial( 17, '2026-10-01 09:00:00', 'stale header', 'header' ) );
 					}
-					return array( self::post( 'de' === ( $args['lang'] ?? '' ) ? 41 : 40, 'stale header' ) );
+					return array();
 				},
 			)
 		);
-		WP_Mock::userFunction( 'get_post', array( 'return' => static fn( int $id ): WP_Post => self::post( $id, 'stale header' ) ) );
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'return' => static function ( int $id, string $language ) use ( &$twins ): int {
+					$twins[] = array( $id, $language );
+					return 17 === $id && 'de' === $language ? 6919 : 0;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'get_post', array( 'return' => static fn( int $id ): WP_Post => self::header_partial( $id, 'stale', 'stale header', 6919 === $id ? 'kopfzeile' : 'header' ) ) );
 		WP_Mock::userFunction(
 			'wp_update_post',
 			array(
@@ -576,19 +587,20 @@ final class TemplatesTest extends TestCase {
 
 		( new Templates() )->sync();
 
-		$this->assertSame( (string) file_get_contents( $files[0] ), $written[40] );
-		$this->assertSame( (string) file_get_contents( $files[1] ), $written[41] );
-		$this->assertStringContainsString( 'href="/de/loesung/heimspeicher/"', $written[41] );
-		$this->assertStringNotContainsString( 'href="/solution/', $written[41] );
-		$this->assertSame( 35, substr_count( $written[40], '<rect x=' ) );
+		$this->assertSame( array( array( 17, 'de' ) ), $twins );
+		$this->assertSame( (string) file_get_contents( $files[0] ), $written[17] );
+		$this->assertSame( (string) file_get_contents( $files[1] ), $written[6919] );
+		$this->assertStringContainsString( 'href="/de/loesung/heimspeicher/"', $written[6919] );
+		$this->assertStringNotContainsString( 'href="/solution/', $written[6919] );
+		$this->assertSame( 35, substr_count( $written[17], '<rect x=' ) );
 	}
 
-	/**
-	 * English and German share the slug. A date-ordered lookup would return
-	 * the newer German partial first; each export must still land in its
-	 * own language, and a missing language is left alone.
-	 */
-	public function test_same_slug_headers_are_written_in_their_own_language_when_german_is_newer(): void {
+		/**
+		 * The German partial is not the same slug. A date-ordered same-slug
+		 * lookup would return the newer kopfzeile row if it were queried as
+		 * header; the write still follows pll_get_post from the English anchor.
+		 */
+	public function test_header_twin_is_resolved_from_the_english_partial_not_the_slug(): void {
 		$files   = Templates::header_partials();
 		$english = (string) file_get_contents( $files[0] );
 		$german  = (string) file_get_contents( $files[1] );
@@ -605,29 +617,28 @@ final class TemplatesTest extends TestCase {
 						return array();
 					}
 					$queried[] = $args;
-					// The bug under test: name + posts_per_page=1 is a singular
-					// query, so the language taxonomy never reaches SQL and the
-					// newer German row is the one returned.
-					if ( isset( $args['name'] ) || true === ( $args['suppress_filters'] ?? true ) || '' === ( $args['lang'] ?? '' ) ) {
-						return array( self::header_partial( 41, '2026-10-12 09:00:00' ) );
+					// A same-slug query is the failure under test: the newer
+					// German row would come back, and its slug is not header.
+					if ( array( 'header' ) === ( $args['post_name__in'] ?? null ) ) {
+						return array( self::header_partial( 6919, '2026-10-12 09:00:00', 'stale', 'kopfzeile' ) );
 					}
-					if ( array( 'header' ) !== ( $args['post_name__in'] ?? null ) ) {
-						return array();
-					}
-					if ( 'en' === $args['lang'] ) {
-						return array( self::header_partial( 40, '2026-10-01 09:00:00' ) );
-					}
-					if ( 'de' === $args['lang'] ) {
-						return array( self::header_partial( 41, '2026-10-12 09:00:00' ) );
+					if ( 'header' === ( $args['name'] ?? '' ) ) {
+						return array( self::header_partial( 17, '2026-10-01 09:00:00', 'stale', 'header' ) );
 					}
 					return array();
 				},
 			)
 		);
 		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'return' => static fn( int $id, string $language ): int => 17 === $id && 'de' === $language ? 6919 : 0,
+			)
+		);
+		WP_Mock::userFunction(
 			'get_post',
 			array(
-				'return' => static fn( int $id ): WP_Post => self::header_partial( $id, 'stale' ),
+				'return' => static fn( int $id ): WP_Post => self::header_partial( $id, 'stale', 'stale', 6919 === $id ? 'kopfzeile' : 'header' ),
 			)
 		);
 		WP_Mock::userFunction(
@@ -644,22 +655,54 @@ final class TemplatesTest extends TestCase {
 
 		( new Templates() )->sync();
 
-		$header_queries = array_values(
-			array_filter(
-				$queried,
-				static fn( array $args ): bool => array( 'header' ) === ( $args['post_name__in'] ?? null )
+		$this->assertSame( array(), array_values( array_filter( $queried, static fn( array $args ): bool => isset( $args['post_name__in'] ) ) ) );
+		$this->assertSame( $english, $written[17] );
+		$this->assertSame( $german, $written[6919] );
+		$this->assertNotSame( $written[17], $written[6919] );
+	}
+
+		/**
+		 * An English header whose German twin cannot be resolved stops the
+		 * sync. Neither language is written, and the run does not report the
+		 * skipped language as a success.
+		 */
+	public function test_a_missing_german_header_twin_refuses_before_any_partial_write(): void {
+		$written = 0;
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_default_language', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn( string $value ): string => $value ) );
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => static function ( array $args ): array {
+					if ( 'lc_partial' === ( $args['post_type'] ?? '' ) && 'header' === ( $args['name'] ?? '' ) ) {
+						return array( self::header_partial( 17, '2026-10-01 09:00:00', 'stale', 'header' ) );
+					}
+					return array();
+				},
 			)
 		);
-		$this->assertCount( 2, $header_queries );
-		foreach ( $header_queries as $args ) {
-			$this->assertSame( array( 'header' ), $args['post_name__in'] );
-			$this->assertFalse( $args['suppress_filters'] );
-			$this->assertArrayNotHasKey( 'name', $args );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'return' => static function () use ( &$written ): int {
+					++$written;
+					return 1;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_insert_post', array( 'return' => 1 ) );
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+
+		try {
+			( new Templates() )->sync();
+			$this->fail( 'A missing German header twin should stop sync()' );
+		} catch ( \RuntimeException $e ) {
+			$this->assertStringContainsString( 'German header partial could not be resolved', $e->getMessage() );
+			$this->assertStringContainsString( '17', $e->getMessage() );
 		}
-		$this->assertSame( array( 'en', 'de' ), array_column( $header_queries, 'lang' ) );
-		$this->assertSame( $english, $written[40] );
-		$this->assertSame( $german, $written[41] );
-		$this->assertNotSame( $written[40], $written[41] );
+		$this->assertSame( 0, $written, 'neither language is written when the twin is missing' );
 	}
 
 	/**
@@ -691,17 +734,18 @@ final class TemplatesTest extends TestCase {
 	 * @param int    $id      Post id.
 	 * @param string $date    post_date, MySQL datetime.
 	 * @param string $content Body.
+	 * @param string $slug    post_name. Live German header is kopfzeile, not header.
 	 */
-	private static function header_partial( int $id, string $date, string $content = 'stale header' ): WP_Post {
+	private static function header_partial( int $id, string $date, string $content = 'stale header', string $slug = 'header' ): WP_Post {
 		return new WP_Post(
 			(object) array(
 				'ID'           => $id,
 				'post_type'    => 'lc_partial',
 				'post_status'  => 'publish',
-				'post_name'    => 'header',
+				'post_name'    => $slug,
 				'post_date'    => $date,
 				'post_content' => $content,
-				'post_title'   => 'header',
+				'post_title'   => 'kopfzeile' === $slug ? 'Kopfzeile' : 'Header',
 			)
 		);
 	}

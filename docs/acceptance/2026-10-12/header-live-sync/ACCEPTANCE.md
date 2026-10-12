@@ -64,7 +64,23 @@ HTML assertions below are `curl` of the local t110 instance (127.0.0.1:8975, plu
 3. The tools roof carries its 35 panel cells as static `<rect>` markup in both header exports. The WindPress rule that drew them at `opacity:0` / `scale(.3)` now only sets their fill and stroke, so the cells are visible without the script that used to draw them.
 4. The header's draft link reads Solution draft / Lösungsentwurf, including its aria-label. The `Cart` / `Warenkorb` pair is gone from the plugin's German catalog; the existing `Solution draft` entry translates it.
 5. `PresentCommand::sources()` includes both header partials, so a missing or empty one is refused before anything is written. `Templates::sync_header_partials` refuses the same way.
-6. The two header partials no longer inline the 8755-character tokens block or the 1434-character site-base reset. Both now live once, in the WindPress volume (`content/windpress/tokens.css`, identical to `content/tokens.css`, and `content/windpress/site-base.css`). A Tailwind 4.3 compile of the volume keeps every declaration, including `all: revert`.
+6. The two header partials no longer inline the tokens block or the site-base reset. The only tokens file is `content/windpress/tokens.css` (`Tokens::path()` reads it; the volume glob publishes it). `content/tokens.css` is gone. A Tailwind 4.3 compile of the volume keeps every declaration, including `all: revert`.
 7. An outside click and a focus leaving the mobile panel close it and clear `aria-expanded`, the same way Escape already did (`assets/header-menu.js`).
 
 The `pll_get_post` stub the whole suite was missing is added inside the presentation tests, so `test_detach_partials` no longer depends on another test's mock.
+
+## Semantic repair — 2026-10-12 (on 5ae7953)
+
+The same-slug lookup was wrong on the real instance. t110's published pair is ID 17 `header` / en and ID 6919 `kopfzeile` / de (`pll_get_post(17, 'de')` = 6919). Twins derives the German slug from the German title, so a `post_name__in=header` query never sees the German partial.
+
+`Templates::sync_header_partials` is back to the English partial as the anchor and `pll_get_post($english, 'de')` for the twin. A loaded Polylang that returns no twin refuses the run; neither partial is written, and `present` does not report success. The `kopfzeile` slug is only the fallback when Polylang itself is not loaded. It is not a same-slug query.
+
+Saving the English header, or its German twin, does not queue a machine translation. `present` writes the curated `de/header.html`; a queued job would replace `kopfzeile`.
+
+The first ArrowDown on a closed mega menu waits for the menu's `visibility` transition (200ms in `chrome.css`) before focusing, with a 250ms fallback. A later arrow on an already open menu focuses in the same turn. `node --test plugins/linker-commerce/tests/js/header-menu.test.mjs`: 3 tests, 3 pass.
+
+t110, after `just present t110` and `just windpress-compile t110`:
+
+- Partial 17 content equals `partials/header.html` (26114 bytes). Partial 6919 content equals `partials/de/header.html` (26475 bytes) and contains `/de/loesung/heimspeicher/`. The English partial does not contain `/de/loesung/`.
+- `python3 tools/windpress_volume_check.py t110` exits 0: `uploads/windpress/data/tokens.css` 9016 bytes, `site-base.css` 1433 bytes, `main.css` imports both.
+- Compile: cache mtime 1791794088 → 1791817579, file 588726 bytes, anchor classes present. The compiled cache contains `--proto-accent` (7), `all: revert` (2).

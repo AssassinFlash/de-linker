@@ -128,7 +128,7 @@ final class PresentCommandTest extends TestCase {
 		);
 		file_put_contents( $this->source_paths[0], '' );
 		try {
-			$this->present( array(), array( $this->source_paths[0], sys_get_temp_dir() . '/linker-commerce-missing-source.css' ) );
+				$this->present( array(), array( $this->source_paths[0], sys_get_temp_dir() . '/linker-commerce-missing-source.css' ) );
 			$this->fail( 'A run on unreadable sources should fail' );
 		} catch ( ExitException $e ) {
 			$this->assertStringContainsString( 'unreadable or empty', $e->getMessage() );
@@ -155,7 +155,7 @@ final class PresentCommandTest extends TestCase {
 			)
 		);
 		try {
-			$this->present( array(), array( $partials[0], $partials[1] . '.missing' ) );
+				$this->present( array(), array( $partials[0], $partials[1] . '.missing' ) );
 			$this->fail( 'A missing header partial should fail the run' );
 		} catch ( ExitException $e ) {
 			$this->assertStringContainsString( 'unreadable or empty', $e->getMessage() );
@@ -381,8 +381,7 @@ final class PresentCommandTest extends TestCase {
 		file_put_contents( $this->cache_path, self::COMPILED_ALL );
 		touch( $this->cache_path, time() + 60 );
 
-		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
-		$this->present( array( 'detach-partials' => true ) );
+			$this->present( array( 'detach-partials' => true ) );
 
 		$backup = $this->options[ self::BACKUP ] ?? null;
 		$this->assertIsArray( $backup );
@@ -646,31 +645,33 @@ final class PresentCommandTest extends TestCase {
 		$this->assertArrayHasKey( self::BACKUP, $this->options, 'the backup survives a failed rollback' );
 	}
 
-	/**
-	 * The two header partials share the slug. The German one is newer, which
-	 * is the order a singular name query would return first. Each export is
-	 * written into the partial of its own language.
-	 */
-	public function test_same_slug_headers_are_written_in_their_own_language_when_german_is_newer(): void {
+		/**
+		 * The live pair is header/en and kopfzeile/de. The German partial is
+		 * newer, which is the row a same-slug date order would return first.
+		 * Each export is written into the partial pll_get_post names, not into
+		 * a second header slug.
+		 */
+	public function test_header_twin_is_written_from_the_english_anchor(): void {
 		$this->mock_install(
 			array(
 				'templates' => array(),
 				'partials'  => array(
 					array(
-						'ID'           => 40,
+						'ID'           => 17,
 						'post_name'    => 'header',
 						'post_content' => '<header>stale english</header>',
 						'post_date'    => '2026-10-01 09:00:00',
 						'lang'         => 'en',
 					),
 					array(
-						'ID'           => 41,
-						'post_name'    => 'header',
+						'ID'           => 6919,
+						'post_name'    => 'kopfzeile',
 						'post_content' => '<header>stale deutsch</header>',
 						'post_date'    => '2026-10-12 09:00:00',
 						'lang'         => 'de',
 					),
 				),
+				'twins'     => array( 17 => array( 'de' => 6919 ) ),
 			)
 		);
 		file_put_contents( $this->cache_path, self::COMPILED_ALL );
@@ -679,10 +680,51 @@ final class PresentCommandTest extends TestCase {
 		$this->present();
 
 		$exports = \Linker\Commerce\Presentation\Templates::header_partials();
-		$this->assertSame( (string) file_get_contents( $exports[0] ), $this->written_partials[40] );
-		$this->assertSame( (string) file_get_contents( $exports[1] ), $this->written_partials[41] );
-		$this->assertStringContainsString( 'href="/de/loesung/heimspeicher/"', $this->written_partials[41] );
-		$this->assertStringNotContainsString( 'href="/de/loesung/', $this->written_partials[40] );
+		$this->assertSame( (string) file_get_contents( $exports[0] ), $this->written_partials[17] );
+		$this->assertSame( (string) file_get_contents( $exports[1] ), $this->written_partials[6919] );
+		$this->assertStringContainsString( 'href="/de/loesung/heimspeicher/"', $this->written_partials[6919] );
+		$this->assertStringNotContainsString( 'href="/de/loesung/', $this->written_partials[17] );
+		$this->assertArrayNotHasKey( 40, $this->written_partials );
+	}
+
+		/**
+		 * A present run that cannot resolve the German header twin fails before
+		 * either partial is written. The refusal is the present path, not a
+		 * silent skip followed by success.
+		 */
+	public function test_a_missing_german_header_twin_refuses_present_without_writing_either_side(): void {
+		$this->mock_install(
+			array(
+				'templates' => array(),
+				'partials'  => array(
+					array(
+						'ID'           => 17,
+						'post_name'    => 'header',
+						'post_content' => '<header>stale english</header>',
+						'lang'         => 'en',
+					),
+				),
+				'twins'     => array(),
+			)
+		);
+		file_put_contents( $this->cache_path, self::COMPILED_ALL );
+		touch( $this->cache_path, time() + 60 );
+
+		try {
+			$this->present();
+			$this->fail( 'A missing German header twin should fail present' );
+		} catch ( \RuntimeException $e ) {
+			$this->assertStringContainsString( 'German header partial could not be resolved', $e->getMessage() );
+		}
+		$this->assertSame( array(), $this->written_partials, 'neither language is written' );
+		$this->assertSame( 0, substr_count( $this->output(), 'wp-cli success:' ) );
+		$backup = $this->options[ self::BACKUP ] ?? null;
+		$this->assertIsArray( $backup );
+		$this->assertSame(
+			array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510 ),
+			$backup['created_templates'],
+			'templates inserted before the header refusal are registered for rollback'
+		);
 	}
 
 	/**
@@ -794,24 +836,39 @@ final class PresentCommandTest extends TestCase {
 			'get_posts',
 			array(
 				'return' => static function ( array $args ) use ( $existing ): array {
-					if ( 'lc_partial' === $args['post_type'] && array( 'header' ) === ( $args['post_name__in'] ?? null ) ) {
-						$language = (string) ( $args['lang'] ?? '' );
-						$rows     = array_values(
-							array_filter(
-								$existing['partials'] ?? array(),
-								static fn( array $row ): bool => (string) ( $row['lang'] ?? '' ) === $language
-							)
-						);
-						// Date order is the trap the production query must not use:
-						// the newer German twin would otherwise come back first.
-						usort(
-							$rows,
-							static fn( array $a, array $b ): int => strcmp( (string) ( $b['post_date'] ?? '' ), (string) ( $a['post_date'] ?? '' ) )
-						);
-						return self::wp_posts( array_slice( $rows, 0, 1 ), 'lc_partial' );
+					if ( 'lc_partial' === $args['post_type'] && 'header' === ( $args['name'] ?? '' ) ) {
+						foreach ( $existing['partials'] ?? array() as $row ) {
+							if ( 'header' === ( $row['post_name'] ?? '' ) ) {
+								return self::wp_posts( array( $row ), 'lc_partial' );
+							}
+						}
+						// The default fixture is the live pair: English header
+						// 17, German twin 6919 (kopfzeile). A test that passes
+						// partials and omits header has no header to sync.
+						if ( ! isset( $existing['partials'] ) ) {
+							return self::wp_posts(
+								array(
+									array(
+										'ID'        => 17,
+										'post_name' => 'header',
+										'lang'      => 'en',
+									),
+								),
+								'lc_partial'
+							);
+						}
+						return array();
+					}
+					if ( 'lc_partial' === $args['post_type'] && 'kopfzeile' === ( $args['name'] ?? '' ) ) {
+						foreach ( $existing['partials'] ?? array() as $row ) {
+							if ( 'kopfzeile' === ( $row['post_name'] ?? '' ) ) {
+								return self::wp_posts( array( $row ), 'lc_partial' );
+							}
+						}
+						return array();
 					}
 					if ( 'lc_partial' === $args['post_type'] ) {
-						return self::wp_posts( $existing['partials'] ?? array(), 'lc_partial' );
+							return self::wp_posts( $existing['partials'] ?? array(), 'lc_partial' );
 					}
 					if ( 'page' === $args['post_type'] ) {
 						return self::wp_posts( $existing['pages'] ?? array(), 'page' );
@@ -828,7 +885,7 @@ final class PresentCommandTest extends TestCase {
 						$assigned = $existing['assigned'][ (string) $args['meta_key'] ] ?? null;
 						return null === $assigned ? array() : self::wp_posts( array( $assigned ) );
 					}
-					return self::wp_posts( $existing['templates'] ?? array() );
+						return self::wp_posts( $existing['templates'] ?? array() );
 				},
 			)
 		);
@@ -886,7 +943,20 @@ final class PresentCommandTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'wp_mkdir_p', array( 'return' => true ) );
-		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => sys_get_temp_dir() ) ) );
+			WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => sys_get_temp_dir() ) ) );
+			// WP_Mock defines pll_get_post as soon as any test registers it, so
+			// function_exists() is true for the rest of the process. Every
+			// install fixture therefore registers a handler. The default pair
+			// is the live one: English partial 17, German twin 6919.
+			$twins = $existing['twins'] ?? array( 17 => array( 'de' => 6919 ) );
+			WP_Mock::userFunction(
+				'pll_get_post',
+				array(
+					'return' => static function ( int $id, string $language ) use ( $twins ): int {
+						return (int) ( $twins[ $id ][ $language ] ?? 0 );
+					},
+				)
+			);
 	}
 
 	/**

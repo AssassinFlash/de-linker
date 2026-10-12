@@ -20,9 +20,10 @@ namespace Linker\Commerce\Presentation;
 	 * exactly the templates whose class names the selectors carry.
 	 *
 	 * `tokens.css` and `site-base.css` are the header's foundation, formerly
-	 * inlined in both header partials. They live here so the partials no longer
-	 * carry a second copy; the compiler keeps their declarations (verified
-	 * against Tailwind 4.3, the version the volume compiles with).
+	 * inlined in both header partials. `content/windpress/tokens.css` is the
+	 * only tokens file: Tokens::path() reads it, and this volume publishes
+	 * it. The compiler keeps their declarations (verified against Tailwind
+	 * 4.3, the version the volume compiles with).
 	 */
 final class WindPressVolume {
 
