@@ -258,7 +258,12 @@ def _user_prompt(request: TurnRequest, retry_reason: str | None) -> str:
         "Every ID of a cards block must appear in the text block's refs. "
         "Out-of-scope turns: call handoff-team, then one handoff block "
         "summarized as {fact:handoff.sentence_en} or "
-        "{fact:handoff.sentence_de}. Ask at most one question and only "
+        "{fact:handoff.sentence_de}. A guest inquiry (inquiry-status "
+        "returned login_required, logged_in=false) is not out of scope: "
+        "do not call handoff-team; answer with exactly one text block, "
+        "'Please log in to see where your Proforma stands.' in English or "
+        "'Bitte melden Sie sich an, um zu sehen, wo Ihre Proforma steht.' "
+        "in German, and nothing else. Ask at most one question and only "
         f"with field in {'|'.join(ASK_FIELDS)}."
     )
     return "\n".join(lines)

@@ -9,10 +9,13 @@ from linker_genie.agent import (
     MAX_TOOL_CALLS,
     ToolBudget,
     _ability_runner,
+    _user_prompt,
+    instructions,
     model_name,
     provider_name,
 )
 from linker_genie.facts import Fact, TurnFacts
+from linker_genie.schema import TurnMessage, TurnRequest
 
 
 def test_four_calls_pass_the_fifth_is_refused() -> None:
@@ -91,6 +94,27 @@ def test_budget_facts_merge_the_parts_of_all_calls() -> None:
     merged = budget.facts()
 
     assert merged.product_ids == {4100, 4101, 4102}
+
+
+def test_the_prompt_tells_a_guest_inquiry_to_ask_for_a_login() -> None:
+    """C2-anon-de: the German system prompt and the per-turn reminder both
+    name the login sentence and forbid the team handoff for this fact."""
+    german = instructions("de")
+    assert "Bitte melden Sie sich an, um zu sehen, wo Ihre Proforma steht." in german
+    assert "login_required" in german
+    assert "handoff-team dafür nicht" in german
+
+    request = TurnRequest(
+        conversation_id="c-guest",
+        locale="de",
+        messages=[TurnMessage(role="user", content="Wo steht meine Proforma?")],
+        user={"logged_in": False},  # type: ignore[arg-type]
+    )
+    reminder = _user_prompt(request, None)
+    assert "logged_in=False" in reminder
+    assert "login_required" in reminder
+    assert "Bitte melden Sie sich an" in reminder
+    assert "do not call handoff-team" in reminder
 
 
 def test_real_client_sends_no_token() -> None:

@@ -1,15 +1,23 @@
 """Deterministic fallback when structured output or grounding fails twice.
 
-Two shapes, both protocol-compliant by construction:
+Three shapes, each inside the protocol set by construction
+(`docs/acceptance/protocol.md` §5):
 
+- A guest inquiry turn (`inquiry.login_required` is a fact of this turn):
+  the login sentence only. R7's unsigned-out half is "要求登录", not the
+  team mailbox, so the template must not hand that turn to the handoff
+  sentence even when `handoff-team` also ran.
 - With this turn's tool results (products survived the failed attempts):
-  the qualified cards plus one ask, cards cited by the text's refs.
+  the qualified cards plus one ask, cards cited by the text's refs. A
+  German turn's text and ask options are German; an English turn's are
+  English. The handoff mailbox sentence is not this shape.
 - With nothing citable (every ability call failed - an outage or a storm -
   or the model produced no product structure twice): one handoff that says
   so plainly instead of reading as a normal answer, and offers the retry
-  and the team. The turn's meta carries `fallback: true` with the failures
-  for anything that reads the stream programmatically; the schema has no
-  separate degradation block.
+  and the team. That sentence is the degraded declaration, not the
+  mailbox sentence: a German line carries no English fragment. The turn's
+  meta carries `fallback: true` with the failures for anything that reads
+  the stream programmatically; the schema has no separate degradation block.
 """
 
 from __future__ import annotations
@@ -41,10 +49,57 @@ DEGRADED = {
     ),
 }
 
+# R7 unsigned-out (docs/acceptance/protocol.md §5, panel B7): a guest who
+# asks where the Proforma stands is asked to log in. The sentence is the
+# service's, not the model's, so a German turn cannot drift into the team
+# mailbox sentence (PR #96 pending-main, measured 2026-10-11). Functional
+# UI text, EN and DE written independently.
+LOGIN_REQUIRED = {
+    "en": "Please log in to see where your Proforma stands.",
+    "de": "Bitte melden Sie sich an, um zu sehen, wo Ihre Proforma steht.",
+}
+
+# English function words that only appear in an English sentence. The e2e
+# suite uses the same test (tests/e2e/specs/genie.spec.ts ENGLISH_ONLY) to
+# refuse a German answer that mixes in an English fragment.
+_ENGLISH_FRAGMENT = (
+    " the ",
+    " and ",
+    " with ",
+    " your ",
+    " this ",
+    " our ",
+)
+
+
+def language_of(locale: str) -> Locale:
+    """`de` for a German locale, otherwise `en`."""
+    return "de" if locale.startswith("de") else "en"
+
+
+def login_required(locale: str) -> TurnOutput:
+    """The R7 guest sentence: ask for a login, name no mailbox, leak nothing."""
+    language = language_of(locale)
+    return TurnOutput(
+        language=language,
+        blocks=[TextBlock(text=LOGIN_REQUIRED[language])],
+    )
+
+
+def german_is_clean(text: str) -> bool:
+    """A German line carries none of the English function-word fragments."""
+    padded = f" {text.lower()} "
+    return not any(fragment in padded for fragment in _ENGLISH_FRAGMENT)
+
 
 def fallback(facts: TurnFacts, locale: str) -> TurnOutput:
-    """Cards of qualified products and at most one ask, in `locale`."""
-    language: Locale = "de" if locale.startswith("de") else "en"
+    """A protocol-set answer for a turn grounding refused twice, in `locale`."""
+    language = language_of(locale)
+    # The login fact outranks every other shape. A guest Proforma question
+    # that also called handoff-team must still ask for a login (R7), not
+    # ship the mailbox sentence the handoff tool returned.
+    if "inquiry.login_required" in facts.facts:
+        return login_required(language)
     qualified = sorted(facts.qualified_ids)
     if not qualified and not facts.product_ids:
         # The handoff-team sentence when the tool ran this turn; the degraded
