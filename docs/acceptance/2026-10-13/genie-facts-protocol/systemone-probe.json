@@ -1,0 +1,348 @@
+{
+ "probe": "one pass of the archived behaviour-panel set on /v1/systemone",
+ "not_an_agreement_rate": "One jev pass over the 11 archived panel items, not the switched-path agreement. The pilot's 9/11 (runs/pilot-20261011-t16i2/summary.json) is also one call per item, not a mean of repeated runs: pilot.py calls jev once and deepseek only when a confidence is under TURN_THRESHOLDS, then counts cascade labels against the panel. This probe never calls that cascade. would_escalate_at_0_6 is computed here and not acted on; 7 of 11 items would escalate on grounded.",
+ "date": "2026-10-13",
+ "run_at_utc": "2026-10-12T17:40:02Z",
+ "seconds": 29.8,
+ "judge": {
+  "name": "jev",
+  "kind": "system_one",
+  "model_requested": "typesafe/jev-1.13",
+  "endpoint": "openrouter",
+  "url": "https://openrouter.ai/api/v1/systemone"
+ },
+ "set": {
+  "panel": "docs/acceptance/2026-10-11/13/deepseek-flash",
+  "items": 11,
+  "reference": "turn-log tool_calls, not a live WordPress replay"
+ },
+ "items": [
+  {
+   "id": "panel-r1",
+   "turn_id": 177,
+   "question": "I need a three-phase hybrid inverter for a home with 10 kWp PV and a future battery.",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.616689332993701,
+   "attempts": 1,
+   "input_tokens": 1279,
+   "output_tokens": 71,
+   "cost_usd": 5.3718e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "1",
+     "confidence": 0.8
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.8999999999999999
+    },
+    "better_pick": {
+     "label": "A",
+     "confidence": 1.0
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": false,
+    "appropriate": false,
+    "better_pick": false
+   }
+  },
+  {
+   "id": "panel-r10",
+   "turn_id": 183,
+   "question": "I already have a GoodWe GW10K-ET and want to add a battery.",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.6758293750026496,
+   "attempts": 1,
+   "input_tokens": 1631,
+   "output_tokens": 71,
+   "cost_usd": 6.8502e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "2",
+     "confidence": 0.35
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.8999999999999999
+    },
+    "better_pick": {
+     "label": "A",
+     "confidence": 1.0
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": true,
+    "appropriate": false,
+    "better_pick": false
+   }
+  },
+  {
+   "id": "panel-r11spell",
+   "turn_id": 186,
+   "question": "I need a forty-eight volt battery for a single-phase home.",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.731243625006755,
+   "attempts": 1,
+   "input_tokens": 1705,
+   "output_tokens": 71,
+   "cost_usd": 7.161e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "2",
+     "confidence": 0.56
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.8799999999999999
+    },
+    "better_pick": {
+     "label": "A",
+     "confidence": 1.0
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": true,
+    "appropriate": false,
+    "better_pick": false
+   }
+  },
+  {
+   "id": "panel-r13spell",
+   "turn_id": 187,
+   "question": "Tell me about this model.",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.4623905419866787,
+   "attempts": 1,
+   "input_tokens": 1141,
+   "output_tokens": 36,
+   "cost_usd": 4.7922e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "1",
+     "confidence": 0.85
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.94
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": false,
+    "appropriate": false
+   }
+  },
+  {
+   "id": "panel-r14de",
+   "turn_id": 182,
+   "question": "Lieferzeit?",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.8511732920014765,
+   "attempts": 1,
+   "input_tokens": 809,
+   "output_tokens": 36,
+   "cost_usd": 3.3978e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "2",
+     "confidence": 0.44
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.96
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": true,
+    "appropriate": false
+   }
+  },
+  {
+   "id": "panel-r2de",
+   "turn_id": 179,
+   "question": "Ich brauche einen dreiphasigen Hybridwechselrichter für ein Wohngebäude mit 10 kWp PV und späterer Batterie. Marke ist egal.",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.7859001250035362,
+   "attempts": 1,
+   "input_tokens": 1644,
+   "output_tokens": 71,
+   "cost_usd": 6.9048e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "1",
+     "confidence": 0.76
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.8999999999999999
+    },
+    "better_pick": {
+     "label": "A",
+     "confidence": 0.98
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": false,
+    "appropriate": false,
+    "better_pick": false
+   }
+  },
+  {
+   "id": "panel-r2en",
+   "turn_id": 178,
+   "question": "I need a three-phase hybrid inverter for a home with 10 kWp PV and a future battery. Any brand is fine.",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.745099082996603,
+   "attempts": 1,
+   "input_tokens": 1449,
+   "output_tokens": 71,
+   "cost_usd": 6.0858e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "1",
+     "confidence": 0.64
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.9199999999999999
+    },
+    "better_pick": {
+     "label": "A",
+     "confidence": 0.98
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": false,
+    "appropriate": false,
+    "better_pick": false
+   }
+  },
+  {
+   "id": "panel-r3spell",
+   "turn_id": 184,
+   "question": "We have twelve kilowatt peak on a three-phase home — is the HS3-5K enough for that?",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.667780916002812,
+   "attempts": 1,
+   "input_tokens": 1677,
+   "output_tokens": 71,
+   "cost_usd": 7.0434e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "1",
+     "confidence": 0.19
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.9199999999999999
+    },
+    "better_pick": {
+     "label": "A",
+     "confidence": 0.98
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": true,
+    "appropriate": false,
+    "better_pick": false
+   }
+  },
+  {
+   "id": "panel-r4spell",
+   "turn_id": 185,
+   "question": "I need a hybrid inverter for my home.",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.506748208004865,
+   "attempts": 1,
+   "input_tokens": 1455,
+   "output_tokens": 71,
+   "cost_usd": 6.111e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "1",
+     "confidence": 0.5
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.9199999999999999
+    },
+    "better_pick": {
+     "label": "A",
+     "confidence": 1.0
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": true,
+    "appropriate": false,
+    "better_pick": false
+   }
+  },
+  {
+   "id": "panel-r5",
+   "turn_id": 180,
+   "question": "Which batteries have documented pairing with this model?",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.891172749994439,
+   "attempts": 1,
+   "input_tokens": 1610,
+   "output_tokens": 71,
+   "cost_usd": 6.762e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "1",
+     "confidence": 0.41
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.9199999999999999
+    },
+    "better_pick": {
+     "label": "A",
+     "confidence": 1.0
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": true,
+    "appropriate": false,
+    "better_pick": false
+   }
+  },
+  {
+   "id": "panel-r8en",
+   "turn_id": 181,
+   "question": "Do you do installations?",
+   "model_reported": "typesafe/jev-1.13-20260917",
+   "seconds": 2.7013882089959225,
+   "attempts": 1,
+   "input_tokens": 779,
+   "output_tokens": 36,
+   "cost_usd": 3.2718e-05,
+   "error": null,
+   "answers": {
+    "grounded": {
+     "label": "2",
+     "confidence": 0.59
+    },
+    "appropriate": {
+     "label": "yes",
+     "confidence": 0.96
+    }
+   },
+   "would_escalate_at_0_6": {
+    "grounded": true,
+    "appropriate": false
+   }
+  }
+ ],
+ "missing_key": false
+}
