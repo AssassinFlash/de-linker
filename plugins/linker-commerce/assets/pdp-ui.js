@@ -74,8 +74,10 @@
 	/* The assistant entries: the tool row's ask button and the project
 	   choices hand their message to the assistant. */
 	function ask(message, trigger) {
+		/* The Genie dock listens for linker-genie-ask (App.tsx); the old
+		   assistant's lia:ask name died with its plugin. */
 		window.dispatchEvent(
-			new CustomEvent("lia:ask", { detail: { message: message, trigger: trigger } })
+			new CustomEvent("linker-genie-ask", { detail: { message: message, trigger: trigger } })
 		);
 	}
 	var askButton = root.querySelector("[data-pdp-ask]");
