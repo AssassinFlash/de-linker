@@ -33,6 +33,7 @@ import {
 import { BlockView } from './components/BlockView';
 import { Compare } from './components/Compare';
 import { GenieCard } from './components/GenieCard';
+import { NewConversationIcon, PanelIcon, SendIcon } from './components/Icons';
 import { VoteButtons } from './components/VoteButtons';
 import './genie.css';
 
@@ -89,8 +90,13 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ historyPhase, setHistoryPhase ] =
 		useState< HistoryPhase >( 'ready' );
 	const [ currentId, setCurrentId ] = useState( 0 );
+	// The rail rides open beside the workspace's column on a wide screen; under
+	// 768px it is an overlay that would land on top of the conversation, so it
+	// starts closed and the bar's toggle opens it — the prototype's own mobile
+	// rule. Read from window.innerWidth rather than a media query, so a jsdom
+	// render (1024) keeps the desktop start.
 	const [ railOpen, setRailOpen ] = useState(
-		config.surface === 'workspace'
+		config.surface === 'workspace' && window.innerWidth >= 768
 	);
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
@@ -352,10 +358,44 @@ export function App( { config }: { config: GenieConfig } ) {
 					onRetry={ () => void refreshHistory() }
 				/>
 			) : null }
+			{ /*
+			 * The rail's scrim, under 768px only, where the rail is an overlay
+			 * (prototype `.gp-rail-mask`): the stylesheet shows it, so a wide
+			 * screen carries it as display:none rather than not at all.
+			 */ }
+			{ visible && railOpen ? (
+				<button
+					type="button"
+					className="linker-genie-rail-mask"
+					onClick={ () => setRailOpen( false ) }
+				>
+					<span className="screen-reader-text">
+						{ __( 'Close sidebar', 'linker-tools' ) }
+					</span>
+				</button>
+			) : null }
 			<div className="linker-genie-app__main">
 				<header className="linker-genie-app__bar">
 					<p className="linker-genie-app__title">{ appName() }</p>
 					<div className="linker-genie-app__bar-actions">
+						{ /*
+						 * The rail's own toggle rides in the rail, which the
+						 * workspace can close. Closed, the rail is gone and
+						 * the only way back has to live outside it.
+						 */ }
+						{ workspace && ! railOpen ? (
+							<button
+								type="button"
+								className="linker-genie-app__rail-toggle"
+								aria-expanded={ railOpen }
+								onClick={ () => setRailOpen( true ) }
+							>
+								<PanelIcon />
+								<span className="screen-reader-text">
+									{ __( 'Conversations', 'linker-tools' ) }
+								</span>
+							</button>
+						) : null }
 						{ ! workspace && config.workspaceUrl ? (
 							<a
 								className="linker-genie-app__full"
@@ -380,101 +420,95 @@ export function App( { config }: { config: GenieConfig } ) {
 				</header>
 				{ visible ? (
 					<div className="linker-genie-app__panel">
-						{ config.disclosure ? (
-							<p className="linker-genie-app__disclosure">
-								{ config.disclosure }
-							</p>
-						) : null }
-						<ol className="linker-genie-app__thread">
-							{ thread.map( ( message, index ) => (
-								<li
-									key={ index }
-									className={ `linker-genie-app__message linker-genie-app__message--${ message.role }` }
+						{ /*
+						 * `.gp-messages`: the transcript is the frame's one
+						 * scroll box and the composer stands outside it, so
+						 * the input is in place however long the thread grows.
+						 * The blocks and the cards travel inside it, the way a
+						 * prototype message carries them.
+						 */ }
+						<div className="linker-genie-app__transcript">
+							<ol className="linker-genie-app__thread">
+								{ thread.map( ( message, index ) => (
+									<li
+										key={ index }
+										className={ `linker-genie-app__message linker-genie-app__message--${ message.role }` }
+									>
+										{ message.content }
+										{ 'assistant' === message.role ? (
+											<VoteButtons
+												voteUrl={ config.voteUrl }
+												nonce={ config.restNonce }
+												turnId={ message.turnId }
+											/>
+										) : null }
+									</li>
+								) ) }
+								{ 'waiting' === phase ? (
+									<li className="linker-genie-app__message linker-genie-app__message--assistant">
+										{ __(
+											'Genie is thinking…',
+											'linker-tools'
+										) }
+									</li>
+								) : null }
+							</ol>
+							{ 'error' === phase ? (
+								<p
+									role="alert"
+									className="linker-genie-app__error"
 								>
-									{ message.content }
-									{ 'assistant' === message.role ? (
-										<VoteButtons
-											voteUrl={ config.voteUrl }
-											nonce={ config.restNonce }
-											turnId={ message.turnId }
-										/>
-									) : null }
-								</li>
-							) ) }
-							{ 'waiting' === phase ? (
-								<li className="linker-genie-app__message linker-genie-app__message--assistant">
 									{ __(
-										'Genie is thinking…',
+										'Genie did not answer. Please try again.',
 										'linker-tools'
 									) }
-								</li>
+								</p>
 							) : null }
-						</ol>
-						{ 'error' === phase ? (
-							<p role="alert" className="linker-genie-app__error">
-								{ __(
-									'Genie did not answer. Please try again.',
-									'linker-tools'
-								) }
-							</p>
-						) : null }
-						{ turn?.blocks.map( ( block, index ) => (
-							<BlockView
-								key={ index }
-								block={ block }
-								accountUrl={ config.accountUrl }
-								onAsk={ ask }
-							/>
-						) ) }
-						{ turn?.blocks.some(
-							( block ) => 'cards' === block.type
-						) ? (
-							<div className="linker-genie-app__cards">
-								{ cardIds.map( ( productId ) => (
-									<GenieCard
-										key={ productId }
-										productId={ productId }
-										restUrl={ config.restUrl }
-										store={ store }
-										locale={ config.locale }
-										status={
-											cards.find(
-												( item ) =>
-													item.productId === productId
-											)?.status ?? {
-												state: 'idle',
-												text: '',
+							{ turn?.blocks.map( ( block, index ) => (
+								<BlockView
+									key={ index }
+									block={ block }
+									accountUrl={ config.accountUrl }
+									onAsk={ ask }
+								/>
+							) ) }
+							{ turn?.blocks.some(
+								( block ) => 'cards' === block.type
+							) ? (
+								<div className="linker-genie-app__cards">
+									{ cardIds.map( ( productId ) => (
+										<GenieCard
+											key={ productId }
+											productId={ productId }
+											restUrl={ config.restUrl }
+											store={ store }
+											locale={ config.locale }
+											status={
+												cards.find(
+													( item ) =>
+														item.productId ===
+														productId
+												)?.status ?? {
+													state: 'idle',
+													text: '',
+												}
 											}
-										}
-										onAdd={ addCardToDraft }
-										onSave={ saveCardSolution }
-									/>
-								) ) }
-							</div>
-						) : null }
-						{ turn?.blocks.some(
-							( block ) => 'compare' === block.type
-						) ? (
-							<Compare
-								products={ compareIds }
-								store={ store }
-								locale={ config.locale }
-							/>
-						) : null }
-						{ thread.length === 0 && config.prompts.length > 0 ? (
-							<div className="linker-genie-app__prompts">
-								{ config.prompts.map( ( prompt ) => (
-									<button
-										key={ prompt }
-										type="button"
-										className="linker-genie-app__prompt"
-										onClick={ () => ask( prompt ) }
-									>
-										{ prompt }
-									</button>
-								) ) }
-							</div>
-						) : null }
+											onAdd={ addCardToDraft }
+											onSave={ saveCardSolution }
+										/>
+									) ) }
+								</div>
+							) : null }
+							{ turn?.blocks.some(
+								( block ) => 'compare' === block.type
+							) ? (
+								<Compare
+									products={ compareIds }
+									store={ store }
+									locale={ config.locale }
+								/>
+							) : null }
+						</div>
 						<form
 							className="linker-genie-app__composer"
 							onSubmit={ ( event ) => {
@@ -491,6 +525,10 @@ export function App( { config }: { config: GenieConfig } ) {
 							<input
 								id="linker-genie-input"
 								className="linker-genie-app__input"
+								placeholder={ __(
+									'Ask Genie',
+									'linker-tools'
+								) }
 								value={ input }
 								onChange={ ( event ) =>
 									setInput( event.target.value )
@@ -499,10 +537,37 @@ export function App( { config }: { config: GenieConfig } ) {
 							<button
 								type="submit"
 								className="linker-genie-app__send"
+								disabled={ ! input.trim() }
 							>
-								{ __( 'Send', 'linker-tools' ) }
+								<SendIcon />
+								<span className="screen-reader-text">
+									{ __( 'Send', 'linker-tools' ) }
+								</span>
 							</button>
 						</form>
+						{ /* `.gp-disclosure` — the prototype prints it under the
+						 * composer, inside the pinned zone. */ }
+						{ config.disclosure ? (
+							<p className="linker-genie-app__disclosure">
+								{ config.disclosure }
+							</p>
+						) : null }
+						{ /* `.gp-prompts` — the opening questions, under the
+						 * composer in the prototype's welcome. */ }
+						{ thread.length === 0 && config.prompts.length > 0 ? (
+							<div className="linker-genie-app__prompts">
+								{ config.prompts.map( ( prompt ) => (
+									<button
+										key={ prompt }
+										type="button"
+										className="linker-genie-app__prompt"
+										onClick={ () => ask( prompt ) }
+									>
+										{ prompt }
+									</button>
+								) ) }
+							</div>
+						) : null }
 					</div>
 				) : null }
 			</div>
@@ -545,58 +610,78 @@ function HistoryRail( {
 			aria-label={ __( 'Conversations', 'linker-tools' ) }
 		>
 			<div className="linker-genie-rail__top">
+				<span
+					className="linker-genie-rail__monogram"
+					aria-hidden="true"
+				>
+					G
+				</span>
+				<span className="linker-genie-rail__brand">
+					{ __( 'Genie', 'linker-tools' ) }
+				</span>
 				<button
 					type="button"
 					className="linker-genie-rail__toggle"
 					aria-expanded={ open }
 					onClick={ open ? onClose : onOpen }
 				>
-					{ open
-						? __( 'Close sidebar', 'linker-tools' )
-						: __( 'Conversations', 'linker-tools' ) }
-				</button>
-				<button
-					type="button"
-					className="linker-genie-rail__new"
-					onClick={ onNew }
-				>
-					{ __( 'New conversation', 'linker-tools' ) }
+					<PanelIcon />
+					<span className="screen-reader-text">
+						{ open
+							? __( 'Close sidebar', 'linker-tools' )
+							: __( 'Conversations', 'linker-tools' ) }
+					</span>
 				</button>
 			</div>
-			{ failed ? (
-				<p role="alert" className="linker-genie-rail__empty">
-					{ __(
-						'Conversations could not be loaded.',
-						'linker-tools'
-					) }{ ' ' }
-					<button type="button" onClick={ onRetry }>
-						{ __( 'Try again', 'linker-tools' ) }
-					</button>
+			<button
+				type="button"
+				className="linker-genie-rail__new"
+				onClick={ onNew }
+			>
+				<NewConversationIcon />
+				{ __( 'New conversation', 'linker-tools' ) }
+			</button>
+			<div className="linker-genie-rail__history">
+				<p className="linker-genie-rail__label">
+					{ __( 'Conversations', 'linker-tools' ) }
 				</p>
-			) : null }
-			{ ! failed && items.length === 0 ? (
-				<p className="linker-genie-rail__empty">
-					{ __( 'No earlier conversation.', 'linker-tools' ) }
-				</p>
-			) : null }
-			{ ! failed && items.length > 0 ? (
-				<ul className="linker-genie-rail__list">
-					{ items.map( ( item ) => (
-						<li key={ item.id }>
-							<button
-								type="button"
-								className="linker-genie-rail__item"
-								aria-current={
-									item.id === currentId ? 'true' : undefined
-								}
-								onClick={ () => onSelect( item.id ) }
-							>
-								{ item.title }
-							</button>
-						</li>
-					) ) }
-				</ul>
-			) : null }
+				{ failed ? (
+					<p role="alert" className="linker-genie-rail__empty">
+						{ __(
+							'Conversations could not be loaded.',
+							'linker-tools'
+						) }{ ' ' }
+						<button type="button" onClick={ onRetry }>
+							{ __( 'Try again', 'linker-tools' ) }
+						</button>
+					</p>
+				) : null }
+				{ ! failed && items.length === 0 ? (
+					<p className="linker-genie-rail__empty">
+						{ __( 'No earlier conversation.', 'linker-tools' ) }
+					</p>
+				) : null }
+				{ ! failed && items.length > 0 ? (
+					<ul className="linker-genie-rail__list">
+						{ items.map( ( item ) => (
+							<li key={ item.id }>
+								<button
+									type="button"
+									className="linker-genie-rail__item"
+									aria-current={
+										item.id === currentId
+											? 'true'
+											: undefined
+									}
+									onClick={ () => onSelect( item.id ) }
+								>
+									{ item.title }
+								</button>
+							</li>
+						) ) }
+					</ul>
+				) : null }
+			</div>
 		</aside>
 	);
 }

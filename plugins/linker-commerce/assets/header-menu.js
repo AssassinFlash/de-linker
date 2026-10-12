@@ -25,8 +25,18 @@
 	disclosures.forEach( item => {
 		const button = buttonFor( item );
 		const menu = item.querySelector( '.tv-mega-menu, .tv-b2b-acct-menu' );
-		if ( ! menu.id ) menu.id = 'linker-menu-' + item.dataset.tvNavPrimary;
+		// `.tv-b2b-acct` carries no data-tv-nav-primary; the account menu is
+		// the one other disclosure.
+		if ( ! menu.id ) menu.id = 'linker-menu-' + ( item.dataset.tvNavPrimary || 'account' );
 		button.setAttribute( 'aria-controls', menu.id );
+		// The account menu is shown by `hidden` alone (the header stylesheet
+		// has .tv-b2b-acct-menu[hidden]{display:none}); the mega menu reads
+		// its state from aria-expanded through :has(). So the state this
+		// script toggles is also the state it starts: a menu served without
+		// `hidden` would otherwise stand open beside aria-expanded="false"
+		// (found on the workspace header 2026-10-13). The mega menu is left
+		// as it arrives — hiding it here would eat the first open's fade.
+		if ( menu.classList.contains( 'tv-b2b-acct-menu' ) ) setOpen( item, false );
 		let hovered = false;
 		item.addEventListener( 'pointerenter', event => {
 			if ( event.pointerType === 'touch' ) return;

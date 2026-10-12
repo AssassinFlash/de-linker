@@ -79,3 +79,22 @@ test( 'a later ArrowDown on an open menu focuses in the same turn', () => {
 	assert.equal( window.document.activeElement, first );
 	assert.equal( queued.length, 0 );
 } );
+
+test( 'an account menu served without hidden is closed on load', () => {
+	const dom = new JSDOM( `<!doctype html><html lang="en"><body>
+		<header id="tv-header-v2">
+			<div class="tv-b2b-acct">
+				<button class="tv-b2b-acct-btn" aria-haspopup="true" aria-expanded="false">Sign in</button>
+				<div class="tv-b2b-acct-menu"><a href="/my-account/">My account</a></div>
+			</div>
+		</header>
+	</body></html>`, { runScripts: 'outside-only', pretendToBeVisual: true } );
+	const { window } = dom;
+	window.eval( source );
+	const button = window.document.querySelector( '.tv-b2b-acct-btn' );
+	const menu = window.document.querySelector( '.tv-b2b-acct-menu' );
+	assert.equal( button.getAttribute( 'aria-expanded' ), 'false' );
+	assert.equal( menu.hidden, true );
+	assert.equal( menu.id, 'linker-menu-account' );
+	assert.equal( button.getAttribute( 'aria-controls' ), menu.id );
+} );
