@@ -21,15 +21,21 @@ import { expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import type { GenieConfig } from './config';
-import { App } from './App';
+import { App, resetTurnLane } from './App';
 
 vi.mock( './api/turn', async ( importOriginal ) => {
 	const actual = await importOriginal< typeof import( './api/turn' ) >();
 	return {
 		// The real message rule, so a restored thread is spelled the same way
-		// a live one is; the two calls around it are doubles.
+		// a live one is; the calls around it are doubles.
 		assistantMessage: actual.assistantMessage,
 		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
+		listConversations: vi.fn( async () => ( {
+			currentId: 0,
+			conversations: [],
+			ok: true,
+		} ) ),
+		selectConversation: vi.fn(),
 		sendTurn: vi.fn(),
 		sendVote: vi.fn( async () => true ),
 	};
@@ -37,7 +43,13 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
-import { readThread, sendTurn, sendVote } from './api/turn';
+import {
+	listConversations,
+	readThread,
+	selectConversation,
+	sendTurn,
+	sendVote,
+} from './api/turn';
 
 const GERMAN_STREAM =
 	'event: meta\n' +
@@ -51,16 +63,20 @@ const GERMAN_STREAM =
 
 function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 	return {
+		surface: 'helper',
 		locale,
 		pageType: 'category',
+		productId: 0,
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
+		conversationsUrl: '/wp-json/linker-ai/v1/genie/conversations',
 		voteUrl: '/wp-json/linker-ai/v1/genie/turn',
 		restUrl: '/wp-json/',
 		restNonce: 'n',
 		disclosure:
 			"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.",
 		accountUrl: '/my-account/',
+		workspaceUrl: '/linker-advisor/',
 		prompts: [
 			'Ask Genie',
 			'I need a three-phase hybrid inverter for a home.',
@@ -267,18 +283,21 @@ test( 'the ready handshake opens once and Hide/reopen reports the same state', a
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.mocked( sendTurn ).mockClear();
 	const states: boolean[] = [];
+	let ready = 0;
 	const onState = ( event: Event ) => {
 		states.push(
 			( event as CustomEvent< { open: boolean } > ).detail.open
 		);
 	};
 	const onReady = () => {
+		ready += 1;
 		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) );
 	};
 	window.addEventListener( 'linker-genie-state', onState );
 	window.addEventListener( 'linker-genie-ready', onReady );
 	try {
 		render( <App config={ config() } /> );
+		expect( ready ).toBe( 1 );
 		expect( screen.getByRole( 'button', { name: 'Hide' } ) ).toBeVisible();
 		fireEvent.click( screen.getByRole( 'button', { name: 'Hide' } ) );
 		expect( states.at( -1 ) ).toBe( false );
@@ -330,4 +349,83 @@ test( 'one entry ask survives a late thread restore without being sent twice', a
 		{ role: 'user', content: 'What pairs with this model?' },
 	] );
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+} );
+
+test( 'a failed history load is not an empty history', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 0,
+		conversations: [],
+		ok: false,
+	} );
+	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Conversations could not be loaded.'
+	);
+	expect( screen.queryByText( 'No earlier conversation.' ) ).toBeNull();
+} );
+
+test( 'a failed switch says so instead of keeping a silent rail', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 7,
+		ok: true,
+		conversations: [
+			{ id: 7, title: 'Battery pairing', updated: '2026-10-12' },
+		],
+	} );
+	vi.mocked( selectConversation ).mockRejectedValue(
+		new Error( 'conversation 500' )
+	);
+	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	fireEvent.click(
+		await screen.findByRole( 'button', { name: 'Battery pairing' } )
+	);
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Conversations could not be loaded.'
+	);
+} );
+
+test( 'the workspace lists real conversations and loads the selected one', async () => {
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 7,
+		ok: true,
+		conversations: [
+			{ id: 7, title: 'Battery pairing', updated: '2026-10-12' },
+			{ id: 8, title: 'Document question', updated: '2026-10-11' },
+		],
+	} );
+	vi.mocked( selectConversation ).mockResolvedValue( {
+		currentId: 8,
+		ok: true,
+		conversations: [
+			{ id: 7, title: 'Battery pairing', updated: '2026-10-12' },
+			{ id: 8, title: 'Document question', updated: '2026-10-11' },
+		],
+	} );
+	vi.mocked( readThread )
+		.mockResolvedValueOnce( { messages: [], turn: null } )
+		.mockResolvedValueOnce( {
+			messages: [ { role: 'user', content: 'Where is the datasheet?' } ],
+			turn: null,
+		} );
+
+	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+
+	expect(
+		await screen.findByRole( 'button', { name: 'Battery pairing' } )
+	).toHaveAttribute( 'aria-current', 'true' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Document question' } )
+		);
+	} );
+	expect( selectConversation ).toHaveBeenCalledWith(
+		'/wp-json/linker-ai/v1/genie/conversations',
+		'n',
+		8
+	);
+	expect(
+		await screen.findByText( 'Where is the datasheet?' )
+	).toBeVisible();
 } );

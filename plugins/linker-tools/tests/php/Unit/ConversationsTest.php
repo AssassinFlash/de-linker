@@ -95,25 +95,26 @@ final class ConversationsTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
-		WP_Mock::expectAction(
-			'linker_tools_set_conversation_cookie',
-			'51',
-			1000000,
-			'/',
-			'',
-			false
-		);
+			$signed = $this->signed_cookie( 51 );
+			WP_Mock::expectAction(
+				'linker_tools_set_conversation_cookie',
+				$signed,
+				1000000,
+				'/',
+				'',
+				false
+			);
 
-		// The same flow a turn uses: no cookie -> open() fires the action, the
-		// registered listener sends the header, and the NEXT request (the
-		// readback below) reuses the conversation from it.
-		$id = $conversation->open();
-		$conversation->send_cookie( (string) $id, 1000000, '/', '', false );
+			// The same flow a turn uses: no cookie -> open() fires the action, the
+			// registered listener sends the header, and the NEXT request (the
+			// readback below) reuses the conversation from it.
+			$id = $conversation->open();
+			$conversation->send_cookie( $signed, 1000000, '/', '', false );
 
-		$this->assertSame( 51, $id );
-		$this->assertCount( 1, $conversation->sent );
-		$this->assertSame( 'linker_conversation', $conversation->sent[0]['name'] );
-		$this->assertSame( '51', $conversation->sent[0]['value'] );
+			$this->assertSame( 51, $id );
+			$this->assertCount( 1, $conversation->sent );
+			$this->assertSame( 'linker_conversation', $conversation->sent[0]['name'] );
+			$this->assertSame( $signed, $conversation->sent[0]['value'] );
 		$this->assertSame( 1000000, $conversation->sent[0]['options']['expires'] );
 		$this->assertTrue( $conversation->sent[0]['options']['httponly'] );
 		$this->assertSame( 'Lax', $conversation->sent[0]['options']['samesite'] );
@@ -159,7 +160,7 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
 		WP_Mock::expectAction(
 			'linker_tools_set_conversation_cookie',
-			'51',
+			$this->signed_cookie( 51 ),
 			1000000,
 			'/',
 			'',
@@ -179,7 +180,7 @@ final class ConversationsTest extends TestCase {
 	 */
 	public function test_current_id_reuses_the_cookie_conversation(): void {
 		$this->logged_out();
-		$_COOKIE = array( 'linker_conversation' => '51' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -201,11 +202,89 @@ final class ConversationsTest extends TestCase {
 	}
 
 	/**
+	 * A signed-in visitor may not read or take over another visitor's
+	 * unowned conversation, even by naming its id. Their own conversation
+	 * and the unowned conversation their cookie names stay usable.
+	 */
+	public function test_a_signed_in_visitor_may_not_use_anothers_unowned_conversation(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 52 ) );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'return' => static function ( string $field, int $id ): string {
+					unset( $field );
+					if ( 51 === $id ) {
+						return '7';
+					}
+					if ( 52 === $id ) {
+						return '0';
+					}
+					return '8';
+				},
+			)
+		);
+
+		$conversations = new Conversations();
+
+		$this->assertTrue( $conversations->may_use( 51 ) );
+		$this->assertTrue( $conversations->may_use( 52 ) );
+		$this->assertFalse( $conversations->may_use( 99 ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A cookie that is only a conversation id is not a credential. The
+	 * signature is what names the conversation; a forged number is ignored
+	 * at the gate and does not open that post.
+	 */
+	public function test_an_unsigned_numeric_cookie_is_refused(): void {
+		$this->logged_out();
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
+		$_COOKIE = array( 'linker_conversation' => '51' );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'args'   => array( 51 ),
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 51 ),
+				'return' => '0',
+			)
+		);
+
+		$conversations = new Conversations();
+
+		$this->assertFalse( $conversations->may_use( 51 ) );
+		$this->assertSame( 0, $conversations->existing_id() );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * A cookie for a foreign or deleted conversation is ignored.
 	 */
 	public function test_current_id_ignores_a_foreign_conversation(): void {
 		$this->logged_out();
-		$_COOKIE = array( 'linker_conversation' => '51' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -223,7 +302,7 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
 		WP_Mock::expectAction(
 			'linker_tools_set_conversation_cookie',
-			'52',
+			$this->signed_cookie( 52 ),
 			1000000,
 			'/',
 			'',
@@ -241,8 +320,9 @@ final class ConversationsTest extends TestCase {
 	public function test_claim_assigns_the_user(): void {
 		$user     = new \WP_User();
 		$user->ID = 7;
-		$_COOKIE  = array( 'linker_conversation' => '51' );
+		$_COOKIE  = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'absint',
 			array(
@@ -282,12 +362,261 @@ final class ConversationsTest extends TestCase {
 	}
 
 	/**
+	 * A guest's history is the cookie conversation, and nothing else.
+	 */
+	public function test_a_guest_lists_only_the_cookie_conversation(): void {
+		$this->logged_out();
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'args'   => array( 51 ),
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 51 ),
+				'return' => '0',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'args'   => array( 51 ),
+				'return' => self::post( 51, 'Which inverter fits?' ),
+			)
+		);
+
+		$list = $this->conversations()->list_for_visitor();
+
+		$this->assertCount( 1, $list );
+		$this->assertSame( 51, $list[0]['id'] );
+		$this->assertSame( 'Which inverter fits?', $list[0]['title'] );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A signed-in customer lists the conversations they own. A conversation
+	 * they may not use never appears, even if a query returned it.
+	 */
+	public function test_a_customer_lists_owned_conversations(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+		$_COOKIE = array();
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'times'  => 1,
+				'return' => array( 51, 52 ),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => static fn( int $id ): string => 53 === $id ? 'post' : 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'return' => static fn( string $field, int $id ): string => 52 === $id ? '8' : '7',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static fn( int $id ): \WP_Post => self::post( $id, 'Conversation ' . $id ),
+			)
+		);
+
+		$list = ( new Conversations() )->list_for_visitor();
+
+		$this->assertSame( array( 51 ), array_column( $list, 'id' ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Selecting a conversation writes the same cookie the next turn reads.
+	 * A conversation the visitor may not use is refused and writes nothing.
+	 */
+	public function test_activate_sets_the_cookie_only_for_an_owned_conversation(): void {
+		$this->logged_out();
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => static fn( int $id ): string => 51 === $id ? 'linker_conversation' : 'post',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 51 ),
+				'return' => '0',
+			)
+		);
+		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction(
+			'linker_tools_set_conversation_cookie',
+			$this->signed_cookie( 51 ),
+			1000000,
+			'/',
+			'',
+			false
+		);
+
+			$conversations = $this->conversations();
+			$this->assertTrue( $conversations->activate( 51 ) );
+			$this->assertFalse( $conversations->activate( 99 ) );
+			$this->assertSame( 51, $conversations->existing_id() );
+			$this->assertConditionsMet();
+	}
+
+	/**
+	 * Selecting another owned conversation is visible in this request.
+	 * The header alone would leave existing_id() and the list on the
+	 * previous cookie until the browser came back.
+	 */
+	public function test_activate_is_visible_to_the_same_request(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => static fn( int $id ): string => in_array( $id, array( 51, 52 ), true ) ? 'linker_conversation' : 'post',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'return' => static fn( string $field, int $id ): string => in_array( $id, array( 51, 52 ), true ) ? '7' : '0',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => array( 51 ),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static fn( int $id ): \WP_Post => self::post( $id, 'Conversation ' . $id ),
+			)
+		);
+		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction(
+			'linker_tools_set_conversation_cookie',
+			$this->signed_cookie( 52 ),
+			1000000,
+			'/',
+			'',
+			false
+		);
+
+		$conversations = $this->conversations();
+		$this->assertSame( 51, $conversations->existing_id() );
+		$this->assertTrue( $conversations->activate( 52 ) );
+		$this->assertSame( 52, $conversations->existing_id() );
+		$this->assertSame( 52, $conversations->current_id() );
+		$this->assertContains( 52, array_column( $conversations->list_for_visitor(), 'id' ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The first customer message names a new conversation. A conversation
+	 * that already has a title keeps it.
+	 */
+	public function test_the_first_message_names_a_new_conversation(): void {
+		$this->logged_out();
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'args'   => array( 51 ),
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 51 ),
+				'return' => '0',
+			)
+		);
+		$titles = array( 'Genie', 'Battery pairing' );
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static function ( int $id ) use ( &$titles ): \WP_Post {
+					return ConversationsTest::post( $id, (string) array_shift( $titles ) );
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'times' => 1,
+				'args'  => array(
+					array(
+						'ID'         => 51,
+						'post_title' => 'Which battery pairs?',
+					),
+				),
+			)
+		);
+
+		$conversations = $this->conversations();
+		$conversations->title_from_first_message( 51, 'Which battery pairs?' );
+		$conversations->title_from_first_message( 51, 'A later question' );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A conversation post as the list reads it.
+	 *
+	 * @param int    $id    Post ID.
+	 * @param string $title Post title.
+	 */
+	public static function post( int $id, string $title ): \WP_Post {
+		return new \WP_Post(
+			(object) array(
+				'ID'                => $id,
+				'post_title'        => $title,
+				'post_type'         => 'linker_conversation',
+				'post_status'       => 'private',
+				'post_modified_gmt' => '2026-10-12 08:00:00',
+			)
+		);
+	}
+
+	/**
 	 * Guest state: is_user_logged_in() false, get_current_user_id() zero.
 	 */
 	private function logged_out(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction(
 			'absint',
@@ -295,6 +624,15 @@ final class ConversationsTest extends TestCase {
 				'return' => static fn( $value ): int => max( 0, (int) $value ),
 			)
 		);
+	}
+
+	/**
+	 * A cookie this site would have signed for `$id`.
+	 *
+	 * @param int $id Conversation post ID.
+	 */
+	private function signed_cookie( int $id ): string {
+		return $id . '.' . hash_hmac( 'sha256', 'linker_conversation|' . $id, 'test-salt' );
 	}
 
 	/**

@@ -21,6 +21,14 @@ use WP_Mock\Tools\TestCase;
 final class EntriesTest extends TestCase {
 
 	/**
+	 * A previous test's shortcode must not mark this request as a workspace.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		Entries::reset_workspace_rendered();
+	}
+
+	/**
 	 * The dock prints the open button, the hidden mount with its config, and
 	 * the boot payload with the built script's URLs.
 	 */
@@ -74,7 +82,140 @@ final class EntriesTest extends TestCase {
 
 		$this->assertStringContainsString( 'der KI-Assistent von Linker', $html );
 		$this->assertStringContainsString( 'Wo steht meine Proforma?', $html );
-		$this->assertStringContainsString( 'data-page-type="account"', $html );
+			$this->assertStringContainsString( 'data-page-type="account"', $html );
+			$this->assertStringContainsString( 'data-workspace-url="https://de-linker.test/linker-advisor/"', $html );
+			$this->assertConditionsMet();
+	}
+
+	/**
+	 * The advisor page prints the mount the loader handshake looks up, next
+	 * to the app mount. Its loader opens on ready and stays open while the
+	 * app loads: the page has no bubble that could reopen a hidden panel.
+	 */
+	public function test_workspace_page_enters_the_loader_handshake(): void {
+		$GLOBALS['linker_tools_test_inline_scripts'] = array();
+		$this->frontend( 'en', array( 'type' => 'other' ), 'linker-advisor' );
+		WP_Mock::userFunction(
+			'wp_scripts',
+			array(
+				'return' => static fn() => new FakeScripts(),
+			)
+		);
+
+		$shortcode = ( new Entries( '/plugin/linker-tools.php' ) )->workspace_shortcode( array() );
+		$html      = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+
+		$this->assertStringContainsString( 'data-linker-app="genie"', $shortcode );
+		$this->assertStringContainsString( 'data-linker-genie-mount', $shortcode );
+		$this->assertStringContainsString( 'data-surface="workspace"', $shortcode );
+		$this->assertStringNotContainsString( 'data-linker-genie-open', $html );
+		$inline  = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
+		$payload = json_decode( (string) ( $inline['data-linker-genie-boot-payload'] ?? '' ), true );
+		$this->assertTrue( $payload['open'] );
+		$script = (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' );
+			$this->assertStringContainsString( 'if (!panel)', $script );
+			$this->assertStringContainsString( 'shell(!!payload.open)', $script );
+			$this->assertStringNotContainsString( 'shell(false)', $script );
+			$this->assertStringContainsString( 'if (payload.open)', $script );
+			$this->assertMatchesRegularExpression( '/if \(payload\.open\) \{\s*pendingOpen = true;\s*boot\(\);/', $script );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A renamed advisor page still printed the workspace shortcode. The
+	 * slug no longer matches, but the shortcode already rendered the
+	 * mount. The dock must boot that mount and must not print a second
+	 * helper: two mounts are two apps on one cookie.
+	 */
+	public function test_a_rendered_workspace_is_not_printed_again_when_the_slug_differs(): void {
+		$GLOBALS['linker_tools_test_inline_scripts'] = array();
+		$this->frontend( 'en', array( 'type' => 'other' ), 'advisor-renamed' );
+		WP_Mock::userFunction(
+			'wp_scripts',
+			array(
+				'return' => static fn() => new FakeScripts(),
+			)
+		);
+
+		$shortcode = ( new Entries( '/plugin/linker-tools.php' ) )->workspace_shortcode( array() );
+		$html      = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+
+		$this->assertSame( 1, substr_count( $shortcode . $html, 'data-linker-app="genie"' ) );
+		$this->assertStringNotContainsString( 'data-linker-genie-open', $html );
+		$inline  = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
+		$payload = json_decode( (string) ( $inline['data-linker-genie-boot-payload'] ?? '' ), true );
+		$this->assertTrue( $payload['open'] );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The slug still says advisor, but the template no longer prints the
+	 * workspace. A dock that trusts the slug would boot an empty page and
+	 * hide the helper. The helper is what a page without the mount gets.
+	 */
+	public function test_a_matching_slug_without_the_workspace_template_keeps_the_helper(): void {
+		$GLOBALS['linker_tools_test_inline_scripts'] = array();
+		$this->frontend( 'en', array( 'type' => 'other' ), 'linker-advisor' );
+		WP_Mock::userFunction(
+			'wp_scripts',
+			array(
+				'return' => static fn() => new FakeScripts(),
+			)
+		);
+
+		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+
+		$this->assertStringContainsString( 'data-linker-genie-open', $html );
+		$this->assertStringContainsString( 'data-surface="helper"', $html );
+		$this->assertStringNotContainsString( 'data-surface="workspace"', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A German page links the full-page workspace to the German advisor
+	 * page. The language layer, not the locale string, decides.
+	 */
+	public function test_german_page_links_the_german_workspace(): void {
+		$this->frontend( 'de_DE_formal', array( 'type' => 'other' ), '', 'de' );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'args'   => array( 'linker-advisor' ),
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 41,
+						'post_name' => 'linker-advisor',
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 41, 'de' ),
+				'return' => 42,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'args'   => array( 42 ),
+				'return' => 'https://de-linker.test/de/linker-berater/',
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_scripts',
+			array(
+				'return' => static fn() => new FakeScripts(),
+			)
+		);
+
+		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+
+		$this->assertStringContainsString(
+			'data-workspace-url="https://de-linker.test/de/linker-berater/"',
+			$html
+		);
 		$this->assertConditionsMet();
 	}
 
@@ -207,8 +348,10 @@ final class EntriesTest extends TestCase {
 	 *
 	 * @param string               $locale determine_locale()'s answer.
 	 * @param array<string, mixed> $page   Page context answer.
+	 * @param string               $slug     Current page slug, empty off a page.
+	 * @param string               $language Language layer's answer; empty when it has none.
 	 */
-	private function frontend( string $locale, array $page ): void {
+	private function frontend( string $locale, array $page, string $slug = '', string $language = '' ): void {
 		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
 		WP_Mock::userFunction( 'determine_locale', array( 'return' => $locale ) );
 		WP_Mock::userFunction(
@@ -288,7 +431,27 @@ final class EntriesTest extends TestCase {
 		WP_Mock::passthruFunction( 'esc_html__' );
 		WP_Mock::passthruFunction( 'esc_attr' );
 		WP_Mock::passthruFunction( 'esc_html' );
-		WP_Mock::passthruFunction( '__' );
+			WP_Mock::passthruFunction( '__' );
+			WP_Mock::userFunction(
+				'get_post',
+				array(
+					'return' => '' === $slug
+						? null
+						: new \WP_Post(
+							(object) array(
+								'ID'           => 9,
+								'post_name'    => $slug,
+								'post_content' => '',
+							)
+						),
+				)
+			);
+			WP_Mock::userFunction(
+				'pll_current_language',
+				array(
+					'return' => '' === $language ? false : $language,
+				)
+			);
 	}
 
 	/**

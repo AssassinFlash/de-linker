@@ -22,6 +22,24 @@ class Entries {
 	public const HANDLE = 'linker-tools-genie';
 
 	/**
+	 * Set when the workspace shortcode has already rendered this request.
+	 *
+	 * The dock runs in `wp_footer`, after the template. The shortcode is
+	 * the authority for "this page is the workspace": a renamed page still
+	 * carries the shortcode, and a page whose template lost it does not.
+	 *
+	 * @var bool
+	 */
+	private static bool $workspace_rendered = false;
+
+	/**
+	 * Clears the workspace mark. Tests share a process; a request does not.
+	 */
+	public static function reset_workspace_rendered(): void {
+		self::$workspace_rendered = false;
+	}
+
+	/**
 	 * Handle of the search box's script (a plain asset, not a built entry).
 	 */
 	public const SEARCH_HANDLE = 'linker-tools-search-ask';
@@ -44,6 +62,7 @@ class Entries {
 		add_action( 'woocommerce_account_dashboard', array( $this, 'account_chips' ) );
 		add_shortcode( 'linker_genie_ask', array( $this, 'ask_shortcode' ) );
 		add_shortcode( 'linker_genie_chips', array( $this, 'chips_shortcode' ) );
+		add_shortcode( 'linker_genie_workspace', array( $this, 'workspace_shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'search_assets' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'dock_assets' ) );
 	}
@@ -73,6 +92,32 @@ class Entries {
 	public function ask_shortcode( $atts = array() ): string {
 		unset( $atts );
 		return $this->ask_chip();
+	}
+
+	/**
+	 * The full-page workspace on /linker-advisor/.
+	 *
+	 * The LiveCanvas template of that page prints this shortcode. It is
+	 * the same mount the dock uses, marked as the page surface so the
+	 * app renders the history rail instead of the helper card. The
+	 * mount element is what the dock loader's ready and failure
+	 * protocol looks up (`[data-linker-genie-mount]`); without it the
+	 * workspace never enters that handshake. The dock loader still
+	 * owns boot, ready and open; this mount does not load a second
+	 * copy of the app.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function workspace_shortcode( $atts = array() ): string {
+		unset( $atts );
+		if ( is_admin() ) {
+			return '';
+		}
+		self::$workspace_rendered = true;
+		return sprintf(
+			'<div id="linker-genie-mount" class="linker-genie-panel linker-genie-panel--workspace" data-linker-genie-mount>%s</div>',
+			$this->mount_markup( 'workspace' )
+		);
 	}
 
 	/**
@@ -144,8 +189,13 @@ class Entries {
 		if ( is_admin() ) {
 			return;
 		}
-		$locale  = $this->locale();
-		$page    = $this->page_context();
+		// The workspace shortcode already printed the mount. This only
+		// boots it. A second helper mount would boot a second app
+		// against the same cookie. A missing template is not a workspace.
+		if ( self::$workspace_rendered ) {
+			$this->print_loader( true );
+			return;
+		}
 		$mount   = 'linker-genie-mount';
 		$payload = array(
 			'src'          => $this->script_src(),
@@ -164,30 +214,44 @@ class Entries {
 			'<div id="%1$s" class="linker-genie-panel" data-linker-genie-mount hidden>',
 			esc_attr( $mount )
 		);
-		printf(
-			'<div data-linker-app="genie" data-locale="%1$s" data-page-type="%2$s" data-turn-url="%3$s" data-thread-url="%4$s" data-vote-url="%5$s" data-rest-url="%6$s" data-rest-nonce="%7$s" data-disclosure="%8$s" data-account-url="%9$s" data-prompts=\'%10$s\'></div>',
-			esc_attr( $locale ),
-			esc_attr( $page['type'] ),
-			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
-			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::THREAD_ROUTE ) ) ),
-			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
-			esc_attr( esc_url_raw( rest_url() ) ),
-			esc_attr( wp_create_nonce( 'wp_rest' ) ),
-			esc_attr( $this->disclosure( $locale ) ),
-			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
-			esc_attr( (string) wp_json_encode( $this->prompts( $page, $locale ) ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already inside esc_attr; the cast silences a false positive on (string).
-		);
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- mount_markup() escapes every attribute.
+		echo $this->mount_markup( 'helper' );
 		echo '</div>';
 		if ( '' !== $payload['src'] ) {
-			// The loader owns entry delivery: an open click or ask boots once,
-			// waits for the App's ready event, then opens it with the first ask.
-			// The App reports Hide/Open back so the shell and mobile card agree.
-			// The payload rides in a data
-			// attribute: attribute values are entity-decoded by the HTML
-			// parser, so getAttribute() yields the clean JSON (script text
-			// would keep the esc_html entities).
-			wp_print_inline_script_tag(
-				<<<'JS'
+			$this->print_loader( false );
+		}
+		echo '</div>';
+	}
+
+	/**
+	 * The one boot loader. `$open` is the workspace: it has no bubble, so
+	 * the loader boots before the script is inserted and opens the mount
+	 * once the app reports ready. A click or ask is what boots a helper.
+	 *
+	 * @param bool $open Whether to boot now and open as soon as the app is ready.
+	 */
+	private function print_loader( bool $open ): void {
+		$payload = array(
+			'src'          => $this->script_src(),
+			'deps'         => $this->script_deps(),
+			'translations' => $this->script_translations(),
+			'error'        => __( 'Genie could not load.', 'linker-tools' ),
+			'retry'        => __( 'Try again', 'linker-tools' ),
+			'open'         => $open,
+		);
+		if ( '' === $payload['src'] ) {
+			return;
+		}
+		// The loader owns entry delivery: an open click, an ask, or a
+		// workspace page (payload.open) boots once, waits for the App's
+		// ready event, then opens it with the first ask. The App reports
+		// Hide/Open back so the shell and mobile card agree.
+		// The payload rides in a data
+		// attribute: attribute values are entity-decoded by the HTML
+		// parser, so getAttribute() yields the clean JSON (script text
+		// would keep the esc_html entities).
+		wp_print_inline_script_tag(
+			<<<'JS'
 (function () {
 	var payload = null;
 	try {
@@ -210,25 +274,29 @@ class Entries {
 				failure = null;
 			}
 		}
-		function showFailure() {
-			clearFailure();
-			failure = document.createElement('section');
-			failure.className = 'linker-genie-app';
-			failure.setAttribute('data-linker-genie-load-error', '');
-			var message = document.createElement('p');
-			message.className = 'linker-genie-app__error';
-			message.setAttribute('role', 'alert');
-			message.textContent = payload.error;
-			var retry = document.createElement('button');
-			retry.type = 'button';
-			retry.className = 'linker-genie-app__toggle';
-			retry.setAttribute('data-linker-genie-open', '');
-			retry.textContent = payload.retry;
-			failure.appendChild(message);
-			failure.appendChild(retry);
-			document.querySelector('[data-linker-genie-mount]').appendChild(failure);
-			shell(true);
-		}
+			function showFailure() {
+				clearFailure();
+				var panel = document.querySelector('[data-linker-genie-mount]');
+				if (!panel) {
+					return;
+				}
+				failure = document.createElement('section');
+				failure.className = 'linker-genie-app';
+				failure.setAttribute('data-linker-genie-load-error', '');
+				var message = document.createElement('p');
+				message.className = 'linker-genie-app__error';
+				message.setAttribute('role', 'alert');
+				message.textContent = payload.error;
+				var retry = document.createElement('button');
+				retry.type = 'button';
+				retry.className = 'linker-genie-app__toggle';
+				retry.setAttribute('data-linker-genie-open', '');
+				retry.textContent = payload.retry;
+				failure.appendChild(message);
+				failure.appendChild(retry);
+				panel.appendChild(failure);
+				shell(true);
+			}
 		function shell(open) {
 		var panel = document.querySelector('[data-linker-genie-mount]');
 		if (panel) {
@@ -258,12 +326,15 @@ class Entries {
 		boot();
 		deliver();
 	}
-		window.addEventListener('linker-genie-ready', function () {
-			ready = true;
-			clearFailure();
-			deliver();
-	});
-	window.addEventListener('linker-genie-state', function (event) {
+				window.addEventListener('linker-genie-ready', function () {
+					ready = true;
+					clearFailure();
+					if (payload.open) {
+						pendingOpen = true;
+					}
+					deliver();
+				});
+		window.addEventListener('linker-genie-state', function (event) {
 		shell(event.detail.open);
 	});
 	window.addEventListener('linker-genie-ask', function (event) {
@@ -272,13 +343,16 @@ class Entries {
 			open(detail.message);
 		}
 	});
-	function boot() {
-		if (loaded) {
-			return;
-		}
-		loaded = true;
-		clearFailure();
-		shell(false);
+			function boot() {
+				if (loaded) {
+					return;
+				}
+				loaded = true;
+				clearFailure();
+				// The workspace has no bubble to reopen a hidden page. Keep it
+				// visible while the app loads; ready then delivers open.
+				// A helper stays closed until the visitor's click is delivered.
+				shell(!!payload.open);
 		var failed = false;
 		var inserted = [];
 		function fail() {
@@ -328,10 +402,17 @@ class Entries {
 					finish();
 				}
 			});
-			append(dep);
-		});
-	}
-	document.addEventListener(
+				append(dep);
+			});
+		}
+		// A workspace page has no bubble. Setting pendingOpen and waiting
+		// for a click leaves the mount empty: nothing ever calls boot().
+		// Boot before any script is inserted; ready then delivers open.
+		if (payload.open) {
+			pendingOpen = true;
+			boot();
+		}
+		document.addEventListener(
 		'click',
 		function (event) {
 			var trigger = event.target.closest(
@@ -346,13 +427,39 @@ class Entries {
 	);
 })();
 JS,
-				array(
-					'data-linker-genie-loader'       => true,
-					'data-linker-genie-boot-payload' => (string) wp_json_encode( $payload ),
-				)
-			);
-		}
-		echo '</div>';
+			array(
+				'data-linker-genie-loader'       => true,
+				'data-linker-genie-boot-payload' => (string) wp_json_encode( $payload ),
+			)
+		);
+	}
+
+	/**
+	 * The mount the app renders into. One markup for the dock and the
+	 * workspace, so both carry the same routes and the same nonce.
+	 *
+	 * @param string $surface `helper` on every page, `workspace` on the advisor page.
+	 */
+	private function mount_markup( string $surface ): string {
+		$locale = $this->locale();
+		$page   = $this->page_context();
+		return sprintf(
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\'></div>',
+			esc_attr( $surface ),
+			esc_attr( $locale ),
+			esc_attr( $page['type'] ),
+			esc_attr( (string) ( $page['product_id'] ?? 0 ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::THREAD_ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::CONVERSATIONS_ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url() ) ),
+			esc_attr( wp_create_nonce( 'wp_rest' ) ),
+			esc_attr( $this->disclosure( $locale ) ),
+			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
+			esc_attr( esc_url_raw( $this->workspace_url() ) ),
+			esc_attr( (string) wp_json_encode( $this->prompts( $page, $locale ) ) )
+		);
 	}
 
 	/**
@@ -537,6 +644,28 @@ JS,
 	private function locale(): string {
 		$lang = function_exists( 'determine_locale' ) ? determine_locale() : 'en_US';
 		return str_starts_with( strtolower( $lang ), 'de' ) ? 'de' : 'en';
+	}
+
+	/**
+	 * The advisor page in the request's language.
+	 *
+	 * The language layer (`pll_current_language`) is the authority for which
+	 * language this request is in — the same one ComparePage asks. German
+	 * gets that page's twin (`pll_get_post`); English, a missing twin, or
+	 * no language layer stays on /linker-advisor/.
+	 */
+	private function workspace_url(): string {
+		$fallback = home_url( '/linker-advisor/' );
+		if ( ! function_exists( 'pll_current_language' ) || 'de' !== pll_current_language() ) {
+			return $fallback;
+		}
+		$page = get_page_by_path( 'linker-advisor' );
+		if ( ! $page instanceof \WP_Post || ! function_exists( 'pll_get_post' ) ) {
+			return home_url( '/de/linker-berater/' );
+		}
+		$twin = (int) pll_get_post( (int) $page->ID, 'de' );
+		$link = $twin > 0 ? get_permalink( $twin ) : false;
+		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/linker-berater/' );
 	}
 
 	/**

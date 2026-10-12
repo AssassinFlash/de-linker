@@ -23,8 +23,23 @@ class Conversations {
 
 	/**
 	 * Cookie that names the guest's conversation post.
+	 *
+	 * The value is `id.signature`, not the id. A number alone is not a
+	 * credential: anyone who can set a cookie could name another guest's post.
 	 */
 	public const COOKIE = 'linker_conversation';
+
+	/**
+	 * Title of a conversation that has not been named by its first message.
+	 */
+	public const UNTITLED = 'Genie';
+
+	/**
+	 * How many conversations the history rail lists. A customer who scrolls
+	 * further than this is browsing, not continuing a job; the current
+	 * conversation is always included even when it is older than the cut.
+	 */
+	public const LIST_LIMIT = 40;
 
 	/**
 	 * Registers the post type; runs on init.
@@ -147,6 +162,105 @@ class Conversations {
 	}
 
 	/**
+	 * The conversations this visitor may continue, newest first.
+	 *
+	 * A guest has one conversation: the cookie's. A signed-in customer has
+	 * every conversation post they own, which is what the history rail
+	 * lists. The current one is always present, so switching away and back
+	 * never drops the thread the cookie names. Reading the list never
+	 * opens a conversation.
+	 *
+	 * @return list<array{id: int, title: string, updated: string}>
+	 */
+	public function list_for_visitor(): array {
+		$current = $this->from_cookie();
+		if ( $current > 0 && ! $this->may_use( $current ) ) {
+			$current = 0;
+		}
+		$ids = array();
+		if ( is_user_logged_in() ) {
+			$owned = get_posts(
+				array(
+					'post_type'      => self::POST_TYPE,
+					'post_status'    => 'private',
+					'author'         => get_current_user_id(),
+					'posts_per_page' => self::LIST_LIMIT,
+					'orderby'        => 'modified',
+					'order'          => 'DESC',
+					'fields'         => 'ids',
+				)
+			);
+			foreach ( $owned as $id ) {
+				$ids[] = (int) $id;
+			}
+		}
+		if ( $current > 0 && ! in_array( $current, $ids, true ) ) {
+			array_unshift( $ids, $current );
+		}
+		$ids  = array_slice( $ids, 0, self::LIST_LIMIT );
+		$list = array();
+		foreach ( $ids as $id ) {
+			if ( ! $this->may_use( $id ) ) {
+				continue;
+			}
+			$post = get_post( $id );
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+			$list[] = array(
+				'id'      => $id,
+				'title'   => '' !== $post->post_title ? $post->post_title : self::UNTITLED,
+				'updated' => (string) $post->post_modified_gmt,
+			);
+		}
+		return $list;
+	}
+
+	/**
+	 * Makes one of this visitor's conversations the current one.
+	 *
+	 * The cookie is the one place a request names its conversation
+	 * (`current_id()`, `existing_id()`), so the dock and the workspace
+	 * share a thread by writing that cookie. A conversation the visitor
+	 * may not use is refused; nothing is opened in its place.
+	 *
+	 * @param int $id Conversation post ID.
+	 */
+	public function activate( int $id ): bool {
+		if ( $id < 1 || ! $this->may_use( $id ) ) {
+			return false;
+		}
+		$this->set_cookie( $id );
+		return true;
+	}
+
+	/**
+	 * Names a conversation after its first customer message.
+	 *
+	 * The history rail has nothing else to show: a conversation post is
+	 * created as "Genie", and the first message is the title the customer
+	 * will recognise. A later turn does not rename it.
+	 *
+	 * @param int    $id    Conversation post ID.
+	 * @param string $title First message, already trimmed.
+	 */
+	public function title_from_first_message( int $id, string $title ): void {
+		if ( $id < 1 || '' === $title ) {
+			return;
+		}
+		$post = \get_post( $id );
+		if ( ! $post instanceof \WP_Post || self::UNTITLED !== $post->post_title ) {
+			return;
+		}
+		wp_update_post(
+			array(
+				'ID'         => $id,
+				'post_title' => $title,
+			)
+		);
+	}
+
+	/**
 	 * A new conversation post, cookie set.
 	 */
 	public function open(): int {
@@ -155,7 +269,7 @@ class Conversations {
 			array(
 				'post_type'   => self::POST_TYPE,
 				'post_status' => 'private',
-				'post_title'  => 'Genie',
+				'post_title'  => self::UNTITLED,
 				'post_author' => $author,
 			),
 			true
@@ -193,6 +307,11 @@ class Conversations {
 	/**
 	 * Whether this request may use the conversation.
 	 *
+	 * A signed-in visitor may use a conversation they own. A still-unowned
+	 * conversation is usable only when this request's cookie names it with
+	 * a signature this site made. A numeric cookie is not that signature.
+	 * A guest may use only the unowned conversation their signed cookie names.
+	 *
 	 * @param int $id Conversation post ID.
 	 */
 	public function may_use( int $id ): bool {
@@ -200,24 +319,55 @@ class Conversations {
 			return false;
 		}
 		$author = (int) get_post_field( 'post_author', $id );
-		if ( is_user_logged_in() ) {
-			return 0 === $author || get_current_user_id() === $author;
+		if ( is_user_logged_in() && get_current_user_id() === $author ) {
+			return true;
 		}
 		return 0 === $author && $id === $this->from_cookie();
 	}
 
 	/**
-	 * Cookie value as a post ID, 0 if missing.
+	 * Cookie value as a post ID, 0 when missing or unsigned.
+	 *
+	 * The cookie is `id.signature`. The signature is HMAC-SHA256 of the id
+	 * with the site's auth salt, so a forged number does not name a post.
 	 */
 	private function from_cookie(): int {
 		if ( ! isset( $_COOKIE[ self::COOKIE ] ) ) {
 			return 0;
 		}
-		return absint( wp_unslash( $_COOKIE[ self::COOKIE ] ) );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- the signature check is the sanitizer; a value that does not verify is discarded.
+		$raw = wp_unslash( $_COOKIE[ self::COOKIE ] );
+		if ( ! is_string( $raw ) || ! str_contains( $raw, '.' ) ) {
+			return 0;
+		}
+		[ $id, $signature ] = explode( '.', $raw, 2 );
+		if ( ! ctype_digit( $id ) || '' === $signature ) {
+			return 0;
+		}
+		$expected = $this->sign( $id );
+		if ( ! hash_equals( $expected, $signature ) ) {
+			return 0;
+		}
+		return (int) $id;
+	}
+
+	/**
+	 * The cookie's signature for one conversation id.
+	 *
+	 * @param string $id Conversation post ID.
+	 */
+	private function sign( string $id ): string {
+		return hash_hmac( 'sha256', self::COOKIE . '|' . $id, wp_salt( 'auth' ) );
 	}
 
 	/**
 	 * Sets the guest cookie.
+	 *
+	 * The header is what the next request reads. PHP does not copy a
+	 * Set-Cookie back into `$_COOKIE`, so a select or open in this request
+	 * would still see the previous conversation (`existing_id()`,
+	 * `current_id()`, `list_for_visitor()`). The same key is written here
+	 * so those reads agree with the header for the rest of this request.
 	 *
 	 * @param int $id Conversation post ID.
 	 */
@@ -225,10 +375,15 @@ class Conversations {
 		if ( $id < 1 ) {
 			return;
 		}
+		$value                   = $this->cookie_value( $id );
+		$_COOKIE[ self::COOKIE ] = $value;
 		/**
 		 * Fires the guest-cookie write; the listener sends the header.
 		 *
-		 * @param string $value  Conversation post ID.
+		 * The value is `id.signature`, not the id. The signature is what
+		 * the next request checks.
+		 *
+		 * @param string $value  Signed conversation cookie.
 		 * @param int    $expire Expiry timestamp.
 		 * @param string $path   Cookie path.
 		 * @param string $domain Cookie domain.
@@ -237,12 +392,21 @@ class Conversations {
 		 */
 		do_action(
 			'linker_tools_set_conversation_cookie',
-			(string) $id,
+			$value,
 			$this->cookie_expire(),
 			defined( 'COOKIEPATH' ) ? COOKIEPATH : '/',
 			defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
 			is_ssl()
 		);
+	}
+
+	/**
+	 * The signed cookie value for one conversation.
+	 *
+	 * @param int $id Conversation post ID.
+	 */
+	private function cookie_value( int $id ): string {
+		return $id . '.' . $this->sign( (string) $id );
 	}
 
 	/**

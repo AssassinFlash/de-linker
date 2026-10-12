@@ -75,6 +75,8 @@ final class Templates {
 		'linker-compare-de' => array( 'de/compare_page', 'Produkte vergleichen', 'compare-products', 'de' ),
 		'linker-faq'        => array( 'faq_page', 'FAQ & documents', 'faq-download', 'en' ),
 		'linker-faq-de'     => array( 'de/faq_page', 'FAQ & Dokumente', 'faq-download', 'de' ),
+		'linker-advisor'    => array( 'advisor_page', 'Genie', 'linker-advisor', 'en' ),
+		'linker-advisor-de' => array( 'de/advisor_page', 'Genie', 'linker-berater', 'de' ),
 	);
 
 		/**

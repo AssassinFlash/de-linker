@@ -258,7 +258,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertCount( 255, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
 		$this->assertCount( 19, $maps['pages'] );
-		$this->assertCount( 8, $maps['retired_tools'] );
+			$this->assertCount( 5, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
 	}
@@ -718,18 +718,15 @@ final class RedirectsTest extends TestCase {
 	}
 
 	/**
-	 * The Advisor's addresses go to the product catalogue of their own
-	 * language: the page was the old assistant as a full page, the assistant
-	 * is Genie now, and the catalogue is where its work starts (#66;
-	 * /de/linker-advisor/ is the English slug under /de/ that the old plugin
-	 * resolved as well).
+	 * The advisor addresses stay. They are the Genie workspace now, not a
+	 * retired tool page, so a request for them is not redirected.
 	 */
-	public function test_retired_advisor_addresses_go_to_the_catalogue(): void {
+	public function test_advisor_addresses_stay(): void {
 		$this->wordpress();
 
-		$this->assertSame( self::HOME . '/products/', ( new Redirects() )->target( '/linker-advisor/' ) );
-		$this->assertSame( self::HOME . '/de/produkte/', ( new Redirects() )->target( '/de/linker-berater/' ) );
-		$this->assertSame( self::HOME . '/de/produkte/', ( new Redirects() )->target( '/de/linker-advisor/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/linker-advisor/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/de/linker-berater/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/de/linker-advisor/' ) );
 	}
 
 	/**

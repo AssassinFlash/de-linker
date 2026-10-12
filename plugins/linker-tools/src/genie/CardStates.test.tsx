@@ -20,6 +20,12 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 	return {
 		assistantMessage: actual.assistantMessage,
 		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
+		listConversations: vi.fn( async () => ( {
+			currentId: 0,
+			conversations: [],
+			ok: true,
+		} ) ),
+		selectConversation: vi.fn(),
 		sendTurn: vi.fn(),
 		sendVote: vi.fn( async () => true ),
 	};
@@ -59,15 +65,19 @@ vi.mock( '../configurator/api/store', () => ( {
 
 function config(): GenieConfig {
 	return {
+		surface: 'helper',
 		locale: 'en',
 		pageType: 'category',
+		productId: 0,
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
+		conversationsUrl: '/wp-json/linker-ai/v1/genie/conversations',
 		voteUrl: '/wp-json/linker-ai/v1/genie/turn',
 		restUrl: '/wp-json/',
 		restNonce: 'n',
 		disclosure: "Hi, I'm Genie.",
 		accountUrl: '/my-account/',
+		workspaceUrl: '/linker-advisor/',
 		prompts: [],
 	};
 }
