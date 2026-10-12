@@ -4,7 +4,7 @@
 
 ## #109 A 组 — Spec
 
-完整 diff：`065f83e9..4722a6a`（一笔提交）。文件两份：`plugins/linker-commerce/content/windpress/catalogue.css`，以及 `docs/acceptance/2026-10-12/visual-round2/implemented-a/` 的测量与截图。
+完整 diff：`ee957226..4722a6a`（一笔提交；父提交是 `ee957226`，不是兄弟提交 `065f83e9`）。文件两份：`plugins/linker-commerce/content/windpress/catalogue.css`，以及 `docs/acceptance/2026-10-12/visual-round2/implemented-a/` 的测量与截图。
 
 对照业主 2026-10-12 批准的 A1、A2（`proposals/README.md`）与实施记录：
 
@@ -29,7 +29,7 @@
 
 ## #110 D 组 — Spec
 
-完整 diff：`065f83e9..faeede3`（实施提交 + 评审修复提交）。文件：`plugins/linker-tools/src/configurator/configurator.css` 及其 build 产物，加上 `implemented-d/` 的测量与截图。
+完整 diff：`ee957226..faeede3`（实施提交 + 评审修复提交；基址是父提交 `ee957226`，不是兄弟提交 `065f83e9`）。文件：`plugins/linker-tools/src/configurator/configurator.css` 及其 build 产物，加上 `implemented-d/` 的测量与截图。
 
 对照批准的 D1、D2：
 

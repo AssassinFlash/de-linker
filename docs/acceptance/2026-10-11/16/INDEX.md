@@ -87,17 +87,17 @@ design-canvas（301）、entwurfsflache（301）——**全部 `[woocommerce_`=0
 
 对比页所需的三件商品是规格里那次线上对照用的 `?ids=6521,6522,6523`（`docs/specs/19-tool-pages.md` §1）。查的是实例 t110（`127.0.0.1:8975`，`~/de-linker-local/t110/wp.sh`），不是生产。
 
-查之前：`wp_postmeta` 里 `_thumbnail_id` 行数为 0；212 个已发布商品都没有这一行，三件对比商品的 meta 读回也是空（`wp post meta get` 退出码 1）。不是值为 0 的行，是行不存在——`get_the_post_thumbnail_url` 同样拿不到图。
+2026-10-13 复测（`~/de-linker-local/t110/wp.sh`，`127.0.0.1:8975`）：`wp_postmeta` 里 `_thumbnail_id` 546 行（`meta_id` 52418–52981，546 行全在这段，0 行在段外）。212 个已发布商品全部有这一行，缺行 0。不是「只补三件、其余仍缺」——那句是本记录写下时的状态，补全发生在本记录之后。这 546 行是同一次写入留下的区间：头三对是对比商品与其草稿（52418–52423），中间被 14 行别的 meta（`_linker_i18n_*`、`linker_genie_*`）隔开，主体 534 行在 52441–52974，尾部再夹 1 行后以 6 行 `_thumbnail_id` 收到 52981。
 
-按装库流程补回的是快照 `~/de-linker-data/20261011-1732/db.sql.gz` 里这三行，附件在本实例存在且文件在盘上，然后 `wp post meta update`：
+快照 `~/de-linker-data/20261011-1732/db.sql.gz` 里有 273 条 `_thumbnail_id` 绑定。273 条的 post 在本实例都在，值与快照逐条一致（0 条不符）。另外 273 行是快照里没有的 post（6575 起），不在那 273 条绑定里。三件对比商品的现值：
 
-| post | 快照 `_thumbnail_id` | 读回 | 文件 |
-|---|---|---|---|
-| 6521 | 5887 | 5887 | `2026/09/goodwe-esa-6-battery-module-studio-logo-20260928.png`（82,293 字节） |
-| 6522 | 5934 | 5934 | `2026/09/goodwe-bat-d-g20-plate-20260928.png`（39,199 字节） |
-| 6523 | 6500 | 6500 | `2026/10/goodwe-esa-3-10kw-eha-g20-cover-20261007-01.png`（577,304 字节） |
+| post | 快照绑定 | 现值 meta_id | 读回 | 文件 |
+|---|---|---|---|---|
+| 6521 | 5887（快照 meta_id 45162） | 52418 | 5887 | `2026/09/goodwe-esa-6-battery-module-studio-logo-20260928.png` |
+| 6522 | 5934（快照 meta_id 45199） | 52420 | 5934 | `2026/09/goodwe-bat-d-g20-plate-20260928.png` |
+| 6523 | 6500（快照 meta_id 45237） | 52422 | 6500 | `2026/10/goodwe-esa-3-10kw-eha-g20-cover-20261007-01.png` |
 
-`get_the_post_thumbnail_url` 对这三件返回上述 URL。其余已发布商品仍缺这一行（补完后 206）。本次只补对比页点名的三件，没有跑全库 `tools/migrate/13-media-meta.py apply`。
+`get_the_post_thumbnail_url` 对这三件返回上述 URL。
 
 ## 8. 复现命令
 
