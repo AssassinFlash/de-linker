@@ -144,3 +144,9 @@ overlay 样式（脚本 `/tmp/t16-proposals.mjs`，CSS 原文见每项的"试验
   改 .po 串 + rail-help 段即可复位。
 - **证据**：`.scratch/t16-verdict/final4/crops/sidebar-3way.png`（live | t16 三栏对照）、
   `.scratch/t16-verdict/final4/analysis/landmarks.json`（live 卡 178.7px 与 t16 卡几何）。
+
+## 台账追加（五段后，2026-10-12）
+- **B rail-help 工具卡文案**：『Plan with the Solution Configurator / Open the Solution Configurator』为 #12 对抗评审定稿（docs/acceptance/2026-10-10/12/copy-review.md），卡高 +20.1px 为其结果——裁定改名豁免。
+- **C 相位分面计数 51/17（live 57/11）**：差值=6 台 EHA 单相机。旧系统 traits 正则把 "1/N/PE" 电压文本误判三相（旧审计 docs/audit/2026-10-11-surface-inventory.md §2 注记原话），新代码修复该 bug——按业主『复刻设计、修复存在的 bug』裁定记 bug 修复豁免。
+- **能量/功率范围折的 >=3 门槛与按类目显隐**：照旧仓库 catalogue-archive.php 1205-1235 行原语义复刻（标量计数、范围不计）。
+- **Genie 坞在 PDP 的可见性**：live PDP 无浮动入口（display:none）、t16 显示——工具入口改版类，随坞豁免一并登记。

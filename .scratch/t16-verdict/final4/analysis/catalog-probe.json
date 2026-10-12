@@ -1,0 +1,6882 @@
+{
+ "shop-en-live": {
+  "contact": {
+   "section": {
+    "x": 362,
+    "y": 8381.3,
+    "w": 958,
+    "h": 145.7,
+    "color": "rgb(32, 58, 50)",
+    "bg": "rgb(244, 248, 246)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "kicker": "CONTACT LINKER",
+   "title": {
+    "rect": {
+     "x": 393,
+     "y": 8439,
+     "w": 700,
+     "h": 29.9,
+     "color": "rgb(10, 10, 10)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "23px",
+     "fw": "700"
+    },
+    "text": "Not sure which model to look for?"
+   },
+   "cta": {
+    "rect": {
+     "x": 1123,
+     "y": 8416,
+     "w": 166,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(18, 102, 79)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "Need help choosing?",
+    "tag": "A",
+    "cls": "linker-contact-primary"
+   },
+   "mail": {
+    "rect": {
+     "x": 1123,
+     "y": 8472,
+     "w": 125.8,
+     "h": 20.1,
+     "color": "rgb(18, 102, 79)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "underline",
+     "fs": "13px",
+     "fw": "400"
+    },
+    "text": "sales@de-linker.com"
+   },
+   "html": "<section class=\"linker-contact-invitation linker-contact-catalog\"><div><span class=\"linker-contact-eyebrow\">CONTACT LINKER</span><h2>Not sure which model to look for?</h2><p>Your question includes this page as context. You can remove it before sending.</p></div><div class=\"linker-contact-invitation-actions\"><a class=\"linker-contact-primary\" href=\"https://de-linker.com/contact/?intent=product&amp;kind=catalogue&amp;title=Archives%3A%20Products&amp;search&amp;source=https%3A%2F%2Fde-linker.com%2Fproducts%2F\" data-linker-contact=\"{&quot;kind&quot;:&quot;catalogue&quot;,&quot;title&quot;:&quot;Archives: Products&quot;,&quot;url&quot;:&quot;https://de-linker.com/products/&quot;,&quot;search&quot;:&quot;&quot;,&quot;filters&quot;:[],&quot;intent&quot;:&quot;product&quot;}\">Need help choosing?</a><a class=\"linker-contact-email\" href=\"mailto:sales@de-linker.com\">sales@de-linker.com</a></div></section>"
+  },
+  "cards": [
+   {
+    "rect": {
+     "x": 342,
+     "y": 494.8,
+     "w": 488,
+     "h": 604.2
+    },
+    "itemNo": "GoodWe GoodWe GW60K-STS-G10 Item no. DLK-GOODWE-GW60KSTSG10",
+    "facts": [
+     "CommunicationRS485",
+     "Communication",
+     "RS485",
+     "Ingress protectionIP54",
+     "Ingress protection",
+     "IP54",
+     "Weight15 kg",
+     "Weight",
+     "15 kg",
+     "Dimensions506 × 590 × 180 mm",
+     "Dimensions",
+     "506 × 590 × 180 mm"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 494.8,
+     "w": 488,
+     "h": 604.2
+    },
+    "itemNo": "GoodWe GoodWe GW30K-STS-G10 Item no. DLK-GOODWE-GW30KSTSG10",
+    "facts": [
+     "CommunicationRS485",
+     "Communication",
+     "RS485",
+     "Ingress protectionIP54",
+     "Ingress protection",
+     "IP54",
+     "Weight12.5 kg",
+     "Weight",
+     "12.5 kg",
+     "Dimensions506 × 590 × 180 mm",
+     "Dimensions",
+     "506 × 590 × 180 mm"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1121,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module) Item no. DLK-GOODWE-GW10KEHAG20",
+    "facts": [
+     "Rated AC power10.0 kW",
+     "Rated AC power",
+     "10.0 kW",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency97.5 %",
+     "Max. efficiency",
+     "97.5 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1121,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module) Item no. DLK-GOODWE-GW8KEHAG20",
+    "facts": [
+     "Rated AC power8.0 kW",
+     "Rated AC power",
+     "8.0 kW",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency97.5 %",
+     "Max. efficiency",
+     "97.5 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1772.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module) Item no. DLK-GOODWE-GW6KEHAG20",
+    "facts": [
+     "Rated AC power6.0 kW",
+     "Rated AC power",
+     "6.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1772.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module) Item no. DLK-GOODWE-GW5KEHAG20",
+    "facts": [
+     "Rated AC power5.0 kW",
+     "Rated AC power",
+     "5.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 2424.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module) Item no. DLK-GOODWE-GW36KEHAG20",
+    "facts": [
+     "Rated AC power3.6 kW",
+     "Rated AC power",
+     "3.6 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 2424.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module) Item no. DLK-GOODWE-GW3KEHAG20",
+    "facts": [
+     "Rated AC power3.0 kW",
+     "Rated AC power",
+     "3.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3076.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh) Item no. DLK-GOODWE-GW83BATDG21",
+    "facts": [
+     "Usable energy8.0 kWh",
+     "Usable energy",
+     "8.0 kWh",
+     "Cell chemistryLFP (LiFePO4)",
+     "Cell chemistry",
+     "LFP (LiFePO4)",
+     "Ingress protectionIP66",
+     "Ingress protection",
+     "IP66",
+     "System energy range5-108 kWh",
+     "System energy range",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3076.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh) Item no. DLK-GOODWE-GW51BATDG21",
+    "facts": [
+     "Usable energy5.0 kWh",
+     "Usable energy",
+     "5.0 kWh",
+     "Cell chemistryLFP (LiFePO4)",
+     "Cell chemistry",
+     "LFP (LiFePO4)",
+     "Ingress protectionIP66",
+     "Ingress protection",
+     "IP66",
+     "System energy range5-108 kWh",
+     "System energy range",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3728.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh) Item no. DLK-GOODWE-GW83BATDG20",
+    "facts": [
+     "Usable energy8.0 kWh",
+     "Usable energy",
+     "8.0 kWh",
+     "Cell chemistryLFP (LiFePO4)",
+     "Cell chemistry",
+     "LFP (LiFePO4)",
+     "Ingress protectionIP66",
+     "Ingress protection",
+     "IP66",
+     "System energy range5-108 kWh",
+     "System energy range",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3728.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh) Item no. DLK-GOODWE-GW51BATDG20",
+    "facts": [
+     "Usable energy5.0 kWh",
+     "Usable energy",
+     "5.0 kWh",
+     "Cell chemistryLFP (LiFePO4)",
+     "Cell chemistry",
+     "LFP (LiFePO4)",
+     "Ingress protectionIP66",
+     "Ingress protection",
+     "IP66",
+     "System energy range5-108 kWh",
+     "System energy range",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 4380.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module) Item no. DLK-GOODWE-GW30KETAG20",
+    "facts": [
+     "Rated AC power30 kW",
+     "Rated AC power",
+     "30 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 4380.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module) Item no. DLK-GOODWE-GW29999KETAG20",
+    "facts": [
+     "Rated AC power29.999 kW",
+     "Rated AC power",
+     "29.999 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5032,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module) Item no. DLK-GOODWE-GW25KETAG20",
+    "facts": [
+     "Rated AC power25 kW",
+     "Rated AC power",
+     "25 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5032,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module) Item no. DLK-GOODWE-GW20KETAG20",
+    "facts": [
+     "Rated AC power20 kW",
+     "Rated AC power",
+     "20 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5683.9,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module) Item no. DLK-GOODWE-GW9999KETAG20",
+    "facts": [
+     "Rated AC power9.999 kW",
+     "Rated AC power",
+     "9.999 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5683.9,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module) Item no. DLK-GOODWE-GW6KETAG20",
+    "facts": [
+     "Rated AC power6 kW",
+     "Rated AC power",
+     "6 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers3",
+     "MPPT trackers",
+     "3",
+     "Max. efficiency98.0 %",
+     "Max. efficiency",
+     "98.0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6335.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module) Item no. DLK-GOODWE-GW5KETAG20",
+    "facts": [
+     "Rated AC power5 kW",
+     "Rated AC power",
+     "5 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers3",
+     "MPPT trackers",
+     "3",
+     "Max. efficiency98.0 %",
+     "Max. efficiency",
+     "98.0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6335.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW12499KETRG10",
+    "facts": [
+     "Rated AC power124.99 kW",
+     "Rated AC power",
+     "124.99 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6987.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW110KETRG10",
+    "facts": [
+     "Rated AC power110.0 kW",
+     "Rated AC power",
+     "110.0 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6987.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW100KETRG10",
+    "facts": [
+     "Rated AC power100 kW",
+     "Rated AC power",
+     "100 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7639.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW9999KETRG10",
+    "facts": [
+     "Rated AC power99.99 kW",
+     "Rated AC power",
+     "99.99 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7639.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW80KETRG10",
+    "facts": [
+     "Rated AC power80.0 kW",
+     "Rated AC power",
+     "80.0 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers8",
+     "MPPT trackers",
+     "8",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   }
+  ],
+  "ncards": 24,
+  "hdr": {
+   "bar": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 89,
+    "color": "rgb(12, 15, 15)",
+    "bg": "rgba(255, 255, 255, 0.95)",
+    "deco": "none",
+    "fs": "16px",
+    "fw": "400"
+   },
+   "chips": [
+    {
+     "rect": {
+      "x": 592.7,
+      "y": 89.8,
+      "w": 44.2,
+      "h": 21.8,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Chat"
+    },
+    {
+     "rect": {
+      "x": 591.7,
+      "y": 186.8,
+      "w": 43.5,
+      "h": 21.8,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Plan"
+    },
+    {
+     "rect": {
+      "x": 611.1,
+      "y": 283.8,
+      "w": 78.4,
+      "h": 21.8,
+      "color": "rgb(42, 122, 88)",
+      "bg": "rgb(241, 249, 248)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Add detail"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(21, 53, 47)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Compare 0"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Compare"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgb(255, 255, 255)",
+      "deco": "none",
+      "fs": "12px",
+      "fw": "700"
+     },
+     "text": "0"
+    }
+   ],
+   "search": {
+    "x": 100,
+    "y": 275.8,
+    "w": 547.1,
+    "h": 52,
+    "color": "rgb(21, 53, 47)",
+    "bg": "rgb(255, 255, 255)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "cart": {
+    "rect": {
+     "x": 1066.5,
+     "y": 21,
+     "w": 46,
+     "h": 46,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgb(255, 255, 255)",
+     "deco": "none",
+     "fs": "13.5px",
+     "fw": "700"
+    },
+    "text": "Cart0",
+    "cls": "tv-header-utility tv-header-cart-link"
+   },
+   "langSwitch": {
+    "rect": {
+     "x": 1172.5,
+     "y": 22,
+     "w": 88,
+     "h": 44,
+     "color": "rgb(15, 23, 42)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "ENDE"
+   },
+   "crumbs": null,
+   "pagination": {
+    "rect": {
+     "x": 342,
+     "y": 8301.3,
+     "w": 998,
+     "h": 44,
+     "color": "rgb(21, 53, 47)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "14px",
+     "fw": "400"
+    },
+    "text": "123Next",
+    "items": [
+     {
+      "rect": {
+       "x": 741,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(255, 255, 255)",
+       "bg": "rgb(21, 53, 47)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "1"
+     },
+     {
+      "rect": {
+       "x": 793,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "2"
+     },
+     {
+      "rect": {
+       "x": 845,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "3"
+     },
+     {
+      "rect": {
+       "x": 897,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "Next"
+     }
+    ]
+   }
+  },
+  "pageH": 9237
+ },
+ "shop-en-t16": {
+  "contact": {
+   "section": {
+    "x": 362,
+    "y": 8381.3,
+    "w": 958,
+    "h": 145.7,
+    "color": "rgb(32, 58, 50)",
+    "bg": "rgb(244, 248, 246)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "kicker": "CONTACT LINKER",
+   "title": {
+    "rect": {
+     "x": 393,
+     "y": 8439,
+     "w": 700,
+     "h": 29.9,
+     "color": "rgb(10, 10, 10)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "23px",
+     "fw": "700"
+    },
+    "text": "Not sure which model to look for?"
+   },
+   "cta": {
+    "rect": {
+     "x": 1123,
+     "y": 8416,
+     "w": 166,
+     "h": 44,
+     "color": "rgb(32, 58, 50)",
+     "bg": "rgb(18, 102, 79)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "Need help choosing?",
+    "tag": "A",
+    "cls": "linker-contact-primary"
+   },
+   "mail": {
+    "rect": {
+     "x": 1123,
+     "y": 8472,
+     "w": 125.8,
+     "h": 20.1,
+     "color": "rgb(32, 58, 50)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "400"
+    },
+    "text": "sales@de-linker.com"
+   },
+   "html": "<section class=\"linker-contact-invitation linker-contact-catalog\"><div><span class=\"linker-contact-eyebrow\">CONTACT LINKER</span><h2>Not sure which model to look for?</h2><p>Your question includes this page as context. You can remove it before sending.</p></div><div class=\"linker-contact-invitation-actions\"><a class=\"linker-contact-primary\" href=\"http://127.0.0.1:8924/contact/?intent=product&amp;kind=catalogue&amp;title=Archives:%20Products&amp;search&amp;source=http://127.0.0.1:8924/products/\" data-linker-contact=\"{&quot;kind&quot;:&quot;catalogue&quot;,&quot;title&quot;:&quot;Archives: Products&quot;,&quot;url&quot;:&quot;http:\\/\\/127.0.0.1:8924\\/products\\/&quot;,&quot;search&quot;:&quot;&quot;,&quot;filters&quot;:[],&quot;intent&quot;:&quot;product&quot;}\">Need help choosing?</a><a class=\"linker-contact-email\" href=\"mailto:sales@de-linker.com\">sales@de-linker.com</a></div></section>"
+  },
+  "cards": [
+   {
+    "rect": {
+     "x": 342,
+     "y": 494.8,
+     "w": 488,
+     "h": 604.2
+    },
+    "itemNo": "GoodWeGoodWe GW60K-STS-G10Item no. DLK-GOODWE-GW60KSTSG10",
+    "facts": [
+     "CommunicationRS485",
+     "Communication",
+     "RS485",
+     "Ingress protectionIP54",
+     "Ingress protection",
+     "IP54",
+     "Weight15 kg",
+     "Weight",
+     "15 kg",
+     "Dimensions506 × 590 × 180 mm",
+     "Dimensions",
+     "506 × 590 × 180 mm"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 494.8,
+     "w": 488,
+     "h": 604.2
+    },
+    "itemNo": "GoodWeGoodWe GW30K-STS-G10Item no. DLK-GOODWE-GW30KSTSG10",
+    "facts": [
+     "CommunicationRS485",
+     "Communication",
+     "RS485",
+     "Ingress protectionIP54",
+     "Ingress protection",
+     "IP54",
+     "Weight12.5 kg",
+     "Weight",
+     "12.5 kg",
+     "Dimensions506 × 590 × 180 mm",
+     "Dimensions",
+     "506 × 590 × 180 mm"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1121,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)Item no. DLK-GOODWE-GW10KEHAG20",
+    "facts": [
+     "Rated AC power10.0 kW",
+     "Rated AC power",
+     "10.0 kW",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency97.5 %",
+     "Max. efficiency",
+     "97.5 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1121,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)Item no. DLK-GOODWE-GW8KEHAG20",
+    "facts": [
+     "Rated AC power8.0 kW",
+     "Rated AC power",
+     "8.0 kW",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency97.5 %",
+     "Max. efficiency",
+     "97.5 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1772.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module)Item no. DLK-GOODWE-GW6KEHAG20",
+    "facts": [
+     "Rated AC power6.0 kW",
+     "Rated AC power",
+     "6.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1772.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)Item no. DLK-GOODWE-GW5KEHAG20",
+    "facts": [
+     "Rated AC power5.0 kW",
+     "Rated AC power",
+     "5.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 2424.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module)Item no. DLK-GOODWE-GW36KEHAG20",
+    "facts": [
+     "Rated AC power3.6 kW",
+     "Rated AC power",
+     "3.6 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 2424.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module)Item no. DLK-GOODWE-GW3KEHAG20",
+    "facts": [
+     "Rated AC power3.0 kW",
+     "Rated AC power",
+     "3.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3076.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)Item no. DLK-GOODWE-GW83BATDG21",
+    "facts": [
+     "Usable energy8.0 kWh",
+     "Usable energy",
+     "8.0 kWh",
+     "Cell chemistryLFP (LiFePO4)",
+     "Cell chemistry",
+     "LFP (LiFePO4)",
+     "Ingress protectionIP66",
+     "Ingress protection",
+     "IP66",
+     "System energy range5-108 kWh",
+     "System energy range",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3076.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)Item no. DLK-GOODWE-GW51BATDG21",
+    "facts": [
+     "Usable energy5.0 kWh",
+     "Usable energy",
+     "5.0 kWh",
+     "Cell chemistryLFP (LiFePO4)",
+     "Cell chemistry",
+     "LFP (LiFePO4)",
+     "Ingress protectionIP66",
+     "Ingress protection",
+     "IP66",
+     "System energy range5-108 kWh",
+     "System energy range",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3728.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)Item no. DLK-GOODWE-GW83BATDG20",
+    "facts": [
+     "Usable energy8.0 kWh",
+     "Usable energy",
+     "8.0 kWh",
+     "Cell chemistryLFP (LiFePO4)",
+     "Cell chemistry",
+     "LFP (LiFePO4)",
+     "Ingress protectionIP66",
+     "Ingress protection",
+     "IP66",
+     "System energy range5-108 kWh",
+     "System energy range",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3728.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)Item no. DLK-GOODWE-GW51BATDG20",
+    "facts": [
+     "Usable energy5.0 kWh",
+     "Usable energy",
+     "5.0 kWh",
+     "Cell chemistryLFP (LiFePO4)",
+     "Cell chemistry",
+     "LFP (LiFePO4)",
+     "Ingress protectionIP66",
+     "Ingress protection",
+     "IP66",
+     "System energy range5-108 kWh",
+     "System energy range",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 4380.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)Item no. DLK-GOODWE-GW30KETAG20",
+    "facts": [
+     "Rated AC power30 kW",
+     "Rated AC power",
+     "30 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 4380.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)Item no. DLK-GOODWE-GW29999KETAG20",
+    "facts": [
+     "Rated AC power29.999 kW",
+     "Rated AC power",
+     "29.999 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5032,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)Item no. DLK-GOODWE-GW25KETAG20",
+    "facts": [
+     "Rated AC power25 kW",
+     "Rated AC power",
+     "25 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5032,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)Item no. DLK-GOODWE-GW20KETAG20",
+    "facts": [
+     "Rated AC power20 kW",
+     "Rated AC power",
+     "20 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5683.9,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)Item no. DLK-GOODWE-GW9999KETAG20",
+    "facts": [
+     "Rated AC power9.999 kW",
+     "Rated AC power",
+     "9.999 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5683.9,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)Item no. DLK-GOODWE-GW6KETAG20",
+    "facts": [
+     "Rated AC power6 kW",
+     "Rated AC power",
+     "6 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers3",
+     "MPPT trackers",
+     "3",
+     "Max. efficiency98.0 %",
+     "Max. efficiency",
+     "98.0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6335.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)Item no. DLK-GOODWE-GW5KETAG20",
+    "facts": [
+     "Rated AC power5 kW",
+     "Rated AC power",
+     "5 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers3",
+     "MPPT trackers",
+     "3",
+     "Max. efficiency98.0 %",
+     "Max. efficiency",
+     "98.0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6335.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW12499KETRG10",
+    "facts": [
+     "Rated AC power124.99 kW",
+     "Rated AC power",
+     "124.99 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6987.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW110KETRG10",
+    "facts": [
+     "Rated AC power110.0 kW",
+     "Rated AC power",
+     "110.0 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6987.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW100KETRG10",
+    "facts": [
+     "Rated AC power100 kW",
+     "Rated AC power",
+     "100 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7639.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW9999KETRG10",
+    "facts": [
+     "Rated AC power99.99 kW",
+     "Rated AC power",
+     "99.99 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7639.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW80KETRG10",
+    "facts": [
+     "Rated AC power80.0 kW",
+     "Rated AC power",
+     "80.0 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers8",
+     "MPPT trackers",
+     "8",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   }
+  ],
+  "ncards": 24,
+  "hdr": {
+   "bar": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 89,
+    "color": "rgb(12, 15, 15)",
+    "bg": "rgba(255, 255, 255, 0.95)",
+    "deco": "none",
+    "fs": "16px",
+    "fw": "400"
+   },
+   "chips": [
+    {
+     "rect": {
+      "x": 592.7,
+      "y": 89.8,
+      "w": 44.2,
+      "h": 21.8,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Chat"
+    },
+    {
+     "rect": {
+      "x": 591.7,
+      "y": 186.8,
+      "w": 43.5,
+      "h": 21.8,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Plan"
+    },
+    {
+     "rect": {
+      "x": 611.1,
+      "y": 283.8,
+      "w": 78.4,
+      "h": 21.8,
+      "color": "rgb(42, 122, 88)",
+      "bg": "rgb(241, 249, 248)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Add detail"
+    },
+    {
+     "rect": {
+      "x": 1273.8,
+      "y": 306.1,
+      "w": 66.3,
+      "h": 21.7,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "400"
+     },
+     "text": "Ask Genie"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgb(247, 247, 241)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Ask Genie"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(21, 53, 47)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "Compare 0/4"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "Compare"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "0/4"
+    }
+   ],
+   "search": {
+    "x": 100,
+    "y": 275.8,
+    "w": 547.1,
+    "h": 52,
+    "color": "rgb(21, 53, 47)",
+    "bg": "rgb(255, 255, 255)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "cart": {
+    "rect": {
+     "x": 1066.5,
+     "y": 21,
+     "w": 46,
+     "h": 46,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgb(255, 255, 255)",
+     "deco": "none",
+     "fs": "13.5px",
+     "fw": "700"
+    },
+    "text": "Cart",
+    "cls": "tv-header-utility tv-header-cart-link"
+   },
+   "langSwitch": {
+    "rect": {
+     "x": 1172.5,
+     "y": 22,
+     "w": 88,
+     "h": 44,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "ENDE"
+   },
+   "crumbs": null,
+   "pagination": {
+    "rect": {
+     "x": 342,
+     "y": 8301.3,
+     "w": 998,
+     "h": 44,
+     "color": "rgb(21, 53, 47)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "14px",
+     "fw": "400"
+    },
+    "text": "123Next",
+    "items": [
+     {
+      "rect": {
+       "x": 741,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(255, 255, 255)",
+       "bg": "rgb(21, 53, 47)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "1"
+     },
+     {
+      "rect": {
+       "x": 793,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "2"
+     },
+     {
+      "rect": {
+       "x": 845,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "3"
+     },
+     {
+      "rect": {
+       "x": 897,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "Next"
+     }
+    ]
+   }
+  },
+  "pageH": 9237
+ },
+ "shop-de-live": {
+  "contact": {
+   "section": {
+    "x": 362,
+    "y": 8381.3,
+    "w": 958,
+    "h": 145.7,
+    "color": "rgb(32, 58, 50)",
+    "bg": "rgb(244, 248, 246)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "kicker": "KONTAKT ZU LINKER",
+   "title": {
+    "rect": {
+     "x": 393,
+     "y": 8439,
+     "w": 692,
+     "h": 29.9,
+     "color": "rgb(10, 10, 10)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "23px",
+     "fw": "700"
+    },
+    "text": "Noch nicht sicher, welches Modell passt?"
+   },
+   "cta": {
+    "rect": {
+     "x": 1115,
+     "y": 8416,
+     "w": 174,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(18, 102, 79)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "Hilfe bei der Auswahl?",
+    "tag": "A",
+    "cls": "linker-contact-primary"
+   },
+   "mail": {
+    "rect": {
+     "x": 1115,
+     "y": 8472,
+     "w": 125.8,
+     "h": 20.1,
+     "color": "rgb(18, 102, 79)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "underline",
+     "fs": "13px",
+     "fw": "400"
+    },
+    "text": "sales@de-linker.com"
+   },
+   "html": "<section class=\"linker-contact-invitation linker-contact-catalog\"><div><span class=\"linker-contact-eyebrow\">KONTAKT ZU LINKER</span><h2>Noch nicht sicher, welches Modell passt?</h2><p>Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen.</p></div><div class=\"linker-contact-invitation-actions\"><a class=\"linker-contact-primary\" href=\"https://de-linker.com/de/kontakt/?intent=product&amp;kind=catalogue&amp;title=Archiv%3A%20Produkte&amp;search&amp;source=https%3A%2F%2Fde-linker.com%2Fproducts%2F\" data-linker-contact=\"{&quot;kind&quot;:&quot;catalogue&quot;,&quot;title&quot;:&quot;Archiv: Produkte&quot;,&quot;url&quot;:&quot;https://de-linker.com/products/&quot;,&quot;search&quot;:&quot;&quot;,&quot;filters&quot;:[],&quot;intent&quot;:&quot;product&quot;}\">Hilfe bei der Auswahl?</a><a class=\"linker-contact-email\" href=\"mailto:sales@de-linker.com\">sales@de-linker.com</a></div></section>"
+  },
+  "cards": [
+   {
+    "rect": {
+     "x": 342,
+     "y": 494.8,
+     "w": 488,
+     "h": 604.2
+    },
+    "itemNo": "GoodWe GoodWe GW60K-STS-G10 Artikelnr. DLK-GOODWE-GW60KSTSG10",
+    "facts": [
+     "KommunikationRS485",
+     "Kommunikation",
+     "RS485",
+     "SchutzartIP54",
+     "Schutzart",
+     "IP54",
+     "Gewicht15 kg",
+     "Gewicht",
+     "15 kg",
+     "Abmessungen506 × 590 × 180 mm",
+     "Abmessungen",
+     "506 × 590 × 180 mm"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 494.8,
+     "w": 488,
+     "h": 604.2
+    },
+    "itemNo": "GoodWe GoodWe GW30K-STS-G10 Artikelnr. DLK-GOODWE-GW30KSTSG10",
+    "facts": [
+     "KommunikationRS485",
+     "Kommunikation",
+     "RS485",
+     "SchutzartIP54",
+     "Schutzart",
+     "IP54",
+     "Gewicht12,5 kg",
+     "Gewicht",
+     "12,5 kg",
+     "Abmessungen506 × 590 × 180 mm",
+     "Abmessungen",
+     "506 × 590 × 180 mm"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1121,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW10KEHAG20",
+    "facts": [
+     "AC-Nennleistung10,0 kW",
+     "AC-Nennleistung",
+     "10,0 kW",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad97,5 %",
+     "Max. Wirkungsgrad",
+     "97,5 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1121,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW8KEHAG20",
+    "facts": [
+     "AC-Nennleistung8,0 kW",
+     "AC-Nennleistung",
+     "8,0 kW",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad97,5 %",
+     "Max. Wirkungsgrad",
+     "97,5 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1772.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW6KEHAG20",
+    "facts": [
+     "AC-Nennleistung6,0 kW",
+     "AC-Nennleistung",
+     "6,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1772.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul) Artikelnr. DLK-GOODWE-GW5KEHAG20",
+    "facts": [
+     "AC-Nennleistung5,0 kW",
+     "AC-Nennleistung",
+     "5,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 2424.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW36KEHAG20",
+    "facts": [
+     "AC-Nennleistung3,6 kW",
+     "AC-Nennleistung",
+     "3,6 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 2424.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW3KEHAG20",
+    "facts": [
+     "AC-Nennleistung3,0 kW",
+     "AC-Nennleistung",
+     "3,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3076.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW8.3-BAT-D-G21 (ESA-Batteriemodul, 8,32 kWh) Artikelnr. DLK-GOODWE-GW83BATDG21",
+    "facts": [
+     "Nutzbare Energie8,0 kWh",
+     "Nutzbare Energie",
+     "8,0 kWh",
+     "ZellchemieLFP (LiFePO4)",
+     "Zellchemie",
+     "LFP (LiFePO4)",
+     "SchutzartIP66",
+     "Schutzart",
+     "IP66",
+     "Energiebereich des Systems5-108 kWh",
+     "Energiebereich des Systems",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3076.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh) Artikelnr. DLK-GOODWE-GW51BATDG21",
+    "facts": [
+     "Nutzbare Energie5,0 kWh",
+     "Nutzbare Energie",
+     "5,0 kWh",
+     "ZellchemieLFP (LiFePO4)",
+     "Zellchemie",
+     "LFP (LiFePO4)",
+     "SchutzartIP66",
+     "Schutzart",
+     "IP66",
+     "Energiebereich des Systems5-108 kWh",
+     "Energiebereich des Systems",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3728.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW8.3-BAT-D-G20 (ESA-Batteriemodul, 8,32 kWh) Artikelnr. DLK-GOODWE-GW83BATDG20",
+    "facts": [
+     "Nutzbare Energie8,0 kWh",
+     "Nutzbare Energie",
+     "8,0 kWh",
+     "ZellchemieLFP (LiFePO4)",
+     "Zellchemie",
+     "LFP (LiFePO4)",
+     "SchutzartIP66",
+     "Schutzart",
+     "IP66",
+     "Energiebereich des Systems5-108 kWh",
+     "Energiebereich des Systems",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3728.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW5.1-BAT-D-G20 (ESA-Batteriemodul, 5,12 kWh) Artikelnr. DLK-GOODWE-GW51BATDG20",
+    "facts": [
+     "Nutzbare Energie5,0 kWh",
+     "Nutzbare Energie",
+     "5,0 kWh",
+     "ZellchemieLFP (LiFePO4)",
+     "Zellchemie",
+     "LFP (LiFePO4)",
+     "SchutzartIP66",
+     "Schutzart",
+     "IP66",
+     "Energiebereich des Systems5-108 kWh",
+     "Energiebereich des Systems",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 4380.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW30KETAG20",
+    "facts": [
+     "AC-Nennleistung30 kW",
+     "AC-Nennleistung",
+     "30 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 4380.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW29999KETAG20",
+    "facts": [
+     "AC-Nennleistung29,999 kW",
+     "AC-Nennleistung",
+     "29,999 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5032,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW25KETAG20",
+    "facts": [
+     "AC-Nennleistung25 kW",
+     "AC-Nennleistung",
+     "25 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5032,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW20K-ETA-G20 (20 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW20KETAG20",
+    "facts": [
+     "AC-Nennleistung20 kW",
+     "AC-Nennleistung",
+     "20 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5683.9,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW9.999K-ETA-G20 (9,999 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW9999KETAG20",
+    "facts": [
+     "AC-Nennleistung9,999 kW",
+     "AC-Nennleistung",
+     "9,999 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5683.9,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW6K-ETA-G20 (6 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW6KETAG20",
+    "facts": [
+     "AC-Nennleistung6 kW",
+     "AC-Nennleistung",
+     "6 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker3",
+     "MPPT-Tracker",
+     "3",
+     "Max. Wirkungsgrad98,0 %",
+     "Max. Wirkungsgrad",
+     "98,0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6335.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW5KETAG20",
+    "facts": [
+     "AC-Nennleistung5 kW",
+     "AC-Nennleistung",
+     "5 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker3",
+     "MPPT-Tracker",
+     "3",
+     "Max. Wirkungsgrad98,0 %",
+     "Max. Wirkungsgrad",
+     "98,0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6335.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW124.99K-ETR-G10 (124,99 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW12499KETRG10",
+    "facts": [
+     "AC-Nennleistung124,99 kW",
+     "AC-Nennleistung",
+     "124,99 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6987.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW110KETRG10",
+    "facts": [
+     "AC-Nennleistung110,0 kW",
+     "AC-Nennleistung",
+     "110,0 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6987.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW100K-ETR-G10 (100 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW100KETRG10",
+    "facts": [
+     "AC-Nennleistung100 kW",
+     "AC-Nennleistung",
+     "100 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7639.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW99.99K-ETR-G10 (99,99 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW9999KETRG10",
+    "facts": [
+     "AC-Nennleistung99,99 kW",
+     "AC-Nennleistung",
+     "99,99 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7639.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW80K-ETR-G10 (80 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW80KETRG10",
+    "facts": [
+     "AC-Nennleistung80,0 kW",
+     "AC-Nennleistung",
+     "80,0 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker8",
+     "MPPT-Tracker",
+     "8",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   }
+  ],
+  "ncards": 24,
+  "hdr": {
+   "bar": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 89,
+    "color": "rgb(12, 15, 15)",
+    "bg": "rgba(255, 255, 255, 0.95)",
+    "deco": "none",
+    "fs": "16px",
+    "fw": "400"
+   },
+   "chips": [
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Chat"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Plan"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(42, 122, 88)",
+      "bg": "rgb(241, 249, 248)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Detail hinzufügen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(21, 53, 47)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Vergleichen 0"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Vergleichen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgb(255, 255, 255)",
+      "deco": "none",
+      "fs": "12px",
+      "fw": "700"
+     },
+     "text": "0"
+    }
+   ],
+   "search": {
+    "x": 100,
+    "y": 275.8,
+    "w": 503.9,
+    "h": 52,
+    "color": "rgb(21, 53, 47)",
+    "bg": "rgb(255, 255, 255)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "cart": {
+    "rect": {
+     "x": 1163.6,
+     "y": 21,
+     "w": 46,
+     "h": 46,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgb(255, 255, 255)",
+     "deco": "none",
+     "fs": "13.5px",
+     "fw": "700"
+    },
+    "text": "Warenkorb0",
+    "cls": "tv-header-utility tv-header-cart-link"
+   },
+   "langSwitch": {
+    "rect": {
+     "x": 1269.6,
+     "y": 22,
+     "w": 88,
+     "h": 44,
+     "color": "rgb(15, 23, 42)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "ENDE"
+   },
+   "crumbs": null,
+   "pagination": {
+    "rect": {
+     "x": 342,
+     "y": 8301.3,
+     "w": 998,
+     "h": 44,
+     "color": "rgb(21, 53, 47)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "14px",
+     "fw": "400"
+    },
+    "text": "123Weiter",
+    "items": [
+     {
+      "rect": {
+       "x": 740.2,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(255, 255, 255)",
+       "bg": "rgb(21, 53, 47)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "1"
+     },
+     {
+      "rect": {
+       "x": 792.2,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "2"
+     },
+     {
+      "rect": {
+       "x": 844.2,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "3"
+     },
+     {
+      "rect": {
+       "x": 896.2,
+       "y": 8301.3,
+       "w": 45.5,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "Weiter"
+     }
+    ]
+   }
+  },
+  "pageH": 9237
+ },
+ "shop-de-t16": {
+  "contact": {
+   "section": {
+    "x": 362,
+    "y": 8381.3,
+    "w": 958,
+    "h": 145.7,
+    "color": "rgb(32, 58, 50)",
+    "bg": "rgb(244, 248, 246)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "kicker": "KONTAKT ZU LINKER",
+   "title": {
+    "rect": {
+     "x": 393,
+     "y": 8439,
+     "w": 692,
+     "h": 29.9,
+     "color": "rgb(10, 10, 10)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "23px",
+     "fw": "700"
+    },
+    "text": "Noch nicht sicher, welches Modell passt?"
+   },
+   "cta": {
+    "rect": {
+     "x": 1115,
+     "y": 8416,
+     "w": 174,
+     "h": 44,
+     "color": "rgb(32, 58, 50)",
+     "bg": "rgb(18, 102, 79)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "Hilfe bei der Auswahl?",
+    "tag": "A",
+    "cls": "linker-contact-primary"
+   },
+   "mail": {
+    "rect": {
+     "x": 1115,
+     "y": 8472,
+     "w": 125.8,
+     "h": 20.1,
+     "color": "rgb(32, 58, 50)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "400"
+    },
+    "text": "sales@de-linker.com"
+   },
+   "html": "<section class=\"linker-contact-invitation linker-contact-catalog\"><div><span class=\"linker-contact-eyebrow\">KONTAKT ZU LINKER</span><h2>Noch nicht sicher, welches Modell passt?</h2><p>Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen.</p></div><div class=\"linker-contact-invitation-actions\"><a class=\"linker-contact-primary\" href=\"http://127.0.0.1:8924/de/kontakt/?intent=product&amp;kind=catalogue&amp;title=Archiv:%20Produkte&amp;search&amp;source=http://127.0.0.1:8924/de/produkte/\" data-linker-contact=\"{&quot;kind&quot;:&quot;catalogue&quot;,&quot;title&quot;:&quot;Archiv: Produkte&quot;,&quot;url&quot;:&quot;http:\\/\\/127.0.0.1:8924\\/de\\/produkte\\/&quot;,&quot;search&quot;:&quot;&quot;,&quot;filters&quot;:[],&quot;intent&quot;:&quot;product&quot;}\">Hilfe bei der Auswahl?</a><a class=\"linker-contact-email\" href=\"mailto:sales@de-linker.com\">sales@de-linker.com</a></div></section>"
+  },
+  "cards": [
+   {
+    "rect": {
+     "x": 342,
+     "y": 494.8,
+     "w": 488,
+     "h": 604.2
+    },
+    "itemNo": "GoodWeGoodWe GW60K-STS-G10Artikelnr. DLK-GOODWE-GW60KSTSG10",
+    "facts": [
+     "KommunikationRS485",
+     "Kommunikation",
+     "RS485",
+     "SchutzartIP54",
+     "Schutzart",
+     "IP54",
+     "Gewicht15 kg",
+     "Gewicht",
+     "15 kg",
+     "Abmessungen506 × 590 × 180 mm",
+     "Abmessungen",
+     "506 × 590 × 180 mm"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 494.8,
+     "w": 488,
+     "h": 604.2
+    },
+    "itemNo": "GoodWeGoodWe GW30K-STS-G10Artikelnr. DLK-GOODWE-GW30KSTSG10",
+    "facts": [
+     "KommunikationRS485",
+     "Kommunikation",
+     "RS485",
+     "SchutzartIP54",
+     "Schutzart",
+     "IP54",
+     "Gewicht12,5 kg",
+     "Gewicht",
+     "12,5 kg",
+     "Abmessungen506 × 590 × 180 mm",
+     "Abmessungen",
+     "506 × 590 × 180 mm"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1121,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW10KEHAG20",
+    "facts": [
+     "AC-Nennleistung10,0 kW",
+     "AC-Nennleistung",
+     "10,0 kW",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad97,5 %",
+     "Max. Wirkungsgrad",
+     "97,5 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1121,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW8KEHAG20",
+    "facts": [
+     "AC-Nennleistung8,0 kW",
+     "AC-Nennleistung",
+     "8,0 kW",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad97,5 %",
+     "Max. Wirkungsgrad",
+     "97,5 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1772.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW6KEHAG20",
+    "facts": [
+     "AC-Nennleistung6,0 kW",
+     "AC-Nennleistung",
+     "6,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1772.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul)Artikelnr. DLK-GOODWE-GW5KEHAG20",
+    "facts": [
+     "AC-Nennleistung5,0 kW",
+     "AC-Nennleistung",
+     "5,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 2424.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW36KEHAG20",
+    "facts": [
+     "AC-Nennleistung3,6 kW",
+     "AC-Nennleistung",
+     "3,6 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 2424.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW3KEHAG20",
+    "facts": [
+     "AC-Nennleistung3,0 kW",
+     "AC-Nennleistung",
+     "3,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3076.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW8.3-BAT-D-G21 (ESA-Batteriemodul, 8,32 kWh)Artikelnr. DLK-GOODWE-GW83BATDG21",
+    "facts": [
+     "Nutzbare Energie8,0 kWh",
+     "Nutzbare Energie",
+     "8,0 kWh",
+     "ZellchemieLFP (LiFePO4)",
+     "Zellchemie",
+     "LFP (LiFePO4)",
+     "SchutzartIP66",
+     "Schutzart",
+     "IP66",
+     "Energiebereich des Systems5-108 kWh",
+     "Energiebereich des Systems",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3076.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh)Artikelnr. DLK-GOODWE-GW51BATDG21",
+    "facts": [
+     "Nutzbare Energie5,0 kWh",
+     "Nutzbare Energie",
+     "5,0 kWh",
+     "ZellchemieLFP (LiFePO4)",
+     "Zellchemie",
+     "LFP (LiFePO4)",
+     "SchutzartIP66",
+     "Schutzart",
+     "IP66",
+     "Energiebereich des Systems5-108 kWh",
+     "Energiebereich des Systems",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3728.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW8.3-BAT-D-G20 (ESA-Batteriemodul, 8,32 kWh)Artikelnr. DLK-GOODWE-GW83BATDG20",
+    "facts": [
+     "Nutzbare Energie8,0 kWh",
+     "Nutzbare Energie",
+     "8,0 kWh",
+     "ZellchemieLFP (LiFePO4)",
+     "Zellchemie",
+     "LFP (LiFePO4)",
+     "SchutzartIP66",
+     "Schutzart",
+     "IP66",
+     "Energiebereich des Systems5-108 kWh",
+     "Energiebereich des Systems",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3728.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW5.1-BAT-D-G20 (ESA-Batteriemodul, 5,12 kWh)Artikelnr. DLK-GOODWE-GW51BATDG20",
+    "facts": [
+     "Nutzbare Energie5,0 kWh",
+     "Nutzbare Energie",
+     "5,0 kWh",
+     "ZellchemieLFP (LiFePO4)",
+     "Zellchemie",
+     "LFP (LiFePO4)",
+     "SchutzartIP66",
+     "Schutzart",
+     "IP66",
+     "Energiebereich des Systems5-108 kWh",
+     "Energiebereich des Systems",
+     "5-108 kWh"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 4380.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW30KETAG20",
+    "facts": [
+     "AC-Nennleistung30 kW",
+     "AC-Nennleistung",
+     "30 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 4380.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW29999KETAG20",
+    "facts": [
+     "AC-Nennleistung29,999 kW",
+     "AC-Nennleistung",
+     "29,999 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5032,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW25KETAG20",
+    "facts": [
+     "AC-Nennleistung25 kW",
+     "AC-Nennleistung",
+     "25 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5032,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW20K-ETA-G20 (20 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW20KETAG20",
+    "facts": [
+     "AC-Nennleistung20 kW",
+     "AC-Nennleistung",
+     "20 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5683.9,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW9.999K-ETA-G20 (9,999 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW9999KETAG20",
+    "facts": [
+     "AC-Nennleistung9,999 kW",
+     "AC-Nennleistung",
+     "9,999 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5683.9,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW6K-ETA-G20 (6 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW6KETAG20",
+    "facts": [
+     "AC-Nennleistung6 kW",
+     "AC-Nennleistung",
+     "6 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker3",
+     "MPPT-Tracker",
+     "3",
+     "Max. Wirkungsgrad98,0 %",
+     "Max. Wirkungsgrad",
+     "98,0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6335.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW5KETAG20",
+    "facts": [
+     "AC-Nennleistung5 kW",
+     "AC-Nennleistung",
+     "5 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker3",
+     "MPPT-Tracker",
+     "3",
+     "Max. Wirkungsgrad98,0 %",
+     "Max. Wirkungsgrad",
+     "98,0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6335.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW124.99K-ETR-G10 (124,99 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW12499KETRG10",
+    "facts": [
+     "AC-Nennleistung124,99 kW",
+     "AC-Nennleistung",
+     "124,99 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6987.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW110KETRG10",
+    "facts": [
+     "AC-Nennleistung110,0 kW",
+     "AC-Nennleistung",
+     "110,0 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6987.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW100K-ETR-G10 (100 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW100KETRG10",
+    "facts": [
+     "AC-Nennleistung100 kW",
+     "AC-Nennleistung",
+     "100 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7639.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW99.99K-ETR-G10 (99,99 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW9999KETRG10",
+    "facts": [
+     "AC-Nennleistung99,99 kW",
+     "AC-Nennleistung",
+     "99,99 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7639.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW80K-ETR-G10 (80 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW80KETRG10",
+    "facts": [
+     "AC-Nennleistung80,0 kW",
+     "AC-Nennleistung",
+     "80,0 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker8",
+     "MPPT-Tracker",
+     "8",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   }
+  ],
+  "ncards": 24,
+  "hdr": {
+   "bar": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 89,
+    "color": "rgb(12, 15, 15)",
+    "bg": "rgba(255, 255, 255, 0.95)",
+    "deco": "none",
+    "fs": "16px",
+    "fw": "400"
+   },
+   "chips": [
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Chat"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Plan"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(42, 122, 88)",
+      "bg": "rgb(241, 249, 248)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Detail hinzufügen"
+    },
+    {
+     "rect": {
+      "x": 1253.7,
+      "y": 306.1,
+      "w": 86.3,
+      "h": 21.7,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "400"
+     },
+     "text": "Genie fragen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgb(247, 247, 241)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Genie fragen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(21, 53, 47)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "Vergleichen 0/4"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "Vergleichen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "0/4"
+    }
+   ],
+   "search": {
+    "x": 100,
+    "y": 275.8,
+    "w": 552,
+    "h": 52,
+    "color": "rgb(21, 53, 47)",
+    "bg": "rgb(255, 255, 255)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "cart": {
+    "rect": {
+     "x": 1163.6,
+     "y": 21,
+     "w": 46,
+     "h": 46,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgb(255, 255, 255)",
+     "deco": "none",
+     "fs": "13.5px",
+     "fw": "700"
+    },
+    "text": "Cart",
+    "cls": "tv-header-utility tv-header-cart-link"
+   },
+   "langSwitch": {
+    "rect": {
+     "x": 1269.6,
+     "y": 22,
+     "w": 88,
+     "h": 44,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "ENDE"
+   },
+   "crumbs": null,
+   "pagination": {
+    "rect": {
+     "x": 342,
+     "y": 8301.3,
+     "w": 998,
+     "h": 44,
+     "color": "rgb(21, 53, 47)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "14px",
+     "fw": "400"
+    },
+    "text": "123Weiter",
+    "items": [
+     {
+      "rect": {
+       "x": 740.2,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(255, 255, 255)",
+       "bg": "rgb(21, 53, 47)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "1"
+     },
+     {
+      "rect": {
+       "x": 792.2,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "2"
+     },
+     {
+      "rect": {
+       "x": 844.2,
+       "y": 8301.3,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "3"
+     },
+     {
+      "rect": {
+       "x": 896.2,
+       "y": 8301.3,
+       "w": 45.5,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "Weiter"
+     }
+    ]
+   }
+  },
+  "pageH": 9237
+ },
+ "archive-en-live": {
+  "contact": {
+   "section": {
+    "x": 362,
+    "y": 8406.9,
+    "w": 958,
+    "h": 145.7,
+    "color": "rgb(32, 58, 50)",
+    "bg": "rgb(244, 248, 246)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "kicker": "CONTACT LINKER",
+   "title": {
+    "rect": {
+     "x": 393,
+     "y": 8464.6,
+     "w": 700,
+     "h": 29.9,
+     "color": "rgb(10, 10, 10)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "23px",
+     "fw": "700"
+    },
+    "text": "Not sure which model to look for?"
+   },
+   "cta": {
+    "rect": {
+     "x": 1123,
+     "y": 8441.7,
+     "w": 166,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(18, 102, 79)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "Need help choosing?",
+    "tag": "A",
+    "cls": "linker-contact-primary"
+   },
+   "mail": {
+    "rect": {
+     "x": 1123,
+     "y": 8497.7,
+     "w": 125.8,
+     "h": 20.1,
+     "color": "rgb(18, 102, 79)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "underline",
+     "fs": "13px",
+     "fw": "400"
+    },
+    "text": "sales@de-linker.com"
+   },
+   "html": "<section class=\"linker-contact-invitation linker-contact-catalog\"><div><span class=\"linker-contact-eyebrow\">CONTACT LINKER</span><h2>Not sure which model to look for?</h2><p>Your question includes this page as context. You can remove it before sending.</p></div><div class=\"linker-contact-invitation-actions\"><a class=\"linker-contact-primary\" href=\"https://de-linker.com/contact/?intent=product&amp;kind=catalogue&amp;title=Category%3A%20Inverters&amp;search&amp;source=https%3A%2F%2Fde-linker.com%2Fproduct-category%2Finverters%2F\" data-linker-contact=\"{&quot;kind&quot;:&quot;catalogue&quot;,&quot;title&quot;:&quot;Category: Inverters&quot;,&quot;url&quot;:&quot;https://de-linker.com/product-category/inverters/&quot;,&quot;search&quot;:&quot;&quot;,&quot;filters&quot;:[],&quot;intent&quot;:&quot;product&quot;}\">Need help choosing?</a><a class=\"linker-contact-email\" href=\"mailto:sales@de-linker.com\">sales@de-linker.com</a></div></section>"
+  },
+  "cards": [
+   {
+    "rect": {
+     "x": 342,
+     "y": 494.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module) Item no. DLK-GOODWE-GW10KEHAG20",
+    "facts": [
+     "Rated AC power10.0 kW",
+     "Rated AC power",
+     "10.0 kW",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency97.5 %",
+     "Max. efficiency",
+     "97.5 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 494.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module) Item no. DLK-GOODWE-GW8KEHAG20",
+    "facts": [
+     "Rated AC power8.0 kW",
+     "Rated AC power",
+     "8.0 kW",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency97.5 %",
+     "Max. efficiency",
+     "97.5 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1146.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module) Item no. DLK-GOODWE-GW6KEHAG20",
+    "facts": [
+     "Rated AC power6.0 kW",
+     "Rated AC power",
+     "6.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1146.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module) Item no. DLK-GOODWE-GW5KEHAG20",
+    "facts": [
+     "Rated AC power5.0 kW",
+     "Rated AC power",
+     "5.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1798.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module) Item no. DLK-GOODWE-GW36KEHAG20",
+    "facts": [
+     "Rated AC power3.6 kW",
+     "Rated AC power",
+     "3.6 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1798.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module) Item no. DLK-GOODWE-GW3KEHAG20",
+    "facts": [
+     "Rated AC power3.0 kW",
+     "Rated AC power",
+     "3.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 2450.3,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module) Item no. DLK-GOODWE-GW30KETAG20",
+    "facts": [
+     "Rated AC power30 kW",
+     "Rated AC power",
+     "30 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 2450.3,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module) Item no. DLK-GOODWE-GW29999KETAG20",
+    "facts": [
+     "Rated AC power29.999 kW",
+     "Rated AC power",
+     "29.999 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3102.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module) Item no. DLK-GOODWE-GW25KETAG20",
+    "facts": [
+     "Rated AC power25 kW",
+     "Rated AC power",
+     "25 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3102.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module) Item no. DLK-GOODWE-GW20KETAG20",
+    "facts": [
+     "Rated AC power20 kW",
+     "Rated AC power",
+     "20 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3754,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module) Item no. DLK-GOODWE-GW9999KETAG20",
+    "facts": [
+     "Rated AC power9.999 kW",
+     "Rated AC power",
+     "9.999 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3754,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module) Item no. DLK-GOODWE-GW6KETAG20",
+    "facts": [
+     "Rated AC power6 kW",
+     "Rated AC power",
+     "6 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers3",
+     "MPPT trackers",
+     "3",
+     "Max. efficiency98.0 %",
+     "Max. efficiency",
+     "98.0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 4405.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module) Item no. DLK-GOODWE-GW5KETAG20",
+    "facts": [
+     "Rated AC power5 kW",
+     "Rated AC power",
+     "5 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers3",
+     "MPPT trackers",
+     "3",
+     "Max. efficiency98.0 %",
+     "Max. efficiency",
+     "98.0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 4405.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW12499KETRG10",
+    "facts": [
+     "Rated AC power124.99 kW",
+     "Rated AC power",
+     "124.99 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5057.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW110KETRG10",
+    "facts": [
+     "Rated AC power110.0 kW",
+     "Rated AC power",
+     "110.0 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5057.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW100KETRG10",
+    "facts": [
+     "Rated AC power100 kW",
+     "Rated AC power",
+     "100 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5709.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW9999KETRG10",
+    "facts": [
+     "Rated AC power99.99 kW",
+     "Rated AC power",
+     "99.99 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5709.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter) Item no. DLK-GOODWE-GW80KETRG10",
+    "facts": [
+     "Rated AC power80.0 kW",
+     "Rated AC power",
+     "80.0 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers8",
+     "MPPT trackers",
+     "8",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6361.4,
+     "w": 488,
+     "h": 608.4
+    },
+    "itemNo": "GoodWe ET Series Item no. DLK-GOODWE-GW75KETG10",
+    "facts": [
+     "Rated AC power75 kW",
+     "Rated AC power",
+     "75 kW",
+     "MPPT trackers8",
+     "MPPT trackers",
+     "8",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %",
+     "Maximum AC output power75 kW",
+     "Maximum AC output power",
+     "75 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6361.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid) Item no. DLK-ECOFLOW-EFHDP16KS2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal6 kW",
+     "AC output w nominal",
+     "6 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7013.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid) Item no. DLK-ECOFLOW-EFHDP15K75S2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal5.75 kW",
+     "AC output w nominal",
+     "5.75 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7013.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid) Item no. DLK-ECOFLOW-EFHDP15KS2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal5 kW",
+     "AC output w nominal",
+     "5 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7665.1,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid) Item no. DLK-ECOFLOW-EFHDP14K6S2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal4.6 kW",
+     "AC output w nominal",
+     "4.6 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7665.1,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid) Item no. DLK-ECOFLOW-EFHDP13K68S2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal3.68 kW",
+     "AC output w nominal",
+     "3.68 kW"
+    ],
+    "nfacts": 12
+   }
+  ],
+  "ncards": 24,
+  "hdr": {
+   "bar": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 89,
+    "color": "rgb(12, 15, 15)",
+    "bg": "rgba(255, 255, 255, 0.95)",
+    "deco": "none",
+    "fs": "16px",
+    "fw": "400"
+   },
+   "chips": [
+    {
+     "rect": {
+      "x": 592.7,
+      "y": 89.8,
+      "w": 44.2,
+      "h": 21.8,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Chat"
+    },
+    {
+     "rect": {
+      "x": 591.7,
+      "y": 186.8,
+      "w": 43.5,
+      "h": 21.8,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Plan"
+    },
+    {
+     "rect": {
+      "x": 611.1,
+      "y": 283.8,
+      "w": 78.4,
+      "h": 21.8,
+      "color": "rgb(42, 122, 88)",
+      "bg": "rgb(241, 249, 248)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Add detail"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(21, 53, 47)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Compare 0"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Compare"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgb(255, 255, 255)",
+      "deco": "none",
+      "fs": "12px",
+      "fw": "700"
+     },
+     "text": "0"
+    }
+   ],
+   "search": {
+    "x": 100,
+    "y": 275.8,
+    "w": 547.1,
+    "h": 52,
+    "color": "rgb(21, 53, 47)",
+    "bg": "rgb(255, 255, 255)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "cart": {
+    "rect": {
+     "x": 1066.5,
+     "y": 21,
+     "w": 46,
+     "h": 46,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgb(255, 255, 255)",
+     "deco": "none",
+     "fs": "13.5px",
+     "fw": "700"
+    },
+    "text": "Cart0",
+    "cls": "tv-header-utility tv-header-cart-link"
+   },
+   "langSwitch": {
+    "rect": {
+     "x": 1172.5,
+     "y": 22,
+     "w": 88,
+     "h": 44,
+     "color": "rgb(15, 23, 42)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "ENDE"
+   },
+   "crumbs": null,
+   "pagination": {
+    "rect": {
+     "x": 342,
+     "y": 8326.9,
+     "w": 998,
+     "h": 44,
+     "color": "rgb(21, 53, 47)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "14px",
+     "fw": "400"
+    },
+    "text": "12Next",
+    "items": [
+     {
+      "rect": {
+       "x": 767,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(255, 255, 255)",
+       "bg": "rgb(21, 53, 47)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "1"
+     },
+     {
+      "rect": {
+       "x": 819,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "2"
+     },
+     {
+      "rect": {
+       "x": 871,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "Next"
+     }
+    ]
+   }
+  },
+  "pageH": 9263
+ },
+ "archive-en-t16": {
+  "contact": {
+   "section": {
+    "x": 362,
+    "y": 8406.9,
+    "w": 958,
+    "h": 145.7,
+    "color": "rgb(32, 58, 50)",
+    "bg": "rgb(244, 248, 246)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "kicker": "CONTACT LINKER",
+   "title": {
+    "rect": {
+     "x": 393,
+     "y": 8464.6,
+     "w": 700,
+     "h": 29.9,
+     "color": "rgb(10, 10, 10)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "23px",
+     "fw": "700"
+    },
+    "text": "Not sure which model to look for?"
+   },
+   "cta": {
+    "rect": {
+     "x": 1123,
+     "y": 8441.7,
+     "w": 166,
+     "h": 44,
+     "color": "rgb(32, 58, 50)",
+     "bg": "rgb(18, 102, 79)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "Need help choosing?",
+    "tag": "A",
+    "cls": "linker-contact-primary"
+   },
+   "mail": {
+    "rect": {
+     "x": 1123,
+     "y": 8497.7,
+     "w": 125.8,
+     "h": 20.1,
+     "color": "rgb(32, 58, 50)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "400"
+    },
+    "text": "sales@de-linker.com"
+   },
+   "html": "<section class=\"linker-contact-invitation linker-contact-catalog\"><div><span class=\"linker-contact-eyebrow\">CONTACT LINKER</span><h2>Not sure which model to look for?</h2><p>Your question includes this page as context. You can remove it before sending.</p></div><div class=\"linker-contact-invitation-actions\"><a class=\"linker-contact-primary\" href=\"http://127.0.0.1:8924/contact/?intent=product&amp;kind=catalogue&amp;title=Category:%20Inverters&amp;search&amp;source=http://127.0.0.1:8924/product-category/inverters/\" data-linker-contact=\"{&quot;kind&quot;:&quot;catalogue&quot;,&quot;title&quot;:&quot;Category: Inverters&quot;,&quot;url&quot;:&quot;http:\\/\\/127.0.0.1:8924\\/product-category\\/inverters\\/&quot;,&quot;search&quot;:&quot;&quot;,&quot;filters&quot;:[],&quot;intent&quot;:&quot;product&quot;}\">Need help choosing?</a><a class=\"linker-contact-email\" href=\"mailto:sales@de-linker.com\">sales@de-linker.com</a></div></section>"
+  },
+  "cards": [
+   {
+    "rect": {
+     "x": 342,
+     "y": 494.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)Item no. DLK-GOODWE-GW10KEHAG20",
+    "facts": [
+     "Rated AC power10.0 kW",
+     "Rated AC power",
+     "10.0 kW",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency97.5 %",
+     "Max. efficiency",
+     "97.5 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 494.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)Item no. DLK-GOODWE-GW8KEHAG20",
+    "facts": [
+     "Rated AC power8.0 kW",
+     "Rated AC power",
+     "8.0 kW",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency97.5 %",
+     "Max. efficiency",
+     "97.5 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1146.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module)Item no. DLK-GOODWE-GW6KEHAG20",
+    "facts": [
+     "Rated AC power6.0 kW",
+     "Rated AC power",
+     "6.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1146.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)Item no. DLK-GOODWE-GW5KEHAG20",
+    "facts": [
+     "Rated AC power5.0 kW",
+     "Rated AC power",
+     "5.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1798.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module)Item no. DLK-GOODWE-GW36KEHAG20",
+    "facts": [
+     "Rated AC power3.6 kW",
+     "Rated AC power",
+     "3.6 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1798.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module)Item no. DLK-GOODWE-GW3KEHAG20",
+    "facts": [
+     "Rated AC power3.0 kW",
+     "Rated AC power",
+     "3.0 kW",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency97.6 %",
+     "Max. efficiency",
+     "97.6 %",
+     "Nominal AC voltageL/N/PE 220/230/240 V",
+     "Nominal AC voltage",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 2450.3,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)Item no. DLK-GOODWE-GW30KETAG20",
+    "facts": [
+     "Rated AC power30 kW",
+     "Rated AC power",
+     "30 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 2450.3,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)Item no. DLK-GOODWE-GW29999KETAG20",
+    "facts": [
+     "Rated AC power29.999 kW",
+     "Rated AC power",
+     "29.999 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3102.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)Item no. DLK-GOODWE-GW25KETAG20",
+    "facts": [
+     "Rated AC power25 kW",
+     "Rated AC power",
+     "25 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.2 %",
+     "Max. efficiency",
+     "98.2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3102.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)Item no. DLK-GOODWE-GW20KETAG20",
+    "facts": [
+     "Rated AC power20 kW",
+     "Rated AC power",
+     "20 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3754,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)Item no. DLK-GOODWE-GW9999KETAG20",
+    "facts": [
+     "Rated AC power9.999 kW",
+     "Rated AC power",
+     "9.999 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers4",
+     "MPPT trackers",
+     "4",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3754,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)Item no. DLK-GOODWE-GW6KETAG20",
+    "facts": [
+     "Rated AC power6 kW",
+     "Rated AC power",
+     "6 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers3",
+     "MPPT trackers",
+     "3",
+     "Max. efficiency98.0 %",
+     "Max. efficiency",
+     "98.0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 4405.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)Item no. DLK-GOODWE-GW5KETAG20",
+    "facts": [
+     "Rated AC power5 kW",
+     "Rated AC power",
+     "5 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers3",
+     "MPPT trackers",
+     "3",
+     "Max. efficiency98.0 %",
+     "Max. efficiency",
+     "98.0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 4405.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW12499KETRG10",
+    "facts": [
+     "Rated AC power124.99 kW",
+     "Rated AC power",
+     "124.99 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5057.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW110KETRG10",
+    "facts": [
+     "Rated AC power110.0 kW",
+     "Rated AC power",
+     "110.0 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5057.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW100KETRG10",
+    "facts": [
+     "Rated AC power100 kW",
+     "Rated AC power",
+     "100 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5709.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW9999KETRG10",
+    "facts": [
+     "Rated AC power99.99 kW",
+     "Rated AC power",
+     "99.99 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers10",
+     "MPPT trackers",
+     "10",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5709.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)Item no. DLK-GOODWE-GW80KETRG10",
+    "facts": [
+     "Rated AC power80.0 kW",
+     "Rated AC power",
+     "80.0 kW",
+     "PhaseThree-phase",
+     "Phase",
+     "Three-phase",
+     "MPPT trackers8",
+     "MPPT trackers",
+     "8",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6361.4,
+     "w": 488,
+     "h": 608.4
+    },
+    "itemNo": "GoodWeET SeriesItem no. DLK-GOODWE-GW75KETG10",
+    "facts": [
+     "Rated AC power75 kW",
+     "Rated AC power",
+     "75 kW",
+     "MPPT trackers8",
+     "MPPT trackers",
+     "8",
+     "Max. efficiency98.1 %",
+     "Max. efficiency",
+     "98.1 %",
+     "Maximum AC output power75 kW",
+     "Maximum AC output power",
+     "75 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6361.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)Item no. DLK-ECOFLOW-EFHDP16KS2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal6 kW",
+     "AC output w nominal",
+     "6 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7013.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)Item no. DLK-ECOFLOW-EFHDP15K75S2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal5.75 kW",
+     "AC output w nominal",
+     "5.75 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7013.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)Item no. DLK-ECOFLOW-EFHDP15KS2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal5 kW",
+     "AC output w nominal",
+     "5 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7665.1,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)Item no. DLK-ECOFLOW-EFHDP14K6S2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal4.6 kW",
+     "AC output w nominal",
+     "4.6 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7665.1,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)Item no. DLK-ECOFLOW-EFHDP13K68S2",
+    "facts": [
+     "PhaseSingle-phase",
+     "Phase",
+     "Single-phase",
+     "MPPT trackers2",
+     "MPPT trackers",
+     "2",
+     "Max. efficiency>96.5%",
+     "Max. efficiency",
+     ">96.5%",
+     "AC output w nominal3.68 kW",
+     "AC output w nominal",
+     "3.68 kW"
+    ],
+    "nfacts": 12
+   }
+  ],
+  "ncards": 24,
+  "hdr": {
+   "bar": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 89,
+    "color": "rgb(12, 15, 15)",
+    "bg": "rgba(255, 255, 255, 0.95)",
+    "deco": "none",
+    "fs": "16px",
+    "fw": "400"
+   },
+   "chips": [
+    {
+     "rect": {
+      "x": 592.7,
+      "y": 89.8,
+      "w": 44.2,
+      "h": 21.8,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Chat"
+    },
+    {
+     "rect": {
+      "x": 591.7,
+      "y": 186.8,
+      "w": 43.5,
+      "h": 21.8,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Plan"
+    },
+    {
+     "rect": {
+      "x": 611.1,
+      "y": 283.8,
+      "w": 78.4,
+      "h": 21.8,
+      "color": "rgb(42, 122, 88)",
+      "bg": "rgb(241, 249, 248)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Add detail"
+    },
+    {
+     "rect": {
+      "x": 1273.8,
+      "y": 306.1,
+      "w": 66.3,
+      "h": 21.7,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "400"
+     },
+     "text": "Ask Genie"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgb(247, 247, 241)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Ask Genie"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(21, 53, 47)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "Compare 0/4"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "Compare"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "0/4"
+    }
+   ],
+   "search": {
+    "x": 100,
+    "y": 275.8,
+    "w": 547.1,
+    "h": 52,
+    "color": "rgb(21, 53, 47)",
+    "bg": "rgb(255, 255, 255)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "cart": {
+    "rect": {
+     "x": 1066.5,
+     "y": 21,
+     "w": 46,
+     "h": 46,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgb(255, 255, 255)",
+     "deco": "none",
+     "fs": "13.5px",
+     "fw": "700"
+    },
+    "text": "Cart",
+    "cls": "tv-header-utility tv-header-cart-link"
+   },
+   "langSwitch": {
+    "rect": {
+     "x": 1172.5,
+     "y": 22,
+     "w": 88,
+     "h": 44,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "ENDE"
+   },
+   "crumbs": null,
+   "pagination": {
+    "rect": {
+     "x": 342,
+     "y": 8326.9,
+     "w": 998,
+     "h": 44,
+     "color": "rgb(21, 53, 47)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "14px",
+     "fw": "400"
+    },
+    "text": "12Next",
+    "items": [
+     {
+      "rect": {
+       "x": 767,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(255, 255, 255)",
+       "bg": "rgb(21, 53, 47)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "1"
+     },
+     {
+      "rect": {
+       "x": 819,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "2"
+     },
+     {
+      "rect": {
+       "x": 871,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "Next"
+     }
+    ]
+   }
+  },
+  "pageH": 9263
+ },
+ "archive-de-live": {
+  "contact": {
+   "section": {
+    "x": 362,
+    "y": 8406.9,
+    "w": 958,
+    "h": 145.7,
+    "color": "rgb(32, 58, 50)",
+    "bg": "rgb(244, 248, 246)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "kicker": "KONTAKT ZU LINKER",
+   "title": {
+    "rect": {
+     "x": 393,
+     "y": 8464.6,
+     "w": 692,
+     "h": 29.9,
+     "color": "rgb(10, 10, 10)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "23px",
+     "fw": "700"
+    },
+    "text": "Noch nicht sicher, welches Modell passt?"
+   },
+   "cta": {
+    "rect": {
+     "x": 1115,
+     "y": 8441.7,
+     "w": 174,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(18, 102, 79)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "Hilfe bei der Auswahl?",
+    "tag": "A",
+    "cls": "linker-contact-primary"
+   },
+   "mail": {
+    "rect": {
+     "x": 1115,
+     "y": 8497.7,
+     "w": 125.8,
+     "h": 20.1,
+     "color": "rgb(18, 102, 79)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "underline",
+     "fs": "13px",
+     "fw": "400"
+    },
+    "text": "sales@de-linker.com"
+   },
+   "html": "<section class=\"linker-contact-invitation linker-contact-catalog\"><div><span class=\"linker-contact-eyebrow\">KONTAKT ZU LINKER</span><h2>Noch nicht sicher, welches Modell passt?</h2><p>Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen.</p></div><div class=\"linker-contact-invitation-actions\"><a class=\"linker-contact-primary\" href=\"https://de-linker.com/de/kontakt/?intent=product&amp;kind=catalogue&amp;title=Kategorie%3A%20Inverters&amp;search&amp;source=https%3A%2F%2Fde-linker.com%2Fproduct-category%2Finverters%2F\" data-linker-contact=\"{&quot;kind&quot;:&quot;catalogue&quot;,&quot;title&quot;:&quot;Kategorie: Inverters&quot;,&quot;url&quot;:&quot;https://de-linker.com/product-category/inverters/&quot;,&quot;search&quot;:&quot;&quot;,&quot;filters&quot;:[],&quot;intent&quot;:&quot;product&quot;}\">Hilfe bei der Auswahl?</a><a class=\"linker-contact-email\" href=\"mailto:sales@de-linker.com\">sales@de-linker.com</a></div></section>"
+  },
+  "cards": [
+   {
+    "rect": {
+     "x": 342,
+     "y": 494.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW10KEHAG20",
+    "facts": [
+     "AC-Nennleistung10,0 kW",
+     "AC-Nennleistung",
+     "10,0 kW",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad97,5 %",
+     "Max. Wirkungsgrad",
+     "97,5 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 494.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW8KEHAG20",
+    "facts": [
+     "AC-Nennleistung8,0 kW",
+     "AC-Nennleistung",
+     "8,0 kW",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad97,5 %",
+     "Max. Wirkungsgrad",
+     "97,5 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1146.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW6KEHAG20",
+    "facts": [
+     "AC-Nennleistung6,0 kW",
+     "AC-Nennleistung",
+     "6,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1146.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul) Artikelnr. DLK-GOODWE-GW5KEHAG20",
+    "facts": [
+     "AC-Nennleistung5,0 kW",
+     "AC-Nennleistung",
+     "5,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1798.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW36KEHAG20",
+    "facts": [
+     "AC-Nennleistung3,6 kW",
+     "AC-Nennleistung",
+     "3,6 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1798.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW3KEHAG20",
+    "facts": [
+     "AC-Nennleistung3,0 kW",
+     "AC-Nennleistung",
+     "3,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 2450.3,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW30KETAG20",
+    "facts": [
+     "AC-Nennleistung30 kW",
+     "AC-Nennleistung",
+     "30 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 2450.3,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW29999KETAG20",
+    "facts": [
+     "AC-Nennleistung29,999 kW",
+     "AC-Nennleistung",
+     "29,999 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3102.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW25KETAG20",
+    "facts": [
+     "AC-Nennleistung25 kW",
+     "AC-Nennleistung",
+     "25 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3102.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW20K-ETA-G20 (20 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW20KETAG20",
+    "facts": [
+     "AC-Nennleistung20 kW",
+     "AC-Nennleistung",
+     "20 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3754,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW9.999K-ETA-G20 (9,999 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW9999KETAG20",
+    "facts": [
+     "AC-Nennleistung9,999 kW",
+     "AC-Nennleistung",
+     "9,999 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3754,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW6K-ETA-G20 (6 kW dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW6KETAG20",
+    "facts": [
+     "AC-Nennleistung6 kW",
+     "AC-Nennleistung",
+     "6 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker3",
+     "MPPT-Tracker",
+     "3",
+     "Max. Wirkungsgrad98,0 %",
+     "Max. Wirkungsgrad",
+     "98,0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 4405.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul) Artikelnr. DLK-GOODWE-GW5KETAG20",
+    "facts": [
+     "AC-Nennleistung5 kW",
+     "AC-Nennleistung",
+     "5 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker3",
+     "MPPT-Tracker",
+     "3",
+     "Max. Wirkungsgrad98,0 %",
+     "Max. Wirkungsgrad",
+     "98,0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 4405.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW124.99K-ETR-G10 (124,99 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW12499KETRG10",
+    "facts": [
+     "AC-Nennleistung124,99 kW",
+     "AC-Nennleistung",
+     "124,99 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5057.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW110KETRG10",
+    "facts": [
+     "AC-Nennleistung110,0 kW",
+     "AC-Nennleistung",
+     "110,0 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5057.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW100K-ETR-G10 (100 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW100KETRG10",
+    "facts": [
+     "AC-Nennleistung100 kW",
+     "AC-Nennleistung",
+     "100 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5709.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW99.99K-ETR-G10 (99,99 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW9999KETRG10",
+    "facts": [
+     "AC-Nennleistung99,99 kW",
+     "AC-Nennleistung",
+     "99,99 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5709.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWe GoodWe GW80K-ETR-G10 (80 kW dreiphasiger Hybrid-Wechselrichter) Artikelnr. DLK-GOODWE-GW80KETRG10",
+    "facts": [
+     "AC-Nennleistung80,0 kW",
+     "AC-Nennleistung",
+     "80,0 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker8",
+     "MPPT-Tracker",
+     "8",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6361.4,
+     "w": 488,
+     "h": 608.4
+    },
+    "itemNo": "GoodWe ET Series Artikelnr. DLK-GOODWE-GW75KETG10",
+    "facts": [
+     "AC-Nennleistung75 kW",
+     "AC-Nennleistung",
+     "75 kW",
+     "MPPT-Tracker8",
+     "MPPT-Tracker",
+     "8",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %",
+     "Maximale AC-Ausgangsleistung75 kW",
+     "Maximale AC-Ausgangsleistung",
+     "75 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6361.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW einphasiger Hybrid) Artikelnr. DLK-ECOFLOW-EFHDP16KS2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal6 kW",
+     "AC-Ausgang w nominal",
+     "6 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7013.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-5K75-S2 (5,75 kW einphasiger Hybrid) Artikelnr. DLK-ECOFLOW-EFHDP15K75S2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal5,75 kW",
+     "AC-Ausgang w nominal",
+     "5,75 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7013.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW einphasiger Hybrid) Artikelnr. DLK-ECOFLOW-EFHDP15KS2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal5 kW",
+     "AC-Ausgang w nominal",
+     "5 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7665.1,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-4K6-S2 (4,6 kW einphasiger Hybrid) Artikelnr. DLK-ECOFLOW-EFHDP14K6S2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal4,6 kW",
+     "AC-Ausgang w nominal",
+     "4,6 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7665.1,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlow EcoFlow OCEAN 2 HD-P1-3K68-S2 (3,68 kW einphasiger Hybrid-Wechselrichter) Artikelnr. DLK-ECOFLOW-EFHDP13K68S2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal3,68 kW",
+     "AC-Ausgang w nominal",
+     "3,68 kW"
+    ],
+    "nfacts": 12
+   }
+  ],
+  "ncards": 24,
+  "hdr": {
+   "bar": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 89,
+    "color": "rgb(12, 15, 15)",
+    "bg": "rgba(255, 255, 255, 0.95)",
+    "deco": "none",
+    "fs": "16px",
+    "fw": "400"
+   },
+   "chips": [
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Chat"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Plan"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(42, 122, 88)",
+      "bg": "rgb(241, 249, 248)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Detail hinzufügen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(21, 53, 47)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Vergleichen 0"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Vergleichen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgb(255, 255, 255)",
+      "deco": "none",
+      "fs": "12px",
+      "fw": "700"
+     },
+     "text": "0"
+    }
+   ],
+   "search": {
+    "x": 100,
+    "y": 275.8,
+    "w": 503.9,
+    "h": 52,
+    "color": "rgb(21, 53, 47)",
+    "bg": "rgb(255, 255, 255)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "cart": {
+    "rect": {
+     "x": 1163.6,
+     "y": 21,
+     "w": 46,
+     "h": 46,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgb(255, 255, 255)",
+     "deco": "none",
+     "fs": "13.5px",
+     "fw": "700"
+    },
+    "text": "Warenkorb0",
+    "cls": "tv-header-utility tv-header-cart-link"
+   },
+   "langSwitch": {
+    "rect": {
+     "x": 1269.6,
+     "y": 22,
+     "w": 88,
+     "h": 44,
+     "color": "rgb(15, 23, 42)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "ENDE"
+   },
+   "crumbs": null,
+   "pagination": {
+    "rect": {
+     "x": 342,
+     "y": 8326.9,
+     "w": 998,
+     "h": 44,
+     "color": "rgb(21, 53, 47)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "14px",
+     "fw": "400"
+    },
+    "text": "12Weiter",
+    "items": [
+     {
+      "rect": {
+       "x": 766.2,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(255, 255, 255)",
+       "bg": "rgb(21, 53, 47)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "1"
+     },
+     {
+      "rect": {
+       "x": 818.2,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "2"
+     },
+     {
+      "rect": {
+       "x": 870.2,
+       "y": 8326.9,
+       "w": 45.5,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "Weiter"
+     }
+    ]
+   }
+  },
+  "pageH": 9263
+ },
+ "archive-de-t16": {
+  "contact": {
+   "section": {
+    "x": 362,
+    "y": 8406.9,
+    "w": 958,
+    "h": 145.7,
+    "color": "rgb(32, 58, 50)",
+    "bg": "rgb(244, 248, 246)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "kicker": "KONTAKT ZU LINKER",
+   "title": {
+    "rect": {
+     "x": 393,
+     "y": 8464.6,
+     "w": 692,
+     "h": 29.9,
+     "color": "rgb(10, 10, 10)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "23px",
+     "fw": "700"
+    },
+    "text": "Noch nicht sicher, welches Modell passt?"
+   },
+   "cta": {
+    "rect": {
+     "x": 1115,
+     "y": 8441.7,
+     "w": 174,
+     "h": 44,
+     "color": "rgb(32, 58, 50)",
+     "bg": "rgb(18, 102, 79)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "Hilfe bei der Auswahl?",
+    "tag": "A",
+    "cls": "linker-contact-primary"
+   },
+   "mail": {
+    "rect": {
+     "x": 1115,
+     "y": 8497.7,
+     "w": 125.8,
+     "h": 20.1,
+     "color": "rgb(32, 58, 50)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "400"
+    },
+    "text": "sales@de-linker.com"
+   },
+   "html": "<section class=\"linker-contact-invitation linker-contact-catalog\"><div><span class=\"linker-contact-eyebrow\">KONTAKT ZU LINKER</span><h2>Noch nicht sicher, welches Modell passt?</h2><p>Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen.</p></div><div class=\"linker-contact-invitation-actions\"><a class=\"linker-contact-primary\" href=\"http://127.0.0.1:8924/de/kontakt/?intent=product&amp;kind=catalogue&amp;title=Kategorie:%20Wechselrichter&amp;search&amp;source=http://127.0.0.1:8924/de/produkt-kategorie/wechselrichter/\" data-linker-contact=\"{&quot;kind&quot;:&quot;catalogue&quot;,&quot;title&quot;:&quot;Kategorie: Wechselrichter&quot;,&quot;url&quot;:&quot;http:\\/\\/127.0.0.1:8924\\/de\\/produkt-kategorie\\/wechselrichter\\/&quot;,&quot;search&quot;:&quot;&quot;,&quot;filters&quot;:[],&quot;intent&quot;:&quot;product&quot;}\">Hilfe bei der Auswahl?</a><a class=\"linker-contact-email\" href=\"mailto:sales@de-linker.com\">sales@de-linker.com</a></div></section>"
+  },
+  "cards": [
+   {
+    "rect": {
+     "x": 342,
+     "y": 494.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW10KEHAG20",
+    "facts": [
+     "AC-Nennleistung10,0 kW",
+     "AC-Nennleistung",
+     "10,0 kW",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad97,5 %",
+     "Max. Wirkungsgrad",
+     "97,5 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 494.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW8KEHAG20",
+    "facts": [
+     "AC-Nennleistung8,0 kW",
+     "AC-Nennleistung",
+     "8,0 kW",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad97,5 %",
+     "Max. Wirkungsgrad",
+     "97,5 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1146.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW6KEHAG20",
+    "facts": [
+     "AC-Nennleistung6,0 kW",
+     "AC-Nennleistung",
+     "6,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1146.6,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul)Artikelnr. DLK-GOODWE-GW5KEHAG20",
+    "facts": [
+     "AC-Nennleistung5,0 kW",
+     "AC-Nennleistung",
+     "5,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 1798.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW36KEHAG20",
+    "facts": [
+     "AC-Nennleistung3,6 kW",
+     "AC-Nennleistung",
+     "3,6 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 1798.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW3KEHAG20",
+    "facts": [
+     "AC-Nennleistung3,0 kW",
+     "AC-Nennleistung",
+     "3,0 kW",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad97,6 %",
+     "Max. Wirkungsgrad",
+     "97,6 %",
+     "AC-NennspannungL/N/PE 220/230/240 V",
+     "AC-Nennspannung",
+     "L/N/PE 220/230/240 V"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 2450.3,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW30KETAG20",
+    "facts": [
+     "AC-Nennleistung30 kW",
+     "AC-Nennleistung",
+     "30 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 2450.3,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW29999KETAG20",
+    "facts": [
+     "AC-Nennleistung29,999 kW",
+     "AC-Nennleistung",
+     "29,999 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3102.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW25KETAG20",
+    "facts": [
+     "AC-Nennleistung25 kW",
+     "AC-Nennleistung",
+     "25 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,2 %",
+     "Max. Wirkungsgrad",
+     "98,2 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3102.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW20K-ETA-G20 (20 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW20KETAG20",
+    "facts": [
+     "AC-Nennleistung20 kW",
+     "AC-Nennleistung",
+     "20 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 3754,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW9.999K-ETA-G20 (9,999 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW9999KETAG20",
+    "facts": [
+     "AC-Nennleistung9,999 kW",
+     "AC-Nennleistung",
+     "9,999 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker4",
+     "MPPT-Tracker",
+     "4",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 3754,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW6K-ETA-G20 (6 kW dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW6KETAG20",
+    "facts": [
+     "AC-Nennleistung6 kW",
+     "AC-Nennleistung",
+     "6 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker3",
+     "MPPT-Tracker",
+     "3",
+     "Max. Wirkungsgrad98,0 %",
+     "Max. Wirkungsgrad",
+     "98,0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 4405.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul)Artikelnr. DLK-GOODWE-GW5KETAG20",
+    "facts": [
+     "AC-Nennleistung5 kW",
+     "AC-Nennleistung",
+     "5 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker3",
+     "MPPT-Tracker",
+     "3",
+     "Max. Wirkungsgrad98,0 %",
+     "Max. Wirkungsgrad",
+     "98,0 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 4405.8,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW124.99K-ETR-G10 (124,99 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW12499KETRG10",
+    "facts": [
+     "AC-Nennleistung124,99 kW",
+     "AC-Nennleistung",
+     "124,99 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5057.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW110KETRG10",
+    "facts": [
+     "AC-Nennleistung110,0 kW",
+     "AC-Nennleistung",
+     "110,0 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5057.7,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW100K-ETR-G10 (100 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW100KETRG10",
+    "facts": [
+     "AC-Nennleistung100 kW",
+     "AC-Nennleistung",
+     "100 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 5709.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW99.99K-ETR-G10 (99,99 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW9999KETRG10",
+    "facts": [
+     "AC-Nennleistung99,99 kW",
+     "AC-Nennleistung",
+     "99,99 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker10",
+     "MPPT-Tracker",
+     "10",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 5709.5,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "GoodWeGoodWe GW80K-ETR-G10 (80 kW dreiphasiger Hybrid-Wechselrichter)Artikelnr. DLK-GOODWE-GW80KETRG10",
+    "facts": [
+     "AC-Nennleistung80,0 kW",
+     "AC-Nennleistung",
+     "80,0 kW",
+     "PhaseDreiphasig",
+     "Phase",
+     "Dreiphasig",
+     "MPPT-Tracker8",
+     "MPPT-Tracker",
+     "8",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 6361.4,
+     "w": 488,
+     "h": 608.4
+    },
+    "itemNo": "GoodWeET SeriesArtikelnr. DLK-GOODWE-GW75KETG10",
+    "facts": [
+     "AC-Nennleistung75 kW",
+     "AC-Nennleistung",
+     "75 kW",
+     "MPPT-Tracker8",
+     "MPPT-Tracker",
+     "8",
+     "Max. Wirkungsgrad98,1 %",
+     "Max. Wirkungsgrad",
+     "98,1 %",
+     "Maximale AC-Ausgangsleistung75 kW",
+     "Maximale AC-Ausgangsleistung",
+     "75 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 6361.4,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW einphasiger Hybrid)Artikelnr. DLK-ECOFLOW-EFHDP16KS2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal6 kW",
+     "AC-Ausgang w nominal",
+     "6 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7013.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-5K75-S2 (5,75 kW einphasiger Hybrid)Artikelnr. DLK-ECOFLOW-EFHDP15K75S2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal5,75 kW",
+     "AC-Ausgang w nominal",
+     "5,75 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7013.2,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW einphasiger Hybrid)Artikelnr. DLK-ECOFLOW-EFHDP15KS2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal5 kW",
+     "AC-Ausgang w nominal",
+     "5 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 342,
+     "y": 7665.1,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-4K6-S2 (4,6 kW einphasiger Hybrid)Artikelnr. DLK-ECOFLOW-EFHDP14K6S2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal4,6 kW",
+     "AC-Ausgang w nominal",
+     "4,6 kW"
+    ],
+    "nfacts": 12
+   },
+   {
+    "rect": {
+     "x": 852,
+     "y": 7665.1,
+     "w": 488,
+     "h": 629.8
+    },
+    "itemNo": "EcoFlowEcoFlow OCEAN 2 HD-P1-3K68-S2 (3,68 kW einphasiger Hybrid-Wechselrichter)Artikelnr. DLK-ECOFLOW-EFHDP13K68S2",
+    "facts": [
+     "PhaseEinphasig",
+     "Phase",
+     "Einphasig",
+     "MPPT-Tracker2",
+     "MPPT-Tracker",
+     "2",
+     "Max. Wirkungsgrad>96,5 %",
+     "Max. Wirkungsgrad",
+     ">96,5 %",
+     "AC-Ausgang w nominal3,68 kW",
+     "AC-Ausgang w nominal",
+     "3,68 kW"
+    ],
+    "nfacts": 12
+   }
+  ],
+  "ncards": 24,
+  "hdr": {
+   "bar": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 89,
+    "color": "rgb(12, 15, 15)",
+    "bg": "rgba(255, 255, 255, 0.95)",
+    "deco": "none",
+    "fs": "16px",
+    "fw": "400"
+   },
+   "chips": [
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Chat"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(90, 99, 99)",
+      "bg": "rgb(238, 240, 240)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Plan"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(42, 122, 88)",
+      "bg": "rgb(241, 249, 248)",
+      "deco": "none",
+      "fs": "10.5px",
+      "fw": "700"
+     },
+     "text": "Detail hinzufügen"
+    },
+    {
+     "rect": {
+      "x": 1253.7,
+      "y": 306.1,
+      "w": 86.3,
+      "h": 21.7,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "400"
+     },
+     "text": "Genie fragen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(21, 53, 47)",
+      "bg": "rgb(247, 247, 241)",
+      "deco": "none",
+      "fs": "14px",
+      "fw": "500"
+     },
+     "text": "Genie fragen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(21, 53, 47)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "Vergleichen 0/4"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "Vergleichen"
+    },
+    {
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "deco": "none",
+      "fs": "16px",
+      "fw": "500"
+     },
+     "text": "0/4"
+    }
+   ],
+   "search": {
+    "x": 100,
+    "y": 275.8,
+    "w": 552,
+    "h": 52,
+    "color": "rgb(21, 53, 47)",
+    "bg": "rgb(255, 255, 255)",
+    "deco": "none",
+    "fs": "14px",
+    "fw": "400"
+   },
+   "cart": {
+    "rect": {
+     "x": 1163.6,
+     "y": 21,
+     "w": 46,
+     "h": 46,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgb(255, 255, 255)",
+     "deco": "none",
+     "fs": "13.5px",
+     "fw": "700"
+    },
+    "text": "Cart",
+    "cls": "tv-header-utility tv-header-cart-link"
+   },
+   "langSwitch": {
+    "rect": {
+     "x": 1269.6,
+     "y": 22,
+     "w": 88,
+     "h": 44,
+     "color": "rgb(12, 15, 15)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "13px",
+     "fw": "600"
+    },
+    "text": "ENDE"
+   },
+   "crumbs": null,
+   "pagination": {
+    "rect": {
+     "x": 342,
+     "y": 8326.9,
+     "w": 998,
+     "h": 44,
+     "color": "rgb(21, 53, 47)",
+     "bg": "rgba(0, 0, 0, 0)",
+     "deco": "none",
+     "fs": "14px",
+     "fw": "400"
+    },
+    "text": "12Weiter",
+    "items": [
+     {
+      "rect": {
+       "x": 766.2,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(255, 255, 255)",
+       "bg": "rgb(21, 53, 47)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "1"
+     },
+     {
+      "rect": {
+       "x": 818.2,
+       "y": 8326.9,
+       "w": 44,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "2"
+     },
+     {
+      "rect": {
+       "x": 870.2,
+       "y": 8326.9,
+       "w": 45.5,
+       "h": 44,
+       "color": "rgb(21, 53, 47)",
+       "bg": "rgb(255, 255, 255)",
+       "deco": "none",
+       "fs": "14px",
+       "fw": "400"
+      },
+      "t": "Weiter"
+     }
+    ]
+   }
+  },
+  "pageH": 9263
+ }
+}

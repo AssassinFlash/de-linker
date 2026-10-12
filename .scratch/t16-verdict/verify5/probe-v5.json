@@ -1,0 +1,690 @@
+{
+ "shop-en": {
+  "live": {
+   "contact": {
+    "rect": [
+     362,
+     8381.3,
+     958,
+     145.67
+    ],
+    "ctaText": "Need help choosing?",
+    "ctaColor": "rgb(255, 255, 255)",
+    "ctaBg": "rgb(18, 102, 79)",
+    "mailColor": "rgb(18, 102, 79)",
+    "mailDeco": "underline",
+    "mailText": "sales@de-linker.com"
+   },
+   "allRow": {
+    "text": "All products",
+    "aria": "page",
+    "fw": "600",
+    "cls": "family-link"
+   },
+   "curRow": null,
+   "sections": {
+    "Phase": [
+     [
+      "3-phase",
+      "57"
+     ],
+     [
+      "1-phase",
+      "11"
+     ]
+    ],
+    "Power": [
+     [
+      "Up to 6 kW",
+      "21"
+     ],
+     [
+      "6 to 15 kW",
+      "28"
+     ],
+     [
+      "15 to 30 kW",
+      "13"
+     ],
+     [
+      "Over 30 kW",
+      "18"
+     ]
+    ]
+   }
+  },
+  "t16": {
+   "contact": {
+    "rect": [
+     362,
+     8381.3,
+     958,
+     145.67
+    ],
+    "ctaText": "Need help choosing?",
+    "ctaColor": "rgb(255, 255, 255)",
+    "ctaBg": "rgb(18, 102, 79)",
+    "mailColor": "rgb(18, 102, 79)",
+    "mailDeco": "underline",
+    "mailText": "sales@de-linker.com"
+   },
+   "allRow": {
+    "text": "All products",
+    "aria": "page",
+    "fw": "600",
+    "cls": "family-link"
+   },
+   "curRow": null,
+   "sections": {
+    "Phase": [
+     [
+      "3-phase",
+      "49"
+     ],
+     [
+      "1-phase",
+      "17"
+     ]
+    ],
+    "Power": [
+     [
+      "Up to 6 kW",
+      "19"
+     ],
+     [
+      "6 to 15 kW",
+      "25"
+     ],
+     [
+      "15 to 30 kW",
+      "11"
+     ],
+     [
+      "Over 30 kW",
+      "14"
+     ]
+    ]
+   }
+  }
+ },
+ "archive-en": {
+  "live": {
+   "contact": {
+    "rect": [
+     362,
+     8406.9,
+     958,
+     145.67
+    ],
+    "ctaText": "Need help choosing?",
+    "ctaColor": "rgb(255, 255, 255)",
+    "ctaBg": "rgb(18, 102, 79)",
+    "mailColor": "rgb(18, 102, 79)",
+    "mailDeco": "underline",
+    "mailText": "sales@de-linker.com"
+   },
+   "allRow": {
+    "text": "All products",
+    "aria": null,
+    "fw": "400",
+    "cls": "family-link"
+   },
+   "curRow": {
+    "text": "Inverters",
+    "fw": "600"
+   },
+   "sections": {
+    "Phase": [
+     [
+      "3-phase",
+      "43"
+     ],
+     [
+      "1-phase",
+      "10"
+     ]
+    ],
+    "Power": [
+     [
+      "Up to 6 kW",
+      "19"
+     ],
+     [
+      "6 to 15 kW",
+      "23"
+     ],
+     [
+      "15 to 30 kW",
+      "7"
+     ],
+     [
+      "Over 30 kW",
+      "10"
+     ]
+    ]
+   }
+  },
+  "t16": {
+   "contact": {
+    "rect": [
+     362,
+     8406.9,
+     958,
+     145.67
+    ],
+    "ctaText": "Need help choosing?",
+    "ctaColor": "rgb(255, 255, 255)",
+    "ctaBg": "rgb(18, 102, 79)",
+    "mailColor": "rgb(18, 102, 79)",
+    "mailDeco": "underline",
+    "mailText": "sales@de-linker.com"
+   },
+   "allRow": {
+    "text": "All products",
+    "aria": null,
+    "fw": "400",
+    "cls": "family-link"
+   },
+   "curRow": {
+    "text": "Inverters",
+    "fw": "600"
+   },
+   "sections": {
+    "Phase": [
+     [
+      "3-phase",
+      "42"
+     ],
+     [
+      "1-phase",
+      "16"
+     ]
+    ],
+    "Power": [
+     [
+      "Up to 6 kW",
+      "19"
+     ],
+     [
+      "6 to 15 kW",
+      "23"
+     ],
+     [
+      "15 to 30 kW",
+      "7"
+     ],
+     [
+      "Over 30 kW",
+      "10"
+     ]
+    ]
+   }
+  }
+ },
+ "shop-de": {
+  "live": {
+   "contact": {
+    "rect": [
+     362,
+     8381.3,
+     958,
+     145.67
+    ],
+    "ctaText": "Hilfe bei der Auswahl?",
+    "ctaColor": "rgb(255, 255, 255)",
+    "ctaBg": "rgb(18, 102, 79)",
+    "mailColor": "rgb(18, 102, 79)",
+    "mailDeco": "underline",
+    "mailText": "sales@de-linker.com"
+   },
+   "allRow": {
+    "text": "Alle Produkte",
+    "aria": "page",
+    "fw": "600",
+    "cls": "family-link"
+   },
+   "curRow": null,
+   "sections": {
+    "Phase": [
+     [
+      "3-phasig",
+      "57"
+     ],
+     [
+      "1-phasig",
+      "11"
+     ]
+    ],
+    "Leistung": [
+     [
+      "Bis 6 kW",
+      "21"
+     ],
+     [
+      "6 bis 15 kW",
+      "28"
+     ],
+     [
+      "15 bis 30 kW",
+      "13"
+     ],
+     [
+      "Über 30 kW",
+      "18"
+     ]
+    ]
+   }
+  },
+  "t16": {
+   "contact": {
+    "rect": [
+     362,
+     8381.3,
+     958,
+     145.67
+    ],
+    "ctaText": "Hilfe bei der Auswahl?",
+    "ctaColor": "rgb(255, 255, 255)",
+    "ctaBg": "rgb(18, 102, 79)",
+    "mailColor": "rgb(18, 102, 79)",
+    "mailDeco": "underline",
+    "mailText": "sales@de-linker.com"
+   },
+   "allRow": {
+    "text": "Alle Produkte",
+    "aria": "page",
+    "fw": "600",
+    "cls": "family-link"
+   },
+   "curRow": null,
+   "sections": {
+    "Phase": [
+     [
+      "3-phasig",
+      "49"
+     ],
+     [
+      "1-phasig",
+      "17"
+     ]
+    ],
+    "Leistung": [
+     [
+      "Bis 6 kW",
+      "19"
+     ],
+     [
+      "6 bis 15 kW",
+      "25"
+     ],
+     [
+      "15 bis 30 kW",
+      "11"
+     ],
+     [
+      "Über 30 kW",
+      "14"
+     ]
+    ]
+   }
+  }
+ },
+ "archive-de": {
+  "live": {
+   "contact": {
+    "rect": [
+     362,
+     8406.9,
+     958,
+     145.67
+    ],
+    "ctaText": "Hilfe bei der Auswahl?",
+    "ctaColor": "rgb(255, 255, 255)",
+    "ctaBg": "rgb(18, 102, 79)",
+    "mailColor": "rgb(18, 102, 79)",
+    "mailDeco": "underline",
+    "mailText": "sales@de-linker.com"
+   },
+   "allRow": {
+    "text": "Alle Produkte",
+    "aria": null,
+    "fw": "400",
+    "cls": "family-link"
+   },
+   "curRow": {
+    "text": "Wechselrichter",
+    "fw": "600"
+   },
+   "sections": {
+    "Phase": [
+     [
+      "3-phasig",
+      "43"
+     ],
+     [
+      "1-phasig",
+      "10"
+     ]
+    ],
+    "Leistung": [
+     [
+      "Bis 6 kW",
+      "19"
+     ],
+     [
+      "6 bis 15 kW",
+      "23"
+     ],
+     [
+      "15 bis 30 kW",
+      "7"
+     ],
+     [
+      "Über 30 kW",
+      "10"
+     ]
+    ]
+   }
+  },
+  "t16": {
+   "contact": {
+    "rect": [
+     362,
+     8406.9,
+     958,
+     145.67
+    ],
+    "ctaText": "Hilfe bei der Auswahl?",
+    "ctaColor": "rgb(255, 255, 255)",
+    "ctaBg": "rgb(18, 102, 79)",
+    "mailColor": "rgb(18, 102, 79)",
+    "mailDeco": "underline",
+    "mailText": "sales@de-linker.com"
+   },
+   "allRow": {
+    "text": "Alle Produkte",
+    "aria": null,
+    "fw": "400",
+    "cls": "family-link"
+   },
+   "curRow": {
+    "text": "Wechselrichter",
+    "fw": "600"
+   },
+   "sections": {
+    "Phase": [
+     [
+      "3-phasig",
+      "42"
+     ],
+     [
+      "1-phasig",
+      "16"
+     ]
+    ],
+    "Leistung": [
+     [
+      "Bis 6 kW",
+      "19"
+     ],
+     [
+      "6 bis 15 kW",
+      "23"
+     ],
+     [
+      "15 bis 30 kW",
+      "7"
+     ],
+     [
+      "Über 30 kW",
+      "10"
+     ]
+    ]
+   }
+  }
+ },
+ "pdp-390": {
+  "live": {
+   "tabsFlexWrap": "nowrap",
+   "tabRows": 1,
+   "tabs": [
+    {
+     "text": "Module energy",
+     "rect": [
+      21,
+      1928,
+      112.7,
+      53.6
+     ],
+     "flex": "1 1 0%"
+    },
+    {
+     "text": "Electrical (three-ph",
+     "rect": [
+      138.7,
+      1928,
+      112.7,
+      53.6
+     ],
+     "flex": "1 1 0%"
+    },
+    {
+     "text": "Module handling",
+     "rect": [
+      256.3,
+      1928,
+      112.7,
+      53.6
+     ],
+     "flex": "1 1 0%"
+    }
+   ],
+   "overviewRect": [
+    16,
+    1112.4,
+    358,
+    418.5
+   ],
+   "copyRect": [
+    38,
+    1134.4,
+    314,
+    356.5
+   ],
+   "copyDeltaFromCardTop": 22,
+   "firstCopyChild": "P.pdp-kicker",
+   "heroMain": {
+    "rect": [
+     183.7,
+     167,
+     190.3,
+     245
+    ],
+    "blend": "multiply",
+    "src": "goodwe-esa-6-battery-module-studio-logo-20260928.png",
+    "natural": [
+     1000,
+     750
+    ],
+    "srcsetAttr": null
+   },
+   "heroWrapRect": [
+    183.7,
+    167,
+    190.3,
+    245
+   ],
+   "hero": {
+    "brand": [
+     16,
+     177,
+     155.7,
+     24
+    ],
+    "h1": [
+     16,
+     210,
+     155.7,
+     57
+    ],
+    "designation": [
+     16,
+     277,
+     155.7,
+     38.4
+    ],
+    "sku": [
+     16,
+     327.3,
+     155.7,
+     33
+    ],
+    "gallery": [
+     183.7,
+     167,
+     190.3,
+     313
+    ],
+    "thumbs": [
+     183.7,
+     412,
+     190.3,
+     68
+    ]
+   },
+   "btnDark": {
+    "text": "Sign in for partner pricing",
+    "bg": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)"
+   },
+   "pageH": 6068
+  },
+  "t16": {
+   "tabsFlexWrap": "nowrap",
+   "tabRows": 1,
+   "tabs": [
+    {
+     "text": "Module energy",
+     "rect": [
+      21,
+      1929.1,
+      112.7,
+      53.6
+     ],
+     "flex": "1 1 0%"
+    },
+    {
+     "text": "Electrical (three-ph",
+     "rect": [
+      138.7,
+      1929.1,
+      112.7,
+      53.6
+     ],
+     "flex": "1 1 0%"
+    },
+    {
+     "text": "Module handling",
+     "rect": [
+      256.3,
+      1929.1,
+      112.7,
+      53.6
+     ],
+     "flex": "1 1 0%"
+    }
+   ],
+   "overviewRect": [
+    16,
+    1113.4,
+    358,
+    418.5
+   ],
+   "copyRect": [
+    38,
+    1135.4,
+    314,
+    356.5
+   ],
+   "copyDeltaFromCardTop": 22,
+   "firstCopyChild": "P.pdp-kicker",
+   "heroMain": {
+    "rect": [
+     183.7,
+     167,
+     190.3,
+     245
+    ],
+    "blend": "multiply",
+    "src": "goodwe-esa-6-battery-module-studio-logo-20260928.png",
+    "natural": [
+     1000,
+     750
+    ],
+    "srcsetAttr": null
+   },
+   "heroWrapRect": [
+    183.7,
+    167,
+    190.3,
+    245
+   ],
+   "hero": {
+    "brand": [
+     16,
+     177,
+     155.7,
+     24
+    ],
+    "h1": [
+     16,
+     210,
+     155.7,
+     57
+    ],
+    "designation": [
+     16,
+     277,
+     155.7,
+     38.4
+    ],
+    "sku": [
+     16,
+     327.4,
+     155.7,
+     33
+    ],
+    "gallery": [
+     183.7,
+     167,
+     190.3,
+     313
+    ],
+    "thumbs": [
+     183.7,
+     412,
+     190.3,
+     68
+    ]
+   },
+   "btnDark": {
+    "text": "Sign in for partner pricing",
+    "bg": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)"
+   },
+   "pageH": 6069
+  }
+ },
+ "pdp-de": {
+  "live": {
+   "skuText": "Artikelnr.: DLK-GOODWE-GW51BATDG21",
+   "lang": "de-DE",
+   "title": "GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh) | Linke"
+  },
+  "t16": {
+   "skuText": "Artikelnr.: DLK-GOODWE-GW51BATDG21",
+   "lang": "de-DE",
+   "title": "GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh) | Linke"
+  }
+ }
+}

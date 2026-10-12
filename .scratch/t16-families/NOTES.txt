@@ -1,0 +1,6 @@
+family implementation:
+- plugin PHP: includes/Presentation/CatalogShortcodes.php (catalog_card family context, family_rows/family_members/family_payload/family_picker, catalog_families/family_count/family_pagination), includes/Storefront/CatalogFilters.php (exclude-from-catalog)
+- assets/catalog-family.js + Module.php enqueue
+- templates: content/livecanvas/{shop_page,archive_product}.html
+- strings: languages/linker-commerce-de_DE_formal.po (+mo), .pot
+- instance twin refresh: shop page (DE) template 6937 (wp eval-file /tmp/refresh-de-twin.php)

@@ -305,6 +305,11 @@ final class CatalogFilters {
 			'brand'       => array(),
 			'phase'       => array(),
 			'power'       => array(),
+			// Products with a scalar energy/power value in this view: the live
+			// shelf rendered each range fold only when at least three rows
+			// carried the value (ranges alone did not count).
+			'has_energy'  => 0,
+			'has_power'   => 0,
 		);
 		foreach ( array(
 			'home'       => 'Home',
@@ -319,6 +324,12 @@ final class CatalogFilters {
 			list( $product_id, $fact ) = $pair;
 			if ( SelectionFactSet::UNKNOWN !== $fact->application ) {
 				++$counts['application'][ $fact->application ]['count'];
+			}
+			if ( \is_float( $fact->usable_kwh ) || \is_float( $fact->nominal_kwh ) ) {
+				++$counts['has_energy'];
+			}
+			if ( \is_float( $fact->ac_power_kw ) ) {
+				++$counts['has_power'];
 			}
 			if ( \is_int( $fact->phase ) ) {
 				$key                     = (string) $fact->phase;
@@ -383,10 +394,12 @@ final class CatalogFilters {
 		 */
 		$facets = array_filter(
 			$counts,
-			static fn( array $values ): bool => array() !== array_filter(
-				$values,
-				static fn( array $value ): bool => $value['count'] > 0
-			)
+			static fn( $values ): bool => \is_array( $values )
+				? array() !== array_filter(
+					$values,
+					static fn( array $value ): bool => $value['count'] > 0
+				)
+				: true // Scalars ride along (has_energy's presence flag).
 		);
 		return $facets;
 	}

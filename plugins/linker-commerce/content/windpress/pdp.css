@@ -595,6 +595,10 @@ body:has(#tv-storefront-pdp) {
 	color: #fff;
 }
 
+#tv-storefront-pdp .pdp-benefit:not(:first-child) {
+	background: rgb(237, 243, 235);
+}
+
 #tv-storefront-pdp .pdp-benefit:first-child p {
 	color: #d6e4d9;
 }
