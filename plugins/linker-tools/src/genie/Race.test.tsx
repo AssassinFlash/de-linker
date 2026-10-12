@@ -12,7 +12,13 @@
 /**
  * External dependencies
  */
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+	act,
+	fireEvent,
+	render,
+	screen,
+	waitFor,
+} from '@testing-library/react';
 import { beforeEach, expect, test, vi } from 'vitest';
 
 /**
@@ -73,7 +79,12 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 	};
 } );
 
-import { readThread, selectConversation, sendTurn } from './api/turn';
+import {
+	listConversations,
+	readThread,
+	selectConversation,
+	sendTurn,
+} from './api/turn';
 
 function hangReads() {
 	vi.mocked( readThread ).mockImplementation( () => {
@@ -238,4 +249,95 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 	expect(
 		vi.mocked( selectConversation ).mock.calls.map( ( call ) => call[ 2 ] )
 	).toEqual( [ 8, 7 ] );
+} );
+
+test( 'a history refresh started by an ask cannot put the old conversation back', async () => {
+	vi.mocked( sendTurn ).mockClear();
+	const slow = deferred< void >();
+	let stale = {
+		currentId: 7,
+		ok: true,
+		conversations: [
+			{ id: 7, title: 'Seven', updated: '2026-10-12' },
+			{ id: 8, title: 'Eight', updated: '2026-10-12' },
+		],
+	};
+	vi.mocked( listConversations ).mockImplementation( async () => {
+		await slow.promise;
+		return stale;
+	} );
+	vi.mocked( selectConversation ).mockImplementation( async () => ( {
+		currentId: 9,
+		ok: true,
+		conversations: [
+			{ id: 8, title: 'Eight', updated: '2026-10-12' },
+			{ id: 9, title: 'Nine', updated: '2026-10-12' },
+		],
+	} ) );
+
+	render( <App config={ config() } /> );
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 1 ) );
+	await act( async () => {
+		reads[ 0 ].resolve( { messages: [], turn: null } );
+	} );
+	await waitFor( () =>
+		expect( listConversations ).toHaveBeenCalledTimes( 1 )
+	);
+	slow.resolve();
+	await screen.findByRole( 'button', { name: 'Eight' } );
+	expect( screen.getByRole( 'button', { name: 'Seven' } ) ).toHaveAttribute(
+		'aria-current',
+		'true'
+	);
+
+	const held = deferred< void >();
+	const selected =
+		deferred< Awaited< ReturnType< typeof selectConversation > > >();
+	slow.promise = held.promise;
+	vi.mocked( selectConversation ).mockImplementation(
+		() => selected.promise
+	);
+	const input = screen.getByRole( 'textbox' );
+	fireEvent.change( input, { target: { value: 'question for eight' } } );
+	fireEvent.submit( input.closest( 'form' )! );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
+	await waitFor( () =>
+		expect( listConversations ).toHaveBeenCalledTimes( 2 )
+	);
+
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'New conversation' } )
+	);
+	stale = {
+		currentId: 8,
+		ok: true,
+		conversations: [
+			{ id: 7, title: 'Seven', updated: '2026-10-12' },
+			{ id: 8, title: 'Eight', updated: '2026-10-12' },
+		],
+	};
+	held.resolve();
+	await waitFor( () => expect( selectConversation ).toHaveBeenCalled() );
+
+	expect( screen.getByRole( 'button', { name: 'Seven' } ) ).toHaveAttribute(
+		'aria-current',
+		'true'
+	);
+	expect(
+		screen.getByRole( 'button', { name: 'Eight' } )
+	).not.toHaveAttribute( 'aria-current', 'true' );
+
+	selected.resolve( {
+		currentId: 9,
+		ok: true,
+		conversations: [
+			{ id: 8, title: 'Eight', updated: '2026-10-12' },
+			{ id: 9, title: 'Nine', updated: '2026-10-12' },
+		],
+	} );
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 2 ) );
+	reads[ 1 ].resolve( { messages: [], turn: null } );
+	expect(
+		await screen.findByRole( 'button', { name: 'Nine' } )
+	).toHaveAttribute( 'aria-current', 'true' );
 } );

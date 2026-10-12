@@ -66,6 +66,9 @@ msgstr "Neues Gespräch"
 msgid "Close sidebar"
 msgstr "Seitenleiste schließen"
 
+msgid "Loading conversations…"
+msgstr "Gespräche werden geladen …"
+
 msgid "No earlier conversation."
 msgstr "Kein früheres Gespräch."
 

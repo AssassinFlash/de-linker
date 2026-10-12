@@ -863,6 +863,25 @@ final class PresentCommandTest extends TestCase {
 						}
 						return array();
 					}
+					if ( 'lc_partial' === $args['post_type'] && 'footer' === ( $args['name'] ?? '' ) ) {
+						foreach ( $existing['partials'] ?? array() as $row ) {
+							if ( 'footer' === ( $row['post_name'] ?? '' ) ) {
+								return self::wp_posts( array( $row ), 'lc_partial' );
+							}
+						}
+						// A fixture that lists partials and omits footer has no
+						// footer to sync. The default fixture has none either:
+						// these tests cover the header pair.
+						return array();
+					}
+					if ( 'lc_partial' === $args['post_type'] && 'fuszeile' === ( $args['name'] ?? '' ) ) {
+						foreach ( $existing['partials'] ?? array() as $row ) {
+							if ( 'fuszeile' === ( $row['post_name'] ?? '' ) ) {
+								return self::wp_posts( array( $row ), 'lc_partial' );
+							}
+						}
+						return array();
+					}
 					if ( 'lc_partial' === $args['post_type'] && 'kopfzeile' === ( $args['name'] ?? '' ) ) {
 						foreach ( $existing['partials'] ?? array() as $row ) {
 							if ( 'kopfzeile' === ( $row['post_name'] ?? '' ) ) {
