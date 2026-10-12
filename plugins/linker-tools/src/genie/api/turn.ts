@@ -104,6 +104,12 @@ export interface ConversationSummary {
 export interface ConversationList {
 	currentId: number;
 	conversations: ConversationSummary[];
+	/**
+	 * False when the history route failed. An empty list with `ok` is a
+	 * visitor who has no earlier conversation; the rail must not say that
+	 * when the request itself failed.
+	 */
+	ok: boolean;
 }
 
 /**
@@ -242,7 +248,7 @@ export async function listConversations(
 	nonce: string,
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< ConversationList > {
-	const empty = { currentId: 0, conversations: [] };
+	const failed = { currentId: 0, conversations: [], ok: false };
 	try {
 		const response = await fetcher( url, {
 			credentials: 'same-origin',
@@ -250,7 +256,7 @@ export async function listConversations(
 			headers: { 'X-WP-Nonce': nonce },
 		} );
 		if ( ! response.ok ) {
-			return empty;
+			return failed;
 		}
 		const body = ( await response.json() ) as {
 			current_id?: number;
@@ -261,9 +267,10 @@ export async function listConversations(
 			conversations: ( body.conversations ?? [] ).filter(
 				( item ) => item && typeof item.id === 'number' && item.title
 			),
+			ok: true,
 		};
 	} catch {
-		return empty;
+		return failed;
 	}
 }
 
@@ -301,6 +308,7 @@ export async function selectConversation(
 	return {
 		currentId: body.conversation_id ?? 0,
 		conversations: body.conversations ?? [],
+		ok: true,
 	};
 }
 

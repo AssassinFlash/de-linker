@@ -279,7 +279,7 @@ class Proxy {
 			// the only title the history rail has.
 			$messages = is_array( $body['messages'] ) ? $body['messages'] : array();
 			$first    = $messages[0] ?? null;
-		if ( is_array( $first ) && isset( $first['content'] ) && Conversations::class === $this->conversations::class ) {
+			if ( is_array( $first ) && isset( $first['content'] ) ) {
 			$this->conversations->title_from_first_message(
 				$conversation,
 				mb_substr( trim( (string) $first['content'] ), 0, 80 )

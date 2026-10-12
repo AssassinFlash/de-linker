@@ -262,10 +262,20 @@ final class ProxyTest extends TestCase {
 				/**
 				 * Opens 52.
 				 */
-			public function open(): int {
-				return 52;
-			}
-		};
+				public function open(): int {
+					return 52;
+				}
+
+				/**
+				 * The real method reads the post. This double has no post.
+				 *
+				 * @param int    $id    Conversation post ID.
+				 * @param string $title First message.
+				 */
+				public function title_from_first_message( int $id, string $title ): void {
+					unset( $id, $title );
+				}
+			};
 		return new Proxy( $conversations, $fetch, $thread ?? new RecordingThread() );
 	}
 
@@ -320,14 +330,14 @@ final class ProxyTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
-		WP_Mock::expectAction(
-			'linker_tools_set_conversation_cookie',
-			'53',
-			1000000,
-			'/',
-			'',
-			false
-		);
+			WP_Mock::expectAction(
+				'linker_tools_set_conversation_cookie',
+				'53.' . hash_hmac( 'sha256', 'linker_conversation|53', 'test-salt' ),
+				1000000,
+				'/',
+				'',
+				false
+			);
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction(
 			'get_post',
@@ -542,7 +552,10 @@ final class ProxyTest extends TestCase {
 				'return' => static fn( $value ): int => max( 0, (int) $value ),
 			)
 		);
-		$_COOKIE = array( 'linker_conversation' => '51' );
+			WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
+			$_COOKIE = array(
+				'linker_conversation' => '51.' . hash_hmac( 'sha256', 'linker_conversation|51', 'test-salt' ),
+			);
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -574,14 +587,14 @@ final class ProxyTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
-		WP_Mock::expectAction(
-			'linker_tools_set_conversation_cookie',
-			'52',
-			1000000,
-			'/',
-			'',
-			false
-		);
+			WP_Mock::expectAction(
+				'linker_tools_set_conversation_cookie',
+				'52.' . hash_hmac( 'sha256', 'linker_conversation|52', 'test-salt' ),
+				1000000,
+				'/',
+				'',
+				false
+			);
 
 		$conversations = new class() extends Conversations {
 			/**

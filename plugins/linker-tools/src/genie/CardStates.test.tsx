@@ -23,6 +23,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		listConversations: vi.fn( async () => ( {
 			currentId: 0,
 			conversations: [],
+			ok: true,
 		} ) ),
 		selectConversation: vi.fn(),
 		sendTurn: vi.fn(),

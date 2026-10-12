@@ -95,25 +95,26 @@ final class ConversationsTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
-		WP_Mock::expectAction(
-			'linker_tools_set_conversation_cookie',
-			'51',
-			1000000,
-			'/',
-			'',
-			false
-		);
+			$signed = $this->signed_cookie( 51 );
+			WP_Mock::expectAction(
+				'linker_tools_set_conversation_cookie',
+				$signed,
+				1000000,
+				'/',
+				'',
+				false
+			);
 
-		// The same flow a turn uses: no cookie -> open() fires the action, the
-		// registered listener sends the header, and the NEXT request (the
-		// readback below) reuses the conversation from it.
-		$id = $conversation->open();
-		$conversation->send_cookie( (string) $id, 1000000, '/', '', false );
+			// The same flow a turn uses: no cookie -> open() fires the action, the
+			// registered listener sends the header, and the NEXT request (the
+			// readback below) reuses the conversation from it.
+			$id = $conversation->open();
+			$conversation->send_cookie( $signed, 1000000, '/', '', false );
 
-		$this->assertSame( 51, $id );
-		$this->assertCount( 1, $conversation->sent );
-		$this->assertSame( 'linker_conversation', $conversation->sent[0]['name'] );
-		$this->assertSame( '51', $conversation->sent[0]['value'] );
+			$this->assertSame( 51, $id );
+			$this->assertCount( 1, $conversation->sent );
+			$this->assertSame( 'linker_conversation', $conversation->sent[0]['name'] );
+			$this->assertSame( $signed, $conversation->sent[0]['value'] );
 		$this->assertSame( 1000000, $conversation->sent[0]['options']['expires'] );
 		$this->assertTrue( $conversation->sent[0]['options']['httponly'] );
 		$this->assertSame( 'Lax', $conversation->sent[0]['options']['samesite'] );
@@ -159,7 +160,7 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
 		WP_Mock::expectAction(
 			'linker_tools_set_conversation_cookie',
-			'51',
+			$this->signed_cookie( 51 ),
 			1000000,
 			'/',
 			'',
@@ -179,7 +180,7 @@ final class ConversationsTest extends TestCase {
 	 */
 	public function test_current_id_reuses_the_cookie_conversation(): void {
 		$this->logged_out();
-		$_COOKIE = array( 'linker_conversation' => '51' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -209,13 +210,14 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'absint',
 			array(
 				'return' => static fn( $value ): int => max( 0, (int) $value ),
 			)
 		);
-		$_COOKIE = array( 'linker_conversation' => '52' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 52 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -246,12 +248,43 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-	/**
-	 * A cookie for a foreign or deleted conversation is ignored.
-	 */
+		/**
+		 * A cookie that is only a conversation id is not a credential. The
+		 * signature is what names the conversation; a forged number is ignored
+		 * at the gate and does not open that post.
+		 */
+		public function test_an_unsigned_numeric_cookie_is_refused(): void {
+			$this->logged_out();
+			WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
+			$_COOKIE = array( 'linker_conversation' => '51' );
+			WP_Mock::userFunction(
+				'get_post_type',
+				array(
+					'args'   => array( 51 ),
+					'return' => 'linker_conversation',
+				)
+			);
+			WP_Mock::userFunction(
+				'get_post_field',
+				array(
+					'args'   => array( 'post_author', 51 ),
+					'return' => '0',
+				)
+			);
+
+			$conversations = new Conversations();
+
+			$this->assertFalse( $conversations->may_use( 51 ) );
+			$this->assertSame( 0, $conversations->existing_id() );
+			$this->assertConditionsMet();
+		}
+
+		/**
+		 * A cookie for a foreign or deleted conversation is ignored.
+		 */
 	public function test_current_id_ignores_a_foreign_conversation(): void {
 		$this->logged_out();
-		$_COOKIE = array( 'linker_conversation' => '51' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -269,7 +302,7 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
 		WP_Mock::expectAction(
 			'linker_tools_set_conversation_cookie',
-			'52',
+			$this->signed_cookie( 52 ),
 			1000000,
 			'/',
 			'',
@@ -287,8 +320,9 @@ final class ConversationsTest extends TestCase {
 	public function test_claim_assigns_the_user(): void {
 		$user     = new \WP_User();
 		$user->ID = 7;
-		$_COOKIE  = array( 'linker_conversation' => '51' );
+		$_COOKIE  = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'absint',
 			array(
@@ -332,7 +366,7 @@ final class ConversationsTest extends TestCase {
 		 */
 	public function test_a_guest_lists_only_the_cookie_conversation(): void {
 		$this->logged_out();
-		$_COOKIE = array( 'linker_conversation' => '51' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -371,6 +405,7 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'absint',
 			array(
@@ -416,7 +451,7 @@ final class ConversationsTest extends TestCase {
 		 */
 	public function test_activate_sets_the_cookie_only_for_an_owned_conversation(): void {
 		$this->logged_out();
-		$_COOKIE = array( 'linker_conversation' => '51' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -433,7 +468,7 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
 		WP_Mock::expectAction(
 			'linker_tools_set_conversation_cookie',
-			'51',
+			$this->signed_cookie( 51 ),
 			1000000,
 			'/',
 			'',
@@ -456,13 +491,14 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'absint',
 			array(
 				'return' => static fn( $value ): int => max( 0, (int) $value ),
 			)
 		);
-		$_COOKIE = array( 'linker_conversation' => '51' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -490,7 +526,7 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
 		WP_Mock::expectAction(
 			'linker_tools_set_conversation_cookie',
-			'52',
+			$this->signed_cookie( 52 ),
 			1000000,
 			'/',
 			'',
@@ -512,7 +548,7 @@ final class ConversationsTest extends TestCase {
 		 */
 	public function test_the_first_message_names_a_new_conversation(): void {
 		$this->logged_out();
-		$_COOKIE = array( 'linker_conversation' => '51' );
+		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -580,13 +616,24 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'absint',
 			array(
 				'return' => static fn( $value ): int => max( 0, (int) $value ),
 			)
 		);
+	}
+
+	/**
+	 * A cookie this site would have signed for `$id`.
+	 *
+	 * @param int $id Conversation post ID.
+	 */
+	private function signed_cookie( int $id ): string {
+		return $id . '.' . hash_hmac( 'sha256', 'linker_conversation|' . $id, 'test-salt' );
 	}
 
 	/**

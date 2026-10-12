@@ -21,6 +21,14 @@ use WP_Mock\Tools\TestCase;
 final class EntriesTest extends TestCase {
 
 	/**
+	 * A previous test's shortcode must not mark this request as a workspace.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		Entries::reset_workspace_rendered();
+	}
+
+	/**
 	 * The dock prints the open button, the hidden mount with its config, and
 	 * the boot payload with the built script's URLs.
 	 */
@@ -113,10 +121,60 @@ final class EntriesTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-	/**
-	 * A German page links the full-page workspace to the German advisor
-	 * page. The language layer, not the locale string, decides.
-	 */
+		/**
+		 * A renamed advisor page still printed the workspace shortcode. The
+		 * slug no longer matches, but the shortcode already rendered the
+		 * mount. The dock must boot that mount and must not print a second
+		 * helper: two mounts are two apps on one cookie.
+		 */
+		public function test_a_rendered_workspace_is_not_printed_again_when_the_slug_differs(): void {
+			$GLOBALS['linker_tools_test_inline_scripts'] = array();
+			$this->frontend( 'en', array( 'type' => 'other' ), 'advisor-renamed' );
+			WP_Mock::userFunction(
+				'wp_scripts',
+				array(
+					'return' => static fn() => new FakeScripts(),
+				)
+			);
+
+			$shortcode = ( new Entries( '/plugin/linker-tools.php' ) )->workspace_shortcode( array() );
+			$html      = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+
+			$this->assertSame( 1, substr_count( $shortcode . $html, 'data-linker-app="genie"' ) );
+			$this->assertStringNotContainsString( 'data-linker-genie-open', $html );
+			$inline  = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
+			$payload = json_decode( (string) ( $inline['data-linker-genie-boot-payload'] ?? '' ), true );
+			$this->assertTrue( $payload['open'] );
+			$this->assertConditionsMet();
+		}
+
+		/**
+		 * The slug still says advisor, but the template no longer prints the
+		 * workspace. A dock that trusts the slug would boot an empty page and
+		 * hide the helper. The helper is what a page without the mount gets.
+		 */
+		public function test_a_matching_slug_without_the_workspace_template_keeps_the_helper(): void {
+			$GLOBALS['linker_tools_test_inline_scripts'] = array();
+			$this->frontend( 'en', array( 'type' => 'other' ), 'linker-advisor' );
+			WP_Mock::userFunction(
+				'wp_scripts',
+				array(
+					'return' => static fn() => new FakeScripts(),
+				)
+			);
+
+			$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+
+			$this->assertStringContainsString( 'data-linker-genie-open', $html );
+			$this->assertStringContainsString( 'data-surface="helper"', $html );
+			$this->assertStringNotContainsString( 'data-surface="workspace"', $html );
+			$this->assertConditionsMet();
+		}
+
+		/**
+		 * A German page links the full-page workspace to the German advisor
+		 * page. The language layer, not the locale string, decides.
+		 */
 	public function test_german_page_links_the_german_workspace(): void {
 		$this->frontend( 'de_DE_formal', array( 'type' => 'other' ), '', 'de' );
 		WP_Mock::userFunction(

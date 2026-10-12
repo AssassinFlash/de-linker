@@ -22,6 +22,22 @@ class Entries {
 	public const HANDLE = 'linker-tools-genie';
 
 	/**
+	 * Set when the workspace shortcode has already rendered this request.
+	 *
+	 * The dock runs in `wp_footer`, after the template. The shortcode is
+	 * the authority for "this page is the workspace": a renamed page still
+	 * carries the shortcode, and a page whose template lost it does not.
+	 */
+	private static bool $workspace_rendered = false;
+
+	/**
+	 * Clears the workspace mark. Tests share a process; a request does not.
+	 */
+	public static function reset_workspace_rendered(): void {
+		self::$workspace_rendered = false;
+	}
+
+	/**
 	 * Handle of the search box's script (a plain asset, not a built entry).
 	 */
 	public const SEARCH_HANDLE = 'linker-tools-search-ask';
@@ -95,6 +111,7 @@ class Entries {
 		if ( is_admin() ) {
 			return '';
 		}
+		self::$workspace_rendered = true;
 		return sprintf(
 			'<div id="linker-genie-mount" class="linker-genie-panel linker-genie-panel--workspace" data-linker-genie-mount>%s</div>',
 			$this->mount_markup( 'workspace' )
@@ -170,10 +187,10 @@ class Entries {
 		if ( is_admin() ) {
 			return;
 		}
-		// The advisor page is the workspace. Its template already printed
-		// the mount; this only boots that mount. A second helper mount
-		// would boot a second app against the same cookie.
-		if ( $this->is_workspace_page() ) {
+		// The workspace shortcode already printed the mount. This only
+		// boots it. A second helper mount would boot a second app
+		// against the same cookie. A missing template is not a workspace.
+		if ( self::$workspace_rendered ) {
 			$this->print_loader( true );
 			return;
 		}
@@ -413,17 +430,6 @@ JS,
 				'data-linker-genie-boot-payload' => (string) wp_json_encode( $payload ),
 			)
 		);
-	}
-
-		/**
-		 * Whether the current page is the advisor workspace.
-		 *
-		 * The German twin keeps its own slug. Both are the same tool page.
-		 */
-	private function is_workspace_page(): bool {
-		$post = \get_post();
-		return $post instanceof \WP_Post
-			&& in_array( $post->post_name, array( 'linker-advisor', 'linker-berater' ), true );
 	}
 
 		/**

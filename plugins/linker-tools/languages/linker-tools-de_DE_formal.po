@@ -68,3 +68,6 @@ msgstr "Seitenleiste schließen"
 
 msgid "No earlier conversation."
 msgstr "Kein früheres Gespräch."
+
+msgid "Conversations could not be loaded."
+msgstr "Gespräche konnten nicht geladen werden."

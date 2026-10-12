@@ -21,10 +21,18 @@ class Conversations {
 	 */
 	public const POST_TYPE = 'linker_conversation';
 
-		/**
-		 * Cookie that names the guest's conversation post.
-		 */
+	/**
+	 * Cookie that names the guest's conversation post.
+	 *
+	 * The value is `id.signature`, not the id. A number alone is not a
+	 * credential: anyone who can set a cookie could name another guest's post.
+	 */
 	public const COOKIE = 'linker_conversation';
+
+	/**
+	 * Title of a conversation that has not been named by its first message.
+	 */
+	public const UNTITLED = 'Genie';
 
 		/**
 		 * How many conversations the history rail lists. A customer who scrolls
@@ -201,7 +209,7 @@ class Conversations {
 			}
 			$list[] = array(
 				'id'      => $id,
-				'title'   => '' !== $post->post_title ? $post->post_title : 'Genie',
+					'title'   => '' !== $post->post_title ? $post->post_title : self::UNTITLED,
 				'updated' => (string) $post->post_modified_gmt,
 			);
 		}
@@ -241,7 +249,7 @@ class Conversations {
 			return;
 		}
 		$post = \get_post( $id );
-		if ( ! $post instanceof \WP_Post || 'Genie' !== $post->post_title ) {
+			if ( ! $post instanceof \WP_Post || self::UNTITLED !== $post->post_title ) {
 			return;
 		}
 		wp_update_post(
@@ -261,7 +269,7 @@ class Conversations {
 			array(
 				'post_type'   => self::POST_TYPE,
 				'post_status' => 'private',
-				'post_title'  => 'Genie',
+					'post_title'  => self::UNTITLED,
 				'post_author' => $author,
 			),
 			true
@@ -299,11 +307,10 @@ class Conversations {
 	/**
 	 * Whether this request may use the conversation.
 	 *
-	 * A signed-in visitor may use a conversation they own, or a still-unowned
-	 * conversation this request's cookie names (the guest thread login has
-	 * not claimed yet). Another visitor's unowned conversation is not
-	 * theirs to read or take over. A guest may use only the unowned
-	 * conversation their cookie names.
+		 * A signed-in visitor may use a conversation they own. A still-unowned
+		 * conversation is usable only when this request's cookie names it with
+		 * a signature this site made. A numeric cookie is not that signature.
+		 * A guest may use only the unowned conversation their signed cookie names.
 	 *
 	 * @param int $id Conversation post ID.
 	 */
@@ -319,18 +326,38 @@ class Conversations {
 	}
 
 	/**
-	 * Cookie value as a post ID, 0 if missing.
-	 */
+	 * Cookie value as a post ID, 0 when missing or unsigned.
+		 *
+		 * The cookie is `id.signature`. The signature is HMAC-SHA256 of the id
+		 * with the site's auth salt, so a forged number does not name a post.
+		 */
 	private function from_cookie(): int {
 		if ( ! isset( $_COOKIE[ self::COOKIE ] ) ) {
 			return 0;
 		}
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- absint() is the sanitizer; the cookie only names a post ID.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- the signature check is the sanitizer; a value that does not verify is discarded.
 		$raw = wp_unslash( $_COOKIE[ self::COOKIE ] );
-		if ( ! is_scalar( $raw ) ) {
+		if ( ! is_string( $raw ) || ! str_contains( $raw, '.' ) ) {
 			return 0;
 		}
-		return absint( (string) $raw );
+		[ $id, $signature ] = explode( '.', $raw, 2 );
+		if ( ! ctype_digit( $id ) || '' === $signature ) {
+			return 0;
+		}
+		$expected = $this->sign( $id );
+		if ( ! hash_equals( $expected, $signature ) ) {
+			return 0;
+		}
+		return (int) $id;
+	}
+
+	/**
+	 * The cookie's signature for one conversation id.
+	 *
+	 * @param string $id Conversation post ID.
+	 */
+	private function sign( string $id ): string {
+		return hash_hmac( 'sha256', self::COOKIE . '|' . $id, wp_salt( 'auth' ) );
 	}
 
 	/**
@@ -348,11 +375,15 @@ class Conversations {
 		if ( $id < 1 ) {
 			return;
 		}
-		$_COOKIE[ self::COOKIE ] = (string) $id;
+		$value                   = $this->cookie_value( $id );
+		$_COOKIE[ self::COOKIE ] = $value;
 		/**
 		 * Fires the guest-cookie write; the listener sends the header.
 		 *
-		 * @param string $value  Conversation post ID.
+		 * The value is `id.signature`, not the id. The signature is what
+		 * the next request checks.
+		 *
+		 * @param string $value  Signed conversation cookie.
 		 * @param int    $expire Expiry timestamp.
 		 * @param string $path   Cookie path.
 		 * @param string $domain Cookie domain.
@@ -361,12 +392,21 @@ class Conversations {
 		 */
 		do_action(
 			'linker_tools_set_conversation_cookie',
-			(string) $id,
+			$value,
 			$this->cookie_expire(),
 			defined( 'COOKIEPATH' ) ? COOKIEPATH : '/',
 			defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
 			is_ssl()
 		);
+	}
+
+	/**
+	 * The signed cookie value for one conversation.
+	 *
+	 * @param int $id Conversation post ID.
+	 */
+	private function cookie_value( int $id ): string {
+		return $id . '.' . $this->sign( (string) $id );
 	}
 
 	/**

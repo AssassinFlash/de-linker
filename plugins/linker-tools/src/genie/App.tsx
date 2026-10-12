@@ -42,6 +42,36 @@ interface CardItem {
 }
 
 type Phase = 'ask' | 'waiting' | 'error';
+type HistoryPhase = 'ready' | 'failed';
+
+/**
+ * One lane for restore, switch and ask. It lives outside the component:
+ * an enqueue closed over a render would chain the next click onto a tail
+ * that render already replaced.
+ */
+let turnLane: Promise< void > = Promise.resolve();
+
+function deferred< T >() {
+	let resolve!: ( value: T ) => void;
+	const promise = new Promise< T >( ( settle ) => {
+		resolve = settle;
+	} );
+	return { promise, resolve };
+}
+
+function enqueue( job: () => Promise< void > ): Promise< void > {
+	const queued = turnLane.then( job, job );
+	turnLane = queued.then(
+		() => undefined,
+		() => undefined
+	);
+	return queued;
+}
+
+/** Test seam: a finished lane must not leak into the next mount. */
+export function resetTurnLane(): void {
+	turnLane = Promise.resolve();
+}
 
 /**
  * Root of the Genie app; every `data-linker-app="genie"` mount gets one.
@@ -56,6 +86,8 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ input, setInput ] = useState( '' );
 	const [ cards, setCards ] = useState< CardItem[] >( [] );
 	const [ history, setHistory ] = useState< ConversationSummary[] >( [] );
+	const [ historyPhase, setHistoryPhase ] =
+		useState< HistoryPhase >( 'ready' );
 	const [ currentId, setCurrentId ] = useState( 0 );
 	const [ railOpen, setRailOpen ] = useState(
 		config.surface === 'workspace'
@@ -72,6 +104,11 @@ export function App( { config }: { config: GenieConfig } ) {
 			config.conversationsUrl,
 			config.restNonce
 		);
+		if ( ! listed.ok ) {
+			setHistoryPhase( 'failed' );
+			return;
+		}
+		setHistoryPhase( 'ready' );
 		setHistory( listed.conversations );
 		if ( listed.currentId ) {
 			setCurrentId( listed.currentId );
@@ -89,46 +126,51 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const ask = useCallback(
 		async ( text: string ) => {
-			if ( ! text.trim() || sending.current ) {
+			const question = text.trim();
+			if ( ! question || sending.current ) {
 				return;
 			}
-			sending.current = true;
 			setOpen( true );
 			setPhase( 'waiting' );
 			setInput( '' );
-			try {
-				// An entry can arrive before the saved thread. Append to that
-				// history after restore rather than race it or discard it.
-				await restoring.current;
-				const next: TurnMessage[] = [
-					...currentThread.current,
-					{ role: 'user', content: text },
-				];
-				currentThread.current = next;
-				setThread( next );
-				const answer = await sendTurn(
-					config.turnUrl,
-					config.restNonce,
-					config.locale,
-					next,
-					{
-						type: config.pageType,
-						...( config.productId > 0
-							? { product_id: config.productId }
-							: {} ),
-					}
-				);
-				const assistant = assistantMessage( answer );
-				currentThread.current = next.concat( assistant );
-				setThread( currentThread.current );
-				setTurn( answer );
-				setPhase( 'ask' );
-				void refreshHistory();
-			} catch {
-				setPhase( 'error' );
-			} finally {
-				sending.current = false;
-			}
+			return enqueue( async () => {
+				// Claim the composer only once this ask is the lane's head.
+				// Setting it before the queue would drop a history click that
+				// arrives while a switch is still resolving.
+				sending.current = true;
+				try {
+					// The lane already ran the mount restore and any switch,
+					// so the ref is the conversation this ask belongs to.
+					const next: TurnMessage[] = [
+						...currentThread.current,
+						{ role: 'user', content: question },
+					];
+					currentThread.current = next;
+					setThread( next );
+					const answer = await sendTurn(
+						config.turnUrl,
+						config.restNonce,
+						config.locale,
+						next,
+						{
+							type: config.pageType,
+							...( config.productId > 0
+								? { product_id: config.productId }
+								: {} ),
+						}
+					);
+					const assistant = assistantMessage( answer );
+					currentThread.current = next.concat( assistant );
+					setThread( currentThread.current );
+					setTurn( answer );
+					setPhase( 'ask' );
+					void refreshHistory();
+				} catch {
+					setPhase( 'error' );
+				} finally {
+					sending.current = false;
+				}
+			} );
 		},
 		[ config, refreshHistory ]
 	);
@@ -138,11 +180,15 @@ export function App( { config }: { config: GenieConfig } ) {
 	// of an empty panel (docs/specs/13-genie.md).
 	useEffect( () => {
 		let cancelled = false;
-		restoring.current = ( async () => {
-			const stored = await readThread(
-				config.threadUrl,
-				config.restNonce
-			);
+		const pending = deferred< {
+			messages: TurnMessage[];
+			turn: Turn | null;
+		} >();
+		restoring.current = enqueue( async () => {
+			const stored = await Promise.race( [
+				readThread( config.threadUrl, config.restNonce ),
+				pending.promise,
+			] );
 			if ( cancelled ) {
 				return;
 			}
@@ -154,29 +200,38 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 			}
 			await refreshHistory();
-		} )();
+		} ).catch( () => undefined );
 		return () => {
 			cancelled = true;
+			// A superseded mount must not hold the lane. The replacement
+			// reads the thread itself.
+			pending.resolve( { messages: [], turn: null } );
 		};
 	}, [ config.threadUrl, config.restNonce, refreshHistory ] );
 
 	const continueConversation = useCallback(
-		async ( id?: number ) => {
-			if ( sending.current ) {
-				return;
-			}
-			await restoring.current;
-			const selected = await selectConversation(
-				config.conversationsUrl,
-				config.restNonce,
-				id
-			);
-			setHistory( selected.conversations );
-			setCurrentId( selected.currentId );
-			setRailOpen( false );
-			setOpen( true );
-			await showStored();
-		},
+		( id?: number ) =>
+			enqueue( async () => {
+				if ( sending.current ) {
+					return;
+				}
+				try {
+					const selected = await selectConversation(
+						config.conversationsUrl,
+						config.restNonce,
+						id
+					);
+					setHistoryPhase( 'ready' );
+					setHistory( selected.conversations );
+					setCurrentId( selected.currentId );
+					setRailOpen( false );
+					setOpen( true );
+					await showStored();
+				} catch {
+					setHistoryPhase( 'failed' );
+					setOpen( true );
+				}
+			} ),
 		[ config.conversationsUrl, config.restNonce, showStored ]
 	);
 
@@ -295,8 +350,10 @@ export function App( { config }: { config: GenieConfig } ) {
 					currentId={ currentId }
 					onOpen={ () => setRailOpen( true ) }
 					onClose={ () => setRailOpen( false ) }
+					failed={ 'failed' === historyPhase }
 					onSelect={ ( id ) => void continueConversation( id ) }
 					onNew={ () => void continueConversation() }
+					onRetry={ () => void refreshHistory() }
 				/>
 			) : null }
 			<div className="linker-genie-app__main">
@@ -466,19 +523,23 @@ function HistoryRail( {
 	docked,
 	items,
 	currentId,
+	failed,
 	onOpen,
 	onClose,
 	onSelect,
 	onNew,
+	onRetry,
 }: {
 	open: boolean;
 	docked: boolean;
 	items: ConversationSummary[];
 	currentId: number;
+	failed: boolean;
 	onOpen: () => void;
 	onClose: () => void;
 	onSelect: ( id: number ) => void;
 	onNew: () => void;
+	onRetry: () => void;
 } ) {
 	return (
 		<aside
@@ -506,11 +567,23 @@ function HistoryRail( {
 					{ __( 'New conversation', 'linker-tools' ) }
 				</button>
 			</div>
-			{ items.length === 0 ? (
+			{ failed ? (
+				<p role="alert" className="linker-genie-rail__empty">
+					{ __(
+						'Conversations could not be loaded.',
+						'linker-tools'
+					) }{ ' ' }
+					<button type="button" onClick={ onRetry }>
+						{ __( 'Try again', 'linker-tools' ) }
+					</button>
+				</p>
+			) : null }
+			{ ! failed && items.length === 0 ? (
 				<p className="linker-genie-rail__empty">
 					{ __( 'No earlier conversation.', 'linker-tools' ) }
 				</p>
-			) : (
+			) : null }
+			{ ! failed && items.length > 0 ? (
 				<ul className="linker-genie-rail__list">
 					{ items.map( ( item ) => (
 						<li key={ item.id }>
@@ -527,7 +600,7 @@ function HistoryRail( {
 						</li>
 					) ) }
 				</ul>
-			) }
+			) : null }
 		</aside>
 	);
 }
