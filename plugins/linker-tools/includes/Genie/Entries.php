@@ -412,19 +412,21 @@ class Entries {
 			pendingOpen = true;
 			boot();
 		}
-		document.addEventListener(
-		'click',
-		function (event) {
-			var trigger = event.target.closest(
-				'[data-linker-genie-open]'
+			document.addEventListener(
+				'click',
+				function (event) {
+					var trigger = event.target.closest(
+						'[data-linker-genie-open]'
+					);
+					if (!trigger) {
+						return;
+					}
+					// A page chip carries its label as the first question. A plain
+					// opener (the bubble, a retry) has no payload and must not ask.
+					open(trigger.getAttribute('data-ask-message') || '');
+				},
+				true
 			);
-			if (!trigger) {
-				return;
-			}
-			open('');
-		},
-		true
-	);
 })();
 JS,
 			array(
@@ -494,7 +496,12 @@ JS,
 	 * The chip groups of one page type: the one list the Woo hooks and the
 	 * LiveCanvas templates' shortcode both read.
 	 *
-	 * @return array<string, list<array{0: string, 1: string}>> Page type => chips (label, page type).
+	 * A real question carries its own `ask`. The catalogue opener does not:
+	 * "Ask Genie" / "Genie fragen" only opens the dock
+	 * (docs/specs/13-genie.md: the shop opener sends no message of its own).
+	 * Omitting `ask` is the absence, not an empty string the loader could send.
+	 *
+	 * @return array<string, list<array{0: string, 1: string, ask?: string}>> Page type => chips.
 	 */
 	private function chips_for(): array {
 		return array(
@@ -502,16 +509,40 @@ JS,
 				array( __( 'Ask Genie', 'linker-tools' ), 'category' ),
 			),
 			'product'  => array(
-				array( __( 'What pairs with this model?', 'linker-tools' ), 'product' ),
-				array( __( 'Compare with…', 'linker-tools' ), 'product' ),
-				array( __( 'Documents', 'linker-tools' ), 'product' ),
+				array(
+					__( 'What pairs with this model?', 'linker-tools' ),
+					'product',
+					'ask' => __( 'What pairs with this model?', 'linker-tools' ),
+				),
+				array(
+					__( 'Compare with…', 'linker-tools' ),
+					'product',
+					'ask' => __( 'Compare with…', 'linker-tools' ),
+				),
+				array(
+					__( 'Documents', 'linker-tools' ),
+					'product',
+					'ask' => __( 'Documents', 'linker-tools' ),
+				),
 			),
 			'draft'    => array(
-				array( __( 'Check my draft', 'linker-tools' ), 'draft' ),
-				array( __( 'What happens next?', 'linker-tools' ), 'draft' ),
+				array(
+					__( 'Check my draft', 'linker-tools' ),
+					'draft',
+					'ask' => __( 'Check my draft', 'linker-tools' ),
+				),
+				array(
+					__( 'What happens next?', 'linker-tools' ),
+					'draft',
+					'ask' => __( 'What happens next?', 'linker-tools' ),
+				),
 			),
 			'account'  => array(
-				array( __( 'Where is my Proforma?', 'linker-tools' ), 'account' ),
+				array(
+					__( 'Where is my Proforma?', 'linker-tools' ),
+					'account',
+					'ask' => __( 'Where is my Proforma?', 'linker-tools' ),
+				),
 			),
 		);
 	}
@@ -523,7 +554,7 @@ JS,
 	 */
 	private function print_group( string $type ): void {
 		foreach ( $this->chips_for()[ $type ] ?? array() as $chip ) {
-			$this->chip( $chip[0], $chip[1] );
+			$this->chip( $chip[0], $chip[1], $chip['ask'] ?? '' );
 		}
 	}
 
@@ -544,14 +575,29 @@ JS,
 	}
 
 	/**
-	 * One chip that opens the dock with a starting question.
+	 * One chip that opens the dock, and asks only when it carries a question.
+	 *
+	 * The label is the visible text. The first question is the explicit `$ask`
+	 * the loader delivers (`data-ask-message`). An opener such as the catalogue
+	 * "Ask Genie" button passes an empty ask and prints no payload, so a click
+	 * opens the dock without sending the label (docs/specs/13-genie.md).
 	 *
 	 * @param string $label Chip label.
 	 * @param string $type  Page type.
+	 * @param string $ask   First question. Empty opens the dock and sends nothing.
 	 */
-	public function chip( string $label, string $type ): void {
+	public function chip( string $label, string $type, string $ask = '' ): void {
+		if ( '' === $ask ) {
+			printf(
+				'<button type="button" class="linker-genie-chip" data-linker-genie-open data-page-type="%1$s">%2$s</button>',
+				esc_attr( $type ),
+				esc_html( $label )
+			);
+			return;
+		}
 		printf(
-			'<button type="button" class="linker-genie-chip" data-linker-genie-open data-page-type="%1$s">%2$s</button>',
+			'<button type="button" class="linker-genie-chip" data-linker-genie-open data-ask-message="%1$s" data-page-type="%2$s">%3$s</button>',
+			esc_attr( $ask ),
 			esc_attr( $type ),
 			esc_html( $label )
 		);
