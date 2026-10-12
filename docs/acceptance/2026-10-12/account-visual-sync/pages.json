@@ -1,0 +1,22 @@
+{
+  "en": {
+    "overview": "http://127.0.0.1:8987/my-account/",
+    "orders": "http://127.0.0.1:8987/my-account/inquiries/",
+    "saved-solutions": "http://127.0.0.1:8987/my-account/saved-solutions/",
+    "documents": "http://127.0.0.1:8987/my-account/documents/",
+    "edit-address": "http://127.0.0.1:8987/my-account/company/",
+    "edit-account": "http://127.0.0.1:8987/my-account/edit-account/",
+    "inquiry": "http://127.0.0.1:8987/my-account/inquiry/5432/",
+    "company-edit": "http://127.0.0.1:8987/my-account/company/billing/"
+  },
+  "de": {
+    "overview": "http://127.0.0.1:8987/de/mein-konto/",
+    "orders": "http://127.0.0.1:8987/de/mein-konto/inquiries/",
+    "saved-solutions": "http://127.0.0.1:8987/de/mein-konto/saved-solutions/",
+    "documents": "http://127.0.0.1:8987/de/mein-konto/documents/",
+    "edit-address": "http://127.0.0.1:8987/de/mein-konto/company/",
+    "edit-account": "http://127.0.0.1:8987/de/mein-konto/edit-account/",
+    "inquiry": "http://127.0.0.1:8987/de/mein-konto/inquiry/5432/",
+    "company-edit": "http://127.0.0.1:8987/de/mein-konto/company/billing/"
+  }
+}

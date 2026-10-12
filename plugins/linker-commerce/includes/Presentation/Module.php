@@ -28,6 +28,7 @@ final class Module {
 	 *                                           from the kept data layers when omitted.
 	 * @param ComparePage            $compare    The comparison page and its chip (#66).
 	 * @param LibraryPage            $library    The document library page (#66).
+	 * @param AccountTemplates       $account    Account content data for LC.
 	 */
 	public function __construct(
 		private readonly Shortcodes $shortcodes,
@@ -35,7 +36,8 @@ final class Module {
 		private readonly WindPress $windpress,
 		private readonly ?CatalogShortcodes $catalog = null,
 		private readonly ComparePage $compare = new ComparePage(),
-		private readonly LibraryPage $library = new LibraryPage()
+		private readonly LibraryPage $library = new LibraryPage(),
+		private readonly AccountTemplates $account = new AccountTemplates()
 	) {}
 
 	/**
@@ -48,6 +50,7 @@ final class Module {
 		$this->windpress->register();
 		$this->compare->register();
 		$this->library->register();
+		$this->account->register();
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 	}
 

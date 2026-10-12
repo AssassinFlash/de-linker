@@ -16,6 +16,23 @@ msgstr ""
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
 
+#: includes/Inquiry/Statuses.php
+msgctxt "Inquiry status"
+msgid "Inquiry received"
+msgstr "Anfrage eingegangen"
+
+#: includes/Presentation/AccountTemplates.php
+msgid "All inquiries"
+msgstr "Alle Anfragen"
+
+#: includes/Presentation/AccountTemplates.php
+msgid "Open inquiries"
+msgstr "Offene Anfragen"
+
+#: includes/Presentation/AccountTemplates.php
+msgid "No inquiries yet."
+msgstr "Noch keine Anfragen."
+
 #. Plugin Name of the plugin
 #: linker-commerce.php
 msgid "Linker Commerce"
