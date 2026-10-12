@@ -421,6 +421,20 @@ export function App( { config }: { config: GenieConfig } ) {
 				{ visible ? (
 					<div className="linker-genie-app__panel">
 						{ /*
+						 * `.gp-welcome h1`: the empty column opens with its own
+						 * line, the prototype's first child of the welcome. It
+						 * is not a bar title — the column under the bar is the
+						 * one it names.
+						 */ }
+						{ thread.length === 0 ? (
+							<h1 className="linker-genie-app__welcome-title">
+								{ __(
+									'Where should we begin?',
+									'linker-tools'
+								) }
+							</h1>
+						) : null }
+						{ /*
 						 * `.gp-messages`: the transcript is the frame's one
 						 * scroll box and the composer stands outside it, so
 						 * the input is in place however long the thread grows.
@@ -434,6 +448,26 @@ export function App( { config }: { config: GenieConfig } ) {
 										key={ index }
 										className={ `linker-genie-app__message linker-genie-app__message--${ message.role }` }
 									>
+										{ /* `.gp-answer-brand` — the answer's own
+										 * label, over its text. The prototype's
+										 * "Demo reply" tag is a demo affordance
+										 * and is not carried. */ }
+										{ 'assistant' === message.role ? (
+											<div className="linker-genie-app__answer-brand">
+												<span
+													className="linker-genie-app__monogram"
+													aria-hidden="true"
+												>
+													G
+												</span>
+												<span>
+													{ __(
+														'Genie',
+														'linker-tools'
+													) }
+												</span>
+											</div>
+										) : null }
 										{ message.content }
 										{ 'assistant' === message.role ? (
 											<VoteButtons
@@ -610,10 +644,7 @@ function HistoryRail( {
 			aria-label={ __( 'Conversations', 'linker-tools' ) }
 		>
 			<div className="linker-genie-rail__top">
-				<span
-					className="linker-genie-rail__monogram"
-					aria-hidden="true"
-				>
+				<span className="linker-genie-app__monogram" aria-hidden="true">
 					G
 				</span>
 				<span className="linker-genie-rail__brand">

@@ -8,9 +8,17 @@
  * proto/genie-r1; tokens in
  * docs/research/2026-10-12-genie-openai-design/DOSSIER.md). Every rule below is
  * that stylesheet's value carried onto the BEM class of the same part; the
- * prototype's own class is named in the comment above it. Two things of that
- * stylesheet are deliberately not carried over: the "Prototype" tag and the
- * rail's bottom demo entries are prototype affordances, not design.
+ * prototype's own class is named in the comment above it.
+ *
+ * What that one stylesheet holds but the app does not carry, and why — demo
+ * affordances of the prototype, not design: the "Prototype" tag; the rail's
+ * bottom entries ("Browse products", "About this demo", "UI prototype · no
+ * account"); the `<small>` demo tags, "Demo reply" beside an answer's label and
+ * the whole `.gp-ai-intro` line (the composer's disclosure is the real one);
+ * and the opening chips' glyphs, which the prototype picks by index for its
+ * three demo questions. Also out of scope: the parts of that sheet that belong
+ * to variants B and C, the site-side dock, and the prototype's own variant
+ * switcher and notice, which are the harness, not the product.
  *
  * Specificity note: the element resets are wrapped in :where() (zero weight)
  * so a component class always wins over them without !important.
@@ -82,7 +90,13 @@
 /* `.gp h1`, `.gp h2`, `.gp p` — the site's own paragraph rhythm must not
  * reach inside the app, which is what the `:where()` reset alone cannot
  * promise (it carries no weight). Colour and line-height are left out: every
- * part below states its own, and a rule here would outrank them. */
+ * part below states its own, and a rule here would outrank them.
+ *
+ * Weight is the price of that promise: this rule outranks a part named by a
+ * single class (`.linker-genie-app__text`, 0-1-0) for the same properties. A
+ * part that states its own margin on an h1, h2 or p therefore carries the
+ * `.linker-genie-app` qualifier, which is the descendant the prototype's own
+ * `.gp-message p` never needed (it tied with `.gp p` and won by order). */
 .linker-genie-app h1,
 .linker-genie-app h2,
 .linker-genie-app p {
@@ -209,8 +223,9 @@ body:has(.linker-genie-workspace)
 	padding: 4px 0 16px;
 }
 
-/* `.gp-monogram` */
-.linker-genie-rail__monogram {
+/* `.gp-monogram` — one disc, worn by the rail's brand and by an answer's own
+ * label (the prototype names one class for both). */
+.linker-genie-app__monogram {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -361,6 +376,15 @@ body:has(.linker-genie-workspace)
 	padding: 0;
 }
 
+/* `.gp-thread` — a conversation's column keeps the prototype's 102px under the
+ * pinned bar: with the 28px disclosure beneath it, the composer's own bottom
+ * edge stands 130px above the frame's. The empty column's own rule below takes
+ * the welcome's 110px instead, and the 767px block restates both. */
+.linker-genie-app--workspace
+	.linker-genie-app__panel:has(.linker-genie-app__message) {
+	padding-bottom: 102px;
+}
+
 /* `.gp-messages{overflow:auto;flex:1;padding-top:24px;scrollbar-width:thin}`
  * — the thread, the answer's blocks and its cards all scroll as one. */
 .linker-genie-app--workspace .linker-genie-app__transcript {
@@ -389,7 +413,8 @@ body:has(.linker-genie-workspace)
 	margin-top: 20px;
 }
 
-/* `.gp-welcome` — the empty column centres its composer in the space. */
+/* `.gp-welcome` — the empty column centres its composer in the space, over a
+ * title of its own and the opening chips. */
 .linker-genie-app--workspace
 	.linker-genie-app__panel:not(:has(.linker-genie-app__message)) {
 	justify-content: center;
@@ -401,6 +426,25 @@ body:has(.linker-genie-workspace)
 	.linker-genie-app__transcript {
 	flex: 0 0 auto;
 	overflow: visible;
+}
+
+/* The empty column has no message list to open — the prototype's `.gp-welcome`
+ * carries no `.gp-messages` at all — so the list it still mounts as the
+ * frame's scroll box takes none of the thread's 24px. */
+.linker-genie-app--workspace
+	.linker-genie-app__panel:not(:has(.linker-genie-app__message))
+	.linker-genie-app__thread {
+	padding-top: 0;
+}
+
+/* `.gp-welcome h1` — the empty column's own opening line. */
+.linker-genie-app .linker-genie-app__welcome-title {
+	margin-bottom: 26px;
+	font-size: 26px;
+	font-weight: 400;
+	line-height: 34px;
+	text-align: center;
+	color: inherit;
 }
 
 /* `.gp-message` */
@@ -426,7 +470,22 @@ body:has(.linker-genie-workspace)
 	padding: 0 10px;
 }
 
-.linker-genie-app__text {
+/* `.gp-answer-brand` — the answer's own label, over its text. The prototype's
+ * `<small>Demo reply</small>` beside it is a demo tag, like the "Prototype"
+ * tag, and is not carried. */
+.linker-genie-app__answer-brand {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin-bottom: 10px;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+/* `.gp-message p` — a text block's own paragraph rhythm. The block is a
+ * sibling of the message list (the frame's scroll box holds both), so it is
+ * named rather than reached through `.linker-genie-app__message`. */
+.linker-genie-app .linker-genie-app__text {
 	margin: 10px 0;
 	font-size: 16px;
 	line-height: 1.65;
@@ -632,7 +691,7 @@ body:has(.linker-genie-workspace)
 	color: var(--proto-color-muted, #5a6363);
 }
 
-.linker-genie-app__handoff {
+.linker-genie-app .linker-genie-app__handoff {
 	margin: 10px 0;
 	font-size: 16px;
 	line-height: 1.65;
@@ -839,15 +898,18 @@ body:has(.pdp-buy-inner)
 		border-radius: 16px 16px 0 0;
 	}
 
-	/* `.gp-rail.is-open` — the rail is an overlay here (prototype: 262px),
-	 * riding the frame rather than the viewport: `top:0;bottom:0` inside
-	 * `.gp-workspace` is the prototype's own absolute box, and it is what
-	 * keeps the overlay out of the site header above the frame. */
+	/* `.gp-rail.is-open` — the rail is an overlay here (prototype
+	 * `width:262px;flex-basis:262px`, two px off the docked 260), riding the
+	 * frame rather than the viewport: `top:0;bottom:0` inside `.gp-workspace`
+	 * is the prototype's own absolute box, and it is what keeps the overlay
+	 * out of the site header above the frame. */
 	.linker-genie-rail--docked {
 		position: absolute;
 		inset: 0 auto 0 0;
 		z-index: 12;
 		display: none;
+		width: 262px;
+		flex-basis: 262px;
 		box-shadow: 5px 0 25px rgba(0, 0, 0, 0.07);
 	}
 
@@ -903,9 +965,22 @@ body:has(.pdp-buy-inner)
 		padding: 8px 14px;
 	}
 
-	.linker-genie-app--workspace .linker-genie-app__panel {
+	/* `.gp-welcome,.gp-thread{width:calc(100% - 32px);padding-bottom:108px}` —
+	 * the prototype gives the two columns the one value at its 767px, so both
+	 * state rules are restated here rather than left to outrank each other. */
+	.linker-genie-app--workspace
+		.linker-genie-app__panel:has(.linker-genie-app__message),
+	.linker-genie-app--workspace
+		.linker-genie-app__panel:not(:has(.linker-genie-app__message)) {
 		width: calc(100% - 32px);
 		padding-bottom: 108px;
+	}
+
+	/* `.gp-welcome h1` at the prototype's 767px. */
+	.linker-genie-app .linker-genie-app__welcome-title {
+		margin-bottom: 24px;
+		font-size: 24px;
+		line-height: 30px;
 	}
 
 	.linker-genie-app__prompts {
@@ -936,6 +1011,11 @@ body:has(.pdp-buy-inner)
 
 	.linker-genie-app__message--user {
 		max-width: 92%;
+	}
+
+	/* `.gp-answer-brand` at the prototype's 767px. */
+	.linker-genie-app__answer-brand {
+		font-size: 13px;
 	}
 
 	.linker-genie-app__disclosure {
