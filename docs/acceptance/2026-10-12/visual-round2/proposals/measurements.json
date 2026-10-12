@@ -1,0 +1,645 @@
+{
+ "A1-before": {
+  "pageH": 9237,
+  "container": [
+   100,
+   123,
+   1240,
+   16
+  ],
+  "grid": [
+   342,
+   495,
+   998,
+   7774
+  ],
+  "gridCols": "488px 488px",
+  "card0": [
+   342,
+   495,
+   488,
+   604
+  ],
+  "identity0": [
+   363,
+   730,
+   446,
+   71
+  ],
+  "facts0": [
+   363,
+   891,
+   446,
+   86
+  ]
+ },
+ "A1-after": {
+  "pageH": 9237,
+  "container": [
+   40,
+   123,
+   1360,
+   16
+  ],
+  "grid": [
+   282,
+   495,
+   1118,
+   7774
+  ],
+  "gridCols": "548px 548px",
+  "card0": [
+   282,
+   495,
+   548,
+   604
+  ],
+  "identity0": [
+   303,
+   730,
+   506,
+   71
+  ],
+  "facts0": [
+   303,
+   891,
+   506,
+   86
+  ]
+ },
+ "A1-guard1200-before": {
+  "pageH": 9274,
+  "container": [
+   88,
+   115,
+   1024,
+   16
+  ],
+  "grid": [
+   330,
+   481,
+   782,
+   7826
+  ],
+  "gridCols": "380px 380px",
+  "card0": [
+   330,
+   481,
+   380,
+   604
+  ],
+  "identity0": [
+   351,
+   716,
+   338,
+   71
+  ],
+  "facts0": [
+   351,
+   877,
+   338,
+   86
+  ]
+ },
+ "A1-guard1200-after": {
+  "pageH": 9274,
+  "container": [
+   88,
+   115,
+   1024,
+   16
+  ],
+  "grid": [
+   330,
+   481,
+   782,
+   7826
+  ],
+  "gridCols": "380px 380px",
+  "card0": [
+   330,
+   481,
+   380,
+   604
+  ],
+  "identity0": [
+   351,
+   716,
+   338,
+   71
+  ],
+  "facts0": [
+   351,
+   877,
+   338,
+   86
+  ]
+ },
+ "A2-before": {
+  "scrollY": 2000,
+  "railViewportRect": [
+   100,
+   -1569,
+   210,
+   1006
+  ],
+  "railPageRect": [
+   100,
+   431,
+   210,
+   1006
+  ]
+ },
+ "A2-after": {
+  "scrollY": 2000,
+  "railViewportRect": [
+   100,
+   104,
+   210,
+   772
+  ],
+  "railPageRect": [
+   100,
+   2104,
+   210,
+   772
+  ]
+ },
+ "B1-before": {
+  "pageH": 1612,
+  "nav": [
+   172,
+   209,
+   329,
+   72
+  ],
+  "listGroup": [
+   172,
+   209,
+   329,
+   72
+  ],
+  "linkCount": 7,
+  "linkDisplays": [
+   "inline"
+  ],
+  "linkHeights": [
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   42
+  ]
+ },
+ "B1-after": {
+  "pageH": 1612,
+  "nav": [
+   172,
+   209,
+   329,
+   279
+  ],
+  "listGroup": [
+   172,
+   209,
+   230,
+   279
+  ],
+  "linkCount": 7,
+  "linkDisplays": [
+   "block"
+  ],
+  "linkHeights": [
+   36,
+   36,
+   36,
+   36,
+   36,
+   36,
+   36
+  ]
+ },
+ "B2-before": {
+  "pageH": 2917,
+  "nav": [
+   48,
+   201,
+   294,
+   72
+  ],
+  "listGroup": [
+   48,
+   201,
+   294,
+   72
+  ],
+  "linkCount": 7,
+  "linkDisplays": [
+   "inline"
+  ],
+  "linkHeights": [
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18
+  ]
+ },
+ "B2-after": {
+  "pageH": 3124,
+  "nav": [
+   48,
+   201,
+   294,
+   279
+  ],
+  "listGroup": [
+   48,
+   201,
+   230,
+   279
+  ],
+  "linkCount": 7,
+  "linkDisplays": [
+   "block"
+  ],
+  "linkHeights": [
+   36,
+   36,
+   36,
+   36,
+   36,
+   36,
+   36
+  ]
+ },
+ "B3-before": {
+  "actions": [
+   {
+    "t": "View",
+    "cls": "view",
+    "bg": "rgb(233, 230, 237)",
+    "color": "rgb(81, 81, 81)",
+    "radius": "3px",
+    "w": 60,
+    "h": 40
+   },
+   {
+    "t": "Request again",
+    "cls": "request-again",
+    "bg": "rgb(233, 230, 237)",
+    "color": "rgb(81, 81, 81)",
+    "radius": "3px",
+    "w": 123,
+    "h": 40
+   }
+  ]
+ },
+ "B3-after": {
+  "actions": [
+   {
+    "t": "View",
+    "cls": "view",
+    "bg": "rgb(255, 255, 255)",
+    "color": "rgb(23, 38, 54)",
+    "radius": "10px",
+    "w": 59,
+    "h": 40
+   },
+   {
+    "t": "Request again",
+    "cls": "request-again",
+    "bg": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "radius": "10px",
+    "w": 116,
+    "h": 40
+   }
+  ]
+ },
+ "C1-before": {
+  "vw": 1440,
+  "panel": [
+   1000,
+   764,
+   420,
+   52
+  ],
+  "appBar": [
+   1001,
+   765,
+   418,
+   50
+  ],
+  "openCircle": [
+   1370,
+   828,
+   50,
+   50
+  ],
+  "buyInner": [
+   987,
+   151,
+   413,
+   776
+  ],
+  "appOpenPanel": null,
+  "toolsUnderBar": 3
+ },
+ "C1-after": {
+  "vw": 1440,
+  "panel": [
+   1000,
+   814,
+   420,
+   2
+  ],
+  "appBar": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "openCircle": [
+   1370,
+   828,
+   50,
+   50
+  ],
+  "buyInner": [
+   987,
+   151,
+   413,
+   776
+  ],
+  "appOpenPanel": null,
+  "toolsUnderBar": 3
+ },
+ "C2-before": {
+  "vw": 390,
+  "wrapperDisplay": "none",
+  "panelRect": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "mountHidden": false,
+  "triggerExpanded": "true",
+  "appToggleExpanded": "false"
+ },
+ "C2-after": {
+  "vw": 390,
+  "wrapperDisplay": "block",
+  "panelRect": [
+   20,
+   443,
+   350,
+   317
+  ],
+  "mountHidden": false,
+  "triggerExpanded": "true",
+  "appToggleExpanded": "true"
+ },
+ "D1-before": {
+  "pageH": 5387,
+  "reportRows": [
+   {
+    "h": 327,
+    "w": 1160,
+    "rows": 9
+   },
+   {
+    "h": 143,
+    "w": 1160,
+    "rows": 4
+   },
+   {
+    "h": 204,
+    "w": 1160,
+    "rows": 5
+   },
+   {
+    "h": 204,
+    "w": 1160,
+    "rows": 5
+   },
+   {
+    "h": 290,
+    "w": 1160,
+    "rows": 8
+   },
+   {
+    "h": 106,
+    "w": 1160,
+    "rows": 3
+   }
+  ],
+  "reportTotalH": 1275
+ },
+ "D1-after": {
+  "pageH": 5120,
+  "reportRows": [
+   {
+    "h": 180,
+    "w": 1160,
+    "rows": 9
+   },
+   {
+    "h": 117,
+    "w": 1160,
+    "rows": 4
+   },
+   {
+    "h": 202,
+    "w": 1160,
+    "rows": 5
+   },
+   {
+    "h": 202,
+    "w": 1160,
+    "rows": 5
+   },
+   {
+    "h": 215,
+    "w": 1160,
+    "rows": 8
+   },
+   {
+    "h": 93,
+    "w": 1160,
+    "rows": 3
+   }
+  ],
+  "reportTotalH": 1008
+ },
+ "D1-guard1100-before": {
+  "pageH": 5402,
+  "reportRows": [
+   {
+    "h": 327,
+    "w": 1020,
+    "rows": 9
+   },
+   {
+    "h": 143,
+    "w": 1020,
+    "rows": 4
+   },
+   {
+    "h": 228,
+    "w": 1020,
+    "rows": 5
+   },
+   {
+    "h": 204,
+    "w": 1020,
+    "rows": 5
+   },
+   {
+    "h": 290,
+    "w": 1020,
+    "rows": 8
+   },
+   {
+    "h": 106,
+    "w": 1020,
+    "rows": 3
+   }
+  ],
+  "reportTotalH": 1298
+ },
+ "D1-guard1100-after": {
+  "pageH": 5402,
+  "reportRows": [
+   {
+    "h": 327,
+    "w": 1020,
+    "rows": 9
+   },
+   {
+    "h": 143,
+    "w": 1020,
+    "rows": 4
+   },
+   {
+    "h": 228,
+    "w": 1020,
+    "rows": 5
+   },
+   {
+    "h": 204,
+    "w": 1020,
+    "rows": 5
+   },
+   {
+    "h": 290,
+    "w": 1020,
+    "rows": 8
+   },
+   {
+    "h": 106,
+    "w": 1020,
+    "rows": 3
+   }
+  ],
+  "reportTotalH": 1298
+ },
+ "D2-before": {
+  "vw": 390,
+  "scrollY": 2400,
+  "stepsViewportRect": [
+   16,
+   -2111,
+   358,
+   28
+  ],
+  "stepsPageY": 289
+ },
+ "D2-after": {
+  "vw": 390,
+  "scrollY": 2384,
+  "stepsViewportRect": [
+   16,
+   89,
+   358,
+   44
+  ],
+  "stepsPageY": 2473
+ },
+ "E1-before": {
+  "pageH": 8264,
+  "routeList": [
+   492,
+   7834,
+   794,
+   150
+  ],
+  "routeCols": "392px 392px",
+  "cardW": 392,
+  "footerH": 574,
+  "otherLists": [
+   "392px 392px",
+   "repeat(2, minmax(0px, 1fr))",
+   "repeat(2, minmax(0px, 1fr))",
+   "repeat(2, minmax(0px, 1fr))"
+  ]
+ },
+ "E1-after": {
+  "pageH": 8264,
+  "routeList": [
+   492,
+   7834,
+   794,
+   70
+  ],
+  "routeCols": "258px 258px 258px",
+  "cardW": 258,
+  "footerH": 574,
+  "otherLists": [
+   "258px 258px 258px",
+   "repeat(2, minmax(0px, 1fr))",
+   "repeat(2, minmax(0px, 1fr))",
+   "repeat(2, minmax(0px, 1fr))"
+  ]
+ },
+ "E1-guard900-before": {
+  "pageH": 9047,
+  "routeList": [
+   336,
+   8605,
+   490,
+   197
+  ],
+  "routeCols": "490px",
+  "routeItems": 13,
+  "footerH": 574
+ },
+ "E1-guard900-after": {
+  "pageH": 9047,
+  "routeList": [
+   336,
+   8605,
+   490,
+   197
+  ],
+  "routeCols": "490px",
+  "routeItems": 13,
+  "footerH": 574
+ },
+ "_trial_css": {
+  "A1": "@media (min-width:1360px){\n  body #tv-woo-b2b-catalog.sf-catalog{--sf-container:1360px}\n  body #tv-woo-b2b-catalog.sf-catalog .container{width:min(1360px,calc(100% - 64px));max-width:none}\n}",
+  "A2": "@media (min-width:861px){\n  body #tv-woo-b2b-catalog.sf-catalog .sidebar-filters{position:sticky;top:104px;align-self:start;max-height:calc(100vh - 128px);overflow-y:auto}\n}",
+  "B1": ".woocommerce-account .woocommerce-MyAccount-navigation .list-group{display:flex;flex-direction:column;gap:2px;padding:8px;border:1px solid #e2e5e5;border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(12,15,15,.08);width:230px}\n.woocommerce-account .woocommerce-MyAccount-navigation .list-group-item{display:block;padding:8px 10px;border-radius:8px;color:#172636;font-size:14px;line-height:1.4;text-decoration:none}\n.woocommerce-account .woocommerce-MyAccount-navigation .list-group-item:hover{background:#f3f7f2}",
+  "B3": ".woocommerce-account .woocommerce-orders-table__cell-order-actions a{border-radius:10px;font-size:12px;min-height:40px;display:inline-flex;align-items:center;padding:6px 14px}\n.woocommerce-account .woocommerce-orders-table__cell-order-actions a.view{background:#fff;border:1px solid #dfe7ec;color:#172636}\n.woocommerce-account .woocommerce-orders-table__cell-order-actions a.request-again{background:#0c7f73;border:1px solid #0c7f73;color:#fff}",
+  "C1": "body:has(.pdp-buy-inner) .linker-genie-app:not(:has(> .linker-genie-app__panel)) > .linker-genie-app__bar{display:none}",
+  "C2": "@media (max-width:860px){\n  .linker-genie:has([data-linker-genie-open][aria-expanded=\"true\"]){display:block;position:fixed;inset:auto 10px 10px 10px;z-index:10000}\n  .linker-genie:has([data-linker-genie-open][aria-expanded=\"true\"]) > .linker-genie-open{display:none}\n  .linker-genie:has([data-linker-genie-open][aria-expanded=\"true\"]) .linker-genie-app{background:#fff;border:1px solid #e2e5e5;border-radius:14px;box-shadow:0 18px 50px rgba(12,15,15,.22);padding:12px;max-height:72vh;overflow:auto}\n}",
+  "D1": "@media (min-width:1200px){\n  [data-linker-app=\"configurator\"] .linker-report__rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:56px;align-items:start}\n}",
+  "D2": "@media (max-width:860px){\n  [data-linker-app=\"configurator\"] .linker-steps{position:sticky;top:89px;z-index:40;background:rgba(246,249,245,.94);backdrop-filter:blur(6px);padding:8px 0;margin:-8px 0 0}\n}",
+  "E1": "@media (min-width:1024px){\n  #tv-footer-v2 #footer-panel-solutions .footer-route-list{grid-template-columns:repeat(3,minmax(0,1fr))}\n}"
+ }
+}
