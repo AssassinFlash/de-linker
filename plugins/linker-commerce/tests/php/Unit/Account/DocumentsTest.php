@@ -135,39 +135,39 @@ final class DocumentsTest extends TestCase {
 				),
 				$documents
 			);
-		}
+	}
 
 		/**
 		 * Completed keeps the download. The number meta, not the status word, is what the page reads.
 		 */
-		public function test_completed_inquiry_keeps_the_download(): void {
-			WP_Mock::passthruFunction( '__' );
-			WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
-			WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
-			$done = Mockery::mock( WC_Order::class );
-			$done->allows( 'get_id' )->andReturn( 23 );
-			$done->allows( 'get_order_number' )->andReturn( '23' );
-			$done->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( 'DLK-PF-2026-0002' );
-			$done->allows( 'get_meta' )->with( Issuer::ISSUED_META )->andReturn( '1760002000' );
-			$done->allows( 'has_status' )->with( Statuses::PROFORMA )->andReturn( false );
-			WP_Mock::userFunction( 'wc_get_orders' )->andReturnUsing(
-				static function ( array $args ) use ( $done ): array {
-					return Issuer::NUMBER_META === ( $args['meta_key'] ?? '' ) ? array( $done ) : array();
-				}
-			);
-			WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
+	public function test_completed_inquiry_keeps_the_download(): void {
+		WP_Mock::passthruFunction( '__' );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
+		$done = Mockery::mock( WC_Order::class );
+		$done->allows( 'get_id' )->andReturn( 23 );
+		$done->allows( 'get_order_number' )->andReturn( '23' );
+		$done->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( 'DLK-PF-2026-0002' );
+		$done->allows( 'get_meta' )->with( Issuer::ISSUED_META )->andReturn( '1760002000' );
+		$done->allows( 'has_status' )->with( Statuses::PROFORMA )->andReturn( false );
+		WP_Mock::userFunction( 'wc_get_orders' )->andReturnUsing(
+			static function ( array $args ) use ( $done ): array {
+				return Issuer::NUMBER_META === ( $args['meta_key'] ?? '' ) ? array( $done ) : array();
+			}
+		);
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
 
-			$documents = ( new Documents( new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' ), '/plugin/templates/' ) )->for_customer( 5 );
+		$documents = ( new Documents( new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' ), '/plugin/templates/' ) )->for_customer( 5 );
 
-			$this->assertSame(
+		$this->assertSame(
+			array(
 				array(
-					array(
-						'title' => 'Proforma invoice DLK-PF-2026-0002 (inquiry #23)',
-						'date'  => 1760002000,
-						'url'   => 'https://example.test/?linker-document=proforma&id=23',
-					),
+					'title' => 'Proforma invoice DLK-PF-2026-0002 (inquiry #23)',
+					'date'  => 1760002000,
+					'url'   => 'https://example.test/?linker-document=proforma&id=23',
 				),
-				$documents
-			);
-		}
+			),
+			$documents
+		);
 	}
+}

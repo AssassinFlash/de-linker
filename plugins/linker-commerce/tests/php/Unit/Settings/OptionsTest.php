@@ -35,7 +35,7 @@ final class OptionsTest extends TestCase {
 	}
 
 	/**
-		 * Without settings, notifications go to sales@de-linker.com (AGENTS.md §2) and numbers start with DLK-PF.
+	 * Without settings, notifications go to sales@de-linker.com (AGENTS.md §2) and numbers start with DLK-PF.
 	 */
 	public function test_defaults(): void {
 		$this->options( array() );

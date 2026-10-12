@@ -95,20 +95,20 @@ final class AccountTemplates {
 	 *
 	 * @param array{template_name: string, args: array<string, mixed>} $context Woo include context.
 	 */
-		public static function output( array $context ): void {
-			if ( null === self::$adapter || ! isset( self::FILES[ $context['template_name'] ] ) ) {
-				return;
-			}
-			$adapter       = self::$adapter;
-			$previous      = $adapter->args;
-			$adapter->args = $context['args'];
-			try {
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- LC markup; all dynamic fields escaped by field().
-				echo $adapter->fragment( self::FILES[ $context['template_name'] ] );
-			} finally {
-				$adapter->args = $previous;
-			}
+	public static function output( array $context ): void {
+		if ( null === self::$adapter || ! isset( self::FILES[ $context['template_name'] ] ) ) {
+			return;
 		}
+		$adapter       = self::$adapter;
+		$previous      = $adapter->args;
+		$adapter->args = $context['args'];
+		try {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- LC markup; all dynamic fields escaped by field().
+			echo $adapter->fragment( self::FILES[ $context['template_name'] ] );
+		} finally {
+			$adapter->args = $previous;
+		}
+	}
 
 	/**
 	 * A repository LC fragment; filename is never supplied by a request.
@@ -116,15 +116,15 @@ final class AccountTemplates {
 	 * @param string               $name Fragment name.
 	 * @param array<string, mixed> $row  Row data.
 	 */
-		private function fragment( string $name, array $row = array() ): string {
-			$previous  = $this->row;
-			$this->row = $row;
-			try {
-				return do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/' . $name . '.html' ) );
-			} finally {
-				$this->row = $previous;
-			}
+	private function fragment( string $name, array $row = array() ): string {
+		$previous  = $this->row;
+		$this->row = $row;
+		try {
+			return do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/' . $name . '.html' ) );
+		} finally {
+			$this->row = $previous;
 		}
+	}
 
 	/**
 	 * Escaped scalar row values; only Woo's formatted totals and native item

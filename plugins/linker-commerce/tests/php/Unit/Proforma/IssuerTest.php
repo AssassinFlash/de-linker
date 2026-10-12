@@ -170,13 +170,13 @@ final class IssuerTest extends TestCase {
 	/**
 	 * A received inquiry with one priced line.
 	 *
-		 * @param string $status Status.
-		 * @param string $number Proforma number already issued.
-		 * @param bool   $priced Whether the line has a price.
-		 * @param int    $id     Inquiry id.
-		 * @return WC_Order&\Mockery\MockInterface
-		 */
-		private function inquiry( string $status = Statuses::RECEIVED, string $number = '', bool $priced = true, int $id = 20 ) {
+	 * @param string $status Status.
+	 * @param string $number Proforma number already issued.
+	 * @param bool   $priced Whether the line has a price.
+	 * @param int    $id     Inquiry id.
+	 * @return WC_Order&\Mockery\MockInterface
+	 */
+	private function inquiry( string $status = Statuses::RECEIVED, string $number = '', bool $priced = true, int $id = 20 ) {
 		$line = Mockery::mock( WC_Order_Item_Product::class );
 		$line->allows( 'get_meta' )->with( '_linker_price_reason' )->andReturn( $priced ? '' : 'unpriced' );
 		$line->allows( 'get_total' )->andReturn( $priced ? '1680' : '0' );
@@ -184,7 +184,7 @@ final class IssuerTest extends TestCase {
 		$line->allows( 'get_name' )->andReturn( 'SAJ H2-10K-T3' );
 		$line->allows( 'get_quantity' )->andReturn( 1 );
 		$order = Mockery::mock( WC_Order::class );
-			$order->allows( 'get_id' )->andReturn( $id );
+		$order->allows( 'get_id' )->andReturn( $id );
 		$order->allows( 'get_status' )->andReturn( $status );
 		$order->allows( 'get_items' )->andReturn( array( $line ) );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
@@ -197,7 +197,7 @@ final class IssuerTest extends TestCase {
 		$order->allows( 'get_fees' )->andReturn( array() );
 		$order->allows( 'get_tax_totals' )->andReturn( array() );
 		$order->allows( 'get_address' )->andReturn( array() );
-			$order->allows( 'get_order_number' )->andReturn( (string) $id );
+		$order->allows( 'get_order_number' )->andReturn( (string) $id );
 		$order->allows( 'get_billing_company' )->andReturn( 'Solarbau GmbH' );
 		$order->allows( 'get_formatted_billing_full_name' )->andReturn( 'Maria Beispiel' );
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
@@ -383,22 +383,25 @@ final class IssuerTest extends TestCase {
 		$this->issuer()->ensure_issued( 20 );
 
 			$this->assertSame( array(), $this->option_values, 'No number and no claim are written without a bank account.' );
-		}
+	}
 
 		/**
 		 * Two issues in one year take the next number. The second does not reuse the first.
 		 */
-		public function test_successive_issues_take_the_next_number(): void {
-			$year = ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'Europe/Berlin' ) ) )->format( 'Y' );
-			$issuer = $this->issuer();
-			$this->expect_rendering();
+	public function test_successive_issues_take_the_next_number(): void {
+		$year   = ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'Europe/Berlin' ) ) )->format( 'Y' );
+		$issuer = $this->issuer();
+		$this->expect_rendering();
 
-			foreach ( array( 20 => '0001', 21 => '0002' ) as $id => $sequence ) {
-				$order = $this->inquiry( Statuses::RECEIVED, '', true, $id );
-				$order->allows( 'update_meta_data' );
-				$order->allows( 'update_status' );
-				$order->allows( 'calculate_totals' );
-				$this->assertSame( "DLK-PF-$year-$sequence", $issuer->issue( $order ) );
-			}
+		foreach ( array(
+			20 => '0001',
+			21 => '0002',
+		) as $id => $sequence ) {
+			$order = $this->inquiry( Statuses::RECEIVED, '', true, $id );
+			$order->allows( 'update_meta_data' );
+			$order->allows( 'update_status' );
+			$order->allows( 'calculate_totals' );
+			$this->assertSame( "DLK-PF-$year-$sequence", $issuer->issue( $order ) );
 		}
 	}
+}

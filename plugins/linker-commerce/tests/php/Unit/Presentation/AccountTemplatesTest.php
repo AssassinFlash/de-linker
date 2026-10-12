@@ -123,62 +123,67 @@ final class AccountTemplatesTest extends TestCase {
 			$this->assertSame( 'DLK-PF-2026-0003', $completed['proforma_number'] );
 			$this->assertSame( '1', $completed['proforma'] );
 			$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $completed['proforma_url'] );
-		}
+	}
 
 		/**
 		 * The inquiry detail and the Documents page both carry the number and a download link.
 		 * German labels are the formal catalogue strings, not a translation invented in this test.
 		 */
-		public function test_detail_and_documents_both_carry_the_number_and_the_link(): void {
-			WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
-			WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
-			WP_Mock::userFunction(
-				'add_query_arg',
-				array(
-					'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ),
-				)
-			);
-			WP_Mock::userFunction(
-				'__',
-				array(
-					'return' => static function ( string $text ): string {
-						return array(
-							'Proforma invoice (PDF)'                => 'Proformarechnung (PDF)',
-							'Download (PDF)'                        => 'Herunterladen (PDF)',
-							'Proforma invoice %1$s (inquiry #%2$s)' => 'Proformarechnung %1$s (Anfrage #%2$s)',
-						)[ $text ] ?? $text;
-					},
-				)
-			);
-			WP_Mock::userFunction( 'esc_html', array( 'return' => static fn ( string $text ): string => $text ) );
-			WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn ( string $text ): string => $text ) );
-			WP_Mock::userFunction( 'esc_url', array( 'return' => static fn ( string $url ): string => $url ) );
+	public function test_detail_and_documents_both_carry_the_number_and_the_link(): void {
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
+		WP_Mock::userFunction(
+			'add_query_arg',
+			array(
+				'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ),
+			)
+		);
+		WP_Mock::userFunction(
+			'__',
+			array(
+				'return' => static function ( string $text ): string {
+					return array(
+						'Proforma invoice (PDF)' => 'Proformarechnung (PDF)',
+						'Download (PDF)'         => 'Herunterladen (PDF)',
+						'Proforma invoice %1$s (inquiry #%2$s)' => 'Proformarechnung %1$s (Anfrage #%2$s)',
+					)[ $text ] ?? $text;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'esc_html', array( 'return' => static fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'esc_url', array( 'return' => static fn ( string $url ): string => $url ) );
 
-			$adapter = new AccountTemplates();
-			$order   = $this->inquiry( Statuses::PROFORMA, 'DLK-PF-2026-0001' );
-			$row     = $adapter->inquiry_row( $order );
-			$detail  = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/proforma.html' );
-			$summary = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/summary.html' );
-			$listed  = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/document-row.html' );
+		$adapter = new AccountTemplates();
+		$order   = $this->inquiry( Statuses::PROFORMA, 'DLK-PF-2026-0001' );
+		$row     = $adapter->inquiry_row( $order );
+		$detail  = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/proforma.html' );
+		$summary = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/summary.html' );
+		$listed  = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/document-row.html' );
 
-			// Inquiry detail: the summary fragment includes the Proforma block, which prints the number and the link.
-			$this->assertStringContainsString( 'type="proforma"', $summary );
-			$this->assertStringContainsString( 'key="number"', $detail );
-			$this->assertStringContainsString( 'key=\'url\'', $detail );
-			$this->assertStringContainsString( 'data-action="proforma"', $detail );
-			$this->assertSame( 'DLK-PF-2026-0001', $row['proforma_number'] );
-			$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $row['proforma_url'] );
-			$this->assertSame( 'Proformarechnung (PDF)', __( 'Proforma invoice (PDF)', 'linker-commerce' ) );
+		// Inquiry detail: the summary fragment includes the Proforma block, which prints the number and the link.
+		$this->assertStringContainsString( 'type="proforma"', $summary );
+		$this->assertStringContainsString( 'key="number"', $detail );
+		$this->assertStringContainsString( 'key=\'url\'', $detail );
+		$this->assertStringContainsString( 'data-action="proforma"', $detail );
+		$this->assertSame( 'DLK-PF-2026-0001', $row['proforma_number'] );
+		$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $row['proforma_url'] );
+		$this->assertSame( 'Proformarechnung (PDF)', __( 'Proforma invoice (PDF)', 'linker-commerce' ) );
 
-			// Documents: the row prints the title (number inside) and the same download URL.
-			$this->assertStringContainsString( 'key="title"', $listed );
-			$this->assertStringContainsString( 'key=\'url\'', $listed );
-			$this->assertSame( 'Herunterladen (PDF)', __( 'Download (PDF)', 'linker-commerce' ) );
+		// Documents: the row prints the title (number inside) and the same download URL.
+		$this->assertStringContainsString( 'key="title"', $listed );
+		$this->assertStringContainsString( 'key=\'url\'', $listed );
+		$this->assertSame( 'Herunterladen (PDF)', __( 'Download (PDF)', 'linker-commerce' ) );
 			$this->assertSame(
 				'Proformarechnung DLK-PF-2026-0001 (Anfrage #20)',
-				sprintf( __( 'Proforma invoice %1$s (inquiry #%2$s)', 'linker-commerce' ), $row['proforma_number'], $order->get_order_number() )
+				sprintf(
+					/* translators: 1: Proforma number, 2: inquiry number. */
+					__( 'Proforma invoice %1$s (inquiry #%2$s)', 'linker-commerce' ),
+					$row['proforma_number'],
+					$order->get_order_number()
+				)
 			);
-		}
+	}
 
 	/**
 	 * An inquiry for the account-row assertions.
