@@ -33,7 +33,7 @@
 		"src/configurator/types.ts": "a200fa47a8d6049a2d928d615f3f7d05e31964ce92303d8351d866612a0d79b8",
 		"src/configurator/utility/UtilityForm.tsx": "4e270beacf46fedd197a7cdca5334c04c3ad72907dc102a8b563652a957fa8aa",
 		"src/configurator/validation.ts": "a540c752f80baaddc867dd67068bd37b0cd4589c8129a1a9d3d55fdff6391263",
-		"src/genie/App.tsx": "ff935a0d5f5a6137c7d214a4cd48d4aeea79e0db727f8a118d2a9301ee196366",
+		"src/genie/App.tsx": "695aa1f78e8d3dc2ae69cf9b9c7bb6df4d43f853bbdbb4e5e5443800216400b4",
 		"src/genie/api/product.ts": "1163e2554f059e5854202952fdae71922846cec0b2060dd34cdfbf0a01a81ea3",
 		"src/genie/api/turn.ts": "76d93c3077f0719d204276d2f2c53d7a6128a660f1ab621693992a067a2b1d9e",
 		"src/genie/components/ActionView.tsx": "0982207086eb6014f78be06fe35881b7583026c7a4a699cc330a2f512d06824a",
@@ -63,9 +63,9 @@
 		"build/configurator.css": "e3b4a8a399cd36daf13b744f1474da4f9e44b054707204ac4822946175acd380",
 		"build/configurator.js": "ce953e9449648fa3bca2187d398eae19cedb14a9029d934541d42672cbdaf475",
 		"build/genie-rtl.css": "98f3934b28044372cd8d984462ad1d951c2af4654d7df930812fda182d3bd666",
-		"build/genie.asset.php": "f9687e330ff525ab1787d5c8da20d345de00a34b1255af923c25ae9d2eb095fc",
+		"build/genie.asset.php": "39e833315aa82ced057e6ba260a4bc758a510ded72310ad2fd455e70f545152c",
 		"build/genie.css": "50d59094d5127baff1a7c7286b8b3da7bee423e311b9090440c61e0235c78503",
-		"build/genie.js": "8c88a5edbb8f9af0d125552312c9369e63ffa4d54f39948ee7dfeed158cf57ab",
+		"build/genie.js": "346c34787ee2fa06a88d7aa2f183ff8adc76afa7ba9f6a84135827b872c7c760",
 		"build/shared.asset.php": "0aa20091dfab05fc87cc510fd89bae3de916b3d554cd7a11054b7e3691418fde",
 		"build/shared.js": "548cb907466c0031d46b1789b6c95c477415f87ea5c0dddc4ff062e13b7dc763"
 	}

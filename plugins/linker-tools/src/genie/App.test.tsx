@@ -351,6 +351,50 @@ test( 'one entry ask survives a late thread restore without being sent twice', a
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
 
+test( 'a history that is still loading is not an empty history', async () => {
+	resetTurnLane();
+	const reads: Array<
+		( value: Awaited< ReturnType< typeof readThread > > ) => void
+	> = [];
+	const lists: Array<
+		( value: Awaited< ReturnType< typeof listConversations > > ) => void
+	> = [];
+	vi.mocked( readThread ).mockImplementation(
+		() =>
+			new Promise( ( resolve ) => {
+				reads.push( resolve );
+			} )
+	);
+	vi.mocked( listConversations ).mockImplementation(
+		() =>
+			new Promise( ( resolve ) => {
+				lists.push( resolve );
+			} )
+	);
+	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	expect( screen.getByRole( 'status' ) ).toHaveTextContent(
+		'Loading conversations…'
+	);
+	expect( screen.queryByText( 'No earlier conversation.' ) ).toBeNull();
+	await waitFor( () => expect( reads.length ).toBeGreaterThan( 0 ) );
+	reads[ 0 ]!( { messages: [], turn: null } );
+	await waitFor( () => expect( lists.length ).toBeGreaterThan( 0 ) );
+	lists[ 0 ]!( { currentId: 0, conversations: [], ok: true } );
+	expect(
+		await screen.findByText( 'No earlier conversation.' )
+	).toBeVisible();
+	expect( screen.queryByRole( 'status' ) ).toBeNull();
+	vi.mocked( readThread ).mockImplementation( async () => ( {
+		messages: [],
+		turn: null,
+	} ) );
+	vi.mocked( listConversations ).mockImplementation( async () => ( {
+		currentId: 0,
+		conversations: [],
+		ok: true,
+	} ) );
+} );
+
 test( 'a failed history load is not an empty history', async () => {
 	resetTurnLane();
 	vi.mocked( listConversations ).mockResolvedValue( {

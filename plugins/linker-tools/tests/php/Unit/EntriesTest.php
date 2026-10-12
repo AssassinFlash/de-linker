@@ -310,10 +310,37 @@ final class EntriesTest extends TestCase {
 		$html = $this->capture(
 			static fn() => ( new Entries( '/plugin/linker-tools.php' ) )->chip( 'Compare with…', 'product' )
 		);
-		$this->assertStringContainsString( 'data-linker-genie-open', $html );
-		$this->assertStringContainsString( 'data-page-type="product"', $html );
-		$this->assertConditionsMet();
-	}
+			$this->assertStringContainsString( 'data-linker-genie-open', $html );
+			$this->assertStringContainsString( 'data-page-type="product"', $html );
+			$this->assertStringContainsString(
+				'data-ask-message="Compare with…"',
+				$html
+			);
+			$this->assertConditionsMet();
+		}
+
+		/**
+		 * An account chip is the first question, not a button that only opens
+		 * an empty panel. The loader reads data-ask-message.
+		 */
+		public function test_account_chip_carries_its_label_as_the_first_question(): void {
+			WP_Mock::passthruFunction( '__' );
+			WP_Mock::passthruFunction( 'esc_html' );
+			WP_Mock::passthruFunction( 'esc_attr' );
+			$html = $this->capture(
+				static fn() => ( new Entries( '/plugin/linker-tools.php' ) )->chip(
+					'Where is my Proforma?',
+					'account'
+				)
+			);
+			$this->assertStringContainsString( 'data-linker-genie-open', $html );
+			$this->assertStringContainsString(
+				'data-ask-message="Where is my Proforma?"',
+				$html
+			);
+			$this->assertStringContainsString( 'data-page-type="account"', $html );
+			$this->assertConditionsMet();
+		}
 
 	/**
 	 * The shortcode prints a page type's chip group: the LiveCanvas

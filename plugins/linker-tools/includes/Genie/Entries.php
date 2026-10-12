@@ -412,19 +412,21 @@ class Entries {
 			pendingOpen = true;
 			boot();
 		}
-		document.addEventListener(
-		'click',
-		function (event) {
-			var trigger = event.target.closest(
-				'[data-linker-genie-open]'
+			document.addEventListener(
+				'click',
+				function (event) {
+					var trigger = event.target.closest(
+						'[data-linker-genie-open]'
+					);
+					if (!trigger) {
+						return;
+					}
+					// A page chip carries its label as the first question. A plain
+					// opener (the bubble, a retry) has no payload and must not ask.
+					open(trigger.getAttribute('data-ask-message') || '');
+				},
+				true
 			);
-			if (!trigger) {
-				return;
-			}
-			open('');
-		},
-		true
-	);
 })();
 JS,
 			array(
@@ -543,19 +545,24 @@ JS,
 		return (string) ob_get_clean();
 	}
 
-	/**
-	 * One chip that opens the dock with a starting question.
-	 *
-	 * @param string $label Chip label.
-	 * @param string $type  Page type.
-	 */
-	public function chip( string $label, string $type ): void {
-		printf(
-			'<button type="button" class="linker-genie-chip" data-linker-genie-open data-page-type="%1$s">%2$s</button>',
-			esc_attr( $type ),
-			esc_html( $label )
-		);
-	}
+		/**
+		 * One chip that opens the dock with a starting question.
+		 *
+		 * The label is both the visible text and the first question the loader
+		 * delivers (`data-ask-message`). A chip that only opens the dock leaves
+		 * the visitor with an empty panel.
+		 *
+		 * @param string $label Chip label.
+		 * @param string $type  Page type.
+		 */
+		public function chip( string $label, string $type ): void {
+			printf(
+				'<button type="button" class="linker-genie-chip" data-linker-genie-open data-ask-message="%1$s" data-page-type="%2$s">%3$s</button>',
+				esc_attr( $label ),
+				esc_attr( $type ),
+				esc_html( $label )
+			);
+		}
 
 	/**
 	 * The opening prompts of one page type in its language.

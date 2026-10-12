@@ -42,7 +42,7 @@ interface CardItem {
 }
 
 type Phase = 'ask' | 'waiting' | 'error';
-type HistoryPhase = 'ready' | 'failed';
+type HistoryPhase = 'loading' | 'ready' | 'failed';
 
 /**
  * One lane for restore, switch and ask. It lives outside the component:
@@ -50,6 +50,11 @@ type HistoryPhase = 'ready' | 'failed';
  * that render already replaced.
  */
 let turnLane: Promise< void > = Promise.resolve();
+/**
+ * A switch bumps this before its POST. A list fetched for an earlier
+ * conversation compares the value it captured and drops itself.
+ */
+let historyEpoch = 0;
 
 function deferred< T >() {
 	let resolve!: ( value: T ) => void;
@@ -71,6 +76,7 @@ function enqueue( job: () => Promise< void > ): Promise< void > {
 /** Test seam: a finished lane must not leak into the next mount. */
 export function resetTurnLane(): void {
 	turnLane = Promise.resolve();
+	historyEpoch = 0;
 }
 
 /**
@@ -87,7 +93,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ cards, setCards ] = useState< CardItem[] >( [] );
 	const [ history, setHistory ] = useState< ConversationSummary[] >( [] );
 	const [ historyPhase, setHistoryPhase ] =
-		useState< HistoryPhase >( 'ready' );
+		useState< HistoryPhase >( 'loading' );
 	const [ currentId, setCurrentId ] = useState( 0 );
 	const [ railOpen, setRailOpen ] = useState(
 		config.surface === 'workspace'
@@ -98,20 +104,28 @@ export function App( { config }: { config: GenieConfig } ) {
 	const store = storeClient( config.restUrl );
 	const workspace = config.surface === 'workspace';
 
-	const refreshHistory = useCallback( async () => {
-		const listed = await listConversations(
-			config.conversationsUrl,
-			config.restNonce
-		);
-		if ( ! listed.ok ) {
-			setHistoryPhase( 'failed' );
-			return;
-		}
-		setHistoryPhase( 'ready' );
-		setHistory( listed.conversations );
-		if ( listed.currentId ) {
-			setCurrentId( listed.currentId );
-		}
+	const refreshHistory = useCallback( () => {
+		const epoch = historyEpoch;
+		return enqueue( async () => {
+			const listed = await listConversations(
+				config.conversationsUrl,
+				config.restNonce
+			);
+			// A switch owns the rail now. Applying this list would put the
+			// conversation it left back as current.
+			if ( epoch !== historyEpoch ) {
+				return;
+			}
+			if ( ! listed.ok ) {
+				setHistoryPhase( 'failed' );
+				return;
+			}
+			setHistoryPhase( 'ready' );
+			setHistory( listed.conversations );
+			if ( listed.currentId ) {
+				setCurrentId( listed.currentId );
+			}
+		} );
 	}, [ config.conversationsUrl, config.restNonce ] );
 
 	const showStored = useCallback( async () => {
@@ -163,6 +177,9 @@ export function App( { config }: { config: GenieConfig } ) {
 					setThread( currentThread.current );
 					setTurn( answer );
 					setPhase( 'ask' );
+					// Enqueue, do not await: the refresh must follow this
+					// turn, but holding the lane until it returns would
+					// block a switch the visitor starts while it is in flight.
 					void refreshHistory();
 				} catch {
 					setPhase( 'error' );
@@ -198,8 +215,14 @@ export function App( { config }: { config: GenieConfig } ) {
 					setTurn( stored.turn );
 				}
 			}
-			await refreshHistory();
-		} ).catch( () => undefined );
+		} )
+			.then( () => {
+				if ( ! cancelled ) {
+					return refreshHistory();
+				}
+				return undefined;
+			} )
+			.catch( () => undefined );
 		return () => {
 			cancelled = true;
 			// A superseded mount must not hold the lane. The replacement
@@ -209,8 +232,11 @@ export function App( { config }: { config: GenieConfig } ) {
 	}, [ config.threadUrl, config.restNonce, refreshHistory ] );
 
 	const continueConversation = useCallback(
-		( id?: number ) =>
-			enqueue( async () => {
+		( id?: number ) => {
+			// Before the job, not inside it: a list already queued behind
+			// this switch captured the old epoch and must drop itself.
+			historyEpoch += 1;
+			return enqueue( async () => {
 				try {
 					const selected = await selectConversation(
 						config.conversationsUrl,
@@ -227,7 +253,8 @@ export function App( { config }: { config: GenieConfig } ) {
 					setHistoryPhase( 'failed' );
 					setOpen( true );
 				}
-			} ),
+			} );
+		},
 		[ config.conversationsUrl, config.restNonce, showStored ]
 	);
 
@@ -346,7 +373,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					currentId={ currentId }
 					onOpen={ () => setRailOpen( true ) }
 					onClose={ () => setRailOpen( false ) }
-					failed={ 'failed' === historyPhase }
+					phase={ historyPhase }
 					onSelect={ ( id ) => void continueConversation( id ) }
 					onNew={ () => void continueConversation() }
 					onRetry={ () => void refreshHistory() }
@@ -519,7 +546,7 @@ function HistoryRail( {
 	docked,
 	items,
 	currentId,
-	failed,
+	phase,
 	onOpen,
 	onClose,
 	onSelect,
@@ -530,7 +557,7 @@ function HistoryRail( {
 	docked: boolean;
 	items: ConversationSummary[];
 	currentId: number;
-	failed: boolean;
+	phase: HistoryPhase;
 	onOpen: () => void;
 	onClose: () => void;
 	onSelect: ( id: number ) => void;
@@ -563,7 +590,16 @@ function HistoryRail( {
 					{ __( 'New conversation', 'linker-tools' ) }
 				</button>
 			</div>
-			{ failed ? (
+			{ 'loading' === phase ? (
+				<p
+					className="linker-genie-rail__empty"
+					role="status"
+					aria-live="polite"
+				>
+					{ __( 'Loading conversations…', 'linker-tools' ) }
+				</p>
+			) : null }
+			{ 'failed' === phase ? (
 				<p role="alert" className="linker-genie-rail__empty">
 					{ __(
 						'Conversations could not be loaded.',
@@ -574,12 +610,12 @@ function HistoryRail( {
 					</button>
 				</p>
 			) : null }
-			{ ! failed && items.length === 0 ? (
+			{ 'ready' === phase && items.length === 0 ? (
 				<p className="linker-genie-rail__empty">
 					{ __( 'No earlier conversation.', 'linker-tools' ) }
 				</p>
 			) : null }
-			{ ! failed && items.length > 0 ? (
+			{ 'ready' === phase && items.length > 0 ? (
 				<ul className="linker-genie-rail__list">
 					{ items.map( ( item ) => (
 						<li key={ item.id }>
