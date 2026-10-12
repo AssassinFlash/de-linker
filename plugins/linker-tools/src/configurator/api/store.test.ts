@@ -21,10 +21,11 @@ function json( body: unknown, headers: Record< string, string > = {} ) {
 
 function cartFetch(
 	after: { id: number; quantity: number }[],
-	failAdd = new Set< number >()
+	failAdd = new Set< number >(),
+	before: { id: number; quantity: number }[] = [ { id: 7, quantity: 1 } ]
 ) {
 	const carts = [
-		json( { items: [ { id: 7, quantity: 1 } ] }, { Nonce: 'abc' } ),
+		json( { items: before }, { Nonce: 'abc' } ),
 		json( { items: after } ),
 	];
 	return vi.fn< typeof fetch >( async ( input, init ) => {
@@ -126,6 +127,45 @@ test( 'a line already at the scheme quantity is not written again, a refused one
 		.filter( ( call ) => String( call[ 0 ] ).endsWith( '/cart/add-item' ) )
 		.map( ( call ) => JSON.parse( String( call[ 1 ]?.body ) ) );
 	expect( posted ).toEqual( [ { id: 9, quantity: 2 } ] );
+} );
+
+test( 'a line short of the scheme quantity is topped up by the difference', async () => {
+	const fetcher = cartFetch(
+		[
+			{ id: 7, quantity: 2 },
+			{ id: 9, quantity: 2 },
+		],
+		new Set(),
+		[ { id: 7, quantity: 1 } ]
+	);
+	const statuses = new Map< number, AddStatus >();
+	const complete = await storeClient( '/wp-json/', fetcher ).addAll(
+		[ { productId: 7, quantity: 2 } ],
+		( id, status ) => statuses.set( id, status )
+	);
+	expect( complete ).toBe( true );
+	expect( statuses.get( 7 ) ).toBe( 'added' );
+	const posted = fetcher.mock.calls
+		.filter( ( call ) => String( call[ 0 ] ).endsWith( '/cart/add-item' ) )
+		.map( ( call ) => JSON.parse( String( call[ 1 ]?.body ) ) );
+	expect( posted ).toEqual( [ { id: 7, quantity: 1 } ] );
+} );
+
+test( 'a line already above the scheme quantity is left alone and counted added', async () => {
+	const fetcher = cartFetch( [ { id: 7, quantity: 5 } ], new Set(), [
+		{ id: 7, quantity: 5 },
+	] );
+	const statuses = new Map< number, AddStatus >();
+	const complete = await storeClient( '/wp-json/', fetcher ).addAll(
+		[ { productId: 7, quantity: 2 } ],
+		( id, status ) => statuses.set( id, status )
+	);
+	expect( complete ).toBe( true );
+	expect( statuses.get( 7 ) ).toBe( 'added' );
+	const posted = fetcher.mock.calls.filter( ( call ) =>
+		String( call[ 0 ] ).endsWith( '/cart/add-item' )
+	);
+	expect( posted ).toHaveLength( 0 );
 } );
 
 test( 'a sent line the draft does not bring up to the scheme quantity stays unverified', async () => {
