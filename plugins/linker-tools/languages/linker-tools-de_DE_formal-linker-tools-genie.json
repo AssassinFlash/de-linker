@@ -46,13 +46,13 @@
 			"Open the configurator": [ "Konfigurator öffnen" ],
 			"View your inquiry": [ "Anfrage ansehen" ],
 			"Helpful": [ "Hilfreich" ],
-				"Not helpful": [ "Nicht hilfreich" ],
-				"Open full page": [ "Vollständige Seite öffnen" ],
-				"Conversations": [ "Gespräche" ],
-				"New conversation": [ "Neues Gespräch" ],
-				"Close sidebar": [ "Seitenleiste schließen" ],
-				"Close": [ "Schließen" ],
-				"No earlier conversation.": [ "Kein früheres Gespräch." ]
+			"Not helpful": [ "Nicht hilfreich" ],
+			"Open full page": [ "Vollständige Seite öffnen" ],
+			"Conversations": [ "Gespräche" ],
+			"New conversation": [ "Neues Gespräch" ],
+			"Close sidebar": [ "Seitenleiste schließen" ],
+			"Close": [ "Schließen" ],
+			"No earlier conversation.": [ "Kein früheres Gespräch." ]
 		}
 	}
 }
