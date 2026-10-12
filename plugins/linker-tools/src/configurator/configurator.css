@@ -972,14 +972,15 @@
  * CSS: docs/acceptance/2026-10-12/visual-round2/proposals/README.md), landed
  * exactly as trialled:
  *   D1: ≥1200px the design report's label/value rows run in two columns with
- *       a 56px gutter (measured on the trial: the seven row blocks shrink
+ *       a 56px gutter (measured on the trial: the six row blocks shrink
  *       1275px → 1008px); below 1200px, and on the phone layout above,
  *       nothing changes.
  *   D2: ≤860px the three-step nav pins under the site header while the
- *       single-page flow scrolls (the header is 89px tall, hence top: 89px;
- *       the -8px top margin cancels the 8px top padding, so the flow does
- *       not shift). Desktop keeps the scrolling nav — only the phone was
- *       trialled and approved.
+ *       single-page flow scrolls (the header is 89px tall, hence top: 89px).
+ *       The −8px top margin against the 8px paddings keeps the bar's own
+ *       content where it was; below the bar the flow gains 16px — the bar is
+ *       16px taller and its 24px bottom margin is gone. Desktop keeps the
+ *       scrolling nav — only the phone was trialled and approved.
  */
 @media (min-width: 1200px) {
 	[data-linker-app="configurator"] .linker-report__rows {
