@@ -135,4 +135,25 @@ final class LabelsTest extends TestCase {
 			)
 		);
 	}
+
+	/**
+	 * The draft page gets its own heading; the cart surface's title is not the one shown.
+	 */
+	public function test_draft_heading_prints_solution_draft(): void {
+		WP_Mock::passthruFunction( 'esc_html__' );
+		WP_Mock::userFunction( 'is_cart' )->andReturn( true );
+
+		$this->expectOutputString( '<h1 class="sf-cart-title">Solution draft</h1>' );
+		( new Labels() )->draft_heading();
+	}
+
+	/**
+	 * A page that is not the draft gets no heading from this callback.
+	 */
+	public function test_draft_heading_leaves_other_pages(): void {
+		WP_Mock::userFunction( 'is_cart' )->andReturn( false );
+
+		$this->expectOutputString( '' );
+		( new Labels() )->draft_heading();
+	}
 }

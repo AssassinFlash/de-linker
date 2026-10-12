@@ -46,6 +46,7 @@ final class Module {
 		add_filter( 'the_title', array( $this->labels, 'page_title' ), 5, 2 );
 		add_filter( 'document_title_parts', array( $this->labels, 'document_title' ) );
 		add_filter( 'woocommerce_get_breadcrumb', array( $this->labels, 'breadcrumb' ) );
+		add_action( 'woocommerce_before_cart', array( $this->labels, 'draft_heading' ), 0 );
 
 		add_filter( 'woocommerce_date_format', array( $this->formats, 'wc_date_format' ) );
 		add_filter( 'wc_get_price_decimal_separator', array( $this->formats, 'decimal_separator' ) );

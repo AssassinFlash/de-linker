@@ -3,8 +3,11 @@
  *
  * "Add all" adds each line, then reads the draft back and compares quantities:
  * a line counts as added only when the draft shows it (docs/specs/14 "走 Store
- * API 并读回"). Product display data is asked for in the page's language
- * (`?lang=`, linker-i18n's RestLang; the default is English).
+ * API 并读回"). A line the draft already holds at the scheme quantity is not
+ * sent again: the live planner records a written line and leaves it out of the
+ * next add, and the Store API adds onto an existing line rather than setting
+ * it. Product display data is asked for in the page's language (`?lang=`,
+ * linker-i18n's RestLang; the default is English).
  */
 
 /**
@@ -88,7 +91,13 @@ export function storeClient(
 				return false;
 			}
 			const sent = new Set< number >();
+			const held = new Set< number >();
 			for ( const line of lines ) {
+				const already = before.quantities.get( line.productId ) ?? 0;
+				if ( already >= line.quantity ) {
+					held.add( line.productId );
+					continue;
+				}
 				try {
 					const response = await fetcher( `${ base }/cart/add-item`, {
 						method: 'POST',
@@ -99,7 +108,7 @@ export function storeClient(
 						},
 						body: JSON.stringify( {
 							id: line.productId,
-							quantity: line.quantity,
+							quantity: line.quantity - already,
 						} ),
 					} );
 					if ( response.ok ) {
@@ -115,19 +124,21 @@ export function storeClient(
 			try {
 				after = await cart();
 			} catch {
+				held.forEach( ( id ) => onStatus( id, 'added' ) );
 				sent.forEach( ( id ) => onStatus( id, 'unverified' ) );
 				return false;
 			}
-			let complete = sent.size === lines.length;
+			let complete = sent.size + held.size === lines.length;
 			for ( const line of lines ) {
+				if ( held.has( line.productId ) ) {
+					onStatus( line.productId, 'added' );
+					continue;
+				}
 				if ( ! sent.has( line.productId ) ) {
 					continue;
 				}
-				const expected =
-					( before.quantities.get( line.productId ) ?? 0 ) +
-					line.quantity;
 				const shown = after.quantities.get( line.productId ) ?? 0;
-				if ( shown >= expected ) {
+				if ( shown >= line.quantity ) {
 					onStatus( line.productId, 'added' );
 				} else {
 					onStatus( line.productId, 'unverified' );

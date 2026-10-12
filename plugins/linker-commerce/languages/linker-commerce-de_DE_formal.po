@@ -2052,6 +2052,7 @@ msgstr ""
 "für die weiteren in unserer [privacy_policy] beschriebenen Zwecke."
 
 #: includes/Vocabulary/Labels.php:131
+#: includes/Vocabulary/Labels.php:150
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 
