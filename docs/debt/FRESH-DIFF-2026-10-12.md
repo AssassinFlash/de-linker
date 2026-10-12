@@ -108,3 +108,85 @@ H-1 的五处是**同一个未解释营销图片差异类别**，不是五个已
 - `sources/capture-original.mjs`、`freshdiff-original.py`、`capture-original.log`：失败线已有脚本与成功进度，**不声称已修、可无期限顺跑**。
 
 后续只在有相关实现/assembly 变更时更新该面的证据；当前以这份明确不完整的成果交回，停止新采集与产品变更。**本轮像素门未通过、完整 Spec/Standards 与当前产品验收未完成；docs PR 的 CI 绿也不能改变这个结论。**
+
+## 7. 续跑（同日，从检查点接着拍）
+
+上一节是停止续拍时的交回。本节是之后按同一协议把 56 个状态拍完的记录。**不覆盖 §1–§6 的原图、原计数、原脚本。**不合并，不宣称整站通过。登录后账号、有内容草稿、表单提交、发送后确认、Proforma 下载、点击与其它交互仍未测。
+
+### 7.1 续跑条件
+
+| 项 | 实测 |
+|---|---|
+| worktree / HEAD | 续跑开始时 `40d5cb335e61917a2bebce26954298d20c67324f`，仍是 `research/debt-freshdiff` |
+| 实例 | `t112` / `http://127.0.0.1:8978` 仍是 14:52 拉起的 PHP 进程；续跑前 `curl -sI` 首页 200。未 `just up`、未 reset、未重装 snapshot |
+| 浏览器 | 树内 `plugins/linker-tools` 的 Playwright，`channel: 'chromium'`，启动读到 `156.0.8078.4`。两侧同一 launch、独立匿名 context |
+| 协议 | 视口 1440×900 / 390×844，URL 带 `cbq`，注入禁动画 CSS，`document.fonts.ready`，滚动触发 lazy，再等图片，全页 PNG。无掩膜、无平移 |
+| 原证据 | `docs/debt/captures/home-en-1440-*.png` SHA-256 仍是 `fcabfefb55d87ccf…` / `b6fa300fc203bb39…`，文件时间仍是 15:08。`--resume` 跳过已有成对 PNG |
+| 脚本窄修 | 原 `capture.mjs:107-113` 在 `complete && naturalWidth===0` 时只挂未来的 load/error，事件已发生则永不返回。续跑脚本改为：已 `complete` 的图直接 decode-or-resolve，并加 15 秒上限。只改这一处等待，外加 `--resume` 与补全的 URL 表。副本：`sources/capture-resume.mjs`。原 `sources/capture-original.mjs` 未改 |
+
+冒烟：修完后单独跑 `home-en-390`，两侧都写出 PNG（live/t112 均为 390×8827），进程以 `done` 退出。这证明死等已解开，不证明像素通过。
+
+### 7.2 56 状态账本
+
+符号：`FAIL` = 本轮真实跑过，未过像素门。`PASS` 要求原始差异像素 = 0 且页高差 = 0。**PASS = 0。**数字来自 `python3 freshdiff.py`（threshold 0，无掩膜），摘要在 `analysis/resume-summary.json`；DOM 与最终 URL 在 `captures/dom-counts-resume.json`。15:08 的 `captures/dom-counts.json` 仍只含首页 EN 1440。
+
+| 面 | EN 1440 | EN 390 | DE 1440 | DE 390 |
+|---|---|---|---|---|
+| home | FAIL 1,039,251 / 8.73% / Δh 0 | FAIL 250,156 / 7.27% / Δh 0 | FAIL 空壳 | FAIL 空壳 |
+| Solution draft（`/cart/`） | FAIL 890,752 / 64.77% / Δh −232 | FAIL 302,445 / 71.47% / Δh −296 | FAIL 空壳 | FAIL 空壳 |
+| 询盘入口（`/proforma-request/`） | FAIL 971,154 / 63.38% / Δh +78 | FAIL 366,166 / 84.58% / Δh +178 | FAIL 空壳 | FAIL 空壳 |
+| account 登录页 | FAIL 1,384,657 / 65.41% / Δh +243 | FAIL 405,286 / 68.10% / Δh +632 | FAIL 空壳 | FAIL 空壳 |
+| about | FAIL 847,364 / 6.38% / Δh 0 | FAIL 176,011 / 4.28% / Δh 0 | FAIL 空壳 | FAIL 空壳 |
+| contact | FAIL 3,834,460 / 84.45% / Δh −371 | FAIL 568,872 / 79.49% / Δh −508 | FAIL 空壳 | FAIL 空壳 |
+| installer | FAIL 846,797 / 6.29% / Δh 0 | FAIL 207,326 / 5.14% / Δh 0 | FAIL 空壳 | FAIL 空壳 |
+| services | FAIL 4,530,082 / 42.15% / Δh +14 | FAIL 2,507,621 / 66.67% / Δh +223 | FAIL 空壳 | FAIL 空壳 |
+| blog index | FAIL 244,567 / 2.82% / Δh 0 | FAIL 180,877 / 4.24% / Δh 0 | FAIL 重定向 | FAIL 重定向 |
+| blog archive（`/category/system-design/`） | FAIL 142,184 / 3.55% / Δh 0 | FAIL 26,526 / 1.85% / Δh 0 | FAIL 重定向 | FAIL 重定向 |
+| blog single | FAIL 2,158,743 / 35.47% / Δh −175 | FAIL 911,790 / 38.69% / Δh −267 | FAIL 空壳 | FAIL 空壳 |
+| search（`?s=PV`） | FAIL 2,962,800 / 59.69% / Δh +657 | FAIL 1,403,752 / 60.01% / Δh +1,671 | FAIL 空壳 | FAIL 空壳 |
+| 404 | FAIL 408,088 / 10.01% / Δh 0 | FAIL 316,286 / 17.66% / Δh 0 | FAIL 空壳 | FAIL 空壳 |
+| compare | FAIL 1,359,146 / 89.46% / Δh −59 | FAIL 412,950 / 88.68% / Δh −33 | FAIL 空壳 | FAIL 空壳 |
+
+**56 = 28 个英文成对 FAIL + 24 个德语空壳 FAIL + 4 个德语重定向 FAIL。PASS 0。**
+
+德语 URL 用的是线上 hreflang，不是猜的 slug：`/de/warenkorb/`、`/de/proforma-anfrage/`、`/de/mein-konto/`、`/de/ueber-uns/`、`/de/kontakt/`、`/de/fuer-installateur/`、`/de/service-support/`、`/de/blog/`、`/de/category/system-design/`、`/de/hybridwechselrichter-vs-ac-speicher/`、`/de/?s=PV`、`/de/audit-404-20261012/`、`/de/compare-products/`。
+
+t112 只读核验（WP-CLI，未写）：`language` 词项 `en` count=161、`de` count=0；`pll_get_post_translations` 对 home/cart/about/contact/blog 等只有 `en`。所以：
+
+- **空壳**：t112 停在所请求的 `/de/…`，但渲染的是 “Sorry, no posts matched your criteria.”（首页滚动高 66/90，其余多为 185，search 为 42）。这是实例没有德语内容，不是采集超时。
+- **重定向**：`/de/blog/` 与 `/de/category/system-design/` 被 Polylang 301 到英文 `/blog/`、`/category/system-design/`（最终 URL 记在 `dom-counts-resume.json`）。英文页不能冒充德语对，记 FAIL。
+
+登录态、空/有内容草稿、表单校验、提交后确认、Proforma 下载、点击，本轮都没有跑。不把访客静态页的 FAIL 说成这些状态的结论。
+
+原脚本里的 EPC、FAQ、solution、PDP、products 也拍了，同样不是像素 PASS（例如 `faqdl-en-1440` 页高 5167→28287）。它们不在 56 的分母里。
+
+### 7.3 首页 EN 1440 营销图归因
+
+§4 的 H-1 当时没有资源测量。续跑补了测量，对象仍是 15:08 那一对原图，没有重拍。
+
+| 测量 | 结果 |
+|---|---|
+| 30 个 `<img>` 的文件名 | 两侧一一相同（`de-linker-logo-1.webp`、`linker-one-stand-for-solar-and-storage.webp` 等） |
+| 抽查 6 个 WebP 的字节 | SHA-256 相同。例：`linker-one-stand-for-solar-and-storage.webp` 两侧都是 `4f57199e043aec96…`，197,622 字节，`WEBPVP8`，1280×720 |
+| 同一次 Chromium 里的绘制框 | 30/30 的 `getBoundingClientRect` 相同；`devicePixelRatio` 两侧都是 1；UA 都是 HeadlessChrome/156 |
+| 浏览器 canvas 像素 | 同一 WebP，live URL 与 t112 URL 的 `getImageData` 差异为 0 |
+| Pillow 解码 | 两个本地副本差异为 0 |
+| 全页 PNG 幅度 | 1,039,251 中 **994,967（95.7%）通道差正好是 1**；`mag>=10` 只有 1,846，其中 1,663 在 y=21–66 |
+
+结论：营销图区的成片差异**不是换文件、不是 srcset 选了另一张、不是裁切框不同、不是解码像素不同**。canvas 与截图像素不一致，且同一 URL 连拍两次截图可以相同、换 host 就出 1 级差——差在 Chromium 把页面合成进 PNG 的那一步，不在图文件。未改浏览器、未重建环境；这个合成差修不掉，也不把它掩掉。1 级差仍然算 FAIL。
+
+结构差（`mag>=10`）另计，不混进营销图：
+
+- **页头 y=21–66，1,663 px。**线上 `header-portal.js`（`terravolt-b2b-core` 0.12.413）在 `.tv-desktop-actions` 里插入 cart 与 account，并画出 EN/DE。t112 该插件 inactive，槽里只有 LC 模板的 Search 链接，文字 “Search” 可见，所以是一颗宽按钮而不是 46px 图标。这是控件缺失，不是图片压缩。390 页头同样少 EN/DE（y=17–62）。
+- **首页 DOM。**h2 少的是 “Linker Advisor”；h3 少的是 “Get help with your solar project”；form 少的是 `lia-form`；button 41→29 含线上后注入的 “Sign in”。与 15:08 计数一致，现在对得上节点，不再只是数字。
+- **390 的 y=774–823。**`#testimonials.is-stor-carousel` 的 inline 脚本用 `setInterval` 每 4 秒换帧，只在 `prefers-reduced-motion: reduce` 时停止。注入 `animation: none` 停不了它。两侧停在不同帧。这是协议没盖住的动态区，不是已批准的掩膜；像素仍算 FAIL。
+- **404 同高但仍有 10.01%。**卡片盒 `getBoundingClientRect` 两侧相同（x=130/531/931）。错位感来自 WebP 合成进 PNG 的同一类差，不是 DOM 位移已证。
+
+同高英文页里，`mag==1` 占原始差异的 88.5%–98.5%（about/installer/blog 与 home 同类）。页头带在这些页上重复出现。页高不同的英文页（cart、询盘入口、account、contact、services、blog single、search、compare）是版面差，不是 1 级合成差能解释的；本轮没有逐页改产品。
+
+### 7.4 仍未做
+
+- 未登录、未提交、未发信、未下 Proforma。
+- 未重建 t112，未补德语内容。德语 28 态因此停在空壳/重定向，不继续造页面。
+- 未把 1 级合成差修进浏览器或加掩膜。
+- 全页 diff PNG 留在工作区 `.scratch/debt-freshdiff/analysis-resume/`（约 6.5MB 可视化），不进本 PR；原图在 `.scratch/debt-freshdiff/captures/`（约 148MB），同样不进 PR。可复核的数字是 `analysis/resume-summary.json` 与 `captures/dom-counts-resume.json`。
