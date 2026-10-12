@@ -93,6 +93,7 @@ final class PendingGateTest extends TestCase {
 			WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
 			WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 			WP_Mock::userFunction( 'remove_all_actions' );
+			// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 			WP_Mock::expectActionAdded( 'woocommerce_account_content', array( new WP_Mock\Matcher\AnyInstance( PendingGate::class ), 'render' ), 1 );
 
 			( new PendingGate( new Approval() ) )->redirect();

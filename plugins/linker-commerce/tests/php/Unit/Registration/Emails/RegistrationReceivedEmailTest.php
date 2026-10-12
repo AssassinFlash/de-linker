@@ -71,8 +71,9 @@ final class RegistrationReceivedEmailTest extends TestCase {
 	 */
 	public function test_an_unknown_user_sends_nothing(): void {
 		$this->expect_action_on_any( Fields::REGISTERED_ACTION . '_notification', RegistrationReceivedEmail::class, 'trigger' );
-		WP_Mock::userFunction( 'get_userdata', array( 'return' => null ) );
-		( new RegistrationReceivedEmail( '/plugin/linker-commerce.php' ) )->trigger( 99 );
-		$this->assertTrue( true );
+			WP_Mock::userFunction( 'get_userdata', array( 'return' => null ) );
+			$email = new RegistrationReceivedEmail( '/plugin/linker-commerce.php' );
+			$email->trigger( 99 );
+			$this->assertSame( '', $email->get_recipient() );
 	}
 }
