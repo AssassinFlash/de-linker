@@ -1,0 +1,82 @@
+[
+  {
+    "mode": "app",
+    "pass": true,
+    "appLoads": 2,
+    "failures": 1,
+    "posts": [
+      {
+        "locale": "en",
+        "messages": [
+          {
+            "role": "user",
+            "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+          }
+        ],
+        "page": {
+          "type": "product"
+        }
+      },
+      {
+        "locale": "en",
+        "messages": [
+          {
+            "role": "user",
+            "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+          },
+          {
+            "role": "assistant",
+            "content": "Retry fixture answer."
+          },
+          {
+            "role": "user",
+            "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+          }
+        ],
+        "page": {
+          "type": "product"
+        }
+      }
+    ]
+  },
+  {
+    "mode": "dependency",
+    "pass": true,
+    "appLoads": 1,
+    "failures": 1,
+    "posts": [
+      {
+        "locale": "en",
+        "messages": [
+          {
+            "role": "user",
+            "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+          }
+        ],
+        "page": {
+          "type": "product"
+        }
+      },
+      {
+        "locale": "en",
+        "messages": [
+          {
+            "role": "user",
+            "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+          },
+          {
+            "role": "assistant",
+            "content": "Retry fixture answer."
+          },
+          {
+            "role": "user",
+            "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+          }
+        ],
+        "page": {
+          "type": "product"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,120 @@
+{
+  "base": "http://127.0.0.1:8984",
+  "phase": "normal-final",
+  "scope": "entry protocol only; REST fixtures, no model calls",
+  "results": [
+    {
+      "name": "en-1440-bubble",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "12px",
+        "maxHeight": "none",
+        "rect": [
+          1000,
+          547.421875,
+          420,
+          268.578125
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "surfaceToken": "#ffffff",
+        "lineToken": "#e2e5e5"
+      }
+    },
+    {
+      "name": "en-1440-pdp",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [
+        {
+          "locale": "en",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Old fixture question"
+            },
+            {
+              "role": "user",
+              "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+            }
+          ],
+          "page": {
+            "type": "product"
+          }
+        },
+        {
+          "locale": "en",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Old fixture question"
+            },
+            {
+              "role": "user",
+              "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+            },
+            {
+              "role": "assistant",
+              "content": "Entry fixture response."
+            },
+            {
+              "role": "user",
+              "content": "About GoodWe GW60K-STS-G10 (DLK-GOODWE-GW60KSTSG10): give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
+            }
+          ],
+          "page": {
+            "type": "product"
+          }
+        }
+      ],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "12px",
+        "maxHeight": "none",
+        "rect": [
+          1000,
+          365.4375,
+          420,
+          450.5625
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "surfaceToken": "#ffffff",
+        "lineToken": "#e2e5e5"
+      }
+    },
+    {
+      "name": "en-390-shop",
+      "pass": true,
+      "appLoads": 1,
+      "posts": [],
+      "skin": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(226, 229, 229)",
+        "radius": "14px",
+        "maxHeight": "607.68px",
+        "rect": [
+          20,
+          443.421875,
+          350,
+          316.578125
+        ],
+        "viewport": [
+          390,
+          844
+        ],
+        "surfaceToken": "#ffffff",
+        "lineToken": "#e2e5e5"
+      }
+    }
+  ]
+}
