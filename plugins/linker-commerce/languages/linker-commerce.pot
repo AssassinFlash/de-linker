@@ -2645,3 +2645,19 @@ msgstr ""
 #: includes/Presentation/CatalogShortcodes.php:1305
 msgid "Selected model"
 msgstr ""
+
+#: includes/Registration/Emails/RegistrationReceivedEmail.php
+msgid "Registration received"
+msgstr ""
+
+#: includes/Registration/Emails/RegistrationReceivedEmail.php
+msgid "Sent to the customer when the account is registered and waiting for review."
+msgstr ""
+
+#: includes/Registration/Emails/RegistrationReceivedEmail.php
+msgid "We received your partner registration"
+msgstr ""
+
+#: templates/emails/linker-registration-received.php
+msgid "We received your partner registration."
+msgstr ""

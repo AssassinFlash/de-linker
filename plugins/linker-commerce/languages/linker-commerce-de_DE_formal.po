@@ -3303,3 +3303,19 @@ msgstr "Hilfe bei der Auswahl?"
 #: includes/Presentation/CatalogShortcodes.php
 msgid "Previous"
 msgstr "Zurück"
+
+#: includes/Registration/Emails/RegistrationReceivedEmail.php
+msgid "Registration received"
+msgstr "Anmeldung eingegangen"
+
+#: includes/Registration/Emails/RegistrationReceivedEmail.php
+msgid "Sent to the customer when the account is registered and waiting for review."
+msgstr "Geht an den Kunden, wenn das Konto registriert ist und auf die Prüfung wartet."
+
+#: includes/Registration/Emails/RegistrationReceivedEmail.php
+msgid "We received your partner registration"
+msgstr "Wir haben Ihre Partner-Anmeldung erhalten"
+
+#: templates/emails/linker-registration-received.php
+msgid "We received your partner registration."
+msgstr "Wir haben Ihre Partner-Anmeldung erhalten."

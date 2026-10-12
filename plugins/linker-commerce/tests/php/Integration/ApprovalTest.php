@@ -10,8 +10,10 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Account\PendingGate;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Inquiry\ProformaGateway;
+use Linker\Commerce\Presentation\LoginGate;
 use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Registration\Approval;
@@ -356,10 +358,70 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->assertFalse( $fields->validate( new \WP_Error() )->has_errors() );
 		$fields->save( $id );
 
-		$this->assertSame( Approval::PENDING, ( new Approval() )->status( $id ), 'The account waits for the team' );
-		$this->assertNotSame( '', get_user_meta( $id, 'locale', true ), 'The customer\'s language is recorded' );
-		$this->assertTrue( ( new Approval() )->is_subject( $id ) );
-		$this->assertFalse( ( new Approval() )->sees_prices( $id ) );
+			$this->assertSame( Approval::PENDING, ( new Approval() )->status( $id ), 'The account waits for the team' );
+			$this->assertNotSame( '', get_user_meta( $id, 'locale', true ), 'The customer\'s language is recorded' );
+			$this->assertTrue( ( new Approval() )->is_subject( $id ) );
+			$this->assertFalse( ( new Approval() )->sees_prices( $id ) );
+	}
+
+		/**
+		 * A pending sign-in is held on the review page, including a direct request
+		 * for the inquiries and the documents. Approving opens those pages again.
+		 * A restricted account keeps the workplace and reads its own gate, with
+		 * the reason, on the Proforma request. A rejection cannot sign in, and
+		 * the reason is in the email.
+		 */
+	public function test_a_pending_sign_in_is_held_until_approval(): void {
+		delete_option( Throttle::OPTION );
+		$customer = $this->customer();
+		update_user_meta( $customer->get_id(), 'locale', 'en_US' );
+		$this->capture_mail( (string) $customer->get_billing_email() );
+
+		$this->set_state( $customer, Approval::PENDING );
+		$this->as_user( $customer->get_id() );
+		$gate = new PendingGate( new Approval(), new LoginGate( new Approval() ) );
+		$this->assertTrue( $gate->holds(), 'A pending sign-in is held.' );
+		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Pending sees no prices.' );
+		$this->assertArrayNotHasKey(
+			ProformaGateway::ID,
+			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
+			'Pending may not send an inquiry.'
+		);
+		ob_start();
+		$gate->render();
+		$review = (string) ob_get_clean();
+		$this->assertStringContainsString( 'Your account is under review', $review, 'The review page is what a pending sign-in reads.' );
+
+		$this->set_state( $customer, Approval::APPROVED );
+		$this->as_user( $customer->get_id() );
+		$this->assertFalse( $gate->holds(), 'Approved is no longer held.' );
+		$this->assertTrue( ( new CommerceState() )->visitor_sees_prices(), 'Approved sees prices.' );
+		$this->assertArrayHasKey(
+			ProformaGateway::ID,
+			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
+			'Approved may send an inquiry.'
+		);
+
+		$this->set_state( $customer, Approval::RESTRICTED, 'Net prices are for businesses.' );
+		$this->as_user( $customer->get_id() );
+		$this->assertFalse( $gate->holds(), 'Restricted keeps the workplace.' );
+		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Restricted sees no prices.' );
+		$this->assertStringContainsString( 'Net prices are for businesses.', ( new LoginGate( new Approval() ) )->html() );
+
+		$this->set_state( $customer, Approval::REJECTED, 'We could not verify the business.' );
+		wp_set_password( self::PASSWORD, $customer->get_id() );
+		$sign_in = wp_signon(
+			array(
+				'user_login'    => $customer->get_username(),
+				'user_password' => self::PASSWORD,
+				'remember'      => false,
+			)
+		);
+		$this->assertInstanceOf( WP_Error::class, $sign_in );
+		$this->assertSame( 'linker_approval_rejected', $sign_in->get_error_code() );
+		$captured = $this->to_address();
+		$this->assertNotEmpty( $captured, 'The rejection mailed the customer.' );
+		$this->assertStringContainsString( 'We could not verify the business.', $captured[ count( $captured ) - 1 ]['body'] );
 	}
 
 	/**
@@ -396,13 +458,13 @@ final class ApprovalTest extends IntegrationTestCase {
 		return WC()->payment_gateways()->payment_gateways();
 	}
 
-	/**
-	 * Applies one action as the admin-post handler does.
-	 *
-	 * @param WC_Customer $customer The account.
-	 * @param string      $status   The state to set.
-	 * @param string      $reason   The reason, required for restrict and reject.
-	 */
+		/**
+		 * Applies one action as the admin-post handler does.
+		 *
+		 * @param WC_Customer $customer The account.
+		 * @param string      $status   The state to set.
+		 * @param string      $reason   The reason, required for restrict and reject.
+		 */
 	private function set_state( WC_Customer $customer, string $status, string $reason = '' ): void {
 		wp_set_current_user( 1 );
 		$this->assertTrue( ( new Approval() )->set( $customer->get_id(), $status, $reason ), "The {$status} action was written" );
