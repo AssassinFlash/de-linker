@@ -1,7 +1,7 @@
 # #16 验收证据索引（2026-10-11）
 
-**状态口径：复刻未达像素门（判决第 3 轮 9 项未过，见 §7）；视觉证据已归档、多模态终判留评审线；
-e2e 套件未合并故未运行（pending，见 §7）。** 本索引不含任何通过性结论。
+**状态口径：像素门未证，保持未证（本索引的页级数字是 2026-10-11 工作包实测，不是终局过门；见 §7 与 A3）。视觉证据已归档。
+e2e 套件已在 main（`tests/e2e/`，PR #96），但本索引记录的那次运行没有跑它，不把「套件存在」写成「套件已通过」。** 本索引不含任何通过性结论。
 
 工作树 `~/Documents/de-linker-worktrees/de-linker-t16`（分支 `t16/review-acceptance`）、
 实例 t16（127.0.0.1:8924 / engine :8925 / genie :8926）。
@@ -16,7 +16,7 @@ e2e 套件未合并故未运行（pending，见 §7）。** 本索引不含任�
 | 渲染断言 | 同上 17 URL grep | `[woocommerce_`=0、`[linker_`=0、`via.placeholder`=0、字面 `&lt;p&gt;`=0（见 §4） |
 | WindPress 编译 | `just windpress-compile t16` | 通过（缓存含锚类；上一轮 1791726070） |
 
-e2e（新套件）：**未运行**——`t16e/e2e-lane` 已有 3 个提交（16d8212 tests/e2e、479bdd9 Genie 线程恢复、3677910 实例与判分）但**无 PR、未合并**（`gh pr list` 无对应项；`origin/main` 无 `tests/e2e/`）。按主会话裁决 pending。
+e2e（新套件）：**本表那次没有运行。** 2026-10-11 写这句话时，`t16e/e2e-lane` 无 PR、`origin/main` 无 `tests/e2e/`。该事实已过期：套件随 PR #96 进入 main（`tests/e2e/specs/` 现有 genie、commerce、configurator、chrome、products、genie-dock、i18n），`just check` 含 `e2e-check`（类型与格式），`just e2e <instance>` 才是对运行中实例的 Playwright。本次回写没有跑 `just e2e`，所以套件仍是**未在本索引的验收里执行**，不是通过。
 
 ## 2. 视觉归档索引（截图 × 视口）
 
@@ -76,16 +76,28 @@ design-canvas（301）、entwurfsflache（301）——**全部 `[woocommerce_`=0
 
 ## 7. 未解问题清单
 
-1. **像素门未过**（主要项）：PDP 1440 28.7–31.1%、390 67.3–69.4%；shop 43.4–44.5%/49.5%；
-   archive 34.1–41.6%/46.8–54.7%；ETA 31.4/38.3%。9 项逐项证据与 5 条块差杠杆见
-   `working/replica-r4/EVIDENCE.md` §3/§4。
-2. **e2e 未运行**：套件未合并（见 §1）；按主会话裁决 pending。
-3. **Genie 入口（商城 chips）**：live 4 条 vs t16 2 条，数量与文案未对齐（§3）。
-4. `design-canvas`/`entwurfsflache`：t16 **301 → /linker-planner/?step=roof**（live 保留独立
-   Site-Detail 页）——属「工具页重设计」候选，需评审线按允许偏差清单裁定。
-5. 非像素缺口：商城家族分组（65 families/24 每页 vs 104/16）、SAJ 描述区 blocks、
-   移动端 390 布局（页高差约 1,100px）、页头 chrome 位次（搜索/购物车/账户/EN-DE）。
-6. 缩略图 srcset 为已声明 DOM 偏差项（像素已对齐）。
+1. **像素门未证，保持未证。** 本包页级数字（PDP 1440 28.7–31.1%、390 67.3–69.4%；shop 43.4–44.5%/49.5%；archive 34.1–41.6%/46.8–54.7%；ETA 31.4/38.3%）是 2026-10-11 工作包实测，不是一份按掩膜与批准变更分解过的终局过门包。后来的成对截图（`.scratch/t16-verdict/final4/`，12 对）也不替代该判定。不把本行改成 PASS，也不用后来的代码改动倒写成「这些百分比今天仍是页面的差」。9 项逐项证据与 5 条块差杠杆见 `working/replica-r4/EVIDENCE.md` §3/§4。
+2. **e2e：套件已在 main，本索引的运行没有执行它。** 「套件未合并」是过期字样，更正见 §1。未跑 `just e2e`，无通过结论。
+3. **Genie 入口（商城 chips）**：本包实测 live 4 条 vs t16 2 条。其后 main 的目录芯片是 Filters（模板按钮）+ Ask Genie（`Entries::chips_for()` 的 category 组一条）。live 4 条里的 Batch import / Nameplate photo 对应业主终裁不做的两项（面清单 GAP-11/14），不是漏建；本行不改写成像素对齐。
+4. `design-canvas`/`entwurfsflache`：t16 **301 → /linker-planner/?step=roof**。这是本站自己退役的工具入口，现已在 `legacy-redirects.json` 的 `retired_tools`（5 条）里，由 `Redirects` 分发。live 当时保留独立 Site-Detail 页；是否算允许的工具页重设计，仍按允许偏差清单，不在本次改成已验收。
+5. 非像素项的去向（实现存在 ≠ 像素已证）：商城家族分组现由 `[linker_catalog_families]` 按每页 24 个家族输出（`PER_PAGE_FAMILIES`）；SAJ 描述区有 `.pdp-feature` / `.pdp-overview-secondary` 的标记与样式；移动端 390 的购买栏拆分写在 `pdp.css` 的 `max-width: 860px`（`display: contents`），**终局像素判定仍待核（A4），本索引不写 PASS**；页头 chrome 位次归页头复刻线复测（A1-retest），PR #119 的功能核对通过、像素门其验收记录自己写明 NOT PASS / not certified。
+6. 缩略图 srcset 为已声明 DOM 偏差项（本包记录像素已对齐）。该声明的范围是本包当时的测量，不是新的像素门证书。
+
+## 9. 本地对比页特色图（C8，2026-10-13，t110）
+
+对比页所需的三件商品是规格里那次线上对照用的 `?ids=6521,6522,6523`（`docs/specs/19-tool-pages.md` §1）。查的是实例 t110（`127.0.0.1:8975`，`~/de-linker-local/t110/wp.sh`），不是生产。
+
+查之前：`wp_postmeta` 里 `_thumbnail_id` 行数为 0；212 个已发布商品都没有这一行，三件对比商品的 meta 读回也是空（`wp post meta get` 退出码 1）。不是值为 0 的行，是行不存在——`get_the_post_thumbnail_url` 同样拿不到图。
+
+按装库流程补回的是快照 `~/de-linker-data/20261011-1732/db.sql.gz` 里这三行，附件在本实例存在且文件在盘上，然后 `wp post meta update`：
+
+| post | 快照 `_thumbnail_id` | 读回 | 文件 |
+|---|---|---|---|
+| 6521 | 5887 | 5887 | `2026/09/goodwe-esa-6-battery-module-studio-logo-20260928.png`（82,293 字节） |
+| 6522 | 5934 | 5934 | `2026/09/goodwe-bat-d-g20-plate-20260928.png`（39,199 字节） |
+| 6523 | 6500 | 6500 | `2026/10/goodwe-esa-3-10kw-eha-g20-cover-20261007-01.png`（577,304 字节） |
+
+`get_the_post_thumbnail_url` 对这三件返回上述 URL。其余已发布商品仍缺这一行（补完后 206）。本次只补对比页点名的三件，没有跑全库 `tools/migrate/13-media-meta.py apply`。
 
 ## 8. 复现命令
 

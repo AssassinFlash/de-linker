@@ -1,12 +1,16 @@
 # 全系统面对照（旧系统 → 新仓库）
 
-审计日期 2026-10-11。枚举方法：旧系统面从代码（旧仓库 `refs/landed/chain-tip` = f007a9dd，经 `git show` 只读）与线上只读 GET（sitemap en+de、/products/、/contact/、/faq-download/、/linker-advisor/、/compare-products/、产品页）穷举；新仓库状态从 main `2eb8da4` 代码与 docs/specs 判定。本清单是 #16/#17 验收与切换清单的骨架，与《2026-10-11 全拆审计》（旧代码存活）互补：那份管"代码是不是抄的"，这份管"面有没有丢"。
+审计日期 2026-10-11。枚举方法：旧系统面从代码（旧仓库 `refs/landed/chain-tip` = f007a9dd，经 `git show` 只读）与线上只读 GET（sitemap en+de、/products/、/contact/、/faq-download/、/linker-advisor/、/compare-products/、产品页）穷举；新仓库状态初判自 main `2eb8da4` 代码与 docs/specs。本清单是 #16/#17 验收与切换清单的骨架，与《2026-10-11 全拆审计》（旧代码存活）互补：那份管"代码是不是抄的"，这份管"面有没有丢"。
+
+**状态回写（2026-10-13，对照 main `c51cb2d`）**：正文各行是审计当日的快照。终局处置以文末「GAP 状态回写」为准，三种状态不混用——**已实现**（代码在 main，本地实例随当前插件生效）、**已预建**（工件在仓库，生产要等 #17 才装上）、**切换后生效**（同一工件，线上今天仍是旧行为；issue #17 仍 OPEN）。回写不是像素验收，也不是整票关闭。
 
 **业主指令背景（2026-10-11）**：全面重构不能依赖业主提名；穷举由工程线负责，业主只答业务事实。
 
 ## 0. 本轮抽验记录（主会话独立复核）
 
-- GAP-6 证实：旧 `legacy-redirects.php` 872 行 / **305 条映射**；新 `Redirects.php` 仅 **5 条**。
+抽验时的事实保留。终局计数见文末 GAP-6，不再以「仅 5 条」为当前状态。
+
+- GAP-6 证实（审计当日）：旧 `legacy-redirects.php` 872 行 / **305 条映射**；新 `Redirects.php` 当时仅 **5 条**。
 - GAP-7 证实：新树生产代码零 `ld+json` 输出（命中全在 node_modules 三方包）。
 - GAP-19 证实：新 mu 仅 3 件本地开发件（isolation/login/rewrites），无错误记录对应物。
 - GAP-2 证实：线上德语产品页实测含 scenario/Anwendung 段（grep 命中 3+2 处）；新模板与 ProductView 零场景渲染。
@@ -22,7 +26,7 @@
 | 产品页 105 ×2 语 | 图库/正文/参数/FAQ/文档/**场景段**/BOM 抽屉入口 | 图值 #7、参数 linker_specs、FAQ #15、文档、按钮价格 #11、Genie 芯片；**场景段无渲染** | 旧 product-scenarios.php:5–10；本轮线上实测 | **GAP-2 → #16 逐区块对账**（产品页裁定=复刻线上设计） |
 | compare 独立页 /compare-products/ | compare-products.php + compare-selection.js（线上 200，含 data-compare） | 页面随快照 200 但交互 JS 属旧插件，切换即死；新有 Genie ability + 产品页 Compare 芯片 | 旧 includes/compare-products.php；新 Abilities/CompareProducts.php | **GAP-3 → 票 #66：重建独立对比页（业主 2026-10-11 改裁定：301 作废，独立页设计逻辑成立）** |
 | FAQ 页 /faq-download/ | linker-ai 知识/文档工作台（线上实测 linker-ai-workspace）+ refdesk 问答 | 页面随快照 200，工作台 JS 属旧插件；#15 只做产品内 FAQ | 线上 GET；旧 reference-and-display.php:2500 | **GAP-4 → 票 B：改静态 FAQ/文档目录页**（Q&A 由 Genie search-knowledge 代偿，保 URL 与 SEO） |
-| /linker-advisor/ | Advisor 聊天整页（线上 linker-ai-assistant ×8） | Genie 为芯片+常驻 dock，无整页挂载，Redirects 无此路径 | Entries.php:29–32 | **GAP-5 → 票 B：301 至 /products/** |
+| /linker-advisor/ | Advisor 聊天整页（线上 linker-ai-assistant ×8） | 审计时：Genie 为芯片+常驻 dock，无整页挂载 | Entries.php:29–32 | **GAP-5**：审计处置是 301；业主 2026-10-12 改方案 A 后已实现为 Genie 全页工作区（见文末回写），不再 301 |
 | /design-canvas/、/quote-configurator/ | 旧独立工具页 | 301 → /linker-planner/ 已重建 | Redirects.php:33–39 | — |
 | /linker-planner/ 配置器 | 旧 planner 七条 design REST | 重建 #14（三屏+屋顶步+LoD2） | src/configurator/（15 文件） | — |
 | /cart/ → Lösungsentwurf | 旧 cart-render/cart-session | 重建：cart_page.html + Vocabulary 改名 | content/livecanvas/ | — |
@@ -126,7 +130,7 @@
 | 自助登录 | magic_login.py（审批后台用） | 本地 `just login`；线上无审批流 | 废弃-随审批 |
 | 日常内容运维工具 | audit_german_site 等 | tools/{pull,migrate,faq}；德语审计按需 | 按需 |
 | mu-plugin 遗留 | linker-i18n-mu-loader.php（删旧插件后无害空转） | #17 未列 | **切换卫生项 → #17**（顺带删除） |
-| SEO 重定向 304 条 | legacy-redirects.php（255 产品+31 分类+18 退役页，含旧 /checkout/） | Redirects.php 仅 5 条 | **GAP-6 → #17：三张表迁入，不补则切换当天旧外链全 404** |
+| SEO 重定向 | legacy-redirects.php（审计计数 255 产品+31 分类+18 退役页，含旧 /checkout/） | `data/legacy-redirects.json` 现为 **255 产品 + 31 分类 + 19 页路径 + 2 checkout slug + 5 retired_tools**（19 = 原 18 条退役页路径 + `/shop/`；2 = `checkout`/`kasse`；5 = 本站自己退役的工具入口）。`Redirects` 在插件注册时即分发 | **GAP-6：表已迁入插件（已实现）；线上旧外链要等 #17 切换后才由新插件应答（切换后生效）** |
 | 旧 design-engine VPS | services/design-engine | services/engine（重写）+ ops/release | 重建 |
 
 ## GAP 汇总（19 项终局处置）
@@ -155,5 +159,42 @@
 2. 线上 3 条活动 snippet（#27/#351/#372）未逐行展开；#17 step3 已要求切换时导出复核，若含未入本清单的面以导出为准。
 3. sitemap 只覆盖可索引 URL；noindex 面靠代码枚举，可能漏掉仅由主题/LC 模板承载的边缘模板。
 4. Woo core 能力按 Woo-first 原则视为不变项，未逐版本核对行为差异。
-5. 本表"已重建"以 main 2eb8da4 为准；#16/#17 实施后需增量复核。
+5. 正文各行的"已重建"以审计当日 main `2eb8da4` 为准。#16 及后续票的增量在文末「GAP 状态回写」（对照 main `c51cb2d`，2026-10-13）；#17 仍 OPEN，生产未切换。
 6. 旧 repo 一切以 `refs/landed/chain-tip`（f007a9dd）为准，未落地改动未审计。
+
+## GAP 状态回写（2026-10-13，main `c51cb2d`）
+
+对照的是仓库里的代码与规格，不是新的像素验收，也不是生产已切换。issue #17 仍 OPEN。计数来自 `plugins/linker-tools/data/legacy-redirects.json` 的键：`products` 255、`categories` 31、`pages` 19、`checkout.slugs` 2（`checkout`/`kasse`）、`retired_tools` 5。19 不是审计时写的 18：`/shop/` 跟 18 条退役页路径放在同一张 `pages` 表（`_source` 仍把 `/shop/` 单独说出）。
+
+### 已实现（代码在 main；本地实例装上当前插件即生效）
+
+- **GAP-1 搜索框 + `?s=` 范围**：`CatalogShortcodes` 输出 `#search-box`（`type="search"`），`CatalogSearchController` 注册 `linker/v1/catalog-search`，`SearchScope` 把未指名 post type 的站内搜索限定为 `product` 与 `post`。票 #68，PR #88。
+- **GAP-2 产品页场景段**：`[linker_pdp_scenes]` 由 `CatalogShortcodes::pdp_scenes()` 装配，`single_product.html` 在 `linker_commerce_pdp_has_scenes` 为真时渲染 `#fit`。票 #16，PR #62。渲染存在不等于像素门通过。
+- **GAP-3 独立对比页**：`ComparePage` + `content/livecanvas/compare_page.html`，地址 `/compare-products/`，选择态与 `?ids=` 回写在。票 #66，PR #91。本地特色图绑定另记在验收索引，不是本清单的生产结论。
+- **GAP-4 文档库页**：`/faq-download/` 由 LC 每页模板承接，`[linker_document_register]` / `[linker_product_answers]` 加冻结的下单前规则。票 #66，PR #91。
+- **GAP-5 Advisor 页**：审计处置「301 至 /products/」已被业主 2026-10-12 方案 A 取代。现为 Genie 全页工作区（`advisor_page.html` 印 `[linker_genie_workspace]`，`docs/specs/19-tool-pages.md` §2）；`Redirects` 不收 advisor 地址。PR #123。
+- **GAP-7 产品页 Product JSON-LD**：`Storefront\ProductSchema` 由 `linker-commerce` 的 `Plugin` 注册，无价格，品牌取产品自己的 `pa_brand`。票 #81，PR #92。SEO 插件那条写死品牌的 Product 模板仍要等切换退役，见下。
+- **GAP-8 联系表单**：`Contact\Form` 短代码 + `Handler` 的 `admin_post_linker_contact`，回执与团队信走既有邮件队列。票 #68，PR #88。不是旧的三条 REST。
+- **GAP-9 库存通道**：`POST linker/v1/stock` 已注册；无推送密钥时全部拒绝，切换时休眠、真 ERP 未接（`Stock\PushKey`）。票 #69，PR #87。通道在，实时库存没有接通。
+- **GAP-11 / GAP-14**：业主终裁不做，无实现。bulk order 不建；铭牌识别不建独立入口，留给以后的 Genie 图像输入。
+- **GAP-15**：审批三态与原因邮件（票 #73，PR #94）、每日摘要四块且空摘要照发（票 #74，PR #93）都在 main。正文「每日摘要 → 无 / GAP-15 裁定废弃」是翻案前的句子，以本行为准。生产调度未由本次核实，不写成已在线上发送。
+- **GAP-16 / GAP-18**：`Health\Monitor` 每日问 genie/engine 的 `/health`，失败才发一封团队信；`Genie\Retention` 清理超过 90 天的访客会话。票 #67，PR #89。
+- **GAP-17 商品文档维护入口**：`Admin\DocumentsMetaBox` 挂在标准商品编辑屏。票 #68，PR #88。
+- **商城家族分组与搜索芯片**（原验收索引里的非像素项，不是 19 GAP 之一）：`[linker_catalog_families]` 每页 24 个家族（`PER_PAGE_FAMILIES`）；目录芯片现为 Filters + Ask Genie。live 当时的 4 条里，Batch import / Nameplate photo 对应 GAP-11/14 的终裁不做，不是漏建。
+
+### 已预建，切换后生效（工件在仓库；线上今天仍是旧行为，#17 未执行）
+
+- **GAP-6 旧地址 301**：五张表已在 `legacy-redirects.json`，`Redirects::register()` 在插件加载时挂上 `template_redirect`。线上要等切换用本仓库插件替换旧插件后，旧外链才由这张表应答。切换当天的抽验仍是 `docs/specs/17-cutover.md` 的验收项，本次未在生产上抽。
+- **GAP-19 错误记录**：`mu-plugins/linker-error-recorder.php` 在仓库里，切换部署的第一步就是把它装到主机 `wp-content/mu-plugins/`（主机 `log_errors` 关闭是既证事实）。未切换 = 生产尚未换上这一份。
+- **i18n mu-loader 卫生删除**：`tools/cutover` 的删除清单含 `linker-i18n-mu-loader.php`，删除发生在切换步骤，不是现在。
+- **GAP-7 的另一半**：新节点已由本插件输出；SEO 插件模板库里那条写死品牌的 Product 模板随切换退役，退役动作未发生。
+- **Redis 上生产 / LiteSpeed 全清 / snippet 生态消失 / 旧插件删除**：仍是 #17 的步骤，仓库侧脚本在 `tools/cutover/`，生产未跑。
+
+### 维持原裁定，没有新实现
+
+- **GAP-10** funnel、**GAP-12** release-state REST、**GAP-13** project 媒体、AI weekly report、报价过期、Stripe 对账：废弃，仓库中无对应路由或任务。
+- **命名净化**（票 #82）不是这 19 项的销账；REST 命名空间与凭据路径按原裁定保留。
+
+### 明确不是本回写能写的
+
+像素门、390 列表终局判定、页头复刻验收都不在这张面清单里改结论。见 `docs/acceptance/2026-10-11/16/INDEX.md` 与 `working/replica-r4/EVIDENCE.md` §6。
