@@ -1,10 +1,13 @@
 /*
- * The catalogue rail and cards' base layout, replicated from the look the
- * site serves today (#16). Source: terravolt-b2b-core assets/catalogue.css
- * @0.12.413, read-only from the live site; no token references to replace.
+ * Product list look, scoped to #linker-products.sf-products.
+ * This volume restates the list classes at body-prefixed specificity:
+ * gallery cards (image beside identity on a phone, facts in two
+ * columns, a finger-sized model picker, a filter drawer).
+ * storefront.css owns the shared tokens and the lower-specificity
+ * base. products-mounts.css owns the toolbar width and the contact
+ * band. Header chrome stays in chrome.css. Selectors are unchanged.
  */
-/* Product list: gallery cards (image and identity side by side on phones,
-   facts in two columns, finger-sized model picker, filter drawer). */
+
 body:has(#linker-products) { background: var(--shop-paper); }
 body #linker-products.sf-products {
   --dlk-radius: 12px;
@@ -154,7 +157,12 @@ body #linker-products.sf-products .sf-card-variant > span { display: block; font
 body #linker-products.sf-products .sf-card-variant > small { display: block; color: var(--shop-muted); font-size: 10px; margin-top: 4px; }
 body #linker-products.sf-products .sf-card-variant[aria-current=true] { background: #e6f2eb; }
 
-/* Card refinements: larger radii, Jakarta 600 titles, compact phone cards. */
+/*
+ * Card refinements.
+ * Larger radii, Jakarta 600 titles, compact phone cards. These
+ * override the card rules above in the same volume.
+ */
+
 body #linker-products.sf-products .sf-card { --dlk-radius: 18px; border-radius: 18px; padding: 20px; gap: 14px; }
 body #linker-products.sf-products .card-media { height: 200px; border-radius: 12px; background: linear-gradient(145deg, #f0f4ef, #f7f9f6); }
 body #linker-products.sf-products .sf-card-brand { margin-bottom: 5px; }
@@ -173,15 +181,17 @@ body #linker-products.sf-products .sf-card-actions a { --dlk-radius: 12px; borde
 body #linker-products.sf-products [data-card-gate] { background: #f3f7f2; border-color: #e3ebe4; }
 
 
-
-
 @media (max-width: 1100px) and (min-width: 861px) {
   body #linker-products.sf-products .product-layout { grid-template-columns: 180px minmax(0, 1fr); gap: 22px; }
 }
 
 @media (max-width: 860px) {
-  /* The Advisor stays in the mobile tools row; no second floating launcher
-     covers the specifications. */
+
+/*
+ * The assistant stays in the mobile tools row.
+ * No second floating launcher covers the specifications.
+ */
+
   body:has(#linker-products) .lia-launch { display: none; }
   body #linker-products.sf-products { padding-top: 22px; }
   body #linker-products.sf-products .container { width: calc(100% - 32px); }
@@ -228,15 +238,14 @@ body #linker-products.sf-products [data-card-gate] { background: #f3f7f2; border
 }
 
 /*
- * Owner-approved round-2 optimizations (owner ruling 2026-10-12; ledger and
- * trialled CSS: docs/acceptance/2026-10-12/visual-round2/proposals/README.md).
- * The two accepted proposals, exactly as trialled there: where this file now
- * differs from the live page it is a ratified exemption, not a replica defect.
- *   A1: >=1360px the shop and category container is 1360px wide, matching the
- *       product page's edges, lifting the theme's 1280px cap.
- *   A2: >=861px the category filter rail is sticky below the header and
- *       scrolls inside its own box.
+ * Approved list-width and sticky rail (owner ruling 2026-10-12).
+ * At 1360px and up the shop and category container is 1360px, matching
+ * the product page and lifting the theme's 1280px cap.
+ * At 861px and up the category filter rail sticks below the header
+ * and scrolls inside its own box.
+ * Ledger: docs/acceptance/2026-10-12/visual-round2/proposals/README.md.
  */
+
 @media (min-width:1360px){
   body #linker-products.sf-products{--sf-container:1360px}
   body #linker-products.sf-products .container{width:min(1360px,calc(100% - 64px));max-width:none}
