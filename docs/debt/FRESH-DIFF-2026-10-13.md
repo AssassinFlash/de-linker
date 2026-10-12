@@ -10,7 +10,7 @@
 |---|---|
 | 分支 | `research/freshdiff-rerun`，从 `origin/main` `c51cb2d34c64a181cd79bb43bba0119e4ec9b76e` 拉出。该提交包含已合并的 PR #119（页头）和 PR #123 |
 | 实例 | t110，PHP 进程自 2026-10-13 00:11 起监听 `127.0.0.1:8975`。本轮没有 `just up`、没有 reset、没有重装 snapshot、没有写数据库 |
-| 插件绑定 | 采集开始前把 `linker-commerce`、`linker-i18n`、`linker-tools` 三个符号链接改到本工作树。主采集的 25 张本地图文件时间是 01:25–01:37，早于 01:42 另一次改绑。账本里 search / 404 / compare 三张 1440 用的是重拍，文件时间是 01:43:30，落在 01:42 改绑之后（见 §4）。01:42 之后符号链接被改回 `de-linker-genie-fidelity`（含未合并改动）。记录没有写明这三张重拍是哪棵树在供码。补查：`de-linker-freshdiff-rerun` 与 `de-linker-genie-fidelity` 两棵树的 `plugins/linker-commerce/assets/header-menu.js` 里 `fits()` / `fit()`（含 `data-tv-actions-compact`）整段字节相同，对页头数字无已知影响。两树该文件的差异在账户菜单的 id 回退与初始 `hidden`，不在这段 |
+| 插件绑定 | 采集开始前把 `linker-commerce`、`linker-i18n`、`linker-tools` 三个符号链接改到本工作树。主采集的 25 张本地图文件时间是 01:25–01:37，早于 01:42 另一次改绑。账本里 search / 404 / compare 三张 1440 用的是重拍，文件时间是 01:43:30，落在 01:42 改绑之后（见 §4、§8）。01:42 之后符号链接被改回 `de-linker-genie-fidelity`（含未合并改动）。这三张重拍由 `de-linker-freshdiff-rerun` 树供码。该树与 `de-linker-genie-fidelity` 树的 `plugins/linker-commerce/assets/header-menu.js` 里 `fits()` / `fit()`（含 `data-tv-actions-compact`）整段字节相同，对页头数字无已知影响。两树该文件的差异在账户菜单的 id 回退与初始 `hidden`，不在这段 |
 | 样式缓存 | 采集时页面引用 `uploads/windpress/cache/tailwind.css?ver=1791822216`。该文件在 01:46 被重编译为 `ver=1791827163`，晚于全部截图，不影响本轮数字 |
 | 浏览器 | 同一 Chromium launch，`channel: 'chromium'`，版本 `156.0.8078.4`，`deviceScaleFactor: 1`。两侧各自一个匿名 context |
 | 协议 | 视口 1440×900 / 390×844；URL 带 `cbq`；注入 `animation/transition: none`；等 `document.fonts.ready`；滚动触发懒加载后回顶；图片 decode-or-error，15 秒上限；全页 PNG。无掩膜、无平移、无阈值 |
@@ -69,17 +69,21 @@
 
 残余落在 EN/DE 控件。home 1440 页头带 `mag≥10` 是 441，about 1440 是 432（y=21–66）。两侧 HTML 类名相同（`lnk-lang-toggle`、`lnk-lang-half`）。差在样式取值，不是规则没送到页面。
 
-对 home 1440 的下划线逐像素复算（非白像素连成的横条）：
+对 home 1440 的下划线逐像素复算（非白像素连成的横条；方法见 §9）：
 
-- 宽度基本相同。线上 x=1184–1205，22px；本地 x=1183–1206，24px。不是「线上更长」。
-- 真差异是垂直位置。线上在 y=57–58，本地在 y=61–62，差 4px。对应规则：仓库 `plugins/linker-commerce/content/windpress/chrome.css:17` 是 `bottom:3px; left:10px; right:10px`；线上 `linker-i18n/assets/linker-i18n-runtime.css`（`ver=0.5.78`）是 `bottom:7px; left:11px; right:11px`。
-- 颜色。两条横条的实心像素都是 `(12, 127, 115)`。本地两端各 1px 是 `(69, 157, 148)`，线上整条 22px 都是 `(12, 127, 115)`、没有这对端点。仓库激活色走 `chrome.css:165` 的 `var(--proto-teal-600)`，`tokens.css:32` 定义为 `#0c7f73`，即 `(12, 127, 115)`。线上规则写的是 `background: #099888`。
+- 宽度基本相同，本地反宽 2px。线上 x=1184–1205，22px；本地 x=1183–1206，24px。不是「线上更长」。
+- 真差异是垂直位置。线上在 y=57–58，本地在 y=61–62。对应规则：仓库 `plugins/linker-commerce/content/windpress/chrome.css:17` 是 `bottom:3px; left:10px; right:10px`；线上旧插件 `linker-i18n/assets/linker-i18n-runtime.css`（`ver=0.5.78`）是 `#tv-header-v2 .lnk-lang-half.is-active::after{bottom:7px;left:11px;right:11px}`。
+- 颜色。横条实心像素两侧都是 `(12, 127, 115)`，即 `#0c7f73`。本地两端各 1px 是 `(69, 157, 148)`，线上整条 22px 都是 `(12, 127, 115)`、没有这对端点。本地端点来自 `chrome.css:17` 的 `border-radius:2px` 抗锯齿，不是另一条色值；激活色本身走 `chrome.css:165` 的 `var(--proto-teal-600)`，`tokens.css:32` 定义为 `#0c7f73`。线上规则写的是 `background:#099888`。截图里线上横条没有采到 `#099888` 的 `(9, 152, 136)`。
 
-390 的竖分隔线也在。线上规则是 `#tv-header-v2 .lnk-lang-half + .lnk-lang-half::before`（`left:0; top:calc(50% - 6.5px); width:1px; height:13px; background:#dbe2e5`）。仓库 `chrome.css` 没有这条兄弟分隔线。home 390 上，线上 y=36–44、x=240–243 有一列本地没有的墨色（y=40 为 `(17, 43, 56)`）。本地 EN/DE 字形从 x=244 起，这块 x=240–243 是白的。这条缝在线上、不在本地，与仓库没有 `::before` 相符；1px 规则在截图里铺成了约 4px，不把宽度写成与规则相同。
+390 的残余不是「只有一条分隔线」。home 390 上是三件：
+
+- 字形左移 4px。暗像素（通道最小值 < 160）在 y=34–46：线上从 x=240 起，本地从 x=244 起。
+- 激活色与字重。线上激活字是 `(17, 43, 56)`，对应 runtime CSS `#tv-header-v2 .lnk-lang-half.is-active{color:#112b38;font-weight:750}`。本地激活字是 `(15, 23, 42)`，即 `#0f172a`：`chrome.css:14` 把整个 toggle 写成 `font-weight:600; color:#0f172a`，激活半边没有单独的字重或颜色。仓库激活字重 600，线上 750。
+- 缺兄弟分隔线。线上规则是 `#tv-header-v2 .lnk-lang-half + .lnk-lang-half::before`（`left:0; top:calc(50% - 6.5px); width:1px; height:13px; background:#dbe2e5`）。仓库 `chrome.css` 没有这条规则。home 390 上，线上 y=36–44、x=240–243 有一列本地没有的墨色（y=40 为 `(17, 43, 56)`）。本地这块 x=240–243 全白（36 个像素都是 `(255, 255, 255)`）。这条缝在线上、不在本地，与仓库没有 `::before` 相符；1px 规则在截图里铺成了约 4px，不把宽度写成与规则相同。这列墨色与激活字形同色，和上面的左移叠在同一块 x 上，不单独拆成第四件。
 
 本地几何规则来自编译缓存，而且已经画在页面上（下划线在，只是 `bottom` / `left` / `right` 与线上不同）。线上规则来自旧插件 `linker-i18n-runtime.css`，不是页头内联样式，也不是「采集缓存没送到」。照「规则没进页面」去修，方向是反的。
 
-后续修复项（本 PR 只记录，不改样式）：把仓库语言控件对齐线上 runtime CSS 的几何、颜色和兄弟分隔线——`bottom:7px; left:11px; right:11px`、`background:#099888`，并补上 `+ .lnk-lang-half::before`。
+后续修复项（本 PR 只记录，不改样式）：把仓库 `chrome.css` 对齐线上 runtime CSS 的几何、颜色、激活字重，并补上兄弟分隔线。几何是 `bottom:7px; left:11px; right:11px`。颜色与字重是线上的 `background:#099888`、`color:#112b38`、`font-weight:750`，对照仓库现在的 `bottom:3px` / `left`·`right:10px`、`var(--proto-teal-600)`（`#0c7f73`）、激活字重 600。分隔线是 `#tv-header-v2 .lnk-lang-half + .lnk-lang-half::before`。
 
 页头带这几百个像素是真实结构差，**不申报为掩膜**。28 态都有。从一态的总数里减去的应是该态自己的页头带 `mag≥10`（表中 432–450），不是一律 441。
 
@@ -90,7 +94,7 @@
 - 404 1440 页高差从 +101 变为 0，`mag≥10` 从 14,425 降到 805。
 - search 1440、compare 1440 的页头带回到 441，与其他 1440 页一致。页高差与主采集不同。主采集（`captures-discarded/`，本地图宽 1550）search 是 +754（线上 3447，本地 4201），compare 是 +38（线上 1114，本地 1152）。重拍（本地图宽 1440）是 +657 与 −59。相对主采集，这两页各矮 97px（4201→4104，1152→1055）。
 
-主采集的 25 张未重拍本地图都在符号链接改回之前。被替换的三张 1440 原图也在改绑之前（01:35–01:37）。重拍进账本的三对文件时间是 01:43:30，在改绑之后；供码树见 §1，`fit()` / compact 段两树一致，不构成页头数字的已知差异。`plugins/linker-commerce/assets/header-menu.js:118-143` 的 `fit()` 在首帧把 `data-tv-actions-compact` 写上；宽按钮是这个属性还没写上时的样子。主采集对这三页截到了那之前。原因没有运行时 trace，不写成已证根因。
+主采集的 25 张未重拍本地图都在符号链接改回之前。被替换的三张 1440 原图也在改绑之前（01:35–01:37）。重拍进账本的三对文件时间是 01:43:30，在改绑之后；供码树是 `de-linker-freshdiff-rerun`（§1）。该树与 `de-linker-genie-fidelity` 的 `fit()` / compact 段字节相同，不构成页头数字的已知差异。`plugins/linker-commerce/assets/header-menu.js:118-143` 的 `fit()` 在首帧把 `data-tv-actions-compact` 写上；宽按钮是这个属性还没写上时的样子。主采集对这三页截到了那之前。原因没有运行时 trace，不写成已证根因。
 
 账本用重拍的三对。被替换的原图留在 `.scratch/freshdiff-rerun/captures-discarded/`。390 的这三页页头带是 448，与其他 390 页一致，没有这个现象，不重拍。
 
@@ -112,7 +116,7 @@
 
 旧账的测量仍然是这条结论的证据，本轮没有重做那一组实验：`docs/debt/FRESH-DIFF-2026-10-12.md` §7.3 记录，同一 WebP 在两侧 URL 上的 `getImageData` 差为 0，Pillow 解码差为 0，绘制框 30/30 相同，而全页 PNG 里 95.7% 的不同像素通道差正好是 1。
 
-本轮同高页面的 `mag=1` 占比与之相符：home 1440 的 1,036,176 里有 980,499（94.6%）是 `mag=1`。about 1440 的 593,109 里有 586,357（98.9%）是 `mag=1`，整页 `mag≥10` 是 441，其中页头带 y=21–66 占 432，扣掉页头后还剩 9（441−432），散在 y=1647–1828，不是 0。441 是 home 1440 的页头带数字，不是 about 的。1 级差仍算 FAIL，不掩、不修浏览器。
+本轮同高页面的 `mag=1` 占比与之相符：home 1440 的 1,036,176 里有 980,499（94.6%）是 `mag=1`。about 1440 的 593,109 里有 586,357（98.9%）是 `mag=1`，整页 `mag≥10` 是 441，其中页头带 y=21–66 占 432，扣掉页头后还剩 9（441−432），散在 y=1647、1770、1821、1826–1828，不是 0。441 是 home 1440 的页头带数字，不是 about 的。1 级差仍算 FAIL，不掩、不修浏览器。
 
 ## 7. 真实结构差
 
@@ -143,4 +147,90 @@
 - 没有重做 §6 引用的 canvas / Pillow 实验。
 - 没有测 DE，没有测登录后与提交后。
 - 页脚与右下角浮动按钮的位置差没有单独量化。页脚文字在抽查的页面上两侧相同，但锚点对齐后的像素差不稳定，不在这里给结论。
-- 01:42 的符号链接改绑与 01:46 的缓存重编译发生在主采集之后。账本采用的 search / 404 / compare 三张 1440 文件时间是 01:43:30，在改绑之后、缓存重编译之前。记录没写这三张由哪棵树供码；两树 `header-menu.js` 的 `fit()` / compact 段一致，见 §1。没有追查是谁改的符号链接。
+- 01:42 的符号链接改绑与 01:46 的缓存重编译发生在主采集之后。账本采用的 search / 404 / compare 三张 1440 文件时间是 01:43:30，落在 01:42 改绑之后、01:46 缓存重编译之前。重拍由 `de-linker-freshdiff-rerun` 树供码。该树与 `de-linker-genie-fidelity` 树的 `header-menu.js` 里 `fits()` / `fit()`（含 `data-tv-actions-compact`）整段字节相同，对页头数字无已知影响（§1）。没有追查是谁改的符号链接。
+
+## 9. 复算方法
+
+§2–§4、§6 里被复算改过的数字，用下面这段对 `.scratch/freshdiff-rerun/` 的 PNG 重跑。依赖 Pillow 与 numpy。`mag` 是重叠区域内逐像素 RGB 通道差的最大值；`mag=1` 是该值正好为 1；`mag≥10` 是该值至少为 10。页头带 1440 取 y=21–66（切片 `21:67`），390 取 y=17–62（切片 `17:63`）。页高差 = 本地高度 − 线上高度。
+
+```python
+from PIL import Image
+import numpy as np
+from pathlib import Path
+
+root = Path(".scratch/freshdiff-rerun")
+
+def rgb(path):
+    return np.asarray(Image.open(path).convert("RGB"))
+
+def mag(live, local):
+    h = min(live.shape[0], local.shape[0])
+    w = min(live.shape[1], local.shape[1])
+    return np.abs(live[:h, :w].astype(np.int16) - local[:h, :w].astype(np.int16)).max(axis=2)
+
+def bar(im, y0, y1, x0, x1, thresh=250):
+    """Non-near-white runs. A run is contiguous columns whose min channel is below thresh."""
+    runs = []
+    for y in range(y0, y1):
+        cols = np.where(im[y, x0:x1].min(axis=1) < thresh)[0] + x0
+        if len(cols) == 0:
+            continue
+        splits = np.where(np.diff(cols) > 1)[0]
+        starts = np.r_[0, splits + 1]
+        ends = np.r_[splits, len(cols) - 1]
+        for s, e in zip(starts, ends):
+            if e - s + 1 >= 8:
+                runs.append((y, int(cols[s]), int(cols[e]), int(e - s + 1)))
+    return runs
+
+# §3 underline, home 1440. Expect live y=57–58 x=1184–1205 (22px);
+# local y=61–62 x=1183–1206 (24px). Solid pixels (12,127,115);
+# local endpoints (69,157,148) at x=1183 and x=1206.
+home_live = rgb(root / "captures/home-en-1440-live.png")
+home_local = rgb(root / "captures/home-en-1440-t110.png")
+print("underline live", bar(home_live, 50, 70, 1160, 1230))
+print("underline local", bar(home_local, 50, 70, 1160, 1230))
+
+# §3 divider + glyph shift, home 390. Dark (min channel < 160) starts at
+# x=240 live and x=244 local over y=34–46. x=240–243, y=36–44 is ink on
+# live and white on local.
+home390_live = rgb(root / "captures/home-en-390-live.png")
+home390_local = rgb(root / "captures/home-en-390-t110.png")
+for name, im in (("live", home390_live), ("local", home390_local)):
+    dark = im[34:47, 220:280].min(axis=2) < 160
+    cols = np.where(dark.any(axis=0))[0] + 220
+    print(name, "glyph left", int(cols.min()), "n", len(cols))
+print("live x240-243", home390_live[40, 240:244].tolist())
+print("local x240-243", home390_local[36:45, 240:244].reshape(-1, 3).tolist()[:4], "all white",
+      bool(np.all(home390_local[36:45, 240:244] == 255)))
+
+# §6 about 1440. Full-page mag>=10 is 441; header band y=21–66 is 432;
+# outside that band is 9, rows 1647, 1770, 1821, 1826–1828.
+about = mag(
+    rgb(root / "captures/about-en-1440-live.png"),
+    rgb(root / "captures/about-en-1440-t110.png"),
+)
+print("about mag10", int((about >= 10).sum()), "header", int((about[21:67] >= 10).sum()),
+      "outside", int((about[67:] >= 10).sum() + (about[:21] >= 10).sum()))
+
+# §4 heights. Primary capture is captures-discarded/; the ledger uses captures/.
+# search: discarded local 1550x4201 vs live 1440x3447 → +754;
+# ledger local 1440x4104 vs live 1440x3447 → +657; 4201−4104 = 97.
+# compare: discarded local 1550x1152 vs live 1440x1114 → +38;
+# ledger local 1440x1055 vs live 1440x1114 → −59; 1152−1055 = 97.
+for folder in ("captures-discarded", "captures"):
+    for stem in ("search-en-1440", "compare-en-1440"):
+        live = Image.open(root / folder / f"{stem}-live.png")
+        local = Image.open(root / folder / f"{stem}-t110.png")
+        print(folder, stem, live.size, local.size, local.size[1] - live.size[1])
+
+# §2 same height. Six stems, not seven.
+same = []
+for live_path in sorted((root / "captures").glob("*-live.png")):
+    local_path = live_path.with_name(live_path.name.replace("-live.png", "-t110.png"))
+    if Image.open(live_path).size[1] == Image.open(local_path).size[1]:
+        same.append(live_path.name[: -len("-live.png")])
+print("same height", len(same), same)
+```
+
+2026-10-13 在本工作树对 `.scratch/freshdiff-rerun/` 跑过这段，输出与 §2–§4、§6 的改写一致。`.scratch/` 不进本 PR，复跑需要那份截图目录。
