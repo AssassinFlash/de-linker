@@ -7,9 +7,9 @@
   "items": [
     {
       "question": "Is the inverter port of the GW60K-STS-G10 also 60 kW?",
-      "answer": "Yes. In the inverter side section of the datasheet, the GW60K-STS-G10 column lists a rated power of 60 kW, with a rated current of 91.0 A at 380 V, 87.0 A at 400 V and 83.4 A at 415 V, and a maximum current of 100 A.",
+      "answer": "No. On page 2 of the STS datasheet the Inverter side block prints one column across the table: rated power 30 kW at 400 V, rated current 43.5 A (45.5 A at 380 V, 41.6 A at 415 V), maximum current 63 A. That column is not under GW60K-STS-G10. The 60 kW rating, and the currents 91.0 A at 380 V, 87.0 A at 400 V, 83.4 A at 415 V and 100 A maximum, sit in the GW60K column of Grid, Back-up and Smart Port.",
       "question_de": "Ist der Wechselrichteranschluss des GW60K-STS-G10 ebenfalls 60 kW?",
-      "answer_de": "Ja. Im Abschnitt „Inverter side“ des Datenblatts nennt die Spalte des GW60K-STS-G10 eine Nennleistung von 60 kW, einen Nennstrom von 91,0 A bei 380 V, 87,0 A bei 400 V und 83,4 A bei 415 V sowie einen maximalen Strom von 100 A.",
+      "answer_de": "Nein. Auf Seite 2 des STS-Datenblatts steht im Block „Inverter side“ eine Spalte über die ganze Tabelle: Nennleistung 30 kW bei 400 V, Nennstrom 43,5 A (45,5 A bei 380 V, 41,6 A bei 415 V), Maximalstrom 63 A. Diese Spalte steht nicht unter GW60K-STS-G10. Die Nennleistung 60 kW und die Ströme 91,0 A bei 380 V, 87,0 A bei 400 V, 83,4 A bei 415 V sowie maximal 100 A stehen in der GW60K-Spalte von Grid, Back-up und Smart Port.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
         "page": 2,
@@ -17,7 +17,7 @@
       },
       "status": "pass",
       "review": "pass",
-      "reason": ""
+      "reason": "2026-10-13 correction. The first pass put 60 kW and 91.0/87.0/83.4/100 A in the Inverter side column of GW60K-STS-G10. pdftotext -bbox on the hosted datasheet, page 2: those values sit in the GW60K column of Grid, Back-up and Smart Port (column center x=474.8). Inverter side prints one column centered across the table (Rated Power 30 at x=396.9; GW30K column center x=318.9). The answer now says that, and does not assign the centered 30 kW to this model."
     }
   ]
 }

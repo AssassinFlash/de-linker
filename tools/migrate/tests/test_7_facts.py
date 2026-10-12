@@ -527,6 +527,32 @@ def test_the_c15_plan_drops_the_inverter_side_key() -> None:
     assert {item["value"] for item in change["from"]} == {"60", "30"}
 
 
+def test_the_gw60k_faq_does_not_arm_the_refuted_column() -> None:
+    """The published FAQ must not put Grid/Back-up/Smart-Port currents in Inverter side.
+
+    tools/faq/import.py writes docs/faq/<slug>.json items with status pass.
+    The first pass of goodwe-gw60k-sts-g10 said the inverter side was 60 kW
+    at 91.0/87.0/83.4 A, maximum 100 A. pdftotext -bbox puts those values in
+    the GW60K column of Grid, Back-up and Smart Port; Inverter side is one
+    centered column. A regression that restores that sentence fails here.
+    """
+    record = json.loads(
+        (HERE.parents[2] / "docs/faq/goodwe-gw60k-sts-g10.json").read_text()
+    )
+    passed = [item for item in record["items"] if item.get("status") == "pass"]
+    assert passed
+    armed = (
+        "inverter side section of the datasheet, the GW60K-STS-G10 column lists a rated power of 60 kW",
+        "Abschnitt „Inverter side“ des Datenblatts nennt die Spalte des GW60K-STS-G10 eine Nennleistung von 60 kW",
+    )
+    for item in passed:
+        text = f"{item['answer']}\n{item['answer_de']}"
+        assert not any(sentence in text for sentence in armed)
+        assert "not under GW60K-STS-G10" in item["answer"]
+        assert "nicht unter GW60K-STS-G10" in item["answer_de"]
+        assert item["citation"]["page"] == 2
+
+
 def test_a_failed_write_stops_before_the_read_back(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
