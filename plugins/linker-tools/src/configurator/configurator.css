@@ -1,20 +1,33 @@
 /*
- * Solution Configurator. Every colour, size and radius is one of the site's
- * own tokens (--proto-*, defined by the theme), with the live value as the
- * fallback so the app looks the same in Storybook.
+ * Solution Configurator.
+ *
+ * The input screen is the archived variant C prototype's structure
+ * (src/configurator/prototype/proto-configurator.css on proto/configurator-r1,
+ * "VARIANT C — trade wizard"): a white card on the light canvas, chip group
+ * labels, two-line choice cards, and a card footer holding the primary action.
+ * That file is the design basis, so its palette and geometry are the values
+ * here; where a site token exists (accent, soft, surface, focus ring) the
+ * token is read with the prototype's value as the fallback, so Storybook and
+ * the site agree.
  */
 
 .linker-configurator {
-	--linker-ink: var(--proto-color-ink, #0c0f0f);
-	--linker-muted: var(--proto-color-muted, #5a6363);
-	--linker-line: var(--proto-color-line, #e2e5e5);
+	--linker-ink: #172636;
+	--linker-muted: #5f6b7c;
+	--linker-line: #dfe7ec;
+	--linker-strip: #f8fafa;
 	--linker-accent: var(--proto-color-accent, #0c7f73);
 	--linker-accent-ink: var(--proto-teal-800, #084d46);
 	--linker-on-accent: var(--proto-color-on-accent, #f3fbfa);
 	--linker-surface: var(--proto-color-surface, #fff);
 	--linker-soft: var(--proto-teal-50, #f1f9f8);
-	--linker-danger: var(--proto-sem-danger, #b85a45);
-	--linker-radius: var(--proto-radius-lg, 12px);
+	--linker-danger: #a03a2f;
+	--linker-disabled: #b9c6c2;
+	--linker-radius: 6px;
+	--linker-card-radius: 8px;
+	--linker-card-pad: clamp(1.125rem, 2.6vw, 1.875rem);
+	--linker-card-shadow: 0 6px 24px rgba(23, 38, 54, 0.06);
+	--linker-stack-gap: var(--proto-space-6, 2rem);
 	box-sizing: border-box;
 	max-width: var(--proto-container, 77.5rem);
 	margin: 0 auto;
@@ -29,8 +42,8 @@
 		"Segoe UI",
 		sans-serif
 	);
-	font-size: var(--proto-size-md, 1rem);
-	line-height: var(--proto-leading-body, 1.7);
+	font-size: 0.8125rem;
+	line-height: 1.5;
 	color: var(--linker-ink);
 	/* Long German compounds hyphenate (lang is set on the app); a token
 	   without a break point (a URL) still wraps rather than overflow. */
@@ -61,12 +74,27 @@
 }
 
 .linker-stage {
+	display: grid;
+	gap: var(--linker-stack-gap);
 	min-width: 0;
-	max-width: 46rem;
+	max-width: 57.5rem;
+}
+
+/* The card (variant C's .pc-card). The first card carries the title and the
+   project type; each section below it is another card of the same stack. */
+.linker-screen,
+.linker-section {
+	padding: var(--linker-card-pad);
+	background: var(--linker-surface);
+	border: 1px solid var(--linker-line);
+	border-radius: var(--linker-card-radius);
+	box-shadow: var(--linker-card-shadow);
 }
 
 .linker-configurator__header {
-	margin-bottom: var(--proto-space-5, 1.5rem);
+	margin-bottom: 1.125rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid var(--linker-line);
 }
 
 .linker-configurator__title {
@@ -78,44 +106,58 @@
 		system-ui,
 		sans-serif
 	);
-	font-size: var(--proto-size-display, clamp(2rem, 1.55rem + 1.4vw, 2.5rem));
-	line-height: var(--proto-leading-display, 1.24);
-	font-weight: 700;
+	font-size: 1.5rem;
+	line-height: 1.25;
+	font-weight: 800;
+	letter-spacing: -0.01em;
 }
 
 .linker-configurator__lead {
-	margin: var(--proto-space-2, 0.5rem) 0 0;
-	font-size: var(--proto-size-body-lg, 1.0625rem);
+	margin: var(--proto-space-1, 0.25rem) 0 0;
+	font-size: 0.8125rem;
 	color: var(--linker-muted);
 }
 
-/* Project type — bordered single-choice cards (variant C) ----------------- */
+/* Project type — two-line choice cards (variant C's .pc-check) ------------- */
 
 .linker-segments {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: var(--proto-space-2, 0.5rem);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem 1rem;
 }
 
 .linker-segments__tab {
 	appearance: none;
+	display: grid;
+	gap: 0.125rem;
+	align-content: center;
 	background: var(--linker-surface);
 	border: 1px solid var(--linker-line);
-	border-radius: 6px;
-	padding: 0.7rem 0.85rem;
+	border-radius: var(--linker-radius);
+	padding: 0.5625rem 0.6875rem;
 	font: inherit;
 	font-size: 0.8125rem;
-	font-weight: 600;
 	color: var(--linker-ink);
 	text-align: left;
 	cursor: pointer;
-	min-height: var(--proto-control-height, 2.75rem);
+	min-height: 2.5rem;
+}
+
+.linker-segments__label {
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.linker-segments__scope {
+	font-weight: 500;
+	font-size: 0.6875rem;
+	line-height: 1.45;
+	color: var(--linker-muted);
 }
 
 .linker-segments__tab[aria-checked="true"] {
 	border-color: var(--linker-accent);
 	background: var(--linker-soft);
-	color: var(--linker-accent-ink);
 }
 
 .linker-segments__tab:focus-visible,
@@ -206,27 +248,24 @@
 
 .linker-flow {
 	display: grid;
-	gap: var(--proto-space-6, 2rem);
+	gap: var(--linker-stack-gap);
 }
 
+/* One card per section (the card geometry is declared with .linker-screen). */
 .linker-section {
 	scroll-margin-top: var(--proto-space-6, 2rem);
 }
 
-.linker-block {
-	margin-bottom: var(--proto-space-5, 1.5rem);
-	padding: clamp(1.125rem, 2.6vw, 1.875rem);
-	border: 1px solid var(--linker-line);
-	border-radius: 8px;
-	background: var(--linker-surface);
-}
+/* Variant C's first card holds the title and the project type; that block is
+   the card's content, not a card of its own, so it carries no rules here —
+   its head, title and step lead are styled below. */
 
 .linker-block__head {
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
 	gap: 0.75rem;
-	margin-bottom: var(--proto-space-4, 1rem);
+	margin-bottom: 1.125rem;
 }
 
 .linker-block__title,
@@ -270,11 +309,11 @@
 .linker-group > legend {
 	float: left;
 	margin: 0.75rem 0 0 0.875rem;
-	padding: 0.4rem 0.65rem;
+	padding: 0.375rem 0.625rem;
 	border: 1px solid var(--linker-line);
 	border-bottom: 0;
 	border-radius: 6px 6px 0 0;
-	background: var(--proto-neutral-50, #f7f8f8);
+	background: var(--linker-strip);
 	font-size: 0.6875rem;
 	font-weight: 800;
 	letter-spacing: 0.08em;
@@ -304,9 +343,9 @@
 
 .linker-field__label,
 .linker-form__choice legend {
-	font-weight: 600;
-	font-size: var(--proto-size-sm, 0.875rem);
-	line-height: var(--proto-leading-caption, 1.55);
+	font-weight: 700;
+	font-size: 0.78125rem;
+	line-height: 1.4;
 }
 
 .linker-field__control {
@@ -320,12 +359,14 @@
 .linker-configurator select,
 .linker-configurator textarea {
 	width: 100%;
-	min-height: var(--proto-input-height, 2.75rem);
-	padding: 0.5rem 0.75rem;
-	border: 1px solid var(--proto-input-line, #c8cdcd);
-	border-radius: var(--proto-input-radius, 12px);
+	min-height: 2.5rem;
+	padding: 0.5rem 0.625rem;
+	border: 1px solid var(--linker-line);
+	border-radius: var(--linker-radius);
 	background: var(--proto-input-bg, #fff);
 	font: inherit;
+	font-size: 0.84375rem;
+	font-weight: 500;
 	color: inherit;
 }
 
@@ -336,12 +377,21 @@
 /* A native select draws its text past the border when the longest option does
    not fit (a phone-width card): the three lines keep the ink inside and name
    what was cut. Text overflow is not document overflow, so the phone-width
-   guard cannot see it; the e2e suite asserts the rule on every select. */
+   guard cannot see it; the e2e suite asserts the rule on every select. The
+   arrow is variant C's chevron (appearance: none plus the background image
+   below), so a select looks like the prototype's, not like the OS's. */
 .linker-configurator select {
+	appearance: none;
+	padding-right: 1.875rem;
 	max-width: 100%;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+	background-color: var(--proto-input-bg, #fff);
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.6 6 6.4 11 1.6' fill='none' stroke='%235f6b7c' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.625rem center;
+	background-size: 0.6875rem 0.5rem;
 }
 
 /* A value the app sets (the PV array from the roof step) reads as set. */
@@ -428,7 +478,7 @@
 	gap: var(--proto-space-2, 0.5rem);
 	align-items: center;
 	align-self: end;
-	min-height: var(--proto-control-height, 2.75rem);
+	min-height: 2.5rem;
 }
 
 .linker-form__roof p {
@@ -437,13 +487,33 @@
 	font-size: var(--proto-size-sm, 0.875rem);
 }
 
+/* The card's footer (variant C's .pc-footer): a strip to the card's edges
+   holding the primary action at its right. It cancels the card's own padding
+   only while it ends the card — then it reaches the border and takes the
+   card's bottom corners. The section's last child test is what makes the
+   roof step (or its loading line) sit below the strip instead of collapsing
+   into the strip's -pad margin, which would pull the panel over its edge. */
 .linker-form__submit {
-	margin-top: var(--proto-space-5, 1.5rem);
+	margin: var(--proto-space-5, 1.5rem) calc(-1 * var(--linker-card-pad)) 0;
+	padding: 0.875rem 1.375rem;
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--proto-space-3, 0.75rem);
 	align-items: center;
 	justify-content: flex-end;
+	border-top: 1px solid var(--linker-line);
+	border-radius: 0 0 var(--linker-card-radius) var(--linker-card-radius);
+	background: var(--linker-strip);
+}
+
+.linker-section > .linker-form:last-child .linker-form__submit {
+	margin-bottom: calc(-1 * var(--linker-card-pad));
+}
+
+/* Whatever the card renders after the strip (the roof panel, or the line that
+   says the map is loading) starts a block of its own, clear of the strip. */
+.linker-section > .linker-form + * {
+	margin-top: var(--proto-space-5, 1.5rem);
 }
 
 /* Buttons ---------------------------------------------------------------------- */
@@ -453,14 +523,13 @@
 	align-items: center;
 	justify-content: center;
 	gap: var(--proto-space-2, 0.5rem);
-	min-height: var(--proto-control-height, 2.75rem);
-	padding: var(--proto-control-pad-y, 0.75rem)
-		var(--proto-control-pad-x, 1.25rem);
-	border-radius: var(--proto-radius-pill, 12px);
+	min-height: 2.5rem;
+	padding: 0.5625rem 1.375rem;
+	border-radius: var(--linker-radius);
 	border: 1px solid transparent;
 	font: inherit;
-	font-size: var(--proto-control-size, 0.9375rem);
-	font-weight: var(--proto-control-weight, 600);
+	font-size: 0.8125rem;
+	font-weight: 700;
 	line-height: 1.2;
 	text-decoration: none;
 	cursor: pointer;
@@ -476,17 +545,18 @@
 }
 
 .linker-button--primary:hover {
-	background: var(--proto-teal-700, #0a665c);
+	background: var(--linker-accent-ink);
 }
 
 .linker-button--secondary {
 	background: var(--linker-surface);
-	color: var(--linker-accent-ink);
-	border-color: var(--linker-accent);
+	color: var(--linker-ink);
+	border-color: var(--linker-line);
+	padding: 0.5625rem 1rem;
 }
 
 .linker-button--secondary:hover {
-	background: var(--linker-soft);
+	background: var(--linker-strip);
 }
 
 .linker-button--quiet {
@@ -499,17 +569,19 @@
 }
 
 .linker-button[disabled] {
-	opacity: 0.6;
-	cursor: progress;
+	background: var(--linker-disabled);
+	border-color: var(--linker-disabled);
+	cursor: wait;
 }
 
 /* Results ----------------------------------------------------------------------- */
 
 .linker-empty {
 	margin: 0;
-	padding: var(--proto-space-5, 1.5rem);
-	border: 1px dashed var(--linker-line);
+	padding: 0.625rem 0.75rem;
+	border: 1px solid var(--linker-line);
 	border-radius: var(--linker-radius);
+	background: var(--linker-strip);
 	color: var(--linker-muted);
 }
 
@@ -521,13 +593,11 @@
 }
 
 .linker-empty--error {
-	border-style: solid;
 	border-color: var(--linker-danger);
 	color: var(--linker-ink);
 }
 
 .linker-empty--none {
-	border-style: solid;
 	color: var(--linker-ink);
 }
 
@@ -1083,9 +1153,14 @@
 		white-space: normal;
 	}
 
-	.linker-actions .linker-button,
-	.linker-form__submit .linker-button {
+	.linker-actions .linker-button {
 		width: 100%;
+	}
+
+	/* The card footer keeps variant C's phone shape: the action stays its
+	   natural width, right-aligned in the strip (C's ≤640px .pc-footer). */
+	.linker-form__submit {
+		gap: var(--proto-space-2, 0.5rem);
 	}
 }
 
