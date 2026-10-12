@@ -554,14 +554,13 @@ final class TemplatesTest extends TestCase {
 			'get_posts',
 			array(
 				'return' => static function ( array $args ): array {
-					if ( 'lc_partial' === ( $args['post_type'] ?? '' ) && 'header' === ( $args['name'] ?? '' ) ) {
-						return array( self::post( 40, 'stale header' ) );
+					if ( 'lc_partial' !== ( $args['post_type'] ?? '' ) || array( 'header' ) !== ( $args['post_name__in'] ?? null ) ) {
+						return array();
 					}
-					return array();
+					return array( self::post( 'de' === ( $args['lang'] ?? '' ) ? 41 : 40, 'stale header' ) );
 				},
 			)
 		);
-		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id ): int => 40 === $id ? 41 : 0 ) );
 		WP_Mock::userFunction( 'get_post', array( 'return' => static fn( int $id ): WP_Post => self::post( $id, 'stale header' ) ) );
 		WP_Mock::userFunction(
 			'wp_update_post',
@@ -585,6 +584,85 @@ final class TemplatesTest extends TestCase {
 	}
 
 	/**
+	 * English and German share the slug. A date-ordered lookup would return
+	 * the newer German partial first; each export must still land in its
+	 * own language, and a missing language is left alone.
+	 */
+	public function test_same_slug_headers_are_written_in_their_own_language_when_german_is_newer(): void {
+		$files   = Templates::header_partials();
+		$english = (string) file_get_contents( $files[0] );
+		$german  = (string) file_get_contents( $files[1] );
+		$written = array();
+		$queried = array();
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_default_language', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn( string $value ): string => $value ) );
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => static function ( array $args ) use ( &$queried ): array {
+					if ( 'lc_partial' !== ( $args['post_type'] ?? '' ) ) {
+						return array();
+					}
+					$queried[] = $args;
+					// The bug under test: name + posts_per_page=1 is a singular
+					// query, so the language taxonomy never reaches SQL and the
+					// newer German row is the one returned.
+					if ( isset( $args['name'] ) || true === ( $args['suppress_filters'] ?? true ) || '' === ( $args['lang'] ?? '' ) ) {
+						return array( self::header_partial( 41, '2026-10-12 09:00:00' ) );
+					}
+					if ( array( 'header' ) !== ( $args['post_name__in'] ?? null ) ) {
+						return array();
+					}
+					if ( 'en' === $args['lang'] ) {
+						return array( self::header_partial( 40, '2026-10-01 09:00:00' ) );
+					}
+					if ( 'de' === $args['lang'] ) {
+						return array( self::header_partial( 41, '2026-10-12 09:00:00' ) );
+					}
+					return array();
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static fn( int $id ): WP_Post => self::header_partial( $id, 'stale' ),
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'return' => static function ( array $data ) use ( &$written ): int {
+					$written[ (int) $data['ID'] ] = (string) $data['post_content'];
+					return (int) $data['ID'];
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_insert_post', array( 'return' => 1 ) );
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+
+		( new Templates() )->sync();
+
+		$header_queries = array_values(
+			array_filter(
+				$queried,
+				static fn( array $args ): bool => array( 'header' ) === ( $args['post_name__in'] ?? null )
+			)
+		);
+		$this->assertCount( 2, $header_queries );
+		foreach ( $header_queries as $args ) {
+			$this->assertSame( array( 'header' ), $args['post_name__in'] );
+			$this->assertFalse( $args['suppress_filters'] );
+			$this->assertArrayNotHasKey( 'name', $args );
+		}
+		$this->assertSame( array( 'en', 'de' ), array_column( $header_queries, 'lang' ) );
+		$this->assertSame( $english, $written[40] );
+		$this->assertSame( $german, $written[41] );
+		$this->assertNotSame( $written[40], $written[41] );
+	}
+
+	/**
 	 * The page's rows as WP_Post objects.
 	 *
 	 * @param array<int, array<string, mixed>> $rows Rows.
@@ -605,6 +683,27 @@ final class TemplatesTest extends TestCase {
 			);
 		}
 		return $posts;
+	}
+
+	/**
+	 * A published header partial. post_date is the trap: the German twin is newer.
+	 *
+	 * @param int    $id      Post id.
+	 * @param string $date    post_date, MySQL datetime.
+	 * @param string $content Body.
+	 */
+	private static function header_partial( int $id, string $date, string $content = 'stale header' ): WP_Post {
+		return new WP_Post(
+			(object) array(
+				'ID'           => $id,
+				'post_type'    => 'lc_partial',
+				'post_status'  => 'publish',
+				'post_name'    => 'header',
+				'post_date'    => $date,
+				'post_content' => $content,
+				'post_title'   => 'header',
+			)
+		);
 	}
 
 	/**

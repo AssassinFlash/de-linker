@@ -132,6 +132,7 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 		public $post_status  = 'publish';
 		public $post_content = '';
 		public $post_name    = '';
+		public $post_date    = '';
 		public function __construct( $post ) {
 			foreach ( get_object_vars( $post ) as $key => $value ) {
 				$this->$key = $value;

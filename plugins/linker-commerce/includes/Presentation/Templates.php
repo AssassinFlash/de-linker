@@ -210,30 +210,25 @@ final class Templates {
 	 * rather than blank the live header. The German export is already
 	 * localized (its links are German addresses), so the write is the file itself.
 	 *
+	 * English and German share the slug header. Each export is written to
+	 * the partial of that language, looked up on its own: taking the first
+	 * post of the slug and translating it writes the English export into
+	 * the German partial when the German one is newer.
+	 *
 	 * @param list<string>|null $files Paths already proved by sync(), the exports when null.
 	 * @throws \RuntimeException When a source is missing or empty, or WordPress refuses the update.
 	 */
 	private function sync_header_partials( ?array $files = null ): int {
 		$files = $this->require_header_partials( $files );
-		$posts = get_posts(
-			array(
-				'post_type'      => 'lc_partial',
-				'post_status'    => 'publish',
-				'name'           => 'header',
-				'lang'           => '',
-				'posts_per_page' => 1,
-			)
-		);
-		if ( ! isset( $posts[0] ) ) {
-			return 0;
-		}
-		$source = (int) $posts[0]->ID;
-		$ids    = array( 'en' => $source );
-		if ( function_exists( 'pll_get_post' ) ) {
-			$twin = (int) pll_get_post( $source, 'de' );
-			if ( $twin > 0 ) {
-				$ids['de'] = $twin;
+		$ids   = array();
+		foreach ( array( 'en', 'de' ) as $lang ) {
+			$id = $this->header_partial_id( $lang );
+			if ( $id > 0 ) {
+				$ids[ $lang ] = $id;
 			}
+		}
+		if ( array() === $ids ) {
+			return 0;
 		}
 		$updated = 0;
 		foreach ( $ids as $lang => $id ) {
@@ -255,6 +250,36 @@ final class Templates {
 			++$updated;
 		}
 		return $updated;
+	}
+
+	/**
+	 * The published header partial of one language, or 0 when it is absent.
+	 *
+	 * A query for one post by name is singular, and WordPress ignores
+	 * taxonomy conditions (the language) for singular queries, so the slug
+	 * is passed as post_name__in. The two languages share the slug, so the
+	 * first row by date is not the English one. Same shape as
+	 * SameSlug\Lookup::post().
+	 *
+	 * @param string $language `en` or `de`.
+	 */
+	private function header_partial_id( string $language ): int {
+		$posts = get_posts(
+			array(
+				'post_type'              => 'lc_partial',
+				'post_name__in'          => array( 'header' ),
+				'lang'                   => $language,
+				'post_status'            => 'publish',
+				'numberposts'            => 1,
+				'orderby'                => 'ID',
+				'order'                  => 'ASC',
+				'no_found_rows'          => true,
+				'suppress_filters'       => false,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			)
+		);
+		return isset( $posts[0] ) ? (int) $posts[0]->ID : 0;
 	}
 
 	/**

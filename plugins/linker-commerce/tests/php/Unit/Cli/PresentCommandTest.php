@@ -57,6 +57,13 @@ final class PresentCommandTest extends TestCase {
 	 */
 	private array $options;
 
+	/**
+	 * Header partials written by the mocked installer, post id => content.
+	 *
+	 * @var array<int, string>
+	 */
+	private array $written_partials = array();
+
 	/** Prepares the per-test cache and source files. */
 	public function setUp(): void {
 		parent::setUp();
@@ -73,6 +80,7 @@ final class PresentCommandTest extends TestCase {
 		file_put_contents( $this->source_paths[0], '<section>template</section>' );
 		file_put_contents( $this->source_paths[1], ':root{--proto-accent:#0c7f73}' );
 		$this->options               = array();
+		$this->written_partials      = array();
 		WP_CLI::$registered_commands = array();
 	}
 
@@ -639,6 +647,45 @@ final class PresentCommandTest extends TestCase {
 	}
 
 	/**
+	 * The two header partials share the slug. The German one is newer, which
+	 * is the order a singular name query would return first. Each export is
+	 * written into the partial of its own language.
+	 */
+	public function test_same_slug_headers_are_written_in_their_own_language_when_german_is_newer(): void {
+		$this->mock_install(
+			array(
+				'templates' => array(),
+				'partials'  => array(
+					array(
+						'ID'           => 40,
+						'post_name'    => 'header',
+						'post_content' => '<header>stale english</header>',
+						'post_date'    => '2026-10-01 09:00:00',
+						'lang'         => 'en',
+					),
+					array(
+						'ID'           => 41,
+						'post_name'    => 'header',
+						'post_content' => '<header>stale deutsch</header>',
+						'post_date'    => '2026-10-12 09:00:00',
+						'lang'         => 'de',
+					),
+				),
+			)
+		);
+		file_put_contents( $this->cache_path, self::COMPILED_ALL );
+		touch( $this->cache_path, time() + 60 );
+
+		$this->present();
+
+		$exports = \Linker\Commerce\Presentation\Templates::header_partials();
+		$this->assertSame( (string) file_get_contents( $exports[0] ), $this->written_partials[40] );
+		$this->assertSame( (string) file_get_contents( $exports[1] ), $this->written_partials[41] );
+		$this->assertStringContainsString( 'href="/de/loesung/heimspeicher/"', $this->written_partials[41] );
+		$this->assertStringNotContainsString( 'href="/de/loesung/', $this->written_partials[40] );
+	}
+
+	/**
 	 * A non-administrator is refused before anything is restored.
 	 */
 	public function test_rollback_refuses_a_non_administrator(): void {
@@ -747,8 +794,24 @@ final class PresentCommandTest extends TestCase {
 			'get_posts',
 			array(
 				'return' => static function ( array $args ) use ( $existing ): array {
+					if ( 'lc_partial' === $args['post_type'] && array( 'header' ) === ( $args['post_name__in'] ?? null ) ) {
+						$language = (string) ( $args['lang'] ?? '' );
+						$rows     = array_values(
+							array_filter(
+								$existing['partials'] ?? array(),
+								static fn( array $row ): bool => (string) ( $row['lang'] ?? '' ) === $language
+							)
+						);
+						// Date order is the trap the production query must not use:
+						// the newer German twin would otherwise come back first.
+						usort(
+							$rows,
+							static fn( array $a, array $b ): int => strcmp( (string) ( $b['post_date'] ?? '' ), (string) ( $a['post_date'] ?? '' ) )
+						);
+						return self::wp_posts( array_slice( $rows, 0, 1 ), 'lc_partial' );
+					}
 					if ( 'lc_partial' === $args['post_type'] ) {
-						return self::wp_posts( $existing['partials'] ?? array() );
+						return self::wp_posts( $existing['partials'] ?? array(), 'lc_partial' );
 					}
 					if ( 'page' === $args['post_type'] ) {
 						return self::wp_posts( $existing['pages'] ?? array(), 'page' );
@@ -807,7 +870,12 @@ final class PresentCommandTest extends TestCase {
 		WP_Mock::userFunction(
 			'wp_update_post',
 			array(
-				'return' => static fn ( array $data ): int => (int) $data['ID'],
+				'return' => function ( array $data ): int {
+					if ( ! isset( $data['post_title'] ) ) {
+						$this->written_partials[ (int) $data['ID'] ] = (string) $data['post_content'];
+					}
+					return (int) $data['ID'];
+				},
 			)
 		);
 		// The volume styles land in a throwaway directory.
@@ -873,6 +941,7 @@ final class PresentCommandTest extends TestCase {
 					'post_content' => (string) ( $row['post_content'] ?? '' ),
 					'post_type'    => (string) ( $row['post_type'] ?? $type ),
 					'post_status'  => (string) ( $row['post_status'] ?? 'publish' ),
+					'post_date'    => (string) ( $row['post_date'] ?? '2026-10-01 09:00:00' ),
 				)
 			);
 		}
