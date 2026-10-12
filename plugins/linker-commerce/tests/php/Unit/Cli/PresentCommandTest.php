@@ -293,7 +293,7 @@ final class PresentCommandTest extends TestCase {
 			$backup['settings']
 		);
 		$this->assertTrue( $backup['settings_existed'] );
-		$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509 ), $backup['created_templates'], 'the templates missing on this site joined the backup' );
+			$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511 ), $backup['created_templates'], 'the templates missing on this site joined the backup' );
 	}
 
 	/**
@@ -324,7 +324,7 @@ final class PresentCommandTest extends TestCase {
 		$backup = $this->options[ self::BACKUP ] ?? null;
 		$this->assertIsArray( $backup );
 		$this->assertSame( array( 6564 ), array_column( $backup['templates'], 'ID' ), 'the already-installed template is staged as an update' );
-		$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509 ), $backup['created_templates'], 'the missing templates are staged as creations' );
+			$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511 ), $backup['created_templates'], 'the missing templates are staged as creations' );
 		$this->assertFalse( $backup['settings_existed'] );
 		$this->assertSame( array(), $backup['settings'] );
 	}
@@ -386,15 +386,15 @@ final class PresentCommandTest extends TestCase {
 
 		$backup = $this->options[ self::BACKUP ] ?? null;
 		$this->assertIsArray( $backup );
-		$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510 ), $backup['created_templates'], 'the fresh install created every template' );
+			$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512 ), $backup['created_templates'], 'the fresh install created every template' );
 		$this->assertSame( array( 'enable-dynamic-templating' => 1 ), $this->options['lc_settings'], 'the run switched dynamic templating on' );
 
 		$this->rollback();
 
-		$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510 ), $deleted, 'the rollback deleted exactly the created templates' );
+			$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512 ), $deleted, 'the rollback deleted exactly the created templates' );
 		$this->assertArrayNotHasKey( 'lc_settings', $this->options, 'the absent lc_settings is not resurrected as an empty option' );
 		$this->assertArrayNotHasKey( self::BACKUP, $this->options, 'the backup is consumed' );
-		$this->assertSame( 1, substr_count( $this->output(), 'wp-cli success: Rolled back 12 writes' ) );
+			$this->assertSame( 1, substr_count( $this->output(), 'wp-cli success: Rolled back 14 writes' ) );
 	}
 
 	/**
