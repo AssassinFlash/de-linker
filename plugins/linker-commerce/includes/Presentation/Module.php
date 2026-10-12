@@ -60,6 +60,7 @@ final class Module {
 	 */
 	public function enqueue_product_scripts(): void {
 		$base = plugins_url( 'assets/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+		wp_enqueue_script( 'linker-header-menu', $base . 'header-menu.js', array(), (string) filemtime( dirname( __DIR__, 2 ) . '/assets/header-menu.js' ), true );
 		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
 			// The catalogue's family cards: the model picker switches the
 			// article a card shows (spec: the live shop's family grid).

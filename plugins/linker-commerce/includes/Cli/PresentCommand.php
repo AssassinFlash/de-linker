@@ -81,7 +81,7 @@ final class PresentCommand {
 		}
 		$this->require_sources();
 
-		$this->backup( isset( $assoc_args['detach-partials'] ) );
+		$this->backup( true );
 
 		$settings = get_option( 'lc_settings', array() );
 		if ( ! is_array( $settings ) ) {

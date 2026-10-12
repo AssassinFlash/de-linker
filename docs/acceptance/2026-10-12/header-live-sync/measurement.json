@@ -1,0 +1,667 @@
+{
+  "browser": "isolated Chromium 1248; functional evidence only; official Computer Use gate pending",
+  "results": [
+    {
+      "key": "guest-en-1440",
+      "boxes": {
+        "header": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 89
+        },
+        "logo": {
+          "x": 56,
+          "y": 18,
+          "w": 104.28125,
+          "h": 52
+        },
+        "nav": {
+          "x": 174.671875,
+          "y": 22,
+          "w": 718.015625,
+          "h": 44
+        },
+        "search": {
+          "x": 1012.5,
+          "y": 21,
+          "w": 46,
+          "h": 46
+        },
+        "cart": {
+          "x": 1066.5,
+          "y": 21,
+          "w": 46,
+          "h": 46
+        },
+        "account": {
+          "x": 1120.5,
+          "y": 22,
+          "w": 44,
+          "h": 44
+        },
+        "language": {
+          "x": 1172.5,
+          "y": 22,
+          "w": 88,
+          "h": 44
+        },
+        "mobileLanguage": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "toggle": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        }
+      },
+      "compact": "true",
+      "literal": false,
+      "accountLinks": [
+        {
+          "text": "Sign in",
+          "url": "http://127.0.0.1:8975/my-account/"
+        },
+        {
+          "text": "My account",
+          "url": "http://127.0.0.1:8975/my-account/"
+        }
+      ],
+      "errors": [],
+      "functional": "PASS"
+    },
+    {
+      "key": "guest-en-390",
+      "boxes": {
+        "header": {
+          "x": 0,
+          "y": 0,
+          "w": 390,
+          "h": 81
+        },
+        "logo": {
+          "x": 16,
+          "y": 20,
+          "w": 80.21875,
+          "h": 40
+        },
+        "nav": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "search": {
+          "x": 180,
+          "y": 17,
+          "w": 46,
+          "h": 46
+        },
+        "cart": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "account": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "language": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "mobileLanguage": {
+          "x": 234,
+          "y": 18,
+          "w": 88,
+          "h": 44
+        },
+        "toggle": {
+          "x": 330,
+          "y": 18,
+          "w": 44,
+          "h": 44
+        }
+      },
+      "literal": false,
+      "accountLinks": [
+        {
+          "text": "Sign in",
+          "url": "http://127.0.0.1:8975/my-account/"
+        },
+        {
+          "text": "My account",
+          "url": "http://127.0.0.1:8975/my-account/"
+        }
+      ],
+      "errors": [],
+      "functional": "PASS"
+    },
+    {
+      "key": "guest-de-1440",
+      "boxes": {
+        "header": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 89
+        },
+        "logo": {
+          "x": 56,
+          "y": 18,
+          "w": 104.28125,
+          "h": 52
+        },
+        "nav": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "search": {
+          "x": 1109.609375,
+          "y": 21,
+          "w": 46,
+          "h": 46
+        },
+        "cart": {
+          "x": 1163.609375,
+          "y": 21,
+          "w": 46,
+          "h": 46
+        },
+        "account": {
+          "x": 1217.609375,
+          "y": 22,
+          "w": 44,
+          "h": 44
+        },
+        "language": {
+          "x": 1269.609375,
+          "y": 22,
+          "w": 88,
+          "h": 44
+        },
+        "mobileLanguage": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "toggle": {
+          "x": 1372,
+          "y": 22,
+          "w": 44,
+          "h": 44
+        }
+      },
+      "folded": "true",
+      "compact": "true",
+      "literal": false,
+      "accountLinks": [
+        {
+          "text": "Sign in",
+          "url": "http://127.0.0.1:8975/de/mein-konto/"
+        },
+        {
+          "text": "My account",
+          "url": "http://127.0.0.1:8975/de/mein-konto/"
+        }
+      ],
+      "errors": [],
+      "functional": "PASS"
+    },
+    {
+      "key": "guest-de-390",
+      "boxes": {
+        "header": {
+          "x": 0,
+          "y": 0,
+          "w": 390,
+          "h": 81
+        },
+        "logo": {
+          "x": 16,
+          "y": 20,
+          "w": 80.21875,
+          "h": 40
+        },
+        "nav": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "search": {
+          "x": 180,
+          "y": 17,
+          "w": 46,
+          "h": 46
+        },
+        "cart": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "account": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "language": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "mobileLanguage": {
+          "x": 234,
+          "y": 18,
+          "w": 88,
+          "h": 44
+        },
+        "toggle": {
+          "x": 330,
+          "y": 18,
+          "w": 44,
+          "h": 44
+        }
+      },
+      "literal": false,
+      "accountLinks": [
+        {
+          "text": "Sign in",
+          "url": "http://127.0.0.1:8975/de/mein-konto/"
+        },
+        {
+          "text": "My account",
+          "url": "http://127.0.0.1:8975/de/mein-konto/"
+        }
+      ],
+      "errors": [],
+      "functional": "PASS"
+    },
+    {
+      "key": "customer-3-en-1440",
+      "boxes": {
+        "header": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 89
+        },
+        "logo": {
+          "x": 56,
+          "y": 18,
+          "w": 104.28125,
+          "h": 52
+        },
+        "nav": {
+          "x": 174.671875,
+          "y": 22,
+          "w": 718.015625,
+          "h": 44
+        },
+        "search": {
+          "x": 1012.5,
+          "y": 21,
+          "w": 46,
+          "h": 46
+        },
+        "cart": {
+          "x": 1066.5,
+          "y": 21,
+          "w": 46,
+          "h": 46
+        },
+        "account": {
+          "x": 1120.5,
+          "y": 22,
+          "w": 44,
+          "h": 44
+        },
+        "language": {
+          "x": 1172.5,
+          "y": 22,
+          "w": 88,
+          "h": 44
+        },
+        "mobileLanguage": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "toggle": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        }
+      },
+      "compact": "true",
+      "literal": false,
+      "accountLinks": [
+        {
+          "text": "Overview",
+          "url": "http://127.0.0.1:8975/my-account/"
+        },
+        {
+          "text": "Inquiries",
+          "url": "http://127.0.0.1:8975/my-account/inquiries/"
+        },
+        {
+          "text": "Saved solutions",
+          "url": "http://127.0.0.1:8975/my-account/saved-solutions/"
+        },
+        {
+          "text": "Documents",
+          "url": "http://127.0.0.1:8975/my-account/documents/"
+        },
+        {
+          "text": "Company",
+          "url": "http://127.0.0.1:8975/my-account/company/"
+        },
+        {
+          "text": "Account details",
+          "url": "http://127.0.0.1:8975/my-account/edit-account/"
+        },
+        {
+          "text": "Log out",
+          "url": "http://127.0.0.1:8975/my-account/customer-logout/?_wpnonce=e222db976a"
+        }
+      ],
+      "errors": [],
+      "functional": "PASS"
+    },
+    {
+      "key": "customer-3-en-390",
+      "boxes": {
+        "header": {
+          "x": 0,
+          "y": 0,
+          "w": 390,
+          "h": 81
+        },
+        "logo": {
+          "x": 16,
+          "y": 20,
+          "w": 80.21875,
+          "h": 40
+        },
+        "nav": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "search": {
+          "x": 180,
+          "y": 17,
+          "w": 46,
+          "h": 46
+        },
+        "cart": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "account": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "language": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "mobileLanguage": {
+          "x": 234,
+          "y": 18,
+          "w": 88,
+          "h": 44
+        },
+        "toggle": {
+          "x": 330,
+          "y": 18,
+          "w": 44,
+          "h": 44
+        }
+      },
+      "literal": false,
+      "accountLinks": [
+        {
+          "text": "Overview",
+          "url": "http://127.0.0.1:8975/my-account/"
+        },
+        {
+          "text": "Inquiries",
+          "url": "http://127.0.0.1:8975/my-account/inquiries/"
+        },
+        {
+          "text": "Saved solutions",
+          "url": "http://127.0.0.1:8975/my-account/saved-solutions/"
+        },
+        {
+          "text": "Documents",
+          "url": "http://127.0.0.1:8975/my-account/documents/"
+        },
+        {
+          "text": "Company",
+          "url": "http://127.0.0.1:8975/my-account/company/"
+        },
+        {
+          "text": "Account details",
+          "url": "http://127.0.0.1:8975/my-account/edit-account/"
+        },
+        {
+          "text": "Log out",
+          "url": "http://127.0.0.1:8975/my-account/customer-logout/?_wpnonce=e222db976a"
+        }
+      ],
+      "errors": [],
+      "functional": "PASS"
+    },
+    {
+      "key": "customer-3-de-1440",
+      "boxes": {
+        "header": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 89
+        },
+        "logo": {
+          "x": 56,
+          "y": 18,
+          "w": 104.28125,
+          "h": 52
+        },
+        "nav": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "search": {
+          "x": 1109.609375,
+          "y": 21,
+          "w": 46,
+          "h": 46
+        },
+        "cart": {
+          "x": 1163.609375,
+          "y": 21,
+          "w": 46,
+          "h": 46
+        },
+        "account": {
+          "x": 1217.609375,
+          "y": 22,
+          "w": 44,
+          "h": 44
+        },
+        "language": {
+          "x": 1269.609375,
+          "y": 22,
+          "w": 88,
+          "h": 44
+        },
+        "mobileLanguage": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "toggle": {
+          "x": 1372,
+          "y": 22,
+          "w": 44,
+          "h": 44
+        }
+      },
+      "folded": "true",
+      "compact": "true",
+      "literal": false,
+      "accountLinks": [
+        {
+          "text": "Übersicht",
+          "url": "http://127.0.0.1:8975/de/mein-konto/"
+        },
+        {
+          "text": "Anfragen",
+          "url": "http://127.0.0.1:8975/de/mein-konto/inquiries/"
+        },
+        {
+          "text": "Gespeicherte Lösungen",
+          "url": "http://127.0.0.1:8975/de/mein-konto/saved-solutions/"
+        },
+        {
+          "text": "Dokumente",
+          "url": "http://127.0.0.1:8975/de/mein-konto/documents/"
+        },
+        {
+          "text": "Unternehmen",
+          "url": "http://127.0.0.1:8975/de/mein-konto/company/"
+        },
+        {
+          "text": "Kontodetails",
+          "url": "http://127.0.0.1:8975/de/mein-konto/edit-account/"
+        },
+        {
+          "text": "Abmelden",
+          "url": "http://127.0.0.1:8975/de/mein-konto/customer-logout/?_wpnonce=e222db976a"
+        }
+      ],
+      "errors": [],
+      "functional": "PASS"
+    },
+    {
+      "key": "customer-3-de-390",
+      "boxes": {
+        "header": {
+          "x": 0,
+          "y": 0,
+          "w": 390,
+          "h": 81
+        },
+        "logo": {
+          "x": 16,
+          "y": 20,
+          "w": 80.21875,
+          "h": 40
+        },
+        "nav": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "search": {
+          "x": 180,
+          "y": 17,
+          "w": 46,
+          "h": 46
+        },
+        "cart": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "account": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "language": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "mobileLanguage": {
+          "x": 234,
+          "y": 18,
+          "w": 88,
+          "h": 44
+        },
+        "toggle": {
+          "x": 330,
+          "y": 18,
+          "w": 44,
+          "h": 44
+        }
+      },
+      "literal": false,
+      "accountLinks": [
+        {
+          "text": "Übersicht",
+          "url": "http://127.0.0.1:8975/de/mein-konto/"
+        },
+        {
+          "text": "Anfragen",
+          "url": "http://127.0.0.1:8975/de/mein-konto/inquiries/"
+        },
+        {
+          "text": "Gespeicherte Lösungen",
+          "url": "http://127.0.0.1:8975/de/mein-konto/saved-solutions/"
+        },
+        {
+          "text": "Dokumente",
+          "url": "http://127.0.0.1:8975/de/mein-konto/documents/"
+        },
+        {
+          "text": "Unternehmen",
+          "url": "http://127.0.0.1:8975/de/mein-konto/company/"
+        },
+        {
+          "text": "Kontodetails",
+          "url": "http://127.0.0.1:8975/de/mein-konto/edit-account/"
+        },
+        {
+          "text": "Abmelden",
+          "url": "http://127.0.0.1:8975/de/mein-konto/customer-logout/?_wpnonce=e222db976a"
+        }
+      ],
+      "errors": [],
+      "functional": "PASS"
+    }
+  ]
+}

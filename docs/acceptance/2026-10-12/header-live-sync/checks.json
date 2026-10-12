@@ -1,0 +1,16 @@
+{
+  "functional_checkpoint": "eight real guest/customer-3 EN/DE 1440/390 PASS",
+  "phpunit": {
+    "tests": 24,
+    "assertions": 87,
+    "result": "PASS"
+  },
+  "changed_phpcs": "PASS",
+  "changed_phpstan_level_8": "PASS",
+  "js_syntax": "PASS",
+  "diff_whitespace": "PASS",
+  "windpress_final_compile": "compiled=true last_generated=1791794088 file_size=570068 cache mtime 1791793407 -> 1791794088 anchor classes present",
+  "final_delta": "final-delta.json",
+  "official_computer_use": "PENDING",
+  "pixel_zero": "NOT CERTIFIED / NO PASS"
+}

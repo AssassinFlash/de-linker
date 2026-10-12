@@ -120,7 +120,7 @@ final class TemplatesTest extends TestCase {
 			'get_posts',
 			array(
 				'return' => static function ( array $args ) use ( &$existing ): array {
-					if ( 'page' === $args['post_type'] ) {
+					if ( in_array( $args['post_type'], array( 'page', 'lc_partial' ), true ) ) {
 						return array();
 					}
 					$key = (string) ( $args['name'] ?? $args['meta_key'] ?? '' );
@@ -210,7 +210,7 @@ final class TemplatesTest extends TestCase {
 			'get_posts',
 			array(
 				'return' => static function ( array $args ) use ( $catalog, $keys, $titles ): array {
-					if ( 'page' === $args['post_type'] ) {
+					if ( in_array( $args['post_type'], array( 'page', 'lc_partial' ), true ) ) {
 						return array();
 					}
 					$key = (string) ( $args['name'] ?? $args['meta_key'] ?? '' );

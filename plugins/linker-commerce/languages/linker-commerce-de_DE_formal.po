@@ -2908,6 +2908,18 @@ msgstr "Modell oder Artikelnummer suchen"
 msgid "Search"
 msgstr "Suchen"
 
+#: includes/Presentation/CatalogShortcodes.php
+msgid "Sign in"
+msgstr "Anmelden"
+
+#: includes/Presentation/CatalogShortcodes.php
+msgid "My account"
+msgstr "Mein Konto"
+
+#: includes/Presentation/CatalogShortcodes.php
+msgid "Cart"
+msgstr "Warenkorb"
+
 #: includes/Presentation/CatalogShortcodes.php:108
 msgid "Product categories"
 msgstr "Produktkategorien"

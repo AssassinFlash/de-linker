@@ -1,0 +1,25 @@
+{
+  "scope": "final mobile rail+DE missing labels only; eight-state functional checkpoint unchanged",
+  "results": [
+    {
+      "lang": "en-US",
+      "searchX": 172,
+      "languageX": 226,
+      "labels": [
+        "Sign in",
+        "My account"
+      ],
+      "cartLabel": "Cart"
+    },
+    {
+      "lang": "de-DE",
+      "searchX": 172,
+      "languageX": 226,
+      "labels": [
+        "Anmelden",
+        "Mein Konto"
+      ],
+      "cartLabel": "Warenkorb"
+    }
+  ]
+}

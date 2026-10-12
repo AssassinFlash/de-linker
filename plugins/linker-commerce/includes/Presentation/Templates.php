@@ -145,6 +145,7 @@ final class Templates {
 			$created_ids = array_merge( $created_ids, $report['created_ids'] );
 		}
 		$this->assign_pages();
+		$updated += $this->sync_header_partials();
 
 		return array(
 			'created'     => $created,
@@ -152,6 +153,56 @@ final class Templates {
 			'unchanged'   => $unchanged,
 			'created_ids' => $created_ids,
 		);
+	}
+
+	/**
+	 * Syncs the existing header and its Polylang twin from the LC exports.
+	 * Does not create substitute partials or change the theme's assignments.
+	 *
+	 * @throws \RuntimeException When WordPress refuses the partial update.
+	 */
+	private function sync_header_partials(): int {
+		$posts = get_posts(
+			array(
+				'post_type'      => 'lc_partial',
+				'post_status'    => 'publish',
+				'name'           => 'header',
+				'lang'           => '',
+				'posts_per_page' => 1,
+			)
+		);
+		if ( ! isset( $posts[0] ) ) {
+			return 0;
+		}
+		$source = (int) $posts[0]->ID;
+		$ids    = array( 'en' => $source );
+		if ( function_exists( 'pll_get_post' ) ) {
+			$twin = (int) pll_get_post( $source, 'de' );
+			if ( $twin > 0 ) {
+				$ids['de'] = $twin;
+			}
+		}
+		$updated = 0;
+		foreach ( $ids as $lang => $id ) {
+			$file = dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/partials/' . ( 'de' === $lang ? 'de/' : '' ) . 'header.html';
+			$html = Tokens::read( $file );
+			$post = get_post( $id );
+			if ( $post instanceof WP_Post && $post->post_content === $html ) {
+				continue;
+			}
+			$result = wp_update_post(
+				array(
+					'ID'           => $id,
+					'post_content' => wp_slash( $html ),
+				),
+				true
+			);
+			if ( is_wp_error( $result ) ) {
+				throw new \RuntimeException( 'Header partial update failed.' );
+			}
+			++$updated;
+		}
+		return $updated;
 	}
 
 	/**

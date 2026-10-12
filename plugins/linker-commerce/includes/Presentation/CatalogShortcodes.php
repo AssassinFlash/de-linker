@@ -1634,21 +1634,35 @@ final class CatalogShortcodes {
 		if ( 'mobile-language' === $attributes['part'] ) {
 			return $this->language_toggle( 'lnk-lang-toggle--mobile' );
 		}
-		$cart_url    = function_exists( 'wc_get_cart_url' ) ? (string) wc_get_cart_url() : '';
-		$account     = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'my-account' ) : '';
-		$count       = function_exists( 'WC' ) && null !== WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
-		$shop        = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : home_url( '/' );
-		$search_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
-		$cart_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6L5 3H2"/></svg>';
-		$user_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path stroke-linecap="round" d="M5.2 19.4a7 7 0 0 1 13.6 0"/></svg>';
-		$html        = '<a href="' . esc_url( $shop . '#search-box' ) . '" class="tv-header-utility tv-header-search" data-tv-header-search aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">' . $search_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Search', 'linker-commerce' ) . '</span></a>';
+		$cart_url      = function_exists( 'wc_get_cart_url' ) ? (string) wc_get_cart_url() : '';
+		$account       = function_exists( 'wc_get_account_endpoint_url' ) ? (string) wc_get_account_endpoint_url( 'dashboard' ) : '';
+		$logged_in     = is_user_logged_in();
+		$account_label = $logged_in ? __( 'My account', 'linker-commerce' ) : __( 'Sign in', 'linker-commerce' );
+		$count         = function_exists( 'WC' ) && null !== WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
+		$shop          = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : home_url( '/' );
+		$search_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+		$cart_icon     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6L5 3H2"/></svg>';
+		$user_icon     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path stroke-linecap="round" d="M5.2 19.4a7 7 0 0 1 13.6 0"/></svg>';
+		$html          = '<a href="' . esc_url( $shop . '#search-box' ) . '" class="tv-header-utility tv-header-search" data-tv-header-search aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">' . $search_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Search', 'linker-commerce' ) . '</span></a>';
 		// The live header hides the badge at zero (its markup carries the
 		// counter with an inline display:none; an empty cart shows no pill).
 		$badge = $count > 0 ? '<span class="tv-b2b-acct-count">' . esc_html( (string) $count ) . '</span>' : '';
 		$html .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Cart', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Cart', 'linker-commerce' ) . '</span>' . $badge . '</a>';
-		$html .= '<div class="tv-b2b-acct"><button type="button" class="tv-b2b-acct-btn" aria-haspopup="true" aria-expanded="false" aria-label="' . esc_attr__( 'Sign in', 'linker-commerce' ) . '"><span class="tv-b2b-acct-avatar">' . $user_icon . '</span><span class="tv-header-utility-label">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</span><span class="tv-b2b-acct-chev"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>';
-		$html .= '<div class="tv-b2b-acct-menu"><a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>';
-		$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'My account', 'linker-commerce' ) . '</a></div></div>';
+		if ( 'mobile' === $attributes['part'] ) {
+			return '<a href="' . esc_url( $cart_url ) . '" class="tv-mobile-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Cart', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Cart', 'linker-commerce' ) . '</span>' . $badge . '</a><a href="' . esc_url( $account ) . '" class="tv-mobile-utility tv-b2b-mobile-portal-link" aria-label="' . esc_attr( $account_label ) . '">' . $user_icon . '<span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span></a>';
+		}
+		$html .= '<div class="tv-b2b-acct"><button type="button" class="tv-b2b-acct-btn" aria-haspopup="true" aria-controls="linker-header-account-menu" aria-expanded="false" aria-label="' . esc_attr( $account_label ) . '"><span class="tv-b2b-acct-avatar">' . $user_icon . '</span><span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span><span class="tv-b2b-acct-chev"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>';
+		$html .= '<div id="linker-header-account-menu" class="tv-b2b-acct-menu" hidden>';
+		if ( $logged_in ) {
+			// Account\\Menu filters Woo's one menu; every account surface reads it.
+			foreach ( wc_get_account_menu_items() as $endpoint => $label ) {
+				$html .= '<a class="tv-b2b-acct-link' . ( 'customer-logout' === $endpoint ? ' is-out' : '' ) . '" href="' . esc_url( wc_get_account_endpoint_url( $endpoint ) ) . '">' . esc_html( $label ) . '</a>';
+			}
+		} else {
+			$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>';
+			$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'My account', 'linker-commerce' ) . '</a>';
+		}
+		$html .= '</div></div>';
 		return $html . $this->language_toggle( 'lnk-lang-toggle--desktop' );
 	}
 
