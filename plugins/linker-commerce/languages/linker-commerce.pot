@@ -2621,9 +2621,6 @@ msgid "Model"
 msgstr ""
 
 #: includes/Presentation/CatalogShortcodes.php:353
-msgid "Product tools"
-msgstr ""
-
 msgid "Add to cart"
 msgstr ""
 

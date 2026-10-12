@@ -2957,10 +2957,6 @@ msgstr "Modell"
 msgid "Add to cart"
 msgstr "In den Warenkorb"
 
-#: includes/Presentation/CatalogShortcodes.php
-msgid "Product tools"
-msgstr "Produktwerkzeuge"
-
 #: includes/Presentation/CatalogShortcodes.php:355
 msgid "Log in for pricing"
 msgstr "Für Preise anmelden"
