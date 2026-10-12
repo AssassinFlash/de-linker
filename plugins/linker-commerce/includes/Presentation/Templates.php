@@ -201,9 +201,12 @@ final class Templates {
 				$unchanged        += $report['unchanged'];
 				$this->created_ids = array_merge( $this->created_ids, $report['created_ids'] );
 		}
-			$this->assign_pages();
-			$updated += $this->sync_header_partials( $header_partials );
-			$updated += $this->sync_footer_partials();
+				$this->assign_pages();
+				$updated += $this->sync_header_partials( $header_partials );
+				// After the header write. A missing German header twin refuses
+				// the run before the footer is touched, so a header refusal does
+				// not also create footer posts.
+				$updated += $this->sync_footer_partials();
 
 			return array(
 				'created'     => $created,
