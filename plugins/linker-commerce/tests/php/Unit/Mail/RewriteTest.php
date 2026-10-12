@@ -149,8 +149,9 @@ final class RewriteTest extends TestCase {
 			return $args;
 		};
 		$queue                             = static function ( array $args ) use ( &$queued ): array {
-			tv_b2b_queue_business_mail_copies( $args );
-			$queued[] = $args['to'];
+			// The call the silence looks for in a closure's body. The stub is
+			// loaded below, before this closure runs; its result is unused.
+			$queued[] = tv_b2b_queue_business_mail_copies( $args )['to'] ?? '';
 			return $args;
 		};
 		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited -- the test's own hook table.
@@ -165,15 +166,7 @@ final class RewriteTest extends TestCase {
 		);
 
 		if ( ! function_exists( 'tv_b2b_queue_business_mail_copies' ) ) {
-			/**
-			 * The legacy plugin's copy queue, present on the review instances.
-			 *
-			 * @param array<string, mixed> $args Arguments.
-			 * @return array<string, mixed>
-			 */
-			function tv_b2b_queue_business_mail_copies( array $args ): array {
-				return $args;
-			}
+			require_once __DIR__ . '/legacy-copy-queue-stub.php';
 		}
 
 		( new TestMode() )->silence_copy_queues();
@@ -244,7 +237,7 @@ final class RewriteTest extends TestCase {
 	 */
 	private function addresses( mixed $to ): array {
 		$found = array();
-		foreach ( $this->lines( $to, ',' ) as $line ) {
+		foreach ( $this->lines( is_string( $to ) ? str_replace( ',', "\n", $to ) : $to ) as $line ) {
 			if ( 1 === preg_match( '/<([^>]+)>/', $line, $match ) ) {
 				$line = $match[1];
 			}
@@ -275,15 +268,14 @@ final class RewriteTest extends TestCase {
 	/**
 	 * Header or address lines of a string or a list.
 	 *
-	 * @param mixed  $value     Value.
-	 * @param string $separator Separator of a string value.
+	 * @param mixed $value Value.
 	 * @return list<string>
 	 */
-	private function lines( mixed $value, string $separator = "\n" ): array {
+	private function lines( mixed $value ): array {
 		if ( is_array( $value ) ) {
 			$parts = $value;
 		} elseif ( is_string( $value ) ) {
-			$parts = explode( $separator, str_replace( array( "\r\n", "\r" ), "\n", $value ) );
+			$parts = explode( "\n", str_replace( array( "\r\n", "\r" ), "\n", $value ) );
 		} else {
 			return array();
 		}
