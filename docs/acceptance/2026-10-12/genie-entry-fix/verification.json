@@ -58,6 +58,10 @@
     {
       "command": "Local linker-i18n import --input=- --format=json --user=<snapshot administrator>; rewrite flush; cache flush",
       "result": "Narrow fixture completion only: product 6530→6574/shop 1034→6575 from stored German snapshot fields; modern LC templates 234→6577/shop6564→6579 through existing Twins importer. No translation model calls. Sources/results in de-fixture-import.json. No snapshot reload."
+    },
+    {
+      "command": "node docs/acceptance/2026-10-12/genie-entry-fix/load-retry.mjs retry-after (after the Entries.php loader fix, head 9a20a17)",
+      "result": "PASS both failure modes (app bundle aborted; wp element dependency aborted): visible error section with an Open retry, the queued first question posts exactly once after retry, success loads the app once, a failed dependency never executes broken JS. retry-*-unrecovered.png are historical from a fixture lacking meta.turn_id, not current failures."
     }
   ],
   "visual": {
