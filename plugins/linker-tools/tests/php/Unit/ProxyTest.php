@@ -262,9 +262,9 @@ final class ProxyTest extends TestCase {
 				/**
 				 * Opens 52.
 				 */
-				public function open(): int {
-					return 52;
-				}
+			public function open(): int {
+				return 52;
+			}
 
 				/**
 				 * The real method reads the post. This double has no post.
@@ -272,10 +272,10 @@ final class ProxyTest extends TestCase {
 				 * @param int    $id    Conversation post ID.
 				 * @param string $title First message.
 				 */
-				public function title_from_first_message( int $id, string $title ): void {
-					unset( $id, $title );
-				}
-			};
+			public function title_from_first_message( int $id, string $title ): void {
+				unset( $id, $title );
+			}
+		};
 		return new Proxy( $conversations, $fetch, $thread ?? new RecordingThread() );
 	}
 
@@ -556,12 +556,12 @@ final class ProxyTest extends TestCase {
 			$_COOKIE = array(
 				'linker_conversation' => '51.' . hash_hmac( 'sha256', 'linker_conversation|51', 'test-salt' ),
 			);
-		WP_Mock::userFunction(
-			'get_post_type',
-			array(
-				'return' => static fn( int $id ): string => in_array( $id, array( 51, 52 ), true ) ? 'linker_conversation' : 'post',
-			)
-		);
+			WP_Mock::userFunction(
+				'get_post_type',
+				array(
+					'return' => static fn( int $id ): string => in_array( $id, array( 51, 52 ), true ) ? 'linker_conversation' : 'post',
+				)
+			);
 		WP_Mock::userFunction(
 			'get_post_field',
 			array(

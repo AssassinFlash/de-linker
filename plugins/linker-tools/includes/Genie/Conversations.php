@@ -209,7 +209,7 @@ class Conversations {
 			}
 			$list[] = array(
 				'id'      => $id,
-					'title'   => '' !== $post->post_title ? $post->post_title : self::UNTITLED,
+				'title'   => '' !== $post->post_title ? $post->post_title : self::UNTITLED,
 				'updated' => (string) $post->post_modified_gmt,
 			);
 		}
@@ -249,7 +249,7 @@ class Conversations {
 			return;
 		}
 		$post = \get_post( $id );
-			if ( ! $post instanceof \WP_Post || self::UNTITLED !== $post->post_title ) {
+		if ( ! $post instanceof \WP_Post || self::UNTITLED !== $post->post_title ) {
 			return;
 		}
 		wp_update_post(
@@ -269,7 +269,7 @@ class Conversations {
 			array(
 				'post_type'   => self::POST_TYPE,
 				'post_status' => 'private',
-					'post_title'  => self::UNTITLED,
+				'post_title'  => self::UNTITLED,
 				'post_author' => $author,
 			),
 			true
@@ -307,10 +307,10 @@ class Conversations {
 	/**
 	 * Whether this request may use the conversation.
 	 *
-		 * A signed-in visitor may use a conversation they own. A still-unowned
-		 * conversation is usable only when this request's cookie names it with
-		 * a signature this site made. A numeric cookie is not that signature.
-		 * A guest may use only the unowned conversation their signed cookie names.
+	 * A signed-in visitor may use a conversation they own. A still-unowned
+	 * conversation is usable only when this request's cookie names it with
+	 * a signature this site made. A numeric cookie is not that signature.
+	 * A guest may use only the unowned conversation their signed cookie names.
 	 *
 	 * @param int $id Conversation post ID.
 	 */
@@ -327,10 +327,10 @@ class Conversations {
 
 	/**
 	 * Cookie value as a post ID, 0 when missing or unsigned.
-		 *
-		 * The cookie is `id.signature`. The signature is HMAC-SHA256 of the id
-		 * with the site's auth salt, so a forged number does not name a post.
-		 */
+	 *
+	 * The cookie is `id.signature`. The signature is HMAC-SHA256 of the id
+	 * with the site's auth salt, so a forged number does not name a post.
+	 */
 	private function from_cookie(): int {
 		if ( ! isset( $_COOKIE[ self::COOKIE ] ) ) {
 			return 0;

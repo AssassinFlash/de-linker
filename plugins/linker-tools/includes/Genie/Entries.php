@@ -27,6 +27,8 @@ class Entries {
 	 * The dock runs in `wp_footer`, after the template. The shortcode is
 	 * the authority for "this page is the workspace": a renamed page still
 	 * carries the shortcode, and a page whose template lost it does not.
+	 *
+	 * @var bool
 	 */
 	private static bool $workspace_rendered = false;
 

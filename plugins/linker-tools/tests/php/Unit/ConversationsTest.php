@@ -253,31 +253,31 @@ final class ConversationsTest extends TestCase {
 		 * signature is what names the conversation; a forged number is ignored
 		 * at the gate and does not open that post.
 		 */
-		public function test_an_unsigned_numeric_cookie_is_refused(): void {
-			$this->logged_out();
-			WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
-			$_COOKIE = array( 'linker_conversation' => '51' );
-			WP_Mock::userFunction(
-				'get_post_type',
-				array(
-					'args'   => array( 51 ),
-					'return' => 'linker_conversation',
-				)
-			);
-			WP_Mock::userFunction(
-				'get_post_field',
-				array(
-					'args'   => array( 'post_author', 51 ),
-					'return' => '0',
-				)
-			);
+	public function test_an_unsigned_numeric_cookie_is_refused(): void {
+		$this->logged_out();
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
+		$_COOKIE = array( 'linker_conversation' => '51' );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'args'   => array( 51 ),
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 51 ),
+				'return' => '0',
+			)
+		);
 
-			$conversations = new Conversations();
+		$conversations = new Conversations();
 
-			$this->assertFalse( $conversations->may_use( 51 ) );
-			$this->assertSame( 0, $conversations->existing_id() );
-			$this->assertConditionsMet();
-		}
+		$this->assertFalse( $conversations->may_use( 51 ) );
+		$this->assertSame( 0, $conversations->existing_id() );
+		$this->assertConditionsMet();
+	}
 
 		/**
 		 * A cookie for a foreign or deleted conversation is ignored.
