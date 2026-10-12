@@ -243,8 +243,9 @@ def test_anonymous_german_proforma_falls_back_to_the_login_request() -> None:
 def test_fallback_after_grounding_stays_inside_the_protocol_set() -> None:
     """C2-fallback: a refused product turn ships qualified cards inside the
     allowed set, cited by the text; a German line carries no English fragment.
-    A turn with nothing citable ships the degraded sentence of that language,
-    not the mailbox sentence."""
+    Nothing citable and handoff-team did not run: the degraded sentence of
+    that language. The mailbox sentence ships only when that tool's sentence
+    is a fact of the turn (test_template_handoff_uses_the_tool_sentence_when_present)."""
     allowed = {4107, 3556}
     facts = TurnFacts()
     facts.product_ids = set(allowed)

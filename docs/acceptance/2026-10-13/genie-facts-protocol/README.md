@@ -5,7 +5,7 @@
 ## C2 未登录德语与兜底
 
 - 未登录问「Wo steht meine Proforma?」时，`inquiry-status` 回 401，`facts.py` 记成 `inquiry.login_required`。提示词要求这一事实只回答登录句，不得调用 handoff-team。grounding 拒掉邮箱句；兜底模板出登录句，不出团队邮箱句。
-- grounding 拒答后的兜底：有合格商品时只出合格卡片，正文引用它们，德语行不混英文功能词；没有可引用事实时出降级声明，不借用邮箱句。
+- grounding 拒答后的兜底：有合格商品时只出合格卡片，正文引用它们，德语行不混英文功能词。没有可引用事实时：本轮已有 handoff 句（`handoff.sentence_de` / `handoff.sentence_en`）就出该邮箱句；仅当 handoff-team 没跑、句不在事实里时出降级声明。
 - 判分测试：`services/genie/tests/test_cycle.py`、`test_ground.py`、`test_agent.py`。
 
 ## C12 检索探针（单轮，不是 11 轮一致率）
