@@ -721,7 +721,7 @@ final class PresentCommandTest extends TestCase {
 		$backup = $this->options[ self::BACKUP ] ?? null;
 		$this->assertIsArray( $backup );
 		$this->assertSame(
-			array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510 ),
+				array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512 ),
 			$backup['created_templates'],
 			'templates inserted before the header refusal are registered for rollback'
 		);
