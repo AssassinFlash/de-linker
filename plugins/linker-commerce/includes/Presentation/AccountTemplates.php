@@ -1,0 +1,428 @@
+<?php
+/**
+ * Woo account data for LiveCanvas's account fragments.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Presentation;
+
+use Linker\Commerce\Account\DocumentDownload;
+use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Proforma\Issuer;
+use Linker\Commerce\Vocabulary\LocaleFormat;
+use WC_Order;
+
+/**
+ * Woo retains endpoint dispatch, permissions and forms. Only its content
+ * templates hand their already-authorised arguments to LC HTML. LC has no
+ * WC_Order/HPOS or private-document array loop; the narrow rows tag supplies
+ * those values without emitting layout or deciding their appearance.
+ */
+final class AccountTemplates {
+
+	/**
+	 * Woo template to LC fragment.
+	 *
+	 * @var array<string, string>
+	 */
+	private const FILES = array(
+		'myaccount/my-account.php'             => 'workspace',
+		'myaccount/dashboard.php'              => 'overview',
+		'myaccount/orders.php'                 => 'inquiries',
+		'myaccount/view-order.php'             => 'inquiry',
+		'myaccount/linker-documents.php'       => 'documents',
+		'myaccount/linker-saved-solutions.php' => 'solutions',
+	);
+
+	/**
+	 * Registered adapter for Woo's data-only include.
+	 *
+	 * @var self|null
+	 */
+	private static ?self $adapter = null;
+
+	/**
+	 * Woo arguments, restored after nested templates.
+	 *
+	 * @var array<string, mixed>
+	 */
+	private array $args = array();
+
+	/**
+	 * Current LC data row.
+	 *
+	 * @var array<string, mixed>
+	 */
+	private array $row = array();
+
+	/**
+	 * One dashboard read per render.
+	 *
+	 * @var list<WC_Order>|null
+	 */
+	private ?array $overview = null;
+
+	/** Registers the content adapter and its data tags. */
+	public function register(): void {
+		self::$adapter = $this;
+		add_filter( 'wc_get_template', array( $this, 'template' ), 20, 2 );
+		add_shortcode( 'linker_account_field', array( $this, 'field' ) );
+		add_shortcode( 'linker_account_rows', array( $this, 'rows' ) );
+		add_shortcode( 'linker_account_hook', array( $this, 'hook' ) );
+		add_shortcode( 'linker_account_text', array( $this, 'text' ) );
+		add_shortcode( 'linker_account_url', array( $this, 'url' ) );
+		add_filter( 'woocommerce_my_account_my_orders_query', array( $this, 'orders_query' ) );
+	}
+
+	/**
+	 * Only account content; never affects checkout, emails or the native forms.
+	 *
+	 * @param string $path Located template.
+	 * @param string $name Woo template name.
+	 */
+	public function template( string $path, string $name ): string {
+		return is_account_page() && is_user_logged_in() && isset( self::FILES[ $name ] ) && shortcode_exists( 'lc_if' )
+			? dirname( __DIR__, 2 ) . '/templates/myaccount/livecanvas.php' : $path;
+	}
+
+	/**
+	 * Called by the Woo include. No markup is produced outside the LC files.
+	 *
+	 * @param array{template_name: string, args: array<string, mixed>} $context Woo include context.
+	 */
+	public static function output( array $context ): void {
+		if ( null === self::$adapter || ! isset( self::FILES[ $context['template_name'] ] ) ) {
+			return;
+		}
+		$adapter       = self::$adapter;
+		$previous      = $adapter->args;
+		$adapter->args = $context['args'];
+		try {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- LC markup; all dynamic fields escaped by field().
+			echo $adapter->fragment( self::FILES[ $context['template_name'] ] );
+		} finally {
+			$adapter->args = $previous;
+		}
+	}
+
+	/**
+	 * A repository LC fragment; filename is never supplied by a request.
+	 *
+	 * @param string               $name Fragment name.
+	 * @param array<string, mixed> $row  Row data.
+	 */
+	private function fragment( string $name, array $row = array() ): string {
+		$previous  = $this->row;
+		$this->row = $row;
+		try {
+			return do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/' . $name . '.html' ) );
+		} finally {
+			$this->row = $previous;
+		}
+	}
+
+	/**
+	 * Escaped scalar row values; only Woo's formatted totals and native item
+	 * metadata are HTML (sanitised through the normal Woo HTML allowlist).
+	 *
+	 * @param array<string, string>|string $atts Attributes.
+	 */
+	public function field( $atts = array() ): string {
+		$key   = (string) ( $atts['key'] ?? '' );
+		$value = $this->row[ $key ] ?? '';
+		if ( 'page-title' === $key ) {
+			$value = is_wc_endpoint_url() ? WC()->query->get_endpoint_title( WC()->query->get_current_endpoint() ) : __( 'Overview', 'linker-commerce' );
+		} elseif ( 'open-url' === $key ) {
+			$value = add_query_arg( 'inquiries', 'open', wc_get_account_endpoint_url( 'orders' ) );
+		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
+			$value = ( 'open-current' === $key ) === $this->open_only() ? 'page' : 'false';
+		}
+		if ( in_array( $key, array( 'total', 'items', 'nonce' ), true ) ) {
+			return 'nonce' === $key ? (string) $value : wp_kses_post( (string) $value );
+		}
+		return in_array( $key, array( 'url', 'open-url', 'report' ), true ) ? esc_url( (string) $value ) : esc_attr( (string) $value );
+	}
+
+	/**
+	 * Native Woo hooks that LC places; cannot call arbitrary PHP actions.
+	 *
+	 * @param array<string, string>|string $atts Attributes.
+	 */
+	public function hook( $atts = array() ): string {
+		$name = (string) ( $atts['name'] ?? '' );
+		ob_start();
+		switch ( $name ) {
+			case 'content':
+				do_action( 'woocommerce_account_content' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
+				break;
+			case 'details':
+				$order = $this->args['order'] ?? null;
+				// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Woo's per-order meta capability.
+				if ( $order instanceof WC_Order && current_user_can( 'view_order', $order->get_id() ) ) {
+					do_action( 'woocommerce_view_order', $order->get_id() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
+				}
+				break;
+			case 'before-orders':
+				do_action( 'woocommerce_before_account_orders', (bool) ( $this->args['has_orders'] ?? false ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
+				break;
+			case 'after-orders':
+				do_action( 'woocommerce_after_account_orders', (bool) ( $this->args['has_orders'] ?? false ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
+				break;
+			case 'pagination':
+				do_action( 'woocommerce_before_account_orders_pagination' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
+				break;
+		}
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Context links remain Woo's URLs, including locale and endpoint slugs.
+	 *
+	 * @param array<string, string>|string $atts Attributes.
+	 */
+	public function url( $atts = array() ): string {
+		$endpoint = (string) ( $atts['endpoint'] ?? 'dashboard' );
+		return esc_url( wc_get_account_endpoint_url( $endpoint ) );
+	}
+
+	/**
+	 * Account-specific labels only; the existing domain remains the word source.
+	 *
+	 * @param array<string, string>|string $atts Attributes.
+	 */
+	public function text( $atts = array() ): string {
+		$labels = array(
+			'overview'        => __( 'Overview', 'linker-commerce' ),
+			'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
+			'all'             => __( 'All inquiries', 'linker-commerce' ),
+			'open'            => __( 'Open inquiries', 'linker-commerce' ),
+			'status'          => __( 'Status', 'linker-commerce' ),
+			'number'          => __( 'Inquiry', 'linker-commerce' ),
+			'date'            => __( 'Date', 'linker-commerce' ),
+			'amount'          => __( 'Amount', 'linker-commerce' ),
+			'view'            => __( 'View', 'linker-commerce' ),
+			'document'        => __( 'Document', 'linker-commerce' ),
+			'download'        => __( 'Download (PDF)', 'linker-commerce' ),
+			'saved'           => __( 'Saved on', 'linker-commerce' ),
+			'add'             => __( 'Add to solution draft', 'linker-commerce' ),
+			'report'          => __( 'Design report (PDF)', 'linker-commerce' ),
+			'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+			'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+			'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
+			'empty-documents' => __( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
+			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
+		);
+		return esc_html( $labels[ (string) ( $atts['key'] ?? '' ) ] ?? '' );
+	}
+
+	/**
+	 * LC data loops, limited to the existing account's records and actions.
+	 *
+	 * @param array<string, string>|string $atts Attributes.
+	 */
+	public function rows( $atts = array() ): string {
+		if ( get_current_user_id() <= 0 ) {
+			return '';
+		}
+		$type = (string) ( $atts['type'] ?? '' );
+		$html = '';
+		switch ( $type ) {
+			case 'groups':
+				foreach ( array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' ) as $status ) {
+					$orders = array_values( array_filter( $this->overview_orders(), static fn ( WC_Order $order ): bool => $order->has_status( $status ) ) );
+					$html  .= $this->fragment(
+						'group',
+						array(
+							'status' => $status,
+							'title'  => wc_get_order_status_name( $status ),
+							'count'  => count( $orders ),
+							'orders' => $orders,
+						)
+					);
+				}
+				return $html;
+			case 'inquiries':
+				$orders = $this->row['orders'] ?? ( $this->args['customer_orders']->orders ?? array() );
+				foreach ( $orders as $order ) {
+					$order = wc_get_order( $order );
+					if ( $order instanceof WC_Order && $order->get_customer_id() === get_current_user_id() ) {
+						$html .= $this->fragment( 'inquiry-card', $this->order_row( $order ) );
+					}
+				}
+				return '' === $html ? $this->fragment( 'empty' ) : $html;
+			case 'actions':
+				$order = $this->row['order'] ?? null;
+				if ( $order instanceof WC_Order ) {
+					foreach ( wc_get_account_orders_actions( $order ) as $kind => $action ) {
+						$action['kind'] = $kind;
+						$html          .= $this->fragment( 'action', $action );
+					}
+				}
+				return $html;
+			case 'summary':
+				$order = $this->args['order'] ?? null;
+				// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Woo's per-order meta capability.
+				return $order instanceof WC_Order && current_user_can( 'view_order', $order->get_id() ) ? $this->fragment( 'summary', $this->order_row( $order ) ) : '';
+			case 'stages':
+				$order = $this->row['order'] ?? null;
+				if ( $order instanceof WC_Order ) {
+					// Only the stored status is current; no invented transition history.
+					foreach ( array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' ) as $status ) {
+						$html .= $this->fragment(
+							'stage',
+							array(
+								'label'   => wc_get_order_status_name( $status ),
+								'current' => $order->has_status( $status ) ? 'step' : 'false',
+							)
+						);
+					}
+				}
+				return $html;
+			case 'documents':
+				foreach ( $this->args['documents'] ?? array() as $document ) {
+					$document['date'] = wp_date( LocaleFormat::date_format(), $document['date'] );
+					$html            .= $this->fragment( 'document-row', $document );
+				}
+				return '' === $html ? $this->fragment( 'empty-documents' ) : $html;
+			case 'solutions':
+				$saved = $this->args['saved'] ?? null;
+				if ( $saved instanceof SavedSolutions ) {
+					foreach ( $this->args['solutions'] ?? array() as $solution ) {
+						if ( get_current_user_id() !== (int) $solution->post_author ) {
+							continue;
+						}
+						$items = '';
+						foreach ( $saved->items( $solution->ID ) as $item ) {
+							$product = wc_get_product( $item['product_id'] );
+							if ( $product ) {
+								$items .= $this->fragment(
+									'product-line',
+									array(
+										'quantity' => $item['quantity'],
+										'name'     => $product->get_name(),
+									)
+								);
+							}
+						}
+						$html .= $this->fragment(
+							'solution-card',
+							array(
+								'id'     => $solution->ID,
+								'title'  => $solution->post_title,
+								'date'   => wp_date( LocaleFormat::date_format(), (int) get_post_timestamp( $solution ) ),
+								'items'  => $items,
+								'nonce'  => wp_nonce_field( SavedSolutions::ADD_ACTION . '_' . $solution->ID, '_wpnonce', true, false ),
+								'report' => '' !== $saved->report_path( $solution->ID ) ? DocumentDownload::report_url( $solution->ID ) : '',
+							)
+						);
+					}
+				}
+				return '' === $html ? $this->fragment( 'empty-solutions' ) : $html;
+			case 'report':
+				return '' !== (string) ( $this->row['report'] ?? '' ) ? $this->fragment(
+					'action',
+					array(
+						'kind' => 'report',
+						'url'  => $this->row['report'],
+						'name' => __( 'Design report (PDF)', 'linker-commerce' ),
+					)
+				) : '';
+			case 'pagination':
+				$pages   = (int) ( $this->args['customer_orders']->max_num_pages ?? 1 );
+				$current = (int) ( $this->args['current_page'] ?? 1 );
+				if ( $current > 1 ) {
+					$html .= $this->fragment(
+						'page-link',
+						array(
+							'url'  => wc_get_endpoint_url( 'orders', (string) ( $current - 1 ) ),
+							'name' => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+						)
+					);
+				}
+				if ( $current < $pages ) {
+					$html .= $this->fragment(
+						'page-link',
+						array(
+							'url'  => wc_get_endpoint_url( 'orders', (string) ( $current + 1 ) ),
+							'name' => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+						)
+					);
+				}
+				return $html;
+		}
+		return '';
+	}
+
+	/**
+	 * The open tab changes only Woo's query, retaining its customer and paging.
+	 *
+	 * @param array<string, mixed> $query Woo's account query.
+	 * @return array<string, mixed>
+	 */
+	public function orders_query( array $query ): array {
+		if ( $this->open_only() ) {
+			$query['status'] = array( Statuses::RECEIVED, Statuses::PROFORMA );
+		}
+		return $query;
+	}
+
+	/** Read-only list selection, never an action or a mutation. */
+	private function open_only(): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
+		return isset( $_GET['inquiries'] ) && 'open' === $_GET['inquiries'];
+	}
+
+	/**
+	 * Dashboard data from Woo's storage-independent customer query.
+	 *
+	 * @return list<WC_Order>
+	 */
+	private function overview_orders(): array {
+		if ( null !== $this->overview ) {
+			return $this->overview;
+		}
+		$orders         = wc_get_orders(
+			array(
+				'customer_id' => get_current_user_id(),
+				'status'      => array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' ),
+				'limit'       => -1,
+			)
+		);
+		$this->overview = is_array( $orders ) ? array_values( $orders ) : array();
+		return $this->overview;
+	}
+
+	/**
+	 * Inquiry values from the one Woo order.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 * @return array<string, mixed>
+	 */
+	private function order_row( WC_Order $order ): array {
+		$items = '';
+		foreach ( $order->get_items() as $item ) {
+			$items .= $this->fragment(
+				'product-line',
+				array(
+					'quantity' => $item->get_quantity(),
+					'name'     => $item->get_name(),
+				)
+			);
+		}
+		return array(
+			'order'    => $order,
+			'id'       => $order->get_id(),
+			'number'   => $order->get_order_number(),
+			'status'   => wc_get_order_status_name( $order->get_status() ),
+			'date'     => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
+			'total'    => $order->get_formatted_order_total(),
+			'items'    => $items,
+			'url'      => $order->get_view_order_url(),
+			'proforma' => (string) $order->get_meta( Issuer::NUMBER_META ),
+		);
+	}
+}

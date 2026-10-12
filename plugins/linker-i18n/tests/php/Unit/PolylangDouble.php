@@ -87,7 +87,19 @@ final class PolylangDouble {
 				'return' => static fn( array $args = array() ): array => 'locale' === ( $args['fields'] ?? 'slug' ) ? array_values( self::LOCALES ) : array_keys( self::LOCALES ),
 			)
 		);
-		WP_Mock::userFunction( 'pll_current_language', array( 'return' => static fn( string $field = 'slug' ): string => 'locale' === $field ? self::LOCALES[ $current ] : $current ) );
+			WP_Mock::userFunction(
+				'pll_current_language',
+				array(
+					'return' => static function ( string $field = 'slug' ) use ( $current ): string {
+						// The current language is the one PLL() holds, so a test
+						// that moves it (as Languages::enter() does) is answered
+						// the same way Polylang answers.
+						$held = self::$polylang->curlang->get_prop( 'slug' );
+						$slug = is_string( $held ) && '' !== $held ? $held : $current;
+						return 'locale' === $field ? self::LOCALES[ $slug ] : $slug;
+					},
+				)
+			);
 		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => static fn( int $id ) => $post_languages[ $id ] ?? false ) );
 		WP_Mock::userFunction( 'pll_get_term_language', array( 'return' => static fn( int $id ) => $term_languages[ $id ] ?? false ) );
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id, string $language ) => $pair( $post_pairs, $post_languages, $id, $language ) ) );

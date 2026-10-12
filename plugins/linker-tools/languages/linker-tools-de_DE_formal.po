@@ -45,3 +45,11 @@ msgstr "Wie geht es weiter?"
 #: includes/Genie/Entries.php
 msgid "Where is my Proforma?"
 msgstr "Wo steht meine Proforma?"
+
+#: includes/Genie/Entries.php
+msgid "Genie could not load."
+msgstr "Genie konnte nicht geladen werden."
+
+#: includes/Genie/Entries.php
+msgid "Try again"
+msgstr "Erneut versuchen"

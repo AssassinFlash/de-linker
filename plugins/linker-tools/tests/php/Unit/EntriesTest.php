@@ -52,6 +52,9 @@ final class EntriesTest extends TestCase {
 		$inline = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
 		$this->assertArrayHasKey( 'data-linker-genie-loader', $inline );
 		$this->assertStringContainsString( 'genie.js', (string) $inline['data-linker-genie-boot-payload'] );
+		$payload = json_decode( (string) $inline['data-linker-genie-boot-payload'], true );
+		$this->assertSame( 'Genie could not load.', $payload['error'] );
+		$this->assertSame( 'Try again', $payload['retry'] );
 		$this->assertConditionsMet();
 	}
 
@@ -140,6 +143,10 @@ final class EntriesTest extends TestCase {
 			true
 		);
 		$this->assertIsArray( $payload );
+		// WP_Mock passes `__` through, so the payload carries the source
+		// strings here; the German wordings live in the hand-written .po.
+		$this->assertSame( 'Genie could not load.', $payload['error'] );
+		$this->assertSame( 'Try again', $payload['retry'] );
 		$this->assertCount( 1, $payload['translations'] );
 		$this->assertStringContainsString(
 			'setLocaleData',

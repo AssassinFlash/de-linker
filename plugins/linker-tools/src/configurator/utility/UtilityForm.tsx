@@ -60,9 +60,14 @@ export function UtilityForm( { config }: { config: Config } ) {
 			aria-labelledby="linker-utility-title"
 			lang={ config.locale }
 		>
-			<h2 className="linker-section__title" id="linker-utility-title">
-				{ __( 'Utility-scale inquiry', 'linker-tools' ) }
-			</h2>
+			<div className="linker-block__head">
+				<h2 className="linker-section__title" id="linker-utility-title">
+					{ __( 'Utility-scale inquiry', 'linker-tools' ) }
+				</h2>
+				<p className="linker-block__step">
+					{ __( 'Step 2 · The project we quote', 'linker-tools' ) }
+				</p>
+			</div>
 			<p className="linker-section__note">
 				{ __(
 					'We quote utility-scale storage per project. Describe the project and our team replies within one business day.',
@@ -70,44 +75,47 @@ export function UtilityForm( { config }: { config: Config } ) {
 				) }
 			</p>
 			<div className="linker-form">
-				<div className="linker-form__grid">
-					{ (
-						Object.keys( labels ) as ( keyof typeof labels )[]
-					 ).map( ( key ) => (
-						<div className="linker-field" key={ key }>
-							<label
-								className="linker-field__label"
-								htmlFor={ `linker-utility-${ key }` }
-							>
-								{ labels[ key ] }
-							</label>
-							{ key === 'message' ? (
-								<textarea
-									id={ `linker-utility-${ key }` }
-									rows={ 4 }
-									value={ values[ key ] }
-									onChange={ ( event ) =>
-										setValues( {
-											...values,
-											[ key ]: event.target.value,
-										} )
-									}
-								/>
-							) : (
-								<input
-									id={ `linker-utility-${ key }` }
-									value={ values[ key ] }
-									onChange={ ( event ) =>
-										setValues( {
-											...values,
-											[ key ]: event.target.value,
-										} )
-									}
-								/>
-							) }
-						</div>
-					) ) }
-				</div>
+				<fieldset className="linker-group">
+					<legend>{ __( 'Project', 'linker-tools' ) }</legend>
+					<div className="linker-form__grid">
+						{ (
+							Object.keys( labels ) as ( keyof typeof labels )[]
+						 ).map( ( key ) => (
+							<div className="linker-field" key={ key }>
+								<label
+									className="linker-field__label"
+									htmlFor={ `linker-utility-${ key }` }
+								>
+									{ labels[ key ] }
+								</label>
+								{ key === 'message' ? (
+									<textarea
+										id={ `linker-utility-${ key }` }
+										rows={ 4 }
+										value={ values[ key ] }
+										onChange={ ( event ) =>
+											setValues( {
+												...values,
+												[ key ]: event.target.value,
+											} )
+										}
+									/>
+								) : (
+									<input
+										id={ `linker-utility-${ key }` }
+										value={ values[ key ] }
+										onChange={ ( event ) =>
+											setValues( {
+												...values,
+												[ key ]: event.target.value,
+											} )
+										}
+									/>
+								) }
+							</div>
+						) ) }
+					</div>
+				</fieldset>
 				<div className="linker-form__submit">
 					<a
 						className="linker-button linker-button--primary"

@@ -188,266 +188,293 @@ export function CommercialPanel( {
 				className="linker-section"
 				aria-labelledby="linker-ci-title"
 			>
-				<h2 className="linker-section__title" id="linker-ci-title">
-					{ __( 'Inputs', 'linker-tools' ) }
-				</h2>
+				<div className="linker-block__head">
+					<h2 className="linker-section__title" id="linker-ci-title">
+						{ __( 'Inputs', 'linker-tools' ) }
+					</h2>
+					<p className="linker-block__step">
+						{ __(
+							'Step 2 · The figures that size the storage',
+							'linker-tools'
+						) }
+					</p>
+				</div>
 				<form
 					className="linker-form"
 					noValidate
 					onSubmit={ handleSubmit( run ) }
 				>
-					<div className="linker-form__grid">
-						<Field
-							id="linker-ci-plz"
-							label={ __(
-								'Postcode of the site',
-								'linker-tools'
-							) }
-							error={ errors.plz?.message }
-						>
-							<input
-								id="linker-ci-plz"
-								inputMode="numeric"
-								maxLength={ 5 }
-								{ ...register( 'plz' ) }
-							/>
-						</Field>
-						<Field
-							id="linker-ci-grid"
-							label={ __(
-								'Grid connection capacity',
-								'linker-tools'
-							) }
-							unit="kVA"
-							error={ errors.grid_connection_kva?.message }
-						>
-							<input
-								id="linker-ci-grid"
-								inputMode="decimal"
-								{ ...register( 'grid_connection_kva' ) }
-							/>
-						</Field>
-						<Field
-							id="linker-ci-annual"
-							label={ __( 'Annual consumption', 'linker-tools' ) }
-							unit="kWh"
-							error={ errors.annual_kwh?.message }
-						>
-							<input
-								id="linker-ci-annual"
-								inputMode="decimal"
-								{ ...register( 'annual_kwh' ) }
-							/>
-						</Field>
-						<fieldset className="linker-form__choice">
-							<legend>{ __( 'Goals', 'linker-tools' ) }</legend>
-							<label htmlFor="linker-ci-goal-peak_shaving">
-								<input
-									id="linker-ci-goal-peak_shaving"
-									type="checkbox"
-									value="peak_shaving"
-									{ ...register( 'goals' ) }
-								/>
-								{ __( 'Peak shaving', 'linker-tools' ) }
-							</label>
-							<label htmlFor="linker-ci-goal-self_consumption">
-								<input
-									id="linker-ci-goal-self_consumption"
-									type="checkbox"
-									value="self_consumption"
-									{ ...register( 'goals' ) }
-								/>
-								{ __(
-									'Self-consumption of PV',
-									'linker-tools'
-								) }
-							</label>
-							<label htmlFor="linker-ci-goal-backup">
-								<input
-									id="linker-ci-goal-backup"
-									type="checkbox"
-									value="backup"
-									{ ...register( 'goals' ) }
-								/>
-								{ __( 'Backup supply', 'linker-tools' ) }
-							</label>
-							<p className="linker-field__error" role="alert">
-								{ errors.goals?.message ?? '' }
-							</p>
-						</fieldset>
-						{ goals.includes( 'peak_shaving' ) ? (
-							<>
-								<Field
-									id="linker-ci-peak"
-									label={ __(
-										'Annual peak from the bill',
-										'linker-tools'
-									) }
-									unit="kW"
-									hint={ __(
-										'Optional when you upload the load profile.',
-										'linker-tools'
-									) }
-									error={ errors.peak_kw?.message }
-								>
-									<input
-										id="linker-ci-peak"
-										inputMode="decimal"
-										{ ...register( 'peak_kw' ) }
-									/>
-								</Field>
-								<Field
-									id="linker-ci-target"
-									label={ __(
-										'Target peak',
-										'linker-tools'
-									) }
-									unit="kW"
-									error={ errors.target_peak_kw?.message }
-								>
-									<input
-										id="linker-ci-target"
-										inputMode="decimal"
-										{ ...register( 'target_peak_kw' ) }
-									/>
-								</Field>
-							</>
-						) : null }
-						{ goals.includes( 'self_consumption' ) ? (
+					<fieldset className="linker-group">
+						<legend>{ __( 'Site', 'linker-tools' ) }</legend>
+						<div className="linker-form__grid">
 							<Field
-								id="linker-ci-pv"
+								id="linker-ci-plz"
 								label={ __(
-									'PV array, existing or planned',
+									'Postcode of the site',
 									'linker-tools'
 								) }
-								unit="kWp"
-								error={ errors.pv_kwp?.message }
+								error={ errors.plz?.message }
 							>
 								<input
-									id="linker-ci-pv"
-									inputMode="decimal"
-									{ ...register( 'pv_kwp' ) }
+									id="linker-ci-plz"
+									inputMode="numeric"
+									maxLength={ 5 }
+									{ ...register( 'plz' ) }
 								/>
 							</Field>
-						) : null }
-						{ goals.includes( 'backup' ) ? (
-							<>
-								<Field
-									id="linker-ci-backup"
-									label={ __(
-										'Load to keep running',
+							<Field
+								id="linker-ci-grid"
+								label={ __(
+									'Grid connection capacity',
+									'linker-tools'
+								) }
+								unit="kVA"
+								error={ errors.grid_connection_kva?.message }
+							>
+								<input
+									id="linker-ci-grid"
+									inputMode="decimal"
+									{ ...register( 'grid_connection_kva' ) }
+								/>
+							</Field>
+							<Field
+								id="linker-ci-annual"
+								label={ __(
+									'Annual consumption',
+									'linker-tools'
+								) }
+								unit="kWh"
+								error={ errors.annual_kwh?.message }
+							>
+								<input
+									id="linker-ci-annual"
+									inputMode="decimal"
+									{ ...register( 'annual_kwh' ) }
+								/>
+							</Field>
+						</div>
+					</fieldset>
+					<fieldset className="linker-group">
+						<legend>{ __( 'Goals', 'linker-tools' ) }</legend>
+						<div className="linker-form__grid">
+							<div className="linker-form__choice linker-cards-choice">
+								<label htmlFor="linker-ci-goal-peak_shaving">
+									<input
+										id="linker-ci-goal-peak_shaving"
+										type="checkbox"
+										value="peak_shaving"
+										{ ...register( 'goals' ) }
+									/>
+									{ __( 'Peak shaving', 'linker-tools' ) }
+								</label>
+								<label htmlFor="linker-ci-goal-self_consumption">
+									<input
+										id="linker-ci-goal-self_consumption"
+										type="checkbox"
+										value="self_consumption"
+										{ ...register( 'goals' ) }
+									/>
+									{ __(
+										'Self-consumption of PV',
 										'linker-tools'
 									) }
-									unit="kW"
-									error={ errors.backup_load_kw?.message }
+								</label>
+								<label htmlFor="linker-ci-goal-backup">
+									<input
+										id="linker-ci-goal-backup"
+										type="checkbox"
+										value="backup"
+										{ ...register( 'goals' ) }
+									/>
+									{ __( 'Backup supply', 'linker-tools' ) }
+								</label>
+								<p className="linker-field__error" role="alert">
+									{ errors.goals?.message ?? '' }
+								</p>
+							</div>
+							{ goals.includes( 'peak_shaving' ) ? (
+								<>
+									<Field
+										id="linker-ci-peak"
+										label={ __(
+											'Annual peak from the bill',
+											'linker-tools'
+										) }
+										unit="kW"
+										hint={ __(
+											'Optional when you upload the load profile.',
+											'linker-tools'
+										) }
+										error={ errors.peak_kw?.message }
+									>
+										<input
+											id="linker-ci-peak"
+											inputMode="decimal"
+											{ ...register( 'peak_kw' ) }
+										/>
+									</Field>
+									<Field
+										id="linker-ci-target"
+										label={ __(
+											'Target peak',
+											'linker-tools'
+										) }
+										unit="kW"
+										error={ errors.target_peak_kw?.message }
+									>
+										<input
+											id="linker-ci-target"
+											inputMode="decimal"
+											{ ...register( 'target_peak_kw' ) }
+										/>
+									</Field>
+								</>
+							) : null }
+							{ goals.includes( 'self_consumption' ) ? (
+								<Field
+									id="linker-ci-pv"
+									label={ __(
+										'PV array, existing or planned',
+										'linker-tools'
+									) }
+									unit="kWp"
+									error={ errors.pv_kwp?.message }
 								>
 									<input
+										id="linker-ci-pv"
+										inputMode="decimal"
+										{ ...register( 'pv_kwp' ) }
+									/>
+								</Field>
+							) : null }
+							{ goals.includes( 'backup' ) ? (
+								<>
+									<Field
 										id="linker-ci-backup"
-										inputMode="decimal"
-										{ ...register( 'backup_load_kw' ) }
-									/>
-								</Field>
-								<Field
-									id="linker-ci-hours"
-									label={ __(
-										'For how long',
-										'linker-tools'
-									) }
-									unit="h"
-									error={ errors.backup_hours?.message }
-								>
-									<input
+										label={ __(
+											'Load to keep running',
+											'linker-tools'
+										) }
+										unit="kW"
+										error={ errors.backup_load_kw?.message }
+									>
+										<input
+											id="linker-ci-backup"
+											inputMode="decimal"
+											{ ...register( 'backup_load_kw' ) }
+										/>
+									</Field>
+									<Field
 										id="linker-ci-hours"
-										inputMode="decimal"
-										{ ...register( 'backup_hours' ) }
-									/>
-								</Field>
-							</>
-						) : null }
-						<FilePicker
-							id="linker-ci-profile"
-							label={ __(
-								'15-minute load profile (CSV, optional)',
-								'linker-tools'
-							) }
-							button={ __( 'Choose file', 'linker-tools' ) }
-							accept=".csv,text/csv,text/plain"
-							chosen={
-								profile?.name ??
-								__( 'No file chosen', 'linker-tools' )
-							}
-							hint={ __(
-								'One value per line, optionally after a timestamp; the last number of each line counts.',
-								'linker-tools'
-							) }
-							onChoose={ async ( file ) =>
-								setProfile(
-									file
-										? {
-												name: file.name,
-												text: await file.text(),
-											}
-										: null
-								)
-							}
-						/>
-						<Field
-							id="linker-ci-unit"
-							label={ __( 'Values in the file', 'linker-tools' ) }
-						>
-							<select
-								id="linker-ci-unit"
-								{ ...register( 'load_profile_unit' ) }
-							>
-								<option value="kW">
-									{ __(
-										'Average power in kW',
-										'linker-tools'
-									) }
-								</option>
-								<option value="kWh">
-									{ __(
-										'Energy per 15 minutes in kWh',
-										'linker-tools'
-									) }
-								</option>
-							</select>
-						</Field>
-						<Field
-							id="linker-ci-site"
-							label={ __( 'Installation place', 'linker-tools' ) }
-						>
-							<select
-								id="linker-ci-site"
-								{ ...register( 'installation' ) }
-							>
-								<option value="unknown">
-									{ __( 'Not decided', 'linker-tools' ) }
-								</option>
-								<option value="indoor">
-									{ __( 'Indoors', 'linker-tools' ) }
-								</option>
-								<option value="outdoor">
-									{ __( 'Outdoors', 'linker-tools' ) }
-								</option>
-							</select>
-						</Field>
-						<Field
-							id="linker-ci-notes"
-							label={ __( 'Site conditions', 'linker-tools' ) }
-							hint={ __(
-								'Space, access, fire protection: anything we should know.',
-								'linker-tools'
-							) }
-						>
-							<textarea
-								id="linker-ci-notes"
-								rows={ 3 }
-								maxLength={ 500 }
-								{ ...register( 'notes' ) }
+										label={ __(
+											'For how long',
+											'linker-tools'
+										) }
+										unit="h"
+										error={ errors.backup_hours?.message }
+									>
+										<input
+											id="linker-ci-hours"
+											inputMode="decimal"
+											{ ...register( 'backup_hours' ) }
+										/>
+									</Field>
+								</>
+							) : null }
+							<FilePicker
+								id="linker-ci-profile"
+								label={ __(
+									'15-minute load profile (CSV, optional)',
+									'linker-tools'
+								) }
+								button={ __( 'Choose file', 'linker-tools' ) }
+								accept=".csv,text/csv,text/plain"
+								chosen={
+									profile?.name ??
+									__( 'No file chosen', 'linker-tools' )
+								}
+								hint={ __(
+									'One value per line, optionally after a timestamp; the last number of each line counts.',
+									'linker-tools'
+								) }
+								onChoose={ async ( file ) =>
+									setProfile(
+										file
+											? {
+													name: file.name,
+													text: await file.text(),
+												}
+											: null
+									)
+								}
 							/>
-						</Field>
-					</div>
+							<Field
+								id="linker-ci-unit"
+								label={ __(
+									'Values in the file',
+									'linker-tools'
+								) }
+							>
+								<select
+									id="linker-ci-unit"
+									{ ...register( 'load_profile_unit' ) }
+								>
+									<option value="kW">
+										{ __(
+											'Average power in kW',
+											'linker-tools'
+										) }
+									</option>
+									<option value="kWh">
+										{ __(
+											'Energy per 15 minutes in kWh',
+											'linker-tools'
+										) }
+									</option>
+								</select>
+							</Field>
+							<Field
+								id="linker-ci-site"
+								label={ __(
+									'Installation place',
+									'linker-tools'
+								) }
+							>
+								<select
+									id="linker-ci-site"
+									{ ...register( 'installation' ) }
+								>
+									<option value="unknown">
+										{ __( 'Not decided', 'linker-tools' ) }
+									</option>
+									<option value="indoor">
+										{ __( 'Indoors', 'linker-tools' ) }
+									</option>
+									<option value="outdoor">
+										{ __( 'Outdoors', 'linker-tools' ) }
+									</option>
+								</select>
+							</Field>
+							<Field
+								id="linker-ci-notes"
+								label={ __(
+									'Site conditions',
+									'linker-tools'
+								) }
+								hint={ __(
+									'Space, access, fire protection: anything we should know.',
+									'linker-tools'
+								) }
+							>
+								<textarea
+									id="linker-ci-notes"
+									rows={ 3 }
+									maxLength={ 500 }
+									{ ...register( 'notes' ) }
+								/>
+							</Field>
+						</div>
+					</fieldset>
 					<div className="linker-form__submit">
 						<button
 							type="submit"
@@ -467,12 +494,20 @@ export function CommercialPanel( {
 				aria-labelledby="linker-ci-result-title"
 				aria-busy={ busy }
 			>
-				<h2
-					className="linker-section__title"
-					id="linker-ci-result-title"
-				>
-					{ __( 'Result', 'linker-tools' ) }
-				</h2>
+				<div className="linker-block__head">
+					<h2
+						className="linker-section__title"
+						id="linker-ci-result-title"
+					>
+						{ __( 'Result', 'linker-tools' ) }
+					</h2>
+					<p className="linker-block__step">
+						{ __(
+							'Step 3 · Sized storage, or indicative ranges',
+							'linker-tools'
+						) }
+					</p>
+				</div>
 				{ failure ? (
 					<p
 						className="linker-empty linker-empty--error"

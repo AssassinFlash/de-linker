@@ -1,0 +1,31 @@
+{
+  "base": "http://127.0.0.1:8984",
+  "phase": "before",
+  "scope": "entry protocol only; REST fixtures, no model calls",
+  "results": [
+    {
+      "name": "en-1440-bubble",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator('.linker-genie-app__composer') to be visible\n",
+      "appLoads": 1,
+      "posts": [],
+      "errors": []
+    },
+    {
+      "name": "en-1440-pdp",
+      "pass": false,
+      "error": "page.waitForFunction: Timeout 30000ms exceeded.",
+      "appLoads": 0,
+      "posts": [],
+      "errors": []
+    },
+    {
+      "name": "en-390-shop",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator('.linker-genie-app__composer') to be visible\n",
+      "appLoads": 1,
+      "posts": [],
+      "errors": []
+    }
+  ]
+}

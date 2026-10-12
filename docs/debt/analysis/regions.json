@@ -1,0 +1,92 @@
+{
+  "capture_sha": "e154e4662f75c92cd61ddca32e15600c65e094e2",
+  "viewport": [
+    1440,
+    900
+  ],
+  "png_size": [
+    1440,
+    8264
+  ],
+  "threshold": 0,
+  "masks": [],
+  "alignment": "none",
+  "purpose": "manual reading bands, not exact DOM boundaries or exemptions",
+  "total_pixels": 11900160,
+  "diff_pixels": 1039251,
+  "diff_percent": 8.733084261051951,
+  "regions": [
+    {
+      "region": "header-cross-reference",
+      "y": [
+        0,
+        136
+      ],
+      "diff_pixels": 2111
+    },
+    {
+      "region": "hero",
+      "y": [
+        136,
+        1076
+      ],
+      "diff_pixels": 294653
+    },
+    {
+      "region": "intro-cards",
+      "y": [
+        1076,
+        1450
+      ],
+      "diff_pixels": 3
+    },
+    {
+      "region": "sourcing",
+      "y": [
+        1450,
+        2390
+      ],
+      "diff_pixels": 77564
+    },
+    {
+      "region": "solutions",
+      "y": [
+        2390,
+        4470
+      ],
+      "diff_pixels": 262630
+    },
+    {
+      "region": "project-steps",
+      "y": [
+        4470,
+        5470
+      ],
+      "diff_pixels": 69613
+    },
+    {
+      "region": "testimonials",
+      "y": [
+        5470,
+        6800
+      ],
+      "diff_pixels": 0
+    },
+    {
+      "region": "cta",
+      "y": [
+        6800,
+        7740
+      ],
+      "diff_pixels": 332677
+    },
+    {
+      "region": "footer",
+      "y": [
+        7740,
+        8264
+      ],
+      "diff_pixels": 0
+    }
+  ]
+}

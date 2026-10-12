@@ -1,0 +1,80 @@
+{
+  "base": "b6bc08410d7c83a01fd6665b93e11bf555dccd5b",
+  "instance": "genieentry",
+  "url": "http://127.0.0.1:8984",
+  "snapshot": "20261011-1732",
+  "scope": "Entry protocol only: real snapshot pages, shipped loader/App/search scripts; browser intercepts Genie REST. No Genie/model service was started, no external model API called, no production writes.",
+  "rootCause": "The loader only revealed the mount while App stayed closed; PDP ask events before mount were lost. The former acceptance helper masked this with a second entry click.",
+  "protocol": "Entries owns pending open/question and boots once. App installs its open listener, reports ready; Entries consumes the pending message once. App reports open/Hide state to the shell. Search only emits the existing ask event. First ask awaits conversation restore and appends to restored history.",
+  "checks": [
+    {
+      "command": "node docs/acceptance/2026-10-12/genie-entry-fix/entry-regression.mjs before --smoke",
+      "result": "RED: desktop bubble has no composer; fresh PDP Ask does not load app; mobile shop Ask has no composer"
+    },
+    {
+      "command": "just build",
+      "result": "PASS; existing configurator vendor chunk size warning remains"
+    },
+    {
+      "command": "npm --prefix plugins/linker-tools run test:unit -- --run src/genie/App.test.tsx src/genie/CardStates.test.tsx",
+      "result": "PASS 10 tests, including ready/open/Hide and first ask appended to late restored history exactly once"
+    },
+    {
+      "command": "npm --prefix plugins/linker-tools run lint:types",
+      "result": "PASS"
+    },
+    {
+      "command": "npx wp-scripts lint-js --max-warnings=0 src/genie/App.tsx src/genie/App.test.tsx assets/search-ask.js (cwd plugins/linker-tools)",
+      "result": "PASS"
+    },
+    {
+      "command": "npx prettier --check src/genie/App.tsx src/genie/App.test.tsx src/genie/config.ts src/genie/genie.css assets/search-ask.js (cwd plugins/linker-tools)",
+      "result": "PASS"
+    },
+    {
+      "command": "php vendor/bin/phpcs --standard=phpcs.xml.dist includes/Genie/Entries.php (PHP 8.3, cwd plugins/linker-tools)",
+      "result": "PASS"
+    },
+    {
+      "command": "php vendor/bin/phpunit tests/php/Unit/EntriesTest.php (PHP 8.3, cwd plugins/linker-tools)",
+      "result": "PASS 9 tests, 42 assertions"
+    },
+    {
+      "command": "just build::check",
+      "result": "PASS: build matches sources"
+    },
+    {
+      "command": "node docs/acceptance/2026-10-12/genie-entry-fix/entry-regression.mjs after",
+      "result": "EN seven actual-page scenarios PASS: 1440 PDP/shop/search/bubble; 390 PDP/shop/search. Each fresh entry loads one bundle, each explicit ask one POST, Hide/reopen stable, late restore retains old history. Matrix exit 1: DE product/shop translated objects are absent in this snapshot instance and URLs return 404; not an entry verdict. The DE bubble row ran on the 404 shell and is NOT German page acceptance."
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "GENIE_ENTRY_LOCALE=de node docs/acceptance/2026-10-12/genie-entry-fix/entry-regression.mjs de-final",
+      "result": "PASS 7 real DE page scenarios, exit 0: 1440 PDP/shop/search/bubble, 390 PDP/shop/search; HTTP 200 and html lang de asserted. Restored history plus first ask once, one bundle, Hide/reopen stable. Supersedes initial DE 404 fixture failures; those records retained as historical."
+    },
+    {
+      "command": "Local linker-i18n import --input=- --format=json --user=<snapshot administrator>; rewrite flush; cache flush",
+      "result": "Narrow fixture completion only: product 6530→6574/shop 1034→6575 from stored German snapshot fields; modern LC templates 234→6577/shop6564→6579 through existing Twins importer. No translation model calls. Sources/results in de-fixture-import.json. No snapshot reload."
+    },
+    {
+      "command": "node docs/acceptance/2026-10-12/genie-entry-fix/load-retry.mjs retry-after (after the Entries.php loader fix, head 0a37496)",
+      "result": "PASS both failure modes (app bundle aborted; wp element dependency aborted): visible error section with an Open retry, the queued first question posts exactly once after retry, success loads the app once, a failed dependency never executes broken JS. retry-*-unrecovered.png are historical from a fixture lacking meta.turn_id, not current failures."
+    }
+  ],
+  "visual": {
+    "C1": "Closed PDP title bar stays hidden; open conversation retains title bar. No rollback of approved selector.",
+    "C2": "390px open card remains white, border rgb(226,229,229), radius 14px and max-height 72vh; Hide removes mobile card. Background/line use the existing same-value surface/line tokens. Radius/shadow stay proposal-specific because no equivalent token exists.",
+    "script": "Historical r2c-implemented.mjs relocated to visual-round2/implemented-c/tools with repository root adjusted. Historical screenshots are not claimed as F1 evidence."
+  },
+  "notClaimed": [
+    "Model answer/grounding acceptance",
+    "Independent Spec/Standards review (parent dispatch ongoing)",
+    "Official visual acceptance (parent to perform)"
+  ],
+  "delivery": "PR only; no merge, auto-merge, deployment, cutover #17 or account-scope changes.",
+  "implementationHead": "160fdcfac48f42f1729d2547dfa771c4e6843744",
+  "finalEntryAcceptance": "EN 7 real-page scenarios passed in after-results.json; DE 7 real-page scenarios passed in de-final-results.json. after-results.json DE failures are pre-fixture historical evidence, not current product failures or a pass claim."
+}
