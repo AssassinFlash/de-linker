@@ -72,6 +72,15 @@
 	}
 	document.addEventListener( 'click', event => {
 		disclosures.forEach( item => { if ( ! item.contains( event.target ) ) setOpen( item, false ); } );
+		if ( panel && panel.dataset.open === 'true' && ! panel.contains( event.target ) && ! toggle.contains( event.target ) ) {
+			setPanel( false );
+		}
+	} );
+	document.addEventListener( 'focusout', event => {
+		if ( ! panel || panel.dataset.open !== 'true' ) return;
+		const next = event.relatedTarget;
+		if ( next && ( panel.contains( next ) || toggle.contains( next ) ) ) return;
+		setPanel( false );
 	} );
 	document.addEventListener( 'keydown', event => {
 		if ( event.key !== 'Escape' ) return;

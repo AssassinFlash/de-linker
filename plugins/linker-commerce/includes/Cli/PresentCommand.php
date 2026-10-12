@@ -262,9 +262,11 @@ final class PresentCommand {
 
 	/**
 	 * The files this run installs from or serves: the LiveCanvas templates, the
-	 * tokens stylesheet, and the fonts its @font-face rules point at (the
-	 * visitor loads them straight from the plugin, so a missing font file is
-	 * the same broken presentation as an empty template).
+	 * two header partials, the tokens stylesheet, and the fonts its @font-face
+	 * rules point at (the visitor loads them straight from the plugin, so a
+	 * missing font file is the same broken presentation as an empty template).
+	 * A missing or empty header partial is refused here, before anything is
+	 * written.
 	 *
 	 * @return list<string>
 	 */
@@ -272,7 +274,7 @@ final class PresentCommand {
 		if ( null !== $this->source_files ) {
 			return $this->source_files;
 		}
-		return array_merge( array_values( Templates::catalog() ), array( Tokens::path() ), Tokens::fonts(), WindPressVolume::files() );
+		return array_merge( array_values( Templates::catalog() ), Templates::header_partials(), array( Tokens::path() ), Tokens::fonts(), WindPressVolume::files() );
 	}
 
 	/**

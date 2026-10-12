@@ -73,6 +73,7 @@ final class TemplatesTest extends TestCase {
 	public function test_sync_inserts_slashed_and_raises_on_a_refused_insert(): void {
 		$slashed = 0;
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => true ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
 		WP_Mock::userFunction(
 			'wp_slash',
@@ -116,6 +117,7 @@ final class TemplatesTest extends TestCase {
 		$updated  = 0;
 		$slashes  = 0;
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		WP_Mock::userFunction(
 			'get_posts',
 			array(
@@ -206,6 +208,7 @@ final class TemplatesTest extends TestCase {
 		$updated = 0;
 		$inserts = 0;
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		WP_Mock::userFunction(
 			'get_posts',
 			array(
@@ -266,6 +269,7 @@ final class TemplatesTest extends TestCase {
 	public function test_sync_assigns_the_source_language_to_languageless_templates(): void {
 		$assigned = array();
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		WP_Mock::userFunction(
 			'get_posts',
 			array(
@@ -314,6 +318,7 @@ final class TemplatesTest extends TestCase {
 	public function test_sync_skips_the_language_when_no_language_is_configured(): void {
 		$assigned = array();
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		WP_Mock::userFunction(
 			'get_posts',
 			array(
@@ -378,6 +383,7 @@ final class TemplatesTest extends TestCase {
 				'post_type' => 'page',
 			),
 		);
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		WP_Mock::userFunction(
 			'get_posts',
 			array(
@@ -456,6 +462,51 @@ final class TemplatesTest extends TestCase {
 		$this->assertSame( 'linker-compare-de', $assigned[6608] );
 		$this->assertSame( 'linker-faq', $assigned[932] );
 		$this->assertSame( 'linker-faq-de', $assigned[6871] );
+	}
+
+	/**
+	 * The installed header and its German twin are written from the two
+	 * exports. The German export is already localized, so a repeat present
+	 * keeps the German addresses.
+	 */
+	public function test_sync_writes_the_localized_header_partials(): void {
+		$files   = Templates::header_partials();
+		$written = array();
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_default_language', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn( string $value ): string => $value ) );
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => static function ( array $args ): array {
+					if ( 'lc_partial' === ( $args['post_type'] ?? '' ) && 'header' === ( $args['name'] ?? '' ) ) {
+						return array( self::post( 40, 'stale header' ) );
+					}
+					return array();
+				},
+			)
+		);
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id ): int => 40 === $id ? 41 : 0 ) );
+		WP_Mock::userFunction( 'get_post', array( 'return' => static fn( int $id ): WP_Post => self::post( $id, 'stale header' ) ) );
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'return' => static function ( array $data ) use ( &$written ): int {
+					$written[ (int) $data['ID'] ] = (string) $data['post_content'];
+					return (int) $data['ID'];
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_insert_post', array( 'return' => 1 ) );
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+
+		( new Templates() )->sync();
+
+		$this->assertSame( (string) file_get_contents( $files[0] ), $written[40] );
+		$this->assertSame( (string) file_get_contents( $files[1] ), $written[41] );
+		$this->assertStringContainsString( 'href="/de/loesung/heimspeicher/"', $written[41] );
+		$this->assertStringNotContainsString( 'href="/solution/', $written[41] );
+		$this->assertSame( 35, substr_count( $written[40], '<rect x=' ) );
 	}
 
 	/**

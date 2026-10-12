@@ -69,6 +69,18 @@ final class Templates {
 	);
 
 	/**
+	 * The header partials `present` installs, English then German. Both
+	 * must be readable and non-empty before a run may write: an empty
+	 * source would blank the live header.
+	 *
+	 * @return list<string> Absolute paths.
+	 */
+	public static function header_partials(): array {
+		$dir = dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/partials/';
+		return array( $dir . 'header.html', $dir . 'de/header.html' );
+	}
+
+	/**
 	 * Absolute paths of the exported HTML, keyed by LiveCanvas meta.
 	 *
 	 * @return array<string, string>
@@ -159,9 +171,20 @@ final class Templates {
 	 * Syncs the existing header and its Polylang twin from the LC exports.
 	 * Does not create substitute partials or change the theme's assignments.
 	 *
-	 * @throws \RuntimeException When WordPress refuses the partial update.
+	 * A missing or empty export is a refusal, not a write: writing '' would
+	 * blank the live header. The German export is already localized (its
+	 * links are German addresses), so the write is the file itself.
+	 *
+	 * @throws \RuntimeException When a source is missing or empty, or WordPress refuses the update.
 	 */
 	private function sync_header_partials(): int {
+		$files = self::header_partials();
+		foreach ( $files as $file ) {
+			if ( '' === trim( Tokens::read( $file ) ) ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- an exception message for the operator log, not page output.
+				throw new \RuntimeException( sprintf( 'Header partial source is missing or empty: %s', $file ) );
+			}
+		}
 		$posts = get_posts(
 			array(
 				'post_type'      => 'lc_partial',
@@ -184,8 +207,7 @@ final class Templates {
 		}
 		$updated = 0;
 		foreach ( $ids as $lang => $id ) {
-			$file = dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/partials/' . ( 'de' === $lang ? 'de/' : '' ) . 'header.html';
-			$html = Tokens::read( $file );
+			$html = Tokens::read( $files[ 'de' === $lang ? 1 : 0 ] );
 			$post = get_post( $id );
 			if ( $post instanceof WP_Post && $post->post_content === $html ) {
 				continue;

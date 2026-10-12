@@ -54,3 +54,17 @@ Local site survives at **http://127.0.0.1:8975/** and **http://127.0.0.1:8975/de
 Open each locale at1440/390, guest plus logged-in customer (mint `just login t110 --user=customer-3` locally). Check Search target, zero/nonzero draft count, account hover/click/keyboard close and current seven-item Menu URLs, language switch, all five megas or drawer accordions (DE1440 intentionally folds), tools approved copy, sticky scroll. Also compare screenshots using same official browser with animations disabled and fonts/images settled.
 
 Actual pixel equality has not been measured/certified by the official surface; do not mark accepted merely from boxes. Approved tools rename/two-card layout and repository-only account menu text are separate change ledger items, not undeclared dynamic masks. Nonzero cart count is real session state; live-only logged-in data was not mutated or newly authenticated in this run. Account page inner content is another lane, excluded here.
+
+## Seven required fixes — 2026-10-12 (follow-up on b01f46e)
+
+HTML assertions below are `curl` of the local t110 instance (127.0.0.1:8975, plugin symlink to this worktree), not a browser verification.
+
+1. Language switch keeps context. `CatalogShortcodes::language_url` reads Polylang's own switcher (`pll_the_languages`, whose URLs pass linker-i18n's `pll_translation_url` filter) and carries the request's account endpoint and the query keys the visitor actually set (`s`, `orderby`, `step`). Curl, both directions: `/my-account/inquiries/` ↔ `/de/mein-konto/inquiries/`; `/linker-planner/?step=roof` ↔ `/de/linker-planer/?step=roof`; `/products/?orderby=price` ↔ `/de/produkte/?orderby=price`; `/?s=battery` ↔ `/de/?s=battery`; `/product-category/home-storage/` ↔ `/de/produkt-kategorie/heimspeicher/`. A category no longer falls back to the home page.
+2. The German header export no longer points at English solution pages. `de/header.html` links `/de/loesung/heimspeicher/`, `/de/loesung/gewerbespeicher/` and `/de/loesung/grossspeicher/` (the live German addresses), so a repeat `present` keeps them.
+3. The tools roof carries its 35 panel cells as static `<rect>` markup in both header exports. The WindPress rule that drew them at `opacity:0` / `scale(.3)` now only sets their fill and stroke, so the cells are visible without the script that used to draw them.
+4. The header's draft link reads Solution draft / Lösungsentwurf, including its aria-label. The `Cart` / `Warenkorb` pair is gone from the plugin's German catalog; the existing `Solution draft` entry translates it.
+5. `PresentCommand::sources()` includes both header partials, so a missing or empty one is refused before anything is written. `Templates::sync_header_partials` refuses the same way.
+6. The two header partials no longer inline the 8755-character tokens block or the 1434-character site-base reset. Both now live once, in the WindPress volume (`content/windpress/tokens.css`, identical to `content/tokens.css`, and `content/windpress/site-base.css`). A Tailwind 4.3 compile of the volume keeps every declaration, including `all: revert`.
+7. An outside click and a focus leaving the mobile panel close it and clear `aria-expanded`, the same way Escape already did (`assets/header-menu.js`).
+
+The `pll_get_post` stub the whole suite was missing is added inside the presentation tests, so `test_detach_partials` no longer depends on another test's mock.

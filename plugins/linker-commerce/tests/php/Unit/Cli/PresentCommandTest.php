@@ -130,6 +130,32 @@ final class PresentCommandTest extends TestCase {
 	}
 
 	/**
+	 * The two header partials are sources of the run: a missing one is refused
+	 * before anything is written.
+	 */
+	public function test_header_partials_are_required_sources(): void {
+		$partials = \Linker\Commerce\Presentation\Templates::header_partials();
+		$this->assertCount( 2, $partials );
+		foreach ( $partials as $path ) {
+			$this->assertNotSame( '', trim( (string) file_get_contents( $path ) ), $path );
+		}
+		WP_Mock::userFunction(
+			'current_user_can',
+			array(
+				'args'   => array( 'manage_options' ),
+				'return' => true,
+			)
+		);
+		try {
+			$this->present( array(), array( $partials[0], $partials[1] . '.missing' ) );
+			$this->fail( 'A missing header partial should fail the run' );
+		} catch ( ExitException $e ) {
+			$this->assertStringContainsString( 'unreadable or empty', $e->getMessage() );
+			$this->assertStringContainsString( 'header.html.missing', $e->getMessage() );
+		}
+	}
+
+	/**
 	 * An absent WindPress cache stops the run: the templates would reach the
 	 * visitor unstyled while the command reports success.
 	 */
@@ -347,6 +373,7 @@ final class PresentCommandTest extends TestCase {
 		file_put_contents( $this->cache_path, self::COMPILED_ALL );
 		touch( $this->cache_path, time() + 60 );
 
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		$this->present( array( 'detach-partials' => true ) );
 
 		$backup = $this->options[ self::BACKUP ] ?? null;

@@ -1647,9 +1647,9 @@ final class CatalogShortcodes {
 		// The live header hides the badge at zero (its markup carries the
 		// counter with an inline display:none; an empty cart shows no pill).
 		$badge = $count > 0 ? '<span class="tv-b2b-acct-count">' . esc_html( (string) $count ) . '</span>' : '';
-		$html .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Cart', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Cart', 'linker-commerce' ) . '</span>' . $badge . '</a>';
+		$html .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Solution draft', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</span>' . $badge . '</a>';
 		if ( 'mobile' === $attributes['part'] ) {
-			return '<a href="' . esc_url( $cart_url ) . '" class="tv-mobile-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Cart', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Cart', 'linker-commerce' ) . '</span>' . $badge . '</a><a href="' . esc_url( $account ) . '" class="tv-mobile-utility tv-b2b-mobile-portal-link" aria-label="' . esc_attr( $account_label ) . '">' . $user_icon . '<span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span></a>';
+			return '<a href="' . esc_url( $cart_url ) . '" class="tv-mobile-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Solution draft', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</span>' . $badge . '</a><a href="' . esc_url( $account ) . '" class="tv-mobile-utility tv-b2b-mobile-portal-link" aria-label="' . esc_attr( $account_label ) . '">' . $user_icon . '<span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span></a>';
 		}
 		$html .= '<div class="tv-b2b-acct"><button type="button" class="tv-b2b-acct-btn" aria-haspopup="true" aria-controls="linker-header-account-menu" aria-expanded="false" aria-label="' . esc_attr( $account_label ) . '"><span class="tv-b2b-acct-avatar">' . $user_icon . '</span><span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span><span class="tv-b2b-acct-chev"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>';
 		$html .= '<div id="linker-header-account-menu" class="tv-b2b-acct-menu" hidden>';
@@ -1685,25 +1685,105 @@ final class CatalogShortcodes {
 	}
 
 	/**
-	 * The current page in the given language, the shop when there is no twin.
+	 * The current page in the given language.
+	 *
+	 * Polylang's own switcher is the language authority
+	 * (`pll_the_languages()`, filtered by linker-i18n's UrlSegments on
+	 * `pll_translation_url`): it keeps the account endpoint, the search and
+	 * the query. A permalink of the queried object does none of that — a
+	 * category, `/my-account/inquiries/` and `?step=roof` all lose their
+	 * context. Home is the fallback only when the switcher has no answer.
 	 *
 	 * @param string $lang Language code.
 	 */
 	private function language_url( string $lang ): string {
-		$id = (int) get_queried_object_id();
-		if ( $id > 0 && \function_exists( 'pll_get_post' ) ) {
-			$twin = (int) pll_get_post( $id, $lang );
-			if ( $twin > 0 ) {
-				$link = get_permalink( $twin );
-				if ( \is_string( $link ) && '' !== $link ) {
-					return $link;
-				}
+		$current = \function_exists( 'pll_current_language' ) ? pll_current_language() : '';
+		if ( \is_string( $current ) && $current === $lang ) {
+			return $this->with_request_context( $this->requested_url(), $lang );
+		}
+		$url = '';
+		if ( \function_exists( 'pll_the_languages' ) ) {
+			$languages = pll_the_languages(
+				array(
+					'raw'           => 1,
+					'hide_if_empty' => 0,
+				)
+			);
+			if ( \is_array( $languages ) && isset( $languages[ $lang ]['url'] ) && \is_string( $languages[ $lang ]['url'] ) ) {
+				$url = $languages[ $lang ]['url'];
 			}
 		}
-		if ( 'de' === $lang && \function_exists( 'pll_home_url' ) ) {
-			return (string) pll_home_url( 'de' );
+		if ( '' === $url ) {
+			$url = 'de' === $lang && \function_exists( 'pll_home_url' ) ? (string) pll_home_url( 'de' ) : home_url( '/' );
 		}
-		return home_url( '/' );
+		return $this->with_request_context( $url, $lang );
+	}
+
+	/**
+	 * The switcher's URL with the request's account endpoint and query kept.
+	 *
+	 * Polylang's switcher translates the page and the language segment
+	 * (`pll_translation_url`, which linker-i18n's UrlSegments filters) and
+	 * stops there: a page permalink has no WooCommerce endpoint and no query,
+	 * so `/my-account/inquiries/` and `?step=roof` would be lost. Both are part
+	 * of the request, not a second translation, so they are carried across on
+	 * the switcher's own URL.
+	 *
+	 * @param string $url  The switcher's URL.
+	 * @param string $lang Language code.
+	 */
+	private function with_request_context( string $url, string $lang ): string {
+		if ( '' !== $this->account_endpoint() && \function_exists( 'PLL' ) && isset( PLL()->links_model, PLL()->links ) ) {
+			$language = PLL()->model->get_language( $lang );
+			if ( \is_object( $language ) && \is_object( PLL()->links->curlang ) && PLL()->links->curlang->slug !== $language->slug ) {
+				// The request's own address, not the endpoint rebuilt in the current
+				// language: rebuilding and then switching the language segment
+				// doubles the segment (/de/de/...) or keeps the current one.
+				$url = PLL()->links_model->switch_language_in_link( $this->requested_url(), $language );
+			}
+		}
+		// The request's own query, not the query vars WordPress rewrites:
+		// a catalogue page sets orderby to its default even when the address
+		// carried none.
+		$kept = array();
+		foreach ( array( 's', 'orderby', 'step' ) as $key ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the public address, not a submitted form.
+			if ( ! isset( $_GET[ $key ] ) || ! \is_string( $_GET[ $key ] ) || '' === $_GET[ $key ] ) {
+				continue;
+			}
+			$kept[ $key ] = sanitize_text_field( wp_unslash( $_GET[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
+		}
+		return (string) add_query_arg( $kept, remove_query_arg( array( 's', 'orderby', 'step', 'cbq' ), $url ) );
+	}
+
+
+
+	/**
+	 * The address the visitor requested, without its query: the query is added
+	 * back by with_request_context(), and only the keys the visitor set.
+	 */
+	private function requested_url(): string {
+		$requested = \function_exists( 'pll_get_requested_url' ) ? pll_get_requested_url() : home_url( (string) wp_unslash( $_SERVER['REQUEST_URI'] ?? '/' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only the path is used, and only to rebuild the address.
+		$path      = (string) wp_parse_url( $requested, PHP_URL_PATH );
+		return home_url( '' === $path ? '/' : $path );
+	}
+
+	/**
+	 * The account endpoint of the request, '' when the request is not one.
+	 *
+	 * Read from the path, not from is_account_page(): that answers for the
+	 * account page of the current language only, so a German account page
+	 * would lose its endpoint on the way to English.
+	 */
+	private function account_endpoint(): string {
+		$path     = trim( (string) wp_parse_url( (string) wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ), '/' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a path, compared against known slugs only.
+		$segments = '' === $path ? array() : explode( '/', $path );
+		foreach ( WC()->query->get_query_vars() as $key => $slug ) {
+			if ( \is_string( $slug ) && '' !== $slug && \in_array( $slug, $segments, true ) ) {
+				return (string) $key;
+			}
+		}
+		return '';
 	}
 
 	/**
