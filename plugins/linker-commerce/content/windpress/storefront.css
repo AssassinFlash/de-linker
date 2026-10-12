@@ -1,13 +1,14 @@
 /*
- * The storefront of the product pages, replicated from the look the site
- * serves today (#16, owner ruling 2026-10-11: the live GET is the visual
- * truth). Source: terravolt-b2b-core assets/storefront.css @0.12.413,
- * read-only from the live site; the two --proto-* token references are
- * replaced by their literal values so this file stands alone in the
- * WindPress volume (uploaded by `wp linker-commerce present`).
+ * Shared product-page tokens.
+ * Ink, paper and the hairline are the journal values of the marketing
+ * pages. Accent and typeface are the site tokens the header carries.
+ * Access pages load this volume and match none of the surface roots
+ * below, so these custom properties are what they inherit.
+ *
+ * Header chrome lives in chrome.css (its own volume). Nothing here
+ * restyles #lc-header or #tv-header-v2.
  */
-/* Shared storefront tokens. Access pages (`body.tv-b2b-access-page`) enqueue this
-   sheet but match none of the surface-scoped copies below. */
+
 :root {
   /* Shop design system: ink, paper and hairline are the journal values of the
      marketing pages; accent and typeface are the site tokens the header carries. */
@@ -28,7 +29,14 @@
   --sf-primary-hover: #0a665c;
 }
 
-/* Storefront catalogue (ticket 066). Scoped to the catalogue root. */
+/*
+ * Product list, scoped to #tv-woo-b2b-catalog.
+ * Page head, search, scope tabs, filter rail, cards, compare tray.
+ * catalogue.css restates the same classes at a higher specificity
+ * for the measured list look; catalogue-mounts.css owns the toolbar
+ * width and the contact band. Selectors stay as the templates emit them.
+ */
+
 #tv-woo-b2b-catalog {
   --sf-container: 1360px;
   --sf-radius-card: 12px;
@@ -1013,7 +1021,13 @@ body .sf-compare .sf-compare-head h1 {
   text-underline-offset: 4px;
 }
 
-/* Storefront PDP (ticket 067). Scoped to the product root. */
+/*
+ * Product page, scoped to #tv-storefront-pdp.
+ * Gallery, purchase rail, specifications, family comparison.
+ * The purchase tools already open Genie, so the floating launcher
+ * is hidden on this page.
+ */
+
 /* The purchase tools already open Advisor without covering buying controls. */
 body:has(#tv-storefront-pdp .pdp-product-tools) .lia-launch { display: none; }
 #tv-storefront-pdp {
@@ -1148,9 +1162,12 @@ body.single-product #tv-storefront-pdp h1 {
 }
 #tv-storefront-pdp .pdp-spec-list dt { color: var(--sf-muted); }
 #tv-storefront-pdp .pdp-spec-list dd { margin: 0; font-weight: 500; text-align: end; }
-/* A long value splits into its reading value and a muted qualifier line
-   (tv_sr_rich_value). The rule lived in retired snippet #23 and was not carried over,
-   so the two spans ran together ("beginning of lifemay vary with inverter"). */
+
+/*
+ * A long specification splits into the reading value and a muted qualifier.
+ * Without the block display the two spans run together.
+ */
+
 #tv-storefront-pdp .vmain { display: block; }
 #tv-storefront-pdp .vqual {
   display: block;
@@ -1977,7 +1994,12 @@ body.single-product #tv-storefront-pdp h1 {
   }
 }
 
-/* Storefront Cart (ticket 069). Scoped to the cart root. */
+/*
+ * Solution draft, scoped to #tv-storefront-cart.
+ * Line items, totals, and the optional coupon row Woo still renders
+ * when coupons are enabled.
+ */
+
 #tv-storefront-cart {
   --sf-container: 1360px;
   --sf-radius-card: 12px;
@@ -2465,8 +2487,11 @@ body.woocommerce-cart #tv-storefront-cart h1 {
   }
 }
 
-/* Checkout / order-pay / order-received (ticket 070). Scoped to the checkout root.
-   Do not reset Stripe / gateway iframes. */
+/*
+ * Inquiry, order-pay and order-received, scoped to #tv-woo-b2b-checkout.
+ * Gateway iframes are not reset.
+ */
+
 body.woocommerce-checkout .entry-title,
 body.woocommerce-checkout h1.display-4,
 body.woocommerce-order-pay .entry-title,
@@ -3063,7 +3088,11 @@ body.woocommerce-order-received #container-content-page > div {
   #tv-woo-b2b-checkout .tv-b2b-stagebar li { flex: 1 1 calc(50% - 0.5rem); min-width: 0; }
 }
 
-/* Account home, inner nav, Orders and order detail (ticket 071). */
+/*
+ * Account home, inner navigation, inquiries and inquiry detail.
+ * Scoped to the account page body. Woo still owns the forms.
+ */
+
 body.woocommerce-account.logged-in .woocommerce {
   width: min(1360px, calc(100% - 2rem)) !important;
   max-width: none !important;
@@ -3675,10 +3704,12 @@ body.sf-account-page .sf-account-detail-wrap table.shop_table td {
   body.sf-account-inner .woocommerce { grid-template-columns: 288px minmax(0, 1fr) !important; }
 }
 
-/* The endpoint intro is the account page's own section head. Its type came
-   from the legacy global snippet's body.dlk-site-system scope - which still
-   !importants a display size onto this h2 - so the block is pinned here at the
-   account shell's section size (ticket 076). */
+/*
+ * Endpoint introduction.
+ * The account page's own section head. A site-wide rule still forces
+ * a display size onto this h2, so the shell size is pinned here.
+ */
+
 body.sf-account-page .tv-b2b-endpoint-intro { margin: 0 0 1.75rem; }
 body.sf-account-page .tv-b2b-endpoint-intro h2 {
   margin: 0 0 0.5rem !important;
@@ -3696,7 +3727,10 @@ body.sf-account-page .tv-b2b-endpoint-intro p {
   font-size: 14px;
 }
 
-/* ── Bulk order (ticket 076): the item-number form and its per-line results. ── */
+/*
+ * Item-number form and its per-line results.
+ */
+
 body.sf-account-page .tv-b2b-bulk-order,
 body.sf-account-page .tv-b2b-bulk-result { margin: 0 0 2.5rem; }
 body.sf-account-page .tv-b2b-bulk-order h2,
@@ -3712,8 +3746,11 @@ body.sf-account-page .tv-b2b-bulk-order > p {
   color: var(--sf-muted);
   font-size: 14px;
 }
-/* The list, the CSV field and the actions are one column, as the prototype has
-   them: the 065 sheet put the CSV block in a second column inside a dashed box. */
+
+/*
+ * The list, the file field and the actions are one column.
+ */
+
 body.sf-account-page .tv-b2b-bulk-order__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -4427,9 +4464,12 @@ body.woocommerce-account { background: var(--shop-paper) !important; }
 body.woocommerce-cart #tv-storefront-cart,
 body.woocommerce-checkout #tv-woo-b2b-checkout { background: transparent; }
 
-/* Ticket 187: the payment box leaves the customer face. The recording
-   gateway is the only one offered and needs no choice, no method list and
-   no payment heading; the submit button below it stays. */
+/*
+ * The payment box leaves the customer face.
+ * One recording gateway is offered, so the method list, the choice
+ * and the payment heading stay hidden. The submit button below remains.
+ */
+
 body.woocommerce-checkout #payment .wc_payment_methods,
 body.woocommerce-checkout #payment ul.payment_methods,
 body.woocommerce-checkout #payment div.payment_box,
