@@ -141,7 +141,9 @@ final class CatalogShortcodesTest extends TestCase {
 		$_SERVER['REQUEST_URI'] = '/proforma-request/inquiry-received/7021/?key=k';
 		$_GET                   = array( 'key' => 'k' );
 
-		$this->assertSame( 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/', $this->url( 'de' ) );
+		// Woo needs the order key on the confirmation page — without it the
+		// thank-you page renders without the order's details.
+		$this->assertSame( 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', $this->url( 'de' ) );
 		$this->assertStringNotContainsString( 'mein-konto', $this->url( 'de' ) );
 	}
 

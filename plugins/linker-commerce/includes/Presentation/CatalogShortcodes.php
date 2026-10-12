@@ -1754,16 +1754,17 @@ final class CatalogShortcodes {
 		}
 		// The request's own query, not the query vars WordPress rewrites:
 		// a catalogue page sets orderby to its default even when the address
-		// carried none.
+		// carried none. `key` is the order key the confirmation page needs —
+		// without it Woo renders the thank-you page without order details.
 		$kept = array();
-		foreach ( array( 's', 'orderby', 'step' ) as $key ) {
+		foreach ( array( 's', 'orderby', 'step', 'key' ) as $query_key ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the public address, not a submitted form.
-			if ( ! isset( $_GET[ $key ] ) || ! \is_string( $_GET[ $key ] ) || '' === $_GET[ $key ] ) {
+			if ( ! isset( $_GET[ $query_key ] ) || ! \is_string( $_GET[ $query_key ] ) || '' === $_GET[ $query_key ] ) {
 				continue;
 			}
-			$kept[ $key ] = sanitize_text_field( wp_unslash( $_GET[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
+			$kept[ $query_key ] = sanitize_text_field( wp_unslash( $_GET[ $query_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
 		}
-		return (string) add_query_arg( $kept, remove_query_arg( array( 's', 'orderby', 'step', 'cbq' ), $url ) );
+		return (string) add_query_arg( $kept, remove_query_arg( array( 's', 'orderby', 'step', 'key', 'cbq' ), $url ) );
 	}
 
 	/**
