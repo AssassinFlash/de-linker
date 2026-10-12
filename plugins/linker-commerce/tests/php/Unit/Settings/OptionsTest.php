@@ -35,15 +35,15 @@ final class OptionsTest extends TestCase {
 	}
 
 	/**
-	 * Without settings, notifications go to sales@de-linker.com (AGENTS.md §2) and numbers start with PI.
+	 * Without settings, notifications go to sales@de-linker.com (AGENTS.md §2) and numbers start with DLK-PF.
 	 */
 	public function test_defaults(): void {
 		$this->options( array() );
 		$options = new Options();
 
 		$this->assertSame( 'sales@de-linker.com', $options->team_to() );
-		$this->assertSame( array(), $options->team_bcc() );
-		$this->assertSame( 'PI', $options->proforma_prefix() );
+			$this->assertSame( array(), $options->team_bcc() );
+			$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
 		$this->assertSame(
 			array(
 				'name'  => '',
@@ -108,7 +108,7 @@ final class OptionsTest extends TestCase {
 		);
 		$options = new Options();
 
-		$this->assertSame( 'PI', $options->proforma_prefix() );
-		$this->assertSame( '', $options->bank()['iban'] );
+			$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
+			$this->assertSame( '', $options->bank()['iban'] );
 	}
 }

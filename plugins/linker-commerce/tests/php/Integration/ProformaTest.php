@@ -106,7 +106,7 @@ final class ProformaTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 
 		$number = $this->issuer()->issue( $order );
-		$this->assertMatchesRegularExpression( '/^PI-\d{4}-\d{4}$/', $number );
+			$this->assertMatchesRegularExpression( '/^DLK-PF-\d{4}-\d{4}$/', $number );
 
 		// A second process races the first on a fresh, unissued inquiry.
 		$second = $this->send_inquiry( $this->customer(), array( array( $this->product( '1000' ), 1 ) ) );

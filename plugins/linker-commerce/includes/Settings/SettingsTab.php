@@ -136,7 +136,7 @@ final class SettingsTab {
 			),
 			array(
 				'title'       => __( 'Number prefix', 'linker-commerce' ),
-				'desc'        => __( 'Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year.', 'linker-commerce' ),
+				'desc'        => __( 'Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty uses DLK-PF, the prefix on de-linker.com.', 'linker-commerce' ),
 				'id'          => Options::PROFORMA_PREFIX,
 				'type'        => 'text',
 				'default'     => Options::DEFAULT_PROFORMA_PREFIX,

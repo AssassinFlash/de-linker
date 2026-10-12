@@ -14,7 +14,8 @@ use Linker\Commerce\Proforma\Emails\ProformaIssuedEmail;
 
 /**
  * The Proforma box and button on the inquiry screen, the Proforma column of
- * the inquiry list, and the email to the customer.
+ * the inquiry list, the document a status change into "Proforma invoice
+ * issued" must leave behind, and the email to the customer.
  */
 final class Module {
 
@@ -23,10 +24,12 @@ final class Module {
 	 *
 	 * @param string   $plugin_file Absolute path of the main plugin file.
 	 * @param AdminBox $box         The admin box.
+	 * @param Issuer   $issuer      Builds the document the customer downloads.
 	 */
 	public function __construct(
 		private readonly string $plugin_file,
-		private readonly AdminBox $box
+		private readonly AdminBox $box,
+		private readonly Issuer $issuer
 	) {}
 
 	/**
@@ -35,6 +38,10 @@ final class Module {
 	public function register(): void {
 		add_action( 'add_meta_boxes', array( $this->box, 'add' ) );
 		add_action( 'woocommerce_process_shop_order_meta', array( $this->box, 'process' ), 60 );
+		// After the status is stored. The Issue button reaches this too, and
+		// ensure_issued() leaves an inquiry that already has a number alone,
+		// so the button still issues exactly once.
+		add_action( 'woocommerce_order_status_' . Statuses::PROFORMA, array( $this->issuer, 'ensure_issued' ), 20 );
 		add_filter( 'woocommerce_order_actions', array( $this->box, 'order_actions' ) );
 		add_filter( 'woocommerce_shop_order_list_table_columns', array( $this->box, 'columns' ) );
 		add_action( 'woocommerce_shop_order_list_table_custom_column', array( $this->box, 'column' ), 10, 2 );

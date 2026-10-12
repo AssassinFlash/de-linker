@@ -36,10 +36,12 @@ final class ModuleTest extends TestCase {
 	public function test_register_adds_the_hooks(): void {
 		$options = new Options();
 		$box     = new AdminBox( new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( '/plugin/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( $this->approved_state() ) ) );
-		$module  = new Module( '/plugin/linker-commerce.php', $box );
+		$issuer  = new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( '/plugin/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( $this->approved_state() ) );
+		$module  = new Module( '/plugin/linker-commerce.php', $box, $issuer );
 
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $box, 'add' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_process_shop_order_meta', array( $box, 'process' ), 60 );
+		WP_Mock::expectActionAdded( 'woocommerce_order_status_proforma-issued', array( $issuer, 'ensure_issued' ), 20 );
 		WP_Mock::expectFilterAdded( 'woocommerce_order_actions', array( $box, 'order_actions' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_shop_order_list_table_columns', array( $box, 'columns' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_shop_order_list_table_custom_column', array( $box, 'column' ), 10, 2 );
