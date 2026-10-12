@@ -53,6 +53,18 @@
 	white-space: nowrap;
 }
 
+.linker-shell {
+	display: grid;
+	grid-template-columns: 13.5rem minmax(0, 1fr);
+	gap: clamp(1.75rem, 4vw, 3.75rem);
+	align-items: start;
+}
+
+.linker-stage {
+	min-width: 0;
+	max-width: 46rem;
+}
+
 .linker-configurator__header {
 	margin-bottom: var(--proto-space-5, 1.5rem);
 }
@@ -77,32 +89,33 @@
 	color: var(--linker-muted);
 }
 
-/* Segments ------------------------------------------------------------------ */
+/* Project type — bordered single-choice cards (variant C) ----------------- */
 
 .linker-segments {
-	display: flex;
-	flex-wrap: wrap;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: var(--proto-space-2, 0.5rem);
-	margin-bottom: var(--proto-space-5, 1.5rem);
-	border-bottom: 1px solid var(--linker-line);
 }
 
 .linker-segments__tab {
 	appearance: none;
-	background: none;
-	border: 0;
-	border-bottom: 3px solid transparent;
-	padding: var(--proto-space-3, 0.75rem) var(--proto-space-4, 1rem);
+	background: var(--linker-surface);
+	border: 1px solid var(--linker-line);
+	border-radius: 6px;
+	padding: 0.7rem 0.85rem;
 	font: inherit;
+	font-size: 0.8125rem;
 	font-weight: 600;
-	color: var(--linker-muted);
+	color: var(--linker-ink);
+	text-align: left;
 	cursor: pointer;
 	min-height: var(--proto-control-height, 2.75rem);
 }
 
-.linker-segments__tab[aria-selected="true"] {
-	color: var(--linker-ink);
-	border-bottom-color: var(--linker-accent);
+.linker-segments__tab[aria-checked="true"] {
+	border-color: var(--linker-accent);
+	background: var(--linker-soft);
+	color: var(--linker-accent-ink);
 }
 
 .linker-segments__tab:focus-visible,
@@ -117,43 +130,76 @@
 	outline-offset: var(--proto-focus-offset, 2px);
 }
 
-/* Steps --------------------------------------------------------------------- */
+/* Steps — vertical rail (variant B). The phone rule below turns it sideways. */
 
 .linker-steps {
+	align-self: start;
+	margin: 0;
+	font-size: 0.8125rem;
+}
+
+.linker-steps__cap,
+.linker-steps__foot {
+	margin: 0;
+	color: var(--linker-muted);
+}
+
+.linker-steps__cap {
+	margin-bottom: 0.875rem;
+	font-size: 0.65625rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.linker-steps__list {
 	display: flex;
-	flex-wrap: wrap;
-	gap: var(--proto-space-2, 0.5rem) var(--proto-space-5, 1.5rem);
-	margin: 0 0 var(--proto-space-5, 1.5rem);
+	flex-direction: column;
+	gap: 2px;
+	margin: 0;
 	padding: 0;
 	list-style: none;
-	font-size: var(--proto-size-sm, 0.875rem);
-	color: var(--linker-muted);
 }
 
 .linker-steps__item {
 	display: flex;
-	align-items: center;
-	gap: var(--proto-space-2, 0.5rem);
+	align-items: baseline;
+	gap: 0.55rem;
+	padding: 0.45rem 0.6rem;
+	border-radius: 8px;
+	color: var(--linker-muted);
+	font-weight: 600;
+	line-height: 1.4;
 }
 
 .linker-steps__number {
-	display: inline-grid;
-	place-items: center;
+	flex-shrink: 0;
 	width: 1.75rem;
-	height: 1.75rem;
-	border-radius: 50%;
-	border: 1px solid var(--linker-line);
-	font-weight: 700;
+	font-size: 0.6875rem;
+	font-variant-numeric: tabular-nums;
+	color: var(--linker-muted);
 }
 
-.linker-steps__item.is-reached {
+.linker-steps__item.is-current {
 	color: var(--linker-ink);
 }
 
-.linker-steps__item.is-reached .linker-steps__number {
+.linker-steps__item.is-current .linker-steps__number::before {
+	content: "";
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin-right: 4px;
+	border-radius: 50%;
 	background: var(--linker-accent);
-	border-color: var(--linker-accent);
-	color: var(--linker-on-accent);
+	vertical-align: 1px;
+}
+
+.linker-steps__foot {
+	margin-top: 1.375rem;
+	padding: 0 0.6rem;
+	font-size: 0.72rem;
+	line-height: 1.5;
 }
 
 /* Sections ------------------------------------------------------------------ */
@@ -167,10 +213,36 @@
 	scroll-margin-top: var(--proto-space-6, 2rem);
 }
 
+.linker-block {
+	margin-bottom: var(--proto-space-5, 1.5rem);
+	padding: clamp(1.125rem, 2.6vw, 1.875rem);
+	border: 1px solid var(--linker-line);
+	border-radius: 8px;
+	background: var(--linker-surface);
+}
+
+.linker-block__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.75rem;
+	margin-bottom: var(--proto-space-4, 1rem);
+}
+
+.linker-block__title,
 .linker-section__title {
-	margin: 0 0 var(--proto-space-4, 1rem);
-	font-size: var(--proto-size-xl, clamp(1.25rem, 1.12rem + 0.55vw, 1.5rem));
+	margin: 0;
+	font-size: 1.1875rem;
+	font-weight: 800;
+	letter-spacing: -0.01em;
 	line-height: var(--proto-leading-title, 1.38);
+}
+
+.linker-block__step {
+	margin: 0;
+	font-size: 0.75rem;
+	color: var(--linker-muted);
+	text-align: right;
 }
 
 .linker-section__subtitle {
@@ -186,6 +258,36 @@
 }
 
 /* Form ------------------------------------------------------------------------- */
+
+.linker-group {
+	margin: 0 0 var(--proto-space-4, 1rem);
+	padding: 0;
+	border: 1px solid var(--linker-line);
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.linker-group > legend {
+	float: left;
+	margin: 0.75rem 0 0 0.875rem;
+	padding: 0.4rem 0.65rem;
+	border: 1px solid var(--linker-line);
+	border-bottom: 0;
+	border-radius: 6px 6px 0 0;
+	background: var(--proto-neutral-50, #f7f8f8);
+	font-size: 0.6875rem;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	line-height: 1;
+	text-transform: uppercase;
+	color: var(--linker-accent);
+}
+
+.linker-group > .linker-form__grid,
+.linker-group > .linker-form__choice {
+	clear: both;
+	padding: 1.125rem 0.875rem 0.875rem;
+}
 
 .linker-form__grid {
 	display: grid;
@@ -287,11 +389,30 @@
 	min-width: 0;
 }
 
+.linker-cards-choice {
+	grid-column: 1 / -1;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .linker-form__choice label {
 	display: flex;
 	align-items: center;
 	gap: var(--proto-space-2, 0.5rem);
 	min-height: 2rem;
+}
+
+.linker-cards-choice label {
+	margin: 0;
+	padding: 0.6rem 0.75rem;
+	border: 1px solid var(--linker-line);
+	border-radius: 6px;
+	background: var(--linker-surface);
+	font-weight: 600;
+}
+
+.linker-cards-choice label:has(input:checked) {
+	border-color: var(--linker-accent);
+	background: var(--linker-soft);
 }
 
 .linker-form__choice input {
@@ -321,6 +442,7 @@
 	flex-wrap: wrap;
 	gap: var(--proto-space-3, 0.75rem);
 	align-items: center;
+	justify-content: flex-end;
 }
 
 /* Buttons ---------------------------------------------------------------------- */
@@ -890,19 +1012,17 @@
 		min-height: 20rem;
 	}
 
-	/* The three project types stay on one line; the bar scrolls if a
-	   translation ever outgrows it. */
-	.linker-segments {
-		flex-wrap: nowrap;
-		gap: 0;
-		overflow-x: auto;
+	.linker-segments,
+	.linker-cards-choice {
+		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.linker-segments__tab {
-		flex: 1 0 auto;
-		padding-inline: var(--proto-space-3, 0.75rem);
-		font-size: var(--proto-size-sm, 0.875rem);
-		white-space: nowrap;
+	.linker-block__head {
+		flex-wrap: wrap;
+	}
+
+	.linker-block__step {
+		text-align: left;
 	}
 
 	.linker-report__rows div {
@@ -975,12 +1095,12 @@
  *       a 56px gutter (measured on the trial: the six row blocks shrink
  *       1275px → 1008px); below 1200px, and on the phone layout above,
  *       nothing changes.
- *   D2: ≤860px the three-step nav pins under the site header while the
- *       single-page flow scrolls (the header is 89px tall, hence top: 89px).
- *       The −8px top margin against the 8px paddings keeps the bar's own
- *       content where it was; below the bar the flow gains 16px — the bar is
- *       16px taller and its 24px bottom margin is gone. Desktop keeps the
- *       scrolling nav — only the phone was trialled and approved.
+ *   D2: ≤860px the step rail pins under the site header while the single-page
+ *       flow scrolls (the header is 89px tall, hence top: 89px). The B+C layout
+ *       pins the whole shell, because the project-type cards now sit with the
+ *       rail; Steps measures that shell for the section's scroll-margin.
+ *       Desktop keeps the rail in the left column — only the phone was
+ *       trialled and approved.
  */
 @media (min-width: 1200px) {
 	[data-linker-app="configurator"] .linker-report__rows {
@@ -992,19 +1112,36 @@
 }
 
 @media (max-width: 860px) {
-	[data-linker-app="configurator"] .linker-steps {
+	/* Variant B's phone treatment, kept sticky so a model change still clears
+	   the bar (D2). The rail leaves the left column; the shell, not only the
+	   rail, pins under the 89px site header, because the project-type cards
+	   now sit beside it. Steps measures the shell; the section clears it by
+	   the sticky top plus that height plus the same 32px gap. */
+	[data-linker-app="configurator"] .linker-shell {
 		position: sticky;
 		top: 89px;
 		z-index: 40;
+		display: block;
 		background: rgba(246, 249, 245, 0.94);
 		backdrop-filter: blur(6px);
-		padding: 8px 0;
-		margin: -8px 0 0;
 	}
 
-	/* Clearance is the sticky top (89px, the rule above) plus the bar's
-	   measured height plus the same 32px gap the section already keeps.
-	   Steps writes the sum; 32px is only the value before that measure. */
+	[data-linker-app="configurator"] .linker-steps__cap,
+	[data-linker-app="configurator"] .linker-steps__foot {
+		display: none;
+	}
+
+	[data-linker-app="configurator"] .linker-steps__list {
+		flex-direction: row;
+		gap: 4px;
+		padding-bottom: 10px;
+		border-bottom: 1px solid var(--linker-line);
+	}
+
+	[data-linker-app="configurator"] .linker-steps {
+		position: static;
+	}
+
 	[data-linker-app="configurator"] .linker-section {
 		scroll-margin-top: var(--linker-steps-scroll-offset, 32px);
 	}

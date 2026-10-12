@@ -16,6 +16,7 @@ import { storeClient, type StoreClient } from './api/store';
 import { CommercialPanel } from './commercial/CommercialPanel';
 import type { Config } from './config';
 import { ResidentialPanel } from './residential/ResidentialPanel';
+import { Steps } from './Steps';
 import { UtilityForm } from './utility/UtilityForm';
 import './configurator.css';
 
@@ -64,65 +65,88 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 
 	return (
 		<div className="linker-configurator" lang={ config.locale }>
-			<header className="linker-configurator__header">
-				<h1 className="linker-configurator__title">
-					{ __( 'Solution Configurator', 'linker-tools' ) }
-				</h1>
-				<p className="linker-configurator__lead">
-					{ __(
-						'Size your system and get the bill of materials.',
-						'linker-tools'
-					) }
-				</p>
-			</header>
-			<div
-				className="linker-segments"
-				role="tablist"
-				aria-label={ __( 'Project type', 'linker-tools' ) }
-			>
-				{ segments.map( ( item, index ) => (
-					<button
-						key={ item.id }
-						ref={ ( node ) => {
-							tabs.current[ item.id ] = node;
-						} }
-						type="button"
-						role="tab"
-						id={ `linker-tab-${ item.id }` }
-						aria-selected={ segment === item.id }
-						aria-controls={ `linker-panel-${ item.id }` }
-						tabIndex={ segment === item.id ? 0 : -1 }
-						className="linker-segments__tab"
-						onClick={ () => setSegment( item.id ) }
-						onKeyDown={ ( event ) => onTabKey( event, index ) }
+			<div className="linker-shell">
+				<Steps current={ 1 } />
+				<div className="linker-stage">
+					<header className="linker-configurator__header">
+						<h1 className="linker-configurator__title">
+							{ __( 'Solution Configurator', 'linker-tools' ) }
+						</h1>
+						<p className="linker-configurator__lead">
+							{ __(
+								'Size your system and get the bill of materials.',
+								'linker-tools'
+							) }
+						</p>
+					</header>
+					<section
+						className="linker-block"
+						aria-labelledby="linker-project-title"
 					>
-						{ item.label }
-					</button>
-				) ) }
-			</div>
-			<div
-				role="tabpanel"
-				id={ `linker-panel-${ segment }` }
-				aria-labelledby={ `linker-tab-${ segment }` }
-				className="linker-configurator__panel"
-			>
-				{ segment === 'residential' ? (
-					<ResidentialPanel
-						config={ config }
-						engine={ clients.engine }
-						store={ clients.store }
-					/>
-				) : null }
-				{ segment === 'commercial' ? (
-					<CommercialPanel
-						config={ config }
-						engine={ clients.engine }
-						store={ clients.store }
-					/>
-				) : null }
-				{ segment === 'utility' ? (
-					<UtilityForm config={ config } />
-				) : null }
+						<div className="linker-block__head">
+							<h2
+								className="linker-block__title"
+								id="linker-project-title"
+							>
+								{ __( 'Project type', 'linker-tools' ) }
+							</h2>
+							<p className="linker-block__step">
+								{ __(
+									'Step 1 · Which project are you sizing?',
+									'linker-tools'
+								) }
+							</p>
+						</div>
+						<div
+							className="linker-segments"
+							role="radiogroup"
+							aria-label={ __( 'Project type', 'linker-tools' ) }
+						>
+							{ segments.map( ( item, index ) => (
+								<button
+									key={ item.id }
+									ref={ ( node ) => {
+										tabs.current[ item.id ] = node;
+									} }
+									type="button"
+									role="radio"
+									id={ `linker-tab-${ item.id }` }
+									aria-checked={ segment === item.id }
+									tabIndex={ segment === item.id ? 0 : -1 }
+									className="linker-segments__tab"
+									onClick={ () => setSegment( item.id ) }
+									onKeyDown={ ( event ) =>
+										onTabKey( event, index )
+									}
+								>
+									{ item.label }
+								</button>
+							) ) }
+						</div>
+					</section>
+					<div
+						id={ `linker-panel-${ segment }` }
+						className="linker-configurator__panel"
+					>
+						{ segment === 'residential' ? (
+							<ResidentialPanel
+								config={ config }
+								engine={ clients.engine }
+								store={ clients.store }
+							/>
+						) : null }
+						{ segment === 'commercial' ? (
+							<CommercialPanel
+								config={ config }
+								engine={ clients.engine }
+								store={ clients.store }
+							/>
+						) : null }
+						{ segment === 'utility' ? (
+							<UtilityForm config={ config } />
+						) : null }
+					</div>
+				</div>
 			</div>
 		</div>
 	);

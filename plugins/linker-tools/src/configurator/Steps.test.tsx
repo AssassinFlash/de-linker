@@ -40,7 +40,10 @@ function mount( barHeight: number ) {
 	const rect = Element.prototype.getBoundingClientRect;
 	Element.prototype.getBoundingClientRect = function getBoundingClientRect() {
 		const box = rect.call( this );
-		if ( this.classList.contains( 'linker-steps' ) ) {
+		if (
+			this.classList.contains( 'linker-steps' ) ||
+			this.classList.contains( 'linker-shell' )
+		) {
 			return { ...box, height: barHeight, bottom: box.top + barHeight };
 		}
 		return box;
@@ -117,7 +120,36 @@ test( 'a model change scrolls the Solution clear of the measured step list', asy
 	} );
 } );
 
-test( 'the narrow-viewport rule uses the measured offset and leaves the sticky bar alone', () => {
+test( 'the rail is vertical, the project type is cards, and the form stays expanded', () => {
+	const { container } = mount( 48 );
+	const rail = container.querySelector( '.linker-steps' );
+	expect( rail?.tagName ).toBe( 'NAV' );
+	expect(
+		within( rail as HTMLElement ).getByText( 'Configurator' )
+	).toBeInTheDocument();
+	expect(
+		within( rail as HTMLElement )
+			.getAllByRole( 'listitem' )
+			.map( ( item ) => item.textContent )
+	).toEqual( [ '01Inputs', '02Solution', '03Design report' ] );
+	expect(
+		screen.getByRole( 'radio', { name: 'Residential' } )
+	).toBeChecked();
+	expect(
+		screen.getByRole( 'heading', { name: 'Project type' } )
+	).toBeVisible();
+	expect(
+		screen.getByText( 'Step 1 · Which project are you sizing?' )
+	).toBeVisible();
+	expect(
+		screen.getByRole( 'group', { name: 'Grid connection' } )
+	).toBeVisible();
+	expect(
+		screen.getByRole( 'button', { name: 'Calculate system' } )
+	).toBeVisible();
+} );
+
+test( 'the narrow-viewport rule pins the shell and clears the measured rail', () => {
 	const css = readFileSync(
 		join( dirname( fileURLToPath( import.meta.url ) ), 'configurator.css' ),
 		'utf8'
@@ -126,13 +158,17 @@ test( 'the narrow-viewport rule uses the measured offset and leaves the sticky b
 		/@media \(max-width: 860px\) \{([\s\S]*?)\n\}/
 	)?.[ 1 ];
 	expect( sticky ).toBeDefined();
+	expect( sticky ).toContain( '.linker-shell' );
 	expect( sticky ).toContain( 'position: sticky;' );
 	expect( sticky ).toContain( 'top: 89px;' );
 	expect( sticky ).toContain( 'z-index: 40;' );
-	expect( sticky ).toContain( 'padding: 8px 0;' );
-	expect( sticky ).toContain( 'margin: -8px 0 0;' );
 	expect( sticky ).toContain(
 		'scroll-margin-top: var(--linker-steps-scroll-offset, 32px);'
 	);
 	expect( sticky ).not.toContain( '44px' );
+	// Desktop keeps the rail in the left column. Only the phone pins it.
+	expect( css ).toContain( 'grid-template-columns: 13.5rem minmax(0, 1fr);' );
+	expect( css ).not.toMatch(
+		/@media \(min-width: 861px\)[\s\S]*\.linker-steps[\s\S]*position:\s*sticky/
+	);
 } );

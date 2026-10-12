@@ -160,220 +160,236 @@ export function ResidentialForm( {
 				onSubmit( toInput( values, locale, roof ) )
 			) }
 		>
-			<div className="linker-form__grid">
-				<Field
-					id="linker-plz"
-					label={ __( 'Postcode of the site', 'linker-tools' ) }
-					error={ errors.plz?.message }
-				>
-					<input
+			<fieldset className="linker-group">
+				<legend>{ __( 'Site', 'linker-tools' ) }</legend>
+				<div className="linker-form__grid">
+					<Field
 						id="linker-plz"
-						inputMode="numeric"
-						autoComplete="postal-code"
-						maxLength={ 5 }
-						{ ...register( 'plz' ) }
-					/>
-				</Field>
-				<Field
-					id="linker-annual"
-					label={ __(
-						'Annual household consumption',
-						'linker-tools'
-					) }
-					unit="kWh"
-					hint={ __(
-						'Without heat pump and electric car; tick them below.',
-						'linker-tools'
-					) }
-					error={ errors.annual_kwh?.message }
-				>
-					<input
+						label={ __( 'Postcode of the site', 'linker-tools' ) }
+						error={ errors.plz?.message }
+					>
+						<input
+							id="linker-plz"
+							inputMode="numeric"
+							autoComplete="postal-code"
+							maxLength={ 5 }
+							{ ...register( 'plz' ) }
+						/>
+					</Field>
+					<Field
 						id="linker-annual"
-						inputMode="decimal"
-						{ ...register( 'annual_kwh' ) }
-					/>
-				</Field>
-				<Field
-					id="linker-kwp"
-					label={ __( 'PV array', 'linker-tools' ) }
-					unit="kWp"
-					error={ errors.pv_kwp?.message }
-				>
-					<input
+						label={ __(
+							'Annual household consumption',
+							'linker-tools'
+						) }
+						unit="kWh"
+						hint={ __(
+							'Without heat pump and electric car; tick them below.',
+							'linker-tools'
+						) }
+						error={ errors.annual_kwh?.message }
+					>
+						<input
+							id="linker-annual"
+							inputMode="decimal"
+							{ ...register( 'annual_kwh' ) }
+						/>
+					</Field>
+					<Field
 						id="linker-kwp"
-						inputMode="decimal"
-						readOnly={ !! roof }
-						aria-describedby="linker-roof-summary"
-						{ ...register( 'pv_kwp' ) }
-					/>
-				</Field>
-				<div className="linker-form__roof" id="linker-roof-summary">
-					{ roof ? (
-						<>
-							<p>
-								{ sprintf(
-									/* translators: 1: number of modules, 2: number of roof planes, 3: kWp */
-									_n(
-										'From the roof: %1$s modules on %2$s plane, %3$s kWp.',
-										'From the roof: %1$s modules on %2$s planes, %3$s kWp.',
-										roof.planes.length,
+						label={ __( 'PV array', 'linker-tools' ) }
+						unit="kWp"
+						error={ errors.pv_kwp?.message }
+					>
+						<input
+							id="linker-kwp"
+							inputMode="decimal"
+							readOnly={ !! roof }
+							aria-describedby="linker-roof-summary"
+							{ ...register( 'pv_kwp' ) }
+						/>
+					</Field>
+					<div className="linker-form__roof" id="linker-roof-summary">
+						{ roof ? (
+							<>
+								<p>
+									{ sprintf(
+										/* translators: 1: number of modules, 2: number of roof planes, 3: kWp */
+										_n(
+											'From the roof: %1$s modules on %2$s plane, %3$s kWp.',
+											'From the roof: %1$s modules on %2$s planes, %3$s kWp.',
+											roof.planes.length,
+											'linker-tools'
+										),
+										formatNumber( roof.modules, locale ),
+										formatNumber(
+											roof.planes.length,
+											locale
+										),
+										formatNumber( roof.kwp, locale, 2 )
+									) }
+									{ roof.address ? ` ${ roof.address }` : '' }
+								</p>
+								<button
+									type="button"
+									className="linker-button linker-button--quiet"
+									onClick={ openRoof }
+								>
+									{ __( 'Change roof', 'linker-tools' ) }
+								</button>
+								<button
+									type="button"
+									className="linker-button linker-button--quiet"
+									onClick={ onRemoveRoof }
+								>
+									{ __(
+										'Enter kWp instead',
 										'linker-tools'
-									),
-									formatNumber( roof.modules, locale ),
-									formatNumber( roof.planes.length, locale ),
-									formatNumber( roof.kwp, locale, 2 )
-								) }
-								{ roof.address ? ` ${ roof.address }` : '' }
-							</p>
+									) }
+								</button>
+							</>
+						) : (
 							<button
 								type="button"
-								className="linker-button linker-button--quiet"
+								className="linker-button linker-button--secondary"
 								onClick={ openRoof }
 							>
-								{ __( 'Change roof', 'linker-tools' ) }
+								{ __(
+									'No PV figure yet? Estimate from the roof',
+									'linker-tools'
+								) }
 							</button>
-							<button
-								type="button"
-								className="linker-button linker-button--quiet"
-								onClick={ onRemoveRoof }
-							>
-								{ __( 'Enter kWp instead', 'linker-tools' ) }
-							</button>
-						</>
-					) : (
-						<button
-							type="button"
-							className="linker-button linker-button--secondary"
-							onClick={ openRoof }
-						>
-							{ __(
-								'No PV figure yet? Estimate from the roof',
-								'linker-tools'
-							) }
-						</button>
-					) }
+						) }
+					</div>
 				</div>
-				<fieldset className="linker-form__choice">
-					<legend>{ __( 'Grid connection', 'linker-tools' ) }</legend>
-					<label htmlFor="linker-phase-3">
-						<input
-							id="linker-phase-3"
-							type="radio"
-							value="3"
-							{ ...register( 'phase' ) }
-						/>
-						{ __( 'Three-phase', 'linker-tools' ) }
-					</label>
-					<label htmlFor="linker-phase-1">
-						<input
-							id="linker-phase-1"
-							type="radio"
-							value="1"
-							{ ...register( 'phase' ) }
-						/>
-						{ __( 'Single-phase', 'linker-tools' ) }
-					</label>
-				</fieldset>
-				<Field
-					id="linker-backup"
-					label={ __( 'Backup supply', 'linker-tools' ) }
-				>
-					<select id="linker-backup" { ...register( 'backup' ) }>
-						<option value="none">
-							{ __( 'Not needed', 'linker-tools' ) }
-						</option>
-						<option value="needed">
-							{ __( 'Needed', 'linker-tools' ) }
-						</option>
-						<option value="needed_accessory_ok">
-							{ __(
-								'Needed, an accessory is fine',
-								'linker-tools'
-							) }
-						</option>
-					</select>
-				</Field>
-				{ backup !== 'none' ? (
-					<>
-						<Field
-							id="linker-backup-load"
-							label={ __(
-								'Load to keep running',
-								'linker-tools'
-							) }
-							unit="kW"
-							hint={ __(
-								'Optional; sizes a reserve on top.',
-								'linker-tools'
-							) }
-							error={ errors.backup_load_kw?.message }
-						>
+			</fieldset>
+			<fieldset className="linker-group">
+				<legend>{ __( 'Connection', 'linker-tools' ) }</legend>
+				<div className="linker-form__grid">
+					<fieldset className="linker-form__choice linker-cards-choice">
+						<legend>
+							{ __( 'Grid connection', 'linker-tools' ) }
+						</legend>
+						<label htmlFor="linker-phase-3">
 							<input
+								id="linker-phase-3"
+								type="radio"
+								value="3"
+								{ ...register( 'phase' ) }
+							/>
+							{ __( 'Three-phase', 'linker-tools' ) }
+						</label>
+						<label htmlFor="linker-phase-1">
+							<input
+								id="linker-phase-1"
+								type="radio"
+								value="1"
+								{ ...register( 'phase' ) }
+							/>
+							{ __( 'Single-phase', 'linker-tools' ) }
+						</label>
+					</fieldset>
+					<Field
+						id="linker-backup"
+						label={ __( 'Backup supply', 'linker-tools' ) }
+					>
+						<select id="linker-backup" { ...register( 'backup' ) }>
+							<option value="none">
+								{ __( 'Not needed', 'linker-tools' ) }
+							</option>
+							<option value="needed">
+								{ __( 'Needed', 'linker-tools' ) }
+							</option>
+							<option value="needed_accessory_ok">
+								{ __(
+									'Needed, an accessory is fine',
+									'linker-tools'
+								) }
+							</option>
+						</select>
+					</Field>
+					{ backup !== 'none' ? (
+						<>
+							<Field
 								id="linker-backup-load"
-								inputMode="decimal"
-								{ ...register( 'backup_load_kw' ) }
-							/>
-						</Field>
-						<Field
-							id="linker-backup-hours"
-							label={ __( 'For how long', 'linker-tools' ) }
-							unit="h"
-							error={ errors.backup_hours?.message }
-						>
-							<input
+								label={ __(
+									'Load to keep running',
+									'linker-tools'
+								) }
+								unit="kW"
+								hint={ __(
+									'Optional; sizes a reserve on top.',
+									'linker-tools'
+								) }
+								error={ errors.backup_load_kw?.message }
+							>
+								<input
+									id="linker-backup-load"
+									inputMode="decimal"
+									{ ...register( 'backup_load_kw' ) }
+								/>
+							</Field>
+							<Field
 								id="linker-backup-hours"
-								inputMode="decimal"
-								{ ...register( 'backup_hours' ) }
+								label={ __( 'For how long', 'linker-tools' ) }
+								unit="h"
+								error={ errors.backup_hours?.message }
+							>
+								<input
+									id="linker-backup-hours"
+									inputMode="decimal"
+									{ ...register( 'backup_hours' ) }
+								/>
+							</Field>
+						</>
+					) : null }
+					<fieldset className="linker-form__choice linker-cards-choice">
+						<legend>
+							{ __( 'Additional consumers', 'linker-tools' ) }
+						</legend>
+						<label htmlFor="linker-heat-pump">
+							<input
+								id="linker-heat-pump"
+								type="checkbox"
+								{ ...register( 'heat_pump' ) }
 							/>
-						</Field>
-					</>
-				) : null }
-				<fieldset className="linker-form__choice">
-					<legend>
-						{ __( 'Additional consumers', 'linker-tools' ) }
-					</legend>
-					<label htmlFor="linker-heat-pump">
-						<input
-							id="linker-heat-pump"
-							type="checkbox"
-							{ ...register( 'heat_pump' ) }
-						/>
-						{ __(
-							'Heat pump (installed or planned)',
-							'linker-tools'
-						) }
-					</label>
-					<label htmlFor="linker-ev">
-						<input
-							id="linker-ev"
-							type="checkbox"
-							{ ...register( 'electric_vehicle' ) }
-						/>
-						{ __(
-							'Electric car (installed or planned)',
-							'linker-tools'
-						) }
-					</label>
-				</fieldset>
-				<Field
-					id="linker-existing"
-					label={ __(
-						'Existing inverter (retrofit)',
-						'linker-tools'
-					) }
-					hint={ __(
-						'Optional. Enter its model and we list only batteries released for it.',
-						'linker-tools'
-					) }
-					error={ errors.existing_inverter?.message }
-				>
-					<input
+							{ __(
+								'Heat pump (installed or planned)',
+								'linker-tools'
+							) }
+						</label>
+						<label htmlFor="linker-ev">
+							<input
+								id="linker-ev"
+								type="checkbox"
+								{ ...register( 'electric_vehicle' ) }
+							/>
+							{ __(
+								'Electric car (installed or planned)',
+								'linker-tools'
+							) }
+						</label>
+					</fieldset>
+					<Field
 						id="linker-existing"
-						autoComplete="off"
-						{ ...register( 'existing_inverter' ) }
-					/>
-				</Field>
-			</div>
+						label={ __(
+							'Existing inverter (retrofit)',
+							'linker-tools'
+						) }
+						hint={ __(
+							'Optional. Enter its model and we list only batteries released for it.',
+							'linker-tools'
+						) }
+						error={ errors.existing_inverter?.message }
+					>
+						<input
+							id="linker-existing"
+							autoComplete="off"
+							{ ...register( 'existing_inverter' ) }
+						/>
+					</Field>
+				</div>
+			</fieldset>
 			<div className="linker-form__submit">
 				<button
 					type="submit"
