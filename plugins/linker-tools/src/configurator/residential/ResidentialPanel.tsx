@@ -36,8 +36,6 @@ import {
 	type ResidentialValues,
 	type RoofSelection,
 } from './ResidentialForm';
-import { Steps } from '../Steps';
-
 // The map libraries load only when the roof step opens.
 const RoofStep = lazy( () =>
 	import( '../roof/RoofStep' ).then( ( module ) => ( {
@@ -179,22 +177,26 @@ export function ResidentialPanel( {
 		}
 	}
 
-	let stage: 1 | 2 | 3 = 2;
-	if ( status === 'empty' ) {
-		stage = 1;
-	} else if ( status === 'done' && result?.selected ) {
-		stage = 3;
-	}
 	return (
 		<div className="linker-flow">
-			<Steps current={ stage } />
 			<section
 				className="linker-section"
 				aria-labelledby="linker-inputs-title"
 			>
-				<h2 className="linker-section__title" id="linker-inputs-title">
-					{ __( 'Inputs', 'linker-tools' ) }
-				</h2>
+				<div className="linker-block__head">
+					<h2
+						className="linker-section__title"
+						id="linker-inputs-title"
+					>
+						{ __( 'Inputs', 'linker-tools' ) }
+					</h2>
+					<p className="linker-block__step">
+						{ __(
+							'Step 2 · The figures that size the system',
+							'linker-tools'
+						) }
+					</p>
+				</div>
 				<ResidentialForm
 					locale={ config.locale }
 					defaults={ defaults }
@@ -231,12 +233,20 @@ export function ResidentialPanel( {
 				aria-busy={ status === 'computing' }
 				ref={ results }
 			>
-				<h2
-					className="linker-section__title"
-					id="linker-solution-title"
-				>
-					{ __( 'Solution', 'linker-tools' ) }
-				</h2>
+				<div className="linker-block__head">
+					<h2
+						className="linker-section__title"
+						id="linker-solution-title"
+					>
+						{ __( 'Solution', 'linker-tools' ) }
+					</h2>
+					<p className="linker-block__step">
+						{ __(
+							'Step 3 · The released system for these inputs',
+							'linker-tools'
+						) }
+					</p>
+				</div>
 				{ status === 'empty' ? (
 					<p className="linker-empty">
 						{ __(
@@ -314,12 +324,17 @@ export function ResidentialPanel( {
 					className="linker-section"
 					aria-labelledby="linker-report-title"
 				>
-					<h2
-						className="linker-section__title"
-						id="linker-report-title"
-					>
-						{ result.report.title }
-					</h2>
+					<div className="linker-block__head">
+						<h2
+							className="linker-section__title"
+							id="linker-report-title"
+						>
+							{ result.report.title }
+						</h2>
+						<p className="linker-block__step">
+							{ __( 'Design report', 'linker-tools' ) }
+						</p>
+					</div>
 					<ReportView
 						report={ result.report }
 						input={ input }
