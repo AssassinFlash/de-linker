@@ -61,7 +61,6 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		disclosure:
 			"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.",
 		accountUrl: '/my-account/',
-		pendingAsk: '',
 		prompts: [
 			'Ask Genie',
 			'I need a three-phase hybrid inverter for a home.',
@@ -262,4 +261,73 @@ test( 'a first visit with no stored conversation opens empty', async () => {
 		);
 	} );
 	expect( screen.queryByText( 'These three fit.' ) ).toBeNull();
+} );
+
+test( 'the ready handshake opens once and Hide/reopen reports the same state', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockClear();
+	const states: boolean[] = [];
+	const onState = ( event: Event ) => {
+		states.push(
+			( event as CustomEvent< { open: boolean } > ).detail.open
+		);
+	};
+	const onReady = () => {
+		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) );
+	};
+	window.addEventListener( 'linker-genie-state', onState );
+	window.addEventListener( 'linker-genie-ready', onReady );
+	try {
+		render( <App config={ config() } /> );
+		expect( screen.getByRole( 'button', { name: 'Hide' } ) ).toBeVisible();
+		fireEvent.click( screen.getByRole( 'button', { name: 'Hide' } ) );
+		expect( states.at( -1 ) ).toBe( false );
+		act( () => {
+			window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) );
+		} );
+		expect( screen.getByLabelText( 'Ask Genie' ) ).toBeVisible();
+		expect( states.at( -1 ) ).toBe( true );
+		expect( sendTurn ).not.toHaveBeenCalled();
+	} finally {
+		window.removeEventListener( 'linker-genie-state', onState );
+		window.removeEventListener( 'linker-genie-ready', onReady );
+	}
+} );
+
+test( 'one entry ask survives a late thread restore without being sent twice', async () => {
+	let restore!: ( value: Awaited< ReturnType< typeof readThread > > ) => void;
+	vi.mocked( readThread ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				restore = resolve;
+			} )
+	);
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
+		} );
+	render( <App config={ config() } /> );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { message: 'What pairs with this model?' },
+			} )
+		);
+	} );
+	expect( sendTurn ).not.toHaveBeenCalled();
+	await act( async () => {
+		restore( {
+			messages: [ { role: 'user', content: 'Old question' } ],
+			turn: null,
+		} );
+	} );
+	expect( screen.getByText( 'What pairs with this model?' ) ).toBeVisible();
+	expect( screen.getByText( 'Old question' ) ).toBeVisible();
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+		{ role: 'user', content: 'Old question' },
+		{ role: 'user', content: 'What pairs with this model?' },
+	] );
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );

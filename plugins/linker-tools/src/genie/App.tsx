@@ -53,6 +53,8 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ input, setInput ] = useState( '' );
 	const [ cards, setCards ] = useState< CardItem[] >( [] );
 	const sending = useRef( false );
+	const currentThread = useRef< TurnMessage[] >( [] );
+	const restoring = useRef< Promise< void > >( Promise.resolve() );
 
 	const store = storeClient( config.restUrl );
 
@@ -64,13 +66,17 @@ export function App( { config }: { config: GenieConfig } ) {
 			sending.current = true;
 			setOpen( true );
 			setPhase( 'waiting' );
-			const next: TurnMessage[] = [
-				...thread,
-				{ role: 'user', content: text },
-			];
-			setThread( next );
 			setInput( '' );
 			try {
+				// An entry can arrive before the saved thread. Append to that
+				// history after restore rather than race it or discard it.
+				await restoring.current;
+				const next: TurnMessage[] = [
+					...currentThread.current,
+					{ role: 'user', content: text },
+				];
+				currentThread.current = next;
+				setThread( next );
 				const answer = await sendTurn(
 					config.turnUrl,
 					config.restNonce,
@@ -79,7 +85,8 @@ export function App( { config }: { config: GenieConfig } ) {
 					{ type: config.pageType }
 				);
 				const assistant = assistantMessage( answer );
-				setThread( next.concat( assistant ) );
+				currentThread.current = next.concat( assistant );
+				setThread( currentThread.current );
 				setTurn( answer );
 				setPhase( 'ask' );
 			} catch {
@@ -88,7 +95,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				sending.current = false;
 			}
 		},
-		[ config, thread ]
+		[ config ]
 	);
 
 	// The conversation the browser already has comes back on mount: a reload,
@@ -96,7 +103,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// of an empty panel (docs/specs/13-genie.md).
 	useEffect( () => {
 		let cancelled = false;
-		void ( async () => {
+		restoring.current = ( async () => {
 			const stored = await readThread(
 				config.threadUrl,
 				config.restNonce
@@ -104,6 +111,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			if ( cancelled || stored.messages.length === 0 ) {
 				return;
 			}
+			currentThread.current = stored.messages;
 			setThread( stored.messages );
 			if ( stored.turn ) {
 				setTurn( stored.turn );
@@ -117,28 +125,31 @@ export function App( { config }: { config: GenieConfig } ) {
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
 
-	// The catalogue search box's chip: a question typed there becomes the
-	// thread's first message. A chip click before the app mounted left its
-	// text on the mount (config.pendingAsk, read once); a click after that
-	// arrives as the event (assets/search-ask.js).
+	// All page entries go through the dock loader. Ready is emitted only after
+	// this listener exists, so even a click while the bundle loads is delivered
+	// exactly once. Plain open never creates an unsolicited model turn.
 	useEffect( () => {
-		if ( '' !== config.pendingAsk ) {
-			void ask( config.pendingAsk );
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- the pending ask is read from the mount exactly once.
-	}, [] );
-
-	useEffect( () => {
-		function onAsk( event: Event ) {
+		function onOpen( event: Event ) {
+			setOpen( true );
 			const detail = ( event as CustomEvent< { message?: unknown } > )
 				.detail;
 			if ( detail && typeof detail.message === 'string' ) {
 				void ask( detail.message );
 			}
 		}
-		window.addEventListener( 'linker-genie-ask', onAsk );
-		return () => window.removeEventListener( 'linker-genie-ask', onAsk );
+		window.addEventListener( 'linker-genie-open', onOpen );
+		return () => window.removeEventListener( 'linker-genie-open', onOpen );
 	}, [ ask ] );
+
+	useEffect( () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-state', { detail: { open } } )
+		);
+	}, [ open ] );
+
+	useEffect( () => {
+		window.dispatchEvent( new CustomEvent( 'linker-genie-ready' ) );
+	}, [] );
 
 	function onCardStatus( productId: number, state: CardState, text: string ) {
 		setCards( ( items ) => {

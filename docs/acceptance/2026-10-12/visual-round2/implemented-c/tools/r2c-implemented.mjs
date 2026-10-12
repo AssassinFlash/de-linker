@@ -14,7 +14,7 @@
  * "before" phase runs against the pre-change checkout (git stash), the
  * "after" phase against the change itself.
  *
- *   node tools/r2c-implemented.mjs before|after
+ *   node docs/acceptance/2026-10-12/visual-round2/implemented-c/tools/r2c-implemented.mjs before|after
  *
  * Screenshots and measurements.json land in
  * docs/acceptance/2026-10-12/visual-round2/implemented-c/.
@@ -24,10 +24,10 @@ import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const repo = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../../..');
 const phase = process.argv[2];
 if (phase !== 'before' && phase !== 'after') {
-	throw new Error('usage: node tools/r2c-implemented.mjs before|after');
+	throw new Error('usage: node docs/acceptance/2026-10-12/visual-round2/implemented-c/tools/r2c-implemented.mjs before|after');
 }
 const out = resolve(
 	repo,

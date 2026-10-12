@@ -8,8 +8,8 @@
  * - What reads as a question (a question mark, a question word or a request
  *   like "I need …" / "Ich brauche …", in English or German) shows the chip
  *   next to the box. Clicking it opens Genie with the typed text as the first
- *   message — the app is booted by the dock's loader, which watches the same
- *   click, and receives the text as the pending ask.
+ *   message — the dock's loader receives the ask event, boots the app and
+ *   delivers the text once its listener is ready.
  * - Submitting a model or item number asks the catalogue search endpoint what
  *   it names: exactly one product goes straight to its page, everything else
  *   (several hits, nothing, an error, the endpoint too slow) leaves the plain
@@ -46,25 +46,15 @@
 		return text.length >= config.questionLength && QUESTION.test( text );
 	}
 
-	// Hands the text to the Genie app. The app may not have loaded yet (it
-	// boots from the same click): the text is left on the app's mount element
-	// for the app's first mount to pick up, and announced as an event for an
-	// app that is already mounted.
+	// One ask event for both cold and mounted apps. The loader owns boot and
+	// pending delivery; no second opener click or mount-attribute copy.
 	function askGenie( text ) {
 		if ( '' === text ) {
 			return;
 		}
-		const mount = document.querySelector( '[data-linker-app="genie"]' );
-		if ( mount ) {
-			mount.setAttribute( 'data-pending-ask', text );
-		}
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-ask', { detail: { message: text } } )
 		);
-		const opener = document.querySelector( '.linker-genie-open' );
-		if ( opener ) {
-			opener.click();
-		}
 	}
 
 	function updateChip() {

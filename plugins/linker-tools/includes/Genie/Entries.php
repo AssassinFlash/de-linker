@@ -177,10 +177,10 @@ class Entries {
 		);
 		echo '</div>';
 		if ( '' !== $payload['src'] ) {
-			// The loader: on the first open/chip click it injects the entry's
-			// WordPress dependencies, the script translations, and the built
-			// app, then reveals the panel. This is the whole of the "first
-			// click loads the JS" mechanism. The payload rides in a data
+			// The loader owns entry delivery: an open click or ask boots once,
+			// waits for the App's ready event, then opens it with the first ask.
+			// The App reports Hide/Open back so the shell and mobile card agree.
+			// The payload rides in a data
 			// attribute: attribute values are entity-decoded by the HTML
 			// parser, so getAttribute() yields the clean JSON (script text
 			// would keep the esc_html entities).
@@ -198,6 +198,51 @@ class Entries {
 		return;
 	}
 	var loaded = false;
+	var ready = false;
+	var pendingOpen = false;
+	var pendingAsk = '';
+	function shell(open) {
+		var panel = document.querySelector('[data-linker-genie-mount]');
+		if (panel) {
+			panel.hidden = !open;
+		}
+		document.querySelectorAll('[data-linker-genie-open]').forEach(function (button) {
+			button.setAttribute('aria-expanded', String(open));
+		});
+	}
+	function deliver() {
+		if (!ready || !pendingOpen) {
+			return;
+		}
+		var message = pendingAsk;
+		pendingOpen = false;
+		pendingAsk = '';
+		window.dispatchEvent(new CustomEvent('linker-genie-open', {
+			detail: { message: message }
+		}));
+	}
+	function open(message) {
+		pendingOpen = true;
+		// A plain reopen during loading must not erase the first question.
+		if (message && !pendingAsk) {
+			pendingAsk = message;
+		}
+		boot();
+		deliver();
+	}
+	window.addEventListener('linker-genie-ready', function () {
+		ready = true;
+		deliver();
+	});
+	window.addEventListener('linker-genie-state', function (event) {
+		shell(event.detail.open);
+	});
+	window.addEventListener('linker-genie-ask', function (event) {
+		var detail = event.detail;
+		if (detail && typeof detail.message === 'string' && detail.message.trim()) {
+			open(detail.message);
+		}
+	});
 	function boot() {
 		if (loaded) {
 			return;
@@ -254,18 +299,7 @@ class Entries {
 			if (!trigger) {
 				return;
 			}
-			boot();
-			var panel = document.querySelector(
-				'[data-linker-genie-mount]'
-			);
-			if (panel) {
-				panel.hidden = false;
-			}
-			document
-				.querySelectorAll('[data-linker-genie-open]')
-				.forEach(function (button) {
-					button.setAttribute('aria-expanded', 'true');
-				});
+			open('');
 		},
 		true
 	);
