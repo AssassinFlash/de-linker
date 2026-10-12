@@ -81,6 +81,7 @@ final class AdminBoxTest extends TestCase {
 		$order->allows( 'get_status' )->andReturn( $status );
 		$order->allows( 'get_items' )->andReturn( array( $line ) );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
+		$order->allows( 'get_meta' )->with( Issuer::FILE_META )->andReturn( '' );
 		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->andReturn( '1760000000' );
 		return $order;
 	}

@@ -58,7 +58,7 @@ final class InquiryList {
 				'name' => __( 'View', 'linker-commerce' ),
 			),
 		);
-		if ( '' !== (string) $order->get_meta( Issuer::NUMBER_META ) ) {
+		if ( self::has_proforma( $order ) ) {
 			$ours['proforma'] = array(
 				'url'  => DocumentDownload::proforma_url( $order ),
 				'name' => __( 'Proforma invoice (PDF)', 'linker-commerce' ),
@@ -75,6 +75,28 @@ final class InquiryList {
 			);
 		}
 		return $ours;
+	}
+
+	/**
+	 * Whether the inquiry has a Proforma the customer can open.
+	 *
+	 * The download is the stored document. A status word without a number has
+	 * no PDF yet — the bank account or a price was missing — and is not shown
+	 * as a download. Issuer writes the number when the document is built.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public static function has_proforma( WC_Order $order ): bool {
+		return '' !== self::proforma_number( $order );
+	}
+
+	/**
+	 * The Proforma number as the customer reads it, or '' when none was stored.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public static function proforma_number( WC_Order $order ): string {
+		return (string) $order->get_meta( Issuer::NUMBER_META );
 	}
 
 	/**

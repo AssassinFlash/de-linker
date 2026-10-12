@@ -1,0 +1,41 @@
+Linker (local t82)
+Inquiry #27
+Overview
+Your contact person
+
+sales@de-linker.com
+
+Inquiry received
+Proforma invoice issued
+Completed
+Cancelled
+Inquiry
+#27
+Date
+12 October 2026
+Amount
+$3,360.00
+View
+Proforma invoice (PDF)
+
+DLK-PF-2026-0003 Proforma invoice (PDF)
+
+Inquiry details
+Product	Total
+Walk inverter × 2	$3,360.00
+Subtotal:	$3,360.00
+Total:	$3,360.00
+Actions:	Proforma invoice (PDF)
+
+Request again
+
+Company details
+Issue GmbH
+Erika Mustermann
+Triftstraße 5
+80331 München
+Germany
+
+proforma-issue-1791830227@example.test
+
+Linker (local t82) is proudly powered by WordPress
