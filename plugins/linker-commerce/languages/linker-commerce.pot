@@ -1853,10 +1853,6 @@ msgstr ""
 msgid "Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the Proforma request."
 msgstr ""
 
-#: includes/Vocabulary/Labels.php
-msgid "Build a cart from catalog products or SKU rows. Approved partner accounts can review pricing, delivery, tax, and checkout details."
-msgstr ""
-
 #: includes/Vocabulary/Labels.php:134
 #: includes/Vocabulary/Terms.php:39
 msgid "Proforma request"

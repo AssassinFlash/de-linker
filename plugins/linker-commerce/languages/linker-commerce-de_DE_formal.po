@@ -2067,10 +2067,6 @@ msgstr "Überprüfen Sie die Positionen in Ihrem Warenkorb, passen Sie die Menge
 msgid "Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the Proforma request."
 msgstr "Stellen Sie einen Lösungsentwurf aus Produkten oder Produktnummern zusammen. Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die Proforma-Anfrage prüfen."
 
-#: includes/Vocabulary/Labels.php
-msgid "Build a cart from catalog products or SKU rows. Approved partner accounts can review pricing, delivery, tax, and checkout details."
-msgstr "Erstellen Sie einen Warenkorb aus Katalogprodukten oder SKU-Zeilen. Freigegebene Partnerkonten können Preise, Lieferung, Steuern und Checkout-Details prüfen."
-
 #: includes/Vocabulary/Labels.php:134 includes/Vocabulary/Terms.php:39
 msgid "Proforma request"
 msgstr "Proforma-Anfrage"
