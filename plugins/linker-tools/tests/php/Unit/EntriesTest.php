@@ -308,7 +308,11 @@ final class EntriesTest extends TestCase {
 		WP_Mock::passthruFunction( 'esc_html' );
 		WP_Mock::passthruFunction( 'esc_attr' );
 		$html = $this->capture(
-			static fn() => ( new Entries( '/plugin/linker-tools.php' ) )->chip( 'Compare with…', 'product' )
+			static fn() => ( new Entries( '/plugin/linker-tools.php' ) )->chip(
+				'Compare with…',
+				'product',
+				'Compare with…'
+			)
 		);
 		$this->assertStringContainsString( 'data-linker-genie-open', $html );
 		$this->assertStringContainsString( 'data-page-type="product"', $html );
@@ -321,17 +325,15 @@ final class EntriesTest extends TestCase {
 
 	/**
 	 * An account chip is the first question, not a button that only opens
-	 * an empty panel. The loader reads data-ask-message.
+	 * an empty panel. The loader reads data-ask-message, and only an explicit
+	 * ask is written there — the visible label is not the payload.
 	 */
-	public function test_account_chip_carries_its_label_as_the_first_question(): void {
+	public function test_account_chip_carries_its_question_as_the_first_ask(): void {
 		WP_Mock::passthruFunction( '__' );
 		WP_Mock::passthruFunction( 'esc_html' );
 		WP_Mock::passthruFunction( 'esc_attr' );
 		$html = $this->capture(
-			static fn() => ( new Entries( '/plugin/linker-tools.php' ) )->chip(
-				'Where is my Proforma?',
-				'account'
-			)
+			static fn() => ( new Entries( '/plugin/linker-tools.php' ) )->account_chips()
 		);
 		$this->assertStringContainsString( 'data-linker-genie-open', $html );
 		$this->assertStringContainsString(
@@ -341,6 +343,129 @@ final class EntriesTest extends TestCase {
 		$this->assertStringContainsString( 'data-page-type="account"', $html );
 		$this->assertConditionsMet();
 	}
+
+	/**
+	 * The catalogue opener is a label, not a question. Writing "Ask Genie"
+	 * into data-ask-message would send that literal as the first turn
+	 * (docs/specs/13-genie.md: the shop opener sends no message).
+	 */
+	public function test_category_opener_carries_no_ask_payload(): void {
+		WP_Mock::passthruFunction( '__' );
+		WP_Mock::passthruFunction( 'esc_html' );
+		WP_Mock::passthruFunction( 'esc_attr' );
+		$html = $this->capture(
+			static fn() => ( new Entries( '/plugin/linker-tools.php' ) )->shop_chip()
+		);
+		$this->assertStringContainsString( 'Ask Genie', $html );
+		$this->assertStringContainsString( 'data-linker-genie-open', $html );
+		$this->assertStringContainsString( 'data-page-type="category"', $html );
+		$this->assertStringNotContainsString( 'data-ask-message', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The loader consumes data-ask-message as the first question, and a
+	 * missing attribute opens with nothing. Deleting that read sends the
+	 * catalogue label ("Ask Genie") as the first turn, so this fixture fails.
+	 *
+	 * The loader is the inline script the dock prints. Running it needs a
+	 * process, which WordPress's filesystem layer does not provide.
+	 *
+	 * phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec, WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open
+	 */
+	public function test_loader_sends_the_ask_attribute_and_not_a_bare_label(): void {
+		$GLOBALS['linker_tools_test_inline_scripts'] = array();
+		$this->frontend( 'en', array( 'type' => 'category' ) );
+		WP_Mock::userFunction(
+			'wp_scripts',
+			array(
+				'return' => static fn() => new FakeScripts(),
+			)
+		);
+
+		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+
+		$script = (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' );
+		$node   = trim( (string) shell_exec( 'command -v node' ) );
+		$this->assertNotSame( '', $node, 'node is required to run the loader fixture' );
+		$fixture = tempnam( sys_get_temp_dir(), 'genie-loader-' );
+		$this->assertIsString( $fixture );
+		file_put_contents(
+			$fixture,
+			<<<'JS'
+class El {
+	constructor(name) { this.nodeName = name; this.attrs = {}; this.hidden = true; this.children = []; this.textContent = ''; this.className = ''; this.src = ''; }
+	addEventListener() {}
+	setAttribute(name, value) { this.attrs[name] = String(value); }
+	getAttribute(name) { return Object.prototype.hasOwnProperty.call(this.attrs, name) ? this.attrs[name] : null; }
+	appendChild(child) { this.children.push(child); return child; }
+	remove() {}
+	closest(selector) { return selector === '[data-linker-genie-open]' && this.getAttribute('data-linker-genie-open') !== null ? this : null; }
+	dispatchEvent(event) { window.dispatchEvent(Object.assign(event, { target: this })); }
+}
+const mount = new El('div');
+mount.setAttribute('data-linker-genie-mount', '');
+const loader = new El('script');
+loader.setAttribute('data-linker-genie-loader', '');
+loader.setAttribute('data-linker-genie-boot-payload', JSON.stringify({ src: 'genie.js', deps: [], translations: [], error: 'Genie could not load.', retry: 'Try again', open: false }));
+const listeners = {};
+function on(type, fn) { (listeners[type] = listeners[type] || []).push(fn); }
+function emit(type, event) { (listeners[type] || []).forEach((fn) => fn(event)); }
+global.window = { addEventListener: on, dispatchEvent(event) { emit(event.type, event); } };
+global.document = {
+	querySelector(selector) { return selector === '[data-linker-genie-loader]' ? loader : selector === '[data-linker-genie-mount]' ? mount : null; },
+	querySelectorAll() { return []; },
+	createElement(name) { return new El(name); },
+	body: { appendChild() {} },
+	addEventListener(type, fn, capture) { window.addEventListener(type, fn, capture); },
+};
+JS . $script . <<<'JS'
+
+var asks = [];
+window.addEventListener('linker-genie-ready', function () {
+	window.dispatchEvent(new CustomEvent('linker-genie-state', { detail: { open: true } }));
+});
+window.addEventListener('linker-genie-open', function (event) {
+	asks.push(event.detail && event.detail.message);
+});
+function click(button) {
+	window.dispatchEvent({ type: 'click', target: button, bubbles: true });
+}
+var labelled = document.createElement('button');
+labelled.setAttribute('data-linker-genie-open', '');
+labelled.textContent = 'Ask Genie';
+document.body.appendChild(labelled);
+click(labelled);
+window.dispatchEvent({ type: 'linker-genie-ready' });
+var asking = document.createElement('button');
+asking.setAttribute('data-linker-genie-open', '');
+asking.setAttribute('data-ask-message', 'Where is my Proforma?');
+asking.textContent = 'Where is my Proforma?';
+document.body.appendChild(asking);
+click(asking);
+process.stdout.write(JSON.stringify(asks));
+JS
+		);
+		$run = proc_open(
+			array( $node, $fixture ),
+			array(
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'pipe', 'w' ),
+			),
+			$pipes
+		);
+		$this->assertIsResource( $run );
+		$out = stream_get_contents( $pipes[1] );
+		$err = stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] );
+		fclose( $pipes[2] );
+		$code = proc_close( $run );
+		unlink( $fixture );
+		$this->assertSame( 0, $code, $err );
+		$this->assertSame( array( '', 'Where is my Proforma?' ), json_decode( (string) $out, true ) );
+		$this->assertConditionsMet();
+	}
+	// phpcs:enable WordPress.WP.AlternativeFunctions, WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec, WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open
 
 	/**
 	 * The shortcode prints a page type's chip group: the LiveCanvas
