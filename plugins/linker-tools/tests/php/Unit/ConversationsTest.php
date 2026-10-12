@@ -201,6 +201,52 @@ final class ConversationsTest extends TestCase {
 	}
 
 	/**
+	 * A signed-in visitor may not read or take over another visitor's
+	 * unowned conversation, even by naming its id. Their own conversation
+	 * and the unowned conversation their cookie names stay usable.
+	 */
+	public function test_a_signed_in_visitor_may_not_use_anothers_unowned_conversation(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+		$_COOKIE = array( 'linker_conversation' => '52' );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'return' => static function ( string $field, int $id ): string {
+					unset( $field );
+					if ( 51 === $id ) {
+						return '7';
+					}
+					if ( 52 === $id ) {
+						return '0';
+					}
+					return '8';
+				},
+			)
+		);
+
+		$conversations = new Conversations();
+
+		$this->assertTrue( $conversations->may_use( 51 ) );
+		$this->assertTrue( $conversations->may_use( 52 ) );
+		$this->assertFalse( $conversations->may_use( 99 ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * A cookie for a foreign or deleted conversation is ignored.
 	 */
 	public function test_current_id_ignores_a_foreign_conversation(): void {

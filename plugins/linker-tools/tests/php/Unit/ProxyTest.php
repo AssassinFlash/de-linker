@@ -270,6 +270,128 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * A signed-in visitor naming another visitor's unowned conversation is
+	 * refused on the thread read, the select, and the turn. The turn must
+	 * not open a conversation in its place.
+	 */
+	public function test_a_signed_in_visitor_is_refused_anothers_unowned_conversation(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction(
+			'is_wp_error',
+			array(
+				'return' => static fn( $thing ): bool => $thing instanceof \WP_Error,
+			)
+		);
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$_COOKIE = array();
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'args'   => array( 99 ),
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 99 ),
+				'return' => '0',
+			)
+		);
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
+		WP_Mock::userFunction(
+			'wp_insert_post',
+			array(
+				'times'  => 1,
+				'return' => static function ( array $post ): int {
+					if ( 7 !== (int) $post['post_author'] ) {
+						return 0;
+					}
+					return 53;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction(
+			'linker_tools_set_conversation_cookie',
+			'53',
+			1000000,
+			'/',
+			'',
+			false
+		);
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'         => 53,
+						'post_title' => 'Genie',
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction( 'wp_update_post', array( 'return' => 53 ) );
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
+
+		$posted        = null;
+		$conversations = new class() extends Conversations {
+			/**
+			 * The fixed expiry second.
+			 */
+			protected function cookie_expire(): int {
+				return 1000000;
+			}
+		};
+		$proxy         = new Proxy(
+			$conversations,
+			static function ( string $url, array $body ) use ( &$posted ): string {
+				$posted = array( $url, $body );
+				return "event: done\ndata: {}\n\n";
+			},
+			new RecordingThread()
+		);
+
+		$thread = $proxy->conversation();
+		$this->assertSame( 0, $thread->get_data()['conversation_id'] );
+		$this->assertSame( array(), $thread->get_data()['messages'] );
+
+		$select = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
+		$select->set_param( 'id', 99 );
+		$refused = $proxy->select_conversation( $select );
+		$this->assertInstanceOf( WP_Error::class, $refused );
+		$this->assertSame( 404, $refused->get_error_data()['status'] );
+
+		$turn = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$turn->set_param(
+			'messages',
+			array(
+				array(
+					'role'    => 'user',
+					'content' => 'Read their thread',
+				),
+			)
+		);
+		$blocked = $proxy->turn( $turn );
+		$this->assertInstanceOf( WP_REST_Response::class, $blocked );
+		$this->assertSame( 53, $blocked->get_data()['conversation_id'] );
+		$this->assertNotSame( 99, $blocked->get_data()['conversation_id'] );
+		$this->assertIsArray( $posted );
+		$this->assertSame( '53', $posted[1]['conversation_id'] );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * An answered turn is kept: the thread the browser sent, and the answer.
 	 */
 	public function test_turn_records_the_thread_and_the_answer(): void {
@@ -288,7 +410,7 @@ final class ProxyTest extends TestCase {
 		);
 
 		$this->proxy( static fn(): string => "event: meta\ndata: {}\n\n", $thread )
-			->turn( $request );
+		->turn( $request );
 
 		$this->assertNotNull( $thread->recorded );
 		$this->assertSame( 51, $thread->recorded['conversation'] );

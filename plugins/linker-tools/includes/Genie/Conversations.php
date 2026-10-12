@@ -252,9 +252,9 @@ class Conversations {
 		);
 	}
 
-		/**
-		 * A new conversation post, cookie set.
-		 */
+	/**
+	 * A new conversation post, cookie set.
+	 */
 	public function open(): int {
 		$author = is_user_logged_in() ? get_current_user_id() : 0;
 		$id     = wp_insert_post(
@@ -299,6 +299,12 @@ class Conversations {
 	/**
 	 * Whether this request may use the conversation.
 	 *
+	 * A signed-in visitor may use a conversation they own, or a still-unowned
+	 * conversation this request's cookie names (the guest thread login has
+	 * not claimed yet). Another visitor's unowned conversation is not
+	 * theirs to read or take over. A guest may use only the unowned
+	 * conversation their cookie names.
+	 *
 	 * @param int $id Conversation post ID.
 	 */
 	public function may_use( int $id ): bool {
@@ -306,8 +312,8 @@ class Conversations {
 			return false;
 		}
 		$author = (int) get_post_field( 'post_author', $id );
-		if ( is_user_logged_in() ) {
-			return 0 === $author || get_current_user_id() === $author;
+		if ( is_user_logged_in() && get_current_user_id() === $author ) {
+			return true;
 		}
 		return 0 === $author && $id === $this->from_cookie();
 	}
@@ -319,7 +325,12 @@ class Conversations {
 		if ( ! isset( $_COOKIE[ self::COOKIE ] ) ) {
 			return 0;
 		}
-		return absint( wp_unslash( $_COOKIE[ self::COOKIE ] ) );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- absint() is the sanitizer; the cookie only names a post ID.
+		$raw = wp_unslash( $_COOKIE[ self::COOKIE ] );
+		if ( ! is_scalar( $raw ) ) {
+			return 0;
+		}
+		return absint( (string) $raw );
 	}
 
 	/**

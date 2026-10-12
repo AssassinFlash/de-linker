@@ -76,23 +76,29 @@ class Entries {
 		return $this->ask_chip();
 	}
 
-		/**
-		 * The full-page workspace on /linker-advisor/.
-		 *
-		 * The LiveCanvas template of that page prints this shortcode. It is
-		 * the same mount the dock uses, marked as the page surface so the
-		 * app renders the history rail instead of the helper card. The dock
-		 * loader still owns boot, ready and open; this mount does not load
-		 * a second copy of the app.
-		 *
-		 * @param array<string, string>|string $atts Shortcode attributes.
-		 */
+	/**
+	 * The full-page workspace on /linker-advisor/.
+	 *
+	 * The LiveCanvas template of that page prints this shortcode. It is
+	 * the same mount the dock uses, marked as the page surface so the
+	 * app renders the history rail instead of the helper card. The
+	 * mount element is what the dock loader's ready and failure
+	 * protocol looks up (`[data-linker-genie-mount]`); without it the
+	 * workspace never enters that handshake. The dock loader still
+	 * owns boot, ready and open; this mount does not load a second
+	 * copy of the app.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
 	public function workspace_shortcode( $atts = array() ): string {
 		unset( $atts );
 		if ( is_admin() ) {
 			return '';
 		}
-		return $this->mount_markup( 'workspace' );
+		return sprintf(
+			'<div id="linker-genie-mount" class="linker-genie-panel linker-genie-panel--workspace" data-linker-genie-mount>%s</div>',
+			$this->mount_markup( 'workspace' )
+		);
 	}
 
 	/**
@@ -247,25 +253,29 @@ class Entries {
 				failure = null;
 			}
 		}
-		function showFailure() {
-			clearFailure();
-			failure = document.createElement('section');
-			failure.className = 'linker-genie-app';
-			failure.setAttribute('data-linker-genie-load-error', '');
-			var message = document.createElement('p');
-			message.className = 'linker-genie-app__error';
-			message.setAttribute('role', 'alert');
-			message.textContent = payload.error;
-			var retry = document.createElement('button');
-			retry.type = 'button';
-			retry.className = 'linker-genie-app__toggle';
-			retry.setAttribute('data-linker-genie-open', '');
-			retry.textContent = payload.retry;
-			failure.appendChild(message);
-			failure.appendChild(retry);
-			document.querySelector('[data-linker-genie-mount]').appendChild(failure);
-			shell(true);
-		}
+			function showFailure() {
+				clearFailure();
+				var panel = document.querySelector('[data-linker-genie-mount]');
+				if (!panel) {
+					return;
+				}
+				failure = document.createElement('section');
+				failure.className = 'linker-genie-app';
+				failure.setAttribute('data-linker-genie-load-error', '');
+				var message = document.createElement('p');
+				message.className = 'linker-genie-app__error';
+				message.setAttribute('role', 'alert');
+				message.textContent = payload.error;
+				var retry = document.createElement('button');
+				retry.type = 'button';
+				retry.className = 'linker-genie-app__toggle';
+				retry.setAttribute('data-linker-genie-open', '');
+				retry.textContent = payload.retry;
+				failure.appendChild(message);
+				failure.appendChild(retry);
+				panel.appendChild(failure);
+				shell(true);
+			}
 		function shell(open) {
 		var panel = document.querySelector('[data-linker-genie-mount]');
 		if (panel) {
@@ -312,16 +322,16 @@ class Entries {
 			open(detail.message);
 		}
 	});
-		function boot() {
-			if (loaded) {
-				return;
-			}
-			loaded = true;
-			if (payload.open) {
-				shell(true);
-			}
-		clearFailure();
-		shell(false);
+			function boot() {
+				if (loaded) {
+					return;
+				}
+				loaded = true;
+				clearFailure();
+				// The workspace has no bubble to reopen a hidden page. Keep it
+				// visible while the app loads; ready then delivers open.
+				// A helper stays closed until the visitor's click is delivered.
+				shell(!!payload.open);
 		var failed = false;
 		var inserted = [];
 		function fail() {
@@ -430,7 +440,7 @@ JS,
 			esc_attr( wp_create_nonce( 'wp_rest' ) ),
 			esc_attr( $this->disclosure( $locale ) ),
 			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
-			esc_attr( esc_url_raw( home_url( '/linker-advisor/' ) ) ),
+			esc_attr( esc_url_raw( $this->workspace_url() ) ),
 			esc_attr( (string) wp_json_encode( $this->prompts( $page, $locale ) ) )
 		);
 	}
@@ -617,6 +627,28 @@ JS,
 	private function locale(): string {
 		$lang = function_exists( 'determine_locale' ) ? determine_locale() : 'en_US';
 		return str_starts_with( strtolower( $lang ), 'de' ) ? 'de' : 'en';
+	}
+
+	/**
+	 * The advisor page in the request's language.
+	 *
+	 * The language layer (`pll_current_language`) is the authority for which
+	 * language this request is in — the same one ComparePage asks. German
+	 * gets that page's twin (`pll_get_post`); English, a missing twin, or
+	 * no language layer stays on /linker-advisor/.
+	 */
+	private function workspace_url(): string {
+		$fallback = home_url( '/linker-advisor/' );
+		if ( ! function_exists( 'pll_current_language' ) || 'de' !== pll_current_language() ) {
+			return $fallback;
+		}
+		$page = get_page_by_path( 'linker-advisor' );
+		if ( ! $page instanceof \WP_Post || ! function_exists( 'pll_get_post' ) ) {
+			return home_url( '/de/linker-berater/' );
+		}
+		$twin = (int) pll_get_post( (int) $page->ID, 'de' );
+		$link = $twin > 0 ? get_permalink( $twin ) : false;
+		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/linker-berater/' );
 	}
 
 	/**
