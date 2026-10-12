@@ -101,8 +101,30 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 	}
 }
 
-if ( ! class_exists( 'WP_Post' ) ) {
-	class WP_Post {
+	if ( ! class_exists( 'WP_Term' ) ) {
+		class WP_Term {
+			public $term_id  = 0;
+			public $name     = '';
+			public $slug     = '';
+			public $taxonomy = '';
+
+			/**
+			 * WordPress's own constructor: the term row, as an object.
+			 *
+			 * @param object|null $term The row.
+			 */
+			public function __construct( $term = null ) {
+				if ( is_object( $term ) ) {
+					foreach ( get_object_vars( $term ) as $key => $value ) {
+						$this->$key = $value;
+					}
+				}
+			}
+		}
+	}
+
+	if ( ! class_exists( 'WP_Post' ) ) {
+		class WP_Post {
 		public $ID          = 0;
 		public $post_type   = 'post';
 		public $post_author = '0';

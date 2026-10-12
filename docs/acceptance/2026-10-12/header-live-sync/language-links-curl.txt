@@ -1,17 +1,51 @@
+Language halves after the permalink-plus-remainder fix. curl of t110
+(http://127.0.0.1:8975, linker-commerce symlink to this worktree), 2026-10-12.
+Current-language half is the requested address (cache-bust key removed). The
+other half is the queried object's translated permalink plus the request path
+past that permalink. Follow rows are the halves themselves, cache-busted.
+
 PAGE	STATUS	EN	DE
-http://127.0.0.1:8975/my-account/inquiries/?cbq=pr119fix	200	http://127.0.0.1:8975/my-account/inquiries/	http://127.0.0.1:8975/de/mein-konto/inquiries/
-http://127.0.0.1:8975/de/mein-konto/inquiries/?cbq=pr119fix	200	http://127.0.0.1:8975/my-account/inquiries/	http://127.0.0.1:8975/de/mein-konto/inquiries/
-http://127.0.0.1:8975/product-category/inverters/?cbq=pr119fix	200	http://127.0.0.1:8975/product-category/inverters/	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/
-http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?cbq=pr119fix	200	http://127.0.0.1:8975/product-category/inverters/	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/
-http://127.0.0.1:8975/linker-planner/?step=roof&cbq=pr119fix	200	http://127.0.0.1:8975/linker-planner/?step=roof	http://127.0.0.1:8975/de/linker-planer/?step=roof
-http://127.0.0.1:8975/de/linker-planer/?step=roof&cbq=pr119fix	200	http://127.0.0.1:8975/linker-planner/?step=roof	http://127.0.0.1:8975/de/linker-planer/?step=roof
-http://127.0.0.1:8975/my-account/inquiries/?step=roof&cbq=pr119fix	200	http://127.0.0.1:8975/my-account/inquiries/?step=roof	http://127.0.0.1:8975/de/mein-konto/inquiries/?step=roof
+http://127.0.0.1:8975/my-account/inquiries/?cbq=langfix2	200	http://127.0.0.1:8975/my-account/inquiries/	http://127.0.0.1:8975/de/mein-konto/inquiries/
+http://127.0.0.1:8975/de/mein-konto/inquiries/?cbq=langfix2	200	http://127.0.0.1:8975/my-account/inquiries/	http://127.0.0.1:8975/de/mein-konto/inquiries/
+http://127.0.0.1:8975/my-account/inquiry/1600/?cbq=langfix2	200	http://127.0.0.1:8975/my-account/inquiry/1600/	http://127.0.0.1:8975/de/mein-konto/inquiry/1600/
+http://127.0.0.1:8975/my-account/inquiries/2/?cbq=langfix2	200	http://127.0.0.1:8975/my-account/inquiries/2/	http://127.0.0.1:8975/de/mein-konto/inquiries/2/
+http://127.0.0.1:8975/my-account/company/billing/?cbq=langfix2	200	http://127.0.0.1:8975/my-account/company/billing/	http://127.0.0.1:8975/de/mein-konto/company/billing/
+http://127.0.0.1:8975/proforma-request/inquiry-received/7021/?cbq=langfix2	200	http://127.0.0.1:8975/proforma-request/inquiry-received/7021/	http://127.0.0.1:8975/de/proforma-anfrage/inquiry-received/7021/
+http://127.0.0.1:8975/de/proforma-anfrage/inquiry-received/7021/?cbq=langfix2	200	http://127.0.0.1:8975/proforma-request/inquiry-received/7021/	http://127.0.0.1:8975/de/proforma-anfrage/inquiry-received/7021/
+http://127.0.0.1:8975/product-category/inverters/?step=roof&cbq=langfix2	200	http://127.0.0.1:8975/product-category/inverters/?step=roof	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?step=roof
+http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?step=roof&cbq=langfix2	200	http://127.0.0.1:8975/product-category/inverters/?step=roof	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?step=roof
+http://127.0.0.1:8975/?s=inverter&cbq=langfix2	200	http://127.0.0.1:8975/?s=inverter	http://127.0.0.1:8975/de/?s=inverter
+http://127.0.0.1:8975/de/?s=inverter&cbq=langfix2	200	http://127.0.0.1:8975/?s=inverter	http://127.0.0.1:8975/de/?s=inverter
+http://127.0.0.1:8975/linker-planner/?step=roof&cbq=langfix2	200	http://127.0.0.1:8975/linker-planner/?step=roof	http://127.0.0.1:8975/de/linker-planer/?step=roof
+http://127.0.0.1:8975/de/linker-planer/?step=roof&cbq=langfix2	200	http://127.0.0.1:8975/linker-planner/?step=roof	http://127.0.0.1:8975/de/linker-planer/?step=roof
+http://127.0.0.1:8975/products/page/2/?cbq=langfix2	200	http://127.0.0.1:8975/products/page/2/	http://127.0.0.1:8975/de/produkte/page/2/
+http://127.0.0.1:8975/product-category/inverters/page/2/?cbq=langfix2	200	http://127.0.0.1:8975/product-category/inverters/page/2/	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/page/2/
 FOLLOW
-200	http://127.0.0.1:8975/my-account/inquiries/?cbq=follow
-200	http://127.0.0.1:8975/de/mein-konto/inquiries/?cbq=follow
-200	http://127.0.0.1:8975/product-category/inverters/?cbq=follow
-200	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?cbq=follow
-200	http://127.0.0.1:8975/linker-planner/?step=roof&cbq=follow
-200	http://127.0.0.1:8975/de/linker-planer/?step=roof&cbq=follow
-200	http://127.0.0.1:8975/my-account/inquiries/?step=roof&cbq=follow
-200	http://127.0.0.1:8975/de/mein-konto/inquiries/?step=roof&cbq=follow
+200	http://127.0.0.1:8975/my-account/inquiries/?cbq=follow2
+200	http://127.0.0.1:8975/de/mein-konto/inquiries/?cbq=follow2
+200	http://127.0.0.1:8975/my-account/inquiry/1600/?cbq=follow2
+200	http://127.0.0.1:8975/de/mein-konto/inquiry/1600/?cbq=follow2
+200	http://127.0.0.1:8975/my-account/inquiries/2/?cbq=follow2
+200	http://127.0.0.1:8975/de/mein-konto/inquiries/2/?cbq=follow2
+200	http://127.0.0.1:8975/my-account/company/billing/?cbq=follow2
+200	http://127.0.0.1:8975/de/mein-konto/company/billing/?cbq=follow2
+200	http://127.0.0.1:8975/proforma-request/inquiry-received/7021/?cbq=follow2
+200	http://127.0.0.1:8975/de/proforma-anfrage/inquiry-received/7021/?cbq=follow2
+200	http://127.0.0.1:8975/product-category/inverters/?step=roof&cbq=follow2
+200	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?step=roof&cbq=follow2
+200	http://127.0.0.1:8975/?s=inverter&cbq=follow2
+200	http://127.0.0.1:8975/de/?s=inverter&cbq=follow2
+200	http://127.0.0.1:8975/linker-planner/?step=roof&cbq=follow2
+200	http://127.0.0.1:8975/de/linker-planer/?step=roof&cbq=follow2
+200	http://127.0.0.1:8975/products/page/2/?cbq=follow2
+200	http://127.0.0.1:8975/de/produkte/page/2/?cbq=follow2
+200	http://127.0.0.1:8975/product-category/inverters/page/2/?cbq=follow2
+200	http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/page/2/?cbq=follow2
+
+Notes from the same t110 (wp eval, not curl): order 1600 exists as a
+checkout-draft, so /my-account/inquiry/1600/ and its German half are real
+account pages and both answer 200. Order 7021 does not exist. The German
+confirmation page does (published page proforma-anfrage, id 6867). The German
+half of /proforma-request/inquiry-received/7021/ is
+/de/proforma-anfrage/inquiry-received/7021/ and answers 200; it does not fall
+through to /de/mein-konto/.
