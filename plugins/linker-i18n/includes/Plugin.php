@@ -104,8 +104,13 @@ final class Plugin {
 		add_filter( 'pll_rel_hreflang_attributes', array( $seo, 'hreflangs' ) );
 		add_filter( 'do_redirect_guess_404_permalink', array( $seo, 'guess_404' ) );
 
-		// REST lists in one language.
-		$rest = new RestLang( $languages );
+			// A German WooCommerce page with no German dynamic template of its own
+			// renders through the English one, which LiveCanvas's language-scoped
+			// lookup would otherwise miss.
+			add_filter( 'lc_modify_template_id', array( new DynamicTemplates( $languages ), 'template' ) );
+
+			// REST lists in one language.
+			$rest = new RestLang( $languages );
 		add_filter( 'rest_request_before_callbacks', array( $rest, 'enter' ), 10, 3 );
 		add_filter( 'rest_request_after_callbacks', array( $rest, 'leave' ) );
 		add_action( 'pre_get_posts', array( $rest, 'posts' ) );
