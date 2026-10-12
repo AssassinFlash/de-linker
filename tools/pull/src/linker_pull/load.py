@@ -230,7 +230,66 @@ def load(
     say(f"active plugins: {', '.join(entry.split('/')[0] for entry in active)}")
     german = _refresh_german(target, say) if live_code else None
     wp.run("rewrite", "flush")
+    # The dump replaced every user_pass with an irreversible placeholder
+    # (anonymize.local_password). The password provision() wrote into admin.txt
+    # no longer opens anything, and the file is the only place a session looks
+    # for one. Rewrite it here, where the replacement happens, so the next
+    # session reads the logins that still work instead of a password that does not.
+    staff = [
+        login
+        for login in wp.run(
+            "user",
+            "list",
+            "--role__in=administrator,shop_manager",
+            "--field=user_login",
+            *SKIP,
+        ).splitlines()
+        if login
+    ]
+    write_admin_note(target.admin_file, target.name, target.url, staff)
     return verify(wp, target, data["database"]["posts"], german)
+
+
+def write_admin_note(path: Path, name: str, url: str, staff: list[str]) -> None:
+    """Rewrite admin.txt for the accounts a loaded snapshot left.
+
+    provision() writes `url`/`user`/`password` for local-admin. A loaded
+    snapshot replaces that account's password with a placeholder no one knows,
+    and may remove the account. The file then has to say which logins remain
+    and that each one is opened with `just login`, not with the old password.
+    """
+    lines = [f"url: {url}/wp-admin/"]
+    if local_wordpress.ADMIN_USER in staff:
+        lines.append(f"user: {local_wordpress.ADMIN_USER}")
+        lines.append(
+            "password: none — the snapshot replaced this account's password "
+            "with an irreversible placeholder, so the password provision() wrote "
+            "here no longer matches. Sign in with "
+            f"`just login {name} --user={local_wordpress.ADMIN_USER}`."
+        )
+        others = [login for login in staff if login != local_wordpress.ADMIN_USER]
+    else:
+        lines.append(
+            "password: none — the snapshot replaced every account password with "
+            "an irreversible placeholder, and local-admin is not on this instance. "
+            "Sign in with `just login "
+            f"{name} --user=<login>`."
+        )
+        others = staff
+    if others:
+        listed = ", ".join(f"`{login}`" for login in others)
+        lines.append(
+            "Also present: "
+            + listed
+            + ". Each password is the same irreversible placeholder. Sign one in with "
+            + f"`just login {name} --user=<login>`."
+        )
+    elif not staff:
+        lines.append("No administrator or shop manager remains on this instance.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.touch(mode=0o600)
+    path.write_text("\n".join(lines) + "\n")
+    path.chmod(0o600)
 
 
 def _refresh_german(target: Instance, say: Say) -> list[str] | None:

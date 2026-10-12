@@ -331,6 +331,13 @@ def test_the_snapshot_lands_with_every_form_of_the_live_address_rewritten(
         wp(docroot, "option", "get", "active_plugins", "--format=json")
     ) == ["fake-licensed/fake-licensed.php"]
     assert not (instance.wp_content / "plugins/old-custom").exists()
+    # The snapshot replaced every password. admin.txt must not still offer the
+    # one provision() wrote, and it must name a login that is still on the instance.
+    note = instance.admin_file.read_text()
+    assert "unused-local-password" not in note
+    assert "owner" in note
+    assert "just login" in note
+    assert instance.admin_file.stat().st_mode & 0o777 == 0o600
 
 
 def test_with_the_live_code_the_live_plugins_run_but_code_snippets(
@@ -382,6 +389,29 @@ def test_an_instance_whose_wp_config_names_another_database_is_refused(
             live_code=False,
             say=lambda message: None,
         )
+
+
+def test_a_loaded_snapshot_rewrites_admin_txt_off_the_old_password(
+    tmp_path: Path,
+) -> None:
+    """The note is the file a session reads; it must not keep a password the snapshot voided."""
+    path = tmp_path / "t109" / "admin.txt"
+    path.parent.mkdir()
+    path.write_text("url: http://127.0.0.1:8969/wp-admin/\nuser: local-admin\npassword: old-secret\n")
+
+    load.write_admin_note(
+        path,
+        "t109",
+        "http://127.0.0.1:8969",
+        ["857558227@qq.com"],
+    )
+
+    text = path.read_text()
+    assert "old-secret" not in text
+    assert "local-admin is not on this instance" in text
+    assert "`857558227@qq.com`" in text
+    assert "just login t109 --user=<login>" in text
+    assert path.stat().st_mode & 0o777 == 0o600
 
 
 def test_an_unregistered_name_is_refused(tmp_path: Path) -> None:
