@@ -555,14 +555,14 @@ JS,
 		 * @param string $label Chip label.
 		 * @param string $type  Page type.
 		 */
-		public function chip( string $label, string $type ): void {
-			printf(
-				'<button type="button" class="linker-genie-chip" data-linker-genie-open data-ask-message="%1$s" data-page-type="%2$s">%3$s</button>',
-				esc_attr( $label ),
-				esc_attr( $type ),
-				esc_html( $label )
-			);
-		}
+	public function chip( string $label, string $type ): void {
+		printf(
+			'<button type="button" class="linker-genie-chip" data-linker-genie-open data-ask-message="%1$s" data-page-type="%2$s">%3$s</button>',
+			esc_attr( $label ),
+			esc_attr( $type ),
+			esc_html( $label )
+		);
+	}
 
 	/**
 	 * The opening prompts of one page type in its language.
