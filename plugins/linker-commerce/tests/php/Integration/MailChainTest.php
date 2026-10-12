@@ -34,7 +34,16 @@ final class MailChainTest extends IntegrationTestCase {
 		$switch = new TestMode();
 		$switch->enable( 'tester@example.test' );
 		$this->later(
-			static function () use ( $switch ): void {
+			function () use ( $switch ): void {
+				// The legacy plugin queues one copy job on the wp_mail filter,
+				// before the outbox takes the call. take_copy_payload() only
+				// cancels the twin this test reads; a second call (the release
+				// below) leaves its own pending job, and that job still names
+				// the three owner inboxes. Cancel every pending copy of this
+				// hook while the switch is still on, then prove none remain,
+				// and only then turn the switch off.
+				$this->cancel_pending_copy_jobs();
+				$this->assertSame( array(), $this->pending_copy_jobs(), 'The instance queue holds no pending owner-copy job after the test.' );
 				$switch->disable();
 			}
 		);
@@ -174,6 +183,45 @@ final class MailChainTest extends IntegrationTestCase {
 			);
 		}
 		return $found;
+	}
+
+	/**
+	 * Pending owner-copy jobs, whatever subject they carry.
+	 *
+	 * @return array<int, mixed>
+	 */
+	private function pending_copy_jobs(): array {
+		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
+			return array();
+		}
+		$actions = as_get_scheduled_actions(
+			array(
+				'hook'     => 'tv_b2b_business_mail_copy_job',
+				'status'   => 'pending',
+				'per_page' => 100,
+				'group'    => 'tv-b2b',
+			)
+		);
+		return is_array( $actions ) ? $actions : array();
+	}
+
+	/**
+	 * Cancels every pending owner-copy job, not only the twin this test reads.
+	 * A second wp_mail() of the same subject queues another one; leaving it
+	 * pending would send the three owner inboxes once the switch is off.
+	 * The query is paged, so a backlog larger than one page is not left behind.
+	 */
+	private function cancel_pending_copy_jobs(): void {
+		if ( ! class_exists( '\ActionScheduler' ) ) {
+			return;
+		}
+		do {
+			$actions = $this->pending_copy_jobs();
+			$full    = count( $actions ) >= 100;
+			foreach ( array_keys( $actions ) as $id ) {
+				\ActionScheduler::store()->cancel_action( (int) $id );
+			}
+		} while ( $full );
 	}
 
 	/**

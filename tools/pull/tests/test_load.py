@@ -397,7 +397,9 @@ def test_a_loaded_snapshot_rewrites_admin_txt_off_the_old_password(
     """The note is the file a session reads; it must not keep a password the snapshot voided."""
     path = tmp_path / "t109" / "admin.txt"
     path.parent.mkdir()
-    path.write_text("url: http://127.0.0.1:8969/wp-admin/\nuser: local-admin\npassword: old-secret\n")
+    path.write_text(
+        "url: http://127.0.0.1:8969/wp-admin/\nuser: local-admin\npassword: old-secret\n"
+    )
 
     load.write_admin_note(
         path,
