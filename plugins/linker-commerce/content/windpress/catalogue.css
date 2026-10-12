@@ -226,3 +226,22 @@ body #tv-woo-b2b-catalog.sf-catalog [data-card-gate] { background: #f3f7f2; bord
   body #tv-woo-b2b-catalog.sf-catalog .sf-card-title { font-size: 17px; }
   body #tv-woo-b2b-catalog.sf-catalog :is(.card-article-picker,.card-exact-article,.card-facts,.sf-card-price,.sf-card-availability,.sf-card-actions) { grid-column: 1 / -1; }
 }
+
+/*
+ * Owner-approved round-2 optimizations (owner ruling 2026-10-12; ledger and
+ * trialled CSS: docs/acceptance/2026-10-12/visual-round2/proposals/README.md).
+ * The two accepted proposals, exactly as trialled there: where this file now
+ * differs from the live page it is a ratified exemption, not a replica defect.
+ *   A1: >=1360px the shop and category container is 1360px wide, matching the
+ *       product page's edges, lifting the theme's 1280px cap.
+ *   A2: >=861px the category filter rail is sticky below the header and
+ *       scrolls inside its own box.
+ */
+@media (min-width:1360px){
+  body #tv-woo-b2b-catalog.sf-catalog{--sf-container:1360px}
+  body #tv-woo-b2b-catalog.sf-catalog .container{width:min(1360px,calc(100% - 64px));max-width:none}
+}
+
+@media (min-width:861px){
+  body #tv-woo-b2b-catalog.sf-catalog .sidebar-filters{position:sticky;top:104px;align-self:start;max-height:calc(100vh - 128px);overflow-y:auto}
+}

@@ -1,0 +1,118 @@
+{
+ "A1-shop-1440": {
+  "pageH": 9237,
+  "sfContainer": "1240px",
+  "container": [
+   100,
+   123,
+   1240,
+   16
+  ],
+  "containerMaxWidth": "1280px",
+  "grid": [
+   342,
+   495,
+   998,
+   7774
+  ],
+  "gridCols": "488px 488px",
+  "card0": [
+   342,
+   495,
+   488,
+   604
+  ],
+  "identity0": [
+   363,
+   730,
+   446,
+   71
+  ]
+ },
+ "A1-category-1440": {
+  "pageH": 4555,
+  "sfContainer": "1240px",
+  "container": [
+   100,
+   123,
+   1240,
+   16
+  ],
+  "containerMaxWidth": "1280px",
+  "grid": [
+   342,
+   495,
+   998,
+   3169
+  ],
+  "gridCols": "488px 488px",
+  "card0": [
+   342,
+   495,
+   488,
+   630
+  ],
+  "identity0": [
+   363,
+   730,
+   446,
+   97
+  ]
+ },
+ "A1-guard1200": {
+  "pageH": 9274,
+  "sfContainer": "1240px",
+  "container": [
+   88,
+   115,
+   1024,
+   16
+  ],
+  "containerMaxWidth": "1024px",
+  "grid": [
+   330,
+   481,
+   782,
+   7826
+  ],
+  "gridCols": "380px 380px",
+  "card0": [
+   330,
+   481,
+   380,
+   604
+  ],
+  "identity0": [
+   351,
+   716,
+   338,
+   71
+  ]
+ },
+ "A2-category-1440-y2000": {
+  "scrollY": 2000,
+  "railViewportRect": [
+   100,
+   -1569,
+   210,
+   1006
+  ],
+  "position": "static",
+  "top": "auto",
+  "maxHeight": "none",
+  "overflowY": "visible"
+ },
+ "A2-guard860-y600": {
+  "scrollY": 600,
+  "railViewportRect": [
+   860,
+   0,
+   360,
+   900
+  ],
+  "position": "fixed",
+  "visibility": "hidden",
+  "maxHeight": "none",
+  "overflowY": "auto"
+ }
+}
