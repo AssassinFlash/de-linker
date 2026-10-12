@@ -24,9 +24,9 @@
 
 自定义代码因此只有两处，都是数据装配：`Comparison`（装配）与 `ComparePage`（表片段、芯片、地址规范化、选择态脚本）。**零内联样式、零设计决策**（表片段只输出语义标记与类名）。
 
-## 2. /linker-advisor/（de /linker-berater/、/de/linker-advisor/）——301 → 目录
+## 2. /linker-advisor/（de /linker-berater/）——Genie 工作区
 
-Advisor 整页是旧助手的整页形态；助手现在是 Genie（每页常驻 dock，产品页与目录页有芯片），所以该页没有自己的后继页，301 到商品目录（en → `/products/`，de → `/de/produkte/`）。`Redirects::RETIRED` 增加三条。`/de/linker-berater/` 是线上德语 sitemap 的地址，`/de/linker-advisor/` 是旧插件同样解析的"英语 slug 加 /de/"别名（与 `/de/design-canvas/` 同一先例）。
+业主 2026-10-12 选定方案 A 后，这一页是 Genie 的全页工作区，不再 301 到目录。LiveCanvas 每页模板（`linker-advisor` / `linker-advisor-de`）只印 `[linker_genie_workspace]`；会话、历史和投票仍由 `linker-tools` 的 Genie 应用与 `linker-ai/v1/genie/conversations` 承担。右下助手与这一页读写同一条 cookie 会话。`/de/linker-advisor/` 仍不是德语页的地址。
 
 ## 3. /faq-download/（en / de）——静态目录化
 

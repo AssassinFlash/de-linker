@@ -288,7 +288,8 @@ final class EntriesTest extends TestCase {
 		WP_Mock::passthruFunction( 'esc_html__' );
 		WP_Mock::passthruFunction( 'esc_attr' );
 		WP_Mock::passthruFunction( 'esc_html' );
-		WP_Mock::passthruFunction( '__' );
+			WP_Mock::passthruFunction( '__' );
+			WP_Mock::userFunction( 'get_post', array( 'return' => null ) );
 	}
 
 	/**

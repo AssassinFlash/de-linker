@@ -111,7 +111,7 @@ final class ProxyTest extends TestCase {
 	 * `en` when nothing says German.
 	 */
 	public function test_locale_defaults_to_english(): void {
-		$proxy  = new Proxy(
+		$proxy      = new Proxy(
 			new class() extends Conversations {
 				/**
 				 * Always the same conversation.
@@ -121,8 +121,7 @@ final class ProxyTest extends TestCase {
 				}
 			}
 		);
-		$method = new \ReflectionMethod( $proxy, 'locale' );
-		$method->setAccessible( true );
+			$method = new \ReflectionMethod( $proxy, 'locale' );
 
 		$this->assertSame( 'en', $method->invoke( $proxy, null ) );
 		$this->assertSame( 'de', $method->invoke( $proxy, 'de_DE_formal' ) );
@@ -235,6 +234,37 @@ final class ProxyTest extends TestCase {
 			public function existing_id(): int {
 				return 51;
 			}
+
+				/**
+				 * The one conversation this double knows.
+				 *
+				 * @return list<array{id: int, title: string, updated: string}>
+				 */
+			public function list_for_visitor(): array {
+				return array(
+					array(
+						'id'      => 51,
+						'title'   => 'Which inverter fits?',
+						'updated' => '2026-10-12 08:00:00',
+					),
+				);
+			}
+
+				/**
+				 * Selects 51 and refuses anything else.
+				 *
+				 * @param int $id Conversation post ID.
+				 */
+			public function activate( int $id ): bool {
+				return 51 === $id;
+			}
+
+				/**
+				 * Opens 52.
+				 */
+			public function open(): int {
+				return 52;
+			}
 		};
 		return new Proxy( $conversations, $fetch, $thread ?? new RecordingThread() );
 	}
@@ -316,6 +346,53 @@ final class ProxyTest extends TestCase {
 			'no-store',
 			(string) $response->get_headers()['Cache-Control']
 		);
+			$this->assertConditionsMet();
+	}
+
+		/**
+		 * The history route lists the visitor's conversations and names the
+		 * current one. It does not open a conversation.
+		 */
+	public function test_conversations_lists_without_opening_one(): void {
+		$this->wp_functions();
+
+		$data = $this->proxy()->conversations()->get_data();
+
+		$this->assertSame( 51, $data['current_id'] );
+		$this->assertSame( 'Which inverter fits?', $data['conversations'][0]['title'] );
+		$this->assertConditionsMet();
+	}
+
+		/**
+		 * Selecting a conversation the visitor owns returns that id. An id
+		 * they may not use is a 404, not a new conversation.
+		 */
+	public function test_selecting_a_conversation_refuses_one_the_visitor_may_not_use(): void {
+		$this->wp_functions();
+		$proxy = $this->proxy();
+
+		$owned = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
+		$owned->set_param( 'id', 51 );
+		$this->assertSame( 51, $proxy->select_conversation( $owned )->get_data()['conversation_id'] );
+
+		$foreign = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
+		$foreign->set_param( 'id', 99 );
+		$error = $proxy->select_conversation( $foreign );
+		$this->assertInstanceOf( WP_Error::class, $error );
+		$this->assertSame( 404, $error->get_error_data()['status'] );
+		$this->assertConditionsMet();
+	}
+
+		/**
+		 * A selection without an id opens a new conversation.
+		 */
+	public function test_selecting_without_an_id_opens_a_conversation(): void {
+		$this->wp_functions();
+		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
+
+		$data = $this->proxy()->select_conversation( $request )->get_data();
+
+		$this->assertSame( 52, $data['conversation_id'] );
 		$this->assertConditionsMet();
 	}
 }

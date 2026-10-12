@@ -64,8 +64,10 @@ final class Templates {
 	private const PAGES = array(
 		'linker-compare'    => array( 'compare_page', 'Compare products', 'compare-products', 'en' ),
 		'linker-compare-de' => array( 'de/compare_page', 'Produkte vergleichen', 'compare-products', 'de' ),
-		'linker-faq'        => array( 'faq_page', 'FAQ & documents', 'faq-download', 'en' ),
-		'linker-faq-de'     => array( 'de/faq_page', 'FAQ & Dokumente', 'faq-download', 'de' ),
+			'linker-faq'        => array( 'faq_page', 'FAQ & documents', 'faq-download', 'en' ),
+			'linker-faq-de'     => array( 'de/faq_page', 'FAQ & Dokumente', 'faq-download', 'de' ),
+			'linker-advisor'    => array( 'advisor_page', 'Genie', 'linker-advisor', 'en' ),
+			'linker-advisor-de' => array( 'de/advisor_page', 'Genie', 'linker-berater', 'de' ),
 	);
 
 	/**

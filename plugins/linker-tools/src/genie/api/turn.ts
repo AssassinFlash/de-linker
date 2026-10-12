@@ -94,6 +94,18 @@ export interface PageContext {
 	product_id?: number;
 }
 
+/** One row of the history rail. */
+export interface ConversationSummary {
+	id: number;
+	title: string;
+	updated: string;
+}
+
+export interface ConversationList {
+	currentId: number;
+	conversations: ConversationSummary[];
+}
+
 /**
  * Sends one message and parses the SSE answer.
  *
@@ -214,6 +226,82 @@ export async function readThread(
 	} catch {
 		return empty;
 	}
+}
+
+/**
+ * The conversations this visitor may continue.
+ *
+ * An empty answer is an empty rail. This never opens a conversation.
+ *
+ * @param url     History route.
+ * @param nonce   wp_rest nonce.
+ * @param fetcher Fetch for tests.
+ */
+export async function listConversations(
+	url: string,
+	nonce: string,
+	fetcher: Fetch = ( ...args ) => fetch( ...args )
+): Promise< ConversationList > {
+	const empty = { currentId: 0, conversations: [] };
+	try {
+		const response = await fetcher( url, {
+			credentials: 'same-origin',
+			cache: 'no-store',
+			headers: { 'X-WP-Nonce': nonce },
+		} );
+		if ( ! response.ok ) {
+			return empty;
+		}
+		const body = ( await response.json() ) as {
+			current_id?: number;
+			conversations?: ConversationSummary[];
+		};
+		return {
+			currentId: body.current_id ?? 0,
+			conversations: ( body.conversations ?? [] ).filter(
+				( item ) => item && typeof item.id === 'number' && item.title
+			),
+		};
+	} catch {
+		return empty;
+	}
+}
+
+/**
+ * Continues one conversation, or opens a new one when `id` is omitted.
+ *
+ * The proxy writes the cookie both surfaces read, so the dock and the
+ * workspace share the thread this returns.
+ *
+ * @param url     History route.
+ * @param nonce   wp_rest nonce.
+ * @param id      Conversation to continue; omit to open a new one.
+ * @param fetcher Fetch for tests.
+ */
+export async function selectConversation(
+	url: string,
+	nonce: string,
+	id?: number,
+	fetcher: Fetch = ( ...args ) => fetch( ...args )
+): Promise< ConversationList > {
+	const response = await fetcher( url, {
+		method: 'POST',
+		credentials: 'same-origin',
+		cache: 'no-store',
+		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
+		body: JSON.stringify( id ? { id } : {} ),
+	} );
+	if ( ! response.ok ) {
+		throw new Error( `conversation ${ response.status }` );
+	}
+	const body = ( await response.json() ) as {
+		conversation_id?: number;
+		conversations?: ConversationSummary[];
+	};
+	return {
+		currentId: body.conversation_id ?? 0,
+		conversations: body.conversations ?? [],
+	};
 }
 
 /**

@@ -21,10 +21,17 @@ class Conversations {
 	 */
 	public const POST_TYPE = 'linker_conversation';
 
-	/**
-	 * Cookie that names the guest's conversation post.
-	 */
+		/**
+		 * Cookie that names the guest's conversation post.
+		 */
 	public const COOKIE = 'linker_conversation';
+
+		/**
+		 * How many conversations the history rail lists. A customer who scrolls
+		 * further than this is browsing, not continuing a job; the current
+		 * conversation is always included even when it is older than the cut.
+		 */
+	public const LIST_LIMIT = 40;
 
 	/**
 	 * Registers the post type; runs on init.
@@ -146,9 +153,108 @@ class Conversations {
 		return array() === $owned ? 0 : (int) $owned[0];
 	}
 
-	/**
-	 * A new conversation post, cookie set.
-	 */
+		/**
+		 * The conversations this visitor may continue, newest first.
+		 *
+		 * A guest has one conversation: the cookie's. A signed-in customer has
+		 * every conversation post they own, which is what the history rail
+		 * lists. The current one is always present, so switching away and back
+		 * never drops the thread the cookie names. Reading the list never
+		 * opens a conversation.
+		 *
+		 * @return list<array{id: int, title: string, updated: string}>
+		 */
+	public function list_for_visitor(): array {
+		$current = $this->from_cookie();
+		if ( $current > 0 && ! $this->may_use( $current ) ) {
+			$current = 0;
+		}
+		$ids = array();
+		if ( is_user_logged_in() ) {
+			$owned = get_posts(
+				array(
+					'post_type'      => self::POST_TYPE,
+					'post_status'    => 'private',
+					'author'         => get_current_user_id(),
+					'posts_per_page' => self::LIST_LIMIT,
+					'orderby'        => 'modified',
+					'order'          => 'DESC',
+					'fields'         => 'ids',
+				)
+			);
+			foreach ( $owned as $id ) {
+				$ids[] = (int) $id;
+			}
+		}
+		if ( $current > 0 && ! in_array( $current, $ids, true ) ) {
+			array_unshift( $ids, $current );
+		}
+		$ids  = array_slice( $ids, 0, self::LIST_LIMIT );
+		$list = array();
+		foreach ( $ids as $id ) {
+			if ( ! $this->may_use( $id ) ) {
+				continue;
+			}
+			$post = get_post( $id );
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+			$list[] = array(
+				'id'      => $id,
+				'title'   => '' !== $post->post_title ? $post->post_title : 'Genie',
+				'updated' => (string) $post->post_modified_gmt,
+			);
+		}
+		return $list;
+	}
+
+		/**
+		 * Makes one of this visitor's conversations the current one.
+		 *
+		 * The cookie is the one place a request names its conversation
+		 * (`current_id()`, `existing_id()`), so the dock and the workspace
+		 * share a thread by writing that cookie. A conversation the visitor
+		 * may not use is refused; nothing is opened in its place.
+		 *
+		 * @param int $id Conversation post ID.
+		 */
+	public function activate( int $id ): bool {
+		if ( $id < 1 || ! $this->may_use( $id ) ) {
+			return false;
+		}
+		$this->set_cookie( $id );
+		return true;
+	}
+
+		/**
+		 * Names a conversation after its first customer message.
+		 *
+		 * The history rail has nothing else to show: a conversation post is
+		 * created as "Genie", and the first message is the title the customer
+		 * will recognise. A later turn does not rename it.
+		 *
+		 * @param int    $id    Conversation post ID.
+		 * @param string $title First message, already trimmed.
+		 */
+	public function title_from_first_message( int $id, string $title ): void {
+		if ( $id < 1 || '' === $title ) {
+			return;
+		}
+		$post = \get_post( $id );
+		if ( ! $post instanceof \WP_Post || 'Genie' !== $post->post_title ) {
+			return;
+		}
+		wp_update_post(
+			array(
+				'ID'         => $id,
+				'post_title' => $title,
+			)
+		);
+	}
+
+		/**
+		 * A new conversation post, cookie set.
+		 */
 	public function open(): int {
 		$author = is_user_logged_in() ? get_current_user_id() : 0;
 		$id     = wp_insert_post(

@@ -141,19 +141,13 @@ final class RedirectsTest extends SiteTestCase {
 		$this->assertRedirects( '/de/entwurfsflache/', '/de/linker-planer/?step=roof' );
 	}
 
-	/**
-	 * The Advisor's retired addresses go to the shop page of their own
-	 * language: the page was the old assistant as a full page, the assistant
-	 * is Genie now, and the shop is where its work starts (#66;
-	 * /de/linker-berater/ is the live sitemap's German address,
-	 * /de/linker-advisor/ the English slug under /de/ that the old plugin
-	 * resolved as well).
-	 */
-	public function test_the_retired_advisor_addresses_go_to_the_shop(): void {
-		$this->assertRedirects( '/linker-advisor/', '/products/' );
-		$this->assertRedirects( '/de/linker-berater/', '/de/produkte/' );
-		$this->assertRedirects( '/de/linker-advisor/', '/de/produkte/' );
-	}
+		/**
+		 * The advisor addresses stay. They are the Genie workspace now.
+		 */
+		public function test_the_advisor_addresses_stay(): void {
+			$this->assertStays( '/linker-advisor/', 200 );
+			$this->assertStays( '/de/linker-berater/', 200 );
+		}
 
 	/**
 	 * The compare page answers for itself: no retired address claims it.

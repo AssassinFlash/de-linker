@@ -27,9 +27,14 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 	const actual = await importOriginal< typeof import( './api/turn' ) >();
 	return {
 		// The real message rule, so a restored thread is spelled the same way
-		// a live one is; the two calls around it are doubles.
+		// a live one is; the calls around it are doubles.
 		assistantMessage: actual.assistantMessage,
 		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
+		listConversations: vi.fn( async () => ( {
+			currentId: 0,
+			conversations: [],
+		} ) ),
+		selectConversation: vi.fn(),
 		sendTurn: vi.fn(),
 		sendVote: vi.fn( async () => true ),
 	};
@@ -37,7 +42,13 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
-import { readThread, sendTurn, sendVote } from './api/turn';
+import {
+	listConversations,
+	readThread,
+	selectConversation,
+	sendTurn,
+	sendVote,
+} from './api/turn';
 
 const GERMAN_STREAM =
 	'event: meta\n' +
@@ -51,16 +62,20 @@ const GERMAN_STREAM =
 
 function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 	return {
+		surface: 'helper',
 		locale,
 		pageType: 'category',
+		productId: 0,
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
+		conversationsUrl: '/wp-json/linker-ai/v1/genie/conversations',
 		voteUrl: '/wp-json/linker-ai/v1/genie/turn',
 		restUrl: '/wp-json/',
 		restNonce: 'n',
 		disclosure:
 			"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.",
 		accountUrl: '/my-account/',
+		workspaceUrl: '/linker-advisor/',
 		prompts: [
 			'Ask Genie',
 			'I need a three-phase hybrid inverter for a home.',
@@ -330,4 +345,46 @@ test( 'one entry ask survives a late thread restore without being sent twice', a
 		{ role: 'user', content: 'What pairs with this model?' },
 	] );
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+} );
+
+test( 'the workspace lists real conversations and loads the selected one', async () => {
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 7,
+		conversations: [
+			{ id: 7, title: 'Battery pairing', updated: '2026-10-12' },
+			{ id: 8, title: 'Document question', updated: '2026-10-11' },
+		],
+	} );
+	vi.mocked( selectConversation ).mockResolvedValue( {
+		currentId: 8,
+		conversations: [
+			{ id: 7, title: 'Battery pairing', updated: '2026-10-12' },
+			{ id: 8, title: 'Document question', updated: '2026-10-11' },
+		],
+	} );
+	vi.mocked( readThread )
+		.mockResolvedValueOnce( { messages: [], turn: null } )
+		.mockResolvedValueOnce( {
+			messages: [ { role: 'user', content: 'Where is the datasheet?' } ],
+			turn: null,
+		} );
+
+	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+
+	expect(
+		await screen.findByRole( 'button', { name: 'Battery pairing' } )
+	).toHaveAttribute( 'aria-current', 'true' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Document question' } )
+		);
+	} );
+	expect( selectConversation ).toHaveBeenCalledWith(
+		'/wp-json/linker-ai/v1/genie/conversations',
+		'n',
+		8
+	);
+	expect(
+		await screen.findByText( 'Where is the datasheet?' )
+	).toBeVisible();
 } );

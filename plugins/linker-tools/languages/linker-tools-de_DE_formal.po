@@ -53,3 +53,21 @@ msgstr "Genie konnte nicht geladen werden."
 #: includes/Genie/Entries.php
 msgid "Try again"
 msgstr "Erneut versuchen"
+
+msgid "Open full page"
+msgstr "Vollständige Seite öffnen"
+
+msgid "Conversations"
+msgstr "Gespräche"
+
+msgid "New conversation"
+msgstr "Neues Gespräch"
+
+msgid "Close sidebar"
+msgstr "Seitenleiste schließen"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "No earlier conversation."
+msgstr "Kein früheres Gespräch."

@@ -59,7 +59,8 @@ if ( ! class_exists( 'WP_Post' ) ) {
 		public $post_status   = 'publish';
 		public $post_content  = '';
 		public $post_name     = '';
-		public $post_date_gmt = '1970-01-01 00:00:00';
+			public $post_date_gmt     = '1970-01-01 00:00:00';
+			public $post_modified_gmt = '1970-01-01 00:00:00';
 		public function __construct( $post ) {
 			foreach ( get_object_vars( $post ) as $key => $value ) {
 				$this->$key = $value;

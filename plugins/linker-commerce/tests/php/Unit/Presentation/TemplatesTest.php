@@ -38,9 +38,11 @@ final class TemplatesTest extends TestCase {
 				'is_archive_for_post_type_product',
 				'linker-compare',
 				'linker-compare-de',
-				'linker-faq',
-				'linker-faq-de',
-			),
+					'linker-faq',
+					'linker-faq-de',
+					'linker-advisor',
+					'linker-advisor-de',
+				),
 			array_keys( $catalog )
 		);
 		foreach ( $catalog as $path ) {
@@ -62,8 +64,10 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( '[woocommerce_my_account]', (string) file_get_contents( $catalog['is_account_page'] ) );
 		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $catalog['linker-compare'] ) );
 		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $catalog['linker-compare-de'] ) );
-		$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $catalog['linker-faq'] ) );
-		$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $catalog['linker-faq-de'] ) );
+			$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $catalog['linker-faq'] ) );
+			$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $catalog['linker-faq-de'] ) );
+			$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $catalog['linker-advisor'] ) );
+			$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $catalog['linker-advisor-de'] ) );
 	}
 
 	/**
@@ -180,14 +184,14 @@ final class TemplatesTest extends TestCase {
 		$first     = $templates->sync();
 		$second    = $templates->sync();
 
-		$this->assertSame( 10, $created, 'the six Woo templates and the four tool-page templates' );
-		$this->assertSame( 10, $first['created'] );
+			$this->assertSame( 12, $created, 'the six Woo templates and the six tool-page templates' );
+			$this->assertSame( 12, $first['created'] );
 		$this->assertSame( 0, $first['updated'] );
 		$this->assertSame( 0, $second['created'] );
-		$this->assertSame( 10, $second['updated'] );
-		$this->assertSame( 10, $updated );
-		// Every insert and every update slashes its content — both write paths.
-		$this->assertSame( 20, $slashes );
+			$this->assertSame( 12, $second['updated'] );
+			$this->assertSame( 12, $updated );
+			// Every insert and every update slashes its content — both write paths.
+			$this->assertSame( 24, $slashes );
 	}
 
 	/**
@@ -200,8 +204,10 @@ final class TemplatesTest extends TestCase {
 		$titles  = array(
 			'linker-compare'    => 'Compare products',
 			'linker-compare-de' => 'Produkte vergleichen',
-			'linker-faq'        => 'FAQ & documents',
-			'linker-faq-de'     => 'FAQ & Dokumente',
+				'linker-faq'        => 'FAQ & documents',
+				'linker-faq-de'     => 'FAQ & Dokumente',
+				'linker-advisor'    => 'Genie',
+				'linker-advisor-de' => 'Genie',
 		);
 		$updated = 0;
 		$inserts = 0;
@@ -253,7 +259,7 @@ final class TemplatesTest extends TestCase {
 
 		$this->assertSame( 0, $report['created'] );
 		$this->assertSame( 0, $report['updated'] );
-		$this->assertSame( 10, $report['unchanged'] );
+			$this->assertSame( 12, $report['unchanged'] );
 		$this->assertSame( 0, $inserts + $updated );
 	}
 
@@ -302,8 +308,8 @@ final class TemplatesTest extends TestCase {
 
 		( new Templates() )->sync();
 
-		$this->assertCount( 10, $assigned, 'the six Woo templates and the four tool-page templates' );
-		$this->assertSame( array_fill( 0, 10, 'en' ), array_values( $assigned ) );
+			$this->assertCount( 12, $assigned, 'the six Woo templates and the six tool-page templates' );
+			$this->assertSame( array_fill( 0, 12, 'en' ), array_values( $assigned ) );
 	}
 
 	/**
@@ -345,7 +351,7 @@ final class TemplatesTest extends TestCase {
 		$report = ( new Templates() )->sync();
 
 		$this->assertSame( array(), $assigned );
-		$this->assertSame( 10, $report['created'] );
+			$this->assertSame( 12, $report['created'] );
 	}
 
 	/**
@@ -372,11 +378,21 @@ final class TemplatesTest extends TestCase {
 				'post_name' => 'faq-download',
 				'post_type' => 'page',
 			),
-			array(
-				'ID'        => 6871,
-				'post_name' => 'faq-download',
-				'post_type' => 'page',
-			),
+				array(
+					'ID'        => 6871,
+					'post_name' => 'faq-download',
+					'post_type' => 'page',
+				),
+				array(
+					'ID'        => 4101,
+					'post_name' => 'linker-advisor',
+					'post_type' => 'page',
+				),
+				array(
+					'ID'        => 4102,
+					'post_name' => 'linker-berater',
+					'post_type' => 'page',
+				),
 		);
 		WP_Mock::userFunction(
 			'get_posts',
@@ -429,7 +445,7 @@ final class TemplatesTest extends TestCase {
 		WP_Mock::userFunction(
 			'pll_get_post_language',
 			array(
-				'return' => static fn ( int $id ): string => in_array( $id, array( 6608, 6871 ), true ) ? 'de' : 'en',
+					'return' => static fn ( int $id ): string => in_array( $id, array( 6608, 6871, 4102 ), true ) ? 'de' : 'en',
 				'times'  => '0+',
 			)
 		);
@@ -454,8 +470,10 @@ final class TemplatesTest extends TestCase {
 
 		$this->assertSame( 'linker-compare', $assigned[5385] );
 		$this->assertSame( 'linker-compare-de', $assigned[6608] );
-		$this->assertSame( 'linker-faq', $assigned[932] );
-		$this->assertSame( 'linker-faq-de', $assigned[6871] );
+			$this->assertSame( 'linker-faq', $assigned[932] );
+			$this->assertSame( 'linker-faq-de', $assigned[6871] );
+			$this->assertSame( 'linker-advisor', $assigned[4101] );
+			$this->assertSame( 'linker-advisor-de', $assigned[4102] );
 	}
 
 	/**

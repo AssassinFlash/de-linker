@@ -281,9 +281,195 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-	/**
-	 * Guest state: is_user_logged_in() false, get_current_user_id() zero.
-	 */
+		/**
+		 * A guest's history is the cookie conversation, and nothing else.
+		 */
+	public function test_a_guest_lists_only_the_cookie_conversation(): void {
+		$this->logged_out();
+		$_COOKIE = array( 'linker_conversation' => '51' );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'args'   => array( 51 ),
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 51 ),
+				'return' => '0',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'args'   => array( 51 ),
+				'return' => self::post( 51, 'Which inverter fits?' ),
+			)
+		);
+
+		$list = $this->conversations()->list_for_visitor();
+
+		$this->assertCount( 1, $list );
+		$this->assertSame( 51, $list[0]['id'] );
+		$this->assertSame( 'Which inverter fits?', $list[0]['title'] );
+		$this->assertConditionsMet();
+	}
+
+		/**
+		 * A signed-in customer lists the conversations they own. A conversation
+		 * they may not use never appears, even if a query returned it.
+		 */
+	public function test_a_customer_lists_owned_conversations(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'return' => static fn( $value ): int => max( 0, (int) $value ),
+			)
+		);
+		$_COOKIE = array();
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'times'  => 1,
+				'return' => array( 51, 52 ),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => static fn( int $id ): string => 53 === $id ? 'post' : 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'return' => static fn( string $field, int $id ): string => 52 === $id ? '8' : '7',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static fn( int $id ): \WP_Post => self::post( $id, 'Conversation ' . $id ),
+			)
+		);
+
+		$list = ( new Conversations() )->list_for_visitor();
+
+		$this->assertSame( array( 51 ), array_column( $list, 'id' ) );
+		$this->assertConditionsMet();
+	}
+
+		/**
+		 * Selecting a conversation writes the same cookie the next turn reads.
+		 * A conversation the visitor may not use is refused and writes nothing.
+		 */
+	public function test_activate_sets_the_cookie_only_for_an_owned_conversation(): void {
+		$this->logged_out();
+		$_COOKIE = array( 'linker_conversation' => '51' );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'return' => static fn( int $id ): string => 51 === $id ? 'linker_conversation' : 'post',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 51 ),
+				'return' => '0',
+			)
+		);
+		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction(
+			'linker_tools_set_conversation_cookie',
+			'51',
+			1000000,
+			'/',
+			'',
+			false
+		);
+
+		$conversations = $this->conversations();
+		$this->assertTrue( $conversations->activate( 51 ) );
+		$this->assertFalse( $conversations->activate( 99 ) );
+		$this->assertConditionsMet();
+	}
+
+		/**
+		 * The first customer message names a new conversation. A conversation
+		 * that already has a title keeps it.
+		 */
+	public function test_the_first_message_names_a_new_conversation(): void {
+		$this->logged_out();
+		$_COOKIE = array( 'linker_conversation' => '51' );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array(
+				'args'   => array( 51 ),
+				'return' => 'linker_conversation',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_field',
+			array(
+				'args'   => array( 'post_author', 51 ),
+				'return' => '0',
+			)
+		);
+		$titles = array( 'Genie', 'Battery pairing' );
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static function ( int $id ) use ( &$titles ): \WP_Post {
+					return ConversationsTest::post( $id, (string) array_shift( $titles ) );
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'times' => 1,
+				'args'  => array(
+					array(
+						'ID'         => 51,
+						'post_title' => 'Which battery pairs?',
+					),
+				),
+			)
+		);
+
+		$conversations = $this->conversations();
+		$conversations->title_from_first_message( 51, 'Which battery pairs?' );
+		$conversations->title_from_first_message( 51, 'A later question' );
+		$this->assertConditionsMet();
+	}
+
+		/**
+		 * A conversation post as the list reads it.
+		 *
+		 * @param int    $id    Post ID.
+		 * @param string $title Post title.
+		 */
+	public static function post( int $id, string $title ): \WP_Post {
+		return new \WP_Post(
+			(object) array(
+				'ID'                => $id,
+				'post_title'        => $title,
+				'post_type'         => 'linker_conversation',
+				'post_status'       => 'private',
+				'post_modified_gmt' => '2026-10-12 08:00:00',
+			)
+		);
+	}
+
+		/**
+		 * Guest state: is_user_logged_in() false, get_current_user_id() zero.
+		 */
 	private function logged_out(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );

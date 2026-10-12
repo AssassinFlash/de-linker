@@ -42,8 +42,9 @@ class Entries {
 		add_action( 'woocommerce_single_product_summary', array( $this, 'product_chips' ), 35 );
 		add_action( 'woocommerce_before_cart', array( $this, 'draft_chips' ) );
 		add_action( 'woocommerce_account_dashboard', array( $this, 'account_chips' ) );
-		add_shortcode( 'linker_genie_ask', array( $this, 'ask_shortcode' ) );
-		add_shortcode( 'linker_genie_chips', array( $this, 'chips_shortcode' ) );
+			add_shortcode( 'linker_genie_ask', array( $this, 'ask_shortcode' ) );
+			add_shortcode( 'linker_genie_chips', array( $this, 'chips_shortcode' ) );
+			add_shortcode( 'linker_genie_workspace', array( $this, 'workspace_shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'search_assets' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'dock_assets' ) );
 	}
@@ -73,6 +74,25 @@ class Entries {
 	public function ask_shortcode( $atts = array() ): string {
 		unset( $atts );
 		return $this->ask_chip();
+	}
+
+		/**
+		 * The full-page workspace on /linker-advisor/.
+		 *
+		 * The LiveCanvas template of that page prints this shortcode. It is
+		 * the same mount the dock uses, marked as the page surface so the
+		 * app renders the history rail instead of the helper card. The dock
+		 * loader still owns boot, ready and open; this mount does not load
+		 * a second copy of the app.
+		 *
+		 * @param array<string, string>|string $atts Shortcode attributes.
+		 */
+	public function workspace_shortcode( $atts = array() ): string {
+		unset( $atts );
+		if ( is_admin() ) {
+			return '';
+		}
+		return $this->mount_markup( 'workspace' );
 	}
 
 	/**
@@ -144,8 +164,13 @@ class Entries {
 		if ( is_admin() ) {
 			return;
 		}
-		$locale  = $this->locale();
-		$page    = $this->page_context();
+		// The advisor page is the workspace. Its template already printed
+		// the mount; this only boots that mount. A second helper mount
+		// would boot a second app against the same cookie.
+		if ( $this->is_workspace_page() ) {
+			$this->print_loader( true );
+			return;
+		}
 		$mount   = 'linker-genie-mount';
 		$payload = array(
 			'src'          => $this->script_src(),
@@ -164,30 +189,42 @@ class Entries {
 			'<div id="%1$s" class="linker-genie-panel" data-linker-genie-mount hidden>',
 			esc_attr( $mount )
 		);
-		printf(
-			'<div data-linker-app="genie" data-locale="%1$s" data-page-type="%2$s" data-turn-url="%3$s" data-thread-url="%4$s" data-vote-url="%5$s" data-rest-url="%6$s" data-rest-nonce="%7$s" data-disclosure="%8$s" data-account-url="%9$s" data-prompts=\'%10$s\'></div>',
-			esc_attr( $locale ),
-			esc_attr( $page['type'] ),
-			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
-			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::THREAD_ROUTE ) ) ),
-			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
-			esc_attr( esc_url_raw( rest_url() ) ),
-			esc_attr( wp_create_nonce( 'wp_rest' ) ),
-			esc_attr( $this->disclosure( $locale ) ),
-			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
-			esc_attr( (string) wp_json_encode( $this->prompts( $page, $locale ) ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already inside esc_attr; the cast silences a false positive on (string).
-		);
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- mount_markup() escapes every attribute.
+		echo $this->mount_markup( 'helper' );
 		echo '</div>';
 		if ( '' !== $payload['src'] ) {
+			$this->print_loader( false );
+		}
+		echo '</div>';
+	}
+
+		/**
+		 * The one boot loader. `$open` is the workspace: it has no bubble, so
+		 * the loader opens the mount once the app reports ready.
+		 *
+		 * @param bool $open Whether to open as soon as the app is ready.
+		 */
+	private function print_loader( bool $open ): void {
+		$payload = array(
+			'src'          => $this->script_src(),
+			'deps'         => $this->script_deps(),
+			'translations' => $this->script_translations(),
+			'error'        => __( 'Genie could not load.', 'linker-tools' ),
+			'retry'        => __( 'Try again', 'linker-tools' ),
+			'open'         => $open,
+		);
+		if ( '' === $payload['src'] ) {
+			return;
+		}
 			// The loader owns entry delivery: an open click or ask boots once,
-			// waits for the App's ready event, then opens it with the first ask.
-			// The App reports Hide/Open back so the shell and mobile card agree.
-			// The payload rides in a data
-			// attribute: attribute values are entity-decoded by the HTML
-			// parser, so getAttribute() yields the clean JSON (script text
-			// would keep the esc_html entities).
-			wp_print_inline_script_tag(
-				<<<'JS'
+		// waits for the App's ready event, then opens it with the first ask.
+		// The App reports Hide/Open back so the shell and mobile card agree.
+		// The payload rides in a data
+		// attribute: attribute values are entity-decoded by the HTML
+		// parser, so getAttribute() yields the clean JSON (script text
+		// would keep the esc_html entities).
+		wp_print_inline_script_tag(
+			<<<'JS'
 (function () {
 	var payload = null;
 	try {
@@ -261,8 +298,11 @@ class Entries {
 		window.addEventListener('linker-genie-ready', function () {
 			ready = true;
 			clearFailure();
+			if (payload.open) {
+				pendingOpen = true;
+			}
 			deliver();
-	});
+		});
 	window.addEventListener('linker-genie-state', function (event) {
 		shell(event.detail.open);
 	});
@@ -272,11 +312,14 @@ class Entries {
 			open(detail.message);
 		}
 	});
-	function boot() {
-		if (loaded) {
-			return;
-		}
-		loaded = true;
+		function boot() {
+			if (loaded) {
+				return;
+			}
+			loaded = true;
+			if (payload.open) {
+				shell(true);
+			}
 		clearFailure();
 		shell(false);
 		var failed = false;
@@ -346,18 +389,55 @@ class Entries {
 	);
 })();
 JS,
-				array(
-					'data-linker-genie-loader'       => true,
-					'data-linker-genie-boot-payload' => (string) wp_json_encode( $payload ),
-				)
-			);
-		}
-		echo '</div>';
+			array(
+				'data-linker-genie-loader'       => true,
+				'data-linker-genie-boot-payload' => (string) wp_json_encode( $payload ),
+			)
+		);
 	}
 
-	/**
-	 * Shop chip: opens Genie over the catalogue.
-	 */
+		/**
+		 * Whether the current page is the advisor workspace.
+		 *
+		 * The German twin keeps its own slug. Both are the same tool page.
+		 */
+	private function is_workspace_page(): bool {
+		$post = \get_post();
+		return $post instanceof \WP_Post
+			&& in_array( $post->post_name, array( 'linker-advisor', 'linker-berater' ), true );
+	}
+
+		/**
+		 * The mount the app renders into. One markup for the dock and the
+		 * workspace, so both carry the same routes and the same nonce.
+		 *
+		 * @param string $surface `helper` on every page, `workspace` on the advisor page.
+		 */
+	private function mount_markup( string $surface ): string {
+		$locale = $this->locale();
+		$page   = $this->page_context();
+		return sprintf(
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\'></div>',
+			esc_attr( $surface ),
+			esc_attr( $locale ),
+			esc_attr( $page['type'] ),
+			esc_attr( (string) ( $page['product_id'] ?? 0 ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::THREAD_ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::CONVERSATIONS_ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
+			esc_attr( esc_url_raw( rest_url() ) ),
+			esc_attr( wp_create_nonce( 'wp_rest' ) ),
+			esc_attr( $this->disclosure( $locale ) ),
+			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
+			esc_attr( esc_url_raw( home_url( '/linker-advisor/' ) ) ),
+			esc_attr( (string) wp_json_encode( $this->prompts( $page, $locale ) ) )
+		);
+	}
+
+		/**
+		 * Shop chip: opens Genie over the catalogue.
+		 */
 	public function shop_chip(): void {
 		$this->print_group( 'category' );
 	}
