@@ -1,6 +1,6 @@
 {
-	"translation-revision-date": "2026-10-09 00:00+0200",
-	"generator": "linker-tools (hand-written, reviewed; see docs/acceptance/2026-10-09/14/copy-review.md)",
+	"translation-revision-date": "2026-10-13 00:00+0200",
+	"generator": "linker-tools (hand-written, reviewed; see docs/acceptance/2026-10-09/14/copy-review.md and docs/acceptance/2026-10-13/configurator-c-fidelity/copy-review.md)",
 	"domain": "messages",
 	"locale_data": {
 		"messages": {
@@ -10,8 +10,17 @@
 				"plural-forms": "nplurals=2; plural=(n != 1);"
 			},
 			"Residential": [ "Wohngebäude" ],
-			"Commercial": [ "Gewerbe" ],
-			"Utility-scale": [ "Großanlagen" ],
+			"Commercial & industrial": [ "Gewerbe und Industrie" ],
+			"Utility": [ "Großanlagen" ],
+			"Home PV, storage and backup": [
+				"PV-Anlage, Speicher und Notstrom im Eigenheim"
+			],
+			"Site load, peak power and operating profile": [
+				"Standortlast, Spitzenlast und Betriebsprofil"
+			],
+			"Storage blocks, grid connection and project stage": [
+				"Speicherblöcke, Netzanschluss und Projektphase"
+			],
 			"Solution Configurator": [ "Lösungskonfigurator" ],
 			"Size your system and get the bill of materials.": [
 				"System auslegen und Stückliste erhalten."

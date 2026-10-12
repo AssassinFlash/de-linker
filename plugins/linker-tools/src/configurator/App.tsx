@@ -46,10 +46,32 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 		commercial: null,
 		utility: null,
 	} );
-	const segments: { id: Segment; label: string }[] = [
-		{ id: 'residential', label: __( 'Residential', 'linker-tools' ) },
-		{ id: 'commercial', label: __( 'Commercial', 'linker-tools' ) },
-		{ id: 'utility', label: __( 'Utility-scale', 'linker-tools' ) },
+	// The project types carry the scope they cover (owner design basis: the
+	// archived variant C prototype's two-line choice cards). The label is the
+	// accessible name, the scope its description, so neither the radio group
+	// nor its options read as one long run-on name.
+	const segments: { id: Segment; label: string; scope: string }[] = [
+		{
+			id: 'residential',
+			label: __( 'Residential', 'linker-tools' ),
+			scope: __( 'Home PV, storage and backup', 'linker-tools' ),
+		},
+		{
+			id: 'commercial',
+			label: __( 'Commercial & industrial', 'linker-tools' ),
+			scope: __(
+				'Site load, peak power and operating profile',
+				'linker-tools'
+			),
+		},
+		{
+			id: 'utility',
+			label: __( 'Utility', 'linker-tools' ),
+			scope: __(
+				'Storage blocks, grid connection and project stage',
+				'linker-tools'
+			),
+		},
 	];
 
 	function onTabKey( event: React.KeyboardEvent, index: number ) {
@@ -68,62 +90,85 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 			<div className="linker-shell">
 				<Steps current={ 1 } />
 				<div className="linker-stage">
-					<header className="linker-configurator__header">
-						<h1 className="linker-configurator__title">
-							{ __( 'Solution Configurator', 'linker-tools' ) }
-						</h1>
-						<p className="linker-configurator__lead">
-							{ __(
-								'Size your system and get the bill of materials.',
-								'linker-tools'
-							) }
-						</p>
-					</header>
-					<section
-						className="linker-block"
-						aria-labelledby="linker-project-title"
-					>
-						<div className="linker-block__head">
-							<h2
-								className="linker-block__title"
-								id="linker-project-title"
-							>
-								{ __( 'Project type', 'linker-tools' ) }
-							</h2>
-							<p className="linker-block__step">
+					<div className="linker-screen">
+						<header className="linker-configurator__header">
+							<h1 className="linker-configurator__title">
 								{ __(
-									'Step 1 · Which project are you sizing?',
+									'Solution Configurator',
+									'linker-tools'
+								) }
+							</h1>
+							<p className="linker-configurator__lead">
+								{ __(
+									'Size your system and get the bill of materials.',
 									'linker-tools'
 								) }
 							</p>
-						</div>
-						<div
-							className="linker-segments"
-							role="radiogroup"
-							aria-label={ __( 'Project type', 'linker-tools' ) }
+						</header>
+						<section
+							className="linker-block"
+							aria-labelledby="linker-project-title"
 						>
-							{ segments.map( ( item, index ) => (
-								<button
-									key={ item.id }
-									ref={ ( node ) => {
-										tabs.current[ item.id ] = node;
-									} }
-									type="button"
-									role="radio"
-									id={ `linker-tab-${ item.id }` }
-									aria-checked={ segment === item.id }
-									tabIndex={ segment === item.id ? 0 : -1 }
-									className="linker-segments__tab"
-									onClick={ () => setSegment( item.id ) }
-									onKeyDown={ ( event ) =>
-										onTabKey( event, index )
-									}
+							<div className="linker-block__head">
+								<h2
+									className="linker-block__title"
+									id="linker-project-title"
 								>
-									{ item.label }
-								</button>
-							) ) }
-						</div>
-					</section>
+									{ __( 'Project type', 'linker-tools' ) }
+								</h2>
+								<p className="linker-block__step">
+									{ __(
+										'Step 1 · Which project are you sizing?',
+										'linker-tools'
+									) }
+								</p>
+							</div>
+							<div
+								className="linker-segments"
+								role="radiogroup"
+								aria-label={ __(
+									'Project type',
+									'linker-tools'
+								) }
+							>
+								{ segments.map( ( item, index ) => (
+									<button
+										key={ item.id }
+										ref={ ( node ) => {
+											tabs.current[ item.id ] = node;
+										} }
+										type="button"
+										role="radio"
+										id={ `linker-tab-${ item.id }` }
+										aria-labelledby={ `linker-tab-label-${ item.id }` }
+										aria-describedby={ `linker-tab-scope-${ item.id }` }
+										aria-checked={ segment === item.id }
+										tabIndex={
+											segment === item.id ? 0 : -1
+										}
+										className="linker-segments__tab"
+										onClick={ () => setSegment( item.id ) }
+										onKeyDown={ ( event ) =>
+											onTabKey( event, index )
+										}
+									>
+										<strong
+											className="linker-segments__label"
+											id={ `linker-tab-label-${ item.id }` }
+										>
+											{ item.label }
+										</strong>
+										<span
+											className="linker-segments__scope"
+											id={ `linker-tab-scope-${ item.id }` }
+										>
+											{ item.scope }
+										</span>
+									</button>
+								) ) }
+							</div>
+						</section>
+					</div>
 					<div
 						id={ `linker-panel-${ segment }` }
 						className="linker-configurator__panel"
