@@ -1,8 +1,9 @@
 /**
  * Recalculation scrolls the Solution section to the top of the viewport.
- * On a phone the step list sticks under the site header and wraps, so the
- * section's scroll clearance has to be the sticky top plus the list's
- * measured height plus the existing 32px gap — not a guessed one-row height.
+ * On a phone only the step rail sticks under the site header. The section's
+ * scroll clearance is the sticky top plus that rail's measured height plus
+ * the existing 32px gap. The sticky element must not contain the section:
+ * a descendant's scroll-margin cannot clear its own sticky ancestor.
  */
 
 /**
@@ -113,26 +114,142 @@ test( 'a model change scrolls the Solution clear of the measured step list', asy
 		).toBe( true );
 	}
 	expect( container ).toHaveStyle( {
-		'--linker-steps-scroll-offset': `${ STICKY_TOP_PX + barHeight + SECTION_GAP_PX }px`,
+		'--linker-steps-scroll-offset': `${ Math.ceil( STICKY_TOP_PX + barHeight + SECTION_GAP_PX ) }px`,
 	} );
 } );
 
-test( 'the narrow-viewport rule uses the measured offset and leaves the sticky bar alone', () => {
+test( 'the rail is vertical, the project type is cards, and the form stays expanded', () => {
+	const { container } = mount( 48 );
+	const rail = container.querySelector( '.linker-steps' );
+	expect( rail?.tagName ).toBe( 'NAV' );
+	expect(
+		within( rail as HTMLElement ).getByText( 'Configurator' )
+	).toBeInTheDocument();
+	expect(
+		within( rail as HTMLElement )
+			.getAllByRole( 'listitem' )
+			.map( ( item ) => item.textContent )
+	).toEqual( [ '01Inputs', '02Solution', '03Design report' ] );
+	expect( within( rail as HTMLElement ).getByText( 'Inputs' ) ).toHaveClass(
+		'linker-steps__label'
+	);
+	expect(
+		screen.getByRole( 'radio', { name: 'Residential' } )
+	).toBeChecked();
+	expect(
+		screen.getByRole( 'heading', { name: 'Project type' } )
+	).toBeVisible();
+	expect(
+		screen.getByText( 'Step 1 · Which project are you sizing?' )
+	).toBeVisible();
+	expect(
+		screen.getByRole( 'group', { name: 'Grid connection' } )
+	).toBeVisible();
+	expect(
+		screen.getByRole( 'button', { name: 'Calculate system' } )
+	).toBeVisible();
+} );
+
+test( 'a model change lands the Solution clear of the sticky rail', async () => {
+	const { chromium } = await import( '@playwright/test' );
 	const css = readFileSync(
 		join( dirname( fileURLToPath( import.meta.url ) ), 'configurator.css' ),
 		'utf8'
 	);
-	const sticky = css.match(
-		/@media \(max-width: 860px\) \{([\s\S]*?)\n\}/
-	)?.[ 1 ];
-	expect( sticky ).toBeDefined();
-	expect( sticky ).toContain( 'position: sticky;' );
-	expect( sticky ).toContain( 'top: 89px;' );
-	expect( sticky ).toContain( 'z-index: 40;' );
-	expect( sticky ).toContain( 'padding: 8px 0;' );
-	expect( sticky ).toContain( 'margin: -8px 0 0;' );
-	expect( sticky ).toContain(
-		'scroll-margin-top: var(--linker-steps-scroll-offset, 32px);'
-	);
-	expect( sticky ).not.toContain( '44px' );
+	const html = `<!doctype html><html><head><meta charset="utf-8"><style>
+			body { margin: 0; }
+			.site-header { position: sticky; top: 0; height: 89px; z-index: 50; background: #123; }
+			${ css }
+			.filler { height: 2400px; }
+			</style></head><body>
+			<header class="site-header"></header>
+			<div style="height: 240px"></div>
+			<div data-linker-app="configurator">
+				<div class="linker-configurator" lang="en">
+					<div class="linker-shell">
+						<nav class="linker-steps" aria-label="Configurator">
+							<ol class="linker-steps__list">
+								<li class="linker-steps__item is-current"><span class="linker-steps__number">01</span><span class="linker-steps__label">Inputs</span></li>
+								<li class="linker-steps__item"><span class="linker-steps__number">02</span><span class="linker-steps__label">Solution</span></li>
+								<li class="linker-steps__item"><span class="linker-steps__number">03</span><span class="linker-steps__label">Design report</span></li>
+							</ol>
+						</nav>
+						<div class="linker-stage">
+							<section class="linker-block"><h2 class="linker-block__title">Project type</h2></section>
+							<div class="linker-flow">
+								<section class="linker-section"><h2 class="linker-section__title">Inputs</h2><div class="filler"></div></section>
+								<section class="linker-section" id="solution"><h2 class="linker-section__title" id="linker-solution-title">Solution</h2><div class="filler"></div></section>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</body></html>`;
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( {
+			viewport: { width: 390, height: 844 },
+		} );
+		await page.setContent( html, { waitUntil: 'load' } );
+		const landed = await page.evaluate( () => {
+			const section = document.querySelector( '#solution' );
+			const title = document.querySelector( '#linker-solution-title' );
+			const rail = document.querySelector( '.linker-steps' );
+			const root = document.querySelector(
+				'[data-linker-app="configurator"]'
+			);
+			const shell = document.querySelector( '.linker-shell' );
+			if (
+				! ( section instanceof HTMLElement ) ||
+				! ( title instanceof HTMLElement ) ||
+				! ( rail instanceof HTMLElement ) ||
+				! ( root instanceof HTMLElement ) ||
+				! ( shell instanceof HTMLElement )
+			) {
+				throw new Error( 'configurator fixture is missing a node' );
+			}
+			const stickyHolding = ( node: Element ) => {
+				const held = [];
+				for (
+					let current = node && node.parentElement;
+					current;
+					current = current.parentElement
+				) {
+					const position = getComputedStyle( current ).position;
+					if ( position === 'sticky' || position === 'fixed' ) {
+						held.push( current.className );
+					}
+				}
+				return held;
+			};
+			// Same formula Steps publishes: sticky top, measured rail, 32px gap.
+			const offset = Math.ceil(
+				89 + rail.getBoundingClientRect().height + 32
+			);
+			root.style.setProperty(
+				'--linker-steps-scroll-offset',
+				`${ offset }px`
+			);
+			section.scrollIntoView( { block: 'start' } );
+			const titleBox = title.getBoundingClientRect();
+			const railBox = rail.getBoundingClientRect();
+			return {
+				railPosition: getComputedStyle( rail ).position,
+				shellPosition: getComputedStyle( shell ).position,
+				sectionHeldBy: stickyHolding( section ),
+				titleHeldBy: stickyHolding( title ),
+				titleTop: titleBox.top,
+				railBottom: railBox.bottom,
+			};
+		} );
+		expect( landed.railPosition ).toBe( 'sticky' );
+		expect( landed.shellPosition ).not.toBe( 'sticky' );
+		expect( landed.sectionHeldBy ).toEqual( [] );
+		expect( landed.titleHeldBy ).toEqual( [] );
+		expect( landed.titleTop ).toBeGreaterThanOrEqual(
+			landed.railBottom + SECTION_GAP_PX
+		);
+	} finally {
+		await browser.close();
+	}
 } );

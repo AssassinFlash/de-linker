@@ -17,6 +17,31 @@
 				"System auslegen und Stückliste erhalten."
 			],
 			"Project type": [ "Projektart" ],
+			"Configurator": [ "Konfigurator" ],
+			"Three steps. The result follows the inputs you enter.": [
+				"Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen."
+			],
+			"Step 1 · Which project are you sizing?": [
+				"Schritt 1 · Welches Projekt legen Sie aus?"
+			],
+			"Step 2 · The figures that size the system": [
+				"Schritt 2 · Die Angaben, nach denen das System ausgelegt wird"
+			],
+			"Step 3 · The released system for these inputs": [
+				"Schritt 3 · Das für diese Eingaben freigegebene System"
+			],
+			"Site": [ "Standort" ],
+			"Connection": [ "Anschluss" ],
+			"Step 2 · The figures that size the storage": [
+				"Schritt 2 · Die Angaben, nach denen der Speicher ausgelegt wird"
+			],
+			"Step 3 · Sized storage, or indicative ranges": [
+				"Schritt 3 · Ausgelegter Speicher oder Richtwerte"
+			],
+			"Step 2 · The project we quote": [
+				"Schritt 2 · Das Projekt, das wir anbieten"
+			],
+			"Project": [ "Projekt" ],
 			"Inputs": [ "Eingaben" ],
 			"Solution": [ "Lösung" ],
 			"Design report": [ "Auslegungsbericht" ],

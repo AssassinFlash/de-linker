@@ -121,3 +121,25 @@ test( 'with a profile: options, the sized battery and systems from the range', a
 		screen.getByRole( 'heading', { name: 'Systems from our range' } )
 	).toBeInTheDocument();
 } );
+
+test( 'commercial inputs stay in one expanded form', () => {
+	render(
+		<App
+			config={ config }
+			engine={ fakeEngine( { locale: 'en' } ).engine }
+			store={ fakeStore().store }
+			initialSegment="commercial"
+		/>
+	);
+	expect( screen.getByRole( 'heading', { name: 'Inputs' } ) ).toBeVisible();
+	expect( screen.getAllByRole( 'group', { name: 'Goals' } ) ).toHaveLength(
+		1
+	);
+	expect( screen.getByLabelText( 'Peak shaving' ) ).toBeVisible();
+	expect(
+		screen.getByRole( 'button', { name: 'Calculate storage' } )
+	).toBeVisible();
+	expect(
+		screen.queryByRole( 'button', { name: 'Continue' } )
+	).not.toBeInTheDocument();
+} );
