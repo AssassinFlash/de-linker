@@ -2051,9 +2051,21 @@ msgstr ""
 "Wir verwenden Ihre personenbezogenen Daten zur Verwaltung Ihres Kontos und "
 "für die weiteren in unserer [privacy_policy] beschriebenen Zwecke."
 
-#: includes/Vocabulary/Labels.php:131
+#: includes/Vocabulary/Labels.php:131 includes/Vocabulary/Terms.php:31
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
+
+#: includes/Vocabulary/Labels.php
+msgid "Review the lines in your solution draft, adjust quantities and check the totals. Approved partner accounts see net prices, tax and delivery terms before the Proforma request."
+msgstr "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Proforma-Anfrage."
+
+#: includes/Vocabulary/Labels.php
+msgid "Review the lines in your basket, adjust quantities and check the totals. Approved partner accounts see net pricing, tax and delivery terms before checkout."
+msgstr "Überprüfen Sie die Positionen in Ihrem Warenkorb, passen Sie die Mengen an und prüfen Sie die Gesamtsummen. Zugelassene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor dem Checkout."
+
+#: includes/Vocabulary/Labels.php
+msgid "Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the Proforma request."
+msgstr "Stellen Sie einen Lösungsentwurf aus Produkten oder Produktnummern zusammen. Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die Proforma-Anfrage prüfen."
 
 #: includes/Vocabulary/Labels.php:134 includes/Vocabulary/Terms.php:39
 msgid "Proforma request"

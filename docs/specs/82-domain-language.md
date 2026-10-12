@@ -49,8 +49,8 @@
 | `Linker\Commerce\Tests\Unit\Catalog`（测试命名空间，8 文件） | `…\Tests\Unit\Products` | `tests/php/Unit/Catalog/{Compatibility,EngineeringData,EngineeringFeed,Faqs,SelectionFacts,SelectionFactsController,SelectionFactsLiveCatalogue,Units}Test.php:10` | t66/t68 各在本目录新建测试 | B |
 | `LiveCatalogue` | `LiveProducts` | 定义 `tests/php/Support/LiveCatalogue.php:20`；用 `tests/php/Unit/Catalog/SelectionFactsLiveCatalogueTest.php:14,200,214,261,272,275,380,455,477`、`tests/php/Unit/Abilities/SearchProductsTest.php:13,81`、`tests/php/Integration/SelectionFactsRestTest.php:14,68,79` | t68 改 `tests/php/Unit/Catalog/*` 相邻面 | B |
 | `LiveCatalogueTest`（文件名+类名） | `LiveProductsTest` | `tests/php/Unit/Catalog/SelectionFactsLiveCatalogueTest.php:20,32` | t68 | B |
-| `MocksCatalogue`（trait） | `MocksProducts` | 定义 `tests/php/Support/MocksCatalogue.php:3,12,24`；用 `tests/php/Unit/Abilities/{SearchProductsTest:14,27,CheckCompatibilityTest:13,24,CompareProductsTest:13,24,GetProductTest:13,24}` | t66/t69 改本文件 | B |
-| `mock_catalogue()` | `mock_products()` | `tests/php/Support/MocksCatalogue.php:51`；调用 `SearchProductsTest.php:82,133,156,178,200`、`CheckCompatibilityTest.php:57,94`、`CompareProductsTest.php:38,58`、`GetProductTest.php:38,63` | t66/t69 | B |
+| `MocksCatalogue`（trait） | `MocksLiveProducts` | 定义 `tests/php/Support/MocksCatalogue.php:3,12,24`；用 `tests/php/Unit/Abilities/{SearchProductsTest:14,27,CheckCompatibilityTest:13,24,CompareProductsTest:13,24,GetProductTest:13,24}`。落地不是表里原先写的 `MocksProducts`：那个 trait 在改名前就已经存在（`tests/php/Support/MocksProducts.php`，`mock_product()`，SelectionFacts 的单品 mock）。Genie 能力这组夹具改名为 `MocksLiveProducts` / `mock_live_products()`，见变更记录 | t66/t69 改本文件 | B |
+| `mock_catalogue()` | `mock_live_products()` | `tests/php/Support/MocksCatalogue.php:51`；调用 `SearchProductsTest.php:82,133,156,178,200`、`CheckCompatibilityTest.php:57,94`、`CompareProductsTest.php:38,58`、`GetProductTest.php:38,63`。不是 `mock_products()`：`MocksProducts::mock_product()` 是另一条已有方法 | t66/t69 | B |
 | `Templates::catalog()` | `Templates::paths()` | 定义 `includes/Presentation/Templates.php:59`；用同文件 `:81`、`includes/Presentation/WindPress.php:51`、`includes/Presentation/WindPressCache.php:76`、`includes/Cli/PresentCommand.php:271`；测试 `tests/php/Unit/Presentation/TemplatesTest.php:28,29,33,35,169,176,178,179,186,187,188`、`tests/php/Unit/Presentation/WindPressCacheTest.php:80` | **t16/t66 改 `Templates.php`**；t16 改 `WindPress*.php`、`PresentCommand` | B |
 
 ### 2.3 CSS 类族、DOM 锚点与 data 属性（宿主 `assets/storefront.css`；B 段宿主改为 t16 的 `content/windpress/{catalogue,pdp,storefront}.css`）
@@ -96,7 +96,7 @@ CSS 同步要求（issue 原文）：改名后**必须重跑像素门**，选择
 | `tests/php/Unit/Abilities/SearchProductsTest.php:31` 引用研究文档路径 | 见 3.6（证据文档改名另议，注释保持字面路径） | 同上 | 无 | — |
 | `tests/php/Unit/Catalog/SelectionFactsLiveCatalogueTest.php:22,23` | 同上 | 同上 | t68 改相邻面 | — |
 | `tests/fixtures/load-live-products.php:7` "reproduces the catalogue" | "reproduces the products" | 同上 | 无 | B |
-| `tests/php/Support/MocksCatalogue.php:3` "Live-catalogue products" | "Live-product products" → "The live products" | 同上 | t66/t69 改本文件 | B |
+| `tests/php/Support/MocksCatalogue.php:3` "Live-catalogue products" | 文件已随 trait 改名为 `tests/php/Support/MocksLiveProducts.php`。首行注释在 B 段落地时仍是 "Live-catalogue products"（2026-10-13 核对 `MocksLiveProducts.php:3`），不是表里写的 "The live products"。那句是描述性注释，概念词清零另见变更记录 | t66/t69 改本文件 | B |
 | `tests/php/Unit/Catalog/CompatibilityTest.php:68` "every tower takes the battery base article" | "…the battery base module…"（英文散文里 article = 货件，改词不改义；同一数据的德文侧见 2.8 豁免） | 同上 | 无 | B |
 
 ### 2.5 语言文件
@@ -251,3 +251,4 @@ A 段执行后 `services/engine` 只剩 2 个文件命中，均为第 3 节豁�
 ## 变更记录
 
 - 2026-10-11 首版（A 段）：全量名录 + 引擎改名执行。更正 issue #82 的量化：引擎侧泄漏不止 `test_catalog.py`，还有 `src/linker_engine/catalog.py` 与 `class Catalog`（A 段一并对齐）；CSS 侧最大聚集点 `#tv-woo-b2b-catalog`（133 处）也未被 issue 表列出，已补入 2.3。
+- 2026-10-13（B 段类名落地后核对）：§2.2 把 `MocksCatalogue` 记成 `MocksProducts`、把 `mock_catalogue()` 记成 `mock_products()`，与产出不符。`MocksProducts` / `mock_product()` 在改名前就存在，给 SelectionFacts 的单品 mock 用（`tests/php/Support/MocksProducts.php:20,31`）。`MocksCatalogue.php` 实际改名为 `tests/php/Support/MocksLiveProducts.php`，trait 为 `MocksLiveProducts`（`:24`），方法为 `mock_live_products()`（`:51`）。四个能力测试（`SearchProductsTest`、`CheckCompatibilityTest`、`CompareProductsTest`、`GetProductTest`）用的是后者，不是 `MocksProducts`。表内两行已按这个产出改正。`MocksLiveProducts.php:3` 的 "Live-catalogue products" 注释当时没有改掉，§2.4 那一行改为记录现状，不把未发生的改写写成已落地。

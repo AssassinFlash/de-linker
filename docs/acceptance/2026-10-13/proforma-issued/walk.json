@@ -1,0 +1,16 @@
+{
+  "log": [
+    "admin http://127.0.0.1:8993/wp-admin/",
+    "proforma box 1",
+    "box text: Proforma invoice Move up Move down Show or hide panel DLK-PF-2026-0003 Issued 12 October 2026 Valid until 11 November 2026 Download PDF",
+    "customer http://127.0.0.1:8993/my-account/",
+    "detail url http://127.0.0.1:8993/my-account/inquiry/27/",
+    "detail head: Linker (local t82) Inquiry #27 Overview Your contact person sales@de-linker.com Inquiry received Proforma invoice issued Completed Cancelled Inquiry #27 Date 12 October 2026 Amount $3,360.00 View Proforma invoice (PDF) DLK-PF-2026-0003 Proforma invoice (PDF) Inquiry details Product Total Walk inverter × 2 $3,360.00 Subtotal: $3,360.00 Total: $3,360.00 Actions: Proforma invoice (PDF) Request again Company details Issue GmbH Erika Mustermann Triftstraße 5 80331 München Germany proforma-issue-17918",
+    "detail download links 3",
+    "detail href http://127.0.0.1:8993/?linker-document=proforma&id=27",
+    "docs head: Linker (local t82) Documents Overview Your contact person sales@de-linker.com Document Date Download (PDF) Proforma invoice DLK-PF-2026-0004 (inquiry #31) 12 October 2026 Download (PDF) Proforma invoice DLK-PF-2026-0003 (inquiry #27) 12 October 2026 Download (PDF) Proforma invoice DLK-PF-2026-0002 (inquiry #25) 12 October 2026 Download (PDF) Proforma invoice DLK-PF-2026-0001 (inquiry #24) 12 October 2026 Download (PDF) Linker (local t82) is proudly powered by WordPress",
+    "docs download links 4",
+    "completed head: Linker (local t82) Inquiry #31 Overview Your contact person sales@de-linker.com Inquiry received Proforma invoice issued Completed Cancelled Inquiry #31 Date 12 October 2026 Amount $0.00 View Proforma invoice (PDF) DLK-PF-2026-0004 Proforma invoice (PDF) Inquiry details Product Total Walk inverter × 1 $0.00 Subtotal: $0.00 Total: $0.00 Actions: Proforma invoice (PDF) Request again Company details ",
+    "completed download links 3"
+  ]
+}

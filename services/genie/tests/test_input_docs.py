@@ -33,7 +33,7 @@ def _read(name: str) -> str:
 
 
 def _device_classes_in_php() -> tuple[str, ...]:
-    source = (COMMERCE / "includes" / "Catalog" / "SelectionFacts.php").read_text(
+    source = (COMMERCE / "includes" / "Products" / "SelectionFacts.php").read_text(
         encoding="utf-8"
     )
     block = re.search(r"DEVICE_CLASSES = array\((.*?)\);", source, re.DOTALL)

@@ -2,7 +2,7 @@
 
 from linker_genie.abilities import AbilityError
 from linker_genie.cycle import run
-from linker_genie.facts import Fact, TurnFacts
+from linker_genie.facts import Fact, TurnFacts, collect
 from linker_genie.schema import (
     CardsBlock,
     HandoffBlock,
@@ -11,7 +11,12 @@ from linker_genie.schema import (
     TurnOutput,
     TurnRequest,
 )
-from linker_genie.template import fallback
+from linker_genie.template import (
+    DEGRADED,
+    LOGIN_REQUIRED,
+    fallback,
+    german_is_clean,
+)
 
 
 def _request() -> TurnRequest:
@@ -148,9 +153,8 @@ def test_template_handoff_uses_the_tool_sentence_when_present() -> None:
 
 
 def test_template_handoff_without_the_tool_declares_the_degradation() -> None:
-    """Nothing citable this turn: the handoff says so and offers the retry
-    and the team, in the turn's language, instead of reading as a normal
-    out-of-scope handoff."""
+    """Nothing citable, and handoff-team did not run: the degraded sentence.
+    The same empty facts with the login fact outrank that sentence."""
     english = fallback(TurnFacts(), "en")
     german = fallback(TurnFacts(), "de")
 
@@ -166,3 +170,114 @@ def test_template_handoff_without_the_tool_declares_the_degradation() -> None:
         "Ich konnte Ihre Frage diesmal nicht beantworten. Bitte versuchen Sie "
         "es gleich noch einmal, oder wenden Sie sich an unser Team."
     )
+    assert german_is_clean(german_handoff.summary)
+    assert " the " not in f" {german_handoff.summary.lower()} "
+
+    # Login fact on otherwise empty facts: the login sentence, not DEGRADED,
+    # even though handoff-team did not run either.
+    guest = _guest_inquiry()
+    login = fallback(guest, "de")
+    assert isinstance(login.blocks[0], TextBlock)
+    assert login.blocks[0].text == LOGIN_REQUIRED["de"]
+    assert login.blocks[0].text != DEGRADED["de"]
+
+
+def _guest_inquiry() -> TurnFacts:
+    """What inquiry-status returns for an anonymous caller (facts.py:252)."""
+    return collect("linker/inquiry-status", {"error": "login_required"})
+
+
+def _guest_request(locale: str) -> TurnRequest:
+    return TurnRequest(
+        conversation_id="c-guest",
+        locale=locale,  # type: ignore[arg-type]
+        messages=[
+            TurnMessage(role="user", content="Wo steht meine Proforma?")
+            if locale == "de"
+            else TurnMessage(role="user", content="Where does my Proforma stand?")
+        ],
+        page_context={"type": "account"},  # type: ignore[arg-type]
+    )
+
+
+def test_anonymous_german_proforma_falls_back_to_the_login_request() -> None:
+    """C2-anon-de: grounding refused the mailbox sentence; the template must
+    ask the guest to log in, in German, and must not ship the team mailbox."""
+    facts = _guest_inquiry()
+    facts.add(
+        Fact(
+            id="handoff.sentence_de",
+            value="Unser Team beantwortet das unter sales@de-linker.com.",
+            source="handoff-team",
+        )
+    )
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        return (
+            TurnOutput(
+                language="de",
+                blocks=[
+                    HandoffBlock(summary="{fact:handoff.sentence_de}"),
+                ],
+            ),
+            facts,
+        )
+
+    result = run(_guest_request("de"), generate)
+
+    assert result.fallback is True
+    assert result.grounded is False
+    assert len(result.output.blocks) == 1
+    block = result.output.blocks[0]
+    assert isinstance(block, TextBlock)
+    assert block.text == LOGIN_REQUIRED["de"]
+    assert "melden Sie sich in Ihrem Konto an" in block.text
+    assert "sales@" not in block.text
+    assert "@" not in block.text
+    assert german_is_clean(block.text)
+    assert result.output.language == "de"
+
+
+def test_fallback_after_grounding_stays_inside_the_protocol_set() -> None:
+    """C2-fallback: a refused product turn ships qualified cards inside the
+    allowed set, cited by the text; a German line carries no English fragment.
+    Nothing citable and handoff-team did not run: the degraded sentence of
+    that language. The mailbox sentence ships only when that tool's sentence
+    is a fact of the turn (test_template_handoff_uses_the_tool_sentence_when_present)."""
+    allowed = {4107, 3556}
+    facts = TurnFacts()
+    facts.product_ids = set(allowed)
+    facts.qualified_ids = set(allowed)
+    facts.unknown_fields = ["phase"]
+
+    german_cards = fallback(facts, "de")
+    offered = {
+        product_id
+        for block in german_cards.blocks
+        if isinstance(block, CardsBlock)
+        for product_id in block.product_ids
+    }
+    assert offered
+    assert offered <= allowed
+    text = next(block for block in german_cards.blocks if isinstance(block, TextBlock))
+    # The template cites a card as p<id> (template.py); the shell and the
+    # grounding check both read that form.
+    assert set(text.refs) >= {f"p{product_id}" for product_id in offered}
+    assert german_cards.language == "de"
+    for block in german_cards.blocks:
+        rendered = getattr(block, "text", None) or ""
+        options = getattr(block, "options", None) or []
+        for line in [rendered, *options]:
+            if line:
+                assert german_is_clean(line), line
+    assert not any(block.type == "handoff" for block in german_cards.blocks)
+
+    german_empty = fallback(TurnFacts(), "de")
+    empty = german_empty.blocks[0]
+    assert isinstance(empty, HandoffBlock)
+    assert empty.summary == DEGRADED["de"]
+    assert german_is_clean(empty.summary)
+    assert "sales@" not in empty.summary
+    assert " the " not in f" {empty.summary.lower()} "

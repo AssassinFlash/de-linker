@@ -11,7 +11,7 @@ namespace Linker\Commerce\Proforma;
 
 /**
  * Numbers PREFIX-YYYY-NNNN, counting from 1 in each calendar year
- * (docs/specs/11-commerce.md, module Proforma: "编号 PI-YYYY-NNNN（按年计数，选项存储）").
+ * (docs/specs/11-commerce.md: 编号 PREFIX-YYYY-NNNN，默认前缀 DLK-PF，按年计数，选项存储).
  * A number is taken only when its document exists: the caller renders the
  * document with next(), then commit() claims the number atomically. If another
  * request claimed it meanwhile, commit() fails and the caller renders again with

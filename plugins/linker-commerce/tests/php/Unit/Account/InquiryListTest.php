@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Account;
 
 use Linker\Commerce\Account\InquiryList;
+use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
@@ -41,14 +42,24 @@ final class InquiryListTest extends TestCase {
 	 *
 	 * @param string $number Proforma number.
 	 * @param bool   $again  Whether its status allows "request again".
+	 * @param string $status Stored status slug.
 	 * @return WC_Order&\Mockery\MockInterface
 	 */
-	private function inquiry( string $number, bool $again ) {
+	private function inquiry( string $number, bool $again, string $status = 'completed' ) {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
-		$order->allows( 'has_status' )->andReturn( $again );
+		$order->allows( 'has_status' )->andReturnUsing(
+			static function ( $asked ) use ( $again, $status ): bool {
+				// The "request again" check passes the status list; the Proforma
+				// check passes one status. $again is the test's switch for the list.
+				if ( is_array( $asked ) ) {
+					return $again && in_array( $status, $asked, true );
+				}
+				return $asked === $status;
+			}
+		);
 		return $order;
 	}
 
@@ -91,6 +102,20 @@ final class InquiryListTest extends TestCase {
 		$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $actions['proforma']['url'] );
 		$this->assertSame( 'https://example.test/cart/?order_again=20&_wpnonce=woocommerce-order_again', $actions['request-again']['url'] );
 		$this->assertSame( 'Request again', $actions['request-again']['name'] );
+
+		// A stored number offers the download even when the status list would not. An empty number does not, in any status.
+		$issued = $list->actions( $woo_list, $this->inquiry( 'PI-2026-0008', false, Statuses::PROFORMA ) );
+		$this->assertSame( array( 'view', 'proforma' ), array_keys( $issued ) );
+		$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $issued['proforma']['url'] );
+		$this->assertSame( 'Proforma invoice (PDF)', $issued['proforma']['name'] );
+			$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( '', false, Statuses::PROFORMA ) ) ) );
+			$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( '', false, Statuses::RECEIVED ) ) ) );
+
+			// Completed keeps the download. The number is what the customer reads, not the status word.
+			$completed = $list->actions( $woo_list, $this->inquiry( 'DLK-PF-2026-0003', false, 'completed' ) );
+			$this->assertSame( array( 'view', 'proforma' ), array_keys( $completed ) );
+			$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $completed['proforma']['url'] );
+			$this->assertSame( 'Proforma invoice (PDF)', $completed['proforma']['name'] );
 
 		foreach ( array( 'view-order', 'order-received' ) as $endpoint ) {
 			$this->assertSame( array( 'view', 'proforma' ), array_keys( $list->actions( $woo_list, $this->inquiry( 'PI-2026-0001', true ) ) ), $endpoint );

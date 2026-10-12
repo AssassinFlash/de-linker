@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Abilities;
 
 use Linker\Commerce\Abilities\CheckCompatibility;
-use Linker\Commerce\Tests\Support\MocksCatalogue;
+use Linker\Commerce\Tests\Support\MocksLiveProducts;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
@@ -21,7 +21,7 @@ use WP_Mock\Tools\TestCase;
  */
 final class CheckCompatibilityTest extends TestCase {
 
-	use MocksCatalogue;
+	use MocksLiveProducts;
 
 	/**
 	 * Translation returns its source.
@@ -54,7 +54,7 @@ final class CheckCompatibilityTest extends TestCase {
 	 * @param string $verdict  Expected verdict.
 	 */
 	public function test_documented_pairs( int $inverter, int $battery, string $verdict ): void {
-		$this->mock_catalogue( array( $inverter, $battery ) );
+		$this->mock_live_products( array( $inverter, $battery ) );
 		$ability = new CheckCompatibility();
 
 		$named   = $ability->execute(
@@ -91,7 +91,7 @@ final class CheckCompatibilityTest extends TestCase {
 	 */
 	public function test_unknown_when_the_contract_has_no_pair(): void {
 		$this->assertSame( 'unknown', ( new CheckCompatibility() )->execute( array() )['verdict'] );
-		$this->mock_catalogue( array( 4107, 3556 ) );
+		$this->mock_live_products( array( 4107, 3556 ) );
 		$two_inverters = ( new CheckCompatibility() )->execute( array( 'product_ids' => array( 4107, 3556 ) ) );
 		$this->assertSame( 'unknown', $two_inverters['verdict'] );
 		$this->assertSame( array(), $two_inverters['documents'] );

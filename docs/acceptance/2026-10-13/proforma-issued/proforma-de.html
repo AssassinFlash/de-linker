@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de-DE-formal">
+<head>
+<meta charset="utf-8">
+<title>DLK-PF-2026-0003</title>
+<style>
+	@page { margin: 15mm 16mm 20mm 16mm; }
+	body { font-family: 'DejaVu Sans', sans-serif; font-size: 9pt; color: #1d1d1b; line-height: 1.35; }
+	h1 { font-size: 16pt; margin: 0 0 4mm 0; }
+	table { border-collapse: collapse; width: 100%; }
+	.head td { vertical-align: top; }
+	.seller { text-align: right; font-size: 8.5pt; }
+	.seller strong { font-size: 10pt; }
+	.meta td { padding: 1mm 0; }
+	.meta td.label { color: #5b5b5b; width: 32mm; padding-right: 3mm; }
+	.buyer { margin: 5mm 0; }
+	.lines th { text-align: left; border-bottom: 0.6pt solid #1d1d1b; padding: 1.5mm 1mm; font-size: 8.5pt; }
+	.lines td { border-bottom: 0.3pt solid #c8c8c8; padding: 1.5mm 1mm; vertical-align: top; }
+	.lines .num { text-align: right; white-space: nowrap; }
+	.sku { color: #5b5b5b; font-size: 8pt; }
+	.totals { width: 75mm; margin-left: auto; margin-top: 3mm; }
+	.totals td { padding: 1mm; }
+	.totals td.num { text-align: right; white-space: nowrap; }
+	.totals tr.grand td { border-top: 0.6pt solid #1d1d1b; font-weight: bold; }
+	.box { margin-top: 4mm; border: 0.6pt solid #1d1d1b; padding: 3mm 4mm; }
+	.box h2 { font-size: 10pt; margin: 0 0 2mm 0; }
+	.box td { padding: 0.6mm 0; }
+	/* Wide enough for the longest German label, "Verwendungszweck". */
+	.box td.label { color: #5b5b5b; width: 38mm; padding-right: 3mm; }
+	.note { margin-top: 5mm; font-size: 8.5pt; }
+	.footer { position: fixed; bottom: -12mm; left: 0; right: 0; font-size: 7.5pt; color: #5b5b5b; text-align: center; }
+</style>
+</head>
+<body>
+<div class="footer">
+	Linker Technology GmbH · Vereinigte Staaten von Amerika (USA) · sales@de-linker.com</div>
+
+<table class="head">
+	<tr>
+		<td>
+			<h1>Proformarechnung</h1>
+			<table class="meta">
+				<tr><td class="label">Proforma-Nr.</td><td><strong>DLK-PF-2026-0003</strong></td></tr>
+				<tr><td class="label">Anfrage-Nr.</td><td>#27</td></tr>
+				<tr><td class="label">Datum</td><td>12. Oktober 2026</td></tr>
+				<tr><td class="label">Gültig bis</td><td>11. November 2026</td></tr>
+			</table>
+		</td>
+		<td class="seller">
+			<strong>Linker Technology GmbH</strong><br>
+							Vereinigte Staaten von Amerika (USA)<br>
+						sales@de-linker.com					</td>
+	</tr>
+</table>
+
+<div class="buyer">
+			<strong>Issue GmbH</strong><br>
+		Erika Mustermann<br>
+			Triftstraße 5<br>
+			80331 München<br>
+			Deutschland<br>
+			proforma-issue-1791830227@example.test</div>
+
+<table class="lines">
+	<thead>
+		<tr>
+			<th>Pos.</th>
+			<th>Produkt</th>
+			<th class="num">Menge</th>
+			<th class="num">Einzelpreis (netto)</th>
+			<th class="num">Betrag (netto)</th>
+		</tr>
+	</thead>
+	<tbody>
+					<tr>
+				<td>1</td>
+				<td>
+					Walk inverter									</td>
+				<td class="num">2</td>
+				<td class="num"><span class="woocommerce-Price-amount amount">1.680,00&nbsp;<span class="woocommerce-Price-currencySymbol" dir="auto">&#036;</span></span></td>
+				<td class="num"><span class="woocommerce-Price-amount amount">3.360,00&nbsp;<span class="woocommerce-Price-currencySymbol" dir="auto">&#036;</span></span></td>
+			</tr>
+					</tbody>
+</table>
+
+<table class="totals">
+	<tr><td>Zwischensumme (netto)</td><td class="num"><span class="woocommerce-Price-amount amount">3.360,00&nbsp;<span class="woocommerce-Price-currencySymbol" dir="auto">&#036;</span></span></td></tr>
+		<tr class="grand"><td>Gesamtbetrag</td><td class="num"><span class="woocommerce-Price-amount amount">3.360,00&nbsp;<span class="woocommerce-Price-currencySymbol" dir="auto">&#036;</span></span></td></tr>
+</table>
+
+<p class="note">
+	Diese Proformarechnung ist gültig bis 11. November 2026.	Dieses Dokument ist keine Rechnung im Sinne des § 14 UStG. Die Rechnung wird gesondert ausgestellt.</p>
+
+<div class="box">
+	<h2>Überweisung</h2>
+	<p>
+		Bitte überweisen Sie den Gesamtbetrag auf das unten genannte Konto und geben Sie <strong>DLK-PF-2026-0003</strong> als Verwendungszweck an.	</p>
+	<table>
+		<tr><td class="label">Kontoinhaber</td><td>Linker Technology GmbH</td></tr>
+					<tr><td class="label">Bank</td><td>E2E Testbank</td></tr>
+				<tr><td class="label">IBAN</td><td>DE02 1203 0000 0000 2020 51</td></tr>
+					<tr><td class="label">BIC</td><td>BYLADEM1001</td></tr>
+				<tr><td class="label">Verwendungszweck</td><td>DLK-PF-2026-0003</td></tr>
+	</table>
+</div>
+
+</body>
+</html>

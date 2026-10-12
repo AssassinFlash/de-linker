@@ -119,7 +119,7 @@ final class SearchKnowledge {
 	public function execute( $input = array() ): array {
 		$input = (array) $input;
 		$query = is_string( $input['query'] ?? null ) ? trim( $input['query'] ) : '';
-		$lang  = CatalogText::lang( $input['lang'] ?? null );
+		$lang  = ProductText::lang( $input['lang'] ?? null );
 		$ids   = array_values( array_unique( array_filter( array_map( 'intval', (array) ( $input['product_ids'] ?? array() ) ) ) ) );
 
 		return array( 'hits' => $this->index()->search( $query, $lang, $ids ) );

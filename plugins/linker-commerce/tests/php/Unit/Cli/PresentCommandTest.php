@@ -28,7 +28,7 @@ final class PresentCommandTest extends TestCase {
 	/**
 	 * The compiled selectors of every anchor class, as Tailwind emits them.
 	 */
-	private const COMPILED_ALL = '.sf-catalog{}.catalog-grid{}.sf-card{}.wb-strip{}'
+	private const COMPILED_ALL = '.sf-products{}.product-grid{}.sf-card{}.wb-strip{}'
 		. '.pdp-layout{}.pdp-purchase{}.pdp-scene-reel{}.pdp-disclose{}';
 
 	/**
@@ -860,6 +860,25 @@ final class PresentCommandTest extends TestCase {
 								),
 								'lc_partial'
 							);
+						}
+						return array();
+					}
+					if ( 'lc_partial' === $args['post_type'] && 'footer' === ( $args['name'] ?? '' ) ) {
+						foreach ( $existing['partials'] ?? array() as $row ) {
+							if ( 'footer' === ( $row['post_name'] ?? '' ) ) {
+								return self::wp_posts( array( $row ), 'lc_partial' );
+							}
+						}
+						// A fixture that lists partials and omits footer has no
+						// footer to sync. The default fixture has none either:
+						// these tests cover the header pair.
+						return array();
+					}
+					if ( 'lc_partial' === $args['post_type'] && 'fuszeile' === ( $args['name'] ?? '' ) ) {
+						foreach ( $existing['partials'] ?? array() as $row ) {
+							if ( 'fuszeile' === ( $row['post_name'] ?? '' ) ) {
+								return self::wp_posts( array( $row ), 'lc_partial' );
+							}
 						}
 						return array();
 					}

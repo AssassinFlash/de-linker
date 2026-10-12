@@ -113,6 +113,34 @@ def test_action_with_foreign_product_is_refused() -> None:
     assert any("action" in item for item in result.failures)
 
 
+def test_a_guest_inquiry_answered_with_the_mailbox_is_refused() -> None:
+    """C2-anon-de: login_required must not hydrate into the team mailbox sentence."""
+    from linker_genie.facts import collect
+    from linker_genie.template import LOGIN_REQUIRED
+
+    facts = collect("linker/inquiry-status", {"error": "login_required"})
+    facts.add(
+        Fact(
+            id="handoff.sentence_de",
+            value="Unser Team beantwortet das unter sales@de-linker.com.",
+            source="handoff-team",
+        )
+    )
+    mailbox = TurnOutput(
+        language="de",
+        blocks=[HandoffBlock(summary="{fact:handoff.sentence_de}")],
+    )
+    refused = check(mailbox, facts)
+    assert not refused.ok
+    assert any("login request" in item for item in refused.failures)
+
+    login = TurnOutput(
+        language="de",
+        blocks=[TextBlock(text=LOGIN_REQUIRED["de"])],
+    )
+    assert check(login, facts).ok
+
+
 def test_handoff_mixed_with_cards_is_refused() -> None:
     output = TurnOutput(
         language="en",

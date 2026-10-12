@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Admin;
 
 use Linker\Commerce\Admin\DocumentsMetaBox;
-use Linker\Commerce\Catalog\EngineeringData;
+use Linker\Commerce\Products\EngineeringData;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 

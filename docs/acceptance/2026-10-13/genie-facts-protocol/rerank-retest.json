@@ -1,0 +1,20 @@
+{
+ "command_attempted": "uv run --locked python -m index.eval.rerank --index ~/de-linker-data/index/builds/20261011T000000Z-repair/index.sqlite --depth 50 --judge deepseek --sample 20 --batch 20",
+ "stock_command": "hung after 'encoding 40 queries\u2026' on four attempts; killed, not timed out by the harness",
+ "this_run": "same questions, same deepseek_rerank, queries encoded one at a time",
+ "index": "/Users/chesterjohn/de-linker-data/index/builds/20261011T000000Z-repair/index.sqlite",
+ "depth": 50,
+ "sample_per_language": 20,
+ "questions": 40,
+ "pool_ceiling": 0.95,
+ "recall@5": 0.775,
+ "page_accuracy": 0.8571428571428571,
+ "cited": 28,
+ "rerank_tokens": {
+  "in": 277221,
+  "out": 352403
+ },
+ "encode_seconds": 136.6,
+ "rerank_seconds": 1667.6,
+ "model": "deepseek-flash"
+}

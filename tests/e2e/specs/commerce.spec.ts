@@ -251,7 +251,31 @@ async function issueProforma(
 		'eval',
 		`$order = wc_get_order( ${orderId} );` +
 			`echo $order ? (string) $order->get_meta( '_linker_proforma_number' ) : '';`,
-	]);
+	]).trim();
+}
+
+/**
+ * The number format the issuer writes: PREFIX-YYYY-NNNN (Sequence::format).
+ * An empty prefix option is DLK-PF (Options::proforma_prefix); a saved custom
+ * prefix is left as it is, so the assertion reads the option rather than a
+ * hard-coded PI- from before the default changed.
+ */
+function proformaNumberPattern(): RegExp {
+	let prefix = 'DLK-PF';
+	try {
+		const saved = wp([
+			'option',
+			'get',
+			'linker_commerce_proforma_prefix',
+		]).trim();
+		if (saved !== '') {
+			prefix = saved;
+		}
+	} catch {
+		// The option does not exist: the issuer uses the default prefix.
+	}
+	const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return new RegExp(`^${escaped}-\\d{4}-\\d{4}$`);
 }
 
 /**
@@ -375,7 +399,9 @@ test.describe('the commercial chain', () => {
 			// 7. The Proforma, from the inquiry screen's own button.
 			const proformaMark = mark();
 			const meta = await issueProforma(browser, orderId);
-			expect(meta, 'the Proforma is issued').toMatch(/PI-/);
+			expect(meta, 'the Proforma is issued').toMatch(
+				proformaNumberPattern()
+			);
 			await mail(
 				(one) =>
 					one.writtenAt > proformaMark &&
