@@ -75,11 +75,13 @@ async function calculate() {
 }
 
 test( 'a model change scrolls the Solution clear of the measured step list', async () => {
-	const scrolls: ScrollIntoViewOptions[] = [];
+	const scrolls: { target: Element; options: ScrollIntoViewOptions }[] = [];
 	Element.prototype.scrollIntoView = function scrollIntoView( options ) {
-		scrolls.push(
-			typeof options === 'object' && options !== null ? options : {}
-		);
+		scrolls.push( {
+			target: this as Element,
+			options:
+				typeof options === 'object' && options !== null ? options : {},
+		} );
 	};
 	// jsdom has no layout. 77px is a two-row phone bar, the case a fixed
 	// one-row height would under-clear.
@@ -94,16 +96,22 @@ test( 'a model change scrolls the Solution clear of the measured step list', asy
 	const other = within( select ).getAllByRole(
 		'option'
 	)[ 1 ] as HTMLOptionElement;
-	scrolls.length = 0;
 	await act( async () => {
 		fireEvent.change( select, { target: { value: other.value } } );
 	} );
 
-	const solution = screen
-		.getByRole( 'heading', { name: 'Solution' } )
-		.closest( '.linker-section' );
-	expect( scrolls ).toEqual( [ { block: 'start', behavior: 'smooth' } ] );
-	expect( solution ).toBeInstanceOf( HTMLElement );
+	// The one call site serves the first calculation and every model change;
+	// each call must scroll the Solution section itself, so the section's
+	// scroll-margin is what clears the bar.
+	expect( scrolls ).toHaveLength( 2 );
+	for ( const { target, options } of scrolls ) {
+		expect( options ).toEqual( { block: 'start', behavior: 'smooth' } );
+		expect(
+			target.classList.contains( 'linker-section' ) &&
+				target.querySelector( '.linker-section__title' )
+					?.textContent === 'Solution'
+		).toBe( true );
+	}
 	expect( container ).toHaveStyle( {
 		'--linker-steps-scroll-offset': `${ STICKY_TOP_PX + barHeight + SECTION_GAP_PX }px`,
 	} );
