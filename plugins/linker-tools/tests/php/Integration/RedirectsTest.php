@@ -141,9 +141,9 @@ final class RedirectsTest extends SiteTestCase {
 		$this->assertRedirects( '/de/entwurfsflache/', '/de/linker-planer/?step=roof' );
 	}
 
-		/**
-		 * The advisor addresses stay. They are the Genie workspace now.
-		 */
+	/**
+	 * The advisor addresses stay. They are the Genie workspace now.
+	 */
 	public function test_the_advisor_addresses_stay(): void {
 		$this->assertStays( '/linker-advisor/', 200 );
 		$this->assertStays( '/de/linker-berater/', 200 );

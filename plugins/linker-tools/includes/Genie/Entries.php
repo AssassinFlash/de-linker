@@ -60,9 +60,9 @@ class Entries {
 		add_action( 'woocommerce_single_product_summary', array( $this, 'product_chips' ), 35 );
 		add_action( 'woocommerce_before_cart', array( $this, 'draft_chips' ) );
 		add_action( 'woocommerce_account_dashboard', array( $this, 'account_chips' ) );
-			add_shortcode( 'linker_genie_ask', array( $this, 'ask_shortcode' ) );
-			add_shortcode( 'linker_genie_chips', array( $this, 'chips_shortcode' ) );
-			add_shortcode( 'linker_genie_workspace', array( $this, 'workspace_shortcode' ) );
+		add_shortcode( 'linker_genie_ask', array( $this, 'ask_shortcode' ) );
+		add_shortcode( 'linker_genie_chips', array( $this, 'chips_shortcode' ) );
+		add_shortcode( 'linker_genie_workspace', array( $this, 'workspace_shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'search_assets' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'dock_assets' ) );
 	}
@@ -223,13 +223,13 @@ class Entries {
 		echo '</div>';
 	}
 
-			/**
-			 * The one boot loader. `$open` is the workspace: it has no bubble, so
-			 * the loader boots before the script is inserted and opens the mount
-			 * once the app reports ready. A click or ask is what boots a helper.
-			 *
-			 * @param bool $open Whether to boot now and open as soon as the app is ready.
-			 */
+	/**
+	 * The one boot loader. `$open` is the workspace: it has no bubble, so
+	 * the loader boots before the script is inserted and opens the mount
+	 * once the app reports ready. A click or ask is what boots a helper.
+	 *
+	 * @param bool $open Whether to boot now and open as soon as the app is ready.
+	 */
 	private function print_loader( bool $open ): void {
 		$payload = array(
 			'src'          => $this->script_src(),
@@ -242,10 +242,10 @@ class Entries {
 		if ( '' === $payload['src'] ) {
 			return;
 		}
-				// The loader owns entry delivery: an open click, an ask, or a
-			// workspace page (payload.open) boots once, waits for the App's
-			// ready event, then opens it with the first ask. The App reports
-			// Hide/Open back so the shell and mobile card agree.
+		// The loader owns entry delivery: an open click, an ask, or a
+		// workspace page (payload.open) boots once, waits for the App's
+		// ready event, then opens it with the first ask. The App reports
+		// Hide/Open back so the shell and mobile card agree.
 		// The payload rides in a data
 		// attribute: attribute values are entity-decoded by the HTML
 		// parser, so getAttribute() yields the clean JSON (script text
@@ -434,12 +434,12 @@ JS,
 		);
 	}
 
-		/**
-		 * The mount the app renders into. One markup for the dock and the
-		 * workspace, so both carry the same routes and the same nonce.
-		 *
-		 * @param string $surface `helper` on every page, `workspace` on the advisor page.
-		 */
+	/**
+	 * The mount the app renders into. One markup for the dock and the
+	 * workspace, so both carry the same routes and the same nonce.
+	 *
+	 * @param string $surface `helper` on every page, `workspace` on the advisor page.
+	 */
 	private function mount_markup( string $surface ): string {
 		$locale = $this->locale();
 		$page   = $this->page_context();
@@ -462,9 +462,9 @@ JS,
 		);
 	}
 
-		/**
-		 * Shop chip: opens Genie over the catalogue.
-		 */
+	/**
+	 * Shop chip: opens Genie over the catalogue.
+	 */
 	public function shop_chip(): void {
 		$this->print_group( 'category' );
 	}

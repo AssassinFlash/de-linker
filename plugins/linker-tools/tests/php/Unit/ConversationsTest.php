@@ -248,11 +248,11 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * A cookie that is only a conversation id is not a credential. The
-		 * signature is what names the conversation; a forged number is ignored
-		 * at the gate and does not open that post.
-		 */
+	/**
+	 * A cookie that is only a conversation id is not a credential. The
+	 * signature is what names the conversation; a forged number is ignored
+	 * at the gate and does not open that post.
+	 */
 	public function test_an_unsigned_numeric_cookie_is_refused(): void {
 		$this->logged_out();
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
@@ -279,9 +279,9 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * A cookie for a foreign or deleted conversation is ignored.
-		 */
+	/**
+	 * A cookie for a foreign or deleted conversation is ignored.
+	 */
 	public function test_current_id_ignores_a_foreign_conversation(): void {
 		$this->logged_out();
 		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
@@ -361,9 +361,9 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * A guest's history is the cookie conversation, and nothing else.
-		 */
+	/**
+	 * A guest's history is the cookie conversation, and nothing else.
+	 */
 	public function test_a_guest_lists_only_the_cookie_conversation(): void {
 		$this->logged_out();
 		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
@@ -397,10 +397,10 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * A signed-in customer lists the conversations they own. A conversation
-		 * they may not use never appears, even if a query returned it.
-		 */
+	/**
+	 * A signed-in customer lists the conversations they own. A conversation
+	 * they may not use never appears, even if a query returned it.
+	 */
 	public function test_a_customer_lists_owned_conversations(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
@@ -445,10 +445,10 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * Selecting a conversation writes the same cookie the next turn reads.
-		 * A conversation the visitor may not use is refused and writes nothing.
-		 */
+	/**
+	 * Selecting a conversation writes the same cookie the next turn reads.
+	 * A conversation the visitor may not use is refused and writes nothing.
+	 */
 	public function test_activate_sets_the_cookie_only_for_an_owned_conversation(): void {
 		$this->logged_out();
 		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
@@ -482,11 +482,11 @@ final class ConversationsTest extends TestCase {
 			$this->assertConditionsMet();
 	}
 
-			/**
-			 * Selecting another owned conversation is visible in this request.
-			 * The header alone would leave existing_id() and the list on the
-			 * previous cookie until the browser came back.
-			 */
+	/**
+	 * Selecting another owned conversation is visible in this request.
+	 * The header alone would leave existing_id() and the list on the
+	 * previous cookie until the browser came back.
+	 */
 	public function test_activate_is_visible_to_the_same_request(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
@@ -542,10 +542,10 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * The first customer message names a new conversation. A conversation
-		 * that already has a title keeps it.
-		 */
+	/**
+	 * The first customer message names a new conversation. A conversation
+	 * that already has a title keeps it.
+	 */
 	public function test_the_first_message_names_a_new_conversation(): void {
 		$this->logged_out();
 		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
@@ -591,12 +591,12 @@ final class ConversationsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * A conversation post as the list reads it.
-		 *
-		 * @param int    $id    Post ID.
-		 * @param string $title Post title.
-		 */
+	/**
+	 * A conversation post as the list reads it.
+	 *
+	 * @param int    $id    Post ID.
+	 * @param string $title Post title.
+	 */
 	public static function post( int $id, string $title ): \WP_Post {
 		return new \WP_Post(
 			(object) array(
@@ -609,16 +609,15 @@ final class ConversationsTest extends TestCase {
 		);
 	}
 
-		/**
-		 * Guest state: is_user_logged_in() false, get_current_user_id() zero.
-		 */
+	/**
+	 * Guest state: is_user_logged_in() false, get_current_user_id() zero.
+	 */
 	private function logged_out(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
-		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'absint',
 			array(

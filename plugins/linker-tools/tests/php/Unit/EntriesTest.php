@@ -121,12 +121,12 @@ final class EntriesTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * A renamed advisor page still printed the workspace shortcode. The
-		 * slug no longer matches, but the shortcode already rendered the
-		 * mount. The dock must boot that mount and must not print a second
-		 * helper: two mounts are two apps on one cookie.
-		 */
+	/**
+	 * A renamed advisor page still printed the workspace shortcode. The
+	 * slug no longer matches, but the shortcode already rendered the
+	 * mount. The dock must boot that mount and must not print a second
+	 * helper: two mounts are two apps on one cookie.
+	 */
 	public function test_a_rendered_workspace_is_not_printed_again_when_the_slug_differs(): void {
 		$GLOBALS['linker_tools_test_inline_scripts'] = array();
 		$this->frontend( 'en', array( 'type' => 'other' ), 'advisor-renamed' );
@@ -148,11 +148,11 @@ final class EntriesTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * The slug still says advisor, but the template no longer prints the
-		 * workspace. A dock that trusts the slug would boot an empty page and
-		 * hide the helper. The helper is what a page without the mount gets.
-		 */
+	/**
+	 * The slug still says advisor, but the template no longer prints the
+	 * workspace. A dock that trusts the slug would boot an empty page and
+	 * hide the helper. The helper is what a page without the mount gets.
+	 */
 	public function test_a_matching_slug_without_the_workspace_template_keeps_the_helper(): void {
 		$GLOBALS['linker_tools_test_inline_scripts'] = array();
 		$this->frontend( 'en', array( 'type' => 'other' ), 'linker-advisor' );
@@ -171,10 +171,10 @@ final class EntriesTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * A German page links the full-page workspace to the German advisor
-		 * page. The language layer, not the locale string, decides.
-		 */
+	/**
+	 * A German page links the full-page workspace to the German advisor
+	 * page. The language layer, not the locale string, decides.
+	 */
 	public function test_german_page_links_the_german_workspace(): void {
 		$this->frontend( 'de_DE_formal', array( 'type' => 'other' ), '', 'de' );
 		WP_Mock::userFunction(

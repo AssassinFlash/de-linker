@@ -717,10 +717,10 @@ final class RedirectsTest extends TestCase {
 		$this->assertSame( self::HOME . '/de/linker-planer/', ( new Redirects() )->target( '/de/angebots-konfigurator/' ) );
 	}
 
-		/**
-		 * The advisor addresses stay. They are the Genie workspace now, not a
-		 * retired tool page, so a request for them is not redirected.
-		 */
+	/**
+	 * The advisor addresses stay. They are the Genie workspace now, not a
+	 * retired tool page, so a request for them is not redirected.
+	 */
 	public function test_advisor_addresses_stay(): void {
 		$this->wordpress();
 

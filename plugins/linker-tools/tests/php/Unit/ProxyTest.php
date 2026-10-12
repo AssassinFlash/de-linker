@@ -235,11 +235,11 @@ final class ProxyTest extends TestCase {
 				return 51;
 			}
 
-				/**
-				 * The one conversation this double knows.
-				 *
-				 * @return list<array{id: int, title: string, updated: string}>
-				 */
+			/**
+			 * The one conversation this double knows.
+			 *
+			 * @return list<array{id: int, title: string, updated: string}>
+			 */
 			public function list_for_visitor(): array {
 				return array(
 					array(
@@ -250,28 +250,28 @@ final class ProxyTest extends TestCase {
 				);
 			}
 
-				/**
-				 * Selects 51 and refuses anything else.
-				 *
-				 * @param int $id Conversation post ID.
-				 */
+			/**
+			 * Selects 51 and refuses anything else.
+			 *
+			 * @param int $id Conversation post ID.
+			 */
 			public function activate( int $id ): bool {
 				return 51 === $id;
 			}
 
-				/**
-				 * Opens 52.
-				 */
+			/**
+			 * Opens 52.
+			 */
 			public function open(): int {
 				return 52;
 			}
 
-				/**
-				 * The real method reads the post. This double has no post.
-				 *
-				 * @param int    $id    Conversation post ID.
-				 * @param string $title First message.
-				 */
+			/**
+			 * The real method reads the post. This double has no post.
+			 *
+			 * @param int    $id    Conversation post ID.
+			 * @param string $title First message.
+			 */
 			public function title_from_first_message( int $id, string $title ): void {
 				unset( $id, $title );
 			}
@@ -481,10 +481,10 @@ final class ProxyTest extends TestCase {
 			$this->assertConditionsMet();
 	}
 
-		/**
-		 * The history route lists the visitor's conversations and names the
-		 * current one. It does not open a conversation.
-		 */
+	/**
+	 * The history route lists the visitor's conversations and names the
+	 * current one. It does not open a conversation.
+	 */
 	public function test_conversations_lists_without_opening_one(): void {
 		$this->wp_functions();
 
@@ -495,10 +495,10 @@ final class ProxyTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * Selecting a conversation the visitor owns returns that id. An id
-		 * they may not use is a 404, not a new conversation.
-		 */
+	/**
+	 * Selecting a conversation the visitor owns returns that id. An id
+	 * they may not use is a 404, not a new conversation.
+	 */
 	public function test_selecting_a_conversation_refuses_one_the_visitor_may_not_use(): void {
 		$this->wp_functions();
 		$proxy = $this->proxy();
@@ -517,9 +517,9 @@ final class ProxyTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-		/**
-		 * A selection without an id opens a new conversation.
-		 */
+	/**
+	 * A selection without an id opens a new conversation.
+	 */
 	public function test_selecting_without_an_id_opens_a_conversation(): void {
 		$this->wp_functions();
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
@@ -532,10 +532,10 @@ final class ProxyTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-			/**
-			 * After select, this request's thread read is the new conversation.
-			 * The cookie header alone would still name the previous one.
-			 */
+	/**
+	 * After select, this request's thread read is the new conversation.
+	 * The cookie header alone would still name the previous one.
+	 */
 	public function test_select_is_the_conversation_the_same_request_reads(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );

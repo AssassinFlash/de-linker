@@ -29,18 +29,18 @@ class Proxy {
 	public const NAMESPACE = 'linker-ai/v1';
 	public const ROUTE     = '/genie/turn';
 
-		/**
-		 * Route that reads the stored thread back.
-		 */
+	/**
+	 * Route that reads the stored thread back.
+	 */
 	public const THREAD_ROUTE = '/genie/conversation';
 
-		/**
-		 * Route that lists the visitor's conversations, and selects one.
-		 *
-		 * GET returns the history rail. POST `{id}` makes that conversation
-		 * the current one, so the dock and the workspace read the same thread.
-		 * POST without an id opens a new conversation.
-		 */
+	/**
+	 * Route that lists the visitor's conversations, and selects one.
+	 *
+	 * GET returns the history rail. POST `{id}` makes that conversation
+	 * the current one, so the dock and the workspace read the same thread.
+	 * POST without an id opens a new conversation.
+	 */
 	public const CONVERSATIONS_ROUTE = '/genie/conversations';
 
 	/**
@@ -127,38 +127,38 @@ class Proxy {
 				),
 			)
 		);
-			register_rest_route(
-				self::NAMESPACE,
-				self::THREAD_ROUTE,
+		register_rest_route(
+			self::NAMESPACE,
+			self::THREAD_ROUTE,
 				array(
 					'methods'             => 'GET',
 					'callback'            => array( $this, 'conversation' ),
 					'permission_callback' => '__return_true',
 				)
 			);
-			register_rest_route(
-				self::NAMESPACE,
-				self::CONVERSATIONS_ROUTE,
+		register_rest_route(
+			self::NAMESPACE,
+			self::CONVERSATIONS_ROUTE,
+			array(
 				array(
-					array(
-						'methods'             => 'GET',
-						'callback'            => array( $this, 'conversations' ),
-						'permission_callback' => '__return_true',
-					),
-					array(
-						'methods'             => 'POST',
-						'callback'            => array( $this, 'select_conversation' ),
-						'permission_callback' => '__return_true',
-						'args'                => array(
-							'id' => array(
-								'type'              => 'integer',
-								'required'          => false,
-								'sanitize_callback' => 'absint',
-							),
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'conversations' ),
+					'permission_callback' => '__return_true',
+				),
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'select_conversation' ),
+					'permission_callback' => '__return_true',
+					'args'                => array(
+						'id' => array(
+							'type'              => 'integer',
+							'required'          => false,
+							'sanitize_callback' => 'absint',
 						),
 					),
-				)
-			);
+				),
+			)
+		);
 	}
 
 	/**
@@ -179,21 +179,21 @@ class Proxy {
 				'stream'          => $store['stream'],
 			)
 		);
-			// The answer depends on the visitor's cookie: it must never be reused
-			// from a cache. Without this a browser that read the thread once (empty,
-			// before the first turn) serves that empty copy to the reload, and the
-			// conversation looks lost (measured 2026-10-11).
-			$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
-			return $reply;
+		// The answer depends on the visitor's cookie: it must never be reused
+		// from a cache. Without this a browser that read the thread once (empty,
+		// before the first turn) serves that empty copy to the reload, and the
+		// conversation looks lost (measured 2026-10-11).
+		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
+		return $reply;
 	}
 
-		/**
-		 * The conversations this visitor may continue.
-		 *
-		 * Read-only: an empty list is an empty list, never a new conversation.
-		 *
-		 * @return WP_REST_Response
-		 */
+	/**
+	 * The conversations this visitor may continue.
+	 *
+	 * Read-only: an empty list is an empty list, never a new conversation.
+	 *
+	 * @return WP_REST_Response
+	 */
 	public function conversations(): WP_REST_Response {
 		$reply = new WP_REST_Response(
 			array(
@@ -205,16 +205,16 @@ class Proxy {
 		return $reply;
 	}
 
-		/**
-		 * Continues one conversation, or opens a new one.
-		 *
-		 * The cookie is what the next turn and the thread read use, so this
-		 * is the switch the dock and the workspace share. An id the visitor
-		 * may not use is a 404, not a new conversation.
-		 *
-		 * @param WP_REST_Request $request Request; `id` selects, its absence opens.
-		 * @return WP_REST_Response|WP_Error
-		 */
+	/**
+	 * Continues one conversation, or opens a new one.
+	 *
+	 * The cookie is what the next turn and the thread read use, so this
+	 * is the switch the dock and the workspace share. An id the visitor
+	 * may not use is a 404, not a new conversation.
+	 *
+	 * @param WP_REST_Request $request Request; `id` selects, its absence opens.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public function select_conversation( WP_REST_Request $request ) {
 		$id = (int) $request->get_param( 'id' );
 		if ( $id > 0 ) {
@@ -273,23 +273,23 @@ class Proxy {
 		if ( is_wp_error( $stream ) ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}
-			// An answered turn is the conversation's record: the thread the
-			// browser sent plus the answer, kept so a reload restores both.
-			// The first customer message names the conversation, which is
-			// the only title the history rail has.
-			$messages = is_array( $body['messages'] ) ? $body['messages'] : array();
-			$first    = $messages[0] ?? null;
+		// An answered turn is the conversation's record: the thread the
+		// browser sent plus the answer, kept so a reload restores both.
+		// The first customer message names the conversation, which is
+		// the only title the history rail has.
+		$messages = is_array( $body['messages'] ) ? $body['messages'] : array();
+		$first    = $messages[0] ?? null;
 		if ( is_array( $first ) && isset( $first['content'] ) ) {
 			$this->conversations->title_from_first_message(
 				$conversation,
 				mb_substr( trim( (string) $first['content'] ), 0, 80 )
 			);
 		}
-			$this->thread->record(
-				$conversation,
-				$messages,
-				(string) $stream
-			);
+		$this->thread->record(
+			$conversation,
+			$messages,
+			(string) $stream
+		);
 		return new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,

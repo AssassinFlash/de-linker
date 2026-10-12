@@ -94,7 +94,6 @@ export function App( { config }: { config: GenieConfig } ) {
 	);
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
-	const restoring = useRef< Promise< void > >( Promise.resolve() );
 
 	const store = storeClient( config.restUrl );
 	const workspace = config.surface === 'workspace';
@@ -184,7 +183,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			messages: TurnMessage[];
 			turn: Turn | null;
 		} >();
-		restoring.current = enqueue( async () => {
+		void enqueue( async () => {
 			const stored = await Promise.race( [
 				readThread( config.threadUrl, config.restNonce ),
 				pending.promise,
@@ -212,9 +211,6 @@ export function App( { config }: { config: GenieConfig } ) {
 	const continueConversation = useCallback(
 		( id?: number ) =>
 			enqueue( async () => {
-				if ( sending.current ) {
-					return;
-				}
 				try {
 					const selected = await selectConversation(
 						config.conversationsUrl,

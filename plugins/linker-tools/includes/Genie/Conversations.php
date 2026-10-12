@@ -34,11 +34,11 @@ class Conversations {
 	 */
 	public const UNTITLED = 'Genie';
 
-		/**
-		 * How many conversations the history rail lists. A customer who scrolls
-		 * further than this is browsing, not continuing a job; the current
-		 * conversation is always included even when it is older than the cut.
-		 */
+	/**
+	 * How many conversations the history rail lists. A customer who scrolls
+	 * further than this is browsing, not continuing a job; the current
+	 * conversation is always included even when it is older than the cut.
+	 */
 	public const LIST_LIMIT = 40;
 
 	/**
@@ -161,17 +161,17 @@ class Conversations {
 		return array() === $owned ? 0 : (int) $owned[0];
 	}
 
-		/**
-		 * The conversations this visitor may continue, newest first.
-		 *
-		 * A guest has one conversation: the cookie's. A signed-in customer has
-		 * every conversation post they own, which is what the history rail
-		 * lists. The current one is always present, so switching away and back
-		 * never drops the thread the cookie names. Reading the list never
-		 * opens a conversation.
-		 *
-		 * @return list<array{id: int, title: string, updated: string}>
-		 */
+	/**
+	 * The conversations this visitor may continue, newest first.
+	 *
+	 * A guest has one conversation: the cookie's. A signed-in customer has
+	 * every conversation post they own, which is what the history rail
+	 * lists. The current one is always present, so switching away and back
+	 * never drops the thread the cookie names. Reading the list never
+	 * opens a conversation.
+	 *
+	 * @return list<array{id: int, title: string, updated: string}>
+	 */
 	public function list_for_visitor(): array {
 		$current = $this->from_cookie();
 		if ( $current > 0 && ! $this->may_use( $current ) ) {
@@ -216,16 +216,16 @@ class Conversations {
 		return $list;
 	}
 
-		/**
-		 * Makes one of this visitor's conversations the current one.
-		 *
-		 * The cookie is the one place a request names its conversation
-		 * (`current_id()`, `existing_id()`), so the dock and the workspace
-		 * share a thread by writing that cookie. A conversation the visitor
-		 * may not use is refused; nothing is opened in its place.
-		 *
-		 * @param int $id Conversation post ID.
-		 */
+	/**
+	 * Makes one of this visitor's conversations the current one.
+	 *
+	 * The cookie is the one place a request names its conversation
+	 * (`current_id()`, `existing_id()`), so the dock and the workspace
+	 * share a thread by writing that cookie. A conversation the visitor
+	 * may not use is refused; nothing is opened in its place.
+	 *
+	 * @param int $id Conversation post ID.
+	 */
 	public function activate( int $id ): bool {
 		if ( $id < 1 || ! $this->may_use( $id ) ) {
 			return false;
@@ -234,16 +234,16 @@ class Conversations {
 		return true;
 	}
 
-		/**
-		 * Names a conversation after its first customer message.
-		 *
-		 * The history rail has nothing else to show: a conversation post is
-		 * created as "Genie", and the first message is the title the customer
-		 * will recognise. A later turn does not rename it.
-		 *
-		 * @param int    $id    Conversation post ID.
-		 * @param string $title First message, already trimmed.
-		 */
+	/**
+	 * Names a conversation after its first customer message.
+	 *
+	 * The history rail has nothing else to show: a conversation post is
+	 * created as "Genie", and the first message is the title the customer
+	 * will recognise. A later turn does not rename it.
+	 *
+	 * @param int    $id    Conversation post ID.
+	 * @param string $title First message, already trimmed.
+	 */
 	public function title_from_first_message( int $id, string $title ): void {
 		if ( $id < 1 || '' === $title ) {
 			return;
