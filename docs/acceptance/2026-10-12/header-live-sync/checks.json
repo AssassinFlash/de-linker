@@ -1,0 +1,18 @@
+{
+  "functional_checkpoint": "eight real guest/customer-3 EN/DE 1440/390 PASS",
+  "phpunit": {
+    "tests": 24,
+    "assertions": 87,
+    "result": "PASS"
+  },
+  "changed_phpcs": "PASS",
+  "changed_phpstan_level_8": "PASS",
+  "js_syntax": "PASS",
+  "diff_whitespace": "PASS",
+  "windpress_final_compile": "compiled=true last_generated=1791817579 file_size=588726 cache mtime 1791794088 -> 1791817579 anchor classes present",
+  "windpress_volume": "python3 tools/windpress_volume_check.py t110 exit 0; tokens.css 9016; site-base.css 1433; main.css imports both",
+  "header_twin_t110": "ID 17 header/en equals partials/header.html; ID 6919 kopfzeile/de equals partials/de/header.html; pll_get_post(17,de)=6919",
+  "final_delta": "final-delta.json",
+  "official_computer_use": "PENDING",
+  "pixel_zero": "NOT CERTIFIED / NO PASS"
+}

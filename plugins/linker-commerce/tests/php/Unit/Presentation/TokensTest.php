@@ -78,41 +78,21 @@ final class TokensTest extends TestCase {
 	}
 
 	/**
-	 * Additional CSS gains the tokens once, and a second install replaces the same marked block.
+	 * The stylesheet path is the volume export, the file WindPressVolume
+	 * publishes. There is no second tokens.css beside it.
 	 */
-	public function test_install_is_idempotent(): void {
-		$saved = array( '' );
-		WP_Mock::userFunction(
-			'wp_get_custom_css',
-			array(
-				'return' => static function () use ( &$saved ): string {
-					return $saved[0];
-				},
-			)
-		);
-		WP_Mock::userFunction(
-			'wp_update_custom_css_post',
-			array(
-				'return' => static function ( string $css ) use ( &$saved ): int {
-					$saved[0] = $css;
-					return 1;
-				},
-			)
-		);
-
-		$tokens = new Tokens();
-		$tokens->install();
-		$tokens->install();
-
-		$this->assertSame( 1, substr_count( $saved[0], Tokens::MARKER ) );
-		$this->assertStringContainsString( '--proto-accent: #0c7f73', $saved[0] );
+	public function test_path_is_the_windpress_volume_export(): void {
+		$this->assertSame( dirname( __DIR__, 4 ) . '/content/windpress/tokens.css', Tokens::path() );
+		$this->assertFileExists( Tokens::path() );
+		$this->assertFileDoesNotExist( dirname( __DIR__, 4 ) . '/content/tokens.css' );
 	}
 
 	/**
-	 * CSS outside the managed block survives every install: a site's own
-	 * Additional CSS keeps its place before and after the tokens block.
+	 * Uninstall removes the marked Additional CSS block an earlier run
+	 * left behind, and a second call finds nothing to remove. CSS outside
+	 * the block stays.
 	 */
-	public function test_install_preserves_css_outside_the_marked_block(): void {
+	public function test_uninstall_removes_only_the_marked_block(): void {
 		$before = "/* the site's own rule */\nh1{color:red}";
 		$after  = "/* later site css */\np{margin:0}";
 		$saved  = array( $before . "\n\n" . Tokens::MARKER . "\n:root{--stale:1}\n/* /linker-commerce-tokens */\n\n" . $after );
@@ -134,12 +114,14 @@ final class TokensTest extends TestCase {
 			)
 		);
 
-		( new Tokens() )->install();
+		$tokens = new Tokens();
+		$this->assertTrue( $tokens->uninstall() );
+		$this->assertFalse( $tokens->uninstall() );
 
-		$this->assertStringStartsWith( $before, $saved[0] );
-		$this->assertStringEndsWith( $after, $saved[0] );
+		$this->assertStringContainsString( $before, $saved[0] );
+		$this->assertStringContainsString( $after, $saved[0] );
+		$this->assertStringNotContainsString( Tokens::MARKER, $saved[0] );
 		$this->assertStringNotContainsString( '--stale', $saved[0] );
-		$this->assertStringContainsString( '--proto-accent: #0c7f73', $saved[0] );
 	}
 
 	/**

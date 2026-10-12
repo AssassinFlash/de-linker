@@ -190,10 +190,99 @@ final class JobsTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-	/**
-	 * A failure for a lasting reason (no key, a rejected translation) is
-	 * never scheduled again.
-	 */
+		/**
+		 * Saving the English header partial does not queue a translation.
+		 * present writes the curated German export itself; a queued job would
+		 * replace kopfzeile with a machine translation of header.
+		 */
+	public function test_saving_the_english_header_partial_does_not_queue_a_translation(): void {
+		PolylangDouble::mock(
+			array( 17 => 'en' ),
+			array( 17 => 6919 ),
+			array(),
+			array(),
+			'en',
+			array( 'lc_partial' => true ),
+			array(
+				17 => array(
+					'post_type'   => 'lc_partial',
+					'post_status' => 'publish',
+					'post_name'   => 'header',
+					'post_title'  => 'Header',
+				),
+			)
+		);
+		WP_Mock::userFunction( 'wp_is_post_revision', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_is_post_autosave', array( 'return' => false ) );
+		WP_Mock::userFunction( 'as_enqueue_async_action', array( 'times' => 0 ) );
+
+		$this->jobs( true, false )->post_saved(
+			17,
+			PolylangDouble::post(
+				17,
+				array(
+					'post_type'   => 'lc_partial',
+					'post_status' => 'publish',
+					'post_name'   => 'header',
+				)
+			)
+		);
+
+		$this->assertConditionsMet();
+	}
+
+		/**
+		 * Saving the German twin does not queue its English source either.
+		 * The twin's slug is kopfzeile; the exemption follows the Polylang pair,
+		 * not a same-slug lookup.
+		 */
+	public function test_saving_the_german_header_twin_does_not_queue_its_english_source(): void {
+		PolylangDouble::mock(
+			array(
+				17   => 'en',
+				6919 => 'de',
+			),
+			array( 17 => 6919 ),
+			array(),
+			array(),
+			'de',
+			array( 'lc_partial' => true ),
+			array(
+				17   => array(
+					'post_type'   => 'lc_partial',
+					'post_status' => 'publish',
+					'post_name'   => 'header',
+				),
+				6919 => array(
+					'post_type'   => 'lc_partial',
+					'post_status' => 'publish',
+					'post_name'   => 'kopfzeile',
+				),
+			)
+		);
+		WP_Mock::userFunction( 'wp_is_post_revision', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_is_post_autosave', array( 'return' => false ) );
+		WP_Mock::userFunction( 'as_enqueue_async_action', array( 'times' => 0 ) );
+
+		$this->jobs( true, false )->post_saved(
+			6919,
+			PolylangDouble::post(
+				6919,
+				array(
+					'post_type'   => 'lc_partial',
+					'post_status' => 'publish',
+					'post_name'   => 'kopfzeile',
+				)
+			)
+		);
+
+		$this->assertConditionsMet();
+	}
+
+		/**
+		 * A failure for a lasting reason (no key, a rejected translation) is
+		 * never scheduled again.
+		 */
 	public function test_a_lasting_failure_is_not_scheduled_again(): void {
 		$this->english_post();
 		$this->wordpress();

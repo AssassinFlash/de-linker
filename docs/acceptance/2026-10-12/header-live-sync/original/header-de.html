@@ -1,0 +1,1084 @@
+<style data-site-css="tokens.css">
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:400;font-display:swap;src:url("/wp-content/plugins/terravolt-b2b-core/assets/fonts/plus-jakarta-sans-400.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:500;font-display:swap;src:url("/wp-content/plugins/terravolt-b2b-core/assets/fonts/plus-jakarta-sans-500.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:600;font-display:swap;src:url("/wp-content/plugins/terravolt-b2b-core/assets/fonts/plus-jakarta-sans-600.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:700;font-display:swap;src:url("/wp-content/plugins/terravolt-b2b-core/assets/fonts/plus-jakarta-sans-700.ttf") format("truetype")}
+@font-face{font-family:"DM Serif Display";font-style:normal;font-weight:400;font-display:swap;src:url("/wp-content/plugins/terravolt-b2b-core/assets/fonts/dm-serif-display-400.ttf") format("truetype")}
+/* prototype/assets/tokens-a.css
+   方向 A · 坝水青绿 · 清透工程感
+   色：ds-explore/color.html 方向 01（锚 #0c7f73）
+   字：ds-explore/type.html 配对 A（Plus Jakarta Sans，sentence case，字距近 0，display 600）
+   控件：ds-explore/controls.html 仪器编辑体（12px、反色悬停、发丝平卡）
+*/
+:root {
+  color-scheme: light;
+--proto-canvas: #ffffff;
+  --proto-ink: #0c0f0f;
+  --proto-accent: #0c7f73;
+  --proto-accent-on: #f3fbfa;
+  --proto-photo-carries-chroma: 1;
+--proto-plate: #ffffff;
+  --proto-plate-soft: rgba(255, 255, 255, 0.96);
+--proto-shadow: none;
+  --proto-hover-lift: 0;
+  --proto-ease: cubic-bezier(0.2, 0, 0, 1);
+  --proto-duration: 180ms;
+/* Accent 50–900 · 锚在 600 = #0c7f73（color.html 方向 01） */
+  --proto-teal-50: #f1f9f8;
+  --proto-teal-100: #d9f0ec;
+  --proto-teal-200: #b3e1d9;
+  --proto-teal-300: #7fcbbf;
+  --proto-teal-400: #3daf9f;
+  --proto-teal-500: #1a9486;
+  --proto-teal-600: #0c7f73;
+  --proto-teal-700: #0a665c;
+  --proto-teal-800: #084d46;
+  --proto-teal-900: #053530;
+--proto-neutral-0: #ffffff;
+  --proto-neutral-50: #f7f8f8;
+  --proto-neutral-100: #eef0f0;
+  --proto-neutral-200: #e2e5e5;
+  --proto-neutral-300: #c8cdcd;
+  --proto-neutral-400: #9aa3a3;
+  --proto-neutral-500: #5a6363;
+  --proto-neutral-600: #4a5151;
+  --proto-neutral-700: #2f3535;
+  --proto-neutral-800: #1a1e1e;
+  --proto-neutral-900: #0c0f0f;
+--proto-canvas-white: var(--proto-neutral-0);
+  --proto-canvas-zebra: #f4f6f6; /* canvas.cool · 仅超长分段，默认不用 */
+--proto-sem-ok: #2a7a58;
+  --proto-sem-warn: #c4a04a;
+  --proto-sem-danger: #b85a45;
+--proto-media-1: linear-gradient(135deg, #7aa39a 0%, #c5d5c8 46%, #8b9e8a 100%);
+  --proto-media-2: linear-gradient(160deg, #9bb7b2 0%, #dfe8e4 52%, #6d8f88 100%);
+  --proto-media-3: linear-gradient(180deg, #b7c4b0 0%, #8a9e96 100%);
+  --proto-media-4: linear-gradient(210deg, #c9d4c6 0%, #a3b7b0 55%, #6f8880 100%);
+/* Pairing A · Plus Jakarta Sans 全阶 · display 600 · 字距近 0 */
+  --proto-font-display: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  --proto-font-sans: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Editorial layer: opt in on narrative pages without changing the trade UI. */
+  --proto-font-editorial: "DM Serif Display", Georgia, serif;
+  --proto-editorial-paper: #f5f1e8;
+  --proto-editorial-sage: #ecefe4;
+  --proto-editorial-mint: #dfe9dc;
+  --proto-font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+--proto-weight-regular: 400;
+  --proto-weight-medium: 500;
+  --proto-weight-semibold: 600;
+  --proto-weight-bold: 700;
+  --proto-weight-extrabold: 700;
+  --proto-weight-display: 600;
+--proto-track-display: 0;
+  --proto-track-title: 0.005em;
+  --proto-track-body: 0.012em;
+  --proto-track-label: 0.08em;
+  --proto-track-index: 0.1em;
+--proto-leading-display: 1.24;
+  --proto-leading-tight: 1.3;
+  --proto-leading-title: 1.38;
+  --proto-leading-body: 1.7;
+  --proto-leading-caption: 1.55;
+--proto-size-micro: 0.75rem; /* 12 */
+  --proto-size-xs: 0.75rem;
+  --proto-size-sm: 0.875rem; /* 14 */
+  --proto-size-md: 1rem; /* 16 正文 */
+  --proto-size-body-lg: 1.0625rem;
+  --proto-size-lg: 1.25rem; /* 20 · 卡片标题 */
+  --proto-size-xl: clamp(1.25rem, 1.12rem + 0.55vw, 1.5rem); /* 20–24 · 次要 section */
+  --proto-size-2xl: clamp(1.375rem, 1.15rem + 0.9vw, 1.75rem);
+  --proto-size-3xl: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+  --proto-size-display: clamp(2rem, 1.55rem + 1.4vw, 2.5rem); /* 32–40 · 重大节点 */
+  --proto-size-display-xl: clamp(2rem, 1.25rem + 2.2vw, 3.5rem);
+  --proto-size-hero: var(--proto-size-display-xl);
+  --proto-size-billboard: var(--proto-size-display-xl);
+--proto-space-1: 0.25rem;
+  --proto-space-2: 0.5rem;
+  --proto-space-3: 0.75rem;
+  --proto-space-4: 1rem;
+  --proto-space-5: 1.5rem;
+  --proto-space-6: 2rem;
+  --proto-space-7: 3rem;
+  --proto-space-8: 4rem;
+  --proto-space-9: 6rem;
+  --proto-space-10: 8rem;
+  --proto-space-section: clamp(4rem, 7vw, 6rem);
+  --proto-space-gutter: 1.5rem;
+  --proto-space-gutter-lg: 2rem;
+/* 仪器编辑体：12 为默认，禁 24–32 */
+  --proto-radius-sm: 4px;
+  --proto-radius-md: 8px;
+  --proto-radius-lg: 12px;
+  --proto-radius-xl: 12px;
+  --proto-radius-photo: 12px;
+  --proto-radius-pill: 12px;
+--proto-container: 77.5rem; /* 1240 · pairing A */
+  --proto-container-wide: 77.5rem;
+  --proto-measure: 45rem;
+  --proto-pad-inline: clamp(1rem, 4vw, 2.5rem);
+--proto-control-height: 2.75rem;
+  --proto-control-pad-x: 1.25rem;
+  --proto-control-pad-y: 0.75rem;
+  --proto-control-weight: 600;
+  --proto-control-size: 0.9375rem;
+/* 主钮：深 teal 填，悬停反色 */
+  --proto-pill-a-bg: var(--proto-teal-600);
+  --proto-pill-a-fg: #f3fbfa;
+  --proto-pill-a-line: var(--proto-teal-600);
+  --proto-pill-a-hover-bg: #ffffff;
+  --proto-pill-a-hover-fg: var(--proto-teal-700);
+  --proto-pill-a-hover-line: var(--proto-teal-600);
+--proto-pill-b-bg: var(--proto-neutral-900);
+  --proto-pill-b-fg: #ffffff;
+  --proto-pill-b-line: var(--proto-neutral-900);
+  --proto-pill-b-hover-bg: #ffffff;
+  --proto-pill-b-hover-fg: var(--proto-neutral-900);
+  --proto-pill-b-hover-line: var(--proto-neutral-900);
+--proto-focus-ring: 2px solid var(--proto-teal-600);
+  --proto-focus-offset: 2px;
+--proto-input-bg: #ffffff;
+  --proto-input-line: var(--proto-neutral-300);
+  --proto-input-line-focus: var(--proto-teal-600);
+  --proto-input-radius: var(--proto-radius-lg);
+  --proto-input-height: 2.75rem;
+--proto-color-canvas: var(--proto-canvas);
+  --proto-color-surface: var(--proto-neutral-0);
+  --proto-color-ink: var(--proto-ink);
+  --proto-color-muted: var(--proto-neutral-500);
+  --proto-color-line: var(--proto-neutral-200);
+  --proto-color-accent: var(--proto-teal-600);
+  --proto-color-on-accent: var(--proto-accent-on);
+  --proto-color-banner: var(--proto-teal-50);
+  --proto-color-banner-ink: var(--proto-teal-900);
+/* Hero 钩子：线上复刻上的染色微调，不改 markup */
+  --hero-teal: #0c7f73;
+  --hero-navy: #053530;
+  --hero-focus: 3px solid rgba(12, 127, 115, 0.55);
+  --hero-badge-color: #7fcbbf;
+  --hero-ops-pill-fg: #0c7f73;
+  --hero-ops-pill-bg: rgba(12, 127, 115, 0.08);
+  --hero-ops-pill-border: rgba(12, 127, 115, 0.25);
+  --hero-ops-dot: #0c7f73;
+  --hero-ops-dot-mobile: #0c7f73;
+  --hero-ops-link-hover: #0a665c;
+  --hero-ops-summary-fg: #0a665c;
+  --hero-capsule-bg: rgba(11, 31, 51, 0.72);
+  --hero-capsule-border: rgba(255, 255, 255, 0.22);
+  --hero-capsule-fg: #f4f7f6;
+  --hero-capsule-hover-bg: rgba(12, 127, 115, 0.55);
+  --hero-capsule-hover-border: #9ed9d0;
+  --hero-capsule-hover-fg: #ffffff;
+  --hero-footnote-link-hover: #7fcbbf;
+/* 2026-10-07 owner-ratified absorption (sweep 002): the values the marketing
+     journals actually use, named so pages consume tokens instead of re-hardcoding.
+     Additive only — nothing above changes, so storefront.css consumers are safe. */
+  --proto-ink-deep: #15352f;         /* journal ink · deep photo green */
+  --proto-ink-muted-deep: #596e67;   /* journal muted text */
+  --proto-paper-journal: #f7f7f1;    /* journal page background */
+  --proto-paper-mist: #edf1ed;       /* marketing pale-green background */
+  --proto-paper-mist-deep: #e1e8e1;  /* same family, one step deeper */
+  --proto-line-journal: #d6ded7;     /* journal hairline */
+  --proto-mint: #d8ede4;             /* journal mint panel */
+  --proto-navy-deep: #102c30;        /* journal dark footer band */
+--proto-radius-card: 18px;         /* journal cards (was hardcoded 18px) */
+  --proto-radius-panel: 22px;        /* journal feature panels (was hardcoded 22px) */
+  --proto-radius-round: 999px;       /* true pills; --proto-radius-pill stays 12px for existing consumers */
+--proto-shadow-1: 0 2px 8px rgba(21, 53, 47, 0.06);
+  --proto-shadow-2: 0 10px 28px rgba(21, 53, 47, 0.08);
+  --proto-shadow-3: 0 18px 45px rgba(21, 53, 47, 0.07);
+--proto-measure-narrow: 34rem;     /* captions, subtexts */
+  --proto-measure-wide: 56rem;       /* hero leads */
+}
+</style>
+<style data-site-css="site-base">
+:where(#lc-header,#lc-footer,body[data-page] #theme-main) :where(*):not(svg,svg *,img,video),:where(#lc-header,#lc-footer,body[data-page] #theme-main) ::before,:where(#lc-header,#lc-footer,body[data-page] #theme-main) ::after{all:revert}
+:where(#lc-header,#lc-footer,body[data-page] #theme-main) :where(img,video,svg){box-sizing:revert;margin:revert;padding:revert;border:revert;display:revert;vertical-align:revert;max-width:revert}
+#theme-main:where(body[data-page] *),:where(#lc-header,#lc-footer){all:revert}
+#lc-header :where(*):not(:where(.tv-b2b-acct,.tv-b2b-acct *,.lnk-lang-toggle,.lnk-lang-toggle *)){box-sizing:revert}
+#lc-header :where(.tv-container){width:auto}
+#lc-header .tv-language-switch,#lc-header .tv-language-rail{display:none!important}
+html:where(:has(> body[data-page])){scroll-behavior:auto}
+html[lang^="de"] body[data-page] #theme-main,html[lang^="de"] :is(#lc-header,#lc-footer){-webkit-hyphens:auto;hyphens:auto}
+#lc-header,#lc-footer{font-family:var(--proto-font-sans);font-size:var(--proto-size-md);line-height:var(--proto-leading-body);color:var(--proto-color-ink);letter-spacing:normal}
+body[data-page]{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--proto-color-canvas);color:var(--proto-color-ink);font-family:var(--proto-font-sans);font-size:var(--proto-size-md);line-height:var(--proto-leading-body)}
+body[data-page] #theme-main{flex:1 0 auto;background:transparent}
+</style>
+
+<section id="tv-header-v2" class="tv-section-compact">
+  <style>
+    /* ============================================================
+       Linker Header v3 - DS v1
+       contracts/design-tokens-ds1.md. Canonical token block first, verbatim.
+    ============================================================ */
+    :root{--lk-header-h:80px}
+    @media (min-width:1280px){:root{--lk-header-h:88px}}
+    /* Sticky header no longer eats in-page anchors. */
+    :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 24px)}
+    body.admin-bar :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 56px)}
+    header#lc-header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--proto-neutral-200)}
+    body.admin-bar header#lc-header{top:32px}
+    @media (max-width:782px){body.admin-bar header#lc-header{top:46px}}
+    #tv-header-v2{font-family:var(--proto-font-sans);position:relative;background:transparent;padding-top:0!important;padding-bottom:0!important;color:var(--proto-ink)}
+    #tv-header-v2 .tv-container{max-width:1360px!important;margin:0 auto;padding-left:1rem;padding-right:1rem}
+    #tv-header-v2 :where(a,button,input,summary,[tabindex]):focus-visible{outline:2px solid var(--proto-teal-600);outline-offset:2px;border-radius:4px}
+    /* Brand */
+    #tv-header-v2 .tv-brand{display:inline-flex;color:var(--proto-ink);align-items:center;min-height:44px;flex-shrink:0;text-decoration:none;touch-action:manipulation}
+    #tv-header-v2 .tv-brand-mark{display:grid;gap:3px;line-height:1}
+    #tv-header-v2 .tv-brand-logo{height:52px;width:auto;display:block}
+    /* Eyebrow. Uppercase 12px/.16em/800, teal, 34x2px rule. Replaces the retired JetBrains Mono microlabel. */
+    #tv-header-v2 .tv-mega-featured-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:inherit;font-size:12px;font-weight:800;line-height:1.2;letter-spacing:.16em;text-transform:uppercase;color:var(--proto-teal-600);margin:0 0 2px}
+    #tv-header-v2 .tv-mega-featured-eyebrow::before{content:"";width:34px;height:2px;background:var(--proto-teal-600);flex-shrink:0}
+    /* Nav frame */
+    #tv-header-v2 .tv-nav-frame{display:flex;flex-direction:row;gap:clamp(.5rem,1vw,1rem);align-items:center;justify-content:space-between;width:100%;min-height:64px;padding:8px 16px;background:transparent;border:none;border-radius:0;box-shadow:none}
+    #tv-header-v2 .lc-block{background:transparent!important}
+    #tv-header-v2 .tv-desktop-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto}
+    @media (max-width:1279px){
+      #tv-header-v2 .lnk-lang-toggle--desktop{display:none!important}
+      /* Cart and account stay in the mobile panel. Keeping them in this row
+         with Search plus the two 44px language halves covered the hamburger
+         (measured 2026-09-08 at 375px: elementFromPoint on the toggle hit DE). */
+      #tv-header-v2 .tv-desktop-actions .tv-header-cart-link,
+      #tv-header-v2 .tv-desktop-actions .tv-b2b-acct{display:none!important}
+      #tv-header-v2 .lnk-lang-toggle--mobile{flex:0 0 auto;min-width:88px}
+      #tv-header-v2 #tv-mobile-toggle{flex-shrink:0;position:relative;z-index:2}
+    }
+    @media (min-width:1280px){#tv-header-v2 .tv-nav-frame{min-height:72px}}
+    /* Desktop nav */
+    #tv-header-v2 .tv-desktop-nav{display:none}
+    @media (min-width:1280px){#tv-header-v2 .tv-desktop-nav{display:flex;align-items:center;gap:4px;flex:0 0 auto}}
+    #tv-header-v2 .tv-nav-item{position:relative}
+    #tv-header-v2 .tv-nav-link{display:inline-flex;align-items:center;gap:4px;height:44px;min-height:44px;padding:0 14px;font-family:inherit;color:var(--proto-ink);text-decoration:none;background:none;border:0;border-radius:8px;cursor:pointer;transition:color 200ms cubic-bezier(.2,0,0,1),background 200ms cubic-bezier(.2,0,0,1);white-space:nowrap;touch-action:manipulation}
+    #tv-header-v2 .tv-nav-link:hover{color:var(--proto-teal-600);background:var(--proto-teal-50)}
+    #tv-header-v2 .tv-nav-link:active{transform:translateY(1px)}
+    #tv-header-v2 .tv-nav-chevron{width:14px;height:14px;transition:transform 200ms cubic-bezier(.2,0,0,1);flex-shrink:0}
+    #tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-nav-chevron{transform:rotate(180deg)}
+    /* Mega menu panel: DS v1 panel language (20px radius, panel shadow) */
+    #tv-header-v2 .tv-mega-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-6px);opacity:0;visibility:hidden;transition:opacity 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),visibility 200ms;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:20px;box-shadow:var(--proto-shadow-3);padding:22px;width:860px;max-width:calc(100vw - 40px);z-index:50;pointer-events:none}
+    /* 400px is set by GERMAN, not English: the overlay renders "Projektangebote, Lieferung und
+       After-Sales-Koordination", which still wrapped and orphaned its last word at 368px. */
+    #tv-header-v2 .tv-mega-menu--compact{width:400px;padding:12px}
+    #tv-header-v2 .tv-mega-menu::before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px}
+    #tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
+    #tv-header-v2 .tv-mega-grid{display:grid;grid-template-columns:260px 1fr;gap:24px}
+    /* Products menu is wider so the rebuilt 16:9 stand and 3:2 tiles show whole.
+       Anchored to the Products item (left:0), not centered on it, or 1080px
+       runs off the left edge of the viewport. Solutions stays the 860px panel. */
+    #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"] .tv-mega-menu{left:0;box-sizing:border-box;width:min(1120px,calc(100vw - 180px));transform:translateY(-6px)}
+    #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"]:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{transform:translateY(0)}
+    #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"] .tv-mega-grid{grid-template-columns:minmax(320px,500px) 1fr}
+    #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"] .tv-mega-sublink{min-height:30px;padding:3px 4px}
+    /* Solutions keeps the compact N layout, but must not stay centered on its
+       nav item: that sends the featured column off the left edge. */
+    #tv-header-v2 .tv-nav-item[data-tv-nav-primary="solutions"] .tv-mega-menu{left:0;box-sizing:border-box;width:min(860px,calc(100vw - 180px));transform:translateY(-6px)}
+    #tv-header-v2 .tv-nav-item[data-tv-nav-primary="solutions"]:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{transform:translateY(0)}
+    #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"] .tv-mega-featured-img,
+    #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"] .tv-mega-link-thumb{width:100%;height:auto;flex:0 0 auto;min-height:0;object-fit:contain}
+    @media (max-width:900px){#tv-header-v2 .tv-mega-grid{grid-template-columns:200px 1fr}}
+    /* Featured tile (left column). Card language: soft bg, line border, hover lift + card shadow. */
+    #tv-header-v2 .tv-mega-featured{display:flex;color:var(--proto-ink);flex-direction:column;gap:8px;padding:16px;background:var(--proto-neutral-50);border:1px solid var(--proto-neutral-200);border-radius:16px;box-shadow:none;text-decoration:none;overflow:hidden;transition:border-color 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),box-shadow 200ms cubic-bezier(.2,0,0,1)}
+    #tv-header-v2 .tv-mega-featured:hover{border-color:var(--proto-teal-600);transform:translateY(-2px);box-shadow:0 16px 36px rgba(24,54,72,.09)}
+    #tv-header-v2 .tv-mega-featured-img{width:100%;flex:1 1 auto;min-height:120px;height:auto;object-fit:cover;border-radius:10px;background:var(--proto-neutral-200);transition:transform 220ms ease}
+    #tv-header-v2 .tv-mega-featured:hover .tv-mega-featured-img{transform:scale(1.03)}
+    #tv-header-v2 .tv-mega-featured-title{font-family:inherit;font-size:15.5px;font-weight:700;color:var(--proto-ink);line-height:1.25;letter-spacing:-.01em;margin:0}
+    #tv-header-v2 .tv-mega-featured-desc{font-size:13.5px;font-weight:400;color:var(--proto-neutral-500);line-height:1.45;margin:0}
+    #tv-header-v2 .tv-mega-featured-cta{font-size:13.5px;font-weight:700;color:var(--proto-teal-600);display:inline-flex;align-items:center;gap:4px;margin-top:auto;padding-top:4px}
+    /* Link grid (right column) */
+    #tv-header-v2 .tv-mega-links{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    #tv-header-v2 .tv-mega-group{display:flex;flex-direction:column;gap:8px;min-width:0}
+    #tv-header-v2 .tv-mega-sublinks{display:flex;flex-direction:column}
+    #tv-header-v2 .tv-mega-sublink{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px;padding:6px 4px;font-size:13.5px;font-weight:400;color:var(--proto-neutral-500);text-decoration:none;border-top:1px solid var(--proto-neutral-200);transition:color 200ms cubic-bezier(.2,0,0,1)}
+    #tv-header-v2 .tv-mega-sublink:first-child{border-top:0}
+    #tv-header-v2 .tv-mega-sublink:after{content:"→";font-size:13.5px;color:var(--proto-teal-600);opacity:0;transition:opacity 200ms cubic-bezier(.2,0,0,1)}
+    #tv-header-v2 .tv-mega-sublink:hover,#tv-header-v2 .tv-mega-sublink:focus-visible{color:var(--proto-teal-600)}
+    #tv-header-v2 .tv-mega-sublink:hover:after,#tv-header-v2 .tv-mega-sublink:focus-visible:after{opacity:1}
+    /* Peer tiles */
+    #tv-header-v2 .tv-mega-link{display:flex;flex-direction:column;gap:0;padding:0;border:1px solid var(--proto-neutral-200);border-radius:12px;box-shadow:none;text-decoration:none;color:var(--proto-ink);background:#ffffff;overflow:hidden;transition:border-color 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),box-shadow 200ms cubic-bezier(.2,0,0,1)}
+    #tv-header-v2 .tv-mega-link:hover{border-color:var(--proto-teal-600);transform:translateY(-2px);box-shadow:0 16px 36px rgba(24,54,72,.09)}
+    #tv-header-v2 .tv-mega-link-title-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    #tv-header-v2 .tv-mega-link-title{font-size:13.5px;font-weight:700;letter-spacing:0;color:var(--proto-ink);line-height:1.3}
+    #tv-header-v2 .tv-mega-link-arrow{color:var(--proto-teal-600);opacity:0;transition:opacity 200ms cubic-bezier(.2,0,0,1);flex-shrink:0}
+    #tv-header-v2 .tv-mega-link:hover .tv-mega-link-arrow{opacity:1}
+    #tv-header-v2 .tv-mega-link-desc{font-size:13.5px;font-weight:400;color:var(--proto-neutral-500);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    #tv-header-v2 .tv-mega-link-thumb{width:100%;height:112px;object-fit:cover;display:block;background:var(--proto-neutral-50);transition:transform 220ms ease}
+    #tv-header-v2 .tv-mega-link:hover .tv-mega-link-thumb{transform:scale(1.03)}
+    #tv-header-v2 .tv-mega-link-text{display:flex;flex-direction:column;gap:4px;padding:12px}
+    /* Solutions mega: left featured + right stack */
+    #tv-header-v2 .tv-app-mega-grid{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+    #tv-header-v2 .tv-app-mega-stack{display:flex;flex-direction:column;gap:8px}
+    #tv-header-v2 .tv-app-mega-stack-item{display:flex;align-items:center;gap:16px;padding:12px;border:1px solid var(--proto-neutral-200);border-radius:12px;box-shadow:none;text-decoration:none;color:var(--proto-ink);background:#ffffff;overflow:hidden;transition:border-color 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),box-shadow 200ms cubic-bezier(.2,0,0,1)}
+    #tv-header-v2 .tv-app-mega-stack-item:hover{border-color:var(--proto-teal-600);transform:translateY(-2px);box-shadow:0 16px 36px rgba(24,54,72,.09)}
+    #tv-header-v2 .tv-app-mega-stack-thumb{width:100px;height:100px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--proto-neutral-50);transition:transform 220ms ease}
+    #tv-header-v2 .tv-app-mega-stack-item:hover .tv-app-mega-stack-thumb{transform:scale(1.03)}
+    #tv-header-v2 .tv-app-mega-stack-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+    #tv-header-v2 .tv-app-mega-stack-title{font-size:13.5px;font-weight:700;color:var(--proto-ink);line-height:1.3}
+    #tv-header-v2 .tv-app-mega-stack-desc{font-size:13.5px;font-weight:400;color:var(--proto-neutral-500);line-height:1.45}
+    @media (max-width:900px){#tv-header-v2 .tv-app-mega-grid{grid-template-columns:1fr}}
+    /* Plan with Linker: preserve the animated project scene, but describe
+       the real Project-aware tools instead of promising an instant final design. */
+    #tv-header-v2 .tv-tools-spark{width:15px;height:15px;color:var(--proto-teal-600);flex-shrink:0}
+    #tv-header-v2 .tv-mega-menu--tools{width:760px;padding:0;overflow:hidden}
+    #tv-header-v2 .tv-tools-card{display:grid;grid-template-columns:288px 1fr}
+    #tv-header-v2 .tv-tools-rail{position:relative;background:var(--proto-navy-deep);color:#fff;padding:22px 20px;overflow:hidden;display:flex;flex-direction:column}
+    #tv-header-v2 .tv-tools-rail::before{content:"";position:absolute;inset:-45% -35% auto auto;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(12,127,115,.5),transparent 62%);animation:tvToolsDrift 9s ease-in-out infinite}
+    @keyframes tvToolsDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(-16px,22px)}}
+    #tv-header-v2 .tv-tools-eyebrow{position:relative;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.78);font-weight:700}
+    #tv-header-v2 .tv-tools-headline{position:relative;margin:9px 0 14px;font-size:20px;line-height:1.16;font-weight:800;letter-spacing:-.02em;color:#fff}
+    #tv-header-v2 .tv-tools-scene{position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:var(--proto-navy-deep)}
+    #tv-header-v2 .tv-tools-scene svg{display:block;width:100%;height:auto}
+    #tv-header-v2 .tv-tools-grid{stroke:rgba(255,255,255,.06);stroke-width:1}
+    #tv-header-v2 .tv-tools-bldg{fill:rgba(255,255,255,.05)}
+    #tv-header-v2 .tv-tools-fill{fill:rgba(12,127,115,.16);opacity:0}
+    #tv-header-v2 .tv-tools-line{fill:none;stroke:var(--proto-teal-600);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+    #tv-header-v2 .tv-tools-vtx{fill:#fff;stroke:var(--proto-teal-600);stroke-width:2;opacity:0}
+    #tv-header-v2 .tv-tools-panels rect{fill:var(--proto-teal-800);stroke:rgba(42,122,88,.55);stroke-width:.5;opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.3)}
+    #tv-header-v2 .tv-tools-readout{position:relative;display:flex;align-items:center;gap:10px;margin-top:12px;opacity:0;transition:opacity .5s}
+    #tv-header-v2 .tv-tools-status{font-size:15px;font-weight:800;line-height:1.2;letter-spacing:-.01em}
+    #tv-header-v2 .tv-tools-sep{width:1px;height:28px;background:rgba(255,255,255,.18)}
+    #tv-header-v2 .tv-tools-lab{font-size:11px;color:rgba(255,255,255,.62);line-height:1.35}
+    #tv-header-v2 .tv-tools-lab b{color:rgba(255,255,255,.78);font-weight:700}
+    #tv-header-v2 .tv-tools-foot{position:relative;margin-top:auto;padding-top:14px;font-size:11px;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:7px}
+    #tv-header-v2 .tv-tools-foot svg{width:13px;height:13px;color:var(--proto-teal-600);flex-shrink:0}
+    #tv-header-v2 .tv-tools-list{padding:12px}
+    #tv-header-v2 .tv-tool{display:flex;gap:14px;padding:14px;border-radius:12px;border:1px solid transparent;text-decoration:none;color:inherit;align-items:flex-start;transition:border-color .18s,background .18s,transform .18s}
+    #tv-header-v2 .tv-tool:hover{border-color:rgba(12,127,115,.4);background:var(--proto-teal-50);transform:translateX(2px)}
+    #tv-header-v2 .tv-tool-ic{flex:0 0 44px;width:44px;height:44px;border-radius:11px;background:var(--proto-teal-50);color:var(--proto-teal-600);display:grid;place-items:center;transition:background .18s,color .18s}
+    #tv-header-v2 .tv-tool-ic svg{width:22px;height:22px}
+    #tv-header-v2 .tv-tool:hover .tv-tool-ic{background:var(--proto-teal-600);color:#fff}
+    #tv-header-v2 .tv-tool-body{flex:1;min-width:0;display:flex;flex-direction:column}
+    #tv-header-v2 .tv-tool-top{display:flex;align-items:center;gap:8px}
+    #tv-header-v2 .tv-tool-name{font-size:15px;font-weight:700;color:var(--proto-ink)}
+    #tv-header-v2 .tv-tool-chip{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:6px;background:var(--proto-neutral-100);color:var(--proto-neutral-500)}
+    #tv-header-v2 .tv-tool-chip--new{background:var(--proto-teal-50);color:var(--proto-sem-ok)}
+    #tv-header-v2 .tv-tool-desc{margin:4px 0 0;font-size:12.5px;line-height:1.5;color:var(--proto-neutral-500)}
+    #tv-header-v2 .tv-tool-arrow{align-self:center;width:18px;height:18px;color:var(--proto-neutral-200);transition:color .18s,transform .18s;flex-shrink:0}
+    #tv-header-v2 .tv-tool:hover .tv-tool-arrow{color:var(--proto-teal-600);transform:translateX(3px)}
+    @media (max-width:820px){#tv-header-v2 .tv-mega-menu--tools{width:min(92vw,760px)}#tv-header-v2 .tv-tools-card{grid-template-columns:1fr}#tv-header-v2 .tv-tools-rail{display:none}}
+    /* For Partners: compact role menu. The relationship stays visible without
+       turning the primary header into a second account dashboard. */
+    #tv-header-v2 .tv-simple-menu-list{display:flex;flex-direction:column;gap:4px}
+    #tv-header-v2 .tv-simple-menu-link{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--proto-ink);transition:background 200ms cubic-bezier(.2,0,0,1)}
+    #tv-header-v2 .tv-simple-menu-link:hover{background:var(--proto-neutral-50)}
+    #tv-header-v2 .tv-simple-menu-title{font-size:14px;font-weight:700;color:var(--proto-ink)}
+    #tv-header-v2 .tv-simple-menu-link:hover .tv-simple-menu-title{color:var(--proto-teal-600)}
+    #tv-header-v2 .tv-simple-menu-desc{font-size:12.5px;color:var(--proto-neutral-500);line-height:1.4}
+    /* ---- Controls. Radius 8 (buttons/inputs), weight 700, teal is the one accent. ---- */
+    #tv-header-v2 .tv-header-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--proto-teal-700);background:var(--proto-teal-700);color:#fff;font-family:inherit;letter-spacing:0;text-transform:none;cursor:pointer;box-shadow:none;transition:background 200ms cubic-bezier(.2,0,0,1),border-color 200ms cubic-bezier(.2,0,0,1),color 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1);white-space:nowrap;text-decoration:none;touch-action:manipulation;flex-shrink:0}
+    #tv-header-v2 .tv-header-cta:hover{background:var(--proto-teal-800);border-color:var(--proto-teal-800);color:#fff;transform:translateY(-1px)}
+    #tv-header-v2 .tv-header-cta:active{transform:translateY(0)}
+    @media (max-width:1279px){#tv-header-v2 .tv-header-cta:not(.tv-mobile-cta){display:none!important}}
+    #tv-header-v2 .tv-header-cta.tv-mobile-cta{display:inline-flex;order:30}
+    /* Advisor launcher: teal-tinted pill, icon + visible label, stays prominent at every size. */
+    #tv-header-v2 .tv-header-utility{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--proto-neutral-200);background:#fff;color:var(--proto-ink);font-family:inherit;text-decoration:none;letter-spacing:0;white-space:nowrap;transition:background 200ms cubic-bezier(.2,0,0,1),border-color 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1);touch-action:manipulation}
+    #tv-header-v2 .tv-header-utility:hover{background:var(--proto-neutral-50);border-color:var(--proto-ink);transform:translateY(-1px)}
+    #tv-header-v2 .tv-header-utility:active{transform:translateY(0)}
+    #tv-header-v2 .tv-header-utility svg{width:18px;height:18px;flex-shrink:0}
+    #tv-header-v2 .tv-header-utility-label{font-weight:700}
+    #tv-header-v2 .tv-header-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;min-height:40px;padding:0;border-radius:8px;border:1px solid var(--proto-neutral-200);background:#ffffff;color:var(--proto-ink);text-decoration:none;transition:border-color 200ms cubic-bezier(.2,0,0,1),color 200ms cubic-bezier(.2,0,0,1),background 200ms cubic-bezier(.2,0,0,1);touch-action:manipulation}
+    #tv-header-v2 .tv-header-icon-btn:hover{border-color:var(--proto-teal-600);color:var(--proto-teal-600);background:var(--proto-teal-50)}
+    #tv-header-v2 .tv-header-icon-btn:active{transform:translateY(1px)}
+    #tv-header-v2 .tv-header-icon-btn svg{width:18px;height:18px;flex-shrink:0}
+    #tv-header-v2 .tv-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    /* Language rail */
+    #tv-header-v2 .tv-language-switch{display:inline-flex;align-items:center;justify-content:center;height:44px;min-height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--proto-neutral-200);background:#ffffff;color:var(--proto-ink);font-family:inherit;line-height:1;text-decoration:none;white-space:nowrap;transition:border-color 200ms cubic-bezier(.2,0,0,1),color 200ms cubic-bezier(.2,0,0,1);touch-action:manipulation}
+    #tv-header-v2 .tv-language-switch:hover{border-color:var(--proto-ink);color:var(--proto-ink)}
+    #tv-header-v2 .lnk-lang-half.is-active::after{background:var(--proto-teal-600)}
+    #tv-header-v2 .lnk-lang-half:hover{color:var(--proto-ink)!important;background:var(--proto-neutral-50)}
+    #tv-header-v2 .tv-language-switch[data-ready="false"]{display:none}
+    /* German-domain launch is deferred; the switch stays wired below but hidden while there is
+       nowhere safe to send it. */
+    #tv-header-v2 .tv-language-rail{display:none}
+    /* Mobile toggle - 44x44 */
+    #tv-header-v2 .tv-mobile-toggle{display:flex;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;padding:0;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:8px;color:var(--proto-ink);cursor:pointer;transition:border-color 200ms cubic-bezier(.2,0,0,1);touch-action:manipulation}
+    #tv-header-v2 .tv-mobile-toggle:hover{border-color:var(--proto-teal-600)}
+    #tv-header-v2 .tv-mobile-toggle:active{transform:translateY(1px)}
+    @media (min-width:1280px){#tv-header-v2 #tv-mobile-toggle{display:none!important}}
+    /* Fold according to the available header width and actual content. */
+    #tv-header-v2[data-tv-nav-folded="true"] .tv-desktop-nav,
+    #tv-header-v2[data-tv-nav-folded="true"] .tv-header-cta:not(.tv-mobile-cta){display:none!important}
+    #tv-header-v2[data-tv-nav-folded="true"] #tv-mobile-toggle{display:flex!important}
+    #tv-header-v2[data-tv-actions-compact="true"] .tv-desktop-actions .tv-b2b-acct-btn .tv-b2b-acct-avatar{width:22px;height:22px}
+    /* Mobile panel */
+    #tv-header-v2 .tv-mobile-panel{display:none;padding:4px 0 12px;border-top:1px solid var(--proto-neutral-200);max-height:calc(100dvh - var(--lk-header-h));overflow-y:auto;overscroll-behavior:contain}
+    #tv-header-v2 .tv-mobile-panel[data-open="true"]{display:flex;flex-direction:column}
+    #tv-header-v2 [data-tv-mobile-primary="products"]{order:1}
+    #tv-header-v2 [data-tv-mobile-primary="solutions"]{order:2}
+    #tv-header-v2 [data-tv-mobile-primary="ai"]{order:3}
+    #tv-header-v2 [data-tv-mobile-primary="services"]{order:4}
+    #tv-header-v2 [data-tv-mobile-primary="partners"]{order:5}
+    #tv-header-v2 [data-tv-mobile-primary="about"]{order:6}
+    #tv-header-v2 .tv-mobile-secondary{order:10}
+    #tv-header-v2 .tv-mobile-utility-row{order:20}
+    #tv-header-v2 .tv-mobile-section{border-bottom:1px solid var(--proto-neutral-200)}
+    #tv-header-v2 .tv-mobile-summary{display:flex;align-items:center;justify-content:space-between;min-height:40px;padding:6px 0;font-family:inherit;font-size:16px;font-weight:700;color:var(--proto-ink);cursor:pointer;list-style:none;background:none;border:0;width:100%;text-align:left;touch-action:manipulation}
+    #tv-header-v2 .tv-mobile-summary::-webkit-details-marker{display:none}
+    #tv-header-v2 .tv-mobile-summary svg{transition:transform 200ms cubic-bezier(.2,0,0,1)}
+    #tv-header-v2 .tv-mobile-section[open] .tv-mobile-summary svg{transform:rotate(180deg)}
+    #tv-header-v2 .tv-mobile-links{padding:0 0 6px;display:flex;flex-direction:column;gap:8px}
+    #tv-header-v2 .tv-mobile-link{display:flex;flex-direction:column;padding:0;font-size:16px;color:var(--proto-ink);text-decoration:none;letter-spacing:0;border:1px solid var(--proto-neutral-200);border-radius:12px;box-shadow:none;background:#ffffff;overflow:hidden;transition:border-color 200ms cubic-bezier(.2,0,0,1)}
+    #tv-header-v2 .tv-mobile-link:hover{border-color:var(--proto-teal-600)}
+    #tv-header-v2 .tv-mobile-link-thumb{width:100%;height:84px;object-fit:cover;display:block;background:var(--proto-neutral-50)}
+    #tv-header-v2 .tv-mobile-link-text{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:44px;padding:10px 12px}
+    #tv-header-v2 .tv-mobile-link-title{font-weight:700;color:var(--proto-ink);font-size:16px;line-height:1.3}
+    #tv-header-v2 .tv-mobile-link-desc{font-size:13.5px;font-weight:400;color:var(--proto-neutral-500);line-height:1.45}
+    #tv-header-v2 .tv-mobile-rail{display:flex;gap:10px;overflow-x:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+    #tv-header-v2 .tv-mobile-rail-card{flex:0 0 140px;scroll-snap-align:start;text-decoration:none;color:inherit}
+    #tv-header-v2 .tv-mobile-rail-card img{width:140px;height:80px;object-fit:cover;border-radius:12px;display:block;background:var(--proto-neutral-50)}
+    #tv-header-v2 .tv-mobile-rail-title{display:block;margin-top:4px;font-size:13px;font-weight:750;line-height:1.3;color:var(--proto-ink)}
+    #tv-header-v2 .tv-mobile-rail-desc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;font-size:12px;font-weight:400;line-height:1.35;color:var(--proto-neutral-500)}
+    #tv-header-v2 .tv-mobile-sub--break{margin-top:10px}
+    #tv-header-v2 .tv-mobile-subhead{margin:8px 2px 2px;font-size:12px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;color:var(--proto-neutral-500)}
+    #tv-header-v2 .tv-mobile-link.tv-mobile-sub{margin-left:0;border:0;border-radius:0;background:transparent;box-shadow:none;border-top:1px solid var(--proto-neutral-200)}
+    #tv-header-v2 .tv-mobile-link.tv-mobile-sub:hover{border-color:var(--proto-neutral-200);color:var(--proto-teal-600)}
+    #tv-header-v2 .tv-mobile-link.tv-mobile-sub .tv-mobile-link-text{min-height:0;padding:8px 2px}
+    #tv-header-v2 [data-tv-mobile-primary="products"] .tv-mobile-links{gap:0}
+    #tv-header-v2 [data-tv-mobile-primary="products"] .tv-mobile-rail{margin-bottom:6px}
+    #tv-header-v2 [data-tv-mobile-primary="products"] .tv-mobile-link--all{margin-top:12px}
+    #tv-header-v2 .tv-mobile-link.tv-mobile-sub .tv-mobile-link-title{font-weight:400;font-size:15px;color:var(--proto-neutral-500)}
+    #tv-header-v2 .tv-mobile-link.tv-mobile-link--all{border-color:rgba(12,127,115,.35);background:var(--proto-teal-50)}
+    #tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-text{min-height:0;padding:9px 12px}
+    #tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-title{color:var(--proto-teal-600);font-weight:700}
+    #tv-header-v2 .tv-mobile-cta{margin-top:10px;width:100%}
+    #tv-header-v2 .tv-mobile-utility-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+    #tv-header-v2 .tv-mobile-utility{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;min-height:44px;border-radius:8px;border:1px solid var(--proto-neutral-200);background:#ffffff;color:var(--proto-ink);font-family:inherit;font-size:13px;font-weight:700;text-decoration:none;touch-action:manipulation}
+    #tv-header-v2 .tv-mobile-utility:hover{border-color:var(--proto-teal-600);color:var(--proto-teal-600)}
+    #tv-header-v2 .tv-mobile-utility:active{transform:translateY(1px)}
+    #tv-header-v2 .tv-mobile-utility svg{width:16px;height:16px;flex-shrink:0}
+    #tv-header-v2 .tv-mobile-utility--ai{background:var(--proto-teal-50);border-color:rgba(12,127,115,.28);color:var(--proto-teal-600)}
+    @media (min-width:1280px){#lc-header #tv-mobile-panel:not([data-open="true"]){display:none!important}}
+    /* And the panel the hamburger opens must be openable. Showing the toggle
+       under html.lia-narrow while this rule still hid the panel by VIEWPORT
+       width left a button that opened nothing - caught by pressing it, not by
+       reading the rule. The mobile panel carries the language control, so a
+       reader who switches EN/DE with the drawer open reaches it here. */
+    html.lia-narrow #lc-header #tv-mobile-panel[data-open="true"]{display:flex!important;flex-direction:column}
+    /* Defensive locks: a foreign sitewide sheet has previously forced radius 4px and a slightly
+       different font metric onto header controls (measured 13.44px/500 vs the intended 13.5px/700).
+       These selectors restate the DS v1 values at matching or higher specificity so the header keeps
+       its own radius scale and type instead of inheriting the page body's. */
+    #tv-header-v2 .tv-brand,#tv-header-v2 .tv-mobile-toggle,#tv-header-v2 .tv-header-cta,#tv-header-v2 .tv-header-utility,#tv-header-v2 .tv-header-icon-btn,#tv-header-v2 .tv-mobile-utility,#tv-header-v2 .tv-nav-link,#tv-header-v2 .tv-language-switch,#tv-header-v2 .tv-b2b-mobile-portal-link,#tv-header-v2 .tv-b2b-acct-btn{border-radius:8px!important}
+    #tv-header-v2 .tv-mobile-link,#tv-header-v2 .tv-mega-link,#tv-header-v2 .tv-mega-featured,#tv-header-v2 .tv-mega-link-thumb,#tv-header-v2 .tv-mega-featured-img,#tv-header-v2 .tv-app-mega-stack-item,#tv-header-v2 .tv-app-mega-stack-thumb,#tv-header-v2 .tv-mobile-link-thumb{border-radius:12px!important}
+    #tv-header-v2 .tv-mega-menu{border-radius:20px!important}
+    #tv-header-v2 .tv-nav-link{font-size:14.5px!important;font-weight:600!important;letter-spacing:-.005em!important;text-transform:none!important}
+    #tv-header-v2 .tv-header-cta{font-size:15px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important}
+    #tv-header-v2 .tv-header-utility,#tv-header-v2 .tv-header-utility-label,#tv-header-v2 .tv-mobile-utility,#tv-header-v2 .tv-language-switch,#tv-header-v2 .tv-b2b-mobile-portal-link{font-size:13.5px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important}
+    /* Cart/account labels appear only when the whole row fits. Compact controls
+       retain their accessible labels and 44px targets. */
+    #tv-header-v2 .tv-desktop-actions .tv-header-utility,
+    #tv-header-v2 .tv-desktop-actions .tv-b2b-acct-btn{position:relative;width:44px;height:44px;min-height:44px;padding:0;gap:0;justify-content:center}
+    #tv-header-v2 .tv-desktop-actions .tv-header-utility-label,
+    #tv-header-v2 .tv-desktop-actions .tv-b2b-acct-chev{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    #tv-header-v2 .tv-desktop-actions .tv-header-cart-link .tv-b2b-acct-count{position:absolute;top:-4px;right:-4px;margin:0}
+    #tv-header-v2 .tv-mobile-utility-row{grid-template-columns:repeat(2,44px);justify-content:flex-start}
+    #tv-header-v2 .tv-mobile-utility.tv-header-cart-link,
+    #tv-header-v2 .tv-mobile-utility.tv-b2b-mobile-portal-link{position:relative;width:44px;min-width:44px;padding:0;gap:0}
+    #tv-header-v2 .tv-mobile-utility.tv-header-cart-link>span:not(.tv-b2b-acct-count),
+    #tv-header-v2 .tv-mobile-utility.tv-b2b-mobile-portal-link>span:not(.tv-b2b-acct-count):not(.tv-b2b-acct-ic){position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (max-width:1279px){
+      #tv-header-v2 .tv-nav-frame{padding-left:0;padding-right:0;gap:8px}
+      #tv-header-v2 .tv-brand-logo{height:40px}
+      #tv-header-v2 .tv-desktop-actions{gap:8px}
+    }
+    @media (min-width:1280px){
+      html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-header-utility{width:auto;padding:0 16px;gap:8px}
+      html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-b2b-acct-btn{width:auto;padding:0 12px;gap:8px}
+      html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-header-utility-label,
+      html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-b2b-acct-chev{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto;clip-path:none}
+      html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-header-cart-link .tv-b2b-acct-count{position:static;top:auto;right:auto;margin-left:2px}
+    }
+    /* A foreign sitewide rule also forces align-items:center / justify-content:center onto every
+       <a> in the header, which silently centres column cards and collapses the sublink
+       space-between. Restore the intended axis alignment at (2,1,0), which outranks it.
+       EVERY column-flex <a> class in this header has to appear on the rule below, and that list is
+       the whole mechanism -- nothing else holds the foreign rule off. `.tv-simple-menu-link` was
+       omitted when the For Partners and About menus were built, so until 2026-07-31 both rendered a
+       centred title above a description that stayed left. Worse, a description short enough for one
+       line was itself centred while a wrapped one was not, so the alignment of a menu item was
+       decided by the length of its sentence. tests/design/test_header_menu_alignment.py fails if a
+       column-flex link class is ever added and not listed here. */
+    #lc-header #tv-header-v2 .tv-mega-link,#lc-header #tv-header-v2 .tv-mega-featured,#lc-header #tv-header-v2 .tv-mobile-link,#lc-header #tv-header-v2 .tv-simple-menu-link{align-items:stretch!important;justify-content:flex-start!important}
+    #lc-header #tv-header-v2 .tv-mega-sublink{align-items:center!important;justify-content:space-between!important}
+    #lc-header #tv-header-v2 .tv-app-mega-stack-item,#lc-header #tv-header-v2 .tv-brand{align-items:center!important;justify-content:flex-start!important}
+    #lc-header #tv-header-v2 .tv-mobile-link-text{align-items:flex-start!important;text-align:left!important}
+    #lc-header #tv-header-v2 .tv-mobile-summary{align-items:center!important;justify-content:space-between!important;text-align:left!important}
+    #lc-header #tv-header-v2 .tv-mobile-summary.tv-mobile-summary--direct{display:flex!important;font-size:16px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important}
+    @media (prefers-reduced-motion:reduce){#tv-header-v2 *,#tv-header-v2 *::before,#tv-header-v2 *::after{transition:none!important;animation:none!important}#tv-header-v2 .tv-mega-link:hover .tv-mega-link-thumb,#tv-header-v2 .tv-mega-featured:hover .tv-mega-featured-img,#tv-header-v2 .tv-app-mega-stack-item:hover .tv-app-mega-stack-thumb,#tv-header-v2 .tv-header-cta:hover,#tv-header-v2 .tv-header-utility:hover{transform:none}}
+  </style>
+
+  <div class="tv-container box-border w-full">
+        <nav class="lc-block tv-nav-frame" aria-label="Primäre Navigation">
+            <a href="/de/" class="tv-brand" aria-label="Linker-Startseite">
+        <span class="tv-brand-mark" aria-hidden="true">
+          <img class="tv-brand-logo" src="/wp-content/uploads/2026/07/de-linker-logo-1.webp" alt="Linker" loading="eager" decoding="async">
+        </span>
+      </a>
+
+            <div class="tv-desktop-nav">
+                <div class="tv-nav-item" data-tv-nav-primary="products">
+          <button class="tv-nav-link" aria-expanded="false" aria-haspopup="true">
+            Produkte
+            <svg class="tv-nav-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="tv-mega-menu" role="menu">
+            <div class="tv-mega-grid">
+              <a href="/de/produkte/" class="tv-mega-featured" role="menuitem">
+                <img data-src="/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp" alt="Der Linker-Stand – Solar-Wechselrichter, Batteriespeicher und Messtechnik an einem Ort" class="tv-mega-featured-img" loading="lazy">
+                <p class="tv-mega-featured-eyebrow">/ Produkte</p>
+                <h4 class="tv-mega-featured-title">Speicherprodukte von autorisierten Marken</h4>
+                <p class="tv-mega-featured-desc">Energiespeicher von GoodWe, SAJ, Pylontech und EcoFlow.</p>
+                <span class="tv-mega-featured-cta">Alle Produkte ansehen →</span>
+              </a>
+              <div class="tv-mega-links" role="none">
+                <div class="tv-mega-group" role="none">
+                  <a href="/de/produkt-kategorie/heimspeicher/" class="tv-mega-link" role="menuitem">
+                    <img data-src="/wp-content/uploads/2026/09/linker-home-battery-storage.webp" alt="" class="tv-mega-link-thumb" loading="lazy">
+                    <div class="tv-mega-link-text">
+                      <div class="tv-mega-link-title-row"><span class="tv-mega-link-title">Heimspeicher</span><svg class="tv-mega-link-arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+    <span class="tv-mega-link-desc">Heimspeicher-Batterien von GoodWe, SAJ und EcoFlow</span></div>
+                  </a>
+                </div>
+                <div class="tv-mega-group" role="none">
+                  <a href="/de/produkt-kategorie/gewerbespeicher/" class="tv-mega-link" role="menuitem">
+                    <img data-src="/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp" alt="" class="tv-mega-link-thumb" loading="lazy">
+                    <div class="tv-mega-link-text">
+                      <div class="tv-mega-link-title-row"><span class="tv-mega-link-title">Gewerbespeicher</span><svg class="tv-mega-link-arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+    <span class="tv-mega-link-desc">All-in-One-Systeme und Batteriesysteme von GoodWe, SAJ und Pylontech</span></div>
+                  </a>
+                  <div class="tv-mega-sublinks" role="none">
+                    <a href="/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/" class="tv-mega-sublink" role="menuitem">All-in-One-Systeme</a>
+                    <a href="/de/produkt-kategorie/gewerbespeicher/batteriesysteme/" class="tv-mega-sublink" role="menuitem">Batteriesysteme</a>
+                  </div>
+                </div>
+                <div class="tv-mega-group" role="none">
+                  <div class="tv-mega-sublinks" role="none">
+                    <a href="/de/produkt-kategorie/wechselrichter/" class="tv-mega-sublink" role="menuitem">Wechselrichter</a>
+                    <a href="/de/produkt-kategorie/ems-monitoring/" class="tv-mega-sublink" role="menuitem">EMS & Monitoring</a>
+                    <a href="/de/produkt-kategorie/ladestationen/" class="tv-mega-sublink" role="menuitem">Ladestationen</a>
+                  </div>
+                </div>
+                <div class="tv-mega-group" role="none">
+                  <div class="tv-mega-sublinks" role="none">
+                    <a href="/de/produkt-kategorie/zubehoer/" class="tv-mega-sublink" role="menuitem">Zubehör</a>
+                    <a href="/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/" class="tv-mega-sublink" role="menuitem">Energiezähler & Stromwandler</a>
+                    <a href="/de/produkt-kategorie/zubehoer/notstrom/" class="tv-mega-sublink" role="menuitem">Notstrom</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+                <div class="tv-nav-item" data-tv-nav-primary="solutions">
+          <button class="tv-nav-link" aria-expanded="false" aria-haspopup="true">
+            Lösungen
+            <svg class="tv-nav-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="tv-mega-menu" role="menu">
+            <div class="tv-app-mega-grid">
+              <a href="/de/loesung/" class="tv-mega-featured" role="menuitem">
+                <img data-src="/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp" alt="Speicher für Wohn-, Gewerbe- und Großprojekte über Linker" class="tv-mega-featured-img" loading="lazy">
+                <p class="tv-mega-featured-eyebrow">/ Lösungen</p>
+                <h4 class="tv-mega-featured-title">Was bauen Sie?</h4>
+                <p class="tv-mega-featured-desc">Heim-, Gewerbe- und Großspeicher, jeweils mit den vorliegenden Unterlagen.</p>
+                <span class="tv-mega-featured-cta">Alle Lösungen →</span>
+              </a>
+              <div class="tv-app-mega-stack" role="none">
+                <a href="/solution/residential-storage/" class="tv-app-mega-stack-item" role="menuitem">
+                  <img data-src="/wp-content/uploads/2026/09/linker-home-storage-solution.webp" alt="" class="tv-app-mega-stack-thumb" loading="lazy">
+                  <div class="tv-app-mega-stack-body">
+                    <span class="tv-app-mega-stack-title">Heimspeicher</span>
+                    <span class="tv-app-mega-stack-desc">Batteriespeicher und Hybrid-Wechselrichter für das Eigenheim</span>
+                  </div>
+                </a>
+                <a href="/solution/commercial-storage/" class="tv-app-mega-stack-item" role="menuitem">
+                  <img data-src="/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp" alt="" class="tv-app-mega-stack-thumb" loading="lazy">
+                  <div class="tv-app-mega-stack-body">
+                    <span class="tv-app-mega-stack-title">Gewerbe & Industrie</span>
+                    <span class="tv-app-mega-stack-desc">Lastspitzenkappung und Notstromversorgung für Gewerbestandorte</span>
+                  </div>
+                </a>
+                <a href="/solution/utility-storage/" class="tv-app-mega-stack-item" role="menuitem">
+                  <img data-src="/wp-content/uploads/2026/09/linker-utility-scale-bess.webp" alt="" class="tv-app-mega-stack-thumb" loading="lazy">
+                  <div class="tv-app-mega-stack-body">
+                    <span class="tv-app-mega-stack-title">Großspeicher-BESS</span>
+                    <span class="tv-app-mega-stack-desc">Netzspeicher, projektbezogen angeboten</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tv-nav-item" data-tv-nav-primary="ai">
+          <button class="tv-nav-link" aria-expanded="false" aria-haspopup="true">
+            <svg class="tv-tools-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l1.9 4.6L18 9l-4.1 1.4L12 15l-1.9-4.6L6 9l4.1-1.4z"/></svg>
+            Planen mit Linker
+            <svg class="tv-nav-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="tv-mega-menu tv-mega-menu--tools" role="menu">
+            <div class="tv-tools-card">
+              <div class="tv-tools-rail">
+                <span class="tv-tools-eyebrow">Ihr Projekt, Schritt für Schritt</span>
+                <h3 class="tv-tools-headline">Bringen Sie Ihr Projekt ein. Linker hilft Ihnen, die nächsten Schritte zu ermitteln.</h3>
+                <div class="tv-tools-scene" aria-hidden="true">
+                  <svg viewBox="0 0 256 150" preserveAspectRatio="xMidYMid slice">
+                    <rect width="256" height="150" fill="#08131c"/>
+                    <g>
+                      <line class="tv-tools-grid" x1="0" y1="38" x2="256" y2="38"/><line class="tv-tools-grid" x1="0" y1="76" x2="256" y2="76"/><line class="tv-tools-grid" x1="0" y1="114" x2="256" y2="114"/>
+                      <line class="tv-tools-grid" x1="64" y1="0" x2="64" y2="150"/><line class="tv-tools-grid" x1="128" y1="0" x2="128" y2="150"/><line class="tv-tools-grid" x1="192" y1="0" x2="192" y2="150"/>
+                    </g>
+                    <rect class="tv-tools-bldg" x="16" y="18" width="52" height="40" rx="3"/><rect class="tv-tools-bldg" x="188" y="96" width="54" height="40" rx="3"/><rect class="tv-tools-bldg" x="196" y="20" width="40" height="30" rx="3"/>
+                    <polygon class="tv-tools-fill" points="52,58 176,44 196,104 68,120"/>
+                    <clipPath id="tvToolsRoof"><polygon points="52,58 176,44 196,104 68,120"/></clipPath>
+                    <g clip-path="url(#tvToolsRoof)" class="tv-tools-panels"></g>
+                    <polygon class="tv-tools-line" points="52,58 176,44 196,104 68,120"/>
+                    <circle class="tv-tools-vtx" cx="52" cy="58" r="3.4"/><circle class="tv-tools-vtx" cx="176" cy="44" r="3.4"/><circle class="tv-tools-vtx" cx="196" cy="104" r="3.4"/><circle class="tv-tools-vtx" cx="68" cy="120" r="3.4"/>
+                  </svg>
+                </div>
+                <div class="tv-tools-readout">
+                  <span class="tv-tools-status">Projektkontext</span>
+                  <span class="tv-tools-sep"></span>
+                  <span class="tv-tools-lab"><b>Zusammengehalten</b><br>Ausrüstung · Standort · Verwendungszweck</span>
+                </div>
+                <span class="tv-tools-foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5z"/></svg>Linker arbeitet mit Ihrem aktuellen Projekt</span>
+              </div>
+              <div class="tv-tools-list">
+                <a href="/de/linker-berater/" class="tv-tool" role="menuitem">
+                  <span class="tv-tool-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg></span>
+                  <span class="tv-tool-body"><span class="tv-tool-top"><span class="tv-tool-name">Genie – der KI-Assistent von Linker</span><span class="tv-tool-chip">Chat</span></span><span class="tv-tool-desc">Bringen Sie ein Modell, eine Kompatibilitätsfrage oder ein Projektdetail ein. Genie findet den nächsten nützlichen Schritt.</span></span>
+                  <svg class="tv-tool-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <a href="/de/linker-planer/" class="tv-tool" role="menuitem">
+                  <span class="tv-tool-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 21V5a2 2 0 0 1 2-2h9l5 5v13z"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 9h6M8 13h8M8 17h5"/></svg></span>
+                  <span class="tv-tool-body"><span class="tv-tool-top"><span class="tv-tool-name">Lösungskonfigurator</span><span class="tv-tool-chip">Plan</span></span><span class="tv-tool-desc">Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf.</span></span>
+                  <svg class="tv-tool-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                </div>
+            </div>
+          </div>
+        </div>
+        <a href="/de/service-support/" class="tv-nav-link" data-tv-nav-primary="services">Dienstleistungen</a>
+        <div class="tv-nav-item" data-tv-nav-primary="partners">
+          <button class="tv-nav-link" aria-expanded="false" aria-haspopup="true">
+            Für Partner
+            <svg class="tv-nav-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="tv-mega-menu tv-mega-menu--compact" role="menu">
+            <div class="tv-simple-menu-list">
+              <a href="/de/fuer-installateur/" class="tv-simple-menu-link" role="menuitem">
+                <span class="tv-simple-menu-title">Für Installateure</span>
+                <span class="tv-simple-menu-desc">Produktauswahl, technischer Support und Bestellung</span>
+              </a>
+              <a href="/de/fuer-epc/" class="tv-simple-menu-link" role="menuitem">
+                <span class="tv-simple-menu-title">Für EPCs</span>
+                <span class="tv-simple-menu-desc">Projektangebote, Lieferung und After-Sales-Koordination</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="tv-nav-item" data-tv-nav-primary="about">
+          <button class="tv-nav-link" aria-expanded="false" aria-haspopup="true">
+            Über uns
+            <svg class="tv-nav-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="tv-mega-menu tv-mega-menu--compact" role="menu">
+            <div class="tv-simple-menu-list">
+              <a href="/de/ueber-uns/" class="tv-simple-menu-link" role="menuitem">
+                <span class="tv-simple-menu-title">Über Linker</span>
+                <span class="tv-simple-menu-desc">Wer wir sind und wie wir arbeiten</span>
+              </a>
+              <a href="/blog/" class="tv-simple-menu-link" role="menuitem">
+                <span class="tv-simple-menu-title">Blog</span>
+                <span class="tv-simple-menu-desc">Technische Hinweise und Produktneuigkeiten</span>
+              </a>
+              <a href="/de/faq-download/" class="tv-simple-menu-link" role="menuitem">
+                <span class="tv-simple-menu-title">FAQ & Dokumente</span>
+                <span class="tv-simple-menu-desc">Datenblätter, Handbücher, Kompatibilitätslisten und Antworten</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+            <div class="tv-desktop-actions" data-tv-account-slot>
+        <a href="/de/produkte/#search-box" class="tv-header-utility tv-header-search" data-tv-header-search aria-label="Produkte suchen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span class="tv-header-utility-label">Suche</span>
+        </a>
+      </div>
+
+            [linker_contact_link placement="header"]
+
+            <button class="tv-mobile-toggle" id="tv-mobile-toggle" aria-label="Menü öffnen" aria-expanded="false">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </nav>
+
+        <div class="tv-mobile-panel" id="tv-mobile-panel">
+      <details class="tv-mobile-section" data-tv-mobile-primary="solutions">
+        <summary class="tv-mobile-summary">
+          Lösungen
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <div class="tv-mobile-links">
+          <div class="tv-mobile-rail">
+            <a href="/solution/residential-storage/" class="tv-mobile-rail-card"><img data-src="/wp-content/uploads/2026/09/linker-home-storage-solution.webp" alt=""><span class="tv-mobile-rail-title">Heimspeicher</span><span class="tv-mobile-rail-desc">Batteriespeicher und Hybrid-Wechselrichter für das Eigenheim</span></a>
+            <a href="/solution/commercial-storage/" class="tv-mobile-rail-card"><img data-src="/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp" alt=""><span class="tv-mobile-rail-title">Gewerbe & Industrie</span><span class="tv-mobile-rail-desc">Lastspitzenkappung und Notstromversorgung für Gewerbestandorte</span></a>
+            <a href="/solution/utility-storage/" class="tv-mobile-rail-card"><img data-src="/wp-content/uploads/2026/09/linker-utility-scale-bess.webp" alt=""><span class="tv-mobile-rail-title">Großspeicher-BESS</span><span class="tv-mobile-rail-desc">Netzspeicher, projektbezogen angeboten</span></a>
+          </div>
+          <a href="/de/loesung/" class="tv-mobile-link tv-mobile-link--all"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Alle Lösungen →</span></div></a>
+        </div>
+      </details>
+      <details class="tv-mobile-section" data-tv-mobile-primary="products">
+        <summary class="tv-mobile-summary">
+          Produkte
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <div class="tv-mobile-links">
+          <div class="tv-mobile-rail">
+            <a href="/de/produkt-kategorie/heimspeicher/" class="tv-mobile-rail-card"><img data-src="/wp-content/uploads/2026/09/linker-home-battery-storage.webp" alt=""><span class="tv-mobile-rail-title">Heimspeicher</span><span class="tv-mobile-rail-desc">Heimspeicher-Batterien von GoodWe, SAJ und EcoFlow</span></a>
+            <a href="/de/produkt-kategorie/gewerbespeicher/" class="tv-mobile-rail-card"><img data-src="/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp" alt=""><span class="tv-mobile-rail-title">Gewerbespeicher</span><span class="tv-mobile-rail-desc">All-in-One-Systeme und Batteriesysteme von GoodWe, SAJ und Pylontech</span></a>
+          </div>
+          <a href="/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">All-in-One-Systeme</span></div></a>
+          <a href="/de/produkt-kategorie/gewerbespeicher/batteriesysteme/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Batteriesysteme</span></div></a>
+          <a href="/de/produkt-kategorie/wechselrichter/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Wechselrichter</span></div></a>
+          <a href="/de/produkt-kategorie/ems-monitoring/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">EMS & Monitoring</span></div></a>
+          <a href="/de/produkt-kategorie/ladestationen/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Ladestationen</span></div></a>
+          <a href="/de/produkt-kategorie/zubehoer/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Zubehör</span></div></a>
+          <a href="/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Energiezähler & Stromwandler</span></div></a>
+          <a href="/de/produkt-kategorie/zubehoer/notstrom/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Notstrom</span></div></a>
+          <a href="/de/produkte/" class="tv-mobile-link tv-mobile-link--all"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Alle Produkte ansehen →</span></div></a>
+        </div>
+      </details>
+      <details class="tv-mobile-section" data-tv-mobile-primary="ai">
+        <summary class="tv-mobile-summary">
+          Planen mit Linker
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <div class="tv-mobile-links">
+          <a href="/de/linker-berater/" class="tv-mobile-link"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Genie – der KI-Assistent von Linker</span><span class="tv-mobile-link-desc">Bringen Sie ein Modell, eine Kompatibilitätsfrage oder Projektdetails ein.</span></div></a>
+          <a href="/de/linker-planer/" class="tv-mobile-link"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Lösungskonfigurator</span><span class="tv-mobile-link-desc">Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf.</span></div></a>
+          </div>
+      </details>
+      <div class="tv-mobile-section" data-tv-mobile-primary="services">
+        <a href="/de/service-support/" class="tv-mobile-summary tv-mobile-summary--direct">
+          Dienstleistungen
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+        </a>
+      </div>
+      <details class="tv-mobile-section" data-tv-mobile-primary="partners">
+        <summary class="tv-mobile-summary">
+          Für Partner
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <div class="tv-mobile-links">
+          <a href="/de/fuer-installateur/" class="tv-mobile-link"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Für Installateure</span><span class="tv-mobile-link-desc">Produktauswahl, technischer Support und Bestellung</span></div></a>
+          <a href="/de/fuer-epc/" class="tv-mobile-link"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Für EPCs</span><span class="tv-mobile-link-desc">Projektangebote, Lieferung und After-Sales-Koordination</span></div></a>
+        </div>
+      </details>
+      <details class="tv-mobile-section" data-tv-mobile-primary="about">
+        <summary class="tv-mobile-summary">
+          Über uns
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <div class="tv-mobile-links">
+          <a href="/de/ueber-uns/" class="tv-mobile-link"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Über Linker</span><span class="tv-mobile-link-desc">Wer wir sind und wie wir arbeiten</span></div></a>
+          <a href="/blog/" class="tv-mobile-link"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Blog</span><span class="tv-mobile-link-desc">Technische Hinweise und Produktneuigkeiten</span></div></a>
+          <a href="/de/faq-download/" class="tv-mobile-link"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">FAQ & Dokumente</span><span class="tv-mobile-link-desc">Datenblätter, Handbücher, Kompatibilitätslisten und Antworten</span></div></a>
+        </div>
+      </details>
+      <div class="tv-mobile-utility-row">
+        <a href="/de/warenkorb/" class="tv-mobile-utility tv-header-cart-link">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l2.4 12.3a2 2 0 002 1.7h7.8a2 2 0 001.95-1.55L21 7H6"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 21h.01M18 21h.01"/></svg>
+          <span class="tv-header-utility-label">Warenkorb</span>
+        </a>
+      </div>
+      [linker_contact_link placement="mobile"]
+    </div>
+
+        <div class="tv-language-rail" aria-label="Sprachwechsel">
+      <a href="/de/" class="tv-language-switch tv-language-switch--rail" data-tv-language-switch="rail" data-ready="false">Sprache</a>
+    </div>
+
+  </div>
+
+
+
+    <script>
+    (function() {
+      'use strict';
+      // Language routing, localized URLs, and form redirects are owned by
+      // the Linker i18n runtime so Header cannot diverge from page/plugin state.
+      var desktopMenus = [].slice.call(document.querySelectorAll('#tv-header-v2 .tv-nav-item'));
+      function setMegaOpen(item, open) {
+        if (open) {
+          desktopMenus.forEach(function(other) {
+            if (other !== item) { other.querySelector('.tv-nav-link').setAttribute('aria-expanded', 'false'); }
+          });
+        }
+        item.querySelector('.tv-nav-link').setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      desktopMenus.forEach(function(item) {
+        var button = item.querySelector('.tv-nav-link');
+        var menu = item.querySelector('.tv-mega-menu');
+        var openedByHover = false;
+        menu.id = 'tv-menu-' + item.getAttribute('data-tv-nav-primary');
+        button.setAttribute('aria-controls', menu.id);
+        item.addEventListener('pointerenter', function(event) {
+          if (event.pointerType === 'touch') { return; }
+          openedByHover = true;
+          setMegaOpen(item, true);
+        });
+        item.addEventListener('pointerleave', function() {
+          openedByHover = false;
+          if (!item.contains(document.activeElement)) { setMegaOpen(item, false); }
+        });
+        button.addEventListener('click', function(event) {
+          setMegaOpen(item, openedByHover && event.detail > 0 ? true : button.getAttribute('aria-expanded') !== 'true');
+          openedByHover = false;
+        });
+        item.addEventListener('focusin', function(event) {
+          if (event.target !== button) { openedByHover = false; setMegaOpen(item, true); }
+        });
+        item.addEventListener('focusout', function(event) {
+          if (!item.contains(event.relatedTarget)) { openedByHover = false; setMegaOpen(item, false); }
+        });
+        item.addEventListener('keydown', function(event) {
+          if (['ArrowDown', 'ArrowUp', 'Home', 'End'].indexOf(event.key) === -1) { return; }
+          var links = [].slice.call(menu.querySelectorAll('a[href]'));
+          if (!links.length) { return; }
+          event.preventDefault();
+          setMegaOpen(item, true);
+          var at = links.indexOf(document.activeElement);
+          var next = event.key === 'Home' ? 0 : event.key === 'End' ? links.length - 1
+            : event.key === 'ArrowDown' ? (at + 1) % links.length : (at <= 0 ? links.length : at) - 1;
+          links[next].focus();
+        });
+      });
+      document.addEventListener('click', function(event) {
+        desktopMenus.forEach(function(item) {
+          if (!item.contains(event.target)) { setMegaOpen(item, false); }
+        });
+      });
+      document.addEventListener('keydown', function(event) {
+        if (event.key !== 'Escape') { return; }
+        desktopMenus.forEach(function(item) {
+          var button = item.querySelector('.tv-nav-link');
+          if (button.getAttribute('aria-expanded') !== 'true') { return; }
+          event.preventDefault();
+          button.focus();
+          setMegaOpen(item, false);
+        });
+      });
+      /* Header Mobile Toggle */
+      var toggle = document.getElementById('tv-mobile-toggle');
+      var panel = document.getElementById('tv-mobile-panel');
+      function setPanelOpen(open) {
+        var isGerman = (document.documentElement.lang || '').toLowerCase().indexOf('de') === 0;
+        panel.setAttribute('data-open', open ? 'true' : 'false');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.setAttribute('aria-label', open
+          ? (isGerman ? 'Menü schließen' : 'Close menu')
+          : (isGerman ? 'Menü öffnen' : 'Open menu'));
+      }
+      if (toggle && panel) {
+        toggle.addEventListener('click', function() {
+          setPanelOpen(panel.getAttribute('data-open') !== 'true');
+        });
+        document.addEventListener('keydown', function(event) {
+          if (event.key === 'Escape' && !event.defaultPrevented && panel.getAttribute('data-open') === 'true'
+            && !document.querySelector('dialog[open]')) {
+            setPanelOpen(false);
+            toggle.focus();
+          }
+        });
+      }
+      /* A viewport breakpoint cannot prove translated navigation and injected
+         account/cart controls fit. First compact the controls, then fold the
+         navigation into its existing drawer only if the row still overflows. */
+      (function() {
+        var header = document.getElementById('tv-header-v2');
+        var frame = header && header.querySelector('.tv-nav-frame');
+        var nav = header && header.querySelector('.tv-desktop-nav');
+        if (!frame || !nav) return;
+        var pending = false;
+        function rowFits() {
+          var style = window.getComputedStyle(frame);
+          var available = frame.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+          var visible = [].filter.call(frame.children, function(child) {
+            return window.getComputedStyle(child).display !== 'none';
+          });
+          var required = visible.reduce(function(width, child) {
+            var childStyle = window.getComputedStyle(child);
+            return width + child.getBoundingClientRect().width
+              + (parseFloat(childStyle.marginRight) || 0);
+          }, 0) + Math.max(0, visible.length - 1) * (parseFloat(style.columnGap) || 0);
+          return Math.ceil(required) <= Math.floor(available);
+        }
+        function fitNavigation() {
+          pending = false;
+          header.removeAttribute('data-tv-nav-folded');
+          header.removeAttribute('data-tv-actions-compact');
+          if (!window.matchMedia('(min-width:1280px)').matches) return;
+          if (!rowFits()) {
+            header.setAttribute('data-tv-actions-compact', 'true');
+            if (!rowFits()) header.setAttribute('data-tv-nav-folded', 'true');
+          }
+          if (window.getComputedStyle(nav).display === 'none') {
+            desktopMenus.forEach(function(item) { setMegaOpen(item, false); });
+          }
+          if (toggle && panel && window.getComputedStyle(nav).display !== 'none') {
+            setPanelOpen(false);
+          }
+        }
+        function scheduleFit() {
+          if (pending) return;
+          pending = true;
+          window.requestAnimationFrame(fitNavigation);
+        }
+        if (window.ResizeObserver) {
+          var resizeObserver = new ResizeObserver(scheduleFit);
+          resizeObserver.observe(frame);
+          resizeObserver.observe(header.querySelector('.tv-brand'));
+          resizeObserver.observe(header.querySelector('.tv-desktop-actions'));
+        }
+        new MutationObserver(scheduleFit).observe(frame, {childList:true, subtree:true, characterData:true});
+        window.addEventListener('resize', scheduleFit, {passive:true});
+        if (document.fonts) document.fonts.ready.then(scheduleFit);
+        fitNavigation();
+      })();
+      /* Scroll-state cinematic tightening */
+      (function() {
+        var header = document.getElementById('tv-header-v2');
+        if (!header) return;
+        var ticking = false;
+        var SCROLL_THRESHOLD = 10;
+        function onScroll() {
+          if (!ticking) {
+            requestAnimationFrame(function() {
+              if (window.scrollY > SCROLL_THRESHOLD) {
+                header.setAttribute('data-scrolled', 'true');
+              } else {
+                header.removeAttribute('data-scrolled');
+              }
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }
+        document.addEventListener('scroll', onScroll, { passive: true });
+      })();
+    })();
+    // Sign in / Account is injected by terravolt-b2b-core (header-portal.js) as a
+    // state-aware dropdown into .tv-desktop-actions + the mobile utility row.
+
+    // Replay the project-scene animation when the Plan-with-Linker menu opens. The
+    // drawing is illustrative; it deliberately exposes no fabricated result.
+    (function () {
+      var root = document.getElementById('tv-header-v2');
+      if (!root) { return; }
+      var item = root.querySelector('[data-tv-nav-primary="ai"]');
+      var mega = item && item.querySelector('.tv-mega-menu--tools');
+      var scene = mega && mega.querySelector('.tv-tools-scene');
+      if (!item || !mega || !scene) { return; }
+      var group = scene.querySelector('.tv-tools-panels');
+      var line = scene.querySelector('.tv-tools-line');
+      var fill = scene.querySelector('.tv-tools-fill');
+      var vertices = scene.querySelectorAll('.tv-tools-vtx');
+      var readout = mega.querySelector('.tv-tools-readout');
+      var perimeter = 470;
+      var svgNamespace = 'http://www.w3.org/2000/svg';
+      if (group && !group.childNodes.length) {
+        for (var y = 52; y < 118; y += 15) {
+          for (var x = 56; x < 192; x += 20) {
+            var panel = document.createElementNS(svgNamespace, 'rect');
+            panel.setAttribute('x', x);
+            panel.setAttribute('y', y);
+            panel.setAttribute('width', 16);
+            panel.setAttribute('height', 11);
+            panel.setAttribute('rx', 1.4);
+            group.appendChild(panel);
+          }
+        }
+      }
+      var panels = group ? group.querySelectorAll('rect') : [];
+      if (line) { line.style.strokeDasharray = perimeter; }
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      var timers = [];
+      function clearTimers() {
+        timers.forEach(clearTimeout);
+        timers = [];
+      }
+      function finalFrame() {
+        if (line) { line.style.strokeDashoffset = 0; }
+        if (fill) { fill.style.opacity = 1; }
+        [].forEach.call(vertices, function (vertex) { vertex.style.opacity = 1; });
+        [].forEach.call(panels, function (panel) {
+          panel.style.opacity = 1;
+          panel.style.transform = 'scale(1)';
+        });
+        if (readout) { readout.style.opacity = 1; }
+      }
+      function reset() {
+        clearTimers();
+        if (line) {
+          line.style.transition = 'none';
+          line.style.strokeDashoffset = perimeter;
+        }
+        if (fill) { fill.style.opacity = 0; }
+        [].forEach.call(vertices, function (vertex) {
+          vertex.style.transition = 'none';
+          vertex.style.opacity = 0;
+        });
+        [].forEach.call(panels, function (panel) {
+          panel.style.transition = 'none';
+          panel.style.opacity = 0;
+          panel.style.transform = 'scale(.3)';
+        });
+        if (readout) { readout.style.opacity = 0; }
+      }
+      function play() {
+        if (reduceMotion) {
+          finalFrame();
+          return;
+        }
+        reset();
+        if (line) {
+          void line.getBoundingClientRect();
+          line.style.transition = 'stroke-dashoffset 1.5s ease';
+          line.style.strokeDashoffset = 0;
+        }
+        [].forEach.call(vertices, function (vertex, index) {
+          timers.push(setTimeout(function () {
+            vertex.style.transition = 'opacity .3s';
+            vertex.style.opacity = 1;
+          }, 260 + index * 360));
+        });
+        timers.push(setTimeout(function () {
+          if (fill) {
+            fill.style.transition = 'opacity .5s';
+            fill.style.opacity = 1;
+          }
+        }, 1250));
+        [].forEach.call(panels, function (panel, index) {
+          timers.push(setTimeout(function () {
+            panel.style.transition = 'opacity .38s,transform .38s';
+            panel.style.opacity = 1;
+            panel.style.transform = 'scale(1)';
+          }, 1500 + index * 45));
+        });
+        timers.push(setTimeout(function () {
+          if (readout) { readout.style.opacity = 1; }
+        }, 1700));
+      }
+      if (reduceMotion) {
+        finalFrame();
+        return;
+      }
+      reset();
+      item.addEventListener('mouseenter', play);
+      item.addEventListener('focusin', play);
+      item.addEventListener('mouseleave', clearTimers);
+      item.addEventListener('focusout', clearTimers);
+    })();
+
+  </script>
+</section>
+

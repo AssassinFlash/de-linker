@@ -9,16 +9,22 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-/**
- * The storefront component CSS is a WindPress volume file: `present` copies
- * `content/windpress/*.css` into the volume directory the WindPress compiler
- * reads (uploads/windpress/data/) and makes the volume's `main.css` import
- * them — the compiler's entry point only reaches a volume file through an
- * import, which is how the site's own `terravolt-*.css` are wired. The next
- * compile ships the rules inside the compiled cache; the plugin never
- * enqueues site CSS itself (AGENTS.md presentation ruling). The styles reach
- * exactly the templates whose class names the selectors carry.
- */
+	/**
+	 * The storefront component CSS is a WindPress volume file: `present` copies
+	 * `content/windpress/*.css` into the volume directory the WindPress compiler
+	 * reads (uploads/windpress/data/) and makes the volume's `main.css` import
+	 * them — the compiler's entry point only reaches a volume file through an
+	 * import, which is how the site's own `terravolt-*.css` are wired. The next
+	 * compile ships the rules inside the compiled cache; the plugin never
+	 * enqueues site CSS itself (AGENTS.md presentation ruling). The styles reach
+	 * exactly the templates whose class names the selectors carry.
+	 *
+	 * `tokens.css` and `site-base.css` are the header's foundation, formerly
+	 * inlined in both header partials. `content/windpress/tokens.css` is the
+	 * only tokens file: Tokens::path() reads it, and this volume publishes
+	 * it. The compiler keeps their declarations (verified against Tailwind
+	 * 4.3, the version the volume compiles with).
+	 */
 final class WindPressVolume {
 
 	/**

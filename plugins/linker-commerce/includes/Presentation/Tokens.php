@@ -10,8 +10,12 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 /**
- * The live tokens.css block, with fonts hosted by this plugin. install() writes
- * it to Additional CSS so the header partial no longer has to carry it.
+ * The design-token stylesheet. The single source is the WindPress volume
+ * export `content/windpress/tokens.css`: `present` copies that directory into
+ * the volume the compiler reads, and `Tokens::path()` points at the same file
+ * so a run cannot require one copy and publish another. Additional CSS is not
+ * a second home for it — `uninstall()` only removes a block an earlier run
+ * left there.
  */
 final class Tokens {
 
@@ -27,9 +31,12 @@ final class Tokens {
 
 	/**
 	 * Absolute path of the exported stylesheet.
+	 *
+	 * This is the only copy. WindPressVolume publishes `content/windpress/*.css`,
+	 * so the tokens file lives in that directory rather than beside it.
 	 */
 	public static function path(): string {
-		return dirname( __DIR__, 2 ) . '/content/tokens.css';
+		return dirname( __DIR__, 2 ) . '/content/windpress/tokens.css';
 	}
 
 	/**
@@ -62,22 +69,10 @@ final class Tokens {
 	}
 
 	/**
-	 * Puts the tokens into Additional CSS, replacing a previous copy of this block.
-	 */
-	public function install(): void {
-		$block   = self::MARKER . "\n" . self::css() . "\n" . self::END;
-		$current = (string) wp_get_custom_css();
-		$updated = $this->replace_block( $current, $block );
-		if ( $updated !== $current ) {
-			wp_update_custom_css_post( $updated );
-		}
-	}
-
-	/**
-	 * Removes the marked tokens block from Additional CSS. The live site serves
-	 * the tokens from the header partial's own `tokens.css` style block and
-	 * carries no `wp-custom-css` tag; the install() block is the copy the
-	 * presentation run used to write, and this takes it back out.
+	 * Removes the marked tokens block from Additional CSS. The live site does
+	 * not serve tokens from Additional CSS: the WindPress volume's tokens.css
+	 * is the copy the compiler reads. This only takes out a block an earlier
+	 * presentation run wrote there.
 	 *
 	 * @return bool Whether Additional CSS changed.
 	 */
@@ -127,26 +122,6 @@ final class Tokens {
 			++$changed;
 		}
 		return $changed;
-	}
-
-	/**
-	 * Replaces or appends the marked block.
-	 *
-	 * @param string $current Existing Additional CSS.
-	 * @param string $block   New marked block.
-	 */
-	private function replace_block( string $current, string $block ): string {
-		if ( str_contains( $current, self::MARKER ) ) {
-			$replaced = preg_replace(
-				'/' . preg_quote( self::MARKER, '/' ) . '.*?' . preg_quote( self::END, '/' ) . '/s',
-				$block,
-				$current,
-				1
-			);
-			return is_string( $replaced ) ? $replaced : $current . "\n" . $block;
-		}
-		$current = rtrim( $current );
-		return '' === $current ? $block : $current . "\n\n" . $block;
 	}
 
 	/**
