@@ -9,8 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Admin;
 
-use Linker\Commerce\Catalog\EngineeringData;
-use Linker\Commerce\Catalog\SelectionFacts;
+use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\SelectionFacts;
 
 /**
  * One row per figure of the product's _tv_b2b_figures: the key (read-only),

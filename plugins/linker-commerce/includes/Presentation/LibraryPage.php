@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-use Linker\Commerce\Catalog\DocumentLibrary;
+use Linker\Commerce\Products\DocumentLibrary;
 
 /**
  * The library page's two fragments (docs/specs/19-tool-pages.md): the

@@ -28,7 +28,7 @@ final class PresentCommandTest extends TestCase {
 	/**
 	 * The compiled selectors of every anchor class, as Tailwind emits them.
 	 */
-	private const COMPILED_ALL = '.sf-catalog{}.catalog-grid{}.sf-card{}.wb-strip{}'
+	private const COMPILED_ALL = '.sf-products{}.product-grid{}.sf-card{}.wb-strip{}'
 		. '.pdp-layout{}.pdp-purchase{}.pdp-scene-reel{}.pdp-disclose{}';
 
 	/**

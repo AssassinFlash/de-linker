@@ -10,8 +10,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Abilities;
 
 use Linker\Commerce\Abilities\SearchProducts;
-use Linker\Commerce\Tests\Support\LiveCatalogue;
-use Linker\Commerce\Tests\Support\MocksCatalogue;
+use Linker\Commerce\Tests\Support\LiveProducts;
+use Linker\Commerce\Tests\Support\MocksLiveProducts;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
@@ -20,11 +20,11 @@ use WP_Mock\Tools\TestCase;
  *
  * @covers \Linker\Commerce\Abilities\SearchProducts
  * @covers \Linker\Commerce\Abilities\ProductCommerce
- * @covers \Linker\Commerce\Abilities\CatalogText
+ * @covers \Linker\Commerce\Abilities\ProductText
  */
 final class SearchProductsTest extends TestCase {
 
-	use MocksCatalogue;
+	use MocksLiveProducts;
 
 	/**
 	 * The research's 28 residential three-phase hybrid inverters
@@ -78,8 +78,8 @@ final class SearchProductsTest extends TestCase {
 	 * Sort is |ac_power_kw − 10| so 10 kW machines come first.
 	 */
 	public function test_r1_residential_three_phase_10_kwp(): void {
-		$ids = array_keys( LiveCatalogue::published() );
-		$this->mock_catalogue( $ids );
+		$ids = array_keys( LiveProducts::published() );
+		$this->mock_live_products( $ids );
 		$result    = ( new SearchProducts() )->select(
 			$ids,
 			array(
@@ -130,7 +130,7 @@ final class SearchProductsTest extends TestCase {
 	 * Full matches sort before a product that is only unknown on an applied filter.
 	 */
 	public function test_full_matches_sort_before_unknown(): void {
-		$this->mock_catalogue( array( 4107, 6480 ) );
+		$this->mock_live_products( array( 4107, 6480 ) );
 		$result = ( new SearchProducts() )->select(
 			array( 4107, 6480 ),
 			array(
@@ -153,7 +153,7 @@ final class SearchProductsTest extends TestCase {
 	 * After the #7 migration, 6480 is home three-phase and sorts with the full matches.
 	 */
 	public function test_migrated_ecoflow_is_a_full_match(): void {
-		$this->mock_catalogue( array( 4107, 6480 ), true );
+		$this->mock_live_products( array( 4107, 6480 ), true );
 		$result = ( new SearchProducts() )->select(
 			array( 4107, 6480 ),
 			array(
@@ -175,7 +175,7 @@ final class SearchProductsTest extends TestCase {
 	 * Closer AC power to the stated kWp sorts first when both are full matches.
 	 */
 	public function test_sorts_by_ac_power_distance_to_pv_kwp(): void {
-		$this->mock_catalogue( array( 2064, 4107 ) );
+		$this->mock_live_products( array( 2064, 4107 ) );
 		$result = ( new SearchProducts() )->select(
 			array( 2064, 4107 ),
 			array(
@@ -197,7 +197,7 @@ final class SearchProductsTest extends TestCase {
 		 */
 	public function test_with_pairings_lists_documented_batteries(): void {
 		$ids = array( 4107, 1832, 2067 );
-		$this->mock_catalogue( $ids );
+		$this->mock_live_products( $ids );
 		$result = ( new SearchProducts() )->select(
 			$ids,
 			array(

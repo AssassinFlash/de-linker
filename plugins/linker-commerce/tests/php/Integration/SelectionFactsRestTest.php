@@ -9,9 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
-use Linker\Commerce\Catalog\SelectionFacts;
-use Linker\Commerce\Catalog\SelectionFactSet;
-use Linker\Commerce\Tests\Support\LiveCatalogue;
+use Linker\Commerce\Products\SelectionFacts;
+use Linker\Commerce\Products\SelectionFactSet;
+use Linker\Commerce\Tests\Support\LiveProducts;
 use Linker\Commerce\Tests\Support\MocksProducts;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -65,7 +65,7 @@ final class SelectionFactsRestTest extends TestCase {
 	 * no-cache header.
 	 */
 	public function test_anonymous_answer_is_the_contract(): void {
-		$ids      = array_keys( LiveCatalogue::published() );
+		$ids      = array_keys( LiveProducts::published() );
 		$response = $this->get( $ids );
 
 		$this->assertSame( 200, $response['status'] );
@@ -76,7 +76,7 @@ final class SelectionFactsRestTest extends TestCase {
 
 		// The site holds the fixture, or the fixture after 7-facts.py: 6480 has no application before.
 		$migrated = 'home' === $response['body']['6480']['application'];
-		$products = LiveCatalogue::published( $migrated );
+		$products = LiveProducts::published( $migrated );
 		foreach ( $ids as $id ) {
 			$product = $products[ $id ];
 			$this->mock_product( $id, $product['categories'], $product['attributes']['pa_application'] ?? array(), $product['attributes']['pa_phase'] ?? array(), $product['figures'] );

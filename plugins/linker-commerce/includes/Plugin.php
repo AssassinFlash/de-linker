@@ -13,13 +13,13 @@ use Linker\Commerce\Abilities\Registrar;
 use Linker\Commerce\Admin\DocumentsMetaBox;
 use Linker\Commerce\Admin\FaqsMetaBox;
 use Linker\Commerce\Admin\FiguresMetaBox;
-use Linker\Commerce\Catalog\CatalogSearchController;
-use Linker\Commerce\Catalog\EngineeringFeedController;
-use Linker\Commerce\Catalog\SearchScope;
-use Linker\Commerce\Catalog\SelectionFactsController;
+use Linker\Commerce\Products\ProductSearchController;
+use Linker\Commerce\Products\EngineeringFeedController;
+use Linker\Commerce\Products\SearchScope;
+use Linker\Commerce\Products\SelectionFactsController;
 use Linker\Commerce\Contact\Module as ContactModule;
 use Linker\Commerce\Health\Monitor;
-use Linker\Commerce\Storefront\CatalogFilters;
+use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductSchema;
 use Linker\Commerce\Storefront\ProductView;
 
@@ -35,7 +35,7 @@ final class Plugin {
 	 * @param Registrar                 $abilities       Registers the plugin's abilities.
 	 * @param SelectionFactsController  $selection_facts REST route of the selection facts.
 	 * @param EngineeringFeedController $engineering     REST route of the engineering feed (#8).
-	 * @param CatalogSearchController   $catalog_search  REST route of the catalogue search (#68).
+	 * @param ProductSearchController   $product_search  REST route of the catalogue search (#68).
 	 * @param SearchScope               $search_scope    The scope of the site search results (#68).
 	 * @param ContactModule             $contact         The contact form of the /contact/ page (#68).
 	 * @param FiguresMetaBox            $figures         The figure-citation meta box of the product edit screen (#8).
@@ -47,7 +47,7 @@ final class Plugin {
 		private readonly Registrar $abilities,
 		private readonly SelectionFactsController $selection_facts,
 		private readonly EngineeringFeedController $engineering,
-		private readonly CatalogSearchController $catalog_search,
+		private readonly ProductSearchController $product_search,
 		private readonly SearchScope $search_scope,
 		private readonly ContactModule $contact,
 		private readonly FiguresMetaBox $figures,
@@ -67,7 +67,7 @@ final class Plugin {
 		add_action( 'rest_api_init', array( $this->selection_facts, 'register_routes' ) );
 		add_action( 'plugins_loaded', array( $this, 'register_commerce' ) );
 		add_action( 'rest_api_init', array( $this->engineering, 'register_routes' ) );
-		add_action( 'rest_api_init', array( $this->catalog_search, 'register_routes' ) );
+		add_action( 'rest_api_init', array( $this->product_search, 'register_routes' ) );
 		add_action( 'add_meta_boxes', array( $this->figures, 'register' ) );
 		add_action( 'save_post_product', array( $this->figures, 'save' ) );
 		add_action( 'admin_notices', array( $this->figures, 'notice_refused' ) );
@@ -80,7 +80,7 @@ final class Plugin {
 
 		add_action( 'plugins_loaded', array( $this, 'stand_down_legacy_template_preemption' ) );
 
-		$filters = new CatalogFilters();
+		$filters = new ProductFilters();
 		$filters->register();
 		$this->search_scope->register();
 		$this->contact->register();
@@ -162,7 +162,7 @@ final class Plugin {
 		return array(
 			new Settings\Module( new Settings\SettingsTab( $jobs ), new Settings\WooOptions() ),
 			new Vocabulary\Module( new Vocabulary\Overrides( new Vocabulary\Terms() ), new Vocabulary\Labels(), new Vocabulary\LocaleFormat() ),
-			new Gating\Module( $prices, new Gating\DraftSummary( $state, $prices ), new Gating\StoreApiPrices( $state ), new Gating\CatalogSorting( $state ) ),
+			new Gating\Module( $prices, new Gating\DraftSummary( $state, $prices ), new Gating\StoreApiPrices( $state ), new Gating\ProductSorting( $state ) ),
 			new Mail\Module( new Mail\Outbox( $jobs, new Mail\Throttle() ), $jobs, new Mail\EmailLocale(), new Mail\EmailPolicy() ),
 			new Digest\Module( $this->file, $jobs ),
 			new Registration\Module( $this->file, $options, new Registration\Fields( $vat, $approval ), new Registration\BillingVatField( $vat ), new Registration\AddressForm(), $approval, new Registration\ApprovalAdmin( $approval ), new Registration\PendingApprovals( $approval ) ),

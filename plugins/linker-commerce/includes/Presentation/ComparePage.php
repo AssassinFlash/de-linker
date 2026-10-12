@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-use Linker\Commerce\Catalog\Comparison;
+use Linker\Commerce\Products\Comparison;
 
 /**
  * /compare-products/: the page a visitor builds a comparison on, and the
@@ -134,7 +134,7 @@ final class ComparePage {
 	 * The page's address with a selection in it: `?ids=1,2,3`, and `capped=1`
 	 * when the address asked for more products than a comparison holds. The
 	 * address is the request language's own page — the language layer swaps in
-	 * the page's twin, the route CatalogText::url takes for a product — so a
+	 * the page's twin, the route ProductText::url takes for a product — so a
 	 * German visitor's chip, canonical redirect and Remove links all stay on
 	 * the German page.
 	 *

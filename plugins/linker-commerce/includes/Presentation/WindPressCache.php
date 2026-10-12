@@ -45,8 +45,8 @@ final class WindPressCache {
 		// WindPress volume stylesheets, so a missing selector is the alarm for
 		// a volume file that never made it into the compile, or a shortcode
 		// parser that ate a class out of a template.
-		'sf-catalog'            => '.sf-catalog',
-		'catalog-grid'          => '.catalog-grid',
+			'sf-products'       => '.sf-products',
+		'product-grid'          => '.product-grid',
 		'sf-card'               => '.sf-card',
 		'wb-strip'              => '.wb-strip',
 		'pdp-layout'            => '.pdp-layout',
@@ -90,7 +90,7 @@ final class WindPressCache {
 		if ( null !== $this->source_files ) {
 			return $this->source_files;
 		}
-				return array_merge( array_values( Templates::catalog() ), Templates::header_partials(), Templates::footer_partials(), array( Tokens::path() ), WindPressVolume::files() );
+			return array_merge( array_values( Templates::paths() ), Templates::header_partials(), Templates::footer_partials(), array( Tokens::path() ), WindPressVolume::files() );
 	}
 
 	/**

@@ -121,7 +121,7 @@ final class Templates {
 	 *
 	 * @return array<string, string>
 	 */
-	public static function catalog(): array {
+	public static function paths(): array {
 		$dir = dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/';
 		$out = array();
 		foreach ( self::FILES as $meta => $file ) {

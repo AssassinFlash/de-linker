@@ -12,7 +12,7 @@
  *
  * The markup contract, for whatever renders a compare control:
  *
- *   <button type="button" data-compare-article="ID" aria-pressed="false">
+ *   <button type="button" data-compare-product="ID" aria-pressed="false">
  *     <span data-compare-label>…</span>
  *   </button>
  *   <a data-compare-chip data-compare-page="/compare-products/" data-compare-max="4" hidden>…</a>
@@ -88,8 +88,8 @@
 			selected[id] = true;
 		});
 
-		Array.prototype.forEach.call(document.querySelectorAll('[data-compare-article]'), function (control) {
-			var id = control.getAttribute('data-compare-article') || '';
+		Array.prototype.forEach.call(document.querySelectorAll('[data-compare-product]'), function (control) {
+			var id = control.getAttribute('data-compare-product') || '';
 			var on = !!selected[id];
 			control.setAttribute('aria-pressed', on ? 'true' : 'false');
 			control.setAttribute('data-compare-selected', on ? 'true' : 'false');
@@ -150,14 +150,14 @@
 	}
 
 	document.addEventListener('click', function (event) {
-		var control = event.target && event.target.closest ? event.target.closest('[data-compare-article]') : null;
+		var control = event.target && event.target.closest ? event.target.closest('[data-compare-product]') : null;
 		if (!control) {
 			return;
 		}
 		if (event.preventDefault) {
 			event.preventDefault();
 		}
-		toggle(control.getAttribute('data-compare-article'));
+		toggle(control.getAttribute('data-compare-product'));
 	});
 
 	window.addEventListener('pageshow', function (event) {

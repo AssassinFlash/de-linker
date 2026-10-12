@@ -29,7 +29,7 @@ MAX_TOOL_CALLS = 4
 # introspection of an ability is permission-protected, so the shapes live here,
 # next to the only consumer. The source of truth is the `input_schema` each
 # ability class declares in plugins/linker-commerce/includes/Abilities/ (the
-# device-class enum: Catalog/SelectionFacts.php DEVICE_CLASSES; the
+# device-class enum: Products/SelectionFacts.php DEVICE_CLASSES; the
 # check-compatibility input: Abilities/CheckCompatibility.php);
 # tests/test_input_docs.py locks this table against those PHP sources.
 INPUT_DOCS: dict[str, str] = {

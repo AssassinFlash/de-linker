@@ -9,9 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Catalog\Compatibility;
-use Linker\Commerce\Catalog\SelectionFacts;
-use Linker\Commerce\Catalog\SelectionFactSet;
+use Linker\Commerce\Products\Compatibility;
+use Linker\Commerce\Products\SelectionFacts;
+use Linker\Commerce\Products\SelectionFactSet;
 use WC_Product;
 
 /**
@@ -214,7 +214,7 @@ final class SearchProducts {
 	 */
 	public function execute( $input = array() ): array {
 		$input = (array) $input;
-		$lang  = CatalogText::lang( $input['lang'] ?? null );
+		$lang  = ProductText::lang( $input['lang'] ?? null );
 		$limit = isset( $input['limit'] ) ? min( self::MAX_LIMIT, max( 1, (int) $input['limit'] ) ) : self::MAX_LIMIT;
 		$ids   = array_values(
 			array_map(
@@ -400,8 +400,8 @@ final class SearchProducts {
 		if ( ! is_string( $wanted ) || '' === $wanted ) {
 			return true;
 		}
-		$slugs = CatalogText::term_slugs( $id, $taxonomy );
-		$name  = CatalogText::term_name( $id, $taxonomy );
+		$slugs = ProductText::term_slugs( $id, $taxonomy );
+		$name  = ProductText::term_name( $id, $taxonomy );
 		if ( array() === $slugs && null === $name ) {
 			return SelectionFactSet::UNKNOWN;
 		}
@@ -427,7 +427,7 @@ final class SearchProducts {
 		}
 		$needle  = strtolower( trim( $text ) );
 		$hay     = strtolower( (string) get_the_title( $id ) );
-		$model   = CatalogText::term_name( $id, 'pa_model' );
+		$model   = ProductText::term_name( $id, 'pa_model' );
 		$product = wc_get_product( $id );
 		$sku     = $product instanceof WC_Product ? (string) $product->get_sku() : '';
 
@@ -542,8 +542,8 @@ final class SearchProducts {
 		$id   = $row['id'];
 		$card = array(
 			'product_id' => $id,
-			'title'      => CatalogText::title( $id, $lang ),
-			'url'        => CatalogText::url( $id, $lang ),
+			'title'      => ProductText::title( $id, $lang ),
+			'url'        => ProductText::url( $id, $lang ),
 			'why'        => $this->why( $row['facts'], $id, $input, $want_future, $batteries ),
 			'facts'      => $row['facts']->to_array(),
 			'commerce'   => ProductCommerce::of( $id, $row['product'] ),

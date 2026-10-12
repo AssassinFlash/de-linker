@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Gating;
 
-use Linker\Commerce\Gating\CatalogSorting;
+use Linker\Commerce\Gating\ProductSorting;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Gating\DraftSummary;
 use Linker\Commerce\Gating\Module;
@@ -33,7 +33,7 @@ final class ModuleTest extends TestCase {
 		$display = new PriceDisplay( $state );
 		$summary = new DraftSummary( $state, $display );
 		$api     = new StoreApiPrices( $state );
-		$sorting = new CatalogSorting( $state );
+		$sorting = new ProductSorting( $state );
 
 		foreach ( array( 'woocommerce_product_get_price', 'woocommerce_product_get_regular_price', 'woocommerce_product_get_sale_price', 'woocommerce_product_variation_get_price', 'woocommerce_product_variation_get_regular_price', 'woocommerce_product_variation_get_sale_price' ) as $filter ) {
 			WP_Mock::expectFilterAdded( $filter, array( $display, 'price' ), 10, 2 );
