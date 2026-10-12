@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
+use Linker\Commerce\Presentation\AccountTemplates;
 use Linker\Commerce\Presentation\ComparePage;
 use Linker\Commerce\Presentation\LibraryPage;
 use Linker\Commerce\Presentation\LoginGate;
@@ -41,9 +42,12 @@ final class ModuleTest extends TestCase {
 		$windpress  = new WindPress();
 		$compare    = new ComparePage();
 		$library    = new LibraryPage();
-		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library );
+		$account    = new AccountTemplates();
+		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library, $account );
 
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 41 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 46 ) );
+		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $account, 'orders_query' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $windpress, 'render_raw' ), 10, 2 );

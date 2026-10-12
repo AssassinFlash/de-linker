@@ -1,0 +1,290 @@
+[
+  {
+    "lang": "en",
+    "width": 1440,
+    "name": "overview",
+    "url": "http://127.0.0.1:8987/my-account/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-1440-overview.png"
+  },
+  {
+    "lang": "en",
+    "width": 1440,
+    "name": "orders",
+    "url": "http://127.0.0.1:8987/my-account/inquiries/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-1440-orders.png"
+  },
+  {
+    "lang": "en",
+    "width": 1440,
+    "name": "saved-solutions",
+    "url": "http://127.0.0.1:8987/my-account/saved-solutions/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-1440-saved-solutions.png"
+  },
+  {
+    "lang": "en",
+    "width": 1440,
+    "name": "documents",
+    "url": "http://127.0.0.1:8987/my-account/documents/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-1440-documents.png"
+  },
+  {
+    "lang": "en",
+    "width": 1440,
+    "name": "edit-address",
+    "url": "http://127.0.0.1:8987/my-account/company/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-1440-edit-address.png"
+  },
+  {
+    "lang": "en",
+    "width": 1440,
+    "name": "edit-account",
+    "url": "http://127.0.0.1:8987/my-account/edit-account/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-1440-edit-account.png"
+  },
+  {
+    "lang": "en",
+    "width": 1440,
+    "name": "inquiry",
+    "url": "http://127.0.0.1:8987/my-account/inquiry/5432/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-1440-inquiry.png"
+  },
+  {
+    "lang": "en",
+    "width": 1440,
+    "name": "company-edit",
+    "url": "http://127.0.0.1:8987/my-account/company/billing/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-1440-company-edit.png"
+  },
+  {
+    "lang": "en",
+    "width": 390,
+    "name": "overview",
+    "url": "http://127.0.0.1:8987/my-account/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-390-overview.png"
+  },
+  {
+    "lang": "en",
+    "width": 390,
+    "name": "orders",
+    "url": "http://127.0.0.1:8987/my-account/inquiries/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-390-orders.png"
+  },
+  {
+    "lang": "en",
+    "width": 390,
+    "name": "saved-solutions",
+    "url": "http://127.0.0.1:8987/my-account/saved-solutions/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-390-saved-solutions.png"
+  },
+  {
+    "lang": "en",
+    "width": 390,
+    "name": "documents",
+    "url": "http://127.0.0.1:8987/my-account/documents/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-390-documents.png"
+  },
+  {
+    "lang": "en",
+    "width": 390,
+    "name": "edit-address",
+    "url": "http://127.0.0.1:8987/my-account/company/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-390-edit-address.png"
+  },
+  {
+    "lang": "en",
+    "width": 390,
+    "name": "edit-account",
+    "url": "http://127.0.0.1:8987/my-account/edit-account/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-390-edit-account.png"
+  },
+  {
+    "lang": "en",
+    "width": 390,
+    "name": "inquiry",
+    "url": "http://127.0.0.1:8987/my-account/inquiry/5432/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-390-inquiry.png"
+  },
+  {
+    "lang": "en",
+    "width": 390,
+    "name": "company-edit",
+    "url": "http://127.0.0.1:8987/my-account/company/billing/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-en-390-company-edit.png"
+  },
+  {
+    "lang": "de",
+    "width": 1440,
+    "name": "overview",
+    "url": "http://127.0.0.1:8987/de/mein-konto/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-1440-overview.png"
+  },
+  {
+    "lang": "de",
+    "width": 1440,
+    "name": "orders",
+    "url": "http://127.0.0.1:8987/de/mein-konto/inquiries/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-1440-orders.png"
+  },
+  {
+    "lang": "de",
+    "width": 1440,
+    "name": "saved-solutions",
+    "url": "http://127.0.0.1:8987/de/mein-konto/saved-solutions/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-1440-saved-solutions.png"
+  },
+  {
+    "lang": "de",
+    "width": 1440,
+    "name": "documents",
+    "url": "http://127.0.0.1:8987/de/mein-konto/documents/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-1440-documents.png"
+  },
+  {
+    "lang": "de",
+    "width": 1440,
+    "name": "edit-address",
+    "url": "http://127.0.0.1:8987/de/mein-konto/company/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-1440-edit-address.png"
+  },
+  {
+    "lang": "de",
+    "width": 1440,
+    "name": "edit-account",
+    "url": "http://127.0.0.1:8987/de/mein-konto/edit-account/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-1440-edit-account.png"
+  },
+  {
+    "lang": "de",
+    "width": 1440,
+    "name": "inquiry",
+    "url": "http://127.0.0.1:8987/de/mein-konto/inquiry/5432/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-1440-inquiry.png"
+  },
+  {
+    "lang": "de",
+    "width": 1440,
+    "name": "company-edit",
+    "url": "http://127.0.0.1:8987/de/mein-konto/company/billing/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-1440-company-edit.png"
+  },
+  {
+    "lang": "de",
+    "width": 390,
+    "name": "overview",
+    "url": "http://127.0.0.1:8987/de/mein-konto/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-390-overview.png"
+  },
+  {
+    "lang": "de",
+    "width": 390,
+    "name": "orders",
+    "url": "http://127.0.0.1:8987/de/mein-konto/inquiries/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-390-orders.png"
+  },
+  {
+    "lang": "de",
+    "width": 390,
+    "name": "saved-solutions",
+    "url": "http://127.0.0.1:8987/de/mein-konto/saved-solutions/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-390-saved-solutions.png"
+  },
+  {
+    "lang": "de",
+    "width": 390,
+    "name": "documents",
+    "url": "http://127.0.0.1:8987/de/mein-konto/documents/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-390-documents.png"
+  },
+  {
+    "lang": "de",
+    "width": 390,
+    "name": "edit-address",
+    "url": "http://127.0.0.1:8987/de/mein-konto/company/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-390-edit-address.png"
+  },
+  {
+    "lang": "de",
+    "width": 390,
+    "name": "edit-account",
+    "url": "http://127.0.0.1:8987/de/mein-konto/edit-account/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-390-edit-account.png"
+  },
+  {
+    "lang": "de",
+    "width": 390,
+    "name": "inquiry",
+    "url": "http://127.0.0.1:8987/de/mein-konto/inquiry/5432/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-390-inquiry.png"
+  },
+  {
+    "lang": "de",
+    "width": 390,
+    "name": "company-edit",
+    "url": "http://127.0.0.1:8987/de/mein-konto/company/billing/",
+    "status": 200,
+    "logged": true,
+    "file": "/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-account-sync/docs/acceptance/2026-10-12/account-visual-sync/captures/before-de-390-company-edit.png"
+  }
+]
