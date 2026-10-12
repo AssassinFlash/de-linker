@@ -1,10 +1,11 @@
 /**
  * The three screens as a vertical rail (variant B), not a clickable wizard.
  *
- * On a narrow viewport the shell — rail plus the project-type cards — sticks
- * under the site header, and the steps sit in one row. German labels wrap, so
- * that height is not a constant: the rail measures the shell and publishes it
- * for the sections' scroll-margin. The sticky rule stays in configurator.css.
+ * On a narrow viewport only this rail sticks under the site header, and the
+ * steps sit in one row. German labels wrap, so that height is not a constant:
+ * the rail measures itself and publishes it for the sections' scroll-margin.
+ * The shell must not be the sticky element — it contains the section the
+ * margin is meant to clear. The sticky rule stays in configurator.css.
  */
 
 /**
@@ -13,7 +14,7 @@
 import { useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-/** Matches `.linker-shell { top }` in the narrow-viewport sticky rule. */
+/** Matches `.linker-steps { top }` in the narrow-viewport sticky rule. */
 const STICKY_TOP_PX = 89;
 
 function stepClass( step: number, current: number ): string {
@@ -35,7 +36,7 @@ export function Steps( { current }: { current: 1 | 2 | 3 } ) {
 	];
 
 	useEffect( () => {
-		const node = rail.current?.closest( '.linker-shell' );
+		const node = rail.current;
 		const root = rail.current?.closest(
 			'[data-linker-app="configurator"]'
 		);
@@ -47,8 +48,11 @@ export function Steps( { current }: { current: 1 | 2 | 3 } ) {
 		}
 		const publish = () => {
 			// The section keeps its own 32px gap below whatever is covering it.
-			const offset =
-				STICKY_TOP_PX + node.getBoundingClientRect().height + 32;
+			// Ceil: Chromium applies scroll-margin a fraction short of a
+			// subpixel sum, which would leave the title under the bar.
+			const offset = Math.ceil(
+				STICKY_TOP_PX + node.getBoundingClientRect().height + 32
+			);
 			root.style.setProperty(
 				'--linker-steps-scroll-offset',
 				`${ offset }px`

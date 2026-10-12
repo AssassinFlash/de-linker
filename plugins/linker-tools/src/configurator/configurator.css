@@ -1098,11 +1098,12 @@
  *       1275px → 1008px); below 1200px, and on the phone layout above,
  *       nothing changes.
  *   D2: ≤860px the step rail pins under the site header while the single-page
- *       flow scrolls (the header is 89px tall, hence top: 89px). The B+C layout
- *       pins the whole shell, because the project-type cards now sit with the
- *       rail; Steps measures that shell for the section's scroll-margin.
- *       Desktop keeps the rail in the left column — only the phone was
- *       trialled and approved.
+ *       flow scrolls (the header is 89px tall, hence top: 89px). Only the rail
+ *       sticks. The shell also holds the stage, and a sticky ancestor swallows
+ *       a descendant's scroll-margin, so a model change would land the
+ *       Solution title under the pinned shell. Steps measures the rail;
+ *       scroll-margin consumes that height. Desktop keeps the rail in the
+ *       left column — only the phone was trialled and approved.
  */
 @media (min-width: 1200px) {
 	.linker-configurator .linker-report__rows {
@@ -1114,17 +1115,20 @@
 }
 
 @media (max-width: 860px) {
-	/* Variant B's phone treatment, kept sticky so a model change still clears
-	   the bar (D2). The rail leaves the left column; the shell, not only the
-	   rail, pins under the 89px site header, because the project-type cards
-	   now sit beside it. Steps measures the shell; the section clears it by
-	   the sticky top plus that height plus the same 32px gap. */
+	/* Variant B's phone treatment. The rail leaves the left column and is the
+	   only thing that pins under the 89px site header (D2). The shell must
+	   not stick: it contains the Solution section, and scroll-margin cannot
+	   clear a sticky ancestor. Steps measures the rail; the section clears
+	   it by the sticky top plus that height plus the same 32px gap. */
 	.linker-configurator .linker-shell {
+		display: block;
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.linker-configurator .linker-steps {
 		position: sticky;
 		top: 89px;
 		z-index: 40;
-		display: block;
-		grid-template-columns: minmax(0, 1fr);
 		background: rgba(246, 249, 245, 0.94);
 		backdrop-filter: blur(6px);
 	}
@@ -1159,10 +1163,6 @@
 	.linker-configurator .linker-block__head,
 	.linker-configurator .linker-group > legend {
 		overflow-wrap: anywhere;
-	}
-
-	.linker-configurator .linker-steps {
-		position: static;
 	}
 
 	.linker-configurator .linker-section {
