@@ -105,17 +105,14 @@ test.describe('i18n', () => {
 			answered,
 			'every address of the live sitemap was requested'
 		).toBe(150);
-			// Two of the live site's German addresses are retired pages that this
-			// site's own chrome redirects on purpose: /de/entwurfsflache/ (design
-			// canvas) and /de/angebots-konfigurator/ (quote configurator) to the
-			// configurator (docs/specs/12-site-chrome.md item 2). /de/linker-berater/
-			// is the Genie workspace and answers for itself. A 200 on a retired
-			// address would mean the redirect was lost; anything else means a
-			// German page broke.
-			const retired = [
-				'/de/entwurfsflache/',
-				'/de/angebots-konfigurator/',
-			];
+		// Two of the live site's German addresses are retired pages that this
+		// site's own chrome redirects on purpose: /de/entwurfsflache/ (design
+		// canvas) and /de/angebots-konfigurator/ (quote configurator) to the
+		// configurator (docs/specs/12-site-chrome.md item 2). /de/linker-berater/
+		// is the Genie workspace and answers for itself. A 200 on a retired
+		// address would mean the redirect was lost; anything else means a
+		// German page broke.
+		const retired = ['/de/entwurfsflache/', '/de/angebots-konfigurator/'];
 		const missing = summary.not_200 ?? [];
 		for (const entry of missing) {
 			const path = entry.replace(/^\d+\s+/, '');
