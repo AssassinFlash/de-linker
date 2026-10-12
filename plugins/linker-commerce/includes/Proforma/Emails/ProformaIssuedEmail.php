@@ -94,6 +94,12 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 	/**
 	 * Number, validity and link for the template.
 	 *
+	 * An inquiry that reached "Proforma invoice issued" without a number (no
+	 * bank account, an empty inquiry, a line without a price) must not render
+	 * the letter: issued meta 0 plus the 30-day term is 1970-01-30, and the
+	 * download answers 404. trigger() already refuses to send; this is the
+	 * same refusal for any other caller of the body.
+	 *
 	 * @return array<string, mixed>
 	 */
 	protected function template_args(): array {
@@ -101,9 +107,13 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 		if ( ! $order instanceof WC_Order ) {
 			return array();
 		}
+		$number = (string) $order->get_meta( Issuer::NUMBER_META );
+		if ( '' === $number ) {
+			return array();
+		}
 		$issued = ( new DateTimeImmutable() )->setTimestamp( (int) $order->get_meta( Issuer::ISSUED_META ) );
 		return array(
-			'proforma_number' => (string) $order->get_meta( Issuer::NUMBER_META ),
+			'proforma_number' => $number,
 			'valid_until'     => wp_date( LocaleFormat::date_format(), Document::valid_until( $issued )->getTimestamp() ),
 			'download_url'    => DocumentDownload::proforma_url( $order ),
 			'inquiry_url'     => $order->get_view_order_url(),

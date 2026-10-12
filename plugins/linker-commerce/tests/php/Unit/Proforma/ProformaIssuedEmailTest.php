@@ -106,6 +106,30 @@ final class ProformaIssuedEmailTest extends TestCase {
 	}
 
 	/**
+	 * Rendering the same blocked inquiry must not invent a validity of 1970 or a
+	 * download link. trigger() already refuses to send; the body refuses too.
+	 */
+	public function test_does_not_render_a_letter_when_the_number_is_missing(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
+		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', ProformaIssuedEmail::class, 'trigger', 10, 2 );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->never();
+		$order->allows( 'get_view_order_url' )->never();
+		WP_Mock::userFunction( 'wp_date' )->never();
+		WP_Mock::userFunction( 'home_url' )->never();
+		WP_Mock::userFunction( 'add_query_arg' )->never();
+
+		$email         = new ProformaIssuedEmail( '/plugin/linker-commerce.php' );
+		$email->object = $order;
+		$template_args = new \ReflectionMethod( ProformaIssuedEmail::class, 'template_args' );
+
+		$this->assertSame( array(), $template_args->invoke( $email ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * The notification carries only the inquiry id when the mailer reloads the
 	 * order. A reloaded inquiry that still has no number is the same refusal.
 	 */
