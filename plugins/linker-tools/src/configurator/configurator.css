@@ -1001,4 +1001,11 @@
 		padding: 8px 0;
 		margin: -8px 0 0;
 	}
+
+	/* Clearance is the sticky top (89px, the rule above) plus the bar's
+	   measured height plus the same 32px gap the section already keeps.
+	   Steps writes the sum; 32px is only the value before that measure. */
+	[data-linker-app="configurator"] .linker-section {
+		scroll-margin-top: var(--linker-steps-scroll-offset, 32px);
+	}
 }
