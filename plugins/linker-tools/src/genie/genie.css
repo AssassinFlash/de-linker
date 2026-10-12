@@ -330,9 +330,9 @@ body:has(.pdp-buy-inner)
 	display: none;
 }
 
-	/* The panel the app renders into, above the bubble. */
-	.linker-genie-panel {
-		position: fixed;
+/* The panel the app renders into, above the bubble. */
+.linker-genie-panel {
+	position: fixed;
 	right: 20px;
 	bottom: 84px;
 	z-index: 10000;
@@ -343,23 +343,23 @@ body:has(.pdp-buy-inner)
 	background: #fff;
 	box-shadow:
 		0 10px 15px -3px rgba(0, 0, 0, 0.1),
-			0 4px 6px -4px rgba(0, 0, 0, 0.1),
-			rgba(0, 0, 0, 0.08) 0 0 0 1px;
-	}
+		0 4px 6px -4px rgba(0, 0, 0, 0.1),
+		rgba(0, 0, 0, 0.08) 0 0 0 1px;
+}
 
-	/* The advisor page is the conversation, not a card above a bubble. */
-	.linker-genie-panel--workspace {
-		position: static;
-		right: auto;
-		bottom: auto;
-		z-index: auto;
-		width: auto;
-		height: auto;
-		overflow: visible;
-		border-radius: 0;
-		background: transparent;
-		box-shadow: none;
-	}
+/* The advisor page is the conversation, not a card above a bubble. */
+.linker-genie-panel--workspace {
+	position: static;
+	right: auto;
+	bottom: auto;
+	z-index: auto;
+	width: auto;
+	height: auto;
+	overflow: visible;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
 
 /*
  * Mobile keeps the resting tree hidden (the live page hides its bubble under

@@ -44,7 +44,7 @@
 		"src/genie/components/Handoff.tsx": "6a6c87dd5c7402fd4a7a8a9c8f617726ddee3a5da07302888e18e345aece7eb7",
 		"src/genie/components/VoteButtons.tsx": "b05fcbc91bcaba604e12ebb0c1cf61c492b107304adcd09f102b382c63a219bf",
 		"src/genie/config.ts": "067c9093d3136bf375fd5780f62078ad128d5eeb5b7060ae8c27cfeb267b9779",
-		"src/genie/genie.css": "d48a7da583c813881b5a35e2b6c0a5b209024f9d859cbedb0cb32fe3c8535906",
+		"src/genie/genie.css": "233c58fbe2f18245a61aa2a170483a434b0f4398552c1a97677ff901ffb626e3",
 		"src/genie/index.tsx": "4ea81be0b05ebc9d56a6a396e22b8fea6fd3e7625954ba0733c4a0986f947f86",
 		"src/shared/App.tsx": "fd207a63e20f0d4aaf72a5e35e56816340d8c86b4199c10c404c4670a0ccf036",
 		"src/shared/ProductCard.tsx": "661fb0f43261810f1d07062adcb6fb2e9b8f2ca5838f25ba271733052a788188",
