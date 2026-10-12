@@ -1,6 +1,6 @@
 /**
  * The model name of one product, from the get-product ability — the one
- * reader of the pa_model term (linker-commerce's ProductText). The Store API
+ * reader of the pa_model term (linker-commerce's CatalogText). The Store API
  * response carries no model, so the card fetches it here instead of showing
  * `#<id>` (AGENTS.md §3: reuse Woo's data, name products by their model).
  *
