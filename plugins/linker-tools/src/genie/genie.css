@@ -400,15 +400,15 @@ body:has(.pdp-buy-inner)
 		display: none;
 	}
 
-		.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
-			.linker-genie-app {
-			background: #fff;
-			border: 0;
-			border-radius: 16px 16px 0 0;
-			box-shadow: none;
-			padding: 12px;
-			max-height: none;
-			height: 100%;
-			overflow: auto;
-		}
+	.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+		.linker-genie-app {
+		background: #fff;
+		border: 0;
+		border-radius: 16px 16px 0 0;
+		box-shadow: none;
+		padding: 12px;
+		max-height: none;
+		height: 100%;
+		overflow: auto;
 	}
+}
