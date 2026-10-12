@@ -45,6 +45,10 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
   `linker-genie-open`（含问句）。圆钮/商城开钮走同一 loader 的无问句打开，不主动发送消息。
   App 先恢复已有对话，再将首问追加一次；Hide/open 通过 `linker-genie-state` 回传壳层，
   同步 mount 的 hidden 与入口 aria-expanded。不再写 pending 属性或另点一次圆钮。
+  **加载失败协议**：应用包或任一依赖加载失败时，loader 复位 `loaded`、移除本批失败脚本、
+  在 mount 里显示可见错误面（"Genie could not load." / "Genie konnte nicht geladen werden."
+  与 "Try again" / "Erneut versuchen"，来自 dock payload）；排队首问保留，重试点击按原问句
+  交付一次；成功仍只加载一次应用，失败的应用脚本永不执行（无依赖完成→不追加应用脚本）。
   提交路径：问句→与芯片同路（preventDefault）；其余查询→`linker/v1/catalog-search?q=&limit=2&lang=`
   恰好一个命中则直达产品页，否则原生 GET 交回 archive（`q` 过滤，CatalogFilters）。
   端点超时/失败一律回落到原生提交。

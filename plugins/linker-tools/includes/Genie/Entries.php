@@ -151,6 +151,8 @@ class Entries {
 			'src'          => $this->script_src(),
 			'deps'         => $this->script_deps(),
 			'translations' => $this->script_translations(),
+			'error'        => __( 'Genie could not load.', 'linker-tools' ),
+			'retry'        => __( 'Try again', 'linker-tools' ),
 		);
 		echo '<div class="linker-genie">';
 		printf(
@@ -199,9 +201,35 @@ class Entries {
 	}
 	var loaded = false;
 	var ready = false;
-	var pendingOpen = false;
-	var pendingAsk = '';
-	function shell(open) {
+		var pendingOpen = false;
+		var pendingAsk = '';
+		var failure = null;
+		function clearFailure() {
+			if (failure) {
+				failure.remove();
+				failure = null;
+			}
+		}
+		function showFailure() {
+			clearFailure();
+			failure = document.createElement('section');
+			failure.className = 'linker-genie-app';
+			failure.setAttribute('data-linker-genie-load-error', '');
+			var message = document.createElement('p');
+			message.className = 'linker-genie-app__error';
+			message.setAttribute('role', 'alert');
+			message.textContent = payload.error;
+			var retry = document.createElement('button');
+			retry.type = 'button';
+			retry.className = 'linker-genie-app__toggle';
+			retry.setAttribute('data-linker-genie-open', '');
+			retry.textContent = payload.retry;
+			failure.appendChild(message);
+			failure.appendChild(retry);
+			document.querySelector('[data-linker-genie-mount]').appendChild(failure);
+			shell(true);
+		}
+		function shell(open) {
 		var panel = document.querySelector('[data-linker-genie-mount]');
 		if (panel) {
 			panel.hidden = !open;
@@ -230,9 +258,10 @@ class Entries {
 		boot();
 		deliver();
 	}
-	window.addEventListener('linker-genie-ready', function () {
-		ready = true;
-		deliver();
+		window.addEventListener('linker-genie-ready', function () {
+			ready = true;
+			clearFailure();
+			deliver();
 	});
 	window.addEventListener('linker-genie-state', function (event) {
 		shell(event.detail.open);
@@ -248,46 +277,58 @@ class Entries {
 			return;
 		}
 		loaded = true;
-		var finish = function () {
+		clearFailure();
+		shell(false);
+		var failed = false;
+		var inserted = [];
+		function fail() {
+			if (failed) {
+				return;
+			}
+			failed = true;
+			loaded = false;
+			inserted.forEach(function (script) { script.remove(); });
+			// Keep pendingOpen/pendingAsk: retry delivers the original ask.
+			showFailure();
+		}
+		function append(script) {
+			inserted.push(script);
+			document.body.appendChild(script);
+		}
+		function finish() {
+			if (failed) {
+				return;
+			}
 			(payload.translations || []).forEach(function (js) {
 				var data = document.createElement('script');
 				data.text = js;
-				document.body.appendChild(data);
+				append(data);
 			});
 			var app = document.createElement('script');
 			app.src = payload.src;
 			app.async = false;
-			document.body.appendChild(app);
-		};
-		var deps = payload.deps;
-		if (deps.length === 0) {
+			app.addEventListener('error', fail);
+			append(app);
+		}
+		// Wait for every dependency, not merely the last one: any failed
+		// dependency aborts this batch before the app can execute broken.
+		var remaining = payload.deps.length;
+		if (remaining === 0) {
 			finish();
 			return;
 		}
-		// An inline script runs the moment it is inserted, so the
-		// translations may only be inserted once the dependencies have
-		// executed — they call wp.i18n. Classic scripts with async=false
-		// execute in insertion order, and "load" fires after execution;
-		// the last dependency's load is therefore the signal. "error"
-		// proceeds too: the app fails on the missing global anyway, and
-		// the panel must still open.
-		var proceeded = false;
-		var proceed = function () {
-			if (proceeded) {
-				return;
-			}
-			proceeded = true;
-			finish();
-		};
-		deps.forEach(function (url, index) {
+		payload.deps.forEach(function (url) {
 			var dep = document.createElement('script');
 			dep.src = url;
 			dep.async = false;
-			if (index === deps.length - 1) {
-				dep.addEventListener('load', proceed);
-				dep.addEventListener('error', proceed);
-			}
-			document.body.appendChild(dep);
+			dep.addEventListener('error', fail);
+			dep.addEventListener('load', function () {
+				remaining -= 1;
+				if (remaining === 0) {
+					finish();
+				}
+			});
+			append(dep);
 		});
 	}
 	document.addEventListener(
