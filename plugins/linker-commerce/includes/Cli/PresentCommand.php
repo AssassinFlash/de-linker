@@ -288,7 +288,7 @@ final class PresentCommand {
 		if ( null !== $this->source_files ) {
 			return $this->source_files;
 		}
-		return array_merge( array_values( Templates::catalog() ), Templates::header_partials(), array( Tokens::path() ), Tokens::fonts(), WindPressVolume::files() );
+		return array_merge( array_values( Templates::paths() ), Templates::header_partials(), array( Tokens::path() ), Tokens::fonts(), WindPressVolume::files() );
 	}
 
 	/**

@@ -25,8 +25,8 @@ final class TemplatesTest extends TestCase {
 	/**
 	 * Every Woo page the presentation layer owns has an exported HTML file and a LiveCanvas meta key.
 	 */
-	public function test_catalog_covers_the_woo_pages_and_the_tool_pages(): void {
-		$catalog = Templates::catalog();
+	public function test_paths_cover_the_woo_pages_and_the_tool_pages(): void {
+		$paths = Templates::paths();
 
 		$this->assertSame(
 			array(
@@ -43,31 +43,31 @@ final class TemplatesTest extends TestCase {
 				'linker-advisor',
 				'linker-advisor-de',
 			),
-			array_keys( $catalog )
+			array_keys( $paths )
 		);
-		foreach ( $catalog as $path ) {
+		foreach ( $paths as $path ) {
 			$this->assertFileExists( $path );
 			$html = (string) file_get_contents( $path );
 			$this->assertNotSame( '', trim( $html ) );
 		}
-		$single = (string) file_get_contents( $catalog['is_single_product'] );
+		$single = (string) file_get_contents( $paths['is_single_product'] );
 		$this->assertStringContainsString( 'class="pdp-layout"', $single );
 		$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $single );
 		$this->assertStringContainsString( '[linker_pdp_tools]', $single );
 		$this->assertStringContainsString( '[lc_if condition="linker_commerce_pdp_has_pairings"]', $single );
 		$this->assertStringNotContainsString( '[linker_pdp_buy]', $single );
-		$this->assertStringContainsString( '[linker_catalog_families]', (string) file_get_contents( $catalog['is_shop_page'] ) );
-		$this->assertStringContainsString( 'id="tv-storefront-pdp"', (string) file_get_contents( $catalog['is_single_product'] ) );
-		$this->assertStringContainsString( 'id="tv-woo-b2b-catalog"', (string) file_get_contents( $catalog['is_shop_page'] ) );
-		$this->assertStringContainsString( '[woocommerce_cart]', (string) file_get_contents( $catalog['is_cart_page'] ) );
-		$this->assertStringContainsString( '[linker_checkout]', (string) file_get_contents( $catalog['is_checkout_page'] ) );
-		$this->assertStringContainsString( '[woocommerce_my_account]', (string) file_get_contents( $catalog['is_account_page'] ) );
-		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $catalog['linker-compare'] ) );
-		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $catalog['linker-compare-de'] ) );
-			$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $catalog['linker-faq'] ) );
-			$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $catalog['linker-faq-de'] ) );
-			$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $catalog['linker-advisor'] ) );
-			$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $catalog['linker-advisor-de'] ) );
+		$this->assertStringContainsString( '[linker_products_families]', (string) file_get_contents( $paths['is_shop_page'] ) );
+		$this->assertStringContainsString( 'id="tv-storefront-pdp"', (string) file_get_contents( $paths['is_single_product'] ) );
+		$this->assertStringContainsString( 'id="linker-products"', (string) file_get_contents( $paths['is_shop_page'] ) );
+		$this->assertStringContainsString( '[woocommerce_cart]', (string) file_get_contents( $paths['is_cart_page'] ) );
+		$this->assertStringContainsString( '[linker_checkout]', (string) file_get_contents( $paths['is_checkout_page'] ) );
+		$this->assertStringContainsString( '[woocommerce_my_account]', (string) file_get_contents( $paths['is_account_page'] ) );
+		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $paths['linker-compare'] ) );
+		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $paths['linker-compare-de'] ) );
+			$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $paths['linker-faq'] ) );
+			$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $paths['linker-faq-de'] ) );
+			$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $paths['linker-advisor'] ) );
+			$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $paths['linker-advisor-de'] ) );
 	}
 
 	/**
@@ -201,9 +201,9 @@ final class TemplatesTest extends TestCase {
 	 * counted unchanged, never written.
 	 */
 	public function test_sync_counts_unchanged_templates_and_writes_nothing(): void {
-		$catalog = Templates::catalog();
-		$keys    = array_keys( $catalog );
-		$titles  = array(
+			$paths = Templates::paths();
+			$keys  = array_keys( $paths );
+		$titles    = array(
 			'linker-compare'    => 'Compare products',
 			'linker-compare-de' => 'Produkte vergleichen',
 			'linker-faq'        => 'FAQ & documents',
@@ -211,29 +211,29 @@ final class TemplatesTest extends TestCase {
 			'linker-advisor'    => 'Genie',
 			'linker-advisor-de' => 'Genie',
 		);
-		$updated = 0;
-		$inserts = 0;
+		$updated   = 0;
+		$inserts   = 0;
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		WP_Mock::userFunction(
 			'get_posts',
 			array(
-				'return' => static function ( array $args ) use ( $catalog, $keys, $titles ): array {
+				'return' => static function ( array $args ) use ( $paths, $keys, $titles ): array {
 					if ( in_array( $args['post_type'], array( 'page', 'lc_partial' ), true ) ) {
 						return array();
 					}
 					$key = (string) ( $args['name'] ?? $args['meta_key'] ?? '' );
 					$id  = 600 + array_search( $key, $keys, true );
-					return array( self::post( $id, (string) file_get_contents( $catalog[ $key ] ), $titles[ $key ] ?? 'Template' ) );
+					return array( self::post( $id, (string) file_get_contents( $paths[ $key ] ), $titles[ $key ] ?? 'Template' ) );
 				},
 			)
 		);
 		WP_Mock::userFunction(
 			'get_post',
 			array(
-				'return' => static function ( int $id ) use ( $catalog, $keys, $titles ): WP_Post {
+				'return' => static function ( int $id ) use ( $paths, $keys, $titles ): WP_Post {
 					$key = (string) $keys[ $id - 600 ];
-					return self::post( $id, (string) file_get_contents( $catalog[ $key ] ), $titles[ $key ] ?? 'Template' );
+					return self::post( $id, (string) file_get_contents( $paths[ $key ] ), $titles[ $key ] ?? 'Template' );
 				},
 			)
 		);

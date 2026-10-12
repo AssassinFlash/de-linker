@@ -9,8 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Catalog\EngineeringData;
-use Linker\Commerce\Catalog\SelectionFacts;
+use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\SelectionFacts;
 use WC_Product;
 
 /**
@@ -123,7 +123,7 @@ final class GetProduct {
 	public function execute( $input = array() ): array {
 		$input = (array) $input;
 		$id    = (int) ( $input['product_id'] ?? 0 );
-		$lang  = CatalogText::lang( $input['lang'] ?? null );
+		$lang  = ProductText::lang( $input['lang'] ?? null );
 		if ( $id < 1 || 'product' !== get_post_type( $id ) || 'publish' !== get_post_status( $id ) ) {
 			return $this->empty( $id, $lang );
 		}
@@ -132,12 +132,12 @@ final class GetProduct {
 
 		return array(
 			'product_id' => $id,
-			'title'      => CatalogText::title( $id, $lang ),
-			'url'        => CatalogText::url( $id ),
+			'title'      => ProductText::title( $id, $lang ),
+			'url'        => ProductText::url( $id ),
 			'sku'        => $product instanceof WC_Product ? (string) $product->get_sku() : '',
-			'model'      => CatalogText::term_name( $id, 'pa_model' ),
-			'brand'      => CatalogText::term_name( $id, 'pa_brand' ),
-			'series'     => CatalogText::term_name( $id, 'pa_series' ),
+			'model'      => ProductText::term_name( $id, 'pa_model' ),
+			'brand'      => ProductText::term_name( $id, 'pa_brand' ),
+			'series'     => ProductText::term_name( $id, 'pa_series' ),
 			'facts'      => $facts->to_array(),
 			'figures'    => (object) $this->figures( $id ),
 			'attributes' => (object) $this->attributes( $id ),
@@ -171,7 +171,7 @@ final class GetProduct {
 	private function attributes( int $product_id ): array {
 		$out = array();
 		foreach ( array( 'pa_application', 'pa_phase', 'pa_brand', 'pa_model', 'pa_series' ) as $taxonomy ) {
-			$slugs = CatalogText::term_slugs( $product_id, $taxonomy );
+			$slugs = ProductText::term_slugs( $product_id, $taxonomy );
 			if ( array() !== $slugs ) {
 				$out[ $taxonomy ] = $slugs;
 			}

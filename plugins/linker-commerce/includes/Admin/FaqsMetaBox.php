@@ -9,8 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Admin;
 
-use Linker\Commerce\Catalog\EngineeringData;
-use Linker\Commerce\Catalog\Faqs;
+use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\Faqs;
 
 /**
  * One row per FAQ of the product's `_linker_faqs`: the English question and
