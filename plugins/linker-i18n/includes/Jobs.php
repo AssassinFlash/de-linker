@@ -139,13 +139,6 @@ final class Jobs {
 		}
 	}
 
-	/**
-	 * Queues the translation of an English object.
-	 *
-	 * @param string $kind  State::POST or State::TERM.
-	 * @param int    $id    English object ID.
-	 * @param bool   $force Translate every segment again, discarding edits.
-	 */
 		/**
 		 * Whether this save is the curated header partial or its German twin.
 		 *
