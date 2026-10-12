@@ -80,8 +80,10 @@
 	max-width: 57.5rem;
 }
 
-/* The card the input screen sits in (variant C's .pc-card). */
-.linker-screen {
+/* The card (variant C's .pc-card). The first card carries the title and the
+   project type; each section below it is another card of the same stack. */
+.linker-screen,
+.linker-section {
 	padding: var(--linker-card-pad);
 	background: var(--linker-surface);
 	border: 1px solid var(--linker-line);
@@ -249,23 +251,14 @@
 	gap: var(--linker-stack-gap);
 }
 
-/* Each section is one card of the screen stack (variant C's .pc-card). */
+/* One card per section (the card geometry is declared with .linker-screen). */
 .linker-section {
 	scroll-margin-top: var(--proto-space-6, 2rem);
-	padding: var(--linker-card-pad);
-	background: var(--linker-surface);
-	border: 1px solid var(--linker-line);
-	border-radius: var(--linker-card-radius);
-	box-shadow: var(--linker-card-shadow);
 }
 
-/* The project type block is the first card's content, not a card of its own. */
-.linker-block {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	background: none;
-}
+/* Variant C's first card holds the title and the project type; that block is
+   the card's content, not a card of its own, so it carries no rules here —
+   its head, title and step lead are styled below. */
 
 .linker-block__head {
 	display: flex;
@@ -485,7 +478,7 @@
 	gap: var(--proto-space-2, 0.5rem);
 	align-items: center;
 	align-self: end;
-	min-height: var(--proto-control-height, 2.75rem);
+	min-height: 2.5rem;
 }
 
 .linker-form__roof p {
@@ -495,11 +488,13 @@
 }
 
 /* The card's footer (variant C's .pc-footer): a strip to the card's edges
-   holding the primary action at its right. The negative margins cancel the
-   section card's padding, so the strip reaches the border. */
+   holding the primary action at its right. It cancels the card's own padding
+   only while it ends the card — then it reaches the border and takes the
+   card's bottom corners. The section's last child test is what makes the
+   roof step (or its loading line) sit below the strip instead of collapsing
+   into the strip's -pad margin, which would pull the panel over its edge. */
 .linker-form__submit {
-	margin: var(--proto-space-5, 1.5rem) calc(-1 * var(--linker-card-pad))
-		calc(-1 * var(--linker-card-pad));
+	margin: var(--proto-space-5, 1.5rem) calc(-1 * var(--linker-card-pad)) 0;
 	padding: 0.875rem 1.375rem;
 	display: flex;
 	flex-wrap: wrap;
@@ -509,6 +504,16 @@
 	border-top: 1px solid var(--linker-line);
 	border-radius: 0 0 var(--linker-card-radius) var(--linker-card-radius);
 	background: var(--linker-strip);
+}
+
+.linker-section > .linker-form:last-child .linker-form__submit {
+	margin-bottom: calc(-1 * var(--linker-card-pad));
+}
+
+/* Whatever the card renders after the strip (the roof panel, or the line that
+   says the map is loading) starts a block of its own, clear of the strip. */
+.linker-section > .linker-form + * {
+	margin-top: var(--proto-space-5, 1.5rem);
 }
 
 /* Buttons ---------------------------------------------------------------------- */
@@ -588,13 +593,11 @@
 }
 
 .linker-empty--error {
-	border-style: solid;
 	border-color: var(--linker-danger);
 	color: var(--linker-ink);
 }
 
 .linker-empty--none {
-	border-style: solid;
 	color: var(--linker-ink);
 }
 
