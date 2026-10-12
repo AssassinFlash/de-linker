@@ -130,12 +130,12 @@ class Proxy {
 		register_rest_route(
 			self::NAMESPACE,
 			self::THREAD_ROUTE,
-				array(
-					'methods'             => 'GET',
-					'callback'            => array( $this, 'conversation' ),
-					'permission_callback' => '__return_true',
-				)
-			);
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'conversation' ),
+				'permission_callback' => '__return_true',
+			)
+		);
 		register_rest_route(
 			self::NAMESPACE,
 			self::CONVERSATIONS_ROUTE,
