@@ -250,6 +250,13 @@ final class SelectionFacts {
 		if ( 1 === preg_match( '/\bsingle[\s-]*phase/i', $text ) ) {
 			$counts[1] = true;
 		}
+		// Datasheet wiring notation like 1P2W or 3P3W/3P4W: the conductor
+		// count before P is the grid phase count (the live facet counted it).
+		if ( preg_match_all( '/(?<![\w.])([13])P[234]W/i', $text, $wiring ) > 0 ) {
+			foreach ( $wiring[1] as $lines ) {
+				$counts[ '3' === $lines ? 3 : 1 ] = true;
+			}
+		}
 		// The line conductors come first: a digit not inside a number, or a bare L (one line).
 		if ( preg_match_all( '/(?<![\w.])(?:([13])\s*L?|L)\s*[+\/]\s*N\s*[+\/]\s*PE\b/i', $text, $matches ) > 0 ) {
 			foreach ( $matches[1] as $lines ) {

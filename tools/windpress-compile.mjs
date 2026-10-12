@@ -54,16 +54,36 @@ try {
 	const generate = app.getByRole('button', { name: 'Generate', exact: true });
 	await generate.waitFor({ state: 'visible', timeout: 30_000 });
 
+	// WindPress parks a review-request prompt in a fixed bottom-right
+	// notification viewport; it swallows the pointer events of everything it
+	// covers (measured 2026-10-11: the Generate click never landed while the
+	// prompt was up). Dismiss it by its own button; if it stays, take the
+	// notification viewport out of the layer.
+	for (const label of [ 'Never', 'Later', "OK, Let's do it!" ]) {
+		const prompt = page.getByRole('button', { name: label, exact: true });
+		if ( await prompt.count() > 0 && await prompt.first().isVisible().catch(() => false) ) {
+			await prompt.first().click().catch(() => {});
+			await page.waitForTimeout(500);
+			break;
+		}
+	}
+	await page.evaluate(() => {
+		const region = document.querySelector('[role="region"][aria-label*="Notification"]');
+		if ( region ) region.remove();
+	});
+
 	const stored = page.waitForResponse(
 		(response) =>
 			response.url().includes('/windpress/v1/admin/settings/cache/store') &&
 			response.request().method() === 'POST',
 		{ timeout: 300_000 }
 	);
-	// A real click is unreliable here: WindPress parks a review-request toast
-	// in a fixed bottom-right viewport that swallows the pointer events. The
-	// DOM click event is the recipe's intent and reaches the Vue handler.
-	await generate.dispatchEvent('click');
+	// A real click is the recipe's intent; the notification viewport (the one
+	// blocker that intercepted it) is out of the layer above.
+	await generate.click().catch(async () => {
+		// Some app builds only answer the DOM event; keep that path as fallback.
+		await generate.dispatchEvent('click');
+	});
 	let response;
 	try {
 		response = await stored;

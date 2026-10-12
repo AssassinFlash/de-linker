@@ -39,9 +39,10 @@ final class ShortcodesTest extends TestCase {
 		$codes = $this->shortcodes();
 		foreach (
 			array(
-				'linker_price'    => 'price',
-				'linker_checkout' => 'checkout',
-				'linker_faqs'     => 'faqs',
+				'linker_price'        => 'price',
+				'linker_checkout'     => 'checkout',
+				'linker_faqs'         => 'faqs',
+				'linker_contact_link' => 'contact_link',
 			) as $tag => $method
 		) {
 			WP_Mock::userFunction(
@@ -191,12 +192,11 @@ final class ShortcodesTest extends TestCase {
 
 		$html = $this->shortcodes()->faqs();
 
-		$this->assertStringContainsString( 'data-faq-count="1"', $html );
-		$this->assertStringContainsString( 'What current does the ATS1-T63-A carry?', $html );
+		$this->assertStringContainsString( '<details class="pdp-disclose"><summary>What current does the ATS1-T63-A carry?', $html );
 		$this->assertStringContainsString( 'Rated current is 50 A.', $html );
-		$this->assertStringContainsString( 'manual.pdf#page=31', $html );
-		$this->assertStringContainsString( 'ATS1 manual, p. 31', $html );
+		$this->assertStringContainsString( '<div class="pdp-disclose-body pdp-reading">', $html );
 		$this->assertStringNotContainsString( 'Welchen Strom', $html );
+		$this->assertStringNotContainsString( '<section', $html );
 		unset( $GLOBALS['product'] );
 	}
 

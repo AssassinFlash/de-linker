@@ -116,6 +116,7 @@ final class Templates {
 					throw new \RuntimeException( sprintf( 'wp_insert_post refused the %s template: %s', $meta, $id->get_error_message() ) );
 				}
 				update_post_meta( (int) $id, $meta, '1' );
+				$this->assign_source_language( (int) $id );
 				$created_ids[] = (int) $id;
 				++$created;
 				continue;
@@ -133,6 +134,7 @@ final class Templates {
 					'post_status'  => 'publish',
 				)
 			);
+			$this->assign_source_language( $id );
 			++$updated;
 		}
 		foreach ( self::PAGES as $slug => $page ) {
@@ -181,6 +183,7 @@ final class Templates {
 				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- an exception message for the operator log, not page output.
 				throw new \RuntimeException( sprintf( 'wp_insert_post refused the %s template: %s', $slug, $id->get_error_message() ) );
 			}
+			$this->assign_source_language( (int) $id );
 
 			return array(
 				'created'     => 1,
@@ -205,6 +208,7 @@ final class Templates {
 				'post_status'  => 'publish',
 			)
 		);
+		$this->assign_source_language( $post->ID );
 
 		return array(
 			'created'     => 0,
@@ -229,6 +233,28 @@ final class Templates {
 				continue;
 			}
 			update_post_meta( $id, 'lc_use_template_of_slug', $slug );
+		}
+	}
+
+	/**
+	 * Gives a template without a language the site's source language, when
+	 * Polylang runs: a German twin is later found only through its
+	 * translation group, and Polylang silently skips a languageless member
+	 * when the twin is paired (#11's LiveCanvas forensics, 2026-10-10). The
+	 * default language is the one objects are written in (`wp linker-i18n
+	 * setup` makes it English); a template that already carries a language
+	 * keeps it. Without Polylang there is nothing to answer to, and the
+	 * setup's own assignment covers the templates later.
+	 *
+	 * @param int $id Template post id.
+	 */
+	private function assign_source_language( int $id ): void {
+		if ( ! function_exists( 'pll_set_post_language' ) || ! function_exists( 'pll_default_language' ) || ! function_exists( 'pll_get_post_language' ) ) {
+			return;
+		}
+		$source = pll_default_language();
+		if ( is_string( $source ) && false === pll_get_post_language( $id ) ) {
+			pll_set_post_language( $id, $source );
 		}
 	}
 

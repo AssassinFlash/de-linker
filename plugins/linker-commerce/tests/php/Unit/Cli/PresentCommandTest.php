@@ -28,9 +28,8 @@ final class PresentCommandTest extends TestCase {
 	/**
 	 * The compiled selectors of every anchor class, as Tailwind emits them.
 	 */
-	private const COMPILED_ALL = '.py-10{padding-block:2.5rem}.px-4{padding-inline:1rem}.bg-white{background-color:#fff}'
-		. '.max-w-\\[1160px\\]{max-width:1160px}.text-\\[\\#0c7f73\\]{color:#0c7f73}.lg\\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}'
-		. '.text-\\(--proto-accent\\){color:var(--proto-accent)}';
+	private const COMPILED_ALL = '.sf-catalog{}.catalog-grid{}.sf-card{}.wb-strip{}'
+		. '.pdp-layout{}.pdp-purchase{}.pdp-scene-reel{}.pdp-disclose{}';
 
 	/**
 	 * The option name of the staged backup.
@@ -219,14 +218,14 @@ final class PresentCommandTest extends TestCase {
 	 */
 	public function test_missing_classes_warn_but_the_run_succeeds(): void {
 		$this->mock_install();
-		file_put_contents( $this->cache_path, '.px-4{padding-inline:1rem}' );
+		file_put_contents( $this->cache_path, '.pdp-layout{display:grid}' );
 		touch( $this->cache_path, time() + 60 );
 
 		$this->present();
 
 		$this->assertSame( 1, substr_count( $this->output(), 'wp-cli warning:' ) );
 		$this->assertStringContainsString( 'not compiled', $this->output() );
-		$this->assertStringContainsString( 'py-10', $this->output() );
+		$this->assertStringContainsString( 'sf-card', $this->output() );
 		$this->assertSame( 1, substr_count( $this->output(), 'wp-cli success:' ) );
 	}
 
@@ -784,6 +783,15 @@ final class PresentCommandTest extends TestCase {
 				'return' => static fn ( array $data ): int => (int) $data['ID'],
 			)
 		);
+		// The volume styles land in a throwaway directory.
+		WP_Mock::userFunction(
+			'wp_get_upload_dir',
+			array(
+				'return' => static fn (): array => array( 'basedir' => sys_get_temp_dir() . '/linker-commerce-present-command-uploads' ),
+			)
+		);
+		WP_Mock::userFunction( 'wp_mkdir_p', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => sys_get_temp_dir() ) ) );
 	}
 
 	/**

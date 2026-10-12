@@ -12,6 +12,7 @@ namespace Linker\Commerce\Storefront;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Registration\Approval;
 
+use Linker\Commerce\Catalog\Materials;
 use Linker\Commerce\Catalog\SelectionFactSet;
 use Linker\Commerce\Catalog\SelectionFacts;
 
@@ -74,11 +75,53 @@ final class ProductView {
 			'attributes'   => $this->attributes( $product ),
 			'figures'      => $this->figures( $product_id ),
 			'features'     => $this->features( $product_id ),
+			'benefits'     => $this->benefits( $product_id ),
+			'stats_claim'  => $this->stats_claim( $product_id ),
+			'scenarios'    => $this->scenarios( $product_id ),
 			'downloads'    => $this->downloads( $product_id ),
 			'faqs'         => $this->faqs( $product_id ),
 			'pairings'     => $this->pairings( $product_id ),
 			'crumbs'       => $this->crumbs( $product_id ),
 		);
+	}
+
+	/**
+	 * The application scenarios: the legacy ACF JSON's application_scenarios
+	 * branch (#16 GAP-2: the live product page has the section, the new
+	 * template had no reader for it). Two record shapes exist in the data:
+	 * a rich one (situation, fit, verdict, checklist) and a plain one
+	 * (body, link). Both come back with the fields they carry.
+	 *
+	 * @param int $product_id The product.
+	 * @return list<array{kind: string, title: string, situation: string, fit: string, verdict: string, checklist: list<string>, image: int, url: string}> The scenarios.
+	 */
+	public function scenarios( int $product_id ): array {
+		$parsed = array();
+		foreach ( $this->legacy( $product_id, 'application_scenarios' ) as $scenario ) {
+			if ( ! \is_array( $scenario ) || ! isset( $scenario['scenario_title'] ) ) {
+				continue;
+			}
+			$link     = \is_array( $scenario['scenario_link'] ?? null ) ? (string) ( $scenario['scenario_link']['url'] ?? '' ) : '';
+			$checks   = \array_values(
+				\array_filter(
+					\array_map(
+						static fn( $row ): string => \is_array( $row ) ? \trim( (string) ( $row['check_text'] ?? '' ) ) : \trim( (string) $row ),
+						\is_array( $scenario['scenario_checklist'] ?? null ) ? $scenario['scenario_checklist'] : array()
+					)
+				)
+			);
+			$parsed[] = array(
+				'kind'      => (string) ( $scenario['scenario_kind'] ?? '' ),
+				'title'     => (string) $scenario['scenario_title'],
+				'situation' => (string) ( $scenario['scenario_situation'] ?? $scenario['scenario_body'] ?? '' ),
+				'fit'       => (string) ( $scenario['scenario_fit'] ?? '' ),
+				'verdict'   => (string) ( $scenario['scenario_verdict'] ?? '' ),
+				'checklist' => $checks,
+				'image'     => (int) ( $scenario['scenario_image'] ?? 0 ),
+				'url'       => $link,
+			);
+		}
+		return $parsed;
 	}
 
 	/**
@@ -118,7 +161,14 @@ final class ProductView {
 				$rest = trim( (string) preg_replace( '/\b' . preg_quote( $token, '/' ) . '\b/u', ' ', $rest ) );
 			}
 		}
-		return trim( $rest, " \t-" );
+		$rest = trim( $rest, " \t-" );
+		// The name's own brackets are dropped: the live page reads "ESA battery
+		// module, 5.12 kWh" where the name says "(ESA battery module, 5.12
+		// kWh)" (measured 2026-10-12, EN and DE).
+		if ( \str_starts_with( $rest, '(' ) && \str_ends_with( $rest, ')' ) ) {
+			$rest = trim( \substr( $rest, 1, -1 ) );
+		}
+		return $rest;
 	}
 
 	/**
@@ -298,9 +348,12 @@ final class ProductView {
 		return esc_url_raw(
 			add_query_arg(
 				array(
-					'intent' => 'product',
-					'kind'   => 'product',
-					'title'  => rawurlencode( $product->get_name() ),
+					'intent'     => 'product',
+					'kind'       => 'product',
+					'title'      => rawurlencode( $product->get_name() ),
+					'source_id'  => $product->get_id(),
+					'product_id' => $product->get_id(),
+					'source'     => $product->get_permalink(),
 				),
 				home_url( '/contact/' )
 			)
@@ -415,6 +468,7 @@ final class ProductView {
 			$parsed[] = array(
 				'title'    => (string) $card['feature_title'],
 				'body'     => (string) ( $card['feature_body'] ?? '' ),
+				'image'    => (int) ( $card['feature_image'] ?? 0 ),
 				'priority' => ! empty( $card['feature_priority'] ),
 			);
 		}
@@ -430,8 +484,8 @@ final class ProductView {
 	 * @return mixed[] The branch's items.
 	 */
 	private function legacy( int $product_id, string $branch ): array {
-		$decoded = json_decode( (string) get_post_meta( $product_id, '_tv_legacy_acf_json', true ), true );
-		if ( ! \is_array( $decoded ) || ! isset( $decoded[ $branch ] ) || ! \is_array( $decoded[ $branch ] ) ) {
+		$decoded = Materials::acf( $product_id );
+		if ( ! isset( $decoded[ $branch ] ) || ! \is_array( $decoded[ $branch ] ) ) {
 			return array();
 		}
 		/** The branch's items.
@@ -449,8 +503,57 @@ final class ProductView {
 	 * @param string $field      The field name.
 	 */
 	private function legacy_field( int $product_id, string $field ): string {
-		$decoded = json_decode( (string) get_post_meta( $product_id, '_tv_legacy_acf_json', true ), true );
-		return \is_array( $decoded ) && isset( $decoded[ $field ] ) && \is_string( $decoded[ $field ] ) ? $decoded[ $field ] : '';
+		$decoded = Materials::acf( $product_id );
+		return isset( $decoded[ $field ] ) && \is_string( $decoded[ $field ] ) ? $decoded[ $field ] : '';
+	}
+
+	/**
+	 * The description panel's benefit bullets: the legacy `value_prop`
+	 * branch's `benefit_bullets`, in order (the live page's two cards).
+	 *
+	 * @param int $product_id The product.
+	 * @return list<string> The bullets.
+	 */
+	public function benefits( int $product_id ): array {
+		$prop = $this->legacy( $product_id, 'value_prop' );
+		$out  = array();
+		foreach ( \is_array( $prop['benefit_bullets'] ?? null ) ? $prop['benefit_bullets'] : array() as $bullet ) {
+			$line = \trim( (string) $bullet );
+			if ( '' !== $line ) {
+				$out[] = $line;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The technical-data summary of the live page: the legacy `stats_claim`
+	 * branch (a kicker label, a headline and a reading body) that sits beside
+	 * the specification deck. array() when the product carries none.
+	 *
+	 * @param int $product_id The product.
+	 * @return array{label?: string, title?: string, body?: string, cards?: list<array{label: string, value: string}>}
+	 */
+	public function stats_claim( int $product_id ): array {
+		$claim = $this->legacy( $product_id, 'stats_claim' );
+		if ( ! isset( $claim['label'] ) && ! isset( $claim['title'] ) ) {
+			return array();
+		}
+		$cards = array();
+		foreach ( \is_array( $claim['cards'] ?? null ) ? $claim['cards'] : array() as $card ) {
+			if ( \is_array( $card ) && '' !== trim( (string) ( $card['label'] ?? '' ) ) ) {
+				$cards[] = array(
+					'label' => (string) $card['label'],
+					'value' => trim( (string) ( $card['value'] ?? '' ) ),
+				);
+			}
+		}
+		return array(
+			'label' => (string) ( $claim['label'] ?? '' ),
+			'title' => (string) ( $claim['title'] ?? '' ),
+			'body'  => (string) ( $claim['body'] ?? '' ),
+			'cards' => $cards,
+		);
 	}
 
 	/**

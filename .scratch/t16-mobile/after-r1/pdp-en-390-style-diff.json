@@ -1,0 +1,1578 @@
+[
+  {
+    "key": "nav.pdp-crumbs[1]",
+    "text": "Products / GoodWe/ GW5.1-BAT-D-G21",
+    "style": {
+      "marginBottom": [
+        "8px",
+        "24px"
+      ],
+      "minHeight": [
+        "44px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 93,
+        "w": 358,
+        "h": 44
+      },
+      "t16": {
+        "x": 16,
+        "y": 101,
+        "w": 358,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "div.pdp-layout[1]",
+    "text": "GW5.1-BAT-D-G21 ESA battery module, 5.12 kWh Item number: DLK-GOODWE-GW51BATDG21 Net price",
+    "style": {
+      "gap": [
+        "normal 12px",
+        "0px 12px"
+      ],
+      "rowGap": [
+        "normal",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 145,
+        "w": 358,
+        "h": 5174.515625
+      },
+      "t16": {
+        "x": 16,
+        "y": 143,
+        "w": 358,
+        "h": 5312.84375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-gallery[1]",
+    "text": "",
+    "style": {
+      "gap": [
+        "normal",
+        "0px"
+      ],
+      "rowGap": [
+        "normal",
+        "0px"
+      ],
+      "columnGap": [
+        "normal",
+        "0px"
+      ],
+      "gridTemplateColumns": [
+        "none",
+        "minmax(0px, 1fr)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 167,
+        "w": 190.3125,
+        "h": 313
+      },
+      "t16": {
+        "x": 183.6875,
+        "y": 165,
+        "w": 190.3125,
+        "h": 313.390625
+      }
+    }
+  },
+  {
+    "key": "img.pdp-gallery-main[1]",
+    "text": "",
+    "style": {
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 167,
+        "w": 190.3125,
+        "h": 245
+      },
+      "t16": {
+        "x": 183.6875,
+        "y": 165,
+        "w": 190.3125,
+        "h": 245.390625
+      }
+    }
+  },
+  {
+    "key": "button.pdp-thumb[2]",
+    "text": "",
+    "style": {
+      "gridTemplateColumns": [
+        "50px",
+        "48px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 282.84375,
+        "y": 416,
+        "w": 60,
+        "h": 60
+      },
+      "t16": {
+        "x": 282.84375,
+        "y": 414.390625,
+        "w": 60,
+        "h": 60
+      }
+    }
+  },
+  {
+    "key": "div.pdp-brand.pdp-brand--logo[1]",
+    "text": "",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ],
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "fontWeight": [
+        "700",
+        "400"
+      ],
+      "lineHeight": [
+        "16.5px",
+        "21px"
+      ],
+      "letterSpacing": [
+        "0.88px",
+        "normal"
+      ],
+      "color": [
+        "rgb(12, 127, 115)",
+        "rgb(89, 110, 103)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 177,
+        "w": 155.6875,
+        "h": 24
+      },
+      "t16": {
+        "x": 16,
+        "y": 175,
+        "w": 155.6875,
+        "h": 39.6875
+      }
+    }
+  },
+  {
+    "key": "img.pdp-brand-logo[1]",
+    "text": "",
+    "style": {
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "fontWeight": [
+        "700",
+        "400"
+      ],
+      "lineHeight": [
+        "16.5px",
+        "21px"
+      ],
+      "letterSpacing": [
+        "0.88px",
+        "normal"
+      ],
+      "color": [
+        "rgb(12, 127, 115)",
+        "rgb(89, 110, 103)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 177,
+        "w": 123.0625,
+        "h": 24
+      },
+      "t16": {
+        "x": 16,
+        "y": 175,
+        "w": 123.0625,
+        "h": 24
+      }
+    }
+  },
+  {
+    "key": "h1.pdp-h1[1]",
+    "text": "GW5.1-BAT-D-G21",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ],
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ],
+      "lineHeight": [
+        "28.5012px",
+        "28.2555px"
+      ],
+      "letterSpacing": [
+        "-0.85995px",
+        "normal"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 210,
+        "w": 155.6875,
+        "h": 56.96875
+      },
+      "t16": {
+        "x": 16,
+        "y": 223.6875,
+        "w": 155.6875,
+        "h": 72.15625
+      }
+    }
+  },
+  {
+    "key": "p.pdp-designation[1]",
+    "text": "ESA battery module, 5.12 kWh",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 276.96875,
+        "w": 155.6875,
+        "h": 38.375
+      },
+      "t16": {
+        "x": 16,
+        "y": 305.84375,
+        "w": 155.6875,
+        "h": 54.109375
+      }
+    }
+  },
+  {
+    "key": "p.pdp-sku[1]",
+    "text": "Item number: DLK-GOODWE-GW51BATDG21",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 327.34375,
+        "w": 155.6875,
+        "h": 33
+      },
+      "t16": {
+        "x": 16,
+        "y": 371.953125,
+        "w": 155.6875,
+        "h": 48.71875
+      }
+    }
+  },
+  {
+    "key": "a.pdp-price-login[1]",
+    "text": "Net price after partner sign-in",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 657.1875,
+        "w": 155.3125,
+        "h": 13
+      },
+      "t16": {
+        "x": 16,
+        "y": 427.671875,
+        "w": 155.3125,
+        "h": 13
+      }
+    }
+  },
+  {
+    "key": "a.pdp-btn.pdp-btn-dark[1]",
+    "text": "Sign in for partner pricing",
+    "style": {
+      "marginTop": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 638.1875,
+        "w": 190.3125,
+        "h": 48
+      },
+      "t16": {
+        "x": 183.6875,
+        "y": 715.359375,
+        "w": 190.3125,
+        "h": 48
+      }
+    }
+  },
+  {
+    "key": "a.pdp-btn.pdp-btn-secondary[1]",
+    "text": "Ask about this product",
+    "style": {
+      "color": [
+        "rgb(12, 127, 115)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 803.96875,
+        "w": 358,
+        "h": 48
+      },
+      "t16": {
+        "x": 16,
+        "y": 793.359375,
+        "w": 358,
+        "h": 48
+      }
+    }
+  },
+  {
+    "key": "button.pdp-tool[2]",
+    "text": "Ask Linker Advisor",
+    "style": {
+      "fontSize": [
+        "11px",
+        "12px"
+      ],
+      "fontWeight": [
+        "500",
+        "600"
+      ],
+      "lineHeight": [
+        "15.4px",
+        "16.8px"
+      ],
+      "paddingTop": [
+        "9px",
+        "10px"
+      ],
+      "paddingRight": [
+        "9px",
+        "14px"
+      ],
+      "paddingBottom": [
+        "9px",
+        "10px"
+      ],
+      "paddingLeft": [
+        "9px",
+        "14px"
+      ],
+      "gap": [
+        "7px",
+        "8px"
+      ],
+      "rowGap": [
+        "7px",
+        "8px"
+      ],
+      "columnGap": [
+        "7px",
+        "8px"
+      ],
+      "flexDirection": [
+        "column",
+        "row"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 869.96875,
+        "w": 175,
+        "h": 62.390625
+      },
+      "t16": {
+        "x": 16,
+        "y": 859.359375,
+        "w": 175,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "a.pdp-tool[1]",
+    "text": "Documents",
+    "style": {
+      "fontSize": [
+        "11px",
+        "12px"
+      ],
+      "fontWeight": [
+        "500",
+        "600"
+      ],
+      "lineHeight": [
+        "15.4px",
+        "16.8px"
+      ],
+      "paddingTop": [
+        "9px",
+        "10px"
+      ],
+      "paddingRight": [
+        "9px",
+        "14px"
+      ],
+      "paddingBottom": [
+        "9px",
+        "10px"
+      ],
+      "paddingLeft": [
+        "9px",
+        "14px"
+      ],
+      "gap": [
+        "7px",
+        "8px"
+      ],
+      "rowGap": [
+        "7px",
+        "8px"
+      ],
+      "columnGap": [
+        "7px",
+        "8px"
+      ],
+      "flexDirection": [
+        "column",
+        "row"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 199,
+        "y": 869.96875,
+        "w": 175,
+        "h": 62.390625
+      },
+      "t16": {
+        "x": 199,
+        "y": 859.359375,
+        "w": 175,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "summary. > h2[1]",
+    "text": "Plan with GW5.1-BAT-D-G21",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "14.95px",
+        "17.25px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 29,
+        "y": 963.359375,
+        "w": 332,
+        "h": 14.9375
+      },
+      "t16": {
+        "x": 33,
+        "y": 934.359375,
+        "w": 324,
+        "h": 17.25
+      }
+    }
+  },
+  {
+    "key": "div.pdp-content[1]",
+    "text": "Description Technical data Documents Description GoodWe GW5.1-BAT-D-G21 (ESA battery modul",
+    "style": {
+      "gap": [
+        "normal",
+        "normal 24px"
+      ],
+      "columnGap": [
+        "normal",
+        "24px"
+      ],
+      "gridTemplateColumns": [
+        "none",
+        "minmax(0px, 1fr)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1024.359375,
+        "w": 358,
+        "h": 4295.15625
+      },
+      "t16": {
+        "x": 16,
+        "y": 988.609375,
+        "w": 358,
+        "h": 4467.234375
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[1]",
+    "text": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 38,
+        "y": 1169.453125,
+        "w": 314,
+        "h": 93.5625
+      },
+      "t16": {
+        "x": 38,
+        "y": 1151.703125,
+        "w": 314,
+        "h": 93.5625
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview-intro.pdp-reading[1]",
+    "text": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the pri",
+    "style": {
+      "fontSize": [
+        "14px",
+        "15px"
+      ],
+      "lineHeight": [
+        "25.2px",
+        "28.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 38,
+        "y": 1283.015625,
+        "w": 314,
+        "h": 207.84375
+      },
+      "t16": {
+        "x": 38,
+        "y": 1265.265625,
+        "w": 314,
+        "h": 247.5
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview-intro.pdp-reading > p[1]",
+    "text": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the pri",
+    "style": {
+      "fontSize": [
+        "14px",
+        "15px"
+      ],
+      "lineHeight": [
+        "23.1px",
+        "24.75px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 38,
+        "y": 1283.015625,
+        "w": 314,
+        "h": 207.84375
+      },
+      "t16": {
+        "x": 38,
+        "y": 1265.265625,
+        "w": 314,
+        "h": 247.5
+      }
+    }
+  },
+  {
+    "key": "div. > p[1]",
+    "text": "5.0 kWh usable under the printed test; 57.5 ± 1 kg; IP66.",
+    "style": {
+      "fontSize": [
+        "12px",
+        "13px"
+      ],
+      "lineHeight": [
+        "21px",
+        "24.7px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 64,
+        "y": 1581.859375,
+        "w": 234.71875,
+        "h": 42
+      },
+      "t16": {
+        "x": 64,
+        "y": 1585.765625,
+        "w": 234.71875,
+        "h": 49.375
+      }
+    }
+  },
+  {
+    "key": "div. > p[2]",
+    "text": "Aerosol fire extinguishing (Integrated); no heating.",
+    "style": {
+      "fontSize": [
+        "12px",
+        "13px"
+      ],
+      "lineHeight": [
+        "21px",
+        "24.7px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 376.71875,
+        "y": 1581.859375,
+        "w": 234.71875,
+        "h": 42
+      },
+      "t16": {
+        "x": 376.71875,
+        "y": 1585.765625,
+        "w": 234.71875,
+        "h": 49.375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[1]",
+    "text": "A 57.5 ± 1 kg module",
+    "style": {
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 1704.859375,
+        "w": 356,
+        "h": 48
+      },
+      "t16": {
+        "x": 17,
+        "y": 1716.140625,
+        "w": 356,
+        "h": 52
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[2]",
+    "text": "Functions in the module",
+    "style": {
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 1764.859375,
+        "w": 356,
+        "h": 48
+      },
+      "t16": {
+        "x": 17,
+        "y": 1780.140625,
+        "w": 356,
+        "h": 52
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[2]",
+    "text": "Technical data",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1847.859375,
+        "w": 358,
+        "h": 31.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 1867.140625,
+        "w": 358,
+        "h": 31.1875
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose.pdp-tab-disclosure[1]",
+    "text": "Module energyRated energy5.12 kWhUsable energy5.0 kWh*1 100% DOD, cell 2.85–3.6 V, 0.2P, 2",
+    "style": {
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "10px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2000.640625,
+        "w": 358,
+        "h": 325.140625
+      },
+      "t16": {
+        "x": 16,
+        "y": 2072.921875,
+        "w": 358,
+        "h": 379.1875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[1]",
+    "text": "*1 100% DOD, cell 2.85–3.6 V, 0.2P, 25±2 °C, beginning of life",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "28.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 205,
+        "y": 2090.234375,
+        "w": 152,
+        "h": 70.171875
+      },
+      "t16": {
+        "x": 205,
+        "y": 2162.515625,
+        "w": 152,
+        "h": 114
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[2]",
+    "text": "laboratory test conditions",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "28.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 205,
+        "y": 2264,
+        "w": 152,
+        "h": 46.78125
+      },
+      "t16": {
+        "x": 205,
+        "y": 2380.109375,
+        "w": 152,
+        "h": 57
+      }
+    }
+  },
+  {
+    "key": "section.pdp-block[3]",
+    "text": "Documents GoodWe ESA Series 5–30 kW datasheet (EN) Datasheet · PDF · EN GoodWe ESA Series ",
+    "style": {
+      "gap": [
+        "normal",
+        "20px"
+      ],
+      "rowGap": [
+        "normal",
+        "20px"
+      ],
+      "columnGap": [
+        "normal",
+        "20px"
+      ],
+      "gridTemplateColumns": [
+        "none",
+        "minmax(0px, 1fr)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2359.78125,
+        "w": 358,
+        "h": 440.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 2476.109375,
+        "w": 358,
+        "h": 452.1875
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[3]",
+    "text": "Documents",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2384.78125,
+        "w": 358,
+        "h": 31.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 2501.109375,
+        "w": 358,
+        "h": 31.1875
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[1]",
+    "text": "GoodWe ESA Series 5–30 kW datasheet (EN) Datasheet · PDF · EN",
+    "style": {
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2415.96875,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 2532.296875,
+        "w": 358,
+        "h": 93
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[1]",
+    "text": "Datasheet · PDF · EN",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 2475.96875,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 2592.296875,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[2]",
+    "text": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5) Manual · PDF · EN",
+    "style": {
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2505.96875,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 2625.296875,
+        "w": 358,
+        "h": 93
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[2]",
+    "text": "Manual · PDF · EN",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 2565.96875,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 2685.296875,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[3]",
+    "text": "GoodWe ESA Serie 5–30 kW Benutzerhandbuch (DE, V1.4) Manual · PDF · DE",
+    "style": {
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2595.96875,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 2718.296875,
+        "w": 358,
+        "h": 93
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[3]",
+    "text": "Manual · PDF · DE",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 2655.96875,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 2778.296875,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[4]",
+    "text": "IEC 62619 CB certificate — Lynx D G2 5.1/8.3 (includes G21) Certificate · PDF · EN",
+    "style": {
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2685.96875,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 2811.296875,
+        "w": 358,
+        "h": 93
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[4]",
+    "text": "Certificate · PDF · EN",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 2745.96875,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 2871.296875,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[4]",
+    "text": "Product questions",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2824.96875,
+        "w": 358,
+        "h": 31.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 2953.296875,
+        "w": 358,
+        "h": 31.1875
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[3]",
+    "text": "Does GW5.1-BAT-D-G21 include heating?",
+    "style": {
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2867.15625,
+        "w": 356,
+        "h": 48
+      },
+      "t16": {
+        "x": 17,
+        "y": 2995.484375,
+        "w": 356,
+        "h": 52
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[4]",
+    "text": "How many modules in one column?",
+    "style": {
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2927.15625,
+        "w": 356,
+        "h": 48
+      },
+      "t16": {
+        "x": 17,
+        "y": 3059.484375,
+        "w": 356,
+        "h": 52
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[5]",
+    "text": "Compatibility records",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3035.15625,
+        "w": 358,
+        "h": 31.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 3171.484375,
+        "w": 358,
+        "h": 31.1875
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[5]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3198.796875,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 3335.125,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[6]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3390.25,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 3526.578125,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[7]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3581.703125,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 3718.03125,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[8]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3773.15625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 3909.484375,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[9]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 3964.609375,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4100.9375,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[10]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4156.0625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4292.390625,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[11]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4347.515625,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4483.84375,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[12]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4538.96875,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4675.296875,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[13]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4730.421875,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 4866.75,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[14]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4921.875,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 5058.203125,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[15]",
+    "text": "On GoodWe's compatibility list",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 5113.328125,
+        "w": 165.140625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 5249.65625,
+        "w": 179.859375,
+        "h": 22
+      }
+    }
+  },
+  {
+    "key": "div.pdp-pairing-footnote.pdp-reading.pdp-muted[1]",
+    "text": "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scal",
+    "style": {
+      "lineHeight": [
+        "23.4px",
+        "20.8px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 5188.328125,
+        "w": 358,
+        "h": 107.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 5324.65625,
+        "w": 358,
+        "h": 107.1875
+      }
+    }
+  }
+]

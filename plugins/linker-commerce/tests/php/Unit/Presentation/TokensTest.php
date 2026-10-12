@@ -22,7 +22,20 @@ use WP_Post;
 final class TokensTest extends TestCase {
 
 	/**
-	 * The exported stylesheet names the self-hosted fonts and the live accent.
+	 * The normalized sha256 of the exported tokens stylesheet: comments
+	 * stripped, whitespace collapsed, lowercased. The string checks below
+	 * only catch a renamed plugin path — the full-teardown audits (PR #64,
+	 * #65) showed a whole-CSS byte copy can slip past them (404 lines did).
+	 * The hash catches any wholesale change: when a change to tokens.css is
+	 * INTENDED, recompute the hash (`php -r '\\'`-free one-liner in the test
+	 * failure message) and re-pin it in the same diff, so the review sees a
+	 * conscious token-layer change instead of a silent transplant.
+	 */
+	private const NORMALIZED_SHA256 = '6ba38a78c839e8ea28a9aefbb8abfa98393cde9f48ef73e3d5b71facdfedad5c';
+
+	/**
+	 * The exported stylesheet names the self-hosted fonts and the live accent,
+	 * and its normalized content is exactly the pinned hash.
 	 */
 	public function test_css_uses_plugin_fonts_and_live_tokens(): void {
 		$css = Tokens::css();
@@ -30,6 +43,14 @@ final class TokensTest extends TestCase {
 		$this->assertStringContainsString( '--proto-accent: #0c7f73', $css );
 		$this->assertStringContainsString( '/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-400.ttf', $css );
 		$this->assertStringNotContainsString( 'terravolt-b2b-core', $css );
+
+		$stripped   = preg_replace( '/\/\*.*?\*\//s', '', $css ) ?? '';
+		$normalized = strtolower( preg_replace( '/\s+/', ' ', $stripped ) ?? '' );
+		$this->assertSame(
+			self::NORMALIZED_SHA256,
+			hash( 'sha256', trim( $normalized ) ),
+			'tokens.css changed beyond its pinned normalized hash — if intended, re-pin NORMALIZED_SHA256 in this test within the same diff.'
+		);
 	}
 
 	/**

@@ -251,6 +251,41 @@ final class CatalogFilters {
 	}
 
 	/**
+	 * The catalogue's default ("Recommended") order, the live page's own:
+	 * articles the visitor can act on first, newest within each group, name as
+	 * the stable tail (measured on the live shop 2026-10-12: the first card
+	 * is the newest invoicable model).
+	 *
+	 * @param int[] $ids The catalogue's product ids.
+	 * @return int[]
+	 */
+	private function recommended_order( array $ids ): array {
+		$rows = array();
+		foreach ( $ids as $id ) {
+			$product = wc_get_product( $id );
+			$rows[]  = array(
+				'id'        => (int) $id,
+				'can_order' => $product instanceof \WC_Product && $product->is_purchasable() && '' !== (string) $product->get_price() ? 1 : 0,
+				'ts'        => (int) get_post_time( 'U', true, (int) $id ),
+				'name'      => (string) get_the_title( (int) $id ),
+			);
+		}
+		usort(
+			$rows,
+			static function ( array $a, array $b ): int {
+				if ( $a['can_order'] !== $b['can_order'] ) {
+					return $b['can_order'] <=> $a['can_order'];
+				}
+				if ( $a['ts'] !== $b['ts'] ) {
+					return $b['ts'] <=> $a['ts'];
+				}
+				return strcasecmp( $a['name'], $b['name'] );
+			}
+		);
+		return array_map( static fn( array $row ): int => (int) $row['id'], $rows );
+	}
+
+	/**
 	 * The facets with the counts and labels the rail shows, for the
 	 * archive's products. A facet value no product answers is left out;
 	 * the power buckets stay listed, the empty one disabled, as the rail
@@ -270,6 +305,11 @@ final class CatalogFilters {
 			'brand'       => array(),
 			'phase'       => array(),
 			'power'       => array(),
+			// Products with a scalar energy/power value in this view: the live
+			// shelf rendered each range fold only when at least three rows
+			// carried the value (ranges alone did not count).
+			'has_energy'  => 0,
+			'has_power'   => 0,
 		);
 		foreach ( array(
 			'home'       => 'Home',
@@ -284,6 +324,12 @@ final class CatalogFilters {
 			list( $product_id, $fact ) = $pair;
 			if ( SelectionFactSet::UNKNOWN !== $fact->application ) {
 				++$counts['application'][ $fact->application ]['count'];
+			}
+			if ( \is_float( $fact->usable_kwh ) || \is_float( $fact->nominal_kwh ) ) {
+				++$counts['has_energy'];
+			}
+			if ( \is_float( $fact->ac_power_kw ) ) {
+				++$counts['has_power'];
 			}
 			if ( \is_int( $fact->phase ) ) {
 				$key                     = (string) $fact->phase;
@@ -319,6 +365,20 @@ final class CatalogFilters {
 				'count' => 0,
 			);
 		}
+		// The rail's own order, not the order the products arrived in: the live
+		// rail prints Phase as 3-phase then 1-phase and Power from "Up to 6 kW"
+		// down to "Over 30 kW" (its $phase_labels / $power_labels arrays,
+		// catalogue-archive.php; measured on the live rail 2026-10-12 — t16
+		// listed 1-phase first and the power buckets descending, which is the
+		// first-encountered order of the archive list).
+		$counts['phase'] = $this->in_value_order( $counts['phase'], array( '3', '1' ) );
+		$counts['power'] = $this->in_value_order( $counts['power'], array_keys( self::POWER_BUCKETS ) );
+		// The brands read A-Z, as the live rail lists them (Chint / EcoFlow /
+		// GoodWe / Pylontech / SAJ — measured 2026-10-12).
+		uasort(
+			$counts['brand'],
+			static fn( array $a, array $b ): int => strcasecmp( (string) $a['label'], (string) $b['label'] )
+		);
 		// The power buckets stay listed (the empty one disabled), as the rail
 		// the site serves today shows them; every other facet hides a value
 		// no product answers.
@@ -334,12 +394,33 @@ final class CatalogFilters {
 		 */
 		$facets = array_filter(
 			$counts,
-			static fn( array $values ): bool => array() !== array_filter(
-				$values,
-				static fn( array $value ): bool => $value['count'] > 0
-			)
+			static fn( $values ): bool => \is_array( $values )
+				? array() !== array_filter(
+					$values,
+					static fn( array $value ): bool => $value['count'] > 0
+				)
+				: true // Scalars ride along (has_energy's presence flag).
 		);
 		return $facets;
+	}
+
+	/**
+	 * A facet's values in the order the live rail lists them: the values the
+	 * live names first, then whatever else was counted, in its own order.
+	 *
+	 * @param array<int|string, array{label: string, count: int}> $values The counted values.
+	 * @param string[]                                            $order  The live rail's value order.
+	 * @return array<int|string, array{label: string, count: int}> The values in that order.
+	 */
+	private function in_value_order( array $values, array $order ): array {
+		$ordered = array();
+		foreach ( $order as $value ) {
+			if ( isset( $values[ $value ] ) ) {
+				$ordered[ $value ] = $values[ $value ];
+			}
+		}
+
+		return $ordered + $values;
 	}
 
 	/**
@@ -399,7 +480,19 @@ final class CatalogFilters {
 		if ( array() !== $tax_query ) {
 			$args['tax_query'] = $tax_query; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- one query per archive render.
 		}
+		// Woo's own catalogue visibility: a product excluded from the
+		// catalogue is not part of this set (the live shop omits it too).
+		$visibility = function_exists( 'wc_get_product_visibility_term_ids' ) ? wc_get_product_visibility_term_ids() : array();
+		$hidden     = (int) ( $visibility['exclude-from-catalog'] ?? 0 );
+		if ( $hidden > 0 ) {
+			$args['tax_query'][] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the catalogue's own visibility filter, one query per archive render.
+				'taxonomy' => 'product_visibility',
+				'field'    => 'term_taxonomy_id',
+				'terms'    => array( $hidden ),
+				'operator' => 'NOT IN',
+			);
+		}
 		$ids = get_posts( $args );
-		return array_map( 'intval', $ids );
+		return $this->recommended_order( array_map( 'intval', $ids ) );
 	}
 }

@@ -1,0 +1,4750 @@
+[
+  {
+    "key": "nav.pdp-crumbs[1]",
+    "text": "Produkte / GoodWe/ GW5K-ETA-G20",
+    "style": {
+      "marginBottom": [
+        "8px",
+        "24px"
+      ],
+      "minHeight": [
+        "44px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 93,
+        "w": 358,
+        "h": 44
+      },
+      "t16": {
+        "x": 16,
+        "y": 101,
+        "w": 358,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "div.pdp-layout[1]",
+    "text": "GW5K-ETA-G20 ESA (5-kW-dreiphasiges Leistungsmodul) Artikelnr.: DLK-GOODWE-GW5KETAG20 Nett",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ],
+      "paddingTop": [
+        "22px",
+        "0px"
+      ],
+      "gap": [
+        "normal 12px",
+        "24px 0px"
+      ],
+      "rowGap": [
+        "normal",
+        "24px"
+      ],
+      "columnGap": [
+        "12px",
+        "0px"
+      ],
+      "gridTemplateColumns": [
+        "155.688px 190.312px",
+        "358px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 145,
+        "w": 358,
+        "h": 5344.21875
+      },
+      "t16": {
+        "x": 16,
+        "y": 143,
+        "w": 358,
+        "h": 7037.125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-gallery[1]",
+    "text": "",
+    "style": {
+      "display": [
+        "block",
+        "grid"
+      ],
+      "gap": [
+        "normal",
+        "18px"
+      ],
+      "rowGap": [
+        "normal",
+        "18px"
+      ],
+      "columnGap": [
+        "normal",
+        "18px"
+      ],
+      "minHeight": [
+        "256px",
+        "auto"
+      ],
+      "gridTemplateColumns": [
+        "none",
+        "358px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 167,
+        "w": 190.3125,
+        "h": 313
+      },
+      "t16": {
+        "x": 16,
+        "y": 143,
+        "w": 358,
+        "h": 533.5
+      }
+    }
+  },
+  {
+    "key": "div.pdp-gallery-pair[1]",
+    "text": "",
+    "style": {
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 167,
+        "w": 190.3125,
+        "h": 245
+      },
+      "t16": {
+        "x": 16,
+        "y": 143,
+        "w": 358,
+        "h": 447.5
+      }
+    }
+  },
+  {
+    "key": "button.pdp-gallery-main-wrap[1]",
+    "text": "",
+    "style": {
+      "display": [
+        "grid",
+        "block"
+      ],
+      "alignItems": [
+        "center",
+        "normal"
+      ],
+      "gridTemplateColumns": [
+        "190.312px",
+        "none"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 167,
+        "w": 190.3125,
+        "h": 245
+      },
+      "t16": {
+        "x": 16,
+        "y": 143,
+        "w": 358,
+        "h": 447.5
+      }
+    }
+  },
+  {
+    "key": "img.pdp-gallery-main[1]",
+    "text": "",
+    "style": {
+      "paddingTop": [
+        "0px",
+        "24px"
+      ],
+      "paddingRight": [
+        "0px",
+        "24px"
+      ],
+      "paddingBottom": [
+        "0px",
+        "24px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "24px"
+      ],
+      "borderRadius": [
+        "0px",
+        "26px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 167,
+        "w": 190.3125,
+        "h": 245
+      },
+      "t16": {
+        "x": 16,
+        "y": 143,
+        "w": 358,
+        "h": 447.5
+      }
+    }
+  },
+  {
+    "key": "div.pdp-thumbs[1]",
+    "text": "",
+    "style": {
+      "gap": [
+        "8px",
+        "12px"
+      ],
+      "rowGap": [
+        "8px",
+        "12px"
+      ],
+      "columnGap": [
+        "8px",
+        "12px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ],
+      "justifyContent": [
+        "safe center",
+        "normal"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 412,
+        "w": 190.3125,
+        "h": 68
+      },
+      "t16": {
+        "x": 16,
+        "y": 608.5,
+        "w": 358,
+        "h": 68
+      }
+    }
+  },
+  {
+    "key": "button.pdp-thumb[1]",
+    "text": "",
+    "style": {
+      "display": [
+        "grid",
+        "block"
+      ],
+      "borderRadius": [
+        "14px",
+        "16px"
+      ],
+      "alignItems": [
+        "center",
+        "normal"
+      ],
+      "gridTemplateColumns": [
+        "48px",
+        "none"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 214.84375,
+        "y": 416,
+        "w": 60,
+        "h": 60
+      },
+      "t16": {
+        "x": 18,
+        "y": 612.5,
+        "w": 60,
+        "h": 60
+      }
+    }
+  },
+  {
+    "key": "button.pdp-thumb[2]",
+    "text": "",
+    "style": {
+      "display": [
+        "grid",
+        "block"
+      ],
+      "borderRadius": [
+        "14px",
+        "16px"
+      ],
+      "alignItems": [
+        "center",
+        "normal"
+      ],
+      "gridTemplateColumns": [
+        "50px",
+        "none"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 282.84375,
+        "y": 416,
+        "w": 60,
+        "h": 60
+      },
+      "t16": {
+        "x": 90,
+        "y": 612.5,
+        "w": 60,
+        "h": 60
+      }
+    }
+  },
+  {
+    "key": "div.pdp-brand.pdp-brand--logo[1]",
+    "text": "",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ],
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "fontWeight": [
+        "700",
+        "400"
+      ],
+      "lineHeight": [
+        "16.5px",
+        "21px"
+      ],
+      "letterSpacing": [
+        "0.88px",
+        "normal"
+      ],
+      "color": [
+        "rgb(12, 127, 115)",
+        "rgb(89, 110, 103)"
+      ],
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "9px",
+        "12px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 177,
+        "w": 155.6875,
+        "h": 24
+      },
+      "t16": {
+        "x": 16,
+        "y": 740.5,
+        "w": 358,
+        "h": 31
+      }
+    }
+  },
+  {
+    "key": "img.pdp-brand-logo[1]",
+    "text": "",
+    "style": {
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "fontWeight": [
+        "700",
+        "400"
+      ],
+      "lineHeight": [
+        "16.5px",
+        "21px"
+      ],
+      "letterSpacing": [
+        "0.88px",
+        "normal"
+      ],
+      "color": [
+        "rgb(12, 127, 115)",
+        "rgb(89, 110, 103)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 177,
+        "w": 123.0625,
+        "h": 24
+      },
+      "t16": {
+        "x": 16,
+        "y": 740.5,
+        "w": 158.96875,
+        "h": 31
+      }
+    }
+  },
+  {
+    "key": "h1.pdp-h1[1]",
+    "text": "GW5K-ETA-G20",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ],
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ],
+      "fontSize": [
+        "24.57px",
+        "24px"
+      ],
+      "lineHeight": [
+        "28.5012px",
+        "27.6px"
+      ],
+      "letterSpacing": [
+        "-0.85995px",
+        "normal"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 210,
+        "w": 155.6875,
+        "h": 56.96875
+      },
+      "t16": {
+        "x": 16,
+        "y": 783.5,
+        "w": 358,
+        "h": 27.59375
+      }
+    }
+  },
+  {
+    "key": "p.pdp-designation[1]",
+    "text": "ESA (5-kW-dreiphasiges Leistungsmodul)",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ],
+      "fontSize": [
+        "12px",
+        "14px"
+      ],
+      "lineHeight": [
+        "19.2px",
+        "23.1px"
+      ],
+      "marginTop": [
+        "10px",
+        "8px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 276.96875,
+        "w": 155.6875,
+        "h": 38.375
+      },
+      "t16": {
+        "x": 16,
+        "y": 819.09375,
+        "w": 358,
+        "h": 23.09375
+      }
+    }
+  },
+  {
+    "key": "p.pdp-sku[1]",
+    "text": "Artikelnr.: DLK-GOODWE-GW5KETAG20",
+    "style": {
+      "position": [
+        "relative",
+        "static"
+      ],
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "16.5px",
+        "19.8px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 327.34375,
+        "w": 155.6875,
+        "h": 33
+      },
+      "t16": {
+        "x": 16,
+        "y": 854.1875,
+        "w": 358,
+        "h": 19.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-price[1]",
+    "text": "Nettopreis nach Partner-Anmeldung",
+    "style": {
+      "marginTop": [
+        "0px",
+        "20px"
+      ],
+      "marginBottom": [
+        "18px",
+        "0px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 633.59375,
+        "w": 155.6875,
+        "h": 48
+      },
+      "t16": {
+        "x": 16,
+        "y": 893.984375,
+        "w": 358,
+        "h": 27
+      }
+    }
+  },
+  {
+    "key": "a.pdp-price-login[1]",
+    "text": "Nettopreis nach Partner-Anmeldung",
+    "style": {
+      "fontSize": [
+        "11px",
+        "18px"
+      ],
+      "lineHeight": [
+        "17.6px",
+        "27px"
+      ],
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 640.59375,
+        "w": 130.453125,
+        "h": 37
+      },
+      "t16": {
+        "x": 16,
+        "y": 895.984375,
+        "w": 312.53125,
+        "h": 23
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list[1]",
+    "text": "AC-Nennleistung5 kW PhaseDreiphasig MPPT-Tracker3 Max. Wirkungsgrad98,0 %",
+    "style": {
+      "display": [
+        "grid",
+        "block"
+      ],
+      "paddingTop": [
+        "17px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "17px",
+        "0px"
+      ],
+      "marginTop": [
+        "12px",
+        "20px"
+      ],
+      "marginBottom": [
+        "22px",
+        "0px"
+      ],
+      "borderBottomWidth": [
+        "1px",
+        "0px"
+      ],
+      "gap": [
+        "10px",
+        "normal"
+      ],
+      "rowGap": [
+        "10px",
+        "normal"
+      ],
+      "columnGap": [
+        "10px",
+        "normal"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ],
+      "gridTemplateColumns": [
+        "82px 82px 82px 82px",
+        "none"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 492,
+        "w": 358,
+        "h": 119.59375
+      },
+      "t16": {
+        "x": 16,
+        "y": 940.984375,
+        "w": 358,
+        "h": 153
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[1]",
+    "text": "AC-Nennleistung5 kW",
+    "style": {
+      "paddingTop": [
+        "0px",
+        "8px"
+      ],
+      "paddingBottom": [
+        "0px",
+        "8px"
+      ],
+      "borderBottomWidth": [
+        "0px",
+        "1px"
+      ],
+      "gap": [
+        "5px",
+        "16px"
+      ],
+      "rowGap": [
+        "5px",
+        "16px"
+      ],
+      "columnGap": [
+        "5px",
+        "16px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ],
+      "flexDirection": [
+        "column",
+        "row"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 510,
+        "w": 82,
+        "h": 83.59375
+      },
+      "t16": {
+        "x": 16,
+        "y": 941.984375,
+        "w": 358,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dt[1]",
+    "text": "AC-Nennleistung",
+    "style": {
+      "fontSize": [
+        "10px",
+        "14px"
+      ],
+      "lineHeight": [
+        "15px",
+        "21px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16.109375,
+        "y": 578.59375,
+        "w": 81.765625,
+        "h": 15
+      },
+      "t16": {
+        "x": 16,
+        "y": 949.984375,
+        "w": 121.953125,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "div. > dd[1]",
+    "text": "5 kW",
+    "style": {
+      "fontWeight": [
+        "600",
+        "500"
+      ],
+      "lineHeight": [
+        "19.6px",
+        "21px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40.4375,
+        "y": 546.5,
+        "w": 33.125,
+        "h": 19.59375
+      },
+      "t16": {
+        "x": 344.5,
+        "y": 949.984375,
+        "w": 29.5,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[2]",
+    "text": "PhaseDreiphasig",
+    "style": {
+      "paddingTop": [
+        "0px",
+        "8px"
+      ],
+      "paddingBottom": [
+        "0px",
+        "8px"
+      ],
+      "borderBottomWidth": [
+        "0px",
+        "1px"
+      ],
+      "gap": [
+        "5px",
+        "16px"
+      ],
+      "rowGap": [
+        "5px",
+        "16px"
+      ],
+      "columnGap": [
+        "5px",
+        "16px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ],
+      "flexDirection": [
+        "column",
+        "row"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 108,
+        "y": 510,
+        "w": 82,
+        "h": 83.59375
+      },
+      "t16": {
+        "x": 16,
+        "y": 979.984375,
+        "w": 358,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dt[2]",
+    "text": "Phase",
+    "style": {
+      "fontSize": [
+        "10px",
+        "14px"
+      ],
+      "lineHeight": [
+        "15px",
+        "21px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 134.4375,
+        "y": 578.59375,
+        "w": 29.125,
+        "h": 15
+      },
+      "t16": {
+        "x": 16,
+        "y": 987.984375,
+        "w": 154.96875,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "div. > dd[2]",
+    "text": "Dreiphasig",
+    "style": {
+      "fontWeight": [
+        "600",
+        "500"
+      ],
+      "lineHeight": [
+        "19.6px",
+        "21px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 112.546875,
+        "y": 546.5,
+        "w": 72.90625,
+        "h": 19.59375
+      },
+      "t16": {
+        "x": 293.0625,
+        "y": 987.984375,
+        "w": 80.9375,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[3]",
+    "text": "MPPT-Tracker3",
+    "style": {
+      "paddingTop": [
+        "0px",
+        "8px"
+      ],
+      "paddingBottom": [
+        "0px",
+        "8px"
+      ],
+      "borderBottomWidth": [
+        "0px",
+        "1px"
+      ],
+      "gap": [
+        "5px",
+        "16px"
+      ],
+      "rowGap": [
+        "5px",
+        "16px"
+      ],
+      "columnGap": [
+        "5px",
+        "16px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ],
+      "flexDirection": [
+        "column",
+        "row"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 200,
+        "y": 510,
+        "w": 82,
+        "h": 83.59375
+      },
+      "t16": {
+        "x": 16,
+        "y": 1017.984375,
+        "w": 358,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dt[3]",
+    "text": "MPPT-Tracker",
+    "style": {
+      "fontSize": [
+        "10px",
+        "14px"
+      ],
+      "lineHeight": [
+        "15px",
+        "21px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 208.0625,
+        "y": 578.59375,
+        "w": 65.859375,
+        "h": 15
+      },
+      "t16": {
+        "x": 16,
+        "y": 1025.984375,
+        "w": 47.765625,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "div. > dd[3]",
+    "text": "3",
+    "style": {
+      "fontWeight": [
+        "600",
+        "500"
+      ],
+      "lineHeight": [
+        "19.6px",
+        "21px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 236.71875,
+        "y": 546.5,
+        "w": 8.5625,
+        "h": 19.59375
+      },
+      "t16": {
+        "x": 337.203125,
+        "y": 1025.984375,
+        "w": 36.796875,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[4]",
+    "text": "Max. Wirkungsgrad98,0 %",
+    "style": {
+      "paddingTop": [
+        "0px",
+        "8px"
+      ],
+      "paddingBottom": [
+        "0px",
+        "8px"
+      ],
+      "borderBottomWidth": [
+        "0px",
+        "1px"
+      ],
+      "gap": [
+        "5px",
+        "16px"
+      ],
+      "rowGap": [
+        "5px",
+        "16px"
+      ],
+      "columnGap": [
+        "5px",
+        "16px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ],
+      "flexDirection": [
+        "column",
+        "row"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 292,
+        "y": 510,
+        "w": 82,
+        "h": 83.59375
+      },
+      "t16": {
+        "x": 16,
+        "y": 1055.984375,
+        "w": 358,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dt[4]",
+    "text": "Max. Wirkungsgrad",
+    "style": {
+      "fontSize": [
+        "10px",
+        "14px"
+      ],
+      "lineHeight": [
+        "15px",
+        "21px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 292,
+        "y": 563.59375,
+        "w": 82,
+        "h": 30
+      },
+      "t16": {
+        "x": 16,
+        "y": 1063.984375,
+        "w": 77.59375,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "div. > dd[4]",
+    "text": "98,0 %",
+    "style": {
+      "fontWeight": [
+        "600",
+        "500"
+      ],
+      "lineHeight": [
+        "19.6px",
+        "21px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 308.6875,
+        "y": 539,
+        "w": 48.625,
+        "h": 19.59375
+      },
+      "t16": {
+        "x": 235.96875,
+        "y": 1063.984375,
+        "w": 138.03125,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "div.pdp-avail[1]",
+    "text": "Auf Lager Voraussichtliche Lieferung innerhalb Deutschlands: 39,00 € bis 90,00 € · Die end",
+    "style": {
+      "paddingTop": [
+        "12px",
+        "16px"
+      ],
+      "paddingBottom": [
+        "0px",
+        "16px"
+      ],
+      "marginTop": [
+        "0px",
+        "20px"
+      ],
+      "marginBottom": [
+        "18px",
+        "0px"
+      ],
+      "borderBottomWidth": [
+        "0px",
+        "1px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 699.59375,
+        "w": 358,
+        "h": 87.375
+      },
+      "t16": {
+        "x": 16,
+        "y": 1113.984375,
+        "w": 358,
+        "h": 120.484375
+      }
+    }
+  },
+  {
+    "key": "p.pdp-avail-label[1]",
+    "text": "Auf Lager",
+    "style": {
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "lineHeight": [
+        "17.6px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 712.59375,
+        "w": 358,
+        "h": 17.59375
+      },
+      "t16": {
+        "x": 16,
+        "y": 1130.984375,
+        "w": 358,
+        "h": 23.09375
+      }
+    }
+  },
+  {
+    "key": "span.pdp-dot[1]",
+    "text": "",
+    "style": {
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "lineHeight": [
+        "17.6px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 717.390625,
+        "w": 8,
+        "h": 8
+      },
+      "t16": {
+        "x": 16,
+        "y": 1138.53125,
+        "w": 8,
+        "h": 8
+      }
+    }
+  },
+  {
+    "key": "p.pdp-avail-note[1]",
+    "text": "Voraussichtliche Lieferung innerhalb Deutschlands: 39,00 € bis 90,00 € · Die endgültigen F",
+    "style": {
+      "fontSize": [
+        "11px",
+        "12px"
+      ],
+      "lineHeight": [
+        "17.6px",
+        "19.8px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 734.1875,
+        "w": 358,
+        "h": 52.78125
+      },
+      "t16": {
+        "x": 16,
+        "y": 1158.078125,
+        "w": 358,
+        "h": 59.390625
+      }
+    }
+  },
+  {
+    "key": "a.pdp-btn.pdp-btn-dark[1]",
+    "text": "Für Partnerpreise anmelden",
+    "style": {
+      "fontSize": [
+        "12px",
+        "14px"
+      ],
+      "fontWeight": [
+        "600",
+        "500"
+      ],
+      "lineHeight": [
+        "18px",
+        "21px"
+      ],
+      "paddingRight": [
+        "14px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "16px"
+      ],
+      "marginTop": [
+        "0px",
+        "20px"
+      ],
+      "marginBottom": [
+        "18px",
+        "0px"
+      ],
+      "borderRadius": [
+        "14px",
+        "12px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 183.6875,
+        "y": 633.59375,
+        "w": 190.3125,
+        "h": 48
+      },
+      "t16": {
+        "x": 16,
+        "y": 1254.46875,
+        "w": 358,
+        "h": 48
+      }
+    }
+  },
+  {
+    "key": "a.pdp-btn.pdp-btn-secondary[1]",
+    "text": "Produkt anfragen",
+    "style": {
+      "fontSize": [
+        "12px",
+        "14px"
+      ],
+      "fontWeight": [
+        "600",
+        "500"
+      ],
+      "lineHeight": [
+        "18px",
+        "21px"
+      ],
+      "color": [
+        "rgb(12, 127, 115)",
+        "rgb(21, 53, 47)"
+      ],
+      "paddingRight": [
+        "14px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "16px"
+      ],
+      "marginBottom": [
+        "18px",
+        "0px"
+      ],
+      "borderRadius": [
+        "14px",
+        "12px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 816.96875,
+        "w": 358,
+        "h": 48
+      },
+      "t16": {
+        "x": 16,
+        "y": 1314.46875,
+        "w": 358,
+        "h": 48
+      }
+    }
+  },
+  {
+    "key": "div.pdp-product-tools[1]",
+    "text": "Vergleichen Linker Berater fragen Dokumente Vergleichen 0",
+    "style": {
+      "marginTop": [
+        "0px",
+        "16px"
+      ],
+      "marginBottom": [
+        "18px",
+        "0px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 882.96875,
+        "w": 358,
+        "h": 62.390625
+      },
+      "t16": {
+        "x": 16,
+        "y": 1378.46875,
+        "w": 358,
+        "h": 107.59375
+      }
+    }
+  },
+  {
+    "key": "button.pdp-tool[1]",
+    "text": "Vergleichen",
+    "style": {
+      "position": [
+        "absolute",
+        "static"
+      ],
+      "fontWeight": [
+        "600",
+        "500"
+      ],
+      "borderRadius": [
+        "14px",
+        "12px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 246.921875,
+        "y": 93,
+        "w": 127.078125,
+        "h": 44
+      },
+      "t16": {
+        "x": 16,
+        "y": 1378.46875,
+        "w": 175,
+        "h": 55.59375
+      }
+    }
+  },
+  {
+    "key": "button.pdp-tool[2]",
+    "text": "Linker Berater fragen",
+    "style": {
+      "fontSize": [
+        "11px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15.4px",
+        "16.8px"
+      ],
+      "paddingTop": [
+        "9px",
+        "10px"
+      ],
+      "paddingRight": [
+        "9px",
+        "14px"
+      ],
+      "paddingBottom": [
+        "9px",
+        "10px"
+      ],
+      "paddingLeft": [
+        "9px",
+        "14px"
+      ],
+      "borderRadius": [
+        "14px",
+        "12px"
+      ],
+      "gap": [
+        "7px",
+        "8px"
+      ],
+      "rowGap": [
+        "7px",
+        "8px"
+      ],
+      "columnGap": [
+        "7px",
+        "8px"
+      ],
+      "flexDirection": [
+        "column",
+        "row"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 882.96875,
+        "w": 175,
+        "h": 62.390625
+      },
+      "t16": {
+        "x": 199,
+        "y": 1378.46875,
+        "w": 175,
+        "h": 55.59375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-tool[1]",
+    "text": "Dokumente",
+    "style": {
+      "fontSize": [
+        "11px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15.4px",
+        "16.8px"
+      ],
+      "paddingTop": [
+        "9px",
+        "10px"
+      ],
+      "paddingRight": [
+        "9px",
+        "14px"
+      ],
+      "paddingBottom": [
+        "9px",
+        "10px"
+      ],
+      "paddingLeft": [
+        "9px",
+        "14px"
+      ],
+      "borderRadius": [
+        "14px",
+        "12px"
+      ],
+      "gap": [
+        "7px",
+        "8px"
+      ],
+      "rowGap": [
+        "7px",
+        "8px"
+      ],
+      "columnGap": [
+        "7px",
+        "8px"
+      ],
+      "flexDirection": [
+        "column",
+        "row"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 199,
+        "y": 882.96875,
+        "w": 175,
+        "h": 62.390625
+      },
+      "t16": {
+        "x": 16,
+        "y": 1442.0625,
+        "w": 175,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "details.pdp-project-check[1]",
+    "text": "Planen mit GW5K-ETA-G20 Neues System, Erweiterung oder Austausch? Linker Berater startet d",
+    "style": {
+      "marginTop": [
+        "0px",
+        "16px"
+      ],
+      "borderRadius": [
+        "14px",
+        "12px"
+      ],
+      "minHeight": [
+        "auto",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 963.359375,
+        "w": 358,
+        "h": 50
+      },
+      "t16": {
+        "x": 16,
+        "y": 1502.0625,
+        "w": 358,
+        "h": 43.25
+      }
+    }
+  },
+  {
+    "key": "summary. > h2[1]",
+    "text": "Planen mit GW5K-ETA-G20",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "14.95px",
+        "17.25px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 29,
+        "y": 976.359375,
+        "w": 332,
+        "h": 14.9375
+      },
+      "t16": {
+        "x": 33,
+        "y": 1515.0625,
+        "w": 324,
+        "h": 17.25
+      }
+    }
+  },
+  {
+    "key": "div.pdp-content[1]",
+    "text": "Beschreibung Technische Daten Dokumente Beschreibung GoodWe ESA GW5K-ETA-G20 (5-kW-dreipha",
+    "style": {
+      "display": [
+        "block",
+        "grid"
+      ],
+      "marginTop": [
+        "24px",
+        "0px"
+      ],
+      "gap": [
+        "normal",
+        "normal 24px"
+      ],
+      "columnGap": [
+        "normal",
+        "24px"
+      ],
+      "gridTemplateColumns": [
+        "none",
+        "358px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1037.359375,
+        "w": 358,
+        "h": 4451.859375
+      },
+      "t16": {
+        "x": 16,
+        "y": 1585.3125,
+        "w": 358,
+        "h": 5594.8125
+      }
+    }
+  },
+  {
+    "key": "nav.pdp-section-nav[1]",
+    "text": "Beschreibung Technische Daten Dokumente",
+    "style": {
+      "borderTopWidth": [
+        "1px",
+        "0px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1037.359375,
+        "w": 358,
+        "h": 64
+      },
+      "t16": {
+        "x": 16,
+        "y": 1585.3125,
+        "w": 358,
+        "h": 63
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[1]",
+    "text": "Beschreibung",
+    "style": {
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "color": [
+        "rgb(12, 127, 115)",
+        "rgb(21, 53, 47)"
+      ],
+      "paddingRight": [
+        "14px",
+        "12px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "12px"
+      ],
+      "borderRadius": [
+        "999px",
+        "12px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1046.359375,
+        "w": 101.59375,
+        "h": 44
+      },
+      "t16": {
+        "x": 16,
+        "y": 1593.3125,
+        "w": 117.65625,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[2]",
+    "text": "Technische Daten",
+    "style": {
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "paddingRight": [
+        "14px",
+        "12px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "12px"
+      ],
+      "borderRadius": [
+        "999px",
+        "12px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 121.59375,
+        "y": 1046.359375,
+        "w": 119.84375,
+        "h": 44
+      },
+      "t16": {
+        "x": 137.65625,
+        "y": 1593.3125,
+        "w": 140.890625,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[3]",
+    "text": "Dokumente",
+    "style": {
+      "fontSize": [
+        "11px",
+        "14px"
+      ],
+      "paddingRight": [
+        "14px",
+        "12px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "12px"
+      ],
+      "borderRadius": [
+        "999px",
+        "12px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 245.4375,
+        "y": 1046.359375,
+        "w": 89.578125,
+        "h": 44
+      },
+      "t16": {
+        "x": 282.546875,
+        "y": 1593.3125,
+        "w": 102.359375,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "section.pdp-block[1]",
+    "text": "Beschreibung GoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul) Der GW5K-ETA-G20 i",
+    "style": {
+      "paddingTop": [
+        "24px",
+        "40px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "40px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1101.359375,
+        "w": 358,
+        "h": 511.03125
+      },
+      "t16": {
+        "x": 16,
+        "y": 1648.3125,
+        "w": 358,
+        "h": 918.09375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview[1]",
+    "text": "Beschreibung GoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul) Der GW5K-ETA-G20 i",
+    "style": {
+      "borderRadius": [
+        "24px",
+        "28px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1125.359375,
+        "w": 358,
+        "h": 303.03125
+      },
+      "t16": {
+        "x": 16,
+        "y": 1688.3125,
+        "w": 358,
+        "h": 383.90625
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[1]",
+    "text": "GoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul)",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 38,
+        "y": 1182.453125,
+        "w": 314,
+        "h": 93.5625
+      },
+      "t16": {
+        "x": 38,
+        "y": 1763.40625,
+        "w": 314,
+        "h": 93.5625
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview-intro.pdp-reading[1]",
+    "text": "Der GW5K-ETA-G20 ist das 5-kW-dreiphasige ESA-G20-Leistungsmodul: 5 kVA Nenn-Notstrom, 10 ",
+    "style": {
+      "fontSize": [
+        "14px",
+        "15px"
+      ],
+      "lineHeight": [
+        "25.2px",
+        "28.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 38,
+        "y": 1296.015625,
+        "w": 314,
+        "h": 92.375
+      },
+      "t16": {
+        "x": 38,
+        "y": 1876.96875,
+        "w": 314,
+        "h": 173.25
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview-intro.pdp-reading > p[1]",
+    "text": "Der GW5K-ETA-G20 ist das 5-kW-dreiphasige ESA-G20-Leistungsmodul: 5 kVA Nenn-Notstrom, 10 ",
+    "style": {
+      "fontSize": [
+        "14px",
+        "15px"
+      ],
+      "lineHeight": [
+        "23.1px",
+        "24.75px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 38,
+        "y": 1296.015625,
+        "w": 314,
+        "h": 92.375
+      },
+      "t16": {
+        "x": 38,
+        "y": 1876.96875,
+        "w": 314,
+        "h": 173.25
+      }
+    }
+  },
+  {
+    "key": "ul.pdp-benefits[1]",
+    "text": "5 kVA Nenn-Notstrom; 5,5 kVA dauerhaft und 10,0 kVA für 10 s im Inselbetrieb; interner Byp",
+    "style": {
+      "display": [
+        "flex",
+        "grid"
+      ],
+      "paddingBottom": [
+        "12px",
+        "0px"
+      ],
+      "gridTemplateColumns": [
+        "minmax(0px, 1fr)",
+        "358px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1460.390625,
+        "w": 358,
+        "h": 112
+      },
+      "t16": {
+        "x": 16,
+        "y": 2104.21875,
+        "w": 358,
+        "h": 406.1875
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[1]",
+    "text": "5 kVA Nenn-Notstrom; 5,5 kVA dauerhaft und 10,0 kVA für 10 s im Inselbetrieb; interner Byp",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "22px"
+      ],
+      "gap": [
+        "10px",
+        "12px"
+      ],
+      "rowGap": [
+        "10px",
+        "12px"
+      ],
+      "columnGap": [
+        "10px",
+        "12px"
+      ],
+      "alignItems": [
+        "start",
+        "flex-start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1460.390625,
+        "w": 300.71875,
+        "h": 100
+      },
+      "t16": {
+        "x": 16,
+        "y": 2104.21875,
+        "w": 358,
+        "h": 111.0625
+      }
+    }
+  },
+  {
+    "key": "div. > p[1]",
+    "text": "5 kVA Nenn-Notstrom; 5,5 kVA dauerhaft und 10,0 kVA für 10 s im Inselbetrieb; interner Byp",
+    "style": {
+      "fontSize": [
+        "12px",
+        "13px"
+      ],
+      "lineHeight": [
+        "21px",
+        "24.7px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 64,
+        "y": 1479.390625,
+        "w": 234.71875,
+        "h": 63
+      },
+      "t16": {
+        "x": 66,
+        "y": 2123.21875,
+        "w": 290,
+        "h": 74.0625
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[2]",
+    "text": "10 kW maximale PV-Eingangsleistung an 3 MPPTs (21/21/21 A).",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "22px"
+      ],
+      "gap": [
+        "10px",
+        "12px"
+      ],
+      "rowGap": [
+        "10px",
+        "12px"
+      ],
+      "columnGap": [
+        "10px",
+        "12px"
+      ],
+      "alignItems": [
+        "start",
+        "flex-start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 328.71875,
+        "y": 1460.390625,
+        "w": 300.71875,
+        "h": 100
+      },
+      "t16": {
+        "x": 16,
+        "y": 2227.28125,
+        "w": 358,
+        "h": 86.375
+      }
+    }
+  },
+  {
+    "key": "div. > p[2]",
+    "text": "10 kW maximale PV-Eingangsleistung an 3 MPPTs (21/21/21 A).",
+    "style": {
+      "fontSize": [
+        "12px",
+        "13px"
+      ],
+      "lineHeight": [
+        "21px",
+        "24.7px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 376.71875,
+        "y": 1479.390625,
+        "w": 234.71875,
+        "h": 42
+      },
+      "t16": {
+        "x": 66,
+        "y": 2246.28125,
+        "w": 290,
+        "h": 49.375
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[3]",
+    "text": "Batteriefenster 700–950 V; Laden 5,0 kW bei 6,7 A, Entladen 5,5 kW bei 7,4 A.",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "22px"
+      ],
+      "gap": [
+        "10px",
+        "12px"
+      ],
+      "rowGap": [
+        "10px",
+        "12px"
+      ],
+      "columnGap": [
+        "10px",
+        "12px"
+      ],
+      "alignItems": [
+        "start",
+        "flex-start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 641.4375,
+        "y": 1460.390625,
+        "w": 300.71875,
+        "h": 100
+      },
+      "t16": {
+        "x": 16,
+        "y": 2325.65625,
+        "w": 358,
+        "h": 86.375
+      }
+    }
+  },
+  {
+    "key": "div. > p[3]",
+    "text": "Batteriefenster 700–950 V; Laden 5,0 kW bei 6,7 A, Entladen 5,5 kW bei 7,4 A.",
+    "style": {
+      "fontSize": [
+        "12px",
+        "13px"
+      ],
+      "lineHeight": [
+        "21px",
+        "24.7px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 689.4375,
+        "y": 1479.390625,
+        "w": 234.71875,
+        "h": 42
+      },
+      "t16": {
+        "x": 66,
+        "y": 2344.65625,
+        "w": 290,
+        "h": 49.375
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[4]",
+    "text": "IP66, intelligente Lüfterkühlung, 34 kg, 800 × 340 × 270 mm.",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "22px"
+      ],
+      "gap": [
+        "10px",
+        "12px"
+      ],
+      "rowGap": [
+        "10px",
+        "12px"
+      ],
+      "columnGap": [
+        "10px",
+        "12px"
+      ],
+      "alignItems": [
+        "start",
+        "flex-start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 954.15625,
+        "y": 1460.390625,
+        "w": 300.71875,
+        "h": 100
+      },
+      "t16": {
+        "x": 16,
+        "y": 2424.03125,
+        "w": 358,
+        "h": 86.375
+      }
+    }
+  },
+  {
+    "key": "div. > p[4]",
+    "text": "IP66, intelligente Lüfterkühlung, 34 kg, 800 × 340 × 270 mm.",
+    "style": {
+      "fontSize": [
+        "12px",
+        "13px"
+      ],
+      "lineHeight": [
+        "21px",
+        "24.7px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1002.15625,
+        "y": 1479.390625,
+        "w": 234.71875,
+        "h": 42
+      },
+      "t16": {
+        "x": 66,
+        "y": 2443.03125,
+        "w": 290,
+        "h": 49.375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[1]",
+    "text": "5 kVA Nenn-Notstrom auf dem 63-A-Bypass.Interner 63-A-Durchgang. Nenn-Notstrom 5 kVA. Inse",
+    "style": {
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "10px",
+        "24px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1622.390625,
+        "w": 358,
+        "h": 50
+      },
+      "t16": {
+        "x": 16,
+        "y": 2566.40625,
+        "w": 358,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[1]",
+    "text": "5 kVA Nenn-Notstrom auf dem 63-A-Bypass.",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "19.5px",
+        "22.5px"
+      ],
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ],
+      "minHeight": [
+        "48px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 1623.390625,
+        "w": 356,
+        "h": 48
+      },
+      "t16": {
+        "x": 17,
+        "y": 2567.40625,
+        "w": 356,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[1]",
+    "text": "Interner 63-A-Durchgang. Nenn-Notstrom 5 kVA. Insel 5,5 kVA dauerhaft, 10,0 kVA für 10 s. ",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "14px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "16px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 1671.390625,
+        "w": 356,
+        "h": 101.75
+      },
+      "t16": {
+        "x": 17,
+        "y": 2623.40625,
+        "w": 356,
+        "h": 110.375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[1]",
+    "text": "Interner 63-A-Durchgang. Nenn-Notstrom 5 kVA. Insel 5,5 kVA dauerhaft, 10,0 kVA für 10 s. ",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "21.45px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 31,
+        "y": 1671.390625,
+        "w": 328,
+        "h": 85.75
+      },
+      "t16": {
+        "x": 37,
+        "y": 2623.40625,
+        "w": 316,
+        "h": 92.375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[2]",
+    "text": "Maximal 5,5 kW Batterieentladung bei 7,4 AEin Hochvolt-Batterieeingang. Laden 5,0 kW bei 6",
+    "style": {
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "10px",
+        "24px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1682.390625,
+        "w": 358,
+        "h": 50
+      },
+      "t16": {
+        "x": 16,
+        "y": 2648.40625,
+        "w": 358,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[2]",
+    "text": "Maximal 5,5 kW Batterieentladung bei 7,4 A",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "19.5px",
+        "22.5px"
+      ],
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ],
+      "minHeight": [
+        "48px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 1683.390625,
+        "w": 356,
+        "h": 48
+      },
+      "t16": {
+        "x": 17,
+        "y": 2649.40625,
+        "w": 356,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[2]",
+    "text": "Ein Hochvolt-Batterieeingang. Laden 5,0 kW bei 6,7 A, Entladen 5,5 kW bei 7,4 A, 700–950 V",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "14px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "16px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 1731.390625,
+        "w": 356,
+        "h": 101.75
+      },
+      "t16": {
+        "x": 17,
+        "y": 2705.40625,
+        "w": 356,
+        "h": 110.375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[2]",
+    "text": "Ein Hochvolt-Batterieeingang. Laden 5,0 kW bei 6,7 A, Entladen 5,5 kW bei 7,4 A, 700–950 V",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "21.45px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 31,
+        "y": 1731.390625,
+        "w": 328,
+        "h": 85.75
+      },
+      "t16": {
+        "x": 37,
+        "y": 2705.40625,
+        "w": 316,
+        "h": 92.375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[3]",
+    "text": "10 kW PV an 3 MPPTs3 MPPTs, Strings 1/1/1, 21/21/21 A / 26/26/26 A Isc. Max. PV 10 kW, MPP",
+    "style": {
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "10px",
+        "24px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1742.390625,
+        "w": 358,
+        "h": 50
+      },
+      "t16": {
+        "x": 16,
+        "y": 2730.40625,
+        "w": 358,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[3]",
+    "text": "10 kW PV an 3 MPPTs",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "19.5px",
+        "22.5px"
+      ],
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ],
+      "minHeight": [
+        "48px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 1743.390625,
+        "w": 356,
+        "h": 48
+      },
+      "t16": {
+        "x": 17,
+        "y": 2731.40625,
+        "w": 356,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[3]",
+    "text": "3 MPPTs, Strings 1/1/1, 21/21/21 A / 26/26/26 A Isc. Max. PV 10 kW, MPPT-Fenster 120–950 V",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "14px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "16px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 1791.390625,
+        "w": 356,
+        "h": 80.3125
+      },
+      "t16": {
+        "x": 17,
+        "y": 2787.40625,
+        "w": 356,
+        "h": 87.28125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[3]",
+    "text": "3 MPPTs, Strings 1/1/1, 21/21/21 A / 26/26/26 A Isc. Max. PV 10 kW, MPPT-Fenster 120–950 V",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "21.45px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 31,
+        "y": 1791.390625,
+        "w": 328,
+        "h": 64.3125
+      },
+      "t16": {
+        "x": 37,
+        "y": 2787.40625,
+        "w": 316,
+        "h": 69.28125
+      }
+    }
+  },
+  {
+    "key": "section.pdp-block[2]",
+    "text": "Technische Daten AC-Ausgang und NotstromPV-EingangBatterieanschlussWirkungsgradAllgemeinAC",
+    "style": {
+      "paddingTop": [
+        "24px",
+        "40px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "40px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1802.390625,
+        "w": 358,
+        "h": 872.265625
+      },
+      "t16": {
+        "x": 16,
+        "y": 2812.40625,
+        "w": 358,
+        "h": 985.15625
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[2]",
+    "text": "Technische Daten",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1826.390625,
+        "w": 358,
+        "h": 31.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 2852.40625,
+        "w": 358,
+        "h": 31.1875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stats-layout[1]",
+    "text": "AC-Ausgang und NotstromPV-EingangBatterieanschlussWirkungsgradAllgemeinAC-Ausgang und Nots",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 1877.578125,
+        "w": 358,
+        "h": 773.078125
+      },
+      "t16": {
+        "x": 16,
+        "y": 2903.59375,
+        "w": 358,
+        "h": 853.96875
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose.pdp-tab-disclosure[1]",
+    "text": "AC-Ausgang und NotstromNenn-/max. Leistung5 kWBemessungsstrom bei 400 V7,3 A7,6 A bei 380 ",
+    "style": {
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "10px",
+        "0px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2029.5625,
+        "w": 358,
+        "h": 611.09375
+      },
+      "t16": {
+        "x": 16,
+        "y": 3105.59375,
+        "w": 358,
+        "h": 651.96875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[4]",
+    "text": "Nenn-/max. Leistung5 kWBemessungsstrom bei 400 V7,3 A7,6 A bei 380 V; 3L/N/PE, 220/380 V o",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "25.2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2030.5625,
+        "w": 356,
+        "h": 609.09375
+      },
+      "t16": {
+        "x": 17,
+        "y": 3106.59375,
+        "w": 356,
+        "h": 649.96875
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-stat-wrap[1]",
+    "text": "Nenn-/max. Leistung5 kWBemessungsstrom bei 400 V7,3 A7,6 A bei 380 V; 3L/N/PE, 220/380 V o",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "28.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 2030.5625,
+        "w": 356,
+        "h": 609.09375
+      },
+      "t16": {
+        "x": 17,
+        "y": 3106.59375,
+        "w": 356,
+        "h": 649.96875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[1]",
+    "text": "7,6 A bei 380 V; 3L/N/PE, 220/380 V oder 230/400 V, 50/60 Hz",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "28.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 205,
+        "y": 2119.15625,
+        "w": 152,
+        "h": 93.5625
+      },
+      "t16": {
+        "x": 205,
+        "y": 3195.1875,
+        "w": 152,
+        "h": 114
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[2]",
+    "text": "interner Bypass 63 A",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "28.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 205,
+        "y": 2266.515625,
+        "w": 152,
+        "h": 23.390625
+      },
+      "t16": {
+        "x": 205,
+        "y": 3362.984375,
+        "w": 152,
+        "h": 28.5
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[3]",
+    "text": "im Netzbetrieb gilt die Scheinleistung aus dem Netz",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "28.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 205,
+        "y": 2414.296875,
+        "w": 152,
+        "h": 70.171875
+      },
+      "t16": {
+        "x": 205,
+        "y": 3515.875,
+        "w": 152,
+        "h": 85.5
+      }
+    }
+  },
+  {
+    "key": "section.pdp-block[3]",
+    "text": "Dokumente GoodWe ESA Serie 5–30 kW Datenblatt (EN) Datenblatt · PDF · EN GoodWe ESA Serie ",
+    "style": {
+      "display": [
+        "block",
+        "grid"
+      ],
+      "paddingTop": [
+        "24px",
+        "40px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "40px"
+      ],
+      "gap": [
+        "normal",
+        "20px"
+      ],
+      "rowGap": [
+        "normal",
+        "20px"
+      ],
+      "columnGap": [
+        "normal",
+        "20px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ],
+      "gridTemplateColumns": [
+        "none",
+        "358px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2674.65625,
+        "w": 358,
+        "h": 1250.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 3797.5625,
+        "w": 358,
+        "h": 1594.1875
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[3]",
+    "text": "Dokumente",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2699.65625,
+        "w": 358,
+        "h": 31.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 3838.5625,
+        "w": 358,
+        "h": 31.1875
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[1]",
+    "text": "GoodWe ESA Serie 5–30 kW Datenblatt (EN) Datenblatt · PDF · EN",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2730.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 3889.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[1]",
+    "text": "Datenblatt · PDF · EN",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 2790.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 3950.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[2]",
+    "text": "GoodWe ESA Serie 5–30 kW Datenblatt (DE) Datenblatt · PDF · DE",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2820.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4003.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[2]",
+    "text": "Datenblatt · PDF · DE",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 2880.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4064.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[3]",
+    "text": "GoodWe ESA Serie 5–30 kW Benutzerhandbuch (EN, V1.5) Handbuch · PDF · EN",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 2910.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4117.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[3]",
+    "text": "Handbuch · PDF · EN",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 2970.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4178.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[4]",
+    "text": "GoodWe ESA Serie 5–30 kW Benutzerhandbuch (DE, V1.4) Handbuch · PDF · DE",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3000.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4231.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[4]",
+    "text": "Handbuch · PDF · DE",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3060.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4292.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[5]",
+    "text": "GoodWe ESA 5–30 kW Schnellinstallationsanleitung (V1.7) Dokument · PDF · Mehrsprachig",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3090.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4345.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[5]",
+    "text": "Dokument · PDF · Mehrsprachig",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3150.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4406.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[6]",
+    "text": "EU-Konformitätserklärung — ESA 5–30 kW Leistungsmodule Zertifikat · PDF · Mehrsprachig",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3180.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4459.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[6]",
+    "text": "Zertifikat · PDF · Mehrsprachig",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3240.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4520.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[7]",
+    "text": "IEC-62109-Zertifikat — ESA 5–30 kW ETA-G20 Zertifikat · PDF · EN",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3270.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4573.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[7]",
+    "text": "Zertifikat · PDF · EN",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3330.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4634.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[8]",
+    "text": "IEC-63027-Zertifikat — ESA 5–30 kW ETA-G20 Zertifikat · PDF · EN",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3360.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4687.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[8]",
+    "text": "Zertifikat · PDF · EN",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3420.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4748.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[9]",
+    "text": "VDE-AR-N-4105-Zertifikat — ESA 5–30 kW ETA-G20 (A3 50706429) Zertifikat · PDF · Mehrsprach",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3450.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4801.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[9]",
+    "text": "Zertifikat · PDF · Mehrsprachig",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3510.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4862.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[10]",
+    "text": "EN-50549-1-Zertifikat — ESA 5–30 kW ETA-G20 (A3 50705507) Zertifikat · PDF · Mehrsprachig",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3540.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 4915.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[10]",
+    "text": "Zertifikat · PDF · Mehrsprachig",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3600.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 4976.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[11]",
+    "text": "EN-50549-2-Zertifikat — ESA 5–30 kW ETA-G20 (A3 50706340) Zertifikat · PDF · Mehrsprachig",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3630.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 5029.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[11]",
+    "text": "Zertifikat · PDF · Mehrsprachig",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3690.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 5090.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[12]",
+    "text": "GoodWe-Wechselrichter-Garantie für Europa (EN) Dokument · PDF · EN",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3720.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 5143.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[12]",
+    "text": "Dokument · PDF · EN",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3780.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 5204.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "a.pdp-doc[13]",
+    "text": "GoodWe-Wechselrichter-Garantie für Europa (DE) Dokument · PDF · DE",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3810.84375,
+        "w": 358,
+        "h": 90
+      },
+      "t16": {
+        "x": 16,
+        "y": 5257.75,
+        "w": 358,
+        "h": 94
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[13]",
+    "text": "Dokument · PDF · DE",
+    "style": {
+      "fontSize": [
+        "10px",
+        "12px"
+      ],
+      "lineHeight": [
+        "15px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 82,
+        "y": 3870.84375,
+        "w": 246,
+        "h": 15
+      },
+      "t16": {
+        "x": 83,
+        "y": 5318.75,
+        "w": 244,
+        "h": 18
+      }
+    }
+  },
+  {
+    "key": "section.pdp-block.pdp-faqs[1]",
+    "text": "Produktfragen Welche Notstromwerte hat der GW5K-ETA-G20?Die Nenn-Scheinleistung am Backup-",
+    "style": {
+      "paddingTop": [
+        "24px",
+        "40px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "40px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3924.84375,
+        "w": 358,
+        "h": 304.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 5391.75,
+        "w": 358,
+        "h": 400.1875
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[4]",
+    "text": "Produktfragen",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3949.84375,
+        "w": 358,
+        "h": 31.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 5432.75,
+        "w": 358,
+        "h": 31.1875
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[4]",
+    "text": "Welche Notstromwerte hat der GW5K-ETA-G20?Die Nenn-Scheinleistung am Backup-Anschluss betr",
+    "style": {
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "10px",
+        "24px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 3991.03125,
+        "w": 358,
+        "h": 67
+      },
+      "t16": {
+        "x": 16,
+        "y": 5463.9375,
+        "w": 358,
+        "h": 79
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[4]",
+    "text": "Welche Notstromwerte hat der GW5K-ETA-G20?",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "19.5px",
+        "22.5px"
+      ],
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ],
+      "minHeight": [
+        "48px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 3992.03125,
+        "w": 356,
+        "h": 65
+      },
+      "t16": {
+        "x": 17,
+        "y": 5464.9375,
+        "w": 356,
+        "h": 77
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[9]",
+    "text": "Die Nenn-Scheinleistung am Backup-Anschluss beträgt 5 kVA. Im Inselbetrieb sind 5,5 kVA da",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "14px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "16px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 4057.03125,
+        "w": 356,
+        "h": 123.1875
+      },
+      "t16": {
+        "x": 17,
+        "y": 5541.9375,
+        "w": 356,
+        "h": 87.28125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[4]",
+    "text": "Die Nenn-Scheinleistung am Backup-Anschluss beträgt 5 kVA. Im Inselbetrieb sind 5,5 kVA da",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "21.45px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 31,
+        "y": 4057.03125,
+        "w": 328,
+        "h": 107.1875
+      },
+      "t16": {
+        "x": 37,
+        "y": 5541.9375,
+        "w": 316,
+        "h": 69.28125
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[5]",
+    "text": "Wie viele MPPTs hat der GW5K-ETA-G20?3 MPPTs, Strings 1/1/1, 21/21/21 A maximaler MPPT-Str",
+    "style": {
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "10px",
+        "24px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4068.03125,
+        "w": 358,
+        "h": 50
+      },
+      "t16": {
+        "x": 16,
+        "y": 5566.9375,
+        "w": 358,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[5]",
+    "text": "Wie viele MPPTs hat der GW5K-ETA-G20?",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "19.5px",
+        "22.5px"
+      ],
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ],
+      "minHeight": [
+        "48px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 4069.03125,
+        "w": 356,
+        "h": 48
+      },
+      "t16": {
+        "x": 17,
+        "y": 5567.9375,
+        "w": 356,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[10]",
+    "text": "3 MPPTs, Strings 1/1/1, 21/21/21 A maximaler MPPT-Strom und 26/26/26 A Kurzschlussstrom. M",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "14px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "16px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 4117.03125,
+        "w": 356,
+        "h": 101.75
+      },
+      "t16": {
+        "x": 17,
+        "y": 5623.9375,
+        "w": 356,
+        "h": 41.09375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[5]",
+    "text": "3 MPPTs, Strings 1/1/1, 21/21/21 A maximaler MPPT-Strom und 26/26/26 A Kurzschlussstrom. M",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "21.45px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 31,
+        "y": 4117.03125,
+        "w": 328,
+        "h": 85.75
+      },
+      "t16": {
+        "x": 37,
+        "y": 5623.9375,
+        "w": 316,
+        "h": 23.09375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[6]",
+    "text": "Welche Batteriemodule gehören zu diesem Leistungsmodul?Die ESA-Batterietabelle nennt GW5.1",
+    "style": {
+      "marginTop": [
+        "10px",
+        "0px"
+      ],
+      "marginBottom": [
+        "10px",
+        "24px"
+      ],
+      "borderRadius": [
+        "14px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4128.03125,
+        "w": 358,
+        "h": 67
+      },
+      "t16": {
+        "x": 16,
+        "y": 5648.9375,
+        "w": 358,
+        "h": 79
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[6]",
+    "text": "Welche Batteriemodule gehören zu diesem Leistungsmodul?",
+    "style": {
+      "fontSize": [
+        "13px",
+        "15px"
+      ],
+      "lineHeight": [
+        "19.5px",
+        "22.5px"
+      ],
+      "paddingTop": [
+        "13px",
+        "16px"
+      ],
+      "paddingRight": [
+        "13px",
+        "0px"
+      ],
+      "paddingBottom": [
+        "13px",
+        "16px"
+      ],
+      "paddingLeft": [
+        "13px",
+        "0px"
+      ],
+      "minHeight": [
+        "48px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 4129.03125,
+        "w": 356,
+        "h": 65
+      },
+      "t16": {
+        "x": 17,
+        "y": 5649.9375,
+        "w": 356,
+        "h": 77
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[11]",
+    "text": "Die ESA-Batterietabelle nennt GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "23.4px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "14px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "16px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "14px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 17,
+        "y": 4194.03125,
+        "w": 356,
+        "h": 187.5
+      },
+      "t16": {
+        "x": 17,
+        "y": 5726.9375,
+        "w": 356,
+        "h": 456.78125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[6]",
+    "text": "Die ESA-Batterietabelle nennt GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT",
+    "style": {
+      "fontSize": [
+        "13px",
+        "14px"
+      ],
+      "lineHeight": [
+        "21.45px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 31,
+        "y": 4194.03125,
+        "w": 328,
+        "h": 171.5
+      },
+      "t16": {
+        "x": 37,
+        "y": 5726.9375,
+        "w": 316,
+        "h": 438.78125
+      }
+    }
+  },
+  {
+    "key": "section.pdp-block[4]",
+    "text": "Kompatibilitätsangaben GoodWe GW5.1-BAT-D-G20 (ESA-Batteriemodul, 5,12 kWh)Artikelnr. DLK-",
+    "style": {
+      "paddingTop": [
+        "24px",
+        "40px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "40px"
+      ],
+      "minHeight": [
+        "0px",
+        "auto"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4229.03125,
+        "w": 358,
+        "h": 1260.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 5791.9375,
+        "w": 358,
+        "h": 1388.1875
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[5]",
+    "text": "Kompatibilitätsangaben",
+    "style": {
+      "letterSpacing": [
+        "-0.6px",
+        "-0.4px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4254.03125,
+        "w": 358,
+        "h": 31.1875
+      },
+      "t16": {
+        "x": 16,
+        "y": 5832.9375,
+        "w": 358,
+        "h": 31.1875
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[1]",
+    "text": "GoodWe GW5.1-BAT-D-G20 (ESA-Batteriemodul, 5,12 kWh)Artikelnr. DLK-GOODWE-GW51BATDG20In de",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4301.21875,
+        "w": 358,
+        "h": 156.5625
+      },
+      "t16": {
+        "x": 16,
+        "y": 5880.125,
+        "w": 358,
+        "h": 172.5625
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[14]",
+    "text": "In der Kompatibilitätsliste von GoodWe",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4398.78125,
+        "w": 202.0625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 5977.6875,
+        "w": 216,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[2]",
+    "text": "GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh)Artikelnr. DLK-GOODWE-GW51BATDG21In de",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4473.78125,
+        "w": 358,
+        "h": 156.5625
+      },
+      "t16": {
+        "x": 16,
+        "y": 6068.6875,
+        "w": 358,
+        "h": 172.5625
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[15]",
+    "text": "In der Kompatibilitätsliste von GoodWe",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4571.34375,
+        "w": 202.0625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 6166.25,
+        "w": 216,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[3]",
+    "text": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)Artikelnr. DLK-GOODWE-GW60BATDG20In der",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4646.34375,
+        "w": 358,
+        "h": 156.5625
+      },
+      "t16": {
+        "x": 16,
+        "y": 6257.25,
+        "w": 358,
+        "h": 172.5625
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[16]",
+    "text": "In der Kompatibilitätsliste von GoodWe",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4743.90625,
+        "w": 202.0625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 6354.8125,
+        "w": 216,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[4]",
+    "text": "GoodWe GW8.3-BAT-D-G20 (ESA-Batteriemodul, 8,32 kWh)Artikelnr. DLK-GOODWE-GW83BATDG20In de",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4818.90625,
+        "w": 358,
+        "h": 156.5625
+      },
+      "t16": {
+        "x": 16,
+        "y": 6445.8125,
+        "w": 358,
+        "h": 172.5625
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[17]",
+    "text": "In der Kompatibilitätsliste von GoodWe",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 4916.46875,
+        "w": 202.0625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 6543.375,
+        "w": 216,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[5]",
+    "text": "GoodWe GW8.3-BAT-D-G21 (ESA-Batteriemodul, 8,32 kWh)Artikelnr. DLK-GOODWE-GW83BATDG21In de",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 4991.46875,
+        "w": 358,
+        "h": 156.5625
+      },
+      "t16": {
+        "x": 16,
+        "y": 6634.375,
+        "w": 358,
+        "h": 172.5625
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[18]",
+    "text": "In der Kompatibilitätsliste von GoodWe",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 5089.03125,
+        "w": 202.0625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 6731.9375,
+        "w": 216,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[6]",
+    "text": "GoodWe GW9.0-BAT-D-G20 (ESA-Batteriemodul, 9,0 kWh)Artikelnr. DLK-GOODWE-GW90BATDG20In der",
+    "style": {
+      "borderRadius": [
+        "18px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 5164.03125,
+        "w": 358,
+        "h": 156.5625
+      },
+      "t16": {
+        "x": 16,
+        "y": 6822.9375,
+        "w": 358,
+        "h": 172.5625
+      }
+    }
+  },
+  {
+    "key": "span.pdp-doc-meta[19]",
+    "text": "In der Kompatibilitätsliste von GoodWe",
+    "style": {
+      "fontSize": [
+        "10px",
+        "11px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 139,
+        "y": 5261.59375,
+        "w": 202.0625,
+        "h": 22
+      },
+      "t16": {
+        "x": 139,
+        "y": 6920.5,
+        "w": 216,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div.pdp-pairing-footnote.pdp-reading.pdp-muted[1]",
+    "text": "Das GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt ei",
+    "style": {
+      "lineHeight": [
+        "23.4px",
+        "20.8px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 16,
+        "y": 5336.59375,
+        "w": 358,
+        "h": 128.625
+      },
+      "t16": {
+        "x": 16,
+        "y": 7011.5,
+        "w": 358,
+        "h": 128.625
+      }
+    }
+  }
+]

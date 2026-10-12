@@ -1,0 +1,1027 @@
+[
+  {
+    "pair": "eta-de-1440",
+    "region": "thumbnails",
+    "source_rect": [
+      40,
+      151,
+      76,
+      640
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 151,
+      "w": 76,
+      "h": 640
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 151,
+      "w": 76,
+      "h": 640
+    },
+    "best_diff_pixels": 4518,
+    "pixels": 48640,
+    "percent": 9.288651,
+    "dx": 0,
+    "dy": 0,
+    "unshifted_diff_pixels": 4518
+  },
+  {
+    "pair": "eta-de-1440",
+    "region": "plan-with",
+    "source_rect": [
+      986,
+      876,
+      414,
+      44
+    ],
+    "geometry_live": {
+      "x": 986.65625,
+      "y": 876.578125,
+      "w": 413.34375,
+      "h": 43.25
+    },
+    "geometry_t16": {
+      "x": 986.65625,
+      "y": 901.25,
+      "w": 413.34375,
+      "h": 43.25
+    },
+    "best_diff_pixels": 465,
+    "pixels": 18216,
+    "percent": 2.552701,
+    "dx": 0,
+    "dy": 24,
+    "unshifted_diff_pixels": 11743
+  },
+  {
+    "pair": "eta-de-1440",
+    "region": "overview",
+    "source_rect": [
+      40,
+      1090,
+      1360,
+      228
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1090.828125,
+      "w": 1360,
+      "h": 226.1875
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1122,
+      "w": 1360,
+      "h": 250.9375
+    },
+    "best_diff_pixels": 28579,
+    "pixels": 310080,
+    "percent": 9.216654,
+    "dx": 0,
+    "dy": 31,
+    "unshifted_diff_pixels": 82175
+  },
+  {
+    "pair": "eta-de-1440",
+    "region": "benefits",
+    "source_rect": [
+      40,
+      1349,
+      1360,
+      123
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1349.015625,
+      "w": 1360,
+      "h": 122.0625
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1404.9375,
+      "w": 1360,
+      "h": 123.0625
+    },
+    "best_diff_pixels": 469,
+    "pixels": 167280,
+    "percent": 0.280368,
+    "dx": 0,
+    "dy": 57,
+    "unshifted_diff_pixels": 90458
+  },
+  {
+    "pair": "eta-de-1440",
+    "region": "description-disclosure",
+    "source_rect": [
+      40,
+      1527,
+      668,
+      59
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1527.078125,
+      "w": 668,
+      "h": 58
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1584,
+      "w": 668,
+      "h": 58
+    },
+    "best_diff_pixels": 2558,
+    "pixels": 39412,
+    "percent": 6.490409,
+    "dx": 0,
+    "dy": 139,
+    "unshifted_diff_pixels": 38513
+  },
+  {
+    "pair": "eta-de-1440",
+    "region": "infodeck",
+    "source_rect": [
+      707,
+      1792,
+      693,
+      581
+    ],
+    "geometry_live": {
+      "x": 707,
+      "y": 1792.671875,
+      "w": 692.984375,
+      "h": 579.671875
+    },
+    "geometry_t16": {
+      "x": 707,
+      "y": 1849.59375,
+      "w": 693,
+      "h": 561.671875
+    },
+    "best_diff_pixels": 57461,
+    "pixels": 402633,
+    "percent": 14.271309,
+    "dx": 1,
+    "dy": 40,
+    "unshifted_diff_pixels": 116192
+  },
+  {
+    "pair": "eta-de-1440",
+    "region": "documents",
+    "source_rect": [
+      40,
+      2412,
+      1360,
+      858
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 2412.34375,
+      "w": 1360,
+      "h": 857.59375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 2451.265625,
+      "w": 1360,
+      "h": 857.59375
+    },
+    "best_diff_pixels": 2425,
+    "pixels": 1166880,
+    "percent": 0.207819,
+    "dx": 0,
+    "dy": 39,
+    "unshifted_diff_pixels": 500955
+  },
+  {
+    "pair": "eta-de-1440",
+    "region": "faq",
+    "source_rect": [
+      40,
+      3269,
+      1360,
+      295
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 3269.9375,
+      "w": 1360,
+      "h": 293.59375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 3308.859375,
+      "w": 1360,
+      "h": 368.59375
+    },
+    "best_diff_pixels": 144723,
+    "pixels": 401200,
+    "percent": 36.072532,
+    "dx": 2,
+    "dy": -100,
+    "unshifted_diff_pixels": 180500
+  },
+  {
+    "pair": "eta-de-1440",
+    "region": "pairing-card",
+    "source_rect": [
+      40,
+      3662,
+      280,
+      227
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 3662.125,
+      "w": 280,
+      "h": 226.34375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 3776.046875,
+      "w": 280,
+      "h": 226.34375
+    },
+    "best_diff_pixels": 16,
+    "pixels": 63560,
+    "percent": 0.025173,
+    "dx": 0,
+    "dy": 114,
+    "unshifted_diff_pixels": 47621
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "thumbnails",
+    "source_rect": [
+      40,
+      151,
+      76,
+      640
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 151,
+      "w": 76,
+      "h": 640
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 151,
+      "w": 76,
+      "h": 640
+    },
+    "best_diff_pixels": 4518,
+    "pixels": 48640,
+    "percent": 9.288651,
+    "dx": 0,
+    "dy": 0,
+    "unshifted_diff_pixels": 4518
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "plan-with",
+    "source_rect": [
+      986,
+      868,
+      414,
+      44
+    ],
+    "geometry_live": {
+      "x": 986.65625,
+      "y": 868.203125,
+      "w": 413.34375,
+      "h": 43.25
+    },
+    "geometry_t16": {
+      "x": 986.65625,
+      "y": 872.078125,
+      "w": 413.34375,
+      "h": 43.25
+    },
+    "best_diff_pixels": 1,
+    "pixels": 18216,
+    "percent": 0.00549,
+    "dx": 0,
+    "dy": 4,
+    "unshifted_diff_pixels": 4719
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "overview",
+    "source_rect": [
+      40,
+      1082,
+      1360,
+      227
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1082.453125,
+      "w": 1360,
+      "h": 226.1875
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1110.328125,
+      "w": 1360,
+      "h": 226.1875
+    },
+    "best_diff_pixels": 15066,
+    "pixels": 308720,
+    "percent": 4.88015,
+    "dx": 0,
+    "dy": 28,
+    "unshifted_diff_pixels": 73244
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "benefits",
+    "source_rect": [
+      40,
+      1340,
+      1360,
+      123
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1340.640625,
+      "w": 1360,
+      "h": 122.0625
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1368.515625,
+      "w": 1360,
+      "h": 123.0625
+    },
+    "best_diff_pixels": 1659,
+    "pixels": 167280,
+    "percent": 0.99175,
+    "dx": 0,
+    "dy": 29,
+    "unshifted_diff_pixels": 54250
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "description-disclosure",
+    "source_rect": [
+      40,
+      1518,
+      668,
+      59
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1518.703125,
+      "w": 668,
+      "h": 58
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1547.578125,
+      "w": 668,
+      "h": 58
+    },
+    "best_diff_pixels": 2656,
+    "pixels": 39412,
+    "percent": 6.739064,
+    "dx": 0,
+    "dy": 111,
+    "unshifted_diff_pixels": 22512
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "infodeck",
+    "source_rect": [
+      707,
+      1784,
+      693,
+      552
+    ],
+    "geometry_live": {
+      "x": 707,
+      "y": 1784.296875,
+      "w": 692.984375,
+      "h": 551.171875
+    },
+    "geometry_t16": {
+      "x": 707,
+      "y": 1813.171875,
+      "w": 693,
+      "h": 533.171875
+    },
+    "best_diff_pixels": 56122,
+    "pixels": 382536,
+    "percent": 14.671037,
+    "dx": 1,
+    "dy": 14,
+    "unshifted_diff_pixels": 81873
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "documents",
+    "source_rect": [
+      40,
+      2375,
+      1360,
+      859
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 2375.46875,
+      "w": 1360,
+      "h": 857.59375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 2386.34375,
+      "w": 1360,
+      "h": 857.59375
+    },
+    "best_diff_pixels": 6788,
+    "pixels": 1168240,
+    "percent": 0.581045,
+    "dx": 0,
+    "dy": 11,
+    "unshifted_diff_pixels": 299586
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "faq",
+    "source_rect": [
+      40,
+      3233,
+      1360,
+      294
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 3233.0625,
+      "w": 1360,
+      "h": 293.59375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 3243.9375,
+      "w": 1360,
+      "h": 368.59375
+    },
+    "best_diff_pixels": 145407,
+    "pixels": 399840,
+    "percent": 36.366297,
+    "dx": 2,
+    "dy": -128,
+    "unshifted_diff_pixels": 217455
+  },
+  {
+    "pair": "eta-en-1440",
+    "region": "pairing-card",
+    "source_rect": [
+      40,
+      3625,
+      280,
+      211
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 3625.25,
+      "w": 280,
+      "h": 210.34375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 3711.125,
+      "w": 280,
+      "h": 210.34375
+    },
+    "best_diff_pixels": 2207,
+    "pixels": 59080,
+    "percent": 3.735613,
+    "dx": 0,
+    "dy": 86,
+    "unshifted_diff_pixels": 40124
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "thumbnails",
+    "source_rect": [
+      40,
+      151,
+      76,
+      640
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 151,
+      "w": 76,
+      "h": 640
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 151,
+      "w": 76,
+      "h": 640
+    },
+    "best_diff_pixels": 5206,
+    "pixels": 48640,
+    "percent": 10.703125,
+    "dx": 0,
+    "dy": 0,
+    "unshifted_diff_pixels": 5206
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "plan-with",
+    "source_rect": [
+      986,
+      896,
+      414,
+      44
+    ],
+    "geometry_live": {
+      "x": 986.65625,
+      "y": 896.375,
+      "w": 413.34375,
+      "h": 43.25
+    },
+    "geometry_t16": {
+      "x": 986.65625,
+      "y": 901.25,
+      "w": 413.34375,
+      "h": 43.25
+    },
+    "best_diff_pixels": 802,
+    "pixels": 18216,
+    "percent": 4.402723,
+    "dx": 0,
+    "dy": 5,
+    "unshifted_diff_pixels": 5020
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "overview",
+    "source_rect": [
+      40,
+      1098,
+      1360,
+      301
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1098,
+      "w": 1360,
+      "h": 300.4375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1122,
+      "w": 1360,
+      "h": 300.4375
+    },
+    "best_diff_pixels": 35100,
+    "pixels": 409360,
+    "percent": 8.57436,
+    "dx": 0,
+    "dy": 24,
+    "unshifted_diff_pixels": 82978
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "benefits",
+    "source_rect": [
+      40,
+      1430,
+      1360,
+      98
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1430.4375,
+      "w": 1360,
+      "h": 97.375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1454.4375,
+      "w": 1360,
+      "h": 98.375
+    },
+    "best_diff_pixels": 217,
+    "pixels": 133280,
+    "percent": 0.162815,
+    "dx": 0,
+    "dy": 25,
+    "unshifted_diff_pixels": 22678
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "description-disclosure",
+    "source_rect": [
+      40,
+      1583,
+      668,
+      59
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1583.8125,
+      "w": 668,
+      "h": 58
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1608.8125,
+      "w": 668,
+      "h": 58
+    },
+    "best_diff_pixels": 1378,
+    "pixels": 39412,
+    "percent": 3.496397,
+    "dx": 0,
+    "dy": 25,
+    "unshifted_diff_pixels": 19471
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "infodeck",
+    "source_rect": [
+      707,
+      1767,
+      693,
+      365
+    ],
+    "geometry_live": {
+      "x": 707,
+      "y": 1767.40625,
+      "w": 692.984375,
+      "h": 363.6875
+    },
+    "geometry_t16": {
+      "x": 707,
+      "y": 1792.40625,
+      "w": 693,
+      "h": 347.6875
+    },
+    "best_diff_pixels": 39755,
+    "pixels": 252945,
+    "percent": 15.716855,
+    "dx": 1,
+    "dy": 10,
+    "unshifted_diff_pixels": 60049
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "documents",
+    "source_rect": [
+      40,
+      2171,
+      1360,
+      333
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 2171.09375,
+      "w": 1360,
+      "h": 332.59375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 2180.09375,
+      "w": 1360,
+      "h": 332.59375
+    },
+    "best_diff_pixels": 2385,
+    "pixels": 452880,
+    "percent": 0.52663,
+    "dx": 0,
+    "dy": 9,
+    "unshifted_diff_pixels": 83905
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "faq",
+    "source_rect": [
+      40,
+      2503,
+      1360,
+      238
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 2503.6875,
+      "w": 1360,
+      "h": 236.59375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 2512.6875,
+      "w": 1360,
+      "h": 286.59375
+    },
+    "best_diff_pixels": 105011,
+    "pixels": 323680,
+    "percent": 32.442845,
+    "dx": 2,
+    "dy": 140,
+    "unshifted_diff_pixels": 166800
+  },
+  {
+    "pair": "pdp-de-1440",
+    "region": "pairing-card",
+    "source_rect": [
+      40,
+      2838,
+      280,
+      247
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 2838.875,
+      "w": 280,
+      "h": 245.234375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 2897.875,
+      "w": 280,
+      "h": 245.234375
+    },
+    "best_diff_pixels": 9,
+    "pixels": 69160,
+    "percent": 0.013013,
+    "dx": 0,
+    "dy": 59,
+    "unshifted_diff_pixels": 38866
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "thumbnails",
+    "source_rect": [
+      40,
+      151,
+      76,
+      640
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 151,
+      "w": 76,
+      "h": 640
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 151,
+      "w": 76,
+      "h": 640
+    },
+    "best_diff_pixels": 5206,
+    "pixels": 48640,
+    "percent": 10.703125,
+    "dx": 0,
+    "dy": 0,
+    "unshifted_diff_pixels": 5206
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "plan-with",
+    "source_rect": [
+      986,
+      868,
+      414,
+      44
+    ],
+    "geometry_live": {
+      "x": 986.65625,
+      "y": 868.203125,
+      "w": 413.34375,
+      "h": 43.25
+    },
+    "geometry_t16": {
+      "x": 986.65625,
+      "y": 872.078125,
+      "w": 413.34375,
+      "h": 43.25
+    },
+    "best_diff_pixels": 1,
+    "pixels": 18216,
+    "percent": 0.00549,
+    "dx": 0,
+    "dy": 4,
+    "unshifted_diff_pixels": 4785,
+    "review_point_1396_906": {
+      "live": [
+        219,
+        226,
+        219
+      ],
+      "t16_best_aligned": [
+        218,
+        225,
+        219
+      ],
+      "t16_same_coordinate": [
+        240,
+        244,
+        239
+      ]
+    }
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "overview",
+    "source_rect": [
+      40,
+      1082,
+      1360,
+      277
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1082.453125,
+      "w": 1360,
+      "h": 275.6875
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1110.328125,
+      "w": 1360,
+      "h": 275.6875
+    },
+    "best_diff_pixels": 13799,
+    "pixels": 376720,
+    "percent": 3.662933,
+    "dx": 0,
+    "dy": 28,
+    "unshifted_diff_pixels": 85099
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "benefits",
+    "source_rect": [
+      40,
+      1390,
+      1360,
+      98
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1390.140625,
+      "w": 1360,
+      "h": 97.375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1418.015625,
+      "w": 1360,
+      "h": 98.375
+    },
+    "best_diff_pixels": 984,
+    "pixels": 133280,
+    "percent": 0.738295,
+    "dx": 0,
+    "dy": 29,
+    "unshifted_diff_pixels": 25746
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "description-disclosure",
+    "source_rect": [
+      40,
+      1543,
+      668,
+      59
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 1543.515625,
+      "w": 668,
+      "h": 58
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 1572.390625,
+      "w": 668,
+      "h": 58
+    },
+    "best_diff_pixels": 1377,
+    "pixels": 39412,
+    "percent": 3.49386,
+    "dx": 0,
+    "dy": 28,
+    "unshifted_diff_pixels": 21034
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "infodeck",
+    "source_rect": [
+      707,
+      1727,
+      693,
+      364
+    ],
+    "geometry_live": {
+      "x": 707,
+      "y": 1727.109375,
+      "w": 692.984375,
+      "h": 363.6875
+    },
+    "geometry_t16": {
+      "x": 707,
+      "y": 1755.984375,
+      "w": 693,
+      "h": 347.6875
+    },
+    "best_diff_pixels": 40552,
+    "pixels": 252252,
+    "percent": 16.075988,
+    "dx": 1,
+    "dy": 16,
+    "unshifted_diff_pixels": 63000
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "documents",
+    "source_rect": [
+      40,
+      2130,
+      1360,
+      334
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 2130.796875,
+      "w": 1360,
+      "h": 332.59375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 2143.671875,
+      "w": 1360,
+      "h": 332.59375
+    },
+    "best_diff_pixels": 2238,
+    "pixels": 454240,
+    "percent": 0.492691,
+    "dx": 0,
+    "dy": 13,
+    "unshifted_diff_pixels": 107812
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "faq",
+    "source_rect": [
+      40,
+      2463,
+      1360,
+      237
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 2463.390625,
+      "w": 1360,
+      "h": 236.59375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 2476.265625,
+      "w": 1360,
+      "h": 286.59375
+    },
+    "best_diff_pixels": 108603,
+    "pixels": 322320,
+    "percent": 33.694155,
+    "dx": 2,
+    "dy": 140,
+    "unshifted_diff_pixels": 166819
+  },
+  {
+    "pair": "pdp-en-1440",
+    "region": "pairing-card",
+    "source_rect": [
+      40,
+      2798,
+      280,
+      230
+    ],
+    "geometry_live": {
+      "x": 40,
+      "y": 2798.578125,
+      "w": 280,
+      "h": 229.234375
+    },
+    "geometry_t16": {
+      "x": 40,
+      "y": 2861.453125,
+      "w": 280,
+      "h": 229.234375
+    },
+    "best_diff_pixels": 2954,
+    "pixels": 64400,
+    "percent": 4.586957,
+    "dx": 0,
+    "dy": 63,
+    "unshifted_diff_pixels": 38465
+  }
+]

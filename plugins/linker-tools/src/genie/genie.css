@@ -155,3 +155,87 @@
 	opacity: 0.3;
 	cursor: default;
 }
+
+/*
+ * The standing dock: the open button floats in the page's bottom-right corner
+ * as the live page's resting Advisor bubble does (50×50 at 20/20, #172636,
+ * radius 999, shadow, z 10000 — measured on the live catalogue 2026-10-12),
+ * and the dock takes no room in the page flow. The live page hides its bubble
+ * under 861px (its own switch sits between 860 and 865).
+ */
+.linker-genie {
+	position: fixed;
+	right: 20px;
+	bottom: 20px;
+	z-index: 10000;
+}
+
+.linker-genie-open {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: #172636;
+	color: #fff;
+	cursor: pointer;
+	box-shadow:
+		0 10px 26px rgba(11, 31, 51, 0.28),
+		0 2px 6px rgba(11, 31, 51, 0.18);
+	transition:
+		transform 160ms,
+		box-shadow 160ms,
+		opacity 160ms;
+}
+
+.linker-genie-open:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 16px 34px rgba(11, 31, 51, 0.34);
+}
+
+.linker-genie-open:active {
+	transform: translateY(0);
+}
+
+.linker-genie-open:focus-visible {
+	outline: 3px solid var(--proto-teal-600, #0c7f73);
+	outline-offset: 2px;
+}
+
+.linker-genie-open-mark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 27px;
+	height: 27px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.14);
+	color: #fff;
+}
+
+.linker-genie-open-mark svg {
+	width: 16px;
+	height: 16px;
+}
+
+.linker-genie-open-label {
+	display: none;
+}
+
+/* The panel the app renders into, above the bubble. */
+.linker-genie-panel {
+	position: fixed;
+	right: 20px;
+	bottom: 84px;
+	z-index: 10000;
+	width: min(420px, calc(100vw - 40px));
+}
+
+@media (max-width: 860px) {
+	.linker-genie {
+		display: none;
+	}
+}

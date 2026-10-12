@@ -2583,3 +2583,65 @@ msgstr ""
 #: templates/storefront-single-product.php:273
 msgid "Close image viewer"
 msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:41
+msgid "Whether the product is in stock. The site only ever says it is."
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:77
+msgid "Search products or filter by category and project requirements."
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:80
+msgid "Search model or item number"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:81
+msgid "Search"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:108
+msgid "Product categories"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:334
+msgid "Model"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:353
+msgid "Add to cart"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:355
+msgid "Log in for pricing"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:608
+msgid "See the applications"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:635
+msgid "Applications"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:1225
+msgid "%d product family"
+msgid_plural "%d product families"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Presentation/CatalogShortcodes.php:1243
+msgid "Product pagination"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:1258
+msgid "Next"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:1300
+msgid "All models"
+msgstr ""
+
+#: includes/Presentation/CatalogShortcodes.php:1305
+msgid "Selected model"
+msgstr ""

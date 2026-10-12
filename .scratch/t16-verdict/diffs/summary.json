@@ -1,0 +1,98 @@
+[
+ {
+  "pair": "archive-de-1440",
+  "live": "1440x9264",
+  "t16": "1440x8975",
+  "overlap": "1440x8975",
+  "diff_pixels": 6010952,
+  "diff_percent": 46.51
+ },
+ {
+  "pair": "archive-de-390",
+  "live": "390x12671",
+  "t16": "390x12040",
+  "overlap": "390x12040",
+  "diff_pixels": 2610771,
+  "diff_percent": 55.6
+ },
+ {
+  "pair": "archive-en-1440",
+  "live": "1440x9264",
+  "t16": "1440x8975",
+  "overlap": "1440x8975",
+  "diff_pixels": 5981701,
+  "diff_percent": 46.28
+ },
+ {
+  "pair": "archive-en-390",
+  "live": "390x12322",
+  "t16": "390x11731",
+  "overlap": "390x11731",
+  "diff_pixels": 2577350,
+  "diff_percent": 56.33
+ },
+ {
+  "pair": "pdp-de-1440",
+  "live": "1440x4432",
+  "t16": "1440x4274",
+  "overlap": "1440x4274",
+  "diff_pixels": 1938571,
+  "diff_percent": 31.5
+ },
+ {
+  "pair": "pdp-de-390",
+  "live": "390x6187",
+  "t16": "390x6271",
+  "overlap": "390x6187",
+  "diff_pixels": 1120302,
+  "diff_percent": 46.43
+ },
+ {
+  "pair": "pdp-en-1440",
+  "live": "1440x4300",
+  "t16": "1440x4124",
+  "overlap": "1440x4124",
+  "diff_pixels": 1855624,
+  "diff_percent": 31.25
+ },
+ {
+  "pair": "pdp-en-390",
+  "live": "390x6068",
+  "t16": "390x6146",
+  "overlap": "390x6068",
+  "diff_pixels": 1000970,
+  "diff_percent": 42.3
+ },
+ {
+  "pair": "shop-de-1440",
+  "live": "1440x9238",
+  "t16": "1440x8898",
+  "overlap": "1440x8898",
+  "diff_pixels": 5612102,
+  "diff_percent": 43.8
+ },
+ {
+  "pair": "shop-de-390",
+  "live": "390x12642",
+  "t16": "390x11941",
+  "overlap": "390x11941",
+  "diff_pixels": 2604592,
+  "diff_percent": 55.93
+ },
+ {
+  "pair": "shop-en-1440",
+  "live": "1440x9238",
+  "t16": "1440x8898",
+  "overlap": "1440x8898",
+  "diff_pixels": 5588338,
+  "diff_percent": 43.61
+ },
+ {
+  "pair": "shop-en-390",
+  "live": "390x12304",
+  "t16": "390x11625",
+  "overlap": "390x11625",
+  "diff_pixels": 2552688,
+  "diff_percent": 56.3
+ }
+]

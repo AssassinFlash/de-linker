@@ -1,0 +1,2246 @@
+{
+ "shop-en-1440-live": {
+  ".wb-acts": [
+   [
+    779,
+    284,
+    561,
+    44
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".rail-help": [
+   [
+    100,
+    1847,
+    210,
+    179
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    362,
+    8381,
+    958,
+    146
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    8663,
+    1440,
+    574
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   9238
+  ],
+  "genieEls": []
+ },
+ "shop-en-1440-t16": {
+  ".wb-acts": [
+   [
+    779,
+    306,
+    561,
+    22
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".rail-help": [
+   [
+    100,
+    1847,
+    210,
+    199
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    362,
+    8381,
+    958,
+    146
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    8663,
+    1440,
+    574
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    1274,
+    306,
+    66,
+    22
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   9238
+  ],
+  "genieEls": [
+   [
+    "BUTTON.linker-genie-chip",
+    [
+     1274,
+     306,
+     66,
+     22
+    ]
+   ],
+   [
+    "DIV.linker-genie",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "BUTTON.linker-genie-open",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "SPAN.linker-genie-open-mark",
+    [
+     1382,
+     842,
+     27,
+     27
+    ]
+   ]
+  ]
+ },
+ "shop-en-390-live": {
+  ".wb-acts": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    16,
+    287,
+    358,
+    96
+   ]
+  ],
+  ".rail-help": [
+   [
+    410,
+    102,
+    320,
+    142
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    36,
+    11214,
+    318,
+    285
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    11635,
+    390,
+    668
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   12304
+  ],
+  "genieEls": []
+ },
+ "shop-en-390-t16": {
+  ".wb-acts": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    16,
+    287,
+    358,
+    44
+   ]
+  ],
+  ".rail-help": [
+   [
+    410,
+    1616,
+    320,
+    142
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    36,
+    11162,
+    318,
+    285
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    11583,
+    390,
+    668
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    196,
+    287,
+    178,
+    44
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   12252
+  ],
+  "genieEls": [
+   [
+    "BUTTON.linker-genie-chip",
+    [
+     196,
+     287,
+     178,
+     44
+    ]
+   ]
+  ]
+ },
+ "shop-de-1440-live": {
+  ".wb-acts": [
+   [
+    730,
+    284,
+    610,
+    44
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".rail-help": [
+   [
+    100,
+    1847,
+    210,
+    179
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    362,
+    8381,
+    958,
+    146
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    8663,
+    1440,
+    574
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   9238
+  ],
+  "genieEls": []
+ },
+ "shop-de-1440-t16": {
+  ".wb-acts": [
+   [
+    779,
+    306,
+    561,
+    22
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".rail-help": [
+   [
+    100,
+    1847,
+    210,
+    237
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    362,
+    8381,
+    958,
+    146
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    8663,
+    1440,
+    574
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    1254,
+    306,
+    86,
+    22
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   9238
+  ],
+  "genieEls": [
+   [
+    "BUTTON.linker-genie-chip",
+    [
+     1254,
+     306,
+     86,
+     22
+    ]
+   ],
+   [
+    "DIV.linker-genie",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "BUTTON.linker-genie-open",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "SPAN.linker-genie-open-mark",
+    [
+     1382,
+     842,
+     27,
+     27
+    ]
+   ]
+  ]
+ },
+ "shop-de-390-live": {
+  ".wb-acts": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    16,
+    306,
+    358,
+    96
+   ]
+  ],
+  ".rail-help": [
+   [
+    410,
+    102,
+    320,
+    161
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    36,
+    11466,
+    318,
+    307
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    11910,
+    390,
+    731
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   12642
+  ],
+  "genieEls": []
+ },
+ "shop-de-390-t16": {
+  ".wb-acts": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    16,
+    306,
+    358,
+    44
+   ]
+  ],
+  ".rail-help": [
+   [
+    410,
+    1616,
+    320,
+    161
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    36,
+    11414,
+    318,
+    307
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    11858,
+    390,
+    731
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    186,
+    306,
+    188,
+    44
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   12590
+  ],
+  "genieEls": [
+   [
+    "BUTTON.linker-genie-chip",
+    [
+     186,
+     306,
+     188,
+     44
+    ]
+   ]
+  ]
+ },
+ "archive-en-1440-live": {
+  ".wb-acts": [
+   [
+    779,
+    284,
+    561,
+    44
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".rail-help": [
+   [
+    100,
+    1618,
+    210,
+    179
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    362,
+    8407,
+    958,
+    146
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    8689,
+    1440,
+    574
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   9264
+  ],
+  "genieEls": []
+ },
+ "archive-en-1440-t16": {
+  ".wb-acts": [
+   [
+    779,
+    306,
+    561,
+    22
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".rail-help": [
+   [
+    100,
+    1771,
+    210,
+    199
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    362,
+    8407,
+    958,
+    146
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    8689,
+    1440,
+    574
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    1274,
+    306,
+    66,
+    22
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   9264
+  ],
+  "genieEls": [
+   [
+    "BUTTON.linker-genie-chip",
+    [
+     1274,
+     306,
+     66,
+     22
+    ]
+   ],
+   [
+    "DIV.linker-genie",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "BUTTON.linker-genie-open",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "SPAN.linker-genie-open-mark",
+    [
+     1382,
+     842,
+     27,
+     27
+    ]
+   ]
+  ]
+ },
+ "archive-en-390-live": {
+  ".wb-acts": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    16,
+    287,
+    358,
+    96
+   ]
+  ],
+  ".rail-help": [
+   [
+    410,
+    102,
+    320,
+    142
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    36,
+    11232,
+    318,
+    285
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    11654,
+    390,
+    668
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   12322
+  ],
+  "genieEls": []
+ },
+ "archive-en-390-t16": {
+  ".wb-acts": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    16,
+    287,
+    358,
+    44
+   ]
+  ],
+  ".rail-help": [
+   [
+    410,
+    1528,
+    320,
+    142
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    36,
+    11180,
+    318,
+    285
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    11602,
+    390,
+    668
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    196,
+    287,
+    178,
+    44
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   12270
+  ],
+  "genieEls": [
+   [
+    "BUTTON.linker-genie-chip",
+    [
+     196,
+     287,
+     178,
+     44
+    ]
+   ]
+  ]
+ },
+ "archive-de-1440-live": {
+  ".wb-acts": [
+   [
+    730,
+    284,
+    610,
+    44
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".rail-help": [
+   [
+    100,
+    1618,
+    210,
+    179
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    362,
+    8407,
+    958,
+    146
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    8689,
+    1440,
+    574
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   9264
+  ],
+  "genieEls": []
+ },
+ "archive-de-1440-t16": {
+  ".wb-acts": [
+   [
+    779,
+    306,
+    561,
+    22
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".rail-help": [
+   [
+    100,
+    1771,
+    210,
+    237
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    362,
+    8407,
+    958,
+    146
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    8689,
+    1440,
+    574
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    1254,
+    306,
+    86,
+    22
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   9264
+  ],
+  "genieEls": [
+   [
+    "BUTTON.linker-genie-chip",
+    [
+     1254,
+     306,
+     86,
+     22
+    ]
+   ],
+   [
+    "DIV.linker-genie",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "BUTTON.linker-genie-open",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "SPAN.linker-genie-open-mark",
+    [
+     1382,
+     842,
+     27,
+     27
+    ]
+   ]
+  ]
+ },
+ "archive-de-390-live": {
+  ".wb-acts": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    16,
+    306,
+    358,
+    96
+   ]
+  ],
+  ".rail-help": [
+   [
+    410,
+    102,
+    320,
+    161
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    36,
+    11495,
+    318,
+    307
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    11939,
+    390,
+    731
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   12671
+  ],
+  "genieEls": []
+ },
+ "archive-de-390-t16": {
+  ".wb-acts": [
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  ".catalog-mobile-actions": [
+   [
+    16,
+    306,
+    358,
+    44
+   ]
+  ],
+  ".rail-help": [
+   [
+    410,
+    1528,
+    320,
+    161
+   ]
+  ],
+  ".linker-contact-invitation": [
+   [
+    36,
+    11443,
+    318,
+    307
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    11887,
+    390,
+    731
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    186,
+    306,
+    188,
+    44
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   12619
+  ],
+  "genieEls": [
+   [
+    "BUTTON.linker-genie-chip",
+    [
+     186,
+     306,
+     188,
+     44
+    ]
+   ]
+  ]
+ },
+ "pdp-en-1440-live": {
+  ".pdp-overview": [
+   [
+    40,
+    1082,
+    1360,
+    276
+   ]
+  ],
+  ".pdp-overview-intro": [
+   [
+    80,
+    1219,
+    747,
+    99
+   ]
+  ],
+  ".pdp-overview-copy": [
+   [
+    80,
+    1122,
+    1280,
+    196
+   ]
+  ],
+  ".pdp-benefits": [
+   [
+    40,
+    1390,
+    1360,
+    97
+   ]
+  ],
+  ".pdp-stats-layout": [
+   [
+    40,
+    1727,
+    1360,
+    364
+   ]
+  ],
+  "#stats": [
+   [
+    40,
+    1626,
+    1360,
+    505
+   ]
+  ],
+  ".pdp-info-tabs": [
+   [
+    707,
+    1727,
+    693,
+    58
+   ]
+  ],
+  ".pdp-info-deck": [
+   [
+    707,
+    1727,
+    693,
+    364
+   ]
+  ],
+  ".pdp-pairings": [
+   [
+    40,
+    2799,
+    1360,
+    716
+   ]
+  ],
+  ".pdp-faqs": [
+   [
+    40,
+    2463,
+    1360,
+    237
+   ]
+  ],
+  ".pdp-spec-list": [
+   [
+    987,
+    359,
+    413,
+    153
+   ]
+  ],
+  ".pdp-project-check": [
+   [
+    987,
+    868,
+    413,
+    43
+   ]
+  ],
+  ".pdp-gallery-main-wrap": [
+   [
+    134,
+    151,
+    813,
+    640
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    3725,
+    1440,
+    574
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   4300
+  ],
+  "introText": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the printed test. Mass 57.5 ± 1 kg, 800 × 326 × 270 mm. Charge from +2 °C; no",
+  "genieEls": []
+ },
+ "pdp-en-1440-t16": {
+  ".pdp-overview": [
+   [
+    40,
+    1082,
+    1360,
+    276
+   ]
+  ],
+  ".pdp-overview-intro": [
+   [
+    80,
+    1219,
+    747,
+    99
+   ]
+  ],
+  ".pdp-overview-copy": [
+   [
+    80,
+    1122,
+    1280,
+    196
+   ]
+  ],
+  ".pdp-benefits": [
+   [
+    40,
+    1390,
+    1360,
+    97
+   ]
+  ],
+  ".pdp-stats-layout": [
+   [
+    40,
+    1727,
+    1360,
+    359
+   ]
+  ],
+  "#stats": [
+   [
+    40,
+    1626,
+    1360,
+    501
+   ]
+  ],
+  ".pdp-info-tabs": [
+   [
+    40,
+    1751,
+    1360,
+    58
+   ]
+  ],
+  ".pdp-info-deck": [
+   [
+    40,
+    1751,
+    1360,
+    335
+   ]
+  ],
+  ".pdp-pairings": [
+   [
+    40,
+    2737,
+    1360,
+    577
+   ]
+  ],
+  ".pdp-faqs": [
+   [
+    40,
+    2459,
+    1360,
+    180
+   ]
+  ],
+  ".pdp-spec-list": [
+   [
+    987,
+    359,
+    413,
+    153
+   ]
+  ],
+  ".pdp-project-check": [
+   [
+    987,
+    868,
+    413,
+    43
+   ]
+  ],
+  ".pdp-gallery-main-wrap": [
+   [
+    134,
+    151,
+    813,
+    640
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    3525,
+    1440,
+    574
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    1370,
+    830,
+    50,
+    50
+   ],
+   [
+    1370,
+    830,
+    50,
+    50
+   ],
+   [
+    1382,
+    842,
+    27,
+    27
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   4100
+  ],
+  "introText": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the printed test. Mass 57.5 ± 1 kg, 800 × 326 × 270 mm. Charge from +2 °C; no",
+  "genieEls": [
+   [
+    "DIV.linker-genie",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "BUTTON.linker-genie-open",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "SPAN.linker-genie-open-mark",
+    [
+     1382,
+     842,
+     27,
+     27
+    ]
+   ]
+  ]
+ },
+ "pdp-en-390-live": {
+  ".pdp-overview": [
+   [
+    16,
+    1112,
+    358,
+    419
+   ]
+  ],
+  ".pdp-overview-intro": [
+   [
+    38,
+    1283,
+    314,
+    208
+   ]
+  ],
+  ".pdp-overview-copy": [
+   [
+    38,
+    1134,
+    314,
+    357
+   ]
+  ],
+  ".pdp-benefits": [
+   [
+    16,
+    1563,
+    358,
+    91
+   ]
+  ],
+  ".pdp-stats-layout": [
+   [
+    16,
+    1899,
+    358,
+    437
+   ]
+  ],
+  "#stats": [
+   [
+    16,
+    1824,
+    358,
+    536
+   ]
+  ],
+  ".pdp-info-tabs": [
+   [
+    16,
+    1923,
+    358,
+    64
+   ]
+  ],
+  ".pdp-info-deck": [
+   [
+    16,
+    1923,
+    358,
+    413
+   ]
+  ],
+  ".pdp-pairings": [
+   [
+    16,
+    3082,
+    358,
+    2090
+   ]
+  ],
+  ".pdp-faqs": [
+   [
+    16,
+    2800,
+    358,
+    210
+   ]
+  ],
+  ".pdp-spec-list": [
+   [
+    16,
+    492,
+    358,
+    124
+   ]
+  ],
+  ".pdp-project-check": [
+   [
+    16,
+    950,
+    358,
+    50
+   ]
+  ],
+  ".pdp-gallery-main-wrap": [
+   [
+    184,
+    167,
+    190,
+    245
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    5400,
+    390,
+    668
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   6068
+  ],
+  "introText": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the printed test. Mass 57.5 ± 1 kg, 800 × 326 × 270 mm. Charge from +2 °C; no",
+  "genieEls": []
+ },
+ "pdp-en-390-t16": {
+  ".pdp-overview": [
+   [
+    16,
+    1113,
+    358,
+    419
+   ]
+  ],
+  ".pdp-overview-intro": [
+   [
+    38,
+    1284,
+    314,
+    208
+   ]
+  ],
+  ".pdp-overview-copy": [
+   [
+    38,
+    1135,
+    314,
+    357
+   ]
+  ],
+  ".pdp-benefits": [
+   [
+    16,
+    1564,
+    358,
+    91
+   ]
+  ],
+  ".pdp-stats-layout": [
+   [
+    16,
+    1900,
+    358,
+    437
+   ]
+  ],
+  "#stats": [
+   [
+    16,
+    1825,
+    358,
+    536
+   ]
+  ],
+  ".pdp-info-tabs": [
+   [
+    16,
+    1924,
+    358,
+    64
+   ]
+  ],
+  ".pdp-info-deck": [
+   [
+    16,
+    1924,
+    358,
+    413
+   ]
+  ],
+  ".pdp-pairings": [
+   [
+    16,
+    3083,
+    358,
+    2090
+   ]
+  ],
+  ".pdp-faqs": [
+   [
+    16,
+    2801,
+    358,
+    210
+   ]
+  ],
+  ".pdp-spec-list": [
+   [
+    16,
+    492,
+    358,
+    125
+   ]
+  ],
+  ".pdp-project-check": [
+   [
+    16,
+    951,
+    358,
+    50
+   ]
+  ],
+  ".pdp-gallery-main-wrap": [
+   [
+    184,
+    167,
+    190,
+    245
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    5401,
+    390,
+    668
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   6069
+  ],
+  "introText": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the printed test. Mass 57.5 ± 1 kg, 800 × 326 × 270 mm. Charge from +2 °C; no",
+  "genieEls": []
+ },
+ "pdp-de-1440-live": {
+  ".pdp-overview": [
+   [
+    40,
+    1098,
+    1360,
+    300
+   ]
+  ],
+  ".pdp-overview-intro": [
+   [
+    80,
+    1235,
+    747,
+    124
+   ]
+  ],
+  ".pdp-overview-copy": [
+   [
+    80,
+    1138,
+    1280,
+    220
+   ]
+  ],
+  ".pdp-benefits": [
+   [
+    40,
+    1430,
+    1360,
+    97
+   ]
+  ],
+  ".pdp-stats-layout": [
+   [
+    40,
+    1767,
+    1360,
+    364
+   ]
+  ],
+  "#stats": [
+   [
+    40,
+    1666,
+    1360,
+    505
+   ]
+  ],
+  ".pdp-info-tabs": [
+   [
+    707,
+    1767,
+    693,
+    58
+   ]
+  ],
+  ".pdp-info-deck": [
+   [
+    707,
+    1767,
+    693,
+    364
+   ]
+  ],
+  ".pdp-pairings": [
+   [
+    40,
+    2839,
+    1360,
+    783
+   ]
+  ],
+  ".pdp-faqs": [
+   [
+    40,
+    2504,
+    1360,
+    237
+   ]
+  ],
+  ".pdp-spec-list": [
+   [
+    987,
+    359,
+    413,
+    153
+   ]
+  ],
+  ".pdp-project-check": [
+   [
+    987,
+    896,
+    413,
+    43
+   ]
+  ],
+  ".pdp-gallery-main-wrap": [
+   [
+    134,
+    151,
+    813,
+    640
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    3857,
+    1440,
+    574
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   4432
+  ],
+  "introText": "GW5.1-BAT-D-G21 ist das ESA-Batteriemodul mit 5,12 kWh Nennenergie und 5,0 kWh nutzbarer Energie im gedruckten Test. Masse 57.5 ± 1 kg, 800 × 326 × 270 mm. Lade",
+  "genieEls": []
+ },
+ "pdp-de-1440-t16": {
+  ".pdp-overview": [
+   [
+    40,
+    1098,
+    1360,
+    300
+   ]
+  ],
+  ".pdp-overview-intro": [
+   [
+    80,
+    1235,
+    747,
+    124
+   ]
+  ],
+  ".pdp-overview-copy": [
+   [
+    80,
+    1138,
+    1280,
+    220
+   ]
+  ],
+  ".pdp-benefits": [
+   [
+    40,
+    1430,
+    1360,
+    97
+   ]
+  ],
+  ".pdp-stats-layout": [
+   [
+    40,
+    1767,
+    1360,
+    359
+   ]
+  ],
+  "#stats": [
+   [
+    40,
+    1666,
+    1360,
+    501
+   ]
+  ],
+  ".pdp-info-tabs": [
+   [
+    40,
+    1791,
+    1360,
+    58
+   ]
+  ],
+  ".pdp-info-deck": [
+   [
+    40,
+    1791,
+    1360,
+    335
+   ]
+  ],
+  ".pdp-pairings": [
+   [
+    40,
+    2777,
+    1360,
+    663
+   ]
+  ],
+  ".pdp-faqs": [
+   [
+    40,
+    2499,
+    1360,
+    180
+   ]
+  ],
+  ".pdp-spec-list": [
+   [
+    987,
+    359,
+    413,
+    153
+   ]
+  ],
+  ".pdp-project-check": [
+   [
+    987,
+    896,
+    413,
+    43
+   ]
+  ],
+  ".pdp-gallery-main-wrap": [
+   [
+    134,
+    151,
+    813,
+    640
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    3675,
+    1440,
+    574
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    1370,
+    830,
+    50,
+    50
+   ],
+   [
+    1370,
+    830,
+    50,
+    50
+   ],
+   [
+    1382,
+    842,
+    27,
+    27
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   1440,
+   4250
+  ],
+  "introText": "GW5.1-BAT-D-G21 ist das ESA-Batteriemodul mit 5,12 kWh Nennkapazität und 5,0 kWh nutzbarer Kapazität gemäß dem angegebenen Test. Masse 57,5 ± 1 kg, 800 × 326 × ",
+  "genieEls": [
+   [
+    "DIV.linker-genie",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "BUTTON.linker-genie-open",
+    [
+     1370,
+     830,
+     50,
+     50
+    ]
+   ],
+   [
+    "SPAN.linker-genie-open-mark",
+    [
+     1382,
+     842,
+     27,
+     27
+    ]
+   ]
+  ]
+ },
+ "pdp-de-390-live": {
+  ".pdp-overview": [
+   [
+    16,
+    1130,
+    358,
+    465
+   ]
+  ],
+  ".pdp-overview-intro": [
+   [
+    38,
+    1301,
+    314,
+    254
+   ]
+  ],
+  ".pdp-overview-copy": [
+   [
+    38,
+    1152,
+    314,
+    403
+   ]
+  ],
+  ".pdp-benefits": [
+   [
+    16,
+    1627,
+    358,
+    91
+   ]
+  ],
+  ".pdp-stats-layout": [
+   [
+    16,
+    1963,
+    358,
+    454
+   ]
+  ],
+  "#stats": [
+   [
+    16,
+    1888,
+    358,
+    553
+   ]
+  ],
+  ".pdp-info-tabs": [
+   [
+    16,
+    1987,
+    358,
+    80
+   ]
+  ],
+  ".pdp-info-deck": [
+   [
+    16,
+    1987,
+    358,
+    430
+   ]
+  ],
+  ".pdp-pairings": [
+   [
+    16,
+    3163,
+    358,
+    2044
+   ]
+  ],
+  ".pdp-faqs": [
+   [
+    16,
+    2881,
+    358,
+    210
+   ]
+  ],
+  ".pdp-spec-list": [
+   [
+    16,
+    492,
+    358,
+    124
+   ]
+  ],
+  ".pdp-project-check": [
+   [
+    16,
+    968,
+    358,
+    50
+   ]
+  ],
+  ".pdp-gallery-main-wrap": [
+   [
+    184,
+    167,
+    190,
+    245
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    5455,
+    390,
+    731
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   6187
+  ],
+  "introText": "GW5.1-BAT-D-G21 ist das ESA-Batteriemodul mit 5,12 kWh Nennenergie und 5,0 kWh nutzbarer Energie im gedruckten Test. Masse 57.5 ± 1 kg, 800 × 326 × 270 mm. Lade",
+  "genieEls": []
+ },
+ "pdp-de-390-t16": {
+  ".pdp-overview": [
+   [
+    16,
+    1131,
+    358,
+    488
+   ]
+  ],
+  ".pdp-overview-intro": [
+   [
+    38,
+    1302,
+    314,
+    277
+   ]
+  ],
+  ".pdp-overview-copy": [
+   [
+    38,
+    1153,
+    314,
+    426
+   ]
+  ],
+  ".pdp-benefits": [
+   [
+    16,
+    1651,
+    358,
+    91
+   ]
+  ],
+  ".pdp-stats-layout": [
+   [
+    16,
+    1987,
+    358,
+    454
+   ]
+  ],
+  "#stats": [
+   [
+    16,
+    1912,
+    358,
+    553
+   ]
+  ],
+  ".pdp-info-tabs": [
+   [
+    16,
+    2011,
+    358,
+    80
+   ]
+  ],
+  ".pdp-info-deck": [
+   [
+    16,
+    2011,
+    358,
+    430
+   ]
+  ],
+  ".pdp-pairings": [
+   [
+    16,
+    3187,
+    358,
+    2044
+   ]
+  ],
+  ".pdp-faqs": [
+   [
+    16,
+    2905,
+    358,
+    210
+   ]
+  ],
+  ".pdp-spec-list": [
+   [
+    16,
+    492,
+    358,
+    125
+   ]
+  ],
+  ".pdp-project-check": [
+   [
+    16,
+    969,
+    358,
+    50
+   ]
+  ],
+  ".pdp-gallery-main-wrap": [
+   [
+    184,
+    167,
+    190,
+    245
+   ]
+  ],
+  "footer": [
+   [
+    0,
+    5480,
+    390,
+    731
+   ]
+  ],
+  "[class*=\"genie\"]": [
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  "#pageH": [
+   0,
+   0,
+   390,
+   6211
+  ],
+  "introText": "GW5.1-BAT-D-G21 ist das ESA-Batteriemodul mit 5,12 kWh Nennkapazität und 5,0 kWh nutzbarer Kapazität gemäß dem angegebenen Test. Masse 57,5 ± 1 kg, 800 × 326 × ",
+  "genieEls": []
+ }
+}

@@ -1,0 +1,56 @@
+/*
+ * The site chrome's utilities — the header cluster the live header carries in
+ * `[data-tv-account-slot]`: search, cart (with its count), account and the
+ * EN|DE toggle, in one row. The header partial mounts them
+ * ([linker_header_utilities]); the partial's own stylesheet carries the
+ * controls' boxes, the compact/narrow states and the language switch (the
+ * live header's own values), so this sheet holds only what the partial does
+ * not style: the account menu, its links and the icon sizes. Fixed widths
+ * here would fight the partial's fit logic (measured 2026-10-12: pinning the
+ * controls at 44px made the row "fit" and the header skipped its compact
+ * state, which the live header renders at 1440px).
+ */
+#lc-header .tv-header-utility svg,
+#lc-header .tv-b2b-acct-btn svg {
+	width: 18px;
+	height: 18px;
+}
+
+#lc-header .tv-b2b-acct {
+	position: relative;
+}
+
+#lc-header .tv-b2b-acct-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #dfe7ec;
+	background: #fff;
+	color: #172636;
+	cursor: pointer;
+}
+
+#lc-header .tv-b2b-acct-menu {
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	z-index: 60;
+	display: none;
+	min-width: 200px;
+	padding: 8px;
+	border: 1px solid #e2e5e5;
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 0 10px 30px rgba(12, 15, 15, 0.08);
+}
+
+#lc-header .tv-b2b-acct-btn[aria-expanded="true"] + .tv-b2b-acct-menu {
+	display: grid;
+}
+
+#lc-header .tv-b2b-acct-link {
+	padding: 8px 10px;
+	border-radius: 8px;
+	color: #172636;
+	text-decoration: none;
+}

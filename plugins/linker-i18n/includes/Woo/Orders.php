@@ -30,6 +30,14 @@ final class Orders {
 	public const LANGUAGE = '_linker_i18n_language';
 
 	/**
+	 * Order meta holding a WordPress locale, written by linker-commerce's
+	 * inquiry flow (OrderLocale::META) since #11. The fallback source of
+	 * {@see self::language_of()} for orders that predate this plugin's own
+	 * record; the slug meta is the authority.
+	 */
+	public const LEGACY_LOCALE = '_linker_locale';
+
+	/**
 	 * One entry per email notification being sent: the order's language and
 	 * whether entering it switched the locale.
 	 *
@@ -64,20 +72,46 @@ final class Orders {
 	 * `woocommerce_checkout_create_order` and
 	 * `woocommerce_store_api_checkout_update_order_meta`).
 	 *
+	 * The checkout form's own `lang` field is read first: it posts by AJAX to
+	 * an address without the language's URL prefix (?wc-ajax=checkout), where
+	 * Polylang answers with the default language and a German inquiry was
+	 * recorded as English (#9, found in #11's replay). The Store API names the
+	 * language in its URL, which {@see \Linker\I18n\Languages::current()}
+	 * resolves; a posted value wins only when it names a language of the site.
+	 *
 	 * @param \WC_Order $order The order.
 	 */
 	public function record( \WC_Order $order ): void {
-		$order->update_meta_data( self::LANGUAGE, $this->languages->current() );
+		// The checkout POST carries WooCommerce's checkout nonce, verified before any order is created.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$posted   = isset( $_POST['lang'] ) && is_string( $_POST['lang'] ) ? sanitize_key( wp_unslash( $_POST['lang'] ) ) : '';
+		$language = '' !== $posted && $this->languages->exists( $posted ) ? $posted : $this->languages->current();
+		$order->update_meta_data( self::LANGUAGE, $language );
 	}
 
 	/**
 	 * The language an order was placed in; English for orders without one.
 	 *
+	 * Orders that linker-commerce recorded before this plugin's meta existed
+	 * carry a locale instead (#11's `_linker_locale`); their language is read
+	 * from it so both metas answer the same. The slug meta is the authority:
+	 * every read goes through this one method.
+	 *
 	 * @param \WC_Order $order The order.
 	 */
 	public function language_of( \WC_Order $order ): string {
 		$language = $order->get_meta( self::LANGUAGE );
-		return is_string( $language ) && $this->languages->exists( $language ) ? $language : Languages::SOURCE;
+		if ( is_string( $language ) && $this->languages->exists( $language ) ) {
+			return $language;
+		}
+		$locale = $order->get_meta( self::LEGACY_LOCALE );
+		if ( is_string( $locale ) && '' !== $locale ) {
+			$language = $this->languages->slug_of_locale( $locale );
+			if ( null !== $language ) {
+				return $language;
+			}
+		}
+		return Languages::SOURCE;
 	}
 
 	/**

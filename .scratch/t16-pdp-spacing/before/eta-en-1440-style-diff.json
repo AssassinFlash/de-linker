@@ -1,0 +1,2254 @@
+[
+  {
+    "key": "a.pdp-price-login[1]",
+    "text": "Net price after partner sign-in",
+    "style": {
+      "fontWeight": [
+        "500",
+        "600"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 313.515625,
+        "w": 254.125,
+        "h": 23
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 313.390625,
+        "w": 257.390625,
+        "h": 23
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[1]",
+    "text": "Rated AC power5 kW",
+    "style": {
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 359.515625,
+        "w": 413.34375,
+        "h": 38
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 359.390625,
+        "w": 413.34375,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dd[1]",
+    "text": "5 kW",
+    "style": {
+      "marginLeft": [
+        "0px",
+        "245.891px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1367.1875,
+        "y": 367.515625,
+        "w": 32.8125,
+        "h": 21
+      },
+      "t16": {
+        "x": 1370.5,
+        "y": 367.390625,
+        "w": 29.5,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[2]",
+    "text": "PhaseThree-phase",
+    "style": {
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 397.515625,
+        "w": 413.34375,
+        "h": 38
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 397.390625,
+        "w": 413.34375,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dd[2]",
+    "text": "Three-phase",
+    "style": {
+      "marginLeft": [
+        "0px",
+        "161.438px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1313.734375,
+        "y": 405.515625,
+        "w": 86.265625,
+        "h": 21
+      },
+      "t16": {
+        "x": 1319.0625,
+        "y": 405.390625,
+        "w": 80.9375,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[3]",
+    "text": "MPPT trackers3",
+    "style": {
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 435.515625,
+        "w": 413.34375,
+        "h": 38
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 435.390625,
+        "w": 413.34375,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dd[3]",
+    "text": "3",
+    "style": {
+      "marginLeft": [
+        "0px",
+        "312.781px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1391.453125,
+        "y": 443.515625,
+        "w": 8.546875,
+        "h": 21
+      },
+      "t16": {
+        "x": 1363.203125,
+        "y": 443.390625,
+        "w": 36.796875,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "dl.pdp-spec-list > div[4]",
+    "text": "Max. efficiency98.0 %",
+    "style": {
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 473.515625,
+        "w": 413.34375,
+        "h": 38
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 473.390625,
+        "w": 413.34375,
+        "h": 38
+      }
+    }
+  },
+  {
+    "key": "div. > dd[4]",
+    "text": "98.0 %",
+    "style": {
+      "marginLeft": [
+        "0px",
+        "181.719px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1351.828125,
+        "y": 481.515625,
+        "w": 48.171875,
+        "h": 21
+      },
+      "t16": {
+        "x": 1261.96875,
+        "y": 481.390625,
+        "w": 138.03125,
+        "h": 21
+      }
+    }
+  },
+  {
+    "key": "p.pdp-avail-label[1]",
+    "text": "In stock",
+    "style": {
+      "fontWeight": [
+        "500",
+        "600"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 548.515625,
+        "w": 413.34375,
+        "h": 23.09375
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 548.390625,
+        "w": 413.34375,
+        "h": 23.09375
+      }
+    }
+  },
+  {
+    "key": "span.pdp-dot[1]",
+    "text": "",
+    "style": {
+      "fontWeight": [
+        "500",
+        "600"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 556.0625,
+        "w": 8,
+        "h": 8
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 555.9375,
+        "w": 8,
+        "h": 8
+      }
+    }
+  },
+  {
+    "key": "p.pdp-avail-note[1]",
+    "text": "Germany delivery estimate: €39.00 to €90.00 · The final delivery charge is included in you",
+    "style": {
+      "fontSize": [
+        "12px",
+        "13px"
+      ],
+      "lineHeight": [
+        "19.8px",
+        "20.8px"
+      ],
+      "marginTop": [
+        "4px",
+        "6px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 575.609375,
+        "w": 413.34375,
+        "h": 39.59375
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 577.484375,
+        "w": 413.34375,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-btn.pdp-btn-secondary[1]",
+    "text": "Ask about this product",
+    "style": {
+      "display": [
+        "inline-flex",
+        "flex"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 986.65625,
+        "y": 712.203125,
+        "w": 413.34375,
+        "h": 48
+      },
+      "t16": {
+        "x": 986.65625,
+        "y": 716.078125,
+        "w": 413.34375,
+        "h": 48
+      }
+    }
+  },
+  {
+    "key": "div.pdp-project-check__body[1]",
+    "text": "New system, extension or replacement? Linker Advisor starts from this model and asks only ",
+    "style": {
+      "paddingBottom": [
+        "14px",
+        "16px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 987.65625,
+        "y": 918.453125,
+        "w": 411.34375,
+        "h": 224.421875
+      },
+      "t16": {
+        "x": 987.65625,
+        "y": 914.328125,
+        "w": 411.34375,
+        "h": 232.390625
+      }
+    }
+  },
+  {
+    "key": "div.pdp-content[1]",
+    "text": "Description Technical data Documents Description GoodWe ESA GW5K-ETA-G20 (5 kW three-phase",
+    "style": {
+      "gap": [
+        "0px 24px",
+        "normal 24px"
+      ],
+      "rowGap": [
+        "0px",
+        "normal"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 971.453125,
+        "w": 1360,
+        "h": 3220.734375
+      },
+      "t16": {
+        "x": 40,
+        "y": 975.328125,
+        "w": 1360,
+        "h": 3292.796875
+      }
+    }
+  },
+  {
+    "key": "nav.pdp-section-nav[1]",
+    "text": "Description Technical data Documents",
+    "style": {
+      "marginTop": [
+        "0px",
+        "24px"
+      ],
+      "alignItems": [
+        "normal",
+        "center"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 971.453125,
+        "w": 1360,
+        "h": 71
+      },
+      "t16": {
+        "x": 40,
+        "y": 999.328125,
+        "w": 1360,
+        "h": 71
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[1]",
+    "text": "Description",
+    "style": {
+      "lineHeight": [
+        "20px",
+        "19.6px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 983.453125,
+        "w": 102.15625,
+        "h": 44
+      },
+      "t16": {
+        "x": 40,
+        "y": 1011.328125,
+        "w": 102.15625,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[2]",
+    "text": "Technical data",
+    "style": {
+      "fontWeight": [
+        "400",
+        "500"
+      ],
+      "lineHeight": [
+        "20px",
+        "19.6px"
+      ],
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 146.15625,
+        "y": 983.453125,
+        "w": 118.8125,
+        "h": 44
+      },
+      "t16": {
+        "x": 146.15625,
+        "y": 1011.328125,
+        "w": 119.84375,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "a.pdp-section-link[3]",
+    "text": "Documents",
+    "style": {
+      "fontWeight": [
+        "400",
+        "500"
+      ],
+      "lineHeight": [
+        "20px",
+        "19.6px"
+      ],
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 268.96875,
+        "y": 983.453125,
+        "w": 101.890625,
+        "h": 44
+      },
+      "t16": {
+        "x": 270,
+        "y": 1011.328125,
+        "w": 102.296875,
+        "h": 44
+      }
+    }
+  },
+  {
+    "key": "div.pdp-overview[1]",
+    "text": "Description GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module) The GW5K-ETA-G20 is th",
+    "style": {
+      "gap": [
+        "56px",
+        "18px"
+      ],
+      "rowGap": [
+        "56px",
+        "18px"
+      ],
+      "columnGap": [
+        "56px",
+        "18px"
+      ],
+      "gridTemplateColumns": [
+        "673.188px 550.812px",
+        "1262px 0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1082.453125,
+        "w": 1360,
+        "h": 226.1875
+      },
+      "t16": {
+        "x": 40,
+        "y": 1110.328125,
+        "w": 1360,
+        "h": 226.1875
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[1]",
+    "text": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 80,
+        "y": 1157.546875,
+        "w": 1280,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 80,
+        "y": 1185.421875,
+        "w": 1280,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[1]",
+    "text": "5 kVA rated backup; 5.5 kVA continuous and 10.0 kVA for 10 s off-grid; 63 A internal bypas",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1340.640625,
+        "w": 328,
+        "h": 122.0625
+      },
+      "t16": {
+        "x": 40,
+        "y": 1368.515625,
+        "w": 328,
+        "h": 123.0625
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[2]",
+    "text": "10 kW maximum PV input on 3 MPPTs (21/21/21 A).",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 384,
+        "y": 1340.640625,
+        "w": 328,
+        "h": 122.0625
+      },
+      "t16": {
+        "x": 384,
+        "y": 1368.515625,
+        "w": 328,
+        "h": 123.0625
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[3]",
+    "text": "Battery window 700–950 V; charge 5.0 kW at 6.7 A, discharge 5.5 kW at 7.4 A.",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 728,
+        "y": 1340.640625,
+        "w": 328,
+        "h": 122.0625
+      },
+      "t16": {
+        "x": 728,
+        "y": 1368.515625,
+        "w": 328,
+        "h": 123.0625
+      }
+    }
+  },
+  {
+    "key": "li.pdp-benefit[4]",
+    "text": "IP66, Smart Fan Cooling, 34 kg, 800 × 340 × 270 mm.",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1072,
+        "y": 1340.640625,
+        "w": 328,
+        "h": 122.0625
+      },
+      "t16": {
+        "x": 1072,
+        "y": 1368.515625,
+        "w": 328,
+        "h": 123.0625
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[1]",
+    "text": "5 kVA rated backup on a 63 A bypass path.Internal 63 A passthrough. Rated backup 5 kVA. Of",
+    "style": {
+      "paddingRight": [
+        "20px",
+        "0px"
+      ],
+      "paddingLeft": [
+        "20px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1518.703125,
+        "w": 668,
+        "h": 58
+      },
+      "t16": {
+        "x": 40,
+        "y": 1547.578125,
+        "w": 668,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[1]",
+    "text": "5 kVA rated backup on a 63 A bypass path.",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1519.703125,
+        "w": 626,
+        "h": 56
+      },
+      "t16": {
+        "x": 41,
+        "y": 1548.578125,
+        "w": 666,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[1]",
+    "text": "Internal 63 A passthrough. Rated backup 5 kVA. Off-grid 5.5 kVA continuous, 10.0 kVA for 1",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1575.703125,
+        "w": 626,
+        "h": 73.5
+      },
+      "t16": {
+        "x": 41,
+        "y": 1604.578125,
+        "w": 666,
+        "h": 64.1875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[1]",
+    "text": "Internal 63 A passthrough. Rated backup 5 kVA. Off-grid 5.5 kVA continuous, 10.0 kVA for 1",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1575.703125,
+        "w": 626,
+        "h": 49.5
+      },
+      "t16": {
+        "x": 61,
+        "y": 1604.578125,
+        "w": 626,
+        "h": 46.1875
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[2]",
+    "text": "5.5 kW maximum battery discharge at 7.4 AOne high-voltage battery input. Charge 5.0 kW at ",
+    "style": {
+      "paddingRight": [
+        "20px",
+        "0px"
+      ],
+      "paddingLeft": [
+        "20px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 732,
+        "y": 1518.703125,
+        "w": 668,
+        "h": 58
+      },
+      "t16": {
+        "x": 732,
+        "y": 1547.578125,
+        "w": 668,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[2]",
+    "text": "5.5 kW maximum battery discharge at 7.4 A",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 753,
+        "y": 1519.703125,
+        "w": 626,
+        "h": 56
+      },
+      "t16": {
+        "x": 733,
+        "y": 1548.578125,
+        "w": 666,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[2]",
+    "text": "One high-voltage battery input. Charge 5.0 kW at 6.7 A, discharge 5.5 kW at 7.4 A, 700–950",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 753,
+        "y": 1575.703125,
+        "w": 626,
+        "h": 73.5
+      },
+      "t16": {
+        "x": 733,
+        "y": 1604.578125,
+        "w": 666,
+        "h": 64.1875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[2]",
+    "text": "One high-voltage battery input. Charge 5.0 kW at 6.7 A, discharge 5.5 kW at 7.4 A, 700–950",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 753,
+        "y": 1575.703125,
+        "w": 626,
+        "h": 49.5
+      },
+      "t16": {
+        "x": 753,
+        "y": 1604.578125,
+        "w": 626,
+        "h": 46.1875
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[3]",
+    "text": "10 kW PV input across 3 MPPTs3 MPPTs, strings 1/1/1, 21/21/21 A / 26/26/26 A Isc. Max PV 1",
+    "style": {
+      "paddingRight": [
+        "20px",
+        "0px"
+      ],
+      "paddingLeft": [
+        "20px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1600.703125,
+        "w": 668,
+        "h": 58
+      },
+      "t16": {
+        "x": 40,
+        "y": 1629.578125,
+        "w": 668,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[3]",
+    "text": "10 kW PV input across 3 MPPTs",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1601.703125,
+        "w": 626,
+        "h": 56
+      },
+      "t16": {
+        "x": 41,
+        "y": 1630.578125,
+        "w": 666,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[3]",
+    "text": "3 MPPTs, strings 1/1/1, 21/21/21 A / 26/26/26 A Isc. Max PV 10 kW, MPPT window 120–950 V, ",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1657.703125,
+        "w": 626,
+        "h": 73.5
+      },
+      "t16": {
+        "x": 41,
+        "y": 1686.578125,
+        "w": 666,
+        "h": 64.1875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[3]",
+    "text": "3 MPPTs, strings 1/1/1, 21/21/21 A / 26/26/26 A Isc. Max PV 10 kW, MPPT window 120–950 V, ",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 61,
+        "y": 1657.703125,
+        "w": 626,
+        "h": 49.5
+      },
+      "t16": {
+        "x": 61,
+        "y": 1686.578125,
+        "w": 626,
+        "h": 46.1875
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[2]",
+    "text": "Technical data",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1722.703125,
+        "w": 1360,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 40,
+        "y": 1751.578125,
+        "w": 1360,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stats-layout[1]",
+    "text": "AC output and backupPV inputBattery portEfficiencyGeneralAC output and backupRated / max. ",
+    "style": {
+      "gridTemplateColumns": [
+        "627px 692.984px",
+        "627px 693px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 1784.296875,
+        "w": 1360,
+        "h": 551.171875
+      },
+      "t16": {
+        "x": 40,
+        "y": 1813.171875,
+        "w": 1360,
+        "h": 533.171875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-info-panel[1]",
+    "text": "AC output and backupRated / max. power5 kWRated current at 400 V7.3 A7.6 A at 380 V; 3L/N/",
+    "style": {
+      "marginTop": [
+        "14px",
+        "0px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1861.890625,
+        "w": 692.984375,
+        "h": 473.578125
+      },
+      "t16": {
+        "x": 707,
+        "y": 1876.765625,
+        "w": 693,
+        "h": 469.578125
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose.pdp-tab-disclosure[1]",
+    "text": "AC output and backupRated / max. power5 kWRated current at 400 V7.3 A7.6 A at 380 V; 3L/N/",
+    "style": {
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderBottomWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "0px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1861.890625,
+        "w": 692.984375,
+        "h": 473.578125
+      },
+      "t16": {
+        "x": 707,
+        "y": 1876.765625,
+        "w": 693,
+        "h": 469.578125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[4]",
+    "text": "Rated / max. power5 kWRated current at 400 V7.3 A7.6 A at 380 V; 3L/N/PE, 220/380 V or 230",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1861.890625,
+        "w": 692.984375,
+        "h": 473.578125
+      },
+      "t16": {
+        "x": 708,
+        "y": 1877.765625,
+        "w": 691,
+        "h": 467.578125
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[1]",
+    "text": "Rated / max. power5 kW",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1861.890625,
+        "w": 692.984375,
+        "h": 49.796875
+      },
+      "t16": {
+        "x": 708,
+        "y": 1877.765625,
+        "w": 691,
+        "h": 49.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[1]",
+    "text": "5 kW",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 1875.890625,
+        "w": 320.5,
+        "h": 20.796875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 1891.765625,
+        "w": 319.5,
+        "h": 20.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[2]",
+    "text": "Rated current at 400 V7.3 A7.6 A at 380 V; 3L/N/PE, 220/380 V or 230/400 V, 50/60 Hz",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 1911.6875,
+        "w": 692.984375,
+        "h": 110.796875
+      },
+      "t16": {
+        "x": 708,
+        "y": 1927.5625,
+        "w": 691,
+        "h": 108.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[2]",
+    "text": "7.3 A7.6 A at 380 V; 3L/N/PE, 220/380 V or 230/400 V, 50/60 Hz",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 1925.6875,
+        "w": 320.5,
+        "h": 81.796875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 1941.5625,
+        "w": 319.5,
+        "h": 79.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[1]",
+    "text": "7.6 A at 380 V; 3L/N/PE, 220/380 V or 230/400 V, 50/60 Hz",
+    "style": {
+      "fontWeight": [
+        "500",
+        "400"
+      ],
+      "marginTop": [
+        "4px",
+        "2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 1950.484375,
+        "w": 320.5,
+        "h": 57
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 1964.359375,
+        "w": 319.5,
+        "h": 57
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[3]",
+    "text": "Max. apparent power from grid43.5 kVA63 A internal bypass",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 2022.484375,
+        "w": 692.984375,
+        "h": 82.296875
+      },
+      "t16": {
+        "x": 708,
+        "y": 2036.359375,
+        "w": 691,
+        "h": 80.296875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[3]",
+    "text": "43.5 kVA63 A internal bypass",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2036.484375,
+        "w": 320.5,
+        "h": 53.296875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2050.359375,
+        "w": 319.5,
+        "h": 51.296875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[2]",
+    "text": "63 A internal bypass",
+    "style": {
+      "fontWeight": [
+        "500",
+        "400"
+      ],
+      "marginTop": [
+        "4px",
+        "2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2061.28125,
+        "w": 320.5,
+        "h": 28.5
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2073.15625,
+        "w": 319.5,
+        "h": 28.5
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[4]",
+    "text": "Backup rated apparent power5 kVA",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 2104.78125,
+        "w": 692.984375,
+        "h": 49.796875
+      },
+      "t16": {
+        "x": 708,
+        "y": 2116.65625,
+        "w": 691,
+        "h": 49.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[4]",
+    "text": "5 kVA",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2118.78125,
+        "w": 320.5,
+        "h": 20.796875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2130.65625,
+        "w": 319.5,
+        "h": 20.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[5]",
+    "text": "Backup max. apparent power (off-grid)5.5 kVA (10.0, 10 s)on-grid backup uses the from-grid",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 2154.578125,
+        "w": 692.984375,
+        "h": 82.296875
+      },
+      "t16": {
+        "x": 708,
+        "y": 2166.453125,
+        "w": 691,
+        "h": 80.296875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[5]",
+    "text": "5.5 kVA (10.0, 10 s)on-grid backup uses the from-grid rating",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2168.578125,
+        "w": 320.5,
+        "h": 53.296875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2180.453125,
+        "w": 319.5,
+        "h": 51.296875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-reading.pdp-muted[3]",
+    "text": "on-grid backup uses the from-grid rating",
+    "style": {
+      "fontWeight": [
+        "500",
+        "400"
+      ],
+      "marginTop": [
+        "4px",
+        "2px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2193.375,
+        "w": 320.5,
+        "h": 28.5
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2203.25,
+        "w": 319.5,
+        "h": 28.5
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[6]",
+    "text": "On/off-grid switching time<4 ms",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 2236.875,
+        "w": 692.984375,
+        "h": 49.796875
+      },
+      "t16": {
+        "x": 708,
+        "y": 2246.75,
+        "w": 691,
+        "h": 49.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[6]",
+    "text": "<4 ms",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2250.875,
+        "w": 320.5,
+        "h": 20.796875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2260.75,
+        "w": 319.5,
+        "h": 20.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row[7]",
+    "text": "Power factor / THDi0.8 leading … 0.8 lagging / THDi <3%",
+    "style": {
+      "gridTemplateColumns": [
+        "320.484px 320.5px",
+        "319.5px 319.5px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 707,
+        "y": 2286.671875,
+        "w": 692.984375,
+        "h": 48.796875
+      },
+      "t16": {
+        "x": 708,
+        "y": 2296.546875,
+        "w": 691,
+        "h": 48.796875
+      }
+    }
+  },
+  {
+    "key": "div.pdp-stat-row > dd[7]",
+    "text": "0.8 leading … 0.8 lagging / THDi <3%",
+    "style": {
+      "color": [
+        "rgb(89, 110, 103)",
+        "rgb(21, 53, 47)"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 1063.484375,
+        "y": 2300.671875,
+        "w": 320.5,
+        "h": 20.796875
+      },
+      "t16": {
+        "x": 1063.5,
+        "y": 2310.546875,
+        "w": 319.5,
+        "h": 20.796875
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[3]",
+    "text": "Documents",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 2416.46875,
+        "w": 1360,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 40,
+        "y": 2427.34375,
+        "w": 1360,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[4]",
+    "text": "Product questions",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3274.0625,
+        "w": 1360,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 40,
+        "y": 3284.9375,
+        "w": 1360,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[4]",
+    "text": "What backup rating does GW5K-ETA-G20 have?Rated backup apparent power is 5 kVA. Off-grid m",
+    "style": {
+      "marginBottom": [
+        "0px",
+        "24px"
+      ],
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "0px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3315.65625,
+        "w": 1360,
+        "h": 57
+      },
+      "t16": {
+        "x": 40,
+        "y": 3326.53125,
+        "w": 1360,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[4]",
+    "text": "What backup rating does GW5K-ETA-G20 have?",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3315.65625,
+        "w": 1360,
+        "h": 56
+      },
+      "t16": {
+        "x": 41,
+        "y": 3327.53125,
+        "w": 1358,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[9]",
+    "text": "Rated backup apparent power is 5 kVA. Off-grid maxima are 5.5 kVA continuous and 10.0 kVA ",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3371.65625,
+        "w": 1360,
+        "h": 48.75
+      },
+      "t16": {
+        "x": 41,
+        "y": 3383.53125,
+        "w": 1358,
+        "h": 41.09375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[4]",
+    "text": "Rated backup apparent power is 5 kVA. Off-grid maxima are 5.5 kVA continuous and 10.0 kVA ",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3371.65625,
+        "w": 1360,
+        "h": 24.75
+      },
+      "t16": {
+        "x": 61,
+        "y": 3383.53125,
+        "w": 1318,
+        "h": 23.09375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[5]",
+    "text": "How many MPPTs does GW5K-ETA-G20 have?3 MPPTs, strings 1/1/1, 21/21/21 A maximum MPPT curr",
+    "style": {
+      "marginBottom": [
+        "0px",
+        "24px"
+      ],
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "0px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3372.65625,
+        "w": 1360,
+        "h": 57
+      },
+      "t16": {
+        "x": 40,
+        "y": 3408.53125,
+        "w": 1360,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[5]",
+    "text": "How many MPPTs does GW5K-ETA-G20 have?",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3372.65625,
+        "w": 1360,
+        "h": 56
+      },
+      "t16": {
+        "x": 41,
+        "y": 3409.53125,
+        "w": 1358,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[10]",
+    "text": "3 MPPTs, strings 1/1/1, 21/21/21 A maximum MPPT current and 26/26/26 A short-circuit curre",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3428.65625,
+        "w": 1360,
+        "h": 48.75
+      },
+      "t16": {
+        "x": 41,
+        "y": 3465.53125,
+        "w": 1358,
+        "h": 41.09375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[5]",
+    "text": "3 MPPTs, strings 1/1/1, 21/21/21 A maximum MPPT current and 26/26/26 A short-circuit curre",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3428.65625,
+        "w": 1360,
+        "h": 24.75
+      },
+      "t16": {
+        "x": 61,
+        "y": 3465.53125,
+        "w": 1318,
+        "h": 23.09375
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose[6]",
+    "text": "Which battery modules stack with this power module?The ESA battery table names GW5.1-BAT-D",
+    "style": {
+      "marginBottom": [
+        "0px",
+        "24px"
+      ],
+      "borderTopWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRightWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderLeftWidth": [
+        "0px",
+        "1px"
+      ],
+      "borderRadius": [
+        "0px",
+        "18px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3429.65625,
+        "w": 1360,
+        "h": 57
+      },
+      "t16": {
+        "x": 40,
+        "y": 3490.53125,
+        "w": 1360,
+        "h": 58
+      }
+    }
+  },
+  {
+    "key": "details.pdp-disclose > summary[6]",
+    "text": "Which battery modules stack with this power module?",
+    "style": {
+      "fontSize": [
+        "16px",
+        "15px"
+      ],
+      "lineHeight": [
+        "24px",
+        "22.5px"
+      ],
+      "minHeight": [
+        "0px",
+        "56px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3429.65625,
+        "w": 1360,
+        "h": 56
+      },
+      "t16": {
+        "x": 41,
+        "y": 3491.53125,
+        "w": 1358,
+        "h": 56
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading[11]",
+    "text": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "25.2px"
+      ],
+      "paddingRight": [
+        "0px",
+        "20px"
+      ],
+      "paddingBottom": [
+        "24px",
+        "18px"
+      ],
+      "paddingLeft": [
+        "0px",
+        "20px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3485.65625,
+        "w": 1360,
+        "h": 73.5
+      },
+      "t16": {
+        "x": 41,
+        "y": 3547.53125,
+        "w": 1358,
+        "h": 110.375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-disclose-body.pdp-reading > p[6]",
+    "text": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D",
+    "style": {
+      "fontSize": [
+        "15px",
+        "14px"
+      ],
+      "lineHeight": [
+        "24.75px",
+        "23.1px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3485.65625,
+        "w": 1360,
+        "h": 49.5
+      },
+      "t16": {
+        "x": 61,
+        "y": 3547.53125,
+        "w": 1318,
+        "h": 92.375
+      }
+    }
+  },
+  {
+    "key": "h2.pdp-section-title[5]",
+    "text": "Compatibility records",
+    "style": {
+      "fontFamily": [
+        "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "Inter, ui-sans-serif, system-ui, sans-serif"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3567.65625,
+        "w": 1360,
+        "h": 41.59375
+      },
+      "t16": {
+        "x": 40,
+        "y": 3653.53125,
+        "w": 1360,
+        "h": 41.59375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[1]",
+    "text": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)Item number DLK-GOODWE-GW51BATDG20On ",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3625.25,
+        "w": 280,
+        "h": 210.34375
+      },
+      "t16": {
+        "x": 40,
+        "y": 3711.125,
+        "w": 280,
+        "h": 210.34375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[2]",
+    "text": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)Item number DLK-GOODWE-GW51BATDG21On ",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 336,
+        "y": 3625.25,
+        "w": 280,
+        "h": 210.34375
+      },
+      "t16": {
+        "x": 336,
+        "y": 3711.125,
+        "w": 280,
+        "h": 210.34375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[3]",
+    "text": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)Item number DLK-GOODWE-GW60BATDG20On G",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 632,
+        "y": 3625.25,
+        "w": 280,
+        "h": 210.34375
+      },
+      "t16": {
+        "x": 632,
+        "y": 3711.125,
+        "w": 280,
+        "h": 210.34375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[4]",
+    "text": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)Item number DLK-GOODWE-GW83BATDG20On ",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 928,
+        "y": 3625.25,
+        "w": 280,
+        "h": 210.34375
+      },
+      "t16": {
+        "x": 928,
+        "y": 3711.125,
+        "w": 280,
+        "h": 210.34375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[5]",
+    "text": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)Item number DLK-GOODWE-GW83BATDG21On ",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 3851.59375,
+        "w": 280,
+        "h": 210.34375
+      },
+      "t16": {
+        "x": 40,
+        "y": 3937.46875,
+        "w": 280,
+        "h": 210.34375
+      }
+    }
+  },
+  {
+    "key": "a.pdp-pairing[6]",
+    "text": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)Item number DLK-GOODWE-GW90BATDG20On G",
+    "style": {
+      "alignItems": [
+        "normal",
+        "start"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 336,
+        "y": 3851.59375,
+        "w": 280,
+        "h": 210.34375
+      },
+      "t16": {
+        "x": 336,
+        "y": 3937.46875,
+        "w": 280,
+        "h": 210.34375
+      }
+    }
+  },
+  {
+    "key": "div.pdp-pairing-footnote.pdp-reading.pdp-muted[1]",
+    "text": "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scal",
+    "style": {
+      "fontSize": [
+        "15px",
+        "13px"
+      ],
+      "lineHeight": [
+        "28.5px",
+        "20.8px"
+      ]
+    },
+    "rect": {
+      "live": {
+        "x": 40,
+        "y": 4077.9375,
+        "w": 640,
+        "h": 74.25
+      },
+      "t16": {
+        "x": 40,
+        "y": 4163.8125,
+        "w": 640,
+        "h": 64.3125
+      }
+    }
+  }
+]

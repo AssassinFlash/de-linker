@@ -1,77 +1,100 @@
-<section class="woocommerce">
-	<div id="container-content-single-product" class="mx-auto max-w-[1160px] overflow-hidden px-4 py-8">
-		<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch">
-			<div class="w-full lg:w-1/2">
-				[lc_wc_carousel image_class="w-full"]
+<div>
+	[lc_wc_notices]
+</div>
+
+<div id="tv-storefront-pdp" class="sf-pdp [linker_pdp_brand_class]">
+	<div class="sf-container">
+		<nav class="pdp-crumbs" aria-label="Breadcrumb">
+			<a href="[lc_wc_get_page_url page="shop"]">Products</a>
+			<span aria-hidden="true">/</span>
+			<span>[linker_pdp_brand]</span>
+			<span aria-hidden="true">/</span>
+			<span>[linker_pdp_model]</span>
+		</nav>
+
+		<div class="pdp-layout">
+			<div class="pdp-gallery">
+				[linker_pdp_gallery_pair]
+				[linker_pdp_gallery_thumbs]
 			</div>
-			<div class="w-full py-4 lg:w-1/2 lg:ps-8">
-				<div>
-					[lc_wc_notices]
+
+			<aside class="pdp-purchase">
+				<div class="pdp-buy-inner">
+					[linker_pdp_brand_logo]
+					<h1 class="pdp-h1">[linker_pdp_model]</h1>
+					<p class="pdp-designation">[linker_pdp_designation]</p>
+					<p class="pdp-sku">Item number: [linker_pdp_sku]</p>
+					<div class="pdp-price">[linker_pdp_price]</div>
+					<dl class="pdp-spec-list">[linker_pdp_key_stats]</dl>
+					<div class="pdp-avail">[linker_pdp_availability]</div>
+					[linker_pdp_cta]
+					[linker_pdp_ask]
+					<div class="pdp-product-tools">[linker_pdp_tools]</div>
+					<details class="pdp-project-check" data-linker-project-product-context aria-label="Check this model for the project">
+						<summary><h2>Plan with [linker_pdp_model]</h2></summary>
+						<div class="pdp-project-check__body">
+							<p>New system, extension or replacement? Linker Advisor starts from this model and asks only for what is still open (existing model, quantity, postcode, installation date).</p>
+							<div class="pdp-project-choices">[linker_pdp_project_choices]</div>
+							<p data-linker-project-product-feedback aria-live="polite"></p>
+						</div>
+					</details>
 				</div>
-				<div class="lc-block">
-					[lc_wc_on_sale_badge class="mt-4 inline-block rounded-full bg-emerald-600 px-3 py-1 text-sm text-white"]
-				</div>
-				<nav aria-label="breadcrumb" class="mt-3 lc-block">
-					<ol class="flex flex-wrap gap-2 text-sm">
-						<li>
-							<a class="text-[#15352f] no-underline" href="[lc_wc_get_page_url]">Home</a>
-						</li>
-						<li>
-							<a class="text-[#15352f] no-underline" href="[lc_wc_product_category get='url']">[lc_wc_product_category]</a>
-						</li>
-						<li aria-current="page">[lc_wc_product get="name"]</li>
-					</ol>
+			</aside>
+
+			<div class="pdp-content">
+				<nav id="product-sections" class="pdp-section-nav" aria-label="Product sections">
+					<a class="pdp-section-link" href="#description">Description</a>
+					<a class="pdp-section-link" href="#stats">Technical data</a>
+					<a class="pdp-section-link" href="#downloads">Documents</a>
 				</nav>
-				<div class="lc-block">
-					<h1 class="mt-4 text-4xl font-bold tracking-tight text-[#15352f]">[lc_wc_product get="name"]</h1>
-				</div>
-				<div class="lc-block my-4 flex flex-col justify-between gap-4 sm:flex-row">
-					<div class="text-xl font-semibold text-[#0c7f73]">
-						[linker_price]
+
+				<section id="description" class="pdp-block">
+					<div class="pdp-overview">
+						<div class="pdp-overview-copy">
+							<p class="pdp-kicker">Description</p>
+							<h2 class="pdp-section-title">[lc_the_title]</h2>
+							<div class="pdp-overview-intro pdp-reading">[linker_pdp_intro]</div>
+						</div>
 					</div>
-					<div>
-						[lc_wc_product_rating]
-					</div>
-				</div>
-				<div class="lc-block mb-4 leading-relaxed text-neutral-600">
-					[lc_wc_product get="short_description" filter="wpautop"]
-				</div>
-				<div class="lc-block">
-					[lc_wc_product_add_to_cart class="inline-flex min-h-11 items-center rounded-lg bg-(--proto-accent) px-6 font-bold text-white" qty_class="min-h-11 rounded-lg border px-3" select_class="min-h-11 rounded-lg border"]
-				</div>
+					[linker_pdp_benefits]
+				</section>
+
+				[linker_pdp_features]
+
+				[linker_pdp_disclosures]
+
+				<section id="stats" class="pdp-block">
+					<h2 class="pdp-section-title">Technical data</h2>
+					[linker_pdp_specs]
+				</section>
+
+				[lc_if condition="linker_commerce_pdp_has_scenes"]<section class="pdp-block pdp-fit" id="fit">
+					<p class="pdp-kicker">Project fit</p>
+					<h2 class="pdp-section-title">Where this model fits.</h2>
+					[linker_pdp_scenes]
+				</section>[/lc_if]
+
+				<section id="downloads" class="pdp-block">
+					<h2 class="pdp-section-title">Documents</h2>
+					[linker_pdp_downloads]
+				</section>
+
+				[lc_if condition="linker_commerce_pdp_has_faqs"]<section class="pdp-block pdp-faqs">
+					<h2 class="pdp-section-title">Product questions</h2>
+					[linker_faqs]
+				</section>[/lc_if]
+
+				[lc_if condition="linker_commerce_pdp_has_pairings"]<section class="pdp-block">
+					<h2 class="pdp-section-title">Compatibility records</h2>
+					[linker_pdp_pairings]
+				</section>[/lc_if]
 			</div>
 		</div>
 	</div>
-</section>
-<section class="woocommerce">
-	<div class="mx-auto max-w-[1160px] px-4">
-		<ul class="flex flex-col sm:flex-row" role="tablist">
-			<li class="nav-item" role="presentation">
-				<a class="nav-link detail-nav-link active block border-b-2 border-[#0c7f73] px-4 py-2 font-semibold" data-bs-toggle="tab" href="#description" role="tab" aria-selected="true">[lc_wc_label text="Description"]</a>
-			</li>
-			<li class="nav-item" role="presentation">
-				<a class="nav-link detail-nav-link additional-information-nav-link block px-4 py-2" data-bs-toggle="tab" href="#additional-information" role="tab" aria-selected="false" tabindex="-1">[lc_wc_label text="Additional information"]</a>
-			</li>
-			<li class="nav-item" role="presentation">
-				<a class="nav-link detail-nav-link block px-4 py-2" data-bs-toggle="tab" href="#reviews" role="tab" aria-selected="false" tabindex="-1">[lc_wc_label text="Reviews"]</a>
-			</li>
-		</ul>
-		<div class="py-8">
-			<div class="tab-pane active lc-block" id="description" role="tabpanel">
-				[lc_wc_product_tab_description]
-				[linker_faqs]
-			</div>
-			<div class="tab-pane lc-block" id="additional-information" role="tabpanel">
-				[lc_wc_product_tab_additional_information]
-			</div>
-			<div class="tab-pane lc-block" id="reviews" role="tabpanel">
-				[lc_wc_product_tab_reviews] ([lc_wc_product get="review_count"])
-			</div>
-		</div>
-	</div>
-</section>
-<section class="woocommerce">
-	<div class="mx-auto max-w-[1160px] px-4 pb-12">
-		[lc_wc_related columns="4" posts_per_page="4" orderby="rand" order="desc"]
-	</div>
-</section>
+
+	<dialog id="pdp-image-viewer">
+		<button type="button" class="pdp-viewer-close" data-pdp-close-image aria-label="Close">&times;</button>
+		<img alt="" />
+		<p data-viewer-caption></p>
+	</dialog>
+</div>

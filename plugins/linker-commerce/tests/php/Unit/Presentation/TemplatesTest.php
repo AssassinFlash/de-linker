@@ -48,7 +48,15 @@ final class TemplatesTest extends TestCase {
 			$html = (string) file_get_contents( $path );
 			$this->assertNotSame( '', trim( $html ) );
 		}
-		$this->assertStringContainsString( '[linker_price]', (string) file_get_contents( $catalog['is_single_product'] ) );
+		$single = (string) file_get_contents( $catalog['is_single_product'] );
+		$this->assertStringContainsString( 'class="pdp-layout"', $single );
+		$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $single );
+		$this->assertStringContainsString( '[linker_pdp_tools]', $single );
+		$this->assertStringContainsString( '[lc_if condition="linker_commerce_pdp_has_pairings"]', $single );
+		$this->assertStringNotContainsString( '[linker_pdp_buy]', $single );
+		$this->assertStringContainsString( '[linker_catalog_families]', (string) file_get_contents( $catalog['is_shop_page'] ) );
+		$this->assertStringContainsString( 'id="tv-storefront-pdp"', (string) file_get_contents( $catalog['is_single_product'] ) );
+		$this->assertStringContainsString( 'id="tv-woo-b2b-catalog"', (string) file_get_contents( $catalog['is_shop_page'] ) );
 		$this->assertStringContainsString( '[woocommerce_cart]', (string) file_get_contents( $catalog['is_cart_page'] ) );
 		$this->assertStringContainsString( '[linker_checkout]', (string) file_get_contents( $catalog['is_checkout_page'] ) );
 		$this->assertStringContainsString( '[woocommerce_my_account]', (string) file_get_contents( $catalog['is_account_page'] ) );
@@ -250,6 +258,97 @@ final class TemplatesTest extends TestCase {
 	}
 
 	/**
+	 * A template created while Polylang runs gets the site's source language
+	 * when it has none, and one that already carries a language keeps it (#11's
+	 * LiveCanvas forensics: a languageless source is silently skipped when its
+	 * German twin is paired).
+	 */
+	public function test_sync_assigns_the_source_language_to_languageless_templates(): void {
+		$assigned = array();
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => static fn(): array => array(), // Nothing existing: sync creates all ten.
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_insert_post',
+			array(
+				'return' => static function () {
+					static $id = 700;
+					return ++$id;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+		WP_Mock::userFunction( 'pll_default_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction(
+			'pll_get_post_language',
+			array(
+				'return' => static fn(): bool => false, // The API answers false for a post without a language.
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_set_post_language',
+			array(
+				'return' => static function ( int $id, string $slug ) use ( &$assigned ): bool {
+					$assigned[ $id ] = $slug;
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn( string $value ): string => $value ) );
+
+		( new Templates() )->sync();
+
+		$this->assertCount( 10, $assigned, 'the six Woo templates and the four tool-page templates' );
+		$this->assertSame( array_fill( 0, 10, 'en' ), array_values( $assigned ) );
+	}
+
+	/**
+	 * Polylang without configured languages has no source language to name:
+	 * the templates stay languageless and a later `wp linker-i18n setup
+	 * --assign` covers them.
+	 */
+	public function test_sync_skips_the_language_when_no_language_is_configured(): void {
+		$assigned = array();
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => static fn(): array => array(),
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_insert_post',
+			array(
+				'return' => static function () {
+					static $id = 800;
+					return ++$id;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+		WP_Mock::userFunction( 'pll_default_language', array( 'return' => false ) ); // Polylang's answer without languages.
+		WP_Mock::userFunction(
+			'pll_set_post_language',
+			array(
+				'return' => static function ( int $id, string $slug ) use ( &$assigned ): bool {
+					$assigned[ $id ] = $slug;
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn( string $value ): string => $value ) );
+
+		$report = ( new Templates() )->sync();
+
+		$this->assertSame( array(), $assigned );
+		$this->assertSame( 10, $report['created'] );
+	}
+
+	/**
 	 * Each tool page carries the LiveCanvas per-post choice of its own
 	 * language's template: the page's template loader reads the choice from
 	 * the queried post, so the English page and the German page name
@@ -331,6 +430,22 @@ final class TemplatesTest extends TestCase {
 			'pll_get_post_language',
 			array(
 				'return' => static fn ( int $id ): string => in_array( $id, array( 6608, 6871 ), true ) ? 'de' : 'en',
+				'times'  => '0+',
+			)
+		);
+		// sync() also gives every template it creates or updates the site's
+		// source language (assign_source_language()).
+		WP_Mock::userFunction(
+			'pll_default_language',
+			array(
+				'return' => 'en',
+				'times'  => '0+',
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_set_post_language',
+			array(
+				'return' => true,
 				'times'  => '0+',
 			)
 		);

@@ -1,0 +1,4025 @@
+{
+ "shop-en-1440-live": {
+  "pageH": 9237,
+  "railHelp": {
+   "rect": {
+    "x": 100,
+    "y": 1846.9,
+    "w": 210,
+    "h": 178.7
+   },
+   "title": "Send a Project to Linker",
+   "cta": "Open Project Brief",
+   "ctarect": {
+    "x": 117,
+    "y": 1968.6,
+    "w": 126.4,
+    "h": 40
+   }
+  },
+  "crumbs": [],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 734.7,
+     "y": 272.7,
+     "w": 94.8,
+     "h": 17.5
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 734.7,
+      "y": 272.7,
+      "w": 241,
+      "h": 17.5
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 734.7,
+     "y": 294.2,
+     "w": 241,
+     "h": 39.1
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 722.7,
+      "y": 260.7,
+      "w": 265,
+      "h": 84.7
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 724.5,
+     "y": 147,
+     "w": 388,
+     "h": 19.6
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 724.5,
+      "y": 125.4,
+      "w": 388,
+      "h": 41.1
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINKER-ASSISTANT",
+    "cls": "lia lia--drawer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10001",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-shell lia-drawer-layer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "relative",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-helper-backdrop",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "flex",
+    "z": "2",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel-head",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor+"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-drawer-brand",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "H2",
+    "cls": "lia-title",
+    "id": "lia-f1c27a8160-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-head-btns",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-new",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-fullscreen",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-history-btn",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": null,
+   "nav": null,
+   "layout": null,
+   "purchase": null,
+   "overview": null,
+   "intro": null,
+   "stats": null,
+   "pairings": null,
+   "faqs": null,
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 8662.9,
+    "w": 1440,
+    "h": 574
+   },
+   "docFirst": null,
+   "doc1text": null,
+   "introtext": null
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 8662.9,
+    "w": 1440,
+    "h": 574
+   },
+   "cls": ""
+  }
+ },
+ "shop-en-1440-t16": {
+  "pageH": 9237,
+  "railHelp": {
+   "rect": {
+    "x": 100,
+    "y": 1846.9,
+    "w": 210,
+    "h": 198.8
+   },
+   "title": "Plan with the Solution Configurator",
+   "cta": "Open the Solution Configurator",
+   "ctarect": {
+    "x": 117,
+    "y": 1988.8,
+    "w": 176,
+    "h": 40
+   }
+  },
+  "crumbs": [],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 734.7,
+     "y": 272.7,
+     "w": 94.8,
+     "h": 17.5
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 734.7,
+      "y": 272.7,
+      "w": 241,
+      "h": 17.5
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 734.7,
+     "y": 294.2,
+     "w": 241,
+     "h": 39.1
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 722.7,
+      "y": 260.7,
+      "w": 265,
+      "h": 84.7
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 724.5,
+     "y": 147,
+     "w": 388,
+     "h": 19.6
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 724.5,
+      "y": 125.4,
+      "w": 388,
+      "h": 41.1
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINK",
+    "cls": "",
+    "id": "linker-tools-genie-css",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-chip",
+    "id": "",
+    "rect": {
+     "x": 1273.8,
+     "y": 306.1,
+     "w": 66.3,
+     "h": 21.7
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-ask min-h-11 rounded-xl border border-neutral-2",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "✦ Ask Genie"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-chip",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "inline-block",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie",
+    "id": "",
+    "rect": {
+     "x": 1370,
+     "y": 830,
+     "w": 50,
+     "h": 50
+    },
+    "pos": "fixed",
+    "disp": "block",
+    "z": "10000",
+    "text": "Ask Genie (function () { var payload = null; try { payload = JSON.parse( document .querySe"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-open",
+    "id": "",
+    "rect": {
+     "x": 1370,
+     "y": 830,
+     "w": 50,
+     "h": 50
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-mark",
+    "id": "",
+    "rect": {
+     "x": 1381.5,
+     "y": 841.5,
+     "w": 27,
+     "h": 27
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-label",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie-panel",
+    "id": "linker-genie-mount",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": null,
+   "nav": null,
+   "layout": null,
+   "purchase": null,
+   "overview": null,
+   "intro": null,
+   "stats": null,
+   "pairings": null,
+   "faqs": null,
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 8662.9,
+    "w": 1440,
+    "h": 574
+   },
+   "docFirst": null,
+   "doc1text": null,
+   "introtext": null
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 8662.9,
+    "w": 1440,
+    "h": 574
+   },
+   "cls": ""
+  }
+ },
+ "shop-en-390-live": {
+  "pageH": 12303,
+  "railHelp": {
+   "rect": {
+    "x": 410,
+    "y": 102,
+    "w": 320,
+    "h": 142.4
+   },
+   "title": "Send a Project to Linker",
+   "cta": "Open Project Brief",
+   "ctarect": {
+    "x": 427,
+    "y": 187.4,
+    "w": 126.4,
+    "h": 40
+   }
+  },
+  "crumbs": [],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINKER-ASSISTANT",
+    "cls": "lia lia--drawer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10001",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-shell lia-drawer-layer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "relative",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-helper-backdrop",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "flex",
+    "z": "2",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel-head",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor+"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-drawer-brand",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "H2",
+    "cls": "lia-title",
+    "id": "lia-55099c5bc7-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-head-btns",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-new",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-fullscreen",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-history-btn",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": null,
+   "nav": null,
+   "layout": null,
+   "purchase": null,
+   "overview": null,
+   "intro": null,
+   "stats": null,
+   "pairings": null,
+   "faqs": null,
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 11634.8,
+    "w": 390,
+    "h": 667.9
+   },
+   "docFirst": null,
+   "doc1text": null,
+   "introtext": null
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 11634.8,
+    "w": 390,
+    "h": 667.9
+   },
+   "cls": ""
+  }
+ },
+ "shop-en-390-t16": {
+  "pageH": 12251,
+  "railHelp": {
+   "rect": {
+    "x": 410,
+    "y": 1616.1,
+    "w": 320,
+    "h": 142.4
+   },
+   "title": "Plan with the Solution Configurator",
+   "cta": "Open the Solution Configurator",
+   "ctarect": {
+    "x": 427,
+    "y": 1701.5,
+    "w": 193.5,
+    "h": 40
+   }
+  },
+  "crumbs": [],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINK",
+    "cls": "",
+    "id": "linker-tools-genie-css",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-chip",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "inline-block",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-ask min-h-11 rounded-xl border border-neutral-2",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "✦ Ask Genie"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-chip",
+    "id": "",
+    "rect": {
+     "x": 196.4,
+     "y": 286.6,
+     "w": 177.6,
+     "h": 44
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": "Ask Genie (function () { var payload = null; try { payload = JSON.parse( document .querySe"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-open",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-mark",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-label",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie-panel",
+    "id": "linker-genie-mount",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": null,
+   "nav": null,
+   "layout": null,
+   "purchase": null,
+   "overview": null,
+   "intro": null,
+   "stats": null,
+   "pairings": null,
+   "faqs": null,
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 11582.8,
+    "w": 390,
+    "h": 667.9
+   },
+   "docFirst": null,
+   "doc1text": null,
+   "introtext": null
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 11582.8,
+    "w": 390,
+    "h": 667.9
+   },
+   "cls": ""
+  }
+ },
+ "archive-en-1440-live": {
+  "pageH": 9263,
+  "railHelp": {
+   "rect": {
+    "x": 100,
+    "y": 1617.9,
+    "w": 210,
+    "h": 178.7
+   },
+   "title": "Send a Project to Linker",
+   "cta": "Open Project Brief",
+   "ctarect": {
+    "x": 117,
+    "y": 1739.6,
+    "w": 126.4,
+    "h": 40
+   }
+  },
+  "crumbs": [],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 734.7,
+     "y": 272.7,
+     "w": 94.8,
+     "h": 17.5
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 734.7,
+      "y": 272.7,
+      "w": 241,
+      "h": 17.5
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 734.7,
+     "y": 294.2,
+     "w": 241,
+     "h": 39.1
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 722.7,
+      "y": 260.7,
+      "w": 265,
+      "h": 84.7
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 724.5,
+     "y": 147,
+     "w": 388,
+     "h": 19.6
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 724.5,
+      "y": 125.4,
+      "w": 388,
+      "h": 41.1
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINKER-ASSISTANT",
+    "cls": "lia lia--drawer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10001",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-shell lia-drawer-layer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "relative",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-helper-backdrop",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "flex",
+    "z": "2",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Find"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel-head",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor+"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-drawer-brand",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "H2",
+    "cls": "lia-title",
+    "id": "lia-3c85c3a08d-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-head-btns",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-new",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-fullscreen",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-history-btn",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": null,
+   "nav": null,
+   "layout": null,
+   "purchase": null,
+   "overview": null,
+   "intro": null,
+   "stats": null,
+   "pairings": null,
+   "faqs": null,
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 8688.6,
+    "w": 1440,
+    "h": 574
+   },
+   "docFirst": null,
+   "doc1text": null,
+   "introtext": null
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 8688.6,
+    "w": 1440,
+    "h": 574
+   },
+   "cls": ""
+  }
+ },
+ "archive-en-1440-t16": {
+  "pageH": 9263,
+  "railHelp": {
+   "rect": {
+    "x": 100,
+    "y": 1770.9,
+    "w": 210,
+    "h": 198.8
+   },
+   "title": "Plan with the Solution Configurator",
+   "cta": "Open the Solution Configurator",
+   "ctarect": {
+    "x": 117,
+    "y": 1912.8,
+    "w": 176,
+    "h": 40
+   }
+  },
+  "crumbs": [],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 734.7,
+     "y": 272.7,
+     "w": 94.8,
+     "h": 17.5
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 734.7,
+      "y": 272.7,
+      "w": 241,
+      "h": 17.5
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 734.7,
+     "y": 294.2,
+     "w": 241,
+     "h": 39.1
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 722.7,
+      "y": 260.7,
+      "w": 265,
+      "h": 84.7
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 724.5,
+     "y": 147,
+     "w": 388,
+     "h": 19.6
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 724.5,
+      "y": 125.4,
+      "w": 388,
+      "h": 41.1
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINK",
+    "cls": "",
+    "id": "linker-tools-genie-css",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-chip",
+    "id": "",
+    "rect": {
+     "x": 1273.8,
+     "y": 306.1,
+     "w": 66.3,
+     "h": 21.7
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-ask min-h-11 rounded-xl border border-neutral-2",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "✦ Ask Genie"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-chip",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "inline-block",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie",
+    "id": "",
+    "rect": {
+     "x": 1370,
+     "y": 830,
+     "w": 50,
+     "h": 50
+    },
+    "pos": "fixed",
+    "disp": "block",
+    "z": "10000",
+    "text": "Ask Genie (function () { var payload = null; try { payload = JSON.parse( document .querySe"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-open",
+    "id": "",
+    "rect": {
+     "x": 1370,
+     "y": 830,
+     "w": 50,
+     "h": 50
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-mark",
+    "id": "",
+    "rect": {
+     "x": 1381.5,
+     "y": 841.5,
+     "w": 27,
+     "h": 27
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-label",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie-panel",
+    "id": "linker-genie-mount",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": null,
+   "nav": null,
+   "layout": null,
+   "purchase": null,
+   "overview": null,
+   "intro": null,
+   "stats": null,
+   "pairings": null,
+   "faqs": null,
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 8688.6,
+    "w": 1440,
+    "h": 574
+   },
+   "docFirst": null,
+   "doc1text": null,
+   "introtext": null
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 8688.6,
+    "w": 1440,
+    "h": 574
+   },
+   "cls": ""
+  }
+ },
+ "pdp-en-1440-live": {
+  "pageH": 4299,
+  "railHelp": null,
+  "crumbs": [
+   {
+    "cls": "pdp-crumbs",
+    "rect": {
+     "x": 40,
+     "y": 109,
+     "w": 1360,
+     "h": 18
+    },
+    "text": "Products / GoodWe/ GW5.1-BAT-D-G21"
+   }
+  ],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 734.7,
+     "y": 272.7,
+     "w": 94.8,
+     "h": 17.5
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 734.7,
+      "y": 272.7,
+      "w": 241,
+      "h": 17.5
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 734.7,
+     "y": 294.2,
+     "w": 241,
+     "h": 39.1
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 722.7,
+      "y": 260.7,
+      "w": 265,
+      "h": 84.7
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 724.5,
+     "y": 147,
+     "w": 388,
+     "h": 19.6
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 724.5,
+      "y": 125.4,
+      "w": 388,
+      "h": 41.1
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINKER-ASSISTANT",
+    "cls": "lia lia--drawer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10001",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Good"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-shell lia-drawer-layer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "relative",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Good"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-helper-backdrop",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "flex",
+    "z": "2",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Good"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel-head",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor+"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-drawer-brand",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "H2",
+    "cls": "lia-title",
+    "id": "lia-f3d4278968-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-head-btns",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-new",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-fullscreen",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-history-btn",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": {
+    "x": 0,
+    "y": 89,
+    "w": 1440,
+    "h": 3636
+   },
+   "nav": {
+    "x": 40,
+    "y": 971.5,
+    "w": 1360,
+    "h": 71
+   },
+   "layout": {
+    "x": 40,
+    "y": 151,
+    "w": 1360,
+    "h": 3494
+   },
+   "purchase": {
+    "x": 946.7,
+    "y": 151,
+    "w": 453.3,
+    "h": 776.5
+   },
+   "overview": {
+    "x": 40,
+    "y": 1082.5,
+    "w": 1360,
+    "h": 275.7
+   },
+   "intro": {
+    "x": 80,
+    "y": 1219.1,
+    "w": 746.6,
+    "h": 99
+   },
+   "stats": {
+    "x": 40,
+    "y": 1727.1,
+    "w": 1360,
+    "h": 363.7
+   },
+   "pairings": {
+    "x": 40,
+    "y": 2798.6,
+    "w": 1360,
+    "h": 716.2
+   },
+   "faqs": {
+    "x": 40,
+    "y": 2463.4,
+    "w": 1360,
+    "h": 236.6
+   },
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 3725,
+    "w": 1440,
+    "h": 574
+   },
+   "docFirst": {
+    "x": 40,
+    "y": 2233.4,
+    "w": 670,
+    "h": 85
+   },
+   "doc1text": "GoodWe ESA Series 5–30 kW datasheet (EN) Datasheet · PDF · EN",
+   "introtext": {
+    "len": 376,
+    "text": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the pri"
+   }
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 3725,
+    "w": 1440,
+    "h": 574
+   },
+   "cls": ""
+  }
+ },
+ "pdp-en-1440-t16": {
+  "pageH": 4099,
+  "railHelp": null,
+  "crumbs": [
+   {
+    "cls": "pdp-crumbs",
+    "rect": {
+     "x": 40,
+     "y": 109,
+     "w": 1360,
+     "h": 18
+    },
+    "text": "Products / GoodWe / GW5.1-BAT-D-G21"
+   }
+  ],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 734.7,
+     "y": 272.7,
+     "w": 94.8,
+     "h": 17.5
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 734.7,
+      "y": 272.7,
+      "w": 241,
+      "h": 17.5
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 734.7,
+     "y": 294.2,
+     "w": 241,
+     "h": 39.1
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 722.7,
+      "y": 260.7,
+      "w": 265,
+      "h": 84.7
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 724.5,
+     "y": 147,
+     "w": 388,
+     "h": 19.6
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 724.5,
+      "y": 125.4,
+      "w": 388,
+      "h": 41.1
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINK",
+    "cls": "",
+    "id": "linker-tools-genie-css",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie",
+    "id": "",
+    "rect": {
+     "x": 1370,
+     "y": 830,
+     "w": 50,
+     "h": 50
+    },
+    "pos": "fixed",
+    "disp": "block",
+    "z": "10000",
+    "text": "Ask Genie (function () { var payload = null; try { payload = JSON.parse( document .querySe"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-open",
+    "id": "",
+    "rect": {
+     "x": 1370,
+     "y": 830,
+     "w": 50,
+     "h": 50
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-mark",
+    "id": "",
+    "rect": {
+     "x": 1381.5,
+     "y": 841.5,
+     "w": 27,
+     "h": 27
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-label",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie-panel",
+    "id": "linker-genie-mount",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": {
+    "x": 0,
+    "y": 89,
+    "w": 1440,
+    "h": 3435.6
+   },
+   "nav": {
+    "x": 40,
+    "y": 971.5,
+    "w": 1360,
+    "h": 71
+   },
+   "layout": {
+    "x": 40,
+    "y": 151,
+    "w": 1360,
+    "h": 3293.6
+   },
+   "purchase": {
+    "x": 946.7,
+    "y": 151,
+    "w": 453.3,
+    "h": 776.5
+   },
+   "overview": {
+    "x": 40,
+    "y": 1082.5,
+    "w": 1360,
+    "h": 275.7
+   },
+   "intro": {
+    "x": 80,
+    "y": 1219.1,
+    "w": 746.6,
+    "h": 99
+   },
+   "stats": {
+    "x": 40,
+    "y": 1727.1,
+    "w": 1360,
+    "h": 359.2
+   },
+   "pairings": {
+    "x": 40,
+    "y": 2737.1,
+    "w": 1360,
+    "h": 577.3
+   },
+   "faqs": {
+    "x": 40,
+    "y": 2458.9,
+    "w": 1360,
+    "h": 179.6
+   },
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 3524.6,
+    "w": 1440,
+    "h": 574
+   },
+   "docFirst": {
+    "x": 40,
+    "y": 2228.9,
+    "w": 670,
+    "h": 85
+   },
+   "doc1text": "GoodWe ESA Series 5–30 kW datasheet (EN)Datasheet · PDF · EN",
+   "introtext": {
+    "len": 377,
+    "text": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the pri"
+   }
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 3524.6,
+    "w": 1440,
+    "h": 574
+   },
+   "cls": ""
+  }
+ },
+ "pdp-de-1440-live": {
+  "pageH": 4431,
+  "railHelp": null,
+  "crumbs": [
+   {
+    "cls": "pdp-crumbs",
+    "rect": {
+     "x": 40,
+     "y": 109,
+     "w": 1360,
+     "h": 18
+    },
+    "text": "Produkte / GoodWe/ GW5.1-BAT-D-G21"
+   }
+  ],
+  "homeNodes": [],
+  "genie": [
+   {
+    "tag": "LINKER-ASSISTANT",
+    "cls": "lia lia--drawer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10001",
+    "text": "Linker Berater+Hilfe für Ihr SolarprojektProdukte, Unterlagen und Ihr nächster Schritt.Goo"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-shell lia-drawer-layer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "relative",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Berater+Hilfe für Ihr SolarprojektProdukte, Unterlagen und Ihr nächster Schritt.Goo"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-helper-backdrop",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "flex",
+    "z": "2",
+    "text": "Linker Berater+Hilfe für Ihr SolarprojektProdukte, Unterlagen und Ihr nächster Schritt.Goo"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel-head",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Berater+"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-drawer-brand",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Berater"
+   },
+   {
+    "tag": "H2",
+    "cls": "lia-title",
+    "id": "lia-06cc66bd07-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Berater"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-head-btns",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-new",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-fullscreen",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-history-btn",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": {
+    "x": 0,
+    "y": 89,
+    "w": 1440,
+    "h": 3768
+   },
+   "nav": {
+    "x": 40,
+    "y": 987,
+    "w": 1360,
+    "h": 71
+   },
+   "layout": {
+    "x": 40,
+    "y": 151,
+    "w": 1360,
+    "h": 3626
+   },
+   "purchase": {
+    "x": 946.7,
+    "y": 151,
+    "w": 453.3,
+    "h": 792
+   },
+   "overview": {
+    "x": 40,
+    "y": 1098,
+    "w": 1360,
+    "h": 300.4
+   },
+   "intro": {
+    "x": 80,
+    "y": 1234.7,
+    "w": 746.6,
+    "h": 123.8
+   },
+   "stats": {
+    "x": 40,
+    "y": 1767.4,
+    "w": 1360,
+    "h": 363.7
+   },
+   "pairings": {
+    "x": 40,
+    "y": 2838.9,
+    "w": 1360,
+    "h": 783.1
+   },
+   "faqs": {
+    "x": 40,
+    "y": 2503.7,
+    "w": 1360,
+    "h": 236.6
+   },
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 3857,
+    "w": 1440,
+    "h": 574
+   },
+   "docFirst": {
+    "x": 40,
+    "y": 2273.7,
+    "w": 670,
+    "h": 85
+   },
+   "doc1text": "GoodWe ESA Serie 5–30 kW Datenblatt (EN) Datenblatt · PDF · EN",
+   "introtext": {
+    "len": 409,
+    "text": "GW5.1-BAT-D-G21 ist das ESA-Batteriemodul mit 5,12 kWh Nennenergie und 5,0 kWh nutzbarer E"
+   }
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 3857,
+    "w": 1440,
+    "h": 574
+   },
+   "cls": ""
+  }
+ },
+ "pdp-de-1440-t16": {
+  "pageH": 4249,
+  "railHelp": null,
+  "crumbs": [
+   {
+    "cls": "pdp-crumbs",
+    "rect": {
+     "x": 40,
+     "y": 109,
+     "w": 1360,
+     "h": 18
+    },
+    "text": "Produkte / GoodWe / GW5.1-BAT-D-G21"
+   }
+  ],
+  "homeNodes": [],
+  "genie": [
+   {
+    "tag": "LINK",
+    "cls": "",
+    "id": "linker-tools-genie-css",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie",
+    "id": "",
+    "rect": {
+     "x": 1370,
+     "y": 830,
+     "w": 50,
+     "h": 50
+    },
+    "pos": "fixed",
+    "disp": "block",
+    "z": "10000",
+    "text": "Genie fragen (function () { var payload = null; try { payload = JSON.parse( document .quer"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-open",
+    "id": "",
+    "rect": {
+     "x": 1370,
+     "y": 830,
+     "w": 50,
+     "h": 50
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Genie fragen"
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-mark",
+    "id": "",
+    "rect": {
+     "x": 1381.5,
+     "y": 841.5,
+     "w": 27,
+     "h": 27
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-label",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "Genie fragen"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie-panel",
+    "id": "linker-genie-mount",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": {
+    "x": 0,
+    "y": 89,
+    "w": 1440,
+    "h": 3586.4
+   },
+   "nav": {
+    "x": 40,
+    "y": 987,
+    "w": 1360,
+    "h": 71
+   },
+   "layout": {
+    "x": 40,
+    "y": 151,
+    "w": 1360,
+    "h": 3444.4
+   },
+   "purchase": {
+    "x": 946.7,
+    "y": 151,
+    "w": 453.3,
+    "h": 792
+   },
+   "overview": {
+    "x": 40,
+    "y": 1098,
+    "w": 1360,
+    "h": 300.4
+   },
+   "intro": {
+    "x": 80,
+    "y": 1234.7,
+    "w": 746.6,
+    "h": 123.8
+   },
+   "stats": {
+    "x": 40,
+    "y": 1767.4,
+    "w": 1360,
+    "h": 359.2
+   },
+   "pairings": {
+    "x": 40,
+    "y": 2777.4,
+    "w": 1360,
+    "h": 663
+   },
+   "faqs": {
+    "x": 40,
+    "y": 2499.2,
+    "w": 1360,
+    "h": 179.6
+   },
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 3675.4,
+    "w": 1440,
+    "h": 574
+   },
+   "docFirst": {
+    "x": 40,
+    "y": 2269.2,
+    "w": 670,
+    "h": 85
+   },
+   "doc1text": "GoodWe ESA Serie 5–30 kW Datenblatt (EN)Datenblatt · PDF · EN",
+   "introtext": {
+    "len": 438,
+    "text": "GW5.1-BAT-D-G21 ist das ESA-Batteriemodul mit 5,12 kWh Nennkapazität und 5,0 kWh nutzbarer"
+   }
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 3675.4,
+    "w": 1440,
+    "h": 574
+   },
+   "cls": ""
+  }
+ },
+ "pdp-en-390-live": {
+  "pageH": 6067,
+  "railHelp": null,
+  "crumbs": [
+   {
+    "cls": "pdp-crumbs",
+    "rect": {
+     "x": 16,
+     "y": 93,
+     "w": 358,
+     "h": 44
+    },
+    "text": "Products / GoodWe/ GW5.1-BAT-D-G21"
+   }
+  ],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINKER-ASSISTANT",
+    "cls": "lia lia--drawer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10001",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Good"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-shell lia-drawer-layer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "relative",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Good"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-helper-backdrop",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "flex",
+    "z": "2",
+    "text": "Linker Advisor+Get help with your solar projectProducts, documents and your next step.Good"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel-head",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor+"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-drawer-brand",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "H2",
+    "cls": "lia-title",
+    "id": "lia-3256766c0f-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Advisor"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-head-btns",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-new",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-fullscreen",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-history-btn",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": {
+    "x": 0,
+    "y": 81,
+    "w": 390,
+    "h": 5318.5
+   },
+   "nav": {
+    "x": 16,
+    "y": 1024.4,
+    "w": 358,
+    "h": 64
+   },
+   "layout": {
+    "x": 16,
+    "y": 145,
+    "w": 358,
+    "h": 5174.5
+   },
+   "purchase": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "overview": {
+    "x": 16,
+    "y": 1112.4,
+    "w": 358,
+    "h": 418.5
+   },
+   "intro": {
+    "x": 38,
+    "y": 1283,
+    "w": 314,
+    "h": 207.8
+   },
+   "stats": {
+    "x": 16,
+    "y": 1899,
+    "w": 358,
+    "h": 436.7
+   },
+   "pairings": {
+    "x": 16,
+    "y": 3082.3,
+    "w": 358,
+    "h": 2090
+   },
+   "faqs": {
+    "x": 16,
+    "y": 2800,
+    "w": 358,
+    "h": 210.2
+   },
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 5399.5,
+    "w": 390,
+    "h": 667.9
+   },
+   "docFirst": {
+    "x": 16,
+    "y": 2416,
+    "w": 358,
+    "h": 90
+   },
+   "doc1text": "GoodWe ESA Series 5–30 kW datasheet (EN) Datasheet · PDF · EN",
+   "introtext": {
+    "len": 376,
+    "text": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the pri"
+   }
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 5399.5,
+    "w": 390,
+    "h": 667.9
+   },
+   "cls": ""
+  }
+ },
+ "pdp-en-390-t16": {
+  "pageH": 6122,
+  "railHelp": null,
+  "crumbs": [
+   {
+    "cls": "pdp-crumbs",
+    "rect": {
+     "x": 16,
+     "y": 93,
+     "w": 358,
+     "h": 44
+    },
+    "text": "Products / GoodWe / GW5.1-BAT-D-G21"
+   }
+  ],
+  "homeNodes": [
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home Storage",
+    "parent": {
+     "cls": "tv-mega-link-title-row",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Home Storage"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mega-link-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries from GoodWe, SAJ and EcoFlow",
+    "parent": {
+     "cls": "tv-mega-link-text",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Home Storage Home batteries from GoodWe, SAJ and EcoFlow"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-app-mega-stack-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-app-mega-stack-body",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy Storage Home batteries and hybrid inverters"
+    }
+   },
+   {
+    "tag": "SPAN",
+    "cls": "tv-mobile-rail-desc",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "text": "Home batteries and hybrid inverters",
+    "parent": {
+     "cls": "tv-mobile-rail-card",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "text": "Residential Energy StorageHome batteries and hybrid inverters"
+    }
+   }
+  ],
+  "genie": [
+   {
+    "tag": "LINK",
+    "cls": "",
+    "id": "linker-tools-genie-css",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": "Ask Genie (function () { var payload = null; try { payload = JSON.parse( document .querySe"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-open",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-mark",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-label",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "Ask Genie"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie-panel",
+    "id": "linker-genie-mount",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": {
+    "x": 0,
+    "y": 81,
+    "w": 390,
+    "h": 5373
+   },
+   "nav": {
+    "x": 16,
+    "y": 1025.8,
+    "w": 358,
+    "h": 64
+   },
+   "layout": {
+    "x": 16,
+    "y": 145,
+    "w": 358,
+    "h": 5229
+   },
+   "purchase": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "overview": {
+    "x": 16,
+    "y": 1113.8,
+    "w": 358,
+    "h": 418.5
+   },
+   "intro": {
+    "x": 38,
+    "y": 1302.4,
+    "w": 314,
+    "h": 207.8
+   },
+   "stats": {
+    "x": 16,
+    "y": 1900.5,
+    "w": 358,
+    "h": 489.8
+   },
+   "pairings": {
+    "x": 16,
+    "y": 3136.8,
+    "w": 358,
+    "h": 2090
+   },
+   "faqs": {
+    "x": 16,
+    "y": 2854.5,
+    "w": 358,
+    "h": 210.2
+   },
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 5454,
+    "w": 390,
+    "h": 667.9
+   },
+   "docFirst": {
+    "x": 16,
+    "y": 2470.5,
+    "w": 358,
+    "h": 90
+   },
+   "doc1text": "GoodWe ESA Series 5–30 kW datasheet (EN)Datasheet · PDF · EN",
+   "introtext": {
+    "len": 377,
+    "text": "GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module with 5.0 kWh usable under the pri"
+   }
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 5454,
+    "w": 390,
+    "h": 667.9
+   },
+   "cls": ""
+  }
+ },
+ "pdp-de-390-live": {
+  "pageH": 6186,
+  "railHelp": null,
+  "crumbs": [
+   {
+    "cls": "pdp-crumbs",
+    "rect": {
+     "x": 16,
+     "y": 93,
+     "w": 358,
+     "h": 44
+    },
+    "text": "Produkte / GoodWe/ GW5.1-BAT-D-G21"
+   }
+  ],
+  "homeNodes": [],
+  "genie": [
+   {
+    "tag": "LINKER-ASSISTANT",
+    "cls": "lia lia--drawer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10001",
+    "text": "Linker Berater+Hilfe für Ihr SolarprojektProdukte, Unterlagen und Ihr nächster Schritt.Goo"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-shell lia-drawer-layer",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "relative",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Berater+Hilfe für Ihr SolarprojektProdukte, Unterlagen und Ihr nächster Schritt.Goo"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-helper-backdrop",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "flex",
+    "z": "2",
+    "text": "Linker Berater+Hilfe für Ihr SolarprojektProdukte, Unterlagen und Ihr nächster Schritt.Goo"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-panel-head",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Berater+"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-drawer-brand",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Linker Berater"
+   },
+   {
+    "tag": "H2",
+    "cls": "lia-title",
+    "id": "lia-9c3425e5f4-title",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "block",
+    "z": "auto",
+    "text": "Linker Berater"
+   },
+   {
+    "tag": "DIV",
+    "cls": "lia-head-btns",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-new",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": "+"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-fullscreen",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button lia-history-btn",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "lia-icon-button",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "grid",
+    "z": "auto",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": {
+    "x": 0,
+    "y": 81,
+    "w": 390,
+    "h": 5374.4
+   },
+   "nav": {
+    "x": 16,
+    "y": 1042,
+    "w": 358,
+    "h": 64
+   },
+   "layout": {
+    "x": 16,
+    "y": 145,
+    "w": 358,
+    "h": 5230.4
+   },
+   "purchase": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "overview": {
+    "x": 16,
+    "y": 1130,
+    "w": 358,
+    "h": 464.7
+   },
+   "intro": {
+    "x": 38,
+    "y": 1300.6,
+    "w": 314,
+    "h": 254
+   },
+   "stats": {
+    "x": 16,
+    "y": 1962.8,
+    "w": 358,
+    "h": 453.5
+   },
+   "pairings": {
+    "x": 16,
+    "y": 3162.9,
+    "w": 358,
+    "h": 2043.8
+   },
+   "faqs": {
+    "x": 16,
+    "y": 2880.5,
+    "w": 358,
+    "h": 210.2
+   },
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 5455.4,
+    "w": 390,
+    "h": 730.9
+   },
+   "docFirst": {
+    "x": 16,
+    "y": 2496.5,
+    "w": 358,
+    "h": 90
+   },
+   "doc1text": "GoodWe ESA Serie 5–30 kW Datenblatt (EN) Datenblatt · PDF · EN",
+   "introtext": {
+    "len": 409,
+    "text": "GW5.1-BAT-D-G21 ist das ESA-Batteriemodul mit 5,12 kWh Nennenergie und 5,0 kWh nutzbarer E"
+   }
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 5455.4,
+    "w": 390,
+    "h": 730.9
+   },
+   "cls": ""
+  }
+ },
+ "pdp-de-390-t16": {
+  "pageH": 6247,
+  "railHelp": null,
+  "crumbs": [
+   {
+    "cls": "pdp-crumbs",
+    "rect": {
+     "x": 16,
+     "y": 93,
+     "w": 358,
+     "h": 44
+    },
+    "text": "Produkte / GoodWe / GW5.1-BAT-D-G21"
+   }
+  ],
+  "homeNodes": [],
+  "genie": [
+   {
+    "tag": "LINK",
+    "cls": "",
+    "id": "linker-tools-genie-css",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": "Genie fragen (function () { var payload = null; try { payload = JSON.parse( document .quer"
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "linker-genie-open",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": "Genie fragen"
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-mark",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "flex",
+    "z": "auto",
+    "text": ""
+   },
+   {
+    "tag": "SPAN",
+    "cls": "linker-genie-open-label",
+    "id": "",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "static",
+    "disp": "none",
+    "z": "auto",
+    "text": "Genie fragen"
+   },
+   {
+    "tag": "DIV",
+    "cls": "linker-genie-panel",
+    "id": "linker-genie-mount",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    },
+    "pos": "fixed",
+    "disp": "none",
+    "z": "10000",
+    "text": ""
+   }
+  ],
+  "pdp": {
+   "root": {
+    "x": 0,
+    "y": 81,
+    "w": 390,
+    "h": 5435.1
+   },
+   "nav": {
+    "x": 16,
+    "y": 1043.4,
+    "w": 358,
+    "h": 64
+   },
+   "layout": {
+    "x": 16,
+    "y": 145,
+    "w": 358,
+    "h": 5291.1
+   },
+   "purchase": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "overview": {
+    "x": 16,
+    "y": 1131.4,
+    "w": 358,
+    "h": 487.8
+   },
+   "intro": {
+    "x": 38,
+    "y": 1320,
+    "w": 314,
+    "h": 277.1
+   },
+   "stats": {
+    "x": 16,
+    "y": 1987.3,
+    "w": 358,
+    "h": 489.8
+   },
+   "pairings": {
+    "x": 16,
+    "y": 3223.7,
+    "w": 358,
+    "h": 2043.8
+   },
+   "faqs": {
+    "x": 16,
+    "y": 2941.3,
+    "w": 358,
+    "h": 210.2
+   },
+   "docs": null,
+   "docgrid": null,
+   "footer": {
+    "x": 0,
+    "y": 5516.1,
+    "w": 390,
+    "h": 730.9
+   },
+   "docFirst": {
+    "x": 16,
+    "y": 2557.3,
+    "w": 358,
+    "h": 90
+   },
+   "doc1text": "GoodWe ESA Serie 5–30 kW Datenblatt (EN)Datenblatt · PDF · EN",
+   "introtext": {
+    "len": 438,
+    "text": "GW5.1-BAT-D-G21 ist das ESA-Batteriemodul mit 5,12 kWh Nennkapazität und 5,0 kWh nutzbarer"
+   }
+  },
+  "footer": {
+   "rect": {
+    "x": 0,
+    "y": 5516.1,
+    "w": 390,
+    "h": 730.9
+   },
+   "cls": ""
+  }
+ }
+}

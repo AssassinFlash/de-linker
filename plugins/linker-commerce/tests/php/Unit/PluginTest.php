@@ -23,7 +23,6 @@ use Linker\Commerce\Plugin;
 use Linker\Commerce\Storefront\CatalogFilters;
 use Linker\Commerce\Storefront\ProductSchema;
 use Linker\Commerce\Storefront\ProductView;
-use Linker\Commerce\Storefront\Storefront;
 use WP_Mock;
 use WP_Mock\Matcher\AnyInstance;
 use WP_Mock\Tools\TestCase;
@@ -72,6 +71,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $documents, 'register' ) );
 		WP_Mock::expectActionAdded( 'save_post_product', array( $documents, 'save' ) );
 		WP_Mock::expectActionAdded( 'cli_init', array( $plugin, 'register_cli' ) );
+		WP_Mock::expectActionAdded( 'plugins_loaded', array( $plugin, 'stand_down_legacy_template_preemption' ) );
 
 		// The contact module mounts its shortcode and handler and keeps the
 		// email classes known to WooCommerce.
@@ -92,10 +92,7 @@ final class PluginTest extends TestCase {
 
 		// AnyInstance matches the object the registration constructs.
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( new AnyInstance( CatalogFilters::class ), 'filter' ), 99 ); // @phpstan-ignore argument.type
-		WP_Mock::expectFilterAdded( 'template_include', array( new AnyInstance( Storefront::class ), 'template' ), 99999 ); // @phpstan-ignore argument.type
-		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( new AnyInstance( Storefront::class ), 'assets' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( ProductSchema::class ), 'print_block' ) ); // @phpstan-ignore argument.type
-		WP_Mock::expectFilterAdded( 'woocommerce_show_page_title', '__return_false' );
 		WP_Mock::expectActionAdded( 'init', array( new AnyInstance( Monitor::class ), 'schedule' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( Monitor::HOOK, array( new AnyInstance( Monitor::class ), 'run' ) ); // @phpstan-ignore argument.type
 		WP_Mock::userFunction( 'register_deactivation_hook' );
@@ -124,6 +121,28 @@ final class PluginTest extends TestCase {
 			'faqs'            => new FaqsMetaBox(),
 			'documents'       => new DocumentsMetaBox(),
 		);
+	}
+
+	/**
+	 * The legacy commerce renderer (terravolt-b2b-core) filters
+	 * template_include at PHP_INT_MAX, above LiveCanvas's 99998, and takes the
+	 * commerce page types away from the dynamic templates for as long as it is
+	 * installed. The stand-down removes exactly that callback; without the old
+	 * plugin it removes nothing.
+	 */
+	public function test_stand_down_removes_the_legacy_template_filter(): void {
+		WP_Mock::userFunction(
+			'remove_filter',
+			array(
+				'times' => 1,
+				'args'  => array( 'template_include', 'tv_b2b_template_include', PHP_INT_MAX ),
+			)
+		);
+
+		$d = $this->dependencies();
+		( new Plugin( self::FILE, $d['abilities'], $d['selection_facts'], $d['engineering'], $d['catalog_search'], $d['search_scope'], new ContactModule( self::FILE, new \Linker\Commerce\Settings\Options() ), $d['figures'], $d['faqs'], $d['documents'] ) )->stand_down_legacy_template_preemption();
+
+		$this->assertConditionsMet();
 	}
 
 	/**

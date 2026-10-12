@@ -74,6 +74,32 @@ final class Tokens {
 	}
 
 	/**
+	 * Removes the marked tokens block from Additional CSS. The live site serves
+	 * the tokens from the header partial's own `tokens.css` style block and
+	 * carries no `wp-custom-css` tag; the install() block is the copy the
+	 * presentation run used to write, and this takes it back out.
+	 *
+	 * @return bool Whether Additional CSS changed.
+	 */
+	public function uninstall(): bool {
+		$current = (string) wp_get_custom_css();
+		if ( ! \str_contains( $current, self::MARKER ) ) {
+			return false;
+		}
+		$stripped = (string) \preg_replace(
+			'/' . \preg_quote( self::MARKER, '/' ) . '.*?' . \preg_quote( self::END, '/' ) . '/s',
+			'',
+			$current
+		);
+		$stripped = \trim( $stripped );
+		if ( $stripped === $current ) {
+			return false;
+		}
+		wp_update_custom_css_post( $stripped );
+		return true;
+	}
+
+	/**
 	 * Removes the inlined tokens.css style block from LiveCanvas header/footer partials.
 	 *
 	 * @return int Partials rewritten.
