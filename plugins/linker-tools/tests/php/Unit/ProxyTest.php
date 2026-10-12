@@ -371,9 +371,11 @@ final class ProxyTest extends TestCase {
 		$this->wp_functions();
 		$proxy = $this->proxy();
 
-		$owned = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
-		$owned->set_param( 'id', 51 );
-		$this->assertSame( 51, $proxy->select_conversation( $owned )->get_data()['conversation_id'] );
+			$owned = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
+			$owned->set_param( 'id', 51 );
+			$selected = $proxy->select_conversation( $owned );
+			$this->assertInstanceOf( WP_REST_Response::class, $selected );
+			$this->assertSame( 51, $selected->get_data()['conversation_id'] );
 
 		$foreign = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
 		$foreign->set_param( 'id', 99 );
@@ -390,7 +392,9 @@ final class ProxyTest extends TestCase {
 		$this->wp_functions();
 		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations' );
 
-		$data = $this->proxy()->select_conversation( $request )->get_data();
+			$opened = $this->proxy()->select_conversation( $request );
+			$this->assertInstanceOf( WP_REST_Response::class, $opened );
+			$data = $opened->get_data();
 
 		$this->assertSame( 52, $data['conversation_id'] );
 		$this->assertConditionsMet();

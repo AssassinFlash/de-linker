@@ -38,11 +38,11 @@ final class TemplatesTest extends TestCase {
 				'is_archive_for_post_type_product',
 				'linker-compare',
 				'linker-compare-de',
-					'linker-faq',
-					'linker-faq-de',
-					'linker-advisor',
-					'linker-advisor-de',
-				),
+				'linker-faq',
+				'linker-faq-de',
+				'linker-advisor',
+				'linker-advisor-de',
+			),
 			array_keys( $catalog )
 		);
 		foreach ( $catalog as $path ) {
@@ -204,10 +204,10 @@ final class TemplatesTest extends TestCase {
 		$titles  = array(
 			'linker-compare'    => 'Compare products',
 			'linker-compare-de' => 'Produkte vergleichen',
-				'linker-faq'        => 'FAQ & documents',
-				'linker-faq-de'     => 'FAQ & Dokumente',
-				'linker-advisor'    => 'Genie',
-				'linker-advisor-de' => 'Genie',
+			'linker-faq'        => 'FAQ & documents',
+			'linker-faq-de'     => 'FAQ & Dokumente',
+			'linker-advisor'    => 'Genie',
+			'linker-advisor-de' => 'Genie',
 		);
 		$updated = 0;
 		$inserts = 0;
@@ -378,21 +378,21 @@ final class TemplatesTest extends TestCase {
 				'post_name' => 'faq-download',
 				'post_type' => 'page',
 			),
-				array(
-					'ID'        => 6871,
-					'post_name' => 'faq-download',
-					'post_type' => 'page',
-				),
-				array(
-					'ID'        => 4101,
-					'post_name' => 'linker-advisor',
-					'post_type' => 'page',
-				),
-				array(
-					'ID'        => 4102,
-					'post_name' => 'linker-berater',
-					'post_type' => 'page',
-				),
+			array(
+				'ID'        => 6871,
+				'post_name' => 'faq-download',
+				'post_type' => 'page',
+			),
+			array(
+				'ID'        => 4101,
+				'post_name' => 'linker-advisor',
+				'post_type' => 'page',
+			),
+			array(
+				'ID'        => 4102,
+				'post_name' => 'linker-berater',
+				'post_type' => 'page',
+			),
 		);
 		WP_Mock::userFunction(
 			'get_posts',
@@ -445,7 +445,7 @@ final class TemplatesTest extends TestCase {
 		WP_Mock::userFunction(
 			'pll_get_post_language',
 			array(
-					'return' => static fn ( int $id ): string => in_array( $id, array( 6608, 6871, 4102 ), true ) ? 'de' : 'en',
+				'return' => static fn ( int $id ): string => in_array( $id, array( 6608, 6871, 4102 ), true ) ? 'de' : 'en',
 				'times'  => '0+',
 			)
 		);

@@ -144,10 +144,10 @@ final class RedirectsTest extends SiteTestCase {
 		/**
 		 * The advisor addresses stay. They are the Genie workspace now.
 		 */
-		public function test_the_advisor_addresses_stay(): void {
-			$this->assertStays( '/linker-advisor/', 200 );
-			$this->assertStays( '/de/linker-berater/', 200 );
-		}
+	public function test_the_advisor_addresses_stay(): void {
+		$this->assertStays( '/linker-advisor/', 200 );
+		$this->assertStays( '/de/linker-berater/', 200 );
+	}
 
 	/**
 	 * The compare page answers for itself: no retired address claims it.

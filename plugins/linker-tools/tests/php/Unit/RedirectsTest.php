@@ -721,13 +721,13 @@ final class RedirectsTest extends TestCase {
 		 * The advisor addresses stay. They are the Genie workspace now, not a
 		 * retired tool page, so a request for them is not redirected.
 		 */
-		public function test_advisor_addresses_stay(): void {
-			$this->wordpress();
+	public function test_advisor_addresses_stay(): void {
+		$this->wordpress();
 
-			$this->assertNull( ( new Redirects() )->target( '/linker-advisor/' ) );
-			$this->assertNull( ( new Redirects() )->target( '/de/linker-berater/' ) );
-			$this->assertNull( ( new Redirects() )->target( '/de/linker-advisor/' ) );
-		}
+		$this->assertNull( ( new Redirects() )->target( '/linker-advisor/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/de/linker-berater/' ) );
+		$this->assertNull( ( new Redirects() )->target( '/de/linker-advisor/' ) );
+	}
 
 	/**
 	 * Addresses that still exist stay: null means no redirect.
