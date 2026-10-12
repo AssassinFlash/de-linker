@@ -26,6 +26,13 @@ final class Menu {
 	);
 
 	/**
+	 * Sets up the menu.
+	 *
+	 * @param string $template_dir Directory of the plugin's templates.
+	 */
+	public function __construct( private readonly string $template_dir ) {}
+
+	/**
 	 * Adds this plugin's endpoints to WooCommerce's query vars.
 	 *
 	 * @param array<string, string> $vars Query var → slug.
@@ -33,6 +40,27 @@ final class Menu {
 	 */
 	public function query_vars( array $vars ): array {
 		return array_merge( $vars, self::ENDPOINTS );
+	}
+
+	/**
+	 * The account navigation's template, ours for the one template the active
+	 * theme still ships as the markup WooCommerce carried in 2.6: a
+	 * list-group of bare anchors, without the current-page state WooCommerce's
+	 * own template prints today. Our copy is that same markup with the state
+	 * restored ("is-active", aria-current="page"); every other template still
+	 * falls through to the theme and WooCommerce.
+	 *
+	 * Runs on woocommerce_locate_template.
+	 *
+	 * @param string $template      Path WooCommerce located.
+	 * @param string $template_name The template asked for.
+	 * @return string
+	 */
+	public function navigation_template( string $template, string $template_name ): string {
+		if ( 'myaccount/navigation.php' !== $template_name ) {
+			return $template;
+		}
+		return $this->template_dir . 'myaccount/navigation.php';
 	}
 
 	/**

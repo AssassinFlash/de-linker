@@ -1,0 +1,137 @@
+{
+ "phase": "after",
+ "B1-1440": {
+  "pageH": 1612,
+  "nav": [
+   172,
+   209,
+   329,
+   279
+  ],
+  "listGroup": [
+   172,
+   209,
+   230,
+   279
+  ],
+  "linkCount": 7,
+  "linkTexts": [
+   "Overview",
+   "Inquiries",
+   "Saved solutions",
+   "Documents",
+   "Company",
+   "Account details",
+   "Log out"
+  ],
+  "linkDisplays": [
+   "block"
+  ],
+  "linkHeights": [
+   36,
+   36,
+   36,
+   36,
+   36,
+   36,
+   36
+  ],
+  "active": {
+   "text": "Inquiries",
+   "className": "list-group-item list-group-item-action is-active",
+   "ariaCurrent": "page",
+   "background": "rgb(243, 247, 242)",
+   "fontWeight": "500"
+  },
+  "hover": {
+   "text": "Saved solutions",
+   "background": "rgb(243, 247, 242)"
+  }
+ },
+ "B1-390": {
+  "pageH": 3124,
+  "nav": [
+   48,
+   201,
+   294,
+   279
+  ],
+  "listGroup": [
+   48,
+   201,
+   230,
+   279
+  ],
+  "linkCount": 7,
+  "linkTexts": [
+   "Overview",
+   "Inquiries",
+   "Saved solutions",
+   "Documents",
+   "Company",
+   "Account details",
+   "Log out"
+  ],
+  "linkDisplays": [
+   "block"
+  ],
+  "linkHeights": [
+   36,
+   36,
+   36,
+   36,
+   36,
+   36,
+   36
+  ],
+  "active": {
+   "text": "Inquiries",
+   "className": "list-group-item list-group-item-action is-active",
+   "ariaCurrent": "page",
+   "background": "rgb(243, 247, 242)",
+   "fontWeight": "500"
+  },
+  "hover": {
+   "text": "Saved solutions",
+   "background": "rgb(243, 247, 242)"
+  }
+ },
+ "B2-1440": {
+  "row1": [
+   {
+    "text": "View",
+    "className": "btn btn-outline-primary woocommerce-button button view",
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(23, 38, 54)",
+    "borderColor": "rgb(223, 231, 236)",
+    "radius": "10px",
+    "fontSize": "12px",
+    "w": 59,
+    "h": 40
+   },
+   {
+    "text": "Request again",
+    "className": "btn btn-outline-primary woocommerce-button button request-again",
+    "background": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "borderColor": "rgb(12, 127, 115)",
+    "radius": "10px",
+    "fontSize": "12px",
+    "w": 116,
+    "h": 40
+   },
+   {
+    "text": "View",
+    "className": "btn btn-outline-primary woocommerce-button button view",
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(23, 38, 54)",
+    "borderColor": "rgb(223, 231, 236)",
+    "radius": "10px",
+    "fontSize": "12px",
+    "w": 59,
+    "h": 40
+   }
+  ],
+  "rows": 10
+ }
+}

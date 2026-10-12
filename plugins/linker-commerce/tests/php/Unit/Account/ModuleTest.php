@@ -30,10 +30,10 @@ use WP_Mock;
 final class ModuleTest extends TestCase {
 
 	/**
-	 * The menu, titles, contact card, inquiry list, saved solutions with their route and claim, documents and downloads are hooked.
+	 * The menu with its navigation template, titles, contact card, inquiry list, saved solutions with their route and claim, documents and downloads are hooked.
 	 */
 	public function test_register_adds_the_hooks(): void {
-		$menu      = new Menu();
+		$menu      = new Menu( '/plugin/templates/' );
 		$contact   = new ContactCard( new Options() );
 		$inquiries = new InquiryList();
 		$saved     = new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' );
@@ -43,6 +43,7 @@ final class ModuleTest extends TestCase {
 
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $menu, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_account_menu_items', array( $menu, 'items' ), 20 );
+		WP_Mock::expectFilterAdded( 'woocommerce_locate_template', array( $menu, 'navigation_template' ), 10, 2 );
 		foreach ( array( 'orders', 'view-order', 'saved-solutions', 'documents', 'edit-address', 'edit-account' ) as $endpoint ) {
 			WP_Mock::expectFilterAdded( 'woocommerce_endpoint_' . $endpoint . '_title', array( $menu, 'title' ), 10, 2 );
 		}

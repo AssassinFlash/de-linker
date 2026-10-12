@@ -3675,6 +3675,65 @@ body.sf-account-page .sf-account-detail-wrap table.shop_table td {
   body.sf-account-inner .woocommerce { grid-template-columns: 288px minmax(0, 1fr) !important; }
 }
 
+/* Owner-approved account optimizations (owner ruling 2026-10-12; ledger and
+   trialled CSS: docs/acceptance/2026-10-12/visual-round2/proposals/README.md).
+   The two accepted proposals, exactly as trialled there, in the header card
+   language of chrome.css (padding 8, radius 12, hairline #e2e5e5, the soft
+   shadow); where the account pages now differ from what they served before
+   the ruling it is a ratified exemption, not a replica defect.
+   B1: the account navigation is the 230px card menu the header's account
+   menu speaks, on every account page and at every width. The current-page
+   state the navigation template prints ("is-active") keeps the account's
+   own active look: the hover tint plus the medium weight. */
+.woocommerce-account .woocommerce-MyAccount-navigation .list-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid #e2e5e5;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(12, 15, 15, 0.08);
+  width: 230px;
+}
+.woocommerce-account .woocommerce-MyAccount-navigation .list-group-item {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #172636;
+  font-size: 14px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.woocommerce-account .woocommerce-MyAccount-navigation .list-group-item:hover {
+  background: #f3f7f2;
+}
+.woocommerce-account .woocommerce-MyAccount-navigation .list-group-item.is-active {
+  background: #f3f7f2;
+  font-weight: 500;
+}
+/* B2: the inquiry list's row actions are layered - View quiet in a white
+   outline, Request again the primary of the row (the classes are the action
+   keys the account's action filter registers). */
+.woocommerce-account .woocommerce-orders-table__cell-order-actions a {
+  border-radius: 10px;
+  font-size: 12px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+}
+.woocommerce-account .woocommerce-orders-table__cell-order-actions a.view {
+  background: #fff;
+  border: 1px solid #dfe7ec;
+  color: #172636;
+}
+.woocommerce-account .woocommerce-orders-table__cell-order-actions a.request-again {
+  background: #0c7f73;
+  border: 1px solid #0c7f73;
+  color: #fff;
+}
+
 /* The endpoint intro is the account page's own section head. Its type came
    from the legacy global snippet's body.dlk-site-system scope - which still
    !importants a display size onto this h2 - so the block is pinned here at the

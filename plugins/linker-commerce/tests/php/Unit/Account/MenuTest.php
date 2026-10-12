@@ -34,7 +34,7 @@ final class MenuTest extends TestCase {
 	 * The menu of docs/specs/11-commerce.md step 6; items of other plugins stay before "Log out"; downloads and payment methods are gone.
 	 */
 	public function test_items(): void {
-		$items = ( new Menu() )->items(
+		$items = ( new Menu( '/plugin/templates/' ) )->items(
 			array(
 				'dashboard'       => 'Dashboard',
 				'orders'          => 'Orders',
@@ -72,7 +72,7 @@ final class MenuTest extends TestCase {
 				'saved-solutions' => 'saved-solutions',
 				'documents'       => 'documents',
 			),
-			( new Menu() )->query_vars( array( 'orders' => 'inquiries' ) )
+			( new Menu( '/plugin/templates/' ) )->query_vars( array( 'orders' => 'inquiries' ) )
 		);
 	}
 
@@ -87,7 +87,7 @@ final class MenuTest extends TestCase {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
 		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
-		$menu = new Menu();
+		$menu = new Menu( '/plugin/templates/' );
 
 		$this->assertSame( 'Inquiries', $menu->title( 'Orders', 'orders' ) );
 		$this->assertSame( 'Inquiry #20', $menu->title( 'Order #20', 'view-order' ) );
@@ -95,5 +95,21 @@ final class MenuTest extends TestCase {
 		$this->assertSame( 'Company', $menu->title( 'Addresses', 'edit-address' ) );
 		$this->assertSame( 'Lost password', $menu->title( 'Lost password', 'lost-password' ) );
 		unset( $GLOBALS['wp'] );
+	}
+
+	/**
+	 * The navigation is ours; every other template keeps the path WooCommerce located.
+	 */
+	public function test_navigation_template(): void {
+		$menu = new Menu( '/plugin/templates/' );
+
+		$this->assertSame(
+			'/plugin/templates/myaccount/navigation.php',
+			$menu->navigation_template( '/theme/woocommerce/myaccount/navigation.php', 'myaccount/navigation.php' )
+		);
+		$this->assertSame(
+			'/theme/woocommerce/myaccount/orders.php',
+			$menu->navigation_template( '/theme/woocommerce/myaccount/orders.php', 'myaccount/orders.php' )
+		);
 	}
 }

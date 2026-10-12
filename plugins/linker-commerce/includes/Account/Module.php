@@ -42,6 +42,7 @@ final class Module {
 	public function register(): void {
 		add_filter( 'woocommerce_get_query_vars', array( $this->menu, 'query_vars' ) );
 		add_filter( 'woocommerce_account_menu_items', array( $this->menu, 'items' ), 20 );
+		add_filter( 'woocommerce_locate_template', array( $this->menu, 'navigation_template' ), 10, 2 );
 		foreach ( array( 'orders', 'view-order', 'saved-solutions', 'documents', 'edit-address', 'edit-account' ) as $endpoint ) {
 			add_filter( 'woocommerce_endpoint_' . $endpoint . '_title', array( $this->menu, 'title' ), 10, 2 );
 		}
