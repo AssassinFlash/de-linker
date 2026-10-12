@@ -2,7 +2,7 @@
 
 - 日期：2026-10-12（UTC）
 - 取证人：设计调研会话（复刻依据采集，供 /prototype 出原型）
-- 证据：`captures/` 下 19 张真实浏览器截图（均为实际访问页面的直接截取）＋本文引用的计算样式与 widget CSS 源码规则
+- 证据：`captures/` 下 18 张真实浏览器截图（均为实际访问页面的直接截取）＋本文引用的计算样式与 widget CSS 源码规则
 - 视口：桌面 1440×900；移动 390×844（iPhone UA）。界面语言 English（chatgpt.com 首访按浏览器 locale 呈中文，经其设置面板切换 English (US) 后重截）
 - 通道：chatgpt.com 系列经 Playwright 浏览器插件；help.openai.com 系列经本机 Python Playwright 驱动有头 Google Chrome 132（Cloudflare 挑战自动通过后取证）。headless 通道被 "Just a moment…" 挑战拦截，已如实记录
 - 纪律遵守：全程只读浏览。未登录任何账号、未在任何表单输入任何字符、未发送任何消息、未调用任何外部模型 API
@@ -234,7 +234,7 @@
 6. **元素级截图两处不稳**：chatgpt「+」菜单与 helper 面板个别元素截图因入场动画 "element is not stable" 失败，改取同状态视口整截（`chatgpt_composer_plusmenu_1440.png`、`helper_panel_open_viewport_1440.png`），信息不损失。
 7. `helper_home_full_1440.png`（1440×8246）原始 5.3MB，为满足 <800KB 以 256 色量化压缩至 767KB（版式为纯色卡面，无肉眼可见损失）。
 
-## 截图索引（19 张）
+## 截图索引（18 张）
 
 | 文件 | 组件/状态/视口 |
 |---|---|
