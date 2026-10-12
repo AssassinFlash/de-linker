@@ -51,12 +51,25 @@ if ( ! function_exists( 'linker_commerce_pdp_has_pairings' ) ) {
 
 if ( ! function_exists( 'linker_commerce_pdp_has_scenes' ) ) {
 	/**
-	 * Whether the product carries an application scenario the live page opens
-	 * the section for. Measured on the live pages 2026-10-11: the section
-	 * needs a scene image and a checklist — the battery and the ETA inverter
-	 * carry neither, the SAJ transfer switch carries an image but no checklist
-	 * (live renders no `#fit` block), while the BAT-AC cabinet and the
-	 * ETA/ETR inverters carry both and the section renders.
+	 * Whether the product carries the project scenario the `#fit` section and
+	 * the nav's `Applications` link are opened for: a scenario with a
+	 * non-empty checklist.
+	 *
+	 * Measured on the live pages 2026-10-13 against the products' own scenario
+	 * records: the GW60K-STS-G10, the GW75K-ET-G10 and the EcoFlow OCEAN
+	 * hybrids each carry a checklist and no scene image, and the live page
+	 * renders `<section class="pdp-block pdp-fit" id="fit">` with "Where this
+	 * model fits." plus the nav link; the ESA GW10K-EHA-G20 carries neither
+	 * and the live page renders no `#fit` and no link. The image is therefore
+	 * not part of this section's gate — an earlier reading required both and
+	 * left every checklist-only product closed, the GW60K among them.
+	 *
+	 * A product whose scenarios carry only a scene image renders the live
+	 * page's other `#fit` variant ("Product views and project settings." with
+	 * a `pdp-scene-reel`); the scenes shortcode does not implement that
+	 * variant yet, so this predicate answers about the project-fit one only.
+	 * The live page's `Applications` link opens whichever variant the product
+	 * has; here it opens the project-fit section.
 	 */
 	function linker_commerce_pdp_has_scenes(): bool {
 		$id = linker_commerce_pdp_product_id();
@@ -64,7 +77,7 @@ if ( ! function_exists( 'linker_commerce_pdp_has_scenes' ) ) {
 			return false;
 		}
 		foreach ( ( new ProductView() )->scenarios( $id ) as $scenario ) {
-			if ( (int) $scenario['image'] > 0 && array() !== (array) $scenario['checklist'] ) {
+			if ( array() !== (array) $scenario['checklist'] ) {
 				return true;
 			}
 		}

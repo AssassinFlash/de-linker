@@ -19,6 +19,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools;
 
+use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
@@ -40,5 +41,6 @@ $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConvention
 	new Entries( __FILE__ ),
 	new Retention( __FILE__ ),
 	new UserContext(),
-	new WindPress()
+	new WindPress(),
+	new Mount()
 ) )->register();

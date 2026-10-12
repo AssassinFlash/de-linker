@@ -42,6 +42,11 @@ final class TemplatesTest extends TestCase {
 				'linker-faq-de',
 				'linker-advisor',
 				'linker-advisor-de',
+				'linker-configurator',
+				'linker-configurator-de',
+				// The German export of a page type is a source of its own: the
+				// product page's German twin is rendered from it.
+				'is_single_product__de',
 			),
 			array_keys( $catalog )
 		);
@@ -68,6 +73,17 @@ final class TemplatesTest extends TestCase {
 			$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $catalog['linker-faq-de'] ) );
 			$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $catalog['linker-advisor'] ) );
 			$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $catalog['linker-advisor-de'] ) );
+			// The configurator's page is the application's mount point, in both
+			// languages: the page must never fall back to markup it held before.
+			$this->assertStringContainsString( '[linker_configurator]', (string) file_get_contents( $catalog['linker-configurator'] ) );
+			$this->assertStringContainsString( '[linker_configurator]', (string) file_get_contents( $catalog['linker-configurator-de'] ) );
+			// The German product page's own export: its words are German, so it
+			// is not the English file (a shared file would print "Products").
+			$german = (string) file_get_contents( $catalog['is_single_product__de'] );
+			$this->assertStringContainsString( 'id="tv-storefront-pdp"', $german );
+			$this->assertStringContainsString( '>Produkte</a>', $german );
+			$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $german );
+			$this->assertStringNotContainsString( '>Products</a>', $german );
 	}
 
 	/**
@@ -186,14 +202,14 @@ final class TemplatesTest extends TestCase {
 		$first     = $templates->sync();
 		$second    = $templates->sync();
 
-			$this->assertSame( 12, $created, 'the six Woo templates and the six tool-page templates' );
-			$this->assertSame( 12, $first['created'] );
+			$this->assertSame( 14, $created, 'the six Woo templates and the eight tool-page templates' );
+			$this->assertSame( 14, $first['created'] );
 		$this->assertSame( 0, $first['updated'] );
 		$this->assertSame( 0, $second['created'] );
-			$this->assertSame( 12, $second['updated'] );
-			$this->assertSame( 12, $updated );
+			$this->assertSame( 14, $second['updated'] );
+			$this->assertSame( 14, $updated );
 			// Every insert and every update slashes its content — both write paths.
-			$this->assertSame( 24, $slashes );
+			$this->assertSame( 28, $slashes );
 	}
 
 	/**
@@ -204,12 +220,14 @@ final class TemplatesTest extends TestCase {
 		$catalog = Templates::catalog();
 		$keys    = array_keys( $catalog );
 		$titles  = array(
-			'linker-compare'    => 'Compare products',
-			'linker-compare-de' => 'Produkte vergleichen',
-			'linker-faq'        => 'FAQ & documents',
-			'linker-faq-de'     => 'FAQ & Dokumente',
-			'linker-advisor'    => 'Genie',
-			'linker-advisor-de' => 'Genie',
+			'linker-compare'         => 'Compare products',
+			'linker-compare-de'      => 'Produkte vergleichen',
+			'linker-faq'             => 'FAQ & documents',
+			'linker-faq-de'          => 'FAQ & Dokumente',
+			'linker-advisor'         => 'Genie',
+			'linker-advisor-de'      => 'Genie',
+			'linker-configurator'    => 'Solution Configurator',
+			'linker-configurator-de' => 'Lösungskonfigurator',
 		);
 		$updated = 0;
 		$inserts = 0;
@@ -262,8 +280,62 @@ final class TemplatesTest extends TestCase {
 
 		$this->assertSame( 0, $report['created'] );
 		$this->assertSame( 0, $report['updated'] );
-			$this->assertSame( 12, $report['unchanged'] );
+			$this->assertSame( 14, $report['unchanged'] );
 		$this->assertSame( 0, $inserts + $updated );
+	}
+
+	/**
+	 * The product page's German export is written into the German twin of the
+	 * English template — the post LiveCanvas renders on /de/produkt/<slug>/
+	 * once the assignment is looked up in the request's language. Measured
+	 * 2026-10-13 on the review instance before this: /product/<slug>/ rendered
+	 * the export through template 234 while /de/produkt/<slug>/ rendered the
+	 * legacy template the snapshot carried through its German twin.
+	 */
+	public function test_the_german_product_export_is_written_into_the_templates_german_twin(): void {
+		$catalog = Templates::catalog();
+		$writes  = array();
+		$this->mock_templates( 234, 6913, $writes );
+
+		$report = ( new Templates() )->sync();
+
+		$this->assertArrayHasKey( 6913, $writes, 'the German twin carries the German export' );
+		$this->assertSame( (string) file_get_contents( $catalog['is_single_product__de'] ), $writes[6913]['post_content'] );
+		$this->assertNotSame( (string) file_get_contents( $catalog['is_single_product'] ), $writes[6913]['post_content'] );
+		$this->assertSame( 1, $report['de_twins_updated'] );
+		$this->assertSame( array(), $report['de_twins_missing'] );
+	}
+
+	/**
+	 * A German twin that already holds the export is left alone: sync is
+	 * idempotent, and a second run writes nothing.
+	 */
+	public function test_a_current_german_twin_is_not_written_again(): void {
+		$catalog = Templates::catalog();
+		$writes  = array();
+		$this->mock_templates( 234, 6913, $writes, (string) file_get_contents( $catalog['is_single_product__de'] ) );
+
+		$report = ( new Templates() )->sync();
+
+		$this->assertSame( array(), $writes );
+		$this->assertSame( 0, $report['de_twins_updated'] );
+		$this->assertSame( array(), $report['de_twins_missing'] );
+	}
+
+	/**
+	 * A page type whose anchor has no German twin is reported, and no template
+	 * is invented for it: the twin is a translation decision this class does
+	 * not own, and present() prints the list.
+	 */
+	public function test_a_page_type_without_a_german_twin_is_reported_and_not_invented(): void {
+		$writes = array();
+		$this->mock_templates( 234, 0, $writes );
+
+		$report = ( new Templates() )->sync();
+
+		$this->assertSame( array(), $writes );
+		$this->assertSame( 0, $report['de_twins_updated'] );
+		$this->assertSame( array( 'is_single_product' ), $report['de_twins_missing'] );
 	}
 
 	/**
@@ -312,8 +384,8 @@ final class TemplatesTest extends TestCase {
 
 		( new Templates() )->sync();
 
-			$this->assertCount( 12, $assigned, 'the six Woo templates and the six tool-page templates' );
-			$this->assertSame( array_fill( 0, 12, 'en' ), array_values( $assigned ) );
+			$this->assertCount( 14, $assigned, 'the six Woo templates and the eight tool-page templates' );
+			$this->assertSame( array_fill( 0, 14, 'en' ), array_values( $assigned ) );
 	}
 
 	/**
@@ -356,7 +428,7 @@ final class TemplatesTest extends TestCase {
 		$report = ( new Templates() )->sync();
 
 		$this->assertSame( array(), $assigned );
-			$this->assertSame( 12, $report['created'] );
+			$this->assertSame( 14, $report['created'] );
 	}
 
 	/**
@@ -766,6 +838,77 @@ final class TemplatesTest extends TestCase {
 				'post_title'   => 'kopfzeile' === $slug ? 'Kopfzeile' : 'Header',
 			)
 		);
+	}
+
+	/**
+	 * A site whose product page type already has an English template — the
+	 * anchor in the German-twin logic — with the German twin (or 0 for a site
+	 * that has none). Records every post write in $writes.
+	 *
+	 * The site has no header partial and no tool page: those paths are covered
+	 * by their own tests, and an empty answer keeps this one's writes to the
+	 * twin the test is about.
+	 *
+	 * @param int                              $anchor          English template post id.
+	 * @param int                              $twin            Its German twin, 0 when the site has none.
+	 * @param array<int, array<string, mixed>> $writes Post writes, by id, filled in by the mock.
+	 * @param string                           $twin_content    The twin's current body.
+	 */
+	private function mock_templates( int $anchor, int $twin, array &$writes, string $twin_content = 'stale legacy template' ): void {
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- pll_get_post's $language, mirrored for the call shape.
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id, string $lang ): int => $id === $anchor ? $twin : 0 ) );
+		WP_Mock::userFunction( 'pll_default_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_set_post_language', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => static function ( array $args ) use ( $anchor ): array {
+					if ( in_array( $args['post_type'], array( 'page', 'lc_partial' ), true ) ) {
+						return array();
+					}
+					if ( 'is_single_product' === (string) ( $args['meta_key'] ?? '' ) ) {
+						return array( self::post( $anchor, 'stale export', 'Single product' ) );
+					}
+					return array();
+				},
+			)
+		);
+		$english = (string) file_get_contents( Templates::catalog()['is_single_product'] );
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => static function ( int $id ) use ( $anchor, $twin, $twin_content, $english ): WP_Post {
+					if ( $id === $twin ) {
+						return self::post( $id, $twin_content, 'Vorlage für einzelnes Produkt' );
+					}
+					// The English anchor already holds its export: the only post
+					// this sync has left to write is the German twin.
+					return self::post( $id, $id === $anchor ? $english : 'stale export' );
+				},
+			)
+		);
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'wp_insert_post',
+			array(
+				'return' => static function (): int {
+					static $id = 700;
+					return ++$id;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'return' => static function ( array $data ) use ( &$writes ): int {
+					$writes[ (int) $data['ID'] ] = $data;
+					return (int) $data['ID'];
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn( string $value ): string => $value ) );
 	}
 
 	/**

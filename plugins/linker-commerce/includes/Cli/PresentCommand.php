@@ -104,6 +104,18 @@ final class PresentCommand {
 			$this->backfill_backup( $templates->created_ids() );
 		}
 		WP_CLI::log( sprintf( 'templates: created %d, updated %d, unchanged %d', $report['created'], $report['updated'], $report['unchanged'] ) );
+		if ( array() !== $report['de_twins_missing'] ) {
+			// A page type without a German twin keeps whatever template this
+			// site already carried on its German page — the state the German
+			// export exists to replace, so it is said out loud instead of
+			// passing as a clean run.
+			WP_CLI::warning(
+				sprintf(
+					'German page types this site has no German template for: %s. Those German pages keep the template the site already carried; the German export is not installed for them.',
+					implode( ', ', $report['de_twins_missing'] )
+				)
+			);
+		}
 
 		$removed = ( new Tokens() )->uninstall();
 		WP_CLI::log( $removed ? 'tokens: removed the Additional CSS copy (the WindPress volume serves content/windpress/tokens.css)' : 'tokens: no Additional CSS copy to remove' );

@@ -1207,7 +1207,17 @@ final class Materials {
 				}
 			}
 		}
-		$editor = \array_filter( \array_map( 'intval', (array) \get_post_meta( (int) $product->get_id(), '_product_image_gallery', true ) ) );
+		// WooCommerce's own gallery field is one comma-separated list
+		// (`WC_Meta_Box_Product_Images::save`; the products carry
+		// "6504,6505"). Casting that string to an array yields its one
+		// element, which is what this read did until 2026-10-13: every
+		// product showed one image fewer than its editor holds, and the
+		// product page lost its second picture and its whole thumbnail strip
+		// (linker_pdp_gallery_pair/thumbs render nothing below two ids). An
+		// array is still accepted — the field has held serialized arrays, and
+		// both shapes name ids.
+		$gallery = \get_post_meta( (int) $product->get_id(), '_product_image_gallery', true );
+		$editor  = \array_filter( \array_map( 'intval', \is_array( $gallery ) ? $gallery : \explode( ',', (string) $gallery ) ) );
 		foreach ( $editor as $image_id ) {
 			if ( \wp_attachment_is_image( $image_id ) && ! \in_array( $image_id, $ids, true ) ) {
 				$ids[] = $image_id;

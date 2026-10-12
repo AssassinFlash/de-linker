@@ -1,0 +1,359 @@
+[
+  {
+    "shot": "pdp-en-1440",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/pdp-en-1440.png",
+    "marker": true,
+    "expected": "sf-pdp",
+    "geometry": {
+      "pair": {
+        "width": 813,
+        "height": 640
+      },
+      "main": {
+        "width": 813,
+        "height": 640
+      },
+      "thumbs": {
+        "width": 76,
+        "height": 628
+      },
+      "thumb": {
+        "width": 72,
+        "height": 72
+      },
+      "thumbCount": 3,
+      "nav": [
+        "Description",
+        "Technical data",
+        "Applications",
+        "Documents"
+      ],
+      "fit": {
+        "width": 907,
+        "height": 758
+      },
+      "faqs": {
+        "width": 907,
+        "height": 188
+      },
+      "app": null
+    }
+  },
+  {
+    "shot": "pdp-en-390",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/pdp-en-390.png",
+    "marker": true,
+    "expected": "sf-pdp",
+    "geometry": {
+      "pair": {
+        "width": 190,
+        "height": 245
+      },
+      "main": {
+        "width": 190,
+        "height": 245
+      },
+      "thumbs": {
+        "width": 190,
+        "height": 68
+      },
+      "thumb": {
+        "width": 60,
+        "height": 60
+      },
+      "thumbCount": 3,
+      "nav": [
+        "Description",
+        "Technical data",
+        "Applications",
+        "Documents"
+      ],
+      "fit": {
+        "width": 358,
+        "height": 801
+      },
+      "faqs": {
+        "width": 358,
+        "height": 162
+      },
+      "app": null
+    }
+  },
+  {
+    "shot": "pdp-de-1440",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/pdp-de-1440.png",
+    "marker": true,
+    "expected": "sf-pdp",
+    "geometry": {
+      "pair": {
+        "width": 813,
+        "height": 640
+      },
+      "main": {
+        "width": 813,
+        "height": 640
+      },
+      "thumbs": {
+        "width": 76,
+        "height": 628
+      },
+      "thumb": {
+        "width": 72,
+        "height": 72
+      },
+      "thumbCount": 3,
+      "nav": [
+        "Beschreibung",
+        "Technische Daten",
+        "Anwendungen",
+        "Dokumente"
+      ],
+      "fit": {
+        "width": 907,
+        "height": 794
+      },
+      "faqs": {
+        "width": 907,
+        "height": 188
+      },
+      "app": null
+    }
+  },
+  {
+    "shot": "pdp-de-390",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/pdp-de-390.png",
+    "marker": true,
+    "expected": "sf-pdp",
+    "geometry": {
+      "pair": {
+        "width": 190,
+        "height": 245
+      },
+      "main": {
+        "width": 190,
+        "height": 245
+      },
+      "thumbs": {
+        "width": 190,
+        "height": 68
+      },
+      "thumb": {
+        "width": 60,
+        "height": 60
+      },
+      "thumbCount": 3,
+      "nav": [
+        "Beschreibung",
+        "Technische Daten",
+        "Anwendungen",
+        "Dokumente"
+      ],
+      "fit": {
+        "width": 358,
+        "height": 822
+      },
+      "faqs": {
+        "width": 358,
+        "height": 162
+      },
+      "app": null
+    }
+  },
+  {
+    "shot": "pdp-live-en-1440",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/pdp-live-en-1440.png",
+    "marker": true,
+    "expected": "sf-pdp",
+    "geometry": {
+      "pair": {
+        "width": 813,
+        "height": 640
+      },
+      "main": {
+        "width": 813,
+        "height": 640
+      },
+      "thumbs": {
+        "width": 76,
+        "height": 640
+      },
+      "thumb": {
+        "width": 72,
+        "height": 72
+      },
+      "thumbCount": 3,
+      "nav": [
+        "Description",
+        "Technical data",
+        "Applications",
+        "Documents"
+      ],
+      "fit": {
+        "width": 1360,
+        "height": 616
+      },
+      "faqs": {
+        "width": 1360,
+        "height": 180
+      },
+      "app": null
+    }
+  },
+  {
+    "shot": "pdp-live-en-390",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/pdp-live-en-390.png",
+    "marker": true,
+    "expected": "sf-pdp",
+    "geometry": {
+      "pair": {
+        "width": 190,
+        "height": 245
+      },
+      "main": {
+        "width": 190,
+        "height": 245
+      },
+      "thumbs": {
+        "width": 190,
+        "height": 68
+      },
+      "thumb": {
+        "width": 60,
+        "height": 60
+      },
+      "thumbCount": 3,
+      "nav": [
+        "Description",
+        "Technical data",
+        "Applications",
+        "Documents"
+      ],
+      "fit": {
+        "width": 358,
+        "height": 608
+      },
+      "faqs": {
+        "width": 358,
+        "height": 167
+      },
+      "app": null
+    }
+  },
+  {
+    "shot": "pdp-live-de-1440",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/pdp-live-de-1440.png",
+    "marker": true,
+    "expected": "sf-pdp",
+    "geometry": {
+      "pair": {
+        "width": 813,
+        "height": 640
+      },
+      "main": {
+        "width": 813,
+        "height": 640
+      },
+      "thumbs": {
+        "width": 76,
+        "height": 640
+      },
+      "thumb": {
+        "width": 72,
+        "height": 72
+      },
+      "thumbCount": 3,
+      "nav": [
+        "Beschreibung",
+        "Technische Daten",
+        "Anwendungen",
+        "Dokumente"
+      ],
+      "fit": {
+        "width": 1360,
+        "height": 616
+      },
+      "faqs": {
+        "width": 1360,
+        "height": 180
+      },
+      "app": null
+    }
+  },
+  {
+    "shot": "configurator-en-1440",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/configurator-en-1440.png",
+    "marker": true,
+    "expected": "data-linker-app=\"configurator\"",
+    "geometry": {
+      "pair": null,
+      "main": null,
+      "thumbs": null,
+      "thumb": null,
+      "thumbCount": 0,
+      "nav": [],
+      "fit": null,
+      "faqs": null,
+      "app": "configurator"
+    }
+  },
+  {
+    "shot": "configurator-en-390",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/configurator-en-390.png",
+    "marker": true,
+    "expected": "data-linker-app=\"configurator\"",
+    "geometry": {
+      "pair": null,
+      "main": null,
+      "thumbs": null,
+      "thumb": null,
+      "thumbCount": 0,
+      "nav": [],
+      "fit": null,
+      "faqs": null,
+      "app": "configurator"
+    }
+  },
+  {
+    "shot": "configurator-de-1440",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/configurator-de-1440.png",
+    "marker": true,
+    "expected": "data-linker-app=\"configurator\"",
+    "geometry": {
+      "pair": null,
+      "main": null,
+      "thumbs": null,
+      "thumb": null,
+      "thumbCount": 0,
+      "nav": [],
+      "fit": null,
+      "faqs": null,
+      "app": "configurator"
+    }
+  },
+  {
+    "shot": "shop-en-1440",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/shop-en-1440.png",
+    "marker": true,
+    "expected": "sf-catalog",
+    "geometry": null
+  },
+  {
+    "shot": "shop-en-390",
+    "status": 200,
+    "file": "docs/acceptance/2026-10-13/pdp-present/sweep-8990/shop-en-390.png",
+    "marker": true,
+    "expected": "sf-catalog",
+    "geometry": null
+  }
+]

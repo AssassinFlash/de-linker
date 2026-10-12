@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools;
 
+use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
@@ -33,6 +34,7 @@ final class Plugin {
 	 * @param Retention     $retention     Deletes expired guest conversations.
 	 * @param UserContext   $user_context  The customer-identity seam.
 	 * @param WindPress     $windpress     Scan provider for the entries' Tailwind classes.
+	 * @param Mount         $mount         The Solution Configurator's mount point.
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -43,7 +45,8 @@ final class Plugin {
 		private readonly Entries $entries,
 		private readonly Retention $retention,
 		private readonly UserContext $user_context,
-		private readonly WindPress $windpress
+		private readonly WindPress $windpress,
+		private readonly Mount $mount
 	) {}
 
 	/**
@@ -62,5 +65,6 @@ final class Plugin {
 		// listening before anything asks who is making the request.
 		$this->user_context->register();
 		$this->windpress->register();
+		$this->mount->register();
 	}
 }
