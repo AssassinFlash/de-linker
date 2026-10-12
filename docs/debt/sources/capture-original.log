@@ -1,0 +1,12 @@
+home-en-1440 live 8264 t112 8264 | a 104 / 94 | img 30 / 30 | h2 11 / 10 | form 1 / 0
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Target page, context or browser has been closed
+    at shoot (/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-r2debt/.scratch/debt-freshdiff/capture.mjs:107:13)
+    at async file:///Users/chesterjohn/Documents/de-linker-worktrees/de-linker-r2debt/.scratch/debt-freshdiff/capture.mjs:126:21 {
+  log: []
+}
+
+Node.js v22.23.2
