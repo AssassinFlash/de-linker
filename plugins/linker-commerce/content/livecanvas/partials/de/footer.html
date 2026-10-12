@@ -1,0 +1,199 @@
+<section class="tv-footer-root" id="tv-footer-v2"><style data-site-css="footer-app.css">
+#tv-footer-v2{color:#173b35;font-family:var(--proto-font-sans);font-size:13px;line-height:1.65;background:radial-gradient(ellipse at 8% 18%,#bfdad7 0,transparent 48%),radial-gradient(ellipse at 95% 80%,#c8d7d9 0,transparent 46%),#e5ece7;border-top:1px solid #ffffffa6}
+#tv-footer-v2 *{box-sizing:border-box}
+#tv-footer-v2 :is(h2,p,ul){margin:0}
+#tv-footer-v2 a{color:inherit;text-decoration:none}
+#tv-footer-v2 ul{padding:0;list-style:none}
+#tv-footer-v2 :is(a,button,[tabindex]):focus-visible{outline:2px solid #087f79;outline-offset:3px}
+#tv-footer-v2 .tv-footer-container{width:min(1240px,calc(100% - 64px));margin:auto;padding:42px 0 22px}
+#tv-footer-v2 .footer-console{display:grid;grid-template-columns:300px minmax(0,1fr);gap:38px;padding:30px;border:1px solid #ffffffb8;border-radius:30px;background:#ffffff42;backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%);box-shadow:inset 0 1px 0 #ffffffb3,0 16px 45px #214c4308}
+#tv-footer-v2 .footer-brand{display:grid;align-content:start;gap:24px;padding:9px 4px}
+#tv-footer-v2 .tv-footer-logo-img{width:120px;height:auto;display:block}
+#tv-footer-v2 .tv-footer-identity{font-size:19px;font-weight:500;line-height:1.7;letter-spacing:-.015em;grid-row:2;color:#31514a}
+#tv-footer-v2 .tv-footer-lang{grid-row:3}
+#tv-footer-v2 .tv-footer-lang-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#tv-footer-v2 .tv-footer-lang-seg{display:inline-flex;padding:4px;gap:2px;border:1px solid #ffffffb0;border-radius:100px;background:#ffffff35;box-shadow:inset 0 1px 0 #fff8}
+#tv-footer-v2 .tv-footer-lang-seg a{font-size:11px;padding:7px 13px;border-radius:100px;min-height:32px}
+#tv-footer-v2 .tv-footer-lang-seg [lang=en]{background:#ffffffbb;box-shadow:0 2px 9px #23453b08}
+#tv-footer-v2 .footer-workspace{min-width:0;display:grid;gap:18px;align-content:start}
+#tv-footer-v2 .footer-panels{border:1px solid #ffffffb5;border-radius:22px;background:#ffffff45;box-shadow:inset 0 1px 0 #fff9;overflow:hidden}
+#tv-footer-v2 .footer-panel{padding:22px;min-height:270px}
+#tv-footer-v2 .footer-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+#tv-footer-v2 .footer-panel-heading h2{font:600 23px/1.35 var(--proto-font-sans);letter-spacing:-.02em;color:#173b35}
+#tv-footer-v2 .footer-panel-count{font-size:11px;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#ffffff65;border:1px solid #ffffffac;color:#62827b}
+#tv-footer-v2 .footer-route-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#tv-footer-v2 .footer-route-list a{display:flex;align-items:center;gap:10px;min-height:70px;height:100%;padding:12px;border:1px solid #ffffffb8;border-radius:14px;background:#ffffff43;box-shadow:inset 0 1px 0 #ffffff7a;transition:background .18s,border-color .18s;line-height:1.5;font-size:12px;font-weight:500}
+#tv-footer-v2 .footer-route-list a:hover{background:#ffffffe0;border-color:#ffffff}
+#tv-footer-v2 .footer-route-icon{display:grid;place-items:center;flex:0 0 33px;width:33px;height:33px;border-radius:11px;background:#ffffff91;color:#147e76}
+#tv-footer-v2 svg{display:block;width:19px;height:19px;flex-shrink:0}
+#tv-footer-v2 .footer-route-arrow{margin-left:auto;opacity:.65}
+#tv-footer-v2 .footer-route-arrow svg{width:15px;height:15px}
+#tv-footer-v2 .footer-dock{display:none;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:4px 0}
+#tv-footer-v2 .footer-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:74px;padding:11px 5px 9px;border:1px solid #ffffffbb;border-radius:15px;background:#ffffff38;color:#3f635c;font:500 11px/1.3 var(--proto-font-sans);cursor:pointer;box-shadow:inset 0 1px 0 #fff8,0 4px 12px #25483f05;transition:background .18s,color .18s}
+#tv-footer-v2 .footer-tab>span{display:flex;align-items:center;justify-content:center;min-height:28px;text-align:center}
+#tv-footer-v2 .footer-tab svg{width:21px;height:21px}
+#tv-footer-v2 .footer-tab:hover{background:#ffffffa3}
+#tv-footer-v2 .footer-tab[aria-selected=true]{background:#137e76;color:#fff;border-color:#137e7655;box-shadow:inset 0 1px 0 #ffffff40,0 6px 18px #137e7622}
+#tv-footer-v2 .footer-tab[aria-selected=true]::after{content:'';position:absolute;bottom:-5px;left:calc(50% - 5px);width:10px;height:10px;background:#137e76;transform:rotate(45deg);border-radius:0 0 2px 0}
+#tv-footer-v2.footer-ready .footer-dock{display:grid}
+#tv-footer-v2 [hidden]{display:none!important}
+#tv-footer-v2 .footer-contact-panel .footer-panel-heading h2 a{display:flex;align-items:center;gap:12px}
+#tv-footer-v2 .footer-contact-panel .footer-panel-heading h2 a:hover{color:#087f79}
+#tv-footer-v2 .tv-footer-address{display:flex;flex-wrap:wrap;gap:0 7px;font-style:normal;font-size:11px;color:#5d7770;line-height:1.7}
+#tv-footer-v2 .tv-footer-legalname{flex:0 0 100%;font-weight:600;font-size:12px;color:#173b35;margin-bottom:3px}
+#tv-footer-v2 .footer-email-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+#tv-footer-v2 .footer-email-card{position:relative;background:#ffffff65;border:1px solid #ffffffbb;border-radius:13px;padding:11px 12px;min-width:0}
+#tv-footer-v2 .footer-email-card a{display:flex;flex-direction:column;gap:5px;width:fit-content}
+#tv-footer-v2 .footer-email-card a>span{font-size:10px;color:#5b7970}
+#tv-footer-v2 .footer-email-card strong{font-weight:500;font-size:12px}
+#tv-footer-v2 .footer-copy{position:absolute;right:6px;top:4px;display:grid;place-items:center;width:34px;height:34px;padding:8px;border:0;border-radius:50%;color:#437a70;background:transparent;cursor:pointer}
+#tv-footer-v2 .footer-copy:hover{background:#ffffffb0}
+#tv-footer-v2 .footer-copy[data-copied=true]{background:#137e76;color:#fff}
+#tv-footer-v2 .footer-copy svg{width:16px;height:16px}
+#tv-footer-v2 .footer-phone{display:flex;align-items:center;justify-content:center;gap:9px;padding:9px 13px;min-height:42px;border-radius:12px;border:1px solid #ffffffa8;background:#ffffff35;font-size:12px;margin-top:12px;width:fit-content}
+#tv-footer-v2 .footer-phone svg{width:15px;height:15px;color:#137e76}
+#tv-footer-v2 .tv-footer-bar{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding:17px 6px 0;font-size:10px;line-height:1.6;color:#5b746e}
+#tv-footer-v2 .tv-footer-bar-legal{display:flex;gap:18px;flex-wrap:wrap}
+#tv-footer-v2 .tv-footer-bar-legal a{padding:5px 0}
+#tv-footer-v2 .tv-footer-bar-legal a:hover{color:#087f79}
+#tv-footer-v2 .tv-footer-bar-trust{width:100%;font-size:10px}
+#tv-footer-v2 .tv-footer-bar-trust em{font-style:normal;margin:0 8px;opacity:.5}
+#tv-footer-v2 .footer-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:1000px){#tv-footer-v2 .footer-console{grid-template-columns:240px minmax(0,1fr);padding:22px;gap:22px}#tv-footer-v2 .tv-footer-identity{font-size:16px}#tv-footer-v2 .footer-route-list{grid-template-columns:1fr}#tv-footer-v2 .footer-route-list a{min-height:50px}#tv-footer-v2 .footer-panel{min-height:286px;padding:18px}#tv-footer-v2 .footer-tab{font-size:10px}}
+@media(max-width:760px){
+ #tv-footer-v2 .tv-footer-container{width:calc(100% - 28px);padding:22px 0 16px}
+ #tv-footer-v2 .footer-console{grid-template-columns:1fr;padding:17px;gap:20px;border-radius:25px}
+ #tv-footer-v2 .footer-brand{grid-template-columns:1fr auto;gap:14px;padding:0}
+ #tv-footer-v2 .tv-footer-logo-img{width:91px}
+ #tv-footer-v2 .tv-footer-lang{grid-area:1/2;align-self:center}
+ #tv-footer-v2 .tv-footer-lang-seg{padding:3px}
+ #tv-footer-v2 .tv-footer-lang-seg a{padding:6px 9px;font-size:10px;min-height:28px}
+ #tv-footer-v2 .tv-footer-identity{grid-column:1/-1;grid-row:2;font-size:12px;font-weight:400;letter-spacing:0;line-height:1.8}
+ #tv-footer-v2 .footer-workspace{gap:12px}
+ #tv-footer-v2 .footer-panels{border-radius:18px}
+ #tv-footer-v2 .footer-panel{padding:16px;min-height:257px}
+ #tv-footer-v2 .footer-panel-heading{margin-bottom:14px}
+ #tv-footer-v2 .footer-panel-heading h2{font-size:21px}
+ #tv-footer-v2 .footer-panel-count{width:27px;height:27px;font-size:10px}
+ #tv-footer-v2 .footer-route-list{gap:7px}
+ #tv-footer-v2 .footer-route-list a{padding:9px 10px;min-height:47px;font-size:12px;gap:10px;border-radius:12px}
+ #tv-footer-v2 .footer-route-icon{flex-basis:28px;width:28px;height:28px;border-radius:9px}
+ #tv-footer-v2 .footer-route-icon svg{width:16px;height:16px}
+ #tv-footer-v2 .footer-dock{gap:5px}
+ #tv-footer-v2 .footer-tab{border-radius:12px;min-height:70px;padding:9px 4px 7px;gap:6px;font-size:9px}
+ #tv-footer-v2 .footer-tab svg{width:19px;height:19px}
+ #tv-footer-v2 .footer-tab>span{min-height:26px}
+ #tv-footer-v2 .footer-email-grid{gap:7px;margin-top:11px}
+ #tv-footer-v2 .footer-email-card{padding:9px 8px}
+ #tv-footer-v2 .footer-email-card strong{font-size:10px;letter-spacing:-.01em}
+ #tv-footer-v2 .footer-email-card a>span{font-size:9px}
+ #tv-footer-v2 .footer-copy{width:28px;height:28px;padding:6px;right:2px;top:2px}
+ #tv-footer-v2 .footer-copy svg{width:13px;height:13px}
+ #tv-footer-v2 .footer-phone{font-size:11px;min-height:39px;margin-top:10px}
+ #tv-footer-v2 .tv-footer-bar{padding:15px 4px 0;gap:8px;justify-content:center;text-align:center;font-size:9px}
+ #tv-footer-v2 .tv-footer-bar-copyright{width:100%}
+ #tv-footer-v2 .tv-footer-bar-legal{gap:5px 13px;justify-content:center}
+ #tv-footer-v2 .tv-footer-bar-legal a{padding:7px 0}
+ #tv-footer-v2 .tv-footer-bar-trust{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){#tv-footer-v2 *{transition:none!important}}
+/* Four planning destinations fit as app shortcuts without extending the tab view. */
+@media(max-width:1000px){
+ #tv-footer-v2 #footer-panel-planning .footer-route-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #tv-footer-v2 #footer-panel-planning .footer-route-list a{display:grid;grid-template-columns:1fr auto;gap:7px;min-height:77px;font-size:11px}
+ #tv-footer-v2 #footer-panel-planning .footer-route-list a>span:nth-child(2){grid-column:1/-1;grid-row:2}
+ #tv-footer-v2 #footer-panel-planning .footer-route-arrow{grid-column:2;grid-row:1}
+}
+/* The original identity sentence becomes a compact three-part brand diagram. */
+#tv-footer-v2 .tv-footer-identity{display:grid;gap:12px;font-size:inherit;letter-spacing:0}
+#tv-footer-v2 .footer-identity-intro{font-size:10px;font-weight:600;line-height:1.4;letter-spacing:.14em;text-transform:uppercase;color:#63857c;display:flex;align-items:center;gap:9px}
+#tv-footer-v2 .footer-identity-intro::before{content:'';width:18px;height:2px;border-radius:2px;background:#137e76;opacity:.65}
+#tv-footer-v2 .footer-identity-network{position:relative;isolation:isolate;display:flex;gap:8px;align-items:center}
+#tv-footer-v2 .footer-identity-network::before{content:'';position:absolute;left:10px;right:10px;height:1px;background:#137e7630;z-index:-1}
+#tv-footer-v2 .footer-identity-node{display:flex;align-items:center;justify-content:center;gap:6px;flex:1 1 0;min-width:0;padding:9px 7px;border:1px solid #ffffffba;border-radius:11px;background:#eaf3efb8;box-shadow:inset 0 1px 0 #ffffffa8;color:#3d675c;font-size:10px;font-weight:500;line-height:1.3}
+#tv-footer-v2 .footer-identity-node svg{width:15px;height:15px;color:#137e76}
+#tv-footer-v2 .footer-identity-close{font-size:17px;font-weight:400;line-height:1.7;letter-spacing:-.015em;color:#49685f}
+#tv-footer-v2 .footer-identity-close strong{font-weight:600;color:#137e76}
+@media(min-width:761px) and (max-width:1000px){#tv-footer-v2 .footer-identity-node{font-size:9px;padding:8px 5px;gap:4px}#tv-footer-v2 .footer-identity-network{gap:6px}#tv-footer-v2 .footer-identity-close{font-size:15px}}
+@media(max-width:760px){
+ #tv-footer-v2 .tv-footer-identity{gap:9px}
+ #tv-footer-v2 .footer-identity-intro{font-size:9px;letter-spacing:.12em}
+ #tv-footer-v2 .footer-identity-node{padding:8px 7px;font-size:10px}
+ #tv-footer-v2 .footer-identity-close{font-size:12px;line-height:1.8;letter-spacing:0}
+}
+</style>
+<div class="tv-footer-container"><div class="footer-console"><div class="footer-brand"><div class="tv-footer-logo">
+<img alt="Linker" class="tv-footer-logo-img" decoding="async" height="55" loading="lazy" src="/wp-content/uploads/2026/07/linker-logo-wordmark.png" width="154"/>
+</div><div class="tv-footer-lang">
+<span class="tv-footer-lang-label"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"></path></svg>Sprache</span>
+<nav aria-label="Sprache" class="tv-footer-lang-seg">
+<a data-lnk-flang="en" href="/de/" hreflang="en" lang="en">Englisch</a>
+            <a data-linker-language-choice="de" data-lnk-flang="de" href="/de/" hreflang="de" lang="de">Deutsch</a>
+</nav>
+</div><p class="tv-footer-identity"><span class="footer-identity-intro">Wir verbinden </span><span class="footer-identity-network"><span class="footer-identity-node"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9m-4-15 8 4.5"/></svg><span>Produkte</span></span><span class="footer-sr-only">, </span><span class="footer-identity-node"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="3"/><path d="M9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4M18 9h4m-4 6h4"/><rect x="10" y="10" width="4" height="4" rx="1"/></svg><span>Technologie</span></span><span class="footer-sr-only"> und </span><span class="footer-identity-node"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-3a8 8 0 0 1 16 0v3M4 11H2v6h4v-6zm16 0h2v6h-4v-6zM20 17v2a2 2 0 0 1-2 2h-5"/><path d="M10 21h3"/></svg><span>Service</span></span></span><span class="footer-identity-close"> und schaffen <strong>dauerhaften Wert</strong> für Energiepartner in Europa.</span></p></div><div class="footer-workspace"><div class="footer-panels"><section class="footer-panel" id="footer-panel-solutions" aria-labelledby="footer-tab-solutions" tabindex="0"><div class="footer-panel-heading"><h2>Lösungen</h2><span class="footer-panel-count" aria-hidden="true">03</span></div><ul class="footer-route-list"><li><a href="/de/loesung/heimspeicher/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V4h6v3M8 12v3m4-3v3m4-3v3"/></svg></span><span>Heimspeicher</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li><li><a href="/de/loesung/gewerbespeicher/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V4h6v3M8 12v3m4-3v3m4-3v3"/></svg></span><span>Gewerbespeicher</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li><li><a href="/de/loesung/grossspeicher/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V4h6v3M8 12v3m4-3v3m4-3v3"/></svg></span><span>Großspeicher</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li></ul></section><section class="footer-panel" id="footer-panel-services" aria-labelledby="footer-tab-services" tabindex="0"><div class="footer-panel-heading"><h2>Dienstleistungen</h2><span class="footer-panel-count" aria-hidden="true">03</span></div><ul class="footer-route-list"><li><a href="/de/service-support/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 5 5M5 19l7-7m3-9a6 6 0 0 0-7 7l-5 5a3 3 0 0 0 4 4l5-5a6 6 0 0 0 7-7l-4 4-3-3z"/></svg></span><span>Projektplanung</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li><li><a href="/de/service-support/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 5 5M5 19l7-7m3-9a6 6 0 0 0-7 7l-5 5a3 3 0 0 0 4 4l5-5a6 6 0 0 0 7-7l-4 4-3-3z"/></svg></span><span>Technischer Support</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li><li><a href="/de/service-support/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 5 5M5 19l7-7m3-9a6 6 0 0 0-7 7l-5 5a3 3 0 0 0 4 4l5-5a6 6 0 0 0 7-7l-4 4-3-3z"/></svg></span><span>Kundendienst</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li></ul></section><section class="footer-panel" id="footer-panel-planning" aria-labelledby="footer-tab-planning" tabindex="0"><div class="footer-panel-heading"><h2>Planen mit Linker</h2><span class="footer-panel-count" aria-hidden="true">03</span></div><ul class="footer-route-list"><li><a href="/de/linker-berater/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h4M8 17l3-3 2 2 3-4"/></svg></span><span>Genie – der KI-Assistent von Linker</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li><li><a href="/de/linker-planer/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h4M8 17l3-3 2 2 3-4"/></svg></span><span>Lösungskonfigurator</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li><li><a href="/blog/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h4M8 17l3-3 2 2 3-4"/></svg></span><span>Blog</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li></ul></section><section class="footer-panel" id="footer-panel-account" aria-labelledby="footer-tab-account" tabindex="0"><div class="footer-panel-heading"><h2>Konto</h2><span class="footer-panel-count" aria-hidden="true">03</span></div><ul class="footer-route-list"><li><a href="/de/mein-konto/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span>Anmelden</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li><li><a href="/de/warenkorb/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span>Lösungsentwurf</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li><li><a href="/de/faq-download/"><span class="footer-route-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span>FAQ & Downloads</span><span class="footer-route-arrow"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a></li></ul></section><section class="footer-panel footer-contact-panel" id="footer-panel-contact" aria-labelledby="footer-tab-contact" tabindex="0"><div class="footer-panel-heading"><h2>[linker_contact_link class="footer-contact-link"]<svg data-footer-contact-arrow aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></h2></div><address class="tv-footer-address">
+<span class="tv-footer-legalname">Linker Technology GmbH</span>
+          <span>Steinfeldstraße 3</span>
+          <span>39179 Barleben</span>
+          <span>Deutschland</span>
+</address><div class="footer-email-grid"><div class="footer-email-card"><a href="mailto:sales@de-linker.com"><span>Vertrieb</span><strong>sales@de-linker.com</strong></a><button type="button" class="footer-copy" data-footer-copy="sales@de-linker.com" aria-label="E-Mail-Adresse kopieren"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/></svg><span class="footer-sr-only">E-Mail-Adresse kopieren</span></button></div><div class="footer-email-card"><a href="mailto:chester@de-linker.com"><span>Support</span><strong>chester@de-linker.com</strong></a></div></div><a class="footer-phone" href="tel:+491744276991"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.4 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"></path></svg>+49 174 4276991</a><span class="footer-copy-status footer-sr-only" role="status"></span></section></div><nav class="footer-dock" aria-label="Fußzeilen-Navigation" data-footer-nav><button type="button" class="footer-tab" id="footer-tab-solutions" data-footer-tab="solutions" aria-controls="footer-panel-solutions"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V4h6v3M8 12v3m4-3v3m4-3v3"/></svg><span>Lösungen</span></button><button type="button" class="footer-tab" id="footer-tab-services" data-footer-tab="services" aria-controls="footer-panel-services"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 5 5M5 19l7-7m3-9a6 6 0 0 0-7 7l-5 5a3 3 0 0 0 4 4l5-5a6 6 0 0 0 7-7l-4 4-3-3z"/></svg><span>Dienstleistungen</span></button><button type="button" class="footer-tab" id="footer-tab-planning" data-footer-tab="planning" aria-controls="footer-panel-planning"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h4M8 17l3-3 2 2 3-4"/></svg><span>Planen mit Linker</span></button><button type="button" class="footer-tab" id="footer-tab-account" data-footer-tab="account" aria-controls="footer-panel-account"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span>Konto</span></button><button type="button" class="footer-tab" id="footer-tab-contact" data-footer-tab="contact" aria-controls="footer-panel-contact"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 21l2-5.5A9 9 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/><path d="M8 11h8m-8 4h4"/></svg><span>Linker kontaktieren</span></button></nav></div></div><div class="tv-footer-bar">
+<div class="tv-footer-bar-copyright">
+        © 2026 Linker. Alle Rechte vorbehalten.
+      </div>
+<nav aria-label="Rechtliches" class="tv-footer-bar-legal">
+<a href="/de/impressum/">Impressum</a>
+        <a href="/de/datenschutz/">Datenschutzerklärung</a>
+        <a href="/de/verkaufsbedingungen/">Verkaufsbedingungen</a>
+        <a href="/de/rueckgabe-erstattung/">Rückgabe & Erstattung</a>
+</nav>
+<div class="tv-footer-bar-trust">
+        Produkteignung<em>·</em>Wechselrichter-Kompatibilität<em>·</em>Projektunterstützung
+      </div>
+</div></div><script data-site-js="footer-app.js">
+(() => {
+  const root = document.getElementById('tv-footer-v2');
+  if (!root) return;
+  const dock = root.querySelector('.footer-dock');
+  const tabs = [...dock.querySelectorAll('[data-footer-tab]')];
+  const panels = tabs.map(tab => root.querySelector('#' + tab.getAttribute('aria-controls')));
+  const select = (index, focus = false) => {
+    tabs.forEach((tab, position) => {
+      const selected = position === index;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      panels[position].hidden = !selected;
+    });
+    if (focus) tabs[index].focus();
+  };
+  dock.setAttribute('role', 'tablist');
+  tabs.forEach((tab, index) => {
+    tab.setAttribute('role', 'tab');
+    panels[index].setAttribute('role', 'tabpanel');
+    tab.addEventListener('click', () => select(index));
+    tab.addEventListener('keydown', event => {
+      const steps = {ArrowRight:1, ArrowLeft:-1};
+      if (!(event.key in steps) && event.key !== 'Home' && event.key !== 'End') return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + steps[event.key] + tabs.length) % tabs.length;
+      select(next, true);
+    });
+  });
+  root.classList.add('footer-ready');
+  const arrow = root.querySelector('[data-footer-contact-arrow]');
+  if (arrow && arrow.previousElementSibling) arrow.previousElementSibling.append(' ', arrow);
+  select(0);
+  const german = (document.documentElement.lang || '').toLowerCase().indexOf('de') === 0;
+  const copy = root.querySelector('[data-footer-copy]');
+  if (copy) copy.addEventListener('click', async () => {
+    const status = root.querySelector('.footer-copy-status');
+    try {
+      await navigator.clipboard.writeText(copy.dataset.footerCopy);
+      copy.dataset.copied = 'true';
+      status.textContent = german ? 'E-Mail-Adresse kopiert.' : 'Email address copied.';
+      copy.setAttribute('aria-label', german ? 'E-Mail-Adresse kopiert' : 'Email address copied');
+    } catch {
+      status.textContent = german ? 'Markieren Sie die E-Mail-Adresse, um sie zu kopieren.' : 'Select the email address to copy it.';
+    }
+  });
+})();
+
+</script></section>

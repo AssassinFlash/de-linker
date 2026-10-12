@@ -10,8 +10,8 @@
 
 declare( strict_types = 1 );
 
-use Linker\Commerce\Catalog\Faqs;
-use Linker\Commerce\Catalog\Materials;
+use Linker\Commerce\Products\Faqs;
+use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Storefront\ProductView;
 
 if ( ! function_exists( 'linker_commerce_pdp_product_id' ) ) {

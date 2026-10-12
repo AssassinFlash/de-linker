@@ -77,7 +77,7 @@ final class WindPress {
 	public function scan(): array {
 		$root     = dirname( __DIR__, 2 );
 		$contents = array();
-		foreach ( Templates::catalog() as $path ) {
+		foreach ( Templates::paths() as $path ) {
 			$contents[] = array(
 				'name'    => 'livecanvas/' . basename( $path ),
 				'content' => Tokens::read( $path ),

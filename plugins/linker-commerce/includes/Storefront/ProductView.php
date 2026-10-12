@@ -12,9 +12,9 @@ namespace Linker\Commerce\Storefront;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Registration\Approval;
 
-use Linker\Commerce\Catalog\Materials;
-use Linker\Commerce\Catalog\SelectionFactSet;
-use Linker\Commerce\Catalog\SelectionFacts;
+use Linker\Commerce\Products\Materials;
+use Linker\Commerce\Products\SelectionFactSet;
+use Linker\Commerce\Products\SelectionFacts;
 
 /**
  * What the product page shows, in the order the template prints it

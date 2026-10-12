@@ -75,9 +75,9 @@ final class SequenceTest extends TestCase {
 	 * Numbers read PREFIX-YYYY-NNNN (docs/specs/11-commerce.md).
 	 */
 	public function test_format(): void {
-		$this->assertSame( 'PI-2026-0001', Sequence::format( 'PI', 2026, 1 ) );
-		$this->assertSame( 'PI-2026-0420', Sequence::format( 'PI', 2026, 420 ) );
-		$this->assertSame( 'PI-2027-12345', Sequence::format( 'PI', 2027, 12345 ) );
+		$this->assertSame( 'DLK-PF-2026-0001', Sequence::format( 'DLK-PF', 2026, 1 ) );
+		$this->assertSame( 'DLK-PF-2026-0420', Sequence::format( 'DLK-PF', 2026, 420 ) );
+		$this->assertSame( 'DLK-PF-2027-12345', Sequence::format( 'DLK-PF', 2027, 12345 ) );
 	}
 
 	/**

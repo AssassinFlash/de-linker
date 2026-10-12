@@ -160,11 +160,12 @@ test.describe('the Genie dock', () => {
 			(await chip.count()) === 0,
 			'pending-main: the account page carries no Genie chip for the Proforma (docs/specs/13-genie.md §C Entries)'
 		);
-		// The chip is the protocol's entry for R7, but a click on it opens the
-		// dock without asking its own question (measured 2026-10-11: the chip
-		// carries no question payload and the loader only reveals the mount),
-		// so the question is typed. The R7 path — the session, the service, the
-		// ability — is the same either way.
+		// The account chip now carries its own question (data-ask-message:
+		// "Where is my Proforma?" / "Wo steht meine Proforma?"). A click opens
+		// the dock and sends that question; this row still types its own so the
+		// asserted status comes from a question this test controls. The R7 path
+		// — the session, the service, the ability — is the same either way.
+		// The 2026-10-11 note that the chip carried no payload is stale.
 		await chip.first().click();
 		await ensureOpen(page);
 		const answer = await ask(page, 'Where does my Proforma stand?');

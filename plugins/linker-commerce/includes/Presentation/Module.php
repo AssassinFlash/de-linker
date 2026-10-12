@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-use Linker\Commerce\Storefront\CatalogFilters;
+use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
 
 /**
@@ -24,7 +24,7 @@ final class Module {
 	 * @param Shortcodes             $shortcodes B2B shortcodes.
 	 * @param LoginGate              $gate       Empty Proforma-request page.
 	 * @param WindPress              $windpress  Compile provider.
-	 * @param CatalogShortcodes|null $catalog    The replica catalogue shortcodes; built
+	 * @param ProductShortcodes|null $products   The replica product shortcodes; built
 	 *                                           from the kept data layers when omitted.
 	 * @param ComparePage            $compare    The comparison page and its chip (#66).
 	 * @param LibraryPage            $library    The document library page (#66).
@@ -34,7 +34,7 @@ final class Module {
 		private readonly Shortcodes $shortcodes,
 		private readonly LoginGate $gate,
 		private readonly WindPress $windpress,
-		private readonly ?CatalogShortcodes $catalog = null,
+		private readonly ?ProductShortcodes $products = null,
 		private readonly ComparePage $compare = new ComparePage(),
 		private readonly LibraryPage $library = new LibraryPage(),
 		private readonly AccountTemplates $account = new AccountTemplates()
@@ -45,7 +45,7 @@ final class Module {
 	 */
 	public function register(): void {
 		$this->shortcodes->register();
-		( $this->catalog ?? new CatalogShortcodes( new CatalogFilters(), new ProductView() ) )->register();
+			( $this->products ?? new ProductShortcodes( new ProductFilters(), new ProductView() ) )->register();
 		$this->gate->register();
 		$this->windpress->register();
 		$this->compare->register();
@@ -67,7 +67,7 @@ final class Module {
 		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
 			// The catalogue's family cards: the model picker switches the
 			// article a card shows (spec: the live shop's family grid).
-			wp_enqueue_script( 'tv-b2b-catalog-family', $base . 'catalog-family.js', array(), '1', true );
+			wp_enqueue_script( 'linker-product-family', $base . 'product-family.js', array(), '1', true );
 		}
 		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;

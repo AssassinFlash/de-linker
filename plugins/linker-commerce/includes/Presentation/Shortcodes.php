@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-use Linker\Commerce\Catalog\Faqs;
+use Linker\Commerce\Products\Faqs;
 use Linker\Commerce\Registration\Approval;
 use WC_Product;
 
@@ -157,7 +157,7 @@ final class Shortcodes {
 		foreach ( $items as $item ) {
 			$question = $german && '' !== $item['question_de'] ? $item['question_de'] : $item['question'];
 			$answer   = $german && '' !== $item['answer_de'] ? $item['answer_de'] : $item['answer'];
-			$html    .= '<details class="pdp-disclose"><summary>' . esc_html( $question ) . CatalogShortcodes::icon( 'chevron' ) . '</summary>'
+			$html    .= '<details class="pdp-disclose"><summary>' . esc_html( $question ) . ProductShortcodes::icon( 'chevron' ) . '</summary>'
 				. '<div class="pdp-disclose-body pdp-reading">' . wp_kses_post( wpautop( $answer ) ) . '</div></details>';
 		}
 		return $html;

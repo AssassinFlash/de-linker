@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Abilities;
 
 use Linker\Commerce\Abilities\GetProduct;
-use Linker\Commerce\Tests\Support\MocksCatalogue;
+use Linker\Commerce\Tests\Support\MocksLiveProducts;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
@@ -21,7 +21,7 @@ use WP_Mock\Tools\TestCase;
  */
 final class GetProductTest extends TestCase {
 
-	use MocksCatalogue;
+	use MocksLiveProducts;
 
 	/**
 	 * Translation returns its source.
@@ -35,7 +35,7 @@ final class GetProductTest extends TestCase {
 	 * A published product carries facts, commerce and REST schemas.
 	 */
 	public function test_published_product(): void {
-		$this->mock_catalogue( array( 4107 ) );
+		$this->mock_live_products( array( 4107 ) );
 		$result = ( new GetProduct() )->execute(
 			array(
 				'product_id' => 4107,
@@ -60,7 +60,7 @@ final class GetProductTest extends TestCase {
 	 * An unpublished or missing ID still fits the schema.
 	 */
 	public function test_missing_product_fits_the_schema(): void {
-		$this->mock_catalogue( array() );
+		$this->mock_live_products( array() );
 		$result = ( new GetProduct() )->execute( array( 'product_id' => 1 ) );
 
 		$this->assertSame( '', $result['title'] );

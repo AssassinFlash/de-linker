@@ -32,13 +32,13 @@ final class Module {
 	 * @param PriceDisplay   $display The price display.
 	 * @param DraftSummary   $summary The solution draft summary.
 	 * @param StoreApiPrices $api     The Store API filter.
-	 * @param CatalogSorting $sorting Sorting without prices for guests.
+	 * @param ProductSorting $sorting Sorting without prices for guests.
 	 */
 	public function __construct(
 		private readonly PriceDisplay $display,
 		private readonly DraftSummary $summary,
 		private readonly StoreApiPrices $api,
-		private readonly CatalogSorting $sorting
+		private readonly ProductSorting $sorting
 	) {}
 
 	/**
