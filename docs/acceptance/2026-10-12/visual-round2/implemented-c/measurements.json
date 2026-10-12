@@ -1,0 +1,300 @@
+{
+ "C1_pdp_closed-before": {
+  "rest": {
+   "bubble": [
+    1370,
+    1667,
+    50,
+    50
+   ],
+   "mountHidden": true,
+   "buyOnPage": true
+  },
+  "scrollY": 1503,
+  "ariaExpanded": "true",
+  "barRect": [
+   1001,
+   2268,
+   418,
+   50
+  ],
+  "barDisplay": "flex",
+  "bubbleRect": [
+   1370,
+   2331,
+   50,
+   50
+  ],
+  "buyRect": [
+   987,
+   1587,
+   413,
+   765
+  ],
+  "buttons": [
+   {
+    "label": "Compare",
+    "rect": [
+     987,
+     2201,
+     132,
+     76
+    ],
+    "overlapBarPx2": 1062,
+    "overlapBubblePx2": 0,
+    "occludedBy": null
+   },
+   {
+    "label": "Ask Linker Advisor",
+    "rect": [
+     1127,
+     2201,
+     132,
+     76
+    ],
+    "overlapBarPx2": 1188,
+    "overlapBubblePx2": 0,
+    "occludedBy": null
+   },
+   {
+    "label": "Documents",
+    "rect": [
+     1268,
+     2201,
+     132,
+     76
+    ],
+    "overlapBarPx2": 1188,
+    "overlapBubblePx2": 0,
+    "occludedBy": null
+   }
+  ]
+ },
+ "C1_pdp_open-before": {
+  "barRect": [
+   1001,
+   1979,
+   418,
+   50
+  ],
+  "barDisplay": "flex",
+  "panelRect": [
+   1001,
+   2030,
+   418,
+   288
+  ]
+ },
+ "C1_shop_closed-before": {
+  "barRect": [
+   1001,
+   9100,
+   418,
+   50
+  ],
+  "barDisplay": "flex"
+ },
+ "C2_shop_open-before": {
+  "resting": {
+   "dockDisplay": "none",
+   "bubbleRect": [
+    0,
+    8407,
+    0,
+    0
+   ]
+  },
+  "viewport": [
+   390,
+   844
+  ],
+  "chipAria": "true",
+  "bubbleAria": "true",
+  "dockDisplay": "none",
+  "dockPosition": "fixed",
+  "bubbleDisplay": "flex",
+  "bubbleRect": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "panelRect": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "panelInViewport": true,
+  "appRect": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "appMaxHeight": "none",
+  "appOverflow": "hidden",
+  "appRadius": "12px",
+  "appBackground": "rgb(255, 255, 255)"
+ },
+ "C2_shop_expand-before": {
+  "toggleVisible": false,
+  "note": "the Open button sits in the display:none dock tree: the conversation is unreachable — the defect C2 fixes"
+ },
+ "C1_pdp_closed-after": {
+  "rest": {
+   "bubble": [
+    1370,
+    1828,
+    50,
+    50
+   ],
+   "mountHidden": true,
+   "buyOnPage": true
+  },
+  "scrollY": 1503,
+  "ariaExpanded": "true",
+  "barRect": [
+   0,
+   1503,
+   0,
+   0
+  ],
+  "barDisplay": "none",
+  "bubbleRect": [
+   1370,
+   2331,
+   50,
+   50
+  ],
+  "buyRect": [
+   987,
+   1587,
+   413,
+   765
+  ],
+  "buttons": [
+   {
+    "label": "Compare",
+    "rect": [
+     987,
+     2201,
+     132,
+     76
+    ],
+    "overlapBarPx2": 0,
+    "overlapBubblePx2": 0,
+    "occludedBy": null
+   },
+   {
+    "label": "Ask Linker Advisor",
+    "rect": [
+     1127,
+     2201,
+     132,
+     76
+    ],
+    "overlapBarPx2": 0,
+    "overlapBubblePx2": 0,
+    "occludedBy": null
+   },
+   {
+    "label": "Documents",
+    "rect": [
+     1268,
+     2201,
+     132,
+     76
+    ],
+    "overlapBarPx2": 0,
+    "overlapBubblePx2": 0,
+    "occludedBy": null
+   }
+  ]
+ },
+ "C1_pdp_open-after": {
+  "barRect": [
+   1001,
+   1979,
+   418,
+   50
+  ],
+  "barDisplay": "flex",
+  "panelRect": [
+   1001,
+   2030,
+   418,
+   288
+  ]
+ },
+ "C1_shop_closed-after": {
+  "barRect": [
+   1001,
+   9097,
+   418,
+   50
+  ],
+  "barDisplay": "flex"
+ },
+ "C2_shop_open-after": {
+  "resting": {
+   "dockDisplay": "none",
+   "bubbleRect": [
+    0,
+    8398,
+    0,
+    0
+   ]
+  },
+  "viewport": [
+   390,
+   844
+  ],
+  "chipAria": "true",
+  "bubbleAria": "true",
+  "dockDisplay": "block",
+  "dockPosition": "fixed",
+  "bubbleDisplay": "none",
+  "bubbleRect": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "panelRect": [
+   20,
+   684,
+   350,
+   76
+  ],
+  "panelInViewport": true,
+  "appRect": [
+   20,
+   684,
+   350,
+   76
+  ],
+  "appMaxHeight": "607.68px",
+  "appOverflow": "auto",
+  "appRadius": "14px",
+  "appBackground": "rgb(255, 255, 255)"
+ },
+ "C2_shop_expand-after": {
+  "appRect": [
+   20,
+   443,
+   350,
+   317
+  ],
+  "panelRect": [
+   33,
+   507,
+   324,
+   240
+  ],
+  "insideCard": true,
+  "composerVisible": true,
+  "maxHeightCapPx": 608,
+  "respectsCap": true
+ }
+}

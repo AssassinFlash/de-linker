@@ -18,6 +18,23 @@
 	padding: 0.75rem 1rem;
 }
 
+/*
+ * On the product page the closed bar rides the sticky buy box's action row
+ * (fixed bar × sticky box, measured 2026-10-12), and its Open button repeats
+ * the dock bubble beside it — so the closed bar hides there. The panel guard
+ * keeps the bar as the card's header once the conversation opens, and every
+ * other page keeps the closed bar. The buy box's class is the product
+ * template's own (content/livecanvas/single_product.html), read through
+ * body:has() as pdp.css already reads that page's marker
+ * (owner-approved round-2 proposal C1,
+ * docs/acceptance/2026-10-12/visual-round2/proposals/).
+ */
+body:has(.pdp-buy-inner)
+	.linker-genie-app:not(:has(> .linker-genie-app__panel))
+	> .linker-genie-app__bar {
+	display: none;
+}
+
 .linker-genie-app__title {
 	margin: 0;
 	font-weight: 700;
@@ -234,8 +251,43 @@
 	width: min(420px, calc(100vw - 40px));
 }
 
+/*
+ * Mobile keeps the resting tree hidden (the live page hides its bubble under
+ * 861px), but an open conversation must not vanish with it: the chips' Ask
+ * Genie boots the app also under this breakpoint. The dock loader marks every
+ * open trigger aria-expanded="true", so the open state — and only it — lets
+ * the tree out as a bottom conversation card, and the bubble hides while the
+ * card is up. Inset 10px, radius 14px, the shadow and the 72vh scroll cap are
+ * the measured values of the owner-approved round-2 proposal C2 (panel
+ * 350×317 at a 390px viewport,
+ * docs/acceptance/2026-10-12/visual-round2/proposals/); specificity carries
+ * the open rules over the resting display:none without touching any JS.
+ */
 @media (max-width: 860px) {
 	.linker-genie {
 		display: none;
+	}
+
+	.linker-genie:has([data-linker-genie-open][aria-expanded="true"]) {
+		display: block;
+		position: fixed;
+		inset: auto 10px 10px 10px;
+		z-index: 10000;
+	}
+
+	.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+		> .linker-genie-open {
+		display: none;
+	}
+
+	.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+		.linker-genie-app {
+		background: #fff;
+		border: 1px solid #e2e5e5;
+		border-radius: 14px;
+		box-shadow: 0 18px 50px rgba(12, 15, 15, 0.22);
+		padding: 12px;
+		max-height: 72vh;
+		overflow: auto;
 	}
 }

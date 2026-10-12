@@ -44,9 +44,18 @@ async function openDock(page: Page): Promise<void> {
 /** Opens the app's own panel once it is loaded (the dock may have done it). */
 async function ensureOpen(page: Page): Promise<void> {
 	const toggle = page.locator('.linker-genie-app__toggle');
-	await expect(toggle, 'the app is loaded').toBeVisible({ timeout: 30_000 });
+	await expect(toggle, 'the app is loaded').toBeAttached({ timeout: 30_000 });
 	if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
-		await toggle.click();
+		// On the product page the app's closed bar hides (the resting bar
+		// covered the buy box's action row, so the page's entries are the
+		// standing bubble and the buy box's own ask button), and a loaded
+		// toggle inside that bar carries no box to click: there the buy box's
+		// ask button is what opens the panel.
+		if (await toggle.isVisible()) {
+			await toggle.click();
+		} else {
+			await page.locator('[data-pdp-ask]').first().click();
+		}
 	}
 	await expect(page.locator('.linker-genie-app__composer')).toBeVisible({
 		timeout: 30_000,
@@ -201,6 +210,13 @@ test.describe('the Genie dock', () => {
 		test.setTimeout(600_000);
 		await page.goto(`${instance().url}${PRODUCT}`);
 		await openDock(page);
+		// On the product page the panel opens through the buy box's own ask
+		// button, and the app drops a send while a turn is in flight: the
+		// opening turn's answer (its votes) must land before the suite's own
+		// question goes out.
+		await expect(
+			page.locator('.linker-genie-app__votes').first()
+		).toBeVisible({ timeout: 180_000 });
 		const question = 'Which hybrid inverters do you carry for homes?';
 		await ask(page, question);
 		const before = await page
