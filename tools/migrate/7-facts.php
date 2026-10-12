@@ -1,8 +1,11 @@
 <?php
 /**
  * The WordPress side of tools/migrate/7-facts.py: reads, or writes, the
- * product attributes and figures that the facts plan names. A figure whose
- * "to" is null is removed; any other "to" replaces the stored entry.
+ * product attributes, the figures and the product page copy that the facts
+ * plan names. A figure whose "to" is null is removed; any other "to" replaces
+ * the stored entry. A copy change writes one string at its path inside a
+ * legacy ACF JSON meta (the English table `_tv_legacy_acf_json`, the German
+ * twin `_linker_de_acf_json` on the English product).
  *
  * 7-facts.py hands this file to `wp eval-file -` with its request (JSON,
  * base64) in place of the placeholder argument at the end. WP-CLI
@@ -29,7 +32,7 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 	 * @param int                  $product_id Product ID.
 	 * @param array<string, mixed> $drop       titles and labels, each a string or a list of strings.
 	 */
-	function seven_facts_drop_legacy_row( int $product_id, array $drop ): void {
+	function seven_facts_drop_legacy_row( int $product_id, array $drop ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- This helper exists only inside this wp eval-file script; it is never part of the plugin's namespace.
 		$titles = array_map( 'strval', (array) ( $drop['titles'] ?? array() ) );
 		$labels = array_map( 'strval', (array) ( $drop['labels'] ?? array() ) );
 		$keys   = array( '_tv_legacy_acf_json', '_linker_de_acf_json' );
@@ -67,6 +70,52 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 				wp_slash( (string) wp_json_encode( $decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) )
 			);
 		}
+	}
+}
+
+if ( ! function_exists( 'seven_facts_set_legacy_path' ) ) {
+	/**
+	 * One string of a legacy ACF JSON meta, replaced at its path.
+	 *
+	 * The meta keys and sides are the same map tools/migrate/7-facts.py reads:
+	 * the English table `_tv_legacy_acf_json`, the German twin
+	 * `_linker_de_acf_json` on the English source row, both read from the
+	 * English product. A path that is not there is a refusal, not a create:
+	 * the plan's "from" described the site as it is, so the path must exist.
+	 *
+	 * @param int                  $product_id Product ID.
+	 * @param array<string, mixed> $change     meta_key, path and the new value.
+	 *
+	 * @throws RuntimeException When the meta is not readable JSON, or the path is not there.
+	 */
+	function seven_facts_set_legacy_path( int $product_id, array $change ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- This helper exists only inside this wp eval-file script; it is never part of the plugin's namespace.
+		$meta_key = (string) ( $change['meta_key'] ?? '' );
+		$path     = array_values( (array) ( $change['path'] ?? array() ) );
+		if ( '' === $meta_key || array() === $path ) {
+			throw new RuntimeException( 'A legacy copy change needs a meta_key and a path.' );
+		}
+		$decoded = json_decode( (string) get_post_meta( $product_id, $meta_key, true ), true );
+		if ( ! is_array( $decoded ) ) {
+			throw new RuntimeException( esc_html( "Product {$product_id} has no readable {$meta_key}." ) );
+		}
+		$last = array_pop( $path );
+		$node = &$decoded;
+		foreach ( $path as $step ) {
+			if ( ! is_array( $node ) || ! array_key_exists( $step, $node ) ) {
+				throw new RuntimeException( esc_html( "Product {$product_id} has no {$meta_key} at that path." ) );
+			}
+			$node = &$node[ $step ];
+		}
+		if ( ! is_array( $node ) || ! array_key_exists( $last, $node ) ) {
+			throw new RuntimeException( esc_html( "Product {$product_id} has no {$meta_key} at that path." ) );
+		}
+		$node[ $last ] = $change['to'];
+		unset( $node );
+		update_post_meta(
+			$product_id,
+			$meta_key,
+			wp_slash( (string) wp_json_encode( $decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) )
+		);
 	}
 }
 
@@ -222,6 +271,9 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 			// The live figures are stored with unescaped Unicode and slashes; the rewrite keeps that form.
 			update_post_meta( $change['product'], $meta_key, wp_slash( (string) wp_json_encode( $figures, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
 			wc_delete_product_transients( $change['product'] );
+		}
+		foreach ( $request['legacy_copy'] ?? array() as $change ) {
+			seven_facts_set_legacy_path( (int) $change['product'], $change );
 		}
 
 		return array( 'written' => true );

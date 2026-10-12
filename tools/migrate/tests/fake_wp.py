@@ -72,6 +72,19 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
             else:
                 figures[change["key"]] = change["to"]
             product["figures"] = json.dumps(figures, ensure_ascii=False)
+        for change in request.get("legacy_copy", []):
+            product = site["products"][str(change["product"])]
+            side = {"_tv_legacy_acf_json": "en", "_linker_de_acf_json": "de"}[
+                change["meta_key"]
+            ]
+            legacy = product.setdefault("legacy", {})
+            decoded = json.loads(legacy.get(side) or "{}")
+            node = decoded
+            *parents, last = change["path"]
+            for step in parents:
+                node = node[step]
+            node[last] = change["to"]
+            legacy[side] = json.dumps(decoded, ensure_ascii=False)
         for change in request.get("citations", []):
             product = site["products"][str(change["product"])]
             figures = json.loads(product["figures"])

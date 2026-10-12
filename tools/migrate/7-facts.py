@@ -2,12 +2,13 @@
 """Data changes of ticket #7, applied through WP-CLI.
 
 The changes are data in 7-facts.json beside this script, or in the file named
-by --plan: product attributes (pa_application, pa_phase) and product figures
-(_tv_b2b_figures entries), each with the value read on the live site ("from"),
-the value to write ("to") and the documents it rests on ("basis"). A figure
-whose "to" is null is removed. "from" may be one value or a list of values the
-site may hold; any of them is "apply". For every change the script reads the
-target site and reports one of
+by --plan: product attributes (pa_application, pa_phase), product figures
+(_tv_b2b_figures entries) and product page copy (one string of a legacy ACF
+JSON, addressed by meta_key and path), each with the value read on the live
+site ("from"), the value to write ("to") and the documents it rests on
+("basis"). A figure whose "to" is null is removed. "from" may be one value or
+a list of values the site may hold; any of them is "apply". For every change
+the script reads the target site and reports one of
 
   apply  the site holds "from": --write will write "to"
   done   the site already holds "to"
@@ -47,7 +48,16 @@ PHP_PAYLOAD = "'7-facts-payload'"
 PRODUCTION_HOST = "de-linker.com"
 FIGURES_META_KEY = "_tv_b2b_figures"
 MARKER = "@@7-facts@@"
-GROUPS = ("attributes", "figures")
+GROUPS = ("attributes", "figures", "legacy_copy")
+# The rendered copy of the product page: the English table and the German twin,
+# both on the English product (7-facts.php carries the same map).
+LEGACY_KEYS = {"_tv_legacy_acf_json": "en", "_linker_de_acf_json": "de"}
+
+
+def plan_changes(plan: dict[str, Any], group: str) -> list[dict[str, Any]]:
+    """The changes of one group; a plan may carry only some of the groups."""
+    changes = plan.get(group) or []
+    return list(changes)
 
 
 def wp_eval(wp: list[str], request: dict[str, Any]) -> dict[str, Any]:
@@ -83,30 +93,63 @@ def wp_eval(wp: list[str], request: dict[str, Any]) -> dict[str, Any]:
 def read_site(wp: list[str], plan: dict[str, Any]) -> dict[str, Any]:
     """The site URL and, per touched product, its attributes, raw figures and
     the fields the migration must not change."""
-    ids = sorted({c["product"] for group in GROUPS for c in plan[group]})
-    taxonomies = sorted({c["taxonomy"] for c in plan["attributes"]})
+    ids = sorted({c["product"] for group in GROUPS for c in plan_changes(plan, group)})
+    taxonomies = sorted({c["taxonomy"] for c in plan_changes(plan, "attributes")})
     return wp_eval(wp, {"action": "read", "products": ids, "taxonomies": taxonomies})
 
 
-def expected_from(change: dict[str, Any]) -> list[Any]:
-    """The values "apply" accepts. A list of "from" values is any of them."""
+def expected_from(group: str, change: dict[str, Any]) -> list[Any]:
+    """The values "apply" accepts.
+
+    An attribute's "from" is the term list itself. A figure's or a copy
+    change's "from" may be a list of recorded values the site may hold
+    (stored entries, strings, or None for "the key is absent"); any of them
+    is apply.
+    """
+    if group == "attributes":
+        return [change["from"]]
     source = change["from"]
     if (
         isinstance(source, list)
         and source
-        and all(isinstance(item, dict) for item in source)
+        and all(item is None or isinstance(item, (dict, str)) for item in source)
     ):
         return list(source)
     return [source]
 
 
+def legacy_value(site: dict[str, Any], change: dict[str, Any]) -> Any:
+    """The string a copy change addresses in the product's legacy meta, or None
+    when the meta, the JSON or the path does not hold one."""
+    product = site["products"].get(str(change["product"]))
+    if product is None:
+        return None
+    side = LEGACY_KEYS.get(change["meta_key"])
+    raw = (product.get("legacy") or {}).get(side)
+    if not raw:
+        return None
+    try:
+        decoded: Any = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    for step in change["path"]:
+        try:
+            decoded = decoded[step]
+        except (KeyError, IndexError, TypeError):
+            return None
+    return decoded
+
+
 def current_value(site: dict[str, Any], group: str, change: dict[str, Any]) -> Any:
-    """What the site holds for one change: term slugs, or a figure entry."""
+    """What the site holds for one change: term slugs, a figure entry, or the
+    addressed copy string."""
     product = site["products"].get(str(change["product"]))
     if product is None:
         return None
     if group == "attributes":
         return product["attributes"][change["taxonomy"]]["terms"]
+    if group == "legacy_copy":
+        return legacy_value(site, change)
     figures = json.loads(product["figures"] or "{}")
     return figures.get(change["key"])
 
@@ -138,6 +181,8 @@ def is_done(site: dict[str, Any], group: str, change: dict[str, Any]) -> bool:
         product = site["products"][str(change["product"])]
         attached = product["attributes"][change["taxonomy"]]["attached"]
         return bool(attached == (change["to"] or None))
+    if group == "legacy_copy":
+        return True
     drop = change.get("drop_legacy")
     if isinstance(drop, dict):
         product = site["products"][str(change["product"])]
@@ -164,7 +209,7 @@ def status(site: dict[str, Any], group: str, change: dict[str, Any]) -> str:
         return "apply"
     return (
         "apply"
-        if current_value(site, group, change) in expected_from(change)
+        if current_value(site, group, change) in expected_from(group, change)
         else "drift"
     )
 
@@ -175,11 +220,15 @@ def report(
     """Prints one line per change and returns the changes by status."""
     by_status: dict[str, list[dict[str, Any]]] = {"apply": [], "done": [], "drift": []}
     for group in GROUPS:
-        for change in plan[group]:
+        for change in plan_changes(plan, group):
             state = status(site, group, change)
             by_status[state].append({"group": group, **change})
             if group == "attributes":
                 field = change["taxonomy"]
+            elif group == "legacy_copy":
+                field = (
+                    f"{change['meta_key']}[{'.'.join(str(s) for s in change['path'])}]"
+                )
             else:
                 field = f"{FIGURES_META_KEY}.{change['key']}"
             current = short(current_value(site, group, change))
@@ -219,15 +268,17 @@ def reversed_plan(plan: dict[str, Any]) -> dict[str, Any]:
     """The plan backwards: every change goes from its "to" to its "from"."""
     backwards = dict(plan)
     for group in GROUPS:
+        if group not in plan:
+            continue
         reversed_changes = []
         for change in plan[group]:
-            source = expected_from(change)
+            source = expected_from(group, change)
             if change["to"] is None:
                 # A deleted key has nothing to put back, and more than one
                 # recorded "from" has no single value to restore.
                 if len(source) != 1:
                     raise ValueError(
-                        f"{change['product']} {change.get('key', change.get('taxonomy'))} "
+                        f"{change['product']} {change.get('key', change.get('meta_key', change.get('taxonomy')))} "
                         "deletes a key from more than one recorded value; it cannot be reversed."
                     )
             reversed_changes.append({**change, "from": change["to"], "to": source[0]})
@@ -309,6 +360,9 @@ def main(argv: list[str] | None = None) -> int:
             "new_attribute": plan["new_attribute"],
             "attributes": [c for c in by_status["apply"] if c["group"] == "attributes"],
             "figures": [c for c in by_status["apply"] if c["group"] == "figures"],
+            "legacy_copy": [
+                c for c in by_status["apply"] if c["group"] == "legacy_copy"
+            ],
         },
     )
 
@@ -320,7 +374,7 @@ def main(argv: list[str] | None = None) -> int:
         return refuse(
             "Fields the migration must not change changed:\n" + "\n".join(changed)
         )
-    total = sum(len(plan[group]) for group in GROUPS)
+    total = sum(len(plan_changes(plan, group)) for group in GROUPS)
     return 0 if len(after["done"]) == total else refuse("Not every change reads done.")
 
 

@@ -53,7 +53,11 @@ PLAN: dict[str, Any] = json.loads(facts.PLAN.read_text())
 def statuses(plan: dict[str, Any]) -> set[str]:
     """The statuses the instance gives the plan's changes now."""
     site = facts.read_site(shlex.split(WP), plan)
-    return {facts.status(site, g, c) for g in facts.GROUPS for c in plan[g]}
+    return {
+        facts.status(site, g, c)
+        for g in facts.GROUPS
+        for c in facts.plan_changes(plan, g)
+    }
 
 
 def fixture_figures() -> dict[str, str]:

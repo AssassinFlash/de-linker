@@ -7,9 +7,9 @@
   "items": [
     {
       "question": "Is the inverter port of the GW60K-STS-G10 also 60 kW?",
-      "answer": "No. On page 2 of the STS datasheet the Inverter side block prints one column across the table: rated power 30 kW at 400 V, rated current 43.5 A (45.5 A at 380 V, 41.6 A at 415 V), maximum current 63 A. That column is not under GW60K-STS-G10. The 60 kW rating, and the currents 91.0 A at 380 V, 87.0 A at 400 V, 83.4 A at 415 V and 100 A maximum, sit in the GW60K column of Grid, Back-up and Smart Port.",
+      "answer": "No. The inverter side is rated 30 kW, and both hosted documents print it: page 2 of the STS datasheet puts 30 kW in the Inverter side block across the whole table, and the ESA 5–30 kW user manual, section 9.3 (p.339–340), puts 30 kW in the GW60K-STS-G10 column of the Inverter side block. The 60 kW rating, and the currents 91.0 A at 380 V, 87.0 A at 400 V, 83.4 A at 415 V and 100 A maximum, sit in the GW60K column of Grid, Back-up and Smart Port.",
       "question_de": "Ist der Wechselrichteranschluss des GW60K-STS-G10 ebenfalls 60 kW?",
-      "answer_de": "Nein. Auf Seite 2 des STS-Datenblatts steht im Block „Inverter side“ eine Spalte über die ganze Tabelle: Nennleistung 30 kW bei 400 V, Nennstrom 43,5 A (45,5 A bei 380 V, 41,6 A bei 415 V), Maximalstrom 63 A. Diese Spalte steht nicht unter GW60K-STS-G10. Die Nennleistung 60 kW und die Ströme 91,0 A bei 380 V, 87,0 A bei 400 V, 83,4 A bei 415 V sowie maximal 100 A stehen in der GW60K-Spalte von Grid, Back-up und Smart Port.",
+      "answer_de": "Nein. Die Wechselrichterseite ist mit 30 kW bemessen, und beide von uns gehosteten Dokumente geben das an: Seite 2 des STS-Datenblatts führt 30 kW im Block „Inverter side“ über die ganze Tabelle, und das ESA-Handbuch 5–30 kW führt in Abschnitt 9.3 (S. 339–340) 30 kW in der Spalte GW60K-STS-G10 der Wechselrichterseite. Die Nennleistung 60 kW und die Ströme 91,0 A bei 380 V, 87,0 A bei 400 V, 83,4 A bei 415 V sowie maximal 100 A stehen in der GW60K-Spalte von Netz, Notstrom und Smart Port.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
         "page": 2,
@@ -17,7 +17,7 @@
       },
       "status": "pass",
       "review": "pass",
-      "reason": "2026-10-13 correction. The first pass put 60 kW and 91.0/87.0/83.4/100 A in the Inverter side column of GW60K-STS-G10. pdftotext -bbox on the hosted datasheet, page 2: those values sit in the GW60K column of Grid, Back-up and Smart Port (column center x=474.8). Inverter side prints one column centered across the table (Rated Power 30 at x=396.9; GW30K column center x=318.9). The answer now says that, and does not assign the centered 30 kW to this model."
+      "reason": "2026-10-13 second correction. The first pass put 60 kW and 91.0/87.0/83.4/100 A in the Inverter side column of GW60K-STS-G10; those values sit in the GW60K column of Grid, Back-up and Smart Port (pdftotext -bbox on the hosted datasheet page 2, column center x=474.8). The correction after that read the datasheet alone and said the merged 30 kW was not this model's value; that over-corrected. The hosted ESA 5–30 kW user manual, section 9.3 (PDF p.339–340), prints Rated Power (kW) 30 in the GW60K-STS-G10 column of the Inverter side block (bbox p.340: value xMin=388.220, the column's own x-origin; Max. Current 100.0, Rated. Current 43.5@400V; DE V1.4 p.372 prints the same). Two independent documents, so the answer now says both print the inverter side at 30 kW."
     }
   ]
 }
