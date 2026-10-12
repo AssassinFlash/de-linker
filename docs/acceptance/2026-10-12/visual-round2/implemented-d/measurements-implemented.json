@@ -1,0 +1,603 @@
+{
+ "D1-before": {
+  "vw": 1440,
+  "pageH": 5387,
+  "rowsBlocks": [
+   {
+    "section": "linker-report-site",
+    "h": 327,
+    "w": 1160,
+    "rows": 9,
+    "display": "grid",
+    "columns": "1160px",
+    "columnGap": "normal",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-yield",
+    "h": 143,
+    "w": 1160,
+    "rows": 4,
+    "display": "grid",
+    "columns": "1160px",
+    "columnGap": "normal",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-storage",
+    "h": 204,
+    "w": 1160,
+    "rows": 5,
+    "display": "grid",
+    "columns": "1160px",
+    "columnGap": "normal",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-metrics",
+    "h": 204,
+    "w": 1160,
+    "rows": 5,
+    "display": "grid",
+    "columns": "1160px",
+    "columnGap": "normal",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-basis",
+    "h": 290,
+    "w": 1160,
+    "rows": 8,
+    "display": "grid",
+    "columns": "1160px",
+    "columnGap": "normal",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-releases",
+    "h": 106,
+    "w": 1160,
+    "rows": 3,
+    "display": "grid",
+    "columns": "1160px",
+    "columnGap": "normal",
+    "alignItems": "normal"
+   }
+  ],
+  "reportTotalH": 1275,
+  "firstTwoRowBoxes": [
+   [
+    140,
+    2308,
+    1160,
+    33
+   ],
+   [
+    140,
+    2344,
+    1160,
+    33
+   ]
+  ],
+  "solution": [
+   140,
+   998,
+   1160,
+   1000
+  ],
+  "bom": [
+   140,
+   3969,
+   1160,
+   390
+  ],
+  "bomTable": [
+   140,
+   4017,
+   1160,
+   326
+  ],
+  "assumptions": [
+   140,
+   4359,
+   1160,
+   304
+  ]
+ },
+ "D1-after": {
+  "vw": 1440,
+  "pageH": 5120,
+  "rowsBlocks": [
+   {
+    "section": "linker-report-site",
+    "h": 180,
+    "w": 1160,
+    "rows": 9,
+    "display": "grid",
+    "columns": "552px 552px",
+    "columnGap": "56px",
+    "alignItems": "start"
+   },
+   {
+    "section": "linker-report-yield",
+    "h": 117,
+    "w": 1160,
+    "rows": 4,
+    "display": "grid",
+    "columns": "552px 552px",
+    "columnGap": "56px",
+    "alignItems": "start"
+   },
+   {
+    "section": "linker-report-storage",
+    "h": 202,
+    "w": 1160,
+    "rows": 5,
+    "display": "grid",
+    "columns": "552px 552px",
+    "columnGap": "56px",
+    "alignItems": "start"
+   },
+   {
+    "section": "linker-report-metrics",
+    "h": 202,
+    "w": 1160,
+    "rows": 5,
+    "display": "grid",
+    "columns": "552px 552px",
+    "columnGap": "56px",
+    "alignItems": "start"
+   },
+   {
+    "section": "linker-report-basis",
+    "h": 215,
+    "w": 1160,
+    "rows": 8,
+    "display": "grid",
+    "columns": "552px 552px",
+    "columnGap": "56px",
+    "alignItems": "start"
+   },
+   {
+    "section": "linker-report-releases",
+    "h": 93,
+    "w": 1160,
+    "rows": 3,
+    "display": "grid",
+    "columns": "552px 552px",
+    "columnGap": "56px",
+    "alignItems": "start"
+   }
+  ],
+  "reportTotalH": 1008,
+  "firstTwoRowBoxes": [
+   [
+    140,
+    2308,
+    552,
+    33
+   ],
+   [
+    748,
+    2308,
+    552,
+    33
+   ]
+  ],
+  "solution": [
+   140,
+   998,
+   1160,
+   1000
+  ],
+  "bom": [
+   140,
+   3703,
+   1160,
+   390
+  ],
+  "bomTable": [
+   140,
+   3750,
+   1160,
+   326
+  ],
+  "assumptions": [
+   140,
+   4093,
+   1160,
+   304
+  ]
+ },
+ "D1-guard1100-after": {
+  "vw": 1100,
+  "pageH": 5402,
+  "rowsBlocks": [
+   {
+    "section": "linker-report-site",
+    "h": 327,
+    "w": 1020,
+    "rows": 9,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-yield",
+    "h": 143,
+    "w": 1020,
+    "rows": 4,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-storage",
+    "h": 228,
+    "w": 1020,
+    "rows": 5,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-metrics",
+    "h": 204,
+    "w": 1020,
+    "rows": 5,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-basis",
+    "h": 290,
+    "w": 1020,
+    "rows": 8,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-releases",
+    "h": 106,
+    "w": 1020,
+    "rows": 3,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   }
+  ],
+  "reportTotalH": 1298,
+  "firstTwoRowBoxes": [
+   [
+    40,
+    2299,
+    1020,
+    33
+   ],
+   [
+    40,
+    2336,
+    1020,
+    33
+   ]
+  ],
+  "solution": [
+   40,
+   990,
+   1020,
+   1000
+  ],
+  "bom": [
+   40,
+   3985,
+   1020,
+   390
+  ],
+  "bomTable": [
+   40,
+   4032,
+   1020,
+   326
+  ],
+  "assumptions": [
+   40,
+   4375,
+   1020,
+   304
+  ]
+ },
+ "D1-guard1100-before": {
+  "vw": 1100,
+  "pageH": 5402,
+  "rowsBlocks": [
+   {
+    "section": "linker-report-site",
+    "h": 327,
+    "w": 1020,
+    "rows": 9,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-yield",
+    "h": 143,
+    "w": 1020,
+    "rows": 4,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-storage",
+    "h": 228,
+    "w": 1020,
+    "rows": 5,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-metrics",
+    "h": 204,
+    "w": 1020,
+    "rows": 5,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-basis",
+    "h": 290,
+    "w": 1020,
+    "rows": 8,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-releases",
+    "h": 106,
+    "w": 1020,
+    "rows": 3,
+    "display": "grid",
+    "columns": "1020px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   }
+  ],
+  "reportTotalH": 1298,
+  "firstTwoRowBoxes": [
+   [
+    40,
+    2299,
+    1020,
+    33
+   ],
+   [
+    40,
+    2336,
+    1020,
+    33
+   ]
+  ],
+  "solution": [
+   40,
+   990,
+   1020,
+   1000
+  ],
+  "bom": [
+   40,
+   3985,
+   1020,
+   390
+  ],
+  "bomTable": [
+   40,
+   4032,
+   1020,
+   326
+  ],
+  "assumptions": [
+   40,
+   4375,
+   1020,
+   304
+  ]
+ },
+ "D2-before": {
+  "vw": 390,
+  "scrollY": 2416,
+  "stepsViewportTop": -2127,
+  "stepsViewportRect": [
+   16,
+   -2127,
+   358,
+   28
+  ],
+  "stepsH": 28,
+  "position": "static",
+  "top": "auto",
+  "zIndex": "auto",
+  "background": "rgba(0, 0, 0, 0)",
+  "backdropFilter": "none",
+  "padding": "0px",
+  "margin": "0px 0px 24px"
+ },
+ "D2-after": {
+  "vw": 390,
+  "scrollY": 2400,
+  "stepsViewportTop": 89,
+  "stepsViewportRect": [
+   16,
+   89,
+   358,
+   44
+  ],
+  "stepsH": 44,
+  "position": "sticky",
+  "top": "89px",
+  "zIndex": "40",
+  "background": "rgba(246, 249, 245, 0.94)",
+  "backdropFilter": "blur(6px)",
+  "padding": "8px 0px",
+  "margin": "-8px 0px 0px"
+ },
+ "D2-rows390": {
+  "vw": 390,
+  "pageH": 9314,
+  "rowsBlocks": [
+   {
+    "section": "linker-report-site",
+    "h": 541,
+    "w": 358,
+    "rows": 9,
+    "display": "grid",
+    "columns": "358px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-yield",
+    "h": 262,
+    "w": 358,
+    "rows": 4,
+    "display": "grid",
+    "columns": "358px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-storage",
+    "h": 347,
+    "w": 358,
+    "rows": 5,
+    "display": "grid",
+    "columns": "358px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-metrics",
+    "h": 347,
+    "w": 358,
+    "rows": 5,
+    "display": "grid",
+    "columns": "358px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-basis",
+    "h": 505,
+    "w": 358,
+    "rows": 8,
+    "display": "grid",
+    "columns": "358px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   },
+   {
+    "section": "linker-report-releases",
+    "h": 178,
+    "w": 358,
+    "rows": 3,
+    "display": "grid",
+    "columns": "358px",
+    "columnGap": "4px",
+    "alignItems": "normal"
+   }
+  ],
+  "reportTotalH": 2179,
+  "firstTwoRowBoxes": [
+   [
+    16,
+    3925,
+    358,
+    57
+   ],
+   [
+    16,
+    3985,
+    358,
+    57
+   ]
+  ],
+  "solution": [
+   16,
+   1354,
+   358,
+   2187
+  ],
+  "bom": [
+   16,
+   6560,
+   358,
+   1239
+  ],
+  "bomTable": [
+   16,
+   6607,
+   358,
+   1176
+  ],
+  "assumptions": [
+   16,
+   7799,
+   358,
+   627
+  ]
+ },
+ "D2-guard1440-before": {
+  "vw": 1440,
+  "scrollY": 2474,
+  "stepsViewportTop": -2164,
+  "stepsViewportRect": [
+   140,
+   -2164,
+   1160,
+   28
+  ],
+  "stepsH": 28,
+  "position": "static",
+  "top": "auto",
+  "zIndex": "auto",
+  "background": "rgba(0, 0, 0, 0)",
+  "backdropFilter": "none",
+  "padding": "0px",
+  "margin": "0px 0px 24px"
+ },
+ "D2-guard1440-after": {
+  "vw": 1440,
+  "scrollY": 2400,
+  "stepsViewportTop": -2090,
+  "stepsViewportRect": [
+   140,
+   -2090,
+   1160,
+   28
+  ],
+  "stepsH": 28,
+  "position": "static",
+  "top": "auto",
+  "zIndex": "auto",
+  "background": "rgba(0, 0, 0, 0)",
+  "backdropFilter": "none",
+  "padding": "0px",
+  "margin": "0px 0px 24px"
+ }
+}
