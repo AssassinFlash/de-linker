@@ -137,9 +137,13 @@ test.describe('the products', () => {
 			).toBeGreaterThan(0);
 			let stated = 0;
 			for (const card of rated) {
-				const power = /(?:AC power|AC-Leistung)\s*([\d.,]+)\s*kW/i.exec(
-					card
-				);
+				// The card's own label: "AC power" in English, "AC-Nennleistung"
+				// in German — the words the live German cards print too
+				// (measured 2026-10-13; "AC-Leistung" is the range form's).
+				const power =
+					/(?:AC power|AC-Nennleistung|AC-Leistung)\s*([\d.,]+)\s*kW/i.exec(
+						card
+					);
 				if (!power) {
 					continue;
 				}

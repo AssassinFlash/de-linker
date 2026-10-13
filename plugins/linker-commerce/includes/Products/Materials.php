@@ -1516,6 +1516,20 @@ final class Materials {
 	 * @return list<array{key: string, label: string, value: string}>
 	 */
 	public static function card_facts( WC_Product $product, int $limit = 4 ): array {
+		// The figures live on the English record (#9): a German product's card
+		// states the same values as its English twin because it reads them
+		// through the same swap the selection facts use (i18n's
+		// facts_product_id listener); without a language layer the asked-for
+		// product answers itself.
+		if ( \function_exists( 'has_filter' ) && \has_filter( 'linker_commerce_facts_product_id' ) ) {
+			$source = (int) \apply_filters( 'linker_commerce_facts_product_id', (int) $product->get_id() );
+			if ( $source > 0 && $source !== (int) $product->get_id() ) {
+				$swapped = \wc_get_product( $source );
+				if ( $swapped instanceof WC_Product ) {
+					$product = $swapped;
+				}
+			}
+		}
 		$order = array(
 			// The live's own material types first.
 			'fixed_system'    => array( 'ac_power', 'phase', 'mppt', 'efficiency', 'ac_nom_voltage', 'system_range' ),
