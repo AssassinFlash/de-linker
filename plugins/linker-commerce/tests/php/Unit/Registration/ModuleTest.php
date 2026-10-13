@@ -16,6 +16,7 @@ use Linker\Commerce\Registration\ApprovalAdmin;
 use Linker\Commerce\Registration\BillingVatField;
 use Linker\Commerce\Registration\Emails\ApprovedEmail;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
+use Linker\Commerce\Registration\Emails\RegistrationReceivedEmail;
 use Linker\Commerce\Registration\Emails\RejectedEmail;
 use Linker\Commerce\Registration\Emails\RestrictedEmail;
 use Linker\Commerce\Registration\Emails\VatReviewEmail;
@@ -165,13 +166,15 @@ final class ModuleTest extends TestCase {
 
 		$this->plain_text();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
-		$this->expect_action_on_any( Fields::REGISTERED_ACTION . '_notification', NewCustomerEmail::class, 'trigger' );
+			$this->expect_action_on_any( Fields::REGISTERED_ACTION . '_notification', NewCustomerEmail::class, 'trigger' );
+			$this->expect_action_on_any( Fields::REGISTERED_ACTION . '_notification', RegistrationReceivedEmail::class, 'trigger' );
 		$this->expect_action_on_any( VatProfile::CHANGED_ACTION . '_notification', VatReviewEmail::class, 'trigger', 10, 3 );
 		$this->expect_action_on_any( Approval::CHANGED_ACTION . '_notification', ApprovedEmail::class, 'trigger', 10, 4 );
 		$this->expect_action_on_any( Approval::CHANGED_ACTION . '_notification', RestrictedEmail::class, 'trigger', 10, 4 );
 		$this->expect_action_on_any( Approval::CHANGED_ACTION . '_notification', RejectedEmail::class, 'trigger', 10, 4 );
 		$emails = $this->module->add_emails( array() );
-		$this->assertInstanceOf( NewCustomerEmail::class, $emails[ NewCustomerEmail::class ] );
+			$this->assertInstanceOf( NewCustomerEmail::class, $emails[ NewCustomerEmail::class ] );
+			$this->assertInstanceOf( RegistrationReceivedEmail::class, $emails[ RegistrationReceivedEmail::class ] );
 		$this->assertInstanceOf( VatReviewEmail::class, $emails[ VatReviewEmail::class ] );
 		$this->assertInstanceOf( ApprovedEmail::class, $emails[ ApprovedEmail::class ] );
 		$this->assertInstanceOf( RestrictedEmail::class, $emails[ RestrictedEmail::class ] );

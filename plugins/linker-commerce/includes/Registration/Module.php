@@ -12,6 +12,7 @@ namespace Linker\Commerce\Registration;
 use Linker\Commerce\Digest\Block as DigestBlock;
 use Linker\Commerce\Registration\Emails\ApprovedEmail;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
+use Linker\Commerce\Registration\Emails\RegistrationReceivedEmail;
 use Linker\Commerce\Registration\Emails\RejectedEmail;
 use Linker\Commerce\Registration\Emails\RestrictedEmail;
 use Linker\Commerce\Registration\Emails\VatReviewEmail;
@@ -108,11 +109,12 @@ final class Module {
 	 * @return array<string, object>
 	 */
 	public function add_emails( array $emails ): array {
-		$emails[ NewCustomerEmail::class ] = new NewCustomerEmail( $this->plugin_file, $this->options );
-		$emails[ VatReviewEmail::class ]   = new VatReviewEmail( $this->plugin_file, $this->options );
-		$emails[ ApprovedEmail::class ]    = new ApprovedEmail( $this->plugin_file );
-		$emails[ RestrictedEmail::class ]  = new RestrictedEmail( $this->plugin_file );
-		$emails[ RejectedEmail::class ]    = new RejectedEmail( $this->plugin_file );
+		$emails[ NewCustomerEmail::class ]          = new NewCustomerEmail( $this->plugin_file, $this->options );
+		$emails[ RegistrationReceivedEmail::class ] = new RegistrationReceivedEmail( $this->plugin_file );
+		$emails[ VatReviewEmail::class ]            = new VatReviewEmail( $this->plugin_file, $this->options );
+		$emails[ ApprovedEmail::class ]             = new ApprovedEmail( $this->plugin_file );
+		$emails[ RestrictedEmail::class ]           = new RestrictedEmail( $this->plugin_file );
+		$emails[ RejectedEmail::class ]             = new RejectedEmail( $this->plugin_file );
 		return $emails;
 	}
 }

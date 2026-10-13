@@ -81,6 +81,16 @@ final class LoginGate {
 	}
 
 	/**
+	 * The pending-review page, for the account page as well as the empty
+	 * Proforma request. Both surfaces read this one markup.
+	 *
+	 * @param string $products The products page's address.
+	 */
+	public function pending_html( string $products ): string {
+		return $this->approval_gate( Approval::PENDING, $products );
+	}
+
+	/**
 	 * The gate of an account whose approval is pending or restricted: what the
 	 * account keeps, what is paused, and the way back.
 	 *

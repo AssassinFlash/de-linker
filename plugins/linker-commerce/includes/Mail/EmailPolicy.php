@@ -12,18 +12,21 @@ namespace Linker\Commerce\Mail;
 use WC_Email;
 
 /**
- * The site sends this plugin's emails and three of WooCommerce's own. Every
+ * The site sends this plugin's emails and two of WooCommerce's own. Every
  * other WooCommerce email is about orders, payment or shipping, which the site
- * does not have (AGENTS.md §1), and is switched off.
+ * does not have, and is switched off. The new-account mail is among them: a
+ * registration starts pending, and RegistrationReceivedEmail is the
+ * confirmation the customer receives. WooCommerce's own mail says the account
+ * is ready.
  */
 final class EmailPolicy {
 
 	/**
-	 * WooCommerce emails that stay on: the welcome email (docs/specs/11-commerce.md,
-	 * journey step 2), the password reset, and the administrator's notice that a
-	 * payment method was switched on (a security notice).
+	 * WooCommerce emails that stay on: the password reset, and the
+	 * administrator's notice that a payment method was switched on (a security
+	 * notice).
 	 */
-	public const KEEP = array( 'customer_new_account', 'customer_reset_password', 'admin_payment_gateway_enabled' );
+	public const KEEP = array( 'customer_reset_password', 'admin_payment_gateway_enabled' );
 
 	/**
 	 * Switches off the other WooCommerce emails; runs on woocommerce_email_classes,

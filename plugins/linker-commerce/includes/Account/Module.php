@@ -11,7 +11,8 @@ namespace Linker\Commerce\Account;
 
 /**
  * The account menu, the contact person, the inquiry list, saved solutions
- * and the route that saves them, documents and their downloads.
+ * and the route that saves them, documents and their downloads. A pending
+ * account sees the review page instead of any of that.
  */
 final class Module {
 
@@ -25,6 +26,7 @@ final class Module {
 	 * @param Documents        $documents The documents page.
 	 * @param DocumentDownload $download  The downloads.
 	 * @param SolutionsRoute   $route     The route that saves solutions.
+	 * @param PendingGate      $pending   The review page of an account still under review.
 	 */
 	public function __construct(
 		private readonly Menu $menu,
@@ -33,7 +35,8 @@ final class Module {
 		private readonly SavedSolutions $solutions,
 		private readonly Documents $documents,
 		private readonly DocumentDownload $download,
-		private readonly SolutionsRoute $route
+		private readonly SolutionsRoute $route,
+		private readonly PendingGate $pending = new PendingGate()
 	) {}
 
 	/**
@@ -45,6 +48,7 @@ final class Module {
 		foreach ( array( 'orders', 'view-order', 'saved-solutions', 'documents', 'edit-address', 'edit-account' ) as $endpoint ) {
 			add_filter( 'woocommerce_endpoint_' . $endpoint . '_title', array( $this->menu, 'title' ), 10, 2 );
 		}
+		add_action( 'template_redirect', array( $this->pending, 'redirect' ) );
 		add_action( 'woocommerce_account_content', array( $this->contact, 'render' ), 5 );
 
 		add_filter( 'woocommerce_account_orders_columns', array( $this->inquiries, 'columns' ) );
