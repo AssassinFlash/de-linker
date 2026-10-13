@@ -25,6 +25,13 @@
 - [ ] 视觉验收：首页、产品页、配置器、Genie、账户 × EN/DE × 1440/390（线上）。
 
 ## 变更记录
+- 2026-10-14（#17 首跑生产）：预检把工具从没有跑过的生产路径都跑了一遍；六处修复，逐条有理由：
+  - **远程 shell 的引用**：脚本现在以单个 shlex 引用词随 ssh 出发（`Target.shell_command`，唯一实现，备份的 `_stream` 同用）。`ssh host 'bash -c' 'script'` 会被登录 shell 重新按空格拆分——实测两次：hygiene 的第一个探针死于 `then`，备份的 dump 收到裸 `set`（落地的"db.sql.gz"是环境清单）。本地演练从不走远程分支。
+  - **发布去服务 VPS，不去站主机**：`services --run` 现在 rsync 到 `linker-services`（新增 ssh 别名 = 服务 VPS 的 root，与 `hostinger-de-linker` 同风格）。`release.sh` 在它运行的机器上取源、`/opt` 在服务 VPS 上，而站主机是共享主机普通用户（`/root` 不可写）；此前该步在两种目标上都跑不通，演练也从未跑到第 5 步。暂存根 `plan.SERVICES_STAGING`，先 ssh `mkdir -p`（macOS 的 openrsync 建不了多级目标）。
+  - **发布排除 `.venv` 与缓存**：本机 678 MB 的 arm64 虚拟环境随船一次即被断线；主机用自己的 uv `--frozen` 建环境。
+  - **备份/恢复脚本内的 WP-CLI 用 `Target.wp_on_target()`**：脚本按本文"一段脚本两个目标"在机器本机运行，内嵌 ssh 前缀在站主机上解析不了别名（实测：`Could not resolve hostname`）。远端形式 = `/usr/local/bin/wp --path=<root>`（cd 变成 `--path`，无传输层）；脚本内以 bash 数组构建（`wp=(…)` + `"${wp[@]}"`），字符串 + 无引号 `$wp` 会把前缀拆散。
+  - **远程目录拷贝分块**：主机掐长传输（uploads 2.6 GB / 约 8 分钟即断，实测两次）。`copy_out` 先一次 ssh 列出块（一级文件 + 二级目录：uploads 的月、插件的子目录），每块一条 tar 流、一条独立连接。
+  - **§5 的运行面**（本文此前只写"发布…并写入地址"，没有写"谁把它跑起来"）：服务 VPS 上两个 systemd 单元——`linker-engine.service`（`/opt/linker-engine/current/.venv/bin/python -m uvicorn linker_engine.app:app --port 8901`，与既有 8443 TLS 入口复用）与 `linker-genie.service`（127.0.0.1:8902，经同一 8443 入口的 `location /genie/` 对外）；环境文件 `/etc/linker-engine.env`（`LINKER_ENGINE_FEED`、`LINKER_ENGINE_COMPATIBILITY`、`LINKER_ENGINE_CORS_ORIGINS=https://de-linker.com`）与 `/etc/linker-genie.env`（`GENIE_WP_URL`）；模型密钥走既有的 `~/.config/terravolt-builder/*.env` 回退路径（服务端安装，600）。引擎的 feed 在数据步之后从线上 `linker/v1/engineering-feed` 取（该路由随新插件部署才存在）。
 - 2026-10-13（C15）：§4 的数据步在 `7-facts.py` 之后再跑同一写入器，计划是 `tools/migrate/c15-facts.json`。那份计划覆盖 #7 计划里没有的五台相位与功率；不进数据步就只存在于仓库，切换时落不了地。
 - 2026-10-09（#5）：切换时写入两个选项，指向 VPS 上的服务：`linker_engine_url`（#14 的引擎）与 `linker_genie_url`（#13 的 Genie）。本地由 `just serve` 写入同名选项。
 - 2026-10-11（#81）：脚本落在 `tools/cutover/`（uv 项目 `linker-cutover`，just 模块 `tools/cutover/cutover.just`），第 1–8 步各是一个可单独重跑的子命令；`just cutover drill <实例>` 在一台本地实例上跑完整切换、回滚、再切换，并写出 `docs/acceptance/<date>/17/drill.json`。同一份代码两个目标：`--target local:<实例>` 与默认的生产主机（`ssh hostinger-de-linker`），因此演练证明的是窗口里要跑的那份代码，不是一套排练装置。对本文的偏差与补给，逐条各有理由：
