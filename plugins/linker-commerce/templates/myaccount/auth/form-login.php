@@ -14,10 +14,13 @@ defined( 'ABSPATH' ) || exit;
 
 use Linker\Commerce\Account\AuthTemplates;
 
+ob_start();
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-login.php.
 do_action( 'woocommerce_before_customer_login_form' );
-
-$registration = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
+$auth_notices = (string) ob_get_clean();
+// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Presentation only; Woo owns verification and processing.
+$register_notice = isset( $_POST['register'] );
+$registration    = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
 ?>
 <div class="linker-auth" id="customer_login">
 	<section class="linker-auth-card" aria-labelledby="linker-auth-signin">
@@ -26,6 +29,12 @@ $registration = 'yes' === get_option( 'woocommerce_enable_myaccount_registration
 			<p><?php esc_html_e( 'Your inquiries, documents and prices in one place.', 'linker-commerce' ); ?></p>
 		</header>
 
+		<?php
+		if ( ! $register_notice ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Woo's notice markup, kept intact beside the form it belongs to.
+			echo $auth_notices;
+		}
+		?>
 		<form class="woocommerce-form woocommerce-form-login login" method="post" novalidate>
 
 			<?php
@@ -71,6 +80,9 @@ $registration = 'yes' === get_option( 'woocommerce_enable_myaccount_registration
 			?>
 
 		</form>
+		<?php if ( $registration ) : ?>
+			<p class="linker-auth-links linker-auth-mobile-links"><a href="#linker-register"><?php esc_html_e( 'Create your business account', 'linker-commerce' ); ?></a></p>
+		<?php endif; ?>
 	</section>
 
 	<?php if ( $registration ) : ?>
@@ -80,7 +92,13 @@ $registration = 'yes' === get_option( 'woocommerce_enable_myaccount_registration
 			<p><?php esc_html_e( 'We review every new account before activation.', 'linker-commerce' ); ?></p>
 		</header>
 
-		<form method="post" class="woocommerce-form woocommerce-form-register register" <?php do_action( 'woocommerce_register_form_tag' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-login.php. ?> >
+		<?php
+		if ( $register_notice ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Woo's notice markup, kept intact beside the form it belongs to.
+			echo $auth_notices;
+		}
+		?>
+		<form method="post" action="#linker-register" class="woocommerce-form woocommerce-form-register register" <?php do_action( 'woocommerce_register_form_tag' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-login.php. ?> >
 
 			<?php $register_blocks = AuthTemplates::register_field_blocks(); ?>
 
@@ -133,6 +151,14 @@ $registration = 'yes' === get_option( 'woocommerce_enable_myaccount_registration
 			do_action( 'woocommerce_register_form' );
 			?>
 
+			<p class="linker-auth-links linker-auth-legal">
+				<?php if ( wc_get_page_id( 'terms' ) > 0 ) : ?>
+					<a href="<?php echo esc_url( wc_get_page_permalink( 'terms' ) ); ?>"><?php esc_html_e( 'Terms of Sale', 'linker-commerce' ); ?></a>
+				<?php endif; ?>
+				<?php if ( get_privacy_policy_url() ) : ?>
+					<a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy', 'linker-commerce' ); ?></a>
+				<?php endif; ?>
+			</p>
 			<p class="woocommerce-form-row form-row linker-auth-submit">
 				<?php wp_nonce_field( 'woocommerce-register', 'woocommerce-register-nonce' ); ?>
 				<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>

@@ -29,6 +29,56 @@ final class Checkout {
 	public function __construct( private readonly Approval $approval = new Approval() ) {}
 
 	/**
+	 * Keep Woo's checkout error notice beside the invalid field on mobile,
+	 * without its one-second page-scroll animation. Validation and notice
+	 * lifecycle stay Woo's own; desktop retains the original scroll handler.
+	 */
+	public function feedback(): void {
+		if ( ! is_checkout() || is_wc_endpoint_url( 'order-received' ) ) {
+			return;
+		}
+		wp_add_inline_script(
+			'wc-checkout',
+			<<<'JS'
+jQuery(function ($) {
+	const nativeScroll = $.scroll_to_notices;
+	$.scroll_to_notices = function (notice) {
+		const form = document.querySelector('#tv-woo-b2b-checkout form.checkout');
+		if (!form || !window.matchMedia('(max-width: 639px)').matches) {
+			if (nativeScroll) nativeScroll(notice);
+			return;
+		}
+		const row = form.querySelector('.woocommerce-invalid');
+		if (row && notice && notice.length) {
+			row.appendChild(notice[0]);
+			notice.find('.woocommerce-error').removeAttr('tabindex');
+			const input = row.querySelector('input, select, textarea');
+			if (input) input.focus({ preventScroll: true });
+		}
+	};
+});
+JS
+		);
+	}
+
+	/**
+	 * Woo review fragments render outside the page URL. Read the same hidden
+	 * language field as the final checkout, after Woo verified its nonce, and
+	 * switch through WordPress so Woo's and this plugin's translations agree.
+	 * Runs on woocommerce_checkout_update_order_review.
+	 *
+	 * @param string $posted Serialized checkout fields.
+	 */
+	public function review_language( string $posted ): void {
+		parse_str( $posted, $values );
+		$language = $values['lang'] ?? '';
+		if ( ! is_string( $language ) || ! in_array( $language, array( 'en', 'de' ), true ) ) {
+			return;
+		}
+		switch_to_locale( 'de' === $language ? 'de_DE_formal' : 'en_US' );
+	}
+
+	/**
 	 * Only the Proforma gateway is offered, and only to accounts that may send;
 	 * runs on woocommerce_available_payment_gateways.
 	 *
@@ -80,6 +130,13 @@ final class Checkout {
 	 * What happens next, on the confirmation page; runs on woocommerce_thankyou_linker_proforma.
 	 */
 	public function next_steps(): void {
+		printf(
+			'<section class="linker-form-success linker-proforma-success woocommerce-message" role="status"><span class="linker-form-state-icon" aria-hidden="true">✓</span><h2>%1$s</h2><p>%2$s</p><a class="linker-form-primary" href="%3$s">%4$s</a></section>',
+			esc_html__( 'Inquiry received', 'linker-commerce' ),
+			esc_html__( 'We reply within one business day.', 'linker-commerce' ),
+			esc_url( wc_get_account_endpoint_url( 'orders' ) ),
+			esc_html__( 'View inquiries', 'linker-commerce' )
+		);
 		printf(
 			'<p class="linker-next-steps">%1$s</p><p class="linker-next-steps">%2$s</p>',
 			esc_html__( 'We reply within one business day.', 'linker-commerce' ),

@@ -3409,6 +3409,18 @@ msgstr "Die USt-IdNr.-Prüfung von %1$s (USt-IdNr. %2$s) hat sich geändert."
 msgid "Before: %1$s. Now: %2$s."
 msgstr "Vorher: %1$s. Jetzt: %2$s."
 
+#: includes/Contact/Form.php
+msgid "Send another message"
+msgstr "Weitere Nachricht senden"
+
+#: includes/Inquiry/Checkout.php
+msgid "View inquiries"
+msgstr "Anfragen ansehen"
+
+#: templates/myaccount/auth/form-login.php
+msgid "Terms of Sale"
+msgstr "Verkaufsbedingungen"
+
 #: templates/myaccount/auth/form-login.php:26
 msgid "Your inquiries, documents and prices in one place."
 msgstr "Ihre Anfragen, Dokumente und Preise an einem Ort."

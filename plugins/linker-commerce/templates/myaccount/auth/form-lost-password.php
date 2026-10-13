@@ -10,8 +10,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
+ob_start();
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-lost-password.php.
 do_action( 'woocommerce_before_lost_password_form' );
+$auth_notices = (string) ob_get_clean();
 ?>
 <div class="linker-auth">
 	<section class="linker-auth-card" aria-labelledby="linker-auth-reset">
@@ -20,6 +22,7 @@ do_action( 'woocommerce_before_lost_password_form' );
 			<p><?php echo apply_filters( 'woocommerce_lost_password_message', esc_html__( 'Lost your password? Please enter your username or email address. You will receive a link to create a new password via email.', 'woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment,WordPress.WP.I18n.TextDomainMismatch -- Woo's own filtered message, its text domain and its filter, escaped by its default. ?></p>
 		</header>
 
+		<?php echo $auth_notices; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Woo's own notice markup, kept intact and local to the reset form. ?>
 		<form method="post" class="woocommerce-ResetPassword lost_reset_password">
 
 			<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">

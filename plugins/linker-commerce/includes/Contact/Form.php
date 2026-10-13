@@ -78,8 +78,12 @@ final class Form {
 	 */
 	public function render( $atts = array() ): string {
 		unset( $atts );
-		$field = 'block w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-normal text-[#15372f] focus:border-[#0c7f73] focus:outline-none';
-		$label = 'grid gap-1 text-sm font-semibold text-[#15372f]';
+		$field = 'linker-form-input';
+		$label = 'linker-form-label';
+		$state = $this->state_message();
+		if ( str_contains( $state, 'linker-form-success' ) ) {
+			return '<div class="linker-contact-form">' . $state . '</div>';
+		}
 
 		$html  = '<form class="linker-contact-form grid gap-5" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
@@ -87,7 +91,6 @@ final class Form {
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, true, false );
 
-		$state = $this->state_message();
 		if ( '' !== $state ) {
 			$html .= $state;
 		}
@@ -104,7 +107,7 @@ final class Form {
 		. '<input class="' . esc_attr( $field ) . '" type="email" name="email" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="email" required /></label>';
 
 		$privacy = get_privacy_policy_url();
-		$html   .= '<label class="flex items-start gap-3 text-xs text-neutral-600"><input class="mt-1" type="checkbox" name="consent" value="1" required />'
+		$html   .= '<label class="linker-form-consent flex items-start gap-3 text-xs text-neutral-600"><input class="mt-1" type="checkbox" name="consent" value="1" required />'
 		. '<span>' . esc_html__( 'I agree that my details may be used to respond to this message.', 'linker-commerce' );
 		if ( '' !== $privacy ) {
 			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '">' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
@@ -113,7 +116,7 @@ final class Form {
 
 		$html .= '<div hidden aria-hidden="true"><label>' . esc_html__( 'Website', 'linker-commerce' ) . '<input type="text" name="' . esc_attr( self::TRAP_FIELD ) . '" tabindex="-1" autocomplete="off" /></label></div>';
 
-		$html .= '<div class="grid gap-2"><button type="submit" class="min-h-11 justify-self-start rounded-lg bg-[#0c7f73] px-5 py-2 text-sm font-semibold text-white">' . esc_html__( 'Send message', 'linker-commerce' ) . '</button>'
+		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '</button>'
 		. '<p class="text-xs text-neutral-500">' . esc_html__( 'Your message goes to the Linker team. We reply to the address you give here.', 'linker-commerce' ) . '</p></div>';
 		$html .= '</form>';
 		return $html;
@@ -123,7 +126,7 @@ final class Form {
 	 * The state message of the last submission, '' when the form opens fresh.
 	 */
 	private function state_message(): string {
-     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
 		return match ( $state ) {
 			'sent'      => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
@@ -140,10 +143,13 @@ final class Form {
 	 * @param string $text The message.
 	 */
 	private function notice( string $kind, string $text ): string {
-		$classes = 'sent' === $kind
-		? 'rounded-lg border border-[#0c7f73]/30 bg-[#0c7f73]/5 px-4 py-3 text-sm text-[#15372f]'
-		: 'rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900';
-		return '<p class="' . esc_attr( $classes ) . '" role="status">' . esc_html( $text ) . '</p>';
+		if ( 'sent' === $kind ) {
+			return '<section class="linker-form-success woocommerce-message" role="status">'
+				. '<span class="linker-form-state-icon" aria-hidden="true">✓</span>'
+				. '<p>' . esc_html( $text ) . '</p>'
+				. '<a class="linker-form-primary" href="' . esc_url( $this->current_url() . '#' . self::ANCHOR ) . '">' . esc_html__( 'Send another message', 'linker-commerce' ) . '</a></section>';
+		}
+		return '<div class="linker-form-error woocommerce-error" role="alert"><span class="linker-form-state-icon" aria-hidden="true">!</span><p>' . esc_html( $text ) . '</p></div>';
 	}
 
 	/**

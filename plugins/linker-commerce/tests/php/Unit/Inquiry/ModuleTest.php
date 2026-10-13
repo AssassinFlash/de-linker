@@ -51,6 +51,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order', array( $checkout, 'without_payment_method_title' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order', array( $locale, 'remember' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_after_order_notes', array( $checkout, 'language_field' ) );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $checkout, 'feedback' ) );
+		WP_Mock::expectActionAdded( 'woocommerce_checkout_update_order_review', array( $checkout, 'review_language' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_review_order_before_submit', array( $checkout, 'reply_promise' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_thankyou_' . ProformaGateway::ID, array( $checkout, 'next_steps' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_checkout_order_received_url', array( $checkout, 'received_url' ), 10, 2 );
