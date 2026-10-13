@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Tests\Unit;
 
 use Linker\Tools\Assets;
+use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
@@ -28,6 +29,7 @@ use WP_Mock\Tools\TestCase;
  * @covers \Linker\Tools\Plugin
  */
 final class PluginTest extends TestCase {
+
 
 	private const FILE = '/srv/www/wp-content/plugins/linker-tools/linker-tools.php';
 
@@ -60,6 +62,7 @@ final class PluginTest extends TestCase {
 			}
 		};
 		$windpress     = new WindPress();
+		$mount         = new Mount();
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -73,9 +76,17 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( Retention::HOOK, array( $retention, 'sweep' ) );
 		WP_Mock::expectActionAdded( Retention::DELETE_HOOK, array( $retention, 'delete' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
+		// The configurator page's LiveCanvas template prints this shortcode.
+		WP_Mock::userFunction(
+			'add_shortcode',
+			array(
+				'times' => 1,
+				'args'  => array( 'linker_configurator', array( $mount, 'shortcode' ) ),
+			)
+		);
 		WP_Mock::userFunction( 'register_deactivation_hook' );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );

@@ -61,6 +61,31 @@ final class Templates {
 	);
 
 	/**
+	 * Page types whose German page carries an export of its own, keyed by the
+	 * LiveCanvas assignment meta of the English template.
+	 *
+	 * A Woo page type is not a page: LiveCanvas looks its assignment up in the
+	 * request's language (livecanvas 4.9.3 modules/templating.php,
+	 * lc_get_template_id(), whose get_posts() Polylang narrows to the current
+	 * language). The English post is the anchor and the German page type
+	 * renders through the anchor's German twin, so a German export belongs on
+	 * the twin — the same write the German header partial gets. The four
+	 * structural page types need none: their markup is shortcodes and their
+	 * words come out of the shortcodes' own translations, and
+	 * Linker\I18n\DynamicTemplates answers a German request with the English
+	 * template when no German one exists. The product page prints a model's
+	 * breadcrumb, section titles and tab labels — words of its own — and it is
+	 * the page both languages show, so it has a German markup file
+	 * (content/livecanvas/de/single_product.html). Measured 2026-10-13 on the
+	 * review instance before this: /product/<slug>/ rendered the export by
+	 * template 234 while /de/produkt/<slug>/ fell through to the legacy
+	 * template the snapshot carried, because nothing ever wrote that twin.
+	 */
+	private const DE_FILES = array(
+		'is_single_product' => 'de/single_product',
+	);
+
+	/**
 	 * Templates of single pages, by template slug (the LiveCanvas post name):
 	 * file, title, the page slug they render and that page's language. A page
 	 * of this kind is not a Woo page type — it is one page, and LiveCanvas
@@ -71,12 +96,20 @@ final class Templates {
 	 * (docs/specs/19-tool-pages.md).
 	 */
 	private const PAGES = array(
-		'linker-compare'    => array( 'compare_page', 'Compare products', 'compare-products', 'en' ),
-		'linker-compare-de' => array( 'de/compare_page', 'Produkte vergleichen', 'compare-products', 'de' ),
-		'linker-faq'        => array( 'faq_page', 'FAQ & documents', 'faq-download', 'en' ),
-		'linker-faq-de'     => array( 'de/faq_page', 'FAQ & Dokumente', 'faq-download', 'de' ),
-		'linker-advisor'    => array( 'advisor_page', 'Genie', 'linker-advisor', 'en' ),
-		'linker-advisor-de' => array( 'de/advisor_page', 'Genie', 'linker-berater', 'de' ),
+		'linker-compare'         => array( 'compare_page', 'Compare products', 'compare-products', 'en' ),
+		'linker-compare-de'      => array( 'de/compare_page', 'Produkte vergleichen', 'compare-products', 'de' ),
+		'linker-faq'             => array( 'faq_page', 'FAQ & documents', 'faq-download', 'en' ),
+		'linker-faq-de'          => array( 'de/faq_page', 'FAQ & Dokumente', 'faq-download', 'de' ),
+		'linker-advisor'         => array( 'advisor_page', 'Genie', 'linker-advisor', 'en' ),
+		'linker-advisor-de'      => array( 'de/advisor_page', 'Genie', 'linker-berater', 'de' ),
+		// The Solution Configurator's page: the tool is a React app and the
+		// template prints its mount point, so the page needs this template
+		// instead of the application markup the old site stored in its body
+		// (docs/specs/14-solution-configurator.md). The page slug stays
+		// `linker-planner`; the German page is `/de/linker-planer/`. One file
+		// serves both languages: the mount and its words come from the app.
+		'linker-configurator'    => array( 'configurator_page', 'Solution Configurator', 'linker-planner', 'en' ),
+		'linker-configurator-de' => array( 'configurator_page', 'Lösungskonfigurator', 'linker-planer', 'de' ),
 	);
 
 		/**
@@ -130,6 +163,9 @@ final class Templates {
 		foreach ( self::PAGES as $slug => $page ) {
 			$out[ $slug ] = $dir . $page[0] . '.html';
 		}
+		foreach ( self::DE_FILES as $meta => $file ) {
+			$out[ $meta . '__de' ] = $dir . $file . '.html';
+		}
 		return $out;
 	}
 
@@ -139,9 +175,11 @@ final class Templates {
 	 * @param list<string>|null $header_partials Header exports to install, the two
 	 *                                           files from header_partials() when null.
 	 *                                           Proved non-empty before any write.
-	 * @return array{created: int, updated: int, unchanged: int, created_ids: list<int>}
+	 * @return array{created: int, updated: int, unchanged: int, created_ids: list<int>, de_twins_updated: int, de_twins_missing: list<string>}
 	 *         The ids of the posts this sync created (a rollback deletes them;
-	 *         the ones it only updated keep their pre-run content in the backup).
+	 *         the ones it only updated keep their pre-run content in the backup),
+	 *         the German page-type twins it wrote, and the page types whose twin
+	 *         this site does not have (see sync_page_type_twins()).
 	 * @throws \RuntimeException When a header source is missing or empty, or WordPress refuses a template insert.
 	 */
 	public function sync( ?array $header_partials = null ): array {
@@ -201,19 +239,23 @@ final class Templates {
 				$unchanged        += $report['unchanged'];
 				$this->created_ids = array_merge( $this->created_ids, $report['created_ids'] );
 		}
-				$this->assign_pages();
-				$updated += $this->sync_header_partials( $header_partials );
-				// After the header write. A missing German header twin refuses
-				// the run before the footer is touched, so a header refusal does
-				// not also create footer posts.
-				$updated += $this->sync_footer_partials();
+		$this->assign_pages();
+		$twins    = $this->sync_page_type_twins();
+		$updated += $twins['updated'];
+		$updated += $this->sync_header_partials( $header_partials );
+		// After the header write. A missing German header twin refuses
+		// the run before the footer is touched, so a header refusal does
+		// not also create footer posts.
+		$updated += $this->sync_footer_partials();
 
-			return array(
-				'created'     => $created,
-				'updated'     => $updated,
-				'unchanged'   => $unchanged,
-				'created_ids' => $this->created_ids,
-			);
+		return array(
+			'created'          => $created,
+			'updated'          => $updated,
+			'unchanged'        => $unchanged,
+			'created_ids'      => $this->created_ids,
+			'de_twins_updated' => $twins['updated'],
+			'de_twins_missing' => $twins['missing'],
+		);
 	}
 
 	/**
@@ -468,7 +510,7 @@ final class Templates {
 		 */
 	private function german_header_twin( int $english ): int {
 		if ( function_exists( 'pll_get_post' ) ) {
-			return (int) pll_get_post( $english, 'de' );
+			return $this->german_twin( $english );
 		}
 		$posts = get_posts(
 			array(
@@ -481,6 +523,23 @@ final class Templates {
 			)
 		);
 		return isset( $posts[0] ) ? (int) $posts[0]->ID : 0;
+	}
+
+	/**
+	 * The German twin of an English post, by Polylang's translation group, or 0.
+	 *
+	 * The one lookup every German twin goes through. There is no slug fallback
+	 * here: the German post's name is derived from its German title (Twins), so
+	 * a same-slug lookup would miss it, and without the language layer there is
+	 * no German page type for a twin to serve.
+	 *
+	 * @param int $english English post id.
+	 */
+	private function german_twin( int $english ): int {
+		if ( ! function_exists( 'pll_get_post' ) ) {
+			return 0;
+		}
+		return (int) pll_get_post( $english, 'de' );
 	}
 
 	/**
@@ -563,6 +622,68 @@ final class Templates {
 			}
 			update_post_meta( $id, 'lc_use_template_of_slug', $slug );
 		}
+	}
+
+	/**
+	 * Writes each German page-type export into its template's German twin.
+	 *
+	 * The English post is the anchor: it carries the LiveCanvas assignment,
+	 * and on a German page LiveCanvas looks that assignment up in the request's
+	 * language, so the German page type renders through the anchor's German
+	 * twin (modules/templating.php under Polylang's language-scoped query). A
+	 * twin that already holds the file is left alone, so a second run writes
+	 * nothing.
+	 *
+	 * A page type without a twin is reported, not guessed at: this site has no
+	 * German page type for that export to serve (no Polylang, or no German
+	 * language), and inventing one here would make a translation decision this
+	 * class does not own. present() prints the list.
+	 *
+	 * @return array{updated: int, missing: list<string>} Twins written, and the
+	 *         LiveCanvas meta keys whose anchor has no German twin.
+	 * @throws \RuntimeException When WordPress refuses the update.
+	 */
+	private function sync_page_type_twins(): array {
+		$updated = 0;
+		$missing = array();
+		foreach ( self::DE_FILES as $meta => $file ) {
+			$anchor = $this->existing_id( $meta );
+			if ( 0 === $anchor ) {
+				continue; // No English template of this page type: nothing to twin.
+			}
+			$twin = $this->german_twin( $anchor );
+			if ( 0 === $twin ) {
+				// Only a site with a language layer can be missing a German
+				// page type; without one the German export has nothing to
+				// serve, and its absence is not a gap to report.
+				if ( function_exists( 'pll_get_post' ) ) {
+					$missing[] = $meta;
+				}
+				continue;
+			}
+			$html = Tokens::read( dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/' . $file . '.html' );
+			$post = get_post( $twin );
+			if ( $post instanceof WP_Post && $post->post_content === $html ) {
+				continue;
+			}
+			$result = wp_update_post(
+				array(
+					'ID'           => $twin,
+					'post_content' => wp_slash( $html ),
+					'post_status'  => 'publish',
+				),
+				true
+			);
+			if ( is_wp_error( $result ) ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- an exception message for the operator log, not page output.
+				throw new \RuntimeException( sprintf( 'wp_update_post refused the German twin %d of the %s template: %s', $twin, $meta, $result->get_error_message() ) );
+			}
+			++$updated;
+		}
+		return array(
+			'updated' => $updated,
+			'missing' => $missing,
+		);
 	}
 
 	/**
