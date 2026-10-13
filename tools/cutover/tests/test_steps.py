@@ -543,6 +543,9 @@ def test_each_migration_gets_its_options_where_argparse_expects_them(
     assert german.index("--user") < german.index("apply")
     assert german[german.index("--user") + 1] == "admin"
     assert german[-1] == "--write"
+    # The migration writes its values-backup into this directory and does not
+    # create it; the caller owns the path it hands over.
+    assert (tmp_path / "migrate").is_dir()
 
 
 def test_the_production_target_gets_the_write_allowance_and_a_failure_stops(

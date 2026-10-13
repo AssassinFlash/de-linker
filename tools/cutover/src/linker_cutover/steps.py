@@ -395,6 +395,13 @@ def migrations(
     """
     actions: list[str] = []
     notes: list[str] = []
+    # The migration writes its backup OF the current values into this
+    # directory, and it does not create it: the caller owns the path it hands
+    # over (measured 2026-10-14 — 7-facts died with FileNotFoundError on a
+    # `migrate/` nothing had made, before it wrote anything, which is why the
+    # site kept its old values).
+    backup_dir = Path(backup) / "migrate"
+    backup_dir.mkdir(parents=True, exist_ok=True)
     for migration in plan.MIGRATIONS:
         script = Path(repository) / "tools" / "migrate" / migration.script
         if not script.is_file():
@@ -403,7 +410,7 @@ def migrations(
         if migration.needs_admin and administrator:
             command += ["--user", administrator]
         if migration.needs_backup_dir:
-            command += ["--backup-dir", str(Path(backup) / "migrate")]
+            command += ["--backup-dir", str(backup_dir)]
         # A plan path in the options is repository-relative. The cutover is not
         # run from the repository root, so the writer must get an absolute path.
         options = list(migration.options)
