@@ -21,7 +21,7 @@
  * block of the results column, under the pagination, on the shop and on every
  * category page — a soft panel with the page as the request's context
  * (measured on the live catalogue 2026-10-12 at 1440: 958×145.67, margin
- * 36/20, padding 26/30, radius 14, bg #f4f8f6, line #cfded9, gap 30; at 390:
+ * 36/20, padding 26/30, radius 14, bg #f7f8f9, line #d7dce1, gap 30; at 390:
  * column, padding 23, gap 20).
  *
  * Every rule is scoped to the catalogue root, because storefront.css
@@ -46,9 +46,9 @@
 	max-width: 1200px;
 	margin: 36px auto;
 	padding: 26px 30px;
-	border: 1px solid #cfded9;
+	border: 1px solid #d7dce1;
 	border-radius: 14px;
-	background: #f4f8f6;
+	background: #f7f8f9;
 	color: #203a32;
 	font-family: system-ui, sans-serif;
 	font-size: 14px;

@@ -8,7 +8,7 @@
 #tv-header-v2 .tv-b2b-acct-menu[hidden]{display:none}
 #tv-header-v2 .tv-b2b-acct-menu::before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px}
 #tv-header-v2 .tv-b2b-acct-link{display:flex;align-items:center;gap:9px;box-sizing:border-box;min-height:41px;padding:9px 11px;border:1px solid transparent;border-radius:9px;color:#172636;font-size:13.5px;font-weight:600;line-height:1.5;text-decoration:none}
-#tv-header-v2 .tv-b2b-acct-link:hover{background:#f3f7f2;border-color:#d6ded7}
+#tv-header-v2 .tv-b2b-acct-link:hover{background:#f5f6f8;border-color:#d7dde4}
 #tv-header-v2 .tv-b2b-acct-link.is-out{color:#b42318}
 #tv-header-v2 .tv-b2b-acct-count{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#0c7f73;color:#fff;font-size:10px;font-weight:700;line-height:1}
 #tv-header-v2 .lnk-lang-toggle{display:inline-flex;align-items:center;gap:0;flex-shrink:0;width:88px;height:44px;font-size:13px;font-weight:600;line-height:1;color:#0f172a}

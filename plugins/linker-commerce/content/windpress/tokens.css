@@ -49,18 +49,18 @@
 --proto-sem-ok: #2a7a58;
   --proto-sem-warn: #c4a04a;
   --proto-sem-danger: #b85a45;
---proto-media-1: linear-gradient(135deg, #7aa39a 0%, #c5d5c8 46%, #8b9e8a 100%);
-  --proto-media-2: linear-gradient(160deg, #9bb7b2 0%, #dfe8e4 52%, #6d8f88 100%);
-  --proto-media-3: linear-gradient(180deg, #b7c4b0 0%, #8a9e96 100%);
-  --proto-media-4: linear-gradient(210deg, #c9d4c6 0%, #a3b7b0 55%, #6f8880 100%);
+--proto-media-1: linear-gradient(135deg, #8aa0ae 0%, #cbd6dd 46%, #7d8f9c 100%);
+  --proto-media-2: linear-gradient(160deg, #9db2bf 0%, #e2e8ec 52%, #6f8794 100%);
+  --proto-media-3: linear-gradient(180deg, #b6c3cc 0%, #879aa6 100%);
+  --proto-media-4: linear-gradient(210deg, #c8d2d8 0%, #a3b2bc 55%, #6f8792 100%);
 /* Pairing A · Plus Jakarta Sans 全阶 · display 600 · 字距近 0 */
   --proto-font-display: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
   --proto-font-sans: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   /* Editorial layer: opt in on narrative pages without changing the trade UI. */
   --proto-font-editorial: "DM Serif Display", Georgia, serif;
-  --proto-editorial-paper: #f5f1e8;
-  --proto-editorial-sage: #ecefe4;
-  --proto-editorial-mint: #dfe9dc;
+  --proto-editorial-paper: #f3f5f7;
+  --proto-editorial-sage: #e9edf1;
+  --proto-editorial-mint: #dfe6ec;
   --proto-font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 --proto-weight-regular: 400;
   --proto-weight-medium: 500;
@@ -173,11 +173,11 @@
      Additive only — nothing above changes, so storefront.css consumers are safe. */
   --proto-ink-deep: #15352f;         /* journal ink · deep photo green */
   --proto-ink-muted-deep: #596e67;   /* journal muted text */
-  --proto-paper-journal: #f7f7f1;    /* journal page background */
-  --proto-paper-mist: #edf1ed;       /* marketing pale-green background */
-  --proto-paper-mist-deep: #e1e8e1;  /* same family, one step deeper */
-  --proto-line-journal: #d6ded7;     /* journal hairline */
-  --proto-mint: #d8ede4;             /* journal mint panel */
+  --proto-paper-journal: #f6f8fa;    /* journal page background */
+  --proto-paper-mist: #edf1f5;       /* marketing pale cool-grey background */
+  --proto-paper-mist-deep: #e1e7ee;  /* same family, one step deeper */
+  --proto-line-journal: #d7dde4;     /* journal hairline */
+  --proto-mint: #d9e6ef;             /* journal mint panel */
   --proto-navy-deep: #102c30;        /* journal dark footer band */
 --proto-radius-card: 18px;         /* journal cards (was hardcoded 18px) */
   --proto-radius-panel: 22px;        /* journal feature panels (was hardcoded 22px) */
