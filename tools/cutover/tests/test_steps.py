@@ -24,11 +24,13 @@ from linker_cutover.target import CutoverError, Target
 class FakeTarget(Target):
     """A Target that records instead of running, for the steps that only build commands."""
 
-    def __init__(self, root: Path) -> None:  # noqa: D107 - a fixture, not a public type
+    def __init__(  # noqa: D107 - a fixture, not a public type
+        self, root: Path, *, base_url: str = "http://127.0.0.1:9999"
+    ) -> None:
         super().__init__(
             label="fake",
             root=str(root),
-            base_url="http://127.0.0.1:9999",
+            base_url=base_url,
             prefix=("wp",),
             shell_prefix=None,
             rsync_remote=None,
@@ -530,6 +532,7 @@ def test_each_migration_gets_its_options_where_argparse_expects_them(
     assert "--backup-dir" in facts
     assert "--plan" not in facts
     assert facts[-1] == "--write"
+    assert "--production" not in facts, "a local instance never gets the allowance"
     phase = seen[1]
     assert phase[1].endswith("7-facts.py")
     assert phase[phase.index("--plan") + 1].endswith("tools/migrate/c15-facts.json")
@@ -540,6 +543,45 @@ def test_each_migration_gets_its_options_where_argparse_expects_them(
     assert german.index("--user") < german.index("apply")
     assert german[german.index("--user") + 1] == "admin"
     assert german[-1] == "--write"
+
+
+def test_the_production_target_gets_the_write_allowance_and_a_failure_stops(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Measured 2026-10-14: without `--production` the facts migrations refused,
+    the step filed the refusal as a note, and the recipe exited 0 while nothing
+    had been written. The guarded migrations get the flag on the production
+    host only; any nonzero exit is the failure it is.
+    """
+    repository = tmp_path / "repo"
+    (repository / "tools" / "migrate").mkdir(parents=True)
+    for migration in plan.MIGRATIONS:
+        (repository / "tools" / "migrate" / migration.script).write_text(
+            "", encoding="utf-8"
+        )
+
+    seen: list[list[str]] = []
+    codes = iter([0, 0, 0, 0])
+
+    def record(command: list[str], **kwargs: object) -> object:
+        del kwargs
+        seen.append(list(command))
+        return SimpleNamespace(returncode=next(codes))
+
+    monkeypatch.setattr("subprocess.run", record)
+    target = FakeTarget(tmp_path, base_url="https://de-linker.com")
+    steps.migrations(
+        repository, target, backup=tmp_path, administrator="admin", writes=True
+    )
+    assert all("--production" in command for command in seen[:3])
+    assert "--production" not in seen[3], "9-i18n has no such guard"
+
+    codes = iter([0, 1, 0, 0])
+    seen.clear()
+    with pytest.raises(CutoverError, match="7-facts.py exited 1"):
+        steps.migrations(
+            repository, target, backup=tmp_path, administrator="admin", writes=True
+        )
 
 
 def test_the_deploy_installs_polylang_and_activates_the_three() -> None:

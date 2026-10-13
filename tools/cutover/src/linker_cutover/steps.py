@@ -24,7 +24,7 @@ from pathlib import Path
 
 from linker_cutover import backup as backup_module
 from linker_cutover import plan
-from linker_cutover.target import CutoverError, Target, wp_prefix_for
+from linker_cutover.target import HOST_URL, CutoverError, Target, wp_prefix_for
 
 
 @dataclass(frozen=True)
@@ -414,15 +414,24 @@ def migrations(
         command += list(migration.subcommand)
         if writes:
             command.append("--write")
+        # The host is decided by the target, not by the flag: a drill against a
+        # local instance must never get the production write-allowance, and the
+        # migration's own guard compares the site's siteurl, not the machine.
+        if migration.production_guard and target.base_url == HOST_URL:
+            command.append("--production")
         print("data: " + " ".join(shlex.quote(part) for part in command))
         completed = subprocess.run(command, check=False)
         actions.append(
             f"{migration.script} {'--write' if writes else '(plan)'} exit {completed.returncode}"
         )
-        if completed.returncode not in (0, 1):
-            raise CutoverError(f"{migration.script} exited {completed.returncode}")
-        if completed.returncode == 1:
-            notes.append(f"{migration.script} exited 1")
+        if completed.returncode != 0:
+            # Both exits of these scripts are defined: 0 is done (or the plan
+            # found no drift), 1 is drift, a refusal or an unfinished write.
+            # A window run of 2026-10-14 tolerated the 1s as notes and the
+            # step read as green while nothing had been written.
+            raise CutoverError(
+                f"{migration.script} exited {completed.returncode} on {target.label}"
+            )
     return Result("data", actions, notes)
 
 

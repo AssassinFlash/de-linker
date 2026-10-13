@@ -134,6 +134,11 @@ class Migration:
     needs_backup_dir: bool = False
     # Steps that act as an administrator need a login.
     needs_admin: bool = False
+    # The migration refuses to write to the production host without
+    # `--production` (its own guard; measured 2026-10-14 — a window run without
+    # the flag writes nothing). The step adds the flag exactly when the target
+    # IS the production host.
+    production_guard: bool = False
 
 
 # In order (spec 17 §4). `--write` is added by the step when it writes.
@@ -141,13 +146,14 @@ class Migration:
 # does not cover. It has to run in this list: a file the cutover never names
 # does not land.
 MIGRATIONS = (
-    Migration("7-facts.py", needs_backup_dir=True),
+    Migration("7-facts.py", needs_backup_dir=True, production_guard=True),
     Migration(
         "7-facts.py",
         options=("--plan", "tools/migrate/c15-facts.json"),
         needs_backup_dir=True,
+        production_guard=True,
     ),
-    Migration("8-engineering.py", needs_backup_dir=True),
+    Migration("8-engineering.py", needs_backup_dir=True, production_guard=True),
     Migration("9-i18n.py", subcommand=("apply",), needs_admin=True),
 )
 
