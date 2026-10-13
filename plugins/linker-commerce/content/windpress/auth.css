@@ -209,7 +209,8 @@
 	body.woocommerce-account:not(.logged-in) .linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info),
 	#tv-woo-b2b-checkout .woocommerce-error {
 		border-radius: var(--proto-radius-card);
-		padding: var(--proto-space-4);
+		/* 3.5em keeps WooCommerce’s status icon clear of the text. */
+		padding: var(--proto-space-4) var(--proto-space-4) var(--proto-space-4) 3.5em;
 		margin: 0 0 var(--proto-space-5);
 		background: var(--proto-neutral-50);
 		border-color: var(--proto-line-journal);

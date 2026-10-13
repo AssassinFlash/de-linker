@@ -181,6 +181,9 @@ OBJECT_CACHE_DROPIN = "wp-content/object-cache.php"
 MANUAL = (
     "hPanel: cron every minute runs `wp cron event run --due-now`",
     "LiteSpeed: purge the whole cache (or `wp litespeed-purge all`) after the switch",
+    "VPS: run the engine with LINKER_ENGINE_CORS_ORIGINS=https://de-linker.com — the "
+    "configurator calls the engine cross-origin, and without the allowance the browser "
+    "blocks every call (the roof step first)",
 )
 
 # The read-only regression subset of spec 17 §7. German URLs come from the

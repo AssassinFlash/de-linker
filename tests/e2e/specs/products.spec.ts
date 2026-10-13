@@ -183,16 +183,21 @@ test.describe('the products', () => {
 			await page.goto(signInLink());
 			await page.goto(`${instance().url}${PRODUCT[locale]}`);
 			const text = await page.locator('body').innerText();
-			expect(text, 'the customer sees a price').toMatch(PRICE);
 			expect(text, 'the product page offers the solution draft').toMatch(
 				DRAFT_BUTTON[locale]
 			);
 
-			// The price the customer sees is an amount, not a placeholder: four
-			// digits or more once the separators are gone (1.234,56 € or
-			// €1,234.56 — a battery module is never cheaper than 100).
+			// The price the customer sees is the product's own price, read from
+			// the price element rather than the page text: the body carries a
+			// freight estimate (14,90 €) whose digits would otherwise satisfy
+			// any body-wide match, price or not.
+			const priceText = await page.locator('.pdp-price').first().innerText();
+			expect(priceText, 'the customer sees a price').toMatch(PRICE);
+			// An amount, not a placeholder: four digits or more once the
+			// separators are gone (1.234,56 € or €1,234.56 — a battery module is
+			// never cheaper than 100).
 			const price = /(?:€|EUR)\s?\d[\d.,]*|\d[\d.,]*\s?(?:€|EUR)/.exec(
-				text
+				priceText
 			)?.[0];
 			expect(price, 'a price is on the page').toBeTruthy();
 			expect(

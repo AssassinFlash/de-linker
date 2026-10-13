@@ -115,7 +115,7 @@ def running(instance: Instance) -> list[str]:
 
 
 def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str]:
-    """The two data paths the engine needs; the feed is fetched from the site.
+    """The engine's data paths and the origin allowance; the feed is fetched from the site.
 
     The instance serves the feed itself (`linker/v1/engineering-feed`, public
     and cacheable), so the file is a copy of what the running site's catalogue
@@ -140,6 +140,9 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
     return {
         "LINKER_ENGINE_FEED": str(feed),
         "LINKER_ENGINE_COMPATIBILITY": str(compatibility),
+        # The configurator calls the engine cross-origin from the page; without
+        # this allowance the browser blocks every call (the roof step first).
+        "LINKER_ENGINE_CORS_ORIGINS": instance.url,
     }
 
 
