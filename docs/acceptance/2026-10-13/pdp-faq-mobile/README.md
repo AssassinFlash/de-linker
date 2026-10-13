@@ -58,7 +58,7 @@
 ## 6. 环境阻塞（未越界改数据）
 
 1. 主会话已通过既有9-i18n补孪生，但 `just wp t109 eval` 实读6530的DE6606是 **draft**，4107的DE6669也是draft。公开DE PDP404；DE列表0产品；真实DE FAQ只有16商贸问答、0产品答案/0文档。因此没有合格的DE PDP截图，也不能宣称DE产品内容未丢已实页验证。EN全量保留与DE模板/i18n已施工；DE真实动态内容缺失仍需主会话处理，**本线没发布/造页面**。
-2. 全105件发布在售商品 `Faqs::of()` 都为空， `_linker_faqs` 尚未导入；PDP FAQ段无法真实取证。FAQ独立页272答案是DocumentLibrary现有旧字段回退，不新造。
+2. 全106件发布在售商品（EN 计数；212 含德语孪生） `Faqs::of()` 都为空， `_linker_faqs` 尚未导入；PDP FAQ段无法真实取证。FAQ独立页272答案是DocumentLibrary现有旧字段回退，不新造。
 3. 本线用户 `pdp-faq-pending/restricted/approved` 按指定meta创建，待审/受限UI不漏价；批准CTA显示原“Add to solution draft”，但旧快照 **terravolt-b2b-core** 的 `woocommerce_get_price_html` hook（WP-CLI实读priority20 `tv_b2b_filter_price_html`）把批准用户价格替成“Net prices after account review”。Woo edit值真实存在（GW60K635、SAJ1680），**不是价格字段为空**。批准点击草稿实际0项。因此四态完整价/加草稿门未通过，未改业务规则或旧插件。
 4. 不推送、不生产部署、不合并；本线提交仅供主会话整合复核。`metrics.md` 是诚实量测并含上述GAP，不代表整体验收绿灯。
 

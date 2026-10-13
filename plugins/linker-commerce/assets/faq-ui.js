@@ -20,6 +20,7 @@
 	var questions = Array.from(root.querySelectorAll(".linker-answer, .linker-trade-question"));
 	var documents = Array.from(root.querySelectorAll(".linker-document"));
 	var groups = Array.from(root.querySelectorAll(".linker-answers-group, .linker-trade-category, .linker-documents-group"));
+	var sections = Array.from(root.querySelectorAll(".linker-faq-section"));
 	// Preserve the reader's own open groups when a search is cleared.
 	var previousOpen = null;
 	search.hidden = false;
@@ -33,6 +34,11 @@
 			var items = Array.from(group.querySelectorAll(".linker-answer, .linker-trade-question, .linker-document"));
 			group.hidden = !items.some(function (item) { return !item.hidden; });
 			if (group.tagName === "DETAILS") group.open = query ? !group.hidden : (previousOpen || []).includes(group);
+		});
+		// A section whose every entry is filtered out takes its heading with it.
+		sections.forEach(function (section) {
+			var items = Array.from(section.querySelectorAll(".linker-answer, .linker-trade-question, .linker-document"));
+			section.hidden = !items.some(function (item) { return !item.hidden; });
 		});
 		if (!query) previousOpen = null;
 		var count = questions.concat(documents).filter(function (item) { return !item.hidden; }).length;

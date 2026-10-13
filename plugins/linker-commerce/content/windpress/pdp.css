@@ -1306,7 +1306,7 @@ body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-gallery-secondary {
 		height: 245px;
 		max-width: 70%;
 		border-radius: 50%;
-		background: radial-gradient(circle at 40% 35%, var(--proto-neutral-100), var(--proto-neutral-100));
+		background: radial-gradient(circle at 40% 35%, var(--proto-canvas-white), var(--proto-neutral-100));
 	}
 
 	body:has(#tv-storefront-pdp) #tv-storefront-pdp .pdp-gallery {
