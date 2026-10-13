@@ -668,6 +668,8 @@ def test_the_publish_stages_over_ssh_and_runs_there(
     ]
     engine_tree, engine_script, engine_publish = seen[1], seen[2], seen[3]
     assert engine_tree[-1] == f"{plan.SERVICES_SSH}:{plan.SERVICES_STAGING}/engine/"
+
+    assert "--exclude=.venv" in engine_tree, "the host builds its own venv"
     assert (
         engine_script[-1] == f"{plan.SERVICES_SSH}:{plan.SERVICES_STAGING}/release.sh"
     )
