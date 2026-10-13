@@ -221,16 +221,23 @@ class Target:
             # stream survives it. Directory contents, like rsync's slash form.
             destination.mkdir(parents=True, exist_ok=True)
             with subprocess.Popen(
-                tar_pull_command(HOST, f"{source.rstrip('/')}"),
+                tar_pull_command(HOST, self.path_of(relative).rstrip("/")),
                 stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             ) as pull:
                 pushed = subprocess.run(
                     ["tar", "-C", str(destination), "-xzf", "-"],
                     stdin=pull.stdout,
                     check=False,
                 )
-            if pushed.returncode != 0:
-                raise CutoverError(f"reading {relative} from {self.label} failed")
+                pull.wait()
+            if pull.returncode != 0 or pushed.returncode != 0:
+                detail = (pull.stderr.read() if pull.stderr else b"").decode(
+                    errors="replace"
+                ).strip()
+                raise CutoverError(
+                    f"reading {relative} from {self.label} failed: {detail}"
+                )
             return
         # A trailing slash on the source copies the directory's contents, the
         # same thing rsync does with `<host>:<dir>`.
