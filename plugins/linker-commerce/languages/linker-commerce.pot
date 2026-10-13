@@ -1837,7 +1837,10 @@ msgstr ""
 msgid "We use your personal data to manage your account and for the other purposes described in our [privacy_policy]."
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:131 includes/Vocabulary/Terms.php:31
+#: includes/Vocabulary/Labels.php:96
+#: includes/Vocabulary/Labels.php:171
+#: includes/Vocabulary/Labels.php:195
+#: includes/Vocabulary/Terms.php:31
 msgid "Solution draft"
 msgstr ""
 

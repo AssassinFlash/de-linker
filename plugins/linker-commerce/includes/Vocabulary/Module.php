@@ -54,6 +54,7 @@ final class Module {
 			add_filter( 'seopress_social_og_desc', array( $this->labels, 'seo_description' ) );
 			add_filter( 'seopress_social_twitter_card_desc', array( $this->labels, 'seo_description' ) );
 		add_filter( 'woocommerce_get_breadcrumb', array( $this->labels, 'breadcrumb' ) );
+		add_action( 'woocommerce_before_cart', array( $this->labels, 'draft_heading' ), 0 );
 
 		add_filter( 'woocommerce_date_format', array( $this->formats, 'wc_date_format' ) );
 		add_filter( 'wc_get_price_decimal_separator', array( $this->formats, 'decimal_separator' ) );

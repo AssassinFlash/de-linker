@@ -175,4 +175,23 @@ final class Labels {
 		}
 		return null;
 	}
+
+	/**
+	 * The heading of the solution draft.
+	 *
+	 * The cart surface prints "Shopping cart" on woocommerce_before_cart at
+	 * priority 1, and it registers that callback on template_redirect, after
+	 * this hook is added. Runs on the same action at priority 0, so it can
+	 * take that callback off before it prints, then print the draft's name.
+	 * Another page is left alone.
+	 */
+	public function draft_heading(): void {
+		if ( ! function_exists( 'is_cart' ) || ! is_cart() ) {
+			return;
+		}
+		if ( function_exists( 'remove_action' ) ) {
+			remove_action( 'woocommerce_before_cart', 'tv_woo_b2b_cart_title', 1 );
+		}
+		echo '<h1 class="sf-cart-title">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</h1>';
+	}
 }

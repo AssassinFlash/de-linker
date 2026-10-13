@@ -2051,7 +2051,10 @@ msgstr ""
 "Wir verwenden Ihre personenbezogenen Daten zur Verwaltung Ihres Kontos und "
 "für die weiteren in unserer [privacy_policy] beschriebenen Zwecke."
 
-#: includes/Vocabulary/Labels.php:131 includes/Vocabulary/Terms.php:31
+#: includes/Vocabulary/Labels.php:96
+#: includes/Vocabulary/Labels.php:171
+#: includes/Vocabulary/Labels.php:195
+#: includes/Vocabulary/Terms.php:31
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 
