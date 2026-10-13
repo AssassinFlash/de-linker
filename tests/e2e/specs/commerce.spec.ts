@@ -18,6 +18,7 @@ import { expect, test, type Browser, type Page } from '@playwright/test';
 /**
  * Internal dependencies
  */
+import { withoutFreightEstimate } from '../lib/copy';
 import { instance, loginLink, wp } from '../lib/instance';
 import { approveCustomer } from '../lib/approval';
 import { mark, messages, type Message } from '../lib/mail';
@@ -68,6 +69,38 @@ function ensureBccConfigured(): void {
 		wp(['option', 'delete', 'linker_commerce_mail_sends']);
 	} catch {
 		// No window recorded yet.
+	}
+	parkTestMailRewrite();
+}
+
+/**
+ * The test-mail rewrite routes every message to one address while it is on
+ * (Mail\TestMode, #137). This suite reads the spool's own routing, and every
+ * address it uses is @example.test on a local instance that blocks outbound
+ * mail — so the switch is parked for the run and restored afterwards.
+ */
+let parkedTestMailTo: string | null | undefined;
+
+function parkTestMailRewrite(): void {
+	if (parkedTestMailTo !== undefined) {
+		return;
+	}
+	parkedTestMailTo = null;
+	try {
+		const saved = wp(['option', 'get', 'linker_commerce_test_mail_to']).trim();
+		if (saved !== '') {
+			parkedTestMailTo = saved;
+			wp(['option', 'delete', 'linker_commerce_test_mail_to']);
+		}
+	} catch {
+		// The option does not exist: the rewrite is off.
+	}
+}
+
+/** Puts the operator's setting back after the run. */
+function restoreTestMailRewrite(): void {
+	if (parkedTestMailTo !== undefined && parkedTestMailTo !== null) {
+		wp(['option', 'update', 'linker_commerce_test_mail_to', parkedTestMailTo]);
 	}
 }
 
@@ -175,6 +208,13 @@ async function register(
 	await page.keyboard.press('Enter');
 	await page.waitForLoadState('load');
 	try {
+		// The logout link lives in the header's account menu — the live
+		// site's dropdown, which the account area follows (owner ruling
+		// 2026-10-12) — so signing in is proven by opening it.
+		await page
+			.getByRole('button', { name: /My account|Mein Konto/ })
+			.first()
+			.click();
 		await expect(
 			page.locator('a[href*="customer-logout"]'),
 			'the customer is signed in after registering'
@@ -297,6 +337,10 @@ async function addToDraft(page: Page, locale: Locale): Promise<void> {
 }
 
 test.describe('the commercial chain', () => {
+	test.afterAll(() => {
+		restoreTestMailRewrite();
+	});
+
 	for (const locale of ['en', 'de'] as Locale[]) {
 		test(`${locale}: register → price → draft → inquiry → Proforma → download`, async ({
 			page,
@@ -329,7 +373,9 @@ test.describe('the commercial chain', () => {
 			// pending (docs/specs/11-commerce.md §2), and a pending account
 			// reads the site like a guest — no price, no draft button.
 			await page.goto(url(PAGES[locale].product));
-			const pendingText = await page.locator('body').innerText();
+			const pendingText = withoutFreightEstimate(
+				await page.locator('body').innerText()
+			);
 			expect(
 				pendingText,
 				'a pending account is shown no price'

@@ -1213,14 +1213,15 @@ final class ProductShortcodes {
 	 * (docs/acceptance/2026-10-11/16/working/replica-r4/EVIDENCE.md §6-2).
 	 *
 	 * The rows come from the same product set the filters scope
-	 * (archive_product_ids(): published, catalog-visible, the queried category
-	 * and the selected filters), grouped by the family the data defines.
+	 * (filtered_product_ids(): published, catalog-visible, the queried
+	 * category and the selected facets), grouped by the family the data
+	 * defines.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
 	public function products_families( $atts = array() ): string {
 		unset( $atts );
-		$ids  = array_values( $this->filters->archive_product_ids() );
+		$ids  = array_values( $this->filters->filtered_product_ids() );
 		$rows = $this->family_rows( $ids );
 		$page = max( 1, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
 		$html = '';
@@ -1246,7 +1247,7 @@ final class ProductShortcodes {
 	 */
 	public function products_family_count( $atts = array() ): string {
 		unset( $atts );
-		$total = \count( $this->family_rows( array_values( $this->filters->archive_product_ids() ) ) );
+		$total = \count( $this->family_rows( array_values( $this->filters->filtered_product_ids() ) ) );
 		$page  = max( 1, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
 		$from  = $total > 0 ? ( $page - 1 ) * self::PER_PAGE_FAMILIES + 1 : 0;
 		$to    = min( $total, $page * self::PER_PAGE_FAMILIES );
@@ -1261,7 +1262,7 @@ final class ProductShortcodes {
 	 */
 	public function products_family_pagination( $atts = array() ): string {
 		unset( $atts );
-		$total = \count( $this->family_rows( array_values( $this->filters->archive_product_ids() ) ) );
+		$total = \count( $this->family_rows( array_values( $this->filters->filtered_product_ids() ) ) );
 		$pages = (int) ceil( $total / self::PER_PAGE_FAMILIES );
 		if ( $pages < 2 ) {
 			return '';

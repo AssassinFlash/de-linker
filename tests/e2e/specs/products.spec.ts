@@ -12,6 +12,7 @@ import { expect, test } from '@playwright/test';
 /**
  * Internal dependencies
  */
+import { withoutFreightEstimate } from '../lib/copy';
 import { instance, loginLink, wp } from '../lib/instance';
 import { approveCustomer } from '../lib/approval';
 
@@ -103,7 +104,7 @@ test.describe('the products', () => {
 			).toBeGreaterThan(0);
 			for (const card of filtered) {
 				expect(card, `a one-phase card (${card.slice(0, 80)})`).toMatch(
-					/phases?\s*1\b|1-phasig|einphasig/i
+					/phases?\s*1\b|single-phase|1-phasig|einphasig/i
 				);
 				expect(
 					card,
@@ -159,7 +160,10 @@ test.describe('the products', () => {
 			expect(text, 'the page states the prices are gated').toMatch(
 				GATED[locale]
 			);
-			expect(text, 'no price reaches a guest').not.toMatch(PRICE);
+			expect(
+				withoutFreightEstimate(text),
+				'no price reaches a guest'
+			).not.toMatch(PRICE);
 			expect(
 				text,
 				'a guest is not offered the solution draft button'

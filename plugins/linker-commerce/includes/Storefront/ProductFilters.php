@@ -495,4 +495,20 @@ final class ProductFilters {
 		$ids = get_posts( $args );
 		return $this->recommended_order( array_map( 'intval', $ids ) );
 	}
+
+	/**
+	 * The archive's products with the request's facets applied — the list the
+	 * family view renders, so a facet link narrows the grid the same way the
+	 * main query is narrowed. No selection is the whole archive; a selection
+	 * with no match is an empty list, never the unfiltered archive.
+	 *
+	 * @return int[] The product IDs.
+	 */
+	public function filtered_product_ids(): array {
+		$selected = $this->requested();
+		if ( array() === $selected ) {
+			return $this->archive_product_ids();
+		}
+		return $this->matching( $this->archive_product_ids(), $selected );
+	}
 }
