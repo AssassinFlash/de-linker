@@ -45,7 +45,6 @@ from linker_cutover.target import (
     UPLOADS,
     CutoverError,
     Target,
-    wp_prefix_for,
 )
 
 MANIFEST = "manifest.json"
@@ -133,12 +132,12 @@ wp={wp}
 {_DUMP_FLAGS}
 db_target
 dump_extra
-MYSQL_PWD="$("${wp[@]}" config get DB_PASSWORD)" mysqldump \\
+MYSQL_PWD="$("${{wp[@]}}" config get DB_PASSWORD)" mysqldump \\
   --single-transaction --quick --skip-dump-date --order-by-primary \\
   --default-character-set=utf8mb4 --no-tablespaces \\
   {_expansion("DUMP_EXTRA")} \\
   {_expansion("DB_ARGS")} \\
-  "$("${wp[@]}" config get DB_NAME)" | gzip
+  "$("${{wp[@]}}" config get DB_NAME)" | gzip
 """
 
 
@@ -150,10 +149,10 @@ cd {shlex.quote(target.root)}
 wp={wp}
 {_DB_TARGET}
 db_target
-gunzip -c | MYSQL_PWD="$("${wp[@]}" config get DB_PASSWORD)" mysql \\
+gunzip -c | MYSQL_PWD="$("${{wp[@]}}" config get DB_PASSWORD)" mysql \\
   --default-character-set=utf8mb4 \\
   {_expansion("DB_ARGS")} \\
-  "$("${wp[@]}" config get DB_NAME)"
+  "$("${{wp[@]}}" config get DB_NAME)"
 """
 
 
