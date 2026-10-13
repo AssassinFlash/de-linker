@@ -308,7 +308,9 @@
 		"/for-project-developer/": "/for-epc/",
 		"/for-project-developers/": "/for-epc/",
 		"/solution/for-distributor/": "/about/",
-		"/request-a-project/": "/linker-planner/",
+		"/request-a-project/": "/solution-configurator/",
+		"/linker-planner/": "/solution-configurator/",
+		"/linker-planer/": "/solution-configurator/",
 		"/product-category/uncategorized/": "/products/",
 		"/shop/": "/shop/"
 	},
@@ -317,10 +319,10 @@
 		"target": "/proforma-request/"
 	},
 	"retired_tools": {
-		"/design-canvas/": "/linker-planner/?step=roof",
-		"/de/design-canvas/": "/de/linker-planer/?step=roof",
-		"/de/entwurfsflache/": "/de/linker-planer/?step=roof",
-		"/quote-configurator/": "/linker-planner/",
-		"/de/angebots-konfigurator/": "/de/linker-planer/"
+		"/design-canvas/": "/solution-configurator/?step=roof",
+		"/de/design-canvas/": "/de/loesungskonfigurator/?step=roof",
+		"/de/entwurfsflache/": "/de/loesungskonfigurator/?step=roof",
+		"/quote-configurator/": "/solution-configurator/",
+		"/de/angebots-konfigurator/": "/de/loesungskonfigurator/"
 	}
 }

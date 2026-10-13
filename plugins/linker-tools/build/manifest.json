@@ -12,7 +12,7 @@
 		"src/configurator/api/store.ts": "ea78c5a376b56c329ebf3078e8ee16201cff3a489c40123c039c12ab40b6b0c7",
 		"src/configurator/commercial/CommercialPanel.tsx": "ccfb6aba3d3804270de2f06fde5fe234ad9f2eb8997979c1cfba9e6a75332f71",
 		"src/configurator/commercial/CommercialResult.tsx": "a5298b944fee43efa1c3c5aaeaecbab58dc5a15bd502c259c40900f58daa4f4a",
-		"src/configurator/config.ts": "060be88d8d17e92c6671b3dc04602d15433c7f48cd3ab9288c4506e13f46b1fe",
+		"src/configurator/config.ts": "60daaaf3c6588d643168c84b790e553be267c03fd0424e9eee40cffdbf420683",
 		"src/configurator/configurator.css": "63935b76a37a8470360e4de3f7cd018f6ef15c2507923881dd2288ea9b7073b9",
 		"src/configurator/css.d.ts": "3b1bcc9c229b0babc052d66b799cedc6931a70d33f04d8cc9ac20ba05b6c5726",
 		"src/configurator/format.ts": "eadae7d31b476fa1f959919723d16bb0634761e34fc597f07c4f8168d1cad16b",

@@ -236,7 +236,7 @@ def test_action_url_returned_by_a_tool_passes() -> None:
     facts.add(
         Fact(
             id="size.configurator_url",
-            value="https://de-linker.test/linker-planner/?pv_kwp=10",
+            value="https://de-linker.test/solution-configurator/?pv_kwp=10",
             source="size-hint",
         )
     )
@@ -246,7 +246,7 @@ def test_action_url_returned_by_a_tool_passes() -> None:
             TextBlock(text="Open the configurator.", refs=["4107"]),
             ActionBlock(
                 name="open_configurator",
-                args={"url": "https://de-linker.test/linker-planner/?pv_kwp=10"},
+                args={"url": "https://de-linker.test/solution-configurator/?pv_kwp=10"},
             ),
         ],
     )

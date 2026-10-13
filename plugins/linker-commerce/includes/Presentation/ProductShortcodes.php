@@ -1950,7 +1950,7 @@ final class ProductShortcodes {
 	 * when the page does not exist (the sidebar tool card links here).
 	 */
 	public static function configurator_page_url(): string {
-		$page = get_page_by_path( 'linker-planner' );
+		$page = get_page_by_path( 'solution-configurator' );
 		if ( ! $page instanceof \WP_Post ) {
 			return '';
 		}

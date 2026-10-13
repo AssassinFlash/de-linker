@@ -67,10 +67,10 @@ test.describe('site chrome', () => {
 
 	test('the retired addresses redirect to the configurator', async () => {
 		const cases: Array<[string, string]> = [
-			['/design-canvas/', '/linker-planner/?step=roof'],
-			['/de/design-canvas/', '/de/linker-planer/?step=roof'],
-			['/quote-configurator/', '/linker-planner/'],
-			['/de/angebots-konfigurator/', '/de/linker-planer/'],
+			['/design-canvas/', '/solution-configurator/?step=roof'],
+			['/de/design-canvas/', '/de/loesungskonfigurator/?step=roof'],
+			['/quote-configurator/', '/solution-configurator/'],
+			['/de/angebots-konfigurator/', '/de/loesungskonfigurator/'],
 		];
 		for (const [from, to] of cases) {
 			const response = await get(from);

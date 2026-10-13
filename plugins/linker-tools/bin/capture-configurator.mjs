@@ -39,8 +39,8 @@ const CSV = new URL(
 const [ base = 'http://127.0.0.1:8903', folder = 'artifacts/capture' ] =
 	process.argv.slice( 2 );
 const PAGES = {
-	en: `${ base }/linker-planner/`,
-	de: `${ base }/de/linker-planer/`,
+	en: `${ base }/solution-configurator/`,
+	de: `${ base }/de/loesungskonfigurator/`,
 };
 const VIEWPORTS = [
 	[ '1440', { width: 1440, height: 900 }, 1 ],

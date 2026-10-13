@@ -228,24 +228,24 @@ final class ProductShortcodesTest extends TestCase {
 			'pll_the_languages',
 			array(
 				'return' => array(
-					'de' => array( 'url' => 'http://linker.test/de/linker-planer/?step=roof' ),
+					'de' => array( 'url' => 'http://linker.test/de/loesungskonfigurator/?step=roof' ),
 				),
 			)
 		);
 		WP_Mock::userFunction(
 			'pll_get_requested_url',
 			array(
-				'return' => 'http://linker.test/linker-planner/?step=roof&cbq=1',
+				'return' => 'http://linker.test/solution-configurator/?step=roof&cbq=1',
 			)
 		);
-		$_SERVER['REQUEST_URI'] = '/linker-planner/?step=roof&cbq=1';
+		$_SERVER['REQUEST_URI'] = '/solution-configurator/?step=roof&cbq=1';
 		$_GET                   = array(
 			'step' => 'roof',
 			'cbq'  => '1',
 		);
 
-		$this->assertSame( 'http://linker.test/de/linker-planer/?step=roof', $this->url( 'de' ) );
-		$this->assertSame( 'http://linker.test/linker-planner/?step=roof', $this->url( 'en' ) );
+		$this->assertSame( 'http://linker.test/de/loesungskonfigurator/?step=roof', $this->url( 'de' ) );
+		$this->assertSame( 'http://linker.test/solution-configurator/?step=roof', $this->url( 'en' ) );
 	}
 
 	/**

@@ -1,6 +1,6 @@
 # #14 Solution Configurator / Lösungskonfigurator
 
-依据：`docs/research/2026-10-09/planner-methods.md`（方法规格与 P0/P1 清单）、`pv-wholesale-selection-tools.md`（同类形状）、`old-repo-plugin-and-planner-inventory.md`（旧引擎知识的来源），AGENTS.md §1。页面 slug `linker-planner` 不变，标题改名。
+依据：`docs/research/2026-10-09/planner-methods.md`（方法规格与 P0/P1 清单）、`pv-wholesale-selection-tools.md`（同类形状）、`old-repo-plugin-and-planner-inventory.md`（旧引擎知识的来源），AGENTS.md §1。页面地址 `/solution-configurator/`（德语 `/de/loesungskonfigurator/`，业主 2026-10-12 裁定：不保留旧 slug；旧地址 301），标题改名。
 
 ## 三屏
 1. **输入**（住宅 / 工商业 / 电站三段）
@@ -33,11 +33,12 @@
 - [ ] 视觉验收：三屏 + 屋顶步 + PDF，EN/DE × 1440/390。
 
 ## 页面装配（工具页归一，2026-10-13）
-配置器页 `/linker-planner/`（德语 `/de/linker-planer/`）与对比页、Genie 工作区同一条路：LiveCanvas 每页模板 + 数据短代码，页面正文不再承载应用。
-- 模板文件 `plugins/linker-commerce/content/livecanvas/configurator_page.html`（EN/DE 共用一个文件：模板只是挂载点，页面上每个字都由应用自己按页面 `lang` 出），模板 slug `linker-configurator` / `linker-configurator-de`，模板文章由 `present` 从文件建立，`Templates::assign_pages()` 把 `/linker-planner/`（en）、`/de/linker-planer/`（de）分别指派到各自语言的模板。
+配置器页 `/solution-configurator/`（德语 `/de/loesungskonfigurator/`）与对比页、Genie 工作区同一条路：LiveCanvas 每页模板 + 数据短代码，页面正文不再承载应用。
+- 模板文件 `plugins/linker-commerce/content/livecanvas/configurator_page.html`（EN/DE 共用一个文件：模板只是挂载点，页面上每个字都由应用自己按页面 `lang` 出），模板 slug `linker-configurator` / `linker-configurator-de`，模板文章由 `present` 从文件建立，`Templates::assign_pages()` 把 `/solution-configurator/`（en）、`/de/loesungskonfigurator/`（de）分别指派到各自语言的模板。
 - 挂载点由 `linker-tools` 的短代码 `[linker_configurator]` 打印（`includes/Configurator/Mount.php`）：`data-linker-app="configurator"`、引擎地址（选项 `linker_engine_url`）、REST 根与 `wp_rest` nonce，并 enqueue 构建条目 `linker-tools-configurator`。零设计、零文案——应用自己的 `build/configurator.css` 决定尺寸与颜色。
 - 在此之前，本机实例的挂载靠实例本地 mu-plugin（`100-t109-configurator-mount.php`，从不部署），没有它的实例（如 t110）该页渲染的是页面正文里旧项目的 Planner 应用。装配进入 `present` 后，任何实例 `just present <name>` 即得同一页面。
 
 ## 变更记录
+- 2026-10-12（业主裁定，slug 不保留）：页面地址 `/linker-planner/` → `/solution-configurator/`（德语 `/de/linker-planer/` → `/de/loesungskonfigurator/`）。旧地址入 `legacy-redirects.json` 的 `pages` 表 301（德语请求经 Polylang 孪生落到德语新址，一跳到 200）；页头/页脚、`SizeHint`、侧栏卡片链接与迁移工具 `12-site-chrome.py`（新增 slug 改名步，`resolve` 按新旧两种 slug 找页）同步。
 - 2026-10-13：页面装配入 `present`（上节）：`Templates::PAGES` 增两条指派、新增模板导出与 `[linker_configurator]`；证据为本机 t110 修改前后（修改前 `curl /linker-planner/` 出现旧应用标记 `qcfg-root` ×121 且无 `data-linker-app="configurator"`，修改后 1 处挂载点、0 处旧标记）。
 - 2026-10-09（#5）：引擎的地址在选项 `linker_engine_url`：本地由 `just serve <name>` 写入 `http://127.0.0.1:<端口>`，线上由切换（#17）写入 VPS 地址；调用引擎的代码从这个选项读。

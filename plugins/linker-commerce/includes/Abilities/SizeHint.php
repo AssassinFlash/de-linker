@@ -23,9 +23,11 @@ final class SizeHint {
 	public const NAME = 'linker/size-hint';
 
 	/**
-	 * Path of the Solution Configurator (docs/specs/12-site-chrome.md: the slug stays linker-planner).
+	 * Path of the Solution Configurator (docs/specs/12-site-chrome.md: the page
+	 * moved to this address on the owner's 2026-10-12 ruling; the old one
+	 * redirects).
 	 */
-	private const PATH = '/linker-planner/';
+	private const PATH = '/solution-configurator/';
 
 	/**
 	 * Backup values the configurator form accepts.

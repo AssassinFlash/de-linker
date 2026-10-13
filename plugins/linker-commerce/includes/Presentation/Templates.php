@@ -105,11 +105,13 @@ final class Templates {
 		// The Solution Configurator's page: the tool is a React app and the
 		// template prints its mount point, so the page needs this template
 		// instead of the application markup the old site stored in its body
-		// (docs/specs/14-solution-configurator.md). The page slug stays
-		// `linker-planner`; the German page is `/de/linker-planer/`. One file
-		// serves both languages: the mount and its words come from the app.
-		'linker-configurator'    => array( 'configurator_page', 'Solution Configurator', 'linker-planner', 'en' ),
-		'linker-configurator-de' => array( 'configurator_page', 'Lösungskonfigurator', 'linker-planer', 'de' ),
+		// (docs/specs/14-solution-configurator.md). The page lives at
+		// `solution-configurator` (German `/de/loesungskonfigurator/`) since
+		// the owner's 2026-10-12 ruling; the former addresses redirect
+		// (Redirects). One file serves both languages: the mount and its
+		// words come from the app.
+		'linker-configurator'    => array( 'configurator_page', 'Solution Configurator', 'solution-configurator', 'en' ),
+		'linker-configurator-de' => array( 'configurator_page', 'Lösungskonfigurator', 'loesungskonfigurator', 'de' ),
 	);
 
 		/**

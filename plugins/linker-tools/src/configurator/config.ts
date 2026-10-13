@@ -6,7 +6,7 @@
  * - `data-rest-url`: the WordPress REST root (Store API and linker/v1);
  * - `data-rest-nonce`: a `wp_rest` nonce for linker/v1/solutions;
  * - `data-step="roof"`: optional, opens the roof step first
- *   (/linker-planner/?step=roof, docs/specs/12-site-chrome.md).
+ *   (/solution-configurator/?step=roof, docs/specs/12-site-chrome.md).
  * The language follows the page's `lang` attribute.
  */
 

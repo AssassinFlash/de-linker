@@ -56,7 +56,7 @@ final class SizeHintTest extends TestCase {
 			)
 		);
 
-		$this->assertStringContainsString( '/linker-planner/', $result['configurator_url'] );
+		$this->assertStringContainsString( '/solution-configurator/', $result['configurator_url'] );
 		$this->assertStringContainsString( 'pv_kwp=10', $result['configurator_url'] );
 		$this->assertStringContainsString( 'annual_kwh=4000', $result['configurator_url'] );
 		$this->assertStringContainsString( 'phase=3', $result['configurator_url'] );

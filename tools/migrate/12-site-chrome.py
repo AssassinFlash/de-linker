@@ -19,12 +19,15 @@ recorded in docs/acceptance/2026-10-10/12/copy-review.md):
    addresses redirect (plugin code, Redirects.php).
 2. The footer partial's planning panel: Genie and Solution Configurator
    links, the Site Detail link removed, the count badge 04 -> 03.
-3. The tool pages rename ("Linker Planner" -> "Solution Configurator",
-   slug stays; "Linker Planer" -> "Lösungskonfigurator"; "Linker Advisor"
-   -> "Genie - Linker's AI assistant"; "Linker Berater" -> "Genie – der
-   KI-Assistent von Linker"), the configurator's SEO title drops the
-   price promise (prices are partner-gated, #11), and the assistant
-   page's no-JavaScript fallback names Genie.
+3. The tool pages rename and the configurator's page moves to its own
+   address ("Linker Planner" -> "Solution Configurator", /linker-planner/
+   -> /solution-configurator/; "Linker Planer" -> "Lösungskonfigurator",
+   /de/linker-planer/ -> /de/loesungskonfigurator/; owner ruling
+   2026-10-12 — the former addresses 301 through the plugin's map.
+   "Linker Advisor" -> "Genie - Linker's AI assistant"; "Linker Berater"
+   -> "Genie – der KI-Assistent von Linker"), the configurator's SEO
+   title drops the price promise (prices are partner-gated, #11), and
+   the assistant page's no-JavaScript fallback names Genie.
 4. The retired pages become drafts: design-canvas / Entwurfsfläche and
    the two "has moved" notices (quote-configurator /
    angebots-konfigurator); Redirects.php sends their addresses to the
@@ -264,7 +267,11 @@ BESPOKE_EN: list[tuple[str, str, tuple[str, ...]]] = [
     ("Linker Planner</h3>", "Solution Configurator</h3>", ("for-installer",)),
     ("Linker Advisor</h3>", "Genie</h3>", ("for-installer",)),
     ("Open Linker Site Detail →", "Open the Roof detail step →", ("for-installer",)),
-    ('href="/design-canvas/"', 'href="/linker-planner/?step=roof"', ("for-installer",)),
+    (
+        'href="/design-canvas/"',
+        'href="/solution-configurator/?step=roof"',
+        ("for-installer",),
+    ),
     (
         'aria-label="Play Linker Site Detail preview"',
         'aria-label="Play the Roof detail preview"',
@@ -390,7 +397,7 @@ BESPOKE_DE: list[tuple[str, str, tuple[str, ...]]] = [
     ),
     (
         'href="/de/entwurfsflache/"',
-        'href="/de/linker-planer/?step=roof"',
+        'href="/de/loesungskonfigurator/?step=roof"',
         ("for-installer",),
     ),
     (
@@ -483,8 +490,9 @@ RESOLVE_PHP = """
 $pairs = json_decode(base64_decode($args[0]), true);
 $out = array();
 foreach ($pairs as $key => $slug) {
+    $candidates = is_array($slug) ? $slug : array($slug);
     $found = get_posts(array(
-        'name' => $slug, 'post_status' => 'any', 'numberposts' => 1,
+        'post_name__in' => $candidates, 'post_status' => 'any', 'numberposts' => 1,
         'post_type' => array('page', 'post', 'lc_partial', 'lc_dynamic_template'),
         'lang' => 'en', 'fields' => 'ids', 'suppress_filters' => false,
     ));
@@ -572,7 +580,9 @@ def resolve(wp: WP) -> dict[str, dict[str, int]]:
         **SURFACES,
         "header": "header",
         "footer": "footer",
-        "linker-planner": "linker-planner",
+        # The configurator's slug before and after the 2026-10-12 move, so
+        # plan and apply run on a site at either address.
+        "linker-planner": ("linker-planner", "solution-configurator"),
         "linker-advisor": "linker-advisor",
         "design-canvas": "design-canvas",
         "quote-configurator": "quote-configurator",
@@ -786,6 +796,38 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
     return plan
 
 
+def rename_slugs(wp: WP, ids: dict[str, dict[str, int]], write: bool) -> None:
+    """The configurator's page answers its new address: the page moves from
+    /linker-planner/ to /solution-configurator/ and its German twin from
+    /de/linker-planer/ to /de/loesungskonfigurator/ (owner ruling
+    2026-10-12, the slug is not kept); the former addresses 301 through the
+    plugin's map. Idempotent: a page already at its new slug is reported
+    and left, and anything else is refused rather than renamed."""
+    for key, post_id, before, after in (
+        (
+            "linker-planner-en",
+            ids["linker-planner"]["en"],
+            "linker-planner",
+            "solution-configurator",
+        ),
+        (
+            "linker-planer-de",
+            ids["linker-planner"]["de"],
+            "linker-planer",
+            "loesungskonfigurator",
+        ),
+    ):
+        current = wp.run("post", "get", str(post_id), "--field=post_name").strip()
+        if current == after:
+            print(f"{key} #{post_id}: slug already {after}", flush=True)
+            continue
+        if current != before:
+            raise SystemExit(f"{key} #{post_id}: unexpected slug {current!r}")
+        print(f"{key} #{post_id}: slug {before} -> {after}", flush=True)
+        if write:
+            wp.run("post", "update", str(post_id), f"--post_name={after}", as_user=True)
+
+
 def read_post(wp: WP, post_id: int) -> dict[str, str]:
     fields = wp.json("post", "get", str(post_id), "--format=json")
     return {
@@ -903,6 +945,7 @@ def do_apply(wp: WP, write: bool) -> int:
             )
             print(f"{step.key}: seo desc renamed", flush=True)
             touched.append(step.post_id)
+    rename_slugs(wp, ids, write)
     if write and touched:
         # The German twins of every edited English post are marked as
         # hand-edited, with the fingerprint of the new English.
@@ -974,6 +1017,14 @@ def do_verify(wp: WP) -> int:
             if current != step.seo[1]:
                 print(f"FAIL {step.key}: SEO title is {current!r}")
                 ok = False
+    for key, post_id, after in (
+        ("linker-planner-en", ids["linker-planner"]["en"], "solution-configurator"),
+        ("linker-planer-de", ids["linker-planner"]["de"], "loesungskonfigurator"),
+    ):
+        current = wp.run("post", "get", str(post_id), "--field=post_name").strip()
+        if current != after:
+            print(f"FAIL {key} #{post_id}: slug is {current!r}, expected {after!r}")
+            ok = False
     # Nothing published anywhere may still name a retired tool.
     posts = wp.json(
         "post",

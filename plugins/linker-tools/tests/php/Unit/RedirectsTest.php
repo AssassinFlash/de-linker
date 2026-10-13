@@ -257,7 +257,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 255, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 19, $maps['pages'] );
+		$this->assertCount( 21, $maps['pages'] );
 			$this->assertCount( 5, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
@@ -701,9 +701,9 @@ final class RedirectsTest extends TestCase {
 	public function test_retired_tool_addresses_go_to_the_configurators_roof_step(): void {
 		$this->wordpress();
 
-		$this->assertSame( self::HOME . '/linker-planner/?step=roof', ( new Redirects() )->target( '/design-canvas/' ) );
-		$this->assertSame( self::HOME . '/de/linker-planer/?step=roof', ( new Redirects() )->target( '/de/design-canvas/' ) );
-		$this->assertSame( self::HOME . '/de/linker-planer/?step=roof', ( new Redirects() )->target( '/de/entwurfsflache/' ) );
+		$this->assertSame( self::HOME . '/solution-configurator/?step=roof', ( new Redirects() )->target( '/design-canvas/' ) );
+		$this->assertSame( self::HOME . '/de/loesungskonfigurator/?step=roof', ( new Redirects() )->target( '/de/design-canvas/' ) );
+		$this->assertSame( self::HOME . '/de/loesungskonfigurator/?step=roof', ( new Redirects() )->target( '/de/entwurfsflache/' ) );
 	}
 
 	/**
@@ -713,8 +713,29 @@ final class RedirectsTest extends TestCase {
 	public function test_the_configurators_former_address_goes_to_the_page(): void {
 		$this->wordpress();
 
-		$this->assertSame( self::HOME . '/linker-planner/', ( new Redirects() )->target( '/quote-configurator/' ) );
-		$this->assertSame( self::HOME . '/de/linker-planer/', ( new Redirects() )->target( '/de/angebots-konfigurator/' ) );
+		$this->assertSame( self::HOME . '/solution-configurator/', ( new Redirects() )->target( '/quote-configurator/' ) );
+		$this->assertSame( self::HOME . '/de/loesungskonfigurator/', ( new Redirects() )->target( '/de/angebots-konfigurator/' ) );
+	}
+
+	/**
+	 * The configurator's own former addresses go to the page: the slug moved
+	 * from /linker-planner/ (the German twin /de/linker-planer/) to
+	 * /solution-configurator/ per the owner's 2026-10-12 ruling; the German
+	 * request lands on the twin's own address.
+	 */
+	public function test_the_configurators_former_addresses_go_to_the_page(): void {
+		$this->wordpress();
+		$this->default_language = 'en';
+		$this->languages        = array( 'en', 'de' );
+
+		$this->assertSame( self::HOME . '/solution-configurator/', ( new Redirects() )->target( '/linker-planner/' ) );
+
+		$this->current_language = 'de';
+		$this->post_ids         = array( self::HOME . '/solution-configurator/' => 71 );
+		$this->post_twins       = array( 71 => array( 'de' => 72 ) );
+		$this->permalinks       = array( 72 => self::HOME . '/de/loesungskonfigurator/' );
+
+		$this->assertSame( self::HOME . '/de/loesungskonfigurator/', ( new Redirects() )->target( '/de/linker-planer/' ) );
 	}
 
 	/**
@@ -735,8 +756,6 @@ final class RedirectsTest extends TestCase {
 	public function test_live_addresses_stay(): void {
 		$this->wordpress();
 
-		$this->assertNull( ( new Redirects() )->target( '/linker-planner/' ) );
-		$this->assertNull( ( new Redirects() )->target( '/de/linker-planer/' ) );
 		$this->assertNull( ( new Redirects() )->target( '/design-canvas-exhibition/' ) );
 		$this->assertNull( ( new Redirects() )->target( '/products/' ) );
 		$this->assertNull( ( new Redirects() )->target( '/de/produkte/' ) );

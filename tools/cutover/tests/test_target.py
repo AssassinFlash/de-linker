@@ -112,7 +112,7 @@ def site(tmp_path: Path) -> Iterator[tuple[Target, list[str]]]:
             requested.append(self.path)
             if self.path.startswith("/design-canvas/"):
                 self.send_response(301)
-                self.send_header("Location", "/linker-planner/?step=roof")
+                self.send_header("Location", "/solution-configurator/?step=roof")
                 self.end_headers()
                 self.wfile.write(b"moved")
                 return
@@ -153,7 +153,7 @@ def test_a_redirect_is_reported_as_the_redirect_it_is(
     """A probe that follows redirects can never fail a 301 assertion.
 
     The drill's record lists `/design-canvas/` at 200 while the instance it ran
-    against answers `301 Location: /linker-planner/?step=roof`, and `verify`
+    against answers `301 Location: /solution-configurator/?step=roof`, and `verify`
     asserts exactly that 301. What the probe followed is not what the address
     answered, and both facts matter: the chain is not requested at all here.
     """
@@ -161,7 +161,7 @@ def test_a_redirect_is_reported_as_the_redirect_it_is(
     status, body = target.http("/design-canvas/", cache_buster="r1")
     assert status == 301
     assert requested == ["/design-canvas/?cbq=r1"], "the redirect must not be followed"
-    assert "linker-planner" not in body
+    assert "solution-configurator" not in body
 
 
 def test_an_error_status_is_the_status_the_address_answered(
