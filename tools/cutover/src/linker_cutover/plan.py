@@ -243,16 +243,6 @@ SERVICE_OPTIONS = (
 SCHEMA_POST_TYPE = "seopress_schemas"
 SCHEMA_TEMPLATE_META = "_seopress_pro_rich_snippets_custom_manual_custom_global"
 SCHEMA_RETIRED = "Product"
-# Debt ① (2026-10-13). The same retirement, as a migration an instance can run
-# before the window: `tools/migrate/69-seopress-schema.py` drafts the published
-# custom template whose body is a Product node, and refuses one it does not
-# recognise. It is not appended to `MIGRATIONS`: spec 17 §4 names that tuple,
-# and `test_the_migrations_are_the_ones_spec_17_names_and_in_order` asserts it
-# exactly. The `schema` step above is still what the window runs; this entry
-# is what names the migration so a file the cutover never names is not the
-# only copy. Its command line is the same shape as 9-i18n's: `apply` is the
-# subcommand, and the step that writes appends `--write` after it.
-SCHEMA_MIGRATION = Migration("69-seopress-schema.py", subcommand=("apply",))
 
 
 @dataclass(frozen=True)

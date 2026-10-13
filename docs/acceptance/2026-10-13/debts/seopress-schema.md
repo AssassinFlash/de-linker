@@ -59,9 +59,11 @@ t110 上的行（`just wp t110 -- eval` 列出全部 `seopress_schemas`）：
 
 把 978 设为草稿，不删。插件自己的查询只读已发布行，草稿就是它的关闭开关，后台也能手工发回去。总开关不动，其余五行不动：它们不是 Product，也没有别的发射器替代。
 
-迁移：`tools/migrate/69-seopress-schema.py`（plan / apply [--write] / verify）。登记在 `tools/cutover/src/linker_cutover/plan.py` 的 `SCHEMA_MIGRATION`（与 `SCHEMA_RETIRED` 同一处），元组结构与 `MIGRATIONS` 的条目相同：`Migration("69-seopress-schema.py", subcommand=("apply",))`，`--write` 由调用方追加在子命令之后。
+迁移：`tools/migrate/69-seopress-schema.py`（plan / apply [--write] / verify）。它不在 `plan.py` 的 `MIGRATIONS` 里，`plan.py` 也没有指向它的常量。
 
-没有追加进 `MIGRATIONS`。规格 17 §4 点名的就是那四个条目，`tools/cutover/tests/test_plan.py` 的 `test_the_migrations_are_the_ones_spec_17_names_and_in_order` 对这个元组做全等断言。追加会让该测试失败，而那个测试文件不在本线可改的路径里。切换窗口自己的 `schema` 步（`steps.retire_stale_schema`）仍是窗口里退役这条模板的实现；`SCHEMA_MIGRATION` 是窗口之外、实例上可重跑的那一份，并且会拒绝它不认识的 Product 模板，而不是一律草稿。
+不加进 `MIGRATIONS`：规格 17 §4 点名的就是那四个条目，`tools/cutover/tests/test_plan.py` 的 `test_the_migrations_are_the_ones_spec_17_names_and_in_order` 对这个元组做全等断言，追加会让它失败，而那个测试文件不在本线可改的路径里。也不另设常量：`plan.py` 开头写明每个清单都有且只有一个步骤和演练在读，一条没有读取方的常量不会被切换窗口执行。仓库里已有同样不进 `MIGRATIONS` 的迁移（`12-site-chrome.py`、`68-contact-form.py`、`80-customers.py`），这条跟着它们：实例上直接跑脚本。
+
+窗口里退役这条模板的仍是既有的 `steps.retire_stale_schema`（`just cutover schema`，把 body 含 Product 的已发布行设为草稿）。69 是窗口之外可重跑的那一份，并且会拒绝它不认识的 Product 模板类型，而不是一律草稿。两者对 t110 上的 978 做同一件事。
 
 取舍：关掉之后 PDP 上不再有 SEOPress 的那一块。那一块没有 sku、没有真实品牌，没有需要保留的字段。首页的 `WebSite` / `Organization` 不走这条 schema 库（`wp-seopress/src/Actions/Front/Schemas/PrintHeadJsonSchema.php` 只在首页、且只发 organization），不受影响。
 
