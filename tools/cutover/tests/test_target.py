@@ -199,3 +199,33 @@ def test_a_single_file_copies_out_and_in_without_the_directory_form(
         target.copy_file_out(PLUGINS, tmp_path / "out" / "plugins")
     with pytest.raises(CutoverError, match="is not a file"):
         target.copy_file_in(tmp_path, f"{PLUGINS}/b.php")
+
+
+def test_the_remote_shell_quotes_the_script_as_one_word(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ssh joins its arguments with spaces and the login shell splits again.
+
+    Measured 2026-10-14 against the production host: an unquoted script arrived
+    as `bash -c if [ -e ... ]` and died on the first `then`. The script element
+    therefore travels through `shlex.quote`.
+    """
+    seen: list[list[str]] = []
+
+    def capture(command: list[str], *, cwd: Path | None = None) -> str:
+        seen.append(command)
+        return ""
+
+    monkeypatch.setattr("linker_cutover.target._run", capture)
+    remote_target().shell("if [ -e x ]; then echo yes; else echo no; fi")
+
+    assert seen == [
+        [
+            "ssh",
+            "-o",
+            "BatchMode=yes",
+            HOST,
+            "bash -c",
+            "'if [ -e x ]; then echo yes; else echo no; fi'",
+        ]
+    ]

@@ -125,7 +125,10 @@ class Target:
         """Run a shell script on the machine the site runs on."""
         if self.shell_prefix is None:
             return _run(["bash", "-c", script])
-        return _run([*self.shell_prefix, script])
+        # ssh joins its arguments with spaces and the remote login shell splits
+        # them again: beside `bash -c` the script must travel as one quoted
+        # word, or the remote shell eats its first token.
+        return _run([*self.shell_prefix, shlex.quote(script)])
 
     def rsync(
         self, source: str, destination: str, *, extra: list[str] | None = None
