@@ -21,7 +21,7 @@
   --sf-fg: var(--shop-ink);
   --sf-muted: var(--shop-muted);
   --sf-line: var(--shop-line);
-  --sf-soft: #f3f4f6;
+  --sf-soft: #f5f6f8;
   --sf-bg: #fff;
   --sf-radius: 12px;
   --sf-danger: #b42318;
@@ -2386,9 +2386,9 @@ body.woocommerce-cart #tv-storefront-cart h1 {
 }
 #tv-storefront-cart .tv-woo-cart-freight.is-pending {
   padding: 0.75rem 0.85rem;
-  border: 1px solid #d0dce9;
+  border: 1px solid #dee6f0;
   border-radius: var(--sf-radius);
-  background: #f1f5f9;
+  background: #fafbfd;
   color: var(--sf-fg);
 }
 #tv-storefront-cart .tv-b2b-total-pending {
@@ -2517,9 +2517,9 @@ body.woocommerce-order-received #container-content-page > div {
   --sf-action: #0c7f73;
   --sf-action-text: #fff;
   --sf-complete: #166534;
-  --sf-complete-bg: #e5ecf3;
+  --sf-complete-bg: #f1f5f8;
   --sf-waiting: #78530b;
-  --sf-waiting-bg: #d6e0eb;
+  --sf-waiting-bg: #f5f7fa;
   font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--sf-fg);
   background: var(--sf-bg);
@@ -2612,7 +2612,7 @@ body.woocommerce-order-received #container-content-page > div {
 }
 #tv-woo-b2b-checkout .tv-b2b-stagebar li.is-done {
   background: var(--sf-complete-bg);
-  border-color: #cbd8e7;
+  border-color: #e4ebf2;
   color: var(--sf-complete);
 }
 #tv-woo-b2b-checkout .tv-b2b-stagebar li.is-active {
@@ -3516,7 +3516,7 @@ body.sf-account-page .sf-account-notice h3 {
 body.sf-account-page .sf-account-notice p { margin: 0 0 0.75rem; font-size: 14px; color: var(--sf-muted); }
 body.sf-account-page .sf-account-notice form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
 body.sf-account-page .sf-account-notice--paused { border-color: #fecaca; background: #fff7f6; }
-body.sf-account-page .sf-account-notice--ok { border-color: #cbd8e7; background: #f3f6fa; }
+body.sf-account-page .sf-account-notice--ok { border-color: #e4ebf2; background: #f8fafc; }
 body.sf-account-page .sf-account-notice--fail { border-color: #fecaca; background: #fef2f2; }
 body.sf-account-page .sf-account-lane__extra { margin: -1.5rem 0 2rem; }
 body.sf-account-page .sf-account-pages { margin-top: 2rem; }
@@ -3896,7 +3896,7 @@ body.sf-account-page .linker-project-card__ref {
 body.sf-account-page .linker-project-card__current {
   padding: 2px 8px;
   border-radius: 999px;
-  background: #e2e9f1;
+  background: #ebf0f5;
   color: #096d62;
   font-size: 10px;
   font-weight: 700;
@@ -3961,9 +3961,9 @@ body.sf-account-page .linker-project-detail__primary .linker-project-review-sugg
 body.sf-account-page .linker-project-review-suggest {
   margin: 0;
   padding: 0.75rem 1rem;
-  border: 1px solid #b4c6db;
+  border: 1px solid #d1dce9;
   border-radius: 12px;
-  background: #eff3f8;
+  background: #f6f9fb;
 }
 body.sf-account-page .linker-project-review-suggest h2 { margin: 0 0 0.375rem; font-size: 0.875rem; font-weight: 700; }
 body.sf-account-page .linker-project-review-suggest p {
@@ -4043,8 +4043,8 @@ body.sf-account-page .linker-project-fact__state {
   font-size: 11px;
   font-weight: 700;
 }
-body.sf-account-page .linker-project-fact__state.is-suggested { background: #e3eaf2; color: #78530b; }
-body.sf-account-page .linker-project-fact__state.is-known { background: #eaeff5; color: #0b6e4f; }
+body.sf-account-page .linker-project-fact__state.is-suggested { background: #f2f5f9; color: #78530b; }
+body.sf-account-page .linker-project-fact__state.is-known { background: #f1f4f8; color: #0b6e4f; }
 body.sf-account-page .linker-project-fact button {
   min-height: 32px;
   padding: 4px 10px;
@@ -4200,8 +4200,8 @@ body.sf-account-page .linker-project-design__approval {
   font-style: normal;
   font-weight: 700;
 }
-body.sf-account-page .linker-project-design__approval.is-approved { background: #eaeff5; color: #0b6e4f; }
-body.sf-account-page .linker-project-design__approval.needs-review { background: #e8eef4; color: #9b4d20; }
+body.sf-account-page .linker-project-design__approval.is-approved { background: #f1f4f8; color: #0b6e4f; }
+body.sf-account-page .linker-project-design__approval.needs-review { background: #ebf0f5; color: #9b4d20; }
 body.sf-account-page .linker-project-design__flags {
   display: grid;
   gap: 0.5rem;
@@ -4388,7 +4388,7 @@ body.woocommerce-account.logged-in .linker-account.woocommerce { width: 100% !im
 .linker-account .linker-account-solution-meta p { margin: 0; font-size: 12px; color: var(--sf-muted); }
 .linker-account .linker-account-stagebar { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; margin: 0; list-style: none; }
 .linker-account .linker-account-stagebar li { flex: 1 1 160px; padding: 8px 12px; border: 1px solid var(--sf-line); border-radius: 8px; background: #fff; color: var(--sf-muted); font-size: 12px; }
-.linker-account .linker-account-stagebar [aria-current="step"] { border-color: #9fd5ca; background: #edf1f6; color: #176457; font-weight: 500; }
+.linker-account .linker-account-stagebar [aria-current="step"] { border-color: #9fd5ca; background: #f2f6f9; color: #176457; font-weight: 500; }
 .linker-account .linker-account-summary .linker-account-card-body { display: block; }
 .linker-account .linker-account-summary .linker-account-card-meta { padding: 0 0 20px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .linker-account .linker-account-detail .woocommerce-order-details { margin: 24px 0; padding: 20px; background: #fff; border: 1px solid var(--sf-line); border-radius: 12px; }
