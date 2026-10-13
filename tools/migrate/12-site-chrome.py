@@ -268,11 +268,6 @@ BESPOKE_EN: list[tuple[str, str, tuple[str, ...]]] = [
     ("Linker Advisor</h3>", "Genie</h3>", ("for-installer",)),
     ("Open Linker Site Detail →", "Open the Roof detail step →", ("for-installer",)),
     (
-        'href="/design-canvas/"',
-        'href="/solution-configurator/?step=roof"',
-        ("for-installer",),
-    ),
-    (
         'aria-label="Play Linker Site Detail preview"',
         'aria-label="Play the Roof detail preview"',
         ("for-installer",),
@@ -396,11 +391,6 @@ BESPOKE_DE: list[tuple[str, str, tuple[str, ...]]] = [
         ("for-installer",),
     ),
     (
-        'href="/de/entwurfsflache/"',
-        'href="/de/loesungskonfigurator/?step=roof"',
-        ("for-installer",),
-    ),
-    (
         'aria-label="Vorschau von Linker Standortdetails abspielen"',
         'aria-label="Vorschau des Dachdetail-Schritts abspielen"',
         ("for-installer",),
@@ -491,11 +481,21 @@ $pairs = json_decode(base64_decode($args[0]), true);
 $out = array();
 foreach ($pairs as $key => $slug) {
     $candidates = is_array($slug) ? $slug : array($slug);
-    $found = get_posts(array(
+    // The pages and partials this migration edits first: a presented site's
+    // LiveCanvas template carries the page's own slug as its post_name (the
+    // per-post template lookup is by that slug), and the template is not
+    // what this migration edits — it is only a fallback for older sites
+    // whose headers were templates.
+    $query = array(
         'post_name__in' => $candidates, 'post_status' => 'any', 'numberposts' => 1,
-        'post_type' => array('page', 'post', 'lc_partial', 'lc_dynamic_template'),
+        'post_type' => array('page', 'post', 'lc_partial'),
         'lang' => 'en', 'fields' => 'ids', 'suppress_filters' => false,
-    ));
+    );
+    $found = get_posts($query);
+    if (!$found) {
+        $query['post_type'] = array('lc_dynamic_template');
+        $found = get_posts($query);
+    }
     $en = $found ? (int) reset($found) : 0;
     $twin = $en ? pll_get_post_translations($en) : array();
     $out[$key] = array('en' => $en, 'de' => (int) ($twin['de'] ?? 0));
@@ -692,6 +692,23 @@ class Step:
         return repr(text[:72])
 
 
+# The Site Detail links fold into the configurator's roof step. Rules, not
+# pairs: the target moved with the page (owner ruling 2026-10-12), and a
+# page an earlier run already rewrote carries the intermediate address — a
+# rule upgrades it, a strict pair would refuse the page.
+LINK_RULES_EN: list[tuple[str, str]] = [
+    ('href="/design-canvas/"', 'href="/solution-configurator/?step=roof"'),
+    ('href="/linker-planner/?step=roof"', 'href="/solution-configurator/?step=roof"'),
+]
+LINK_RULES_DE: list[tuple[str, str]] = [
+    ('href="/de/entwurfsflache/"', 'href="/de/loesungskonfigurator/?step=roof"'),
+    (
+        'href="/de/linker-planer/?step=roof"',
+        'href="/de/loesungskonfigurator/?step=roof"',
+    ),
+]
+
+
 def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
     """The whole edit, in write order: partials, tool pages, then the
     marketing surfaces."""
@@ -782,16 +799,22 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
         ),
     ]
     for key in SURFACES:
-        for lang, rules, bespoke in (
-            ("en", NAME_RULES_EN, BESPOKE_EN),
-            ("de", NAME_RULES_DE, BESPOKE_DE),
+        for lang, rules, bespoke, links in (
+            ("en", NAME_RULES_EN, BESPOKE_EN, LINK_RULES_EN),
+            ("de", NAME_RULES_DE, BESPOKE_DE, LINK_RULES_DE),
         ):
             post_id = ids[key][lang]
             if not post_id:
                 continue
             pairs = [(old, new) for old, new, where in bespoke if key in where]
             plan.append(
-                Step(f"{key}-{lang}", post_id, ids[key]["en"], pairs, rules=rules)
+                Step(
+                    f"{key}-{lang}",
+                    post_id,
+                    ids[key]["en"],
+                    pairs,
+                    rules=rules + links,
+                )
             )
     return plan
 
