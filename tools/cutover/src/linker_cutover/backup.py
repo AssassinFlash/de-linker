@@ -182,6 +182,31 @@ def destination(home: Path, *, now: datetime | None = None) -> Path:
     return home / f"cutover-{stamp}"
 
 
+def _prove_the_tree_arrived(target: Target, relative: str, local: Path) -> None:
+    """The pulled tree holds as many files as the site's own `find` counts.
+
+    The chunk walk decides what travels, so a chunk rule that misses a kind
+    of file makes a silently smaller backup — measured 2026-10-14: 195 files
+    (every file living directly inside a first-level directory) absent from
+    the first production backup. The site counts its own tree; a mismatch
+    stops the backup instead of shipping it as somebody's rollback.
+    """
+    counted = target.shell(
+        f"find {shlex.quote(target.path_of(relative))} -type f | wc -l"
+    ).strip()
+    on_site = int(counted)
+    # `find -type f` counts regular files, so the local side does too: a
+    # symlink is neither counted nor hashed (the manifest agrees).
+    local_count = sum(
+        1 for path in local.rglob("*") if path.is_file() and not path.is_symlink()
+    )
+    if local_count != on_site:
+        raise CutoverError(
+            f"{relative}: {local_count} files arrived, the site counts {on_site} "
+            "— the backup is not complete"
+        )
+
+
 def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup:
     """Take the backup: database, uploads, plugins, .htaccess, options, manifest."""
     directory = destination(home, now=now)
@@ -216,17 +241,24 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
     for relative in (UPLOADS, PLUGINS):
         print(f"backup: {relative}")
         target.copy_out(relative, directory / relative)
+        _prove_the_tree_arrived(target, relative, directory / relative)
 
     # The switch writes the mu directory too — the recorder is installed over
     # the live file and the old i18n loader is deleted — so a rollback that
     # could not put it back is not a rollback. A site without that directory is
     # a legal site with nothing to put back, and the absence is recorded rather
-    # than fatal (the same treatment `.htaccess` gets below).
+    # than fatal (the same treatment `.htaccess` gets below). The completeness
+    # check stays outside the try: a mismatch is a failed backup, not a site
+    # without a directory.
     print(f"backup: {MU_PLUGINS}")
+    present = True
     try:
         target.copy_out(MU_PLUGINS, directory / MU_PLUGINS)
     except CutoverError as error:
+        present = False
         print(f"backup: no {MU_PLUGINS} ({error})")
+    if present:
+        _prove_the_tree_arrived(target, MU_PLUGINS, directory / MU_PLUGINS)
 
     htaccess = directory / HTACCESS
     try:

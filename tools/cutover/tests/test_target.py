@@ -21,6 +21,7 @@ from linker_cutover.target import (
     PLUGINS,
     CutoverError,
     Target,
+    _local_entries,
     remote_entries_command,
     remote_target,
     wp_prefix_for,
@@ -242,12 +243,63 @@ def test_the_on_target_wp_command_drops_the_transport() -> None:
 
 
 def test_the_chunk_listing_asks_for_files_and_second_level_directories() -> None:
-    """One short connection per chunk: months under uploads, dirs under plugins."""
+    """One short connection per chunk: months under uploads, dirs under plugins.
+
+    Four kinds, because two leave gaps: a file directly inside a first-level
+    directory and a first-level directory without subdirectories are each
+    covered by no other kind (195 files went missing that way, 2026-10-14).
+    """
     command = remote_entries_command(HOST, "/srv/wp-content/uploads")
     assert command[:4] == ["ssh", "-o", "BatchMode=yes", HOST]
-    assert "cd /srv/wp-content/uploads" in command[4]
-    assert "F %p" in command[4]
-    assert "D %p" in command[4]
+    script = command[4]
+    assert "cd /srv/wp-content/uploads" in script
+    assert "F %p" in script
+    assert "D %p" in script
+    assert "-maxdepth 1 -type d -printf 'd %p" in script
+
+
+def test_copy_out_pulls_the_four_chunk_kinds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The listing's four kinds decide what travels, so each must be pulled.
+
+    A first-level directory with subdirectories is pulled by its
+    subdirectories plus its own files; one without them travels whole —
+    skipping it because "its children cover it" is how a whole single-file
+    plugin can vanish from a backup.
+    """
+    listing = "\n".join(
+        [
+            "D ./assets/fonts",
+            "F ./logo-direct.png",
+            "F ./root.txt",
+            "d ./templates",
+            "d ./assets",
+        ]
+    )
+    seen: list[list[str]] = []
+
+    def capture(command: list[str], *args: object, **kwargs: object) -> object:
+        del args, kwargs
+        seen.append(command)
+        if command[0] == "ssh":
+            return SimpleNamespace(returncode=0, stdout=listing, stderr="")
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("linker_cutover.target.subprocess.run", capture)
+    target = remote_target()
+    relative = f"{PLUGINS}/demo"
+    target.copy_out(relative, tmp_path / "demo")
+
+    base = target.path_of(relative)
+    pulls = [command[-2] for command in seen if command[0] == "rsync"]
+    assert pulls == [
+        f"{HOST}:{base}/logo-direct.png",
+        f"{HOST}:{base}/root.txt",
+        f"{HOST}:{base}/assets/fonts/",
+        f"{HOST}:{base}/templates/",
+    ]
+    assert f"{HOST}:{base}/assets/" not in pulls, "its children carry it"
 
 
 def test_copy_in_sends_each_chunk_to_one_host_prefix(
@@ -280,11 +332,11 @@ def test_copy_in_sends_each_chunk_to_one_host_prefix(
 
     base = target.path_of(relative)
     # The destination may not exist yet (the first deploy of a plugin), and
-    # rsync's receiver cannot place a file into a missing directory — so the
-    # first thing that goes out is the directory itself.
+    # rsync's receiver creates the final path component only — so every
+    # chunk's directory goes out first, in one shell.
     mkdir, *pushes = seen
     assert mkdir[:5] == ["ssh", "-o", "BatchMode=yes", HOST, "bash -c"]
-    assert f"mkdir -p {base}" in mkdir[-1]
+    assert f"mkdir -p {base} {base}/includes {base}/vendor/autoload" in mkdir[-1]
     destinations = [command[-1] for command in pushes]
     assert destinations == [
         f"{HOST}:{base}/linker-commerce.php",
@@ -293,3 +345,50 @@ def test_copy_in_sends_each_chunk_to_one_host_prefix(
     ]
     for destination in destinations:
         assert f"{HOST}:{HOST}:" not in destination
+
+
+def test_the_local_chunks_cover_every_file(tmp_path: Path) -> None:
+    """No file may fall between two chunks.
+
+    Measured 2026-10-14: the two-kind rule (root files, depth-2 directories)
+    left every file that lives directly inside a first-level directory out of
+    the deploy and the backup — `vendor/autoload.php` beside `vendor/composer/`
+    is exactly that shape. The property is the whole rule: every file in the
+    tree is inside exactly one chunk, and no chunk overlaps another.
+    """
+    source = tmp_path / "plugin"
+    for relative in (
+        "root.php",
+        "assets/logo.svg",
+        "assets/fonts/x.woff2",
+        "assets/fonts/deep/y.bin",
+        "includes/Bootstrap.php",
+        "includes/Core/Thing.php",
+        "templates/single.php",
+        "flat/plugin.php",
+    ):
+        path = source / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("x", encoding="utf-8")
+
+    files = [path for path in source.rglob("*") if path.is_file()]
+    chunks = _local_entries(source)
+    for path in files:
+        owners = [
+            chunk
+            for chunk in chunks
+            if path == chunk or (chunk.is_dir() and path.is_relative_to(chunk))
+        ]
+        assert len(owners) == 1, f"{path} is in {len(owners)} chunks"
+
+    # And the chunks are the expected shape, not one whole-tree copy.
+    names = {str(chunk.relative_to(source)) for chunk in chunks}
+    assert names == {
+        "root.php",
+        "assets/logo.svg",
+        "assets/fonts",
+        "includes/Bootstrap.php",
+        "includes/Core",
+        "templates",
+        "flat",
+    }

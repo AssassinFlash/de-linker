@@ -95,9 +95,15 @@ def _run(command: list[str], *, cwd: Path | None = None) -> str:
 def remote_entries_command(host: str, source: str) -> list[str]:
     """The one ssh call that lists a directory's copy chunks.
 
-    Depth-1 files and depth-2 directories: the host drops a single long
-    transfer (2.6 GB of uploads in ~8 minutes, measured 2026-10-14), so each
-    chunk — one month under uploads, one plugin — gets its own connection.
+    The host drops a single long transfer (2.6 GB of uploads in ~8 minutes,
+    measured 2026-10-14), so each chunk — one month under uploads, one
+    directory inside a plugin — gets its own connection. Four kinds are
+    listed because two are not enough: a file that lives directly inside a
+    first-level directory (`vendor/autoload.php` beside `vendor/composer/`)
+    is covered by no directory chunk, and a first-level directory without
+    subdirectories (a plugin that is one file in its own folder) would vanish
+    whole — measured as 195 files missing from the 2026-10-14 backup before
+    this listing gained depth-2 files and depth-1 directories.
     """
     return [
         "ssh",
@@ -106,16 +112,28 @@ def remote_entries_command(host: str, source: str) -> list[str]:
         host,
         f"cd {shlex.quote(source)} && "
         "{ find . -maxdepth 1 -type f -printf 'F %p\n'; "
-        "find . -mindepth 2 -maxdepth 2 -type d -printf 'D %p\n'; } | sort",
+        "find . -mindepth 2 -maxdepth 2 -type f -printf 'F %p\n'; "
+        "find . -mindepth 2 -maxdepth 2 -type d -printf 'D %p\n'; "
+        "find . -mindepth 1 -maxdepth 1 -type d -printf 'd %p\n'; } | sort",
     ]
 
 
 def _local_entries(source: Path) -> list[Path]:
-    """A tree's chunks: root files and depth-2 directories (copy_in's rule)."""
+    """A tree's chunks: the four kinds `remote_entries_command` lists.
+
+    Root files; files directly inside a first-level directory; depth-2
+    directories; a first-level directory without subdirectories as a whole.
+    Nothing may fall between two chunks — files beside a directory chunk are
+    chunks of their own.
+    """
     entries = [path for path in source.iterdir() if path.is_file()]
     for first in sorted(path for path in source.iterdir() if path.is_dir()):
         nested = sorted(path for path in first.iterdir() if path.is_dir())
-        entries.extend(nested if nested else [first])
+        if nested:
+            entries.extend(sorted(path for path in first.iterdir() if path.is_file()))
+            entries.extend(nested)
+        else:
+            entries.append(first)
     return entries
 
 
@@ -234,17 +252,36 @@ class Target:
                     f"listing {relative} on {self.label} failed: "
                     f"{listed.stderr.strip()[:200]}"
                 )
+            files: list[str] = []
+            directories: list[str] = []
+            first_level: list[str] = []
             for line in listed.stdout.splitlines():
                 kind, _, entry = line.strip().partition(" ")
-                entry = entry.strip()
-                if kind not in ("F", "D") or not entry or entry in (".", ".."):
+                path = entry.strip().removeprefix("./")
+                if not path or path in (".", ".."):
                     continue
-                local = destination / entry.lstrip("./")
+                if kind == "F":
+                    files.append(path)
+                elif kind == "D":
+                    directories.append(path)
+                elif kind == "d":
+                    first_level.append(path)
+            # A first-level directory with subdirectories is pulled by its
+            # subdirectories plus its own files; one without them travels
+            # whole, because nothing else would carry it.
+            with_children = {path.rpartition("/")[0] for path in directories}
+            chunks = (
+                [(path, False) for path in files]
+                + [(path, True) for path in directories]
+                + [(path, True) for path in first_level if path not in with_children]
+            )
+            for path, is_dir in chunks:
+                local = destination / path
                 local.parent.mkdir(parents=True, exist_ok=True)
                 self._pull_entry(
-                    f"{base}/{entry.lstrip('./')}",
-                    local.parent if kind == "F" else local,
-                    is_dir=kind == "D",
+                    f"{base}/{path}",
+                    local if is_dir else local.parent,
+                    is_dir=is_dir,
                 )
             return
         # A trailing slash on the source copies the directory's contents, the
@@ -347,17 +384,29 @@ class Target:
             return
         # See copy_out: one short connection per chunk, retried — the host
         # drops long transfers, and rsync resumes what a tar stream would
-        # restart. The chunk list mirrors copy_out's (root files, depth-2
-        # directories), walked on this side because the source is here.
+        # restart. The chunk list mirrors copy_out's, walked on this side
+        # because the source is here.
         # The base is the bare path: `_push_entry` adds the host itself, and
         # `address()` would arrive as `host:host:/path` (the deploy died on
         # exactly that, 2026-10-14). The directory itself may not exist yet —
-        # the first deploy of a plugin — and rsync's receiver cannot place a
-        # file into a missing directory; the local branch above creates it,
-        # so this one does too.
+        # the first deploy of a plugin — and rsync's receiver creates the
+        # final path component only, so every chunk's destination directory
+        # is made first, in one shell; the local branch above creates the
+        # directory the same way.
         base = self.path_of(relative).rstrip("/")
-        self.shell(f"mkdir -p {shlex.quote(base)}")
-        for entry in _local_entries(source):
+        entries = _local_entries(source)
+        directories = {base}
+        for entry in entries:
+            local = entry.relative_to(source)
+            if entry.is_dir():
+                directories.add(f"{base}/{local}")
+            else:
+                parent = local.parent
+                directories.add(base if str(parent) == "." else f"{base}/{parent}")
+        self.shell(
+            "mkdir -p " + " ".join(shlex.quote(path) for path in sorted(directories))
+        )
+        for entry in entries:
             self._push_entry(entry, f"{base}/{entry.relative_to(source)}")
 
     def exists(self, relative: str) -> bool:
