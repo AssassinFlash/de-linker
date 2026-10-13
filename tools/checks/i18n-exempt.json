@@ -1,0 +1,276 @@
+{
+  "catalogs": {
+    "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po": [
+      {
+        "msgid": "Check inverter and battery compatibility",
+        "reason": "WordPress Abilities API label of linker/check-compatibility. Consumed by the Genie service over wp-abilities/v1, not rendered on a customer or staff page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/CheckCompatibility.php:54 label inside wp_register_ability() args; RestMeta.php:31 show_in_rest."
+      },
+      {
+        "msgid": "Returns the documented release of an inverter with a battery: released, released with an accessory, not released, or unknown when no file covers the pair.",
+        "reason": "Ability description in the same JSON schema. Machine-facing contract text.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/CheckCompatibility.php:55"
+      },
+      {
+        "msgid": "Inverter product ID.",
+        "reason": "JSON Schema property description on the ability input. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/CheckCompatibility.php:62"
+      },
+      {
+        "msgid": "Battery product ID.",
+        "reason": "JSON Schema property description on the ability input. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/CheckCompatibility.php:67"
+      },
+      {
+        "msgid": "Two product IDs: one inverter and one battery, in either order.",
+        "reason": "JSON Schema property description on the ability input. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/CheckCompatibility.php:77"
+      },
+      {
+        "msgid": "Compare products",
+        "reason": "Ability label of linker/compare-products. The customer-facing \"Compare\" button is a different msgid and is already translated.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/CompareProducts.php:54"
+      },
+      {
+        "msgid": "A table of two to four published products. Battery energy and inverter output are separate rows.",
+        "reason": "Ability description in the JSON schema. Machine-facing contract text.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/CompareProducts.php:55"
+      },
+      {
+        "msgid": "Get a product",
+        "reason": "Ability label of linker/get-product. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/GetProduct.php:40"
+      },
+      {
+        "msgid": "Returns one published product: facts, figures, attributes, documents and FAQ.",
+        "reason": "Ability description in the JSON schema. Machine-facing contract text.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/GetProduct.php:41"
+      },
+      {
+        "msgid": "Cited figure entries as stored.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/GetProduct.php:73"
+      },
+      {
+        "msgid": "Hand off to the Linker team",
+        "reason": "Ability label of linker/handoff-team. The sentence the customer sees is returned as data, not this label.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/HandoffTeam.php:33"
+      },
+      {
+        "msgid": "Returns the team-mailbox sentence in English and German, and a mailto link that carries the conversation summary.",
+        "reason": "Ability description in the JSON schema. Machine-facing contract text.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/HandoffTeam.php:34"
+      },
+      {
+        "msgid": "Short summary of the conversation for the team.",
+        "reason": "JSON Schema property description on the ability input. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/HandoffTeam.php:40"
+      },
+      {
+        "msgid": "English sentence naming the team mailbox.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/HandoffTeam.php:50"
+      },
+      {
+        "msgid": "German sentence naming the team mailbox.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/HandoffTeam.php:54"
+      },
+      {
+        "msgid": "mailto URL with the summary in the body.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/HandoffTeam.php:58"
+      },
+      {
+        "msgid": "Inquiry ID.",
+        "reason": "JSON Schema property description on the inquiry-status ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:38"
+      },
+      {
+        "msgid": "Inquiry number as the customer sees it.",
+        "reason": "JSON Schema property description. The number itself is data; this sentence is the schema.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:42"
+      },
+      {
+        "msgid": "Status slug without the wc- prefix.",
+        "reason": "JSON Schema property description naming an internal slug. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:46"
+      },
+      {
+        "msgid": "Status name in the page language.",
+        "reason": "JSON Schema property description. The status name the customer sees is a different, already-translated string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:50"
+      },
+      {
+        "msgid": "Date created, GMT.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:54"
+      },
+      {
+        "msgid": "Amount as stored on the inquiry.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:58"
+      },
+      {
+        "msgid": "Proforma number when one has been issued.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:62"
+      },
+      {
+        "msgid": "List my inquiries",
+        "reason": "Ability label of linker/inquiry-status. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:70"
+      },
+      {
+        "msgid": "Returns this account's inquiries and their status. Requires a logged-in customer.",
+        "reason": "Ability description in the JSON schema. Machine-facing contract text.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/InquiryStatus.php:71"
+      },
+      {
+        "msgid": "Whether this visitor sees the stored price.",
+        "reason": "JSON Schema property description inside ProductCommerce::schema(), attached to search-products and get-product outputs.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:35"
+      },
+      {
+        "msgid": "Stored price when it is visible.",
+        "reason": "JSON Schema property description on the ability commerce object. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:39"
+      },
+      {
+        "msgid": "Whether the product is in stock (the stock the ERP pushed).",
+        "reason": "JSON Schema property description on the ability commerce object. The customer-facing stock words are separate and already translated.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:43"
+      },
+      {
+        "msgid": "Whether the product is quoted per project.",
+        "reason": "JSON Schema property description on the ability commerce object. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:47"
+      },
+      {
+        "msgid": "Chunk ID the answer may cite.",
+        "reason": "JSON Schema property description on the search-knowledge ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:42"
+      },
+      {
+        "msgid": "Hosted document URL.",
+        "reason": "JSON Schema property description on the search-knowledge ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:46"
+      },
+      {
+        "msgid": "Document title in the requested language.",
+        "reason": "JSON Schema property description on the search-knowledge ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:50"
+      },
+      {
+        "msgid": "1-based page of the chunk.",
+        "reason": "JSON Schema property description on the search-knowledge ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:54"
+      },
+      {
+        "msgid": "Returns chunks from the hosted PDF index. Cite only the returned chunk IDs.",
+        "reason": "Ability description of linker/search-knowledge. Machine-facing contract text. The customer-facing label of the same ability is already translated.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:66"
+      },
+      {
+        "msgid": "Qualifies published products against selection facts, sorts them, and explains each match.",
+        "reason": "Ability description of linker/search-products. The shared msgid \"Search products\" is already translated for the page; this sentence is only the schema.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SearchProducts.php:119"
+      },
+      {
+        "msgid": "Open the Solution Configurator with these inputs",
+        "reason": "Ability label of linker/size-hint. The customer-facing configurator links are different msgids and are already translated.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SizeHint.php:44"
+      },
+      {
+        "msgid": "Returns a short summary and the Solution Configurator URL with the given fields pre-filled.",
+        "reason": "Ability description in the JSON schema. Machine-facing contract text.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SizeHint.php:45"
+      },
+      {
+        "msgid": "What will be pre-filled on the configurator.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SizeHint.php:77"
+      },
+      {
+        "msgid": "Solution Configurator URL with the fields as query arguments.",
+        "reason": "JSON Schema property description on the ability output. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/SizeHint.php:81"
+      },
+      {
+        "msgid": "The feed schema version, the contract with the engine (#14).",
+        "reason": "REST item-schema description of the engineering feed the sizing engine reads. Not a page string.",
+        "evidence": "plugins/linker-commerce/includes/Products/EngineeringFeedController.php:120"
+      },
+      {
+        "msgid": "Stock pushes",
+        "reason": "Post-type label of a private audit log. show_ui is false, so no admin screen prints it.",
+        "evidence": "plugins/linker-commerce/includes/Stock/BatchLog.php:38 label, :35 public false, :36 show_ui false."
+      },
+      {
+        "msgid": "The pushed stock rows. Each is an object with a string sku and a qty (integer, 0 or more), a state (instock or outofstock), or both; rows that do not parse, or name an unknown SKU, are answered as error rows of their own.",
+        "reason": "REST collection-parameter description of POST linker/v1/stock. The caller is the ERP, authenticated with a push key.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:75"
+      },
+      {
+        "msgid": "A valid stock push key is required.",
+        "reason": "WP_Error message returned as JSON to the ERP caller of linker/v1/stock (HTTP 401). Not a page.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:102"
+      },
+      {
+        "msgid": "The batch has no items.",
+        "reason": "WP_Error message returned as JSON to the ERP caller of linker/v1/stock (HTTP 400). Not a page.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:119"
+      },
+      {
+        "msgid": "The batch was applied but its audit row could not be written; retry the push (it is idempotent).",
+        "reason": "WP_Error message returned as JSON to the ERP caller of linker/v1/stock (HTTP 500). Not a page.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:140"
+      },
+      {
+        "msgid": "The answer to one stock push (ticket #69).",
+        "reason": "REST item-schema description of the stock-push answer. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:166"
+      },
+      {
+        "msgid": "The audit row the batch left.",
+        "reason": "JSON Schema property description on the stock-push answer. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:171"
+      },
+      {
+        "msgid": "Rows written.",
+        "reason": "JSON Schema property description on the stock-push answer. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:175"
+      },
+      {
+        "msgid": "Rows already in place: no-op.",
+        "reason": "JSON Schema property description on the stock-push answer. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:179"
+      },
+      {
+        "msgid": "Rows refused; the rest of the batch still applied.",
+        "reason": "JSON Schema property description on the stock-push answer. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:183"
+      },
+      {
+        "msgid": "One row per pushed item, in request order.",
+        "reason": "JSON Schema property description on the stock-push answer. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:187"
+      },
+      {
+        "msgid": "On error rows: invalid_item, invalid_sku, invalid_qty, invalid_state, missing_target, unknown_sku, not_stock_managed or state_overridden (a state that contradicts what the quantity derives on a stock-managed product).",
+        "reason": "JSON Schema property description listing machine error codes. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:198"
+      },
+      {
+        "msgid": "The product's quantity after the push.",
+        "reason": "JSON Schema property description on the stock-push answer. The site never shows a quantity to a customer.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:202"
+      },
+      {
+        "msgid": "The product's stock status after the push.",
+        "reason": "JSON Schema property description on the stock-push answer. Machine-facing.",
+        "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:206"
+      }
+    ]
+  }
+}

@@ -1319,7 +1319,7 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php:108
 msgctxt "breadcrumb"
 msgid "Home"
-msgstr ""
+msgstr "Startseite"
 
 #: includes/Presentation/ProductShortcodes.php:115
 msgid "Search products or filter by category and project requirements."
@@ -1597,7 +1597,7 @@ msgstr "Spezifikationsgruppe"
 
 #: includes/Presentation/ProductShortcodes.php:999
 msgid "About these specifications"
-msgstr ""
+msgstr "Zu diesen Angaben"
 
 #. translators: %s: product name.
 #: includes/Presentation/ProductShortcodes.php:1027
@@ -1842,7 +1842,7 @@ msgstr "AC-Nennleistung"
 
 #: includes/Products/Materials.php:740
 msgid "Nominal apparent power"
-msgstr ""
+msgstr "Nennscheinleistung"
 
 #: includes/Products/Materials.php:741
 msgid "Max. apparent power"
@@ -1858,7 +1858,7 @@ msgstr "Max. Wirkungsgrad"
 
 #: includes/Products/Materials.php:745
 msgid "Battery voltage"
-msgstr ""
+msgstr "Batteriespannung"
 
 #: includes/Products/Materials.php:747
 msgid "Nominal energy"
@@ -1963,15 +1963,15 @@ msgstr "Max. Ladestrom"
 
 #: includes/Products/Materials.php:773
 msgid "Max. discharge current"
-msgstr ""
+msgstr "Max. Entladestrom"
 
 #: includes/Products/Materials.php:774 includes/Products/Materials.php:791
 msgid "Cycle life"
-msgstr ""
+msgstr "Zyklenlebensdauer"
 
 #: includes/Products/Materials.php:775
 msgid "Transformer ratio"
-msgstr ""
+msgstr "Übersetzungsverhältnis"
 
 #: includes/Products/Materials.php:776
 msgid "Accuracy class"
@@ -1979,11 +1979,11 @@ msgstr "Genauigkeitsklasse"
 
 #: includes/Products/Materials.php:777
 msgid "Rated burden"
-msgstr ""
+msgstr "Nennbürde"
 
 #: includes/Products/Materials.php:778
 msgid "Devices supported"
-msgstr ""
+msgstr "Unterstützte Geräte"
 
 #: includes/Products/Materials.php:779
 msgid "Communication"
@@ -2003,7 +2003,7 @@ msgstr "Abmessungen"
 
 #: includes/Products/Materials.php:787
 msgid "AC output (nominal)"
-msgstr ""
+msgstr "AC-Ausgang (Nennwert)"
 
 #: includes/Products/Materials.php:788
 msgid "Backup power"
@@ -2011,7 +2011,7 @@ msgstr "Notstromleistung"
 
 #: includes/Products/Materials.php:789
 msgid "System voltage"
-msgstr ""
+msgstr "Systemspannung"
 
 #: includes/Products/Materials.php:790
 msgid "Modules per stack"
@@ -2019,7 +2019,7 @@ msgstr "Module pro Stapel"
 
 #: includes/Products/Materials.php:792
 msgid "Role"
-msgstr ""
+msgstr "Funktion"
 
 #: includes/Products/Materials.php:793 includes/Products/Materials.php:794
 msgid "Altitude"
@@ -2027,19 +2027,19 @@ msgstr "Betriebshöhe"
 
 #: includes/Products/Materials.php:795
 msgid "Ambient humidity"
-msgstr ""
+msgstr "Umgebungsfeuchte"
 
 #: includes/Products/Materials.php:796
 msgid "Applicable standards"
-msgstr ""
+msgstr "Anwendbare Normen"
 
 #: includes/Products/Materials.php:797
 msgid "Certification"
-msgstr ""
+msgstr "Zertifizierung"
 
 #: includes/Products/Materials.php:798
 msgid "Cable length"
-msgstr ""
+msgstr "Kabellänge"
 
 #: includes/Products/Materials.php:799
 msgid "Accessory option"
@@ -2047,7 +2047,7 @@ msgstr "Zubehöroption"
 
 #: includes/Products/Materials.php:800
 msgid "AC surge protection"
-msgstr ""
+msgstr "AC-Überspannungsschutz"
 
 #: includes/Products/Materials.php:801
 msgid "Accuracy class, reactive"
@@ -2055,23 +2055,23 @@ msgstr "Genauigkeitsklasse, Blindenergie"
 
 #: includes/Products/Materials.php:802
 msgid "Battery type"
-msgstr ""
+msgstr "Batterietyp"
 
 #: includes/Products/Materials.php:804
 msgid "System nominal voltage"
-msgstr ""
+msgstr "Systemnennspannung"
 
 #: includes/Products/Materials.php:805
 msgid "Backup apparent power"
-msgstr ""
+msgstr "Notstrom-Scheinleistung"
 
 #: includes/Products/Materials.php:806
 msgid "Backup output frequency"
-msgstr ""
+msgstr "Notstrom-Ausgangsfrequenz"
 
 #: includes/Products/Materials.php:807
 msgid "Nominal apparent power to grid"
-msgstr ""
+msgstr "Nennscheinleistung zum Netz"
 
 #: includes/Products/Materials.php:1045
 msgid "Delivery to Germany"
@@ -2229,7 +2229,7 @@ msgstr "Proforma"
 
 #: includes/Proforma/Emails/ProformaIssuedEmail.php:41
 msgid "Proforma invoice issued"
-msgstr ""
+msgstr "Proformarechnung ausgestellt"
 
 #: includes/Proforma/Emails/ProformaIssuedEmail.php:42
 msgid ""
@@ -2679,6 +2679,8 @@ msgid ""
 "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty "
 "uses DLK-PF, the prefix on de-linker.com."
 msgstr ""
+"Nummern haben die Form PRÄFIX-JAHR-NNNN und zählen jedes Kalenderjahr ab 1. "
+"Leer verwendet DLK-PF, das Präfix auf de-linker.com."
 
 #: includes/Settings/SettingsTab.php:147
 msgid "Seller"
@@ -2877,6 +2879,9 @@ msgid ""
 "und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
 "Steuern und Lieferbedingungen vor der Proforma-Anfrage."
 msgstr ""
+"Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
+"und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
+"Steuern und Lieferbedingungen vor der Proforma-Anfrage."
 
 #: includes/Vocabulary/Labels.php:174 includes/Vocabulary/Terms.php:40
 msgid "Proforma request"
