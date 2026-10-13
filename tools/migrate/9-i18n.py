@@ -143,10 +143,24 @@ class WP:
 
     def run(self, *args: str, stdin: str | None = None, as_user: bool = False) -> str:
         """Run one command; as_user signs it in as the administrator, because the
-        plugin's commands check manage_options and refuse without a user."""
-        command = [*self.prefix, *args]
+        plugin's commands check manage_options and refuse without a user.
+
+        A prefix that starts with `ssh` is remote, and its arguments travel
+        quoted as one word: ssh joins its argv with spaces and the login shell
+        splits again, so a SQL statement would break apart (measured
+        2026-10-14, against the production host: the category lookup died on
+        "Too many positional arguments"). A local prefix keeps argv semantics.
+        """
+        tail = list(args)
         if as_user and self.user:
-            command.append(f"--user={self.user}")
+            tail.append(f"--user={self.user}")
+        if self.prefix and self.prefix[0] == "ssh":
+            command = [
+                *self.prefix[:-1],
+                " ".join([self.prefix[-1], *(shlex.quote(arg) for arg in tail)]),
+            ]
+        else:
+            command = [*self.prefix, *tail]
         result = subprocess.run(
             command, input=stdin, capture_output=True, text=True, check=False
         )
