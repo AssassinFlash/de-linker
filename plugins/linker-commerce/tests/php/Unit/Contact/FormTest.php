@@ -82,10 +82,15 @@ final class FormTest extends TestCase {
 		$_GET = array( Form::STATE_PARAM => 'sent' );
 		$sent = ( new Form() )->render();
 		$this->assertStringContainsString( 'role="status"', $sent );
-		$this->assertStringContainsString( 'rounded-lg border border-[#0c7f73]/30', $sent );
+		$this->assertStringContainsString( 'linker-form-success woocommerce-message', $sent );
+		$this->assertStringContainsString( 'Send another message', $sent );
+		$this->assertStringNotContainsString( 'type="submit"', $sent, 'A sent message has one follow-up action, not another form.' );
 
-		$_GET = array( Form::STATE_PARAM => 'invalid' );
-		$this->assertStringContainsString( 'border-amber-300', ( new Form() )->render() );
+		$_GET    = array( Form::STATE_PARAM => 'invalid' );
+		$invalid = ( new Form() )->render();
+		$this->assertStringContainsString( 'linker-form-error woocommerce-error', $invalid );
+		$this->assertStringContainsString( 'role="alert"', $invalid );
+		$this->assertStringContainsString( 'type="submit"', $invalid, 'An invalid submission keeps the form available.' );
 
 		$_GET = array( Form::STATE_PARAM => 'throttled' );
 		$this->assertStringContainsString( 'Please try again later', ( new Form() )->render() );

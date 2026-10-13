@@ -3070,6 +3070,18 @@ msgstr ""
 msgid "Before: %1$s. Now: %2$s."
 msgstr ""
 
+#: includes/Contact/Form.php
+msgid "Send another message"
+msgstr ""
+
+#: includes/Inquiry/Checkout.php
+msgid "View inquiries"
+msgstr ""
+
+#: templates/myaccount/auth/form-login.php
+msgid "Terms of Sale"
+msgstr ""
+
 #: templates/myaccount/auth/form-login.php:26
 msgid "Your inquiries, documents and prices in one place."
 msgstr ""

@@ -56,6 +56,8 @@ final class Module {
 		add_action( 'woocommerce_checkout_create_order', array( $this->checkout, 'without_payment_method_title' ) );
 		add_action( 'woocommerce_checkout_create_order', array( $this->locale, 'remember' ) );
 		add_action( 'woocommerce_after_order_notes', array( $this->checkout, 'language_field' ) );
+		add_action( 'wp_enqueue_scripts', array( $this->checkout, 'feedback' ) );
+		add_action( 'woocommerce_checkout_update_order_review', array( $this->checkout, 'review_language' ) );
 		add_action( 'woocommerce_review_order_before_submit', array( $this->checkout, 'reply_promise' ) );
 		add_action( 'woocommerce_thankyou_' . ProformaGateway::ID, array( $this->checkout, 'next_steps' ) );
 		add_filter( 'woocommerce_get_checkout_order_received_url', array( $this->checkout, 'received_url' ), 10, 2 );
