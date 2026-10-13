@@ -217,8 +217,8 @@ final class TemplatesTest extends TestCase {
 	 * counted unchanged, never written.
 	 */
 	public function test_sync_counts_unchanged_templates_and_writes_nothing(): void {
-		$paths = Templates::paths();
-		$keys  = array_keys( $paths );
+		$paths   = Templates::paths();
+		$keys    = array_keys( $paths );
 		$titles  = array(
 			'linker-compare'         => 'Compare products',
 			'linker-compare-de'      => 'Produkte vergleichen',
@@ -229,8 +229,8 @@ final class TemplatesTest extends TestCase {
 			'linker-configurator'    => 'Solution Configurator',
 			'linker-configurator-de' => 'Lösungskonfigurator',
 		);
-		$updated   = 0;
-		$inserts   = 0;
+		$updated = 0;
+		$inserts = 0;
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
 		WP_Mock::userFunction(
@@ -293,8 +293,8 @@ final class TemplatesTest extends TestCase {
 	 * legacy template the snapshot carried through its German twin.
 	 */
 	public function test_the_german_product_export_is_written_into_the_templates_german_twin(): void {
-		$paths = Templates::paths();
-		$writes  = array();
+		$paths  = Templates::paths();
+		$writes = array();
 		$this->mock_templates( 234, 6913, $writes );
 
 		$report = ( new Templates() )->sync();
@@ -311,8 +311,8 @@ final class TemplatesTest extends TestCase {
 	 * idempotent, and a second run writes nothing.
 	 */
 	public function test_a_current_german_twin_is_not_written_again(): void {
-		$paths = Templates::paths();
-		$writes  = array();
+		$paths  = Templates::paths();
+		$writes = array();
 		$this->mock_templates( 234, 6913, $writes, (string) file_get_contents( $paths['is_single_product__de'] ) );
 
 		$report = ( new Templates() )->sync();
