@@ -70,14 +70,14 @@ class Backup:
 # is one script for both targets.
 _DB_TARGET = """db_target() {
   local raw
-  raw="$($wp config get DB_HOST)"
+  raw="$("${wp[@]}" config get DB_HOST)"
   DB_ARGS=()
   case "$raw" in
     *:/*) DB_ARGS+=(--host="${raw%%:*}" --socket="${raw#*:}") ;;
     *:*)  DB_ARGS+=(--host="${raw%%:*}" --port="${raw##*:}") ;;
     *)    DB_ARGS+=(--host="$raw") ;;
   esac
-  DB_ARGS+=(--user="$($wp config get DB_USER)")
+  DB_ARGS+=(--user="$("${wp[@]}" config get DB_USER)")
 }"""
 
 # Two flags keep the dump inside what the site's own database user can do.
@@ -112,37 +112,48 @@ def _expansion(name: str) -> str:
     return "${" + name + '[@]+"${' + name + '[@]}"}'
 
 
+def _wp_array(target: Target) -> str:
+    """The target's WP-CLI command as a bash array literal.
+
+    The prefix is one machine's command line (the remote form carries a
+    quoted `cd … && wp` element with spaces); assigning it as a plain string
+    and using `$wp` unquoted splits that element apart (measured 2026-10-14:
+    the dump never left the Mac). The array keeps each element whole.
+    """
+    return "(" + " ".join(shlex.quote(part) for part in target.prefix) + ")"
+
+
 def dump_script(target: Target) -> str:
     """The shell script that writes the database, gzip-compressed, to standard output."""
-    wp = wp_prefix_for(target)
+    wp = _wp_array(target)
     return f"""set -euo pipefail
 cd {shlex.quote(target.root)}
-wp="{wp}"
+wp={wp}
 {_DB_TARGET}
 {_DUMP_FLAGS}
 db_target
 dump_extra
-MYSQL_PWD="$($wp config get DB_PASSWORD)" mysqldump \\
+MYSQL_PWD="$("${wp[@]}" config get DB_PASSWORD)" mysqldump \\
   --single-transaction --quick --skip-dump-date --order-by-primary \\
   --default-character-set=utf8mb4 --no-tablespaces \\
   {_expansion("DUMP_EXTRA")} \\
   {_expansion("DB_ARGS")} \\
-  "$($wp config get DB_NAME)" | gzip
+  "$("${wp[@]}" config get DB_NAME)" | gzip
 """
 
 
 def restore_script(target: Target) -> str:
     """The shell script that replaces the database with a dump read from standard input."""
-    wp = wp_prefix_for(target)
+    wp = _wp_array(target)
     return f"""set -euo pipefail
 cd {shlex.quote(target.root)}
-wp="{wp}"
+wp={wp}
 {_DB_TARGET}
 db_target
-gunzip -c | MYSQL_PWD="$($wp config get DB_PASSWORD)" mysql \\
+gunzip -c | MYSQL_PWD="$("${wp[@]}" config get DB_PASSWORD)" mysql \\
   --default-character-set=utf8mb4 \\
   {_expansion("DB_ARGS")} \\
-  "$($wp config get DB_NAME)"
+  "$("${wp[@]}" config get DB_NAME)"
 """
 
 

@@ -311,3 +311,21 @@ def test_a_mysqldump_that_knows_the_flag_gets_it(tmp_path: Path) -> None:
     )
     assert completed.returncode == 0, completed.stderr
     assert completed.stdout.strip() == "probe:--set-gtid-purged=OFF"
+
+
+def test_the_scripts_use_the_wp_prefix_as_an_array() -> None:
+    """A string assignment plus unquoted `$wp` splits the remote prefix apart.
+
+    Measured 2026-10-14: the production dump's first word reached the host as
+    `set` and the "dump" was the shell's environment listing.
+    """
+    target = _target(Path("/srv/site"))
+
+    dump = backup.dump_script(target)
+    assert "wp=(" in dump
+    assert '"${wp[@]}" config get DB_HOST' in dump
+    assert '"${wp[@]}" config get DB_NAME' in dump
+
+    restore = backup.restore_script(target)
+    assert "wp=(" in restore
+    assert '"${wp[@]}" config get DB_PASSWORD' in restore
