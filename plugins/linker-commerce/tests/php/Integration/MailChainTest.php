@@ -202,7 +202,7 @@ final class MailChainTest extends IntegrationTestCase {
 				'group'    => 'tv-b2b',
 			)
 		);
-		return is_array( $actions ) ? $actions : array();
+		return $actions;
 	}
 
 	/**
