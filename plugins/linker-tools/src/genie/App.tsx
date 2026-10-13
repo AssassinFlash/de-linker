@@ -736,7 +736,9 @@ function HistoryRail( {
 									type="button"
 									className="linker-genie-rail__item"
 									aria-current={
-										item.id === currentId ? 'true' : undefined
+										item.id === currentId
+											? 'true'
+											: undefined
 									}
 									onClick={ () => onSelect( item.id ) }
 								>
