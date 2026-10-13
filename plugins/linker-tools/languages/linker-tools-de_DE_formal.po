@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: linker-tools 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-10-10 00:00+0200\n"
-"PO-Revision-Date: 2026-10-10 00:00+0200\n"
+"PO-Revision-Date: 2026-10-13 00:00+0200\n"
 "Last-Translator: Linker Technology GmbH\n"
 "Language-Team: de_DE_formal\n"
 "Language: de_DE_formal\n"
@@ -74,3 +74,39 @@ msgstr "Kein früheres Gespräch."
 
 msgid "Conversations could not be loaded."
 msgstr "Gespräche konnten nicht geladen werden."
+
+msgid "Get help with your solar project"
+msgstr "Hilfe bei Ihrem Solarprojekt"
+
+msgid "Products, documents and your next step."
+msgstr "Produkte, Unterlagen und Ihr nächster Schritt."
+
+msgid "Back"
+msgstr "Zurück"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Attach a file"
+msgstr "Datei anhängen"
+
+msgid "Attached: %s"
+msgstr "Anhang: %s"
+
+msgid "Remove attachment %s"
+msgstr "Anhang %s entfernen"
+
+msgid "Dictate"
+msgstr "Diktieren"
+
+msgid "Stop dictation"
+msgstr "Diktat beenden"
+
+msgid "FAQ & Downloads"
+msgstr "FAQ & Downloads"
+
+msgid "Contact Linker"
+msgstr "Linker kontaktieren"
+
+msgid "Privacy Policy"
+msgstr "Datenschutzerklärung"

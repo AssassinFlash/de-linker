@@ -329,21 +329,25 @@ body:has(.linker-genie-workspace)
 }
 
 /*
- * The helper card's bar is the prototype's dock head (`.gp-dock-head`), which
- * is its own row: 58px, 12px 16px 6px, a 17px title.
+ * The dock's head is the live Advisor's `.lia-panel-head` (measured
+ * 2026-10-12, docs/research/2026-10-12-live-account-and-advisor/): 53px,
+ * padding 8px 12px 8px 18px, a 13px/600 title, the icon group at the
+ * trailing edge, and a hairline parting it from the conversation.
  */
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__bar {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 12px;
-	min-height: 58px;
-	padding: 12px 16px 6px;
+	gap: 8px;
+	flex-shrink: 0;
+	min-height: 53px;
+	padding: 8px 12px 8px 18px;
+	border-bottom: 1px solid var(--proto-color-line, #e2e5e5);
 }
 
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__title {
-	font-size: 17px;
-	font-weight: 500;
+	font-size: 13px;
+	font-weight: 600;
 	line-height: 1.5;
 	color: inherit;
 }
@@ -354,7 +358,24 @@ body:has(.linker-genie-workspace)
 	gap: 8px;
 }
 
-.linker-genie-app__full,
+/* The dock head's icon buttons — the Advisor's `.lia-head-btns` (32×36,
+ * radius 9, transparent). The button hover comes from the app's reset; the
+ * anchor (the full-page entry) names its own. */
+.linker-genie-app__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 36px;
+	border-radius: 9px;
+	color: #5d5d5d;
+	text-decoration: none;
+}
+
+.linker-genie-app__icon:hover {
+	background: #ededed;
+}
+
 .linker-genie-app__toggle {
 	border-radius: 10px;
 	padding: 6px 10px;
@@ -658,6 +679,13 @@ body:has(.linker-genie-workspace)
 	display: none;
 }
 
+/* The dock's own scrim: the OpenAI helper sheet's backdrop (`#0000004d`,
+ * docs/research/2026-10-12-genie-openai-design/ §B7). Rendered whenever the
+ * dock is open; only the mobile sheet form shows it. */
+.linker-genie-dock-mask {
+	display: none;
+}
+
 /* `.gp-disclosure` */
 .linker-genie-app__disclosure {
 	margin: 0;
@@ -668,13 +696,219 @@ body:has(.linker-genie-workspace)
 	text-align: center;
 }
 
-/* The helper card keeps the panel's own padding; the workspace column is the
- * 768px one above. */
-.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__panel {
+/*
+ * The dock (helper surface) fills the panel the PHP prints
+ * (`.linker-genie-panel`, 400×600, radius 16, white — the live Advisor's
+ * `.lia-panel`), so the card's own border, radius and background retire here
+ * and the column flexes: head and composer zone pinned, the conversation —
+ * or the welcome, or the history view — the flexible scrolling middle.
+ */
+.linker-genie-panel:not(.linker-genie-panel--workspace)
+	> [data-linker-app="genie"] {
+	height: 100%;
+}
+
+.linker-genie-app:not(.linker-genie-app--workspace) {
 	display: flex;
 	flex-direction: column;
-	gap: 0.75rem;
-	padding: 0 1rem 1rem;
+	height: 100%;
+	border: 0;
+	border-radius: 16px;
+	background: #fff;
+}
+
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__main {
+	min-height: 0;
+}
+
+/* The workspace column is the 768px one above; the dock's is the panel's. */
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__panel {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+}
+
+/* The message list is a list; nothing here numbers or indents it. */
+.linker-genie-app__thread {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.linker-genie-app:not(.linker-genie-app--workspace)
+	.linker-genie-app__transcript {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+	padding: 12px 16px;
+	overflow: auto;
+	scrollbar-width: thin;
+}
+
+/* The dock's opening state — the Advisor's `.lia-welcome`: greeting, one
+ * subline and the page's example questions, centred in the free space. */
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__welcome {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+	padding: 16px;
+	overflow: auto;
+	text-align: center;
+}
+
+.linker-genie-app .linker-genie-app__welcome-greeting {
+	font-size: 22px;
+	font-weight: 600;
+	line-height: 1.35;
+	color: inherit;
+}
+
+.linker-genie-app .linker-genie-app__welcome-sub {
+	margin-top: 6px;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #5d5d5d;
+}
+
+.linker-genie-app:not(.linker-genie-app--workspace)
+	.linker-genie-app__welcome
+	.linker-genie-app__prompts {
+	justify-content: center;
+	margin-top: 18px;
+}
+
+/* The dock's history view — the Advisor's `.lia-history` as the panel's own
+ * page: it scrolls in the conversation's place and reuses the rail's list. */
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__history {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+	padding: 4px 8px;
+	overflow: auto;
+	scrollbar-width: thin;
+}
+
+.linker-genie-app__history .linker-genie-rail__empty {
+	max-width: none;
+}
+
+/* A conversation in a 400px card reads smaller than the 768px column's —
+ * the Advisor's 13.5px, on this app's scale. */
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message,
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__text,
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__handoff {
+	font-size: 14px;
+}
+
+.linker-genie-app:not(.linker-genie-app--workspace)
+	.linker-genie-app__answer-brand {
+	font-size: 13px;
+}
+
+/* The picked files, over the composer. */
+.linker-genie-app:not(.linker-genie-app--workspace)
+	.linker-genie-app__attachments {
+	display: flex;
+	flex-wrap: wrap;
+	flex-shrink: 0;
+	gap: 6px;
+	margin: 0;
+	padding: 0 12px 8px;
+	list-style: none;
+}
+
+.linker-genie-app__attachment {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	max-width: 100%;
+	padding: 4px 6px 4px 10px;
+	border: 1px solid #e5e5e5;
+	border-radius: 99px;
+	font-size: 12px;
+	color: #5d5d5d;
+}
+
+.linker-genie-app__attachment-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.linker-genie-app__attachment-remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+}
+
+/* The dock's composer zone — the Advisor's `.lia-composer-zone` (padding
+ * 0 12px 10px): the bar carries the attach entry on its left now, so the
+ * input's own 20px lead retires here; attach and dictation are the send
+ * button's own 44px round kind. */
+.linker-genie-app:not(.linker-genie-app--workspace)
+	.linker-genie-app__composer {
+	width: auto;
+	margin: 0 12px;
+	padding-left: 7px;
+}
+
+.linker-genie-app__attach,
+.linker-genie-app__mic {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	color: #5d5d5d;
+}
+
+.linker-genie-app__mic[aria-pressed="true"] {
+	color: var(--proto-teal-600, #0c7f73);
+}
+
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__composer,
+.linker-genie-app:not(.linker-genie-app--workspace)
+	.linker-genie-app__disclosure,
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__links {
+	flex-shrink: 0;
+}
+
+/* The Advisor's `.lia-privacy` row: the site's own links, small and quiet,
+ * contact and privacy at the trailing edge. */
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__links {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+	margin: 0;
+	padding: 8px 16px 10px;
+	font-size: 11px;
+	line-height: 1.5;
+	color: #5d5d5d;
+}
+
+.linker-genie-app__links a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.linker-genie-app__links a:hover {
+	text-decoration: underline;
+}
+
+.linker-genie-app__links-contact {
+	margin-left: auto;
 }
 
 .linker-genie-app__cards {
@@ -954,10 +1188,41 @@ body:has(.pdp-buy-inner)
 		border: 0;
 		border-radius: 16px 16px 0 0;
 		box-shadow: none;
-		padding: 12px;
 		max-height: none;
 		height: 100%;
-		overflow: auto;
+		overflow: hidden;
+	}
+
+	/* The sheet's drag handle — the OpenAI helper's `._HandleIndicator_`
+	 * (50×4, alpha-15, 8px from the top, centred). */
+	.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+		.linker-genie-panel::before {
+		content: "";
+		position: absolute;
+		z-index: 2;
+		top: 8px;
+		left: 50%;
+		width: 50px;
+		height: 4px;
+		margin-left: -25px;
+		border-radius: 999px;
+		background: rgba(0, 0, 0, 0.15);
+		pointer-events: none;
+	}
+
+	/* The backdrop under the sheet; a tap on it folds the dock away. */
+	.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+		.linker-genie-dock-mask {
+		display: block;
+		position: fixed;
+		inset: 0;
+		border: 0;
+		border-radius: 0;
+		background: rgba(0, 0, 0, 0.3);
+	}
+
+	.linker-genie-dock-mask:hover {
+		background: rgba(0, 0, 0, 0.3);
 	}
 }
 

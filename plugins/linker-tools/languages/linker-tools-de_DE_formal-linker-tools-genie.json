@@ -1,5 +1,5 @@
 {
-	"translation-revision-date": "2026-10-10 00:00+0200",
+	"translation-revision-date": "2026-10-13 00:00+0200",
 	"generator": "linker-tools (hand-written, reviewed; AGENTS.md §3: Sie form, no AI clichés)",
 	"domain": "messages",
 	"locale_data": {
@@ -58,7 +58,23 @@
 			"Conversations could not be loaded.": [
 				"Gespräche konnten nicht geladen werden."
 			],
-			"Try again": [ "Erneut versuchen" ]
+			"Try again": [ "Erneut versuchen" ],
+			"Get help with your solar project": [
+				"Hilfe bei Ihrem Solarprojekt"
+			],
+			"Products, documents and your next step.": [
+				"Produkte, Unterlagen und Ihr nächster Schritt."
+			],
+			"Back": [ "Zurück" ],
+			"Close": [ "Schließen" ],
+			"Attach a file": [ "Datei anhängen" ],
+			"Attached: %s": [ "Anhang: %s" ],
+			"Remove attachment %s": [ "Anhang %s entfernen" ],
+			"Dictate": [ "Diktieren" ],
+			"Stop dictation": [ "Diktat beenden" ],
+			"FAQ & Downloads": [ "FAQ & Downloads" ],
+			"Contact Linker": [ "Linker kontaktieren" ],
+			"Privacy Policy": [ "Datenschutzerklärung" ]
 		}
 	}
 }
