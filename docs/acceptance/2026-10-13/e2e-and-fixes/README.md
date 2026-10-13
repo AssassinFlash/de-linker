@@ -42,3 +42,30 @@ LINKER_E2E_INSTANCE=t110 npx playwright test specs/products.spec.ts -g 'filters 
 python3 ../../tools/migrate/8-engineering.py --wp ~/de-linker-local/t110/wp.sh --verify
 python3 ../../tools/migrate/12-site-chrome.py --wp ~/de-linker-local/t110/wp.sh verify
 ```
+
+## 5. 第二轮（同日晚，接业主追问后继续）
+
+首份报告里"后续入口"不是客套：一类是真缺陷、一类是修复已落地但证据待重拍。本轮完成真缺陷类的主体：
+
+| 项 | 根因（全部实测） | 修复 | 复验 |
+|---|---|---|---|
+| DE 商城/分类页渲染旧家族页 | present 按"元键认领"复用旧模板做容器：档案的 EN 锚 = #231（`is_archive_for_post_type_product`）已被写成我方导出；**德语孪生 #6915 从未被写**（`DE_FILES` 只列了单商品）→ 德语档案请求解析到 TerraVolt 内容 | `DE_FILES` 增 `is_archive_for_post_type_product => de/archive_product`（德语导出文件，字面词 Filter/Produktaktionen/Produktfilter，其余为自翻译短代码） | DE 商城与分类页：TerraVolt 20→0、网格/过滤轨/德语 Filter 在位；products spec **6/6 过**（含此前唯一红灯） |
+| DE 卡片不声明 AC 功率 | `Materials::card_facts` 直接读传入商品（DE 记录无图值 `_tv_b2b_figures`），而 `SelectionFacts` 经 i18n 的 `linker_commerce_facts_product_id` 映射到英文记录——两条读取路径不一致 | card_facts 走同一权威做孪生映射（同 `has_filter` 守卫；无语言层时自问自答） | DE 卡出现 `AC-Nennleistung 30 kW` 等行，**与线上德语卡逐字相同**（2026-10-13 live 实测） |
+| 测试词表过期 | products spec 的功率正则只认 `AC power\|AC-Leistung`；线上与本站德语卡实际用 `AC-Nennleistung`（`AC-Leistung` 是过滤轨表单的标签） | 正则扩为 `AC power\|AC-Nennleistung\|AC-Leistung`（注释注明线上实测） | 6/6 |
+| 旧 404 模板（#940/#6871）供旧标记 | 旧 404 模板内容内嵌旧插件字体/CSS 引用（terravolt-b2b-core，资产仍在所以是 200 而非死链）；主题自带 404 更干净 | t110 与 t109 均将 #940（+t110 的 #6871）转草稿 | 404 页 h1 "Page not found"、terravolt 引用 0；可见文本无旧品牌（404/搜索/博客三面实测） |
+
+**本轮终盘 E2E**：56 过 / 1 败（genie R2=德语轮"三相机推荐"单轮把配对电池当卡片给出——LLM 抖动，单独复跑 32.8s 即过，非数据回归）/ 5 跳。products 组 6/6、commerce 链 EN/DE、configurator 17/17、i18n 150 地址全绿。
+
+**仍在册的残留**（同一"旧 LC 模板族与实例平价"工作包）：
+- 旧模板族其它成员（#607/#6889 税分类、#613/#6887 单篇、#619/#6885 搜索、#574/#6891 博客首页）仍供旧标记；三面可见内容已实测干净，但页面仍引用旧插件资产（t109 DE 商城 12 处、t110 商城各 1 处）。归属 = 切换迁移步（#17 暂停中）：随旧插件移除一并停用/退役。
+- t109 的 DE 目录更深一层（其构建早于 present 全量装配：DE 商城无网格）——预览实例，建议随下次 `just reset` 以新工具链重建。
+- 视觉验收重拍（188 对静态基线 + PDP/配置器/Genie 修复面）：工具齐备（`.scratch/freshdiff-full/capture.mjs` + `freshdiff.py`），尚未重跑。
+
+## 6. 复现（补充）
+
+```bash
+# DE 档案孪生与卡片事实的实例侧验证
+curl -s 'http://127.0.0.1:8975/de/produkte/?kw_min=15&cbq=x' | grep -c 'AC-Nennleistung'
+curl -s 'http://127.0.0.1:8975/de/produkt-kategorie/wechselrichter/?cbq=x' | grep -ci terravolt   # 期望 0
+just wp t110 eval '$p=wc_get_product((int)pll_get_post(4107,"de")); echo json_encode(array_column(\Linker\Commerce\Products\Materials::card_facts($p,4),"key"));'  # 期望以 ac_power 开头
+```

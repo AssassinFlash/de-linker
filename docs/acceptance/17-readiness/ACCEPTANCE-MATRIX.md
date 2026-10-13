@@ -102,7 +102,7 @@
 | Compare table with ids | FAIL | `?ids=6530,6529`。EN 1440：2,156,807 / 94.14%，Δh +451 |
 
 ## 已知影响判定的在途项
-- **旧 LC 模板族截流（DE 商城/分类档案）**：旧项目遗留 `is_archive_for_post_type_product`（#231/#6915）等 7 对模板仍发布，LC 在 `is_shop_page` 未命中后先解析它们 → `/de/produkte/` 渲染旧家族页（E2E 唯一红灯）。独立工作包：先定分类档案的模板归属，再退役旧族（`docs/acceptance/2026-10-13/e2e-and-fixes/README.md` §3）
+- **旧 LC 模板族（已修主项，余项在册）**：DE 商城/分类页已修——档案的德语孪生由 `DE_FILES` 写入我方导出（t110 实测 TerraVolt 0、products spec 6/6）；旧 404 模板已退役（t110+t109）。仍供旧标记的旧模板族成员（税分类/单篇/搜索/博客首页）与旧插件资产引用归切换迁移步处置（`docs/acceptance/2026-10-13/e2e-and-fixes/README.md` §5）
 - 页头带差异：PR119 后重测（EN 对拍重测覆盖）
 - DE 24 空壳：DE 实例补内容后重测（DE 实例对拍覆盖）
 - 配置器 C 视觉：已并，重拍后判定
