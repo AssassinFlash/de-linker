@@ -220,23 +220,30 @@ class Target:
             # ("Connection closed by remote host", measured 2026-10-14); a tar
             # stream survives it. Directory contents, like rsync's slash form.
             destination.mkdir(parents=True, exist_ok=True)
-            with subprocess.Popen(
+            # No `with` (its exit closes the pipes before the statuses are
+            # read) and no stderr pipe on the ssh side (nothing drains it
+            # while the extractor runs, and a full buffer would stall both).
+            pull = subprocess.Popen(
                 tar_pull_command(HOST, self.path_of(relative).rstrip("/")),
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            ) as pull:
+            )
+            try:
                 pushed = subprocess.run(
                     ["tar", "-C", str(destination), "-xzf", "-"],
                     stdin=pull.stdout,
+                    capture_output=True,
+                    text=True,
                     check=False,
                 )
-                pull.wait()
-            if pull.returncode != 0 or pushed.returncode != 0:
-                detail = (pull.stderr.read() if pull.stderr else b"").decode(
-                    errors="replace"
-                ).strip()
+            finally:
+                if pull.stdout is not None:
+                    pull.stdout.close()
+            pulled = pull.wait()
+            if pulled != 0 or pushed.returncode != 0:
                 raise CutoverError(
-                    f"reading {relative} from {self.label} failed: {detail}"
+                    f"reading {relative} from {self.label} failed "
+                    f"(ssh rc={pulled}, local tar rc={pushed.returncode}): "
+                    f"{pushed.stderr.strip()[:200]}"
                 )
             return
         # A trailing slash on the source copies the directory's contents, the
