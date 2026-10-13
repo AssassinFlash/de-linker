@@ -22,8 +22,6 @@ from linker_cutover.target import (
     Target,
     remote_entries_command,
     remote_target,
-    tar_pull_command,
-    tar_push_command,
     wp_prefix_for,
 )
 
@@ -242,27 +240,10 @@ def test_the_on_target_wp_command_drops_the_transport() -> None:
     assert all("ssh" not in part for part in remote)
 
 
-def test_the_directory_tar_commands_quote_both_directions() -> None:
-    """The far side's shell re-splits: each tar argument travels quoted."""
-    pull = tar_pull_command(
-        HOST, "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads"
-    )
-    assert pull[:4] == ["ssh", "-o", "BatchMode=yes", HOST]
-    assert pull[4].startswith("tar -C /home/u388076051")
-    assert pull[4].endswith("-czf - .")
-
-    push = tar_push_command(
-        HOST, "/home/u388076051/domains/de-linker.com/public_html/wp-content/plugins"
-    )
-    assert push[4].startswith("mkdir -p /home/u388076051")
-    assert " && tar -C /home/u388076051" in push[4]
-    assert push[4].endswith("-xzf -")
-
-
 def test_the_chunk_listing_asks_for_files_and_second_level_directories() -> None:
     """One short connection per chunk: months under uploads, dirs under plugins."""
     command = remote_entries_command(HOST, "/srv/wp-content/uploads")
     assert command[:4] == ["ssh", "-o", "BatchMode=yes", HOST]
     assert "cd /srv/wp-content/uploads" in command[4]
-    assert "-maxdepth 1 -type f" in command[4]
-    assert "-mindepth 2 -maxdepth 2 -type d" in command[4]
+    assert "F %p" in command[4]
+    assert "D %p" in command[4]

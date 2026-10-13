@@ -92,17 +92,6 @@ def _run(command: list[str], *, cwd: Path | None = None) -> str:
     return result.stdout
 
 
-def tar_pull_command(host: str, source: str) -> list[str]:
-    """`ssh <host> tar -czf -` for a directory's contents, quoted for the far shell."""
-    return [
-        "ssh",
-        "-o",
-        "BatchMode=yes",
-        host,
-        f"tar -C {shlex.quote(source)} -czf - .",
-    ]
-
-
 def remote_entries_command(host: str, source: str) -> list[str]:
     """The one ssh call that lists a directory's copy chunks.
 
@@ -116,20 +105,18 @@ def remote_entries_command(host: str, source: str) -> list[str]:
         "BatchMode=yes",
         host,
         f"cd {shlex.quote(source)} && "
-        "{ find . -maxdepth 1 -type f -printf '%p\n'; "
-        "find . -mindepth 2 -maxdepth 2 -type d -printf '%p\n'; } | sort",
+        "{ find . -maxdepth 1 -type f -printf 'F %p\n'; "
+        "find . -mindepth 2 -maxdepth 2 -type d -printf 'D %p\n'; } | sort",
     ]
 
 
-def tar_push_command(host: str, destination: str) -> list[str]:
-    """`ssh <host> 'mkdir -p … && tar -xzf -'` for a directory's contents."""
-    return [
-        "ssh",
-        "-o",
-        "BatchMode=yes",
-        host,
-        f"mkdir -p {shlex.quote(destination)} && tar -C {shlex.quote(destination)} -xzf -",
-    ]
+def _local_entries(source: Path) -> list[Path]:
+    """A tree's chunks: root files and depth-2 directories (copy_in's rule)."""
+    entries = [path for path in source.iterdir() if path.is_file()]
+    for first in sorted(path for path in source.iterdir() if path.is_dir()):
+        nested = sorted(path for path in first.iterdir() if path.is_dir())
+        entries.extend(nested if nested else [first])
+    return entries
 
 
 @dataclass(frozen=True)
@@ -247,42 +234,80 @@ class Target:
                     f"listing {relative} on {self.label} failed: "
                     f"{listed.stderr.strip()[:200]}"
                 )
-            for entry in listed.stdout.splitlines():
+            for line in listed.stdout.splitlines():
+                kind, _, entry = line.strip().partition(" ")
                 entry = entry.strip()
-                if not entry or entry in (".", ".."):
+                if kind not in ("F", "D") or not entry or entry in (".", ".."):
                     continue
                 local = destination / entry.lstrip("./")
                 local.parent.mkdir(parents=True, exist_ok=True)
-                self._pull_entry(f"{base}/{entry.lstrip('./')}", local.parent)
+                self._pull_entry(
+                    f"{base}/{entry.lstrip('./')}",
+                    local.parent if kind == "F" else local,
+                    is_dir=kind == "D",
+                )
             return
         # A trailing slash on the source copies the directory's contents, the
         # same thing rsync does with `<host>:<dir>`.
         self.rsync(f"{source.rstrip('/')}/", f"{destination}/")
 
-    def _pull_entry(self, source: str, destination: Path) -> None:
-        """One chunk of a remote directory: a tar stream into `destination`."""
-        pull = subprocess.Popen(
-            tar_pull_command(HOST, source),
-            stdout=subprocess.PIPE,
-        )
-        try:
-            pushed = subprocess.run(
-                ["tar", "-C", str(destination), "-xzf", "-"],
-                stdin=pull.stdout,
+    def _pull_entry(self, source: str, destination: Path, *, is_dir: bool) -> None:
+        """One chunk of a remote tree, retried.
+
+        The host drops a long transfer (measured 2026-10-14 on 2.6 GB and
+        again on a single big month); rsync sees files one at a time, so a
+        retry resumes the chunk instead of restarting it — which is what a
+        tar stream cannot do.
+        """
+        source_arg = f"{HOST}:{source}/" if is_dir else f"{HOST}:{source}"
+        last = ""
+        for _attempt in range(4):
+            completed = subprocess.run(
+                [
+                    "rsync",
+                    "-az",
+                    "--delete",
+                    "-e",
+                    "ssh -o BatchMode=yes",
+                    source_arg,
+                    f"{destination}/",
+                ],
                 capture_output=True,
                 text=True,
                 check=False,
             )
-        finally:
-            if pull.stdout is not None:
-                pull.stdout.close()
-        pulled = pull.wait()
-        if pulled != 0 or pushed.returncode != 0:
-            raise CutoverError(
-                f"reading {source} from {HOST} failed "
-                f"(ssh rc={pulled}, local tar rc={pushed.returncode}): "
-                f"{pushed.stderr.strip()[:200]}"
+            if completed.returncode == 0:
+                return
+            last = completed.stderr.strip()[:200]
+        raise CutoverError(
+            f"reading {source} from {HOST} failed after 4 attempts: {last}"
+        )
+
+    def _push_entry(self, source: Path, destination: str) -> None:
+        """One chunk of a local tree onto the target, retried like copy_out."""
+        source_arg = f"{source}/" if source.is_dir() else str(source)
+        last = ""
+        for _attempt in range(4):
+            completed = subprocess.run(
+                [
+                    "rsync",
+                    "-az",
+                    "--delete",
+                    "-e",
+                    "ssh -o BatchMode=yes",
+                    source_arg,
+                    f"{HOST}:{destination}",
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
             )
+            if completed.returncode == 0:
+                return
+            last = completed.stderr.strip()[:200]
+        raise CutoverError(
+            f"writing {source} to {HOST}:{destination} failed after 4 attempts: {last}"
+        )
 
     def copy_file_out(self, relative: str, destination: Path) -> None:
         """Copy one WordPress-root-relative file off the target to `destination`.
@@ -321,18 +346,12 @@ class Target:
             path.mkdir(parents=True, exist_ok=True)
             self.rsync(f"{source}/", f"{destination}/")
             return
-        # See copy_out: the remote directory travels as a tar stream.
-        with subprocess.Popen(
-            ["tar", "-C", str(source), "-czf", "-", "."],
-            stdout=subprocess.PIPE,
-        ) as pack:
-            pushed = subprocess.run(
-                tar_push_command(HOST, destination),
-                stdin=pack.stdout,
-                check=False,
-            )
-        if pushed.returncode != 0:
-            raise CutoverError(f"writing {relative} to {self.label} failed")
+        # See copy_out: one short connection per chunk, retried — the host
+        # drops long transfers, and rsync resumes what a tar stream would
+        # restart. The chunk list mirrors copy_out's (root files, depth-2
+        # directories), walked on this side because the source is here.
+        for entry in _local_entries(source):
+            self._push_entry(entry, f"{destination}/{entry.relative_to(source)}")
 
     def exists(self, relative: str) -> bool:
         """Whether a WordPress-root-relative path is on the target."""
