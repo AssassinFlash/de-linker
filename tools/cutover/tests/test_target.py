@@ -229,3 +229,11 @@ def test_the_remote_shell_quotes_the_script_as_one_word(
             "'if [ -e x ]; then echo yes; else echo no; fi'",
         ]
     ]
+
+
+def test_the_on_target_wp_command_drops_the_transport() -> None:
+    """The dump scripts run on the machine they read; the ssh prefix is not it."""
+    remote = remote_target().wp_on_target()
+    assert remote[0] == "/usr/local/bin/wp"
+    assert remote[1].startswith("--path=/home/u388076051")
+    assert all("ssh" not in part for part in remote)

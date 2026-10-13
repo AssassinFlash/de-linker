@@ -121,6 +121,19 @@ class Target:
         """A WP-CLI command that prints JSON."""
         return json.loads(self.wp(*args, "--format=json"))
 
+    def wp_on_target(self) -> list[str]:
+        """WP-CLI as command parts valid ON the machine the site runs on.
+
+        The remote prefix is an ssh command line ("cd <root> && <wp>"); the
+        backup's dump and restore scripts already run on that machine, so the
+        cd becomes `--path` and no transport remains. Running the remote form
+        there would ssh to an alias that host does not have (measured
+        2026-10-14: the dump died with "Could not resolve hostname").
+        """
+        if self.shell_prefix is None:
+            return list(self.prefix)
+        return [WP_CLI, f"--path={self.root}"]
+
     def shell_command(self, script: str) -> list[str]:
         """The argv that runs a shell script on the machine the site runs on.
 

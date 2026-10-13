@@ -112,14 +112,13 @@ def _expansion(name: str) -> str:
 
 
 def _wp_array(target: Target) -> str:
-    """The target's WP-CLI command as a bash array literal.
+    """The target's WP-CLI command as a bash array literal, valid on the target.
 
-    The prefix is one machine's command line (the remote form carries a
-    quoted `cd … && wp` element with spaces); assigning it as a plain string
-    and using `$wp` unquoted splits that element apart (measured 2026-10-14:
-    the dump never left the Mac). The array keeps each element whole.
+    A string assignment plus unquoted `$wp` splits the remote prefix apart
+    (measured 2026-10-14: the dump ran a bare `set`); the array keeps each
+    element whole. `Target.wp_on_target` is the on-machine form.
     """
-    return "(" + " ".join(shlex.quote(part) for part in target.prefix) + ")"
+    return "(" + " ".join(shlex.quote(part) for part in target.wp_on_target()) + ")"
 
 
 def dump_script(target: Target) -> str:
