@@ -31,7 +31,7 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check e2e-check py-check pull::check cutover::check banned-words build::check
+check: php-check js-check e2e-check py-check pull::check cutover::check banned-words i18n-coverage build::check
 
 # Unit tests of every chain and the end-to-end tests.
 test: php-test js-test py-test pull::test cutover::test
@@ -333,3 +333,9 @@ banned-words:
         exit 1
     fi
     echo "banned-words: clean"
+
+# German formal catalogs: untranslated entries minus the developer-facing
+# exemption list must be zero (tools/checks/i18n-coverage.py).
+[group('check')]
+i18n-coverage:
+    python3 "{{ justfile_directory() }}/tools/checks/i18n-coverage.py"
