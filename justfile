@@ -45,7 +45,8 @@ e2e name *args:
     set -euo pipefail
     cd "{{ justfile_directory() }}/tests/e2e"
     if [ ! -d node_modules ]; then npm ci --no-audit --no-fund; fi
-    LINKER_E2E_INSTANCE="{{ name }}" npx playwright test "$@"
+    # positional-arguments leaves the instance name in $1; only the rest is a filter.
+    LINKER_E2E_INSTANCE="{{ name }}" npx playwright test "${@:2}"
 
 # Local WordPress instances (docs/local-stack.md): `up` creates the instance on
 # first use, then (re)starts it with this checkout's plugins.

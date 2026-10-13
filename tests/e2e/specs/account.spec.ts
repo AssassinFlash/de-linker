@@ -69,8 +69,7 @@ async function signIn(
 	// the menu opens — the count is the signal, not its visibility).
 	await page.waitForFunction(
 		() =>
-			document.querySelectorAll('a[href*="customer-logout"]').length ===
-			1,
+			document.querySelectorAll('a[href*="customer-logout"]').length >= 1,
 		null,
 		{ timeout: 30_000 }
 	);
@@ -179,7 +178,7 @@ test('en: an approved partner saves account details and company, and signs out',
 	await expect(
 		page.locator('a[href*="customer-logout"]'),
 		'the customer is signed in'
-	).toHaveCount(1);
+	).not.toHaveCount(0);
 
 	// Account details: the first name round-trips through the form.
 	await page.goto(url('/my-account/edit-account/'));
@@ -387,7 +386,7 @@ test('en: a restricted account signs in, keeps the workplace and reads its gate 
 	await expect(
 		page.locator('a[href*="customer-logout"]'),
 		'a restricted account still signs in'
-	).toHaveCount(1);
+	).not.toHaveCount(0);
 	await expect(
 		page.locator('body'),
 		'the workplace stays open'

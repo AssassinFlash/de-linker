@@ -19,6 +19,7 @@ use Linker\Commerce\Products\SearchScope;
 use Linker\Commerce\Products\SelectionFactsController;
 use Linker\Commerce\Contact\Module as ContactModule;
 use Linker\Commerce\Health\Monitor;
+use Linker\Commerce\Storefront\ArchiveSchema;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductSchema;
 use Linker\Commerce\Storefront\ProductView;
@@ -85,6 +86,7 @@ final class Plugin {
 		$this->search_scope->register();
 		$this->contact->register();
 		( new ProductSchema() )->register();
+		( new ArchiveSchema() )->register();
 		( new Monitor( $this->file, new Settings\Options() ) )->register();
 	}
 

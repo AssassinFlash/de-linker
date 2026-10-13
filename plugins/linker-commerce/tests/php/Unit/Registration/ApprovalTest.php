@@ -189,4 +189,25 @@ final class ApprovalTest extends TestCase {
 		$error = new WP_Error( 'incorrect_password' );
 		$this->assertSame( $error, $approval->gate_login( $error ) );
 	}
+
+	/**
+	 * The sign-in form's message: the refusal of this attempt passes through
+	 * whole, and anything else reads one generic line, so an anonymous
+	 * visitor cannot tell a missing username from a wrong password.
+	 */
+	public function test_the_sign_in_message_is_the_refusal_or_one_generic_line(): void {
+		$approval     = new Approval();
+		$customer     = new WP_User();
+		$customer->ID = 5;
+		$this->store[ Approval::STATUS_META ] = Approval::REJECTED;
+
+		$refused = $approval->gate_login( $customer );
+
+		$this->assertInstanceOf( WP_Error::class, $refused );
+		$this->assertSame( $refused->get_error_message(), $approval->login_errors() );
+		$this->assertStringContainsString( 'sales@de-linker.com', $approval->login_errors() );
+
+		$untouched = new Approval();
+		$this->assertSame( 'The username or the password is not correct.', $untouched->login_errors() );
+	}
 }

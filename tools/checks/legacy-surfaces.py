@@ -3,12 +3,14 @@
 
 Two assertions over plain HTTP, no authentication:
 
-1. Asset sweep: sampled public pages must contain zero references to the old
-   plugin's assets (`terravolt-b2b-core` paths). `TerraVolt` word occurrences
-   are reported as warnings (they surface legacy branding strings such as the
-   snapshot child theme's JSON-LD, whose removal is owned by the theme work,
-   not by template attribution) but do not fail the gate. The sampled page
-   list is printed with each page's result.
+1. Asset sweep: sampled public pages must contain none of the old project's
+   traces — references to its plugin's assets (`terravolt-b2b-core` paths),
+   its brand word (`TerraVolt`), or its German domain (`tvolt-energie.de`,
+   which the snapshot child theme's hreflang emitter points at). All three are
+   failures: the header of every sampled page and the archive JSON-LD are
+   where these strings lived. The sampled page list is printed with each
+   page's result, and includes the contact pages and a product page beside
+   the front pages and the faces.
 
 2. Face attribution: the four faces the old project served through its own
    LiveCanvas templates — blog posts index, single post, search results, blog
@@ -54,6 +56,7 @@ LEGACY_DT_IDS = {574, 6891, 613, 6887, 619, 6885, 607, 6889, 940, 6871}
 LEGACY_ID_RE = re.compile(r'id="(tv-[a-z0-9-]+)"')
 LEGACY_WORD_RE = re.compile(r"terravolt", re.IGNORECASE)
 LEGACY_ASSET_RE = re.compile(r"terravolt-b2b-core", re.IGNORECASE)
+LEGACY_DOMAIN_RE = re.compile(r"tvolt-energie\.de", re.IGNORECASE)
 LC_DT_RE = re.compile(r"<!--\s*LC DT ID:\s*(\d+)\s*-->")
 
 TIMEOUT = 20
@@ -109,6 +112,14 @@ def discover(base: str) -> dict[str, str | None]:
         en = found["category-en"]
         if en.startswith(base):
             found["category-de"] = f"{base}/de{en[len(base):]}"
+    # One product page: its hreflang pair was in the old emitter's product map.
+    # The Store API is public; the DE twin path mirrors the EN one under /de/.
+    products = fetch_json(f"{base}/wp-json/wc/store/v1/products?per_page=1")
+    if products and products[0].get("permalink"):
+        en = str(products[0]["permalink"])
+        found["product-en"] = en
+        if en.startswith(base + "/product/"):
+            found["product-de"] = base + "/de/produkt/" + en[len(base) + len("/product/"):]
     return found
 
 
@@ -148,6 +159,8 @@ def main() -> int:
     parser.add_argument("--search-de", default="/de/?s=wechselrichter", help="search URL, DE")
     parser.add_argument("--products-en", default="/products/", help="product archive path, EN")
     parser.add_argument("--products-de", default="/de/produkte/", help="product archive path, DE")
+    parser.add_argument("--contact-en", default="/contact/", help="contact page path, EN")
+    parser.add_argument("--contact-de", default="/de/kontakt/", help="contact page path, DE")
     args = parser.parse_args()
     base = args.base.rstrip("/")
     allow_ids = shipped_tv_ids(Path(args.repo_root))
@@ -170,14 +183,18 @@ def main() -> int:
     ]
 
     problems = 0
-    warnings = 0
 
     print("== face attribution ==")
-    sweep_urls: list[tuple[str, str]] = [
-        ("front-en", f"{base}/"),
-        ("front-de", f"{base}/de/"),
-        ("products-en", f"{base}{args.products_en}"),
-        ("products-de", f"{base}{args.products_de}"),
+    sweep_urls: list[tuple[str, str, bool]] = [
+        ("front-en", f"{base}/", True),
+        ("front-de", f"{base}/de/", True),
+        ("products-en", f"{base}{args.products_en}", True),
+        ("products-de", f"{base}{args.products_de}", True),
+        ("contact-en", f"{base}{args.contact_en}", True),
+        ("contact-de", f"{base}{args.contact_de}", True),
+        # Discovered, so optional: an instance without a product page skips.
+        ("product-en", found["product-en"] or "", False),
+        ("product-de", found["product-de"] or "", False),
     ]
     for name, url in faces:
         if url is None:
@@ -190,29 +207,34 @@ def main() -> int:
         if not ok:
             problems += 1
         if status == 200:
-            sweep_urls.append((name, url))
+            sweep_urls.append((name, url, True))
 
-    print("== asset sweep (terravolt-b2b-core references must be 0) ==")
-    for name, url in sweep_urls:
+    print("== asset sweep (old assets, brand word and domain must all be 0) ==")
+    for name, url, required in sweep_urls:
+        if not url:
+            print(f"SKIP {name}: not discovered on this instance")
+            continue
         status, body = fetch(url)
         if status != 200:
-            print(f"FAIL {name}: cannot sweep, http {status} — {url}")
-            problems += 1
+            if not required:
+                print(f"SKIP {name}: http {status} — {url}")
+            else:
+                print(f"FAIL {name}: cannot sweep, http {status} — {url}")
+                problems += 1
             continue
         assets = len(LEGACY_ASSET_RE.findall(body))
         words = len(LEGACY_WORD_RE.findall(body))
-        mark = "ok  " if assets == 0 else "FAIL"
-        note = f"{assets} asset reference(s)"
-        if words:
-            note += f", WARN {words} TerraVolt word(s)"
-            warnings += 1
-        print(f"{mark} {name}: {note} — {url}")
-        if assets:
+        domains = len(LEGACY_DOMAIN_RE.findall(body))
+        ok = assets == 0 and words == 0 and domains == 0
+        note = (
+            f"{assets} asset reference(s), {words} TerraVolt word(s), "
+            f"{domains} old-domain reference(s)"
+        )
+        print(f"{'ok  ' if ok else 'FAIL'} {name}: {note} — {url}")
+        if not ok:
             problems += 1
 
     summary = "CLEAN" if problems == 0 else f"{problems} problem(s)"
-    if warnings:
-        summary += f", {warnings} page(s) with TerraVolt-word warnings"
     print(f"== {summary} ==")
     return 0 if problems == 0 else 1
 

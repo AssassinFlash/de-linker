@@ -225,7 +225,7 @@ async function register(
 			.first()
 			.click();
 		await expect(
-			page.locator('a[href*="customer-logout"]'),
+			page.locator('a[href*="customer-logout"]').first(),
 			'the customer is signed in after registering'
 		).toBeVisible({ timeout: 60_000 });
 	} catch (error) {

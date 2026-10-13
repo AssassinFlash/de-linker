@@ -180,6 +180,7 @@ def provision(
 
     if snapshot_dir is not None:
         install_snapshot(instance, wp, snapshot_dir, say)
+    install_theme_files(instance, checkout)
 
     linked = link_plugins(instance, checkout)
     say(f"plugins {', '.join(linked)} -> {checkout.root}")
@@ -218,6 +219,7 @@ def refresh(
     wp = WpCli(php, instance)
     if snapshot_dir is not None:
         install_snapshot(instance, wp, snapshot_dir, say)
+    install_theme_files(instance, checkout)
     known = {path.name for path in (instance.wp_content / "plugins").iterdir()}
     linked = link_plugins(instance, checkout)
     say(f"plugins {', '.join(linked)} -> {checkout.root}")
@@ -323,15 +325,29 @@ def _extract_wordpress(archive: Path, docroot: Path) -> None:
 
 
 def install_mu_plugins(instance: Instance, checkout: Checkout) -> None:
-    """Copy the local mu-plugins (copies keep working when the checkout is removed)."""
+    """Copy the mu-plugins, local-only and production (copies keep working when the checkout is removed)."""
     target = instance.wp_content / "mu-plugins"
     target.mkdir(exist_ok=True)
     wanted = {path.name for path in checkout.mu_plugins()}
     for stale in target.glob("*linker-local*.php"):
         if stale.name not in wanted:
             stale.unlink()
-    for source in checkout.mu_plugins():
+    for source in (*checkout.mu_plugins(), *checkout.production_mu_plugins()):
         shutil.copyfile(source, target / source.name)
+
+
+def install_theme_files(instance: Instance, checkout: Checkout) -> None:
+    """Copy this checkout's files over the instance's copy of the theme.
+
+    The instance's themes arrive with a live snapshot; the files under
+    `themes/<slug>/` are this repository's replacements for the same paths
+    (`themes` mirrors `wp-content/themes`). Called after the snapshot install,
+    so the checkout's file is the one that stays."""
+    for source in checkout.theme_files():
+        relative = source.relative_to(checkout.root / "themes")
+        destination = instance.wp_content / "themes" / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
 
 
 def wp_config_constants(instance: Instance) -> str:

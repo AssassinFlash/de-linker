@@ -51,6 +51,8 @@ def test_the_error_recorder_is_not_deleted() -> None:
     assert "linker-i18n-mu-loader.php" in plan.LEGACY_MU_PLUGINS
     assert plan.MU_PLUGINS_REPO == "mu-plugins"
     assert plan.MU_PLUGINS_DIR == "wp-content/mu-plugins"
+    assert plan.THEMES_REPO == "themes"
+    assert plan.THEMES_DIR == "wp-content/themes"
     assert plan.LEGACY_GLOBS == ("*.bak-*",)
     assert plan.MU_ARCHIVE == "mu"
 

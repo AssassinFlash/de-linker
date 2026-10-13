@@ -1,0 +1,44 @@
+== hreflang after (one set, Polylang's; no tvolt-energie.de) ==
+-- /products/
+<link rel="alternate" href="http://127.0.0.1:8975/products/?cbq=ev1" hreflang="en" />
+<link rel="alternate" href="http://127.0.0.1:8975/de/produkte/?cbq=ev1" hreflang="de" />
+<link rel="alternate" href="http://127.0.0.1:8975/products/?cbq=ev1" hreflang="x-default" />
+-- /contact/
+<link rel="alternate" href="http://127.0.0.1:8975/contact/" hreflang="en" />
+<link rel="alternate" href="http://127.0.0.1:8975/de/kontakt/" hreflang="de" />
+<link rel="alternate" href="http://127.0.0.1:8975/contact/" hreflang="x-default" />
+-- /hybrid-inverter-vs-ac-coupled-storage/
+<link rel="alternate" href="http://127.0.0.1:8975/hybrid-inverter-vs-ac-coupled-storage/" hreflang="en" />
+<link rel="alternate" href="http://127.0.0.1:8975/de/hybridwechselrichter-vs-ac-speicher/" hreflang="de" />
+<link rel="alternate" href="http://127.0.0.1:8975/hybrid-inverter-vs-ac-coupled-storage/" hreflang="x-default" />
+-- /de/produkte/
+<link rel="alternate" href="http://127.0.0.1:8975/products/?cbq=ev1" hreflang="en" />
+<link rel="alternate" href="http://127.0.0.1:8975/de/produkte/?cbq=ev1" hreflang="de" />
+<link rel="alternate" href="http://127.0.0.1:8975/products/?cbq=ev1" hreflang="x-default" />
+-- /product/goodwe-gw60k-sts-g10/
+<link rel="alternate" href="http://127.0.0.1:8975/product/goodwe-gw60k-sts-g10/" hreflang="en" />
+<link rel="alternate" href="http://127.0.0.1:8975/de/produkt/goodwe-gw60k-sts-g10/" hreflang="de" />
+<link rel="alternate" href="http://127.0.0.1:8975/product/goodwe-gw60k-sts-g10/" hreflang="x-default" />
+
+== archive JSON-LD after (ours: Linker brand, language-correct) ==
+-- /products/
+{"@context": "https://schema.org", "@type": "CollectionPage", "name": "Products", "url": "http://127.0.0.1:8975/products/", "description": "Search products or filter by category and project requirements.", "isPartOf": {"@type": "WebSite", "name": "Linker", "url": "http://127.0.0.1:8975/"}}
+{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "http://127.0.0.1:8975/"}, {"@type": "ListItem", "position": 2, "name": "Products", "item": "http://127.0.0.1:8975/products/"}]}
+-- /de/produkte/
+{"@context": "https://schema.org", "@type": "CollectionPage", "name": "Produkte", "url": "http://127.0.0.1:8975/de/produkte/", "description": "Suchen Sie Produkte oder filtern Sie nach Kategorie und Projektanforderungen.", "isPartOf": {"@type": "WebSite", "name": "Linker", "url": "http://127.0.0.1:8975/"}}
+{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "http://127.0.0.1:8975/"}, {"@type": "ListItem", "position": 2, "name": "Produkte", "item": "http://127.0.0.1:8975/de/produkte/"}]}
+
+== security headers after (mu-plugins/linker-site-guards.php) ==
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+
+== html element and the js class ==
+<html lang="en-US" data-theme="light">
+classList.add('js')
+
+== contact mount state (68 migration verify) ==
+/contact/: form=True old-fallback=False
+/de/kontakt/: form=True old-fallback=False
+ok

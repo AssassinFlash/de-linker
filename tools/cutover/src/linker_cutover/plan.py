@@ -6,8 +6,8 @@ the maintenance window runs cannot drift apart.
 
 Two kinds of entry:
 
-- Things the script does (`NEW_PLUGINS`, `LEGACY_*`, `MIGRATIONS`, `HYGIENE`,
-  `VERIFY_PATHS`).
+- Things the script does (`NEW_PLUGINS`, `THEMES_REPO`, `LEGACY_*`, `MIGRATIONS`,
+  `HYGIENE`, `VERIFY_PATHS`).
 - Things only a person at the host's control panel can do (`MANUAL`). They are
   listed here so the checklist is complete, and `steps.hygiene` prints them
   instead of pretending to have run them.
@@ -46,6 +46,16 @@ PLUGINS_DIR = "wp-content/plugins"
 # project files (composer.json, tests/) are not deployed.
 MU_PLUGINS_REPO = "mu-plugins"
 MU_PLUGINS_DIR = "wp-content/mu-plugins"
+# The repository's files inside the live theme: `themes/<slug>/<file>` mirrors
+# `wp-content/themes/<slug>/<file>`. The child theme's functions.php is this
+# repository's file — the site renders through the LiveCanvas templates and the
+# linker-* plugins, so the theme file carries only the theme's own behaviours —
+# and the live site's copy of it carries another site's. `steps.deploy` copies
+# every file under `themes/`; the theme's rendering assets (its templates,
+# styles, scripts) come with the live theme and are not this repository's to
+# deploy.
+THEMES_REPO = "themes"
+THEMES_DIR = "wp-content/themes"
 
 # Installed from wordpress.org and activated: the free base of the i18n chain
 # (docs/specs/9-i18n.md). WP-CLI's own installer is the native mechanism, and it

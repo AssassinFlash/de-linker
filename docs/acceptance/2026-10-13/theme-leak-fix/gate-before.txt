@@ -1,0 +1,27 @@
+== face attribution ==
+ok   blog-en: 200 theme fallback — http://127.0.0.1:8975/blog/
+ok   blog-de: 200 theme fallback — http://127.0.0.1:8975/de/blog/
+ok   single-en: 200 theme fallback — http://127.0.0.1:8975/hybrid-inverter-vs-ac-coupled-storage/
+ok   single-de: 200 theme fallback — http://127.0.0.1:8975/de/hybridwechselrichter-vs-ac-speicher/
+ok   search-en: 200 theme fallback — http://127.0.0.1:8975/?s=inverter
+ok   search-de: 200 theme fallback — http://127.0.0.1:8975/de/?s=wechselrichter
+ok   category-en: 200 theme fallback — http://127.0.0.1:8975/category/uncategorized/
+ok   category-de: 200 theme fallback — http://127.0.0.1:8975/de/category/uncategorized/
+== asset sweep (old assets, brand word and domain must all be 0) ==
+FAIL front-en: 0 asset reference(s), 0 TerraVolt word(s), 1 old-domain reference(s) — http://127.0.0.1:8975/
+ok   front-de: 0 asset reference(s), 0 TerraVolt word(s), 0 old-domain reference(s) — http://127.0.0.1:8975/de/
+FAIL products-en: 0 asset reference(s), 3 TerraVolt word(s), 0 old-domain reference(s) — http://127.0.0.1:8975/products/
+FAIL products-de: 0 asset reference(s), 3 TerraVolt word(s), 0 old-domain reference(s) — http://127.0.0.1:8975/de/produkte/
+FAIL contact-en: 1 asset reference(s), 1 TerraVolt word(s), 1 old-domain reference(s) — http://127.0.0.1:8975/contact/
+FAIL contact-de: 1 asset reference(s), 1 TerraVolt word(s), 0 old-domain reference(s) — http://127.0.0.1:8975/de/kontakt/
+FAIL product-en: 0 asset reference(s), 0 TerraVolt word(s), 1 old-domain reference(s) — http://127.0.0.1:8975/product/goodwe-gw60k-sts-g10/
+ok   product-de: 0 asset reference(s), 0 TerraVolt word(s), 0 old-domain reference(s) — http://127.0.0.1:8975/de/produkt/goodwe-gw60k-sts-g10/
+FAIL blog-en: 0 asset reference(s), 0 TerraVolt word(s), 1 old-domain reference(s) — http://127.0.0.1:8975/blog/
+ok   blog-de: 0 asset reference(s), 0 TerraVolt word(s), 0 old-domain reference(s) — http://127.0.0.1:8975/de/blog/
+FAIL single-en: 0 asset reference(s), 0 TerraVolt word(s), 1 old-domain reference(s) — http://127.0.0.1:8975/hybrid-inverter-vs-ac-coupled-storage/
+ok   single-de: 0 asset reference(s), 0 TerraVolt word(s), 0 old-domain reference(s) — http://127.0.0.1:8975/de/hybridwechselrichter-vs-ac-speicher/
+FAIL search-en: 0 asset reference(s), 0 TerraVolt word(s), 1 old-domain reference(s) — http://127.0.0.1:8975/?s=inverter
+ok   search-de: 0 asset reference(s), 0 TerraVolt word(s), 0 old-domain reference(s) — http://127.0.0.1:8975/de/?s=wechselrichter
+FAIL category-en: 0 asset reference(s), 0 TerraVolt word(s), 1 old-domain reference(s) — http://127.0.0.1:8975/category/uncategorized/
+FAIL category-de: 0 asset reference(s), 0 TerraVolt word(s), 1 old-domain reference(s) — http://127.0.0.1:8975/de/category/uncategorized/
+== 11 problem(s) ==

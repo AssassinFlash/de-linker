@@ -21,9 +21,13 @@ What changes (ticket #68, GAP-8; docs/specs/11-commerce.md, the contact form):
    without JavaScript.
 3. The German twin gets the same edit; its fallback text is German and the
    replacement is identical, so both languages carry the same mount.
+4. The page's own script keeps driving the hero and the story panels, but its
+   header comment credits the previous runtime by name; the name goes with
+   the runtime (the mount above it is this repository's form now). A page
+   that names the previous tree anywhere else is refused rather than guessed
+   at.
 
-Nothing else in the page changes: the hero, the intro, the story and the
-page's own script (which also drives the hero and the story panels) stay.
+Nothing else in the page changes: the hero, the intro and the story stay.
 
 The migration is idempotent: the replacement is applied once per page, a
 second run reports nothing to do, and a page whose region matches neither the
@@ -61,6 +65,11 @@ NOSCRIPT = re.compile(
 
 # The shortcode the form is mounted with.
 SHORTCODE = "[linker_contact_form]"
+
+# The page script's header comment credits the previous runtime by name.
+PREVIOUS_RUNTIME = re.compile(r"\s*\(terravolt-b2b-core contact-request\.js\)")
+# What must not survive anywhere in the page.
+PREVIOUS_BRAND = re.compile(r"terravolt", re.IGNORECASE)
 
 RESOLVE_PHP = """
 $en = get_page_by_path('contact');
@@ -118,18 +127,26 @@ def resolve(wp: WP) -> dict[str, int]:
 def planned(content: str) -> tuple[str, list[str]]:
     """The new content and the changes it makes, or the reason it is refused."""
     changes: list[str] = []
-    if SHORTCODE in content:
-        return content, changes
-    if not MOUNT.search(content):
+    new = content
+    if SHORTCODE not in new:
+        if not MOUNT.search(new):
+            raise SystemExit(
+                "the contact form region matches neither the old mount with its "
+                "fallback nor the new shortcode; nothing is written"
+            )
+        new = MOUNT.sub(lambda m: f"{m.group(1)}{SHORTCODE}{m.group(2)}", new, count=1)
+        changes.append("mount: fallback -> " + SHORTCODE)
+        if NOSCRIPT.search(new):
+            new = NOSCRIPT.sub("", new, count=1)
+            changes.append("noscript fallback removed")
+    if PREVIOUS_RUNTIME.search(new):
+        new = PREVIOUS_RUNTIME.sub("", new, count=1)
+        changes.append("script comment: the previous runtime's name removed")
+    if PREVIOUS_BRAND.search(new):
         raise SystemExit(
-            "the contact form region matches neither the old mount with its "
-            "fallback nor the new shortcode; nothing is written"
+            "the page still names the previous tree somewhere this step does "
+            "not know; nothing is written"
         )
-    new = MOUNT.sub(lambda m: f"{m.group(1)}{SHORTCODE}{m.group(2)}", content, count=1)
-    changes.append("mount: fallback -> " + SHORTCODE)
-    if NOSCRIPT.search(new):
-        new = NOSCRIPT.sub("", new, count=1)
-        changes.append("noscript fallback removed")
     return new, changes
 
 
@@ -175,6 +192,12 @@ def do_verify(wp: WP, base: str) -> int:
         if SHORTCODE not in content:
             print(f"{lang} #{post_id}: the shortcode is missing", flush=True)
             ok = False
+        if PREVIOUS_BRAND.search(content):
+            print(
+                f"{lang} #{post_id}: the previous tree is still named",
+                flush=True,
+            )
+            ok = False
     for path in ("/contact/", "/de/kontakt/"):
         try:
             with urllib.request.urlopen(
@@ -202,7 +225,9 @@ def main() -> int:
         "--user", default=None, help="administrator login for the writes"
     )
     parser.add_argument(
-        "--base", default="http://127.0.0.1:8927", help="instance address for verify"
+        "--base",
+        default="http://127.0.0.1:8975",
+        help="instance address for verify (default: the reference instance, t110)",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("plan")

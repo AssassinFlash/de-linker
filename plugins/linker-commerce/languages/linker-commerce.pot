@@ -2130,6 +2130,10 @@ msgstr ""
 msgid "This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again."
 msgstr ""
 
+#: includes/Registration/Approval.php:230
+msgid "The username or the password is not correct."
+msgstr ""
+
 #: includes/Registration/ApprovalAdmin.php:45
 #: includes/Registration/ApprovalAdmin.php:138
 msgid "Approve"

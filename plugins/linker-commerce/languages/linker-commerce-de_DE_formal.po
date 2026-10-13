@@ -2315,6 +2315,10 @@ msgstr ""
 "per E-Mail geschickt. Schreiben Sie an sales@de-linker.com; wir sehen uns "
 "Ihr Konto erneut an."
 
+#: includes/Registration/Approval.php:230
+msgid "The username or the password is not correct."
+msgstr "Benutzername oder Passwort ist nicht korrekt."
+
 #: includes/Registration/ApprovalAdmin.php:45
 #: includes/Registration/ApprovalAdmin.php:138
 msgid "Approve"

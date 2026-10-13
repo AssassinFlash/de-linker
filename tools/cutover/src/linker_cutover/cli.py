@@ -2,7 +2,7 @@
 
     linker-cutover backup       take the complete backup (step 1)
     linker-cutover maintenance  on|off (steps 2 and 7)
-    linker-cutover deploy       files: the three plugins and Polylang (step 3)
+    linker-cutover deploy       files: the three plugins, the theme file and Polylang (step 3)
     linker-cutover plugins      export the snippets, remove the legacy plugins (step 3)
     linker-cutover data         the migrations (step 4)
     linker-cutover schema       retire the retained SEO plugin's Product template

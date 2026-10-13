@@ -149,8 +149,8 @@ def _acceptance(tmp_path: Path) -> Path:
     return tmp_path / "docs" / "acceptance" / "2026-10-11" / "17"
 
 
-def _repository(tmp_path: Path, *, recorder: bool = True) -> Path:
-    """A checkout with the three plugins, and the must-use directory #80 adds."""
+def _repository(tmp_path: Path, *, recorder: bool = True, themes: bool = True) -> Path:
+    """A checkout with the three plugins, the must-use directory #80 adds, and the theme file."""
     repository = tmp_path / "repo"
     for slug in plan.NEW_PLUGINS:
         source = repository / plan.REPO / slug
@@ -161,6 +161,12 @@ def _repository(tmp_path: Path, *, recorder: bool = True) -> Path:
         must_use.mkdir()
         (must_use / "linker-error-recorder.php").write_text(
             "<?php // the recorder", encoding="utf-8"
+        )
+    if themes:
+        theme = repository / plan.THEMES_REPO / "picostrap5-child-base"
+        theme.mkdir(parents=True)
+        (theme / "functions.php").write_text(
+            "<?php // the theme file", encoding="utf-8"
         )
     return repository
 
@@ -293,11 +299,60 @@ def test_the_deploy_installs_the_recorder_over_the_live_file(tmp_path: Path) -> 
     source, destination = target.rsyncs[0]
     assert Path(source).name == recorder
     assert destination == f"{target.root}/{plan.MU_PLUGINS_DIR}/{recorder}"
-    assert len(target.rsyncs) == 4, "the recorder and the three plugins"
+    assert len(target.rsyncs) == 5, "the recorder, the theme file and the three plugins"
     assert result.actions[0] == (
         f"deployed {plan.MU_PLUGINS_REPO}/{recorder} to "
         f"{plan.MU_PLUGINS_DIR}/{recorder} (replaced the live file)"
     )
+
+
+def test_the_deploy_installs_the_theme_file_over_the_live_one(tmp_path: Path) -> None:
+    """The child theme's functions.php is this repository's file.
+
+    The live copy of the same path belongs to the site being replaced: the
+    switch writes this one over it and says which of the two it did.
+    """
+    target = _fake(tmp_path)
+    relative = "picostrap5-child-base/functions.php"
+    target.existing.add(f"{plan.THEMES_DIR}/{relative}")
+    repository = _repository(tmp_path)
+
+    result = steps.deploy(target, repository=repository, staging=tmp_path / "staging")
+
+    installed = [
+        (source, destination)
+        for source, destination in target.rsyncs
+        if Path(source).name == "functions.php"
+    ]
+    assert len(installed) == 1
+    source, destination = installed[0]
+    assert source == str(repository / plan.THEMES_REPO / relative)
+    assert destination == f"{target.root}/{plan.THEMES_DIR}/{relative}"
+    assert (
+        f"deployed {plan.THEMES_REPO}/{relative} to "
+        f"{plan.THEMES_DIR}/{relative} (replaced the live file)" in result.actions
+    )
+
+
+def test_the_deploy_stops_when_the_checkout_has_no_theme_directory(
+    tmp_path: Path,
+) -> None:
+    """The theme file is an input of the step, like the must-use directory.
+
+    Shipping the three plugins while the live theme still carries the replaced
+    site's functions.php would leave the old behaviours running (hreflang to
+    the wrong domain among them) and report success.
+    """
+    target = _fake(tmp_path)
+    with pytest.raises(CutoverError, match="carries no theme file"):
+        steps.deploy(
+            target,
+            repository=_repository(tmp_path, themes=False),
+            staging=tmp_path / "staging",
+        )
+    assert [Path(source).name for source, _ in target.rsyncs] == [
+        "linker-error-recorder.php"
+    ], "the recorder goes first; the theme failure stops everything after it"
 
 
 def test_the_deploy_stops_when_the_checkout_has_no_must_use_directory(

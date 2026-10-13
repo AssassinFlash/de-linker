@@ -1,0 +1,10 @@
+Full suite after the fix: just e2e t110 (2026-10-13 evening)
+
+  1 failed
+  4 skipped
+  68 passed (10.3m)
+
+The one failure, re-run alone:
+  genie.spec.ts R3-en — flaked on an LLM answer that did not name the asked model (turn 881); re-run passed in 12.6s (same class as the earlier round's single red).
+
+The five account-spec failures of the previous run (stale predicates + the swallowed refusal) are all green in this run: account.spec.ts 11/11 incl. the four new VIES/approval cases.

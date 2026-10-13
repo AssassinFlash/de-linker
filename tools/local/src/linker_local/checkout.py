@@ -31,6 +31,17 @@ class Checkout:
         """The local-only mu-plugins, copied into every instance."""
         return sorted((self.root / "tools" / "local" / "mu").glob("*.php"))
 
+    def production_mu_plugins(self) -> list[Path]:
+        """The production must-use plugins (`mu-plugins/*.php`), copied into every instance."""
+        return sorted((self.root / "mu-plugins").glob("*.php"))
+
+    def theme_files(self) -> list[Path]:
+        """This checkout's files inside the live theme, `themes/<slug>/<file>`."""
+        themes = self.root / "themes"
+        if not themes.is_dir():
+            return []
+        return sorted(path for path in themes.rglob("*") if path.is_file())
+
     @property
     def router(self) -> Path:
         return self.root / "tools" / "local" / "router.php"

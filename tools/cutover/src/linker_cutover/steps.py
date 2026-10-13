@@ -119,7 +119,7 @@ def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:
 
 
 def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
-    """Step 3's file half: the three plugins, the must-use recorder, and Polylang.
+    """Step 3's file half: the three plugins, the must-use recorder, the theme file, and Polylang.
 
     The translations travel inside each plugin's `languages/` directory, so
     "new .po/.mo" needs no separate copy. Polylang is installed by WP-CLI from
@@ -131,6 +131,7 @@ def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
     """
     actions: list[str] = []
     actions += deploy_mu_plugins(target, repository=repository)
+    actions += deploy_theme_files(target, repository=repository)
     for slug in plan.NEW_PLUGINS:
         tree = stage_plugin(repository, slug, staging)
         target.copy_in(tree, f"{plan.PLUGINS_DIR}/{slug}")
@@ -184,6 +185,42 @@ def deploy_mu_plugins(target: Target, *, repository: Path) -> list[str]:
         target.copy_file_in(path, relative)
         actions.append(
             f"deployed {plan.MU_PLUGINS_REPO}/{path.name} to {relative}"
+            + (" (replaced the live file)" if replaced else "")
+        )
+    return actions
+
+
+def deploy_theme_files(target: Target, *, repository: Path) -> list[str]:
+    """The repository's files inside the live theme, over the live theme's own.
+
+    `themes/<slug>/<file>` mirrors `wp-content/themes/<slug>/<file>`. The
+    child theme's functions.php is this repository's: the site renders through
+    the LiveCanvas templates and the linker-* plugins, so the file carries the
+    theme's own two behaviours and nothing that belongs to those owners — the
+    live copy of the same path belongs to the site being replaced and goes
+    with it. The directory is an input of step 3 like the must-use one: a
+    checkout without it stops the step rather than shipping a site whose theme
+    still behaves like the old one.
+    """
+    source = Path(repository) / plan.THEMES_REPO
+    files = (
+        sorted(path for path in source.rglob("*") if path.is_file())
+        if source.is_dir()
+        else []
+    )
+    if not files:
+        raise CutoverError(
+            f"{source} carries no theme file — the switch deploys the child "
+            "theme's functions.php from themes/"
+        )
+    actions: list[str] = []
+    for path in files:
+        relative = path.relative_to(source)
+        destination = f"{plan.THEMES_DIR}/{relative}"
+        replaced = target.exists(destination)
+        target.copy_file_in(path, destination)
+        actions.append(
+            f"deployed {plan.THEMES_REPO}/{relative} to {destination}"
             + (" (replaced the live file)" if replaced else "")
         )
     return actions

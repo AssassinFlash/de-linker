@@ -41,6 +41,16 @@ final class Approval {
 	public const CHANGED_BY_META = 'linker_approval_changed_by';
 
 	/**
+	 * The refusal of the attempt that is signing in, when there is one.
+	 * WooCommerce applies `login_errors` in the same request as `gate_login`
+	 * (class-wc-form-handler.php), so this is the message that attempt
+	 * produced; a request without a refusal leaves it null.
+	 *
+	 * @var string|null
+	 */
+	private ?string $refusal = null;
+
+	/**
 	 * Fired when the state changes; the customer emails listen on its
 	 * "_notification" form (the way WooCommerce queues transactional emails,
 	 * NewCustomerEmail::register()).
@@ -59,10 +69,27 @@ final class Approval {
 	/**
 	 * Adds the hooks: a rejected account cannot sign in (WordPress's own gate
 	 * after the credentials were checked; no other callback was attached on
-	 * this site).
+	 * this site), and the sign-in form shows this gate's message rather than
+	 * the theme's blanket line.
 	 */
 	public function register(): void {
 		add_filter( 'wp_authenticate_user', array( $this, 'gate_login' ) );
+		// Priority 20: the theme's own blanket sign-in line is registered on
+		// this filter at 10, and the last callback's return is the one the
+		// customer reads.
+		add_filter( 'login_errors', array( $this, 'login_errors' ), 20 );
+	}
+
+	/**
+	 * What the sign-in form shows after a failed attempt.
+	 *
+	 * The approval refusal passes through with its state and the way back:
+	 * it is the one message the customer has to read (ticket 73). Everything
+	 * else reads one line — a missing username and a wrong password must
+	 * look the same to an anonymous visitor.
+	 */
+	public function login_errors(): string {
+		return $this->refusal ?? __( 'The username or the password is not correct.', 'linker-commerce' );
 	}
 
 	/**
@@ -204,9 +231,7 @@ final class Approval {
 		if ( ! $user instanceof WP_User || self::REJECTED !== $this->status( $user->ID ) ) {
 			return $user;
 		}
-		return new WP_Error(
-			'linker_approval_rejected',
-			__( 'This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again.', 'linker-commerce' )
-		);
+		$this->refusal = __( 'This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again.', 'linker-commerce' );
+		return new WP_Error( 'linker_approval_rejected', $this->refusal );
 	}
 }
