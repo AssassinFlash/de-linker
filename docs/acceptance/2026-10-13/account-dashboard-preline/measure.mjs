@@ -239,7 +239,6 @@ for (const spec of Object.values(OURS)) {
 	spec[1].push(['workspace', '#container-content-account', BOX], ['content', '.linker-account-main', BOX],
 		['h1', '.linker-account-heading h1', [...TYPE, 'rect']],
 		['sidebar', '.linker-account-sidebar', BOX],
-		['sidebar.item', '.linker-account-nav-items a', BOX],
 		['navigation.toggle', '.linker-account-menu-toggle', BOX],
 		['tiles.grid', '.linker-account-tiles', ['gridTemplateColumns', 'gap', 'rect']],
 		['table.card', '.linker-account-table-card', BOX],

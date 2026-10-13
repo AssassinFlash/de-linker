@@ -91,7 +91,7 @@ export function MobileNavigation( { steps }: { steps: MobileStep[] } ) {
 			className="linker-mobile-nav"
 			ref={ navigation }
 			hidden={ ! visible }
-			aria-label={ __( 'Configurator', 'linker-tools' ) }
+			aria-label={ __( 'Configurator navigation', 'linker-tools' ) }
 		>
 			{ steps.map( ( step, index ) => (
 				<button

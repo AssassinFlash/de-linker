@@ -27,6 +27,8 @@
 			],
 			"Project type": [ "Projektart" ],
 			"Configurator": [ "Konfigurator" ],
+			"Configurator navigation": [ "Konfigurator-Navigation" ],
+			"Configurator steps": [ "Konfigurator-Schritte" ],
 			"Three steps. The result follows the inputs you enter.": [
 				"Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen."
 			],

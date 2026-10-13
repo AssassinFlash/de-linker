@@ -71,7 +71,7 @@ export function Steps( { current }: { current: 1 | 2 | 3 } ) {
 		<nav
 			className="linker-steps"
 			ref={ rail }
-			aria-label={ __( 'Configurator', 'linker-tools' ) }
+			aria-label={ __( 'Configurator steps', 'linker-tools' ) }
 		>
 			<p className="linker-steps__cap">
 				{ __( 'Configurator', 'linker-tools' ) }

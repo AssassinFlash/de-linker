@@ -207,13 +207,13 @@ final class AccountTemplates {
 			case 'pagination':
 				do_action( 'woocommerce_before_account_orders_pagination' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
 				break;
-			case 'sidebar':
+			case 'after-content':
 				// The sidebar's own slot (the contact person). Pending accounts
 				// read the review page, so — like nav() — they get nothing here.
 				$user_id = get_current_user_id();
 				if ( $user_id > 0 && Approval::PENDING !== ( new Approval() )->status( $user_id ) ) {
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Account module's existing contact slot.
-					do_action( 'linker_account_sidebar' );
+					do_action( 'linker_account_after_content' );
 				}
 				break;
 		}

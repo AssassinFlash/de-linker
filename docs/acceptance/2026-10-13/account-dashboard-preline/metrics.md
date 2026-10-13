@@ -58,7 +58,7 @@
 | company | My Profile: initials + full-width edit | 四键 fixed + 七入口折叠菜单 | 不适用 | 44px（目标 ≥44） | 16px（目标16） | 65px（64+1边框） |
 | account-details | My Profile: initials + full-width edit | 四键 fixed + 七入口折叠菜单 | 不适用 | 44px（目标 ≥44） | 16px（目标16） | 65px（64+1边框） |
 
-移动补充：状态瓦片 173×116、两列 gap12；快捷瓦片 83.5×80、四列 gap8；标题24/32/600；输入48px；save CTA48px固定在底栏之上，间隔12px；无 CTA 页面底部预留100px，有 CTA 页面预留220px，均另加 safe-area。
+移动补充：状态瓦片 173×116、两列 gap12；快捷瓦片 83.5×80、四列 gap8；标题24/32/600；输入48px；save CTA48px固定在底栏之上，间隔11px（CTA 下沿 768 → 底栏盒顶 779）；无 CTA 页面底部预留100px，有 CTA 页面预留220px，均另加 safe-area。
 390/430 × EN/DE 的最后一个可交互元素 hit-test 与全菜单七入口证明见 mobile-check.json；未伪造空态中不存在的动作。
 颜色取 shared tokens；主参照的学生/课表/学费/进度不复制，既有四态数据与 PI 金额是唯一对应物。
 

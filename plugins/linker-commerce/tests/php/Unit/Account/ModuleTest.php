@@ -51,7 +51,7 @@ final class ModuleTest extends TestCase {
 		}
 			$pending = new PendingGate();
 			WP_Mock::expectActionAdded( 'template_redirect', array( $pending, 'redirect' ) );
-			WP_Mock::expectActionAdded( 'linker_account_sidebar', array( $contact, 'render' ) );
+			WP_Mock::expectActionAdded( 'linker_account_after_content', array( $contact, 'render' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_account_orders_columns', array( $inquiries, 'columns' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_actions', array( $inquiries, 'actions' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'woocommerce_order_item_meta_end', array( $inquiries, 'datasheet_link' ), 10, 4 );

@@ -51,7 +51,7 @@ final class Module {
 			add_filter( 'woocommerce_endpoint_' . $endpoint . '_title', array( $this->menu, 'title' ), 10, 2 );
 		}
 		add_action( 'template_redirect', array( $this->pending, 'redirect' ) );
-		add_action( 'linker_account_sidebar', array( $this->contact, 'render' ) );
+		add_action( 'linker_account_after_content', array( $this->contact, 'render' ) );
 		$this->auth->register();
 
 		add_filter( 'woocommerce_account_orders_columns', array( $this->inquiries, 'columns' ) );

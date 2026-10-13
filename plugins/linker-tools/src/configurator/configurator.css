@@ -1229,8 +1229,9 @@
 		border-bottom: 1px solid var(--linker-line);
 	}
 
-	/* German step names do not fit three-across at 390px. The number stays;
-	   the name remains in the accessible name of the step. */
+	/* In the 769–860px band three columns are too tight for the German step
+	   names: the number stays and the name lives on as the accessible name.
+	   The ≤48rem block below shows the labels again for the narrow layout. */
 	.linker-configurator .linker-steps__label {
 		position: absolute;
 		width: 1px;
