@@ -279,6 +279,66 @@ test( 'a first visit with no stored conversation opens empty', async () => {
 	expect( screen.queryByText( 'These three fit.' ) ).toBeNull();
 } );
 
+// The empty column's own line, the prototype's `.gp-welcome h1` (variant A).
+// It belongs to the empty state and leaves with the first turn.
+test( 'the empty column carries the welcome title until a turn lands', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
+		} );
+	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	expect(
+		await screen.findByRole( 'heading', {
+			name: 'Where should we begin?',
+		} )
+	).toBeVisible();
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', {
+				name: 'I need a three-phase hybrid inverter for a home.',
+			} )
+		);
+	} );
+	expect(
+		screen.queryByRole( 'heading', { name: 'Where should we begin?' } )
+	).toBeNull();
+} );
+
+// The prototype's `.gp-answer-brand`: an answer is labelled with the assistant,
+// a question is not.
+test( 'an answer carries the answer label and a question does not', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
+		} );
+	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', {
+				name: 'I need a three-phase hybrid inverter for a home.',
+			} )
+		);
+	} );
+	const brands = document.querySelectorAll(
+		'.linker-genie-app__answer-brand'
+	);
+	expect( brands.length ).toBe( 1 );
+	expect( brands[ 0 ].textContent ).toContain( 'Genie' );
+	expect(
+		document
+			.querySelector( '.linker-genie-app__message--user' )
+			?.querySelector( '.linker-genie-app__answer-brand' )
+	).toBeNull();
+} );
+
 test( 'the ready handshake opens once and Hide/reopen reports the same state', async () => {
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.mocked( sendTurn ).mockClear();

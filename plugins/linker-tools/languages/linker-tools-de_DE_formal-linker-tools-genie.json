@@ -12,6 +12,7 @@
 			"Genie - Linker's AI assistant": [
 				"Genie – der KI-Assistent von Linker"
 			],
+			"Genie": [ "Genie" ],
 			"Open": [ "Öffnen" ],
 			"Hide": [ "Ausblenden" ],
 			"Send": [ "Senden" ],
@@ -51,7 +52,7 @@
 			"Conversations": [ "Gespräche" ],
 			"New conversation": [ "Neues Gespräch" ],
 			"Close sidebar": [ "Seitenleiste schließen" ],
-			"Loading conversations…": [ "Gespräche werden geladen …" ],
+			"Where should we begin?": [ "Womit möchten Sie beginnen?" ],
 			"No earlier conversation.": [ "Kein früheres Gespräch." ],
 			"Conversations could not be loaded.": [
 				"Gespräche konnten nicht geladen werden."

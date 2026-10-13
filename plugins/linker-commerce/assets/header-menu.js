@@ -25,8 +25,22 @@
 	disclosures.forEach( item => {
 		const button = buttonFor( item );
 		const menu = item.querySelector( '.tv-mega-menu, .tv-b2b-acct-menu' );
-		if ( ! menu.id ) menu.id = 'linker-menu-' + item.dataset.tvNavPrimary;
+		// `.tv-b2b-acct` carries no data-tv-nav-primary; the account menu is
+		// the one other disclosure.
+		if ( ! menu.id ) menu.id = 'linker-menu-' + ( item.dataset.tvNavPrimary || 'account' );
 		button.setAttribute( 'aria-controls', menu.id );
+		// The account menu is shown by `hidden` alone (the header stylesheet
+		// has .tv-b2b-acct-menu[hidden]{display:none}); the mega menu reads
+		// its state from aria-expanded through :has(). Closing the account
+		// menu here is defensive, not a fix for an observed failure: the two
+		// are read from different places (visibility from the markup's
+		// `hidden`, the announcement from this script), so a menu served
+		// without `hidden` would stand open beside aria-expanded="false".
+		// Closing it makes the state this script toggles the state it starts
+		// from, whatever the markup arrives with. Not reproduced on the
+		// workspace header, the planner or any other page. The mega menu is
+		// left as it arrives — hiding it here would eat the first open's fade.
+		if ( menu.classList.contains( 'tv-b2b-acct-menu' ) ) setOpen( item, false );
 		let hovered = false;
 		item.addEventListener( 'pointerenter', event => {
 			if ( event.pointerType === 'touch' ) return;
