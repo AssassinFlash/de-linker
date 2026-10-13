@@ -322,11 +322,7 @@ def _stream(
     stdout: IO[bytes] | None = None,
 ) -> None:
     """Run a script on the target with the given standard streams."""
-    command = (
-        ["bash", "-c", script]
-        if target.shell_prefix is None
-        else [*target.shell_prefix, script]
-    )
+    command = target.shell_command(script)
     with tempfile.TemporaryFile() as error:
         completed = subprocess.run(
             command, stdin=stdin, stdout=stdout, stderr=error, check=False

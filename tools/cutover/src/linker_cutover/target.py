@@ -121,14 +121,22 @@ class Target:
         """A WP-CLI command that prints JSON."""
         return json.loads(self.wp(*args, "--format=json"))
 
+    def shell_command(self, script: str) -> list[str]:
+        """The argv that runs a shell script on the machine the site runs on.
+
+        ssh joins its arguments with spaces and the remote login shell splits
+        them again: beside `bash -c` the script must travel as one quoted word,
+        or the remote shell eats its first token (measured 2026-10-14: the
+        backup's dump arrived as a bare `set`, which printed the environment).
+        One implementation: `shell` and the backup's stream both call this.
+        """
+        if self.shell_prefix is None:
+            return ["bash", "-c", script]
+        return [*self.shell_prefix, shlex.quote(script)]
+
     def shell(self, script: str) -> str:
         """Run a shell script on the machine the site runs on."""
-        if self.shell_prefix is None:
-            return _run(["bash", "-c", script])
-        # ssh joins its arguments with spaces and the remote login shell splits
-        # them again: beside `bash -c` the script must travel as one quoted
-        # word, or the remote shell eats its first token.
-        return _run([*self.shell_prefix, shlex.quote(script)])
+        return _run(self.shell_command(script))
 
     def rsync(
         self, source: str, destination: str, *, extra: list[str] | None = None
