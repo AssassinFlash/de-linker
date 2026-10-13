@@ -370,6 +370,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	useEffect( () => {
 		function onOpen( event: Event ) {
 			setOpen( true );
+			setDockHistory( false );
 			const detail = ( event as CustomEvent< { message?: unknown } > )
 				.detail;
 			if ( detail && typeof detail.message === 'string' ) {
@@ -483,7 +484,10 @@ export function App( { config }: { config: GenieConfig } ) {
 				<button
 					type="button"
 					className="linker-genie-dock-mask"
-					onClick={ () => setOpen( false ) }
+					onClick={ () => {
+						setDockHistory( false );
+						setOpen( false );
+					} }
 				>
 					<span className="screen-reader-text">
 						{ __( 'Hide', 'linker-tools' ) }
@@ -613,7 +617,10 @@ export function App( { config }: { config: GenieConfig } ) {
 											'Close',
 											'linker-tools'
 										) }
-										onClick={ () => setOpen( false ) }
+										onClick={ () => {
+											setDockHistory( false );
+											setOpen( false );
+										} }
 									>
 										<CloseIcon />
 									</button>

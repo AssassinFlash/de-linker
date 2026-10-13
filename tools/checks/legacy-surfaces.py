@@ -78,7 +78,7 @@ def fetch(url: str) -> tuple[int | None, str]:
     except urllib.error.HTTPError as error:
         body = error.read().decode("utf-8", errors="replace") if error.fp else ""
         return error.code, body
-    except urllib.error.URLError:
+    except (urllib.error.URLError, TimeoutError):
         return None, ""
 
 
@@ -128,11 +128,11 @@ def classify(status: int | None, body: str, allow_ids: set[str]) -> tuple[str, b
     legacy_stamps = stamped & LEGACY_DT_IDS
     if legacy_stamps:
         return f"legacy-template {sorted(legacy_stamps)}", False
-    if stamped:
-        return f"lc-template {sorted(stamped)}", True
     leaks = sorted(set(LEGACY_ID_RE.findall(body)) - allow_ids)
     if leaks:
         return f"legacy markup ({', '.join(leaks[:3])})", False
+    if stamped:
+        return f"lc-template {sorted(stamped)}", True
     if LEGACY_WORD_RE.search(body):
         return "legacy markup (TerraVolt comment)", False
     return "theme fallback", True

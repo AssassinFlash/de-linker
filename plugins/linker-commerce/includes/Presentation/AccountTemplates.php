@@ -75,17 +75,28 @@ final class AccountTemplates {
 	 */
 	private ?\Linker\Commerce\Account\Documents $documents = null;
 
+	/**
+	 * Takes the account documents assembly #11 owns when production wires it
+	 * (Plugin.php); a bare construction (tests) keeps the local assembly in
+	 * documents() as its fallback.
+	 *
+	 * @param \Linker\Commerce\Account\Documents|null $documents The shared assembly.
+	 */
+	public function __construct( ?\Linker\Commerce\Account\Documents $documents = null ) {
+		$this->documents = $documents;
+	}
+
 	/** Registers the content adapter and its data tags. */
 	public function register(): void {
 		self::$adapter = $this;
-			add_filter( 'wc_get_template', array( $this, 'template' ), 20, 2 );
-			add_shortcode( 'linker_account_field', array( $this, 'field' ) );
-			add_shortcode( 'linker_account_rows', array( $this, 'rows' ) );
-			add_shortcode( 'linker_account_hook', array( $this, 'hook' ) );
-			add_shortcode( 'linker_account_text', array( $this, 'text' ) );
-			add_shortcode( 'linker_account_url', array( $this, 'url' ) );
-			add_shortcode( 'linker_account_nav', array( $this, 'nav' ) );
-			add_filter( 'woocommerce_my_account_my_orders_query', array( $this, 'orders_query' ) );
+		add_filter( 'wc_get_template', array( $this, 'template' ), 20, 2 );
+		add_shortcode( 'linker_account_field', array( $this, 'field' ) );
+		add_shortcode( 'linker_account_rows', array( $this, 'rows' ) );
+		add_shortcode( 'linker_account_hook', array( $this, 'hook' ) );
+		add_shortcode( 'linker_account_text', array( $this, 'text' ) );
+		add_shortcode( 'linker_account_url', array( $this, 'url' ) );
+		add_shortcode( 'linker_account_nav', array( $this, 'nav' ) );
+		add_filter( 'woocommerce_my_account_my_orders_query', array( $this, 'orders_query' ) );
 	}
 
 	/**
@@ -304,30 +315,30 @@ final class AccountTemplates {
 	 * @param array<string, string>|string $atts Attributes.
 	 */
 	public function text( $atts = array() ): string {
-			$labels = array(
-				'overview'        => __( 'Overview', 'linker-commerce' ),
-				'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
-				'all'             => __( 'All inquiries', 'linker-commerce' ),
-				'open'            => __( 'Open inquiries', 'linker-commerce' ),
-				'status'          => __( 'Status', 'linker-commerce' ),
-				'number'          => __( 'Inquiry', 'linker-commerce' ),
-				'date'            => __( 'Date', 'linker-commerce' ),
-				'amount'          => __( 'Amount', 'linker-commerce' ),
-				'view'            => __( 'View', 'linker-commerce' ),
-				'document'        => __( 'Document', 'linker-commerce' ),
-				'download'        => __( 'Download (PDF)', 'linker-commerce' ),
-				'saved'           => __( 'Saved on', 'linker-commerce' ),
-				'add'             => __( 'Add to solution draft', 'linker-commerce' ),
-				'report'          => __( 'Design report (PDF)', 'linker-commerce' ),
-				'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-				'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-				'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
-				'empty-documents' => __( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
-				'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
-				'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
-				'view-all'        => __( 'View all', 'linker-commerce' ),
-				'documents'       => __( 'Documents', 'linker-commerce' ),
-			);
+		$labels = array(
+			'overview'        => __( 'Overview', 'linker-commerce' ),
+			'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
+			'all'             => __( 'All inquiries', 'linker-commerce' ),
+			'open'            => __( 'Open inquiries', 'linker-commerce' ),
+			'status'          => __( 'Status', 'linker-commerce' ),
+			'number'          => __( 'Inquiry', 'linker-commerce' ),
+			'date'            => __( 'Date', 'linker-commerce' ),
+			'amount'          => __( 'Amount', 'linker-commerce' ),
+			'view'            => __( 'View', 'linker-commerce' ),
+			'document'        => __( 'Document', 'linker-commerce' ),
+			'download'        => __( 'Download (PDF)', 'linker-commerce' ),
+			'saved'           => __( 'Saved on', 'linker-commerce' ),
+			'add'             => __( 'Add to solution draft', 'linker-commerce' ),
+			'report'          => __( 'Design report (PDF)', 'linker-commerce' ),
+			'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+			'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+			'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
+			'empty-documents' => __( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
+			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
+			'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
+			'view-all'        => __( 'View all', 'linker-commerce' ),
+			'documents'       => __( 'Documents', 'linker-commerce' ),
+		);
 			return esc_html( $labels[ (string) ( $atts['key'] ?? '' ) ] ?? '' );
 	}
 
