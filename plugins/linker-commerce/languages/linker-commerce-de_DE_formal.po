@@ -2680,7 +2680,7 @@ msgid ""
 "uses DLK-PF, the prefix on de-linker.com."
 msgstr ""
 "Nummern haben die Form PRÄFIX-JAHR-NNNN und zählen jedes Kalenderjahr ab 1. "
-"Leer verwendet DLK-PF, das Präfix auf de-linker.com."
+"Bleibt das Feld leer, gilt DLK-PF, das Präfix auf de-linker.com."
 
 #: includes/Settings/SettingsTab.php:147
 msgid "Seller"
