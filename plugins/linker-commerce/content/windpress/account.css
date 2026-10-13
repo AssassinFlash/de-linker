@@ -1,0 +1,505 @@
+/*
+ * Account area: guest sign-in/register/lost-password cards and the signed-in
+ * dashboard (sidebar navigation, status tiles, inquiry rows, document entry).
+ * Every colour comes from the shared --proto-* tokens; the selectors are new
+ * class names, so this sheet never restates an existing rule and is neutral
+ * to the volume's import order. Layout and spacing only here — Woo keeps the
+ * forms, the fragments keep the markup.
+ */
+
+/* ---------- Guest: sign-in, register, lost password ---------- */
+
+.linker-account .linker-auth {
+	display: grid;
+	gap: var(--proto-space-6);
+	justify-items: center;
+	padding: var(--proto-space-5) 0 var(--proto-space-7);
+}
+
+.linker-account .linker-auth-card {
+	width: 100%;
+	max-width: 26rem;
+	padding: var(--proto-space-6);
+	background: var(--proto-canvas-white);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-card);
+	box-shadow: var(--proto-shadow-1);
+}
+
+.linker-account .linker-auth-card-heading {
+	margin-bottom: var(--proto-space-5);
+}
+
+.linker-account .linker-auth-card-heading h1,
+.linker-account .linker-auth-card-heading h2 {
+	margin: 0 0 var(--proto-space-2);
+	font-family: var(--proto-font-display);
+	font-size: var(--proto-size-2xl);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-tight);
+	color: var(--proto-neutral-900);
+}
+
+.linker-account .linker-auth-card-heading p {
+	margin: 0;
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-body);
+	color: var(--proto-ink-muted-deep);
+}
+
+.linker-account .linker-auth-register {
+	max-width: 36rem;
+}
+
+.linker-account .linker-auth form {
+	margin: 0;
+}
+
+.linker-account .linker-auth .input-text,
+.linker-account .linker-auth select {
+	border-radius: var(--proto-input-radius);
+	border-color: var(--proto-input-line);
+	background: var(--proto-input-bg);
+	min-height: var(--proto-input-height);
+}
+
+.linker-account .linker-auth :where(a, button, input, select):focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+
+.linker-account .linker-auth .input-text:focus {
+	border-color: var(--proto-input-line-focus);
+}
+
+.linker-account .linker-auth .woocommerce-invalid .input-text,
+.linker-account .linker-auth .woocommerce-invalid-required-field .input-text {
+	border-color: var(--proto-sem-danger);
+}
+
+.linker-account .linker-auth .linker-auth-submit {
+	margin-bottom: var(--proto-space-3);
+}
+
+.linker-account .linker-auth .linker-auth-submit .button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-height: var(--proto-control-height);
+	padding: var(--proto-control-pad-y) var(--proto-control-pad-x);
+	border: 1px solid var(--proto-pill-a-line);
+	border-radius: var(--proto-radius-md);
+	background: var(--proto-pill-a-bg);
+	color: var(--proto-pill-a-fg);
+	font-size: var(--proto-control-size);
+	font-weight: var(--proto-control-weight);
+	line-height: var(--proto-leading-tight);
+	cursor: pointer;
+	transition: background var(--proto-duration) var(--proto-ease), color var(--proto-duration) var(--proto-ease);
+}
+
+.linker-account .linker-auth .linker-auth-submit .button:hover {
+	background: var(--proto-pill-a-hover-bg);
+	border-color: var(--proto-pill-a-hover-line);
+	color: var(--proto-pill-a-hover-fg);
+}
+
+.linker-account .linker-auth .lost_password {
+	margin: 0;
+	text-align: center;
+	font-size: var(--proto-size-sm);
+}
+
+.linker-account .linker-auth .lost_password a,
+.linker-account .linker-auth-links a {
+	color: var(--proto-teal-700);
+	text-decoration: none;
+}
+
+.linker-account .linker-auth .lost_password a:hover,
+.linker-account .linker-auth-links a:hover {
+	text-decoration: underline;
+}
+
+.linker-account .linker-auth-links {
+	margin: var(--proto-space-4) 0 0;
+	text-align: center;
+	font-size: var(--proto-size-sm);
+}
+
+.linker-account .linker-auth .woocommerce-form-login__rememberme {
+	font-size: var(--proto-size-sm);
+	color: var(--proto-neutral-600);
+}
+
+/* The register form's three steps: company, contact and address, sign-in
+   details. The fields inside are Woo's own rows in Woo's own order. */
+
+.linker-account .linker-auth-steps {
+	display: grid;
+	gap: var(--proto-space-5);
+	margin: 0 0 var(--proto-space-5);
+	padding: 0;
+	list-style: none;
+}
+
+.linker-account .linker-auth-step {
+	padding-top: var(--proto-space-5);
+	border-top: 1px solid var(--proto-line-journal);
+}
+
+.linker-account .linker-auth-step-title {
+	display: flex;
+	align-items: center;
+	gap: var(--proto-space-3);
+	margin: 0 0 var(--proto-space-4);
+	font-family: var(--proto-font-sans);
+	font-size: var(--proto-size-md);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-tight);
+	color: var(--proto-neutral-900);
+}
+
+.linker-account .linker-auth-step-index {
+	display: inline-grid;
+	place-items: center;
+	width: 1.75rem;
+	height: 1.75rem;
+	border: 1px solid var(--proto-teal-100);
+	border-radius: var(--proto-radius-round);
+	background: var(--proto-teal-50);
+	color: var(--proto-teal-700);
+	font-size: var(--proto-size-sm);
+	font-weight: var(--proto-weight-semibold);
+}
+
+/* Notices sit directly above the card they belong to, in the card's width. */
+
+body.woocommerce-account:not(.logged-in) .linker-account .woocommerce-notices-wrapper {
+	max-width: 26rem;
+	margin: 0 auto;
+}
+
+body.woocommerce-account:not(.logged-in) .linker-account .woocommerce-error,
+body.woocommerce-account:not(.logged-in) .linker-account .woocommerce-message,
+body.woocommerce-account:not(.logged-in) .linker-account .woocommerce-info {
+	margin: 0 0 var(--proto-space-4);
+	padding: var(--proto-space-3) var(--proto-space-4);
+	border: 1px solid var(--proto-line-journal);
+	border-left: 3px solid var(--proto-teal-600);
+	border-radius: var(--proto-radius-md);
+	background: var(--proto-canvas-white);
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-body);
+	color: var(--proto-neutral-700);
+	list-style: none;
+}
+
+body.woocommerce-account:not(.logged-in) .linker-account .woocommerce-error {
+	border-left-color: var(--proto-sem-danger);
+}
+
+body.woocommerce-account:not(.logged-in) .linker-account .woocommerce-message {
+	border-left-color: var(--proto-sem-ok);
+}
+
+/* ---------- Signed-in: the dashboard ---------- */
+
+.linker-account .linker-account-layout {
+	display: grid;
+	grid-template-columns: 14rem minmax(0, 1fr);
+	gap: var(--proto-space-6);
+	align-items: start;
+}
+
+.linker-account .linker-account-layout:not(:has(.linker-account-nav)) {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.linker-account .linker-account-sidebar:not(:has(.linker-account-nav)) {
+	display: none;
+}
+
+.linker-account .linker-account-nav-group {
+	margin-bottom: var(--proto-space-5);
+}
+
+.linker-account .linker-account-nav-label {
+	margin: 0 0 var(--proto-space-2);
+	font-size: var(--proto-size-xs);
+	font-weight: var(--proto-weight-semibold);
+	letter-spacing: var(--proto-track-label);
+	text-transform: uppercase;
+	color: var(--proto-ink-muted-deep);
+}
+
+.linker-account .linker-account-nav-items {
+	display: grid;
+	gap: 2px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.linker-account .linker-account-nav-items a {
+	display: block;
+	padding: var(--proto-space-2) var(--proto-space-3);
+	border-radius: var(--proto-radius-md);
+	font-size: var(--proto-size-sm);
+	font-weight: var(--proto-weight-medium);
+	line-height: var(--proto-leading-tight);
+	color: var(--proto-neutral-700);
+	text-decoration: none;
+}
+
+.linker-account .linker-account-nav-items a:hover {
+	background: var(--proto-neutral-100);
+	color: var(--proto-neutral-900);
+}
+
+.linker-account .linker-account-nav-items [aria-current="page"] {
+	background: var(--proto-teal-50);
+	color: var(--proto-teal-700);
+	font-weight: var(--proto-weight-semibold);
+}
+
+.linker-account .linker-account-main {
+	min-width: 0;
+}
+
+.linker-account .linker-account-dashboard {
+	display: grid;
+	gap: var(--proto-space-6);
+}
+
+/* Four status tiles, one per inquiry state, linking to the inquiry list. */
+
+.linker-account .linker-account-tiles {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: var(--proto-space-4);
+	margin-bottom: var(--proto-space-6);
+}
+
+.linker-account .linker-account-tile {
+	display: grid;
+	gap: var(--proto-space-2);
+	padding: var(--proto-space-4) var(--proto-space-4) var(--proto-space-5);
+	background: var(--proto-canvas-white);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-card);
+	box-shadow: var(--proto-shadow-1);
+	text-decoration: none;
+}
+
+.linker-account .linker-account-tile:hover {
+	border-color: var(--proto-teal-600);
+}
+
+.linker-account .linker-account-tile:focus-visible,
+.linker-account .linker-account-row:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+
+.linker-account .linker-account-tile-count {
+	font-family: var(--proto-font-display);
+	font-size: var(--proto-size-2xl);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-tight);
+	color: var(--proto-neutral-900);
+}
+
+.linker-account .linker-account-tile-label {
+	display: flex;
+	align-items: center;
+	gap: var(--proto-space-2);
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-tight);
+	color: var(--proto-ink-muted-deep);
+}
+
+.linker-account .linker-account-tile-label::before {
+	content: "";
+	flex: none;
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: var(--proto-radius-round);
+	background: var(--proto-neutral-300);
+}
+
+.linker-account .linker-account-tile[data-status="inquiry-received"] .linker-account-tile-label::before {
+	background: var(--proto-teal-600);
+}
+
+.linker-account .linker-account-tile[data-status="proforma-issued"] .linker-account-tile-label::before {
+	background: var(--proto-sem-warn);
+}
+
+.linker-account .linker-account-tile[data-status="completed"] .linker-account-tile-label::before {
+	background: var(--proto-sem-ok);
+}
+
+/* Panels: recent inquiries and the documents entry. */
+
+.linker-account .linker-account-panel {
+	background: var(--proto-canvas-white);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-card);
+	box-shadow: var(--proto-shadow-1);
+}
+
+.linker-account .linker-account-panel-heading {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--proto-space-3);
+	padding: var(--proto-space-4) var(--proto-space-5);
+	border-bottom: 1px solid var(--proto-line-journal);
+}
+
+.linker-account .linker-account-panel-heading h2 {
+	margin: 0;
+	font-family: var(--proto-font-sans);
+	font-size: var(--proto-size-md);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-tight);
+	color: var(--proto-neutral-900);
+}
+
+.linker-account .linker-account-panel-heading a {
+	font-size: var(--proto-size-sm);
+	color: var(--proto-teal-700);
+	text-decoration: none;
+}
+
+.linker-account .linker-account-panel-heading a:hover {
+	text-decoration: underline;
+}
+
+.linker-account .linker-account-rows {
+	display: grid;
+}
+
+.linker-account .linker-account-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--proto-space-2) var(--proto-space-4);
+	padding: var(--proto-space-3) var(--proto-space-5);
+	color: inherit;
+	text-decoration: none;
+}
+
+.linker-account .linker-account-row + .linker-account-row {
+	border-top: 1px solid var(--proto-line-journal);
+}
+
+.linker-account .linker-account-row:hover {
+	background: var(--proto-neutral-50);
+}
+
+.linker-account .linker-account-row-number {
+	font-size: var(--proto-size-sm);
+	font-weight: var(--proto-weight-medium);
+	color: var(--proto-neutral-900);
+}
+
+.linker-account .linker-account-row-status {
+	flex: none;
+	padding: 2px var(--proto-space-3);
+	border: 1px solid var(--proto-neutral-300);
+	border-radius: var(--proto-radius-pill);
+	background: var(--proto-canvas-white);
+	font-size: var(--proto-size-xs);
+	font-weight: var(--proto-weight-medium);
+	line-height: var(--proto-leading-tight);
+	color: var(--proto-neutral-600);
+}
+
+.linker-account .linker-account-row-status[data-status="inquiry-received"] {
+	border-color: var(--proto-teal-600);
+	color: var(--proto-teal-700);
+}
+
+.linker-account .linker-account-row-status[data-status="proforma-issued"] {
+	border-color: var(--proto-sem-warn);
+	color: var(--proto-sem-warn);
+}
+
+.linker-account .linker-account-row-status[data-status="completed"] {
+	border-color: var(--proto-sem-ok);
+	color: var(--proto-sem-ok);
+}
+
+.linker-account .linker-account-row-date {
+	margin-left: auto;
+	font-size: var(--proto-size-sm);
+	color: var(--proto-ink-muted-deep);
+}
+
+.linker-account .linker-account-row-amount {
+	font-size: var(--proto-size-sm);
+	font-weight: var(--proto-weight-medium);
+	font-variant-numeric: tabular-nums;
+	color: var(--proto-neutral-900);
+}
+
+/* The documents entry table inherits .linker-account-table; only its outer
+   panel spacing is new. */
+
+.linker-account .linker-account-panel .linker-account-table-wrap {
+	border: 0;
+}
+
+/* The page heading reads as a dashboard title. */
+
+.linker-account .linker-account-main .linker-account-heading h1 {
+	font-size: var(--proto-size-xl);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-title);
+}
+
+@media (max-width: 1023px) {
+	.linker-account .linker-account-layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.linker-account .linker-account-nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--proto-space-3) var(--proto-space-5);
+	}
+
+	.linker-account .linker-account-nav-group {
+		margin-bottom: 0;
+	}
+
+	.linker-account .linker-account-nav-items {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.linker-account .linker-account-tiles {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 639px) {
+	.linker-account .linker-auth-card {
+		padding: var(--proto-space-5) var(--proto-space-4);
+	}
+
+	.linker-account .linker-account-panel-heading,
+	.linker-account .linker-account-row {
+		padding-left: var(--proto-space-4);
+		padding-right: var(--proto-space-4);
+	}
+
+	.linker-account .linker-account-row-date {
+		margin-left: 0;
+		width: 100%;
+		order: 4;
+	}
+}

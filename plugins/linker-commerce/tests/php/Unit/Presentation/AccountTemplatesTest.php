@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Presentation\AccountTemplates;
 use Linker\Commerce\Proforma\Issuer;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_Order;
@@ -33,7 +34,7 @@ final class AccountTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		$adapter = new AccountTemplates();
 		$this->assertSame( '/woo/orders.php', $adapter->template( '/woo/orders.php', 'myaccount/orders.php' ) );
-		$this->assertSame( '', $adapter->rows( array( 'type' => 'groups' ) ) );
+		$this->assertSame( '', $adapter->rows( array( 'type' => 'dashboard' ) ) );
 	}
 
 	/** Forms, email templates and checkout never route to account LC fragments. */
@@ -183,6 +184,123 @@ final class AccountTemplatesTest extends TestCase {
 					$order->get_order_number()
 				)
 			);
+	}
+
+	/** Guests and pending accounts get no sidebar navigation. */
+	public function test_nav_is_empty_for_guests_and_pending_accounts(): void {
+		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
+		$this->signed_in( 0 );
+		$adapter = new AccountTemplates();
+		$this->assertSame( '', $adapter->nav() );
+		$this->signed_in( 5 );
+		$this->assertSame( '', $adapter->nav() );
+	}
+
+	/**
+	 * An approved account's navigation groups the same menu the header dropdown
+	 * reads: the workplace, then the account records with sign-out last. The
+	 * dashboard is current when no endpoint is being read.
+	 */
+	public function test_nav_groups_the_account_menu_for_an_approved_account(): void {
+		$this->plain_text();
+		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
+		WP_Mock::userFunction(
+			'wc_get_account_menu_items',
+			array(
+				'return' => array(
+					'dashboard'       => 'Overview',
+					'orders'          => 'Inquiries',
+					'saved-solutions' => 'Saved solutions',
+					'documents'       => 'Documents',
+					'edit-address'    => 'Company data',
+					'edit-account'    => 'Account details',
+					'customer-logout' => 'Sign out',
+				),
+			)
+		);
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => static fn ( string $endpoint ): string => 'https://example.test/my-account/' . $endpoint . '/' ) );
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		$adapter = new AccountTemplates();
+		$this->expand_fields( $adapter );
+
+		$html = $adapter->nav();
+		$this->assertStringContainsString( '<nav class="linker-account-nav"', $html );
+		$this->assertSame( 2, substr_count( $html, 'linker-account-nav-group' ) );
+		$this->assertStringContainsString( 'Workplace', $html );
+		$this->assertStringContainsString( 'https://example.test/my-account/orders/', $html );
+		$this->assertStringContainsString( 'https://example.test/my-account/customer-logout/', $html );
+		$this->assertStringContainsString( 'aria-current="page"', $html );
+	}
+
+	/**
+	 * The dashboard renders one tile per inquiry state with that state's count,
+	 * the newest inquiries as rows and the documents entry — empty documents
+	 * fall back to the empty row, never to nothing.
+	 */
+	public function test_dashboard_tiles_rows_and_documents_entry(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => static fn ( string $endpoint ): string => 'https://example.test/my-account/' . $endpoint . '/' ) );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
+		WP_Mock::userFunction(
+			'add_query_arg',
+			array(
+				'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ),
+			)
+		);
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
+		$orders = array(
+			$this->inquiry( Statuses::RECEIVED, '' ),
+			$this->inquiry( Statuses::PROFORMA, 'DLK-PF-2026-0001' ),
+			$this->inquiry( 'completed', 'DLK-PF-2026-0002' ),
+		);
+		WP_Mock::userFunction(
+			'wc_get_orders',
+			array(
+				'return' => static function ( array $args ) use ( $orders ): array {
+					$status = $args['status'] ?? array();
+					return isset( $args['meta_key'] ) || array( Statuses::PROFORMA ) === $status ? array() : $orders;
+				},
+			)
+		);
+		$adapter = new AccountTemplates();
+		$this->expand_fields( $adapter );
+
+		$html = $adapter->rows( array( 'type' => 'dashboard' ) );
+		$this->assertSame( 4, substr_count( $html, 'linker-account-tile-count' ) );
+		foreach ( array( 'inquiry-received', 'proforma-issued', 'completed', 'cancelled' ) as $status ) {
+			$this->assertStringContainsString( 'data-status="' . $status . '"', $html );
+		}
+		// Three orders: one per state, none cancelled.
+		$this->assertSame( 3, substr_count( $html, '<span class="linker-account-tile-count">1</span>' ) );
+		$this->assertStringContainsString( '<span class="linker-account-tile-count">0</span>', $html );
+		$this->assertSame( 3, substr_count( $html, 'linker-account-row-number' ) );
+		$this->assertSame( 3, substr_count( $html, '#20' ) );
+		$this->assertStringContainsString( 'linker-account-panel', $html );
+		$this->assertStringContainsString( 'linker-account-empty', $html );
+	}
+
+	/**
+	 * Lets do_shortcode expand the field tags through the adapter's own field(),
+	 * so a fragment's substituted values can be asserted; the other shortcodes
+	 * stay as tags.
+	 *
+	 * @param AccountTemplates $adapter The adapter under test.
+	 */
+	private function expand_fields( AccountTemplates $adapter ): void {
+		WP_Mock::userFunction(
+			'do_shortcode',
+			array(
+				'return' => static function ( string $content ) use ( $adapter ): string {
+					return (string) preg_replace_callback(
+						'/\[linker_account_field key=["\']([a-z-]+)["\']\]/',
+						static fn ( array $m ): string => $adapter->field( array( 'key' => $m[1] ) ),
+						$content
+					);
+				},
+			)
+		);
 	}
 
 	/**

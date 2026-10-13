@@ -27,6 +27,7 @@ final class Module {
 	 * @param DocumentDownload $download  The downloads.
 	 * @param SolutionsRoute   $route     The route that saves solutions.
 	 * @param PendingGate      $pending   The review page of an account still under review.
+	 * @param AuthTemplates    $auth      The guest sign-in, register and lost-password pages.
 	 */
 	public function __construct(
 		private readonly Menu $menu,
@@ -36,7 +37,8 @@ final class Module {
 		private readonly Documents $documents,
 		private readonly DocumentDownload $download,
 		private readonly SolutionsRoute $route,
-		private readonly PendingGate $pending = new PendingGate()
+		private readonly PendingGate $pending = new PendingGate(),
+		private readonly AuthTemplates $auth = new AuthTemplates()
 	) {}
 
 	/**
@@ -50,6 +52,7 @@ final class Module {
 		}
 		add_action( 'template_redirect', array( $this->pending, 'redirect' ) );
 		add_action( 'woocommerce_account_content', array( $this->contact, 'render' ), 5 );
+		$this->auth->register();
 
 		add_filter( 'woocommerce_account_orders_columns', array( $this->inquiries, 'columns' ) );
 		add_filter( 'woocommerce_my_account_my_orders_actions', array( $this->inquiries, 'actions' ), 10, 2 );
