@@ -3005,8 +3005,8 @@ msgstr "Vergleichen: %s"
 msgid "Up to %d products. Remove one to add another."
 msgstr "Bis zu %d Produkte. Entfernen Sie eines, um ein weiteres hinzuzufügen."
 
-msgid "Ask Linker Advisor"
-msgstr "Linker Berater fragen"
+msgid "Ask Genie"
+msgstr "Genie fragen"
 
 msgid "Contact Linker"
 msgstr "Linker kontaktieren"

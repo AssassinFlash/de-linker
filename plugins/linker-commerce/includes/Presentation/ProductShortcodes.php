@@ -662,7 +662,7 @@ final class ProductShortcodes {
 		$html  = '<button type="button" class="pdp-tool" data-compare-product="' . $product_id . '" aria-pressed="false">' . self::icon( 'compare' )
 			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span></button>';
 		$html .= '<button type="button" class="pdp-tool" data-pdp-ask data-ask-message="' . esc_attr( $ask_message ) . '">' . self::icon( 'ask' )
-			. esc_html__( 'Ask Linker Advisor', 'linker-commerce' ) . '</button>';
+			. esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>';
 		$html .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
 			. esc_html__( 'Documents', 'linker-commerce' ) . '</a>';
 		// The floating comparison chip is not copied here: ComparePage prints
