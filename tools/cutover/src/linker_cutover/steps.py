@@ -547,6 +547,14 @@ def _rsync(source: Path, destination: str) -> None:
             "rsync",
             "-az",
             "--delete",
+            # The local virtualenv is this Mac's build (hundreds of MB, arm64
+            # binaries); the release builds its own on the host. Caches never
+            # travel either.
+            "--exclude=.venv",
+            "--exclude=__pycache__",
+            "--exclude=.pytest_cache",
+            "--exclude=.mypy_cache",
+            "--exclude=.ruff_cache",
             "-e",
             "ssh -o BatchMode=yes",
             source_arg,
