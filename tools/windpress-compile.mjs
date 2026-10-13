@@ -72,11 +72,15 @@ try {
 		if ( region ) region.remove();
 	});
 
+	const waitMs = Number(process.env.WINDPRESS_COMPILE_WAIT_MS ?? 300_000);
 	const stored = page.waitForResponse(
 		(response) =>
 			response.url().includes('/windpress/v1/admin/settings/cache/store') &&
 			response.request().method() === 'POST',
-		{ timeout: 300_000 }
+		// A loaded machine (Spotlight's indexing storms after a reboot) can
+		// stretch one compile past five minutes; the environment variable
+		// raises the wait for such a run without lowering it otherwise.
+		{ timeout: waitMs }
 	);
 	// A real click is the recipe's intent; the notification viewport (the one
 	// blocker that intercepted it) is out of the layer above.
@@ -91,7 +95,7 @@ try {
 		if (page.isClosed()) {
 			throw new Error('the admin page closed before the cache was stored (the browser-side compile crashed)');
 		}
-		throw new Error(`no cache store within 300s of Generate — the compile never finished (${error.message.split('\n')[0]})`);
+		throw new Error(`no cache store within ${Math.round(waitMs / 1000)}s of Generate — the compile never finished (${error.message.split('\n')[0]})`);
 	}
 	if ( ! response.ok() ) {
 		throw new Error(`the cache store answered HTTP ${response.status()}: ${await response.text()}`);
