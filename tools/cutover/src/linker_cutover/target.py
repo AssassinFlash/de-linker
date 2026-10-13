@@ -103,6 +103,24 @@ def tar_pull_command(host: str, source: str) -> list[str]:
     ]
 
 
+def remote_entries_command(host: str, source: str) -> list[str]:
+    """The one ssh call that lists a directory's copy chunks.
+
+    Depth-1 files and depth-2 directories: the host drops a single long
+    transfer (2.6 GB of uploads in ~8 minutes, measured 2026-10-14), so each
+    chunk — one month under uploads, one plugin — gets its own connection.
+    """
+    return [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        host,
+        f"cd {shlex.quote(source)} && "
+        "{ find . -maxdepth 1 -type f -printf '%p\n'; "
+        "find . -mindepth 2 -maxdepth 2 -type d -printf '%p\n'; } | sort",
+    ]
+
+
 def tar_push_command(host: str, destination: str) -> list[str]:
     """`ssh <host> 'mkdir -p … && tar -xzf -'` for a directory's contents."""
     return [
@@ -216,39 +234,55 @@ class Target:
         if self.rsync_remote is None and not Path(self.path_of(relative)).is_dir():
             raise CutoverError(f"{relative} is not a directory on {self.label}")
         if self.rsync_remote is not None:
-            # openrsync (macOS's rsync) dies on a large tree against this host
-            # ("Connection closed by remote host", measured 2026-10-14); a tar
-            # stream survives it. Directory contents, like rsync's slash form.
             destination.mkdir(parents=True, exist_ok=True)
-            # No `with` (its exit closes the pipes before the statuses are
-            # read) and no stderr pipe on the ssh side (nothing drains it
-            # while the extractor runs, and a full buffer would stall both).
-            pull = subprocess.Popen(
-                tar_pull_command(HOST, self.path_of(relative).rstrip("/")),
-                stdout=subprocess.PIPE,
+            base = self.path_of(relative).rstrip("/")
+            listed = subprocess.run(
+                remote_entries_command(HOST, base),
+                capture_output=True,
+                text=True,
+                check=False,
             )
-            try:
-                pushed = subprocess.run(
-                    ["tar", "-C", str(destination), "-xzf", "-"],
-                    stdin=pull.stdout,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-            finally:
-                if pull.stdout is not None:
-                    pull.stdout.close()
-            pulled = pull.wait()
-            if pulled != 0 or pushed.returncode != 0:
+            if listed.returncode != 0:
                 raise CutoverError(
-                    f"reading {relative} from {self.label} failed "
-                    f"(ssh rc={pulled}, local tar rc={pushed.returncode}): "
-                    f"{pushed.stderr.strip()[:200]}"
+                    f"listing {relative} on {self.label} failed: "
+                    f"{listed.stderr.strip()[:200]}"
                 )
+            for entry in listed.stdout.splitlines():
+                entry = entry.strip()
+                if not entry or entry in (".", ".."):
+                    continue
+                local = destination / entry.lstrip("./")
+                local.parent.mkdir(parents=True, exist_ok=True)
+                self._pull_entry(f"{base}/{entry.lstrip('./')}", local.parent)
             return
         # A trailing slash on the source copies the directory's contents, the
         # same thing rsync does with `<host>:<dir>`.
         self.rsync(f"{source.rstrip('/')}/", f"{destination}/")
+
+    def _pull_entry(self, source: str, destination: Path) -> None:
+        """One chunk of a remote directory: a tar stream into `destination`."""
+        pull = subprocess.Popen(
+            tar_pull_command(HOST, source),
+            stdout=subprocess.PIPE,
+        )
+        try:
+            pushed = subprocess.run(
+                ["tar", "-C", str(destination), "-xzf", "-"],
+                stdin=pull.stdout,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        finally:
+            if pull.stdout is not None:
+                pull.stdout.close()
+        pulled = pull.wait()
+        if pulled != 0 or pushed.returncode != 0:
+            raise CutoverError(
+                f"reading {source} from {HOST} failed "
+                f"(ssh rc={pulled}, local tar rc={pushed.returncode}): "
+                f"{pushed.stderr.strip()[:200]}"
+            )
 
     def copy_file_out(self, relative: str, destination: Path) -> None:
         """Copy one WordPress-root-relative file off the target to `destination`.
