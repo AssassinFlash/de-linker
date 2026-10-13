@@ -24,7 +24,7 @@ from pathlib import Path
 
 from linker_cutover import backup as backup_module
 from linker_cutover import plan
-from linker_cutover.target import HOST, CutoverError, Target, wp_prefix_for
+from linker_cutover.target import CutoverError, Target, wp_prefix_for
 
 
 @dataclass(frozen=True)
@@ -550,12 +550,14 @@ def _rsync(source: Path, destination: str) -> None:
             "-e",
             "ssh -o BatchMode=yes",
             source_arg,
-            f"{HOST}:{destination}",
+            f"{plan.SERVICES_SSH}:{destination}",
         ],
         check=False,
     )
     if completed.returncode != 0:
-        raise CutoverError(f"rsync {source} -> {HOST}:{destination} failed")
+        raise CutoverError(
+            f"rsync {source} -> {plan.SERVICES_SSH}:{destination} failed"
+        )
 
 
 def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Result:
@@ -572,8 +574,19 @@ def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Resul
     """
     actions: list[str] = []
     notes: list[str] = []
-    ssh = ("ssh", "-o", "BatchMode=yes", HOST)
+    ssh = ("ssh", "-o", "BatchMode=yes", plan.SERVICES_SSH)
     staging_root = plan.SERVICES_STAGING
+    if run:
+        # macOS ships rsync 2.6.9, which cannot create the destination's
+        # parents; the staging root exists only after the first publish.
+        made = subprocess.run(
+            [*ssh, f"mkdir -p {staging_root}/engine {staging_root}/genie"],
+            check=False,
+        )
+        if made.returncode != 0:
+            raise CutoverError(
+                f"could not create {staging_root} on {plan.SERVICES_SSH}"
+            )
     for service, root, directory in plan.SERVICES:
         staging = f"{staging_root}/{service}"
         if run:
@@ -590,7 +603,7 @@ def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Resul
         else:
             actions.append(
                 "would publish "
-                f"{service}: rsync {directory} -> {HOST}:{staging}, then "
+                f"{service}: rsync {directory} -> {plan.SERVICES_SSH}:{staging}, then "
                 f"GENIE_RELEASE_ROOT={root} bash {staging_root}/release.sh publish {staging}"
             )
     for _service, option, variable in plan.SERVICE_OPTIONS:

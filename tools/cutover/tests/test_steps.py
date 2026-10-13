@@ -18,7 +18,7 @@ from types import SimpleNamespace
 import pytest
 
 from linker_cutover import plan, steps
-from linker_cutover.target import HOST, CutoverError, Target
+from linker_cutover.target import CutoverError, Target
 
 
 class FakeTarget(Target):
@@ -650,15 +650,32 @@ def test_the_publish_stages_over_ssh_and_runs_there(
     monkeypatch.setattr("linker_cutover.steps.subprocess.run", capture)
     steps.services(repository=repository, addresses={}, run=True)
 
-    assert [command[0] for command in seen] == ["rsync", "rsync", "ssh"] * 2
-    engine_tree, engine_script, engine_publish = seen[0], seen[1], seen[2]
-    assert engine_tree[-1] == f"{HOST}:{plan.SERVICES_STAGING}/engine/"
-    assert engine_script[-1] == f"{HOST}:{plan.SERVICES_STAGING}/release.sh"
+    assert [command[0] for command in seen] == [
+        "ssh",
+        "rsync",
+        "rsync",
+        "ssh",
+        "rsync",
+        "rsync",
+        "ssh",
+    ]
+    assert seen[0] == [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        plan.SERVICES_SSH,
+        f"mkdir -p {plan.SERVICES_STAGING}/engine {plan.SERVICES_STAGING}/genie",
+    ]
+    engine_tree, engine_script, engine_publish = seen[1], seen[2], seen[3]
+    assert engine_tree[-1] == f"{plan.SERVICES_SSH}:{plan.SERVICES_STAGING}/engine/"
+    assert (
+        engine_script[-1] == f"{plan.SERVICES_SSH}:{plan.SERVICES_STAGING}/release.sh"
+    )
     assert engine_publish[-1] == (
         "GENIE_RELEASE_ROOT=/opt/linker-engine "
         f"bash {plan.SERVICES_STAGING}/release.sh publish {plan.SERVICES_STAGING}/engine"
     )
-    assert seen[5][-1] == (
+    assert seen[6][-1] == (
         "GENIE_RELEASE_ROOT=/opt/linker-genie "
         f"bash {plan.SERVICES_STAGING}/release.sh publish {plan.SERVICES_STAGING}/genie"
     )

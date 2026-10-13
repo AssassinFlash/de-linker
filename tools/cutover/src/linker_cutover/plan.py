@@ -223,6 +223,11 @@ RELEASE_SCRIPT = "services/genie/ops/release.sh"
 # release.sh copies from a directory on the machine it runs on, and the release
 # script and the two servicetrees travel there over ssh.
 SERVICES_STAGING = "/root/linker-release"
+# The services live on their own host, not on the WordPress host: the site's
+# ssh alias reaches shared hosting as a plain user (no /root), while the
+# releases land under /opt on the VPS. `linker-services` is the ssh-config
+# alias for that VPS (root, its own key).
+SERVICES_SSH = "linker-services"
 SERVICES = (
     ("engine", "/opt/linker-engine", "services/engine"),
     ("genie", "/opt/linker-genie", "services/genie"),
