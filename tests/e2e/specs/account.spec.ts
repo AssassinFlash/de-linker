@@ -276,3 +276,177 @@ test('en: a fresh account reads the designed empty states', async ({
 	);
 	await shot(page, 'en-saved-solutions');
 });
+
+/**
+ * The register form's own fields, filled the way the form carries them. The
+ * register button of this build submits on the keyboard (commerce.spec's
+ * pattern), and the register hook checks the VAT ID without ever blocking.
+ */
+async function registerPartner(
+	page: Page,
+	email: string,
+	vat: string
+): Promise<void> {
+	await page.goto(url('/my-account/'));
+	await page.fill('#billing_company', 'E2E Partner GmbH');
+	await page
+		.locator('select[name="linker_customer_role"]')
+		.selectOption('installer');
+	await page.fill('#billing_vat_id', vat);
+	await page.fill('#billing_first_name', 'Erika');
+	await page.fill('#billing_last_name', 'Mustermann');
+	await page.selectOption('#billing_country', 'DE');
+	await page.fill('#billing_address_1', 'Triftstraße 5');
+	await page.fill('#billing_postcode', '80538');
+	await page.fill('#billing_city', 'München');
+	await page.fill('#reg_email', email);
+	await page.fill('#reg_password', PASSWORD);
+	await page.locator('button[name="register"]').focus();
+	await page.keyboard.press('Enter');
+	await page.waitForLoadState('load');
+}
+
+/** The registered account's id, read through WP-CLI, never the UI. */
+function registeredId(email: string): string {
+	const id = wp(['user', 'get', email, '--field=ID']).trim();
+	if (!/^\d+$/.test(id)) {
+		throw new Error(`registration did not produce an account: ${id}`);
+	}
+	return id;
+}
+
+test('en: a VAT ID VIES cannot check never blocks registration, and the account is flagged', async ({
+	page,
+}) => {
+	const stamp = Date.now();
+	const email = `e2e-vat-noneu-${stamp}@example.test`;
+	// Not an EU member-state prefix: the verdict is deterministic, no VIES call.
+	await registerPartner(page, email, 'US-1234567');
+
+	await shot(page, 'en-register-vat-not-eu');
+	const id = registeredId(email);
+	expect(
+		wp(['user', 'meta', 'get', id, 'linker_vat_status']).trim(),
+		'the unchecked number is flagged, not refused'
+	).toBe('unverified');
+	expect(
+		wp(['user', 'meta', 'get', id, 'linker_vat_detail']).trim(),
+		'the flag says why'
+	).toBe('not an EU VAT ID');
+	expect(
+		wp(['user', 'meta', 'get', id, 'linker_vat_checked_number']).trim(),
+		'the flag belongs to the typed number'
+	).toBe('US1234567');
+});
+
+test('en: an EU-format VAT ID is checked at registration and the verdict kept', async ({
+	page,
+}) => {
+	const stamp = Date.now();
+	const email = `e2e-vat-eu-${stamp}@example.test`;
+	await registerPartner(page, email, 'DE123456789');
+
+	await shot(page, 'en-register-vat-eu-checked');
+	const id = registeredId(email);
+	// The check ran and its verdict is stored with the number it is for. The
+	// verdict itself (valid, invalid or unverified) is VIES's answer and
+	// depends on the instance's reachability — the behavior pinned here is
+	// that registration went through and the account carries a verdict.
+	expect(
+		wp(['user', 'meta', 'get', id, 'linker_vat_checked_number']).trim(),
+		'the stored number is the typed one'
+	).toBe('DE123456789');
+	expect(
+		wp(['user', 'meta', 'get', id, 'linker_vat_status']).trim(),
+		'a verdict exists'
+	).toMatch(/^(valid|invalid|unverified)$/);
+});
+
+test('en: a restricted account signs in, keeps the workplace and reads its gate on the Proforma request', async ({
+	page,
+}) => {
+	const login = createCustomer(Date.now(), 'en');
+	wp([
+		'user',
+		'meta',
+		'update',
+		login,
+		'linker_approval_status',
+		'restricted',
+	]);
+	wp([
+		'user',
+		'meta',
+		'update',
+		login,
+		'linker_approval_reason',
+		'E2E: documents under review',
+	]);
+
+	await signIn(page, login, PASSWORD);
+	await expect(
+		page.locator('a[href*="customer-logout"]'),
+		'a restricted account still signs in'
+	).toHaveCount(1);
+	await expect(
+		page.locator('body'),
+		'the workplace stays open'
+	).toContainText(/Overview/);
+
+	await page.goto(url('/proforma-request/'));
+	await page.waitForLoadState('load');
+	const gate = page.locator(
+		'section[aria-label="Account with limited access"]'
+	);
+	await expect(
+		gate,
+		'the Proforma request reads the restriction gate'
+	).toBeVisible();
+	await expect(gate, 'the gate names the limit').toContainText(
+		/Access currently limited/
+	);
+	await expect(gate, 'the gate carries the reason').toContainText(
+		/E2E: documents under review/
+	);
+	await shot(page, 'en-restricted-proforma-gate');
+});
+
+test('en: a rejected account cannot sign in and reads the refusal', async ({
+	page,
+}) => {
+	const login = createCustomer(Date.now(), 'en');
+	wp(['user', 'meta', 'update', login, 'linker_approval_status', 'rejected']);
+	wp([
+		'user',
+		'meta',
+		'update',
+		login,
+		'linker_approval_reason',
+		'E2E: not a business customer',
+	]);
+
+	await page.goto(url('/my-account/'));
+	await page.fill('#username', login);
+	await page.fill('#password', PASSWORD);
+	await page.locator('button[name="login"]').focus();
+	await page.keyboard.press('Enter');
+	await page.waitForLoadState('load');
+
+	const error = page.locator('.woocommerce-error');
+	await expect(
+		error.first(),
+		'the rejection is the sign-in refusal'
+	).toBeVisible();
+	await expect(error.first(), 'the refusal names the way back').toContainText(
+		/not approved for sign-in/
+	);
+	await expect(
+		page.locator('#username'),
+		'the rejected account stays on the form'
+	).toBeVisible();
+	await expect(
+		page.locator('a[href*="customer-logout"]'),
+		'no session was opened'
+	).toHaveCount(0);
+	await shot(page, 'en-rejected-sign-in');
+});

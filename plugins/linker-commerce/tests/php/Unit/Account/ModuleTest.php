@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Account;
 
+use Linker\Commerce\Account\AuthTemplates;
 use Linker\Commerce\Account\ContactCard;
 use Linker\Commerce\Account\DocumentDownload;
 use Linker\Commerce\Account\Documents;
@@ -31,7 +32,7 @@ use WP_Mock;
 final class ModuleTest extends TestCase {
 
 	/**
-	 * The menu, titles, contact card, inquiry list, saved solutions with their route and claim, documents, downloads and the pending review page are hooked.
+	 * The menu, titles, contact card, inquiry list, saved solutions with their route and claim, documents, downloads, the pending review page and the guest auth pages are hooked.
 	 */
 	public function test_register_adds_the_hooks(): void {
 		$menu      = new Menu();
@@ -41,6 +42,7 @@ final class ModuleTest extends TestCase {
 		$documents = new Documents( $saved, '/plugin/templates/' );
 		$download  = new DocumentDownload( new PrivateFiles( 'proforma' ), $saved );
 		$route     = new SolutionsRoute( $saved );
+		$auth      = new AuthTemplates();
 
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $menu, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_account_menu_items', array( $menu, 'items' ), 20 );
@@ -60,8 +62,9 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $route, 'register' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_account_documents_endpoint', array( $documents, 'render' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $download, 'serve' ), 1 );
+		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
 
-		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending ) )->register();
+		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth ) )->register();
 
 		$this->assertConditionsMet();
 	}

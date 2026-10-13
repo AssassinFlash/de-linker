@@ -14,6 +14,7 @@ use Linker\Commerce\Account\InquiryList;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Proforma\Issuer;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Vocabulary\LocaleFormat;
 use WC_Order;
 
@@ -67,16 +68,24 @@ final class AccountTemplates {
 	 */
 	private ?array $overview = null;
 
+	/**
+	 * The documents page, built once: the dashboard reads the same list.
+	 *
+	 * @var \Linker\Commerce\Account\Documents|null
+	 */
+	private ?\Linker\Commerce\Account\Documents $documents = null;
+
 	/** Registers the content adapter and its data tags. */
 	public function register(): void {
 		self::$adapter = $this;
-		add_filter( 'wc_get_template', array( $this, 'template' ), 20, 2 );
-		add_shortcode( 'linker_account_field', array( $this, 'field' ) );
-		add_shortcode( 'linker_account_rows', array( $this, 'rows' ) );
-		add_shortcode( 'linker_account_hook', array( $this, 'hook' ) );
-		add_shortcode( 'linker_account_text', array( $this, 'text' ) );
-		add_shortcode( 'linker_account_url', array( $this, 'url' ) );
-		add_filter( 'woocommerce_my_account_my_orders_query', array( $this, 'orders_query' ) );
+			add_filter( 'wc_get_template', array( $this, 'template' ), 20, 2 );
+			add_shortcode( 'linker_account_field', array( $this, 'field' ) );
+			add_shortcode( 'linker_account_rows', array( $this, 'rows' ) );
+			add_shortcode( 'linker_account_hook', array( $this, 'hook' ) );
+			add_shortcode( 'linker_account_text', array( $this, 'text' ) );
+			add_shortcode( 'linker_account_url', array( $this, 'url' ) );
+			add_shortcode( 'linker_account_nav', array( $this, 'nav' ) );
+			add_filter( 'woocommerce_my_account_my_orders_query', array( $this, 'orders_query' ) );
 	}
 
 	/**
@@ -142,7 +151,7 @@ final class AccountTemplates {
 		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
 			$value = ( 'open-current' === $key ) === $this->open_only() ? 'page' : 'false';
 		}
-		if ( in_array( $key, array( 'total', 'items', 'nonce' ), true ) ) {
+		if ( in_array( $key, array( 'total', 'items', 'nonce', 'tiles', 'rows' ), true ) ) {
 			return 'nonce' === $key ? (string) $value : wp_kses_post( (string) $value );
 		}
 		return in_array( $key, array( 'url', 'open-url', 'report' ), true ) ? esc_url( (string) $value ) : esc_attr( (string) $value );
@@ -191,33 +200,135 @@ final class AccountTemplates {
 	}
 
 	/**
+	 * The dashboard's grouped navigation: the same menu the header dropdown
+	 * reads (Menu::items), split into the groups a dashboard sidebar shows —
+	 * the workplace, then the account's own records with sign-out last.
+	 * Current page is Woo's own endpoint, so the highlight follows the
+	 * request. A pending account reads the review page instead of the
+	 * workplace, so it gets no navigation. The shortcode takes no attribute.
+	 */
+	public function nav(): string {
+		$user_id = get_current_user_id();
+		if ( $user_id <= 0 || Approval::PENDING === ( new Approval() )->status( $user_id ) ) {
+			return '';
+		}
+		$items = wc_get_account_menu_items();
+		$html  = '';
+		foreach ( $this->nav_groups() as $group => $endpoints ) {
+			$links = '';
+			foreach ( $endpoints as $endpoint ) {
+				if ( ! isset( $items[ $endpoint ] ) ) {
+					continue;
+				}
+				$links .= $this->fragment(
+					'nav-item',
+					array(
+						'url'     => wc_get_account_endpoint_url( $endpoint ),
+						'label'   => $items[ $endpoint ],
+						'current' => $this->endpoint_current( $endpoint ),
+					)
+				);
+			}
+			if ( '' === $links ) {
+				continue;
+			}
+			$html .= $this->fragment(
+				'nav-group',
+				array(
+					'label' => $this->nav_group_label( $group ),
+					'items' => $links,
+				)
+			);
+		}
+		if ( '' === $html ) {
+			return '';
+		}
+		return sprintf(
+			'<nav class="linker-account-nav" aria-label="%s">%s</nav>',
+			esc_attr__( 'Account menu', 'linker-commerce' ),
+			$html
+		);
+	}
+
+	/**
+	 * Sidebar groups, in order. Endpoints the menu does not carry are skipped,
+	 * and an endpoint another plugin added falls into the account group so it
+	 * stays reachable.
+	 *
+	 * @return array<string, list<string>>
+	 */
+	private function nav_groups(): array {
+		$known   = array(
+			'workplace' => array( 'dashboard', 'orders', 'saved-solutions', 'documents' ),
+			'account'   => array( 'edit-address', 'edit-account', 'customer-logout' ),
+		);
+		$account = $known['account'];
+		foreach ( array_keys( wc_get_account_menu_items() ) as $endpoint ) {
+			if ( ! in_array( $endpoint, array_merge( ...array_values( $known ) ), true ) ) {
+				$account[] = $endpoint;
+			}
+		}
+		$known['account'] = $account;
+		return $known;
+	}
+
+	/**
+	 * The group's heading.
+	 *
+	 * @param string $group Group key.
+	 */
+	private function nav_group_label( string $group ): string {
+		$labels = array(
+			'workplace' => __( 'Workplace', 'linker-commerce' ),
+			'account'   => __( 'Account', 'linker-commerce' ),
+		);
+		return $labels[ $group ] ?? $labels['account'];
+	}
+
+	/**
+	 * Whether the endpoint is the page being read: "page" or "false", the
+	 * values the fragments' aria-current attribute takes.
+	 *
+	 * @param string $endpoint Endpoint.
+	 */
+	private function endpoint_current( string $endpoint ): string {
+		if ( 'dashboard' === $endpoint ) {
+			return is_wc_endpoint_url() ? 'false' : 'page';
+		}
+		return is_wc_endpoint_url( $endpoint ) ? 'page' : 'false';
+	}
+
+	/**
 	 * Account-specific labels only; the existing domain remains the word source.
 	 *
 	 * @param array<string, string>|string $atts Attributes.
 	 */
 	public function text( $atts = array() ): string {
-		$labels = array(
-			'overview'        => __( 'Overview', 'linker-commerce' ),
-			'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
-			'all'             => __( 'All inquiries', 'linker-commerce' ),
-			'open'            => __( 'Open inquiries', 'linker-commerce' ),
-			'status'          => __( 'Status', 'linker-commerce' ),
-			'number'          => __( 'Inquiry', 'linker-commerce' ),
-			'date'            => __( 'Date', 'linker-commerce' ),
-			'amount'          => __( 'Amount', 'linker-commerce' ),
-			'view'            => __( 'View', 'linker-commerce' ),
-			'document'        => __( 'Document', 'linker-commerce' ),
-			'download'        => __( 'Download (PDF)', 'linker-commerce' ),
-			'saved'           => __( 'Saved on', 'linker-commerce' ),
-			'add'             => __( 'Add to solution draft', 'linker-commerce' ),
-			'report'          => __( 'Design report (PDF)', 'linker-commerce' ),
-			'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-			'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-			'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
-			'empty-documents' => __( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
-			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
-		);
-		return esc_html( $labels[ (string) ( $atts['key'] ?? '' ) ] ?? '' );
+			$labels = array(
+				'overview'        => __( 'Overview', 'linker-commerce' ),
+				'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
+				'all'             => __( 'All inquiries', 'linker-commerce' ),
+				'open'            => __( 'Open inquiries', 'linker-commerce' ),
+				'status'          => __( 'Status', 'linker-commerce' ),
+				'number'          => __( 'Inquiry', 'linker-commerce' ),
+				'date'            => __( 'Date', 'linker-commerce' ),
+				'amount'          => __( 'Amount', 'linker-commerce' ),
+				'view'            => __( 'View', 'linker-commerce' ),
+				'document'        => __( 'Document', 'linker-commerce' ),
+				'download'        => __( 'Download (PDF)', 'linker-commerce' ),
+				'saved'           => __( 'Saved on', 'linker-commerce' ),
+				'add'             => __( 'Add to solution draft', 'linker-commerce' ),
+				'report'          => __( 'Design report (PDF)', 'linker-commerce' ),
+				'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+				'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
+				'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
+				'empty-documents' => __( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
+				'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
+				'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
+				'view-all'        => __( 'View all', 'linker-commerce' ),
+				'documents'       => __( 'Documents', 'linker-commerce' ),
+			);
+			return esc_html( $labels[ (string) ( $atts['key'] ?? '' ) ] ?? '' );
 	}
 
 	/**
@@ -232,20 +343,8 @@ final class AccountTemplates {
 		$type = (string) ( $atts['type'] ?? '' );
 		$html = '';
 		switch ( $type ) {
-			case 'groups':
-				foreach ( array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' ) as $status ) {
-					$orders = array_values( array_filter( $this->overview_orders(), static fn ( WC_Order $order ): bool => $order->has_status( $status ) ) );
-					$html  .= $this->fragment(
-						'group',
-						array(
-							'status' => $status,
-							'title'  => wc_get_order_status_name( $status ),
-							'count'  => count( $orders ),
-							'orders' => $orders,
-						)
-					);
-				}
-				return $html;
+			case 'dashboard':
+				return $this->dashboard();
 			case 'inquiries':
 				$orders = $this->row['orders'] ?? ( $this->args['customer_orders']->orders ?? array() );
 				foreach ( $orders as $order ) {
@@ -285,7 +384,7 @@ final class AccountTemplates {
 				$order = $this->row['order'] ?? null;
 				if ( $order instanceof WC_Order ) {
 					// Only the stored status is current; no invented transition history.
-					foreach ( array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' ) as $status ) {
+					foreach ( $this->statuses() as $status ) {
 						$html .= $this->fragment(
 							'stage',
 							array(
@@ -372,6 +471,75 @@ final class AccountTemplates {
 	}
 
 	/**
+	 * The dashboard: one tile per inquiry state with its count, the newest
+	 * inquiries as rows, and the newest documents. Every value comes from the
+	 * records the account already reads — the customer's own inquiries and
+	 * Documents' own list — so the dashboard adds no query and no rule.
+	 */
+	private function dashboard(): string {
+		$customer = get_current_user_id();
+		$orders   = $this->overview_orders();
+		$tiles    = '';
+		foreach ( $this->statuses() as $status ) {
+			$of_status = array_values( array_filter( $orders, static fn ( WC_Order $order ): bool => $order->has_status( $status ) ) );
+			$tiles    .= $this->fragment(
+				'tile',
+				array(
+					'status' => $status,
+					'title'  => wc_get_order_status_name( $status ),
+					'count'  => count( $of_status ),
+					'url'    => wc_get_account_endpoint_url( 'orders' ),
+				)
+			);
+		}
+		$recent = '';
+		foreach ( array_slice( $orders, 0, 5 ) as $order ) {
+			$recent .= $this->fragment( 'inquiry-row', $this->order_row( $order ) );
+		}
+		$documents = '';
+		foreach ( array_slice( $this->documents()->for_customer( $customer ), 0, 3 ) as $document ) {
+			$document['date'] = wp_date( LocaleFormat::date_format(), $document['date'] );
+			$documents       .= $this->fragment( 'document-row', $document );
+		}
+		return $this->fragment( 'tiles', array( 'tiles' => $tiles ) )
+			. $this->fragment(
+				'recent',
+				array(
+					'rows' => '' === $recent ? $this->fragment( 'empty' ) : $recent,
+				)
+			)
+			. $this->fragment(
+				'documents-entry',
+				array(
+					'rows' => '' === $documents ? $this->fragment( 'empty-documents' ) : $documents,
+				)
+			);
+	}
+
+	/**
+	 * The four inquiry states, in the order the account reads them.
+	 *
+	 * @return list<string>
+	 */
+	private function statuses(): array {
+		return array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' );
+	}
+
+	/**
+	 * The documents list the Documents page reads, so the dashboard's entry
+	 * and the page can never disagree about what a document is.
+	 */
+	private function documents(): \Linker\Commerce\Account\Documents {
+		if ( null === $this->documents ) {
+			$this->documents = new \Linker\Commerce\Account\Documents(
+				new \Linker\Commerce\Account\SavedSolutions( new \Linker\Commerce\Account\PrivateFiles( \Linker\Commerce\Account\SavedSolutions::REPORTS_DIRECTORY ), '' ),
+				''
+			);
+		}
+		return $this->documents;
+	}
+
+	/**
 	 * The open tab changes only Woo's query, retaining its customer and paging.
 	 *
 	 * @param array<string, mixed> $query Woo's account query.
@@ -438,18 +606,19 @@ final class AccountTemplates {
 				)
 			);
 		}
-		return array(
-			'order'           => $order,
-			'id'              => $order->get_id(),
-			'number'          => $order->get_order_number(),
-			'status'          => wc_get_order_status_name( $order->get_status() ),
-			'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
-			'total'           => $order->get_formatted_order_total(),
-			'items'           => $items,
-			'url'             => $order->get_view_order_url(),
-			'proforma'        => InquiryList::has_proforma( $order ) ? '1' : '',
-			'proforma_number' => InquiryList::proforma_number( $order ),
-			'proforma_url'    => InquiryList::has_proforma( $order ) ? DocumentDownload::proforma_url( $order ) : '',
-		);
+			return array(
+				'order'           => $order,
+				'id'              => $order->get_id(),
+				'number'          => $order->get_order_number(),
+				'status'          => wc_get_order_status_name( $order->get_status() ),
+				'status-slug'     => $order->get_status(),
+				'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
+				'total'           => $order->get_formatted_order_total(),
+				'items'           => $items,
+				'url'             => $order->get_view_order_url(),
+				'proforma'        => InquiryList::has_proforma( $order ) ? '1' : '',
+				'proforma_number' => InquiryList::proforma_number( $order ),
+				'proforma_url'    => InquiryList::has_proforma( $order ) ? DocumentDownload::proforma_url( $order ) : '',
+			);
 	}
 }

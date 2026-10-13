@@ -1,7 +1,14 @@
 <div class="woocommerce-MyAccount-content linker-account-content">
-	<header class="linker-account-heading">
-		<h1>[linker_account_field key="page-title"]</h1>
-		[lc_if condition="is_wc_endpoint_url"]<a class="linker-account-back" href="[linker_account_url endpoint='dashboard']">[linker_account_text key="overview"]</a>[/lc_if]
-	</header>
-	[linker_account_hook name="content"]
+	<div class="linker-account-layout">
+		<aside class="linker-account-sidebar">
+			[linker_account_nav]
+		</aside>
+		<main class="linker-account-main">
+			<header class="linker-account-heading">
+				<h1>[linker_account_field key="page-title"]</h1>
+				[lc_if condition="is_wc_endpoint_url"]<a class="linker-account-back" href="[linker_account_url endpoint='dashboard']">[linker_account_text key="overview"]</a>[/lc_if]
+			</header>
+			[linker_account_hook name="content"]
+		</main>
+	</div>
 </div>
