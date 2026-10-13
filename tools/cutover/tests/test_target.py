@@ -392,3 +392,51 @@ def test_the_local_chunks_cover_every_file(tmp_path: Path) -> None:
         "templates",
         "flat",
     }
+
+
+def test_the_remote_wp_quotes_an_argument_with_spaces(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`wp eval '<php>'` died remotely: ssh joins argv, the login shell splits.
+
+    Measured 2026-10-14: the snippet export arrived as `wp eval $rows =
+    $GLOBALS['wpdb']->get_results(` and the remote shell died on the
+    parenthesis. Every remote argument travels quoted; plain words are
+    unchanged.
+    """
+    import shlex
+
+    seen: list[list[str]] = []
+
+    def capture(command: list[str], **kwargs: object) -> object:
+        del kwargs
+        seen.append(command)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("linker_cutover.target.subprocess.run", capture)
+    code = "$rows = $GLOBALS['wpdb']->get_results(\"SELECT 1\");"
+    remote_target().wp("eval", code)
+
+    command = seen[0]
+    assert command[:4] == ["ssh", "-o", "BatchMode=yes", HOST]
+    remote = command[4]
+    assert " eval " in remote
+    assert shlex.quote(code) in remote
+
+
+def test_a_plain_remote_wp_call_reads_the_same_after_quoting(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Quoting changed nothing for the words the other calls pass."""
+    seen: list[list[str]] = []
+
+    def capture(command: list[str], **kwargs: object) -> object:
+        del kwargs
+        seen.append(command)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("linker_cutover.target.subprocess.run", capture)
+    remote_target().wp("plugin", "list", "--fields=name")
+
+    plain = remote_target().prefix[-1]
+    assert seen[0][4] == f"{plain} plugin list --fields=name"

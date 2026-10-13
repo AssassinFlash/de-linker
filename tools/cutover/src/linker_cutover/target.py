@@ -153,8 +153,23 @@ class Target:
     rsync_remote: str | None
 
     def wp(self, *args: str, check: bool = True) -> str:
-        """Run a WP-CLI command against the site and return its standard output."""
-        command = [*self.prefix, *args]
+        """Run a WP-CLI command against the site and return its standard output.
+
+        Remote arguments travel quoted: ssh joins its argv with spaces and the
+        login shell splits again, so an argument with a space or a parenthesis
+        — `wp eval '<php>'`, `wp db query 'DROP TABLE x'` — must be one word
+        or the remote shell reads the parenthesis as syntax (measured
+        2026-10-14: the snippet export died on `get_results(`). A plain word
+        quotes to itself, so every other call is unchanged. The local target
+        keeps argv-list semantics — nothing there re-splits.
+        """
+        if self.shell_prefix is None:
+            command = [*self.prefix, *args]
+        else:
+            command = [
+                *self.prefix[:-1],
+                " ".join([self.prefix[-1], *(shlex.quote(arg) for arg in args)]),
+            ]
         if not check:
             result = subprocess.run(
                 command, capture_output=True, text=True, check=False
