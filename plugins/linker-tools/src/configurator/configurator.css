@@ -1071,6 +1071,11 @@
 	opacity: 0.85;
 }
 
+/* The navigation shortcuts are phone-only; the desktop rail is unchanged. */
+.linker-mobile-nav {
+	display: none;
+}
+
 /* Narrow screens ----------------------------------------------------------------- */
 
 @media (max-width: 48rem) {
@@ -1204,7 +1209,7 @@
 		position: sticky;
 		top: 89px;
 		z-index: 40;
-		background: rgba(246, 249, 245, 0.94);
+		background: var(--linker-surface);
 		backdrop-filter: blur(6px);
 	}
 
@@ -1242,5 +1247,295 @@
 
 	.linker-configurator .linker-section {
 		scroll-margin-top: var(--linker-steps-scroll-offset, 32px);
+	}
+}
+
+/* 2026-10-13 mobile brief: the Hommlie reference's generous touch controls,
+   separated groups, rounded cards, map + lower sheet and pinned actions.
+   All colour/shadow choices consume the existing site/application tokens.
+   Geometry stays under the phone breakpoint; 1440px variant C is untouched. */
+@media (max-width: 48rem) {
+	.linker-configurator {
+		--linker-radius: var(--proto-radius-lg);
+		--linker-card-radius: var(--proto-radius-card);
+		--linker-card-pad: var(--proto-space-4);
+		--linker-stack-gap: var(--proto-space-4);
+		font-size: var(--proto-size-sm);
+		padding: var(--proto-space-4);
+	}
+
+	.linker-configurator:has(.linker-mobile-nav) {
+		padding-bottom: calc(
+			var(--linker-mobile-nav-height, 8rem) + var(--proto-space-4)
+		);
+	}
+
+	.linker-configurator .linker-steps {
+		border-radius: var(--linker-radius);
+		margin-bottom: var(--proto-space-4);
+	}
+
+	.linker-steps__list {
+		justify-content: space-between;
+	}
+
+	.linker-configurator .linker-steps__label {
+		position: static;
+		width: auto;
+		height: auto;
+		clip: auto;
+		white-space: normal;
+		font-size: var(--proto-size-xs);
+	}
+
+	.linker-steps__item {
+		flex: 1;
+		flex-direction: column;
+		gap: var(--proto-space-1);
+		align-items: center;
+		padding-inline: var(--proto-space-1);
+		text-align: center;
+	}
+
+	.linker-configurator__title {
+		font-size: var(--proto-size-xl);
+	}
+
+	.linker-segments__tab {
+		min-height: 4rem;
+		padding: var(--proto-space-3);
+	}
+
+	.linker-segments__scope {
+		font-size: var(--proto-size-xs);
+	}
+
+	.linker-group {
+		border: 0;
+		border-radius: 0;
+		margin-bottom: var(--proto-space-5);
+		overflow: visible;
+	}
+
+	.linker-group > legend {
+		margin: 0;
+		border: 0;
+		border-radius: var(--proto-radius-round);
+		padding: var(--proto-space-2) var(--proto-space-3);
+		background: var(--linker-soft);
+	}
+
+	.linker-group > .linker-form__grid,
+	.linker-group > .linker-form__choice {
+		padding: var(--proto-space-4) 0 0;
+	}
+
+	.linker-form__grid {
+		gap: var(--proto-space-4);
+	}
+
+	.linker-field {
+		gap: var(--proto-space-2);
+	}
+
+	.linker-field__label,
+	.linker-form__choice legend {
+		font-size: var(--proto-size-sm);
+	}
+
+	.linker-configurator
+		input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+	.linker-configurator select,
+	.linker-configurator textarea {
+		min-height: 3rem;
+		font-size: var(--proto-size-md);
+		padding-block: var(--proto-space-3);
+	}
+
+	.linker-button,
+	.linker-table .linker-button,
+	.linker-button--quiet,
+	.linker-form__choice label,
+	.linker-planes label,
+	.linker-basis summary,
+	.linker-roof__notes summary {
+		min-height: 3rem;
+	}
+
+	.linker-form__choice label,
+	.linker-planes label {
+		padding: var(--proto-space-3);
+		border: 1px solid var(--linker-line);
+		border-radius: var(--linker-radius);
+	}
+
+	.linker-form__submit .linker-button,
+	.linker-form__roof .linker-button {
+		width: 100%;
+	}
+
+	.linker-form__submit {
+		padding: var(--proto-space-3) var(--proto-space-4);
+	}
+
+	.linker-roof {
+		padding: 0;
+		border: 0;
+		scroll-margin-top: var(--linker-steps-scroll-offset);
+	}
+
+	.linker-roof .maplibregl-ctrl-group button {
+		width: 3rem;
+		height: 3rem;
+	}
+
+	.linker-roof__header {
+		flex-wrap: wrap;
+	}
+
+	.linker-roof__map {
+		min-height: 22rem;
+		border-radius: var(--linker-card-radius);
+	}
+
+	.linker-roof__layout {
+		gap: 0;
+	}
+
+	.linker-roof__panel {
+		position: relative;
+		margin-top: calc(-1 * var(--proto-space-4));
+		padding: var(--proto-space-4);
+		border: 1px solid var(--linker-line);
+		border-radius: var(--linker-card-radius);
+		background: var(--linker-surface);
+		box-shadow: var(--proto-shadow-2);
+	}
+
+	.linker-roof__draw,
+	.linker-roof__draw label {
+		width: 100%;
+	}
+
+	.linker-roof__draw label {
+		grid-template-columns: minmax(0, 1fr) 4.5rem auto;
+	}
+
+	.linker-roof__actions .linker-button {
+		width: 100%;
+	}
+
+	.linker-empty--none {
+		padding: var(--proto-space-5) var(--proto-space-4);
+		text-align: center;
+	}
+
+	.linker-empty--none::before {
+		content: "⌕";
+		display: grid;
+		place-items: center;
+		width: 4rem;
+		height: 4rem;
+		margin: 0 auto var(--proto-space-4);
+		border-radius: var(--proto-radius-round);
+		background: var(--linker-soft);
+		color: var(--linker-accent);
+		font-size: var(--proto-size-display);
+	}
+
+	.linker-empty--none ul {
+		text-align: left;
+	}
+
+	.linker-actions__status:not(:empty) {
+		padding: var(--proto-space-4);
+		border-radius: var(--linker-radius);
+		background: var(--linker-soft);
+	}
+
+	.linker-report__download .linker-button {
+		width: 100%;
+	}
+
+	#linker-report-section > .linker-block__head {
+		display: grid;
+		justify-items: center;
+		text-align: center;
+	}
+
+	#linker-report-section > .linker-block__head::before {
+		content: "✓";
+		display: grid;
+		place-items: center;
+		width: 4rem;
+		height: 4rem;
+		border-radius: var(--proto-radius-round);
+		background: var(--linker-soft);
+		color: var(--linker-accent);
+		font-size: var(--proto-size-display);
+	}
+
+	.linker-configurator input,
+	.linker-configurator select,
+	.linker-configurator textarea,
+	.linker-configurator button,
+	.linker-configurator a {
+		scroll-margin-block: var(--linker-steps-scroll-offset)
+			calc(var(--linker-mobile-nav-height, 8rem) + var(--proto-space-4));
+	}
+
+	.linker-mobile-nav {
+		position: fixed;
+		inset: auto var(--proto-space-4) 0;
+		z-index: 45;
+		display: flex;
+		gap: var(--proto-space-2);
+		/* Reserve the existing 50px site launcher + its 16px right gutter.
+		   It stays usable without changing any Genie surface. */
+		padding: var(--proto-space-3) 4.25rem
+			calc(var(--proto-space-3) + env(safe-area-inset-bottom, 0px))
+			var(--proto-space-2);
+		border: 1px solid var(--linker-line);
+		border-radius: var(--linker-card-radius) var(--linker-card-radius) 0 0;
+		background: var(--linker-surface);
+		box-shadow: var(--proto-shadow-2);
+	}
+
+	.linker-mobile-nav[hidden],
+	.linker-configurator:has(.linker-roof) .linker-mobile-nav {
+		display: none;
+	}
+
+	.linker-mobile-nav__step {
+		flex: 1;
+		min-width: 0;
+		min-height: 3rem;
+		display: grid;
+		align-content: center;
+		gap: var(--proto-space-1);
+		padding: var(--proto-space-2);
+		border: 1px solid var(--linker-line);
+		border-radius: var(--linker-radius);
+		background: var(--linker-surface);
+		color: var(--linker-ink);
+		font: inherit;
+		font-size: var(--proto-size-xs);
+		font-weight: 700;
+		cursor: pointer;
+	}
+
+	.linker-mobile-nav__number {
+		color: var(--linker-muted);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.linker-mobile-nav__step[aria-current="step"] {
+		border-color: var(--linker-accent);
+		background: var(--linker-soft);
+	}
+
+	.linker-mobile-nav__step:focus-visible {
+		outline: var(--proto-focus-ring);
+		outline-offset: var(--proto-focus-offset);
 	}
 }
