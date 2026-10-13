@@ -311,6 +311,8 @@
 		"/request-a-project/": "/solution-configurator/",
 		"/linker-planner/": "/solution-configurator/",
 		"/linker-planer/": "/solution-configurator/",
+		"/linker-advisor/": "/genie/",
+		"/linker-berater/": "/genie/",
 		"/product-category/uncategorized/": "/products/",
 		"/shop/": "/shop/"
 	},

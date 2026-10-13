@@ -464,12 +464,12 @@ final class TemplatesTest extends TestCase {
 			),
 			array(
 				'ID'        => 4101,
-				'post_name' => 'linker-advisor',
+				'post_name' => 'genie',
 				'post_type' => 'page',
 			),
 			array(
 				'ID'        => 4102,
-				'post_name' => 'linker-berater',
+				'post_name' => 'genie',
 				'post_type' => 'page',
 			),
 		);

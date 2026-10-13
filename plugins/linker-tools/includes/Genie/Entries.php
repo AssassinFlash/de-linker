@@ -95,7 +95,7 @@ class Entries {
 	}
 
 	/**
-	 * The full-page workspace on /linker-advisor/.
+	 * The full-page workspace on /genie/.
 	 *
 	 * The LiveCanvas template of that page prints this shortcode. It is
 	 * the same mount the dock uses, marked as the page surface so the
@@ -698,20 +698,20 @@ JS,
 	 * The language layer (`pll_current_language`) is the authority for which
 	 * language this request is in — the same one ComparePage asks. German
 	 * gets that page's twin (`pll_get_post`); English, a missing twin, or
-	 * no language layer stays on /linker-advisor/.
+	 * no language layer stays on /genie/.
 	 */
 	private function workspace_url(): string {
-		$fallback = home_url( '/linker-advisor/' );
+		$fallback = home_url( '/genie/' );
 		if ( ! function_exists( 'pll_current_language' ) || 'de' !== pll_current_language() ) {
 			return $fallback;
 		}
-		$page = get_page_by_path( 'linker-advisor' );
+		$page = get_page_by_path( 'genie' );
 		if ( ! $page instanceof \WP_Post || ! function_exists( 'pll_get_post' ) ) {
-			return home_url( '/de/linker-berater/' );
+			return home_url( '/de/genie/' );
 		}
 		$twin = (int) pll_get_post( (int) $page->ID, 'de' );
 		$link = $twin > 0 ? get_permalink( $twin ) : false;
-		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/linker-berater/' );
+		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/genie/' );
 	}
 
 	/**

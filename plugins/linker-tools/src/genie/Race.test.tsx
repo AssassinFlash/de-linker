@@ -128,7 +128,7 @@ function config(): GenieConfig {
 		restNonce: 'n',
 		disclosure: 'AI.',
 		accountUrl: '/my-account/',
-		workspaceUrl: '/linker-advisor/',
+		workspaceUrl: '/genie/',
 		prompts: [ 'Ask Genie' ],
 	};
 }

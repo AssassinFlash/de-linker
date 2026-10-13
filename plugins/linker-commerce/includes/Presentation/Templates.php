@@ -108,8 +108,8 @@ final class Templates {
 		'linker-compare-de'      => array( 'de/compare_page', 'Produkte vergleichen', 'compare-products', 'de' ),
 		'linker-faq'             => array( 'faq_page', 'FAQ & documents', 'faq-download', 'en' ),
 		'linker-faq-de'          => array( 'de/faq_page', 'FAQ & Dokumente', 'faq-download', 'de' ),
-		'linker-advisor'         => array( 'advisor_page', 'Genie', 'linker-advisor', 'en' ),
-		'linker-advisor-de'      => array( 'de/advisor_page', 'Genie', 'linker-berater', 'de' ),
+		'linker-advisor'         => array( 'advisor_page', 'Genie', 'genie', 'en' ),
+		'linker-advisor-de'      => array( 'de/advisor_page', 'Genie', 'genie', 'de' ),
 		// The Solution Configurator's page: the tool is a React app and the
 		// template prints its mount point, so the page needs this template
 		// instead of the application markup the old site stored in its body

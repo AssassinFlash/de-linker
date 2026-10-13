@@ -24,9 +24,9 @@
 
 自定义代码因此只有两处，都是数据装配：`Comparison`（装配）与 `ComparePage`（表片段、芯片、地址规范化、选择态脚本）。**零内联样式、零设计决策**（表片段只输出语义标记与类名）。
 
-## 2. /linker-advisor/（de /linker-berater/）——Genie 工作区
+## 2. /genie/（de /de/genie/）——Genie 工作区
 
-业主 2026-10-12 选定方案 A 后，这一页是 Genie 的全页工作区，不再 301 到目录。LiveCanvas 每页模板（`linker-advisor` / `linker-advisor-de`）只印 `[linker_genie_workspace]`；会话、历史和投票仍由 `linker-tools` 的 Genie 应用与 `linker-ai/v1/genie/conversations` 承担。右下助手与这一页读写同一条 cookie 会话。`/de/linker-advisor/` 仍不是德语页的地址。
+业主 2026-10-12 选定方案 A 后，这一页是 Genie 的全页工作区，不再 301 到目录。LiveCanvas 每页模板（`linker-advisor` / `linker-advisor-de`）只印 `[linker_genie_workspace]`；会话、历史和投票仍由 `linker-tools` 的 Genie 应用与 `linker-ai/v1/genie/conversations` 承担。右下助手与这一页读写同一条 cookie 会话。页面地址 2026-10-13 业主裁定改为 `/genie/`（德语 `/de/genie/`，不保留旧 slug）；旧 `/linker-advisor/`、`/de/linker-berater/`、`/de/linker-advisor/` 一律 301。
 
 ## 3. /faq-download/（en / de）——静态目录化
 

@@ -77,7 +77,7 @@ function config(): GenieConfig {
 		restNonce: 'n',
 		disclosure: "Hi, I'm Genie.",
 		accountUrl: '/my-account/',
-		workspaceUrl: '/linker-advisor/',
+		workspaceUrl: '/genie/',
 		prompts: [],
 	};
 }

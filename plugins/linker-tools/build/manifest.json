@@ -44,7 +44,7 @@
 		"src/genie/components/Handoff.tsx": "6a6c87dd5c7402fd4a7a8a9c8f617726ddee3a5da07302888e18e345aece7eb7",
 		"src/genie/components/Icons.tsx": "2d267bac0e10bc636ca91be0cd1ea123b8dc0478e073dbfb419fe1d2b2e9c4e5",
 		"src/genie/components/VoteButtons.tsx": "b05fcbc91bcaba604e12ebb0c1cf61c492b107304adcd09f102b382c63a219bf",
-		"src/genie/config.ts": "067c9093d3136bf375fd5780f62078ad128d5eeb5b7060ae8c27cfeb267b9779",
+		"src/genie/config.ts": "07037b23398dae9b06ef8408dcfa5fae4ecdd591150573eb330efdef39188981",
 		"src/genie/genie.css": "ca69d59f342ef92faab0842c4d1688c43acfc405ff3204c31cdb89b7a0cb9972",
 		"src/genie/index.tsx": "4ea81be0b05ebc9d56a6a396e22b8fea6fd3e7625954ba0733c4a0986f947f86",
 		"src/shared/App.tsx": "fd207a63e20f0d4aaf72a5e35e56816340d8c86b4199c10c404c4670a0ccf036",
@@ -64,9 +64,9 @@
 		"build/configurator.css": "27597cdbdb5f2e263068f673bd6b05dd00a1d915318add6fec66b50e05c827e6",
 		"build/configurator.js": "cb9ed80ce934a922fb5b755007189ea0cf67c68ffd6e25ec63705769a488d5f8",
 		"build/genie-rtl.css": "47f2fe6678ef74a303578f69e1d1f82757f48d2e13655905c86fcfab221657ed",
-		"build/genie.asset.php": "70195ebcc01008d91c0f4f8062a11c36d063759ed6dbdd7a8c5cea22c7ff954a",
+		"build/genie.asset.php": "d3d6283d01db52b9343fb1d2b1037b6e6d3e7b91d9aa8b24ded5aff4bdb47bf2",
 		"build/genie.css": "afefc3db99ede0f66e68b77c567b7ea736f7c973c1771c61383f15058af18c98",
-		"build/genie.js": "c919ce50348bfa4f8fca0b108141d451fd9584cfda43f166e0368759be002e0b",
+		"build/genie.js": "512c1e3f24ce74e4927173d9f39c311a45bd4cb24d467966c58cfc62bd6faffe",
 		"build/shared.asset.php": "0aa20091dfab05fc87cc510fd89bae3de916b3d554cd7a11054b7e3691418fde",
 		"build/shared.js": "548cb907466c0031d46b1789b6c95c477415f87ea5c0dddc4ff062e13b7dc763"
 	}

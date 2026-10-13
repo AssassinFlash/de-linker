@@ -105,19 +105,22 @@ test.describe('i18n', () => {
 			answered,
 			'every address of the live sitemap was requested'
 		).toBe(150);
-		// Three of the live site's German addresses are retired pages that
+		// Five of the live site's German addresses are retired pages that
 		// this site's own chrome redirects on purpose: /de/entwurfsflache/
 		// (design canvas) and /de/angebots-konfigurator/ (quote configurator)
-		// to the configurator (docs/specs/12-site-chrome.md item 2), and
-		// /de/linker-planer/ — the configurator's own former address; the page
-		// moved to /de/loesungskonfigurator/ (owner ruling 2026-10-12, the slug
-		// is not kept). /de/linker-berater/ is the Genie workspace and answers
-		// for itself. A 200 on a retired address would mean the redirect was
+		// to the configurator (docs/specs/12-site-chrome.md item 2);
+		// /de/linker-planer/ — the configurator's own former address, moved
+		// to /de/loesungskonfigurator/ (owner ruling 2026-10-12); and
+		// /de/linker-berater/ with its English slug under /de/ — the Genie
+		// workspace's former addresses, moved to /de/genie/ (owner ruling
+		// 2026-10-13). A 200 on a retired address would mean the redirect was
 		// lost; anything else means a German page broke.
 		const retired = [
 			'/de/entwurfsflache/',
 			'/de/angebots-konfigurator/',
 			'/de/linker-planer/',
+			'/de/linker-berater/',
+			'/de/linker-advisor/',
 		];
 		const missing = summary.not_200 ?? [];
 		for (const entry of missing) {

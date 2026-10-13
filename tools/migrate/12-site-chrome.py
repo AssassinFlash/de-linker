@@ -583,7 +583,9 @@ def resolve(wp: WP) -> dict[str, dict[str, int]]:
         # The configurator's slug before and after the 2026-10-12 move, so
         # plan and apply run on a site at either address.
         "linker-planner": ("linker-planner", "solution-configurator"),
-        "linker-advisor": "linker-advisor",
+        # The advisor's slug before and after the 2026-10-13 move, so plan
+        # and apply run on a site at either address.
+        "linker-advisor": ("linker-advisor", "genie"),
         "design-canvas": "design-canvas",
         "quote-configurator": "quote-configurator",
     }
@@ -839,6 +841,18 @@ def rename_slugs(wp: WP, ids: dict[str, dict[str, int]], write: bool) -> None:
             "linker-planer",
             "loesungskonfigurator",
         ),
+        (
+            "linker-advisor-en",
+            ids["linker-advisor"]["en"],
+            "linker-advisor",
+            "genie",
+        ),
+        (
+            "linker-berater-de",
+            ids["linker-advisor"]["de"],
+            "linker-berater",
+            "genie",
+        ),
     ):
         current = wp.run("post", "get", str(post_id), "--field=post_name").strip()
         if current == after:
@@ -1043,6 +1057,8 @@ def do_verify(wp: WP) -> int:
     for key, post_id, after in (
         ("linker-planner-en", ids["linker-planner"]["en"], "solution-configurator"),
         ("linker-planer-de", ids["linker-planner"]["de"], "loesungskonfigurator"),
+        ("linker-advisor-en", ids["linker-advisor"]["en"], "genie"),
+        ("linker-berater-de", ids["linker-advisor"]["de"], "genie"),
     ):
         current = wp.run("post", "get", str(post_id), "--field=post_name").strip()
         if current != after:

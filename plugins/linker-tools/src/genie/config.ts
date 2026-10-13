@@ -3,7 +3,7 @@
  *
  * PHP prints `<div data-linker-app="genie" …>` (includes/Genie/Entries.php):
  * - `data-locale`: `en` or `de`;
- * - `data-surface`: `helper` in the dock, `workspace` on /linker-advisor/;
+ * - `data-surface`: `helper` in the dock, `workspace` on /genie/;
  * - `data-page-type`: category | product | draft | account | other;
  * - `data-product-id`: the product page's id, 0 elsewhere;
  * - `data-turn-url`: the REST proxy route (linker-ai/v1/genie/turn);
@@ -62,7 +62,7 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		restNonce: data.restNonce ?? '',
 		disclosure: data.disclosure ?? '',
 		accountUrl: data.accountUrl ?? '',
-		workspaceUrl: data.workspaceUrl ?? '/linker-advisor/',
+		workspaceUrl: data.workspaceUrl ?? '/genie/',
 		prompts: data.prompts ? JSON.parse( data.prompts ) : [],
 	};
 }

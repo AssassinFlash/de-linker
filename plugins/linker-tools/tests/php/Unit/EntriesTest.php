@@ -83,7 +83,7 @@ final class EntriesTest extends TestCase {
 		$this->assertStringContainsString( 'der KI-Assistent von Linker', $html );
 		$this->assertStringContainsString( 'Wo steht meine Proforma?', $html );
 			$this->assertStringContainsString( 'data-page-type="account"', $html );
-			$this->assertStringContainsString( 'data-workspace-url="https://de-linker.test/linker-advisor/"', $html );
+			$this->assertStringContainsString( 'data-workspace-url="https://de-linker.test/genie/"', $html );
 			$this->assertConditionsMet();
 	}
 
@@ -94,7 +94,7 @@ final class EntriesTest extends TestCase {
 	 */
 	public function test_workspace_page_enters_the_loader_handshake(): void {
 		$GLOBALS['linker_tools_test_inline_scripts'] = array();
-		$this->frontend( 'en', array( 'type' => 'other' ), 'linker-advisor' );
+		$this->frontend( 'en', array( 'type' => 'other' ), 'genie' );
 		WP_Mock::userFunction(
 			'wp_scripts',
 			array(
@@ -149,13 +149,14 @@ final class EntriesTest extends TestCase {
 	}
 
 	/**
-	 * The slug still says advisor, but the template no longer prints the
-	 * workspace. A dock that trusts the slug would boot an empty page and
-	 * hide the helper. The helper is what a page without the mount gets.
+	 * The queried page is the workspace page's slug, but its template no
+	 * longer prints the workspace. A dock that trusts the slug would boot an
+	 * empty page and hide the helper. The helper is what a page without the
+	 * mount gets.
 	 */
 	public function test_a_matching_slug_without_the_workspace_template_keeps_the_helper(): void {
 		$GLOBALS['linker_tools_test_inline_scripts'] = array();
-		$this->frontend( 'en', array( 'type' => 'other' ), 'linker-advisor' );
+		$this->frontend( 'en', array( 'type' => 'other' ), 'genie' );
 		WP_Mock::userFunction(
 			'wp_scripts',
 			array(
@@ -172,7 +173,7 @@ final class EntriesTest extends TestCase {
 	}
 
 	/**
-	 * A German page links the full-page workspace to the German advisor
+	 * A German page links the full-page workspace to the German Genie
 	 * page. The language layer, not the locale string, decides.
 	 */
 	public function test_german_page_links_the_german_workspace(): void {
@@ -180,11 +181,11 @@ final class EntriesTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_page_by_path',
 			array(
-				'args'   => array( 'linker-advisor' ),
+				'args'   => array( 'genie' ),
 				'return' => new \WP_Post(
 					(object) array(
 						'ID'        => 41,
-						'post_name' => 'linker-advisor',
+						'post_name' => 'genie',
 					)
 				),
 			)
@@ -200,7 +201,7 @@ final class EntriesTest extends TestCase {
 			'get_permalink',
 			array(
 				'args'   => array( 42 ),
-				'return' => 'https://de-linker.test/de/linker-berater/',
+				'return' => 'https://de-linker.test/de/genie/',
 			)
 		);
 		WP_Mock::userFunction(
@@ -213,7 +214,7 @@ final class EntriesTest extends TestCase {
 		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
 		$this->assertStringContainsString(
-			'data-workspace-url="https://de-linker.test/de/linker-berater/"',
+			'data-workspace-url="https://de-linker.test/de/genie/"',
 			$html
 		);
 		$this->assertConditionsMet();

@@ -257,7 +257,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 255, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 21, $maps['pages'] );
+		$this->assertCount( 23, $maps['pages'] );
 			$this->assertCount( 5, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
@@ -739,15 +739,25 @@ final class RedirectsTest extends TestCase {
 	}
 
 	/**
-	 * The advisor addresses stay. They are the Genie workspace now, not a
-	 * retired tool page, so a request for them is not redirected.
+	 * The advisor's old addresses go to the Genie page: the slug moved from
+	 * /linker-advisor/ (the German twin /de/linker-berater/) to /genie/ on
+	 * the owner's 2026-10-13 ruling; the German request lands on the twin's
+	 * own address.
 	 */
-	public function test_advisor_addresses_stay(): void {
+	public function test_the_advisors_former_addresses_go_to_the_page(): void {
 		$this->wordpress();
+		$this->default_language = 'en';
+		$this->languages        = array( 'en', 'de' );
 
-		$this->assertNull( ( new Redirects() )->target( '/linker-advisor/' ) );
-		$this->assertNull( ( new Redirects() )->target( '/de/linker-berater/' ) );
-		$this->assertNull( ( new Redirects() )->target( '/de/linker-advisor/' ) );
+		$this->assertSame( self::HOME . '/genie/', ( new Redirects() )->target( '/linker-advisor/' ) );
+
+		$this->current_language = 'de';
+		$this->post_ids         = array( self::HOME . '/genie/' => 71 );
+		$this->post_twins       = array( 71 => array( 'de' => 72 ) );
+		$this->permalinks       = array( 72 => self::HOME . '/de/genie/' );
+
+		$this->assertSame( self::HOME . '/de/genie/', ( new Redirects() )->target( '/de/linker-berater/' ) );
+		$this->assertSame( self::HOME . '/de/genie/', ( new Redirects() )->target( '/de/linker-advisor/' ) );
 	}
 
 	/**
