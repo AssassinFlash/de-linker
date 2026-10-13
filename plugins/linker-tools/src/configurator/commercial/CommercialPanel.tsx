@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -22,6 +22,7 @@ import type { StoreClient } from '../api/store';
 import type { Config } from '../config';
 import { Field } from '../Field';
 import { FilePicker } from '../FilePicker';
+import { MobileNavigation } from '../MobileNavigation';
 import schema from '../schema/commercial-input.schema.json';
 import type {
 	CommercialInput,
@@ -143,6 +144,19 @@ export function CommercialPanel( {
 		),
 	} );
 	const goals = watch( 'goals' );
+	const mobileSteps = useMemo(
+		() => [
+			{
+				id: 'linker-ci-inputs-section',
+				label: __( 'Inputs', 'linker-tools' ),
+			},
+			{
+				id: 'linker-ci-result-section',
+				label: __( 'Result', 'linker-tools' ),
+			},
+		],
+		[]
+	);
 
 	async function run( values: CommercialValues ) {
 		setBusy( true );
@@ -185,6 +199,7 @@ export function CommercialPanel( {
 	return (
 		<div className="linker-flow">
 			<section
+				id="linker-ci-inputs-section"
 				className="linker-section"
 				aria-labelledby="linker-ci-title"
 			>
@@ -490,6 +505,7 @@ export function CommercialPanel( {
 				</form>
 			</section>
 			<section
+				id="linker-ci-result-section"
 				className="linker-section"
 				aria-labelledby="linker-ci-result-title"
 				aria-busy={ busy }
@@ -534,6 +550,7 @@ export function CommercialPanel( {
 					/>
 				) : null }
 			</section>
+			<MobileNavigation steps={ mobileSteps } />
 		</div>
 	);
 }

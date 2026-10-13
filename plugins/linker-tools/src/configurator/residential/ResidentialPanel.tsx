@@ -11,6 +11,7 @@ import {
 	lazy,
 	Suspense,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -23,6 +24,7 @@ import { EngineError, type EngineClient } from '../api/engine';
 import { saveSolution } from '../api/solutions';
 import type { AddStatus, StoreClient } from '../api/store';
 import type { Config } from '../config';
+import { MobileNavigation } from '../MobileNavigation';
 import { ReportView } from '../report/ReportView';
 import { NoCandidate } from '../solution/NoCandidate';
 import { Solution, type SaveState } from '../solution/Solution';
@@ -98,6 +100,28 @@ export function ResidentialPanel( {
 	const [ saveState, setSaveState ] = useState< SaveState >( 'idle' );
 	const [ savedUrl, setSavedUrl ] = useState< string | null >( null );
 	const results = useRef< HTMLDivElement >( null );
+	const reportReady = status === 'done' && !! result?.selected;
+	const mobileSteps = useMemo(
+		() => [
+			{
+				id: 'linker-inputs-section',
+				label: __( 'Inputs', 'linker-tools' ),
+			},
+			{
+				id: 'linker-solution-section',
+				label: __( 'Solution', 'linker-tools' ),
+			},
+			...( reportReady
+				? [
+						{
+							id: 'linker-report-section',
+							label: __( 'Design report', 'linker-tools' ),
+						},
+					]
+				: [] ),
+		],
+		[ reportReady ]
+	);
 
 	useEffect( () => {
 		if ( config.openRoof && defaults?.plz ) {
@@ -180,6 +204,7 @@ export function ResidentialPanel( {
 	return (
 		<div className="linker-flow">
 			<section
+				id="linker-inputs-section"
 				className="linker-section"
 				aria-labelledby="linker-inputs-title"
 			>
@@ -228,6 +253,7 @@ export function ResidentialPanel( {
 				) : null }
 			</section>
 			<section
+				id="linker-solution-section"
 				className="linker-section"
 				aria-labelledby="linker-solution-title"
 				aria-busy={ status === 'computing' }
@@ -321,6 +347,7 @@ export function ResidentialPanel( {
 			</section>
 			{ status === 'done' && result?.selected && input ? (
 				<section
+					id="linker-report-section"
 					className="linker-section"
 					aria-labelledby="linker-report-title"
 				>
@@ -342,6 +369,7 @@ export function ResidentialPanel( {
 					/>
 				</section>
 			) : null }
+			<MobileNavigation steps={ mobileSteps } />
 		</div>
 	);
 }
