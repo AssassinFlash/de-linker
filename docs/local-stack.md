@@ -48,7 +48,7 @@ brew services start redis
   <name>/
     wordpress/            文档根；wp-content/plugins/linker-* 是指向检出的链接
     php.ini  router.php   PHP 内置服务器的配置与路由（每次 up 重写）
-    admin.txt             后台口令（600）
+    admin.txt             后台登录说明（600）。干净安装是 local-admin 的口令；`just pull load` 之后口令已被快照换成不可逆占位，文件改写为剩余员工登录名与 `just login` 的用法
     mail/                 截获的邮件，*.eml
     logs/                 server.log、php-error.log、isolation.log、engine.log、genie.log
     run/                  pid 文件
@@ -98,7 +98,7 @@ brew services start redis
 <dir>/uploads/           wp-content/uploads
 ```
 
-插件与主题逐个替换实例里的同名目录，插件随后启用，主题只复制（启用哪个由数据库决定）；uploads 合并进实例；`linker-*` 只能来自检出，快照里出现即报错。安装这些文件的是 `linker_local.snapshot.install`，#6 的 `load` 也用它；数据库由 #6 装入。
+插件与主题逐个替换实例里的同名目录，插件随后启用，主题只复制（启用哪个由数据库决定）；uploads 合并进实例；`linker-*` 只能来自检出，快照里出现即报错。安装这些文件的是 `linker_local.snapshot.install`，#6 的 `load` 也用它；数据库由 #6 装入。装入同时改写实例目录的 `admin.txt`：快照把每个账号口令换成不可逆占位（`anonymize.local_password`），`provision()` 写下的口令不再能登录，文件改为列出仍在的员工登录名，并指向 `just login <name> --user=<login>`。
 
 ## 服务
 

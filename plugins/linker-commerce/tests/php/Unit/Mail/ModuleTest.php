@@ -29,20 +29,20 @@ final class ModuleTest extends TestCase {
 	 * Every wp_mail() call goes through the outbox; retries, the queue type and the email language are hooked.
 	 */
 	public function test_register_adds_the_hooks(): void {
-		$jobs   = new JobStore();
-		$outbox = new Outbox( $jobs, new Throttle() );
-		$locale = new EmailLocale();
-		$policy = new EmailPolicy();
+			$jobs   = new JobStore();
+			$outbox = new Outbox( $jobs, new Throttle() );
+			$locale = new EmailLocale();
+			$policy = new EmailPolicy();
 
-		WP_Mock::expectActionAdded( 'init', array( $jobs, 'register_post_type' ) );
-		WP_Mock::expectFilterAdded( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
-		WP_Mock::expectActionAdded( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
+			WP_Mock::expectActionAdded( 'init', array( $jobs, 'register_post_type' ) );
+			WP_Mock::expectFilterAdded( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
+			WP_Mock::expectActionAdded( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
 		WP_Mock::expectActionAdded( Outbox::HOOK, array( $outbox, 'retry' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_switching_email_locale', array( $locale, 'allow' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_restoring_email_locale', array( $locale, 'allow' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $policy, 'switch_off_others' ), 1000 );
 
-		( new Module( $outbox, $jobs, $locale, $policy ) )->register();
+			( new Module( $outbox, $jobs, $locale, $policy ) )->register();
 
 		$this->assertConditionsMet();
 	}

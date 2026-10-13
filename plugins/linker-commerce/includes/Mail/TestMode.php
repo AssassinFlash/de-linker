@@ -16,7 +16,24 @@ namespace Linker\Commerce\Mail;
  * The switch is an option that the command line sets and removes
  * (`wp linker-commerce test-mail on|off`); the queue keeps the recipients the
  * message was handed over with — the routing data every assertion reads — and
- * the rewrite happens on the way to wp_mail() alone.
+ * the rewrite happens on the way out of the outbox alone (Outbox calls
+ * redirect() on the copy it sends, after the queue has stored the original).
+ *
+ * A wp_mail filter cannot do that rewrite. WordPress applies the wp_mail filter
+ * before pre_wp_mail (wp-includes/pluggable.php), and the outbox records the
+ * queue from the arguments pre_wp_mail is handed. Rewriting on wp_mail would
+ * replace those arguments first, and the queue would name the tester address
+ * instead of the routing data.
+ *
+ * The review instances still run the legacy plugin. Its wp_mail filter (priority
+ * 100, mail-identity.php) schedules one later message per owner inbox whenever
+ * the business inbox is a recipient, and that later message is itself a
+ * wp_mail() call. The outbox takes every such call, so while the switch is on
+ * the copy is rewritten to the tester address on the way out the same way the
+ * original is. A rerun with the switch on (t109, 2026-10-12) queued the three
+ * owner addresses and then wrote each copy to the tester address alone; it did
+ * not show a copy leaving for a real recipient. That is why this class does not
+ * also rewrite wp_mail() arguments or unhook the copy queue.
  */
 final class TestMode {
 
@@ -92,13 +109,23 @@ final class TestMode {
 		if ( '' === $address ) {
 			return $message;
 		}
-		$headers = array();
-		foreach ( $message->headers as $header ) {
+		return new Message( array( $address ), $message->subject, $message->body, self::without_copies( $message->headers ), $message->attachments );
+	}
+
+	/**
+	 * Header lines without a visible or blind copy.
+	 *
+	 * @param string[] $headers Header lines.
+	 * @return list<string>
+	 */
+	private static function without_copies( array $headers ): array {
+		$kept = array();
+		foreach ( $headers as $header ) {
 			$name = strtolower( ltrim( $header ) );
 			if ( ! str_starts_with( $name, 'cc:' ) && ! str_starts_with( $name, 'bcc:' ) ) {
-				$headers[] = $header;
+				$kept[] = $header;
 			}
 		}
-		return new Message( array( $address ), $message->subject, $message->body, $headers, $message->attachments );
+		return $kept;
 	}
 }

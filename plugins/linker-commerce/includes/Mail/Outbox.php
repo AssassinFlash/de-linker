@@ -11,14 +11,21 @@ namespace Linker\Commerce\Mail;
 
 use WP_Error;
 
-/**
- * Takes every wp_mail() call of the site (WooCommerce's emails included) on
- * pre_wp_mail. A message goes out at once when the Throttle allows; otherwise,
- * and after a failed attempt, it waits in the JobStore for an Action Scheduler
- * action. Retries follow RETRY_DELAYS, then the message is marked failed and
- * logged. Each attempt sends the message once, recipients and blind copies
- * together, so a retry never repeats a mailbox that already received it.
- */
+	/**
+	 * Takes every wp_mail() call of the site (WooCommerce's emails included) on
+	 * pre_wp_mail. A message goes out at once when the Throttle allows; otherwise,
+	 * and after a failed attempt, it waits in the JobStore for an Action Scheduler
+	 * action. Retries follow RETRY_DELAYS, then the message is marked failed and
+	 * logged. Each attempt sends the message once, recipients and blind copies
+	 * together, so a retry never repeats a mailbox that already received it.
+	 *
+	 * The queue is written from the arguments this filter is handed, before
+	 * TestMode::redirect() changes who the attempt is sent to. WordPress runs
+	 * the wp_mail filter before pre_wp_mail (wp-includes/pluggable.php), so a
+	 * rewrite registered on wp_mail would already have replaced those arguments
+	 * by the time this filter runs, and the queue would no longer be the routing
+	 * data an assertion reads (AGENTS.md §5).
+	 */
 final class Outbox {
 
 	/**
@@ -122,12 +129,13 @@ final class Outbox {
 			return false;
 		}
 
-		$this->throttle->record( $now );
-		$this->delivering = true;
-		$this->error      = '';
-		// Test mode rewrites the recipients on the way out alone: what was queued
-		// keeps the recipients the routing data names (Mail\TestMode).
-		$delivery = $this->test_mode->redirect( $message );
+			$this->throttle->record( $now );
+			$this->delivering = true;
+			$this->error      = '';
+			// Test mode rewrites the recipients on the way out alone. $message is
+			// what was queued, and it keeps the recipients the routing data names
+			// (Mail\TestMode); only this attempt's copy is redirected.
+			$delivery = $this->test_mode->redirect( $message );
 		try {
 			$sent = wp_mail( $delivery->to, $delivery->subject, $delivery->body, $delivery->headers, $delivery->attachments );
 		} finally {
