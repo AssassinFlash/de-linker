@@ -446,6 +446,10 @@ def test_hygiene_deletes_only_after_it_has_listed_the_names(tmp_path: Path) -> N
     assert deleted == [
         ("wp", ("option", "delete", "tv_b2b_seller_email", "dlk_content_dirty"))
     ]
+    # A revision does not support the trash: without `--force` WP-CLI refuses
+    # every one of them (measured 2026-10-14 on 2156 revisions).
+    forced = [call for call in target.calls if call[1][:2] == ("post", "delete")]
+    assert forced == [("wp", ("post", "delete", "42", "43", "--force"))]
     assert (tmp_path / "legacy-options.json").read_text(encoding="utf-8").count(
         "tv_b2b"
     ) == 1

@@ -507,7 +507,12 @@ def hygiene(target: Target, *, backup: Path, writes: bool) -> Result:
     ).split()
     if revisions:
         if writes:
-            target.wp("post", "delete", *revisions)
+            # `--force` is the difference between deleting and failing: a
+            # revision does not support the trash, and plain `wp post delete`
+            # refuses every one of them (measured 2026-10-14 on the first
+            # 2156-revision site — a fresh drill instance has none, which is
+            # why the drill never saw it).
+            target.wp("post", "delete", *revisions, "--force")
         actions.append(
             f"revisions: {'deleted' if writes else 'would delete'} {len(revisions)}"
         )
