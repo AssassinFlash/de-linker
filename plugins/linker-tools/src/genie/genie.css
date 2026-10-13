@@ -106,35 +106,25 @@
 }
 
 /*
- * `.gp-workspace` — the advisor page is the app, not a document: the frame
- * takes exactly what the site header leaves, the page itself never scrolls,
- * and the shop's footer never stands under the frame.
- *
- * The prototype states the height as `calc(100dvh - 88px)` against its frozen
- * 88px header. The live header is not a constant — it is 88px on a desktop and
- * 80px under 768px, and it folds — so the height is taken from the header
- * itself: `body` becomes the column, `main` absorbs what is left, and the
- * mount chain passes that height down to the app. No page scroll means the
- * input is always reachable; `display:none` on the footer keeps it out of
- * reach of an anchor or a focus jump as well.
+ * `.gp-workspace` — the advisor page fills the first viewport under the site
+ * header, so the composer sits at the fold, and the shop's footer stands
+ * below the frame: the page scrolls that far (owner ruling 2026-10-13 — the
+ * closed frame keeps its footer). The app frame's height is the viewport
+ * minus the site header and, when one rides, WordPress's admin bar. The
+ * header's own heights are the site chrome's, measured on the reference
+ * instance 2026-10-13: 89px on a desktop, 81px under 768px.
  *
  * `--wp-admin--admin-bar--height` is WordPress's own variable: it is 0 on the
  * customer's pages and 32px on a login the admin bar rides.
  */
 body:has(.linker-genie-workspace) {
-	display: flex;
-	flex-direction: column;
-	height: calc(100dvh - var(--wp-admin--admin-bar--height, 0px));
-	overflow: hidden;
+	--linker-site-header: 89px;
 }
 
-body:has(.linker-genie-workspace) > main {
-	flex: 1 1 auto;
-	min-height: 0;
-}
-
-body:has(.linker-genie-workspace) > footer {
-	display: none;
+@media (max-width: 767px) {
+	body:has(.linker-genie-workspace) {
+		--linker-site-header: 81px;
+	}
 }
 
 /* The wrappers between `main` and the app are the template's and the mount
@@ -145,7 +135,10 @@ body:has(.linker-genie-workspace)
 		#linker-genie-mount,
 		#linker-genie-mount > div
 	) {
-	height: 100%;
+	height: calc(
+		100dvh - var(--wp-admin--admin-bar--height, 0px) -
+			var(--linker-site-header)
+	);
 	min-height: 0;
 }
 
@@ -178,6 +171,16 @@ body:has(.linker-genie-workspace)
 	gap: 12px;
 	min-height: 56px;
 	padding: 8px 24px;
+}
+
+/* The bar's leading group: the rail's reopen (when the workspace closed it)
+ * and the app title, so the title keeps its place whether the toggle is
+ * there or not. */
+.linker-genie-app__bar-lead {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
 }
 
 /* `.gp-app-title` */

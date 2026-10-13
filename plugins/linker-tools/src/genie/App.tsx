@@ -403,12 +403,13 @@ export function App( { config }: { config: GenieConfig } ) {
 			) : null }
 			<div className="linker-genie-app__main">
 				<header className="linker-genie-app__bar">
-					<p className="linker-genie-app__title">{ appName() }</p>
-					<div className="linker-genie-app__bar-actions">
+					<div className="linker-genie-app__bar-lead">
 						{ /*
 						 * The rail's own toggle rides in the rail, which the
 						 * workspace can close. Closed, the rail is gone and
-						 * the only way back has to live outside it.
+						 * the way back stands at the bar's leading edge, the
+						 * chat app's own place for it (owner ruling
+						 * 2026-10-13).
 						 */ }
 						{ workspace && ! railOpen ? (
 							<button
@@ -423,6 +424,9 @@ export function App( { config }: { config: GenieConfig } ) {
 								</span>
 							</button>
 						) : null }
+						<p className="linker-genie-app__title">{ appName() }</p>
+					</div>
+					<div className="linker-genie-app__bar-actions">
 						{ ! workspace && config.workspaceUrl ? (
 							<a
 								className="linker-genie-app__full"
