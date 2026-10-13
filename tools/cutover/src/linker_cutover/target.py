@@ -351,8 +351,12 @@ class Target:
         # directories), walked on this side because the source is here.
         # The base is the bare path: `_push_entry` adds the host itself, and
         # `address()` would arrive as `host:host:/path` (the deploy died on
-        # exactly that, 2026-10-14).
+        # exactly that, 2026-10-14). The directory itself may not exist yet —
+        # the first deploy of a plugin — and rsync's receiver cannot place a
+        # file into a missing directory; the local branch above creates it,
+        # so this one does too.
         base = self.path_of(relative).rstrip("/")
+        self.shell(f"mkdir -p {shlex.quote(base)}")
         for entry in _local_entries(source):
             self._push_entry(entry, f"{base}/{entry.relative_to(source)}")
 

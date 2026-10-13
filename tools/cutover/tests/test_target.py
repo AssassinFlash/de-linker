@@ -279,7 +279,13 @@ def test_copy_in_sends_each_chunk_to_one_host_prefix(
     target.copy_in(source, relative)
 
     base = target.path_of(relative)
-    destinations = [command[-1] for command in seen]
+    # The destination may not exist yet (the first deploy of a plugin), and
+    # rsync's receiver cannot place a file into a missing directory — so the
+    # first thing that goes out is the directory itself.
+    mkdir, *pushes = seen
+    assert mkdir[:5] == ["ssh", "-o", "BatchMode=yes", HOST, "bash -c"]
+    assert f"mkdir -p {base}" in mkdir[-1]
+    destinations = [command[-1] for command in pushes]
     assert destinations == [
         f"{HOST}:{base}/linker-commerce.php",
         f"{HOST}:{base}/includes",
