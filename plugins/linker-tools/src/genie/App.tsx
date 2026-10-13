@@ -33,7 +33,18 @@ import {
 import { BlockView } from './components/BlockView';
 import { Compare } from './components/Compare';
 import { GenieCard } from './components/GenieCard';
-import { NewConversationIcon, PanelIcon, SendIcon } from './components/Icons';
+import {
+	AttachIcon,
+	BackIcon,
+	CloseIcon,
+	ExpandIcon,
+	HistoryIcon,
+	MicIcon,
+	NewConversationIcon,
+	PanelIcon,
+	PlusIcon,
+	SendIcon,
+} from './components/Icons';
 import { VoteButtons } from './components/VoteButtons';
 import './genie.css';
 
@@ -42,8 +53,37 @@ interface CardItem {
 	status: { state: CardState; text: string };
 }
 
+/**
+ * The browser's own speech recognition, structurally — lib.dom's
+ * SpeechRecognition is what the engine ships; the constructor and the three
+ * events the dictation button uses. `webkitSpeechRecognition` is the same
+ * interface under its prefixed name.
+ */
+interface Dictation {
+	lang: string;
+	onresult:
+		| ( ( event: {
+				results: ArrayLike< ArrayLike< { transcript: string } > >;
+		  } ) => void )
+		| null;
+	onend: ( () => void ) | null;
+	onerror: ( () => void ) | null;
+	start: () => void;
+	stop: () => void;
+}
+
+/** Test seam: the dictation test stubs the constructor. */
+export type { Dictation };
+
 type Phase = 'ask' | 'waiting' | 'error';
 type HistoryPhase = 'loading' | 'ready' | 'failed';
+
+declare global {
+	interface Window {
+		SpeechRecognition?: new () => Dictation;
+		webkitSpeechRecognition?: new () => Dictation;
+	}
+}
 
 /**
  * One lane for restore, switch and ask. It lives outside the component:
@@ -104,6 +144,18 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ railOpen, setRailOpen ] = useState(
 		config.surface === 'workspace' && window.innerWidth >= 768
 	);
+	// The dock's own history view (the live Advisor's `.lia-history`, opened
+	// from the header's clock): it replaces the thread, and the header's
+	// mark becomes the way back. The workspace keeps its rail instead.
+	const [ dockHistory, setDockHistory ] = useState( false );
+	// What the visitor attached this turn, and what the dictation heard.
+	// Both are the browser's own: the turn route carries text only
+	// (docs/specs/13-genie.md), so the name rides in the question and the
+	// words land in the field.
+	const attachInput = useRef< HTMLInputElement >( null );
+	const recognition = useRef< Dictation | null >( null );
+	const [ attached, setAttached ] = useState< string[] >( [] );
+	const [ dictating, setDictating ] = useState( false );
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
 
@@ -145,13 +197,23 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const ask = useCallback(
 		async ( text: string ) => {
-			const question = text.trim();
+			const question = [
+				text.trim(),
+				...attached.map( ( name ) =>
+					// translators: %s is the name of a file the visitor attached.
+					__( 'Attached: %s', 'linker-tools' ).replace( '%s', name )
+				),
+			]
+				.filter( ( part ) => part !== '' )
+				.join( '\n' );
 			if ( ! question || sending.current ) {
 				return;
 			}
 			setOpen( true );
+			setDockHistory( false );
 			setPhase( 'waiting' );
 			setInput( '' );
+			setAttached( [] );
 			return enqueue( async () => {
 				// Claim the composer only once this ask is the lane's head.
 				// Setting it before the queue would drop a history click that
@@ -194,7 +256,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 			} );
 		},
-		[ config, refreshHistory ]
+		[ config, refreshHistory, attached ]
 	);
 
 	// The conversation the browser already has comes back on mount: a reload,
@@ -263,6 +325,41 @@ export function App( { config }: { config: GenieConfig } ) {
 		},
 		[ config.conversationsUrl, config.restNonce, showStored ]
 	);
+
+	// The browser's own dictation (the live Advisor's `.lia-voice` and the
+	// ChatGPT composer's microphone). No vendor service: where the browser
+	// has none, the button says so and stays. The recognition lives for the
+	// mount; stopping it on unmount is what a second mount must not inherit.
+	const dictate = useCallback( () => {
+		const SpeechRecognition =
+			window.SpeechRecognition ?? window.webkitSpeechRecognition;
+		if ( ! SpeechRecognition ) {
+			return;
+		}
+		if ( dictating && recognition.current ) {
+			recognition.current.stop();
+			return;
+		}
+		const session = new SpeechRecognition();
+		session.lang = config.locale === 'de' ? 'de-DE' : 'en-US';
+		session.onresult = ( event ) => {
+			const heard = event.results[ 0 ]?.[ 0 ]?.transcript ?? '';
+			if ( heard ) {
+				setInput( ( current ) =>
+					current ? `${ current } ${ heard }` : heard
+				);
+			}
+		};
+		session.onend = () => setDictating( false );
+		session.onerror = () => setDictating( false );
+		recognition.current = session;
+		setDictating( true );
+		session.start();
+	}, [ config.locale, dictating ] );
+
+	// The mount's own cleanup, not a reaction to a render; the ref is the
+	// one thing the deps rule treats as stable, so the list stays empty.
+	useEffect( () => () => recognition.current?.stop(), [] );
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
@@ -362,6 +459,12 @@ export function App( { config }: { config: GenieConfig } ) {
 		}
 	}
 
+	const historyView = ! workspace && dockHistory;
+	const german = config.locale === 'de';
+	// A browser without speech recognition gets no dead button.
+	const canDictate = Boolean(
+		window.SpeechRecognition ?? window.webkitSpeechRecognition
+	);
 	const visible = workspace || open;
 	return (
 		<section
@@ -371,7 +474,25 @@ export function App( { config }: { config: GenieConfig } ) {
 			lang={ config.locale }
 			aria-label={ appName() }
 		>
-			{ visible ? (
+			{ /*
+			 * The mobile sheet's backdrop (the OpenAI helper's): a tap
+			 * off the card folds the dock away. First child, so the
+			 * positioned main column paints above it.
+			 */ }
+			{ ! workspace && open ? (
+				<button
+					type="button"
+					className="linker-genie-dock-mask"
+					onClick={ () => setOpen( false ) }
+				>
+					<span className="screen-reader-text">
+						{ __( 'Hide', 'linker-tools' ) }
+					</span>
+				</button>
+			) : null }
+			{ /* The rail is the workspace's history; the dock's is the
+			 * header's history view, so a helper mount carries no rail. */ }
+			{ visible && workspace ? (
 				<HistoryRail
 					open={ railOpen }
 					docked={ workspace }
@@ -426,28 +547,94 @@ export function App( { config }: { config: GenieConfig } ) {
 						) : null }
 						<p className="linker-genie-app__title">{ appName() }</p>
 					</div>
-					<div className="linker-genie-app__bar-actions">
-						{ ! workspace && config.workspaceUrl ? (
-							<a
-								className="linker-genie-app__full"
-								href={ config.workspaceUrl }
-							>
-								{ __( 'Open full page', 'linker-tools' ) }
-							</a>
-						) : null }
-						{ ! workspace ? (
-							<button
-								type="button"
-								className="linker-genie-app__toggle"
-								aria-expanded={ open }
-								onClick={ () => setOpen( ! open ) }
-							>
-								{ open
-									? __( 'Hide', 'linker-tools' )
-									: __( 'Open', 'linker-tools' ) }
-							</button>
-						) : null }
-					</div>
+					{ ! workspace ? (
+						<div className="linker-genie-app__bar-actions">
+							{ open ? (
+								/*
+								 * The open dock's head is the live Advisor's
+								 * `.lia-head-btns` row (new conversation, the full
+								 * page, the history, closing) as icon buttons — the
+								 * owner-approved reference of 2026-10-13
+								 * (docs/research/2026-10-12-live-account-and-advisor/).
+								 */
+								<>
+									<button
+										type="button"
+										className="linker-genie-app__icon"
+										aria-label={ __(
+											'New conversation',
+											'linker-tools'
+										) }
+										onClick={ () => {
+											setDockHistory( false );
+											void continueConversation();
+										} }
+									>
+										<PlusIcon />
+									</button>
+									{ config.workspaceUrl ? (
+										<a
+											className="linker-genie-app__icon"
+											href={ config.workspaceUrl }
+											aria-label={ __(
+												'Open full page',
+												'linker-tools'
+											) }
+										>
+											<ExpandIcon />
+										</a>
+									) : null }
+									<button
+										type="button"
+										className="linker-genie-app__icon"
+										aria-label={
+											dockHistory
+												? __( 'Back', 'linker-tools' )
+												: __(
+														'Conversations',
+														'linker-tools'
+													)
+										}
+										aria-expanded={ dockHistory }
+										onClick={ () =>
+											setDockHistory( ! dockHistory )
+										}
+									>
+										{ dockHistory ? (
+											<BackIcon />
+										) : (
+											<HistoryIcon />
+										) }
+									</button>
+									<button
+										type="button"
+										className="linker-genie-app__icon"
+										aria-label={ __(
+											'Close',
+											'linker-tools'
+										) }
+										onClick={ () => setOpen( false ) }
+									>
+										<CloseIcon />
+									</button>
+								</>
+							) : (
+								/*
+								 * The closed bar is a fallback — in the page the
+								 * loader hides the whole mount and the bubble opens
+								 * the dock — and it is how a jsdom mount opens.
+								 */
+								<button
+									type="button"
+									className="linker-genie-app__toggle"
+									aria-expanded={ open }
+									onClick={ () => setOpen( true ) }
+								>
+									{ __( 'Open', 'linker-tools' ) }
+								</button>
+							) }
+						</div>
+					) : null }
 				</header>
 				{ visible ? (
 					<div className="linker-genie-app__panel">
@@ -455,9 +642,9 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * `.gp-welcome h1`: the empty column opens with its own
 						 * line, the prototype's first child of the welcome. It
 						 * is not a bar title — the column under the bar is the
-						 * one it names.
+						 * one it names. The dock's own welcome stands below.
 						 */ }
-						{ thread.length === 0 ? (
+						{ workspace && thread.length === 0 ? (
 							<h1 className="linker-genie-app__welcome-title">
 								{ __(
 									'Where should we begin?',
@@ -466,160 +653,340 @@ export function App( { config }: { config: GenieConfig } ) {
 							</h1>
 						) : null }
 						{ /*
+						 * The dock's history view is the live Advisor's
+						 * `.lia-history`: the header's clock swaps the
+						 * conversation for the list, the chevron swaps back.
+						 */ }
+						{ historyView ? (
+							<div className="linker-genie-app__history">
+								<HistoryList
+									items={ history }
+									currentId={ currentId }
+									phase={ historyPhase }
+									onSelect={ ( id ) => {
+										setDockHistory( false );
+										void continueConversation( id );
+									} }
+									onRetry={ () => void refreshHistory() }
+								/>
+							</div>
+						) : null }
+						{ /*
+						 * The dock's opening state is the live Advisor's
+						 * `.lia-welcome`: a centred greeting, one subline and
+						 * the page's own example questions.
+						 */ }
+						{ ! workspace &&
+						! historyView &&
+						thread.length === 0 ? (
+							<div className="linker-genie-app__welcome">
+								<p className="linker-genie-app__welcome-greeting">
+									{ __(
+										'Get help with your solar project',
+										'linker-tools'
+									) }
+								</p>
+								<p className="linker-genie-app__welcome-sub">
+									{ __(
+										'Products, documents and your next step.',
+										'linker-tools'
+									) }
+								</p>
+								{ config.prompts.length > 0 ? (
+									<div className="linker-genie-app__prompts">
+										{ config.prompts.map( ( prompt ) => (
+											<button
+												key={ prompt }
+												type="button"
+												className="linker-genie-app__prompt"
+												onClick={ () => ask( prompt ) }
+											>
+												{ prompt }
+											</button>
+										) ) }
+									</div>
+								) : null }
+							</div>
+						) : null }
+						{ /*
 						 * `.gp-messages`: the transcript is the frame's one
 						 * scroll box and the composer stands outside it, so
 						 * the input is in place however long the thread grows.
 						 * The blocks and the cards travel inside it, the way a
-						 * prototype message carries them.
+						 * prototype message carries them. The dock's welcome and
+						 * its history view stand in its place instead.
 						 */ }
-						<div className="linker-genie-app__transcript">
-							<ol className="linker-genie-app__thread">
-								{ thread.map( ( message, index ) => (
-									<li
-										key={ index }
-										className={ `linker-genie-app__message linker-genie-app__message--${ message.role }` }
+						{ ! historyView &&
+						( workspace || thread.length > 0 ) ? (
+							<div className="linker-genie-app__transcript">
+								<ol className="linker-genie-app__thread">
+									{ thread.map( ( message, index ) => (
+										<li
+											key={ index }
+											className={ `linker-genie-app__message linker-genie-app__message--${ message.role }` }
+										>
+											{ /* `.gp-answer-brand` — the answer's own
+											 * label, over its text. The prototype's
+											 * "Demo reply" tag is a demo affordance
+											 * and is not carried. */ }
+											{ 'assistant' === message.role ? (
+												<div className="linker-genie-app__answer-brand">
+													<span
+														className="linker-genie-app__monogram"
+														aria-hidden="true"
+													>
+														G
+													</span>
+													<span>
+														{ __(
+															'Genie',
+															'linker-tools'
+														) }
+													</span>
+												</div>
+											) : null }
+											{ message.content }
+											{ 'assistant' === message.role ? (
+												<VoteButtons
+													voteUrl={ config.voteUrl }
+													nonce={ config.restNonce }
+													turnId={ message.turnId }
+												/>
+											) : null }
+										</li>
+									) ) }
+									{ 'waiting' === phase ? (
+										<li className="linker-genie-app__message linker-genie-app__message--assistant">
+											{ __(
+												'Genie is thinking…',
+												'linker-tools'
+											) }
+										</li>
+									) : null }
+								</ol>
+								{ 'error' === phase ? (
+									<p
+										role="alert"
+										className="linker-genie-app__error"
 									>
-										{ /* `.gp-answer-brand` — the answer's own
-										 * label, over its text. The prototype's
-										 * "Demo reply" tag is a demo affordance
-										 * and is not carried. */ }
-										{ 'assistant' === message.role ? (
-											<div className="linker-genie-app__answer-brand">
-												<span
-													className="linker-genie-app__monogram"
-													aria-hidden="true"
-												>
-													G
-												</span>
-												<span>
-													{ __(
-														'Genie',
-														'linker-tools'
-													) }
-												</span>
-											</div>
-										) : null }
-										{ message.content }
-										{ 'assistant' === message.role ? (
-											<VoteButtons
-												voteUrl={ config.voteUrl }
-												nonce={ config.restNonce }
-												turnId={ message.turnId }
-											/>
-										) : null }
-									</li>
-								) ) }
-								{ 'waiting' === phase ? (
-									<li className="linker-genie-app__message linker-genie-app__message--assistant">
 										{ __(
-											'Genie is thinking…',
+											'Genie did not answer. Please try again.',
 											'linker-tools'
 										) }
-									</li>
+									</p>
 								) : null }
-							</ol>
-							{ 'error' === phase ? (
-								<p
-									role="alert"
-									className="linker-genie-app__error"
+								{ turn?.blocks.map( ( block, index ) => (
+									<BlockView
+										key={ index }
+										block={ block }
+										accountUrl={ config.accountUrl }
+										onAsk={ ask }
+									/>
+								) ) }
+								{ turn?.blocks.some(
+									( block ) => 'cards' === block.type
+								) ? (
+									<div className="linker-genie-app__cards">
+										{ cardIds.map( ( productId ) => (
+											<GenieCard
+												key={ productId }
+												productId={ productId }
+												restUrl={ config.restUrl }
+												store={ store }
+												locale={ config.locale }
+												status={
+													cards.find(
+														( item ) =>
+															item.productId ===
+															productId
+													)?.status ?? {
+														state: 'idle',
+														text: '',
+													}
+												}
+												onAdd={ addCardToDraft }
+												onSave={ saveCardSolution }
+											/>
+										) ) }
+									</div>
+								) : null }
+								{ turn?.blocks.some(
+									( block ) => 'compare' === block.type
+								) ? (
+									<Compare
+										products={ compareIds }
+										store={ store }
+										locale={ config.locale }
+									/>
+								) : null }
+							</div>
+						) : null }
+						{ /* The picked files' names, over the composer; each
+						 * rides in the question's text (see ask()). */ }
+						{ ! workspace &&
+						! historyView &&
+						attached.length > 0 ? (
+							<ul className="linker-genie-app__attachments">
+								{ attached.map( ( name ) => (
+									<li
+										key={ name }
+										className="linker-genie-app__attachment"
+									>
+										<span className="linker-genie-app__attachment-name">
+											{ name }
+										</span>
+										<button
+											type="button"
+											className="linker-genie-app__attachment-remove"
+											aria-label={
+												// translators: %s is the attached file's name.
+												__(
+													'Remove attachment %s',
+													'linker-tools'
+												).replace( '%s', name )
+											}
+											onClick={ () =>
+												setAttached( ( current ) =>
+													current.filter(
+														( item ) =>
+															item !== name
+													)
+												)
+											}
+										>
+											<CloseIcon size={ 14 } />
+										</button>
+									</li>
+								) ) }
+							</ul>
+						) : null }
+						{ ! historyView ? (
+							<form
+								className="linker-genie-app__composer"
+								onSubmit={ ( event ) => {
+									event.preventDefault();
+									ask( input );
+								} }
+							>
+								{ ! workspace ? (
+									/*
+									 * The Advisor composer's `.lia-vision-button`:
+									 * the attach entry. The turn route carries text
+									 * only (docs/specs/13-genie.md), so a pick lists
+									 * the file's name over the composer and the name
+									 * rides in the question — nothing claims the
+									 * file's bytes went anywhere.
+									 */
+									<>
+										<button
+											type="button"
+											className="linker-genie-app__attach"
+											aria-label={ __(
+												'Attach a file',
+												'linker-tools'
+											) }
+											onClick={ () =>
+												attachInput.current?.click()
+											}
+										>
+											<AttachIcon />
+										</button>
+										<input
+											ref={ attachInput }
+											type="file"
+											multiple
+											hidden
+											onChange={ ( event ) => {
+												const files =
+													event.target.files;
+												if ( files ) {
+													setAttached(
+														( current ) => [
+															...new Set( [
+																...current,
+																...Array.from(
+																	files
+																).map(
+																	( file ) =>
+																		file.name
+																),
+															] ),
+														]
+													);
+												}
+												// Picking the same file again must
+												// fire again.
+												event.target.value = '';
+											} }
+										/>
+									</>
+								) : null }
+								<label
+									className="screen-reader-text"
+									htmlFor="linker-genie-input"
 								>
-									{ __(
-										'Genie did not answer. Please try again.',
+									{ __( 'Ask Genie', 'linker-tools' ) }
+								</label>
+								<input
+									id="linker-genie-input"
+									className="linker-genie-app__input"
+									placeholder={ __(
+										'Ask Genie',
 										'linker-tools'
 									) }
-								</p>
-							) : null }
-							{ turn?.blocks.map( ( block, index ) => (
-								<BlockView
-									key={ index }
-									block={ block }
-									accountUrl={ config.accountUrl }
-									onAsk={ ask }
+									value={ input }
+									onChange={ ( event ) =>
+										setInput( event.target.value )
+									}
 								/>
-							) ) }
-							{ turn?.blocks.some(
-								( block ) => 'cards' === block.type
-							) ? (
-								<div className="linker-genie-app__cards">
-									{ cardIds.map( ( productId ) => (
-										<GenieCard
-											key={ productId }
-											productId={ productId }
-											restUrl={ config.restUrl }
-											store={ store }
-											locale={ config.locale }
-											status={
-												cards.find(
-													( item ) =>
-														item.productId ===
-														productId
-												)?.status ?? {
-													state: 'idle',
-													text: '',
-												}
-											}
-											onAdd={ addCardToDraft }
-											onSave={ saveCardSolution }
-										/>
-									) ) }
-								</div>
-							) : null }
-							{ turn?.blocks.some(
-								( block ) => 'compare' === block.type
-							) ? (
-								<Compare
-									products={ compareIds }
-									store={ store }
-									locale={ config.locale }
-								/>
-							) : null }
-						</div>
-						<form
-							className="linker-genie-app__composer"
-							onSubmit={ ( event ) => {
-								event.preventDefault();
-								ask( input );
-							} }
-						>
-							<label
-								className="screen-reader-text"
-								htmlFor="linker-genie-input"
-							>
-								{ __( 'Ask Genie', 'linker-tools' ) }
-							</label>
-							<input
-								id="linker-genie-input"
-								className="linker-genie-app__input"
-								placeholder={ __(
-									'Ask Genie',
-									'linker-tools'
-								) }
-								value={ input }
-								onChange={ ( event ) =>
-									setInput( event.target.value )
-								}
-							/>
-							<button
-								type="submit"
-								className="linker-genie-app__send"
-								disabled={ ! input.trim() }
-							>
-								<SendIcon />
-								<span className="screen-reader-text">
-									{ __( 'Send', 'linker-tools' ) }
-								</span>
-							</button>
-						</form>
+								{ ! workspace && canDictate ? (
+									<button
+										type="button"
+										className="linker-genie-app__mic"
+										aria-label={
+											dictating
+												? __(
+														'Stop dictation',
+														'linker-tools'
+													)
+												: __(
+														'Dictate',
+														'linker-tools'
+													)
+										}
+										aria-pressed={ dictating }
+										onClick={ dictate }
+									>
+										<MicIcon />
+									</button>
+								) : null }
+								<button
+									type="submit"
+									className="linker-genie-app__send"
+									disabled={
+										! input.trim() && attached.length === 0
+									}
+								>
+									<SendIcon />
+									<span className="screen-reader-text">
+										{ __( 'Send', 'linker-tools' ) }
+									</span>
+								</button>
+							</form>
+						) : null }
 						{ /* `.gp-disclosure` — the prototype prints it under the
 						 * composer, inside the pinned zone. */ }
-						{ config.disclosure ? (
+						{ config.disclosure && ! historyView ? (
 							<p className="linker-genie-app__disclosure">
 								{ config.disclosure }
 							</p>
 						) : null }
 						{ /* `.gp-prompts` — the opening questions, under the
-						 * composer in the prototype's welcome. */ }
-						{ thread.length === 0 && config.prompts.length > 0 ? (
+						 * composer in the prototype's welcome; the dock carries
+						 * them in its own welcome above. */ }
+						{ workspace &&
+						thread.length === 0 &&
+						config.prompts.length > 0 ? (
 							<div className="linker-genie-app__prompts">
 								{ config.prompts.map( ( prompt ) => (
 									<button
@@ -632,6 +999,43 @@ export function App( { config }: { config: GenieConfig } ) {
 									</button>
 								) ) }
 							</div>
+						) : null }
+						{ /*
+						 * The Advisor's `.lia-privacy` row, with the site's own
+						 * pages and words: the questions page, the contact page
+						 * and the privacy policy (English footer partial; the
+						 * German twins per tools/migrate/9-i18n.py's PAGE_BASES
+						 * and the German footer partial).
+						 */ }
+						{ ! workspace && ! historyView ? (
+							<p className="linker-genie-app__links">
+								<a
+									href={
+										german
+											? '/de/faq-download/'
+											: '/faq-download/'
+									}
+								>
+									{ __( 'FAQ & Downloads', 'linker-tools' ) }
+								</a>
+								<a
+									className="linker-genie-app__links-contact"
+									href={
+										german ? '/de/kontakt/' : '/contact/'
+									}
+								>
+									{ __( 'Contact Linker', 'linker-tools' ) }
+								</a>
+								<a
+									href={
+										german
+											? '/de/datenschutz/'
+											: '/privacy-policy/'
+									}
+								>
+									{ __( 'Privacy Policy', 'linker-tools' ) }
+								</a>
+							</p>
 						) : null }
 					</div>
 				) : null }
@@ -704,56 +1108,91 @@ function HistoryRail( {
 				{ __( 'New conversation', 'linker-tools' ) }
 			</button>
 			<div className="linker-genie-rail__history">
-				<p className="linker-genie-rail__label">
-					{ __( 'Conversations', 'linker-tools' ) }
-				</p>
-				{ 'loading' === phase ? (
-					<p
-						className="linker-genie-rail__empty"
-						role="status"
-						aria-live="polite"
-					>
-						{ __( 'Loading conversations…', 'linker-tools' ) }
-					</p>
-				) : null }
-				{ 'failed' === phase ? (
-					<p role="alert" className="linker-genie-rail__empty">
-						{ __(
-							'Conversations could not be loaded.',
-							'linker-tools'
-						) }{ ' ' }
-						<button type="button" onClick={ onRetry }>
-							{ __( 'Try again', 'linker-tools' ) }
-						</button>
-					</p>
-				) : null }
-				{ 'ready' === phase && items.length === 0 ? (
-					<p className="linker-genie-rail__empty">
-						{ __( 'No earlier conversation.', 'linker-tools' ) }
-					</p>
-				) : null }
-				{ 'ready' === phase && items.length > 0 ? (
-					<ul className="linker-genie-rail__list">
-						{ items.map( ( item ) => (
-							<li key={ item.id }>
-								<button
-									type="button"
-									className="linker-genie-rail__item"
-									aria-current={
-										item.id === currentId
-											? 'true'
-											: undefined
-									}
-									onClick={ () => onSelect( item.id ) }
-								>
-									{ item.title }
-								</button>
-							</li>
-						) ) }
-					</ul>
-				) : null }
+				<HistoryList
+					items={ items }
+					currentId={ currentId }
+					phase={ phase }
+					onSelect={ onSelect }
+					onRetry={ onRetry }
+				/>
 			</div>
 		</aside>
+	);
+}
+
+/**
+ * The conversation list's four states — the rail's, and the dock history
+ * view's. Both name the same classes: the list is the one component, the
+ * container around it is what differs.
+ * @param root0
+ * @param root0.items
+ * @param root0.currentId
+ * @param root0.phase
+ * @param root0.onSelect
+ * @param root0.onRetry
+ */
+function HistoryList( {
+	items,
+	currentId,
+	phase,
+	onSelect,
+	onRetry,
+}: {
+	items: ConversationSummary[];
+	currentId: number;
+	phase: HistoryPhase;
+	onSelect: ( id: number ) => void;
+	onRetry: () => void;
+} ) {
+	return (
+		<>
+			<p className="linker-genie-rail__label">
+				{ __( 'Conversations', 'linker-tools' ) }
+			</p>
+			{ 'loading' === phase ? (
+				<p
+					className="linker-genie-rail__empty"
+					role="status"
+					aria-live="polite"
+				>
+					{ __( 'Loading conversations…', 'linker-tools' ) }
+				</p>
+			) : null }
+			{ 'failed' === phase ? (
+				<p role="alert" className="linker-genie-rail__empty">
+					{ __(
+						'Conversations could not be loaded.',
+						'linker-tools'
+					) }{ ' ' }
+					<button type="button" onClick={ onRetry }>
+						{ __( 'Try again', 'linker-tools' ) }
+					</button>
+				</p>
+			) : null }
+			{ 'ready' === phase && items.length === 0 ? (
+				<p className="linker-genie-rail__empty">
+					{ __( 'No earlier conversation.', 'linker-tools' ) }
+				</p>
+			) : null }
+			{ 'ready' === phase && items.length > 0 ? (
+				<ul className="linker-genie-rail__list">
+					{ items.map( ( item ) => (
+						<li key={ item.id }>
+							<button
+								type="button"
+								className="linker-genie-rail__item"
+								aria-current={
+									item.id === currentId ? 'true' : undefined
+								}
+								onClick={ () => onSelect( item.id ) }
+							>
+								{ item.title }
+							</button>
+						</li>
+					) ) }
+				</ul>
+			) : null }
+		</>
 	);
 }
 

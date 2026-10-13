@@ -21,7 +21,7 @@ import { expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import type { GenieConfig } from './config';
-import { App, resetTurnLane } from './App';
+import { App, resetTurnLane, type Dictation } from './App';
 
 vi.mock( './api/turn', async ( importOriginal ) => {
 	const actual = await importOriginal< typeof import( './api/turn' ) >();
@@ -339,7 +339,7 @@ test( 'an answer carries the answer label and a question does not', async () => 
 	).toBeNull();
 } );
 
-test( 'the ready handshake opens once and Hide/reopen reports the same state', async () => {
+test( 'the ready handshake opens once and Close/reopen reports the same state', async () => {
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.mocked( sendTurn ).mockClear();
 	const states: boolean[] = [];
@@ -358,8 +358,8 @@ test( 'the ready handshake opens once and Hide/reopen reports the same state', a
 	try {
 		render( <App config={ config() } /> );
 		expect( ready ).toBe( 1 );
-		expect( screen.getByRole( 'button', { name: 'Hide' } ) ).toBeVisible();
-		fireEvent.click( screen.getByRole( 'button', { name: 'Hide' } ) );
+		expect( screen.getByRole( 'button', { name: 'Close' } ) ).toBeVisible();
+		fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
 		expect( states.at( -1 ) ).toBe( false );
 		act( () => {
 			window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) );
@@ -532,4 +532,269 @@ test( 'the workspace lists real conversations and loads the selected one', async
 	expect(
 		await screen.findByText( 'Where is the datasheet?' )
 	).toBeVisible();
+} );
+
+// The dock head is the Advisor's `.lia-head-btns`: new conversation, the
+// full page, the history, closing — as named icon buttons.
+test( 'the open dock head carries the icon group', () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect(
+		screen.getByRole( 'button', { name: 'New conversation' } )
+	).toBeVisible();
+	expect(
+		screen.getByRole( 'button', { name: 'Conversations' } )
+	).toBeVisible();
+	expect(
+		screen.getByRole( 'link', { name: 'Open full page' } )
+	).toHaveAttribute( 'href', '/genie/' );
+	expect( screen.getByRole( 'button', { name: 'Close' } ) ).toBeVisible();
+} );
+
+// The dock's opening state is the Advisor's `.lia-welcome`: the greeting,
+// one subline and the page's own example chips, all of it gone with the
+// first turn.
+test( 'the dock opens on the welcome and loses it with the first turn', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
+		} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect(
+		screen.getByText( 'Get help with your solar project' )
+	).toBeVisible();
+	expect(
+		screen.getByText( 'Products, documents and your next step.' )
+	).toBeVisible();
+	expect(
+		screen.getByRole( 'button', {
+			name: 'I need a three-phase hybrid inverter for a home.',
+		} )
+	).toBeVisible();
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) );
+	} );
+	expect(
+		screen.queryByText( 'Get help with your solar project' )
+	).toBeNull();
+} );
+
+// The Advisor's `.lia-privacy` row, on this site's own pages: the questions
+// page, the contact page, the privacy policy — German twins on German pages.
+test( 'the dock footer carries the site links, locale-aware', () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	const { unmount } = render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect(
+		screen.getByRole( 'link', { name: 'FAQ & Downloads' } )
+	).toHaveAttribute( 'href', '/faq-download/' );
+	expect(
+		screen.getByRole( 'link', { name: 'Contact Linker' } )
+	).toHaveAttribute( 'href', '/contact/' );
+	expect(
+		screen.getByRole( 'link', { name: 'Privacy Policy' } )
+	).toHaveAttribute( 'href', '/privacy-policy/' );
+	unmount();
+	render( <App config={ config( 'de' ) } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect(
+		screen.getByRole( 'link', { name: 'FAQ & Downloads' } )
+	).toHaveAttribute( 'href', '/de/faq-download/' );
+	expect(
+		screen.getByRole( 'link', { name: 'Contact Linker' } )
+	).toHaveAttribute( 'href', '/de/kontakt/' );
+	expect(
+		screen.getByRole( 'link', { name: 'Privacy Policy' } )
+	).toHaveAttribute( 'href', '/de/datenschutz/' );
+} );
+
+// The header's clock swaps the conversation for the history view and the
+// chevron swaps back; a row continues its conversation.
+test( 'the dock history view lists conversations and continues one', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 7,
+		ok: true,
+		conversations: [
+			{ id: 7, title: 'Battery pairing', updated: '2026-10-12' },
+			{ id: 8, title: 'Document question', updated: '2026-10-11' },
+		],
+	} );
+	vi.mocked( selectConversation ).mockResolvedValue( {
+		currentId: 8,
+		ok: true,
+		conversations: [
+			{ id: 7, title: 'Battery pairing', updated: '2026-10-12' },
+			{ id: 8, title: 'Document question', updated: '2026-10-11' },
+		],
+	} );
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	// The list stays behind the header's clock until asked for.
+	expect(
+		screen.queryByRole( 'button', { name: 'Battery pairing' } )
+	).toBeNull();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
+	expect(
+		await screen.findByRole( 'button', { name: 'Battery pairing' } )
+	).toBeVisible();
+	// The composer leaves with the conversation.
+	expect( screen.queryByLabelText( 'Ask Genie' ) ).toBeNull();
+	// The chevron leads back.
+	fireEvent.click( screen.getByRole( 'button', { name: 'Back' } ) );
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toBeVisible();
+	// A row continues its conversation.
+	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Document question' } )
+		);
+	} );
+	expect( selectConversation ).toHaveBeenCalledWith(
+		'/wp-json/linker-ai/v1/genie/conversations',
+		'n',
+		8
+	);
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toBeVisible();
+	// The plus opens a new one.
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'New conversation' } )
+		);
+	} );
+	expect( selectConversation ).toHaveBeenCalledWith(
+		'/wp-json/linker-ai/v1/genie/conversations',
+		'n',
+		undefined
+	);
+} );
+
+// The turn route carries text only: a picked file's name rides in the
+// question, and the chip takes it back out before sending.
+test( 'an attached file rides in the question by name', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
+		} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const fileInput = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	const datasheet = new File( [ 'x' ], 'gw10k-et-datenblatt.pdf', {
+		type: 'application/pdf',
+	} );
+	fireEvent.change( fileInput, { target: { files: [ datasheet ] } } );
+	expect( screen.getByText( 'gw10k-et-datenblatt.pdf' ) ).toBeVisible();
+	// The send key arms on an attachment alone, and the chip removes it.
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	expect( send ).toBeEnabled();
+	fireEvent.click(
+		screen.getByRole( 'button', {
+			name: 'Remove attachment gw10k-et-datenblatt.pdf',
+		} )
+	);
+	expect( screen.queryByText( 'gw10k-et-datenblatt.pdf' ) ).toBeNull();
+	expect( send ).toBeDisabled();
+	fireEvent.change( fileInput, { target: { files: [ datasheet ] } } );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+		{ role: 'user', content: 'Attached: gw10k-et-datenblatt.pdf' },
+	] );
+	// The sent attachment leaves the composer.
+	expect( screen.queryByText( 'gw10k-et-datenblatt.pdf' ) ).toBeNull();
+} );
+
+// The dictation button is the browser's own speech recognition: it writes
+// what it hears into the field and stops cleanly.
+test( 'the dictation button writes what the browser hears', () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	const sessions: Dictation[] = [];
+	class FakeDictation implements Dictation {
+		lang = '';
+		onresult: Dictation[ 'onresult' ] = null;
+		onend: Dictation[ 'onend' ] = null;
+		onerror: Dictation[ 'onerror' ] = null;
+		constructor() {
+			sessions.push( this );
+		}
+		start() {}
+		stop() {
+			this.onend?.();
+		}
+	}
+	const previous = window.SpeechRecognition;
+	window.SpeechRecognition = FakeDictation;
+	try {
+		render( <App config={ config() } /> );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+		const mic = screen.getByRole( 'button', { name: 'Dictate' } );
+		fireEvent.click( mic );
+		expect( mic ).toHaveAttribute( 'aria-pressed', 'true' );
+		expect( sessions ).toHaveLength( 1 );
+		expect( sessions[ 0 ].lang ).toBe( 'en-US' );
+		act( () => {
+			sessions[ 0 ].onresult?.( {
+				results: [ [ { transcript: 'hybrid inverter' } ] ],
+			} );
+		} );
+		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+			'hybrid inverter'
+		);
+		// A second tap stops the session.
+		fireEvent.click( mic );
+		expect( mic ).toHaveAttribute( 'aria-pressed', 'false' );
+	} finally {
+		if ( previous ) {
+			window.SpeechRecognition = previous;
+		} else {
+			delete window.SpeechRecognition;
+		}
+	}
+} );
+
+// A browser without speech recognition carries no dead button.
+test( 'no speech recognition, no dictation button', () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect( screen.queryByRole( 'button', { name: 'Dictate' } ) ).toBeNull();
+} );
+
+// The mobile sheet's backdrop: a tap off the card folds the dock away.
+test( 'the dock mask folds the sheet', () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	const states: boolean[] = [];
+	const onState = ( event: Event ) => {
+		states.push(
+			( event as CustomEvent< { open: boolean } > ).detail.open
+		);
+	};
+	window.addEventListener( 'linker-genie-state', onState );
+	try {
+		render( <App config={ config() } /> );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Hide' } ) );
+		expect( states.at( -1 ) ).toBe( false );
+	} finally {
+		window.removeEventListener( 'linker-genie-state', onState );
+	}
 } );
