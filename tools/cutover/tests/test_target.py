@@ -21,6 +21,8 @@ from linker_cutover.target import (
     CutoverError,
     Target,
     remote_target,
+    tar_pull_command,
+    tar_push_command,
     wp_prefix_for,
 )
 
@@ -237,3 +239,20 @@ def test_the_on_target_wp_command_drops_the_transport() -> None:
     assert remote[0] == "/usr/local/bin/wp"
     assert remote[1].startswith("--path=/home/u388076051")
     assert all("ssh" not in part for part in remote)
+
+
+def test_the_directory_tar_commands_quote_both_directions() -> None:
+    """The far side's shell re-splits: each tar argument travels quoted."""
+    pull = tar_pull_command(
+        HOST, "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads"
+    )
+    assert pull[:4] == ["ssh", "-o", "BatchMode=yes", HOST]
+    assert pull[4].startswith("tar -C /home/u388076051")
+    assert pull[4].endswith("-czf - .")
+
+    push = tar_push_command(
+        HOST, "/home/u388076051/domains/de-linker.com/public_html/wp-content/plugins"
+    )
+    assert push[4].startswith("mkdir -p /home/u388076051")
+    assert " && tar -C /home/u388076051" in push[4]
+    assert push[4].endswith("-xzf -")

@@ -92,6 +92,28 @@ def _run(command: list[str], *, cwd: Path | None = None) -> str:
     return result.stdout
 
 
+def tar_pull_command(host: str, source: str) -> list[str]:
+    """`ssh <host> tar -czf -` for a directory's contents, quoted for the far shell."""
+    return [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        host,
+        f"tar -C {shlex.quote(source)} -czf - .",
+    ]
+
+
+def tar_push_command(host: str, destination: str) -> list[str]:
+    """`ssh <host> 'mkdir -p … && tar -xzf -'` for a directory's contents."""
+    return [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        host,
+        f"mkdir -p {shlex.quote(destination)} && tar -C {shlex.quote(destination)} -xzf -",
+    ]
+
+
 @dataclass(frozen=True)
 class Target:
     """One WordPress site a cutover can run against, and how to reach it."""
@@ -193,6 +215,23 @@ class Target:
         source = self.address(relative)
         if self.rsync_remote is None and not Path(self.path_of(relative)).is_dir():
             raise CutoverError(f"{relative} is not a directory on {self.label}")
+        if self.rsync_remote is not None:
+            # openrsync (macOS's rsync) dies on a large tree against this host
+            # ("Connection closed by remote host", measured 2026-10-14); a tar
+            # stream survives it. Directory contents, like rsync's slash form.
+            destination.mkdir(parents=True, exist_ok=True)
+            with subprocess.Popen(
+                tar_pull_command(HOST, f"{source.rstrip('/')}"),
+                stdout=subprocess.PIPE,
+            ) as pull:
+                pushed = subprocess.run(
+                    ["tar", "-C", str(destination), "-xzf", "-"],
+                    stdin=pull.stdout,
+                    check=False,
+                )
+            if pushed.returncode != 0:
+                raise CutoverError(f"reading {relative} from {self.label} failed")
+            return
         # A trailing slash on the source copies the directory's contents, the
         # same thing rsync does with `<host>:<dir>`.
         self.rsync(f"{source.rstrip('/')}/", f"{destination}/")
@@ -234,7 +273,18 @@ class Target:
             path.mkdir(parents=True, exist_ok=True)
             self.rsync(f"{source}/", f"{destination}/")
             return
-        self.rsync(f"{source}/", f"{destination}/")
+        # See copy_out: the remote directory travels as a tar stream.
+        with subprocess.Popen(
+            ["tar", "-C", str(source), "-czf", "-", "."],
+            stdout=subprocess.PIPE,
+        ) as pack:
+            pushed = subprocess.run(
+                tar_push_command(HOST, destination),
+                stdin=pack.stdout,
+                check=False,
+            )
+        if pushed.returncode != 0:
+            raise CutoverError(f"writing {relative} to {self.label} failed")
 
     def exists(self, relative: str) -> bool:
         """Whether a WordPress-root-relative path is on the target."""
