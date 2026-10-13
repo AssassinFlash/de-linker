@@ -1,0 +1,424 @@
+{
+	"description": "C15 phase and power corrections for products 1178, 2409, 6482, 6529 and 6530, plus the 2026-10-13 second correction: the GW60K-STS-G10 inverter-side rated power the first pass dropped is restored at 30 kW — the hosted ESA 5–30 kW user manual §9.3 prints 30 kW in the GW60K-STS-G10 column of the Inverter side block, matching the STS datasheet's merged 30 kW cell. Same apply/done/drift contract as 7-facts.json. Applied by tools/migrate/7-facts.py --plan tools/migrate/c15-facts.json, which the cutover data step runs after 7-facts.json. A figure whose \"to\" is null is deleted; a legacy_copy change replaces one string of the product page copy at meta_key and path. Read docs/debt/C15-phase-power-2026-10-13.md.",
+	"new_attribute": {
+		"_source": "As on the EcoFlow OCEAN 2 inverters already on the site (3555–3580, 2026-10-09): pa_phase at position 0, visible; pa_application at position 3, hidden.",
+		"pa_phase": {
+			"position": 0,
+			"visible": true
+		},
+		"pa_application": {
+			"position": 3,
+			"visible": false
+		}
+	},
+	"attributes": [
+		{
+			"product": 1178,
+			"name": "SAJ ATS1-T63-A",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "saj-ats1-t63-phase"
+		},
+		{
+			"product": 2409,
+			"name": "GoodWe SEC3000C Smart Energy Controller",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "goodwe-sec3000c-phase"
+		},
+		{
+			"product": 6529,
+			"name": "GoodWe GW30K-STS-G10",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "goodwe-sts-phase"
+		},
+		{
+			"product": 6530,
+			"name": "GoodWe GW60K-STS-G10",
+			"taxonomy": "pa_phase",
+			"from": [],
+			"to": [
+				"three-phase"
+			],
+			"basis": "goodwe-sts-phase"
+		}
+	],
+	"figures": [
+		{
+			"product": 6529,
+			"name": "GoodWe GW30K-STS-G10",
+			"key": "rated_current_a",
+			"from": {
+				"value": "63",
+				"unit": "A",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				]
+			},
+			"to": {
+				"value": "43.5",
+				"unit": "A",
+				"value_de": "43,5",
+				"note": "Rated current at 400 V. The same page lists 45.5 A at 380 V and 41.6 A at 415 V; max current is 63 A.",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				],
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-p2"
+		},
+		{
+			"product": 6529,
+			"name": "GoodWe GW30K-STS-G10",
+			"key": "max_current_a",
+			"from": null,
+			"to": {
+				"value": "63",
+				"unit": "A",
+				"value_de": "63",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				],
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-p2"
+		},
+		{
+			"product": 6530,
+			"name": "GoodWe GW60K-STS-G10",
+			"key": "rated_current_a",
+			"from": {
+				"value": "100",
+				"unit": "A",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				]
+			},
+			"to": {
+				"value": "87.0",
+				"unit": "A",
+				"value_de": "87,0",
+				"note": "Rated current at 400 V. The same page lists 91.0 A at 380 V and 83.4 A at 415 V; max current is 100 A.",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				],
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-p2"
+		},
+		{
+			"product": 6530,
+			"name": "GoodWe GW60K-STS-G10",
+			"key": "max_current_a",
+			"from": null,
+			"to": {
+				"value": "100",
+				"unit": "A",
+				"value_de": "100",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				],
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-p2"
+		},
+		{
+			"product": 6530,
+			"name": "GoodWe GW60K-STS-G10",
+			"key": "inverter_side_rated_power_kw",
+			"from": [
+				null,
+				{
+					"value": "30",
+					"unit": "kW",
+					"evidence_refs": [
+						"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+					]
+				}
+			],
+			"to": {
+				"value": "30",
+				"unit": "kW",
+				"value_de": "30",
+				"note": "Two independent hosted documents confirm the inverter side of this model: the STS datasheet p.2 prints Rated Power 30 kW as one cell merged across the Inverter side table; the ESA 5–30 kW user manual §9.3 (PDF p.339–340) prints Rated Power 30 kW in the GW60K-STS-G10 column of the Inverter side block.",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2",
+					"GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf:p339-340"
+				],
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-inverter-side-30kw"
+		},
+		{
+			"product": 6482,
+			"name": "EcoFlow OCEAN 2 HD-P3-15K-G2F (15 kW three-phase hybrid)",
+			"key": "phases",
+			"from": null,
+			"to": {
+				"value": "Three-phase",
+				"unit": null,
+				"value_de": "Dreiphasig",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+					"page": 2
+				}
+			},
+			"basis": "ecoflow-p3-15k-phase"
+		},
+		{
+			"product": 1178,
+			"name": "SAJ ATS1-T63-A",
+			"key": "phases",
+			"from": null,
+			"to": {
+				"value": "Three-phase",
+				"unit": null,
+				"value_de": "Dreiphasig",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf",
+					"page": 2
+				}
+			},
+			"basis": "saj-ats1-t63-phase"
+		},
+		{
+			"product": 2409,
+			"name": "GoodWe SEC3000C Smart Energy Controller",
+			"key": "phases",
+			"from": null,
+			"to": {
+				"value": "Three-phase",
+				"unit": null,
+				"value_de": "Dreiphasig",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
+					"page": 1
+				}
+			},
+			"basis": "goodwe-sec3000c-phase"
+		},
+		{
+			"product": 6529,
+			"name": "GoodWe GW30K-STS-G10",
+			"key": "phases",
+			"from": null,
+			"to": {
+				"value": "Three-phase",
+				"unit": null,
+				"value_de": "Dreiphasig",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-phase"
+		},
+		{
+			"product": 6530,
+			"name": "GoodWe GW60K-STS-G10",
+			"key": "phases",
+			"from": null,
+			"to": {
+				"value": "Three-phase",
+				"unit": null,
+				"value_de": "Dreiphasig",
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-phase"
+		},
+		{
+			"product": 6529,
+			"name": "GoodWe GW30K-STS-G10",
+			"key": "rated_power_kw",
+			"from": {
+				"value": "30",
+				"unit": "kW",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				]
+			},
+			"to": {
+				"value": "30",
+				"unit": "kW",
+				"value_de": "30",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				],
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-p2"
+		},
+		{
+			"product": 6530,
+			"name": "GoodWe GW60K-STS-G10",
+			"key": "rated_power_kw",
+			"from": {
+				"value": "60",
+				"unit": "kW",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				]
+			},
+			"to": {
+				"value": "60",
+				"unit": "kW",
+				"value_de": "60",
+				"evidence_refs": [
+					"GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf:p2"
+				],
+				"citation": {
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+					"page": 2
+				}
+			},
+			"basis": "goodwe-sts-p2"
+		}
+	],
+	"legacy_copy": [
+		{
+			"product": 6530,
+			"meta_key": "_tv_legacy_acf_json",
+			"path": [
+				"value_prop",
+				"benefit_bullets",
+				0
+			],
+			"from": [
+				"60 kW rated on the grid, back-up and smart-port sides; inverter-side rated power 30 kW.",
+				"60 kW rated on the grid, back-up and smart-port sides. The datasheet does not put a rated power in the inverter-side column of this model."
+			],
+			"to": "60 kW rated on the grid, back-up and smart-port sides; the inverter side is rated 30 kW in both the STS datasheet and the ESA 5–30 kW user manual.",
+			"basis": "goodwe-sts-inverter-side-30kw"
+		},
+		{
+			"product": 6530,
+			"meta_key": "_tv_legacy_acf_json",
+			"path": [
+				"feature_cards",
+				0,
+				"feature_body"
+			],
+			"from": [
+				"Those three sides are rated 60 kW and 100 A maximum. The inverter-side rated power in the same table is 30 kW. The ESA 5–30 kW manual limits this switch to ≤ 60 kVA and one hybrid inverter. Inverter-side maximum current is not stated (the datasheet and the ESA manual disagree).",
+				"Those three sides are rated 60 kW and 100 A maximum. The inverter-side block prints 30 kW in one column across the table, not under this model, so the inverter-side rated power is not stated for the GW60K-STS-G10. The ESA 5–30 kW manual limits this switch to ≤ 60 kVA and one hybrid inverter. Inverter-side maximum current is not stated (the datasheet and the ESA manual disagree)."
+			],
+			"to": "Those three sides are rated 60 kW and 100 A maximum. The inverter side is rated 30 kW in both documents: the STS datasheet prints 30 kW across the whole Inverter side block, and the ESA 5–30 kW user manual lists 30 kW in the GW60K-STS-G10 column of that block. The ESA 5–30 kW manual limits this switch to ≤ 60 kVA and one hybrid inverter. The two documents print different inverter-side maximum currents (63 A across the datasheet table, 100 A in the manual's GW60K column).",
+			"basis": "goodwe-sts-inverter-side-30kw"
+		},
+		{
+			"product": 6530,
+			"meta_key": "_linker_de_acf_json",
+			"path": [
+				"value_prop",
+				"benefit_bullets",
+				0
+			],
+			"from": [
+				"60 kW Nennleistung auf Netz-, Notstrom- und Smart-Port-Seite; Wechselrichterseite 30 kW Nennleistung.",
+				"60 kW Nennleistung auf Netz-, Notstrom- und Smart-Port-Seite. Das Datenblatt setzt in der Wechselrichterspalte dieses Modells keine Nennleistung."
+			],
+			"to": "60 kW Nennleistung auf Netz-, Notstrom- und Smart-Port-Seite; die Wechselrichterseite ist in beiden Dokumenten mit 30 kW bemessen (STS-Datenblatt und ESA-Handbuch 5–30 kW).",
+			"basis": "goodwe-sts-inverter-side-30kw"
+		},
+		{
+			"product": 6530,
+			"meta_key": "_linker_de_acf_json",
+			"path": [
+				"feature_cards",
+				0,
+				"feature_body"
+			],
+			"from": [
+				"Diese drei Seiten sind mit 60 kW und maximal 100 A bemessen. Die Nennleistung der Wechselrichterseite in derselben Tabelle beträgt 30 kW. Das ESA-Handbuch 5–30 kW begrenzt diesen Schalter auf ≤ 60 kVA und einen Hybridwechselrichter. Der Maximalstrom der Wechselrichterseite wird nicht angegeben (Datenblatt und ESA-Handbuch weichen ab).",
+				"Diese drei Seiten sind mit 60 kW und maximal 100 A bemessen. Im Block der Wechselrichterseite steht 30 kW in einer Spalte über die ganze Tabelle, nicht unter diesem Modell; die Nennleistung der Wechselrichterseite ist für den GW60K-STS-G10 nicht angegeben. Das ESA-Handbuch 5–30 kW begrenzt diesen Schalter auf ≤ 60 kVA und einen Hybridwechselrichter. Der Maximalstrom der Wechselrichterseite wird nicht angegeben (Datenblatt und ESA-Handbuch weichen ab)."
+			],
+			"to": "Diese drei Seiten sind mit 60 kW und maximal 100 A bemessen. Die Wechselrichterseite ist in beiden Dokumenten mit 30 kW angegeben: Das STS-Datenblatt führt 30 kW im Block „Inverter side“ über die ganze Tabelle, das ESA-Handbuch 5–30 kW führt 30 kW in der Spalte GW60K-STS-G10 der Wechselrichterseite. Das ESA-Handbuch 5–30 kW begrenzt diesen Schalter auf ≤ 60 kVA und einen Hybridwechselrichter. Der Maximalstrom der Wechselrichterseite wird in den beiden Dokumenten unterschiedlich angegeben (63 A im Datenblatt über die ganze Tabelle, 100 A in der GW60K-Spalte des Handbuchs).",
+			"basis": "goodwe-sts-inverter-side-30kw"
+		}
+	],
+	"basis": {
+		"saj-ats1-t63-phase": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf",
+				"page": 2,
+				"states": "Model ATS1-T63-A column: Grid Connection, Inverter Connection and Backup Grid Connection each read Three Phase. No rated kW."
+			}
+		],
+		"goodwe-sec3000c-phase": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
+				"page": 1,
+				"states": "Meter Voltage Measurement Range is 3L/N/PE and 3L/PE. Power Consumption ≤25 W is the controller draw, not an AC output rating."
+			}
+		],
+		"goodwe-sts-phase": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+				"page": 2,
+				"states": "Nominal Voltage of Grid, Back-up, Smart Port and Inverter side: 220/380, 230/400, 240/415, 3L/N/PE."
+			}
+		],
+		"goodwe-sts-p2": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+				"page": 2,
+				"states": "GW30K rated current 43.5 A at 400 V, max 63 A, rated power 30 kW. GW60K rated current 87.0 A at 400 V, max 100 A, rated power 60 kW. Those values sit in the GW30K and GW60K columns; the Inverter side block is one cell merged across the table."
+			}
+		],
+		"ecoflow-p3-15k-phase": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+				"page": 2,
+				"states": "Column EF HD-P3-15K-G2F: Nominale Ausgangsleistung 15000 W; Nennspannung 3L+N+PE."
+			}
+		],
+		"goodwe-sts-inverter-side-30kw": [
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+				"page": 2,
+				"states": "Inverter side block, one cell merged across the table: Rated Power (kW) 30, Rated. Current 43.5 A at 400 V (45.5 at 380, 41.6 at 415), Max. Current 63."
+			},
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+				"page": 340,
+				"states": "§9.3 STS Technical Data, Inverter side block (PDF pages 339–340): the GW60K-STS-G10 column prints Rated Power (kW) 30, Max. Current 100.0, Rated. Current 43.5@400V. A per-model column, independent of the datasheet's merged cell — two hosted documents for the same value."
+			},
+			{
+				"document": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-DE_V1.4.pdf",
+				"page": 372,
+				"states": "§9.3 Technische Daten des STS, Wechselrichterseite: the GW60K-STS-G10 column prints Nennleistung (kW) 30, Max. Strom 100.0, Nennstrom 43.5@400V. Same value as the EN V1.5."
+			}
+		]
+	}
+}

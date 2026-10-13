@@ -127,8 +127,16 @@ class Migration:
 
 
 # In order (spec 17 §4). `--write` is added by the step when it writes.
+# c15-facts.json is the same writer as 7-facts.json, on the products that plan
+# does not cover. It has to run in this list: a file the cutover never names
+# does not land.
 MIGRATIONS = (
     Migration("7-facts.py", needs_backup_dir=True),
+    Migration(
+        "7-facts.py",
+        options=("--plan", "tools/migrate/c15-facts.json"),
+        needs_backup_dir=True,
+    ),
     Migration("8-engineering.py", needs_backup_dir=True),
     Migration("9-i18n.py", subcommand=("apply",), needs_admin=True),
 )

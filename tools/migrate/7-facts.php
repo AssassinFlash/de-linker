@@ -1,7 +1,11 @@
 <?php
 /**
  * The WordPress side of tools/migrate/7-facts.py: reads, or writes, the
- * product attributes and figures that tools/migrate/7-facts.json names.
+ * product attributes, the figures and the product page copy that the facts
+ * plan names. A figure whose "to" is null is removed; any other "to" replaces
+ * the stored entry. A copy change writes one string at its path inside a
+ * legacy ACF JSON meta (the English table `_tv_legacy_acf_json`, the German
+ * twin `_linker_de_acf_json` on the English product).
  *
  * 7-facts.py hands this file to `wp eval-file -` with its request (JSON,
  * base64) in place of the placeholder argument at the end. WP-CLI
@@ -14,6 +18,106 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
+	/**
+	 * Removes one spec row, matched by its English or German label, from the
+	 * legacy tables the product page still renders.
+	 *
+	 * The English table is `_tv_legacy_acf_json`. The German table is
+	 * `_linker_de_acf_json` on the English source row. A group left with no
+	 * rows is removed with the row. The source copy `_linker_de_source_acf_json`
+	 * is what the translation was made from; it is not rendered, and it stays.
+	 *
+	 * @param int                  $product_id Product ID.
+	 * @param array<string, mixed> $drop       titles and labels, each a string or a list of strings.
+	 */
+	function seven_facts_drop_legacy_row( int $product_id, array $drop ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- This helper exists only inside this wp eval-file script; it is never part of the plugin's namespace.
+		$titles = array_map( 'strval', (array) ( $drop['titles'] ?? array() ) );
+		$labels = array_map( 'strval', (array) ( $drop['labels'] ?? array() ) );
+		$keys   = array( '_tv_legacy_acf_json', '_linker_de_acf_json' );
+		foreach ( $keys as $meta_key ) {
+			$decoded = json_decode( (string) get_post_meta( $product_id, $meta_key, true ), true );
+			if ( ! is_array( $decoded ) || ! isset( $decoded['spec_groups'] ) || ! is_array( $decoded['spec_groups'] ) ) {
+				continue;
+			}
+			$groups = array();
+			foreach ( $decoded['spec_groups'] as $group ) {
+				if ( ! is_array( $group ) || ! isset( $group['spec_rows'] ) || ! is_array( $group['spec_rows'] ) ) {
+					$groups[] = $group;
+					continue;
+				}
+					$title          = (string) ( $group['spec_group_title'] ?? '' );
+					$is_named_group = in_array( $title, $titles, true );
+				$rows               = array();
+				foreach ( $group['spec_rows'] as $row ) {
+					$row_label = is_array( $row ) ? (string) ( $row['spec_label'] ?? '' ) : '';
+					if ( $is_named_group && in_array( $row_label, $labels, true ) ) {
+						continue;
+					}
+					$rows[] = $row;
+				}
+				if ( array() === $rows ) {
+					continue;
+				}
+				$group['spec_rows'] = $rows;
+				$groups[]           = $group;
+			}
+			$decoded['spec_groups'] = $groups;
+			update_post_meta(
+				$product_id,
+				$meta_key,
+				wp_slash( (string) wp_json_encode( $decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) )
+			);
+		}
+	}
+}
+
+if ( ! function_exists( 'seven_facts_set_legacy_path' ) ) {
+	/**
+	 * One string of a legacy ACF JSON meta, replaced at its path.
+	 *
+	 * The meta keys and sides are the same map tools/migrate/7-facts.py reads:
+	 * the English table `_tv_legacy_acf_json`, the German twin
+	 * `_linker_de_acf_json` on the English source row, both read from the
+	 * English product. A path that is not there is a refusal, not a create:
+	 * the plan's "from" described the site as it is, so the path must exist.
+	 *
+	 * @param int                  $product_id Product ID.
+	 * @param array<string, mixed> $change     meta_key, path and the new value.
+	 *
+	 * @throws RuntimeException When the meta is not readable JSON, or the path is not there.
+	 */
+	function seven_facts_set_legacy_path( int $product_id, array $change ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- This helper exists only inside this wp eval-file script; it is never part of the plugin's namespace.
+		$meta_key = (string) ( $change['meta_key'] ?? '' );
+		$path     = array_values( (array) ( $change['path'] ?? array() ) );
+		if ( '' === $meta_key || array() === $path ) {
+			throw new RuntimeException( 'A legacy copy change needs a meta_key and a path.' );
+		}
+		$decoded = json_decode( (string) get_post_meta( $product_id, $meta_key, true ), true );
+		if ( ! is_array( $decoded ) ) {
+			throw new RuntimeException( esc_html( "Product {$product_id} has no readable {$meta_key}." ) );
+		}
+		$last = array_pop( $path );
+		$node = &$decoded;
+		foreach ( $path as $step ) {
+			if ( ! is_array( $node ) || ! array_key_exists( $step, $node ) ) {
+				throw new RuntimeException( esc_html( "Product {$product_id} has no {$meta_key} at that path." ) );
+			}
+			$node = &$node[ $step ];
+		}
+		if ( ! is_array( $node ) || ! array_key_exists( $last, $node ) ) {
+			throw new RuntimeException( esc_html( "Product {$product_id} has no {$meta_key} at that path." ) );
+		}
+		$node[ $last ] = $change['to'];
+		unset( $node );
+		update_post_meta(
+			$product_id,
+			$meta_key,
+			wp_slash( (string) wp_json_encode( $decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) )
+		);
+	}
+}
 
 ( static function ( string $payload ): void {
 	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- base64 lets any request JSON sit in the single-quoted literal 7-facts.py writes into this file.
@@ -63,25 +167,29 @@ defined( 'ABSPATH' ) || exit;
 					'attached' => $attached_slugs( $product, $taxonomy ),
 				);
 			}
-			$products[ $product_id ] = array(
-				'attributes' => $attributes,
-				'figures'    => (string) get_post_meta( $product_id, $meta_key, true ),
-				// What the migration must leave as it is (docs/specs/7-selection-facts.md, 不做).
-				'protected'  => array(
-					'name'              => $product->get_name(),
-					'sku'               => $product->get_sku(),
-					'status'            => $product->get_status(),
-					'description'       => md5( $product->get_description() ),
-					'short_description' => md5( $product->get_short_description() ),
-					'regular_price'     => $product->get_regular_price(),
-					'sale_price'        => $product->get_sale_price(),
-					'manage_stock'      => $product->get_manage_stock(),
-					'stock_quantity'    => $product->get_stock_quantity(),
-					'stock_status'      => $product->get_stock_status(),
-					'backorders'        => $product->get_backorders(),
-					'low_stock_amount'  => $product->get_low_stock_amount(),
-				),
-			);
+				$products[ $product_id ] = array(
+					'attributes' => $attributes,
+					'figures'    => (string) get_post_meta( $product_id, $meta_key, true ),
+					'legacy'     => array(
+						'en' => (string) get_post_meta( $product_id, '_tv_legacy_acf_json', true ),
+						'de' => (string) get_post_meta( $product_id, '_linker_de_acf_json', true ),
+					),
+					// What the migration must leave as it is (docs/specs/7-selection-facts.md, 不做).
+					'protected'  => array(
+						'name'              => $product->get_name(),
+						'sku'               => $product->get_sku(),
+						'status'            => $product->get_status(),
+						'description'       => md5( $product->get_description() ),
+						'short_description' => md5( $product->get_short_description() ),
+						'regular_price'     => $product->get_regular_price(),
+						'sale_price'        => $product->get_sale_price(),
+						'manage_stock'      => $product->get_manage_stock(),
+						'stock_quantity'    => $product->get_stock_quantity(),
+						'stock_status'      => $product->get_stock_status(),
+						'backorders'        => $product->get_backorders(),
+						'low_stock_amount'  => $product->get_low_stock_amount(),
+					),
+				);
 		}
 
 		return array(
@@ -150,10 +258,22 @@ defined( 'ABSPATH' ) || exit;
 			if ( ! is_array( $figures ) ) {
 				throw new RuntimeException( esc_html( "Product {$change['product']} has no readable figures." ) );
 			}
-			$figures[ $change['key'] ] = $change['to'];
+			if ( null === $change['to'] ) {
+				unset( $figures[ $change['key'] ] );
+				// The product page still reads the legacy spec table. A key the
+				// datasheet does not support must not stay there as a cited row.
+				if ( isset( $change['drop_legacy'] ) && is_array( $change['drop_legacy'] ) ) {
+					seven_facts_drop_legacy_row( (int) $change['product'], $change['drop_legacy'] );
+				}
+			} else {
+				$figures[ $change['key'] ] = $change['to'];
+			}
 			// The live figures are stored with unescaped Unicode and slashes; the rewrite keeps that form.
 			update_post_meta( $change['product'], $meta_key, wp_slash( (string) wp_json_encode( $figures, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
 			wc_delete_product_transients( $change['product'] );
+		}
+		foreach ( $request['legacy_copy'] ?? array() as $change ) {
+			seven_facts_set_legacy_path( (int) $change['product'], $change );
 		}
 
 		return array( 'written' => true );

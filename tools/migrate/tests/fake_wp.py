@@ -5,10 +5,11 @@ the request the Python side put in place of its payload placeholder, and
 answers as the real file does, reading from and writing to site.json:
 
     {"siteurl": "...",
-     "products": {"<id>": {"attributes": {"<taxonomy>": {"terms": [...], "attached": [...] | null}},
-                           "figures": "<JSON object>",
-                           "documents": "<JSON list>",
-                           "protected": {"<field>": ...}}},
+    "products": {"<id>": {"attributes": {"<taxonomy>": {"terms": [...], "attached": [...] | null}},
+                          "figures": "<JSON object>",
+                          "documents": "<JSON list>",
+                          "legacy": {"en": "<JSON object>", "de": "<JSON object>"},
+                          "protected": {"<field>": ...}}},
      "term_counts": {"<taxonomy>:<slug>": <count>},
      "faults": ["ignore-writes" | "touch-stock" | "fail-write"],
      "writes": [<every write request>]}
@@ -41,8 +42,49 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
         for change in request.get("figures", []):
             product = site["products"][str(change["product"])]
             figures = json.loads(product["figures"])
-            figures[change["key"]] = change["to"]
+            if change["to"] is None:
+                figures.pop(change["key"], None)
+                drop = change.get("drop_legacy")
+                if isinstance(drop, dict):
+                    titles = {str(item) for item in drop.get("titles") or []}
+                    labels = {str(item) for item in drop.get("labels") or []}
+                    legacy = product.setdefault("legacy", {})
+                    for side in ("en", "de"):
+                        raw = legacy.get(side)
+                        if not raw:
+                            continue
+                        decoded = json.loads(raw)
+                        groups = []
+                        for group in decoded.get("spec_groups") or []:
+                            if str(group.get("spec_group_title") or "") not in titles:
+                                groups.append(group)
+                                continue
+                            rows = [
+                                row
+                                for row in group.get("spec_rows") or []
+                                if str(row.get("spec_label") or "") not in labels
+                            ]
+                            if rows:
+                                group = {**group, "spec_rows": rows}
+                                groups.append(group)
+                        decoded["spec_groups"] = groups
+                        legacy[side] = json.dumps(decoded, ensure_ascii=False)
+            else:
+                figures[change["key"]] = change["to"]
             product["figures"] = json.dumps(figures, ensure_ascii=False)
+        for change in request.get("legacy_copy", []):
+            product = site["products"][str(change["product"])]
+            side = {"_tv_legacy_acf_json": "en", "_linker_de_acf_json": "de"}[
+                change["meta_key"]
+            ]
+            legacy = product.setdefault("legacy", {})
+            decoded = json.loads(legacy.get(side) or "{}")
+            node = decoded
+            *parents, last = change["path"]
+            for step in parents:
+                node = node[step]
+            node[last] = change["to"]
+            legacy[side] = json.dumps(decoded, ensure_ascii=False)
         for change in request.get("citations", []):
             product = site["products"][str(change["product"])]
             figures = json.loads(product["figures"])
