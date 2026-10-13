@@ -12,7 +12,7 @@ namespace Linker\Commerce\Account;
 use Linker\Commerce\Settings\Options;
 
 /**
- * Names the customer's contact person at the top of every account page
+ * Names the customer's contact person in the sidebar of every account page
  * (docs/specs/11-commerce.md, journey step 6; every distributor in the
  * account-workspace mapping names one, §2.3).
  */
@@ -26,7 +26,7 @@ final class ContactCard {
 	public function __construct( private readonly Options $options ) {}
 
 	/**
-	 * Prints the card; runs on woocommerce_account_content before the page.
+	 * Prints the card; runs on linker_account_sidebar, below the navigation.
 	 */
 	public function render(): void {
 		$contact = $this->options->contact();

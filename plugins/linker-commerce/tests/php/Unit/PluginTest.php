@@ -93,6 +93,7 @@ final class PluginTest extends TestCase {
 		// AnyInstance matches the object the registration constructs.
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( new AnyInstance( ProductFilters::class ), 'filter' ), 99 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( ProductSchema::class ), 'print_block' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( \Linker\Commerce\Storefront\ArchiveSchema::class ), 'print_block' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'init', array( new AnyInstance( Monitor::class ), 'schedule' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( Monitor::HOOK, array( new AnyInstance( Monitor::class ), 'run' ) ); // @phpstan-ignore argument.type
 		WP_Mock::userFunction( 'register_deactivation_hook' );
