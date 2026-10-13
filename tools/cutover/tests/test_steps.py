@@ -78,12 +78,17 @@ class FakeTarget(Target):
             return self.eval_reply
         if args[:2] == ("post", "list"):
             return "42 43"
-        if args[:2] == ("maintenance-mode",):
-            return "Maintenance mode is not active."
         return ""
 
     def shell(self, script: str) -> str:  # noqa: D102
         self.shells.append(script)
+        # The maintenance window is a file on the target; the fake filesystem
+        # is `existing`, so the write and the removal keep that set in step.
+        if ".maintenance" in script:
+            if "rm -f" in script:
+                self.existing.discard(".maintenance")
+            elif ">" in script:
+                self.existing.add(".maintenance")
         for key, value in self.shell_replies.items():
             if key in script:
                 return value
@@ -622,6 +627,36 @@ def test_a_step_describes_exactly_what_it_did() -> None:
     """A note printed as an action would let a dry run read as a finished window."""
     result = steps.Result("x", ["did a"], ["could not do b"])
     assert result.describe().splitlines() == ["x: did a", "x: note: could not do b"]
+
+
+def test_the_maintenance_window_is_the_core_file(tmp_path: Path) -> None:
+    """Measured 2026-10-14: `wp maintenance-mode` reports "not active", whose
+    substring "active" the first version read as success — and its activate
+    writes a literal timestamp that core stops honouring after ten minutes.
+    The window must be the self-refreshing core file, and the readback its proof.
+    """
+    target = _fake(tmp_path)
+    on = steps.maintenance(target, on=True)
+    assert target.calls == [], "no WP-CLI command may stand in for the window"
+    assert any("<?php $upgrading = time();" in script for script in target.shells)
+    assert ".maintenance" in target.existing
+    assert on.notes == ["maintenance page: active"]
+
+    off = steps.maintenance(target, on=False)
+    assert ".maintenance" not in target.existing
+    assert off.notes == ["maintenance page: off"]
+
+
+def test_maintenance_refuses_to_claim_a_window_it_did_not_get(
+    tmp_path: Path,
+) -> None:
+    class Deaf(FakeTarget):
+        def shell(self, script: str) -> str:  # noqa: D102 - the write never lands
+            self.shells.append(script)
+            return ""
+
+    with pytest.raises(CutoverError, match="still absent"):
+        steps.maintenance(Deaf(tmp_path), on=True)
 
 
 def test_the_publish_stages_over_ssh_and_runs_there(

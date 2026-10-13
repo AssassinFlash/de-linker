@@ -44,25 +44,33 @@ class Result:
 def maintenance(target: Target, *, on: bool) -> Result:
     """Step 2 and the first half of step 7 of spec 17: the maintenance window.
 
-    Turning it on when it is already on (and off when it is already off) is not
-    a failure: the window is re-runnable step by step, and WP-CLI calls the
-    repeat an error. The status the step reports is read after the command, so
-    the state it left behind is never in doubt.
+    The window is the core `.maintenance` file itself. `wp maintenance-mode
+    activate` exists on the host but writes a literal timestamp, and core's
+    `wp_maintenance()` stops honouring a file whose timestamp is over ten
+    minutes old — shorter than a deploy window, and it cannot be re-armed
+    mid-run (measured on production 2026-10-14, and the command's status
+    wording "not active" also contains "active", which the first version of
+    this step read as its own success). The `time()` form re-evaluates on
+    every request, so the window lasts exactly as long as the file exists,
+    and the readback below is the proof, not the command's exit status.
+
+    Turning it on when it is already on (or off when already off) is not a
+    failure: the window is re-runnable step by step.
     """
-    action = "activate" if on else "deactivate"
-    wanted = "active" if on else "not active"
-    status = target.wp("maintenance-mode", "status").strip()
-    if wanted in status.lower():
-        return Result(
-            "maintenance",
-            [f"wp maintenance-mode {action} (already {wanted})"],
-            [f"status: {status}"],
+    path = shlex.quote(target.path_of(".maintenance"))
+    if on:
+        target.shell(f"printf '%s\\n' '<?php $upgrading = time();' > {path}")
+    else:
+        target.shell(f"rm -f {path}")
+    active = target.exists(".maintenance")
+    if active != on:
+        state = "still present" if active else "still absent"
+        raise CutoverError(
+            f"the maintenance file is {state} after {'writing' if on else 'removing'} it"
         )
-    target.wp("maintenance-mode", action)
-    status = target.wp("maintenance-mode", "status").strip()
-    return Result(
-        "maintenance", [f"wp maintenance-mode {action}"], [f"status: {status}"]
-    )
+    action = "wrote .maintenance" if on else "removed .maintenance"
+    note = "maintenance page: active" if on else "maintenance page: off"
+    return Result("maintenance", [action], [note])
 
 
 def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:

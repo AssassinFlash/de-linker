@@ -334,7 +334,6 @@ class Target:
         """Copy `source` onto the target as the WordPress-root-relative `relative`."""
         if not source.is_dir():
             raise CutoverError(f"{source} is not a directory")
-        destination = self.address(relative)
         if self.rsync_remote is None:
             # `just up` leaves wp-content/plugins/linker-* as symlinks into the
             # checkout. rsync would follow one and write into the repository, so
@@ -344,14 +343,18 @@ class Target:
             if path.is_symlink():
                 path.unlink()
             path.mkdir(parents=True, exist_ok=True)
-            self.rsync(f"{source}/", f"{destination}/")
+            self.rsync(f"{source}/", f"{self.address(relative)}/")
             return
         # See copy_out: one short connection per chunk, retried — the host
         # drops long transfers, and rsync resumes what a tar stream would
         # restart. The chunk list mirrors copy_out's (root files, depth-2
         # directories), walked on this side because the source is here.
+        # The base is the bare path: `_push_entry` adds the host itself, and
+        # `address()` would arrive as `host:host:/path` (the deploy died on
+        # exactly that, 2026-10-14).
+        base = self.path_of(relative).rstrip("/")
         for entry in _local_entries(source):
-            self._push_entry(entry, f"{destination}/{entry.relative_to(source)}")
+            self._push_entry(entry, f"{base}/{entry.relative_to(source)}")
 
     def exists(self, relative: str) -> bool:
         """Whether a WordPress-root-relative path is on the target."""

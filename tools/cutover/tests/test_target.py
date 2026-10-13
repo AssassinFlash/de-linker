@@ -12,6 +12,7 @@ import threading
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -247,3 +248,42 @@ def test_the_chunk_listing_asks_for_files_and_second_level_directories() -> None
     assert "cd /srv/wp-content/uploads" in command[4]
     assert "F %p" in command[4]
     assert "D %p" in command[4]
+
+
+def test_copy_in_sends_each_chunk_to_one_host_prefix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`address()` already carries `host:`; `_push_entry` adds it again.
+
+    Measured on the production deploy 2026-10-14: every chunk went to
+    `hostinger-de-linker:hostinger-de-linker:/…` and the deploy died on the
+    first file. The remote branch hands `_push_entry` the bare path, so the
+    host appears exactly once and exactly where the caller can see it.
+    """
+    source = tmp_path / "staged" / "linker-commerce"
+    (source / "includes").mkdir(parents=True)
+    (source / "vendor").mkdir()
+    (source / "vendor" / "autoload").mkdir()
+    (source / "linker-commerce.php").write_text("<?php", encoding="utf-8")
+
+    seen: list[list[str]] = []
+
+    def capture(command: list[str], *args: object, **kwargs: object) -> object:
+        del args, kwargs
+        seen.append(command)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("linker_cutover.target.subprocess.run", capture)
+    target = remote_target()
+    relative = f"{PLUGINS}/linker-commerce"
+    target.copy_in(source, relative)
+
+    base = target.path_of(relative)
+    destinations = [command[-1] for command in seen]
+    assert destinations == [
+        f"{HOST}:{base}/linker-commerce.php",
+        f"{HOST}:{base}/includes",
+        f"{HOST}:{base}/vendor/autoload",
+    ]
+    for destination in destinations:
+        assert f"{HOST}:{HOST}:" not in destination
