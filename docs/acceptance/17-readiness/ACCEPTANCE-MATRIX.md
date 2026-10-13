@@ -9,8 +9,10 @@
 ## 状态汇总
 
 - verified: 0
-- FAIL: 本轮 132 态全部未过像素门（`docs/debt/FRESH-DIFF-STATIC-2026-10-13.md`，数字 `docs/debt/analysis/freshdiff-full-summary.json`）。覆盖 Solution 四页、9 个子分类、FAQ/EPC/capability/Imprint/Privacy/Terms/Refund/Thank-you 静态/Footer closed、Compare 空态+芯片+ids、Shop/Archive filtered+sort 与 390 筛选抽屉、mega×5 开态与 closed、移动抽屉开合、账户 guest 登录表单。没有一格差异像素=0
-- in-flight: 静态 14 页型×EN/DE×两视口（EN对拍重测/DE实例对拍）、PDP 静态（PDP+指派修复）、Genie 工作区/坞开启/页面芯片（Genie视觉还原）、配置器 residential/commercial 空输入与报告屏（配置器C还原）。这些格本轮不改
+- FAIL: 静态 132 态维持 2026-10-13 测量（`docs/debt/FRESH-DIFF-STATIC-2026-10-13.md`，数字 `docs/debt/analysis/freshdiff-full-summary.json`）。覆盖 Solution 四页、9 个子分类、FAQ/EPC/capability/Imprint/Privacy/Terms/Refund/Thank-you 静态/Footer closed、Compare 空态+芯片+ids、Shop/Archive filtered+sort 与 390 筛选抽屉、mega×5 开态与 closed、移动抽屉开合、账户 guest 登录表单。没有一格差异像素=0
+- 功能面 E2E（2026-10-13 复跑，t110）：**56 过 / 1 败 / 5 跳**（`docs/acceptance/2026-10-13/e2e-and-fixes/README.md`）。配置器 17/17、商务链 EN/DE 全程、访客/批准态价格门、i18n 150 地址、Genie 各 spec 通过；唯一红灯 = DE 商城过滤（旧 LC 模板截流，见"在途项"）
+- 已修复待重拍（不写成 PASS）: PDP 静态与指派（present 装配已并，证据 `docs/acceptance/2026-10-13/pdp-present/`）、Genie 工作区/坞开启/页面芯片（#139 已并）、配置器 resident/commercial/utility 全态（引擎数据补迁 + E2E 17/17 过；C 还原已并，证据 `docs/acceptance/2026-10-13/configurator-c-fidelity/`）；配置器页地址已迁 `/solution-configurator/`（`docs/acceptance/2026-10-13/slug-move/`）
+- in-flight: 静态 14 页型×EN/DE×两视口（EN 对拍重测/DE 实例对拍）
 - unverified: 其余全部（见下）
 
 ## 未验证格子（按面分组；基准 / 状态 / 语言 / 视口）
@@ -100,9 +102,9 @@
 | Compare table with ids | FAIL | `?ids=6530,6529`。EN 1440：2,156,807 / 94.14%，Δh +451 |
 
 ## 已知影响判定的在途项
+- **旧 LC 模板族截流（DE 商城/分类档案）**：旧项目遗留 `is_archive_for_post_type_product`（#231/#6915）等 7 对模板仍发布，LC 在 `is_shop_page` 未命中后先解析它们 → `/de/produkte/` 渲染旧家族页（E2E 唯一红灯）。独立工作包：先定分类档案的模板归属，再退役旧族（`docs/acceptance/2026-10-13/e2e-and-fixes/README.md` §3）
 - 页头带差异：PR119 后重测（EN 对拍重测覆盖）
 - DE 24 空壳：DE 实例补内容后重测（DE 实例对拍覆盖）
-- Genie 壳/输入框固定/滚动收容/Ask Genie 芯片：Genie 视觉还原线
-- 配置器 C 视觉：PR #126（评审中）
-- PDP 结构：PDP+指派修复线
+- 配置器 C 视觉：已并，重拍后判定
+- PDP 结构：present 装配已并并实测，重拍后判定
 - ±1 合成差与轮播动态区：掩膜申报单待呈（按规则申报，不擅自施加）
