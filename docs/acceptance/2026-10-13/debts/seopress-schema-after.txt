@@ -1,0 +1,7 @@
+# after: t110 PDP head ld+json, captured 2026-10-14 after drafting SEOPress schema row 978
+# GET http://127.0.0.1:8975/product/saj-ats1-t63-a/?cbq=schema-after-20261014 -> 200
+# blocks: 1
+# row 978 is draft; the plugin's WP_Query reads published rows only
+# remaining block: plugins/linker-commerce/includes/Storefront/ProductSchema.php
+
+{"@context":"https://schema.org","@type":"Product","name":"SAJ ATS1-T63-A","url":"http://127.0.0.1:8975/product/saj-ats1-t63-a/","description":"SAJ ATS1-T63-A is a three-phase automatic transfer switch panel for whole-home backup with SAJ H2, HS2 and HS3 three-phase hybrid systems. It switches the backup loads between the grid and the backup output of the inverter in 50 ms, in automatic or manual mode. Its rated current is 50 A; its maximum current is 63 A at ambient temperatures up to +30 °C.","sku":"DLK-SAJ-ATS1T63A","brand":{"@type":"Brand","name":"SAJ"},"manufacturer":{"@type":"Organization","name":"SAJ"},"model":"ATS1-T63-A","category":"Backup Power","image":"http://127.0.0.1:8975/wp-content/uploads/2026/07/saj_ats1-t63-a_product_front.jpg","offers":{"@type":"Offer","url":"http://127.0.0.1:8975/product/saj-ats1-t63-a/","availability":"https://schema.org/InStock"}}
