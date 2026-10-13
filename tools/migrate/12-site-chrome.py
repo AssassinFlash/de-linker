@@ -53,8 +53,6 @@ import re
 import shlex
 import subprocess
 import sys
-import tempfile
-from pathlib import Path
 from typing import Any, overload
 
 # The old tool names that must not survive in any published post body or
@@ -542,9 +540,24 @@ class WP:
         self.user = user
 
     def run(self, *args: str, stdin: str | None = None, as_user: bool = False) -> str:
-        command = [*self.prefix, *args]
+        """Run one command.
+
+        A prefix that starts with `ssh` is remote, and its arguments travel
+        quoted as one word: ssh joins its argv with spaces and the login shell
+        splits again, so `--post_title=Genie - Linker's AI assistant` would
+        break apart (the same rule 9-i18n.py states; measured on this site
+        2026-10-14). A local prefix keeps argv semantics.
+        """
+        tail = list(args)
         if as_user and self.user:
-            command.append(f"--user={self.user}")
+            tail.append(f"--user={self.user}")
+        if self.prefix and self.prefix[0] == "ssh":
+            command = [
+                *self.prefix[:-1],
+                " ".join([self.prefix[-1], *(shlex.quote(arg) for arg in tail)]),
+            ]
+        else:
+            command = [*self.prefix, *tail]
         result = subprocess.run(
             command, input=stdin, capture_output=True, text=True, check=False
         )
@@ -561,18 +574,20 @@ class WP:
         return json.loads(out[start:]) if start >= 0 else None
 
     def eval_php(self, code: str, payload: Any) -> Any:
-        """Runs PHP with the payload as base64 argv[1]; returns its JSON."""
-        with tempfile.NamedTemporaryFile("w", suffix=".php", delete=False) as handle:
-            handle.write("<?php\n" + code)
-            path = handle.name
-        try:
-            return self.json(
-                "eval-file",
-                path,
-                base64.b64encode(json.dumps(payload).encode()).decode(),
-            )
-        finally:
-            Path(path).unlink(missing_ok=True)
+        """Runs PHP with the payload as base64 argv[1]; returns its JSON.
+
+        The code travels on standard input (`eval-file -`): a temp path exists
+        on this machine, and a remote WP-CLI cannot open it (measured
+        2026-10-14, this migration's first production run — the remote wp
+        answered "'/var/folders/…' does not exist"). The base64 payload is an
+        argument and stays safe either way.
+        """
+        return self.json(
+            "eval-file",
+            "-",
+            base64.b64encode(json.dumps(payload).encode()).decode(),
+            stdin="<?php\n" + code,
+        )
 
 
 def resolve(wp: WP) -> dict[str, dict[str, int]]:
