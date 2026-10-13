@@ -137,3 +137,9 @@ t110 的 `/de/produkte/`、`/de/produkt-kategorie/…` 最终 URL 停在所请�
 - 没有重建 t110，没有补德语目录模板。
 - 原图不进 PR。可复核的数字是 `docs/debt/analysis/freshdiff-full-summary.json`。
 - 像素门未通过。本 PR 的 CI 绿也不改变这一点。
+
+## 复测（2026-10-13 晚，配置器/目录/账户修复之后）
+
+同日第二次全量采集（132 对，live × t110，同协议）：**0 PASS 维持**；中位差异 28.5%；最好的一对 `imprint-en-1440` 0.043%（1,336 px，全部为 header10 441 带 + struct10），最差 ~63%（utility/faq 页）。64 对页高差 |Δ|≤8px。归因与前次一致（头带 + mag1 合成），目录/配置器/账户面上的修复不在这 132 对的覆盖面内。
+
+数字：`docs/debt/analysis/freshdiff-rerun-2026-10-13.json`（pairs=132；PASS 定义同前：差异像素=0 且页高差=0）。原图在 `de-linker-worktrees/de-linker-r2debt/.scratch/freshdiff-full/captures-b/`（同前例，不进 git）。
