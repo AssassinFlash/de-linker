@@ -44,9 +44,11 @@ final class TemplatesTest extends TestCase {
 				'linker-advisor-de',
 				'linker-configurator',
 				'linker-configurator-de',
-				// The German export of a page type is a source of its own: the
-				// product page's German twin is rendered from it.
+				// The German exports of page types are sources of their own:
+				// the product page's and the product archive's German twins
+				// are rendered from them.
 				'is_single_product__de',
+				'is_archive_for_post_type_product__de',
 			),
 			array_keys( $paths )
 		);

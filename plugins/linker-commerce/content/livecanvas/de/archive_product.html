@@ -1,0 +1,38 @@
+<div>
+	[lc_wc_notices]
+</div>
+
+<div id="linker-products" class="sf-products">
+	[linker_products_head]
+
+	<nav class="product-mobile-actions" aria-label="Produktaktionen">
+		<button type="button" id="product-filter-open" aria-controls="sidebar-filters" aria-expanded="false"><span>Filter</span> &middot; <span data-linker-applied-filter-count>0</span></button>
+		[linker_genie_chips page_type="category"]
+	</nav>
+
+	<section class="product-section">
+		<div class="container product-layout">
+			<aside class="sidebar-filters" id="sidebar-filters" data-linker-product-filter aria-label="Produktfilter">
+				[linker_products_filters]
+			</aside>
+
+			<div class="product-results">
+				<div class="wb-strip">
+					<div class="wbc"></div>
+					<span class="wbcount">[linker_products_family_count]</span>
+					[linker_products_sort]
+				</div>
+
+				[linker_products_empty]
+
+				<div class="product-grid" id="product-grid">
+					[linker_products_families]
+				</div>
+
+				<div class="wb-pages">[linker_products_family_pagination]</div>
+
+				[linker_products_contact]
+			</div>
+		</div>
+	</section>
+</div>

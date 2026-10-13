@@ -80,9 +80,17 @@ final class Templates {
 	 * review instance before this: /product/<slug>/ rendered the export by
 	 * template 234 while /de/produkt/<slug>/ fell through to the legacy
 	 * template the snapshot carried, because nothing ever wrote that twin.
+	 *
+	 * The product archive (the shop and the category pages that share its
+	 * export) is the second such type: its English anchor is the legacy
+	 * `is_archive_for_post_type_product` template the sync reclaims by its
+	 * meta key (#231), the German page resolves that key to its own legacy
+	 * twin (#6915), and the export carries words ("Filters", the two aria
+	 * labels) — so the twin gets a German file too.
 	 */
 	private const DE_FILES = array(
 		'is_single_product' => 'de/single_product',
+		'is_archive_for_post_type_product' => 'de/archive_product',
 	);
 
 	/**
