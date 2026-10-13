@@ -3603,3 +3603,23 @@ msgstr "Verwendungszweck"
 
 #~ msgid "Input voltage"
 #~ msgstr "Eingangsspannung"
+
+#: includes/Presentation/LibraryPage.php
+msgid "How can we help?"
+msgstr "Wie können wir Ihnen helfen?"
+
+#: includes/Presentation/LibraryPage.php
+msgid "Find answers and product documents."
+msgstr "Antworten und Dokumente zu Produkten finden."
+
+#: includes/Presentation/LibraryPage.php
+msgid "Search questions or models"
+msgstr "Fragen oder Modelle suchen"
+
+#: includes/Presentation/LibraryPage.php
+msgid "Matching entries: %d"
+msgstr "Passende Einträge: %d"
+
+#: includes/Presentation/LibraryPage.php
+msgid "No matching entries. Try another search term."
+msgstr "Keine passenden Einträge. Versuchen Sie einen anderen Suchbegriff."

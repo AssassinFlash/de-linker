@@ -3170,3 +3170,23 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr ""
+
+#: includes/Presentation/LibraryPage.php
+msgid "How can we help?"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php
+msgid "Find answers and product documents."
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php
+msgid "Search questions or models"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php
+msgid "Matching entries: %d"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php
+msgid "No matching entries. Try another search term."
+msgstr ""

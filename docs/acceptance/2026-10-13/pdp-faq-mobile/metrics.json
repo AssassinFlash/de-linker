@@ -1,0 +1,1338 @@
+{
+  "results": [
+    {
+      "name": "pdp-en",
+      "width": 390,
+      "overflow": false,
+      "pageHeight": 4208,
+      "gallery": {
+        "x": 0,
+        "y": 145,
+        "w": 390,
+        "h": 300
+      },
+      "sticky": {
+        "x": 0,
+        "y": 756,
+        "w": 390,
+        "h": 88
+      },
+      "pills": {
+        "x": 16,
+        "y": 1257.265625,
+        "w": 358,
+        "h": 62
+      },
+      "search": null,
+      "firstQuestion": null,
+      "margin": 16,
+      "targets": [
+        {
+          "text": "Product image 1",
+          "h": 44,
+          "w": 44
+        },
+        {
+          "text": "Product image 2",
+          "h": 44,
+          "w": 44
+        },
+        {
+          "text": "Compare",
+          "h": 66.796875,
+          "w": 114
+        },
+        {
+          "text": "Ask Genie",
+          "h": 66.796875,
+          "w": 114
+        },
+        {
+          "text": "Documents",
+          "h": 66.796875,
+          "w": 114
+        },
+        {
+          "text": "Plan with GW60K-STS-G10",
+          "h": 48,
+          "w": 356
+        },
+        {
+          "text": "Description",
+          "h": 46,
+          "w": 96.984375
+        },
+        {
+          "text": "Technical data",
+          "h": 46,
+          "w": 111.265625
+        },
+        {
+          "text": "Applications",
+          "h": 46,
+          "w": 101.40625
+        },
+        {
+          "text": "Documents",
+          "h": 46,
+          "w": 96.765625
+        },
+        {
+          "text": "60 kW on grid, back-up and smart port.",
+          "h": 48,
+          "w": 356
+        },
+        {
+          "text": "Transfer in ≤ 4 ms.",
+          "h": 48,
+          "w": 356
+        },
+        {
+          "text": "IP54 wall box, 15 kg.",
+          "h": 48,
+          "w": 356
+        },
+        {
+          "text": "Net price after partner sign-in",
+          "h": 44,
+          "w": 147.046875
+        },
+        {
+          "text": "Sign in for partner pricing",
+          "h": 52,
+          "w": 198.953125
+        }
+      ],
+      "answers": 0,
+      "trade": 0,
+      "documents": 0,
+      "open": 3
+    },
+    {
+      "name": "pdp-en",
+      "width": 430,
+      "overflow": false,
+      "pageHeight": 4146,
+      "gallery": {
+        "x": 0,
+        "y": 145,
+        "w": 430,
+        "h": 300
+      },
+      "sticky": {
+        "x": 0,
+        "y": 844,
+        "w": 430,
+        "h": 88
+      },
+      "pills": {
+        "x": 16,
+        "y": 1239.671875,
+        "w": 398,
+        "h": 62
+      },
+      "search": null,
+      "firstQuestion": null,
+      "margin": 16,
+      "targets": [
+        {
+          "text": "Product image 1",
+          "h": 44,
+          "w": 44
+        },
+        {
+          "text": "Product image 2",
+          "h": 44,
+          "w": 44
+        },
+        {
+          "text": "Compare",
+          "h": 66.796875,
+          "w": 127.328125
+        },
+        {
+          "text": "Ask Genie",
+          "h": 66.796875,
+          "w": 127.328125
+        },
+        {
+          "text": "Documents",
+          "h": 66.796875,
+          "w": 127.34375
+        },
+        {
+          "text": "Plan with GW60K-STS-G10",
+          "h": 48,
+          "w": 396
+        },
+        {
+          "text": "Description",
+          "h": 46,
+          "w": 96.984375
+        },
+        {
+          "text": "Technical data",
+          "h": 46,
+          "w": 111.265625
+        },
+        {
+          "text": "Applications",
+          "h": 46,
+          "w": 101.40625
+        },
+        {
+          "text": "Documents",
+          "h": 46,
+          "w": 96.765625
+        },
+        {
+          "text": "60 kW on grid, back-up and smart port.",
+          "h": 48,
+          "w": 396
+        },
+        {
+          "text": "Transfer in ≤ 4 ms.",
+          "h": 48,
+          "w": 396
+        },
+        {
+          "text": "IP54 wall box, 15 kg.",
+          "h": 48,
+          "w": 396
+        },
+        {
+          "text": "Net price after partner sign-in",
+          "h": 44,
+          "w": 164.046875
+        },
+        {
+          "text": "Sign in for partner pricing",
+          "h": 52,
+          "w": 221.953125
+        }
+      ],
+      "answers": 0,
+      "trade": 0,
+      "documents": 0,
+      "open": 3
+    },
+    {
+      "name": "pdp-en",
+      "width": 1440,
+      "overflow": false,
+      "pageHeight": 3651,
+      "gallery": {
+        "x": 134,
+        "y": 151,
+        "w": 812.65625,
+        "h": 640
+      },
+      "sticky": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "pills": {
+        "x": 40,
+        "y": 960.15625,
+        "w": 1360,
+        "h": 71
+      },
+      "search": null,
+      "firstQuestion": null,
+      "margin": 40,
+      "targets": [
+        {
+          "text": "Product image 1",
+          "h": 72,
+          "w": 72
+        },
+        {
+          "text": "Product image 2",
+          "h": 72,
+          "w": 72
+        },
+        {
+          "text": "Compare",
+          "h": 76,
+          "w": 132.4375
+        },
+        {
+          "text": "Ask Genie",
+          "h": 76,
+          "w": 132.453125
+        },
+        {
+          "text": "Documents",
+          "h": 76,
+          "w": 132.453125
+        },
+        {
+          "text": "Plan with GW60K-STS-G10",
+          "h": 41.25,
+          "w": 411.34375
+        },
+        {
+          "text": "Description",
+          "h": 44,
+          "w": 102.15625
+        },
+        {
+          "text": "Technical data",
+          "h": 44,
+          "w": 118.8125
+        },
+        {
+          "text": "Applications",
+          "h": 44,
+          "w": 107.3125
+        },
+        {
+          "text": "Documents",
+          "h": 44,
+          "w": 101.890625
+        },
+        {
+          "text": "60 kW on grid, back-up and smart port.",
+          "h": 56,
+          "w": 626
+        },
+        {
+          "text": "Transfer in ≤ 4 ms.",
+          "h": 56,
+          "w": 626
+        },
+        {
+          "text": "IP54 wall box, 15 kg.",
+          "h": 56,
+          "w": 626
+        }
+      ],
+      "answers": 0,
+      "trade": 0,
+      "documents": 0,
+      "open": 3
+    },
+    {
+      "name": "faq-en",
+      "width": 390,
+      "overflow": false,
+      "pageHeight": 4460,
+      "gallery": null,
+      "sticky": null,
+      "pills": null,
+      "search": {
+        "x": 36,
+        "y": 276.578125,
+        "w": 318,
+        "h": 48
+      },
+      "firstQuestion": {
+        "x": 33,
+        "y": 721.96875,
+        "w": 324,
+        "h": 76.78125
+      },
+      "margin": 16,
+      "targets": [
+        {
+          "text": "input",
+          "h": 48,
+          "w": 264.34375
+        },
+        {
+          "text": "✉Contact Linker",
+          "h": 52,
+          "w": 173
+        },
+        {
+          "text": "✦Ask Genie",
+          "h": 52,
+          "w": 173
+        },
+        {
+          "text": "Documents",
+          "h": 44,
+          "w": 112.703125
+        },
+        {
+          "text": "Product answers",
+          "h": 44,
+          "w": 147.421875
+        },
+        {
+          "text": "Before you order",
+          "h": 44,
+          "w": 147.734375
+        },
+        {
+          "text": "What is the minimum order quantity, and where does Linker deliver?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Can different brands be combined in one project order?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Does Linker supply complete storage packages or individual components?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "How are project quotations processed?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "How do trade partners access net pricing?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "Who is eligible for a Partner Account?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "How are lithium battery systems transported?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "What is the procedure if transport damage occurs?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "What delivery destinations are supported?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "Whose warranty applies to the supplied equipment?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "How are warranty claims processed?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "What technical support is included with an order?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Is equipment certified for the German electrical grid?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Are documentation and manuals available in German?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Are Declarations of Conformity provided with orders?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "What technical documentation is available through Genie?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Chint 1 answer",
+          "h": 78.375,
+          "w": 316
+        },
+        {
+          "text": "EcoFlow 40 answers",
+          "h": 78.375,
+          "w": 316
+        },
+        {
+          "text": "GoodWe 128 answers",
+          "h": 78.375,
+          "w": 316
+        },
+        {
+          "text": "Pylontech 1 answer",
+          "h": 78.375,
+          "w": 316
+        },
+        {
+          "text": "SAJ 102 answers",
+          "h": 78.375,
+          "w": 316
+        },
+        {
+          "text": "Chint 2 documents",
+          "h": 76.328125,
+          "w": 316
+        },
+        {
+          "text": "GoodWe 90 documents",
+          "h": 76.328125,
+          "w": 316
+        },
+        {
+          "text": "EcoFlow 25 documents",
+          "h": 76.328125,
+          "w": 316
+        },
+        {
+          "text": "Pylontech 3 documents",
+          "h": 76.328125,
+          "w": 316
+        },
+        {
+          "text": "SAJ 39 documents",
+          "h": 76.328125,
+          "w": 316
+        },
+        {
+          "text": "FAQ & documents",
+          "h": 56,
+          "w": 316
+        }
+      ],
+      "answers": 272,
+      "trade": 16,
+      "documents": 159,
+      "open": 0
+    },
+    {
+      "name": "faq-en",
+      "width": 430,
+      "overflow": false,
+      "pageHeight": 4392,
+      "gallery": null,
+      "sticky": null,
+      "pills": null,
+      "search": {
+        "x": 36,
+        "y": 276.578125,
+        "w": 358,
+        "h": 48
+      },
+      "firstQuestion": {
+        "x": 33,
+        "y": 721.96875,
+        "w": 364,
+        "h": 76.78125
+      },
+      "margin": 16,
+      "targets": [
+        {
+          "text": "input",
+          "h": 48,
+          "w": 304.34375
+        },
+        {
+          "text": "✉Contact Linker",
+          "h": 52,
+          "w": 193
+        },
+        {
+          "text": "✦Ask Genie",
+          "h": 52,
+          "w": 193
+        },
+        {
+          "text": "Documents",
+          "h": 44,
+          "w": 112.703125
+        },
+        {
+          "text": "Product answers",
+          "h": 44,
+          "w": 147.421875
+        },
+        {
+          "text": "Before you order",
+          "h": 44,
+          "w": 147.734375
+        },
+        {
+          "text": "What is the minimum order quantity, and where does Linker deliver?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Can different brands be combined in one project order?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Does Linker supply complete storage packages or individual components?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "How are project quotations processed?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "How do trade partners access net pricing?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Who is eligible for a Partner Account?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "How are lithium battery systems transported?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "What is the procedure if transport damage occurs?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "What delivery destinations are supported?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Whose warranty applies to the supplied equipment?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "How are warranty claims processed?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "What technical support is included with an order?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Is equipment certified for the German electrical grid?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Are documentation and manuals available in German?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Are Declarations of Conformity provided with orders?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "What technical documentation is available through Genie?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Chint 1 answer",
+          "h": 78.375,
+          "w": 356
+        },
+        {
+          "text": "EcoFlow 40 answers",
+          "h": 78.375,
+          "w": 356
+        },
+        {
+          "text": "GoodWe 128 answers",
+          "h": 78.375,
+          "w": 356
+        },
+        {
+          "text": "Pylontech 1 answer",
+          "h": 78.375,
+          "w": 356
+        },
+        {
+          "text": "SAJ 102 answers",
+          "h": 78.375,
+          "w": 356
+        },
+        {
+          "text": "Chint 2 documents",
+          "h": 76.328125,
+          "w": 356
+        },
+        {
+          "text": "GoodWe 90 documents",
+          "h": 76.328125,
+          "w": 356
+        },
+        {
+          "text": "EcoFlow 25 documents",
+          "h": 76.328125,
+          "w": 356
+        },
+        {
+          "text": "Pylontech 3 documents",
+          "h": 76.328125,
+          "w": 356
+        },
+        {
+          "text": "SAJ 39 documents",
+          "h": 76.328125,
+          "w": 356
+        },
+        {
+          "text": "FAQ & documents",
+          "h": 56,
+          "w": 356
+        }
+      ],
+      "answers": 272,
+      "trade": 16,
+      "documents": 159,
+      "open": 0
+    },
+    {
+      "name": "faq-en",
+      "width": 1440,
+      "overflow": false,
+      "pageHeight": 3270,
+      "gallery": null,
+      "sticky": null,
+      "pills": null,
+      "search": {
+        "x": 372,
+        "y": 309.390625,
+        "w": 696,
+        "h": 48
+      },
+      "firstQuestion": {
+        "x": 185,
+        "y": 709.984375,
+        "w": 504,
+        "h": 56
+      },
+      "margin": 340,
+      "targets": [
+        {
+          "text": "input",
+          "h": 48,
+          "w": 642.34375
+        },
+        {
+          "text": "✉Contact Linker",
+          "h": 52,
+          "w": 374
+        },
+        {
+          "text": "✦Ask Genie",
+          "h": 52,
+          "w": 374
+        },
+        {
+          "text": "Documents",
+          "h": 38,
+          "w": 112.703125
+        },
+        {
+          "text": "Product answers",
+          "h": 38,
+          "w": 147.421875
+        },
+        {
+          "text": "Before you order",
+          "h": 38,
+          "w": 147.734375
+        },
+        {
+          "text": "What is the minimum order quantity, and where does Linker deliver?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Can different brands be combined in one project order?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Does Linker supply complete storage packages or individual components?",
+          "h": 76.78125,
+          "w": 504
+        },
+        {
+          "text": "How are project quotations processed?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "How do trade partners access net pricing?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Who is eligible for a Partner Account?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "How are lithium battery systems transported?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "What is the procedure if transport damage occurs?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "What delivery destinations are supported?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Whose warranty applies to the supplied equipment?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "How are warranty claims processed?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "What technical support is included with an order?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Is equipment certified for the German electrical grid?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Are documentation and manuals available in German?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Are Declarations of Conformity provided with orders?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "What technical documentation is available through Genie?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Chint 1 answer",
+          "h": 78.375,
+          "w": 506
+        },
+        {
+          "text": "EcoFlow 40 answers",
+          "h": 78.375,
+          "w": 506
+        },
+        {
+          "text": "GoodWe 128 answers",
+          "h": 78.375,
+          "w": 506
+        },
+        {
+          "text": "Pylontech 1 answer",
+          "h": 78.375,
+          "w": 506
+        },
+        {
+          "text": "SAJ 102 answers",
+          "h": 78.375,
+          "w": 506
+        },
+        {
+          "text": "Chint 2 documents",
+          "h": 76.328125,
+          "w": 506
+        },
+        {
+          "text": "GoodWe 90 documents",
+          "h": 76.328125,
+          "w": 506
+        },
+        {
+          "text": "EcoFlow 25 documents",
+          "h": 76.328125,
+          "w": 506
+        },
+        {
+          "text": "Pylontech 3 documents",
+          "h": 76.328125,
+          "w": 506
+        },
+        {
+          "text": "SAJ 39 documents",
+          "h": 76.328125,
+          "w": 506
+        },
+        {
+          "text": "FAQ & documents",
+          "h": 56,
+          "w": 1070
+        }
+      ],
+      "answers": 272,
+      "trade": 16,
+      "documents": 159,
+      "open": 0
+    },
+    {
+      "name": "faq-de",
+      "width": 390,
+      "overflow": false,
+      "pageHeight": 3701,
+      "gallery": null,
+      "sticky": null,
+      "pills": null,
+      "search": {
+        "x": 36,
+        "y": 307.765625,
+        "w": 318,
+        "h": 48
+      },
+      "firstQuestion": {
+        "x": 33,
+        "y": 794.9375,
+        "w": 324,
+        "h": 76.78125
+      },
+      "margin": 16,
+      "targets": [
+        {
+          "text": "input",
+          "h": 48,
+          "w": 264.34375
+        },
+        {
+          "text": "✉Linker kontaktieren",
+          "h": 65.1875,
+          "w": 173
+        },
+        {
+          "text": "✦Genie fragen",
+          "h": 65.1875,
+          "w": 173
+        },
+        {
+          "text": "Dokumente",
+          "h": 44,
+          "w": 113.4375
+        },
+        {
+          "text": "Produktantworten",
+          "h": 44,
+          "w": 158.84375
+        },
+        {
+          "text": "Bevor Sie bestellen",
+          "h": 44,
+          "w": 162.765625
+        },
+        {
+          "text": "Was ist die Mindestbestellmenge, und wohin liefert Linker?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Können verschiedene Marken in einer Projektbestellung kombiniert werden?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Liefert Linker komplette Speicher-Pakete oder einzelne Komponenten?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Wie werden Projektangebote bearbeitet?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "Wie erhalten Handelspartner Zugang zu Nettopreisen?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Wer ist für ein Partnerkonto berechtigt?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "Wie werden Lithium-Batteriespeichersysteme transportiert?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Wie ist das Verfahren bei Transportschäden?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "Welche Lieferziele werden unterstützt?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "Wessen Garantie gilt für die gelieferte Ausrüstung?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Wie werden Garantieansprüche bearbeitet?",
+          "h": 56,
+          "w": 324
+        },
+        {
+          "text": "Welcher technische Support ist bei einer Bestellung enthalten?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Ist die Ausrüstung für das deutsche Stromnetz zertifiziert?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Sind Dokumentation und Handbücher auf Deutsch verfügbar?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Werden Konformitätserklärungen mit Bestellungen bereitgestellt?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "Welche technische Dokumentation ist über Genie verfügbar?",
+          "h": 76.78125,
+          "w": 324
+        },
+        {
+          "text": "FAQ & Dokumente",
+          "h": 56,
+          "w": 316
+        }
+      ],
+      "answers": 0,
+      "trade": 16,
+      "documents": 0,
+      "open": 0
+    },
+    {
+      "name": "faq-de",
+      "width": 430,
+      "overflow": false,
+      "pageHeight": 3573,
+      "gallery": null,
+      "sticky": null,
+      "pills": null,
+      "search": {
+        "x": 36,
+        "y": 276.578125,
+        "w": 358,
+        "h": 48
+      },
+      "firstQuestion": {
+        "x": 33,
+        "y": 750.5625,
+        "w": 364,
+        "h": 76.78125
+      },
+      "margin": 16,
+      "targets": [
+        {
+          "text": "input",
+          "h": 48,
+          "w": 304.34375
+        },
+        {
+          "text": "✉Linker kontaktieren",
+          "h": 52,
+          "w": 193
+        },
+        {
+          "text": "✦Genie fragen",
+          "h": 52,
+          "w": 193
+        },
+        {
+          "text": "Dokumente",
+          "h": 44,
+          "w": 113.4375
+        },
+        {
+          "text": "Produktantworten",
+          "h": 44,
+          "w": 158.84375
+        },
+        {
+          "text": "Bevor Sie bestellen",
+          "h": 44,
+          "w": 162.765625
+        },
+        {
+          "text": "Was ist die Mindestbestellmenge, und wohin liefert Linker?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Können verschiedene Marken in einer Projektbestellung kombiniert werden?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Liefert Linker komplette Speicher-Pakete oder einzelne Komponenten?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Wie werden Projektangebote bearbeitet?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Wie erhalten Handelspartner Zugang zu Nettopreisen?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Wer ist für ein Partnerkonto berechtigt?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Wie werden Lithium-Batteriespeichersysteme transportiert?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Wie ist das Verfahren bei Transportschäden?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Welche Lieferziele werden unterstützt?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Wessen Garantie gilt für die gelieferte Ausrüstung?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Wie werden Garantieansprüche bearbeitet?",
+          "h": 56,
+          "w": 364
+        },
+        {
+          "text": "Welcher technische Support ist bei einer Bestellung enthalten?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Ist die Ausrüstung für das deutsche Stromnetz zertifiziert?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Sind Dokumentation und Handbücher auf Deutsch verfügbar?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Werden Konformitätserklärungen mit Bestellungen bereitgestellt?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "Welche technische Dokumentation ist über Genie verfügbar?",
+          "h": 76.78125,
+          "w": 364
+        },
+        {
+          "text": "FAQ & Dokumente",
+          "h": 56,
+          "w": 356
+        }
+      ],
+      "answers": 0,
+      "trade": 16,
+      "documents": 0,
+      "open": 0
+    },
+    {
+      "name": "faq-de",
+      "width": 1440,
+      "overflow": false,
+      "pageHeight": 2730,
+      "gallery": null,
+      "sticky": null,
+      "pills": null,
+      "search": {
+        "x": 372,
+        "y": 309.390625,
+        "w": 696,
+        "h": 48
+      },
+      "firstQuestion": {
+        "x": 185,
+        "y": 709.984375,
+        "w": 504,
+        "h": 56
+      },
+      "margin": 340,
+      "targets": [
+        {
+          "text": "input",
+          "h": 48,
+          "w": 642.34375
+        },
+        {
+          "text": "✉Linker kontaktieren",
+          "h": 52,
+          "w": 374
+        },
+        {
+          "text": "✦Genie fragen",
+          "h": 52,
+          "w": 374
+        },
+        {
+          "text": "Dokumente",
+          "h": 38,
+          "w": 113.4375
+        },
+        {
+          "text": "Produktantworten",
+          "h": 38,
+          "w": 158.84375
+        },
+        {
+          "text": "Bevor Sie bestellen",
+          "h": 38,
+          "w": 162.765625
+        },
+        {
+          "text": "Was ist die Mindestbestellmenge, und wohin liefert Linker?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Können verschiedene Marken in einer Projektbestellung kombiniert werden?",
+          "h": 76.78125,
+          "w": 504
+        },
+        {
+          "text": "Liefert Linker komplette Speicher-Pakete oder einzelne Komponenten?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Wie werden Projektangebote bearbeitet?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Wie erhalten Handelspartner Zugang zu Nettopreisen?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Wer ist für ein Partnerkonto berechtigt?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Wie werden Lithium-Batteriespeichersysteme transportiert?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Wie ist das Verfahren bei Transportschäden?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Welche Lieferziele werden unterstützt?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Wessen Garantie gilt für die gelieferte Ausrüstung?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Wie werden Garantieansprüche bearbeitet?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Welcher technische Support ist bei einer Bestellung enthalten?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Ist die Ausrüstung für das deutsche Stromnetz zertifiziert?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Sind Dokumentation und Handbücher auf Deutsch verfügbar?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Werden Konformitätserklärungen mit Bestellungen bereitgestellt?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "Welche technische Dokumentation ist über Genie verfügbar?",
+          "h": 56,
+          "w": 504
+        },
+        {
+          "text": "FAQ & Dokumente",
+          "h": 56,
+          "w": 1070
+        }
+      ],
+      "answers": 0,
+      "trade": 16,
+      "documents": 0,
+      "open": 0
+    }
+  ],
+  "checks": [
+    "faq-en: 272 product answers / 16 trade questions / 159 documents; default 0 open; search match/empty/reset + keyboard Enter PASS",
+    "faq-en no JS: same 272/16/159; search hidden; native accordion PASS",
+    "faq-de: 0 product answers / 16 trade questions / 0 documents; default 0 open; search match/empty/reset + keyboard Enter PASS",
+    "faq-de no JS: same 0/16/0; search hidden; native accordion PASS",
+    "PDP pending: Prices after approval | Prices after approval UI-state PASS (amount/add operation separate)",
+    "PDP restricted: Not available for your account | Not available for your account UI-state PASS (amount/add operation separate)",
+    "GAP: approved PDP amount is intercepted by the active snapshot plugin price hook (tv_b2b_filter_price_html); Woo edit price is present.",
+    "PDP approved: Net prices after account review | Add to solution draft UI-state PASS (amount/add operation separate)",
+    "PDP approved action: existing Woo add-to-cart -> draft items 0 GAP: snapshot price/cart gate conflicts with new approval state",
+    "DE PDP public response: 404 (instance product twin is draft; not edited)"
+  ]
+}
