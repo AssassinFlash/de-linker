@@ -44,6 +44,36 @@ final class LibraryPage {
 	public function register(): void {
 		add_shortcode( 'linker_document_register', array( $this, 'register_documents' ) );
 		add_shortcode( 'linker_product_answers', array( $this, 'product_answers' ) );
+		add_shortcode( 'linker_faq_help', array( $this, 'help' ) );
+	}
+
+	/**
+	 * The help card's localized UI. The LC export owns its position.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes, unused.
+	 */
+	public function help( $atts = array() ): string {
+		unset( $atts );
+		$path = dirname( __DIR__, 2 ) . '/assets/faq-ui.js';
+		wp_enqueue_script(
+			'linker-faq-ui',
+			plugins_url( 'assets/faq-ui.js', dirname( __DIR__, 2 ) . '/linker-commerce.php' ),
+			array(),
+			(string) filemtime( $path ),
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+		$html  = '<div class="linker-faq-help"><h1>' . esc_html__( 'How can we help?', 'linker-commerce' ) . '</h1>';
+		$html .= '<p>' . esc_html__( 'Find answers and product documents.', 'linker-commerce' ) . '</p>';
+		$html .= '<div class="linker-faq-search" data-faq-search hidden><label for="linker-faq-query">' . esc_html__( 'Search questions or models', 'linker-commerce' ) . '</label>';
+		$html .= '<div class="linker-faq-search-field"><span aria-hidden="true">⌕</span><input id="linker-faq-query" type="search" aria-controls="answers before-you-order documents" placeholder="' . esc_attr__( 'Search questions or models', 'linker-commerce' ) . '"></div>';
+		/* translators: %d: number of questions and documents matching the search. */
+		$html .= '<p data-faq-result role="status" aria-live="polite" data-result-label="' . esc_attr__( 'Matching entries: %d', 'linker-commerce' ) . '" data-empty-label="' . esc_attr__( 'No matching entries. Try another search term.', 'linker-commerce' ) . '"></p></div></div>';
+		$html .= '<div class="linker-faq-contact"><a href="' . esc_url( Shortcodes::contact_page_url() ) . '"><span aria-hidden="true">✉</span>' . esc_html__( 'Contact Linker', 'linker-commerce' ) . '</a>';
+		$html .= '<button type="button" data-linker-genie-open><span aria-hidden="true">✦</span>' . esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button></div>';
+		return $html;
 	}
 
 	/**
@@ -59,19 +89,19 @@ final class LibraryPage {
 		}
 		$html = '<div id="linker-documents" class="linker-documents flex flex-col gap-6">';
 		foreach ( $groups as $brand => $documents ) {
-			$html .= '<section class="linker-documents-group" data-brand="' . esc_attr( sanitize_title( (string) $brand ) ) . '">';
-			$html .= '<h3 class="linker-documents-brand mb-3 text-lg font-semibold text-(--proto-navy-deep)">' . esc_html( (string) $brand ) . ' <span class="linker-documents-count text-sm font-normal text-neutral-500">' . esc_html(
+			$html .= '<details class="linker-documents-group" data-brand="' . esc_attr( sanitize_title( (string) $brand ) ) . '">';
+			$html .= '<summary class="linker-documents-brand"><span>' . esc_html( (string) $brand ) . ' <span class="linker-documents-count text-sm font-normal text-neutral-500">' . esc_html(
 				sprintf(
 					/* translators: %d: number of documents of the brand. */
 					_n( '%d document', '%d documents', count( $documents ), 'linker-commerce' ),
 					count( $documents )
 				)
-			) . '</span></h3>';
-			$html .= '<ul class="linker-documents-list border-t border-neutral-200">';
+			) . '</span></span></summary>';
+			$html .= '<ul class="linker-documents-list">';
 			foreach ( $documents as $document ) {
 				$html .= $this->document( $document );
 			}
-			$html .= '</ul></section>';
+			$html .= '</ul></details>';
 		}
 
 		return $html . '</div>';
@@ -89,16 +119,16 @@ final class LibraryPage {
 		foreach ( $this->library->answers( $german ? 'de' : 'en' ) as $answer ) {
 			$groups[ strtok( $answer['product'], ' ' ) ][] = $answer;
 		}
-		$html = '<div id="linker-answers" class="linker-answers flex flex-col gap-8">';
+		$html = '<div id="linker-answers" class="linker-answers">';
 		foreach ( $groups as $brand => $answers ) {
-			$html .= '<section class="linker-answers-group" data-brand="' . esc_attr( sanitize_title( (string) $brand ) ) . '">';
-			$html .= '<h3 class="linker-answers-brand mb-3 text-lg font-semibold text-(--proto-navy-deep)">' . esc_html( (string) $brand ) . ' <span class="linker-answers-count text-sm font-normal text-neutral-500">' . esc_html(
+			$html .= '<details class="linker-answers-group" data-brand="' . esc_attr( sanitize_title( (string) $brand ) ) . '">';
+			$html .= '<summary class="linker-answers-brand"><span>' . esc_html( (string) $brand ) . ' <span class="linker-answers-count">' . esc_html(
 				sprintf(
 					/* translators: %d: number of answers of the brand. */
 					_n( '%d answer', '%d answers', count( $answers ), 'linker-commerce' ),
 					count( $answers )
 				)
-			) . '</span></h3>';
+			) . '</span></span></summary>';
 			foreach ( $answers as $answer ) {
 				$html .= '<details class="linker-answer border-b border-neutral-200 py-3">';
 				$html .= '<summary class="linker-answer-question cursor-pointer font-semibold text-(--proto-navy-deep)">' . esc_html( $answer['question'] ) . '</summary>';
@@ -110,7 +140,7 @@ final class LibraryPage {
 				$html .= '</p>';
 				$html .= '</div></details>';
 			}
-			$html .= '</section>';
+			$html .= '</details>';
 		}
 
 		return $html . '</div>';

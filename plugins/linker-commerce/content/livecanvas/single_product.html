@@ -80,7 +80,7 @@
 					[linker_pdp_downloads]
 				</section>
 
-				[lc_if condition="linker_commerce_pdp_has_faqs"]<section class="pdp-block pdp-faqs">
+				[lc_if condition="linker_commerce_pdp_has_faqs"]<section class="pdp-block pdp-faqs" id="product-questions">
 					<h2 class="pdp-section-title">Product questions</h2>
 					[linker_faqs]
 				</section>[/lc_if]
@@ -92,6 +92,8 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="pdp-mobile-action"><div class="pdp-price">[linker_pdp_price]</div>[linker_pdp_cta]</div>
 
 	<dialog id="pdp-image-viewer">
 		<button type="button" class="pdp-viewer-close" data-pdp-close-image aria-label="Close">&times;</button>

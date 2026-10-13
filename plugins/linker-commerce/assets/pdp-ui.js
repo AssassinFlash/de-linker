@@ -14,27 +14,69 @@
 	/* Gallery: a thumbnail selects the main image; the main and secondary
 	   images open the viewer dialog. */
 	var main = root.querySelector(".pdp-gallery-main");
-	if (main) {
-		root.querySelectorAll("[data-pdp-thumb]").forEach(function (thumb) {
-			thumb.addEventListener("click", function () {
-				var previous = root.querySelector('.pdp-thumb[aria-pressed="true"]');
-				if (previous) {
-					previous.setAttribute("aria-pressed", "false");
-				}
-				thumb.setAttribute("aria-pressed", "true");
-				var source = thumb.getAttribute("data-src");
-				if (source) {
-					main.removeAttribute("srcset");
-					main.removeAttribute("sizes");
-					main.src = source;
-				}
+	var mainTrigger = root.querySelector("[data-pdp-main]");
+	var thumbs = Array.from(root.querySelectorAll("[data-pdp-thumb]"));
+	var suppressClickUntil = 0;
+	// Measure the actual bar, including localized wrapping, text zoom and safe area.
+	var actionBar = root.querySelector(".pdp-mobile-action");
+	if (actionBar && typeof ResizeObserver !== "undefined") {
+		new ResizeObserver(function () {
+			var height = actionBar.getBoundingClientRect().height;
+			if (height) document.body.style.setProperty("--pdp-action-height", height + "px");
+		}).observe(actionBar);
+	}
+	if (main && mainTrigger) {
+		var selected = 0;
+		function selectImage(index) {
+			if (!thumbs.length) return;
+			selected = (index + thumbs.length) % thumbs.length;
+			thumbs.forEach(function (thumb, position) {
+				thumb.setAttribute("aria-pressed", position === selected ? "true" : "false");
 			});
+			var source = thumbs[selected].getAttribute("data-src");
+			if (source) {
+				main.removeAttribute("srcset");
+				main.removeAttribute("sizes");
+				main.src = source;
+				mainTrigger.setAttribute("aria-label", thumbs[selected].getAttribute("aria-label") || main.alt);
+				// Viewer always opens the image currently selected, including desktop.
+				mainTrigger.setAttribute("data-src", source);
+			}
+		}
+		thumbs.forEach(function (thumb, index) {
+			thumb.addEventListener("click", function () { selectImage(index); });
+		});
+		var touch = null;
+		mainTrigger.addEventListener("touchstart", function (event) {
+			if (!window.matchMedia("(max-width: 860px)").matches || event.touches.length !== 1) return;
+			touch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+			suppressClickUntil = 0;
+		}, { passive: true });
+		mainTrigger.addEventListener("touchend", function (event) {
+			if (!touch || !event.changedTouches.length) return;
+			var dx = event.changedTouches[0].clientX - touch.x;
+			var dy = event.changedTouches[0].clientY - touch.y;
+			touch = null;
+			// 40px separates a deliberate horizontal swipe from a tap/vertical scroll.
+			if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy) && thumbs.length > 1) {
+				selectImage(selected + (dx < 0 ? 1 : -1));
+				// Suppress only the immediate synthetic click, never a later tap.
+				suppressClickUntil = Date.now() + 350;
+			}
+		}, { passive: true });
+		mainTrigger.addEventListener("touchcancel", function () { touch = null; });
+		mainTrigger.addEventListener("keydown", function (event) {
+			if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+				event.preventDefault();
+				selectImage(selected + (event.key === "ArrowRight" ? 1 : -1));
+			}
 		});
 	}
 	var viewer = root.querySelector("#pdp-image-viewer");
 	var viewerImage = viewer ? viewer.querySelector("img") : null;
 	root.querySelectorAll("[data-pdp-image]").forEach(function (trigger) {
 		trigger.addEventListener("click", function () {
+			if (trigger === mainTrigger && Date.now() < suppressClickUntil) { suppressClickUntil = 0; return; }
 			if (!viewer || !viewerImage) {
 				return;
 			}

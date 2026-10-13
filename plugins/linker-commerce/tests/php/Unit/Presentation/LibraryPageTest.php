@@ -125,6 +125,8 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( 'href="https://de-linker.test/media/900.pdf"', $html );
 		$this->assertStringContainsString( 'Download', $html );
 		$this->assertStringNotContainsString( '<script', $html );
+		$this->assertStringContainsString( '<details class="linker-documents-group"', $html );
+		$this->assertStringNotContainsString( ' open', $html );
 	}
 
 	/**
@@ -140,5 +142,7 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( '<a href="https://de-linker.test/produkt/goodwe-gw5-1/">GoodWe GW5.1-BAT-D-G21</a>', $html );
 		$this->assertStringContainsString( 'ESA battery manual, p. 12', $html );
 		$this->assertStringContainsString( 'href="https://de-linker.test/media/901.pdf#page=12"', $html );
+		$this->assertStringContainsString( '<details class="linker-answers-group"', $html );
+		$this->assertStringNotContainsString( ' open', $html );
 	}
 }
