@@ -134,17 +134,14 @@ ETA 页缺摘要与 32→28 statrow）
 
 ## 6. 未决与不属于像素的缺口
 
-1. **e2e 套件运行：pending**——套件在并行线 `t16e/e2e-lane`（未提交、无 PR，其
-   worktree 在 21:49 仍有写入；其自跑 report.json 21:49 已有一笔非绿：
-   "the cascade judge agrees with the deterministic checks = False"）。按主会话裁决，
-   本阶段不运行；待「套件 PR 合并且复刻收口后由主会话另行触发」。
-2. 商城家族分组（live 65 families/24 每页 vs t16 104 商品/16 每页）、目录卡族级
-   facts 序变体、搜索 chips 文案。
-3. SAJ 描述区：highlights 表（4 行）、`.pdp-overview-secondary`、`.pdp-feature` 尺寸。
-4. 移动端（390）：live 用 `display:contents` 拆购买栏 + 2 列栅格；t16 单列，页高差
-   约 1,100px。
-5. 页头 chrome：搜索/购物车/账户/EN-DE 切换控件与 live 不同位。
-6. 缩略图 img 的 srcset 为已知 DOM 偏差（像素已对齐，§3 ③）。
+2026-10-13 按项注明去向。本包仍是工作态，不是终局像素证书；下面「已有实现」只说明 main 里现在有对应代码，不改写本节上面的页级差。
+
+1. **e2e 套件**：写本包时套件在并行线、无 PR，本阶段没有运行。该句已过期——套件随 PR #96 进入 main（`tests/e2e/`）。本包没有补跑 `just e2e`，所以这里仍无套件通过记录。当时那笔自跑非绿（"the cascade judge agrees with the deterministic checks = False"）是并行线自己的 report，不是本次复跑。
+2. **商城家族分组 / 搜索芯片**：本包实测 live 65 家族、每页 24，t16 是 104 商品、每页 16。main 现由 `[linker_catalog_families]` 按每页 24 个家族输出。目录芯片现为 Filters + Ask Genie；live 4 条里的 Batch import / Nameplate photo 是业主终裁不做的两项，不是漏建。族级 facts 序变体本包没有新测量。
+3. **SAJ 描述区**：本包记的是 highlights 表、`.pdp-overview-secondary`、`.pdp-feature` 尺寸未对齐。main 已有这两组标记与样式（`CatalogShortcodes` 的 feature 块、`storefront.css` / `pdp.css`）。尺寸是否与 live 一致，本包没有复测，不销。
+4. **移动端（390）——待 A4 判定，不在本包销账。** 本包实测：live 用 `display:contents` 拆购买栏并走 2 列栅格，t16 单列，页高差约 1,100px。其后 `pdp.css` 在 `max-width: 860px` 写入了同一拆法（`.pdp-purchase` / `.pdp-buy-inner` 为 `display: contents`，注释指向本条）。代码落上不等于终局像素门已判：A4 的范围是列表页 390 的终局判定仍未核，本条的 PDP 390 页高差同样没有新的掩膜外零差证据。不写 PASS，也不把本包的 1,100px 说成今天仍测得的差。
+5. **页头 chrome——归 A1-retest，不在本包销账。** 本包记的是搜索/购物车/账户/EN-DE 与 live 不同位。页头复刻由 `fix/header-live-sync`（PR #119，已合并）承接；其验收记录写明功能核对通过、零像素对照 NOT PASS / not certified。本包不把页头改判为已对齐。
+6. 缩略图 img 的 srcset 为已知 DOM 偏差（本包当时记像素已对齐，§3 ③）。范围限于那次测量。
 
 ## 7. 复现命令
 
