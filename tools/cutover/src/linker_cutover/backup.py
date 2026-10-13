@@ -183,27 +183,41 @@ def destination(home: Path, *, now: datetime | None = None) -> Path:
 
 
 def _prove_the_tree_arrived(target: Target, relative: str, local: Path) -> None:
-    """The pulled tree holds as many files as the site's own `find` counts.
+    """The pulled tree holds every file the site has — by name, case-folded.
 
     The chunk walk decides what travels, so a chunk rule that misses a kind
     of file makes a silently smaller backup — measured 2026-10-14: 195 files
     (every file living directly inside a first-level directory) absent from
-    the first production backup. The site counts its own tree; a mismatch
-    stops the backup instead of shipping it as somebody's rollback.
+    the first production backup. The site lists its own tree and the local
+    tree must agree.
+
+    The comparison folds case because this Mac's filesystem is
+    case-insensitive: `includes/jobs.php` and `includes/Jobs.php` are two
+    files on the Linux host and one slot here (measured on linker-i18n,
+    2026-10-14 — the only collision on the whole site). Folding is the
+    strongest claim this side can make, and it is the honest one.
     """
-    counted = target.shell(
-        f"find {shlex.quote(target.path_of(relative))} -type f | wc -l"
-    ).strip()
-    on_site = int(counted)
-    # `find -type f` counts regular files, so the local side does too: a
-    # symlink is neither counted nor hashed (the manifest agrees).
-    local_count = sum(
-        1 for path in local.rglob("*") if path.is_file() and not path.is_symlink()
+    listed = target.shell(
+        f"cd {shlex.quote(target.path_of(relative))} && find . -type f"
     )
-    if local_count != on_site:
+    on_site = {
+        line.strip().removeprefix("./").lower()
+        for line in listed.splitlines()
+        if line.strip()
+    }
+    # `find -type f` lists regular files, so the local side ignores symlinks
+    # the same way (the manifest agrees).
+    arrived = {
+        str(path.relative_to(local)).lower()
+        for path in local.rglob("*")
+        if path.is_file() and not path.is_symlink()
+    }
+    if arrived != on_site:
+        missing = ", ".join(sorted(on_site - arrived)[:3])
+        extra = ", ".join(sorted(arrived - on_site)[:3])
         raise CutoverError(
-            f"{relative}: {local_count} files arrived, the site counts {on_site} "
-            "— the backup is not complete"
+            f"{relative}: the backup does not hold the site's file set "
+            f"(missing like [{missing}], extra like [{extra}])"
         )
 
 

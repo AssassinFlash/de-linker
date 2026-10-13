@@ -329,3 +329,47 @@ def test_the_scripts_use_the_wp_prefix_as_an_array() -> None:
     restore = backup.restore_script(target)
     assert "wp=(" in restore
     assert '"${wp[@]}" config get DB_PASSWORD' in restore
+
+
+def test_the_gate_folds_case_because_this_mac_has_one_slot(tmp_path: Path) -> None:
+    """The Linux host holds `jobs.php` and `Jobs.php`; this Mac holds one file.
+
+    Measured 2026-10-14 on linker-i18n: the site counts 18295 files under
+    wp-content/plugins, the pulled tree 18294, and the only difference is
+    that pair — a case-folded set comparison is the strongest claim this
+    filesystem can make, and it still refuses a genuinely missing file.
+    """
+
+    class _SiteWithListing(_Site):
+        listing: str = ""
+
+        def shell(self, script: str) -> str:  # noqa: D102 - the site's own answer
+            del script
+            return self.listing
+
+    local = tmp_path / "archive" / PLUGINS
+    (local / "linker-i18n" / "includes").mkdir(parents=True)
+    (local / "linker-i18n" / "includes" / "Jobs.php").write_text(
+        "<?php", encoding="utf-8"
+    )
+    target = _SiteWithListing(
+        label="local:test",
+        root=str(tmp_path / "root"),
+        base_url="http://127.0.0.1:9999",
+        prefix=("php", "wp"),
+        shell_prefix=None,
+        rsync_remote=None,
+    )
+
+    target.listing = (
+        "./linker-i18n/includes/Jobs.php\n./linker-i18n/includes/jobs.php\n"
+    )
+    backup._prove_the_tree_arrived(target, PLUGINS, local)
+
+    target.listing = (
+        "./linker-i18n/includes/Jobs.php\n"
+        "./linker-i18n/includes/jobs.php\n"
+        "./linker-i18n/includes/Missing.php\n"
+    )
+    with pytest.raises(CutoverError, match="missing like"):
+        backup._prove_the_tree_arrived(target, PLUGINS, local)
