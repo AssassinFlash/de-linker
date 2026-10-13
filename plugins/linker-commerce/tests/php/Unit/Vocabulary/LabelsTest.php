@@ -163,6 +163,7 @@ final class LabelsTest extends TestCase {
 	public function test_draft_heading_prints_solution_draft(): void {
 		WP_Mock::passthruFunction( 'esc_html__' );
 		WP_Mock::userFunction( 'is_cart' )->andReturn( true );
+		WP_Mock::userFunction( 'remove_action' )->once()->with( 'woocommerce_before_cart', 'tv_woo_b2b_cart_title', 1 );
 
 		$this->expectOutputString( '<h1 class="sf-cart-title">Solution draft</h1>' );
 		( new Labels() )->draft_heading();

@@ -119,7 +119,6 @@ final class ApprovalEmailsTest extends TestCase {
 	 */
 	private function template_args_of( CustomerApprovalEmail $email ): array {
 		$method = new \ReflectionMethod( $email, 'template_args' );
-		$method->setAccessible( true );
 		return (array) $method->invoke( $email );
 	}
 }

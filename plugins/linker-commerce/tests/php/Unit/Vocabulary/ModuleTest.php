@@ -49,6 +49,7 @@ final class ModuleTest extends TestCase {
 			WP_Mock::expectFilterAdded( 'seopress_social_og_desc', array( $labels, 'seo_description' ) );
 			WP_Mock::expectFilterAdded( 'seopress_social_twitter_card_desc', array( $labels, 'seo_description' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_breadcrumb', array( $labels, 'breadcrumb' ) );
+		WP_Mock::expectActionAdded( 'woocommerce_before_cart', array( $labels, 'draft_heading' ), 0 );
 		WP_Mock::expectFilterAdded( 'woocommerce_date_format', array( $formats, 'wc_date_format' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_price_decimal_separator', array( $formats, 'decimal_separator' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_price_thousand_separator', array( $formats, 'thousand_separator' ) );
