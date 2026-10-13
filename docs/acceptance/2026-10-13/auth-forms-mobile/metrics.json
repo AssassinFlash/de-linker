@@ -857,11 +857,11 @@
       },
       {
         "label": "I have read and agree to the website terms and conditions *",
-        "height": 56
+        "height": 72
       },
       {
         "label": "terms and conditions",
-        "height": 46
+        "height": 44
       },
       {
         "label": "Request Proforma",
@@ -973,19 +973,19 @@
     },
     "touch": [
       {
-        "label": "privacy policy",
+        "label": "Datenschutzerklärung",
         "height": 44
       },
       {
-        "label": "I have read and agree to the website terms and conditions *",
-        "height": 56
+        "label": "Ich habe die Allgemeine Geschäftsbedingungen gelesen und stimme ihnen zu *",
+        "height": 100
       },
       {
-        "label": "terms and conditions",
-        "height": 46
+        "label": "Allgemeine Geschäftsbedingungen",
+        "height": 44
       },
       {
-        "label": "Request Proforma",
+        "label": "Proforma anfordern",
         "height": 52
       }
     ],
@@ -2009,19 +2009,19 @@
     },
     "touch": [
       {
-        "label": "privacy policy",
+        "label": "Datenschutzerklärung",
         "height": 21
       },
       {
-        "label": "I have read and agree to the website terms and conditions *",
-        "height": 56
+        "label": "Ich habe die Allgemeine Geschäftsbedingungen gelesen und stimme ihnen zu *",
+        "height": 84
       },
       {
-        "label": "terms and conditions",
-        "height": 18
+        "label": "Allgemeine Geschäftsbedingungen",
+        "height": 46
       },
       {
-        "label": "Request Proforma",
+        "label": "Proforma anfordern",
         "height": 48
       }
     ],
@@ -2927,11 +2927,11 @@
       },
       {
         "label": "I have read and agree to the website terms and conditions *",
-        "height": 56
+        "height": 72
       },
       {
         "label": "terms and conditions",
-        "height": 46
+        "height": 44
       },
       {
         "label": "Request Proforma",
@@ -3043,19 +3043,19 @@
     },
     "touch": [
       {
-        "label": "privacy policy",
+        "label": "Datenschutzerklärung",
         "height": 44
       },
       {
-        "label": "I have read and agree to the website terms and conditions *",
-        "height": 56
+        "label": "Ich habe die Allgemeine Geschäftsbedingungen gelesen und stimme ihnen zu *",
+        "height": 72
       },
       {
-        "label": "terms and conditions",
-        "height": 46
+        "label": "Allgemeine Geschäftsbedingungen",
+        "height": 44
       },
       {
-        "label": "Request Proforma",
+        "label": "Proforma anfordern",
         "height": 52
       }
     ],

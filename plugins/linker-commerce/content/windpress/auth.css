@@ -230,14 +230,14 @@
 	}
 	#contact-form { padding-inline: var(--proto-space-4); }
 	#contact-form .linker-contact-form .linker-form-label { gap: var(--proto-space-2); }
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .woocommerce-privacy-policy-text a,
-	#contact-form .linker-contact-form .linker-form-consent a,
-	#tv-woo-b2b-checkout .woocommerce-privacy-policy-text a {
-		display: inline-flex;
-		align-items: center;
-		min-height: var(--proto-control-height);
-	}
-	#tv-woo-b2b-checkout .checkout-inline-error-message { color: var(--proto-sem-danger); }
+		#contact-form .linker-contact-form .linker-form-consent a,
+		body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .woocommerce-privacy-policy-text a,
+		#tv-woo-b2b-checkout .woocommerce-privacy-policy-text a {
+			display: inline-flex;
+			align-items: center;
+			min-height: var(--proto-control-height);
+		}
+		#tv-woo-b2b-checkout .checkout-inline-error-message { color: var(--proto-sem-danger); }
 	#tv-woo-b2b-checkout form.checkout textarea { min-height: 6.5rem; }
 	#contact-form .linker-contact-form .linker-form-consent {
 		display: flex;
@@ -303,6 +303,11 @@
 	}
 	#tv-woo-b2b-checkout #payment .woocommerce-terms-and-conditions-wrapper label.checkbox,
 	#tv-woo-b2b-checkout #ship-to-different-address label {
+		min-height: var(--proto-control-height);
+	}
+	#tv-woo-b2b-checkout .woocommerce-terms-and-conditions-checkbox-text a {
+		display: inline-flex;
+		align-items: center;
 		min-height: var(--proto-control-height);
 	}
 }
