@@ -61,3 +61,7 @@
 2. 全105件发布在售商品 `Faqs::of()` 都为空， `_linker_faqs` 尚未导入；PDP FAQ段无法真实取证。FAQ独立页272答案是DocumentLibrary现有旧字段回退，不新造。
 3. 本线用户 `pdp-faq-pending/restricted/approved` 按指定meta创建，待审/受限UI不漏价；批准CTA显示原“Add to solution draft”，但旧快照 **terravolt-b2b-core** 的 `woocommerce_get_price_html` hook（WP-CLI实读priority20 `tv_b2b_filter_price_html`）把批准用户价格替成“Net prices after account review”。Woo edit值真实存在（GW60K635、SAJ1680），**不是价格字段为空**。批准点击草稿实际0项。因此四态完整价/加草稿门未通过，未改业务规则或旧插件。
 4. 不推送、不生产部署、不合并；本线提交仅供主会话整合复核。`metrics.md` 是诚实量测并含上述GAP，不代表整体验收绿灯。
+
+## 7. 搜索状态行对比度修复
+
+`faq.css:15` 的 `[data-faq-result]` 原先未设 color，页面全局段落色覆盖卡片继承，13px 文本在青绿卡上为 2.94:1。现显式使用 `var(--proto-accent-on)`。真实 390 浏览器实测：`/faq-download/` 为 Matching entries: 208，`/de/faq-download/` 为德语空态；两页 computed color 均为 rgb(243,251,250)，卡片背景 rgb(12,127,115)，对比度 4.65:1。截图：`faq-en-search-status-ours-390.png`、`faq-de-search-status-ours-390.png`。
