@@ -24,7 +24,7 @@ from pathlib import Path
 
 from linker_cutover import backup as backup_module
 from linker_cutover import plan
-from linker_cutover.target import CutoverError, Target, wp_prefix_for
+from linker_cutover.target import HOST, CutoverError, Target, wp_prefix_for
 
 
 @dataclass(frozen=True)
@@ -539,25 +539,60 @@ def hygiene(target: Target, *, backup: Path, writes: bool) -> Result:
     return Result("hygiene", actions, notes)
 
 
+def _rsync(source: Path, destination: str) -> None:
+    """One rsync leg of a publish: a directory (or file) onto the VPS."""
+    source_arg = f"{source}/" if source.is_dir() else str(source)
+    completed = subprocess.run(
+        [
+            "rsync",
+            "-az",
+            "--delete",
+            "-e",
+            "ssh -o BatchMode=yes",
+            source_arg,
+            f"{HOST}:{destination}",
+        ],
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise CutoverError(f"rsync {source} -> {HOST}:{destination} failed")
+
+
 def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Result:
-    """Step 5: publish the two services and write their addresses into the site.
+    """Step 5: publish the two services to the VPS and write their addresses into the site.
 
     The release script is the genie's `ops/release.sh` for both services: its
     root is its parameter, so one implementation owns the release rule (version
-    directory, `current` symlink, rollback) for two services. Publishing needs
-    the VPS, so without `run` this reports the command lines instead.
+    directory, `current` symlink, rollback) for two services. It copies from a
+    directory on the machine it runs on, so a publish stages over ssh first
+    (the tree and the script into `plan.SERVICES_STAGING`) and runs there.
+    What serves a release afterwards — the units, the environments, the
+    engine's feed — is host setup the window performs; this step lays the
+    releases down. Without `run` it reports the command lines instead.
     """
     actions: list[str] = []
     notes: list[str] = []
+    ssh = ("ssh", "-o", "BatchMode=yes", HOST)
+    staging_root = plan.SERVICES_STAGING
     for service, root, directory in plan.SERVICES:
-        command = f"GENIE_RELEASE_ROOT={shlex.quote(root)} bash {plan.RELEASE_SCRIPT} publish {directory}"
+        staging = f"{staging_root}/{service}"
         if run:
-            completed = subprocess.run(["bash", "-c", command], check=False)
+            _rsync(repository / directory, f"{staging}/")
+            _rsync(repository / plan.RELEASE_SCRIPT, f"{staging_root}/release.sh")
+            publish = (
+                f"GENIE_RELEASE_ROOT={shlex.quote(root)} "
+                f"bash {staging_root}/release.sh publish {staging}"
+            )
+            completed = subprocess.run([*ssh, publish], check=False)
             if completed.returncode != 0:
                 raise CutoverError(f"publishing {service} failed")
-        actions.append(
-            ("published " if run else "would publish ") + f"{service}: {command}"
-        )
+            actions.append(f"published {service} -> {root} (staged at {staging})")
+        else:
+            actions.append(
+                "would publish "
+                f"{service}: rsync {directory} -> {HOST}:{staging}, then "
+                f"GENIE_RELEASE_ROOT={root} bash {staging_root}/release.sh publish {staging}"
+            )
     for _service, option, variable in plan.SERVICE_OPTIONS:
         value = addresses.get(variable, "")
         if value:

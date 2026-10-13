@@ -219,6 +219,10 @@ VERIFY_REDIRECTS = (("/design-canvas/", 301),)
 # `ops/release.sh`, whose root is its parameter — so the release rule has one
 # implementation for two services.
 RELEASE_SCRIPT = "services/genie/ops/release.sh"
+# Where a publish stages on the VPS before release.sh lays it into its root:
+# release.sh copies from a directory on the machine it runs on, and the release
+# script and the two servicetrees travel there over ssh.
+SERVICES_STAGING = "/root/linker-release"
 SERVICES = (
     ("engine", "/opt/linker-engine", "services/engine"),
     ("genie", "/opt/linker-genie", "services/genie"),

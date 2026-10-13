@@ -18,7 +18,7 @@ from types import SimpleNamespace
 import pytest
 
 from linker_cutover import plan, steps
-from linker_cutover.target import CutoverError, Target
+from linker_cutover.target import HOST, CutoverError, Target
 
 
 class FakeTarget(Target):
@@ -622,3 +622,43 @@ def test_a_step_describes_exactly_what_it_did() -> None:
     """A note printed as an action would let a dry run read as a finished window."""
     result = steps.Result("x", ["did a"], ["could not do b"])
     assert result.describe().splitlines() == ["x: did a", "x: note: could not do b"]
+
+
+def test_the_publish_stages_over_ssh_and_runs_there(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """release.sh copies from the machine it runs on, so the publish must too.
+
+    Measured 2026-10-14: the old step ran the publish command with a local
+    bash, which cannot reach /opt on the VPS; the drill never ran step 5.
+    """
+    repository = tmp_path / "repo"
+    for _service, _root, directory in plan.SERVICES:
+        (repository / directory).mkdir(parents=True)
+        (repository / directory / "app.py").write_text("", encoding="utf-8")
+    release = repository / plan.RELEASE_SCRIPT
+    release.parent.mkdir(parents=True)
+    release.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+
+    seen: list[list[str]] = []
+
+    def capture(command: list[str], *args: object, **kwargs: object) -> object:
+        del args, kwargs
+        seen.append(command)
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr("linker_cutover.steps.subprocess.run", capture)
+    steps.services(repository=repository, addresses={}, run=True)
+
+    assert [command[0] for command in seen] == ["rsync", "rsync", "ssh"] * 2
+    engine_tree, engine_script, engine_publish = seen[0], seen[1], seen[2]
+    assert engine_tree[-1] == f"{HOST}:{plan.SERVICES_STAGING}/engine/"
+    assert engine_script[-1] == f"{HOST}:{plan.SERVICES_STAGING}/release.sh"
+    assert engine_publish[-1] == (
+        "GENIE_RELEASE_ROOT=/opt/linker-engine "
+        f"bash {plan.SERVICES_STAGING}/release.sh publish {plan.SERVICES_STAGING}/engine"
+    )
+    assert seen[5][-1] == (
+        "GENIE_RELEASE_ROOT=/opt/linker-genie "
+        f"bash {plan.SERVICES_STAGING}/release.sh publish {plan.SERVICES_STAGING}/genie"
+    )
