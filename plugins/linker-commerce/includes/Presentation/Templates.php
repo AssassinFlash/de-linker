@@ -89,7 +89,7 @@ final class Templates {
 	 * labels) — so the twin gets a German file too.
 	 */
 	private const DE_FILES = array(
-		'is_single_product' => 'de/single_product',
+		'is_single_product'                => 'de/single_product',
 		'is_archive_for_post_type_product' => 'de/archive_product',
 	);
 

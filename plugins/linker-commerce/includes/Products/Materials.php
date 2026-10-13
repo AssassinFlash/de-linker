@@ -1522,6 +1522,14 @@ final class Materials {
 		// facts_product_id listener); without a language layer the asked-for
 		// product answers itself.
 		if ( \function_exists( 'has_filter' ) && \has_filter( 'linker_commerce_facts_product_id' ) ) {
+			/**
+			 * Filters the product the selection facts answer for; documented
+			 * where it is registered (Linker\I18n\Woo\Storefront).
+			 *
+			 * @since 0.1.0
+			 *
+			 * @param int $product_id The product ID asked for.
+			 */
 			$source = (int) \apply_filters( 'linker_commerce_facts_product_id', (int) $product->get_id() );
 			if ( $source > 0 && $source !== (int) $product->get_id() ) {
 				$swapped = \wc_get_product( $source );
