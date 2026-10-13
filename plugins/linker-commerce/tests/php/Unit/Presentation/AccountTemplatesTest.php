@@ -67,6 +67,8 @@ final class AccountTemplatesTest extends TestCase {
 
 	/** The tab only narrows statuses, without replacing Woo's ownership/paging. */
 	public function test_open_tab_keeps_customer_and_pagination(): void {
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( string $value ): string => stripslashes( $value ) ) );
+		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn ( string $value ): string => (string) preg_replace( '/[^a-z0-9_-]/', '', strtolower( $value ) ) ) );
 		$adapter = new AccountTemplates();
 		$query   = array(
 			'customer_id' => 3,
@@ -74,13 +76,58 @@ final class AccountTemplatesTest extends TestCase {
 			'limit'       => 10,
 			'paginate'    => true,
 		);
-		unset( $_GET['inquiries'] );
+		unset( $_GET['inquiry-status'] );
 		$this->assertSame( $query, $adapter->orders_query( $query ) );
-		$_GET['inquiries'] = 'open';
+		$_GET['inquiry-status'] = 'open';
 		try {
 			$this->assertSame( $query + array( 'status' => array( 'inquiry-received', 'proforma-issued' ) ), $adapter->orders_query( $query ) );
 		} finally {
-			unset( $_GET['inquiries'] );
+			unset( $_GET['inquiry-status'] );
+		}
+	}
+
+	/** State shortcuts only narrow Woo's own query; arbitrary states are ignored. */
+	public function test_state_shortcuts_preserve_customer_and_paging(): void {
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( string $value ): string => stripslashes( $value ) ) );
+		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn ( string $value ): string => (string) preg_replace( '/[^a-z0-9_-]/', '', strtolower( $value ) ) ) );
+		$adapter = new AccountTemplates();
+		$query   = array(
+			'customer_id' => 5,
+			'page'        => 2,
+			'limit'       => 10,
+			'paginate'    => true,
+		);
+		try {
+			foreach ( array( 'inquiry-received', 'proforma-issued', 'completed', 'cancelled' ) as $status ) {
+				$_GET['inquiry-status'] = $status;
+				$this->assertSame( $query + array( 'status' => array( $status ) ), $adapter->orders_query( $query ) );
+			}
+			$_GET['inquiry-status'] = 'processing';
+			$this->assertSame( $query, $adapter->orders_query( $query ) );
+			$_GET['inquiry-status'] = array( 'completed' );
+			$this->assertSame( $query, $adapter->orders_query( $query ) );
+		} finally {
+			unset( $_GET['inquiry-status'] );
+		}
+	}
+
+	/** Native page links retain selection instead of silently widening on page two. */
+	public function test_pagination_keeps_selected_state(): void {
+		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( string $value ): string => $value ) );
+		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn ( string $value ): string => $value ) );
+		WP_Mock::userFunction( 'wc_get_endpoint_url', array( 'return' => static fn ( string $endpoint, string $page ): string => 'https://example.test/inquiries/' . $page . '/' ) );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $query, string $url ): string => $url . '?' . http_build_query( $query ) ) );
+		$adapter = new AccountTemplates();
+		$method  = new \ReflectionMethod( $adapter, 'page_url' );
+		try {
+			$_GET['inquiry-status'] = 'cancelled';
+			$this->assertSame( 'https://example.test/inquiries/2/?inquiry-status=cancelled', $method->invoke( $adapter, 2 ) );
+			$_GET['inquiry-status'] = 'open';
+			$this->assertSame( 'https://example.test/inquiries/2/?inquiry-status=open', $method->invoke( $adapter, 2 ) );
+			unset( $_GET['inquiry-status'] );
+			$this->assertSame( 'https://example.test/inquiries/2/', $method->invoke( $adapter, 2 ) );
+		} finally {
+			unset( $_GET['inquiry-status'] );
 		}
 	}
 

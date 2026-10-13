@@ -1,0 +1,566 @@
+[
+	{
+		"name": "overview",
+		"locale": "en",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 399.59375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "inquiries",
+		"locale": "en",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 663.875,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "documents",
+		"locale": "en",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 415.59375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "saved-solutions",
+		"locale": "en",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 424.875,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "company",
+		"locale": "en",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 720,
+			"width": 358,
+			"height": 48
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 399.859375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "account-details",
+		"locale": "en",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 720,
+			"width": 358,
+			"height": 48
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 399.953125,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "inquiry-detail",
+		"locale": "en",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 664.90625,
+			"width": 358,
+			"height": 103.09375
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 400,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "overview",
+		"locale": "de",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 399.59375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "inquiries",
+		"locale": "de",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 679.875,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "documents",
+		"locale": "de",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 415.59375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "saved-solutions",
+		"locale": "de",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 444.875,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "company",
+		"locale": "de",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 720,
+			"width": 358,
+			"height": 48
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 399.859375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "account-details",
+		"locale": "de",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 720,
+			"width": 358,
+			"height": 48
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 399.953125,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "inquiry-detail",
+		"locale": "de",
+		"width": 390,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 664.90625,
+			"width": 358,
+			"height": 103.09375
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 400,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "overview",
+		"locale": "en",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 443.59375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "inquiries",
+		"locale": "en",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 591.734375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "documents",
+		"locale": "en",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 395.59375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "saved-solutions",
+		"locale": "en",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 401.78125,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "company",
+		"locale": "en",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 808,
+			"width": 398,
+			"height": 48
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 443.859375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "account-details",
+		"locale": "en",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 808,
+			"width": 398,
+			"height": 48
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 443.765625,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "inquiry-detail",
+		"locale": "en",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 752.90625,
+			"width": 398,
+			"height": 103.09375
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 444,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "overview",
+		"locale": "de",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 443.59375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "inquiries",
+		"locale": "de",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 659.734375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "documents",
+		"locale": "de",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 415.59375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "saved-solutions",
+		"locale": "de",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": null,
+		"lastBox": {
+			"x": 37,
+			"y": 424.875,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "company",
+		"locale": "de",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 808,
+			"width": 398,
+			"height": 48
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 443.859375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "account-details",
+		"locale": "de",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 808,
+			"width": 398,
+			"height": 48
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 444.375,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	},
+	{
+		"name": "inquiry-detail",
+		"locale": "de",
+		"width": 430,
+		"menuLinks": 7,
+		"navigation": "4 fixed tabs + complete collapsible menu",
+		"minTarget": 44,
+		"gutter": 16,
+		"bottomHeight": 65,
+		"cta": {
+			"x": 16,
+			"y": 752.90625,
+			"width": 398,
+			"height": 103.09375
+		},
+		"lastBox": {
+			"x": 37,
+			"y": 444,
+			"width": 141.046875,
+			"height": 44
+		},
+		"lastContentHit": true
+	}
+]

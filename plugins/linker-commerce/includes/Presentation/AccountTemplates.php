@@ -147,23 +147,34 @@ final class AccountTemplates {
 	}
 
 	/**
-	 * Escaped scalar row values; only Woo's formatted totals and native item
-	 * metadata are HTML (sanitised through the normal Woo HTML allowlist).
+	 * Escaped scalar row values; only Woo's formatted totals and the fragments'
+	 * own assembled markup are HTML (sanitised against the post allowlist plus
+	 * the sidebar icons' SVG, which wp_kses's post list does not carry).
 	 *
 	 * @param array<string, string>|string $atts Attributes.
 	 */
 	public function field( $atts = array() ): string {
 		$key   = (string) ( $atts['key'] ?? '' );
 		$value = $this->row[ $key ] ?? '';
-		if ( 'page-title' === $key ) {
+		if ( in_array( $key, array( 'customer-name', 'customer-initials' ), true ) ) {
+			$user  = wp_get_current_user();
+			$name  = '' !== (string) $user->first_name ? (string) $user->first_name : (string) $user->display_name;
+			$value = 'customer-initials' === $key ? mb_strtoupper( mb_substr( $name, 0, 1 ) ) : $name;
+		} elseif ( 'page-title' === $key ) {
 			$value = is_wc_endpoint_url() ? WC()->query->get_endpoint_title( WC()->query->get_current_endpoint() ) : __( 'Overview', 'linker-commerce' );
+			if ( is_wc_endpoint_url( 'orders' ) && in_array( $this->selected_status(), $this->statuses(), true ) ) {
+				$value .= ' · ' . wc_get_order_status_name( $this->selected_status() );
+			}
 		} elseif ( 'open-url' === $key ) {
-			$value = add_query_arg( 'inquiries', 'open', wc_get_account_endpoint_url( 'orders' ) );
+			$value = add_query_arg( 'inquiry-status', 'open', wc_get_account_endpoint_url( 'orders' ) );
 		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
-			$value = ( 'open-current' === $key ) === $this->open_only() ? 'page' : 'false';
+			$value = ( 'open-current' === $key ? $this->open_only() : '' === $this->selected_status() ) ? 'page' : 'false';
+		}
+		if ( 'icon' === $key ) {
+			return (string) $value; // Fixed SVG from nav_icon() below; never request data.
 		}
 		if ( in_array( $key, array( 'total', 'items', 'nonce', 'tiles', 'rows' ), true ) ) {
-			return 'nonce' === $key ? (string) $value : wp_kses_post( (string) $value );
+			return 'nonce' === $key ? (string) $value : wp_kses( (string) $value, self::allowed_html() );
 		}
 		return in_array( $key, array( 'url', 'open-url', 'report' ), true ) ? esc_url( (string) $value ) : esc_attr( (string) $value );
 	}
@@ -196,6 +207,15 @@ final class AccountTemplates {
 			case 'pagination':
 				do_action( 'woocommerce_before_account_orders_pagination' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
 				break;
+			case 'sidebar':
+				// The sidebar's own slot (the contact person). Pending accounts
+				// read the review page, so — like nav() — they get nothing here.
+				$user_id = get_current_user_id();
+				if ( $user_id > 0 && Approval::PENDING !== ( new Approval() )->status( $user_id ) ) {
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Account module's existing contact slot.
+					do_action( 'linker_account_sidebar' );
+				}
+				break;
 		}
 		return (string) ob_get_clean();
 	}
@@ -216,15 +236,37 @@ final class AccountTemplates {
 	 * the workplace, then the account's own records with sign-out last.
 	 * Current page is Woo's own endpoint, so the highlight follows the
 	 * request. A pending account reads the review page instead of the
-	 * workplace, so it gets no navigation. The shortcode takes no attribute.
+	 * workplace, so it gets no navigation.
+	 *
+	 * @param array<string, string>|string $atts Optional mobile navigation form.
 	 */
-	public function nav(): string {
+	public function nav( $atts = array() ): string {
 		$user_id = get_current_user_id();
 		if ( $user_id <= 0 || Approval::PENDING === ( new Approval() )->status( $user_id ) ) {
 			return '';
 		}
 		$items = wc_get_account_menu_items();
 		$html  = '';
+		if ( in_array( $atts['type'] ?? '', array( 'mobile', 'shortcuts' ), true ) ) {
+			foreach ( array( 'dashboard', 'orders', 'documents', 'edit-account' ) as $endpoint ) {
+				if ( isset( $items[ $endpoint ] ) ) {
+					$current = 'orders' === $endpoint && is_wc_endpoint_url( 'view-order' ) ? 'page' : $this->endpoint_current( $endpoint );
+					if ( 'edit-account' === $endpoint && is_wc_endpoint_url( 'edit-address' ) ) {
+						$current = 'page';
+					}
+					$html .= $this->fragment(
+						'nav-item',
+						array(
+							'url'     => wc_get_account_endpoint_url( $endpoint ),
+							'label'   => 'edit-account' === $endpoint ? __( 'Account', 'linker-commerce' ) : $items[ $endpoint ],
+							'current' => $current,
+							'icon'    => $this->nav_icon( $endpoint ),
+						)
+					);
+				}
+			}
+			return $this->fragment( 'shortcuts' === $atts['type'] ? 'shortcuts' : 'mobile-nav', array( 'items' => $html ) );
+		}
 		foreach ( $this->nav_groups() as $group => $endpoints ) {
 			$links = '';
 			foreach ( $endpoints as $endpoint ) {
@@ -237,6 +279,7 @@ final class AccountTemplates {
 						'url'     => wc_get_account_endpoint_url( $endpoint ),
 						'label'   => $items[ $endpoint ],
 						'current' => $this->endpoint_current( $endpoint ),
+						'icon'    => $this->nav_icon( $endpoint ),
 					)
 				);
 			}
@@ -297,6 +340,77 @@ final class AccountTemplates {
 	}
 
 	/**
+	 * The endpoint's sidebar icon: a fixed Lucide outline per endpoint, stroked
+	 * in currentColor so the active state recolours it from CSS. An endpoint
+	 * another plugin added gets the generic dot.
+	 *
+	 * @param string $endpoint Endpoint.
+	 */
+	private function nav_icon( string $endpoint ): string {
+		$paths = array(
+			'dashboard'       => '<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+			'orders'          => '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+			'saved-solutions' => '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
+			'documents'       => '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+			'edit-address'    => '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+			'edit-account'    => '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+			'customer-logout' => '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+		);
+		$path  = $paths[ $endpoint ] ?? '<circle cx="12" cy="12" r="9"/>';
+		return sprintf(
+			'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="linker-account-nav-icon" aria-hidden="true">%s</svg>',
+			$path // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed markup from the map above.
+		);
+	}
+
+	/**
+	 * WordPress's post allowlist plus the SVG elements of the sidebar icons, so
+	 * the assembled fragment markup (the nav's items) keeps them. Leaf values
+	 * are escaped before assembly, so the icons' fixed markup is the only SVG
+	 * that can ever arrive here.
+	 *
+	 * @return array<string, array<string, bool>>
+	 */
+	private static function allowed_html(): array {
+		$svg = array(
+			'svg'      => array(
+				'xmlns'           => true,
+				'viewbox'         => true,
+				'fill'            => true,
+				'stroke'          => true,
+				'stroke-width'    => true,
+				'stroke-linecap'  => true,
+				'stroke-linejoin' => true,
+				'class'           => true,
+				'aria-hidden'     => true,
+				'width'           => true,
+				'height'          => true,
+			),
+			'rect'     => array(
+				'width'  => true,
+				'height' => true,
+				'x'      => true,
+				'y'      => true,
+				'rx'     => true,
+			),
+			'path'     => array( 'd' => true ),
+			'circle'   => array(
+				'cx' => true,
+				'cy' => true,
+				'r'  => true,
+			),
+			'line'     => array(
+				'x1' => true,
+				'x2' => true,
+				'y1' => true,
+				'y2' => true,
+			),
+			'polyline' => array( 'points' => true ),
+		);
+		return array_merge( wp_kses_allowed_html( 'post' ), $svg );
+	}
+
+	/**
 	 * Whether the endpoint is the page being read: "page" or "false", the
 	 * values the fragments' aria-current attribute takes.
 	 *
@@ -316,6 +430,9 @@ final class AccountTemplates {
 	 */
 	public function text( $atts = array() ): string {
 		$labels = array(
+			'welcome'         => __( 'Welcome back', 'linker-commerce' ),
+			'workspace'       => __( 'Your account workspace', 'linker-commerce' ),
+			'menu'            => __( 'Account menu', 'linker-commerce' ),
 			'overview'        => __( 'Overview', 'linker-commerce' ),
 			'inquiries'       => __( 'Inquiries', 'linker-commerce' ),
 			'all'             => __( 'All inquiries', 'linker-commerce' ),
@@ -324,6 +441,7 @@ final class AccountTemplates {
 			'number'          => __( 'Inquiry', 'linker-commerce' ),
 			'date'            => __( 'Date', 'linker-commerce' ),
 			'amount'          => __( 'Amount', 'linker-commerce' ),
+			'actions'         => __( 'Actions', 'linker-commerce' ),
 			'view'            => __( 'View', 'linker-commerce' ),
 			'document'        => __( 'Document', 'linker-commerce' ),
 			'download'        => __( 'Download (PDF)', 'linker-commerce' ),
@@ -364,7 +482,7 @@ final class AccountTemplates {
 						$html .= $this->fragment( 'inquiry-card', $this->order_row( $order ) );
 					}
 				}
-				return '' === $html ? $this->fragment( 'empty' ) : $html;
+				return '' === $html ? $this->fragment( 'empty-inquiries' ) : $html;
 			case 'actions':
 				$order = $this->row['order'] ?? null;
 				if ( $order instanceof WC_Order ) {
@@ -401,6 +519,7 @@ final class AccountTemplates {
 							array(
 								'label'   => wc_get_order_status_name( $status ),
 								'current' => $order->has_status( $status ) ? 'step' : 'false',
+								'status'  => $status,
 							)
 						);
 					}
@@ -462,7 +581,7 @@ final class AccountTemplates {
 					$html .= $this->fragment(
 						'page-link',
 						array(
-							'url'  => wc_get_endpoint_url( 'orders', (string) ( $current - 1 ) ),
+							'url'  => $this->page_url( $current - 1 ),
 							'name' => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
 						)
 					);
@@ -471,7 +590,7 @@ final class AccountTemplates {
 					$html .= $this->fragment(
 						'page-link',
 						array(
-							'url'  => wc_get_endpoint_url( 'orders', (string) ( $current + 1 ) ),
+							'url'  => $this->page_url( $current + 1 ),
 							'name' => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
 						)
 					);
@@ -499,7 +618,7 @@ final class AccountTemplates {
 					'status' => $status,
 					'title'  => wc_get_order_status_name( $status ),
 					'count'  => count( $of_status ),
-					'url'    => wc_get_account_endpoint_url( 'orders' ),
+					'url'    => add_query_arg( array( 'inquiry-status' => $status ), wc_get_account_endpoint_url( 'orders' ) ),
 				)
 			);
 		}
@@ -559,14 +678,35 @@ final class AccountTemplates {
 	public function orders_query( array $query ): array {
 		if ( $this->open_only() ) {
 			$query['status'] = array( Statuses::RECEIVED, Statuses::PROFORMA );
+		} else {
+			$status = $this->selected_status();
+			if ( in_array( $status, $this->statuses(), true ) ) {
+				$query['status'] = array( $status );
+			}
 		}
 		return $query;
 	}
 
 	/** Read-only list selection, never an action or a mutation. */
 	private function open_only(): bool {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
-		return isset( $_GET['inquiries'] ) && 'open' === $_GET['inquiries'];
+		return 'open' === $this->selected_status();
+	}
+
+	/** Validated selection shared by the heading, tabs, query and pagination. */
+	private function selected_status(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only filter.
+		$status = isset( $_GET['inquiry-status'] ) && is_string( $_GET['inquiry-status'] ) ? sanitize_key( wp_unslash( $_GET['inquiry-status'] ) ) : '';
+		return in_array( $status, array_merge( $this->statuses(), array( 'open' ) ), true ) ? $status : '';
+	}
+
+	/**
+	 * Woo page URL, retaining the current status selection.
+	 *
+	 * @param int $page Page number.
+	 */
+	private function page_url( int $page ): string {
+		$url = wc_get_endpoint_url( 'orders', (string) $page );
+		return '' === $this->selected_status() ? $url : add_query_arg( array( 'inquiry-status' => $this->selected_status() ), $url );
 	}
 
 	/**

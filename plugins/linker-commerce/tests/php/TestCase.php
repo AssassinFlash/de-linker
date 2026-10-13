@@ -47,9 +47,10 @@ abstract class TestCase extends WP_Mock\Tools\TestCase {
 	 * Lets translation and escaping functions return (or print) their first argument.
 	 */
 	protected function plain_text(): void {
-		foreach ( array( '__', '_x', 'esc_html__', 'esc_attr__', 'esc_html_x', 'esc_html', 'esc_attr', 'esc_url', 'esc_url_raw', 'wp_kses_post' ) as $function ) {
+		foreach ( array( '__', '_x', 'esc_html__', 'esc_attr__', 'esc_html_x', 'esc_html', 'esc_attr', 'esc_url', 'esc_url_raw', 'wp_kses_post', 'wp_kses' ) as $function ) {
 			WP_Mock::passthruFunction( $function );
 		}
+		WP_Mock::userFunction( 'wp_kses_allowed_html', array( 'return' => array() ) );
 		foreach ( array( '_e', 'esc_html_e', 'esc_attr_e' ) as $function ) {
 			WP_Mock::echoFunction( $function );
 		}

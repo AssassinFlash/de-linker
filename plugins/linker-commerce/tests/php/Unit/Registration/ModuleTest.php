@@ -81,6 +81,8 @@ final class ModuleTest extends TestCase {
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 		WP_Mock::expectFilterAdded( 'wp_authenticate_user', array( new WP_Mock\Matcher\AnyInstance( Approval::class ), 'gate_login' ) );
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectFilterAdded( 'login_errors', array( new WP_Mock\Matcher\AnyInstance( Approval::class ), 'login_errors' ), 20 );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 		WP_Mock::expectFilterAdded( 'manage_users_columns', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'column_header' ) );
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 		WP_Mock::expectFilterAdded( 'manage_users_custom_column', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'column_cell' ), 10, 3 );

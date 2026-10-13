@@ -994,6 +994,14 @@ msgstr "Storniert"
 msgid "Queued emails"
 msgstr "E-Mails in der Warteschlange"
 
+#: includes/Presentation/AccountTemplates.php
+msgid "Welcome back"
+msgstr "Willkommen zurück"
+
+#: includes/Presentation/AccountTemplates.php
+msgid "Your account workspace"
+msgstr "Ihr persönlicher Arbeitsbereich"
+
 #: includes/Presentation/AccountTemplates.php:248
 msgid "Account menu"
 msgstr "Kontomenü"
