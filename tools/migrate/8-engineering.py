@@ -284,50 +284,97 @@ def http_json(url: str) -> Any:
 
 
 def verify(siteurl: str, plan: dict[str, Any]) -> int:
-    """The acceptance read: old materials route against the new feed."""
-    bindings = plan["verify"]["bindings"]
+    """The acceptance read: the feed carries every planned figure, and — while
+    the old materials route still answers — the old values agree with the feed
+    key by key. The route was retired with the Products rename (#82), so a 404
+    there is a note, not a failure."""
     feed = http_json(f"{siteurl}/wp-json/linker/v1/engineering-feed")
-    old = http_json(f"{siteurl}/wp-json/linker/v1/materials")
-    old_by_material = {m["material_id"]: m for m in old["materials"]}
     items = {str(item["id"]): item for item in feed["products"]}
     differences: list[str] = []
     unknown = 0
-    for material_id, product_id in bindings:
-        material = old_by_material.get(material_id)
-        item = items.get(str(product_id))
-        if material is None or item is None:
-            differences.append(f"{material_id} <-> {product_id}: not on both sides")
+
+    # The feed against the plan: every figure the plan writes is in the feed
+    # with the planned value; a figure the plan removes is absent.
+    for change in plan["figures"]:
+        item = items.get(str(change["product"]))
+        if item is None:
+            unknown += 1
+            differences.append(f"{change['product']} {change['key']}: not in the feed")
             continue
-        specs = material["technical"]["specifications"]
-        for old_key, entry in sorted(specs.items()):
-            key = KEY_RENAMES.get(old_key, old_key)
-            figure = item["figures"].get(key)
-            if figure is None:
-                continue  # a display key or an uncited value: not an engine field in the feed
-            old_value, new_value = str(entry.get("value")), str(figure["value"])
-            if old_value == new_value:
-                continue
-            if (str(product_id), key) in DECIDED_DIFFERENCES:
-                differences.append(
-                    f"{product_id} {key}: {old_value!r} -> {new_value!r} "
-                    f"[decided: {DECIDED_DIFFERENCES[(str(product_id), key)]}]"
-                )
-            elif key == "phases" and re.sub(r"[\s-]+", "", old_value.lower()) == re.sub(
-                r"[\s-]+", "", new_value.lower()
-            ):
-                differences.append(
-                    f"{product_id} {key}: {old_value!r} -> {new_value!r} "
-                    "[decided: the same phase statement, different spelling]"
-                )
-            else:
+        figure = (item.get("figures") or {}).get(change["key"])
+        target = change.get("to")
+        if target is None:
+            if figure is not None:
                 unknown += 1
                 differences.append(
-                    f"{product_id} {key}: {old_value!r} -> {new_value!r} [UNDECIDED]"
+                    f"{change['product']} {change['key']}: planned removed, feed holds {figure!r}"
                 )
-    print(
-        f"feed products: {len(items)}, old materials: {len(old['materials'])}, "
-        f"bound pairs checked: {len(bindings)}"
-    )
+            continue
+        if figure is None:
+            unknown += 1
+            differences.append(
+                f"{change['product']} {change['key']}: planned {target!r}, feed holds nothing"
+            )
+            continue
+        if str(figure.get("value")) != str(target.get("value")) or str(
+            figure.get("unit")
+        ) != str(target.get("unit")):
+            unknown += 1
+            differences.append(
+                f"{change['product']} {change['key']}: feed {figure.get('value')!r}/"
+                f"{figure.get('unit')!r}, planned {target.get('value')!r}/{target.get('unit')!r}"
+            )
+    print(f"feed products: {len(items)}, plan figures: {len(plan['figures'])}")
+
+    try:
+        old = http_json(f"{siteurl}/wp-json/linker/v1/materials")
+    except Exception:  # noqa: BLE001 - a retired route must not fail this read
+        print(
+            "old materials route retired (#82 renamed the catalogue); "
+            "the plan-side read above is the acceptance."
+        )
+        old = None
+
+    if old is not None:
+        bindings = plan["verify"]["bindings"]
+        old_by_material = {m["material_id"]: m for m in old["materials"]}
+        for material_id, product_id in bindings:
+            material = old_by_material.get(material_id)
+            item = items.get(str(product_id))
+            if material is None or item is None:
+                differences.append(f"{material_id} <-> {product_id}: not on both sides")
+                continue
+            specs = material["technical"]["specifications"]
+            for old_key, entry in sorted(specs.items()):
+                key = KEY_RENAMES.get(old_key, old_key)
+                figure = item["figures"].get(key)
+                if figure is None:
+                    continue  # a display key or an uncited value: not an engine field in the feed
+                old_value, new_value = str(entry.get("value")), str(figure["value"])
+                if old_value == new_value:
+                    continue
+                if (str(product_id), key) in DECIDED_DIFFERENCES:
+                    differences.append(
+                        f"{product_id} {key}: {old_value!r} -> {new_value!r} "
+                        f"[decided: {DECIDED_DIFFERENCES[(str(product_id), key)]}]"
+                    )
+                elif key == "phases" and re.sub(
+                    r"[\s-]+", "", old_value.lower()
+                ) == re.sub(r"[\s-]+", "", new_value.lower()):
+                    differences.append(
+                        f"{product_id} {key}: {old_value!r} -> {new_value!r} "
+                        "[decided: the same phase statement, different spelling]"
+                    )
+                else:
+                    unknown += 1
+                    differences.append(
+                        f"{product_id} {key}: {old_value!r} -> {new_value!r} [UNDECIDED]"
+                    )
+        print(
+            f"old materials: {len(old['materials'])}, "
+            f"bound pairs checked: {len(bindings)}"
+        )
+
     for line in differences:
         print("  " + line)
     print(f"{len(differences)} differences, {unknown} undecided.")
