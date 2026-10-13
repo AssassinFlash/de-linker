@@ -87,7 +87,11 @@ function parkTestMailRewrite(): void {
 	}
 	parkedTestMailTo = null;
 	try {
-		const saved = wp(['option', 'get', 'linker_commerce_test_mail_to']).trim();
+		const saved = wp([
+			'option',
+			'get',
+			'linker_commerce_test_mail_to',
+		]).trim();
 		if (saved !== '') {
 			parkedTestMailTo = saved;
 			wp(['option', 'delete', 'linker_commerce_test_mail_to']);
@@ -100,7 +104,12 @@ function parkTestMailRewrite(): void {
 /** Puts the operator's setting back after the run. */
 function restoreTestMailRewrite(): void {
 	if (parkedTestMailTo !== undefined && parkedTestMailTo !== null) {
-		wp(['option', 'update', 'linker_commerce_test_mail_to', parkedTestMailTo]);
+		wp([
+			'option',
+			'update',
+			'linker_commerce_test_mail_to',
+			parkedTestMailTo,
+		]);
 	}
 }
 
