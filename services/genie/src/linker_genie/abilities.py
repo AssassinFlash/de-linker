@@ -97,7 +97,12 @@ class AbilityClient:
     ) -> Any:
         if name not in ABILITY_NAMES:
             raise AbilityError(f"unknown ability {name}")
-        path = f"/wp-json/wp-abilities/v1/abilities/{quote(name, safe='')}/run"
+        # The slash in `linker/search-products` stays raw: the production site
+        # sits behind LiteSpeed, which answers an encoded slash with 404
+        # (measured 2026-10-14: `linker%2Fsearch-products` 404, the raw path
+        # 200), and every ability name carries one. The name is checked against
+        # the allowlist above, so nothing unquoted can slip through.
+        path = f"/wp-json/wp-abilities/v1/abilities/{quote(name, safe='/')}/run"
         # Read-only abilities take GET; the input rides as nested query params,
         # which the abilities REST controller reads back as `input`.
         params: dict[str, Any] = {}

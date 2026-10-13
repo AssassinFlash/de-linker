@@ -180,3 +180,17 @@ def test_a_4xx_answer_is_final_and_never_retried() -> None:
         client.run("linker/search-products", {})
     assert len(recorder.requests) == 1
     assert clock.waits == []
+
+
+def test_the_ability_name_keeps_its_slash_raw() -> None:
+    """LiteSpeed answers an encoded slash with 404 (measured 2026-10-14).
+
+    Every ability name carries one (`linker/search-products`), and the
+    production site sits behind that server — the raw path is what answers.
+    """
+    recorder = Recorder()
+    client_for(recorder).run("linker/search-products", {"text": "GoodWe"})
+
+    raw = recorder.requests[0].url.raw_path.decode()
+    assert "/abilities/linker/search-products/run" in raw
+    assert "%2F" not in raw
