@@ -1,10 +1,13 @@
 /**
- * The header's menu images load when their menu opens: the partials carry
- * them as data-src/data-srcset, and this script hydrates the images of a
- * menu the visitor opens (hover, touch, keyboard or focus) — before any
- * open, the network panel shows no menu image request (#12, old ticket
- * 193). The image tags keep their size and density attributes, so the
- * rendered ratio and sharpness are the partials' own.
+ * Fallback hydrator for deferred menu images. The header's thumbnails
+ * resolve through their own src again (debt family 12: the deferred
+ * data-src form left empty boxes wherever the open event never fired),
+ * and this script stays until a running instance proves the visual
+ * parity without it. It keeps the data-src/data-srcset contract for any
+ * markup that reintroduces the deferred form: it hydrates the images of
+ * a menu the visitor opens (hover, touch, keyboard or focus). The image
+ * tags keep their size and density attributes, so the rendered ratio
+ * and sharpness are the partials' own.
  */
 ( function () {
 	'use strict';
