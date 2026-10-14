@@ -39,27 +39,31 @@ REMOTE = (
 LOCAL = "/Users/x/de-linker-local/t12/wp.sh"
 
 
-def _capture(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, object]]:
-    seen: list[dict[str, object]] = []
+def _capture(monkeypatch: pytest.MonkeyPatch) -> tuple[list[list[str]], list[str]]:
+    """The commands run and the stdin each carried, in order."""
+    commands: list[list[str]] = []
+    inputs: list[str] = []
 
     def capture(command: list[str], **kwargs: object) -> object:
-        seen.append({"command": list(command), **kwargs})
+        commands.append(list(command))
+        stdin = kwargs.get("input")
+        inputs.append(stdin if isinstance(stdin, str) else "")
         return SimpleNamespace(returncode=0, stdout="{}", stderr="")
 
     monkeypatch.setattr("subprocess.run", capture)
-    return seen
+    return commands, inputs
 
 
 def test_a_remote_title_with_spaces_travels_as_one_word(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    seen = _capture(monkeypatch)
+    commands, _ = _capture(monkeypatch)
     title = "Genie - Linker's AI assistant"
     chrome.WP(REMOTE, user="admin").run(
         "post", "update", "4083", f"--post_title={title}", as_user=True
     )
 
-    command = seen[0]["command"]
+    command = commands[0]
     assert command[:4] == ["ssh", "-o", "BatchMode=yes", "hostinger-de-linker"]
     assert shlex.quote(f"--post_title={title}") in command[4]
 
@@ -68,18 +72,18 @@ def test_the_php_travels_on_standard_input_not_as_a_local_path(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A temp path exists on this machine; the remote WP-CLI cannot open it."""
-    seen = _capture(monkeypatch)
+    commands, inputs = _capture(monkeypatch)
     chrome.WP(REMOTE, user=None).eval_php("echo 1;", {"a": 1})
 
-    command = seen[0]["command"]
+    command = commands[0]
     assert "eval-file" in command[4]
     assert command[4].endswith(" -") or " - " in command[4], "eval-file reads stdin"
-    assert seen[0]["input"].startswith("<?php\n")
-    assert "/var/folders" not in seen[0]["input"]
+    assert inputs[0].startswith("<?php\n")
+    assert "/var/folders" not in inputs[0]
 
 
 def test_a_local_prefix_keeps_argv_semantics(monkeypatch: pytest.MonkeyPatch) -> None:
-    seen = _capture(monkeypatch)
+    commands, _ = _capture(monkeypatch)
     chrome.WP(LOCAL, user=None).run("post", "update", "4083", "--post_name=genie")
 
-    assert seen[0]["command"] == [LOCAL, "post", "update", "4083", "--post_name=genie"]
+    assert commands[0] == [LOCAL, "post", "update", "4083", "--post_name=genie"]

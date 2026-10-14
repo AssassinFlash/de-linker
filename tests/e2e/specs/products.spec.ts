@@ -191,7 +191,10 @@ test.describe('the products', () => {
 			// the price element rather than the page text: the body carries a
 			// freight estimate (14,90 €) whose digits would otherwise satisfy
 			// any body-wide match, price or not.
-			const priceText = await page.locator('.pdp-price').first().innerText();
+			const priceText = await page
+				.locator('.pdp-price')
+				.first()
+				.innerText();
 			expect(priceText, 'the customer sees a price').toMatch(PRICE);
 			// An amount, not a placeholder: four digits or more once the
 			// separators are gone (1.234,56 € or €1,234.56 — a battery module is
