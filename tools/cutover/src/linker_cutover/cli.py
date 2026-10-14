@@ -200,9 +200,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "verify":
             result = steps.verify(target, cache_buster=_cache_buster())
             _print(result)
+            notes = list(result.notes)
+            if args.target is None:
+                # Production only (#145): no local instance is connected to Google.
+                ownership = steps.search_console(target)
+                _print(ownership)
+                notes += ownership.notes
             # A note is a check that failed: the window must not read a 200-only
             # page list as a pass when the redirect or a German page is wrong.
-            return 1 if result.notes else 0
+            return 1 if notes else 0
         if args.command == "rollback":
             result = steps.rollback(target, backup=_backup(target, args))
             _print(result)

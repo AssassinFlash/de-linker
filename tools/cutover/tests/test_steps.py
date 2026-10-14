@@ -777,3 +777,79 @@ def test_the_publish_stages_over_ssh_and_runs_there(
         "GENIE_RELEASE_ROOT=/opt/linker-genie "
         f"bash {plan.SERVICES_STAGING}/release.sh publish {plan.SERVICES_STAGING}/genie"
     )
+
+
+class _SiteKit(_Pages):
+    """A site whose Site Kit state is a few canned WP-CLI answers."""
+
+    def __init__(  # noqa: D107 - a fixture, not a public type
+        self, root: Path, *, active: bool, settings: str, token: str, served: bool
+    ) -> None:
+        super().__init__(root, {})
+        self.active = active
+        self.settings = settings
+        self.token = token
+        self.served = served
+
+    def wp(self, *args: str, check: bool = True) -> str:  # noqa: D102 - canned answers
+        del check
+        if args[:2] == ("plugin", "list"):
+            status = "active" if self.active else "inactive"
+            return json.dumps([{"name": plan.SITE_KIT, "status": status}])
+        if args[:2] == ("option", "get"):
+            return self.settings
+        if args[:2] == ("db", "prefix"):
+            return "wp_"
+        if args[:3] == ("user", "meta", "get"):
+            assert args[3:] == ("1", "wp_" + plan.SITE_KIT_VERIFICATION_FILE_META)
+            return self.token
+        raise AssertionError(args)
+
+    def http(  # noqa: D102 - canned answers
+        self, path: str, *, cache_buster: str | None = None
+    ) -> tuple[int, str]:
+        assert cache_buster is None, "Site Kit serves the exact path only"
+        if self.served and path == f"/google{self.token}.html":
+            return 200, f"google-site-verification: google{self.token}.html"
+        return 404, "not found"
+
+
+_CONNECTED = json.dumps({"propertyID": plan.SEARCH_CONSOLE_PROPERTY, "ownerID": 1})
+
+
+def test_a_connected_site_kit_serving_its_file_passes(tmp_path: Path) -> None:
+    """The state 2026-10-14 left: active, connected, the file served."""
+    site = _SiteKit(
+        tmp_path, active=True, settings=_CONNECTED, token="abc", served=True
+    )
+    result = steps.search_console(site)
+    assert result.notes == []
+    assert "GET /googleabc.html -> 200" in result.actions
+
+
+@pytest.mark.parametrize(
+    ("active", "settings", "token", "served", "note"),
+    [
+        (False, _CONNECTED, "abc", True, "is not active"),
+        (True, "", "abc", True, "is not connected"),
+        (
+            True,
+            json.dumps({"propertyID": "sc-domain:x", "ownerID": 1}),
+            "abc",
+            True,
+            "is not connected",
+        ),
+        (True, "PHP Notice: x\n{}", "abc", True, "did not parse"),
+        (True, _CONNECTED, "", True, "holds no Site Kit verification file token"),
+        (True, _CONNECTED, "abc", False, "does not serve the verification token"),
+    ],
+)
+def test_each_way_of_losing_the_verification_is_a_note(
+    tmp_path: Path, active: bool, settings: str, token: str, served: bool, note: str
+) -> None:
+    """A rollback, a cleanup or a reset all still answer 200 on every page."""
+    site = _SiteKit(
+        tmp_path, active=active, settings=settings, token=token, served=served
+    )
+    result = steps.search_console(site)
+    assert len(result.notes) == 1 and note in result.notes[0]

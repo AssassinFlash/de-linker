@@ -704,6 +704,72 @@ def verify(target: Target, *, cache_buster: str) -> Result:
     return Result("verify", actions, notes)
 
 
+def search_console(target: Target) -> Result:
+    """The site is still a verified Search Console property (#145).
+
+    Site Kit holds the verification: a virtual file `/google<token>.html`
+    whose token is a user option of the administrator who connected it. A
+    rollback to an older backup, a plugin cleanup or a Site Kit reset takes it
+    away while every page still answers 200, and Search Console unverifies the
+    owner a grace period later. The file is read without a cache-buster —
+    Site Kit serves the exact path only, and that is what Google requests.
+    Production only: a local instance is never connected to Google.
+    """
+    actions: list[str] = []
+
+    def failed(note: str) -> Result:
+        return Result(plan.SEARCH_CONSOLE_STEP, actions, [note])
+
+    active = any(
+        entry.get("status") == "active"
+        for entry in target.wp_json(
+            "plugin", "list", f"--name={plan.SITE_KIT}", "--fields=name,status"
+        )
+    )
+    actions.append(f"{plan.SITE_KIT} active: {active}")
+    if not active:
+        return failed(
+            f"{plan.SITE_KIT} is not active — Search Console loses its verification"
+        )
+    raw = target.wp(
+        "option",
+        "get",
+        plan.SITE_KIT_SEARCH_CONSOLE_OPTION,
+        "--format=json",
+        check=False,
+    )
+    try:
+        settings = json.loads(raw) if raw else {}
+    except json.JSONDecodeError:
+        return failed(
+            f"{plan.SITE_KIT_SEARCH_CONSOLE_OPTION} did not parse: {raw[:200]!r}"
+        )
+    if not isinstance(settings, dict):
+        settings = {}
+    owner = settings.get("ownerID")
+    actions.append(
+        f"Search Console property: {settings.get('propertyID')} (owner user {owner})"
+    )
+    if settings.get("propertyID") != plan.SEARCH_CONSOLE_PROPERTY or not owner:
+        return failed(f"Site Kit is not connected to {plan.SEARCH_CONSOLE_PROPERTY}")
+    token = target.wp(
+        "user",
+        "meta",
+        "get",
+        str(owner),
+        table_prefix(target) + plan.SITE_KIT_VERIFICATION_FILE_META,
+        check=False,
+    ).strip()
+    if not token:
+        return failed(f"user {owner} holds no Site Kit verification file token")
+    path = f"/google{token}.html"
+    status, body = target.http(path, cache_buster=None)
+    actions.append(f"GET {path} -> {status}")
+    if status != 200 or f"google{token}.html" not in body:
+        return failed(f"{path} does not serve the verification token")
+    return Result(plan.SEARCH_CONSOLE_STEP, actions, [])
+
+
 # The blocks a page declares as JSON-LD. WordPress writes the `type` attribute
 # quoted and in either style, and not always first, so neither is assumed here.
 _LD_JSON = re.compile(
