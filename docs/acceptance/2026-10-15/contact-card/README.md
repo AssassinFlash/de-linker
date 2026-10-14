@@ -72,7 +72,7 @@ link    { color: rgb(12,127,115) = --proto-teal-600, text-decoration: underline,
 本轮 `wp option update wp_page_for_privacy_policy 1673` 后链接出现，上表即其量值；
 `underline` 工具类同族失效的问题因此不再影响本行（样式在卡的表里）。
 
-## 上一轮那处异常：实测根因（本轮量到，替换上一轮的"成因不追"）
+## 上一轮那处异常：实测根因（本轮量到并改写该节）
 
 **现象**：第一轮编译后量到提交条 167px、`.linker-form-submit` 计算 `display: block`；
 本轮量到同意行 15px / 13×13 方框，而标记声明的是 12px（`text-xs`）与 4px（`mt-1`）。
