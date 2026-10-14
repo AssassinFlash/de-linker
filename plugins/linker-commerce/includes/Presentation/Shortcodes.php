@@ -66,6 +66,13 @@ final class Shortcodes {
 	 * Placement selects the chrome's own class (header, mobile header,
 	 * footer).
 	 *
+	 * The site chrome prints the default words. The blog templates call the
+	 * same shortcode for their own contact button and pass the words the live
+	 * band carries: `label` for English, `label_de` for German — the pair is
+	 * how one template that both languages render (the search face's) reaches
+	 * both. A call that passes no label keeps the chrome's default, so the
+	 * header and footer partials are unaffected.
+	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
 	public function contact_link( $atts = array() ): string {
@@ -73,6 +80,8 @@ final class Shortcodes {
 			array(
 				'placement' => 'header',
 				'class'     => '',
+				'label'     => '',
+				'label_de'  => '',
 			),
 			(array) $atts
 		);
@@ -96,7 +105,32 @@ final class Shortcodes {
 				);
 			}
 		}
-		return '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( $url ) . '">' . esc_html__( 'Contact Linker', 'linker-commerce' ) . '</a>';
+		return '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( $url ) . '">' . esc_html( self::contact_link_label( (string) $attributes['label'], (string) $attributes['label_de'] ) ) . '</a>';
+	}
+
+	/**
+	 * A contact link's words: the German label on a German page, the English
+	 * one otherwise, the chrome's default when the call passes neither.
+	 *
+	 * The attributes arrive as the stored template wrote them; LiveCanvas
+	 * renders the template's HTML through wptexturize, so an arrow reaches
+	 * this method as `&rarr;` and is decoded before it is printed.
+	 *
+	 * @param string $label    The English label, empty when the call has none.
+	 * @param string $label_de The German label, empty when the call has none.
+	 */
+	private static function contact_link_label( string $label, string $label_de ): string {
+		$german = function_exists( 'pll_current_language' ) && 'de' === pll_current_language();
+		$chosen = trim( $german ? $label_de : $label );
+		if ( '' === $chosen ) {
+			// A call that passes only one of the two words still speaks: the
+			// one it passed.
+			$chosen = '' !== trim( $label ) ? trim( $label ) : trim( $label_de );
+		}
+		if ( '' === $chosen ) {
+			return (string) __( 'Contact Linker', 'linker-commerce' );
+		}
+		return html_entity_decode( $chosen, ENT_QUOTES, 'UTF-8' );
 	}
 
 	/**
