@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools;
 
+use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
@@ -35,6 +36,7 @@ final class Plugin {
 	 * @param UserContext   $user_context  The customer-identity seam.
 	 * @param WindPress     $windpress     Scan provider for the entries' Tailwind classes.
 	 * @param Mount         $mount         The Solution Configurator's mount point.
+	 * @param EngineProxy   $engine_proxy  The same-origin route to the sizing engine.
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -46,7 +48,8 @@ final class Plugin {
 		private readonly Retention $retention,
 		private readonly UserContext $user_context,
 		private readonly WindPress $windpress,
-		private readonly Mount $mount
+		private readonly Mount $mount,
+		private readonly EngineProxy $engine_proxy
 	) {}
 
 	/**
@@ -57,6 +60,7 @@ final class Plugin {
 		add_action( 'init', array( $this->assets, 'load_text_domain' ) );
 		add_action( 'init', array( $this->conversations, 'register' ) );
 		add_action( 'rest_api_init', array( $this->proxy, 'register' ) );
+		add_action( 'rest_api_init', array( $this->engine_proxy, 'register' ) );
 		$this->redirects->register();
 		$this->site_chrome->register();
 		$this->entries->register();

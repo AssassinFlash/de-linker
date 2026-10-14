@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Tests\Unit;
 
 use Linker\Tools\Assets;
+use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
@@ -63,11 +64,13 @@ final class PluginTest extends TestCase {
 		};
 		$windpress     = new WindPress();
 		$mount         = new Mount();
+		$engine        = new EngineProxy();
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
 		WP_Mock::expectActionAdded( 'init', array( $conversations, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $proxy, 'register' ) );
+		WP_Mock::expectActionAdded( 'rest_api_init', array( $engine, 'register' ) );
 		// Priority 1: the retired addresses answer ahead of WordPress's own
 		// canonical redirects (Redirects::register()).
 		WP_Mock::expectActionAdded( 'template_redirect', WP_Mock\Functions::type( 'Closure' ), 1 );
@@ -86,7 +89,7 @@ final class PluginTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'register_deactivation_hook' );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );
