@@ -54,7 +54,6 @@ button{ width: 644, justify: space-between }   # 644 = 卡内宽 − 2×32，通
 （`.linker-form-submit{display:grid}`、`.linker-form-consent{display:flex;align-items:flex-start}`），
 符合 AGENTS §5"样式只在 WindPress"。修后按钮宽 644（= 卡内宽 − 2×32），EN/DE 两侧一致。
 
-对照探针（同实例、修后）：在页面里新建 `div.grid` / `div.flex` 读到 `grid` / `flex`，
-`a.underline` 读到 `underline`——工具类本身在该环境可用；上面那一轮为何没落到元素上未定，
-不写成结论。本票只保证**卡的布局不依赖它**（这就是本节的关闭方式：卡自身的规则已覆盖
-需要的那几处，渲染实测通过）。
+对照探针（同实例、修后，见 `probe-card.mjs` 的 `controlProbe`）：在页面里新建
+`div.grid` / `div.flex` 读到 `grid` / `flex`——工具类在该环境可用，故上面那一轮的读数
+不写成"工具类不可用"的结论。成因不追（卡的布局已自带规则、渲染实测通过，本项以此关闭）。
