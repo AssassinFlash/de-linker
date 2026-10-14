@@ -206,3 +206,20 @@ CN=linker-design-engine）。浏览器无法钉扎，需其一：
 `Plugin` 构造为固定类型参数导致新组件未被接线（首次调用 404，a5cc8b0 前后两提交）；`WP_REST_Response::get_header()`
 在核心不存在（测试双簧自造的方法骗过了单测，线上 500——错误记录器首日即定位到行，修理并让双簧镜像核心）。
 **DNS/Let's Encrypt 路线不再必需**（保留为日后管理面 TLS 正规化的可选项）。
+
+## 欠账盘点与手动项闭合（2026-10-14 晚，全部自理）
+
+业主 MCP 认证恢复后，spec §6 的两项 MANUAL 均已用 Hostinger API 自理关闭，无需业主点击：
+
+- **hPanel 每分钟 cron**：`hosting_cron-jobs_create` 建 `* * * * *` 任务
+  `/usr/local/bin/wp --path=… cron event run --due-now --quiet`（uid `fesXZNtJ0u`，list 读回一致）。
+  **运行证据**（非仅安装）：`wp_version_check` 的 next_run 从 "2 分钟 3 秒" 跳到 "11 小时 59 分钟"、
+  `wp_privacy_delete_old_export_files` 从 "2 分钟" 跳到 "59 分钟"——到点执行并重排，机器在跑。
+- **LiteSpeed 整页缓存**：插件本体未安装（API 读得 `is_installed:false`，与 `wp litespeed-purge` 未注册一致）；
+  服务器级缓存以 `hosting_cache_clear-website` 清除（"Request accepted"），清后站点 200 复测通过。
+- **i18n 的 "5 未同步" 审计**：4 个 `needs_review`（英文侧在德语手编后被改：/de/、footer、/de/loesung/ 等）
+  与 2 个 `pending`（归档/单品德语孪生等自动翻译，站点无 DeepSeek key）**均为插件自身台账**——实质核验：
+  德语 header/footer/归档/单品四件与仓库语言源文件**逐一 IDENTICAL**（规范化后）， /de/ 与 /de/loesung/
+  渲染抽查均为德语（无英文回退）。无需动作；日后若要自动翻译再谈 key。
+- **旁注**：Hostinger 账号下另有一个沉睡的 `staging.de-linker.com` WordPress 安装（旧项目时期，
+  标题仍为 TerraVolt）；该域名**不解析**（从 VPS 侧 `getent hosts` 无记录），非公开面，仅记录。
