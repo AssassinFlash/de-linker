@@ -223,3 +223,6 @@ CN=linker-design-engine）。浏览器无法钉扎，需其一：
   渲染抽查均为德语（无英文回退）。无需动作；日后若要自动翻译再谈 key。
 - **旁注**：Hostinger 账号下另有一个沉睡的 `staging.de-linker.com` WordPress 安装（旧项目时期，
   标题仍为 TerraVolt）；该域名**不解析**（从 VPS 侧 `getent hosts` 无记录），非公开面，仅记录。
+- **服务器缓存生产态**：无读取端点，响应头亦无命中标记；以幂等开关
+  `hosting_cache_toggle-website enabled=true` 置为生产态（文档：已在目标态则无操作），
+  随后核心面无 cache-buster 复测全 200。
