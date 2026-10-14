@@ -106,9 +106,11 @@ final class Shortcodes {
 	 * The words are the live band's, read off the old live pages (utility
 	 * solution, EPC, the EPC intake, services, article; EN and DE,
 	 * 2026-10-12/13 captures). An unknown surface prints nothing: it must
-	 * not borrow another surface's words. Each band's shape is the page's
-	 * own rule (the intake's sits on `.lk-bottom-cta`); the markup carries
-	 * no shape class beyond the surface. Styles stay in WindPress
+	 * not borrow another surface's words. Four of the five surfaces get
+	 * their shape from the page's own rule (the intake's sits on
+	 * `.lk-bottom-cta`); the article surface has no page rule, so its shape
+	 * is in the band's stylesheet. The markup carries no shape class beyond
+	 * the surface. Styles stay in WindPress
 	 * (content/windpress/contact-invitation.css).
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.

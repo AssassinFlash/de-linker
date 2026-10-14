@@ -557,8 +557,9 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The article band is the editorial shape and opens a product request;
-	 * the others open a project request and carry the page as context.
+	 * The article band opens a product request and carries its surface
+	 * class; the others open a project request and carry the page as
+	 * context.
 	 */
 	public function test_invitation_carries_the_page_and_the_request_kind(): void {
 		$this->invitation_page( 'en' );
@@ -576,28 +577,38 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The band stylesheet never claims the product-list band. That band is
-	 * the page rules' (.linker-contact-products, styled with its container
-	 * in products-mounts.css); every selector in this file either names
-	 * another surface or excludes the products band with :not(). The file
-	 * once shipped a body-scoped rule that outranked the page rules — this
-	 * assertion locks the exclusion in, not in memory.
+	 * The band stylesheet claims the article surface and nothing else.
+	 *
+	 * The band's markup lands inside the article template's prose rules,
+	 * which are (1,1,1) — #tv-blog-single-v1 .tv-blog-single-content h2,
+	 * p and a — and would otherwise take the band over: under them the
+	 * heading renders at the page's 32px and the button's label is teal on
+	 * the teal fill. Every selector here carries that wrapper's id and its
+	 * two classes, so every one of them is (1,3,0) or higher and wins; the
+	 * same wrapper is what keeps the file off the four surfaces the page
+	 * styles itself, and off .linker-contact-products, which
+	 * products-mounts.css styles with its container.
 	 */
-	public function test_the_band_stylesheet_never_claims_the_products_band(): void {
+	public function test_the_band_stylesheet_claims_the_article_surface_only(): void {
 		$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/contact-invitation.css' );
-		$css = (string) preg_replace( '/\*.*?\*\//s', '', $css );
-		preg_match_all( '/^([^\{\}@][^\{\}]*)\{/m', $css, $matches );
+		$css = (string) preg_replace( '~/\*.*?\*/~s', '', $css );
+		preg_match_all( '/^([^\{\}\s@][^\{\}]*?)\s*\{/m', $css, $matches );
 
 		$this->assertNotEmpty( $matches[1], 'the stylesheet should still declare selectors' );
-		$this->assertMatchesRegularExpression(
-			'/\.linker-contact-article:not\(\.linker-contact-products\)/',
-			$css
-		);
 		foreach ( $matches[1] as $selector ) {
-			$this->assertDoesNotMatchRegularExpression(
-				'/(?<!:not\()\.linker-contact-products/',
-				$selector
-			);
+			$selector = trim( (string) preg_replace( '/\s+/', ' ', $selector ) );
+			foreach ( array(
+				'#tv-blog-single-v1',
+				'.tv-blog-single-content',
+				'>',
+				'.linker-contact-invitation',
+				'.linker-contact-article',
+			) as $part ) {
+				$this->assertStringContainsString( $part, $selector, $selector );
+			}
+			$this->assertSame( 1, substr_count( $selector, '#' ), $selector );
+			$this->assertGreaterThanOrEqual( 3, substr_count( $selector, '.' ), $selector );
+			$this->assertStringNotContainsString( '.linker-contact-products', $selector );
 		}
 	}
 
