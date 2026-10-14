@@ -565,4 +565,99 @@ final class TwinsTest extends TestCase {
 		);
 		$this->assertConditionsMet();
 	}
+
+	/**
+	 * The German term of the snapshot category is not in this database (no
+	 * 10 → de pair). terms() must leave the German post alone: writing the
+	 * empty English list would clear the German post's category, and there
+	 * is no German term to write instead. The English restore before the
+	 * insert is the whole write — the German post 6893 receives no
+	 * wp_set_object_terms call at all.
+	 */
+	public function test_a_missing_german_category_term_leaves_the_german_post_alone(): void {
+		PolylangDouble::mock(
+			array(
+				551  => 'en',
+				6893 => 'de',
+			),
+			array( 551 => 6893 ),
+			array( 10 => 'en' ),
+			array(),
+			'en',
+			array(),
+			array(
+				551  => array(
+					'post_type'      => 'post',
+					'post_status'    => 'publish',
+					'post_parent'    => 0,
+					'post_author'    => 1,
+					'menu_order'     => 0,
+					'comment_status' => 'closed',
+					'ping_status'    => 'closed',
+					'post_password'  => '',
+					'post_title'     => 'How to Choose',
+				),
+				6893 => array(
+					'post_type'   => 'post',
+					'post_status' => 'publish',
+					'post_title'  => 'So wählen Sie',
+				),
+			),
+			array( 10 => array( 'slug' => 'system-design' ) )
+		);
+		WP_Mock::passthruFunction( 'wp_slash' );
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
+		WP_Mock::userFunction( 'remove_action', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'category' ) ) );
+		WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction(
+			'wp_get_object_terms',
+			array(
+				'return' => array(),
+				'args'   => array( 551, 'category', array( 'fields' => 'ids' ) ),
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'times' => 1,
+				'args'  => array(
+					Mockery::on( static fn( array $postarr ): bool => 6893 === $postarr['ID'] ),
+					true,
+				),
+			)
+		);
+		$assigned = array();
+		WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+			static function ( int $object_id, array $terms, string $taxonomy, bool $append = false ) use ( &$assigned ): array {
+				$assigned[] = array( $object_id, $terms, $taxonomy, $append );
+				return $terms;
+			}
+		);
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+		$twins->post(
+			551,
+			array(
+				'post_title'   => 'So wählen Sie',
+				'post_excerpt' => '',
+				'post_content' => '<p>Deutsch.</p>',
+			),
+			'hybridwechselrichter-vs-ac-speicher'
+		);
+
+		$this->assertSame(
+			array(
+				// The English restore runs before the insert (Twins::post()).
+				// With no German term in the database this is the whole write:
+				// the empty English list never reaches the German post.
+				array( 551, array( 10 ), 'category', false ),
+			),
+			$assigned
+		);
+		$this->assertConditionsMet();
+	}
 }

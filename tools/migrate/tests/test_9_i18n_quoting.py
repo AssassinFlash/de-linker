@@ -140,3 +140,38 @@ def test_a_local_prefix_keeps_argv_semantics(monkeypatch: pytest.MonkeyPatch) ->
     i18n.WP(LOCAL, user=None).run("db", "query", "SELECT 1")
 
     assert seen[0] == [LOCAL, "db", "query", "SELECT 1"]
+
+
+def test_twins_post_category_slugs_match_the_migration_table() -> None:
+    """The plugin's snapshot slug guard names the slugs the migration mints.
+
+    Twins::POST_CATEGORY_SLUGS (the write guard) and POST_CATEGORY_NAMES here
+    (what the migration mints/renames the German term to) must not drift: a
+    slug changed in one table only mints the wrong German archive silently —
+    the guard then refuses every write, or admits a term the archive never
+    answers on, and /de/category/system-design/ 301s again (families 16/22;
+    the slugs themselves are the 2026-10-13 live measurement,
+    docs/debt/DE-PARITY-2026-10-13.md §4.1).
+    """
+    twins = (
+        HERE.parent.parent.parent / "plugins/linker-i18n/includes/Twins.php"
+    ).read_text(encoding="utf-8")
+    block = twins.split("POST_CATEGORY_SLUGS = array(", 1)[1].split(");", 1)[0]
+    php_slugs = {
+        int(term_id): slug.strip("'")
+        for term_id, slug in (
+            line.strip().rstrip(",").split(" => ", 1)
+            for line in block.splitlines()
+            if " => " in line
+        )
+    }
+    assert php_slugs == {
+        10: "system-design",
+        11: "battery-storage-blog",
+        12: "installation-commissioning",
+        13: "monitoring-energy-management",
+        14: "applications-blog",
+    }
+    assert {slug for _de_name, slug in i18n.POST_CATEGORY_NAMES.values()} == set(
+        php_slugs.values()
+    )

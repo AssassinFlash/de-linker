@@ -94,6 +94,18 @@ final class Twins {
 	);
 
 	/**
+	 * The slug a snapshot term must hold, empty when the id is not a
+	 * snapshot term at all. One lookup for both guards (restore_post_category()
+	 * and assign_term()), so the two can never drift apart; the empty answer
+	 * matches no real slug and skips the write.
+	 *
+	 * @param int $term_id Term ID.
+	 */
+	private static function snapshot_slug( int $term_id ): string {
+		return self::POST_CATEGORY_SLUGS[ $term_id ] ?? '';
+	}
+
+	/**
 	 * Whether this class is writing (its own saves are not edits by a person).
 	 *
 	 * @var bool
@@ -494,8 +506,12 @@ final class Twins {
 			return false;
 		}
 		$source = get_term( $term_id, 'category' );
+		// The snapshot ids are the English terms. A database whose id 10
+		// holds the German system-design term (same slug, other language) or
+		// no language at all is not proven to be this snapshot's term.
 		if ( ! $source instanceof \WP_Term || 'category' !== $source->taxonomy
-			|| self::POST_CATEGORY_SLUGS[ $term_id ] !== $source->slug ) {
+			|| Languages::SOURCE !== $this->languages->of_term( $term_id )
+			|| self::snapshot_slug( $term_id ) !== $source->slug ) {
 			return false;
 		}
 		// Replace, do not append. Post 558 was left on Uncategorized when the
@@ -543,7 +559,8 @@ final class Twins {
 	 */
 	private function assign_term( \WP_Term $source ): void {
 		if ( 'category' !== $source->taxonomy
-			|| ( self::POST_CATEGORY_SLUGS[ $source->term_id ] ?? '' ) !== $source->slug ) {
+			|| Languages::SOURCE !== $this->languages->of_term( $source->term_id )
+			|| self::snapshot_slug( $source->term_id ) !== $source->slug ) {
 			return;
 		}
 		foreach ( self::POST_CATEGORIES as $post_id => $term_id ) {

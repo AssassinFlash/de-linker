@@ -218,10 +218,36 @@ test.describe('i18n', () => {
 		);
 		expect(post.status, 'the German post answers').toBe(200);
 		const html = await post.text();
+		expect(html, 'the single page links its category archive').toContain(
+			'/de/category/system-design/'
+		);
+	});
+
+	test('the English blog archive lists its posts, and the post names the category', async () => {
+		// Family 16's English side: the 2026-10-14 online recheck found the
+		// category page's ARTICLES IN THIS CATEGORY section empty and the
+		// single page's category metadata empty once the post→category
+		// relations were lost. Post 551 sits on system-design in the
+		// snapshot (docs/debt/DE-PARITY-2026-10-13.md §2).
+		const archive = await fetch(
+			`${instance().url}/category/system-design/`
+		);
+		expect(archive.status, 'the English category archive answers').toBe(
+			200
+		);
+		const archiveHtml = await archive.text();
 		expect(
-			html,
-			'the single page links its category archive'
-		).toContain('/de/category/system-design/');
+			archiveHtml,
+			'the archive lists a snapshot post of this category'
+		).toContain('/hybrid-inverter-vs-ac-coupled-storage/');
+		const post = await fetch(
+			`${instance().url}/hybrid-inverter-vs-ac-coupled-storage/`
+		);
+		expect(post.status, 'the English post answers').toBe(200);
+		const html = await post.text();
+		expect(html, 'the single page links its category archive').toContain(
+			'/category/system-design/'
+		);
 	});
 
 	test('a product and its German twin share their slug', async () => {
