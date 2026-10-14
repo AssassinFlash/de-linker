@@ -364,6 +364,70 @@ final class TwinsTest extends TestCase {
 	}
 
 	/**
+	 * The snapshot ids are the English terms. A database whose ids 10–14 hold
+	 * the German terms — same slugs, the other language — is not this
+	 * snapshot: the language guard refuses every write, so the repair both
+	 * writes nothing and counts nothing. The count is what the CLI reports,
+	 * so it must not claim a write the guard refused. Deleting the language
+	 * check in restore_post_category() (Twins.php, the `Languages::SOURCE`
+	 * condition) makes this test fail: every one of the ten posts would be
+	 * written onto a German term.
+	 */
+	public function test_the_snapshot_ids_holding_the_german_terms_restore_nothing(): void {
+		PolylangDouble::mock(
+			array(
+				551 => 'en',
+				552 => 'en',
+				553 => 'en',
+				554 => 'en',
+				555 => 'en',
+				556 => 'en',
+				557 => 'en',
+				558 => 'en',
+				559 => 'en',
+				560 => 'en',
+			),
+			array(),
+			array(
+				10 => 'de',
+				11 => 'de',
+				12 => 'de',
+				13 => 'de',
+				14 => 'de',
+			),
+			array(),
+			'en',
+			array(),
+			array(
+				551 => array( 'post_type' => 'post' ),
+				552 => array( 'post_type' => 'post' ),
+				553 => array( 'post_type' => 'post' ),
+				554 => array( 'post_type' => 'post' ),
+				555 => array( 'post_type' => 'post' ),
+				556 => array( 'post_type' => 'post' ),
+				557 => array( 'post_type' => 'post' ),
+				558 => array( 'post_type' => 'post' ),
+				559 => array( 'post_type' => 'post' ),
+				560 => array( 'post_type' => 'post' ),
+			),
+			array(
+				10 => array( 'slug' => 'system-design' ),
+				11 => array( 'slug' => 'battery-storage-blog' ),
+				12 => array( 'slug' => 'installation-commissioning' ),
+				13 => array( 'slug' => 'monitoring-energy-management' ),
+				14 => array( 'slug' => 'applications-blog' ),
+			)
+		);
+		WP_Mock::userFunction( 'wp_set_object_terms', array( 'times' => 0 ) );
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+
+		$this->assertSame( 0, $twins->restore_post_categories() );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * The same guard for the post: snapshot id 551 holding a page in this
 	 * database is a different object, and the repair leaves it alone.
 	 */

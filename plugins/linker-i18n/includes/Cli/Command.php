@@ -255,6 +255,13 @@ final class Command {
 	 * already in the database: those rows are gone, so a lookup by the
 	 * English term finds nothing.
 	 *
+	 * A write of nothing is an error, not a success: the guards (the post
+	 * type, the term's language, the snapshot slug) refuse a database that
+	 * is not the snapshot's, and both callers — the migration's apply and
+	 * the operator's cutover step — read this exit code. A silent zero is
+	 * what leaves the German archive on its 301 while the log says success
+	 * (the 2026-10-14 online recheck, families 16/22).
+	 *
 	 * @subcommand repair-post-categories
 	 *
 	 * @param array<int, string>    $args       Positional arguments.
@@ -269,7 +276,11 @@ final class Command {
 			WP_CLI::error( 'No writer for the post categories.' );
 		}
 		$restored = $this->twins->restore_post_categories();
-		WP_CLI::success( sprintf( 'Post categories restored for %d posts whose snapshot term is still here.', $restored ) );
+		$expected = count( Twins::POST_CATEGORIES );
+		if ( 0 === $restored ) {
+			WP_CLI::error( sprintf( 'No post restored: none of the snapshot\'s %d posts is a post in this database, or its category no longer carries the snapshot slug. The repair writes the pre-cutover snapshot\'s own objects only.', $expected ) );
+		}
+		WP_CLI::success( sprintf( 'Post categories restored for %d of the snapshot\'s %d posts.', $restored, $expected ) );
 	}
 
 	/**

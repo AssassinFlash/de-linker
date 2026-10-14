@@ -5,11 +5,16 @@ argv list and nothing re-splits it. Against the production host the prefix is
 an ssh command line, and an argument with spaces must survive the login shell
 — measured 2026-10-14: the category SELECT died on "Too many positional
 arguments" because it arrived unquoted.
+
+The last tests bind the plugin's snapshot tables (Twins::POST_CATEGORIES and
+Twins::POST_CATEGORY_SLUGS, the repair's authority) to what they must agree
+with: the migration's slugs and the recorded snapshot rows.
 """
 
 from __future__ import annotations
 
 import importlib.util
+import re
 import shlex
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
@@ -175,3 +180,74 @@ def test_twins_post_category_slugs_match_the_migration_table() -> None:
     assert {slug for _de_name, slug in i18n.POST_CATEGORY_NAMES.values()} == set(
         php_slugs.values()
     )
+
+
+def _twins_table(name: str) -> dict[int, str]:
+    """One of Twins' id => value tables, parsed from the plugin source."""
+    twins = (
+        HERE.parent.parent.parent / "plugins/linker-i18n/includes/Twins.php"
+    ).read_text(encoding="utf-8")
+    block = twins.split(f"{name} = array(", 1)[1].split(");", 1)[0]
+    return {
+        int(key): value.strip("'")
+        for key, value in (
+            line.strip().rstrip(",").split(" => ", 1)
+            for line in block.splitlines()
+            if " => " in line
+        )
+    }
+
+
+def test_twins_post_categories_are_the_snapshot_rows() -> None:
+    """The plugin's post→term map is the snapshot's own relationship rows.
+
+    Twins::POST_CATEGORIES is the repair's authority: posts 551–560 on terms
+    10–14, two each. The rows are read back with the §2 commands of
+    docs/debt/DE-PARITY-2026-10-13.md, which quotes the ten triples
+    (object_id, term_taxonomy_id, term_order) of wp_term_relationships; the
+    dumps themselves live outside the repository (~/de-linker-data), so the
+    record is the side this test binds to. A row moved on either side means
+    the repair writes onto the wrong objects; the post-type and slug guards
+    are the second line, this is the first.
+    """
+    php_map = {
+        post_id: int(term_id)
+        for post_id, term_id in _twins_table("POST_CATEGORIES").items()
+    }
+    record = (
+        HERE.parent.parent.parent / "docs/debt/DE-PARITY-2026-10-13.md"
+    ).read_text(encoding="utf-8")
+    snapshot_rows = {
+        int(post_id): int(term_id)
+        for post_id, term_id in re.findall(r"\((\d{3}),(\d{1,2}),0\)", record)
+    }
+    assert (
+        php_map
+        == snapshot_rows
+        == {
+            551: 10,
+            552: 10,
+            553: 11,
+            554: 11,
+            555: 12,
+            556: 12,
+            557: 13,
+            558: 13,
+            559: 14,
+            560: 14,
+        }
+    )
+
+
+def test_twins_snapshot_tables_cover_the_same_terms() -> None:
+    """Every mapped term id carries a snapshot slug, so no id is silently skipped.
+
+    snapshot_slug() answers '' for an id that is not in POST_CATEGORY_SLUGS,
+    and both guards read '' as "not a snapshot term": a POST_CATEGORIES entry
+    without a slug entry is skipped without a word and without a count. The
+    two tables must name the same five terms.
+    """
+    categories = _twins_table("POST_CATEGORIES")
+    slugs = _twins_table("POST_CATEGORY_SLUGS")
+
+    assert {int(term_id) for term_id in categories.values()} == set(slugs)
