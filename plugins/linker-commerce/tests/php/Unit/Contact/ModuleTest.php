@@ -20,9 +20,11 @@ use WP_Post;
  * The deployed contact pages still carry the previous runtime's fallback
  * mount (measured 2026-10-14: form=0, the fallback line visible). The module
  * replaces that mount while the form shortcode can render, and leaves the
- * fallback when it cannot. The line survives in two stored shapes — the
- * deployed pages wrap it in `<noscript>`, the snapshot loader keeps the bare
- * paragraph (both measured 2026-10-14) — so both fixtures run the mount.
+ * fallback when it cannot. The line survives in two stored shapes — wrapped
+ * in `<noscript>` on the deployed pages and snapshot-loaded instances, and
+ * as a bare paragraph after the contactform instance's kses-shaped re-save
+ * of 2026-10-14 (reads: docs/acceptance/2026-10-14/contact-form/README.md)
+ * — so both fixtures run the mount.
  *
  * @covers \Linker\Commerce\Contact\Module
  */
@@ -34,10 +36,12 @@ final class ModuleTest extends TestCase {
 	private const FIXTURE = __DIR__ . '/../../Fixtures/contact-page.html';
 
 	/**
-	 * The same region as the snapshot loader stores it: the noscript note
-	 * reduced to the bare paragraph (contactform instance, post 10).
+	 * The same region as the contactform instance's 2026-10-14 13:26–13:33
+	 * UTC re-save left it (post 10): `<script>`, `<style>` and the
+	 * `<noscript>` wrapper dropped with their text kept, so the line stands
+	 * as a bare paragraph.
 	 */
-	private const SNAPSHOT_FIXTURE = __DIR__ . '/../../Fixtures/contact-page-snapshot.html';
+	private const STRIPPED_SAVE_FIXTURE = __DIR__ . '/../../Fixtures/contact-page-stripped-save.html';
 
 	/**
 	 * The old mount becomes the form shortcode, and the fallback line goes —
@@ -47,7 +51,7 @@ final class ModuleTest extends TestCase {
 		$this->on_contact_page();
 		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => true ) );
 
-		foreach ( array( $this->fixture( self::FIXTURE ), $this->fixture( self::SNAPSHOT_FIXTURE ) ) as $content ) {
+		foreach ( array( $this->fixture( self::FIXTURE ), $this->fixture( self::STRIPPED_SAVE_FIXTURE ) ) as $content ) {
 			$html = $this->module()->mount_form( $content );
 
 			$this->assertStringContainsString(
@@ -118,10 +122,32 @@ final class ModuleTest extends TestCase {
 		$this->on_page( 6917, 'kontakt', 6917 );
 		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => true ) );
 
-		$html = $this->module()->mount_form( $this->fixture( self::SNAPSHOT_FIXTURE ) );
+		$html = $this->module()->mount_form( $this->fixture( self::STRIPPED_SAVE_FIXTURE ) );
 
 		$this->assertStringContainsString( '[' . Form::SHORTCODE . ']', $html );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
+	}
+
+	/**
+	 * A fallback region that holds a nested element still mounts: the region
+	 * regex walks to the fallback's own close and takes the mount's close
+	 * after it, and a shape it cannot pair cleanly is left as it was (the
+	 * match-count guard), so the walk is pinned here.
+	 */
+	public function test_mounts_when_the_fallback_holds_a_nested_div(): void {
+		$this->on_contact_page();
+		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => true ) );
+		$content = '<section class="cp-form-region" id="contact-form">'
+			. '<div data-linker-contact-mount="">'
+			. '<div class="cp-contact-fallback" data-contact-fallback=""><div class="cp-note">x</div>'
+			. '<p>Tell us what you need.</p></div>'
+			. '</div></section>';
+
+		$html = $this->module()->mount_form( $content );
+
+		$this->assertSame( 1, substr_count( $html, '[' . Form::SHORTCODE . ']' ) );
+		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
+		$this->assertStringNotContainsString( 'cp-note', $html );
 	}
 
 	/**

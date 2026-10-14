@@ -161,11 +161,19 @@ final class Module {
 	 * form ("If the form is unavailable…" / "Falls das Formular nicht
 	 * verfügbar ist…").
 	 *
-	 * The line survives in two stored shapes: the deployed pages keep it
-	 * wrapped in `<noscript>` (de-linker.com/contact/ and /de/kontakt/,
-	 * fetched 2026-10-14), the snapshot loader stores it as a bare
-	 * paragraph (contactform instance, post 10, same date). Both shapes
-	 * are this line, so both are matched.
+	 * The line survives in two stored shapes. The deployed pages and the
+	 * snapshot-loaded instances wrap it in `<noscript>` (de-linker.com
+	 * /contact/ and /de/kontakt/, fetched 2026-10-14; the loader runs
+	 * `kses_remove_filters()` before it inserts — plugins/linker-i18n/tests/
+	 * fixtures/seed.php:78 — so t110 post 6917 keeps the wrapper). The bare
+	 * paragraph is what a re-save of the contactform instance left on posts
+	 * 10 and 11, 2026-10-14 13:26–13:33 UTC: `<script>`, `<style>` and
+	 * `<noscript>` dropped with their text kept — the shape a kses-filtered
+	 * save leaves. Which process ran that save is not recorded; the lane
+	 * README (docs/acceptance/2026-10-14/contact-form/) carries the reads
+	 * and the open question.
+	 *
+	 * Both shapes are this line, so both are matched.
 	 *
 	 * @param string $content Page content that already mounts the form.
 	 */

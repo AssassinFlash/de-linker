@@ -37,10 +37,44 @@ final class ContactFormMountTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * The id of a snapshot page, or a skip: an instance the live snapshot was
+	 * not loaded onto has no such page, and a red 404 would say nothing about
+	 * this module.
+	 *
+	 * @param string $path The page path, e.g. `contact`.
+	 */
+	private function page_id_or_skip( string $path ): int {
+		$page = get_page_by_path( $path );
+		if ( ! $page instanceof \WP_Post ) {
+			self::markTestSkipped( "the instance has no page at {$path}; load the live snapshot first (just pull load)" );
+		}
+		return (int) $page->ID;
+	}
+
+	/**
+	 * The German twin of the contact page — the page `/de/kontakt/` serves.
+	 * Resolved the way the module resolves it (Polylang), with the slug as
+	 * the fallback for instances that pair pages differently.
+	 */
+	private function german_twin_id_or_skip(): int {
+		$english = $this->page_id_or_skip( 'contact' );
+		$twin    = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $english, 'de' ) : 0;
+		if ( $twin > 0 ) {
+			return $twin;
+		}
+		$fallback = get_page_by_path( 'kontakt' );
+		if ( $fallback instanceof \WP_Post ) {
+			return (int) $fallback->ID;
+		}
+		self::markTestSkipped( 'the instance has no German twin of the contact page; load the live snapshot first (just pull load)' );
+	}
+
+	/**
 	 * /contact/ renders the form. The stored page still has the old mount;
 	 * the response does not.
 	 */
 	public function test_the_english_page_renders_the_form(): void {
+		$this->page_id_or_skip( 'contact' );
 		$html = $this->get( '/contact/' );
 
 		$this->assertStringContainsString( '<form class="linker-contact-form', $html );
@@ -55,6 +89,7 @@ final class ContactFormMountTest extends IntegrationTestCase {
 	 * The German twin renders the same form, in German.
 	 */
 	public function test_the_german_page_renders_the_form_in_german(): void {
+		$this->german_twin_id_or_skip();
 		$html = $this->get( '/de/kontakt/' );
 
 		$this->assertStringContainsString( '<form class="linker-contact-form', $html );
@@ -69,6 +104,7 @@ final class ContactFormMountTest extends IntegrationTestCase {
 	 * the fields.
 	 */
 	public function test_the_sent_state_renders_instead_of_the_fields(): void {
+		$this->page_id_or_skip( 'contact' );
 		$html = $this->get( '/contact/?contact=sent' );
 
 		$this->assertStringContainsString( 'linker-form-success', $html );
