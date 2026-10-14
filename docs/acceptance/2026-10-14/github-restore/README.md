@@ -36,8 +36,8 @@
   修复后：本地 `just check` **EXIT=0**、`just test` **EXIT=0**（与 CI 同门），提交 `3bb94cf`、`667c32b`。
 - **CI 终态**：`667c32b` 那次跑到倒数第三门时又抓出一处环境差——`i18n-coverage`（积压带来、旧 CI 从未
   跑过的新门）需要 gettext 的 `msgattrib`，runner 镜像没有；工作流补 `apt-get install -y gettext`
-  后（提交 `c68020f`），push 触发的 run **全绿**（`just check` + Playwright 安装 + `just test`——
-  含 10 条 e2e，均在 runner 上通过 + build 复现检查）。
+  后（提交 `412b686`），push 触发的 run **`38506225494`（headSha `412b686`）全绿**：
+  `just check` + Playwright 安装 + `just test`（含 10 条 e2e，均在 runner 上通过）+ build 复现检查。
 
 ## 常备事项
 
