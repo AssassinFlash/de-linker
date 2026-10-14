@@ -1,0 +1,17 @@
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project '/Users/chesterjohn/Documents/de-linker-worktrees/de-linker-t145/tools/cutover' linker-cutover verify "$@"
+verify: GET / -> 200
+verify: GET /de/ -> 200 lang=de True
+verify: GET /products/ -> 200
+verify: GET /de/produkte/ -> 200 lang=de True
+verify: GET /proforma-request/ -> 200
+verify: GET /de/proforma-anfrage/ -> 200 lang=de True
+verify: GET /my-account/ -> 200
+verify: GET /de/mein-konto/ -> 200 lang=de True
+verify: GET /product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/ -> 200
+verify: GET /product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/ -> 1 Product node(s) in ld+json
+verify: GET /de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/ -> 200 lang=de True
+verify: GET /de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/ -> 1 Product node(s) in ld+json
+verify: GET /design-canvas/ -> 301 (expected 301)
+search-console: google-site-kit active: True
+search-console: Search Console property: https://de-linker.com/ (owner user 1)
+search-console: GET /google3176d3a1f9d50e5f.html -> 200

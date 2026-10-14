@@ -223,8 +223,13 @@ VERIFY_REDIRECTS = (("/design-canvas/", 301),)
 # The Search Console property (#145, docs/specs/145-search-console.md): Site
 # Kit by Google holds the verification, and the marketing feedback loop reads
 # the property. `steps.search_console` checks it after every `verify`.
+SEARCH_CONSOLE_STEP = "search-console"
 SITE_KIT = "google-site-kit"
 SEARCH_CONSOLE_PROPERTY = "https://de-linker.com/"
+# Site Kit's own names: the module's settings option ({propertyID, ownerID})
+# and the user option, behind the table prefix, holding the file token.
+SITE_KIT_SEARCH_CONSOLE_OPTION = "googlesitekit_search-console_settings"
+SITE_KIT_VERIFICATION_FILE_META = "googlesitekit_site_verification_file"
 
 # The service releases of spec 17 §5. Both use one release script — the genie's
 # `ops/release.sh`, whose root is its parameter — so the release rule has one

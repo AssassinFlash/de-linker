@@ -1,10 +1,8 @@
 /**
  * Site chrome (docs/specs/16-review-acceptance.md, docs/specs/12-site-chrome.md):
  * the header and footer name the two tools, the retired addresses redirect,
- * the sitemap lists the site's own sections, the language alternates
- * point at this site and nowhere else, and Site Kit by Google — the holder of
- * the Search Console verification (#145, docs/specs/145-search-console.md) —
- * is still active.
+ * the sitemap lists the site's own sections, and the language alternates
+ * point at this site and nowhere else.
  */
 
 /**
@@ -84,13 +82,6 @@ test.describe('site chrome', () => {
 			const followed = await fetch(location);
 			expect(followed.status, `${to} answers`).toBe(200);
 		}
-	});
-
-	test('Site Kit by Google is still active (the Search Console verification)', async () => {
-		const html = await (await get('/')).text();
-		expect(html, 'Site Kit prints its generator tag').toMatch(
-			/<meta name="generator" content="Site Kit by Google /
-		);
 	});
 
 	test("the sitemap lists this site's own sections", async () => {

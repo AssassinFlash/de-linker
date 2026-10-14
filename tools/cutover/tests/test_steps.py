@@ -782,18 +782,16 @@ def test_the_publish_stages_over_ssh_and_runs_there(
 class _SiteKit(_Pages):
     """A site whose Site Kit state is a few canned WP-CLI answers."""
 
-    def __init__(  # noqa: D107
+    def __init__(  # noqa: D107 - a fixture, not a public type
         self, root: Path, *, active: bool, settings: str, token: str, served: bool
     ) -> None:
         super().__init__(root, {})
-        self.active, self.settings, self.token, self.served = (
-            active,
-            settings,
-            token,
-            served,
-        )
+        self.active = active
+        self.settings = settings
+        self.token = token
+        self.served = served
 
-    def wp(self, *args: str, check: bool = True) -> str:  # noqa: D102
+    def wp(self, *args: str, check: bool = True) -> str:  # noqa: D102 - canned answers
         del check
         if args[:2] == ("plugin", "list"):
             status = "active" if self.active else "inactive"
@@ -803,11 +801,11 @@ class _SiteKit(_Pages):
         if args[:2] == ("db", "prefix"):
             return "wp_"
         if args[:3] == ("user", "meta", "get"):
-            assert args[3:] == ("1", "wp_googlesitekit_site_verification_file")
+            assert args[3:] == ("1", "wp_" + plan.SITE_KIT_VERIFICATION_FILE_META)
             return self.token
         raise AssertionError(args)
 
-    def http(  # noqa: D102
+    def http(  # noqa: D102 - canned answers
         self, path: str, *, cache_buster: str | None = None
     ) -> tuple[int, str]:
         assert cache_buster is None, "Site Kit serves the exact path only"
@@ -816,7 +814,7 @@ class _SiteKit(_Pages):
         return 404, "not found"
 
 
-_CONNECTED = json.dumps({"propertyID": "https://de-linker.com/", "ownerID": 1})
+_CONNECTED = json.dumps({"propertyID": plan.SEARCH_CONSOLE_PROPERTY, "ownerID": 1})
 
 
 def test_a_connected_site_kit_serving_its_file_passes(tmp_path: Path) -> None:
@@ -841,6 +839,7 @@ def test_a_connected_site_kit_serving_its_file_passes(tmp_path: Path) -> None:
             True,
             "is not connected",
         ),
+        (True, "PHP Notice: x\n{}", "abc", True, "did not parse"),
         (True, _CONNECTED, "", True, "holds no Site Kit verification file token"),
         (True, _CONNECTED, "abc", False, "does not serve the verification token"),
     ],

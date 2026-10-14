@@ -713,9 +713,13 @@ def search_console(target: Target) -> Result:
     away while every page still answers 200, and Search Console unverifies the
     owner a grace period later. The file is read without a cache-buster —
     Site Kit serves the exact path only, and that is what Google requests.
+    Production only: a local instance is never connected to Google.
     """
     actions: list[str] = []
-    notes: list[str] = []
+
+    def failed(note: str) -> Result:
+        return Result(plan.SEARCH_CONSOLE_STEP, actions, [note])
+
     active = any(
         entry.get("status") == "active"
         for entry in target.wp_json(
@@ -724,42 +728,46 @@ def search_console(target: Target) -> Result:
     )
     actions.append(f"{plan.SITE_KIT} active: {active}")
     if not active:
-        notes.append(
+        return failed(
             f"{plan.SITE_KIT} is not active — Search Console loses its verification"
         )
-        return Result("search-console", actions, notes)
     raw = target.wp(
         "option",
         "get",
-        "googlesitekit_search-console_settings",
+        plan.SITE_KIT_SEARCH_CONSOLE_OPTION,
         "--format=json",
         check=False,
     )
-    settings = json.loads(raw) if raw else {}
-    prop = settings.get("propertyID") if isinstance(settings, dict) else None
-    owner = settings.get("ownerID") if isinstance(settings, dict) else None
-    actions.append(f"Search Console property: {prop} (owner user {owner})")
-    if prop != plan.SEARCH_CONSOLE_PROPERTY or not owner:
-        notes.append(f"Site Kit is not connected to {plan.SEARCH_CONSOLE_PROPERTY}")
-        return Result("search-console", actions, notes)
-    prefix = target.wp("db", "prefix").strip()
+    try:
+        settings = json.loads(raw) if raw else {}
+    except json.JSONDecodeError:
+        return failed(
+            f"{plan.SITE_KIT_SEARCH_CONSOLE_OPTION} did not parse: {raw[:200]!r}"
+        )
+    if not isinstance(settings, dict):
+        settings = {}
+    owner = settings.get("ownerID")
+    actions.append(
+        f"Search Console property: {settings.get('propertyID')} (owner user {owner})"
+    )
+    if settings.get("propertyID") != plan.SEARCH_CONSOLE_PROPERTY or not owner:
+        return failed(f"Site Kit is not connected to {plan.SEARCH_CONSOLE_PROPERTY}")
     token = target.wp(
         "user",
         "meta",
         "get",
         str(owner),
-        f"{prefix}googlesitekit_site_verification_file",
+        table_prefix(target) + plan.SITE_KIT_VERIFICATION_FILE_META,
         check=False,
     ).strip()
     if not token:
-        notes.append(f"user {owner} holds no Site Kit verification file token")
-        return Result("search-console", actions, notes)
+        return failed(f"user {owner} holds no Site Kit verification file token")
     path = f"/google{token}.html"
     status, body = target.http(path, cache_buster=None)
     actions.append(f"GET {path} -> {status}")
     if status != 200 or f"google{token}.html" not in body:
-        notes.append(f"{path} does not serve the verification token")
-    return Result("search-console", actions, notes)
+        return failed(f"{path} does not serve the verification token")
+    return Result(plan.SEARCH_CONSOLE_STEP, actions, [])
 
 
 # The blocks a page declares as JSON-LD. WordPress writes the `type` attribute
