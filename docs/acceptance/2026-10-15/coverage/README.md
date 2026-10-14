@@ -2,7 +2,8 @@
 
 本泳道把 `docs/debt/ADJUDICATION-2026-10-14.md` 的「未拍 / 无证据清单」B–H 段逐行补拍/补验并关闭。
 逐行结论在下文；每行的结论只有三种形态：**captured+功能核验**（矩阵基准 live/functional 的行）、
-**captured+结构对照**、或**拍不到 → 阻塞原因 + 替代证据**（本包第三种 0 行，见 §6 边界）。
+**captured+结构对照**、或**拍不到 → 阻塞原因 + 替代证据**。第三种形态本包 **1 行**：D6 的屋顶轮廓
+（影像瓦片取不到；该行仍在 §3 逐条写明阻塞原因与替代证据）——其余 33 行都是前两种。
 
 ## 1. 环境与代码基线（结论只在基线内成立）
 
@@ -13,7 +14,7 @@
 | 引擎 / Genie 服务 | 均起于 `de-linker-worktrees/de-linker-fix-blog-relations/services/{engine,genie}`（端口 8976 / 8977，`/health` 200） | `ps aux \| grep services/genie`；`curl :8977/health` → `{"status":"ok"}` |
 | 拍摄协议 | `.scratch/live-recheck/shoot.mjs` 的同一套：禁动画、等字体、600px 步进懒加载滚动、图片 decode（15s 预算）、全页 PNG；同机同浏览器同视口 | 采集脚本 `.scratch/coverage/lib.mjs` 的 `settle()` 逐条照搬 |
 | 线上侧 | 仅公开可达状态 GET（无登录、无提交），`https://de-linker.com` | `capture-H.mjs` 的 live 分支 |
-| 测试邮件纪律 | 拍摄期间 t110 `linker-commerce test-mail on --to=tester@example.test`（注册/询盘/联系各态只落一封，收件人单一；实例邮件本就落 `~/de-linker-local/t110/mail/`，不发外网）。**拍摄结束未关（下一段收尾请 `test-mail off`）** | `just wp t110 linker-commerce test-mail status` |
+| 测试邮件纪律 | 拍摄期间 t110 `linker-commerce test-mail on --to=tester@example.test`（注册/询盘/联系各态只落一封，收件人单一；实例邮件本就落 `~/de-linker-local/t110/mail/`，不发外网）。**拍摄结束后已关**：`just wp t110 linker-commerce test-mail off` → 「Success: Test mode is off: emails go to their recipients again.」，`test-mail status` → 「Test mode is off: emails go to their recipients.」（2026-10-15 实测输出） | `just wp t110 linker-commerce test-mail status`（关后输出见左） |
 | 实例写入 | 仅测试数据：`coverage-*` 客户、其询盘/方案/Proforma（经插件自身 `Issuer`/`SavedSolutions::save()`）、审批三态用的三个一次性账号；联系表单限流用 `wp cache flush` 在四格之间复位 | §4 逐条命令 |
 
 实例里为本次补拍准备的数据（可复核）：
@@ -103,8 +104,8 @@ Woo 默认的 `orders`/`view-order` 端点在本站 404（`/my-account/orders/` 
 | # | 行 | 结论 | 证据 |
 |---|---|---|---|
 | F1 | 工作区/对话面（欢迎语/快捷问题/composer/消息往返） | captured+功能核验：①坞内欢迎态（披露句「Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.」+ 快捷问题 chip + composer）②**消息往返实测**：EN 21.8s、DE 16.9s 收到带合格产品卡的答复（EN「Model H2-10K-T3 In stock…Save solution」；DE 德语同构）③整页工作区 `/genie/`（Conversations 栏、Where should we begin?、Ask Genie composer、披露句、快捷问题）EN/DE × 1440/390 四格 | `genie-welcome-*`、`genie-roundtrip-*`、`genie-workspace-*`；`probe-F.json`（`ms`）、`probe-F3.json` |
-| F2 | dock history failed / pending question | captured：①历史栏打开态（EN「Conversations」列表 + 本轮会话行；DE 走同一个 icon 按钮，`genie-history-open-1440-de.png`）②pending question：提问后引擎未定夺期间的界面（本轮以「I need a battery for my house.」的进行态截取，见 `genie-pending-question-*`）③**failed 态未拍**：该态要求对话历史读取失败；本轮以路由阻断未复现出该界面（阻断后应用回退到「无历史」而不是 failed 面），故按「无该可拍触发」记录——不写「无法核」的理由与缺口见下 | `genie-history-open-1440-{en,de}.png`、`genie-pending-question-1440-{en,de}.png`；`probe-F.json`/`probe-F2.json` |
-| F3 | product card 七态（pending/added/unverified/retry；saving/saved/failed） | captured（4+2）：added（点「Add to solution draft」后卡片状态）、save failed/retry（把 solutions 路由 abort 后点「Save solution」→ 失败态）、saved（重试后保存成功）；**未拍：pending / unverified / saving 三个瞬态**——pending 与 saving 是同一动作的进行态（本轮以路由延时未稳定捕获，卡状态文本由 `onCardStatus` 写入 `plugins/linker-tools/src/genie/App.tsx:410/432`）、unverified 需要引擎返回未核验字段的特定数据。该三态的证据补位：源码状态机位置 + 同类已拍态（added/failed/saved） | `genie-card-{added,save-failed,saved}-1440-{en,de}.png`；`App.tsx:410-463` |
+| F2 | dock history failed / pending question | **captured（三态齐）**：①历史栏 ready（EN「Conversations」列表 + 本轮会话行；DE 同按钮，`genie-history-open-1440-de.png`）②pending question：提问后引擎未定夺期间的界面（`genie-pending-question-*`）③**failed**：把历史读 `GET …/genie/conversations` 用路由 fulfill 成 503 后打开历史栏 → 界面实测「Conversations could not be loaded. Try again」（`role=alert`，源码 `App.tsx:1179-1186`） | `genie-history-failed-1440-en.png`；复核：`node .scratch/coverage/verify-genie-states.mjs` → `history 503 → {"alert":"Conversations could not be loaded. Try again"}` |
+| F3 | product card 七态（pending/added/unverified/retry；saving/saved/failed） | **captured（七态齐，每态带造态触发）**：①pending「Adding…」（`GET …/wc/store/v1/cart` 路由延时 8s 顶住）②added「In your solution draft.」（常规）③unverified「Sent, but the draft does not show it yet. Please check.」（add 成功、回读被改写为加购前的购物车）④retry「Not added. Try again.」（`POST …/cart/add-item` fulfill 500）⑤saving「Saving…」（`POST …/linker/v1/solutions` 延时 8s）⑥saved「Saved to your account.」（常规）⑦failed「Not saved. Try again.」（solutions fulfill 500） | 截图 `genie-card-{pending,added,unverified,retry,saving,saved,save-failed,failed}-1440-{en,de}.png`；复核：`node .scratch/coverage/verify-genie-states.mjs` 逐态打印上述文本（七个造态脚本 `capture-F4.mjs` 同目录） |
 | F4 | page chips 四入口（account/draft/PDP/catalog search） | captured+功能核验：四个面都渲染入口 chip 且可见（EN/DE 各四格，`chipVisible=true`） | `genie-chip-{account,draft,pdp,category}-1440-{en,de}.png`；`probe-F.json` |
 | 边界 | 390 视口 | 390 下导航里的 `[data-linker-genie-open]` **不可见**（`vis=false`，实测于首页；坞入口是桌面形态），390 的 Genie 面以整页工作区承载（`genie-workspace-390-{en,de}` 已拍） | `probe-F3.json` |
 
@@ -120,7 +121,7 @@ Woo 默认的 `orders`/`view-order` 端点在本站 404（`/my-account/orders/` 
 | 条目 | 结论 | 证据 |
 |---|---|---|
 | A2 · 页头/页脚 `[linker_contact_link]` 三处 placement | **已定性（current state）**：两侧都把短代码渲染成设计化链接，**未出现字面量**。实测（同一探针）：页头 2 个 + 页脚 1 个 contact 链接，形状一致（`/contact/?intent=…&kind=…&title=…&source_id=…&product_id=…&source=…`；DE `/de/kontakt/` 同构）；`shortcodes` 探针在两侧均为空数组 | `.scratch/coverage/probe-H-pairs.json` 各行的 `headerContactLinks`/`footerContactLinks`/`shortcodes` |
-| A3 · 复刻像素门缺可复核终局包 | **本行产出 PDP 的成对包**（三套对拍此前不含 PDP）：`h-pairs/pdp-{en,de}-{1440,390}-{local,live}.png` + 指标。**量出的差异（结构对照）**：EN 1440 全页差 14.71%（802 506 px，页高 3977 vs 3789）、EN 390 14.13%、DE 1440 14.38%、DE 390 14.79%；差异不是整页位移（最优位移 0），集中在两带：y≈1744–1843（**本地面板少一个规格组**：本地 Technical data 两组「Grid, back-up and smart port / Switching and environment」，线上三组，中间多「Inverter side」；DE 同形 y≈1792–1848）与页尾（本地比线上高 188 px，尾部整体下移）。两侧产品 id 不同（本地 6575 / 线上 6565）→ 快照与线上是两条产品行，差异至少部分是内容/构建漂移。**结论**：终局包已建立且可重跑（§4 命令 5），但掩膜与「允许差异」须由业主裁定后才能给过门结论——本行不自行判 PASS | `h-pairs-metrics.json`；`pdp-en-1440-{local,live}.png` 的 1650–1900 / 3150–3600 裁片 |
+| A3 · 复刻像素门缺可复核终局包 | **本行产出 PDP 的成对包**（三套对拍此前不含 PDP）：`h-pairs/pdp-{en,de}-{1440,390}-{local,live}.png` + 指标。**量出的差异（结构对照）**：EN 1440 全页差 14.71%（802 506 px，页高 3977 vs 3789）、EN 390 14.13%、DE 1440 14.38%、DE 390 14.79%；差异不是整页位移（最优位移 0），集中在两带：y≈1744–1843（**本地面板少一个规格组**：本地 Technical data 两组「Grid, back-up and smart port / Switching and environment」，线上三组，中间多「Inverter side」；DE 同形 y≈1792–1848）与页尾（本地比线上高 188 px，尾部整体下移）。**定性（2026-10-15 复核）**：这是**快照数据缺口，不是模板/构建缺陷**——两侧同一 product id 6530（EN 页头的 contact 链接两侧都是 `source_id=6530`），本地渲染的是该商品的 `_tv_legacy_acf_json.spec_groups`（WP-CLI 实测：两组，Grid… 5 行 + Switching… 6 行，无 Inverter side），而仓库的更正数据本来就该带上该组：`tools/migrate/c15-facts.json` 的 6530 条目 `inverter_side_rated_power_kw` 明说「the first pass dropped」的逆变侧 30 kW 由该次更正**恢复**（并带双来源注）；渲染端逐组输出（`plugins/linker-commerce/includes/Storefront/ProductView.php:371-402`），线上三组即其数据含该组。落点=在实例上补跑 C15 数据步（`tools/migrate/7-facts.py --plan tools/migrate/c15-facts.json`，属数据/切换泳道）。**结论**：终局包已建立且可重跑（§4 命令 5），差异主因已定性为数据缺口；掩膜与「允许差异」仍须业主裁定后才能给过门结论——本行不自行判 PASS | `h-pairs-metrics.json`；`pdp-en-1440-{local,live}.png` 的 1650–1900 / 3150–3600 裁片 |
 | A4 · 列表页 390 终局判定待核（默认态 shop/archive 390） | **已判（像素零差异）**：390 默认态 `/products/`、`/de/produkte/`、`/product-category/inverters/`、`/de/produkt-kategorie/wechselrichter/` 四格 local vs live **差异像素 = 0（0.0000%）**、页高逐格相等（12252 / 12590 / 12270 / 12619） | `h-pairs-metrics.json` 的 `shop-*-390`、`archive-*-390`；`h-pairs/*.png` |
 | A6 · 条带口径 vs 全页口径 | **两口径逐项呈报（本轮 9 面）**：见下表。口径定义：全页 = 整页逐像素（阈值 >2/255）；条带 = 先取最优整页垂直位移后的逐像素。9 面里 5 面两口径同为 0；PDP 四面最优位移均为 0（不是位移问题），两口径数值相同 | 下表（数字源 `h-pairs-metrics.json`） |
 | C6 · 商城样式 fresh authoring（代码形态债） | **已定性（代码面）**：两份卷**已重写为新作者版**，旧出处字符串不再存在——`content/windpress/storefront.css`（4 627 行）在树，`catalogue.css` 已不在卷里（`git ls-files \| grep -c 'catalogue\.css'` = 0）；`grep 'terravolt-b2b-core\|0\.12\.413' content/windpress/` 无命中。作者记录见 `docs/audit/2026-10-13-storefront-fresh-author.md`（选择器与声明保持不变、注释按卷职责重写）。原条目「代码形态债、不直接证明用户视觉缺陷、无专属成对截图」由此收口为：**该条目不是视觉缺口**，视觉差异由分类/商城面族的行承载；本轮 A4 已给四个 390 默认态列表页 local vs live 差异像素 = 0 | `ls content/windpress/`；`wc -l content/windpress/storefront.css`；`git ls-files \| grep -c 'catalogue\.css'` → 0；`grep -rn 'terravolt-b2b-core' content/windpress/` → 空（§4 命令 6） |
@@ -216,14 +217,71 @@ grep -rn 'terravolt-b2b-core\|0\.12\.413' /Users/chesterjohn/Documents/de-linker
   （无插件字段时不动状态、不 die）。
 - 验证：`php vendor/bin/phpunit --filter ApprovalAdminTest` → **OK (9 tests, 38 assertions)**。
 
+## 5bis. 两处修复的实例端到端复验（在查出缺陷的那个站上）
+
+拍摄基线 t110 的插件软链原本指向并行泳道的 `de-linker-nits`；按评审意见把软链临时指向本分支并重启实例
+（`cd <this worktree> && just up t110`，输出 `t110: plugins linker-commerce, linker-i18n, linker-tools -> …/de-linker-coverage`），
+复验后已还原（`cd …/de-linker-nits && just up t110`，输出同形、目标回到 nits）：
+
+```
+# 设计报告 PDF，经站点代理（同一 URL：修复前 200 application/json 73 242 B、正文 {"detail":"%PDF…）
+$ curl -s -o /tmp/fix-report2.bin -w 'proxy %{http_code} %{content_type} %{size_download}\n' \
+    -X POST http://127.0.0.1:8975/wp-json/linker-ai/v1/engine/report/pdf \
+    -H 'Content-Type: application/json' \
+    -d '{"input":{"locale":"en","plz":"80538","annual_kwh":5000,"pv_kwp":10,"phase":3},"logo":null}'
+proxy 200 application/pdf 48837          # 头 %PDF-1.4；file → PDF document, version 1.4, 3 pages
+proxy-de 200 application/pdf 49529       # DE 输入同形
+
+$ node .scratch/coverage/verify-approval-live.mjs     # 档案页三个按钮，实点实拍
+approve   url=/wp-admin/user-edit.php?user_id=254 status=approved  reason=(unset)
+restrict  url=/wp-admin/user-edit.php?user_id=255 status=restricted reason=Coverage verification: r…
+reject    url=/wp-admin/user-edit.php?user_id=256 status=rejected   reason=Coverage verification: r…
+# 三态修复后的页面截图：.scratch/coverage/shots/approval-admin-<action>-1440-en-after-fixed.png
+```
+
+## 5ter. 复核工具的选择器与可运行性（决策 7）
+
+决策记录第 7 条要求把复核工具 `.scratch/live-recheck/shoot.mjs` 的选择器更新到新树 id。实测两侧（线上与 t110 本地）
+只发 `data-compare-product`（curl 各 24 个），`data-compare-article` 两侧都为 0；工具原本两处仍用旧属性，compare 动作恒报
+`no compare control`。改动与验证：
+
+```
+$ grep -n "data-compare" .scratch/live-recheck/shoot.mjs
+138:  products: q('li.product, .products .product, [data-compare-product], [data-compare-article]'),
+225:  const control = page.locator('[data-compare-product], [data-compare-article]').first();
+
+$ node .scratch/live-recheck/shoot.mjs compare-chip --force     # 线上 GET-only
+shot compare-chip-en-1440 9237 h en-US Browse Inverters, Batteries and Systems | Linker
+shot compare-chip-en-390 12251 h en-US Browse Inverters, Batteries and Systems | Linker
+# dom-counts.json：compare-chip-en-1440/390 → products 24；action {ok:true, found:true, visible:true, text:'Compare 1/4'}
+```
+
+同时修了工具自己的启动致命项：它以 `plugins/linker-tools/package.json` 解析 playwright，而全新 checkout 里该目录没有
+`node_modules`（工具在任何一次拍摄前就崩），现在回退到 `tests/e2e/package.json`；并加 `--force` 以便探针改过后重拍。
+
+## 5quater. phpcs 结论的树与运行时口径（评审纠正）
+
+§5 的两条修复各自以单测 + 实例复验收口；仓库级的 phpcs 结论按树与 PHP 运行时记：
+
+```
+$ php vendor/bin/phpcs -q                # PATH php = 8.5.5，CWD = 本分支的 plugins/linker-commerce
+→ 2 ERROR：tests/php/Integration/ProductSearchRestTest.php:191 与 SelectionFactsRestTest.php:177
+           （Generic.PHP.DeprecatedFunctions：curl_close() 已弃用）
+$ /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpcs -q      # justfile 的 php（8.3）
+→ 无输出
+```
+
+即：**本分支带 main 既有的两条 curl_close 弃用报告**（决策 13 归属 nits 泳道，那条泳道已在其树里把
+`curl_close($handle)` 换成 `unset($handle)`），不是「本分支 clean」；两条命令只是运行时不同（8.5 vs 8.3）。
+本分支自己改动的文件在上述两条命令下都干净。
+
 ## 6. 边界与未竟（逐项写明，不留 TODO 之外的模糊表述）
 
-1. **F2「dock history failed」未拍到可拍触发**：该态需要对话历史读取失败；本轮用路由阻断没把它逼出来
-   （应用回退到「无历史」）。已拍的是 history ready（EN/DE）与 pending question。缺口性质是「本轮未复现该触发」，
-   不是「无该状态」——状态机在 `App.tsx:79`（`HistoryPhase = 'loading' | 'ready' | 'failed'`）。
-2. **F3 的三个瞬态**（pending / unverified / saving）：见 §3 F3 的说明与源码位置。
-3. **D6 屋顶轮廓**：影像瓦片取不到（外部 WMS），轮廓叠加拍不到；引擎侧 `/roof/outline` 实测正常（§4 命令 4）。
-4. **A3 的 PDP 差异**：终局包与数字已出（含「本地少一个规格组」的定位），但「过不过像素门」需掩膜与允许差异的业主裁定，
-   本行不自行判 PASS。
-5. **test-mail 开关**：拍摄期间开着（收件人 tester 单一地址），未在本文关闭；收尾段请执行
-   `just wp t110 linker-commerce test-mail off`。
+1. **F2 / F3 的六个状态已补齐**（2026-10-15 二次补拍，触发与文本见 §3 的 F 段表），此前记的「未复现」说法已撤下。
+2. 见上：不再有属于「未复现」的 F 行。
+3. **D6 屋顶轮廓**（本包唯一的第三种形态行）：影像瓦片取不到（外部 WMS `geoservices.bayern.de`，画布灰底、点屋面无法定位），
+   轮廓叠加拍不到；替代证据 = 引擎 `/roof/outline` 同坐标实测 `found:true`（§4 命令 4）。
+4. **A3 的 PDP 差异**：终局包、两口径数字与主因定性已齐（快照数据缺口；§3 H·A3），只剩「过不过像素门」需要掩膜与允许差异的
+   业主裁定，本行不自行判 PASS。
+5. **test-mail 开关**：拍摄结束后已关（`off` 与 `status` 的实测输出见 §1 该行）；实例的插件软链也已还原到
+   并行泳道的 `de-linker-nits`（§5bis 末尾），本次复验窗口之外未留改动。
