@@ -45,9 +45,10 @@ final class ModuleTest extends TestCase {
 		$account    = new AccountTemplates();
 		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library, $account );
 
-		// 50: the product, checkout, comparison, library and account shortcodes,
-		// the empty-draft state and the contact invitation band.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 50 ) );
+		// 52: the product, checkout, comparison, library and account shortcodes,
+		// the empty-draft state, the contact invitation band, and the
+		// catalogue's mobile actions bar and chips strip.
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 52 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $account, 'orders_query' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );

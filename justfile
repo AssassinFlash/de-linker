@@ -285,6 +285,10 @@ js-check: js-install
 [working-directory("plugins/linker-tools")]
 js-test: js-install
     npm run test:unit
+    # The commerce plugins' script tests are plain node:test files (jsdom
+    # resolves through this project's node_modules); this gate is what runs
+    # them in CI.
+    node --test "../../plugins/linker-commerce/tests/js/*.test.mjs"
     npx playwright install --only-shell chromium
     npm run test:e2e
 
