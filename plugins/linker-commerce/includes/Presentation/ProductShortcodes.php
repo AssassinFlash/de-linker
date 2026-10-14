@@ -2304,13 +2304,22 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * One row of the rail's Category section, with the live page's own
+	 * One row of the rail's Category section, with the reference rail's own
 	 * nesting: on a category page the branch the visitor is in expands — the
 	 * group's own rows first (RAIL_GROUP_ROWS), then the children the term
-	 * tree holds. The live all-in-one page renders Inverters / All-in-One
-	 * Systems / Battery Systems under Commercial Storage, the accessories
-	 * page Meters & Current Transformers / Backup Power under Accessories
-	 * (measured 2026-10-12).
+	 * tree holds, the children indented under the group.
+	 *
+	 * Rows and indentation are the reference captures of 2026-10-13: the
+	 * all-in-one page prints Inverters / All-in-One Systems / Battery
+	 * Systems under Commercial Storage, the accessories page Meters &
+	 * Current Transformers / Backup Power under Accessories, each child
+	 * indented (measured 2026-10-12; `cat-aio-en-1440-live.png`,
+	 * `cat-aio-de-1440-live.png`, `cat-cstorage-en-1440-live.png`). The
+	 * deployed tree carries no such nesting — the recheck of 2026-10-14
+	 * found its rail a flat list there, the nested rows and the crumb's
+	 * parent segment gone (docs/debt/ADJUDICATION-2026-10-14.md, the
+	 * Category EN recheck row, still `reproduced`). This expansion restores
+	 * the reference's composition, not the deployed tree's.
 	 *
 	 * @param WP_Term      $category   The top-level category of this row.
 	 * @param WP_Term|null $current    The category on display, null on the shop.
