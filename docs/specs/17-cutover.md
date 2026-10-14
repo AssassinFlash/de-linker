@@ -46,3 +46,13 @@
 - 2026-10-11（#81，§7 的邮件验收行对齐业主终裁）：原行写"邮件 24 小时内到达 sales@ 与 Bcc"，那是多封实发才能验的做法。业主 2026-10-11 的测试邮件纪律（AGENTS.md §5：测试只发一封、只发给 Chester，To/Cc/Bcc 一律重写为 `chester@de-linker.com`，多收件路由以 Outbox 队列的收件人数据断言）把它改成上面那条；窗口里那次真实询盘同样走这个开关，验证后关闭。
 - 2026-10-11（#80）：部署面加错误记录件 `mu-plugins/linker-error-recorder.php`（轮转，非 WordPress 依赖）；mu 卫生点名旧 `linker-i18n-mu-loader.php` 与旧记录件备份进删除清单；数据步加存量客户迁移 `tools/migrate/80-customers.py`；验收加旧地址 301 抽验、存量客户状态与记录件实证。
 - 2026-10-11（#80 修复轮）：抽验清单补上本轮数据化的两条线上硬编码规则——退役归档 `/shop/` 与英文 `/produkt/<撤回 slug>/` 别名基底（映射表 pages 的 `/shop/` 一条与 `requested_product()` 的路径解析），两者落点以线上实测为准。
+
+- 2026-10-14（夜窗口的实际执行记录在 `docs/acceptance/2026-10-14/17/README.md`，此处只补规格缺口）：
+  演练里看不到、窗口里必须有的步骤此后按三步补全——`wp linker-commerce present --user=<admin>`（表现层：
+  LiveCanvas 模板 + partial + WindPress volume，`--allow-stale` 先行、浏览器编译后再净跑一次）、
+  WindPress 浏览器侧编译（唯一编译方式；线上以临时一次性登录桥驱动 `tools/windpress-compile.mjs`，用完即撤）、
+  与 `12-site-chrome.py` / `page-template-empty.py`（改名与页模板，指向这两个脚本而非复制其规则）。
+  服务侧两处必须在窗口内做、此前只写在运行面：`LINKER_ENGINE_CORS_ORIGINS` 之外，**PHP 侧对自签证书的
+  钉扎**（`mu-plugins/linker-engine-pin.php` + `engine-ca.pem`，旧插件同名机制的移植）与**发布后重建 venv**
+  （`uv sync --locked`；否则新 release 的 `current` 触发 203/EXEC）。引擎端点仍为 `https://<ip>:8443`；
+  浏览器侧信任需具名域名的公共证书（DNS 在阿里云，见 README ⑨）。

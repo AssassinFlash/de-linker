@@ -1,0 +1,7 @@
+urls: 151
+FAIL 301  https://de-linker.com/de/angebots-konfigurator/
+FAIL 301  https://de-linker.com/de/entwurfsflache/
+FAIL 301  https://de-linker.com/de/linker-berater/
+FAIL 301  https://de-linker.com/de/linker-planer/
+checked 151, failures 4
+SWEEP_EXIT=1

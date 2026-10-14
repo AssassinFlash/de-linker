@@ -1,0 +1,117 @@
+<?php
+/**
+ * Plugin Name: Linker Error Recorder
+ * Description: Makes this site able to say that it broke. Records fatals and the
+ *              memory/time conditions around them, because the host does not.
+ * Version: 1.0.0
+ *
+ * WHY THIS EXISTS
+ *
+ * On 2026-08-03 the site returned HTTP 500 and the cause had to be GUESSED,
+ * because nothing anywhere recorded it. Checked on the host afterwards:
+ *
+ *     ini_get('log_errors')  ===  ''      // OFF
+ *     ini_get('display_errors') === '0'   // correct for production
+ *
+ * A canary written with trigger_error() grew the error log by exactly zero
+ * bytes. So PHP fatals, warnings and notices are not recorded at all. The only
+ * reason the log has ANY content is that WordPress calls error_log() itself for
+ * database errors, which does not depend on log_errors.
+ *
+ * That single setting is why the outage was diagnosed from a symptom instead of
+ * from evidence, and why the 1,047 database errors in the four days before it -
+ * every one of them breaking WooCommerce's action scheduler, option writes and
+ * cron locks for the rest of its request - had nobody looking at them.
+ *
+ * WHAT THE DATABASE ERRORS PROBABLY WERE
+ *
+ * 1,022 of the 1,047 had shutdown_action_hook as their entry point, and every
+ * query after the first one in those requests failed. "Commands out of sync"
+ * means a previous result set was never read - the footprint of a request that
+ * was ALREADY killed mid-query (memory limit, or the host's process manager)
+ * and whose shutdown hooks then ran against a connection left mid-result.
+ *
+ * That is a hypothesis, not a finding: three other explanations were tested on
+ * the host and disproved (unbuffered streaming - the code used buffered
+ * LIMIT/OFFSET batches; wait_timeout=20 - wpdb reconnects; database work during
+ * shutdown after a 30s pause - works). What settles it is evidence from the next
+ * occurrence, which is what this file exists to capture.
+ *
+ * WHAT IT DOES
+ *
+ * - Turns log_errors on. It is PHP_INI_ALL, so this works at runtime.
+ * - Records E_ERROR / E_PARSE / E_CORE_ERROR / E_COMPILE_ERROR on shutdown with
+ *   the request URI, peak memory against the limit, and the elapsed time - the
+ *   three numbers that would have answered the question in August.
+ *
+ * WHAT IT DOES NOT DO
+ *
+ * It does not touch display_errors. Errors must never reach a visitor.
+ * It writes with error_log() and nothing else: no database, no options, no HTTP.
+ * A recorder that needs a working site to report a broken one is not a recorder.
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// PHP_INI_ALL, so runtime is enough. Without this, nothing below the fatal
+// handler - warnings, notices, deprecations - is written anywhere at all.
+if (!ini_get('log_errors')) {
+    @ini_set('log_errors', '1');
+}
+// Never to the browser. This is a production site.
+@ini_set('display_errors', '0');
+
+if (!function_exists('linker_error_recorder_bytes')) {
+    /** "512M" -> 536870912. Returns 0 for an unlimited or unreadable limit. */
+    function linker_error_recorder_bytes($value)
+    {
+        $value = trim((string) $value);
+        if ($value === '' || $value === '-1') {
+            return 0;
+        }
+        $unit = strtolower(substr($value, -1));
+        $n = (float) $value;
+        if ($unit === 'g') { return (int) ($n * 1024 * 1024 * 1024); }
+        if ($unit === 'm') { return (int) ($n * 1024 * 1024); }
+        if ($unit === 'k') { return (int) ($n * 1024); }
+        return (int) $n;
+    }
+}
+
+$GLOBALS['linker_error_recorder_start'] = microtime(true);
+
+register_shutdown_function(function () {
+    $e = error_get_last();
+    if (!$e || !in_array($e['type'], array(E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR), true)) {
+        return;
+    }
+
+    $limit = linker_error_recorder_bytes(ini_get('memory_limit'));
+    $peak = memory_get_peak_usage(true);
+    $started = isset($GLOBALS['linker_error_recorder_start'])
+        ? (float) $GLOBALS['linker_error_recorder_start'] : microtime(true);
+
+    $uri = '-';
+    if (isset($_SERVER['REQUEST_URI']) && is_string($_SERVER['REQUEST_URI'])) {
+        // The path only. A query string can carry customer data and this line
+        // goes to a log file that is read by a person, not by the site.
+        $uri = (string) parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    }
+
+    error_log(sprintf(
+        'LINKER FATAL %s in %s:%d | uri=%s | method=%s | peak=%.1fMB of %s (%s) | elapsed=%.1fs of %ss | php=%s',
+        str_replace(array("\r", "\n"), ' ', (string) $e['message']),
+        (string) $e['file'],
+        (int) $e['line'],
+        $uri,
+        isset($_SERVER['REQUEST_METHOD']) ? (string) $_SERVER['REQUEST_METHOD'] : '-',
+        $peak / 1048576,
+        (string) ini_get('memory_limit'),
+        $limit > 0 ? sprintf('%.0f%%', 100 * $peak / $limit) : 'no limit',
+        microtime(true) - $started,
+        (string) ini_get('max_execution_time'),
+        PHP_VERSION
+    ));
+});
