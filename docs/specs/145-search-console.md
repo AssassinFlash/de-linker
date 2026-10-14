@@ -13,10 +13,17 @@ Google 官方插件 **Site Kit by Google**（wordpress.org `google-site-kit`，�
 - 选型理由与证据：`docs/research/2026-10-14/search-console-carrier.md`。
 
 ## 防冲掉
-部署不会删除仓库之外的插件；会把它拿掉的是回滚到旧备份、手工清理插件或重置 Site Kit。回归检查在这些情况下报错（Site Kit 连接后补齐具体断言，写入本节）。
+部署不会删除仓库之外的插件；会把验证拿掉的是回滚到旧备份、手工清理插件或重置 Site Kit——这些情况下每页仍是 200。两道检查：
+
+| 检查 | 在哪 | 断什么 |
+|---|---|---|
+| `just cutover verify` 的 `search-console` 段（`steps.search_console`） | 线上（默认目标） | Site Kit 启用；`googlesitekit_search-console_settings.propertyID` = `https://de-linker.com/`；连接者（`ownerID`）的用户选项 `<前缀>googlesitekit_site_verification_file` 有令牌；`/google<令牌>.html` **不带** cache-buster 返回 200 且含令牌（Site Kit 只认精确路径，带查询串即 404；Google 也按精确路径取）。任一不成立 → 退出码 1 |
+| `tests/e2e/specs/chrome.spec.ts`「Site Kit by Google is still active」 | 评审站 / 本地实例 | 首页有 Site Kit 的 generator 标记（本地实例连不上 Google，只断插件在） |
+
+2026-10-14 线上状态：Site Kit 1.189.0，连接者 = 后台用户 1（唯一管理员），验证方式 = 虚拟 HTML 文件。
 
 ## 所有者侧（角色名；真实账号只在营销侧私有 vault）
-所有者账号：在后台 Site Kit 里完成设置（不勾 Analytics）→ 在 Search Console 把日常账号加为**所有者**（委托所有者）→ 在「站点地图」提交 `sitemaps.xml`。
+所有者账号：在后台 Site Kit 里完成设置（不勾 Analytics、不勾匿名使用数据）→ 在 Search Console 把日常账号加为**所有者**（委托所有者）→ 在「站点地图」提交 `sitemaps.xml`。
 
 ## 变更记录
 - 2026-10-14（#145）：首版。载体最初按「仓库 mu 插件输出验证标记」实现，业主改裁定为官方 Site Kit、验证不写代码，mu 插件方案撤回未合并。

@@ -704,6 +704,64 @@ def verify(target: Target, *, cache_buster: str) -> Result:
     return Result("verify", actions, notes)
 
 
+def search_console(target: Target) -> Result:
+    """The site is still a verified Search Console property (#145).
+
+    Site Kit holds the verification: a virtual file `/google<token>.html`
+    whose token is a user option of the administrator who connected it. A
+    rollback to an older backup, a plugin cleanup or a Site Kit reset takes it
+    away while every page still answers 200, and Search Console unverifies the
+    owner a grace period later. The file is read without a cache-buster —
+    Site Kit serves the exact path only, and that is what Google requests.
+    """
+    actions: list[str] = []
+    notes: list[str] = []
+    active = any(
+        entry.get("status") == "active"
+        for entry in target.wp_json(
+            "plugin", "list", f"--name={plan.SITE_KIT}", "--fields=name,status"
+        )
+    )
+    actions.append(f"{plan.SITE_KIT} active: {active}")
+    if not active:
+        notes.append(
+            f"{plan.SITE_KIT} is not active — Search Console loses its verification"
+        )
+        return Result("search-console", actions, notes)
+    raw = target.wp(
+        "option",
+        "get",
+        "googlesitekit_search-console_settings",
+        "--format=json",
+        check=False,
+    )
+    settings = json.loads(raw) if raw else {}
+    prop = settings.get("propertyID") if isinstance(settings, dict) else None
+    owner = settings.get("ownerID") if isinstance(settings, dict) else None
+    actions.append(f"Search Console property: {prop} (owner user {owner})")
+    if prop != plan.SEARCH_CONSOLE_PROPERTY or not owner:
+        notes.append(f"Site Kit is not connected to {plan.SEARCH_CONSOLE_PROPERTY}")
+        return Result("search-console", actions, notes)
+    prefix = target.wp("db", "prefix").strip()
+    token = target.wp(
+        "user",
+        "meta",
+        "get",
+        str(owner),
+        f"{prefix}googlesitekit_site_verification_file",
+        check=False,
+    ).strip()
+    if not token:
+        notes.append(f"user {owner} holds no Site Kit verification file token")
+        return Result("search-console", actions, notes)
+    path = f"/google{token}.html"
+    status, body = target.http(path, cache_buster=None)
+    actions.append(f"GET {path} -> {status}")
+    if status != 200 or f"google{token}.html" not in body:
+        notes.append(f"{path} does not serve the verification token")
+    return Result("search-console", actions, notes)
+
+
 # The blocks a page declares as JSON-LD. WordPress writes the `type` attribute
 # quoted and in either style, and not always first, so neither is assumed here.
 _LD_JSON = re.compile(

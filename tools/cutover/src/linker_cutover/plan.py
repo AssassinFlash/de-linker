@@ -220,6 +220,11 @@ VERIFY_PRODUCT_TYPE = "Product"
 # `/design-canvas/` is a redirect the new tree keeps (spec 17 acceptance);
 # it is checked as a 301, by `steps.verify`.
 VERIFY_REDIRECTS = (("/design-canvas/", 301),)
+# The Search Console property (#145, docs/specs/145-search-console.md): Site
+# Kit by Google holds the verification, and the marketing feedback loop reads
+# the property. `steps.search_console` checks it after every `verify`.
+SITE_KIT = "google-site-kit"
+SEARCH_CONSOLE_PROPERTY = "https://de-linker.com/"
 
 # The service releases of spec 17 §5. Both use one release script — the genie's
 # `ops/release.sh`, whose root is its parameter — so the release rule has one

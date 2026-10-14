@@ -25,6 +25,7 @@
 - [ ] 视觉验收：首页、产品页、配置器、Genie、账户 × EN/DE × 1440/390（线上）。
 
 ## 变更记录
+- 2026-10-14（#145）：`just cutover verify` 之后再跑 `search-console` 段（`steps.search_console`）：Site Kit 启用、已连接 `https://de-linker.com/`、验证文件不带 cache-buster 可取；任一不成立退出码 1。`drill` 不跑这一段（本地实例不连 Google）。规格 `docs/specs/145-search-console.md`。
 - 2026-10-14（#17 首跑生产）：预检把工具从没有跑过的生产路径都跑了一遍；六处修复，逐条有理由：
   - **远程 shell 的引用**：脚本现在以单个 shlex 引用词随 ssh 出发（`Target.shell_command`，唯一实现，备份的 `_stream` 同用）。`ssh host 'bash -c' 'script'` 会被登录 shell 重新按空格拆分——实测两次：hygiene 的第一个探针死于 `then`，备份的 dump 收到裸 `set`（落地的"db.sql.gz"是环境清单）。本地演练从不走远程分支。
   - **发布去服务 VPS，不去站主机**：`services --run` 现在 rsync 到 `linker-services`（新增 ssh 别名 = 服务 VPS 的 root，与 `hostinger-de-linker` 同风格）。`release.sh` 在它运行的机器上取源、`/opt` 在服务 VPS 上，而站主机是共享主机普通用户（`/root` 不可写）；此前该步在两种目标上都跑不通，演练也从未跑到第 5 步。暂存根 `plan.SERVICES_STAGING`，先 ssh `mkdir -p`（macOS 的 openrsync 建不了多级目标）。
