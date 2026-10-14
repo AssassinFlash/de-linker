@@ -53,6 +53,10 @@ final class WindPressCache {
 		'pdp-purchase'          => '.pdp-purchase',
 		'pdp-scene-reel'        => '.pdp-scene-reel',
 		'pdp-disclose'          => '.pdp-disclose',
+		// The blog single face: every one of its rules lives in the volume file
+		// blog.css, so this id is the alarm for that file never reaching the
+		// compile — the face would render as unstyled markup.
+		'tv-blog-single-v1'     => '#tv-blog-single-v1',
 	);
 
 	/**

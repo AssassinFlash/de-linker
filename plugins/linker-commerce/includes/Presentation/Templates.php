@@ -46,6 +46,7 @@ final class Templates {
 		'is_account_page'                  => 'account_page',
 		'is_single_product'                => 'single_product',
 		'is_archive_for_post_type_product' => 'archive_product',
+		'is_single_post'                   => 'blog_single',
 	);
 
 	/**
@@ -58,6 +59,7 @@ final class Templates {
 		'is_account_page'                  => 'Account',
 		'is_single_product'                => 'Single product',
 		'is_archive_for_post_type_product' => 'Product archive',
+		'is_single_post'                   => 'Blog single post',
 	);
 
 	/**
@@ -87,10 +89,18 @@ final class Templates {
 	 * meta key (#231), the German page resolves that key to its own legacy
 	 * twin (#6915), and the export carries words ("Filters", the two aria
 	 * labels) — so the twin gets a German file too.
+	 *
+	 * The blog single post is the third. Its words — the rail's labels, the
+	 * checkpoints, the band's heading and both of its buttons, the related
+	 * grid's title — are markup, not shortcode output, so the German face
+	 * needs a file of its own. The sync reclaims the legacy templates the
+	 * snapshot carries by the same `is_single_post` key (the live pair), which
+	 * is what closes the blog face out of the instance's old implementation.
 	 */
 	private const DE_FILES = array(
 		'is_single_product'                => 'de/single_product',
 		'is_archive_for_post_type_product' => 'de/archive_product',
+		'is_single_post'                   => 'de/blog_single',
 	);
 
 	/**

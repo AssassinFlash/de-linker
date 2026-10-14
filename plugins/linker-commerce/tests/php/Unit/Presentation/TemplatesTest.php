@@ -36,6 +36,7 @@ final class TemplatesTest extends TestCase {
 				'is_account_page',
 				'is_single_product',
 				'is_archive_for_post_type_product',
+				'is_single_post',
 				'linker-compare',
 				'linker-compare-de',
 				'linker-faq',
@@ -45,10 +46,11 @@ final class TemplatesTest extends TestCase {
 				'linker-configurator',
 				'linker-configurator-de',
 				// The German exports of page types are sources of their own:
-				// the product page's and the product archive's German twins
-				// are rendered from them.
+				// the product page's, the product archive's and the blog single
+				// face's German twins are rendered from them.
 				'is_single_product__de',
 				'is_archive_for_post_type_product__de',
+				'is_single_post__de',
 			),
 			array_keys( $paths )
 		);
@@ -90,6 +92,35 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( '>Produkte</a>', $german );
 		$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $german );
 		$this->assertStringNotContainsString( '>Products</a>', $german );
+
+		// The blog single face: the article's two data areas are the plugin's
+		// own shortcodes (the live face resolved them with template loops),
+		// the band's words are the live band's, and no style block sits in
+		// the markup — the face's rules are the WindPress volume file
+		// blog.css.
+		$blog = (string) file_get_contents( $paths['is_single_post'] );
+		$this->assertStringContainsString( 'id="tv-blog-single-v1"', $blog );
+		$this->assertStringContainsString( '[linker_blog_post_categories]', $blog );
+		$this->assertStringContainsString( '[linker_blog_related_posts]', $blog );
+		$this->assertStringContainsString( '[linker_contact_invitation surface="article"]', $blog );
+		$this->assertStringContainsString( 'label="Request a project quote →"', $blog );
+		$this->assertStringContainsString( 'Back to blog', $blog );
+		$this->assertStringNotContainsString( 'Contact Linker</a>', $blog );
+		$this->assertStringNotContainsString( '<style', $blog );
+		$this->assertStringNotContainsString( 'Zurück zum Blog', $blog );
+
+		// The German twin is the German face, not the English file re-used:
+		// its words, its band label and its date format are the ones the
+		// German page shows.
+		$blog_de = (string) file_get_contents( $paths['is_single_post__de'] );
+		$this->assertStringContainsString( 'id="tv-blog-single-v1"', $blog_de );
+		$this->assertStringContainsString( '[linker_blog_post_categories]', $blog_de );
+		$this->assertStringContainsString( '[linker_blog_related_posts]', $blog_de );
+		$this->assertStringContainsString( 'label_de="Projektangebot anfragen →"', $blog_de );
+		$this->assertStringContainsString( 'Zurück zum Blog', $blog_de );
+		$this->assertStringContainsString( 'date_format="d.m.Y"', $blog_de );
+		$this->assertStringNotContainsString( 'Back to blog', $blog_de );
+		$this->assertStringNotContainsString( '<style', $blog_de );
 	}
 
 	/**
@@ -208,14 +239,14 @@ final class TemplatesTest extends TestCase {
 		$first     = $templates->sync();
 		$second    = $templates->sync();
 
-			$this->assertSame( 14, $created, 'the six Woo templates and the eight tool-page templates' );
-			$this->assertSame( 14, $first['created'] );
+			$this->assertSame( 15, $created, 'the six Woo templates, the blog single face and the eight tool-page templates' );
+			$this->assertSame( 15, $first['created'] );
 		$this->assertSame( 0, $first['updated'] );
 		$this->assertSame( 0, $second['created'] );
-			$this->assertSame( 14, $second['updated'] );
-			$this->assertSame( 14, $updated );
+			$this->assertSame( 15, $second['updated'] );
+			$this->assertSame( 15, $updated );
 			// Every insert and every update slashes its content — both write paths.
-			$this->assertSame( 28, $slashes );
+			$this->assertSame( 30, $slashes );
 	}
 
 	/**
@@ -286,7 +317,7 @@ final class TemplatesTest extends TestCase {
 
 		$this->assertSame( 0, $report['created'] );
 		$this->assertSame( 0, $report['updated'] );
-			$this->assertSame( 14, $report['unchanged'] );
+			$this->assertSame( 15, $report['unchanged'] );
 		$this->assertSame( 0, $inserts + $updated );
 	}
 
@@ -390,8 +421,8 @@ final class TemplatesTest extends TestCase {
 
 		( new Templates() )->sync();
 
-			$this->assertCount( 14, $assigned, 'the six Woo templates and the eight tool-page templates' );
-			$this->assertSame( array_fill( 0, 14, 'en' ), array_values( $assigned ) );
+			$this->assertCount( 15, $assigned, 'the six Woo templates, the blog single face and the eight tool-page templates' );
+			$this->assertSame( array_fill( 0, 15, 'en' ), array_values( $assigned ) );
 	}
 
 	/**
@@ -434,7 +465,7 @@ final class TemplatesTest extends TestCase {
 		$report = ( new Templates() )->sync();
 
 		$this->assertSame( array(), $assigned );
-			$this->assertSame( 14, $report['created'] );
+			$this->assertSame( 15, $report['created'] );
 	}
 
 	/**

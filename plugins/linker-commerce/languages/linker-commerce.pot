@@ -1132,6 +1132,10 @@ msgstr ""
 msgid "Multilingual"
 msgstr ""
 
+#: includes/Presentation/BlogShortcodes.php
+msgid "Read article"
+msgstr ""
+
 #: includes/Presentation/LoginGate.php
 #: includes/Presentation/Shortcodes.php
 msgid "Empty solution draft"
