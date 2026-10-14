@@ -3211,7 +3211,3 @@ msgstr ""
 #: includes/Presentation/Shortcodes.php
 msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
 msgstr ""
-
-#: includes/Presentation/Shortcodes.php
-msgid "Batch item-number import"
-msgstr ""

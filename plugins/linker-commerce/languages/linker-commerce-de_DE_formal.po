@@ -3642,7 +3642,3 @@ msgstr "Keine passenden Einträge. Versuchen Sie einen anderen Suchbegriff."
 #: includes/Presentation/Shortcodes.php
 msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
 msgstr "Sie können die Produkte durchsuchen und eine Artikelnummernliste abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der Kontoprüfung möglich."
-
-#: includes/Presentation/Shortcodes.php
-msgid "Batch item-number import"
-msgstr "Sammelimport von Artikelnummern"

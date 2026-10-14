@@ -67,18 +67,18 @@ final class LoginGate {
 				esc_html__( 'Browse products', 'linker-commerce' )
 			);
 		}
-			return sprintf(
-				'<section class="sf-checkout-empty" aria-label="%1$s"><h1>%2$s</h1>%3$s<h2>%4$s</h2><p>%5$s</p><div class="sf-checkout-empty__actions"><a class="sf-checkout-btn" href="%6$s">%7$s</a><a class="sf-checkout-btn sf-checkout-btn--ghost" href="%8$s">%9$s</a></div></section>',
-				esc_attr__( 'Proforma request sign-in', 'linker-commerce' ),
-				esc_html__( 'Get your Proforma', 'linker-commerce' ),
-				$this->genie_pill(),
-				esc_html__( 'Sign in to get your Proforma.', 'linker-commerce' ),
-				esc_html__( 'The Proforma request is reserved for Linker partner accounts. Register, add your systems, and return here — VAT and delivery are ours to handle.', 'linker-commerce' ),
-				esc_url( (string) $account ),
-				esc_html__( 'Sign in or register', 'linker-commerce' ),
-				esc_url( $products ),
-				esc_html__( 'Browse products', 'linker-commerce' )
-			);
+		return sprintf(
+			'<section class="sf-checkout-empty" aria-label="%1$s"><h1>%2$s</h1>%3$s<h2>%4$s</h2><p>%5$s</p><div class="sf-checkout-empty__actions"><a class="sf-checkout-btn" href="%6$s">%7$s</a><a class="sf-checkout-btn sf-checkout-btn--ghost" href="%8$s">%9$s</a></div></section>',
+			esc_attr__( 'Proforma request sign-in', 'linker-commerce' ),
+			esc_html__( 'Get your Proforma', 'linker-commerce' ),
+			$this->genie_pill(),
+			esc_html__( 'Sign in to get your Proforma.', 'linker-commerce' ),
+			esc_html__( 'The Proforma request is reserved for Linker partner accounts. Register, add your systems, and return here — VAT and delivery are ours to handle.', 'linker-commerce' ),
+			esc_url( (string) $account ),
+			esc_html__( 'Sign in or register', 'linker-commerce' ),
+			esc_url( $products ),
+			esc_html__( 'Browse products', 'linker-commerce' )
+		);
 	}
 
 	/**
@@ -102,49 +102,42 @@ final class LoginGate {
 		if ( Approval::RESTRICTED === $status ) {
 			$reason = $this->approval->reason( get_current_user_id() );
 			$why    = '' !== $reason
-				? sprintf(
-					'<p class="mt-3 text-neutral-600"><strong>%1$s</strong> %2$s</p>',
-					esc_html__( 'Our reason:', 'linker-commerce' ),
-					esc_html( $reason )
-				)
+					? sprintf(
+						'<p class="sf-checkout-empty__reason"><strong>%1$s</strong> %2$s</p>',
+						esc_html__( 'Our reason:', 'linker-commerce' ),
+						esc_html( $reason )
+					)
 				: '';
-				return sprintf(
-					'<section class="sf-checkout-empty" aria-label="%1$s"><h1>%2$s</h1><p>%3$s</p>%4$s<p>%5$s</p><div class="sf-checkout-empty__actions"><a class="sf-checkout-btn" href="%6$s">%7$s</a></div></section>',
-					esc_attr__( 'Account with limited access', 'linker-commerce' ),
-					esc_html__( 'Access currently limited', 'linker-commerce' ),
-					esc_html__( 'Your partner account is limited for now: the products and your questions stay open, net prices and the Proforma request are paused.', 'linker-commerce' ),
-					$why,
-					esc_html__( 'Write to sales@de-linker.com and we will look at your account again.', 'linker-commerce' ),
-					esc_url( $products ),
-					esc_html__( 'Browse products', 'linker-commerce' )
-				);
-		}
 			return sprintf(
-				'<section class="sf-checkout-empty" aria-label="%1$s"><h1>%2$s</h1><p>%3$s</p><p>%4$s</p><div class="sf-checkout-empty__actions"><a class="sf-checkout-btn" href="%5$s">%6$s</a></div></section>',
-				esc_attr__( 'Account under review', 'linker-commerce' ),
-				esc_html__( 'Your account is under review', 'linker-commerce' ),
-				esc_html__( 'We are reviewing your partner account. Net prices and the Proforma request open as soon as it is approved, and we will email you.', 'linker-commerce' ),
-				esc_html__( 'Until then, browse the products and write to sales@de-linker.com with any question.', 'linker-commerce' ),
+				'<section class="sf-checkout-empty" aria-label="%1$s"><h1>%2$s</h1><p>%3$s</p>%4$s<p>%5$s</p><div class="sf-checkout-empty__actions"><a class="sf-checkout-btn" href="%6$s">%7$s</a></div></section>',
+				esc_attr__( 'Account with limited access', 'linker-commerce' ),
+				esc_html__( 'Access currently limited', 'linker-commerce' ),
+				esc_html__( 'Your partner account is limited for now: the products and your questions stay open, net prices and the Proforma request are paused.', 'linker-commerce' ),
+				$why,
+				esc_html__( 'Write to sales@de-linker.com and we will look at your account again.', 'linker-commerce' ),
 				esc_url( $products ),
 				esc_html__( 'Browse products', 'linker-commerce' )
 			);
+		}
+		return sprintf(
+			'<section class="sf-checkout-empty" aria-label="%1$s"><h1>%2$s</h1><p>%3$s</p><p>%4$s</p><div class="sf-checkout-empty__actions"><a class="sf-checkout-btn" href="%5$s">%6$s</a></div></section>',
+			esc_attr__( 'Account under review', 'linker-commerce' ),
+			esc_html__( 'Your account is under review', 'linker-commerce' ),
+			esc_html__( 'We are reviewing your partner account. Net prices and the Proforma request open as soon as it is approved, and we will email you.', 'linker-commerce' ),
+			esc_html__( 'Until then, browse the products and write to sales@de-linker.com with any question.', 'linker-commerce' ),
+			esc_url( $products ),
+			esc_html__( 'Browse products', 'linker-commerce' )
+		);
 	}
 
 	/**
-	 * Whether the current request is the site's checkout page or one of its
-	 * translations: WooCommerce's checkout is a single (English) page whose
-	 * translations — the German Proforma-Anfrage — must keep the same
-	 * empty-draft behavior, so the check reads the translation group of the
-	 * checkout page id instead of matching a slug.
+	 * The Genie entry on the empty Proforma request.
+	 *
+	 * The live page opened the assistant from a dark pill under the title
+	 * (then named Advisor / Berater). The pill keeps that place and opens
+	 * Genie, the name the site uses now. Without the dock script the same
+	 * control is the Genie page, so the entry is not JavaScript-only.
 	 */
-		/**
-		 * The Genie entry on the empty Proforma request.
-		 *
-		 * The live page opened the assistant from a dark pill under the title
-		 * (then named Advisor / Berater). The pill keeps that place and opens
-		 * Genie, the name the site uses now. Without the dock script the same
-		 * control is the Genie page, so the entry is not JavaScript-only.
-		 */
 	private function genie_pill(): string {
 		$url = '';
 		if ( function_exists( 'pll_current_language' ) && 'de' === pll_current_language() && function_exists( 'pll_get_post' ) ) {
@@ -169,13 +162,13 @@ final class LoginGate {
 		);
 	}
 
-		/**
-		 * Whether the current request is the site's checkout page or one of its
-		 * translations: WooCommerce's checkout is a single (English) page whose
-		 * translations — the German Proforma-Anfrage — must keep the same
-		 * empty-draft behavior, so the check reads the translation group of the
-		 * checkout page id instead of matching a slug.
-		 */
+	/**
+	 * Whether the current request is the site's checkout page or one of its
+	 * translations: WooCommerce's checkout is a single (English) page whose
+	 * translations — the German Proforma-Anfrage — must keep the same
+	 * empty-draft behavior, so the check reads the translation group of the
+	 * checkout page id instead of matching a slug.
+	 */
 	private function is_proforma_request(): bool {
 		$checkout_id = (int) wc_get_page_id( 'checkout' );
 		if ( $checkout_id <= 0 ) {

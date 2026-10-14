@@ -125,19 +125,14 @@ final class ShortcodesTest extends TestCase {
 
 		/**
 		 * An empty solution draft is the designed empty state: icon, title,
-		 * the review note, and the three ways back. A filled draft is not.
+		 * the review note, and the two ways back that still have a page.
+		 * The retired batch import is not one of them.
 		 */
 	public function test_empty_draft_is_the_designed_empty_state(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
-		WP_Mock::userFunction(
-			'wc_get_endpoint_url',
-			array(
-				'return' => 'https://example.test/my-account/bulk-order/',
-			)
-		);
 		$this->cart_is( true );
 
 		$shortcodes = $this->shortcodes();
@@ -149,11 +144,11 @@ final class ShortcodesTest extends TestCase {
 		$this->assertStringContainsString( '<h1>Your solution draft is empty.</h1>', $html );
 		$this->assertStringContainsString( 'match an item-number list now', $html );
 		$this->assertStringContainsString( 'href="https://example.test/products/"', $html );
-		$this->assertStringContainsString( 'href="https://example.test/my-account/bulk-order/"', $html );
-		$this->assertStringContainsString( 'Batch item-number import', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/"', $html );
 		$this->assertStringContainsString( 'Sign in or register', $html );
-		$this->assertSame( 3, substr_count( $html, 'class="sf-cart-btn' ) );
+		$this->assertStringNotContainsString( 'bulk-order', $html );
+		$this->assertStringNotContainsString( 'Batch item-number import', $html );
+		$this->assertSame( 2, substr_count( $html, 'class="sf-cart-btn' ) );
 		$this->assertStringNotContainsString( 'style=', $html );
 	}
 
