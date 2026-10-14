@@ -15,7 +15,7 @@
 | 拍摄协议 | `.scratch/live-recheck/shoot.mjs` 的同一套：禁动画、等字体、600px 步进懒加载滚动、图片 decode（15s 预算）、全页 PNG；同机同浏览器同视口 | 采集脚本 `.scratch/coverage/lib.mjs` 的 `settle()` 逐条照搬 |
 | 线上侧 | 仅公开可达状态 GET（无登录、无提交），`https://de-linker.com` | `capture-H.mjs` 的 live 分支 |
 | 测试邮件纪律 | 拍摄期间 t110 `linker-commerce test-mail on --to=tester@example.test`（注册/询盘/联系各态只落一封，收件人单一；实例邮件本就落 `~/de-linker-local/t110/mail/`，不发外网）。**拍摄结束后已关**：`just wp t110 linker-commerce test-mail off` → 「Success: Test mode is off: emails go to their recipients again.」，`test-mail status` → 「Test mode is off: emails go to their recipients.」（2026-10-15 实测输出） | `just wp t110 linker-commerce test-mail status`（关后输出见左） |
-| 实例写入 | 仅测试数据：`coverage-*` 客户、其询盘/方案/Proforma（经插件自身 `Issuer`/`SavedSolutions::save()`）、审批三态用的三个一次性账号；联系表单限流用 `wp cache flush` 在四格之间复位 | §4 逐条命令 |
+| 实例写入 | ①测试数据：`coverage-*` 客户、其询盘/方案/Proforma（经插件自身 `Issuer`/`SavedSolutions::save()`）、审批三态用的三个一次性账号；联系表单限流用 `wp cache flush` 在四格之间复位 ②**产品数据（A3）**：`just wp t110 eval-file .scratch/coverage/restore-inverter-side.php` 把线上副本里丢失的 `Inverter side` 规格组插回 6530 的 `_tv_legacy_acf_json.spec_groups`（只插该组、其余字节不动，幂等：已在则打印 nothing to write；读回 `instance before: 2 groups …` → `instance after: 3 groups: Grid, back-up and smart port \| Inverter side \| Switching and environment`，页面三枚 `pdp-spec-tab-*`） ③插件软链：复验窗口内临时指向本分支，复验后已还原 `de-linker-nits`（§5bis）；④test-mail：拍摄期 on、结束后 off（§1 上行） | §4 逐条命令（命令 2、9 与 §5bis） |
 
 实例里为本次补拍准备的数据（可复核）：
 
@@ -35,7 +35,7 @@ just wp t110 eval-file /Users/chesterjohn/Documents/de-linker/.scratch/coverage/
 
 ## 2. 截图与采集脚本位置
 
-- 截图：`.scratch/coverage/shots/`（260+ 张，不进仓库）；H 段的成对图：`.scratch/coverage/h-pairs/`（18 张：9 面 × local/live，另加实例恢复 Inverter side 后的 `pdp-en-{1440,390}-local-after-restore.png` 两张），像素指标 `.scratch/coverage/h-pairs-metrics.json`。
+- 截图：`.scratch/coverage/shots/` **232 张**（`ls .scratch/coverage/shots | wc -l` → 232，全部 .png：`ls … | sed 's/.*\.//' | sort | uniq -c` → `232 png`）；H 段成对图 `.scratch/coverage/h-pairs/` **20 张**（`ls … | wc -l` → 20：9 面 × local/live = 18，另加实例恢复 Inverter side 后重拍的 `pdp-en-{1440,390}-local-after-restore.png`），两目录合计 **252 个 png**（`find .scratch/coverage -name '*.png' | wc -l` → 252）。均不进仓库；像素指标 `.scratch/coverage/h-pairs-metrics.json`。
 - 采集脚本：`.scratch/coverage/lib.mjs`（登录/协议/探针）、`capture-B.mjs`、`capture-C1.mjs`、`capture-C2.mjs`（`FILTER=` 分组）、`capture-D.mjs`、`capture-D2.mjs`、`capture-EG.mjs`、`capture-F.mjs`、`capture-F2.mjs`、`capture-F3.mjs`、`capture-H.mjs`、`analyse-pairs.py`。
 - 每次运行的 DOM 探针原样落 `.scratch/coverage/probe-*.json`（本文每个数字都能在对应文件里找到）。
 
@@ -130,7 +130,7 @@ inserted at index: 1; payload bytes: 5041
 $ curl -s http://127.0.0.1:8975/product/goodwe-gw60k-sts-g10/ | grep -o 'id="pdp-spec-tab-[0-9]"' | sort -u
 id="pdp-spec-tab-0" / -1 / -2                    # 三个 tab；Inverter side 行为「Rated power 30 kW + 双来源注」
 ```
-复拍后同协议对照（`h-pairs/pdp-en-1440-local-after-restore.png` vs `-live.png`）：tab 带差异消失（首个差异行 1744 → 1836），同排一致到 y≈3214；余下差异=y3214 起的页尾整段位移（条带口径：位移 188 时残差 **0 px / 609 行**，即页尾内容逐像素相同、整体下移 188px，本地该段多出 FAQ「Product questions」块的高度）。**仍未决的一点**：组是在哪一步从实例掉的（转储与仓库副本都有、实例没有）——按缺陷候选挂，步骤与承担者见 §6.4。**结论**：终局包已建立且可重跑（§4 命令 5），结构差的主因已定性并已修复实例侧；掩膜与「允许差异」仍须业主裁定后才能给过门结论——本行不自行判 PASS | `h-pairs-metrics.json`；`pdp-en-1440-{local,live}.png` 的 1650–1900 / 3150–3600 裁片 |
+复拍后同协议对照（`h-pairs/pdp-en-1440-local-after-restore.png` vs `-live.png`，min 高裁剪、阈值 >2/255，本线自算）：**恢复前那条 tab 带（rows 1744–1799）整段消失**，首个差异行从 1744 移到 1836；余下的未位移差异只有三小条——rows 1836–1842 = 24 px（cols 931–942）、row 3134 = 907 px（cols 40–946）、rows 3180–3199 = 1 201 px（cols 41–202），**合计 2 132 px**（后两条落在 FAQ 块带）；再往下是**页尾自 live y3180 起整体下移 188px**，位移后残差 **0 px / 609 行**（local rows 3368–3977 对 live rows 3180–3789），即页尾内容逐像素相同。页高 local 3977 / live 3789（差 188）；本地多出的是 FAQ「Product questions」块（`grep -c '<details'`：本地 13、线上 12；该小标题只在本地面）。**仍未决的一点**：组是在哪一步从实例掉的（转储与仓库副本都有、实例没有）——按缺陷候选挂，步骤与承担者见 §6.4。**结论**：终局包已建立且可重跑（§4 命令 5），结构差的主因已定性并已修复实例侧；掩膜与「允许差异」仍须业主裁定后才能给过门结论——本行不自行判 PASS | `h-pairs-metrics.json`；`pdp-en-1440-{local,live}.png` 的 1650–1900 / 3150–3600 裁片 |
 | A4 · 列表页 390 终局判定待核（默认态 shop/archive 390） | **已判（像素零差异）**：390 默认态 `/products/`、`/de/produkte/`、`/product-category/inverters/`、`/de/produkt-kategorie/wechselrichter/` 四格 local vs live **差异像素 = 0（0.0000%）**、页高逐格相等（12252 / 12590 / 12270 / 12619） | `h-pairs-metrics.json` 的 `shop-*-390`、`archive-*-390`；`h-pairs/*.png` |
 | A6 · 条带口径 vs 全页口径 | **两口径逐项呈报（本轮 9 面）**：见下表。口径定义：全页 = 整页逐像素（阈值 >2/255）；条带 = 先取最优整页垂直位移后的逐像素。9 面里 5 面两口径同为 0；PDP 四面最优位移均为 0（不是位移问题），两口径数值相同 | 下表（数字源 `h-pairs-metrics.json`） |
 | C6 · 商城样式 fresh authoring（代码形态债） | **已定性（代码面）**：两份卷**已重写为新作者版**，旧出处字符串不再存在——`content/windpress/storefront.css`（4 627 行）在树，`catalogue.css` 已不在卷里（`git ls-files \| grep -c 'catalogue\.css'` = 0）；`grep 'terravolt-b2b-core\|0\.12\.413' content/windpress/` 无命中。作者记录见 `docs/audit/2026-10-13-storefront-fresh-author.md`（选择器与声明保持不变、注释按卷职责重写）。原条目「代码形态债、不直接证明用户视觉缺陷、无专属成对截图」由此收口为：**该条目不是视觉缺口**，视觉差异由分类/商城面族的行承载；本轮 A4 已给四个 390 默认态列表页 local vs live 差异像素 = 0 | `ls content/windpress/`；`wc -l content/windpress/storefront.css`；`git ls-files \| grep -c 'catalogue\.css'` → 0；`grep -rn 'terravolt-b2b-core' content/windpress/` → 空（§4 命令 6） |
@@ -305,9 +305,7 @@ $ /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpcs -q      # justfile 的 php�
 3. **D6 屋顶轮廓**（本包唯一的第三种形态行）：影像瓦片取不到（外部 WMS `geoservices.bayern.de`，画布灰底、点屋面无法定位），
    轮廓叠加拍不到；替代证据 = 引擎 `/roof/outline` 同坐标实测 `found:true`（§4 命令 4）。
 4. **A3 的 PDP 差异**：实例侧缺组已恢复并复验（§3 H·A3，`restore-inverter-side.php`），余下差异=页尾整段 188px 位移
-   （内容逐像素相同）。**缺陷候选（缺组发生在哪一步）**——挂给数据/切换泳道，可复核步骤：①`for d in ~/de-linker-data/*/; do gzip -dc $d/db.sql.gz |
-   grep -c '6530' ; done` 扫各转储的 6530 legacy 行是否含 `Inverter side`（本机四份都含）②在实例上 `just wp t110 eval` 读
-   6530 `_tv_legacy_acf_json.spec_groups` 的组数（本线实测 2）③比对 `plugins/linker-i18n/tests/fixtures/live/products.json` 的
+   （内容逐像素相同）。**缺陷候选（缺组发生在哪一步）**——挂给数据/切换泳道，可复核步骤：①判组（绑到 6530 那行，不是数行数）：`gzip -dc ~/de-linker-data/<dump>/db.sql.gz | grep '_tv_legacy_acf_json' | grep -m1 '6530' | grep -o 'Inverter side' | wc -l` → **1**（本线对 `20261010-0027` 与 `cutover-20261013-1759` 实测均为 1；只跑 `grep -o 'Inverter side' | wc -l` 不带前缀定位会得到 69，那是全库出现次数，判不了 6530）②在实例上读组数：`just wp t110 eval '$g = json_decode( (string) get_post_meta( 6530, "_tv_legacy_acf_json", true ), true ); echo count( $g["spec_groups"] );'`（本线实测 2，恢复后 3）③比对 `plugins/linker-i18n/tests/fixtures/live/products.json` 的
    6530 条目（三组）④差异点定位后再决定是否需要一个「legacy 组完整性」判定进迁移检查。承担者：数据/切换泳道（本线只做实例侧恢复）。
    「过不过像素门」仍须业主掩膜/允许差异裁定，本行不自行判 PASS。
 5. **test-mail 开关**：拍摄结束后已关（`off` 与 `status` 的实测输出见 §1 该行）；实例的插件软链也已还原到
