@@ -10,18 +10,19 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Products;
 
 /**
- * What the site search (the `?s=` results page) may return: products and
- * posts (docs/specs/13-genie.md, the search box of the catalogue; ticket #68).
+ * What the site search (the `?s=` results page) may return: blog posts only
+ * (docs/specs/13-genie.md, the search box of the catalogue; ticket #68,
+ * narrowed by the 2026-10-14 live recheck, families 17 and 23).
  *
- * WordPress defaults an unspecified search to every public post type, which
- * would feed pages, templates and other objects into the results. The site
- * the search box lives on (its results page and its catalogue) serves two
- * searchable kinds: the products of the catalogue and the entries of the
- * blog; everything else is reached by navigation.
+ * WordPress defaults an unspecified search to every public post type. The
+ * results page is the blog's article template (Blog / Search, article cards,
+ * category chips). Products belong in the catalogue search (`q` and
+ * `linker/v1/catalog-search`), not in that template: feeding them in renders
+ * product rows as article cards and paginates them. The live site's previous
+ * search scope kept the implicit search to posts for the same reason.
  *
  * Only the implicit case is scoped — a request that names its own post_type
- * (an explicit product search, an integration) keeps control, as the site's
- * previous search scope did (the newsletter's article-only template).
+ * (an explicit product search, an integration) keeps control.
  */
 final class SearchScope {
 
@@ -29,9 +30,13 @@ final class SearchScope {
 	/**
 	 * The post types the search results may hold.
 	 *
+	 * One type: the blog post. The catalogue is searched by its own box, not
+	 * by `?s=` (2026-10-14 live recheck, families 17 and 23: `?s=PV` is seven
+	 * article cards, no product rows, no pagination).
+	 *
 	 * @var list<string>
 	 */
-	public const POST_TYPES = array( 'product', 'post' );
+	public const POST_TYPES = array( 'post' );
 
 	/**
 	 * Adds the plugin's hook.
