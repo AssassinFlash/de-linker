@@ -56,6 +56,10 @@ final class Twins {
 		 * terms 10–14, two posts each). The live database no longer has these
 		 * rows, so a repair cannot discover them from the term.
 		 *
+		 * The ids are the live snapshot's, not a sequence a fresh install
+		 * mints. restore_post_category() also checks the post type and the
+		 * term slug, so a database whose ids landed elsewhere is left alone.
+		 *
 		 * @var array<int, int>
 		 */
 	public const POST_CATEGORIES = array(
@@ -69,6 +73,21 @@ final class Twins {
 		558 => 13,
 		559 => 14,
 		560 => 14,
+	);
+
+		/**
+		 * The slug each snapshot category term must still have. A term id
+		 * without this slug is a different object, and the repair does not
+		 * touch it.
+		 *
+		 * @var array<int, string>
+		 */
+	private const POST_CATEGORY_SLUGS = array(
+		10 => 'system-design',
+		11 => 'battery-storage-blog',
+		12 => 'installation-commissioning',
+		13 => 'monitoring-energy-management',
+		14 => 'applications-blog',
 	);
 
 	/**
@@ -455,25 +474,34 @@ final class Twins {
 	 *
 	 * Does not read the relationships that are already there: on the live
 	 * database those rows are gone, so a lookup by the English term finds
-	 * nothing. A post or term that is not in this database is skipped.
+	 * nothing. A post that is not a post, or a term whose slug is not the
+	 * snapshot's, is skipped: the ids are the live snapshot's, and another
+	 * database may have reused them.
 	 *
 	 * @param int $post_id English post ID.
+	 * @return bool Whether the English post was written.
 	 */
-	public function restore_post_category( int $post_id ): void {
+	public function restore_post_category( int $post_id ): bool {
 		$term_id = self::POST_CATEGORIES[ $post_id ] ?? 0;
-		if ( 0 === $term_id || ! get_post( $post_id ) instanceof \WP_Post ) {
-			return;
+		$post    = get_post( $post_id );
+		if ( 0 === $term_id || ! $post instanceof \WP_Post || 'post' !== $post->post_type ) {
+			return false;
 		}
-		$source = get_term( $term_id, 'category' );
-		if ( ! $source instanceof \WP_Term || 'category' !== $source->taxonomy ) {
-			return;
+		$source   = get_term( $term_id, 'category' );
+			$slug = self::POST_CATEGORY_SLUGS[ $term_id ];
+		if ( ! $source instanceof \WP_Term || 'category' !== $source->taxonomy || $slug !== $source->slug ) {
+			return false;
 		}
-		wp_set_object_terms( $post_id, array( $source->term_id ), 'category', true );
+		// Replace, do not append. Post 558 was left on Uncategorized after
+		// the relationships were cleared (DE-PARITY §2); appending the
+		// snapshot term would show both on the single page.
+		wp_set_object_terms( $post_id, array( $source->term_id ), 'category', false );
 		$german_post = $this->languages->post_translation( $post_id, Languages::TARGET );
 		$german_term = $this->languages->term_translation( $source->term_id, Languages::TARGET );
 		if ( null !== $german_post && null !== $german_term ) {
-			wp_set_object_terms( $german_post, array( $german_term ), 'category', true );
+			wp_set_object_terms( $german_post, array( $german_term ), 'category', false );
 		}
+		return true;
 	}
 
 	/**
@@ -484,11 +512,9 @@ final class Twins {
 	public function restore_post_categories(): int {
 		$restored = 0;
 		foreach ( array_keys( self::POST_CATEGORIES ) as $post_id ) {
-			if ( ! get_post( $post_id ) instanceof \WP_Post ) {
-				continue;
+			if ( $this->restore_post_category( $post_id ) ) {
+				++$restored;
 			}
-			$this->restore_post_category( $post_id );
-			++$restored;
 		}
 		return $restored;
 	}
@@ -505,17 +531,29 @@ final class Twins {
 	 * @param int      $twin   German term ID.
 	 */
 	private function assign_term( \WP_Term $source, int $twin ): void {
+		// Only the post category. Product categories and attribute terms
+		// already copy their objects through terms() when the German post is
+		// written; this list is the snapshot of the ten blog posts, and
+		// applying it to another taxonomy would hang those posts on a product
+		// term. The previous assign_new_term() copied whatever taxonomy it
+		// was given, from get_objects_in_term(); that lookup is empty once
+		// the rows are gone, which is the state this repairs.
 		if ( 'category' !== $source->taxonomy ) {
 			return;
 		}
+		$slug = self::POST_CATEGORY_SLUGS[ $source->term_id ] ?? '';
+		if ( '' === $slug || $slug !== $source->slug ) {
+			return;
+		}
 		foreach ( self::POST_CATEGORIES as $post_id => $term_id ) {
-			if ( $term_id !== $source->term_id || ! get_post( $post_id ) instanceof \WP_Post ) {
+			$post = get_post( $post_id );
+			if ( $term_id !== $source->term_id || ! $post instanceof \WP_Post || 'post' !== $post->post_type ) {
 				continue;
 			}
-			wp_set_object_terms( $post_id, array( $source->term_id ), 'category', true );
+			wp_set_object_terms( $post_id, array( $source->term_id ), 'category', false );
 			$german = $this->languages->post_translation( $post_id, Languages::TARGET );
 			if ( null !== $german ) {
-				wp_set_object_terms( $german, array( $twin ), 'category', true );
+				wp_set_object_terms( $german, array( $twin ), 'category', false );
 			}
 		}
 	}

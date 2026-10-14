@@ -156,6 +156,18 @@ test.describe('i18n', () => {
 				/\b(Startseite|Produkte|Anfrage|Anmeldung|Konto|Lösung|Preise)\b/
 			);
 		}
+		const archive = await fetch(
+			`${instance().url}/de/category/system-design/`,
+			{ redirect: 'manual' }
+		);
+		expect(archive.status, 'the German category archive answers').toBe(200);
+		const archiveHtml = await archive.text();
+		expect(archiveHtml, 'the archive stays German').toMatch(
+			/<html[^>]*lang="de/i
+		);
+		expect(archiveHtml, 'the archive title is the German category').toMatch(
+			/<title>[^<]*Systemauslegung/
+		);
 		for (const path of ['/de/about/', '/de/shop/', '/de/cart/']) {
 			const response = await fetch(`${instance().url}${path}`, {
 				redirect: 'manual',

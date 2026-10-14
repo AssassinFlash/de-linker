@@ -14,10 +14,10 @@ namespace Linker\I18n\Cli;
 	use Linker\I18n\LinkLocalizer;
 	use Linker\I18n\Setup;
 	use Linker\I18n\Twins;
-use Linker\I18n\Translation\State;
-use Linker\I18n\Translation\TranslationFailed;
-use Linker\I18n\Translation\Translator;
-use WP_CLI;
+	use Linker\I18n\Translation\State;
+	use Linker\I18n\Translation\TranslationFailed;
+	use Linker\I18n\Translation\Translator;
+	use WP_CLI;
 
 /**
  * Sets up the languages and manages the German versions of pages, posts,
@@ -269,7 +269,7 @@ final class Command {
 			WP_CLI::error( 'No writer for the post categories.' );
 		}
 		$restored = $this->twins->restore_post_categories();
-		WP_CLI::success( sprintf( 'Post categories restored for %d published posts.', $restored ) );
+			WP_CLI::success( sprintf( 'Post categories restored for %d posts whose snapshot term was still here.', $restored ) );
 	}
 
 	/**

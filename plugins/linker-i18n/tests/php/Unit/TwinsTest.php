@@ -325,10 +325,10 @@ final class TwinsTest extends TestCase {
 
 			$this->assertSame(
 				array(
-					array( 551, array( 10 ), 'category', true ),
-					array( 6893, array( 557 ), 'category', true ),
-					array( 552, array( 10 ), 'category', true ),
-					array( 6895, array( 557 ), 'category', true ),
+					array( 551, array( 10 ), 'category', false ),
+					array( 6893, array( 557 ), 'category', false ),
+					array( 552, array( 10 ), 'category', false ),
+					array( 6895, array( 557 ), 'category', false ),
 				),
 				$assigned
 			);
@@ -403,99 +403,138 @@ final class TwinsTest extends TestCase {
 			$this->assertSame( 557, $twin );
 			$this->assertSame(
 				array(
-					array( 551, array( 10 ), 'category', true ),
-					array( 6893, array( 557 ), 'category', true ),
+					array( 551, array( 10 ), 'category', false ),
+					array( 6893, array( 557 ), 'category', false ),
 				),
 				$assigned
 			);
 			$this->assertConditionsMet();
 	}
-		/**
-		 * A re-run writes the German post while the English post has no
-		 * category. terms() must not copy that empty list onto the German
-		 * post: the snapshot says 551 is on term 10, so 6893 stays on the
-		 * German term.
-		 */
+	/**
+	 * A re-run writes the German post while the English post has no
+	 * category. terms() must not copy that empty list onto the German
+	 * post: the snapshot says 551 is on term 10, so 6893 keeps the German
+	 * term. get_object_taxonomies is registered once, here — WordPress()
+	 * also registers it, and WP_Mock keeps the first registration, so a
+	 * second one never runs. wp_set_object_terms is called with three
+	 * arguments from terms() and four from the snapshot restore.
+	 */
 	public function test_an_empty_english_category_does_not_clear_the_german_post(): void {
-			PolylangDouble::mock(
-				array(
-					551  => 'en',
-					6893 => 'de',
+		PolylangDouble::mock(
+			array(
+				551  => 'en',
+				6893 => 'de',
+			),
+			array( 551 => 6893 ),
+			array(
+				10  => 'en',
+				557 => 'de',
+			),
+			array( 10 => 557 ),
+			'en',
+			array(),
+			array(
+				551  => array(
+					'post_type'      => 'post',
+					'post_status'    => 'publish',
+					'post_parent'    => 0,
+					'post_author'    => 1,
+					'menu_order'     => 0,
+					'comment_status' => 'closed',
+					'ping_status'    => 'closed',
+					'post_password'  => '',
+					'post_title'     => 'How to Choose',
 				),
-				array( 551 => 6893 ),
-				array(
-					10  => 'en',
-					557 => 'de',
+				6893 => array(
+					'post_type'   => 'post',
+					'post_status' => 'publish',
+					'post_title'  => 'So wählen Sie',
 				),
-				array( 10 => 557 ),
-				'en',
-				array(),
-				array(
-					551  => array(
-						'post_type'      => 'post',
-						'post_status'    => 'publish',
-						'post_parent'    => 0,
-						'post_author'    => 1,
-						'menu_order'     => 0,
-						'comment_status' => 'closed',
-						'ping_status'    => 'closed',
-						'post_password'  => '',
-						'post_title'     => 'How to Choose',
-					),
-					6893 => array(
-						'post_type'   => 'post',
-						'post_status' => 'publish',
-						'post_title'  => 'So wählen Sie',
-					),
-				)
-			);
-			$this->wordpress();
-			WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'category' ) ) );
-			WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );
-			WP_Mock::userFunction(
-				'wp_get_object_terms',
-				array(
-					'return' => array(),
-					'args'   => array( 551, 'category', array( 'fields' => 'ids' ) ),
-				)
-			);
-			WP_Mock::userFunction(
-				'wp_update_post',
-				array(
-					'times' => 1,
-					'args'  => array(
-						Mockery::on( static fn( array $postarr ): bool => 6893 === $postarr['ID'] ),
-						true,
-					),
-				)
-			);
-			$assigned = array();
-			WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
-				static function ( int $object_id, array $terms, string $taxonomy, bool $append ) use ( &$assigned ): array {
-					$assigned[] = array( $object_id, $terms, $taxonomy, $append );
-					return $terms;
-				}
-			);
+			)
+		);
+		WP_Mock::passthruFunction( 'wp_slash' );
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
+		WP_Mock::userFunction( 'remove_action', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'category' ) ) );
+		WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_post_type', array( 'return' => 'post' ) );
+		WP_Mock::userFunction( 'get_children', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction(
+			'wp_get_object_terms',
+			array(
+				'return' => array(),
+				'args'   => array( 551, 'category', array( 'fields' => 'ids' ) ),
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'times' => 1,
+				'args'  => array(
+					Mockery::on( static fn( array $postarr ): bool => 6893 === $postarr['ID'] ),
+					true,
+				),
+			)
+		);
+		$assigned = array();
+		WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+			static function ( int $object_id, $terms, string $taxonomy, bool $append = false ) use ( &$assigned ): array {
+				$terms      = is_array( $terms ) ? $terms : array( $terms );
+				$assigned[] = array( $object_id, $terms, $taxonomy, $append );
+				return $terms;
+			}
+		);
 
-			$languages = new Languages();
-			$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
-			$twins->post(
-				551,
-				array(
-					'post_title'   => 'So wählen Sie',
-					'post_excerpt' => '',
-					'post_content' => '<p>Deutsch.</p>',
-				),
-				'hybridwechselrichter-vs-ac-speicher'
-			);
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+		$twins->post(
+			551,
+			array(
+				'post_title'   => 'So wählen Sie',
+				'post_excerpt' => '',
+				'post_content' => '<p>Deutsch.</p>',
+			),
+			'hybridwechselrichter-vs-ac-speicher'
+		);
 
-			$this->assertSame(
-				array(
-					array( 551, array( 10 ), 'category', true ),
-					array( 6893, array( 557 ), 'category', true ),
-				),
-				$assigned
-			);
-			$this->assertConditionsMet();
+		$this->assertSame(
+			array(
+				array( 551, array( 10 ), 'category', false ),
+				array( 6893, array( 557 ), 'category', false ),
+				// terms() writes three arguments. The empty English list is
+				// not copied: the German post keeps the snapshot term.
+				array( 6893, array( 557 ), 'category', false ),
+			),
+			$assigned
+		);
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A database that reused the snapshot ids is left alone. Term 10 here is
+	 * not system-design, so the repair writes nothing and does not report a
+	 * restore.
+	 */
+	public function test_a_reused_term_id_is_not_assigned(): void {
+		PolylangDouble::mock(
+			array( 551 => 'en' ),
+			array(),
+			array( 10 => 'en' ),
+			array(),
+			'en',
+			array(),
+			array( 551 => array( 'post_type' => 'post' ) ),
+			array( 10 => array( 'slug' => 'not-the-snapshot' ) )
+		);
+			WP_Mock::userFunction( 'wp_set_object_terms', array( 'times' => 0 ) );
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+
+		$this->assertFalse( $twins->restore_post_category( 551 ) );
+		$this->assertSame( 0, $twins->restore_post_categories() );
+		$this->assertConditionsMet();
 	}
 }

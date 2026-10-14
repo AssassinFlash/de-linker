@@ -81,7 +81,7 @@ PRODUCT_CATEGORIES: dict[str, tuple[str, str]] = {
 # already does this). The earlier "no German archive URL, slug follows the
 # German name" note was wrong: it minted systemauslegung, and Polylang then
 # 301'd /de/category/system-design/ back to the English term.
-POST_CATEGORIES: dict[str, tuple[str, str]] = {
+POST_CATEGORY_NAMES: dict[str, tuple[str, str]] = {
     "System Design": ("Systemauslegung", "system-design"),
     "Battery Storage": ("Batteriespeicher", "battery-storage-blog"),
     "Installation & Commissioning": (
@@ -361,8 +361,8 @@ class Migration:
             name = html_unescape(term["name"])
             if row["kind"] == "product_cat" and term["slug"] in PRODUCT_CATEGORIES:
                 de_name, de_slug = PRODUCT_CATEGORIES[term["slug"]]
-            elif row["kind"] == "category" and name in POST_CATEGORIES:
-                de_name, de_slug = POST_CATEGORIES[name]
+            elif row["kind"] == "category" and name in POST_CATEGORY_NAMES:
+                de_name, de_slug = POST_CATEGORY_NAMES[name]
             elif row["kind"] in ATTRIBUTE_TAXONOMIES and name in ATTRIBUTE_TERMS:
                 de_name, de_slug = ATTRIBUTE_TERMS[name], ""
             else:
