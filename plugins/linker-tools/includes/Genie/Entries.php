@@ -421,6 +421,13 @@ class Entries {
 					if (!trigger) {
 						return;
 					}
+					// An anchor opener (the empty Proforma request's Genie
+					// pill) keeps its href as the no-JavaScript fallback.
+					// With the dock present the click opens the panel here,
+					// so the navigation must not fire on top of it.
+					if (trigger.tagName === 'A') {
+						event.preventDefault();
+					}
 					// A page chip carries its label as the first question. A plain
 					// opener (the bubble, a retry) has no payload and must not ask.
 					open(trigger.getAttribute('data-ask-message') || '');

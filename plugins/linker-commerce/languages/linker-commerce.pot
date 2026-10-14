@@ -3370,5 +3370,5 @@ msgid "Discuss your project"
 msgstr ""
 
 #: includes/Presentation/Shortcodes.php
-msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
+msgid "Browse the products now. Adding to the solution draft is possible only after your account has been reviewed."
 msgstr ""

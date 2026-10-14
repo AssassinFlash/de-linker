@@ -71,6 +71,9 @@ final class SearchScopeTest extends TestCase {
 		$scope->scope( $this->query( array( 'product' ) ) );
 		$this->assertNull( $this->scoped, 'A request that names its post type keeps control.' );
 
+		$scope->scope( $this->query( array( 'post', 'page' ) ) );
+		$this->assertNull( $this->scoped, 'A list that names its post types keeps control.' );
+
 		$scope->scope( $this->query( 'product' ) );
 		$this->assertNull( $this->scoped, 'An explicit product search is not rewritten to posts.' );
 	}

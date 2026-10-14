@@ -630,7 +630,6 @@ class Step:
         title: tuple[str, str] | None = None,
         seo: tuple[str, str] | None = None,
         status: str | None = None,
-        menu_images: bool = False,
     ) -> None:
         self.key = key
         self.post_id = post_id
@@ -642,7 +641,6 @@ class Step:
         self.title = title
         self.seo = seo
         self.status = status
-        self.menu_images = menu_images
 
     def planned(self, content: str) -> str:
         return self.apply(content, report=lambda message: None)
@@ -677,36 +675,40 @@ class Step:
             if count:
                 content = content.replace(old, new)
                 report(f"{self.key}: {count}x {self._brief(old)} -> {self._brief(new)}")
-        if self.menu_images:
-            content = self.defer_menu_images(content, report)
-        return content
-
-    @staticmethod
-    def defer_menu_images(content: str, report: Any) -> str:
-        """The header's menu images become data-src: no request before the
-        visitor opens the menu (old ticket 193; assets/menu-images.js of
-        linker-tools hydrates the open menu's). The eager brand logo keeps
-        its src. Every other image of the partial defers: the desktop menu
-        cards carry loading="lazy", the mobile rail cards carry no loading
-        attribute at all (5 webp, about 1.4 MB together) -- matching the
-        lazy ones alone left those loading on every page."""
-
-        def defer(match: re.Match[str]) -> str:
-            tag = match.group(0)
-            tag = tag.replace('src="', 'data-src="', 1)
-            tag = tag.replace('srcset="', 'data-srcset="', 1)
-            return tag
-
-        pattern = r'<img(?![^>]*loading="eager")(?![^>]*data-src=")[^>]*>'
-        count = len(re.findall(pattern, content))
-        if count:
-            content = re.sub(pattern, defer, content)
-            report(f"menu images: {count}x src -> data-src")
         return content
 
     @staticmethod
     def _brief(text: str) -> str:
         return repr(text[:72])
+
+
+# ---------------------------------------------------------------------------
+# The header partials' images.
+# ---------------------------------------------------------------------------
+IMAGE_TAG = re.compile(r"<img\b[^>]*>", re.S)
+
+
+def unresolved_menu_images(content: str) -> list[str]:
+    """The header's images that would not load, one fault per image.
+
+    Spec 12 item 8 (2026-10-14) is the live site's own form: every menu
+    image resolves through a plain src, and the browser's own loading
+    attribute decides when it is fetched (the live checkpoint carries the
+    desktop menu cards as `src=... loading="lazy"` and the drawer rail as
+    plain `src`; see docs/specs/12-site-chrome.md item 8). There is no
+    hydration contract: a deferred data-src becomes a photo only if a
+    script sees the exact open event, which is how the panel and drawer
+    thumbnails rendered as empty boxes. This is the guard that keeps a
+    re-run or a hand edit from writing that form back.
+    """
+
+    faults: list[str] = []
+    for tag in IMAGE_TAG.findall(content):
+        if "data-src" in tag:
+            faults.append(f"deferred to data-src: {tag[:90]}")
+        elif 'src=""' in tag or 'src="' not in tag:
+            faults.append(f"no resolving src: {tag[:90]}")
+    return faults
 
 
 # The Site Detail links fold into the configurator's roof step. Rules, not
@@ -728,7 +730,17 @@ LINK_RULES_DE: list[tuple[str, str]] = [
 
 def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
     """The whole edit, in write order: partials, tool pages, then the
-    marketing surfaces."""
+    marketing surfaces.
+
+    The header's menu images are not this migration's business. Both
+    partials resolve their thumbnails through their own src — the live
+    site's own form (spec 12 item 8, rewritten 2026-10-14) — and an
+    earlier version of this file deferred them to data-src after its
+    pairs ran, so a re-run wrote the empty-box form back onto the
+    instance. That transform is retired and `do_verify` refuses the
+    deferred form; instance content that still carries it heals through
+    `present`, which writes the repo partials verbatim.
+    """
     plan: list[Step] = [
         Step(
             "header-en",
@@ -736,7 +748,6 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
             ids["header"]["en"],
             HEADER_EN,
             HEADER_EN_REMOVE,
-            menu_images=True,
         ),
         Step(
             "header-de",
@@ -744,7 +755,6 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
             ids["header"]["en"],
             HEADER_DE,
             HEADER_DE_REMOVE,
-            menu_images=True,
         ),
         Step(
             "footer-en",
@@ -1050,6 +1060,17 @@ def do_verify(wp: WP) -> int:
         post = read_post(wp, step.post_id)
         if step.status:  # drafted: its content is retired with the page
             continue
+        if step.key.startswith("header-"):
+            # The menu thumbnails of both header partials must resolve
+            # through their own src (spec 12 item 8): the deferred form is
+            # the empty-box defect, and `present` is what rewrites the
+            # instance's partial from the repository.
+            for fault in unresolved_menu_images(post["post_content"]):
+                print(
+                    f"FAIL {step.key}: menu image would not resolve ({fault});"
+                    " run `present` to write the repo partials"
+                )
+                ok = False
         for name in OLD_NAMES:
             if name in post["post_content"]:
                 print(f"FAIL {step.key}: old name still present: {name!r}")

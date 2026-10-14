@@ -346,7 +346,7 @@
 
 > 共同前提（裁定 12）：以下全部条目都是 t110 @ c51cb2d 期截图的候选，复核=在当前 main 本地与当前线上同 URL 重新成对拍摄后对照下述看点；复核通过（差异消失或已修）即关闭，仍在即定 live bug。
 >
-> 线上复核标记（2026-10-14 线上复核轮追加，判定与证据详见文末「线上复核轮（2026-10-14）」）：【线上仍在】=当前线上症状复现，定 live bug，进修复队列；【部分仍在】=族内一部分面销账、其余复现（含族 9/10/11 的 DE 侧已销账、EN 侧仍在），进修复队列；【已销账】=当前线上症状消失；【需业主】=须业主裁定（本批为族 24）；【无法核】=本轮无法核实（本批 0 条）。
+> 线上复核标记（2026-10-14 线上复核轮追加，判定与证据详见文末「线上复核轮（2026-10-14）」）：【线上仍在】=当前线上症状复现，定 live bug，进修复队列；【部分仍在】=族内一部分面销账、其余复现（含族 9/10/11 的 DE 侧已销账、EN 侧仍在），进修复队列；【已销账】=当前线上症状消失；【需业主】=须业主裁定（本批为族 24；2026-10-15 已按 Q5a 裁定原文收口为 intentional，见「线上复核轮」族 24 收口段）；【无法核】=本轮无法核实（本批 0 条）。
 
 1. 【线上仍在】**Solution utility 营销页结构差**（4 行：EN/DE × 1440/390）。要点：页头透明压图 vs 白底条、英雄区字级变大、中段 CTA 横带缺失（EN "A storage solution built around the whole project." / DE "Ihr Großspeicherprojekt als Gesamtlösung gedacht."）、「How to work with Linker」缩略图一行四张 vs 2×2、390 下画布宽 444/412≠390 横向溢出、Δh 高达 +3505/+4195。**复核建议**：当前线上 Solution utility 页 EN 与 DE 各拍 1440/390 全页，与当前 main 本地同 URL 对照：看页头形态、英雄区字级、中段 CTA 横带存废、缩略图栅格、390 横向溢出与页高差是否仍在。
 2. 【线上仍在】**Category EN 目录页组成差**（18 行：accessories/all-in-one/backup-power/battery-systems/commercial-storage/ems/ev-chargers/inverters/meters × EN × 1440/390）。要点：面包屑缺父级段（COMMERCIAL STORAGE / ACCESSORIES）、芯片行 3→1 且 Filters 徽标计数 1→0、侧栏 facet 组成差（Category 嵌套子项缺失、Power 档项与 AC power min/max 组件及 Project Brief CTA 盒消失、Application/Phase 新增）、逐卡规格字段选列变化、SAJ 卡标题由完整型号变仅「SAJ」、GoodWe BAT-C 选型 832.0V→166.4V。**复核建议**：当前线上九个分类页 EN 各拍 1440/390，与当前 main 本地对照：面包屑层级、搜索行芯片与徽标计数、侧栏 facet 逐项（含 Project Brief 盒）、卡片规格字段与选型值。
@@ -371,7 +371,7 @@
 21. 【部分仍在】**contact/installers/services DE 版面差未归因**（6 行）。要点：Δh −371/−499/+53/+91/0/+247，大通道差占比 72%–90%，调色/字体裁定不足以解释；services-de-1440 §4.3 裁图只见页头差，解释不了 37.71% 全页差。**复核建议**：当前线上三页 DE 两视口，对照当前 main 本地，逐段定位版面差来源（表单/嵌入块/联系带/短代码字面量，参照 EN 同页已核形态）。
 22. 【部分仍在】**blog DE 缺图/重定向/版面差**（6 行：bloglist/blogarchive/blogpost × 1440/390）。要点：blogarchive-de 被 301 到英文分类页（t110 侧 lang=en-US，线上同 URL 200 de-DE）；bloglist/blogpost 结构差 61%–84%、Δh 最大 −1,152，t110 文章分类关系为 0（§1）。**复核建议**：当前线上 /de/category/system-design/ 与德语博客列表/单页，对照当前 main 本地：先核重定向是否仍在（curl 状态码与 lang），再核缺图与相关块。
 23. 【线上仍在】**search DE 结果集差**（2 行）。要点：本地比线上长 635/1,781px（+1,781 为全册最大页高差），疑结果集/范围或卡片呈现差异。**复核建议**：当前线上德语搜索页同查询两视口，对照当前 main 本地：结果集与卡片构成。
-24. 【需业主】**A1 页头复刻债残余**（1 行，贯穿 28 态页头带 432–450）。要点：1440 下划线位置/宽度差（线上 y=57–58/x=1184–1205 22px vs 本地 y=61–62/x=1183–1206 24px）、激活色 (12,127,115) vs #099888、字重 600 vs 750、缺兄弟分隔线、390 字形左移 4px；裁定 4（2026-10-13）列为待对齐修复项而非已锁微调。**复核建议**：当前线上页头 EN/DE 两视口，对照当前 main 本地逐项量上述五个点位；并逐项对 Q5a 锁定清单确认是否属已锁微调，不属于则对齐修复。
+24. 【需业主→10-15 已收口】**A1 页头复刻债残余**（1 行，贯穿 28 态页头带 432–450）。要点：1440 下划线位置/宽度差（线上 y=57–58/x=1184–1205 22px vs 本地 y=61–62/x=1183–1206 24px）、激活色 (12,127,115) vs #099888、字重 600 vs 750、缺兄弟分隔线、390 字形左移 4px；裁定 4（2026-10-13）列为待对齐修复项而非已锁微调。**复核建议**：当前线上页头 EN/DE 两视口，对照当前 main 本地逐项量上述五个点位；并逐项对 Q5a 锁定清单确认是否属已锁微调，不属于则对齐修复。**2026-10-15 收口：** 按 Q5a 裁定原文（`docs/acceptance/2026-10-12/header-live-sync/ACCEPTANCE.md:5`）五项经重量后两个非差异（激活色、字重新旧线上渲染未变）、三个属重建件内部视觉微调（下划线几何、分隔线、390 位移），判 intentional，见「线上复核轮」族 24 收口段。
 25. 【已销账】**C8 对比页图片列空（登记册条目）**（1 行）。要点：历史实例 _thumbnail_id=0、对比图片列为空；本轮 compare-ids-en-1440 目视两侧产品图均在，问题未复现，但当前实例值未核。**复核建议**：先查当前实例 _thumbnail_id，再在当前线上 compare 带 ids 表（ids=6530,6529）与当前 main 本地对照图片列。
 
 ## 未拍 / 无证据清单（50 行）
@@ -466,7 +466,7 @@
 
 **方法**：按裁定 12，对缺陷候选清单 25 族在当前线上做复核——当前线上 GET-only 重拍 97 面，与旧线上参考截图对照。证据两份：探针 `.scratch/live-recheck/dom-counts.json`（lang/title/resultsLine/filterOpen/shortcodes/scrollWidth/scrollHeight/bodyHead/chipText/img 计数等）与截图 `.scratch/live-recheck/shots/`（当前线上全页与裁区、旧线上参考、旧线上\|新线上\|t110 对照条）。判型口径：**结构判型不判色**——只核组成、布局、计数、短代码字面量、页高与画布宽等结构性事实；已裁定的冷色调与字体观感差不作判定依据。短代码探针命中 `[linker_contact_invitation` 字面量即自动判 reproduced。全程 GET-only，无任何写操作。本节数字全部来自上述探针与截图测量（经复核结论转录），本台账不新造；对当前本地 main 的逐像素对照不在本轮材料内（协议 live-only）。
 
-**判定汇总**：复核结论 28 条（族 9/10/11 因 DE 侧与 EN 侧分开复核各占两条）——reproduced 11、fixed 11、partial 5、needs-owner 1、无法核 0。归并到 25 族口径（即上文缺陷候选清单的族号标记）：【线上仍在】8 族（1、2、4、13、15、17、20、23）、【部分仍在】8 族（9、10、11、12、14、16、21、22）、【已销账】8 族（3、5、6、7、8、18、19、25）、【需业主】1 族（24）、【无法核】0。销账只针对本轮复核覆盖的当前线上症状；清单内 t110 期定性行与数字不改动。
+**判定汇总**：复核结论 28 条（族 9/10/11 因 DE 侧与 EN 侧分开复核各占两条）——reproduced 11、fixed 11、partial 5、needs-owner 1、无法核 0。归并到 25 族口径（即上文缺陷候选清单的族号标记）：【线上仍在】8 族（1、2、4、13、15、17、20、23）、【部分仍在】8 族（9、10、11、12、14、16、21、22）、【已销账】8 族（3、5、6、7、8、18、19、25）、【需业主】1 族（24，2026-10-15 已按 Q5a 裁定原文收口为 intentional，见族 24 收口段；收口后 needs-owner 归零）、【无法核】0。销账只针对本轮复核覆盖的当前线上症状；清单内 t110 期定性行与数字不改动。
 
 **销账口径（live-only 协议的闭合逻辑与边界）**：本轮未拍当前 main 本地图，销账的闭合逻辑=当前线上证据+t110 期本地记录两侧对照——自 t110 后线上已从 main 重新部署（采集时点告示：此后 main 已前进一百多个提交；族 1/6/7/8 的当前线上页高与台账 t110 侧值逐像素相等或全等，亦佐证当前线上跑的是 t110 期或更新构建），故当前线上视同当前构建的代表面。对症状本在 t110 本地侧的族（族 3 本地落错页、族 5 本地缺浮动钮、族 18/19 本地页尾 Genie 块泄漏），线上侧证据不能单独证明当前本地已修复——这些族的【已销账】含义是「台账记录的 live-vs-t110 差异在当前线上不再复现」（当前线上与旧线上同态，或症状元素在线上消失）；严格按上文共同前提（当前 main 本地与当前线上成对重拍）尚缺当前本地一侧，若后续当前本地复拍与当前线上不一致，相关销账翻回。族 6/7/8/25 同理适用该口径。
 
@@ -500,26 +500,28 @@
 | 21 · contact/installers/services DE 版面差未归因 | 部分仍在（partial） | 版面差来源现已定位且仍在：contact-de-1440/390 form=0+德语兜底行（bodyHead「Falls das Formular nicht verfügbar ist…」），Δh −371/−499 逐像素吻合；services-de 两视口探针 shortcodes=["[linker_contact_invitation"]，截图中部字面量带。installers-de 结构齐（三工具块在），+53/+91 与旧线上 9714/10843 的差可由裁定改名（Lösungskonfigurator – Dachdetails 换行）解释，非缺块。 |
 | 22 · blog DE 缺图/重定向/版面差 | 部分仍在（partial） | 重定向复现：探针 blogarchive-de-1440 请求 /de/category/system-design/ 最终 URL=/category/system-design/、lang=en-US、title "System Design"，截图即英文分类页（且其文章段亦空）。blogpost-de 复现：shortcodes 含 [linker_contact_invitation，截图中部字面量、Kategorie 空、「Mehr vom Blog」相关区整段无卡，页高 3864 vs 旧线上 4625（Δh −761，当前线上 vs 旧线上；台账 t110 期为 −1,045/−1,152，数值不符、方向一致，差异原因未定位）。bloglist-de 缺图症状已消：img=32=旧线上计数，截图各卡带图；当前线上与旧线上页高差仍为 −46（数值与台账 t110 期 bloglist-de-1440 的 −46 相同；「已修」指缺图症状，不指页高差）。 |
 | 23 · search DE 结果集差 | 线上仍在（reproduced） | search-de-1440/390 当前线上返回德语 GoodWe ESA 产品条目卡（灰占位图）+分页 1 2 3 … 8 »；旧线上（de-parity 套）为 7 篇带图德语博客卡。页高 4191/7976 vs 旧 3556/6195，Δh +635/+1781 与台账 +635/+1,781 逐像素吻合。 |
-| 24 · A1 页头复刻债残余 | 需业主（needs-owner） | 五点位在当前线上逐一重量（对比 freshdiff-rerun/freshdiff-full 旧线上同 key）：①1440 下划线旧线上 y57-58/x1184-1205/22px → 新线上 y61-62/x1183-1206/24px，恰等于台账记录的本地 t110 值；390 旧 y53-54/x237-258/22px → 新 y57-58/x240-263/24px。②激活色渲染值新旧线上均为 (12,127,115)（台账 #099888 为规则值），未变。③字重未变：EN 字形暗像素量 57→61、字高 y39/40-48 两侧相同。④兄弟分隔线旧线上有（1440 EN x1217、DE x1314、390 x270，1px 灰柱）而新线上全部消失。⑤390 字形新线上右移约 3-4px（EN x237→240、DE x284→288），与台账记录的本地左移 4px 方向相反。五点位中三个的线上基线已移动（两个落到台账本地形态）、两个不变；Q5a 锁定清单不在手，是否属已锁微调须业主裁定，不自行翻案。 |
+| 24 · A1 页头复刻债残余 | 需业主→已收口（2026-10-15，见下方收口段） | 五点位在当前线上逐一重量（对比 freshdiff-rerun/freshdiff-full 旧线上同 key）：①1440 下划线旧线上 y57-58/x1184-1205/22px → 新线上 y61-62/x1183-1206/24px，恰等于台账记录的本地 t110 值；390 旧 y53-54/x237-258/22px → 新 y57-58/x240-263/24px。②激活色渲染值新旧线上均为 (12,127,115)（台账 #099888 为规则值），未变。③字重未变：EN 字形暗像素量 57→61、字高 y39/40-48 两侧相同。④兄弟分隔线旧线上有（1440 EN x1217、DE x1314、390 x270，1px 灰柱）而新线上全部消失。⑤390 字形新线上右移约 3-4px（EN x237→240、DE x284→288），与台账记录的本地左移 4px 方向相反。五点位中三个的线上基线已移动（两个落到台账本地形态）、两个不变；Q5a 锁定清单不在手，是否属已锁微调须业主裁定，不自行翻案。 |
 | 25 · C8 对比页图片列空（登记册条目） | 已销账（fixed） | compare-ids-en-1440 当前线上（/compare-products/?ids=6530,6529）裁图：Products 行两张产品缩略图均在（GW60K-STS-G10、GW30K-STS-G10），图片列不空；探针 img 计数 16，比 compare-empty-en-1440 的 14 恰多 2，与两张产品图吻合。图片列空症状在当前线上不存在。实例 _thumbnail_id 数据库值本会话无通道核查（未运行该项），结论以渲染证据为准；表内字段选列与旧线上不同属 compare 页重建裁定范围，不计本族。 |
 
 ### 修复队列（全部 reproduced 与 partial 条目，共 16 条；fixNote 照抄复核结论——仅族 11 一条经二轮审读收敛措辞，见文末「复核轮审读处置」第 10 条）
 
+> **2026-10-15 校正（主会话按裁定记录）：** ①族 13/20 空态 CTA 实为**两枚**——第三枚原指 batch import，业主 2026-10-11 终裁「不做」（`docs/audit/2026-10-11-surface-inventory.md` GAP-11），其原指向端点 /my-account/bulk-order/ 不存在；②族 2 的 Batch item numbers 与 Nameplate photo 按业主 2026-10-13 再确认「不补齐」（`docs/specs/13-genie.md` C 节），不再列为恢复项，工具行只修 Filters 徽标计数；③族 2 的 Application/Phase 改为逐货架旧线上证据口径；BAT-C 832.0 V 已按手册 Nominal Voltage 落定。
+
 | 族号 | 判定 | fixNote |
 |---|---|---|
 | 1 | reproduced | 在部署实例注册/修复 linker_contact_invitation 短代码处理器使中段 CTA 横带渲染，恢复缩略图一行四张栅格与页头透明压图形态，消除 390 下 444/412 画布横向溢出。 |
-| 2 | reproduced | 按旧线上恢复目录页模板组成：面包屑补父级分类段（term 父链）；工具行恢复 Batch item numbers 与 Nameplate photo 芯片并修 Filters 徽标计数（旧线上空态为 1）；侧栏恢复 Category 嵌套子项展开、Power 档位、AC power min/max 组件与 Project Brief CTA 盒，新增的 Application/Phase facet 及不收敛的 facet 计数（inv Home 38→49、1-phase 10→16）需逐项裁定或移除；卡片规格选列、SAJ 卡完整型号标题、GoodWe BAT-C 默认选型值按旧线上恢复（166.4 V 若为手册修正需补裁定记录）。 |
+| 2 | reproduced | 按旧线上恢复目录页模板组成：面包屑补父级分类段（term 父链）；工具行修 Filters 徽标计数（Batch item numbers 与 Nameplate photo **不恢复**——业主 2026-10-13 再确认不补齐，spec 13）；侧栏恢复 Category 嵌套子项展开、Power 档位、AC power min/max 组件与 Project Brief CTA 盒；Application/Phase 按旧线上逐货架证据处理（2026-10-15 校正：inverters 两维、accessories 仅 Application、cstorage/ems/ev/meters/aio/bat/backup 两维均无、商城两维）并补钉住该映射的夹具测试，facet 计数随筛选收敛（inv Home 38→49、1-phase 10→16 的漂移随之消失）；卡片规格选列、SAJ 卡完整型号标题按旧线上恢复；GoodWe BAT-C 832.0 V 已按手册 Nominal Voltage 落定为正确值（166.4 V 系 Pack 电压，不采用）。 |
 | 4 | reproduced | 注册 linker_contact_invitation 短代码使 EPC 色带（surface="epc"）正常渲染为设计化联系带，页高差随色带恢复收敛。 |
 | 9（EN 侧） | reproduced | 恢复商城/分类侧栏 Phase/Power/AC power/Usable energy/Project Brief 各段的完整渲染（当前 Brand 后截断、Phase 标题破损）；并核卡片 compare 控件 markup 变更后已选态（绿实心）是否仍生效。 |
 | 10（EN 侧） | reproduced | 让筛选态完整落地：渲染 GoodWe 芯片+Clear all 与 390 徽标计数；sort=name 真正作用到结果序（首卡应落 ESA）；facet 计数随激活筛选收敛；ESA Series 家族卡回到列表。 |
 | 11（EN 侧） | reproduced | 恢复 390 下筛选抽屉开启与面板：探针等待 #catalog-filter-open 8s 超时（选择器不存在或 markup 已变更，等价物存否未证实），原缺陷行自认的「采集点击未生效」疑点未排除——先人工点验当前线上 Filters 钮的开合行为，再修复/恢复点击后打开含 facet+Clear/Show products 的抽屉并复测。 |
-| 12 | partial | 缩略图空盒按 C8 缺图方向修线上菜单图片引用（面板/抽屉缩略图 src 不解析或懒加载未触发）；切换件形态、抽屉人形图标、390 圆钮存废三项线上已变成台账 t110 形态，连 Q5a 锁定清单报业主裁定是已锁微调还是线上改版。 |
-| 13 | reproduced | 按 2026-10-10 商务全链补充裁定，把旧线上空态设计层（图标+说明+三 CTA）与询盘入口左排布局+顾问药丸（现名 Genie）移植进新实现的 LC 模板/WindPress 层，措辞保留已裁定新名。 |
+| 12 | partial | 缩略图空盒按 C8 缺图方向修线上菜单图片引用（面板/抽屉缩略图 src 不解析或懒加载未触发）；切换件形态、抽屉人形图标、390 圆钮存废三项线上已变成台账 t110 形态——**2026-10-15 收口：三项均判 intentional**（前两项属页头重建件微调、圆钮属 Genie 坞 C1/C2 移动形态；见族 24 收口段），不进修复队列。 |
+| 13 | reproduced | 按 2026-10-10 商务全链补充裁定，把旧线上空态设计层（图标+说明+**两** CTA：Browse products / Sign in or register——第三枚原指 batch import，业主 2026-10-11 终裁不做、端点不存在，不再移植）与询盘入口左排布局+顾问药丸（现名 Genie）移植进新实现的 LC 模板/WindPress 层，措辞保留已裁定新名。 |
 | 14 | partial | 恢复 contact 页询盘表单块渲染（旧线上为完整表单卡 form=2），兜底行只在表单不可用时出现。 |
 | 15 | reproduced | 实现 linker_contact_invitation 短代码的设计化渲染（TECHNICAL PARTNERSHIP 联系带），390 英雄区恢复双列横排。 |
 | 16 | partial | 恢复文章→分类关系（归档卡与单页 Category/相关文章据此渲染），并渲染单页中部短代码块。 |
 | 17 | reproduced | 搜索结果集收回到博客文章范围（带图文章卡），移除产品条目与分页。 |
-| 20 | reproduced | 与族 13 同一修复在 DE 侧同步落地：空草稿恢复图标+说明+三 CTA 的设计化空态，Proforma-Anfrage 恢复左排布局+Genie 药丸入口，落点限 LC markup/WindPress 样式。 |
+| 20 | reproduced | 与族 13 同一修复在 DE 侧同步落地：空草稿恢复图标+说明+**两** CTA（Produkte ansehen / Anmelden oder registrieren）的设计化空态，Proforma-Anfrage 恢复左排布局+Genie 药丸入口，落点限 LC markup/WindPress 样式。 |
 | 21 | partial | contact-de 恢复表单块、services-de 实现短代码联系带（同 EN 族 14/15 的修复）。 |
 | 22 | partial | 消除 /de/category/ 英文 slug 的 301（按 DE-PARITY-2026-10-13 §4.1 二选一：德语词项 slug 对齐线上 URL 或补映射）；单页同族 16 修分类关系与短代码。 |
 | 23 | reproduced | 同族 17：德语搜索收回博客文章范围，移除产品条目与分页。 |
@@ -541,6 +543,8 @@
 | 25 | compare-ids-en-1440 两张产品缩略图均在，img 计数 16 比空态 14 恰多 2，图片列空症状不存在。边界：实例 _thumbnail_id 数据库值本会话无通道核查（未运行该项），结论以渲染证据为准。 |
 
 族 24（A1 页头复刻债残余）判 needs-owner：五点位中三个的线上基线已移动（其中两个落到台账记录的 t110 形态）、两个不变；是否属 Q5a 已锁微调须业主裁定，本台账不自行翻案，也不进修复队列或销账清单。
+
+**族 24 收口段（2026-10-15 主会话，Q5a 原文回引）。** Q5a 裁定原文（`docs/acceptance/2026-10-12/header-live-sync/ACCEPTANCE.md:5`）：『match live header composition, positions and density; **only visual adjustments**』（页头与线上在组成、位置、密度上一致；允许视觉微调——即『微调已锁』）。据此对上文五点位收口：**①激活色、②字重两项经重量为非差异**（新旧线上渲染值均未变：激活色两侧 (12,127,115)，台账所记 #099888 是旧线上的 CSS 规则值；字形暗像素量 57→61、字高相同）——不进任何队列。**③下划线几何（y+4px、22→24px）、④旧线上 1px 分隔竖线未随重建、⑤390 字形 +3~4px** 三项均为页头重建件（语言切换件，`chrome.css` 的 `lnk-lang-half` 规则族，由 header-live-sync 线 b01f46e/5cd1c47 建立）的内部视觉微调，属 Q5a『only visual adjustments』范围，**判 intentional，不进修复队列**。族 12 连坐三项同判：切换件形态与抽屉底部图标（账户人形）同属重建件微调；390 悬浮圆钮缺位属 Genie 坞 C1/C2 移动形态（2026-10-12 已批，裁定 2）。**needs-owner 归零**。边界：若业主日后要求页头与旧线上逐像素对齐（22px、带分隔线），以一条独立小修回改，不改 Q5a 本身。
 
 ### 复核轮审读处置（2026-10-14 二轮，独立审读 12 条）
 

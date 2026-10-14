@@ -368,6 +368,8 @@ final class EntriesTest extends TestCase {
 	 * The loader consumes data-ask-message as the first question, and a
 	 * missing attribute opens with nothing. Deleting that read sends the
 	 * catalogue label ("Ask Genie") as the first turn, so this fixture fails.
+	 * An anchor opener (the empty Proforma request's pill) must ask without
+	 * navigating away — its href is the no-JavaScript fallback only.
 	 *
 	 * The loader is the inline script the dock prints. Running it needs a
 	 * process, which WordPress's filesystem layer does not provide.
@@ -395,7 +397,7 @@ final class EntriesTest extends TestCase {
 			$fixture,
 			<<<'JS'
 class El {
-	constructor(name) { this.nodeName = name; this.attrs = {}; this.hidden = true; this.children = []; this.textContent = ''; this.className = ''; this.src = ''; }
+	constructor(name) { this.nodeName = name; this.tagName = name.toUpperCase(); this.attrs = {}; this.hidden = true; this.children = []; this.textContent = ''; this.className = ''; this.src = ''; }
 	addEventListener() {}
 	setAttribute(name, value) { this.attrs[name] = String(value); }
 	getAttribute(name) { return Object.prototype.hasOwnProperty.call(this.attrs, name) ? this.attrs[name] : null; }
@@ -429,8 +431,14 @@ window.addEventListener('linker-genie-ready', function () {
 window.addEventListener('linker-genie-open', function (event) {
 	asks.push(event.detail && event.detail.message);
 });
+var events = [];
 function click(button) {
-	window.dispatchEvent({ type: 'click', target: button, bubbles: true });
+	var event = {
+		type: 'click', target: button, bubbles: true, defaultPrevented: false,
+		preventDefault() { this.defaultPrevented = true; },
+	};
+	events.push(event);
+	window.dispatchEvent(event);
 }
 var labelled = document.createElement('button');
 labelled.setAttribute('data-linker-genie-open', '');
@@ -444,7 +452,19 @@ asking.setAttribute('data-ask-message', 'Where is my Proforma?');
 asking.textContent = 'Where is my Proforma?';
 document.body.appendChild(asking);
 click(asking);
-process.stdout.write(JSON.stringify(asks));
+// The empty Proforma request's pill is an anchor: the dock opens here, so
+// the click must not also navigate to the pill's href.
+var pill = document.createElement('a');
+pill.setAttribute('data-linker-genie-open', '');
+pill.setAttribute('href', '/genie/');
+pill.textContent = 'Genie';
+document.body.appendChild(pill);
+click(pill);
+process.stdout.write(JSON.stringify({
+	asks: asks,
+	buttonPrevented: events[0].defaultPrevented || events[1].defaultPrevented,
+	anchorPrevented: events[2].defaultPrevented,
+}));
 JS
 		);
 		$run = proc_open(
@@ -463,7 +483,10 @@ JS
 		$code = proc_close( $run );
 		unlink( $fixture );
 		$this->assertSame( 0, $code, $err );
-		$this->assertSame( array( '', 'Where is my Proforma?' ), json_decode( (string) $out, true ) );
+		$result = (array) json_decode( (string) $out, true );
+		$this->assertSame( array( '', 'Where is my Proforma?', '' ), $result['asks'] ?? null, 'every opener asks, the anchor included' );
+		$this->assertFalse( (bool) ( $result['buttonPrevented'] ?? true ), 'a button opener has no default action to cancel' );
+		$this->assertTrue( (bool) ( $result['anchorPrevented'] ?? false ), 'the anchor opener must not navigate away from the page' );
 		$this->assertConditionsMet();
 	}
 	// phpcs:enable WordPress.WP.AlternativeFunctions, WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec, WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open
