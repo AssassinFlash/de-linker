@@ -35,7 +35,7 @@ just wp t110 eval-file /Users/chesterjohn/Documents/de-linker/.scratch/coverage/
 
 ## 2. 截图与采集脚本位置
 
-- 截图：`.scratch/coverage/shots/`（217 张，不进仓库）；H 段的成对图：`.scratch/coverage/h-pairs/`（18 张：9 面 × local/live），像素指标 `.scratch/coverage/h-pairs-metrics.json`。
+- 截图：`.scratch/coverage/shots/`（260+ 张，不进仓库）；H 段的成对图：`.scratch/coverage/h-pairs/`（18 张：9 面 × local/live，另加实例恢复 Inverter side 后的 `pdp-en-{1440,390}-local-after-restore.png` 两张），像素指标 `.scratch/coverage/h-pairs-metrics.json`。
 - 采集脚本：`.scratch/coverage/lib.mjs`（登录/协议/探针）、`capture-B.mjs`、`capture-C1.mjs`、`capture-C2.mjs`（`FILTER=` 分组）、`capture-D.mjs`、`capture-D2.mjs`、`capture-EG.mjs`、`capture-F.mjs`、`capture-F2.mjs`、`capture-F3.mjs`、`capture-H.mjs`、`analyse-pairs.py`。
 - 每次运行的 DOM 探针原样落 `.scratch/coverage/probe-*.json`（本文每个数字都能在对应文件里找到）。
 
@@ -66,7 +66,7 @@ Woo 默认的 `orders`/`view-order` 端点在本站 404（`/my-account/orders/` 
 | # | 行 | 结论 | 证据 |
 |---|---|---|---|
 | C1 | Registration 五态 | captured+功能核验：本构建的注册是三段式表单（`ol.linker-auth-steps`：1 Company / 2 Contact and address / 3 Sign-in details，全部同屏可填），五态按此拍：①step1 空 ②公司已填 ③联系/地址已填 ④提交待审（页转「Your account is under review」/「Ihr Konto wird geprüft」，且 WP-CLI 读回 `linker_approval_status=pending`）⑤校验错误（`x@y` → 「Error: Please provide a valid email address.」/「Fehler: Bitte geben Sie eine gültige E-Mail-Adresse an.」） | `registration-step1-empty-*`、`-step2-company-*`、`-step3-account-*`、`-submitted-pending-*`、`-validation-error-*`（EN/DE × 1440/390，20 张）；`probe-C1.json` |
-| C2 | Commerce approval admin 三态 | **captured+功能核验失败 → 本轮修复**：后台档案页 `wp-admin/user-edit.php` 的三个按钮（approve/restrict/reject）在本构建里点不动（POST 落到 WordPress 错误页，状态保持 pending）；根因 = 插件块的 `action=linker_approval` 之后还有核心自己的隐藏 `action=update`，PHP 重复键取末值 → 请求路由到 `admin_post_update`。修复见 §5-2。**证据链**：①修复前三个按钮的 POST 体实测 `action=["linker_approval","update"]`、响应 400、状态保持 `pending`（截图 after 均为 WordPress 错误页）②同字段、只留 `action=linker_approval` 发一次 → 302 且状态 `restricted` + 原因落库（WP-CLI 读回）——即根因成立、单键路径可用 ③修复本身由单测覆盖（§5-2）。**未做**：把 t110 指向本分支后的实机三态复拍（实例插件软链属并行泳道，不擅自改指向） | `approval-admin-{approve,restrict,reject}-1440-en-{before,after}.png`；§4 命令 2 |
+| C2 | Commerce approval admin 三态 | **captured+功能核验失败 → 本轮修复**：后台档案页 `wp-admin/user-edit.php` 的三个按钮（approve/restrict/reject）在本构建里点不动（POST 落到 WordPress 错误页，状态保持 pending）；根因 = 插件块的 `action=linker_approval` 之后还有核心自己的隐藏 `action=update`，PHP 重复键取末值 → 请求路由到 `admin_post_update`。**captured+功能核验（修复后实机复验，见 §5bis）**。证据链：①修复前三个按钮的 POST 体实测 `action=["linker_approval","update"]`、响应 400、状态保持 `pending`（截图 after 均为 WordPress 错误页）②同字段、只留 `action=linker_approval` 发一次 → 302 且状态 `restricted` + 原因落库（WP-CLI 读回，根因成立）③**修复后在 t110 上实点复验**（软链临时指向本分支）：`node .scratch/coverage/verify-approval-live.mjs` → `approve … status=approved` / `restrict … status=restricted reason=Coverage verification: r…` / `reject … status=rejected reason=…`，页面回 `user-edit.php`；④单测覆盖（§5-2） | `approval-admin-{approve,restrict,reject}-1440-en-{before,after}.png`（修复前）、`approval-admin-{approve,restrict,reject}-1440-en-after-fixed.png`（修复后实机）、`node .scratch/coverage/verify-approval-live.mjs` 三行输出；§4 命令 2、§5bis |
 | C3 | Commerce price gate 三态 | captured+功能核验（商品页 `/product/chint-dtsu666/`，DE `/de/produkt/chint-dtsu666/`，EN/DE × 1440/390）：价格位被替换为设计化 CTA，**三态三种文案**——guest「Sign in for partner pricing」/ DE 登录入口；pending「Prices after approval」/「Preise nach Freigabe」；restricted「Not available for your account」/「Für Ihr Konto nicht verfügbar」（pending 与 restricted 文案不同，实测三态三样）；rejected 登录拦截：EN「This account is not approved for sign-in. We have emailed you the reason.」/ DE「Dieses Konto ist nicht zur Anmeldung freigegeben. …」 | `price-gate-{guest,pending,restricted}-*`（12 张）、`price-gate-rejected-login-*`（4 张）；`probe-C2-price.json` + 复核命令：`node .scratch/coverage/verify-price-gate.mjs`（输出即三态文本） |
 | C4 | Proforma request approved filled / 校验错误 | captured+功能核验：已批准账户草稿 2 件时表单按公司数据预填（`#billing_company=Coverage Installer GmbH`、`#billing_first_name=Carla`、`#billing_city=Muenchen`）；未勾条款提交 → 「Please read and accept the terms and conditions to send your inquiry.」（四格同文本） | `proforma-request-filled-*`、`proforma-request-validation-error-*`；`probe-C2-funnel.json` |
 | C5 | Thank-you order-received with key | captured+功能核验：本站端点被词汇表改名，收讫 URL = `<checkout>/inquiry-received/<id>/?key=…`（`wc_get_order()->get_checkout_order_received_url()` 实测输出）；EN `/proforma-request/inquiry-received/7147/?key=…`、DE `/de/proforma-anfrage/inquiry-received/7151/?key=…`，四格均 200 且渲染「Inquiry details / Details der Anfrage + 明细」 | `thankyou-order-received-*`；`probe-C2-thankyou.json` |
@@ -105,7 +105,7 @@ Woo 默认的 `orders`/`view-order` 端点在本站 404（`/my-account/orders/` 
 |---|---|---|---|
 | F1 | 工作区/对话面（欢迎语/快捷问题/composer/消息往返） | captured+功能核验：①坞内欢迎态（披露句「Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.」+ 快捷问题 chip + composer）②**消息往返实测**：EN 21.8s、DE 16.9s 收到带合格产品卡的答复（EN「Model H2-10K-T3 In stock…Save solution」；DE 德语同构）③整页工作区 `/genie/`（Conversations 栏、Where should we begin?、Ask Genie composer、披露句、快捷问题）EN/DE × 1440/390 四格 | `genie-welcome-*`、`genie-roundtrip-*`、`genie-workspace-*`；`probe-F.json`（`ms`）、`probe-F3.json` |
 | F2 | dock history failed / pending question | **captured（三态齐）**：①历史栏 ready（EN「Conversations」列表 + 本轮会话行，`genie-history-open-1440-en.png`）②pending question：提问后引擎未定夺期间的界面（`genie-pending-question-1440-{en,de}.png`）③**failed**：把历史读 `GET …/genie/conversations` 用路由 fulfill 成 503 后打开历史栏 → 界面实测「Conversations could not be loaded. Try again」（`role=alert`，源码 `App.tsx:1179-1186`），EN/DE 各一图 | `genie-history-failed-1440-{en,de}.png`；复核：`node .scratch/coverage/verify-genie-states.mjs` → `history 503 → {"alert":"Conversations could not be loaded. Try again"}` |
-| F3 | product card 七态（pending/added/unverified/retry；saving/saved/failed） | **captured（七态齐，每态带造态触发）**：①pending「Adding…」（`GET …/wc/store/v1/cart` 路由延时 8s 顶住）②added「In your solution draft.」（常规）③unverified「Sent, but the draft does not show it yet. Please check.」（add 成功、回读被改写为加购前的购物车）④retry「Not added. Try again.」（`POST …/cart/add-item` fulfill 500）⑤saving「Saving…」（`POST …/linker/v1/solutions` 延时 8s）⑥saved「Saved to your account.」（常规）⑦failed「Not saved. Try again.」（solutions fulfill 500）。语言覆盖：**EN 与 DE 各七态全拍**（DE 卡片按钮的德语标签在 `languages/linker-tools-de_DE_formal-linker-tools-genie.json`：`Zum Lösungsentwurf hinzufügen` / `Lösung speichern`，脚本按两种标签找；早先 DE pending 缺图的那轮是该轮答复里没带卡，属答复抽样，重跑即成，`LANG=de` 单跑一次 0 错） | 截图 EN：`genie-card-{pending,added,unverified,retry,saving,saved,save-failed,failed}-1440-en.png`；DE：`genie-card-{added,unverified,retry,saving,saved,save-failed,failed}-1440-de.png`；复态文本：`node .scratch/coverage/verify-genie-states.mjs`（造态脚本 `capture-F4.mjs`，`LANG=de` 可单跑一支） |
+| F3 | product card 七态（pending/added/unverified/retry；saving/saved/failed） | **captured（七态齐，每态带造态触发）**：①pending「Adding…」（`GET …/wc/store/v1/cart` 路由延时 8s 顶住）②added「In your solution draft.」（常规）③unverified「Sent, but the draft does not show it yet. Please check.」（add 成功、回读被改写为加购前的购物车）④retry「Not added. Try again.」（`POST …/cart/add-item` fulfill 500）⑤saving「Saving…」（`POST …/linker/v1/solutions` 延时 8s）⑥saved「Saved to your account.」（常规）⑦failed「Not saved. Try again.」（solutions fulfill 500）。语言覆盖：**EN 与 DE 各七态全拍**（DE 卡片按钮的德语标签在 `languages/linker-tools-de_DE_formal-linker-tools-genie.json`：`Zum Lösungsentwurf hinzufügen` / `Lösung speichern`，脚本按两种标签找；早先 DE pending 缺图的那轮是该轮答复里没带卡，属答复抽样，重跑即成，`LANG=de` 单跑一次 0 错） | 截图 EN：`genie-card-{pending,added,unverified,retry,saving,saved,save-failed,failed}-1440-en.png`；DE：`genie-card-{pending,added,unverified,retry,saving,saved,save-failed,failed}-1440-de.png`；复态文本：`node .scratch/coverage/verify-genie-states.mjs`（造态脚本 `capture-F4.mjs`，`LANG=de` 可单跑一支） |
 | F4 | page chips 四入口（account/draft/PDP/catalog search） | captured+功能核验：四个面都渲染入口 chip 且可见（EN/DE 各四格，`chipVisible=true`） | `genie-chip-{account,draft,pdp,category}-1440-{en,de}.png`；`probe-F.json` |
 | 边界 | 390 视口 | 390 下导航里的 `[data-linker-genie-open]` **不可见**（`vis=false`，实测于首页；坞入口是桌面形态），390 的 Genie 面以整页工作区承载（`genie-workspace-390-{en,de}` 已拍） | `probe-F3.json` |
 
@@ -121,7 +121,16 @@ Woo 默认的 `orders`/`view-order` 端点在本站 404（`/my-account/orders/` 
 | 条目 | 结论 | 证据 |
 |---|---|---|
 | A2 · 页头/页脚 `[linker_contact_link]` 三处 placement | **已定性（current state）**：两侧都把短代码渲染成设计化链接，**未出现字面量**。实测（同一探针）：页头 2 个 + 页脚 1 个 contact 链接，形状一致（`/contact/?intent=…&kind=…&title=…&source_id=…&product_id=…&source=…`；DE `/de/kontakt/` 同构）；`shortcodes` 探针在两侧均为空数组 | `.scratch/coverage/probe-H-pairs.json` 各行的 `headerContactLinks`/`footerContactLinks`/`shortcodes` |
-| A3 · 复刻像素门缺可复核终局包 | **本行产出 PDP 的成对包**（三套对拍此前不含 PDP）：`h-pairs/pdp-{en,de}-{1440,390}-{local,live}.png` + 指标。**量出的差异（结构对照）**：EN 1440 全页差 14.71%（802 506 px，页高 3977 vs 3789）、EN 390 14.13%、DE 1440 14.38%、DE 390 14.79%；差异不是整页位移（最优位移 0），集中在两带：y≈1744–1843（**本地面板少一个规格组**：本地 Technical data 两组「Grid, back-up and smart port / Switching and environment」，线上三组，中间多「Inverter side」；DE 同形 y≈1792–1848）与页尾（本地比线上高 188 px，尾部整体下移）。**定性（2026-10-15 复核）**：这是**快照数据缺口，不是模板/构建缺陷**——两侧同一 product id 6530（EN 页头的 contact 链接两侧都是 `source_id=6530`），本地渲染的是该商品的 `_tv_legacy_acf_json.spec_groups`（WP-CLI 实测：两组，Grid… 5 行 + Switching… 6 行，无 Inverter side），而仓库的更正数据本来就该带上该组：`tools/migrate/c15-facts.json` 的 6530 条目 `inverter_side_rated_power_kw` 明说「the first pass dropped」的逆变侧 30 kW 由该次更正**恢复**（并带双来源注）；渲染端逐组输出（`plugins/linker-commerce/includes/Storefront/ProductView.php:371-402`），线上三组即其数据含该组。落点=在实例上补跑 C15 数据步（`tools/migrate/7-facts.py --plan tools/migrate/c15-facts.json`，属数据/切换泳道）。**结论**：终局包已建立且可重跑（§4 命令 5），差异主因已定性为数据缺口；掩膜与「允许差异」仍须业主裁定后才能给过门结论——本行不自行判 PASS | `h-pairs-metrics.json`；`pdp-en-1440-{local,live}.png` 的 1650–1900 / 3150–3600 裁片 |
+| A3 · 复刻像素门缺可复核终局包 | **本行产出 PDP 的成对包**（三套对拍此前不含 PDP）：`h-pairs/pdp-{en,de}-{1440,390}-{local,live}.png` + 指标。**量出的差异（结构对照）**：EN 1440 全页差 14.71%（802 506 px，页高 3977 vs 3789）、EN 390 14.13%、DE 1440 14.38%、DE 390 14.79%；差异不是整页位移（最优位移 0），集中在两带：y≈1744–1843（**本地面板少一个规格组**：本地 Technical data 两组「Grid, back-up and smart port / Switching and environment」，线上三组，中间多「Inverter side」；DE 同形 y≈1792–1848）与页尾（本地比线上高 188 px，尾部整体下移）。**定性（2026-10-15 复核，按实测定稿）**：缺组在**实例侧**，不在快照。①本机四份快照/切换转储（`~/de-linker-data/{20261010-0027,20261010-0033,20261011-1732,cutover-20261011-1157}`，另本线另扫 `cutover-20261013-1759`）里 6530 的 `_tv_legacy_acf_json` 行都**含三组**（逐行 gzip 扫描：`Grid, back-up and smart port` / `Inverter side` / `Switching and environment`，行 5 387 B）；仓库持有的线上副本同形（`plugins/linker-i18n/tests/fixtures/live/products.json` 的 6530 条目三组）。②实例是两组（`just wp t110 eval` 读 6530 `_tv_legacy_acf_json.spec_groups` = 2；`linker_specs` 为空，故确走 legacy 分支；渲染端逐组输出见 `plugins/linker-commerce/includes/Storefront/ProductView.php:371-402`）。③**落在实例上的恢复已做并复验**：从仓库的线上副本取出该组、按线上位置插回实例的 legacy JSON（只插该组，其余字节不动）——
+```
+$ just wp t110 eval-file .scratch/coverage/restore-inverter-side.php
+instance before: 2 groups: Grid, back-up and smart port | Switching and environment
+instance after:  3 groups: Grid, back-up and smart port | Inverter side | Switching and environment
+inserted at index: 1; payload bytes: 5041
+$ curl -s http://127.0.0.1:8975/product/goodwe-gw60k-sts-g10/ | grep -o 'id="pdp-spec-tab-[0-9]"' | sort -u
+id="pdp-spec-tab-0" / -1 / -2                    # 三个 tab；Inverter side 行为「Rated power 30 kW + 双来源注」
+```
+复拍后同协议对照（`h-pairs/pdp-en-1440-local-after-restore.png` vs `-live.png`）：tab 带差异消失（首个差异行 1744 → 1836），同排一致到 y≈3214；余下差异=y3214 起的页尾整段位移（条带口径：位移 188 时残差 **0 px / 609 行**，即页尾内容逐像素相同、整体下移 188px，本地该段多出 FAQ「Product questions」块的高度）。**仍未决的一点**：组是在哪一步从实例掉的（转储与仓库副本都有、实例没有）——按缺陷候选挂，步骤与承担者见 §6.4。**结论**：终局包已建立且可重跑（§4 命令 5），结构差的主因已定性并已修复实例侧；掩膜与「允许差异」仍须业主裁定后才能给过门结论——本行不自行判 PASS | `h-pairs-metrics.json`；`pdp-en-1440-{local,live}.png` 的 1650–1900 / 3150–3600 裁片 |
 | A4 · 列表页 390 终局判定待核（默认态 shop/archive 390） | **已判（像素零差异）**：390 默认态 `/products/`、`/de/produkte/`、`/product-category/inverters/`、`/de/produkt-kategorie/wechselrichter/` 四格 local vs live **差异像素 = 0（0.0000%）**、页高逐格相等（12252 / 12590 / 12270 / 12619） | `h-pairs-metrics.json` 的 `shop-*-390`、`archive-*-390`；`h-pairs/*.png` |
 | A6 · 条带口径 vs 全页口径 | **两口径逐项呈报（本轮 9 面）**：见下表。口径定义：全页 = 整页逐像素（阈值 >2/255）；条带 = 先取最优整页垂直位移后的逐像素。9 面里 5 面两口径同为 0；PDP 四面最优位移均为 0（不是位移问题），两口径数值相同 | 下表（数字源 `h-pairs-metrics.json`） |
 | C6 · 商城样式 fresh authoring（代码形态债） | **已定性（代码面）**：两份卷**已重写为新作者版**，旧出处字符串不再存在——`content/windpress/storefront.css`（4 627 行）在树，`catalogue.css` 已不在卷里（`git ls-files \| grep -c 'catalogue\.css'` = 0）；`grep 'terravolt-b2b-core\|0\.12\.413' content/windpress/` 无命中。作者记录见 `docs/audit/2026-10-13-storefront-fresh-author.md`（选择器与声明保持不变、注释按卷职责重写）。原条目「代码形态债、不直接证明用户视觉缺陷、无专属成对截图」由此收口为：**该条目不是视觉缺口**，视觉差异由分类/商城面族的行承载；本轮 A4 已给四个 390 默认态列表页 local vs live 差异像素 = 0 | `ls content/windpress/`；`wc -l content/windpress/storefront.css`；`git ls-files \| grep -c 'catalogue\.css'` → 0；`grep -rn 'terravolt-b2b-core' content/windpress/` → 空（§4 命令 6） |
@@ -159,9 +168,13 @@ JS
 # → status 200 application/pdf 26603 B %PDF-1.7
 # 无会话对照（同一 URL）：curl -s -o /dev/null -w '%{http_code}\n' "http://127.0.0.1:8975/?linker-document=proforma&id=7148" → 403
 
-# 2 · 审批三态（C2）：单键 POST 真的落状态（修复前的症状与修复后的路径）
-just wp t110 eval 'echo wc_get_order(7150)->get_status();'   # 任一探针用账号
-#   修复前：档案页三个按钮点击 → admin-post.php 400；修复后见 §5-2 的单测与同路径调用
+# 2 · 审批三态（C2）：实机复验（软链临时指向本分支，见 §5bis 的完整命令与还原）
+node .scratch/coverage/verify-approval-live.mjs
+# → approve   url=/wp-admin/user-edit.php?user_id=254 status=approved  reason=(unset)
+#   restrict  url=/wp-admin/user-edit.php?user_id=255 status=restricted reason=Coverage verification: r…
+#   reject    url=/wp-admin/user-edit.php?user_id=256 status=rejected   reason=Coverage verification: r…
+#   修复前同一操作：POST 落 admin-post.php 400、状态不变（截图 approval-admin-<action>-1440-en-after.png）
+#   修复后页面截图：approval-admin-<action>-1440-en-after-fixed.png
 
 # 3 · 设计报告 PDF（D2）：引擎直连 vs 站点代理
 curl -s -o /tmp/report.pdf -w "engine %{http_code} %{content_type} %{size_download}\n" \
@@ -179,13 +192,21 @@ curl -s -X POST http://127.0.0.1:8976/roof/outline -H 'Content-Type: application
 # 5 · H 段成对图与两口径指标
 node .scratch/coverage/capture-H.mjs && python3 .scratch/coverage/analyse-pairs.py
 
-# 7 · 价格门三态文本（C3 复核）
+# 6 · 价格门三态文本（C3 复核）
 node .scratch/coverage/verify-price-gate.mjs
 
-# 6 · C6 的代码面事实
+# 7 · Genie 的造态与状态文本（F2/F3 复核）：七态造态与逐态文本
+node .scratch/coverage/verify-genie-states.mjs          # history 503 / Adding… / Sent, but… / Not added… / Saving… / Saved… / Not saved…
+LANG=de node .scratch/coverage/capture-F4.mjs           # 只跑一支语言的造态拍摄（也可以不带 LANG 跑两语）
+
+# 8 · C6 的代码面事实
 git -C /Users/chesterjohn/Documents/de-linker ls-files | grep -c 'catalogue\.css'          # → 0
 wc -l /Users/chesterjohn/Documents/de-linker/plugins/linker-commerce/content/windpress/storefront.css   # → 4627
 grep -rn 'terravolt-b2b-core\|0\.12\.413' /Users/chesterjohn/Documents/de-linker/plugins/linker-commerce/content/windpress/   # → 空
+
+# 9 · PDP 的 Inverter side 组（A3 落点）：把丢失的组写回实例，再读回渲染
+just wp t110 eval-file /Users/chesterjohn/Documents/de-linker/.scratch/coverage/restore-inverter-side.php
+curl -s http://127.0.0.1:8975/product/goodwe-gw60k-sts-g10/ | grep -o 'id="pdp-spec-tab-[0-9]"' | sort -u   # → 0/1/2 三枚
 ```
 
 ## 5. 本轮修的两处（都由本泳道的补拍发现，含单测）
@@ -283,7 +304,11 @@ $ /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpcs -q      # justfile 的 php�
 2. 见上：本包不再有属于「未复现」的 F 行。
 3. **D6 屋顶轮廓**（本包唯一的第三种形态行）：影像瓦片取不到（外部 WMS `geoservices.bayern.de`，画布灰底、点屋面无法定位），
    轮廓叠加拍不到；替代证据 = 引擎 `/roof/outline` 同坐标实测 `found:true`（§4 命令 4）。
-4. **A3 的 PDP 差异**：终局包、两口径数字与主因定性已齐（快照数据缺口；§3 H·A3），只剩「过不过像素门」需要掩膜与允许差异的
-   业主裁定，本行不自行判 PASS。
+4. **A3 的 PDP 差异**：实例侧缺组已恢复并复验（§3 H·A3，`restore-inverter-side.php`），余下差异=页尾整段 188px 位移
+   （内容逐像素相同）。**缺陷候选（缺组发生在哪一步）**——挂给数据/切换泳道，可复核步骤：①`for d in ~/de-linker-data/*/; do gzip -dc $d/db.sql.gz |
+   grep -c '6530' ; done` 扫各转储的 6530 legacy 行是否含 `Inverter side`（本机四份都含）②在实例上 `just wp t110 eval` 读
+   6530 `_tv_legacy_acf_json.spec_groups` 的组数（本线实测 2）③比对 `plugins/linker-i18n/tests/fixtures/live/products.json` 的
+   6530 条目（三组）④差异点定位后再决定是否需要一个「legacy 组完整性」判定进迁移检查。承担者：数据/切换泳道（本线只做实例侧恢复）。
+   「过不过像素门」仍须业主掩膜/允许差异裁定，本行不自行判 PASS。
 5. **test-mail 开关**：拍摄结束后已关（`off` 与 `status` 的实测输出见 §1 该行）；实例的插件软链也已还原到
    并行泳道的 `de-linker-nits`（§5bis 末尾），本次复验窗口之外未留改动。
