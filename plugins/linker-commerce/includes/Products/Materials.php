@@ -818,8 +818,6 @@ final class Materials {
 			'ac_surge_protection'             => __( 'AC surge protection', 'linker-commerce' ),
 			'accuracy_class_reactive'         => __( 'Accuracy class, reactive', 'linker-commerce' ),
 			'battery_type'                    => __( 'Battery type', 'linker-commerce' ),
-			'nominal_voltage_v'               => __( 'Nominal voltage', 'linker-commerce' ),
-			'system_nominal_voltage_v'        => __( 'System nominal voltage', 'linker-commerce' ),
 			'backup_nominal_apparent_power'   => __( 'Backup apparent power', 'linker-commerce' ),
 			'backup_nominal_output_frequency' => __( 'Backup output frequency', 'linker-commerce' ),
 			'nominal_apparent_power_output_to_utility_grid' => __( 'Nominal apparent power to grid', 'linker-commerce' ),

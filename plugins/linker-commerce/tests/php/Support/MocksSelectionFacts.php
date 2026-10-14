@@ -21,7 +21,12 @@ trait MocksSelectionFacts {
 	/**
 	 * Mocks the given products' facts (and nothing else).
 	 *
-	 * @param array<int, array{brand: string, application: string, phase: int, kw: float}> $products Products by ID.
+	 * @param array<int, array{brand: string, application: string, phase: int, kw?: float|null}> $products Products by ID.
+	 *                                                                                                      A product without a `kw`
+	 *                                                                                                      (or with it null) carries no
+	 *                                                                                                      AC power figure, the state
+	 *                                                                                                      the live powerless shelves
+	 *                                                                                                      (meters, EMS) are in.
 	 */
 	protected function mock_selection_facts( array $products ): void {
 		WP_Mock::userFunction(
@@ -75,15 +80,14 @@ trait MocksSelectionFacts {
 					if ( \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY !== $key ) {
 						return '';
 					}
-					return (string) json_encode(
-						array(
-							'ac_output_kw_nominal' => array(
-								'value' => (string) $products[ $id ]['kw'],
-								'unit'  => 'kW',
-							),
-						),
-						JSON_UNESCAPED_SLASHES
-					);
+					$figures = array();
+					if ( isset( $products[ $id ]['kw'] ) ) {
+						$figures['ac_output_kw_nominal'] = array(
+							'value' => (string) $products[ $id ]['kw'],
+							'unit'  => 'kW',
+						);
+					}
+					return (string) json_encode( $figures, JSON_UNESCAPED_SLASHES );
 				},
 			)
 		);

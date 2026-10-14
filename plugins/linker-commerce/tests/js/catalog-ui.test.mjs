@@ -15,7 +15,7 @@ test('the Filters button opens the drawer panel over the page',()=>{
  const win=fixture();
  win.document.getElementById('product-filter-open').click();
  assert.equal(win.document.getElementById('sidebar-filters').classList.contains('is-mobile-open'),true);
- assert.equal(win.document.body.classList.contains('tv-product-filter-open'),true);
+ assert.equal(win.document.body.classList.contains('product-filter-open'),true);
  assert.equal(win.document.getElementById('product-filter-open').getAttribute('aria-expanded'),'true');
 });
 test('close, apply and Escape hide the drawer again',()=>{
@@ -26,7 +26,7 @@ test('close, apply and Escape hide the drawer again',()=>{
  assert.equal(win.document.getElementById('product-filter-open').getAttribute('aria-expanded'),'false');
  open.click();
  win.document.getElementById('product-filter-apply').click();
- assert.equal(win.document.body.classList.contains('tv-product-filter-open'),false);
+ assert.equal(win.document.body.classList.contains('product-filter-open'),false);
  open.click();
  win.document.dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
  assert.equal(win.document.getElementById('sidebar-filters').classList.contains('is-mobile-open'),false);

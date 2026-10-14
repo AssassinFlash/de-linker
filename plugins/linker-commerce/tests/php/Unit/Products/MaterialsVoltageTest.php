@@ -191,16 +191,15 @@ final class MaterialsVoltageTest extends TestCase {
 	}
 
 	/**
-	 * Seeds (or clears) the registry statics.
+	 * Seeds (or clears) the registry statics. Reflection reads and writes
+	 * non-public properties as of PHP 8.1 without setAccessible().
 	 *
 	 * @param array<string, mixed>|null $materials The registry's materials, null to reset.
 	 */
 	private function seed_registry( ?array $materials ): void {
 		$registry = new ReflectionProperty( Materials::class, 'registry' );
-		$registry->setAccessible( true );
 		$registry->setValue( null, null === $materials ? null : array( 'materials' => $materials ) );
 		$index = new ReflectionProperty( Materials::class, 'product_index' );
-		$index->setAccessible( true );
 		$index->setValue( null, null );
 	}
 }

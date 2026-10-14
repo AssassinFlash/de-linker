@@ -187,29 +187,41 @@ final class ProductShortcodes {
 	 */
 	public function products_filters( $atts = array() ): string {
 		unset( $atts );
-		$queried  = get_queried_object();
-		$is_term  = $queried instanceof WP_Term;
-		$selected = $this->filters->requested();
-		$archive  = $this->filters->archive_product_ids();
-		$facets   = $this->filters->facet_counts( $archive, $selected );
-		$ranges   = $this->filters->range_folds( $archive );
-		$applied  = $this->filters->applied_count( $is_term, $selected );
-		$base_url = $is_term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
-		// The live rail's summary arithmetic (measured 2026-10-12, recheck
-		// 2026-10-14): an active facet shows "Filters" with a Reset link and
-		// the strip's chips carry the selection; on a category with no facet
-		// selected the summary is "Filters (1)" — the category itself is the
-		// one filter; the plain shop with none is "Filters".
+		$queried    = get_queried_object();
+		$is_term    = $queried instanceof WP_Term;
+		$selected   = $this->filters->requested();
+		$archive    = $this->filters->archive_product_ids();
+		$facets     = $this->filters->facet_counts( $archive, $selected );
+		$ranges     = $this->filters->range_folds( $archive );
+		$applied    = $this->filters->applied_count( $is_term, $selected );
+		$base_url   = $is_term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
 		$has_facets = \count( \array_diff_key( $selected, array( 'q' => '' ) ) ) > 0;
 
 		$html  = '<button type="button" class="product-filter-close" id="product-filter-close" aria-label="' . esc_attr__( 'Close filters', 'linker-commerce' ) . '">&times;</button>';
 		$html .= '<details class="rail-fold" open>';
+		// The rail-fold's summary is the live rail's own element, hidden there
+		// as here (`#linker-products .rail-summary { display: none; }` in
+		// storefront.css, outside any media query): the live shop and archive
+		// markup both print this summary and neither shows it, the visible
+		// line reading just "Filters". It carries the rail's applied
+		// arithmetic — one for the category the visitor is on, one per
+		// selected facet — which is the same number the narrow viewports'
+		// "Filters · n" badge prints (products_actions()). The count is not
+		// visible on the desktop rail; its visible symptom there is the Reset
+		// link below.
 		$html .= '<summary class="rail-summary"><span>' . ( $has_facets || ! $is_term
 			? esc_html__( 'Filters', 'linker-commerce' )
 			: esc_html( sprintf( /* translators: %d: number of selected filters. */ __( 'Filters (%d)', 'linker-commerce' ), $applied ) ) )
-			. '</span>' . ( $has_facets ? '<a class="rail-reset" href="' . esc_url( $base_url ) . '">' . esc_html__( 'Reset', 'linker-commerce' ) . '</a>' : '<span class="rail-summary-mark" aria-hidden="true"></span>' ) . '</summary>';
+			. '</span><span class="rail-summary-mark" aria-hidden="true"></span></summary>';
 		$html .= '<div class="rail-body">';
-		$html .= '<div class="rail-head"><span class="rail-head-label">' . esc_html__( 'Filters', 'linker-commerce' ) . '</span></div>';
+		// The visible header, and the row the filtered rail shows its Reset on:
+		// the live filtered shelves read "Filters … Reset" at the rail's left
+		// edge with the applied chips on the same line in the grid column
+		// (the 2026-10-14 shelf captures; the recheck's family-10 "no Reset"
+		// finding). Without a facet there is no Reset to offer.
+		$html .= '<div class="rail-head"><span class="rail-head-label">' . esc_html__( 'Filters', 'linker-commerce' ) . '</span>'
+			. ( $has_facets ? '<a class="rail-reset" href="' . esc_url( $base_url ) . '">' . esc_html__( 'Reset', 'linker-commerce' ) . '</a>' : '' )
+			. '</div>';
 
 		$categories = get_terms(
 			array(
@@ -231,8 +243,13 @@ final class ProductShortcodes {
 			// /products/ and /de/produkte/, absent on the archives — t16 showed
 			// 400 everywhere because the attribute was never printed).
 			$html .= '<a class="family-link"' . ( $is_term ? '' : ' aria-current="page"' ) . ' href="' . esc_url( (string) wc_get_page_permalink( 'shop' ) ) . '"><span>' . esc_html__( 'All products', 'linker-commerce' ) . '</span></a>';
+			// The branch's ancestor ids, read once for the whole section
+			// (each row asks whether it is on the queried term's line).
+			$branch_ids = $is_term
+				? array_map( static fn( WP_Term $term ): int => (int) $term->term_id, $this->term_ancestors( $queried ) )
+				: array();
 			foreach ( $categories as $category ) {
-				$html .= $this->category_nav_row( $category, $is_term ? $queried : null );
+				$html .= $this->category_nav_row( $category, $is_term ? $queried : null, $branch_ids );
 			}
 			$html .= '</div></details>';
 		}
@@ -2271,16 +2288,17 @@ final class ProductShortcodes {
 	 * Power under Accessories; measured 2026-10-12, recheck 2026-10-14 found
 	 * the deployed tree's list flat).
 	 *
-	 * @param WP_Term      $category The top-level category of this row.
-	 * @param WP_Term|null $current  The category on display, null on the shop.
+	 * @param WP_Term      $category   The top-level category of this row.
+	 * @param WP_Term|null $current    The category on display, null on the shop.
+	 * @param array<int>   $branch_ids The queried category's ancestor ids, its own line in the section.
 	 */
-	private function category_nav_row( WP_Term $category, ?WP_Term $current ): string {
+	private function category_nav_row( WP_Term $category, ?WP_Term $current, array $branch_ids = array() ): string {
 		$row = $this->category_nav_link( $category, null !== $current && $current->term_id === $category->term_id );
 		// The branch expands for the category on display, for its children's
 		// parent and for its ancestors (a deep child keeps its whole line
-		// open).
+		// open); the caller reads the ancestor ids once for the section.
 		$expand = null !== $current
-			&& ( $current->term_id === $category->term_id || $current->parent === $category->term_id || \in_array( (int) $category->term_id, array_map( static fn( WP_Term $term ): int => (int) $term->term_id, $this->term_ancestors( $current ) ), true ) );
+			&& ( $current->term_id === $category->term_id || $current->parent === $category->term_id || \in_array( (int) $category->term_id, $branch_ids, true ) );
 		if ( ! $expand ) {
 			return $row;
 		}
@@ -2295,7 +2313,7 @@ final class ProductShortcodes {
 			return $row;
 		}
 		foreach ( $children as $child ) {
-			$row .= $this->category_nav_link( $child, $current->term_id === $child->term_id, 'family-link-child' );
+			$row .= $this->category_nav_link( $child, $current->term_id === $child->term_id, 'family-link--child' );
 		}
 		return $row;
 	}

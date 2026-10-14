@@ -302,17 +302,38 @@ final class ProductFilters {
 
 	/**
 	 * The facets with the counts and labels the rail shows, for the
-	 * archive's products. A facet section lists when the view's own data
-	 * answers at least two of its values (the live rail hides a facet whose
-	 * every product sits in one value: no Application and no Phase on the
-	 * all-in-one archive, Application on the shop and on the accessories
-	 * archive — measured 2026-10-12 on the live rail); the power buckets
-	 * stay listed, the empty one disabled. Under an active filter the
-	 * counts converge: each facet is counted over the products the OTHER
-	 * facets select (the live rail's own behaviour — under brand=goodwe the
-	 * Phase rows read the goodwe subset, a value nothing answers stays
-	 * listed, disabled, at 0), while the sections themselves stay those of
-	 * the unfiltered view.
+	 * archive's products.
+	 *
+	 * A facet section lists when two of the view's own values answer. That is
+	 * the composition of all nine category shelves as the live design
+	 * reference renders it (the 2026-10-14 shelf captures): the shelves whose
+	 * products sit in one Application value print no Application fold and
+	 * those in one Phase value print no Phase fold, while the shelves that
+	 * answer both values (inverters, EV chargers) print it. The rail the site
+	 * serves now prints the one-value sections as well; whether that is the
+	 * wanted composition is the recheck's family-2 open point — its added
+	 * Application/Phase facets are sent to the owner for item-by-item
+	 * adjudication — so this reader keeps the reference's composition.
+	 *
+	 * Power carries a gate of its own: it lists when at least one product of
+	 * the view has a bucketed AC power figure, and a shelf whose products
+	 * carry none prints no Power fold at all — the live meters and EMS rails
+	 * read Category → Brand → the tool card and stop, and the 2026-10-14
+	 * recheck found the deployed rail listing four empty Power rows there.
+	 * Every shelf that does carry a figure prints the fold and keeps the
+	 * tiers nothing answers in it, disabled (the live accessories rail lists
+	 * "15 to 30 kW" and "Over 30 kW" and leaves "Up to 6 kW" and
+	 * "6 to 15 kW" greyed). The boundary between the two states — one product
+	 * or three — is not discriminated by the shelf captures (no shelf carries
+	 * one or two power figures), so the gate stays at the smallest value the
+	 * evidence states; the AC power and Usable energy forms keep their own,
+	 * separately measured three-row threshold (range_folds()).
+	 *
+	 * Under an active filter the counts converge: each facet is counted over
+	 * the products the OTHER facets select (the live rail's own behaviour —
+	 * under brand=goodwe the Phase rows read the goodwe subset, a value
+	 * nothing answers stays listed, disabled, at 0), while the sections
+	 * themselves stay those of the unfiltered view.
 	 *
 	 * @param int[]                       $product_ids The archive's products.
 	 * @param array<string, string|float> $selected    The request's facet selections.
@@ -421,9 +442,15 @@ final class ProductFilters {
 				$counts[ $facet ][ $value ]['count'] = $this->facet_value_count( $facet, (string) $value, $product_ids, $context_ids, $by_id );
 			}
 		}
-		// A facet section lists when two of the view's own values answer
-		// (power's buckets are exempt — they always list); with a filter
-		// active the listed sections keep their zero rows, disabled.
+		// A facet section lists when two of the view's own values answer; the
+		// Power buckets carry the all-zero gate instead — a shelf whose
+		// products hold no AC power figure shows no Power section at all (the
+		// live meters and EMS rails, cat-meters-en-1440-live.png and
+		// cat-ems-en-1440-live.png) — and the empty tiers of a listed section
+		// stay, disabled (the live accessories rail keeps "Up to 6 kW" and
+		// "6 to 15 kW" greyed beside the two tiers it answers,
+		// cat-acc-en-1440-live.png). With a filter active the listed sections
+		// keep their zero rows, disabled.
 		$keep_empty = array() !== $active;
 		foreach ( array( 'application', 'brand', 'phase' ) as $facet ) {
 			$answered = \array_filter(
@@ -437,6 +464,13 @@ final class ProductFilters {
 			if ( ! $keep_empty ) {
 				$counts[ $facet ] = $answered;
 			}
+		}
+		$power_answered = \array_filter(
+			$full_counts['power'],
+			static fn( array $value ): bool => $value['count'] > 0
+		);
+		if ( array() === $power_answered ) {
+			unset( $counts['power'] );
 		}
 		/** The facets with their labels and counts, the thin sections gone.
 		 *
@@ -648,18 +682,29 @@ final class ProductFilters {
 	}
 
 	/**
-	 * The archive's products with the request's facets applied — the list the
-	 * family view renders, so a facet link narrows the grid the same way the
-	 * main query is narrowed. No selection is the whole archive; a selection
-	 * with no match is an empty list, never the unfiltered archive.
+	 * The archive's products with the request's facets applied and in the
+	 * request's order — the list the family view renders, so a facet link
+	 * narrows the grid the same way the main query is narrowed and the sort
+	 * select orders it. The grid reads this list and not the main query (its
+	 * rows are grouped from these ids), so the order has to land here:
+	 * ordering the main query's post__in moved only the page's own loop and
+	 * never the grid (recheck 2026-10-14: /products/?brand=goodwe&sort=name
+	 * kept the Recommended lead, GW60K-STS-G10, instead of the ESA card the
+	 * live shop opens with).
 	 *
-	 * @return int[] The product IDs.
+	 * No selection is the whole archive; a selection with no match is an
+	 * empty list, never the unfiltered archive.
+	 *
+	 * @return int[] The product IDs, in display order.
 	 */
 	public function filtered_product_ids(): array {
 		$selected = $this->requested();
-		if ( array() === $selected ) {
-			return $this->archive_product_ids();
-		}
-		return $this->matching( $this->archive_product_ids(), $selected );
+		$ids      = array() === $selected
+			? $this->archive_product_ids()
+			: $this->matching( $this->archive_product_ids(), $selected );
+		// "Recommended" is the archive's own order, already applied by
+		// archive_product_ids(); every other sort lands here, ordered() being
+		// the one place that knows them.
+		return $this->ordered( $ids, $this->requested_sort() );
 	}
 }
