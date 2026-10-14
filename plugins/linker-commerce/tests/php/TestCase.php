@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests;
 
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Registration\Approval;
+use Mockery;
 use WP_Mock;
 use WP_User;
 
@@ -176,5 +177,28 @@ abstract class TestCase extends WP_Mock\Tools\TestCase {
 				'return' => static fn ( string $name, $default_value = false ) => array_key_exists( $name, $values ) ? $values[ $name ] : $default_value,
 			)
 		);
+	}
+
+	/**
+	 * The request's cart: what WC()->cart answers while a test runs.
+	 *
+	 * @param bool $vacant Whether the draft has no lines.
+	 */
+	protected function cart_is( bool $vacant ): void {
+		$cart = Mockery::mock( \WC_Cart::class );
+		$cart->allows( 'is_empty' )->andReturn( $vacant );
+		$woocommerce       = new \stdClass();
+		$woocommerce->cart = $cart;
+		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
+	}
+
+	/**
+	 * WooCommerce present but no cart for this request (an admin, REST or CLI
+	 * context initialises none).
+	 */
+	protected function no_cart(): void {
+		$woocommerce       = new \stdClass();
+		$woocommerce->cart = null;
+		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
 	}
 }

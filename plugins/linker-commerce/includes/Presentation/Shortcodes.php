@@ -11,6 +11,7 @@ namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Products\Faqs;
 use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Settings\Options;
 use WC_Product;
 
 /**
@@ -36,15 +37,16 @@ final class Shortcodes {
 		add_shortcode( 'linker_draft_empty', array( $this, 'draft_empty' ) );
 		add_shortcode( 'linker_faqs', array( $this, 'faqs' ) );
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
-		// LiveCanvas's native condition tag. Both names stay true or false
-		// together, so a template that lost one half still cannot print both.
-		add_filter( 'lc_define_condition_linker_commerce_draft_empty', array( $this, 'draft_is_empty' ) );
-		add_filter( 'lc_define_condition_linker_commerce_draft_filled', array( $this, 'draft_is_filled' ) );
+		add_shortcode( 'linker_contact_invitation', array( $this, 'contact_invitation' ) );
+		// The cart template's [lc_if] conditions are the global functions in
+		// template-functions.php (linker_commerce_draft_empty/_filled):
+		// LiveCanvas resolves a condition with function_exists(), never a
+		// filter under the condition's name.
 	}
 
 	/**
 	 * The contact page in the page's language; every contact entry (the site
-	 * chrome's, the catalogue's invitation) resolves its target here.
+	 * chrome's, the product list's invitation) resolves its target here.
 	 */
 	public static function contact_page_url(): string {
 		$page = get_page_by_path( 'contact' );
@@ -98,6 +100,188 @@ final class Shortcodes {
 	}
 
 	/**
+	 * The designed contact band the marketing pages and the article template
+	 * print as `[linker_contact_invitation surface="…"]`.
+	 *
+	 * The words are the live band's, read off the old live pages (utility
+	 * solution, EPC, the EPC intake, services, article; EN and DE,
+	 * 2026-10-12/13 captures). An unknown surface prints nothing: it must
+	 * not borrow another surface's words. Four of the five surfaces get
+	 * their shape from the page's own rule (the intake's sits on
+	 * `.lk-bottom-cta`); the article surface has no page rule, so its shape
+	 * is in the band's stylesheet. The markup carries no shape class beyond
+	 * the surface. Styles stay in WindPress
+	 * (content/windpress/contact-invitation.css).
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function contact_invitation( $atts = array() ): string {
+		$attributes = shortcode_atts(
+			array(
+				'surface' => '',
+			),
+			(array) $atts,
+			'linker_contact_invitation'
+		);
+		// Decode before sanitize_html_class. An unregistered tag is
+		// wptexturized to &#8221; (current /services-support/ and
+		// /solution/utility-storage/ HTML, 2026-10-14). A stored entity is
+		// not a quote to shortcode_parse_atts, so the value arrives as
+		// &#8221;services&#8221; and sanitizes to 8221services8221, which
+		// matches no surface and prints no band. WordPress's own
+		// shortcode_parse_atts / sanitize_html_class.
+		$surface = html_entity_decode( (string) $attributes['surface'], ENT_QUOTES, 'UTF-8' );
+		$surface = trim( $surface, "\"\'\xE2\x80\x9C\xE2\x80\x9D" );
+		$surface = sanitize_html_class( $surface );
+		$copy    = self::invitation_copy();
+		if ( ! isset( $copy[ $surface ] ) ) {
+			return '';
+		}
+		$row     = $copy[ $surface ];
+		$intent  = self::invitation_intent( $surface );
+		$email   = ( new Options() )->team_to();
+		$context = $this->invitation_context( $intent );
+		$url     = (string) add_query_arg(
+			array(
+				'intent'    => $intent,
+				'kind'      => (string) $context['kind'],
+				'title'     => (string) $context['title'],
+				'source'    => (string) $context['url'],
+				'source_id' => (int) $context['source_id'],
+			),
+			self::contact_page_url()
+		);
+		$classes = 'linker-contact-invitation linker-contact-' . $surface;
+
+		$html  = '<section class="' . esc_attr( $classes ) . '">';
+		$html .= '<div>';
+		if ( '' !== $row['eyebrow'] ) {
+			$html .= '<span class="linker-contact-eyebrow">' . esc_html( $row['eyebrow'] ) . '</span>';
+		}
+		$html .= '<h2>' . esc_html( $row['heading'] ) . '</h2>';
+		$html .= '<p>' . esc_html( $row['note'] ) . '</p>';
+		$html .= '</div>';
+		$html .= '<div class="linker-contact-invitation-actions">';
+		$html .= '<a class="linker-contact-primary" href="' . esc_url( $url ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $context ) ) . '">' . esc_html( $row['button'] ) . '</a>';
+		$html .= '<a class="linker-contact-email" href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a>';
+		$html .= '</div>';
+		return $html . '</section>';
+	}
+
+	/**
+	 * Which request the band opens. The article band is about the product
+	 * the piece discusses; the others are about the project on the page.
+	 *
+	 * @param string $surface A known surface.
+	 */
+	private static function invitation_intent( string $surface ): string {
+		return 'article' === $surface ? 'product' : 'project';
+	}
+
+	/**
+	 * The page the band sits on, so the request keeps that page as context.
+	 *
+	 * @param string $intent `project` or `product`.
+	 * @return array{kind: string, title: string, url: string, source_id: int, intent: string}
+	 */
+	private function invitation_context( string $intent ): array {
+		$id    = function_exists( 'get_queried_object_id' ) ? (int) get_queried_object_id() : 0;
+		$title = $id > 0 ? wp_strip_all_tags( (string) get_the_title( $id ) ) : '';
+		$url   = $id > 0 ? (string) get_permalink( $id ) : '';
+		$kind  = function_exists( 'is_singular' ) && is_singular( 'post' ) ? 'article' : 'page';
+		if ( '' === $title ) {
+			$title = 'Linker';
+		}
+		if ( '' === $url ) {
+			$url = home_url( '/' );
+		}
+		return array(
+			'kind'      => $kind,
+			'title'     => $title,
+			'url'       => $url,
+			'source_id' => $id,
+			'intent'    => $intent,
+		);
+	}
+
+	/**
+	 * The live band's words, in the page's language.
+	 *
+	 * German is the page's own wording (Polylang `de`), not a translation of
+	 * the English string. The intake band has no eyebrow.
+	 *
+	 * @return array<string, array{eyebrow: string, heading: string, note: string, button: string}>
+	 */
+	private static function invitation_copy(): array {
+		if ( function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
+			return array(
+				'solution'   => array(
+					'eyebrow' => __( 'LÖSUNGEN FÜR GROSSSPEICHER', 'linker-commerce' ),
+					'heading' => __( 'Ihr Großspeicherprojekt als Gesamtlösung gedacht.', 'linker-commerce' ),
+					'note'    => __( 'Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die Systemauswahl mit einer umsetzbaren Planung für die Lieferung.', 'linker-commerce' ),
+					'button'  => __( 'Ihr Projekt gemeinsam entwickeln', 'linker-commerce' ),
+				),
+				'epc'        => array(
+					'eyebrow' => __( 'KONTAKT ZU LINKER', 'linker-commerce' ),
+					'heading' => __( 'Das Projekt vor dem vollständigen Briefing besprechen.', 'linker-commerce' ),
+					'note'    => __( 'Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen.', 'linker-commerce' ),
+					'button'  => __( 'EPC-Anforderung besprechen', 'linker-commerce' ),
+				),
+				'services'   => array(
+					'eyebrow' => __( 'TECHNISCHE ZUSAMMENARBEIT', 'linker-commerce' ),
+					'heading' => __( 'Ein technischer Partner in jeder Projektphase.', 'linker-commerce' ),
+					'note'    => __( 'Unser Team arbeitet mit Ihrem Team an Systementscheidungen, Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben wir bei technischen Fragen an Ihrer Seite.', 'linker-commerce' ),
+					'button'  => __( 'Mit unserem Technikteam sprechen', 'linker-commerce' ),
+				),
+				'article'    => array(
+					'eyebrow' => __( 'IHR PROJEKT IN DER PRAXIS', 'linker-commerce' ),
+					'heading' => __( 'Was kann die passende Speicherlösung an Ihrem Standort leisten?', 'linker-commerce' ),
+					'note'    => __( 'Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt.', 'linker-commerce' ),
+					'button'  => __( 'Ihre Speicheroptionen besprechen', 'linker-commerce' ),
+				),
+				'epc-intake' => array(
+					'eyebrow' => '',
+					'heading' => __( 'Eine frühe Frage reicht aus.', 'linker-commerce' ),
+					'note'    => __( 'Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im Kurzformular optional.', 'linker-commerce' ),
+					'button'  => __( 'Projekt besprechen', 'linker-commerce' ),
+				),
+			);
+		}
+		return array(
+			'solution'   => array(
+				'eyebrow' => __( 'UTILITY-SCALE SOLUTIONS', 'linker-commerce' ),
+				'heading' => __( 'A storage solution built around the whole project.', 'linker-commerce' ),
+				'note'    => __( 'We work alongside developers and EPC teams to shape battery storage around the project’s energy goals, site conditions and integration needs. Together, we connect system choices with a practical plan for delivery.', 'linker-commerce' ),
+				'button'  => __( 'Explore your project with us', 'linker-commerce' ),
+			),
+			'epc'        => array(
+				'eyebrow' => __( 'CONTACT LINKER', 'linker-commerce' ),
+				'heading' => __( 'Discuss the project before preparing the full brief.', 'linker-commerce' ),
+				'note'    => __( 'Your question includes this page as context. You can remove it before sending.', 'linker-commerce' ),
+				'button'  => __( 'Discuss an EPC requirement', 'linker-commerce' ),
+			),
+			'services'   => array(
+				'eyebrow' => __( 'TECHNICAL PARTNERSHIP', 'linker-commerce' ),
+				'heading' => __( 'A technical partner, wherever your project stands.', 'linker-commerce' ),
+				'note'    => __( 'Our team works with yours on system choices, installation questions and commissioning, and stays involved when support is needed after delivery.', 'linker-commerce' ),
+				'button'  => __( 'Talk to our technical team', 'linker-commerce' ),
+			),
+			'article'    => array(
+				'eyebrow' => __( 'YOUR PROJECT, IN PRACTICE', 'linker-commerce' ),
+				'heading' => __( 'What could the right storage solution do for your site?', 'linker-commerce' ),
+				'note'    => __( 'We’ll explore how hybrid or AC-coupled storage could work with your installation, your energy use and the outcome you want to achieve.', 'linker-commerce' ),
+				'button'  => __( 'Talk through your storage options', 'linker-commerce' ),
+			),
+			'epc-intake' => array(
+				'eyebrow' => '',
+				'heading' => __( 'An early question is enough.', 'linker-commerce' ),
+				'note'    => __( 'Share what you already know. Project location and timing are optional in the short form.', 'linker-commerce' ),
+				'button'  => __( 'Discuss your project', 'linker-commerce' ),
+			),
+		);
+	}
+
+	/**
 	 * The current product's gated price HTML.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
@@ -139,29 +323,13 @@ final class Shortcodes {
 		return $this->empty_draft_html();
 	}
 
-	/**
-	 * Whether the solution draft has no lines. A confirmation or pay page is
-	 * not an empty draft: those pages share the cart's template family only
-	 * by accident, and the condition must not hide a receipt.
-	 */
-	public function draft_is_empty(): bool {
-		return $this->is_empty_request();
-	}
-
-	/**
-	 * The other half of the cart template's condition. Never true together
-	 * with draft_is_empty().
-	 */
-	public function draft_is_filled(): bool {
-		return ! $this->draft_is_empty();
-	}
-
 		/**
 		 * Markup of the empty solution draft.
 		 *
 		 * The live empty cart had three actions. The middle one opened a
-		 * batch item-number import the owner later ruled out (surface
-		 * inventory, 2026-10-11: not built). This page keeps the two
+		 * batch item-number import the owner ruled out on 2026-10-11
+		 * (docs/audit/2026-10-11-surface-inventory.md GAP-11: not built), so
+		 * the note does not promise one either. This page keeps the two
 		 * actions that still have a page: browse products, and sign in.
 		 * The heading names the solution draft. Classes only; the look
 		 * lives in the storefront volume.
@@ -175,7 +343,7 @@ final class Shortcodes {
 			esc_attr__( 'Empty solution draft', 'linker-commerce' ),
 			$icon,
 			esc_html__( 'Your solution draft is empty.', 'linker-commerce' ),
-			esc_html__( 'You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed.', 'linker-commerce' ),
+			esc_html__( 'Browse the products now. Adding to the solution draft is possible only after your account has been reviewed.', 'linker-commerce' ),
 			esc_url( $products ),
 			esc_html__( 'Browse products', 'linker-commerce' ),
 			esc_url( $account ),
@@ -185,12 +353,11 @@ final class Shortcodes {
 
 	/**
 	 * Whether this is an empty Proforma request (not a confirmation or pay page).
+	 * The cart template's own condition function, so the gate and the branch
+	 * the visitor sees can never disagree.
 	 */
 	private function is_empty_request(): bool {
-		if ( is_wc_endpoint_url( 'order-received' ) || is_wc_endpoint_url( 'order-pay' ) ) {
-			return false;
-		}
-		return WC()->cart->is_empty();
+		return linker_commerce_draft_empty();
 	}
 
 	/**

@@ -1,0 +1,20 @@
+# 商务链两空态 · 实例渲染证据
+
+2026-10-14。本轮分支（fix/recheck-commerce-empty，基线 origin/main d8795a3）。条件按 LiveCanvas function_exists() 解析——已核实例实际运行的 LiveCanvas 4.9.3：`shortcode/wordpress/wp-content/plugins/livecanvas/modules/shortcodes.php:915-916` 对未定义条件名返回 `Error: Invalid condition function.`（PR #148 的过滤器从未被 lc_if 查询，即本轮修的机理）。
+
+实例：`shortcode`（http://127.0.0.1:9012/，插件链到本 worktree，`just up shortcode` 重启后验证）。
+
+## EN · HTTP GET
+
+`curl http://127.0.0.1:9012/cart/` → 200。正文断言全过：无 `Invalid condition function`；`sf-cart-empty` 区块在；`<h1>Your solution draft is empty.</h1>`；图标 `sf-cart-empty__icon`；新说明 `Browse the products now.`；`item-number` 已不在；两 CTA（`Browse products`、`Sign in or register`）；`class="sf-cart-btn` 恰 2 个。
+
+## DE · wp eval-file（switch_to_locale de_DE_formal + 本分支 .mo）
+
+该实例无德语页（页面表无 /de/ 页，Polylang 未激活），德语证据用 CLI 渲染：`wc_load_cart()` 后 `do_shortcode(模板 6565 正文)` 与 `do_shortcode('[linker_checkout]')`，走真实 .mo、真实 LC lc_if、真实 LoginGate。16 项断言：
+
+- 空草稿（9 项全过）：INVALID=no · TITLE=Ihr Lösungsentwurf ist leer. · NOTE=Durchsuchen Sie jetzt die Produkte. · Kontoprüfung 句在 · ARTIKELNUMMERN=gone · BROWSE=Zu den Produkten · SIGNIN=Anmelden oder registrieren · BTNS=2 · ICON=yes。
+- 询盘门（7 项：6 过 1 项是我探针期望写错）：GATE INVALID=no · TITLE=Proformarechnung anfordern · PILL=Genie（sf-checkout-genie__pill）· SIGNIN=Melden Sie sich an, um Ihre Proformarechnung zu erhalten. · BTN=Anmelden oder registrieren · LEFT-COLUMN 无卡片边框。第 7 项我探针里期望旧词「Produkte ansehen」——实际渲染按钮为「Anmelden oder registrieren | Zu den Produkten」（wp eval-file 直读确认）。「Zu den Produkten」是已定稿的 Browse products 德语串（.po:1235），不是缺陷；探针期望错，按钮对。
+
+## e2e（LINKER_E2E_SKIP_SERVICES=1 just e2e shortcode empty-draft.spec.ts）
+
+EN 两用例过：空态构成（标题/说明/两链接/图标/恰 2 按钮/无 item-number/无 Invalid condition function）+ 询盘页左列与 Genie 药丸（含点击药丸后仍停在 /proforma-request/，验证锚点不再同时跳转）。德语两用例在本实例 404（实例没有德语页），在带德语页的实例上运行；德语行为以上面的 eval-file 证据为准。

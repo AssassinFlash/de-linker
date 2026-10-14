@@ -3636,20 +3636,195 @@ msgid "No matching entries. Try another search term."
 msgstr "Keine passenden Einträge. Versuchen Sie einen anderen Suchbegriff."
 
 #: includes/Presentation/Shortcodes.php
+msgid "LÖSUNGEN FÜR GROSSSPEICHER"
+msgstr "LÖSUNGEN FÜR GROSSSPEICHER"
+
+#: includes/Presentation/Shortcodes.php
+msgid "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
+msgstr "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher a"
+"n Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die Systema"
+"uswahl mit einer umsetzbaren Planung für die Lieferung."
+msgstr ""
+"Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher a"
+"n Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die Systema"
+"uswahl mit einer umsetzbaren Planung für die Lieferung."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Ihr Projekt gemeinsam entwickeln"
+msgstr "Ihr Projekt gemeinsam entwickeln"
+
+#: includes/Presentation/Shortcodes.php
+msgid "KONTAKT ZU LINKER"
+msgstr "KONTAKT ZU LINKER"
+
+#: includes/Presentation/Shortcodes.php
+msgid "Das Projekt vor dem vollständigen Briefing besprechen."
+msgstr "Das Projekt vor dem vollständigen Briefing besprechen."
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden e"
+"ntfernen."
+msgstr ""
+"Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden e"
+"ntfernen."
+
+#: includes/Presentation/Shortcodes.php
+msgid "EPC-Anforderung besprechen"
+msgstr "EPC-Anforderung besprechen"
+
+#: includes/Presentation/Shortcodes.php
+msgid "TECHNISCHE ZUSAMMENARBEIT"
+msgstr "TECHNISCHE ZUSAMMENARBEIT"
+
+#: includes/Presentation/Shortcodes.php
+msgid "Ein technischer Partner in jeder Projektphase."
+msgstr "Ein technischer Partner in jeder Projektphase."
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Unser Team arbeitet mit Ihrem Team an Systementscheidungen, Installationsfrag"
+"en und der Inbetriebnahme. Auch nach der Lieferung bleiben wir bei technische"
+"n Fragen an Ihrer Seite."
+msgstr ""
+"Unser Team arbeitet mit Ihrem Team an Systementscheidungen, Installationsfrag"
+"en und der Inbetriebnahme. Auch nach der Lieferung bleiben wir bei technische"
+"n Fragen an Ihrer Seite."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Mit unserem Technikteam sprechen"
+msgstr "Mit unserem Technikteam sprechen"
+
+#: includes/Presentation/Shortcodes.php
+msgid "IHR PROJEKT IN DER PRAXIS"
+msgstr "IHR PROJEKT IN DER PRAXIS"
+
+#: includes/Presentation/Shortcodes.php
+msgid "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
+msgstr "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu Ihr"
+"er Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
+msgstr ""
+"Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu Ihr"
+"er Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Ihre Speicheroptionen besprechen"
+msgstr "Ihre Speicheroptionen besprechen"
+
+#: includes/Presentation/Shortcodes.php
+msgid "UTILITY-SCALE SOLUTIONS"
+msgstr "LÖSUNGEN FÜR GROSSSPEICHER"
+
+#: includes/Presentation/Shortcodes.php
+msgid "A storage solution built around the whole project."
+msgstr "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"We work alongside developers and EPC teams to shape battery storage around th"
+"e project’s energy goals, site conditions and integration needs. Together, we"
+" connect system choices with a practical plan for delivery."
+msgstr ""
+"Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher a"
+"n Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die Systema"
+"uswahl mit einer umsetzbaren Planung für die Lieferung."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Explore your project with us"
+msgstr "Ihr Projekt gemeinsam entwickeln"
+
+#: includes/Presentation/Shortcodes.php
+msgid "Discuss the project before preparing the full brief."
+msgstr "Das Projekt vor dem vollständigen Briefing besprechen."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Discuss an EPC requirement"
+msgstr "EPC-Anforderung besprechen"
+
+#: includes/Presentation/Shortcodes.php
+msgid "TECHNICAL PARTNERSHIP"
+msgstr "TECHNISCHE ZUSAMMENARBEIT"
+
+#: includes/Presentation/Shortcodes.php
+msgid "A technical partner, wherever your project stands."
+msgstr "Ein technischer Partner in jeder Projektphase."
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Our team works with yours on system choices, installation questions and commi"
+"ssioning, and stays involved when support is needed after delivery."
+msgstr ""
+"Unser Team arbeitet mit Ihrem Team an Systementscheidungen, Installationsfrag"
+"en und der Inbetriebnahme. Auch nach der Lieferung bleiben wir bei technische"
+"n Fragen an Ihrer Seite."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Talk to our technical team"
+msgstr "Mit unserem Technikteam sprechen"
+
+#: includes/Presentation/Shortcodes.php
+msgid "YOUR PROJECT, IN PRACTICE"
+msgstr "IHR PROJEKT IN DER PRAXIS"
+
+#: includes/Presentation/Shortcodes.php
+msgid "What could the right storage solution do for your site?"
+msgstr "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"We’ll explore how hybrid or AC-coupled storage could work with your installat"
+"ion, your energy use and the outcome you want to achieve."
+msgstr ""
+"Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu Ihr"
+"er Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Talk through your storage options"
+msgstr "Ihre Speicheroptionen besprechen"
+
+#: includes/Presentation/Shortcodes.php
+msgid "Eine frühe Frage reicht aus."
+msgstr "Eine frühe Frage reicht aus."
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im K"
+"urzformular optional."
+msgstr ""
+"Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im K"
+"urzformular optional."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Projekt besprechen"
+msgstr "Projekt besprechen"
+
+#: includes/Presentation/Shortcodes.php
+msgid "An early question is enough."
+msgstr "Eine frühe Frage reicht aus."
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Share what you already know. Project location and timing are optional in the "
+"short form."
+msgstr ""
+"Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im K"
+"urzformular optional."
+
+#: includes/Presentation/Shortcodes.php
+msgid "Discuss your project"
+msgstr "Projekt besprechen"
+
+#: includes/Presentation/Shortcodes.php
 msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
 msgstr "Sie können die Produkte durchsuchen und eine Artikelnummernliste abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der Kontoprüfung möglich."
-
-#: includes/Presentation/ProductShortcodes.php
-msgid "Batch item numbers"
-msgstr "Artikelnummern-Sammelimport"
-
-#: includes/Presentation/ProductShortcodes.php
-msgid "Batch import"
-msgstr "Sammelimport"
-
-#: includes/Presentation/ProductShortcodes.php
-msgid "Nameplate photo"
-msgstr "Typenschild-Foto"
 
 #: includes/Presentation/ProductShortcodes.php
 msgid "Reset"
@@ -3670,3 +3845,7 @@ msgstr "kW"
 #: includes/Presentation/ProductShortcodes.php
 msgid "kWh"
 msgstr "kWh"
+
+#: includes/Presentation/template-functions.php
+msgid "Browse the products now. Adding to the solution draft is possible only after your account has been reviewed."
+msgstr "Durchsuchen Sie jetzt die Produkte. Das Hinzufügen zum Lösungsentwurf ist erst nach der Kontoprüfung möglich."

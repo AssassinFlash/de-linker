@@ -130,20 +130,11 @@ final class ProductShortcodes {
 		$html .= '<input id="search-box" name="q" type="search" placeholder="' . esc_attr__( 'Search model or item number', 'linker-commerce' ) . '" value="' . esc_attr( $q ) . '" aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">';
 		$html .= '<button type="submit" class="wb-go">' . esc_html__( 'Search', 'linker-commerce' ) . '</button>';
 		$html .= '</form>';
-		// The head's tool row, the live page's own three entries at the
-		// position its toolbar keeps them (measured 2026-10-12 on the live
-		// shop and archives; the 2026-10-14 recheck found the two tool chips
-		// missing on the deployed tree): the batch item-number entry, the
-		// nameplate entry, and the AI entry — the renamed assistant's own
-		// chip (docs/acceptance/2026-10-10/12/copy-review.md). The two tool
-		// entries open the assistant dock, the one assistant the site has;
-		// without a question they only open it (the chip contract,
-		// docs/specs/13-genie.md).
-		$html .= '<div class="wb-acts">'
-			. '<button type="button" class="wb-act" data-linker-genie-open><span aria-hidden="true">&#8686;</span> ' . esc_html__( 'Batch item numbers', 'linker-commerce' ) . '</button>'
-			. '<button type="button" class="wb-act" data-linker-genie-open>' . esc_html__( 'Identify a device from a nameplate photo', 'linker-commerce' ) . '</button>'
-			. do_shortcode( '[linker_genie_chips page_type="category"]' ) . do_shortcode( '[linker_genie_ask]' )
-			. '</div>';
+		// The catalogue's AI entry, at the position the live page keeps its
+		// toolbar chips: the delivered chip shows itself when the typed text
+		// reads as a question (spec 13 §C); the live page's other two chips
+		// (batch item numbers, nameplate photo) are owner-ruled out.
+		$html .= '<div class="wb-acts">' . do_shortcode( '[linker_genie_chips page_type="category"]' ) . do_shortcode( '[linker_genie_ask]' ) . '</div>';
 		$html .= '</div>';
 		$html .= $this->scope_nav( $shop_url, $is_term ? $queried->term_id : 0 );
 		$html .= '</div>';
@@ -412,8 +403,6 @@ final class ProductShortcodes {
 		$applied = $this->filters->applied_count( $is_term, $this->filters->requested() );
 		$html    = '<nav class="product-mobile-actions" aria-label="' . esc_attr__( 'Product actions', 'linker-commerce' ) . '">';
 		$html   .= '<button type="button" id="product-filter-open" aria-controls="sidebar-filters" aria-expanded="false"><span>' . esc_html__( 'Filters', 'linker-commerce' ) . '</span> &middot; <span data-linker-applied-filter-count>' . esc_html( (string) $applied ) . '</span></button>';
-		$html   .= '<button type="button" data-linker-genie-open>' . esc_html__( 'Batch import', 'linker-commerce' ) . '</button>';
-		$html   .= '<button type="button" data-linker-genie-open>' . esc_html__( 'Nameplate photo', 'linker-commerce' ) . '</button>';
 		$html   .= do_shortcode( '[linker_genie_chips page_type="category"]' );
 		return $html . '</nav>';
 	}

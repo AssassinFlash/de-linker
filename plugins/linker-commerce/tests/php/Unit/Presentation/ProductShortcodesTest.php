@@ -397,19 +397,20 @@ final class ProductShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The head's tool row carries the live page's three entries: the batch
-	 * item-number entry, the nameplate entry and the AI entry (the renamed
-	 * assistant's chip rides inside).
+	 * The head's tool row carries the AI entry only: the batch item-number
+	 * and nameplate chips stay out (owner re-confirmed 2026-10-13, spec 13
+	 * section C), and no chip may borrow another surface's words.
 	 */
-	public function test_head_tool_row_carries_the_batch_and_nameplate_entries(): void {
+	public function test_head_tool_row_carries_the_ai_entry_alone(): void {
 		$this->mock_catalog_query( null );
 		$_GET = array();
 
 		$head = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_head();
 
 		$this->assertStringContainsString( 'class="wb-acts"', $head );
-		$this->assertStringContainsString( 'Batch item numbers', $head );
-		$this->assertStringContainsString( 'Identify a device from a nameplate photo', $head );
+		$this->assertStringNotContainsString( 'Batch item numbers', $head );
+		$this->assertStringNotContainsString( 'Identify a device from a nameplate photo', $head );
+		$this->assertStringNotContainsString( 'data-linker-bom-open', $head );
 	}
 
 	/**
@@ -695,8 +696,8 @@ final class ProductShortcodesTest extends TestCase {
 
 		$this->assertStringContainsString( 'id="product-filter-open"', $bar );
 		$this->assertStringContainsString( 'data-linker-applied-filter-count>1</span>', $bar );
-		$this->assertStringContainsString( 'Batch import', $bar );
-		$this->assertStringContainsString( 'Nameplate photo', $bar );
+		$this->assertStringNotContainsString( 'Batch import', $bar );
+		$this->assertStringNotContainsString( 'Nameplate photo', $bar );
 	}
 
 	/**

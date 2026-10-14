@@ -67,9 +67,10 @@ final class PolylangDouble {
 	 * @param array<int, int>                  $term_pairs     English term ID => German term ID.
 	 * @param string                           $current        The current language.
 	 * @param array<string, bool>              $translated     Post type or taxonomy => whether Polylang translates it.
-	 * @param array<int, array<string, mixed>> $posts Fields of the post get_post() returns, by ID.
+	 * @param array<int, array<string, mixed>> $posts          Fields of the post get_post() returns, by ID.
+	 * @param array<int, array<string, mixed>> $term_fields    Fields of the term get_term() returns, by ID (slug, taxonomy, …).
 	 */
-	public static function mock( array $post_languages = array(), array $post_pairs = array(), array $term_languages = array(), array $term_pairs = array(), string $current = 'en', array $translated = array(), array $posts = array() ): void {
+	public static function mock( array $post_languages = array(), array $post_pairs = array(), array $term_languages = array(), array $term_pairs = array(), string $current = 'en', array $translated = array(), array $posts = array(), array $term_fields = array() ): void {
 		$translates = static fn( string $type ): bool => $translated[ $type ] ?? in_array( $type, array( 'page', 'post', 'product', 'product_cat', 'category', 'pa_phase' ), true );
 		$pair       = static function ( array $pairs, array $languages, int $id, string $language ) {
 			if ( ( $languages[ $id ] ?? null ) === $language ) {
@@ -87,19 +88,19 @@ final class PolylangDouble {
 				'return' => static fn( array $args = array() ): array => 'locale' === ( $args['fields'] ?? 'slug' ) ? array_values( self::LOCALES ) : array_keys( self::LOCALES ),
 			)
 		);
-			WP_Mock::userFunction(
-				'pll_current_language',
-				array(
-					'return' => static function ( string $field = 'slug' ) use ( $current ): string {
-						// The current language is the one PLL() holds, so a test
-						// that moves it (as Languages::enter() does) is answered
-						// the same way Polylang answers.
-						$held = self::$polylang->curlang->get_prop( 'slug' );
-						$slug = is_string( $held ) && '' !== $held ? $held : $current;
-						return 'locale' === $field ? self::LOCALES[ $slug ] : $slug;
-					},
-				)
-			);
+		WP_Mock::userFunction(
+			'pll_current_language',
+			array(
+				'return' => static function ( string $field = 'slug' ) use ( $current ): string {
+					// The current language is the one PLL() holds, so a test
+					// that moves it (as Languages::enter() does) is answered
+					// the same way Polylang answers.
+					$held = self::$polylang->curlang->get_prop( 'slug' );
+					$slug = is_string( $held ) && '' !== $held ? $held : $current;
+					return 'locale' === $field ? self::LOCALES[ $slug ] : $slug;
+				},
+			)
+		);
 		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => static fn( int $id ) => $post_languages[ $id ] ?? false ) );
 		WP_Mock::userFunction( 'pll_get_term_language', array( 'return' => static fn( int $id ) => $term_languages[ $id ] ?? false ) );
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id, string $language ) => $pair( $post_pairs, $post_languages, $id, $language ) ) );
@@ -126,7 +127,7 @@ final class PolylangDouble {
 				},
 			)
 		);
-		WP_Mock::userFunction( 'get_term', array( 'return' => static fn( $id ) => isset( $term_languages[ (int) $id ] ) ? self::term( (int) $id ) : null ) );
+		WP_Mock::userFunction( 'get_term', array( 'return' => static fn( $id ) => isset( $term_languages[ (int) $id ] ) ? self::term( (int) $id, $term_fields[ (int) $id ] ?? array() ) : null ) );
 		self::$languages = array();
 		self::$polylang  = new PolylangInstance( self::language( $current ) );
 		WP_Mock::userFunction( 'PLL', array( 'return' => self::$polylang ) );
@@ -168,7 +169,9 @@ final class PolylangDouble {
 	 * A term object.
 	 *
 	 * @param int                  $id     Term ID.
-	 * @param array<string, mixed> $fields Other fields.
+	 * @param array<string, mixed> $fields Other fields (slug defaults to a
+	 *                                     stand-in, so a test names the slug
+	 *                                     only when the code reads it).
 	 * @return \WP_Term
 	 */
 	public static function term( int $id, array $fields = array() ) {
@@ -176,6 +179,7 @@ final class PolylangDouble {
 		$term->term_id  = $id;
 		$term->parent   = 0;
 		$term->taxonomy = 'category';
+		$term->slug     = 'term-' . $id;
 		foreach ( $fields as $field => $value ) {
 			$term->$field = $value;
 		}

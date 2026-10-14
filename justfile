@@ -31,7 +31,7 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check e2e-check py-check pull::check cutover::check banned-words i18n-coverage build::check
+check: php-check js-check e2e-check py-check pull::check cutover::check banned-words i18n-coverage i18n-validity build::check
 
 # Unit tests of every chain and the end-to-end tests.
 test: php-test js-test py-test pull::test cutover::test
@@ -343,3 +343,11 @@ banned-words:
 [group('check')]
 i18n-coverage:
     python3 "{{ justfile_directory() }}/tools/checks/i18n-coverage.py"
+
+# Every catalog compiles: msgfmt --check over each plugin's .po and .pot
+# (tools/checks/i18n-validity.py). The coverage gate above reads the German
+# catalogs only, so a template catalog that lost a msgstr section or repeats
+# a msgid would reach the trunk silently.
+[group('check')]
+i18n-validity:
+    python3 "{{ justfile_directory() }}/tools/checks/i18n-validity.py"
