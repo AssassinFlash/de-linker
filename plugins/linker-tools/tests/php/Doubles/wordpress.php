@@ -164,8 +164,5 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 		public function get_headers() {
 			return $this->headers;
 		}
-		public function get_header( $key ) {
-			return $this->headers[ $key ] ?? null;
-		}
 	}
 }

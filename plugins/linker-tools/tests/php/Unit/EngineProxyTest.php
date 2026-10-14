@@ -187,7 +187,7 @@ final class EngineProxyTest extends TestCase {
 
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame( $bytes, $response->get_data() );
-		$this->assertStringStartsWith( 'application/pdf', (string) $response->get_header( 'Content-Type' ) );
+		$this->assertStringStartsWith( 'application/pdf', (string) ( $response->get_headers()['Content-Type'] ?? '' ) );
 		$this->assertConditionsMet();
 	}
 

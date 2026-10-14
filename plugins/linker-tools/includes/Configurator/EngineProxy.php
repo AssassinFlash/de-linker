@@ -73,6 +73,12 @@ final class EngineProxy {
 	 * Registers the route; runs on rest_api_init.
 	 */
 	public function register(): void {
+		$args = array(
+			'path' => array(
+				'type'     => 'string',
+				'required' => true,
+			),
+		);
 		register_rest_route(
 			self::NAMESPACE,
 			self::ROUTE . '/(?P<path>.+)',
@@ -81,11 +87,13 @@ final class EngineProxy {
 					'methods'             => 'GET',
 					'callback'            => array( $this, 'forward' ),
 					'permission_callback' => '__return_true',
+					'args'                => $args,
 				),
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'forward' ),
 					'permission_callback' => '__return_true',
+					'args'                => $args,
 				),
 			)
 		);
@@ -105,13 +113,11 @@ final class EngineProxy {
 	 * @return bool
 	 */
 	public static function serve_pdf( $served, $result ): bool {
-		if (
-			$result instanceof WP_REST_Response
-			&& str_starts_with(
-				(string) $result->get_header( 'Content-Type' ),
-				'application/pdf'
-			)
-		) {
+		if ( ! $result instanceof WP_REST_Response ) {
+			return (bool) $served;
+		}
+		$content_type = (string) ( $result->get_headers()['Content-Type'] ?? '' );
+		if ( str_starts_with( $content_type, 'application/pdf' ) ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the engine's own PDF bytes.
 			echo $result->get_data();
 			return true;
