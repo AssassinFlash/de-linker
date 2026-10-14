@@ -20,9 +20,11 @@ export const INSTANCE_READY =
 	'the instance answers /wp-json/ and both services report healthy';
 
 export default async function globalSetup(): Promise<void> {
-	// A page spec that does not talk to the engine or Genie sets this. The
-	// commercial-chain suites render WordPress only, so their health gate
-	// stays: WordPress must answer, the services may not exist.
+	// A page spec that renders WordPress only and never talks to the engine
+	// or Genie sets this (specs/empty-draft.spec.ts, documented in
+	// tests/e2e/README.md). The instance must still be a registered one that
+	// answers: an unknown name or a stopped server fails here exactly as it
+	// does without the switch.
 	if (process.env.LINKER_E2E_SKIP_SERVICES === '1') {
 		const name = instanceName();
 		const target = instance(name);

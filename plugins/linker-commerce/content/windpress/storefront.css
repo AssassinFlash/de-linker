@@ -2724,11 +2724,14 @@ body.woocommerce-order-received #container-content-page > div {
   min-height: 44px;
   padding: 0.4rem 1.1rem 0.4rem 0.45rem;
   border-radius: 999px;
-  /* Sampled from the live Advisor pill, checkout-en-1440-live.png
-     (2026-10-12/13 capture): near-black fill, slightly lighter mark
-     disc below. Not a site token; the pill is that control, not a
-     button of the storefront palette. */
-  background: #1c2430;
+  /* The live request page's Advisor pill: on all four 2026-10-12/13 captures
+     of the old live page (freshdiff-rerun checkout-en-1440/-390-live.png,
+     de-parity checkout-de-1440/-390-live.png) the fill samples rgb(23,38,54)
+     = #172636 — the same dark the live Advisor bubble carries
+     (plugins/linker-tools/src/genie/genie.css, .linker-genie-open). Not a
+     site token; the pill is that control, not a button of the storefront
+     palette. */
+  background: #172636;
   color: #fff;
   font-size: 0.95rem;
   font-weight: 500;
@@ -2740,7 +2743,11 @@ body.woocommerce-order-received #container-content-page > div {
   height: 28px;
   padding: 5px;
   border-radius: 999px;
-  background: #2a3340;
+  /* The mark disc on the same four captures samples rgb(56,69,82) — white 14%
+     over the fill above, to the bit (±1 per channel: the composite rounds) —
+     as the live bubble's own disc is built (.linker-genie-open-mark, same
+     file). */
+  background: rgba(255, 255, 255, 0.14);
   color: #fff;
 }
 #tv-woo-b2b-checkout .sf-checkout-empty h2 {

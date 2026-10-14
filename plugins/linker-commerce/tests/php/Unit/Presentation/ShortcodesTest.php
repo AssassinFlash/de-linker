@@ -187,20 +187,7 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => fn (): int => $this->signed_in_user ) );
 		$this->signed_in( 0 );
 		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
-		$cart = new class() {
-			/**
-			 * Filled draft.
-			 */
-			public function is_empty(): bool {
-				return false;
-			}
-		};
-		WP_Mock::userFunction(
-			'WC',
-			array(
-				'return' => (object) array( 'cart' => $cart ),
-			)
-		);
+		$this->cart_is( false );
 		WP_Mock::userFunction(
 			'do_shortcode',
 			array(
@@ -341,38 +328,9 @@ final class ShortcodesTest extends TestCase {
 		unset( $GLOBALS['product'] );
 	}
 
-		/**
-		 * The request's cart, empty or not.
-		 *
-		 * @param bool $vacant Whether the draft has no lines.
-		 */
-	private function cart_is( bool $vacant ): void {
-		$cart = new class( $vacant ) {
-			/**
-			 * Sets whether the draft has no lines.
-			 *
-			 * @param bool $vacant Whether the draft has no lines.
-			 */
-			public function __construct( private bool $vacant ) {}
-
-			/**
-			 * Whether the draft has no lines.
-			 */
-			public function is_empty(): bool {
-				return $this->vacant;
-			}
-		};
-			WP_Mock::userFunction(
-				'WC',
-				array(
-					'return' => (object) array( 'cart' => $cart ),
-				)
-			);
-	}
-
-		/**
-		 * The shortcodes under test.
-		 */
+	/**
+	 * The shortcodes under test.
+	 */
 	private function shortcodes(): Shortcodes {
 		return new Shortcodes( new LoginGate( new Approval() ), new Approval() );
 	}

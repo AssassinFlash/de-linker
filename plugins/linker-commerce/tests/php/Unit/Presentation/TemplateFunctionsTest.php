@@ -119,7 +119,6 @@ final class TemplateFunctionsTest extends TestCase {
 		$this->cart_is( true );
 
 		$this->assertTrue( linker_commerce_draft_empty() );
-		$this->assertTrue( linker_commerce_draft_is_empty() );
 		$this->assertFalse( linker_commerce_draft_filled() );
 	}
 
@@ -132,7 +131,6 @@ final class TemplateFunctionsTest extends TestCase {
 		$this->cart_is( false );
 
 		$this->assertFalse( linker_commerce_draft_empty() );
-		$this->assertFalse( linker_commerce_draft_is_empty() );
 		$this->assertTrue( linker_commerce_draft_filled() );
 	}
 
@@ -151,8 +149,20 @@ final class TemplateFunctionsTest extends TestCase {
 		$this->cart_is( true );
 
 		$this->assertFalse( linker_commerce_draft_empty() );
-		$this->assertFalse( linker_commerce_draft_is_empty() );
 		$this->assertTrue( linker_commerce_draft_filled() );
+	}
+
+	/**
+	 * WooCommerce loaded but no cart for the request: the question is answered
+	 * rather than asked of a null (the gate reads this on every request the
+	 * checkout shortcode renders into).
+	 */
+	public function test_a_request_without_a_cart_is_an_empty_draft(): void {
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		$this->no_cart();
+
+		$this->assertTrue( linker_commerce_draft_empty() );
+		$this->assertFalse( linker_commerce_draft_filled() );
 	}
 
 	/**
@@ -167,35 +177,6 @@ final class TemplateFunctionsTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/\[lc_if condition="linker_commerce_draft_filled"\]/', $cart );
 		$this->assertTrue( function_exists( 'linker_commerce_draft_empty' ) );
 		$this->assertTrue( function_exists( 'linker_commerce_draft_filled' ) );
-	}
-
-	/**
-	 * The request's cart.
-	 *
-	 * @param bool $vacant Whether the draft has no lines.
-	 */
-	private function cart_is( bool $vacant ): void {
-		$cart = new class( $vacant ) {
-			/**
-			 * Sets whether the draft has no lines.
-			 *
-			 * @param bool $vacant Whether the draft has no lines.
-			 */
-			public function __construct( private bool $vacant ) {}
-
-			/**
-			 * Whether the draft has no lines.
-			 */
-			public function is_empty(): bool {
-				return $this->vacant;
-			}
-		};
-		WP_Mock::userFunction(
-			'WC',
-			array(
-				'return' => (object) array( 'cart' => $cart ),
-			)
-		);
 	}
 
 	/**

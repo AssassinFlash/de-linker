@@ -169,11 +169,11 @@ final class Shortcodes {
 
 	/**
 	 * Whether this is an empty Proforma request (not a confirmation or pay page).
-	 * One answer with the condition functions LiveCanvas calls, so the gate
-	 * and the cart template can never disagree.
+	 * The cart template's own condition function, so the gate and the branch
+	 * the visitor sees can never disagree.
 	 */
 	private function is_empty_request(): bool {
-		return linker_commerce_draft_is_empty();
+		return linker_commerce_draft_empty();
 	}
 
 	/**

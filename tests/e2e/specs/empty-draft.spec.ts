@@ -5,8 +5,10 @@
  * This one opens the chain's two empty states with no lines and no account:
  * the cart's designed empty state (the live cart-en/de captures' icon, title,
  * note and actions), and the request page's left column with its Genie pill.
- * Neither page talks to the engine or Genie's agent loop, so the suite runs
- * with LINKER_E2E_SKIP_SERVICES=1.
+ * No turn and no engine request leaves the page — the pill's own click opens
+ * the dock's panel, and the dock asks Genie nothing without a
+ * data-ask-message — so the suite runs with LINKER_E2E_SKIP_SERVICES=1
+ * (tests/e2e/README.md).
  */
 
 /**
@@ -94,19 +96,34 @@ for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
 			'the gate column, not a centred card'
 		).toBeVisible();
 		await expect(page.locator('h1')).toHaveText(pageCopy.title);
+		const pill = page.locator('.sf-checkout-genie__pill');
 		await expect(
-			page.locator('.sf-checkout-genie__pill'),
+			pill,
 			'the dark pill under the title, in the site’s current name'
 		).toHaveText(/Genie/);
 		await expect(body).toContainText(pageCopy.signIn);
 
-		// The pill is an anchor whose href is the no-JavaScript fallback.
-		// With the dock present the click opens Genie here, so the page must
-		// not navigate away.
-		await page.locator('.sf-checkout-genie__pill').click();
+		// The pill is an anchor whose href is the no-JavaScript fallback. With
+		// the dock present the click opens Genie here instead: the dock's own
+		// report is the evidence — it unhides the mount and marks the opener
+		// expanded only once the app is ready — and the fallback must not fire
+		// on top of it.
+		expect(
+			await pill.getAttribute('aria-expanded'),
+			'nothing has opened the dock yet'
+		).not.toBe('true');
+		await pill.click();
+		await expect(
+			page.locator('[data-linker-genie-mount]'),
+			'the pill really opens the Genie panel'
+		).toBeVisible();
+		await expect(
+			pill,
+			'the opener that opened it is marked expanded'
+		).toHaveAttribute('aria-expanded', 'true');
 		expect(
 			new URL(page.url()).pathname,
 			'the pill keeps the visitor on the request page'
-		).not.toBe('/genie/');
+		).toBe(pageCopy.path);
 	});
 }

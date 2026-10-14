@@ -85,9 +85,10 @@ if ( ! function_exists( 'linker_commerce_pdp_has_scenes' ) ) {
 	}
 }
 
-if ( ! function_exists( 'linker_commerce_draft_is_empty' ) ) {
+if ( ! function_exists( 'linker_commerce_draft_empty' ) ) {
 	/**
-	 * Whether the solution draft has no lines.
+	 * Whether the solution draft has no lines: the cart template's empty
+	 * branch, and the one answer the Proforma gate reads too.
 	 *
 	 * LiveCanvas resolves `[lc_if condition="…"]` with function_exists() and
 	 * one call of the named function (livecanvas modules/shortcodes.php, the
@@ -96,24 +97,15 @@ if ( ! function_exists( 'linker_commerce_draft_is_empty' ) ) {
 	 * or a pay page is not an empty draft: those requests can share the cart
 	 * template, and the condition must not hide a receipt.
 	 */
-	function linker_commerce_draft_is_empty(): bool {
+	function linker_commerce_draft_empty(): bool {
 		if ( function_exists( 'is_wc_endpoint_url' ) && ( is_wc_endpoint_url( 'order-received' ) || is_wc_endpoint_url( 'order-pay' ) ) ) {
 			return false;
 		}
-		if ( ! function_exists( 'WC' ) ) {
-			return true;
-		}
-		return WC()->cart->is_empty();
-	}
-}
-
-if ( ! function_exists( 'linker_commerce_draft_empty' ) ) {
-	/**
-	 * The cart template's empty branch. Same answer as
-	 * linker_commerce_draft_is_empty(); the template names this one.
-	 */
-	function linker_commerce_draft_empty(): bool {
-		return linker_commerce_draft_is_empty();
+		// A request WooCommerce never gave a cart (an admin, a REST or a CLI
+		// run without wc_load_cart) holds no lines either; asking its cart
+		// directly would be a fatal.
+		$cart = function_exists( 'WC' ) ? WC()->cart : null;
+		return ! $cart instanceof WC_Cart || $cart->is_empty();
 	}
 }
 
