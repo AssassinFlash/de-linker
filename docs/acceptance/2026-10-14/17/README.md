@@ -251,3 +251,13 @@ CN=linker-design-engine）。浏览器无法钉扎，需其一：
   数据库 4（D5YLd=de-linker 在用、oLeGH+9SZnb+sunriver=sunriver 家族）；安装 3
   （de-linker + sunriver 两枚）；`/home/u388076051/domains/` 只剩 de-linker.com 与
   sunriver-inverter.com 两个目录。live de-linker.com 首页/Genie/配置器复测全 200。
+
+### 线上 vs 仓库对账（2026-10-14 深夜，业主问"改了这么久，线上还有要调整的吗"）
+
+对 12 个会落线的关键文件（三个插件入口/挂载/代理、构建产物三件、mu 四件）两边取哈希逐对比较：
+**9 件字节一致；3 件有差且均为注释/构建清单级**（`EngineProxy.php` 与 `AccountTemplates.php` 的 docblock
+修正、`build/manifest.json` 重建清单），三件已同步上线，复验两边全同。**功能层面无漂移**——线上无需任何
+功能性调整。
+工具侧顺带闭掉一个未来会咬人的缺口：cutover 的 mu 部署是 PHP-only glob，
+`linker-engine-ca.pem`（引擎钉扎证书，与读它的插件同目录）在**下次重建/演练**时不会随行，站点上的钉扎会
+读不到证书。已改为 `*.php` + `*.pem` 同发（守门仍以插件为准），含目的路径与相对顺序断言（`342a93c`）。
