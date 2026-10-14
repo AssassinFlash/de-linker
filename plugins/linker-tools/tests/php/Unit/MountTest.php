@@ -41,20 +41,19 @@ final class MountTest extends TestCase {
 	}
 
 	/**
-	 * The mount point: the app's name, the engine's address from the option
-	 * `just serve` and the cutover write, the REST root and a REST nonce.
+	 * The mount point: the app's name, the engine's address — this plugin's
+	 * own engine route, so the browser never talks to the self-signed engine
+	 * directly — the REST root and a REST nonce.
 	 */
 	public function test_the_shortcode_prints_the_mount_point_and_loads_the_app(): void {
 		$enqueued = array();
 		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
 		WP_Mock::userFunction(
-			'get_option',
+			'rest_url',
 			array(
-				'args'   => array( Mount::ENGINE_URL_OPTION, '' ),
-				'return' => 'http://127.0.0.1:8976',
+				'return' => static fn( string $path = '' ): string => 'http://127.0.0.1:8975/wp-json/' . $path,
 			)
 		);
-		WP_Mock::userFunction( 'rest_url', array( 'return' => 'http://127.0.0.1:8975/wp-json/' ) );
 		WP_Mock::userFunction(
 			'wp_create_nonce',
 			array(
@@ -86,7 +85,7 @@ final class MountTest extends TestCase {
 		$html = ( new Mount() )->shortcode();
 
 		$this->assertSame(
-			'<div data-linker-app="configurator" data-engine-url="http://127.0.0.1:8976" data-rest-url="http://127.0.0.1:8975/wp-json/" data-rest-nonce="abc123"></div>',
+			'<div data-linker-app="configurator" data-engine-url="http://127.0.0.1:8975/wp-json/linker-ai/v1/engine" data-rest-url="http://127.0.0.1:8975/wp-json/" data-rest-nonce="abc123"></div>',
 			$html
 		);
 		$this->assertSame( array( 'script:' . Mount::HANDLE, 'style:' . Mount::HANDLE ), $enqueued );
@@ -109,8 +108,12 @@ final class MountTest extends TestCase {
 	 */
 	public function test_the_markup_carries_no_copy_and_no_style(): void {
 		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
-		WP_Mock::userFunction( 'get_option', array( 'return' => '' ) );
-		WP_Mock::userFunction( 'rest_url', array( 'return' => 'https://de-linker.com/wp-json/' ) );
+		WP_Mock::userFunction(
+			'rest_url',
+			array(
+				'return' => static fn( string $path = '' ): string => 'https://de-linker.com/wp-json/' . $path,
+			)
+		);
 		WP_Mock::userFunction( 'wp_create_nonce', array( 'return' => 'nonce' ) );
 		WP_Mock::userFunction( 'esc_url_raw', array( 'return' => static fn( string $url ): string => $url ) );
 		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn( string $value ): string => $value ) );

@@ -15,11 +15,17 @@ namespace Linker\Tools\Configurator;
  * The LiveCanvas template of the configurator page prints
  * `[linker_configurator]`; the app is the built entry `build/configurator.js`
  * that Assets registers as `linker-tools-configurator`. The markup carries
- * what the app cannot know server-side — the engine's address (the option
- * `linker_engine_url`, docs/specs/14-solution-configurator.md), the REST root
+ * what the app cannot know server-side — the engine's address, the REST root
  * and a REST nonce (shape: linker-tools src/configurator/config.ts) — and
  * nothing else: zero design, no word of copy, and the app's own stylesheet
  * sizes and colours it.
+ *
+ * The engine address the app gets is this plugin's own engine route
+ * (Configurator\EngineProxy), not the engine's own URL: the production
+ * engine's certificate is self-signed and a browser cannot pin it, while
+ * the site's PHP can and does (mu-plugins/linker-engine-pin.php — the same
+ * hop the Genie already makes). The engine's own URL lives in the option
+ * `linker_engine_url` and is read by the proxy, server-side.
  *
  * It prints on the page it is written into and nowhere else. The page is the
  * one place the tool lives; without this mount the page would keep whatever
@@ -32,13 +38,6 @@ final class Mount {
 	 * entry).
 	 */
 	public const HANDLE = 'linker-tools-configurator';
-
-	/**
-	 * Option holding the configurator engine's base URL: `just serve <name>`
-	 * writes it locally, the cutover writes it in production
-	 * (docs/local-stack.md, docs/specs/17-cutover.md).
-	 */
-	public const ENGINE_URL_OPTION = 'linker_engine_url';
 
 	/**
 	 * Hooks the shortcode; runs during plugin registration.
@@ -62,7 +61,11 @@ final class Mount {
 
 		return sprintf(
 			'<div data-linker-app="configurator" data-engine-url="%1$s" data-rest-url="%2$s" data-rest-nonce="%3$s"></div>',
-			esc_attr( (string) get_option( self::ENGINE_URL_OPTION, '' ) ),
+			esc_attr(
+				esc_url_raw(
+					rest_url( EngineProxy::NAMESPACE . EngineProxy::ROUTE )
+				)
+			),
 			esc_attr( esc_url_raw( rest_url() ) ),
 			esc_attr( wp_create_nonce( 'wp_rest' ) )
 		);

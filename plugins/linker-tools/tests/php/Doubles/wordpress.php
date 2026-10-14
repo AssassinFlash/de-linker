@@ -101,10 +101,17 @@ if ( ! class_exists( 'WP_Term' ) ) {
 
 if ( ! class_exists( 'WP_REST_Request' ) ) {
 	class WP_REST_Request {
+		private $method;
 		private $route;
 		private $params = array();
+		private $query  = array();
+		private $body   = '';
 		public function __construct( $method = '', $route = '' ) {
-			$this->route = $route;
+			$this->method = $method;
+			$this->route  = $route;
+		}
+		public function get_method() {
+			return $this->method;
 		}
 		public function get_route() {
 			return $this->route;
@@ -114,6 +121,18 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 		}
 		public function get_param( $key ) {
 			return $this->params[ $key ] ?? null;
+		}
+		public function set_query_params( $query ) {
+			$this->query = $query;
+		}
+		public function get_query_params() {
+			return $this->query;
+		}
+		public function set_body( $body ) {
+			$this->body = $body;
+		}
+		public function get_body() {
+			return $this->body;
 		}
 	}
 }
@@ -144,6 +163,9 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 		}
 		public function get_headers() {
 			return $this->headers;
+		}
+		public function get_header( $key ) {
+			return $this->headers[ $key ] ?? null;
 		}
 	}
 }
