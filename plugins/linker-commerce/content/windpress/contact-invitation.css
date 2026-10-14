@@ -49,16 +49,24 @@
  * article has no page rule. The live single prints the shortcode as
  * text; #tv-blog-single-v1 styles a different teal banner
  * (#tv-blog-single-cta). The card below is measured on
- * blogpost-en-1440-live.png y1893–2182: white card, heading (16,44,48)
- * = #102c30, button (18,102,79) = #12664f. The 760px stack is the
- * product-list band's own break, reused because this capture was not
- * re-measured at 390.
+ * blogpost-en-1440-live.png: card x442–1347 (906px, the article
+ * column), rules y1966 and y2182 — 1px #d6ded7 on every side, corners
+ * square (x442 column is dark for the full band height, no radius
+ * arc), interior #fff. Eyebrow ink (32,58,50) = #203a32 (the products
+ * band's ink, not teal); heading (16,44,48) = #102c30; note
+ * (83,107,98) = #536b62; button fill (18,102,79) = #12664f, box
+ * x1060–1306 × y2028–2072 (247×44); the mail link sits UNDER the
+ * button (text rows y2088–2102, left edges equal at x1060, gap 16px)
+ * — the actions stack. Padding: eyebrow ink starts y2003, 37px below
+ * the top rule; content ink starts x484, 42px right of the left
+ * rule. The 760px stack is the product-list band's own break, reused
+ * because this capture was not re-measured at 390.
  *
  * The fallback is (0,2,0). It is under every page rule above, so it
  * only shows where a page has not styled the surface.
  */
 
-/* Article card. blogpost-en-1440-live.png y1893–2182. */
+/* Article card. blogpost-en-1440-live.png x442–1347 × y1966–2182. */
 .linker-contact-invitation.linker-contact-article:not(.linker-contact-products) {
 	display: flex;
 	align-items: center;
@@ -67,9 +75,9 @@
 	box-sizing: border-box;
 	width: min(903px, 100%);
 	margin: 28px 0;
-	padding: 26px 30px;
+	padding: 36px 42px;
 	border: 1px solid #d6ded7;
-	border-radius: 14px;
+	border-radius: 0;
 	background: #fff;
 	color: #102c30;
 	font-size: 14px;
@@ -83,9 +91,9 @@
 
 .linker-contact-invitation.linker-contact-article:not(.linker-contact-products) .linker-contact-invitation-actions {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	gap: 16px;
-	align-items: center;
+	align-items: flex-start;
 	flex-shrink: 0;
 }
 
@@ -95,7 +103,7 @@
 	font-weight: 700;
 	letter-spacing: .13em;
 	line-height: 1.55;
-	color: #0c7f73;
+	color: #203a32;
 	text-transform: uppercase;
 }
 
