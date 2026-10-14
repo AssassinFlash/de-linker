@@ -89,7 +89,7 @@ def test_post_category_slugs_are_the_live_german_archive_slugs() -> None:
     is 404. A slug minted from the German name is what Polylang 301s back to
     English.
     """
-    assert i18n.POST_CATEGORIES == {
+    assert i18n.POST_CATEGORY_NAMES == {
         "System Design": ("Systemauslegung", "system-design"),
         "Battery Storage": ("Batteriespeicher", "battery-storage-blog"),
         "Installation & Commissioning": (
@@ -102,7 +102,7 @@ def test_post_category_slugs_are_the_live_german_archive_slugs() -> None:
         ),
         "Applications": ("Anwendungen", "applications-blog"),
     }
-    for _name, (german_name, slug) in i18n.POST_CATEGORIES.items():
+    for _name, (german_name, slug) in i18n.POST_CATEGORY_NAMES.items():
         assert slug
         assert " " not in slug
         assert german_name

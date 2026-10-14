@@ -50,14 +50,20 @@ final class Twins {
 	 */
 	private const LIVECANVAS_TYPES = array( 'lc_partial', 'lc_dynamic_template' );
 
-		/**
-		 * The published posts and their category, as the pre-cutover snapshot
-		 * records them (docs/debt/DE-PARITY-2026-10-13.md §2: posts 551–560 on
-		 * terms 10–14, two posts each). The live database no longer has these
-		 * rows, so a repair cannot discover them from the term.
-		 *
-		 * @var array<int, int>
-		 */
+	/**
+	 * The published posts and their category, as the pre-cutover snapshot
+	 * records them (docs/debt/DE-PARITY-2026-10-13.md §2: posts 551–560 on
+	 * terms 10–14, two posts each). The live database no longer has these
+	 * rows, so a repair cannot discover them from the term.
+	 *
+	 * The ids are the live snapshot's, not a sequence a fresh install mints.
+	 * restore_post_category() and assign_term() only write when the post
+	 * really is a post and the term still carries the snapshot's slug
+	 * (POST_CATEGORY_SLUGS), so a database whose ids landed elsewhere is
+	 * left alone.
+	 *
+	 * @var array<int, int>
+	 */
 	public const POST_CATEGORIES = array(
 		551 => 10,
 		552 => 10,
@@ -69,6 +75,22 @@ final class Twins {
 		558 => 13,
 		559 => 14,
 		560 => 14,
+	);
+
+	/**
+	 * The slug each snapshot category term must still have (the live German
+	 * archives answer on these; docs/debt/DE-PARITY-2026-10-13.md §4.1). A
+	 * term id holding another slug is a different object in this database,
+	 * and the repair must not hang posts 551–560 on it.
+	 *
+	 * @var array<int, string>
+	 */
+	private const POST_CATEGORY_SLUGS = array(
+		10 => 'system-design',
+		11 => 'battery-storage-blog',
+		12 => 'installation-commissioning',
+		13 => 'monitoring-energy-management',
+		14 => 'applications-blog',
 	);
 
 	/**
@@ -264,7 +286,7 @@ final class Twins {
 			// adopt() must put the posts back. Polylang's term sync runs on
 			// set_object_terms while writing is still true, so it does not
 			// treat this as a person's edit.
-			$this->assign_term( $source, $twin );
+			$this->assign_term( $source );
 		} finally {
 			$this->restore_kses( $kses );
 			$this->restore_default_category( $defaulting );
@@ -437,13 +459,16 @@ final class Twins {
 			}
 			// An empty category list is the English relationships already
 			// gone, not a post that has no category. Writing it would clear
-			// the German post too (append is false). The snapshot's
-			// category is the one to keep.
+			// the German post too (wp_set_object_terms replaces). The
+			// snapshot's category is the one to keep; while its German term
+			// is not in this database yet, the German post's category is
+			// left as it is.
 			if ( 'category' === $taxonomy && array() === $ids && isset( self::POST_CATEGORIES[ $source->ID ] ) ) {
 				$german_term = $this->languages->term_translation( self::POST_CATEGORIES[ $source->ID ], Languages::TARGET );
-				if ( null !== $german_term ) {
-					$ids = array( $german_term );
+				if ( null === $german_term ) {
+					continue;
 				}
+				$ids = array( $german_term );
 			}
 			wp_set_object_terms( $twin, $ids, $taxonomy );
 		}
@@ -455,40 +480,50 @@ final class Twins {
 	 *
 	 * Does not read the relationships that are already there: on the live
 	 * database those rows are gone, so a lookup by the English term finds
-	 * nothing. A post or term that is not in this database is skipped.
+	 * nothing. A post that is not a post, or a term whose slug is not the
+	 * snapshot's, is skipped: the ids are the live snapshot's, and another
+	 * database may have reused them.
 	 *
 	 * @param int $post_id English post ID.
+	 * @return bool Whether the English post was written.
 	 */
-	public function restore_post_category( int $post_id ): void {
+	public function restore_post_category( int $post_id ): bool {
 		$term_id = self::POST_CATEGORIES[ $post_id ] ?? 0;
-		if ( 0 === $term_id || ! get_post( $post_id ) instanceof \WP_Post ) {
-			return;
+		$post    = get_post( $post_id );
+		if ( 0 === $term_id || ! $post instanceof \WP_Post || 'post' !== $post->post_type ) {
+			return false;
 		}
 		$source = get_term( $term_id, 'category' );
-		if ( ! $source instanceof \WP_Term || 'category' !== $source->taxonomy ) {
-			return;
+		if ( ! $source instanceof \WP_Term || 'category' !== $source->taxonomy
+			|| self::POST_CATEGORY_SLUGS[ $term_id ] !== $source->slug ) {
+			return false;
 		}
-		wp_set_object_terms( $post_id, array( $source->term_id ), 'category', true );
+		// Replace, do not append. Post 558 was left on Uncategorized when the
+		// relationships went (docs/debt/DE-PARITY-2026-10-13.md §2); appending
+		// the snapshot term would leave it on both, and the single page
+		// prints every category.
+		wp_set_object_terms( $post_id, array( $source->term_id ), 'category', false );
 		$german_post = $this->languages->post_translation( $post_id, Languages::TARGET );
 		$german_term = $this->languages->term_translation( $source->term_id, Languages::TARGET );
 		if ( null !== $german_post && null !== $german_term ) {
-			wp_set_object_terms( $german_post, array( $german_term ), 'category', true );
+			wp_set_object_terms( $german_post, array( $german_term ), 'category', false );
 		}
+		return true;
 	}
 
 	/**
 	 * Puts every published post of POST_CATEGORIES back on its category.
 	 *
-	 * @return int How many English posts were written.
+	 * @return int How many English posts were written. A post that is
+	 *             missing, is not a post, or whose term does not carry the
+	 *             snapshot's slug is not counted.
 	 */
 	public function restore_post_categories(): int {
 		$restored = 0;
 		foreach ( array_keys( self::POST_CATEGORIES ) as $post_id ) {
-			if ( ! get_post( $post_id ) instanceof \WP_Post ) {
-				continue;
+			if ( $this->restore_post_category( $post_id ) ) {
+				++$restored;
 			}
-			$this->restore_post_category( $post_id );
-			++$restored;
 		}
 		return $restored;
 	}
@@ -499,24 +534,23 @@ final class Twins {
 	 *
 	 * The posts are the snapshot list, not get_objects_in_term(): that
 	 * lookup is empty once the relationships are gone, which is the state
-	 * a re-run has to repair.
+	 * a re-run has to repair. Only the blog posts' own category: product
+	 * categories and attribute terms already copy their objects while the
+	 * German post is written (terms()), and this snapshot list applied to
+	 * another taxonomy would hang posts 551–560 on a product term.
 	 *
 	 * @param \WP_Term $source English term.
-	 * @param int      $twin   German term ID.
 	 */
-	private function assign_term( \WP_Term $source, int $twin ): void {
-		if ( 'category' !== $source->taxonomy ) {
+	private function assign_term( \WP_Term $source ): void {
+		if ( 'category' !== $source->taxonomy
+			|| ( self::POST_CATEGORY_SLUGS[ $source->term_id ] ?? '' ) !== $source->slug ) {
 			return;
 		}
 		foreach ( self::POST_CATEGORIES as $post_id => $term_id ) {
-			if ( $term_id !== $source->term_id || ! get_post( $post_id ) instanceof \WP_Post ) {
+			if ( $term_id !== $source->term_id ) {
 				continue;
 			}
-			wp_set_object_terms( $post_id, array( $source->term_id ), 'category', true );
-			$german = $this->languages->post_translation( $post_id, Languages::TARGET );
-			if ( null !== $german ) {
-				wp_set_object_terms( $german, array( $twin ), 'category', true );
-			}
+			$this->restore_post_category( $post_id );
 		}
 	}
 

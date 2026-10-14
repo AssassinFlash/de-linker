@@ -269,7 +269,7 @@ final class Command {
 			WP_CLI::error( 'No writer for the post categories.' );
 		}
 		$restored = $this->twins->restore_post_categories();
-		WP_CLI::success( sprintf( 'Post categories restored for %d published posts.', $restored ) );
+		WP_CLI::success( sprintf( 'Post categories restored for %d posts whose snapshot term is still here.', $restored ) );
 	}
 
 	/**

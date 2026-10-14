@@ -174,6 +174,56 @@ test.describe('i18n', () => {
 		}
 	});
 
+	test('the German blog archive answers on the live slug and lists its posts', async () => {
+		// The live German archive answers /de/category/system-design/ at 200
+		// de-DE, titled Systemauslegung (docs/debt/DE-PARITY-2026-10-13.md
+		// §4.1). A German term minted as systemauslegung - or no German term
+		// at all - makes Polylang 301 this address to the English page. The
+		// German term carries the same slug as the English one (SameSlug
+		// allows it once the term has its language), and Polylang's canonical
+		// keeps a slug the requested language also holds.
+		const archive = await fetch(
+			`${instance().url}/de/category/system-design/`,
+			{ redirect: 'manual' }
+		);
+		expect(
+			archive.status,
+			'the German category archive answers without a redirect'
+		).toBe(200);
+		const archiveHtml = await archive.text();
+		expect(archiveHtml, 'the archive stays German').toMatch(
+			/<html[^>]*lang="de/i
+		);
+		expect(archiveHtml, 'the archive title is the German category').toMatch(
+			/<title>[^<]*Systemauslegung/
+		);
+		// The archive lists the posts of its category. The 2026-10-14 online
+		// recheck found the section empty once the post→category relations
+		// were lost (families 16 and 22). Post 551 sits on system-design in
+		// the snapshot; its German twin is /de/hybridwechselrichter-vs-ac-
+		// speicher/ (docs/debt/DE-PARITY-2026-10-13.md §2: en=551, de=6893).
+		expect(
+			archiveHtml,
+			'the archive lists the German twin of a snapshot post of this category'
+		).toContain('/de/hybridwechselrichter-vs-ac-speicher/');
+	});
+
+	test('a German post names its category', async () => {
+		// The single page carries the post's category. The 2026-10-14 online
+		// recheck found the category metadata empty when the relations were
+		// gone (families 16 and 22); with them restored, the page links the
+		// German archive.
+		const post = await fetch(
+			`${instance().url}/de/hybridwechselrichter-vs-ac-speicher/`
+		);
+		expect(post.status, 'the German post answers').toBe(200);
+		const html = await post.text();
+		expect(
+			html,
+			'the single page links its category archive'
+		).toContain('/de/category/system-design/');
+	});
+
 	test('a product and its German twin share their slug', async () => {
 		const [product] = await storeProducts('per_page=1&lang=en');
 		expect(product, 'there is a published product').toBeTruthy();
