@@ -59,9 +59,12 @@
 
 - 组件：短代码 `[linker_contact_form]`（`Linker\Commerce\Contact\Form`），服务器端渲染
   （无 JS 也能看与提交），语义 markup + Tailwind 类，样式经 WindPress 扫描（页面内容里
-  do_shortcode 的 LC provider 已覆盖）；挂载点=页面的 `[data-linker-contact-mount]`，
-  由 `tools/migrate/68-contact-form.py`（plan/apply --write/verify，幂等）把旧的
-  `cp-contact-fallback` 换成短代码并移除 `noscript` 行，EN #28 + DE 孪生。
+  do_shortcode 的 LC provider 已覆盖）；挂载点=页面的 `[data-linker-contact-mount]`。
+  `tools/migrate/68-contact-form.py`（plan/apply --write/verify，幂等）把旧的
+  `cp-contact-fallback` 换成短代码并移除 `noscript` 行，但它不在切换清单里，
+  部署实例的页面内容仍是旧挂载。`Contact\Module::mount_form` 在 `the_content`
+  优先级 9（`do_shortcode` 为 11）对 `/contact/` 与其德语孪生做同一次替换：
+  短代码已注册才替换，未注册则原样留下兜底行。已含短代码的页面只去掉残留兜底。
 - 字段：message（问题，≤5000）、name、company（选填）、email、consent 勾选、蜜罐
   `website`（`hidden` + `aria-hidden`，人不可见）、nonce、隐藏 `lang`（页面语言）与
   回跳地址。校验在 `Contact\Submission`（服务端，与浏览器约束并行）。
@@ -109,4 +112,5 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - 2026-10-13：Proforma 号与 PDF 不再只挂在 Issue 按钮上。状态进入 `wc-proforma-issued` 时 `Issuer::ensure_issued` 补签发（已有号或 PDF 的不动，避免按钮路径签两次）。客户侧询盘详情（摘要卡号 + 下载链接）与 Documents 只读 `_linker_proforma_number`；Completed 后号还在，下载仍在。银行账户缺失时按钮隐藏、状态路径不签发，配置键见上节，不补造账户。默认号前缀由 `PI` 改为 `DLK-PF`，与线上 `DLK-PF-年份-…` 一致；空前缀走默认，已保存的自定义前缀不动。
 - 2026-10-13（#138）：注册邮件改为注册确认（`RegistrationReceivedEmail`；Woo 原生欢迎信仍关）。邮件清单补第 5 封。pending 停在审核页；restricted 保留工作台，Proforma request 显示限制原因。文案定稿 `docs/acceptance/2026-10-13/138/copy-review.md`。
 - 2026-10-11（#67，GAP-16）：新增 `Health` 模块（服务健康告警最小件）。WordPress/Woo 没有外部服务健康监视的原生能力，检查本身是本插件的；机制全部原生：调度 WP cron daily（`init` 懒登记 + 停用 `wp_clear_scheduled_hook`），HTTP 走 WP HTTP API，邮件走 `wp_mail` 即 #11 的 Outbox 队列（复用限流与重试）。验收：单元 `MonitorTest`（7 项）+ 实例集成 `HealthMonitorTest`（cron 钩子触发路径、失败一封 To 对接人+Bcc、健康零邮件、每日事件在排期），实例级 `wp cron event run linker_commerce_health_check` 健康/失败两跑实证。
+- 2026-10-14：线上 `/contact/` 与 `/de/kontakt/` 仍渲染旧兜底（form=0）。根因是挂载替换只在迁移脚本里，而该脚本不在切换清单，部署后的页面内容没有短代码。渲染时替换补上这一步，兜底行只在短代码未注册时留下。
 - 2026-10-11（#68）：联系表单（最小）落地并接 Mail 管线：短代码 `[linker_contact_form]`、admin-post 处理（nonce/蜜罐/限流/校验）、客户回执 + 团队信（Bcc 走 SettingsTab）；`tools/migrate/68-contact-form.py` 换挂载点；同轮修 Figures/FAQ meta box 的保存形态（浏览器实际提交的是嵌套数组，两个箱子此前对真实 POST 从不写入，证据与复现见 docs/acceptance/2026-10-11/68/README.md §3）。
