@@ -16,8 +16,10 @@ namespace Linker\Tools;
  * - the marketing pages' content modules also switch on desktop hover
  *   (a hover clicks the module's own trigger, so the click, keyboard and
  *   touch behaviour is the page's own and unchanged);
- * - the header's menu images load when their menu opens (the partials
- *   carry them as data-src; this script hydrates the open menu's).
+ * - the header's menu images load when their menu opens (a fallback for
+ *   markup that carries them as data-src; the header's thumbnails resolve
+ *   through their own src, so the hydrator currently finds nothing — it
+ *   stays until an instance proves the visual parity without it).
  */
 final class SiteChrome {
 
