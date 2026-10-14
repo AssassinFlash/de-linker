@@ -237,3 +237,17 @@ CN=linker-design-engine）。浏览器无法钉扎，需其一：
 - **主机与本地**：/tmp 探针与临时件清空（主机 1 个 0 字节旧 temp、本地全部本次脚本/提取件；可复用脚本已在 `.scratch/cutover-run` 与本文档留档）。
 - **文档时效**：AGENTS.md 的呈现层描述修正一处过时（tokens 已从 Additional CSS 移入 WindPress 卷——以代码为准）。
 - **账号级盘点（de-linker 之外，呈报未动）**：账号另有 4 个站点与 6 个库。live de-linker.com = `u388076051_D5YLd` ✓（与安装同日创建，勿动）；`sunriver-inverter.com` + 其 staging `stg.sunriver-inverter.com`（"Website migrated by Hostinger"）+ 两个大库（557 MB/669 MB）= 另一在线项目，未触碰；`tvolt-energie.de`（旧品牌）——DNS 已不解析、vhost 与两个小库（71 MB/6 MB）尚存，连同预览域 `orchid-owl-…hostingersite.com` 与 `metal-divider.com`（builder 站），均为**业主侧处置项**：要不要清 tvolt 与预览域、sunriver 家族是否保留，等业主一句话即可执行。
+
+### 业主裁定执行（同一晚）：旧品牌与预览域清除
+
+业主令："旧品牌的和 ORCHID 这个也是要清的，SunRiver 不要清，MetalDivider 也不要清。"
+
+- `tvolt-energie.de`：`hosting_websites_delete` 整站删除——文件目录（含 vhost）、71 MB 库
+  `u388076051_8eaUl` 随站消失；6 MB 库 `u388076051_O2mxm` 被平台摘链未删，已补
+  `hosting_databases_delete`；WP 安装记录（28465306，TerraVolt Energie GmbH）随之消失。
+- `orchid-owl-398706.hostingersite.com`（Hostinger 预览域）：`hosting_websites_delete` 删除，
+  目录不复存在。
+- **读回终态**：网站 3（de-linker.com、sunriver-inverter.com、metal-divider.com——后两者按令保留）；
+  数据库 4（D5YLd=de-linker 在用、oLeGH+9SZnb+sunriver=sunriver 家族）；安装 3
+  （de-linker + sunriver 两枚）；`/home/u388076051/domains/` 只剩 de-linker.com 与
+  sunriver-inverter.com 两个目录。live de-linker.com 首页/Genie/配置器复测全 200。
