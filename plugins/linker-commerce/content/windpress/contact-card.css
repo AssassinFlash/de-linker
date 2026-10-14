@@ -164,10 +164,35 @@
 	gap: var(--proto-space-3);
 }
 
+/* The consent row lands here too — the markup's utility classes are inert
+ * inside #theme-main (the compiled cache carries an unlayered
+ * `:where(#lc-header, #lc-footer, body[data-page] #theme-main) :where(*){all:
+ * revert}` that beats @layer utilities; measured, see the acceptance record).
+ * Values are the live card's row (11px line on 1.85, an 18×18 box with a 2px
+ * top margin, the link underlined with a 3px offset, 10px between box and
+ * text); the colours are the site's tokens, in place of the card's old mint
+ * and green. */
 #contact-form .linker-contact-card .linker-form-consent {
 	display: flex;
 	align-items: flex-start;
-	gap: var(--proto-space-3);
+	gap: 10px;
+	font-size: 11px;
+	line-height: 1.85;
+	color: var(--proto-neutral-500);
+}
+
+#contact-form .linker-contact-card .linker-form-consent input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	flex: 0 0 18px;
+	margin: 2px 0 0;
+	accent-color: var(--proto-accent);
+}
+
+#contact-form .linker-contact-card .linker-form-consent a {
+	color: var(--proto-teal-600);
+	text-decoration: underline;
+	text-underline-offset: 3px;
 }
 
 /* The two side cards under the form (22px of padding and a 20px radius on the

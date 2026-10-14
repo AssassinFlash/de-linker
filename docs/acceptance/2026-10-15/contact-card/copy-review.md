@@ -55,6 +55,31 @@ Hard Stops + 线上既有措辞与 `.po` 术语。定稿即 `.po` 的 msgstr 与
   **定稿**同初稿：`This is about: %s` / `Es geht um: %s`。
 - 说明：本行不承载复信路由（`Reply-to` 仍是客户地址，先于本行），也不进入客户回执。
 
+## 2b. 同意行的取值选择（几何取旧线上、颜色取现行 tokens）
+
+同意行（`.linker-form-consent`）的可见几何本票取**旧线上参考卡**的值，不取 #68 登记过的
+`text-xs text-neutral-600` 意图：
+
+| 项 | 取值 | 来源 |
+|---|---|---|
+| 行字号 / 行高 | 11px / 1.85 | 旧线上卡 `contact-journal.css` 的 `.lkc-check{font-size:11px;line-height:1.85}` |
+| 行颜色 | `--proto-neutral-500` | 旧线上是 `--cp-muted`（旧卡绿灰）；按清账要求颜色用现行 tokens |
+| 复选框 | 18×18、上边距 2px、`accent-color: var(--proto-accent)` | 旧线上 `.lkc-check input{width:18px;height:18px;margin:2px 0 0}`；色用现行 token |
+| Privacy 链接 | `--proto-teal-600`、下划线、offset 3px | 旧线上 `.lkc-check a{color:var(--cp-teal);text-decoration:underline;text-underline-offset:3px}` |
+| 方框与文字间距 | 10px | 旧线上 `.lkc-check{gap:10px}` |
+
+理由：/contact/ 是复刻面、像素门按旧线上卡逐行比，同意行是可见面；几何照旧线上可少一条
+登记差异，颜色一律落在现行 tokens（清账泳道明令"只移植组成/结构/间距，颜色用现行 tokens"）。
+另一条候选（#68 的 12px/`neutral-600` + 浏览器默认 13px 方框）不取：它小于旧线上一档、
+且方框明显更小，会在像素门上留下整行差异。实测（本机机读，1440/390 × EN/DE 四格一致）：
+字号 11px、行高 20.35px、色 `rgb(90,99,99)`、方框 18×18/2px、链接 `rgb(12,127,115)` +
+underline + offset 3px。
+
+为什么这行要写进本记录而不是只写进验收 README：上一轮该行的样式落在标记的工具类上，
+在 `#theme-main` 内被编译缓存里一条未分层的 `all: revert` 规则吃掉（实测见
+`docs/acceptance/2026-10-15/contact-card/README.md`），计算值是 15px / 13×13 —— 即
+**"取哪个值"这件事当时并没有真正落地**。本轮把它移进卡自己的样式表，本表即其定稿。
+
 ## 3. 本票相对旧线上卡面的**有意差异**（供像素门登记）
 
 移植目标面是复刻面在像素门内，因此下列与旧线上原文不同处须逐条进变更台账、给业主过目

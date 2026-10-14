@@ -41,19 +41,71 @@ fields{ columns: 314.203px 314.203px } # Name / Reply email 同行（801px 以�
 button{ width: 644, justify: space-between }   # 644 = 卡内宽 − 2×32，通栏条（与旧线上同形）
 ```
 
-## 本轮在渲染里发现并修掉的一处：提交条没有通栏
+## 同意行的实现值（本轮机读，1440/390 × EN/DE 四格一致）
 
-第一次渲染（编译后截图）量到按钮宽 167px（内容宽），与旧线上"提交条横跨卡"的形不同。
-量法：Playwright 读 `.linker-contact-card .linker-form-primary` 的
-`getBoundingClientRect().width`；同一轮 CDP `CSS.getMatchedStylesForNode`
-(`.linker-form-submit`) 返回的 `display` 命中只有 UA 的 `div{display:block}` 与
-`.grid{display:grid}`（Tailwind `@layer utilities`），而计算值 `block`——即当时那一轮里，
-布局落在标记的工具类上没有生效。
+上一轮这行还落在标记的工具类上（`text-xs text-neutral-600` / `mt-1`），实测是 15px /
+`rgb(21,55,47)` / 13×13 方框 / 3px 上边距。本轮把它移到卡自己的样式表
+（`contact-card.css` 的 `.linker-form-consent` 三条规则），**取值按旧线上参考卡**
+（`contact-journal.css` 的 `.lkc-check` 与 `.lkc-check input|a`：11px、muted、18×18、
+2px 上边距、链接下划线带 3px offset、10px 间距），颜色用现行 tokens：
 
-处置：卡的组成不依赖工具类——`contact-card.css` 自己声明提交条与同意行的布局
-（`.linker-form-submit{display:grid}`、`.linker-form-consent{display:flex;align-items:flex-start}`），
-符合 AGENTS §5"样式只在 WindPress"。修后按钮宽 644（= 卡内宽 − 2×32），EN/DE 两侧一致。
+```
+consent { font-size: 11px, line-height: 20.35px (=11×1.85), color: rgb(90,99,99) = --proto-neutral-500, gap: 10px }
+box     { 18×18px, margin-top: 2px, accent-color: rgb(12,127,115) = --proto-accent }
+link    { color: rgb(12,127,115) = --proto-teal-600, text-decoration: underline, text-underline-offset: 3px }
+```
 
-对照探针（同实例、修后，见 `probe-card.mjs` 的 `controlProbe`）：在页面里新建
-`div.grid` / `div.flex` 读到 `grid` / `flex`——工具类在该环境可用，故上面那一轮的读数
-不写成"工具类不可用"的结论。成因不追（卡的布局已自带规则、渲染实测通过，本项以此关闭）。
+选择理由（也写在 `copy-review.md` §3）：/contact/ 是复刻面、像素门按旧线上卡逐行比，
+同意行是可见面，取旧线上的几何；站内现行 tokens 提供颜色。另一条候选（#68 登记的
+12px/neutral-600 + 浏览器默认 13px 方框）不取，故不上台账——本行与旧线上同值。
+
+隐私链接：该实例原先没设隐私政策页（`get_privacy_policy_url()` 为空、页面不渲染链接），
+本轮 `wp option update wp_page_for_privacy_policy 1673` 后链接出现，上表即其量值；
+`underline` 工具类同族失效的问题因此不再影响本行（样式在卡的表里）。
+
+## 上一轮那处异常：实测根因（本轮量到，替换上一轮的"成因不追"）
+
+**现象**：第一轮编译后量到提交条 167px、`.linker-form-submit` 计算 `display: block`；
+本轮量到同意行 15px / 13×13 方框，而标记声明的是 12px（`text-xs`）与 4px（`mt-1`）。
+
+**根因**：编译缓存 `uploads/windpress/cache/tailwind.css` 里有**未分层**（不在任何
+`@layer` 内）的规则
+
+```
+:where(#lc-header, #lc-footer, body[data-page] #theme-main) :where(*):not(svg, svg *, img, video),
+:where(#lc-header, #lc-footer, body[data-page] #theme-main) :before,
+:where(#lc-header, #lc-footer, body[data-page] #theme-main) :after { all: revert; }
+```
+
+（同类还有 `#theme-main:where(body[data-page] *), :where(#lc-header, #lc-footer){ all: revert }`）。
+未分层样式压过 `@layer utilities`（层序先于特异度），所以 **`#theme-main` 这一页内容区
+里的 Tailwind 工具类一律失效**：`display` 被 revert 回 `block`（提交条那处），
+`font-size`/`color`/`margin` 被 revert 回继承或初始值（同意行这处）。
+
+**对照实验**（`probe-card.mjs` 的 `controlProbe`，同一个
+`class="grid text-xs text-neutral-600 mt-1"` 的 div 放两处）：
+
+```
+outside #theme-main: { display: grid, fontSize: 12px, color: neutral-600, marginTop: 4px }
+inside  #theme-main: { display: block, fontSize: 16px, color: ink(#0c0f0f), marginTop: 0px }
+```
+
+所以上一轮"工具类在该环境可用"的句子的前提是**在 `#theme-main` 之外**；上一轮的探针把
+控制 div 挂在 `document.body`（页头/页脚之外、`#theme-main` 之外），量不到该现象。
+本轮的探针已把两个位置都记上，结论改为有前提的表述：**页头/页脚与 `#theme-main` 内**的
+工具类被那条 `all: revert` 吃掉，其余位置正常。
+
+**范围（不是孤立一处）**：插件的短代码输出里仍有多处把样式/布局交给工具类。本机复跑
+`grep -rno 'class="[^"]*\(grid\|flex\|text-\|mt-\|p-[0-9]\|gap-\)[^"]*"' plugins/linker-commerce/includes --include="*.php"`
+的命中分布：`Contact/Form.php` 2 处（`linker-form-consent … text-xs text-neutral-600`、
+`mt-1`；`linker-form-submit grid gap-2` 已由卡自带规则覆盖）、
+`Presentation/ComparePage.php` 12 处（`linker-compare-cell … p-3 …`、
+`linker-compare-chip … inline-flex …` 等）、`Presentation/LibraryPage.php` 11 处
+（`linker-documents … gap-6`、`linker-documents-count text-sm …` 等）、
+`Presentation/Shortcodes.php` 1 处（`linker-price font-semibold text-[#0c7f73]`）。
+在 `#theme-main` 内这些类同样失效；是否有卷内 CSS 兜住，本票只核了 contact 卡这一面
+（已改为卡自带规则），其余面未逐面核，故此处按面登记，不按"已关闭"记。
+
+**处置与本票的范围**：contact 卡的所有可见组成（卡框、块间距、字段布局、提交条、同意行、
+副卡、链接）现在都由 `content/windpress/contact-card.css` 自带规则承载，不再依赖工具类；
+其余面（上段所列）不在本票改动层。

@@ -52,13 +52,24 @@ for (const [name, route, width, height] of shots) {
 					background: style.backgroundColor,
 				};
 			};
-			const probe = document.createElement('div');
-			probe.className = 'grid';
-			document.body.appendChild(probe);
-			const grid = getComputedStyle(probe).display;
-			probe.className = 'flex';
-			const flex = getComputedStyle(probe).display;
-			probe.remove();
+			// The control: the same classes in the two places that matter. The
+			// unlayered `:where(… #theme-main) :where(*) { all: revert }` rule of
+			// the compiled cache reaches every descendant of #theme-main, so the
+			// utilities only hold outside it (see README).
+			const read = (el) => { const s = getComputedStyle(el); return { display: s.display, fontSize: s.fontSize, color: s.color, marginTop: s.marginTop }; };
+			const make = () => { const d = document.createElement('div'); d.className = 'grid text-xs text-neutral-600 mt-1'; return d; };
+			const outside = make();
+			document.body.appendChild(outside);
+			const inside = make();
+			(document.querySelector('#theme-main') || document.body).appendChild(inside);
+			const controlProbe = { outsideThemeMain: read(outside), insideThemeMain: read(inside) };
+			outside.remove();
+			inside.remove();
+
+			const consent = document.querySelector('.linker-form-consent');
+			const consentBox = consent && consent.querySelector('input[type="checkbox"]');
+			const consentLink = consent && consent.querySelector('a');
+			const styleOf = (node) => { const s = getComputedStyle(node); return { color: s.color, decoration: s.textDecorationLine, offset: s.textUnderlineOffset }; };
 			return {
 				card: box('.linker-contact-card'),
 				form: box('.linker-contact-form'),
@@ -67,7 +78,17 @@ for (const [name, route, width, height] of shots) {
 				rail: box('.linker-contact-rail'),
 				fields: box('.linker-form-fields'),
 				topic: (() => { const select = document.querySelector('select[name="intent"]'); return select ? select.value : null; })(),
-				controlProbe: { grid, flex },
+				consent: consent ? {
+					display: getComputedStyle(consent).display,
+					width: Math.round(consent.getBoundingClientRect().width),
+					fontSize: getComputedStyle(consent).fontSize,
+					lineHeight: getComputedStyle(consent).lineHeight,
+					color: getComputedStyle(consent).color,
+					gap: getComputedStyle(consent).gap,
+					checkbox: consentBox ? { width: getComputedStyle(consentBox).width, height: getComputedStyle(consentBox).height, marginTop: getComputedStyle(consentBox).marginTop, accent: getComputedStyle(consentBox).accentColor } : null,
+					link: consentLink ? styleOf(consentLink) : null,
+				} : null,
+				controlProbe,
 			};
 		});
 		console.log(JSON.stringify({ name, file, metrics }));
