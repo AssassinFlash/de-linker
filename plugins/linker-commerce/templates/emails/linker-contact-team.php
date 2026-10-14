@@ -39,6 +39,14 @@ printf( esc_html__( 'Reply address: %s', 'linker-commerce' ), esc_html( $submiss
 <br />
 <?php
 printf(
+	/* translators: %s: the topic the visitor picked, for example "A question". */
+	esc_html__( 'This is about: %s', 'linker-commerce' ),
+	esc_html( \Linker\Commerce\Contact\Form::intent_label( $submission->intent ) )
+);
+?>
+<br />
+<?php
+printf(
 	/* translators: %s: EN or DE, the language the visitor wrote in. */
 	esc_html__( 'Written in: %s', 'linker-commerce' ),
 	esc_html( $submission->is_german() ? 'DE' : 'EN' )
