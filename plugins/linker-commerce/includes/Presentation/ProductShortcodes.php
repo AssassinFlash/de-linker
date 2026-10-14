@@ -53,6 +53,8 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_products_empty', array( $this, 'products_empty' ) );
 		add_shortcode( 'linker_products_card', array( $this, 'products_card' ) );
 		add_shortcode( 'linker_products_families', array( $this, 'products_families' ) );
+		add_shortcode( 'linker_products_actions', array( $this, 'products_actions' ) );
+		add_shortcode( 'linker_products_chips', array( $this, 'products_chips' ) );
 		add_shortcode( 'linker_header_utilities', array( $this, 'header_utilities' ) );
 		add_shortcode( 'linker_products_family_count', array( $this, 'products_family_count' ) );
 		add_shortcode( 'linker_products_family_pagination', array( $this, 'products_family_pagination' ) );
@@ -99,15 +101,25 @@ final class ProductShortcodes {
 
 		$html = '<div class="wb-head">';
 		// The live page's own crumb: "HOME / PRODUCTS" on the shop (the
-		// second entry bold, not a link), "HOME / PRODUCTS / INVERTERS" on a
-		// category (the category linked, its name bold), all words uppercase
-		// as the live page prints them (measured 2026-10-12). The category's
-		// name is the English one on both language pages — the live German
-		// archive prints "STARTSEITE / PRODUKTE / INVERTERS" above its own
-		// "Wechselrichter" heading.
-		$html .= '<div class="wb-metarow container"><span class="wbm-l"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( self::upper( _x( 'Home', 'breadcrumb', 'linker-commerce' ) ) ) . '</a> / '
-			. ( $is_term ? '<a href="' . esc_url( $shop_url ) . '">' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</a> / <b>' . esc_html( self::upper( $this->category_crumb_name( $queried ) ) ) . '</b>' : '<b>' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</b>' )
-			. '</span></div>';
+		// second entry bold, not a link), "HOME / PRODUCTS / COMMERCIAL
+		// STORAGE / ALL-IN-ONE SYSTEMS" on a nested category (every ancestor
+		// of the term linked, the term itself bold), all words uppercase as
+		// the live page prints them (measured 2026-10-12; the recheck of
+		// 2026-10-14 found the parent segment missing on the deployed tree).
+		// The category's name is the English one on both language pages —
+		// the live German archive prints "STARTSEITE / PRODUKTE / INVERTERS"
+		// above its own "Wechselrichter" heading.
+		$html .= '<div class="wb-metarow container"><span class="wbm-l"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( self::upper( _x( 'Home', 'breadcrumb', 'linker-commerce' ) ) ) . '</a> / ';
+		if ( $is_term ) {
+			$html .= '<a href="' . esc_url( $shop_url ) . '">' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</a>';
+			foreach ( $this->term_ancestors( $queried ) as $ancestor ) {
+				$html .= ' / <a href="' . esc_url( $this->term_link( $ancestor ) ) . '">' . esc_html( self::upper( $this->category_crumb_name( $ancestor ) ) ) . '</a>';
+			}
+			$html .= ' / <b>' . esc_html( self::upper( $this->category_crumb_name( $queried ) ) ) . '</b>';
+		} else {
+			$html .= '<b>' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</b>';
+		}
+		$html .= '</span></div>';
 		$html .= '<div class="wb-bar container">';
 		$html .= '<div class="wb-copy"><h1 class="wb-title">' . esc_html( $is_term ? $queried->name : __( 'Products', 'linker-commerce' ) ) . '</h1>';
 		// The live shop and archives both carry the generic subtitle; the
@@ -118,11 +130,20 @@ final class ProductShortcodes {
 		$html .= '<input id="search-box" name="q" type="search" placeholder="' . esc_attr__( 'Search model or item number', 'linker-commerce' ) . '" value="' . esc_attr( $q ) . '" aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">';
 		$html .= '<button type="submit" class="wb-go">' . esc_html__( 'Search', 'linker-commerce' ) . '</button>';
 		$html .= '</form>';
-		// The catalogue's AI entry, at the position the live page keeps its
-		// toolbar chips: the delivered chip shows itself when the typed text
-		// reads as a question (spec 13 §C); the live page's other two chips
-		// (batch item numbers, nameplate photo) are owner-ruled out.
-		$html .= '<div class="wb-acts">' . do_shortcode( '[linker_genie_chips page_type="category"]' ) . do_shortcode( '[linker_genie_ask]' ) . '</div>';
+		// The head's tool row, the live page's own three entries at the
+		// position its toolbar keeps them (measured 2026-10-12 on the live
+		// shop and archives; the 2026-10-14 recheck found the two tool chips
+		// missing on the deployed tree): the batch item-number entry, the
+		// nameplate entry, and the AI entry — the renamed assistant's own
+		// chip (docs/acceptance/2026-10-10/12/copy-review.md). The two tool
+		// entries open the assistant dock, the one assistant the site has;
+		// without a question they only open it (the chip contract,
+		// docs/specs/13-genie.md).
+		$html .= '<div class="wb-acts">'
+			. '<button type="button" class="wb-act" data-linker-genie-open><span aria-hidden="true">&#8686;</span> ' . esc_html__( 'Batch item numbers', 'linker-commerce' ) . '</button>'
+			. '<button type="button" class="wb-act" data-linker-genie-open>' . esc_html__( 'Identify a device from a nameplate photo', 'linker-commerce' ) . '</button>'
+			. do_shortcode( '[linker_genie_chips page_type="category"]' ) . do_shortcode( '[linker_genie_ask]' )
+			. '</div>';
 		$html .= '</div>';
 		$html .= $this->scope_nav( $shop_url, $is_term ? $queried->term_id : 0 );
 		$html .= '</div>';
@@ -166,15 +187,27 @@ final class ProductShortcodes {
 	 */
 	public function products_filters( $atts = array() ): string {
 		unset( $atts );
-		$facets     = $this->filters->facet_counts( $this->filters->archive_product_ids() );
-		$selected   = $this->filters->requested();
-		$queried    = get_queried_object();
-		$is_term    = $queried instanceof WP_Term;
-		$selected_n = \count( \array_diff_key( $selected, array( 'q' => '' ) ) );
+		$queried  = get_queried_object();
+		$is_term  = $queried instanceof WP_Term;
+		$selected = $this->filters->requested();
+		$archive  = $this->filters->archive_product_ids();
+		$facets   = $this->filters->facet_counts( $archive, $selected );
+		$ranges   = $this->filters->range_folds( $archive );
+		$applied  = $this->filters->applied_count( $is_term, $selected );
+		$base_url = $is_term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
+		// The live rail's summary arithmetic (measured 2026-10-12, recheck
+		// 2026-10-14): an active facet shows "Filters" with a Reset link and
+		// the strip's chips carry the selection; on a category with no facet
+		// selected the summary is "Filters (1)" — the category itself is the
+		// one filter; the plain shop with none is "Filters".
+		$has_facets = \count( \array_diff_key( $selected, array( 'q' => '' ) ) ) > 0;
 
 		$html  = '<button type="button" class="product-filter-close" id="product-filter-close" aria-label="' . esc_attr__( 'Close filters', 'linker-commerce' ) . '">&times;</button>';
 		$html .= '<details class="rail-fold" open>';
-		$html .= '<summary class="rail-summary"><span>' . esc_html( sprintf( /* translators: %d: number of selected filters. */ _n( 'Filters (%d)', 'Filters (%d)', $selected_n, 'linker-commerce' ), $selected_n ) ) . '</span><span class="rail-summary-mark" aria-hidden="true"></span></summary>';
+		$html .= '<summary class="rail-summary"><span>' . ( $has_facets || ! $is_term
+			? esc_html__( 'Filters', 'linker-commerce' )
+			: esc_html( sprintf( /* translators: %d: number of selected filters. */ __( 'Filters (%d)', 'linker-commerce' ), $applied ) ) )
+			. '</span>' . ( $has_facets ? '<a class="rail-reset" href="' . esc_url( $base_url ) . '">' . esc_html__( 'Reset', 'linker-commerce' ) . '</a>' : '<span class="rail-summary-mark" aria-hidden="true"></span>' ) . '</summary>';
 		$html .= '<div class="rail-body">';
 		$html .= '<div class="rail-head"><span class="rail-head-label">' . esc_html__( 'Filters', 'linker-commerce' ) . '</span></div>';
 
@@ -199,8 +232,7 @@ final class ProductShortcodes {
 			// 400 everywhere because the attribute was never printed).
 			$html .= '<a class="family-link"' . ( $is_term ? '' : ' aria-current="page"' ) . ' href="' . esc_url( (string) wc_get_page_permalink( 'shop' ) ) . '"><span>' . esc_html__( 'All products', 'linker-commerce' ) . '</span></a>';
 			foreach ( $categories as $category ) {
-				$current = $is_term && $queried->term_id === $category->term_id;
-				$html   .= '<a class="family-link' . ( $current ? ' is-current' : '' ) . '" href="' . esc_url( $this->term_link( $category ) ) . '"' . ( $current ? ' aria-current="page"' : '' ) . '><span>' . esc_html( $category->name ) . '</span></a>';
+				$html .= $this->category_nav_row( $category, $is_term ? $queried : null );
 			}
 			$html .= '</div></details>';
 		}
@@ -233,10 +265,10 @@ final class ProductShortcodes {
 			$html .= '</div></details>';
 		}
 
-		if ( ( $facets['has_power'] ?? 0 ) >= 3 ) {
+		if ( $ranges['has_power'] >= 3 ) {
 			$html .= $this->range_form( __( 'AC power', 'linker-commerce' ), 'kw', __( 'Minimum AC power in kilowatts', 'linker-commerce' ), __( 'Maximum AC power in kilowatts', 'linker-commerce' ), 'kW', $selected );
 		}
-		if ( ( $facets['has_energy'] ?? 0 ) >= 3 ) {
+		if ( $ranges['has_energy'] >= 3 ) {
 			$html .= $this->range_form( __( 'Usable energy', 'linker-commerce' ), 'kwh', __( 'Minimum usable energy in kilowatt hours', 'linker-commerce' ), __( 'Maximum usable energy in kilowatt hours', 'linker-commerce' ), 'kWh', $selected );
 		}
 
@@ -346,6 +378,120 @@ final class ProductShortcodes {
 	}
 
 	/**
+	 * The mobile actions bar: the Filters button with the applied count, the
+	 * two tool entries and the AI entry — the live page's own
+	 * `catalog-mobile-actions` (measured 2026-10-12 on the live shop and
+	 * archives; the 2026-10-14 recheck found the deployed bar down to the
+	 * one chip). The count's arithmetic is the rail's
+	 * (ProductFilters::applied_count): the live bar reads "Filters · 0" on
+	 * the shop, "Filters · 1" on a category, one more per selected facet.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function products_actions( $atts = array() ): string {
+		unset( $atts );
+		$queried = get_queried_object();
+		$is_term = $queried instanceof WP_Term;
+		$applied = $this->filters->applied_count( $is_term, $this->filters->requested() );
+		$html    = '<nav class="product-mobile-actions" aria-label="' . esc_attr__( 'Product actions', 'linker-commerce' ) . '">';
+		$html   .= '<button type="button" id="product-filter-open" aria-controls="sidebar-filters" aria-expanded="false"><span>' . esc_html__( 'Filters', 'linker-commerce' ) . '</span> &middot; <span data-linker-applied-filter-count>' . esc_html( (string) $applied ) . '</span></button>';
+		$html   .= '<button type="button" data-linker-genie-open>' . esc_html__( 'Batch import', 'linker-commerce' ) . '</button>';
+		$html   .= '<button type="button" data-linker-genie-open>' . esc_html__( 'Nameplate photo', 'linker-commerce' ) . '</button>';
+		$html   .= do_shortcode( '[linker_genie_chips page_type="category"]' );
+		return $html . '</nav>';
+	}
+
+	/**
+	 * The results strip's applied-filter chips, the live page's own
+	 * `.wbc` content: one pill per selected facet that removes it, and the
+	 * "Clear all" link (measured 2026-10-12 on the live shop filtered by
+	 * GoodWe: a "GoodWe ×" pill and "Clear all"; recheck 2026-10-14 found
+	 * the deployed strip empty). The search term stays in the search box,
+	 * not a chip.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function products_chips( $atts = array() ): string {
+		unset( $atts );
+		$selected = \array_diff_key( $this->filters->requested(), array( 'q' => '' ) );
+		if ( array() === $selected ) {
+			return '';
+		}
+		$labels     = $this->selection_labels();
+		$html       = '';
+		$range_keys = array(
+			'kw'  => array( __( 'AC power', 'linker-commerce' ), __( 'kW', 'linker-commerce' ), 'kw_min', 'kw_max' ),
+			'kwh' => array( __( 'Usable energy', 'linker-commerce' ), __( 'kWh', 'linker-commerce' ), 'kwh_min', 'kwh_max' ),
+		);
+		foreach ( array( 'application', 'brand', 'phase', 'power' ) as $facet ) {
+			if ( ! isset( $selected[ $facet ] ) ) {
+				continue;
+			}
+			$value = (string) $selected[ $facet ];
+			$html .= '<a class="wbchip" href="' . esc_url( $this->facet_remove_url( $facet ) ) . '" rel="nofollow">' . esc_html( $labels[ $facet ][ $value ] ?? $value ) . ' <span aria-hidden="true">&times;</span></a>';
+		}
+		foreach ( $range_keys as $range ) {
+			list( $title, $unit, $min_key, $max_key ) = $range;
+			if ( ! isset( $selected[ $min_key ] ) && ! isset( $selected[ $max_key ] ) ) {
+				continue;
+			}
+			$min   = isset( $selected[ $min_key ] ) ? self::trim_number( (float) $selected[ $min_key ] ) : '';
+			$max   = isset( $selected[ $max_key ] ) ? self::trim_number( (float) $selected[ $max_key ] ) : '';
+			$label = $title . ' ' . $min . '&ndash;' . $max . ' ' . $unit;
+			$html .= '<a class="wbchip" href="' . esc_url( $this->facet_remove_url( $min_key, $max_key ) ) . '" rel="nofollow">' . wp_kses_post( $label ) . ' <span aria-hidden="true">&times;</span></a>';
+		}
+		$queried  = get_queried_object();
+		$base_url = $queried instanceof WP_Term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
+		$html    .= '<a class="wbclear" href="' . esc_url( $base_url ) . '" rel="nofollow">' . esc_html__( 'Clear all', 'linker-commerce' ) . '</a>';
+		return $html;
+	}
+
+	/**
+	 * The facet values' printed labels, for the chips: the rail's own words
+	 * (the facet data owns them), plus the brands' term names.
+	 *
+	 * @return array<string, array<int|string, string>> Labels by facet and value. The phase values are
+	 *                                                   PHP's numeric strings: '3' lives under the int key 3,
+	 *                                                   and lookups by either spelling reach it.
+	 */
+	private function selection_labels(): array {
+		$labels = $this->filters->value_labels();
+		$brands = get_terms(
+			array(
+				'taxonomy'   => 'pa_brand',
+				'hide_empty' => false,
+			)
+		);
+		foreach ( \is_array( $brands ) ? $brands : array() as $brand ) {
+			$labels['brand'][ $brand->slug ] = $brand->name;
+		}
+		return $labels;
+	}
+
+	/**
+	 * A number without trailing zeros, for a range chip's bound.
+	 *
+	 * @param float $value The bound.
+	 */
+	private static function trim_number( float $value ): string {
+		$printed = (string) round( $value, 2 );
+		return str_contains( $printed, '.' ) ? rtrim( rtrim( $printed, '0' ), '.' ) : $printed;
+	}
+
+	/**
+	 * The current request's address with one facet (or a range's two bounds)
+	 * removed: remove_query_arg reads the request's own address, as the
+	 * facet links' one-argument form does, so the chip keeps the relative
+	 * address style the live rail's links print. Dropping the page number —
+	 * a narrower set starts on its first page.
+	 *
+	 * @param string ...$facets The query parameters to drop.
+	 */
+	private function facet_remove_url( string ...$facets ): string {
+		return remove_query_arg( array_merge( $facets, array( 'product-page' ) ) );
+	}
+
+	/**
 	 * The current product's catalogue card (inside [lc_loop], or called by the
 	 * family grid with a family context).
 	 *
@@ -369,9 +515,11 @@ final class ProductShortcodes {
 		$facts   = SelectionFacts::for_product( $product_id );
 		$series  = (string) ( $card['series'] ?? '' );
 		$multi   = null !== $family && \count( (array) $family['ids'] ) > 1;
-		$title   = $multi && '' !== $series ? $series : (string) $card['title'];
-		$gated   = '' !== (string) ( $card['price']['url'] ?? '' );
-		$data    = array(
+		$title   = $multi ? self::series_title( $series, (string) $card['brand'], (string) $card['title'] ) : (string) $card['title'];
+		// The picker's anchor only when the card actually shows the series.
+		$label = $multi && $title !== (string) $card['title'] ? $series : '';
+		$gated = '' !== (string) ( $card['price']['url'] ?? '' );
+		$data  = array(
 			'data-product-id="' . esc_attr( (string) $product_id ) . '"',
 			'data-can-order="' . ( $gated ? '0' : '1' ) . '"',
 			'data-sku="' . esc_attr( $card['sku'] ) . '"',
@@ -380,7 +528,7 @@ final class ProductShortcodes {
 			'data-power="' . esc_attr( \is_float( $facts->ac_power_kw ) ? (string) $facts->ac_power_kw : '0' ) . '"',
 			'data-application="' . esc_attr( (string) $facts->application ) . '"',
 		);
-		$url     = (string) get_permalink( $product_id );
+		$url   = (string) get_permalink( $product_id );
 
 		$html = '<article class="sf-card product-card" data-linker-family-card ' . implode( ' ', $data ) . '>';
 		if ( null !== $family && \count( (array) $family['ids'] ) > 1 ) {
@@ -406,7 +554,7 @@ final class ProductShortcodes {
 		if ( '' !== $card['brand'] ) {
 			$html .= '<p class="sf-card-brand">' . esc_html( $card['brand'] ) . '</p>';
 		}
-		$html .= '<a class="sf-card-title" data-card-title data-card-series-title="' . esc_attr( $multi && '' !== $series ? $series : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>';
+		$html .= '<a class="sf-card-title" data-card-title data-card-series-title="' . esc_attr( $label ) . '" href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>';
 		// The live catalogue card carries brand, title and item number only:
 		// no designation line (measured 2026-10-12, 0/65 cards).
 		if ( '' !== $card['sku'] ) {
@@ -1362,6 +1510,26 @@ final class ProductShortcodes {
 	}
 
 	/**
+	 * The family card's title: the data's series label, as the live page
+	 * prints it ("ESA Series", "GoodWe BAT-C") — unless the label is the
+	 * brand's own name and says nothing the brand line above doesn't: the
+	 * SAJ CHS2 records carry product_series "SAJ", and the live all-in-one
+	 * page printed their full model names ("SAJ CHS2-50K-T6-X", measured
+	 * 2026-10-12; recheck 2026-10-14 found the deployed card reading just
+	 * "SAJ").
+	 *
+	 * @param string $series The product's series label.
+	 * @param string $brand  The product's brand name.
+	 * @param string $title  The product's own name.
+	 */
+	public static function series_title( string $series, string $brand, string $title ): string {
+		if ( '' !== $series && 0 !== strcasecmp( $series, $brand ) ) {
+			return $series;
+		}
+		return $title;
+	}
+
+	/**
 	 * A crumb word as the live page prints it: uppercase.
 	 *
 	 * @param string $word The word.
@@ -2068,6 +2236,79 @@ final class ProductShortcodes {
 	private function term_link( WP_Term $term ): string {
 		$link = get_term_link( $term );
 		return is_wp_error( $link ) ? '' : $link;
+	}
+
+	/**
+	 * The category's ancestors, nearest parent first, as the crumb walks
+	 * them: the term's parent chain up to the top level.
+	 *
+	 * @param WP_Term $term The category.
+	 * @return list<WP_Term> The ancestors, top level last.
+	 */
+	private function term_ancestors( WP_Term $term ): array {
+		$ancestors = array();
+		$parent_id = (int) $term->parent;
+		$guard     = 0;
+		while ( $parent_id > 0 && $guard < 10 ) {
+			$parent = get_term( $parent_id, 'product_cat' );
+			// A refused id answers a WP_Error, which is no WP_Term.
+			if ( ! $parent instanceof WP_Term ) {
+				break;
+			}
+			$ancestors[] = $parent;
+			$parent_id   = (int) $parent->parent;
+			++$guard;
+		}
+		return array_reverse( $ancestors );
+	}
+
+	/**
+	 * One row of the rail's Category section, with the live page's own
+	 * nesting: on a category page the branch the visitor is in expands — the
+	 * category's children indent under it (the live all-in-one page renders
+	 * Inverters / All-in-One Systems / Battery Systems under Commercial
+	 * Storage, the accessories page Meters & Current Transformers / Backup
+	 * Power under Accessories; measured 2026-10-12, recheck 2026-10-14 found
+	 * the deployed tree's list flat).
+	 *
+	 * @param WP_Term      $category The top-level category of this row.
+	 * @param WP_Term|null $current  The category on display, null on the shop.
+	 */
+	private function category_nav_row( WP_Term $category, ?WP_Term $current ): string {
+		$row = $this->category_nav_link( $category, null !== $current && $current->term_id === $category->term_id );
+		// The branch expands for the category on display, for its children's
+		// parent and for its ancestors (a deep child keeps its whole line
+		// open).
+		$expand = null !== $current
+			&& ( $current->term_id === $category->term_id || $current->parent === $category->term_id || \in_array( (int) $category->term_id, array_map( static fn( WP_Term $term ): int => (int) $term->term_id, $this->term_ancestors( $current ) ), true ) );
+		if ( ! $expand ) {
+			return $row;
+		}
+		$children = get_terms(
+			array(
+				'taxonomy'   => 'product_cat',
+				'hide_empty' => true,
+				'parent'     => (int) $category->term_id,
+			)
+		);
+		if ( ! \is_array( $children ) ) {
+			return $row;
+		}
+		foreach ( $children as $child ) {
+			$row .= $this->category_nav_link( $child, $current->term_id === $child->term_id, 'family-link-child' );
+		}
+		return $row;
+	}
+
+	/**
+	 * One link of the Category section.
+	 *
+	 * @param WP_Term $term    The category.
+	 * @param bool    $current Whether it is the category on display.
+	 * @param string  $variant Extra class (the child rows indent).
+	 */
+	private function category_nav_link( WP_Term $term, bool $current, string $variant = '' ): string {
+		return '<a class="family-link' . ( '' !== $variant ? ' ' . $variant : '' ) . ( $current ? ' is-current' : '' ) . '" href="' . esc_url( $this->term_link( $term ) ) . '"' . ( $current ? ' aria-current="page"' : '' ) . '><span>' . esc_html( $term->name ) . '</span></a>';
 	}
 
 	/**

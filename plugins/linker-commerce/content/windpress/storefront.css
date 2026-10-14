@@ -425,7 +425,7 @@
   cursor: pointer;
   z-index: 2;
 }
-#linker-products .card-compare-checkbox.selected {
+#linker-products .card-compare-checkbox[data-compare-selected="true"] {
   background: var(--sf-fg);
   color: #fff;
 }

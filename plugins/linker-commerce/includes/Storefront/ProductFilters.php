@@ -225,15 +225,30 @@ final class ProductFilters {
 
 	/**
 	 * The product IDs in the order a sort asks for. The power sorts order
-	 * by the facts' AC power; the others keep the archive's own order
-	 * (menu order, then title), which WordPress applies when no facet has
-	 * narrowed the query.
+	 * by the facts' AC power; "Name A-Z" orders by the product's title,
+	 * case-insensitively (the live shop's own order under sort=name reads
+	 * GW10K-EHA…, GW10K-ETA…, GW125/261…, GW20K-ETA… — plain character
+	 * order, not natural-number order: 2026-10-12 capture of
+	 * /products/?brand=goodwe&sort=name); the rest keep the archive's own
+	 * order (menu order, then title), which WordPress applies when no facet
+	 * has narrowed the query.
 	 *
 	 * @param int[]  $product_ids The matching products.
 	 * @param string $sort        One of self::SORTS.
 	 * @return int[] The ordered IDs.
 	 */
 	public function ordered( array $product_ids, string $sort ): array {
+		if ( 'name' === $sort ) {
+			$titles = array();
+			foreach ( $product_ids as $product_id ) {
+				$titles[ (int) $product_id ] = (string) get_the_title( (int) $product_id );
+			}
+			uksort(
+				$titles,
+				static fn( int $a, int $b ): int => strcasecmp( $titles[ $a ], $titles[ $b ] )
+			);
+			return array_map( 'intval', array_keys( $titles ) );
+		}
 		if ( 'power-desc' !== $sort && 'power-asc' !== $sort ) {
 			return $product_ids;
 		}
@@ -287,29 +302,40 @@ final class ProductFilters {
 
 	/**
 	 * The facets with the counts and labels the rail shows, for the
-	 * archive's products. A facet value no product answers is left out;
-	 * the power buckets stay listed, the empty one disabled, as the rail
-	 * the site serves today shows them.
+	 * archive's products. A facet section lists when the view's own data
+	 * answers at least two of its values (the live rail hides a facet whose
+	 * every product sits in one value: no Application and no Phase on the
+	 * all-in-one archive, Application on the shop and on the accessories
+	 * archive — measured 2026-10-12 on the live rail); the power buckets
+	 * stay listed, the empty one disabled. Under an active filter the
+	 * counts converge: each facet is counted over the products the OTHER
+	 * facets select (the live rail's own behaviour — under brand=goodwe the
+	 * Phase rows read the goodwe subset, a value nothing answers stays
+	 * listed, disabled, at 0), while the sections themselves stay those of
+	 * the unfiltered view.
 	 *
-	 * @param int[] $product_ids The archive's products.
-	 * @return array<string, array<string, array{label: string, count: int}>> Facet values by facet name.
+	 * @param int[]                       $product_ids The archive's products.
+	 * @param array<string, string|float> $selected    The request's facet selections.
+	 * @return array<string, array<string, array{label: string, count: int}>> The facets with their labels
+	 *                                                                        and counts, the thin sections
+	 *                                                                        gone. The range folds' presence
+	 *                                                                        is range_folds(), not a facet.
 	 */
-	public function facet_counts( array $product_ids ): array {
+	public function facet_counts( array $product_ids, array $selected = array() ): array {
 		$facts = array();
+		$by_id = array();
 		foreach ( $product_ids as $product_id ) {
-			$facts[] = array( (int) $product_id, SelectionFacts::for_product( (int) $product_id ) );
+			$fact                       = SelectionFacts::for_product( (int) $product_id );
+			$facts[]                    = array( (int) $product_id, $fact );
+			$by_id[ (int) $product_id ] = $fact;
 		}
+		$active = \array_diff_key( $selected, array( 'q' => '' ) );
 
 		$counts = array(
 			'application' => array(),
 			'brand'       => array(),
 			'phase'       => array(),
 			'power'       => array(),
-			// Products with a scalar energy/power value in this view: the live
-			// shelf rendered each range fold only when at least three rows
-			// carried the value (ranges alone did not count).
-			'has_energy'  => 0,
-			'has_power'   => 0,
 		);
 		foreach ( array(
 			'home'       => 'Home',
@@ -324,12 +350,6 @@ final class ProductFilters {
 			list( $product_id, $fact ) = $pair;
 			if ( SelectionFactSet::UNKNOWN !== $fact->application ) {
 				++$counts['application'][ $fact->application ]['count'];
-			}
-			if ( \is_float( $fact->usable_kwh ) || \is_float( $fact->nominal_kwh ) ) {
-				++$counts['has_energy'];
-			}
-			if ( \is_float( $fact->ac_power_kw ) ) {
-				++$counts['has_power'];
 			}
 			if ( \is_int( $fact->phase ) ) {
 				$key                     = (string) $fact->phase;
@@ -379,29 +399,135 @@ final class ProductFilters {
 			$counts['brand'],
 			static fn( array $a, array $b ): int => strcasecmp( (string) $a['label'], (string) $b['label'] )
 		);
-		// The power buckets stay listed (the empty one disabled), as the rail
-		// the site serves today shows them; every other facet hides a value
-		// no product answers.
+		// The sections themselves come from the view's own data: a section
+		// lists when two of the view's values answer on the UNFILTERED set
+		// (the live rail's filtered sections are those of the unfiltered
+		// page — a value its subset answers zero times stays listed,
+		// disabled). Snapshot the full counts before they converge.
+		$full_counts = array();
+		foreach ( array( 'application', 'brand', 'phase', 'power' ) as $facet ) {
+			$full_counts[ $facet ] = $counts[ $facet ];
+		}
+		// The converged counts: each facet counted over the products every
+		// OTHER selected facet keeps.
+		foreach ( array( 'application', 'brand', 'phase', 'power' ) as $facet ) {
+			$others  = \array_diff_key( $active, array( $facet => '' ) );
+			$context = $product_ids;
+			if ( array() !== $others ) {
+				$context = $this->matching( $product_ids, $others );
+			}
+			$context_ids = array_fill_keys( array_map( 'intval', $context ), true );
+			foreach ( $counts[ $facet ] as $value => $option ) {
+				$counts[ $facet ][ $value ]['count'] = $this->facet_value_count( $facet, (string) $value, $product_ids, $context_ids, $by_id );
+			}
+		}
+		// A facet section lists when two of the view's own values answer
+		// (power's buckets are exempt — they always list); with a filter
+		// active the listed sections keep their zero rows, disabled.
+		$keep_empty = array() !== $active;
 		foreach ( array( 'application', 'brand', 'phase' ) as $facet ) {
-			$counts[ $facet ] = array_filter(
-				$counts[ $facet ],
+			$answered = \array_filter(
+				$full_counts[ $facet ],
 				static fn( array $value ): bool => $value['count'] > 0
 			);
+			if ( \count( $answered ) < 2 ) {
+				unset( $counts[ $facet ] );
+				continue;
+			}
+			if ( ! $keep_empty ) {
+				$counts[ $facet ] = $answered;
+			}
 		}
-		/** The facets with their labels and counts, the empty facets gone.
+		/** The facets with their labels and counts, the thin sections gone.
 		 *
 		 * @var array<string, array<string, array{label: string, count: int}>> $facets
 		 */
-		$facets = array_filter(
-			$counts,
-			static fn( $values ): bool => \is_array( $values )
-				? array() !== array_filter(
-					$values,
-					static fn( array $value ): bool => $value['count'] > 0
-				)
-				: true // Scalars ride along (has_energy's presence flag).
-		);
+		$facets = $counts;
 		return $facets;
+	}
+
+	/**
+	 * How many of the view's products carry a scalar energy and AC power
+	 * value: the live shelf rendered each range fold only when at least
+	 * three rows carried the value (ranges alone did not count), so the rail
+	 * asks these two numbers before it prints the "AC power" and "Usable
+	 * energy" forms.
+	 *
+	 * @param int[] $product_ids The archive's products.
+	 * @return array{has_energy: int, has_power: int} The folds' row counts.
+	 */
+	public function range_folds( array $product_ids ): array {
+		$has_energy = 0;
+		$has_power  = 0;
+		foreach ( $product_ids as $product_id ) {
+			$fact = SelectionFacts::for_product( (int) $product_id );
+			if ( \is_float( $fact->usable_kwh ) || \is_float( $fact->nominal_kwh ) ) {
+				++$has_energy;
+			}
+			if ( \is_float( $fact->ac_power_kw ) ) {
+				++$has_power;
+			}
+		}
+		return array(
+			'has_energy' => $has_energy,
+			'has_power'  => $has_power,
+		);
+	}
+
+	/**
+	 * One facet value's converged count: the products the other facets keep
+	 * whose facts answer the value.
+	 *
+	 * @param string                       $facet       The facet's query parameter.
+	 * @param string                       $value       The facet value.
+	 * @param int[]                        $product_ids The archive's products.
+	 * @param array<int, true>             $context_ids The products the other facets keep.
+	 * @param array<int, SelectionFactSet> $by_id      Every archive product's facts.
+	 */
+	private function facet_value_count( string $facet, string $value, array $product_ids, array $context_ids, array $by_id ): int {
+		$count = 0;
+		foreach ( $product_ids as $product_id ) {
+			$product_id = (int) $product_id;
+			if ( ! isset( $context_ids[ $product_id ] ) ) {
+				continue;
+			}
+			$fact = $by_id[ $product_id ];
+			$keep = false;
+			switch ( $facet ) {
+				case 'application':
+					$keep = SelectionFactSet::UNKNOWN !== $fact->application && (string) $fact->application === $value;
+					break;
+				case 'phase':
+					$keep = \is_int( $fact->phase ) && (string) $fact->phase === $value;
+					break;
+				case 'power':
+					$keep = \is_float( $fact->ac_power_kw ) && isset( self::POWER_BUCKETS[ $value ] ) && $this->in_bucket( $fact->ac_power_kw, self::POWER_BUCKETS[ $value ] );
+					break;
+				case 'brand':
+					$keep = has_term( $value, 'pa_brand', $product_id );
+					break;
+			}
+			if ( $keep ) {
+				++$count;
+			}
+		}
+		return $count;
+	}
+
+	/**
+	 * How many filters the rail reports as applied: the category the visitor
+	 * is on counts as one, every selected facet adds one (the live badge and
+	 * summary's own arithmetic — measured 2026-10-12: "Filters · 0" on the
+	 * shop, "Filters · 1" on a category, "· 1" with brand=goodwe on the
+	 * shop, "· 2" with brand=goodwe on the Inverters archive; the search
+	 * term is the search box's, not a filter). The sort is not a filter.
+	 *
+	 * @param bool                        $is_term  Whether the view is a category archive.
+	 * @param array<string, string|float> $selected The request's facet selections.
+	 */
+	public function applied_count( bool $is_term, array $selected = array() ): int {
+		$count = \count( \array_diff_key( $selected, array( 'q' => '' ) ) );
+		return $is_term ? $count + 1 : $count;
 	}
 
 	/**
@@ -434,6 +560,31 @@ final class ProductFilters {
 			'mid'  => __( '6 to 15 kW', 'linker-commerce' ),
 			'high' => __( '15 to 30 kW', 'linker-commerce' ),
 			'top'  => __( 'Over 30 kW', 'linker-commerce' ),
+		);
+	}
+
+	/**
+	 * The facet values' printed labels, the rail's own words: the chips that
+	 * carry an applied selection print the same words the rail lists
+	 * (docs/specs/12-site-chrome.md item 5). The brands are the terms' own
+	 * names, read where the chips render.
+	 *
+	 * @return array<string, array<int|string, string>> Labels by facet and value. The phase values are
+	 *                                                   PHP's numeric strings: '3' lives under the int key 3,
+	 *                                                   and lookups by either spelling reach it.
+	 */
+	public function value_labels(): array {
+		$phase = array();
+		foreach ( array( 3, 1 ) as $phases ) {
+			$phase[ (string) $phases ] = sprintf( /* translators: %d: number of grid phases. */ _n( '%d-phase', '%d-phase', $phases, 'linker-commerce' ), $phases );
+		}
+		return array(
+			'application' => array(
+				'home'       => __( 'Home', 'linker-commerce' ),
+				'commercial' => __( 'Commercial', 'linker-commerce' ),
+			),
+			'phase'       => $phase,
+			'power'       => $this->power_labels(),
 		);
 	}
 

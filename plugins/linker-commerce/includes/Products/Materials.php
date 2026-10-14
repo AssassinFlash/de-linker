@@ -274,6 +274,26 @@ final class Materials {
 			'system_energy_kwh_nominal'        => 'nominal_kwh',
 			'module_voltage_v_nominal'         => 'nom_voltage',
 			'system_voltage_v_nominal'         => 'nom_voltage',
+			// The system-level nominal voltages are the same "Nominal voltage"
+			// row: the GW61.4-BAT-AC-G10 and GW112.6-BAT-AC-G10 registry rows
+			// carry system_nominal_voltage_v (307.2 V / 563.2 V) and the live
+			// battery cards read exactly those values (measured 2026-10-12;
+			// recheck 2026-10-14 found the deployed cards without the row,
+			// because this key mapped to itself where no card order reads it).
+			// The system_* fields sort ahead of a module's own value in
+			// specs().
+			'system_nominal_voltage_v'         => 'nom_voltage',
+			// The product-level nominal voltage IS the product's "Nominal
+			// voltage" row: the GW261.2-BAT-LCD-G10 registry row carries it
+			// (832.0 V, our hosted datasheet GW_BAT-C-208-261
+			// _Datasheet_EMEA-EN_V1.1.pdf p.2, alongside the pack's 166.4 V)
+			// and the live battery cards read it — the card's model line
+			// showed "832.0 V · GW261.2-BAT-LCD-G10" (measured 2026-10-12;
+			// recheck 2026-10-14 found the deployed card at the pack's
+			// 166.4 V because this key had no mapping). The module-suppression
+			// rule in specs() keeps the pack value only where no product value
+			// exists.
+			'nominal_voltage_v'                => 'nom_voltage',
 			'chemistry'                        => 'chemistry',
 			'max_charge_current_a'             => 'charge_a',
 			'max_discharge_current_a'          => 'discharge_a',
@@ -306,8 +326,6 @@ final class Materials {
 			'backup_power_kw'                  => 'backup_power_kw',
 			'ac_output_kw_max'                 => 'ac_output_kw_max',
 			'modules_per_stack_max'            => 'modules_per_stack_max',
-			'nominal_voltage_v'                => 'nominal_voltage_v',
-			'system_nominal_voltage_v'         => 'system_nominal_voltage_v',
 			'system_voltage_vdc'               => 'system_voltage_vdc',
 			'battery_type'                     => 'battery_type',
 		);

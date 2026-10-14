@@ -45,7 +45,7 @@ final class ModuleTest extends TestCase {
 		$account    = new AccountTemplates();
 		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library, $account );
 
-			WP_Mock::userFunction( 'add_shortcode', array( 'times' => 49 ) );
+			WP_Mock::userFunction( 'add_shortcode', array( 'times' => 51 ) );
 			WP_Mock::expectFilterAdded( 'lc_define_condition_linker_commerce_draft_empty', array( $shortcodes, 'draft_is_empty' ) );
 			WP_Mock::expectFilterAdded( 'lc_define_condition_linker_commerce_draft_filled', array( $shortcodes, 'draft_is_filled' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );

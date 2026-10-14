@@ -5,10 +5,7 @@
 <div id="linker-products" class="sf-products">
 	[linker_products_head]
 
-	<nav class="product-mobile-actions" aria-label="Produktaktionen">
-		<button type="button" id="product-filter-open" aria-controls="sidebar-filters" aria-expanded="false"><span>Filter</span> &middot; <span data-linker-applied-filter-count>0</span></button>
-		[linker_genie_chips page_type="category"]
-	</nav>
+	[linker_products_actions]
 
 	<section class="product-section">
 		<div class="container product-layout">
@@ -18,7 +15,7 @@
 
 			<div class="product-results">
 				<div class="wb-strip">
-					<div class="wbc"></div>
+					<div class="wbc">[linker_products_chips]</div>
 					<span class="wbcount">[linker_products_family_count]</span>
 					[linker_products_sort]
 				</div>

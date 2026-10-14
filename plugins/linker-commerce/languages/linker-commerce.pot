@@ -3211,3 +3211,28 @@ msgstr ""
 #: includes/Presentation/Shortcodes.php
 msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
 msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Batch item numbers"
+msgstr ""
+#: includes/Presentation/ProductShortcodes.php
+msgid "Batch import"
+msgstr ""
+#: includes/Presentation/ProductShortcodes.php
+msgid "Nameplate photo"
+msgstr ""
+#: includes/Presentation/ProductShortcodes.php
+msgid "Reset"
+msgstr ""
+#: includes/Presentation/ProductShortcodes.php
+msgid "Clear all"
+msgstr ""
+#: includes/Presentation/ProductShortcodes.php
+msgid "Product actions"
+msgstr ""
+#: includes/Presentation/ProductShortcodes.php
+msgid "kW"
+msgstr ""
+#: includes/Presentation/ProductShortcodes.php
+msgid "kWh"
+msgstr ""
