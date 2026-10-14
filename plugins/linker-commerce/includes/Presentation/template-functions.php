@@ -85,6 +85,46 @@ if ( ! function_exists( 'linker_commerce_pdp_has_scenes' ) ) {
 	}
 }
 
+if ( ! function_exists( 'linker_commerce_draft_is_empty' ) ) {
+	/**
+	 * Whether the solution draft has no lines.
+	 *
+	 * LiveCanvas resolves `[lc_if condition="…"]` with function_exists() and
+	 * a call (livecanvas 4.9.3 modules/shortcodes.php, the lc_if handler).
+	 * A confirmation or a pay page is not an empty draft: those requests can
+	 * share the cart template, and the condition must not hide a receipt.
+	 */
+	function linker_commerce_draft_is_empty(): bool {
+		if ( function_exists( 'is_wc_endpoint_url' ) && ( is_wc_endpoint_url( 'order-received' ) || is_wc_endpoint_url( 'order-pay' ) ) ) {
+			return false;
+		}
+		if ( ! function_exists( 'WC' ) ) {
+			return true;
+		}
+		return WC()->cart->is_empty();
+	}
+}
+
+if ( ! function_exists( 'linker_commerce_draft_empty' ) ) {
+	/**
+	 * The cart template's empty branch. Same answer as
+	 * linker_commerce_draft_is_empty(); the template names this one.
+	 */
+	function linker_commerce_draft_empty(): bool {
+		return linker_commerce_draft_is_empty();
+	}
+}
+
+if ( ! function_exists( 'linker_commerce_draft_filled' ) ) {
+	/**
+	 * The cart template's filled branch. Never true together with
+	 * linker_commerce_draft_empty().
+	 */
+	function linker_commerce_draft_filled(): bool {
+		return ! linker_commerce_draft_empty();
+	}
+}
+
 if ( ! function_exists( 'linker_commerce_pdp_has_faqs' ) ) {
 	/**
 	 * Whether the product carries FAQ rows.

@@ -150,7 +150,9 @@ final class LoginGateTest extends TestCase {
 			$this->assertStringContainsString( 'sf-checkout-genie__pill', $html );
 			$this->assertStringContainsString( 'data-linker-genie-open', $html );
 			$this->assertStringContainsString( '>Genie<', $html );
-			$this->assertStringContainsString( 'href="https://example.test/genie/"', $html );
+			$this->assertStringContainsString( 'data-linker-genie-href="https://example.test/genie/"', $html );
+			$this->assertStringContainsString( 'type="button"', $html );
+			$this->assertStringNotContainsString( '<a class="sf-checkout-genie__pill"', $html );
 			$this->assertStringNotContainsString( 'mx-auto', $html );
 			$this->assertStringNotContainsString( 'border-neutral-200', $html );
 			$this->assertStringNotContainsString( 'style=', $html );
@@ -178,7 +180,7 @@ final class LoginGateTest extends TestCase {
 
 		$html = ( new LoginGate( $this->approval() ) )->html();
 
-		$this->assertStringContainsString( 'href="https://example.test/de/genie/"', $html );
+			$this->assertStringContainsString( 'data-linker-genie-href="https://example.test/de/genie/"', $html );
 		$this->assertStringContainsString( 'sf-checkout-genie__pill', $html );
 		$this->assertStringContainsString( '>Genie<', $html );
 		$this->assertStringContainsString( 'Sign in to get your Proforma.', $html );

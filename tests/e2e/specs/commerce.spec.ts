@@ -157,19 +157,19 @@ const PAGES = {
 		draft: '/cart/',
 		request: '/proforma-request/',
 		priceNote: /sign in for partner pricing/i,
-		draftButton: /add to solution draft/i,
-		inquiries: /inquiries/i,
-	},
-	de: {
-		account: '/de/mein-konto/',
-		product: '/de/produkt/saj-h2-10k-t3/',
-		draft: '/de/warenkorb/',
-		request: '/de/proforma-anfrage/',
-		priceNote: /Preise nach Anmeldung/i,
-		draftButton: /Zum Lösungsentwurf/i,
-		inquiries: /Anfragen/i,
-	},
-} as const;
+			draftButton: /add to solution draft/i,
+			inquiries: /inquiries/i,
+		},
+		de: {
+			account: '/de/mein-konto/',
+			product: '/de/produkt/saj-h2-10k-t3/',
+			draft: '/de/warenkorb/',
+			request: '/de/proforma-anfrage/',
+			priceNote: /Preise nach Anmeldung/i,
+			draftButton: /Zum Lösungsentwurf/i,
+			inquiries: /Anfragen/i,
+		},
+	} as const;
 
 function url(path: string): string {
 	return `${instance().url}${path}`;

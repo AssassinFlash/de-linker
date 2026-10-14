@@ -37,16 +37,14 @@ final class ShortcodesTest extends TestCase {
 	 */
 	public function test_register_adds_the_shortcodes(): void {
 		$codes = $this->shortcodes();
-		WP_Mock::expectFilterAdded( 'lc_define_condition_linker_commerce_draft_empty', array( $codes, 'draft_is_empty' ) );
-		WP_Mock::expectFilterAdded( 'lc_define_condition_linker_commerce_draft_filled', array( $codes, 'draft_is_filled' ) );
 		foreach (
-		array(
-			'linker_price'        => 'price',
-			'linker_checkout'     => 'checkout',
-			'linker_draft_empty'  => 'draft_empty',
-			'linker_faqs'         => 'faqs',
-			'linker_contact_link' => 'contact_link',
-		) as $tag => $method
+			array(
+				'linker_price'        => 'price',
+				'linker_checkout'     => 'checkout',
+				'linker_draft_empty'  => 'draft_empty',
+				'linker_faqs'         => 'faqs',
+				'linker_contact_link' => 'contact_link',
+			) as $tag => $method
 		) {
 			WP_Mock::userFunction(
 				'add_shortcode',
@@ -135,14 +133,16 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		$this->cart_is( true );
 
-		$shortcodes = $this->shortcodes();
-		$html       = $shortcodes->draft_empty();
+		$html = $this->shortcodes()->draft_empty();
 
-		$this->assertTrue( $shortcodes->draft_is_empty() );
-		$this->assertFalse( $shortcodes->draft_is_filled() );
+		$this->assertTrue( function_exists( 'linker_commerce_draft_empty' ) );
+		$this->assertTrue( function_exists( 'linker_commerce_draft_filled' ) );
+		$this->assertTrue( linker_commerce_draft_empty() );
+		$this->assertFalse( linker_commerce_draft_filled() );
 		$this->assertStringContainsString( 'sf-cart-empty__icon', $html );
 		$this->assertStringContainsString( '<h1>Your solution draft is empty.</h1>', $html );
-		$this->assertStringContainsString( 'match an item-number list now', $html );
+		$this->assertStringContainsString( 'Browse the products now.', $html );
+		$this->assertStringNotContainsString( 'item-number', $html );
 		$this->assertStringContainsString( 'href="https://example.test/products/"', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/"', $html );
 		$this->assertStringContainsString( 'Sign in or register', $html );
@@ -160,15 +160,13 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 		$this->cart_is( false );
 
-		$shortcodes = $this->shortcodes();
-
-		$this->assertFalse( $shortcodes->draft_is_empty() );
-		$this->assertTrue( $shortcodes->draft_is_filled() );
+		$this->assertFalse( linker_commerce_draft_empty() );
+		$this->assertTrue( linker_commerce_draft_filled() );
 
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
 		$this->cart_is( true );
-		$this->assertFalse( $shortcodes->draft_is_empty() );
-		$this->assertTrue( $shortcodes->draft_is_filled() );
+		$this->assertFalse( linker_commerce_draft_empty() );
+		$this->assertTrue( linker_commerce_draft_filled() );
 	}
 
 	/**

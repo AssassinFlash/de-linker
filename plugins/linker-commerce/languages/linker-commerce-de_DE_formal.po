@@ -3640,5 +3640,5 @@ msgid "No matching entries. Try another search term."
 msgstr "Keine passenden Einträge. Versuchen Sie einen anderen Suchbegriff."
 
 #: includes/Presentation/Shortcodes.php
-msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
-msgstr "Sie können die Produkte durchsuchen und eine Artikelnummernliste abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der Kontoprüfung möglich."
+msgid "Browse the products now. Adding to the solution draft is possible only after your account has been reviewed."
+msgstr "Durchsuchen Sie jetzt die Produkte. Das Hinzufügen zum Lösungsentwurf ist erst nach der Kontoprüfung möglich."

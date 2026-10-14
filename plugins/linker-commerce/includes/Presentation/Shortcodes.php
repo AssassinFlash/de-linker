@@ -36,10 +36,6 @@ final class Shortcodes {
 		add_shortcode( 'linker_draft_empty', array( $this, 'draft_empty' ) );
 		add_shortcode( 'linker_faqs', array( $this, 'faqs' ) );
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
-		// LiveCanvas's native condition tag. Both names stay true or false
-		// together, so a template that lost one half still cannot print both.
-		add_filter( 'lc_define_condition_linker_commerce_draft_empty', array( $this, 'draft_is_empty' ) );
-		add_filter( 'lc_define_condition_linker_commerce_draft_filled', array( $this, 'draft_is_filled' ) );
 	}
 
 	/**
@@ -139,23 +135,6 @@ final class Shortcodes {
 		return $this->empty_draft_html();
 	}
 
-	/**
-	 * Whether the solution draft has no lines. A confirmation or pay page is
-	 * not an empty draft: those pages share the cart's template family only
-	 * by accident, and the condition must not hide a receipt.
-	 */
-	public function draft_is_empty(): bool {
-		return $this->is_empty_request();
-	}
-
-	/**
-	 * The other half of the cart template's condition. Never true together
-	 * with draft_is_empty().
-	 */
-	public function draft_is_filled(): bool {
-		return ! $this->draft_is_empty();
-	}
-
 		/**
 		 * Markup of the empty solution draft.
 		 *
@@ -163,8 +142,9 @@ final class Shortcodes {
 		 * batch item-number import the owner later ruled out (surface
 		 * inventory, 2026-10-11: not built). This page keeps the two
 		 * actions that still have a page: browse products, and sign in.
-		 * The heading names the solution draft. Classes only; the look
-		 * lives in the storefront volume.
+		 * The note says the same two things and does not promise a match
+		 * the site no longer offers. Classes only; the look lives in the
+		 * storefront volume.
 		 */
 	private function empty_draft_html(): string {
 		$products = (string) get_permalink( wc_get_page_id( 'shop' ) );
@@ -175,7 +155,7 @@ final class Shortcodes {
 			esc_attr__( 'Empty solution draft', 'linker-commerce' ),
 			$icon,
 			esc_html__( 'Your solution draft is empty.', 'linker-commerce' ),
-			esc_html__( 'You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed.', 'linker-commerce' ),
+			esc_html__( 'Browse the products now. Adding to the solution draft is possible only after your account has been reviewed.', 'linker-commerce' ),
 			esc_url( $products ),
 			esc_html__( 'Browse products', 'linker-commerce' ),
 			esc_url( $account ),
@@ -187,10 +167,7 @@ final class Shortcodes {
 	 * Whether this is an empty Proforma request (not a confirmation or pay page).
 	 */
 	private function is_empty_request(): bool {
-		if ( is_wc_endpoint_url( 'order-received' ) || is_wc_endpoint_url( 'order-pay' ) ) {
-			return false;
-		}
-		return WC()->cart->is_empty();
+		return linker_commerce_draft_is_empty();
 	}
 
 	/**

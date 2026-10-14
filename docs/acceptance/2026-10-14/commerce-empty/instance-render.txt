@@ -1,0 +1,25 @@
+# 空 Lösungsentwurf 两态 · 实例渲染
+
+2026-10-14。条件函数按 LiveCanvas 4.9.3 modules/shortcodes.php:914-921 的 function_exists() 解析。
+
+## shortcode 实例（插件链到本 worktree，HTTP http://127.0.0.1:9012/）
+
+wp eval do_shortcode(cart_page.html)，LiveCanvas 自己的 lc_if：
+
+- EN 空草稿：INVALID=no EMPTY_BLOCK=yes FORM=no BTNS=2 NOTE=Browse the products now.
+- EN 有行（SAJ H2-10K-T3 × 1）：INVALID=no EMPTY=no FORM=yes SKU=yes
+- DE 空草稿（switch_to_locale de_DE_formal + 本分支 .mo）：INVALID=no TITLE=Ihr Lösungsentwurf ist leer. NOTE=Durchsuchen Sie jetzt die Produkte. BROWSE=Zu den Produkten SIGNIN=Anmelden oder registrieren BTNS=2
+- DE 有行：INVALID=no EMPTY=no FORM=yes SKU=yes
+
+HTTP GET /cart/ → 200，正文含 Your solution draft is empty. 与 Browse the products now.，无 Invalid condition function。
+该实例没有德语页（pll_get_post(cart, de)=0，/de/ 301 到 /design-canvas/），所以德语 HTTP 页不在这里。
+
+## e2e
+
+LINKER_E2E_SKIP_SERVICES=1 just e2e shortcode specs/empty-draft.spec.ts --grep en:
+1 passed. 断言空态标题、说明、两个链接、图标，且无 Invalid condition function、无 item-number。
+德语用例未跑：这个实例没有 /de/warenkorb/。
+
+## t110（http://127.0.0.1:8975/de/warenkorb/）
+
+插件链到别的 worktree，未改它的链接。GET /de/warenkorb/ 200，正文是旧句 Ihr Lösungsentwurf ist leer.，没有 sf-cart-empty，也没有新说明。wp eval 在该实例退出 255，未能把本分支函数注入后再渲染。德语两态的证据因此是 shortcode 实例上的 do_shortcode，不是 t110 的 HTTP 页。

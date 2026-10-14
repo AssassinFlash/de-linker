@@ -20,6 +20,11 @@ export const INSTANCE_READY =
 	'the instance answers /wp-json/ and both services report healthy';
 
 export default async function globalSetup(): Promise<void> {
+	// A page spec that does not talk to the engine or Genie sets this.
+	// The commercial-chain suite does not, so its health gate stays.
+	if (process.env.LINKER_E2E_SKIP_SERVICES === '1') {
+		return;
+	}
 	const name = instanceName();
 	const target = instance(name);
 	const context = await request.newContext({ timeout: 20_000 });

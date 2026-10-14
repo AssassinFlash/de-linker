@@ -87,9 +87,57 @@ final class TemplatesTest extends TestCase {
 		// is not the English file (a shared file would print "Products").
 		$german = (string) file_get_contents( $paths['is_single_product__de'] );
 		$this->assertStringContainsString( 'id="tv-storefront-pdp"', $german );
-		$this->assertStringContainsString( '>Produkte</a>', $german );
-		$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $german );
-		$this->assertStringNotContainsString( '>Products</a>', $german );
+			$this->assertStringContainsString( '>Produkte</a>', $german );
+			$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $german );
+			$this->assertStringNotContainsString( '>Products</a>', $german );
+	}
+
+		/**
+		 * LiveCanvas resolves a condition with function_exists() (livecanvas
+		 * 4.9.3 modules/shortcodes.php). A missing function is the error the
+		 * shipped template printed. Both branches of the cart template are
+		 * walked: an empty draft keeps the designed empty state, a filled
+		 * draft keeps WooCommerce's cart.
+		 */
+	public function test_the_cart_template_conditions_are_real_functions(): void {
+		$this->assertTrue( function_exists( 'linker_commerce_draft_empty' ) );
+		$this->assertTrue( function_exists( 'linker_commerce_draft_filled' ) );
+		$html = (string) file_get_contents( Templates::paths()['is_cart_page'] );
+
+		$empty = self::render_lc_if( $html, true );
+		$this->assertStringNotContainsString( 'Invalid condition function', $empty );
+		$this->assertStringContainsString( '[linker_draft_empty]', $empty );
+		$this->assertStringNotContainsString( '[woocommerce_cart]', $empty );
+
+		$filled = self::render_lc_if( $html, false );
+		$this->assertStringNotContainsString( 'Invalid condition function', $filled );
+		$this->assertStringContainsString( '[woocommerce_cart]', $filled );
+		$this->assertStringNotContainsString( '[linker_draft_empty]', $filled );
+	}
+
+	/**
+	 * The lc_if rule LiveCanvas ships: a known function is called, an
+	 * unknown one is the error string. The draft conditions read the
+	 * cart, so the stand-in answers with the state under test.
+	 *
+	 * @param string $html   Template HTML.
+	 * @param bool   $vacant Whether the draft under test has no lines.
+	 */
+	private static function render_lc_if( string $html, bool $vacant ): string {
+		return (string) preg_replace_callback(
+			'/\[lc_if condition="([^"]+)"\](.*?)\[\/lc_if\]/s',
+			static function ( array $found ) use ( $vacant ): string {
+				$name = $found[1];
+				if ( ! function_exists( $name ) ) {
+					return 'Error: Invalid condition function.';
+				}
+				$shown = 'linker_commerce_draft_empty' === $name
+					? $vacant
+					: ( 'linker_commerce_draft_filled' === $name ? ! $vacant : (bool) $name() );
+				return $shown ? $found[2] : '';
+			},
+			$html
+		);
 	}
 
 	/**

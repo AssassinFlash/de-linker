@@ -2036,12 +2036,14 @@ body.woocommerce-cart #tv-storefront-cart h1 {
 /*
  * Empty solution draft. The live empty cart (measured 2026-10-12/13,
  * cart-en/de 1440 and 390) is a centred block: a 48px cart stroke, a
- * 20px/500 title, a muted two-line note capped at 28rem, then three
- * 44px pills. At 390 the third pill wraps under the first two — flex
- * wrap, not a second layout.
+ * 20px/500 title, a muted note capped at 28rem, then the actions.
+ * The live page had three pills; the middle one opened a batch
+ * item-number import the owner ruled out on 2026-10-11 (GAP-11), so
+ * this page keeps two. At 390 the second wraps under the first.
+ * The section is a direct child of #tv-storefront-cart, not of the
+ * line-item grid, so it does not claim a grid column.
  */
 #tv-storefront-cart .sf-cart-empty {
-  grid-column: 1 / -1;
   width: 100%;
   max-width: 40rem;
   margin: 4.5rem auto 5rem;
@@ -2719,7 +2721,12 @@ body.woocommerce-order-received #container-content-page > div {
   gap: 0.55rem;
   min-height: 44px;
   padding: 0.4rem 1.1rem 0.4rem 0.45rem;
+  border: 0;
   border-radius: 999px;
+  /* Sampled from the live Advisor pill, checkout-en-1440-live.png
+     (2026-10-12/13 capture): near-black fill, slightly lighter mark
+     disc. Not a site token; the pill is that control, not a button
+     of the storefront palette. */
   background: #1c2430;
   color: #fff;
   font-size: 0.95rem;
