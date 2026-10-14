@@ -29,11 +29,13 @@ final class SubmissionTest extends TestCase {
 	private function sanitizers(): void {
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn ( string $value ): string => trim( $value ) ) );
 		WP_Mock::userFunction( 'sanitize_textarea_field', array( 'return' => static fn ( string $value ): string => trim( $value ) ) );
+		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn ( string $key ): string => strtolower( preg_replace( '/[^a-z0-9_-]/i', '', $key ) ?? '' ) ) );
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 	}
 
 	/**
-	 * A complete form makes a submission in the language the form posted.
+	 * A complete form makes a submission in the language the form posted, and
+	 * the topic the card's select carried travels with it.
 	 */
 	public function test_complete_form_makes_a_submission(): void {
 		$this->plain_text();
@@ -47,6 +49,7 @@ final class SubmissionTest extends TestCase {
 				'email'   => 'Maria@Example.Test',
 				'company' => 'Weber Solar',
 				'message' => "Do you ship the GW5.1 battery?\nThanks.",
+				'intent'  => 'offer',
 				'consent' => '1',
 			)
 		);
@@ -56,7 +59,41 @@ final class SubmissionTest extends TestCase {
 		$this->assertSame( 'maria@example.test', $submission->email );
 		$this->assertSame( 'Weber Solar', $submission->company );
 		$this->assertSame( "Do you ship the GW5.1 battery?\nThanks.", $submission->message );
+		$this->assertSame( 'offer', $submission->intent );
 		$this->assertTrue( $submission->is_german() );
+	}
+
+	/**
+	 * The topic is one of the card's; a request without it, or with a value the
+	 * card does not offer, is the general question — the mail never repeats an
+	 * arbitrary string back.
+	 */
+	public function test_topic_falls_back_to_the_general_question(): void {
+		$this->plain_text();
+		$this->reload_plugin_textdomain();
+		$this->sanitizers();
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => false ) );
+		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'en_US' ) );
+
+		$complete = array(
+			'name'    => 'Maria',
+			'email'   => 'maria@example.test',
+			'message' => 'A question.',
+			'consent' => '1',
+		);
+
+		$missing = Submission::from_post( $complete );
+		$this->assertInstanceOf( Submission::class, $missing );
+		$this->assertSame( Submission::INTENT_DEFAULT, $missing->intent );
+
+		$unknown = Submission::from_post( array_merge( $complete, array( 'intent' => 'something else' ) ) );
+		$this->assertInstanceOf( Submission::class, $unknown );
+		$this->assertSame( Submission::INTENT_DEFAULT, $unknown->intent );
+
+		$known = Submission::from_post( array_merge( $complete, array( 'intent' => 'support' ) ) );
+		$this->assertInstanceOf( Submission::class, $known );
+		$this->assertSame( 'support', $known->intent );
 	}
 
 	/**

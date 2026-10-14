@@ -41,8 +41,10 @@ final class ContactFormMountTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * /contact/ renders the form. The stored page still has the old mount;
-	 * the response does not.
+	/**
+	 * /contact/ renders the card. The stored page still has the old mount;
+	 * the response does not. The card's own words are the ones the copy
+	 * review settled (docs/acceptance/2026-10-15/contact-card/copy-review.md).
 	 */
 	public function test_the_english_page_renders_the_form(): void {
 		$html = $this->get( '/contact/' );
@@ -50,13 +52,18 @@ final class ContactFormMountTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '<form class="linker-contact-form', $html );
 		$this->assertStringContainsString( 'name="message"', $html );
 		$this->assertStringContainsString( 'type="submit"', $html );
+		$this->assertStringContainsString( 'linker-contact-head', $html );
+		$this->assertStringContainsString( 'What can we help with?', $html );
+		$this->assertStringContainsString( 'linker-contact-rail', $html );
+		$this->assertStringContainsString( 'Prefer email?', $html );
+		$this->assertStringContainsString( 'Send message', $html );
 		$this->assertStringNotContainsString( '[' . Form::SHORTCODE . ']', $html, 'the shortcode is expanded, not left as text' );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
 		$this->assertStringNotContainsString( 'If the form is unavailable', $html );
 	}
 
 	/**
-	 * The German twin renders the same form, in German.
+	 * The German twin renders the same card, in German.
 	 */
 	public function test_the_german_page_renders_the_form_in_german(): void {
 		$html = $this->get( '/de/kontakt/' );
@@ -64,7 +71,11 @@ final class ContactFormMountTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '<form class="linker-contact-form', $html );
 		$this->assertStringContainsString( 'name="lang" value="de"', $html );
 		$this->assertStringContainsString( 'Ihre Frage', $html );
+		$this->assertStringContainsString( 'Wie können wir helfen?', $html );
+		$this->assertStringContainsString( 'Wohin dürfen wir antworten?', $html );
 		$this->assertStringContainsString( 'Nachricht senden', $html );
+		$this->assertStringContainsString( 'Lieber per E-Mail?', $html );
+		$this->assertStringContainsString( 'Noch in der Orientierung?', $html );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
 	}
 

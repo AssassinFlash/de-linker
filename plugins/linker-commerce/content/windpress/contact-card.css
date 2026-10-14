@@ -1,0 +1,280 @@
+/*
+ * The /contact/ card — [linker_contact_form].
+ *
+ * The composition is the live page's, read off the 2026-10-12/13 captures
+ * (.scratch/freshdiff-rerun/captures/contact-en-1440-live.png,
+ * .scratch/de-parity/captures/contact-de-1440-live.png, contact-en-390-live.png
+ * and contact-de-390-live.png; the 2026-10-14 recheck shots of the same pages
+ * no longer print it): one card across the form column — eyebrow, heading,
+ * lead, "Your question", "This is about", a rule, "Where can we reply?" with
+ * Name and Reply email beside each other and Company under them, the note,
+ * the consent row, the submit bar and its footnote — and, under the card, the
+ * two side cards "Prefer email?" and "Still exploring?".
+ *
+ * Geometry, measured on contact-en-1440-live.png and its stylesheet (the
+ * page's own `contact-journal.css`, re-fetched 2026-10-15): the card is
+ * x682–1391 and its content box starts at x714 — 32px, the padding the page's
+ * stylesheet gives that box and what this file uses (--proto-space-6); the
+ * blocks run on a 24px rhythm; the rule above the reply block sits 24px above
+ * it; Name and Reply email share a row with 16px between them and collapse to
+ * one column at 800px and below; the two side cards start 20px under the card,
+ * split the same 710px in half with 16px between them and collapse the same
+ * way. The card's radius is 26px there and the side cards' 20px: this file
+ * takes the site's panel and card radii (--proto-radius-panel,
+ * --proto-radius-card) instead, like every other surface.
+ *
+ * Two things of the live card are deliberately not here. Its palette: the
+ * site's current tokens are the ruling (AGENTS.md §2, 2026-10-11 — the old
+ * card's mint and its self-hosted shell are not part of the design system the
+ * rebuilt pages follow). And its JavaScript: the live card was arranged at
+ * runtime — a two-step flow below 801px with 01/02 tabs and a Continue button,
+ * the side cards collapsed into one-line disclosures, the extra fields per
+ * topic — by the page's own script over a runtime that is retired (Module's
+ * own docblock; that script is stored in the page and still runs, but looks
+ * for that runtime's markup). This form is server-rendered and works without
+ * JavaScript (ticket #68), so the card is one column of blocks at every width
+ * and the side cards stack.
+ */
+
+#contact-form .linker-contact-card {
+	display: grid;
+	/* 20px: the live rail's own margin-top under the card. */
+	gap: calc(var(--proto-space-4) + var(--proto-space-1));
+}
+
+/* The card box. The receipt state keeps the wrapper (the success panel's own
+ * rules hang off `#contact-form .linker-contact-form .linker-form-success`)
+ * but draws no second box around it. */
+#contact-form .linker-contact-card .linker-contact-form:not(.linker-contact-receipt) {
+	display: grid;
+	gap: var(--proto-space-5);
+	padding: var(--proto-space-6);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-panel);
+	background: var(--proto-canvas-white);
+}
+
+#contact-form .linker-contact-head {
+	display: grid;
+	gap: var(--proto-space-3);
+}
+
+#contact-form .linker-contact-overline {
+	font-size: var(--proto-size-micro);
+	font-weight: var(--proto-weight-semibold);
+	letter-spacing: var(--proto-track-label);
+	line-height: var(--proto-leading-caption);
+	text-transform: uppercase;
+	color: var(--proto-teal-600);
+}
+
+#contact-form .linker-contact-head h2 {
+	margin: 0;
+	font-family: var(--proto-font-display);
+	font-size: var(--proto-size-3xl);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-display);
+	letter-spacing: -0.02em;
+	color: var(--proto-ink-deep);
+}
+
+#contact-form .linker-contact-head p {
+	margin: 0;
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-body);
+	color: var(--proto-ink-muted-deep);
+}
+
+/* The question block: the live card's textarea sits under its label with the
+ * prompt as the placeholder, on the floor the live page's stylesheet gives it
+ * (155px), which keeps the block's weight. */
+#contact-form .linker-contact-question textarea.linker-form-input {
+	min-height: 155px;
+}
+
+/* The reply block opens after a rule in the live card (24px below it). */
+#contact-form .linker-contact-reply {
+	display: grid;
+	gap: var(--proto-space-5);
+	padding-top: var(--proto-space-5);
+	border-top: 1px solid var(--proto-line-journal);
+}
+
+#contact-form .linker-contact-reply h3 {
+	margin: 0;
+	font-family: var(--proto-font-display);
+	font-size: var(--proto-size-lg);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-title);
+	color: var(--proto-ink-deep);
+}
+
+#contact-form .linker-form-fields {
+	display: grid;
+	gap: var(--proto-space-4);
+}
+
+/* Name and Reply email share a row from 801px, the live card's own breakpoint;
+ * below it the card is one column. */
+@media (min-width: 801px) {
+	#contact-form .linker-form-fields {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	#contact-form .linker-contact-rail {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+#contact-form .linker-form-optional {
+	font-size: var(--proto-size-xs);
+	font-weight: var(--proto-weight-regular);
+	color: var(--proto-neutral-500);
+}
+
+#contact-form .linker-form-note {
+	margin: 0;
+	font-size: var(--proto-size-xs);
+	line-height: var(--proto-leading-caption);
+	color: var(--proto-neutral-500);
+}
+
+#contact-form .linker-contact-end {
+	display: grid;
+	gap: var(--proto-space-4);
+}
+
+/* The submit bar: the live card's button spans the card, its mark at the end.
+ * The control's own height and radius stay the site's (--proto-control-height). */
+#contact-form .linker-contact-card .linker-form-primary {
+	justify-self: stretch;
+	justify-content: space-between;
+	gap: var(--proto-space-4);
+	padding-inline: var(--proto-control-pad-x);
+}
+
+/* The row keeps its own layout: the card does not lean on the markup's
+ * utility classes for it. Measured on the contactdesign instance 2026-10-15
+ * (docs/acceptance/2026-10-15/contact-card/README.md): with the layout left to
+ * the markup's `grid` class the submit row computed `display: block` and the
+ * button measured 167px; with this rule it is the 644px bar the live card
+ * shows. */
+#contact-form .linker-contact-card .linker-form-submit {
+	display: grid;
+	gap: var(--proto-space-3);
+}
+
+/* The consent row lands here too — the markup's utility classes are inert
+ * inside #theme-main (the compiled cache carries an unlayered
+ * `:where(#lc-header, #lc-footer, body[data-page] #theme-main) :where(*){all:
+ * revert}` that beats @layer utilities; measured, see the acceptance record).
+ * Values are the live card's row (11px line on 1.85, an 18×18 box with a 2px
+ * top margin, the link underlined with a 3px offset, 10px between box and
+ * text); the colours are the site's tokens, in place of the card's old mint
+ * and green. */
+#contact-form .linker-contact-card .linker-form-consent {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	font-size: 11px;
+	line-height: 1.85;
+	color: var(--proto-neutral-500);
+}
+
+#contact-form .linker-contact-card .linker-form-consent input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	flex: 0 0 18px;
+	margin: 2px 0 0;
+	accent-color: var(--proto-accent);
+}
+
+#contact-form .linker-contact-card .linker-form-consent a {
+	color: var(--proto-teal-600);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* The two side cards under the form (22px of padding and a 20px radius on the
+ * live page; the tokens give 24px and the card radius). */
+#contact-form .linker-contact-rail {
+	display: grid;
+	gap: var(--proto-space-4);
+}
+
+#contact-form .linker-contact-rail-card {
+	display: grid;
+	gap: var(--proto-space-3);
+	align-content: start;
+	padding: var(--proto-space-5);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-card);
+	background: var(--proto-paper-mist);
+}
+
+#contact-form .linker-contact-rail-card h3 {
+	margin: 0;
+	font-family: var(--proto-font-display);
+	font-size: var(--proto-size-lg);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-title);
+	color: var(--proto-ink-deep);
+}
+
+#contact-form .linker-contact-rail-card p {
+	margin: 0;
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-body);
+	color: var(--proto-ink-muted-deep);
+}
+
+#contact-form .linker-contact-address {
+	font-size: var(--proto-size-lg);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-title);
+	color: var(--proto-ink-deep);
+	text-decoration: none;
+	overflow-wrap: anywhere;
+}
+
+#contact-form .linker-contact-address:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+#contact-form .linker-contact-explore a {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--proto-space-2);
+	font-size: var(--proto-size-sm);
+	font-weight: var(--proto-weight-semibold);
+	color: var(--proto-teal-600);
+	text-decoration: none;
+}
+
+#contact-form .linker-contact-explore a:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+#contact-form .linker-contact-card :where(a, button, input, textarea, select):focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+
+/* 800px and below: the live card's own padding step (25px) and heading size.
+ * The card box keeps the receipt's `:not()` selector here: without it this
+ * rule is one class lighter than the box rule above and loses. */
+@media (max-width: 800px) {
+	#contact-form .linker-contact-card .linker-contact-form:not(.linker-contact-receipt) {
+		padding: var(--proto-space-5);
+	}
+
+	#contact-form .linker-contact-head h2 {
+		font-size: var(--proto-size-2xl);
+	}
+
+	#contact-form .linker-contact-reply {
+		padding-top: var(--proto-space-5);
+	}
+}

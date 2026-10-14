@@ -31,12 +31,23 @@ final class Submission {
 	public const MAX_MESSAGE = 5000;
 
 	/**
+	 * The topic the visitor picked in the card's "This is about" select.
+	 */
+	public const INTENT_FIELD = 'intent';
+
+	/**
+	 * The value of INTENT_FIELD when the select was left as it arrived.
+	 */
+	public const INTENT_DEFAULT = 'general';
+
+	/**
 	 * Sets up the submission.
 	 *
 	 * @param string $name    The visitor's name.
 	 * @param string $email   Where the reply goes.
 	 * @param string $company The visitor's company, '' when not given.
 	 * @param string $message The question.
+	 * @param string $intent  What the enquiry is about, one of Form::INTENTS.
 	 * @param string $locale  The language the visitor wrote in.
 	 */
 	private function __construct(
@@ -44,6 +55,7 @@ final class Submission {
 		public readonly string $email,
 		public readonly string $company,
 		public readonly string $message,
+		public readonly string $intent,
 		public readonly string $locale
 	) {
 	}
@@ -63,6 +75,7 @@ final class Submission {
 		$email   = self::text( $post['email'] ?? '' );
 		$company = self::text( $post['company'] ?? '' );
 		$message = self::long_text( $post['message'] ?? '' );
+		$intent  = self::intent( $post[ self::INTENT_FIELD ] ?? '' );
 		$consent = isset( $post['consent'] ) && '1' === (string) $post['consent'];
 
 		if ( '' === $name ) {
@@ -78,7 +91,7 @@ final class Submission {
 			return new WP_Error( 'linker_contact_consent', __( 'Please agree to the use of your details for the reply.', 'linker-commerce' ) );
 		}
 
-		return new self( $name, strtolower( $email ), $company, $message, OrderLocale::current() );
+		return new self( $name, strtolower( $email ), $company, $message, $intent, OrderLocale::current() );
 	}
 
 	/**
@@ -86,6 +99,21 @@ final class Submission {
 	 */
 	public function is_german(): bool {
 		return str_starts_with( strtolower( $this->locale ), 'de' );
+	}
+
+	/**
+	 * What the enquiry is about, one of the card's topics.
+	 *
+	 * The value decides nothing (every enquiry reaches the same mailbox); the
+	 * team letter names it. A value the card does not offer — an old link, a
+	 * hand-made request — is the card's general topic rather than a string
+	 * the mail would repeat back.
+	 *
+	 * @param mixed $value Posted value.
+	 */
+	private static function intent( $value ): string {
+		$intent = sanitize_key( is_scalar( $value ) ? (string) $value : '' );
+		return in_array( $intent, Form::INTENTS, true ) ? $intent : self::INTENT_DEFAULT;
 	}
 
 	/**

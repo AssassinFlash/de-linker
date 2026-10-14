@@ -118,13 +118,21 @@ final class Issuer {
 	/**
 	 * Why an inquiry cannot get a Proforma now, or '' when it can.
 	 *
-	 * The Issue button is only for a received inquiry. A status change into
-	 * "Proforma invoice issued" is the other way in, and is checked by
-	 * ensure_issued() instead of this status rule.
+	 * An inquiry that already has a Proforma is refused with that reason before
+	 * the received-status rule: issuing moves the inquiry to "Proforma invoice
+	 * issued", so a second issue() would otherwise answer with the status error
+	 * although "already has one" is the truth. Both errors stay reachable — a
+	 * non-received inquiry without a Proforma still gets the status error. The
+	 * status rule itself stays: the Issue button is only for a received inquiry,
+	 * and a status change into "Proforma invoice issued" is the other way in,
+	 * checked by ensure_issued() instead of this rule.
 	 *
 	 * @param WC_Order $order Inquiry.
 	 */
 	public function blocker( WC_Order $order ): string {
+		if ( '' !== (string) $order->get_meta( self::NUMBER_META ) || '' !== (string) $order->get_meta( self::FILE_META ) ) {
+			return __( 'This inquiry already has a Proforma invoice.', 'linker-commerce' );
+		}
 		if ( Statuses::RECEIVED !== $order->get_status() ) {
 			return __( 'Only a received inquiry gets a Proforma invoice.', 'linker-commerce' );
 		}
@@ -135,16 +143,15 @@ final class Issuer {
 	 * Why the document itself cannot be built, or '' when it can.
 	 *
 	 * Shared by the Issue button and a status change into "Proforma invoice
-	 * issued": an inquiry that already has a Proforma, an empty inquiry, a
-	 * line without a price, or a missing bank account. The bank account is
-	 * owner data (WooCommerce → Settings → Inquiries); it is never invented.
+	 * issued": an empty inquiry, a line without a price, or a missing bank
+	 * account. The bank account is owner data (WooCommerce → Settings →
+	 * Inquiries); it is never invented. An inquiry that already has a Proforma
+	 * never reaches these checks: blocker() refuses it first, and
+	 * ensure_issued() leaves it alone.
 	 *
 	 * @param WC_Order $order Inquiry.
 	 */
 	private function material_blocker( WC_Order $order ): string {
-		if ( '' !== (string) $order->get_meta( self::NUMBER_META ) || '' !== (string) $order->get_meta( self::FILE_META ) ) {
-			return __( 'This inquiry already has a Proforma invoice.', 'linker-commerce' );
-		}
 		if ( array() === $order->get_items() ) {
 			return __( 'The inquiry has no products.', 'linker-commerce' );
 		}
