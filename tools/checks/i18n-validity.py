@@ -36,7 +36,7 @@ def main() -> int:
     failed = False
     for catalog in catalogs():
         # -o: without it msgfmt writes its default messages.mo beside the
-        # catalogue it just checked.
+        # catalog it just checked.
         result = subprocess.run(
             ["msgfmt", "--check", "-o", os.devnull, str(ROOT / catalog)],
             check=False,
