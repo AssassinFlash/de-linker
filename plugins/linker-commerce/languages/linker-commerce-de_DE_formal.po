@@ -2130,7 +2130,6 @@ msgstr ""
 "die danach geändert wurden."
 
 #: includes/Products/EngineeringFeedController.php:115
-#, fuzzy
 msgid ""
 "The engineering data of every published product, the overlay components and "
 "the compatibility version (docs/specs/8-engineering-data.md, target shape 5; "
@@ -2138,16 +2137,16 @@ msgid ""
 msgstr ""
 "Die technischen Daten aller veröffentlichten Produkte, die Overlay-"
 "Komponenten und die Version des Kompatibilitätsvertrags (docs/specs/8-"
-"engineering-data.md)."
+"engineering-data.md, Zielform 5; der verbindliche Vertrag ist services/"
+"engine/schemas/feed.schema.json)."
 
 #: includes/Products/EngineeringFeedController.php:120
 msgid "The feed schema version, the contract with the engine (#14)."
 msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:128
-#, fuzzy
 msgid "The version stated by data/compatibility.json."
-msgstr "sha256 von data/compatibility.json."
+msgstr "Die in data/compatibility.json angegebene Version."
 
 #: includes/Products/EngineeringFeedController.php:132
 msgid ""
@@ -2162,28 +2161,25 @@ msgstr "Ein Eintrag je veröffentlichtem Produkt."
 
 #: includes/Products/EngineeringFeedController.php:181
 msgid "Rated AC power in kW, or unknown (#7 SelectionFactSet)."
-msgstr "Übernehmen"
+msgstr "AC-Nennleistung in kW oder unbekannt (#7 SelectionFactSet)."
 
 #: includes/Products/EngineeringFeedController.php:185
-#, fuzzy
 msgid "Maximum PV input power in kW, or unknown."
-msgstr "Maximale PV-Eingangsleistung in kW."
+msgstr "Maximale PV-Eingangsleistung in kW oder unbekannt."
 
 #: includes/Products/EngineeringFeedController.php:189
-#, fuzzy
 msgid "Usable energy in kWh, or unknown."
-msgstr "Nutzbare Energie in kWh."
+msgstr "Nutzbare Energie in kWh oder unbekannt."
 
 #: includes/Products/EngineeringFeedController.php:193
-#, fuzzy
 msgid "Nominal energy in kWh, or unknown."
-msgstr "Nennenergie in kWh."
+msgstr "Nennenergie in kWh oder unbekannt."
 
 #: includes/Products/EngineeringFeedController.php:197
-#, fuzzy
 msgid "Energy range in kWh the product data states; null when it states none."
 msgstr ""
-"Energiebereich in kWh, den die Produktdaten angeben; nur dann vorhanden."
+"Energiebereich in kWh, den die Produktdaten angeben; null, wenn keiner "
+"angegeben ist."
 
 #: includes/Products/EngineeringFeedController.php:201
 msgid ""
