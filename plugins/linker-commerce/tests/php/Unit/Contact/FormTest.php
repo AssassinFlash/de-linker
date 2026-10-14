@@ -73,8 +73,11 @@ final class FormTest extends TestCase {
 		$this->assertStringContainsString( '<div hidden aria-hidden="true">', $html, 'The honeypot is hidden from people.' );
 		$this->assertStringContainsString( 'name="website"', $html );
 		$this->assertStringContainsString( 'type="submit"', $html );
-		$this->assertStringContainsString( 'Send enquiry', $html );
-		$this->assertStringContainsString( 'Your question goes to the Linker team. Keep the receipt to check its progress.', $html );
+		// The three strings the #68 review settled keep its wording
+		// (docs/acceptance/2026-10-15/contact-card/copy-review.md §1).
+		$this->assertStringContainsString( 'I agree that my details may be used to respond to this message.', $html );
+		$this->assertStringContainsString( 'Send message', $html );
+		$this->assertStringContainsString( 'Your message goes to the Linker team. We reply to the address you give here.', $html );
 
 		foreach ( array( 'name="message"', 'name="name"', 'name="email"', 'name="company"', 'name="consent"' ) as $field ) {
 			$this->assertStringContainsString( $field, $html );

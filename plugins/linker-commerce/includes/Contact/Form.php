@@ -19,12 +19,15 @@ use Linker\Commerce\Settings\Options;
  * The composition is the live card's (README of docs/acceptance/2026-10-14/
  * contact-form/; the captures `contact-en-1440-live.png`, `contact-de-1440-
  * live.png`, `contact-en-390-live.png` and `contact-de-390-live.png` of the
- * 2026-10-12/13 rounds): the same blocks in the same order, the same words
- * (the contact page is frozen copy), the same fields. Its colours are not
- * carried over — the site's tokens are (AGENTS.md §2, 2026-10-11: the site's
- * palette is the current one) — and neither is the retired runtime that
- * rendered it: this form posts to admin-post.php, keeps its meaning without
- * JavaScript, and carries the language of the page it was written on.
+ * 2026-10-12/13 rounds): the same blocks in the same order, the same fields,
+ * and the card's words — with the three the #68 review had already settled
+ * kept as it settled them (the button, the consent sentence and the line
+ * under it; docs/acceptance/2026-10-15/contact-card/copy-review.md §1 says
+ * why the live's own three are not taken back). Its colours are not carried
+ * over — the site's tokens are (AGENTS.md §2, 2026-10-11: the site's palette
+ * is the current one) — and neither is the retired runtime that rendered it:
+ * this form posts to admin-post.php, keeps its meaning without JavaScript,
+ * and carries the language of the page it was written on.
  *
  * The composition is data assembly: semantic markup and class names, no
  * styles and no scripts of its own (AGENTS.md §5 — the styles of the page
@@ -162,14 +165,14 @@ final class Form {
 		$html   .= '<div class="linker-contact-end">';
 		$privacy = get_privacy_policy_url();
 		$html   .= '<label class="linker-form-consent flex items-start gap-3 text-xs text-neutral-600"><input class="mt-1" type="checkbox" name="consent" value="1" required />'
-			. '<span>' . esc_html__( 'I agree that my details may be used to respond to this enquiry.', 'linker-commerce' );
+			. '<span>' . esc_html__( 'I agree that my details may be used to respond to this message.', 'linker-commerce' );
 		if ( '' !== $privacy ) {
 			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '">' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</span></label>';
 		$html .= '<div hidden aria-hidden="true"><label>' . esc_html__( 'Website', 'linker-commerce' ) . '<input type="text" name="' . esc_attr( self::TRAP_FIELD ) . '" tabindex="-1" autocomplete="off" /></label></div>';
-		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send enquiry', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
-			. '<p class="linker-form-note">' . esc_html__( 'Your question goes to the Linker team. Keep the receipt to check its progress.', 'linker-commerce' ) . '</p></div>';
+		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
+			. '<p class="linker-form-note">' . esc_html__( 'Your message goes to the Linker team. We reply to the address you give here.', 'linker-commerce' ) . '</p></div>';
 		$html .= '</div>';
 
 		$html .= '</form>';

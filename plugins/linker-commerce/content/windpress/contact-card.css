@@ -13,15 +13,15 @@
  *
  * Geometry, measured on contact-en-1440-live.png and its stylesheet (the
  * page's own `contact-journal.css`, re-fetched 2026-10-15): the card is
- * x682–1391 with the blocks starting at x722 (40px of inline padding, 32px of
- * block padding) and its blocks run on a 24px rhythm; the rule above the reply
- * block sits 24px above it; Name and Reply email share a row with 16px between
- * them and collapse to one column at 800px and below; the two side cards start
- * 20px under the card, split the same 710px in half with 16px between them and
- * collapse the same way. The card's radius is 26px there and the side cards'
- * 20px: this file takes the site's panel and card radii
- * (--proto-radius-panel, --proto-radius-card) instead, like every other
- * surface.
+ * x682–1391 and its content box starts at x714 — 32px, the padding the page's
+ * stylesheet gives that box and what this file uses (--proto-space-6); the
+ * blocks run on a 24px rhythm; the rule above the reply block sits 24px above
+ * it; Name and Reply email share a row with 16px between them and collapse to
+ * one column at 800px and below; the two side cards start 20px under the card,
+ * split the same 710px in half with 16px between them and collapse the same
+ * way. The card's radius is 26px there and the side cards' 20px: this file
+ * takes the site's panel and card radii (--proto-radius-panel,
+ * --proto-radius-card) instead, like every other surface.
  *
  * Two things of the live card are deliberately not here. Its palette: the
  * site's current tokens are the ruling (AGENTS.md §2, 2026-10-11 — the old
@@ -86,9 +86,10 @@
 }
 
 /* The question block: the live card's textarea sits under its label with the
- * prompt as the placeholder; its 155px floor keeps the block's weight. */
+ * prompt as the placeholder, on the floor the live page's stylesheet gives it
+ * (155px), which keeps the block's weight. */
 #contact-form .linker-contact-question textarea.linker-form-input {
-	min-height: 9.5rem;
+	min-height: 155px;
 }
 
 /* The reply block opens after a rule in the live card (24px below it). */
@@ -152,7 +153,20 @@
 	padding-inline: var(--proto-control-pad-x);
 }
 
+/* The row keeps its own layout: the card does not lean on the markup's
+ * utility classes for it. Measured on the contactdesign instance 2026-10-15
+ * (docs/acceptance/2026-10-15/contact-card/README.md): with the layout left to
+ * the markup's `grid` class the submit row computed `display: block` and the
+ * button measured 167px; with this rule it is the 644px bar the live card
+ * shows. */
 #contact-form .linker-contact-card .linker-form-submit {
+	display: grid;
+	gap: var(--proto-space-3);
+}
+
+#contact-form .linker-contact-card .linker-form-consent {
+	display: flex;
+	align-items: flex-start;
 	gap: var(--proto-space-3);
 }
 
@@ -223,9 +237,11 @@
 	outline-offset: var(--proto-focus-offset);
 }
 
-/* 800px and below: the live card's own padding step (25px) and heading size. */
+/* 800px and below: the live card's own padding step (25px) and heading size.
+ * The card box keeps the receipt's `:not()` selector here: without it this
+ * rule is one class lighter than the box rule above and loses. */
 @media (max-width: 800px) {
-	#contact-form .linker-contact-card .linker-contact-form {
+	#contact-form .linker-contact-card .linker-contact-form:not(.linker-contact-receipt) {
 		padding: var(--proto-space-5);
 	}
 

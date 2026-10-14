@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-14T18:17:56+00:00\n"
+"POT-Creation-Date: 2026-10-14T19:37:26+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -365,7 +365,7 @@ msgid "Documents"
 msgstr "Dokumente"
 
 #: includes/Account/Menu.php:50 includes/Account/Menu.php:86
-#: includes/Contact/Form.php:157 templates/emails/linker-new-customer.php:23
+#: includes/Contact/Form.php:160 templates/emails/linker-new-customer.php:23
 #: templates/myaccount/auth/form-login.php:107
 msgid "Company"
 msgstr "Unternehmen"
@@ -580,149 +580,148 @@ msgstr "Neue Nachricht von {name}"
 msgid "New message from the contact form"
 msgstr "Neue Nachricht über das Kontaktformular"
 
-#: includes/Contact/Form.php:134
+#: includes/Contact/Form.php:137
 #: includes/Presentation/ProductShortcodes.php:1507
 #: includes/Presentation/Shortcodes.php:258
 msgid "CONTACT LINKER"
 msgstr "KONTAKT ZU LINKER"
 
-#: includes/Contact/Form.php:135
+#: includes/Contact/Form.php:138
 msgid "What can we help with?"
 msgstr "Wie können wir helfen?"
 
-#: includes/Contact/Form.php:136
+#: includes/Contact/Form.php:139
 msgid "Tell us what you need. We’ll use the email below for your reply."
 msgstr ""
 "Beschreiben Sie Ihr Anliegen. Für die Antwort verwenden wir die unten "
 "angegebene E-Mail-Adresse."
 
-#: includes/Contact/Form.php:140
+#: includes/Contact/Form.php:143
 msgid "Your question"
 msgstr "Ihre Frage"
 
-#: includes/Contact/Form.php:141
+#: includes/Contact/Form.php:144
 msgid "What would you like to know?"
 msgstr "Was möchten Sie wissen?"
 
-#: includes/Contact/Form.php:145
+#: includes/Contact/Form.php:148
 msgid "This is about"
 msgstr "Es geht um"
 
-#: includes/Contact/Form.php:150
+#: includes/Contact/Form.php:153
 msgid "Where can we reply?"
 msgstr "Wohin dürfen wir antworten?"
 
-#: includes/Contact/Form.php:152 includes/Settings/SettingsTab.php:110
+#: includes/Contact/Form.php:155 includes/Settings/SettingsTab.php:110
 #: templates/emails/linker-new-customer.php:25
 msgid "Name"
 msgstr "Name"
 
-#: includes/Contact/Form.php:154
+#: includes/Contact/Form.php:157
 msgid "Reply email"
 msgstr "E-Mail für die Antwort"
 
-#: includes/Contact/Form.php:157
+#: includes/Contact/Form.php:160
 msgid "optional"
 msgstr "optional"
 
-#: includes/Contact/Form.php:159
+#: includes/Contact/Form.php:162
 msgid "No account or Project is needed to ask a question."
 msgstr ""
-"Für eine Frage brauchen Sie weder ein Konto noch ein Project."
+"Für eine Frage brauchen Sie weder ein Konto noch ein Projekt."
 
-#: includes/Contact/Form.php:165
-msgid "I agree that my details may be used to respond to this enquiry."
+#: includes/Contact/Form.php:168
+msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser "
-"Anfrage verwendet werden."
+"Nachricht verwendet werden."
 
-#: includes/Contact/Form.php:167 templates/myaccount/auth/form-login.php:159
+#: includes/Contact/Form.php:170 templates/myaccount/auth/form-login.php:159
 msgid "Privacy"
 msgstr "Datenschutz"
 
-#: includes/Contact/Form.php:170
+#: includes/Contact/Form.php:173
 msgid "Website"
 msgstr "Website"
 
-#: includes/Contact/Form.php:171
-msgid "Send enquiry"
-msgstr "Anfrage senden"
+#: includes/Contact/Form.php:174
+msgid "Send message"
+msgstr "Nachricht senden"
 
-#: includes/Contact/Form.php:172
+#: includes/Contact/Form.php:175
 msgid ""
-"Your question goes to the Linker team. Keep the receipt to check its "
-"progress."
+"Your message goes to the Linker team. We reply to the address you give here."
 msgstr ""
-"Ihre Anfrage geht an das Linker-Team. Mit dem Beleg können Sie den Stand "
-"prüfen."
+"Ihre Nachricht geht an das Linker-Team. Wir antworten an die Adresse, die "
+"Sie hier angeben."
 
-#: includes/Contact/Form.php:210
+#: includes/Contact/Form.php:213
 msgid "Product guidance"
 msgstr "Produktberatung"
 
-#: includes/Contact/Form.php:211
+#: includes/Contact/Form.php:214
 msgid "Price & availability"
 msgstr "Preis und Verfügbarkeit"
 
-#: includes/Contact/Form.php:212
+#: includes/Contact/Form.php:215
 msgid "Product documents"
 msgstr "Produktunterlagen"
 
-#: includes/Contact/Form.php:213
+#: includes/Contact/Form.php:216
 msgid "Discuss a project"
 msgstr "Projekt besprechen"
 
-#: includes/Contact/Form.php:214
+#: includes/Contact/Form.php:217
 msgid "Support for an order"
 msgstr "Hilfe zu einer Bestellung"
 
-#: includes/Contact/Form.php:215
+#: includes/Contact/Form.php:218
 msgid "Work with Linker"
 msgstr "Zusammenarbeit mit Linker"
 
-#: includes/Contact/Form.php:216
+#: includes/Contact/Form.php:219
 msgid "A question"
 msgstr "Eine Frage"
 
-#: includes/Contact/Form.php:229
+#: includes/Contact/Form.php:232
 msgid "Prefer email?"
 msgstr "Lieber per E-Mail?"
 
-#: includes/Contact/Form.php:231
+#: includes/Contact/Form.php:234
 msgid ""
 "Send your question directly to our team. Opening your email app does not "
 "send a message."
 msgstr ""
-"Schreiben Sie unserem Team direkt. Das Öffnen Ihres E-Mail-Programms "
-"sendet noch keine Nachricht."
+"Schreiben Sie unserem Team direkt. Das Öffnen Ihres E-Mail-Programms sendet "
+"noch keine Nachricht."
 
-#: includes/Contact/Form.php:234
+#: includes/Contact/Form.php:237
 msgid "Still exploring?"
 msgstr "Noch in der Orientierung?"
 
-#: includes/Contact/Form.php:235
+#: includes/Contact/Form.php:238
 msgid "Take your time."
 msgstr "Nehmen Sie sich Zeit."
 
-#: includes/Contact/Form.php:236
+#: includes/Contact/Form.php:239
 msgid "Use Genie to explore the options, then return to your question."
 msgstr ""
 "Mit Genie können Sie Ihre Möglichkeiten erkunden und später zu Ihrer Frage "
 "zurückkehren."
 
-#: includes/Contact/Form.php:237
+#: includes/Contact/Form.php:240
 msgid "Explore with Genie"
 msgstr "Mit Genie weiterdenken"
 
-#: includes/Contact/Form.php:272
+#: includes/Contact/Form.php:275
 msgid "Thank you. Your message is with the Linker team."
 msgstr "Vielen Dank. Ihre Nachricht liegt beim Linker-Team."
 
-#: includes/Contact/Form.php:273
+#: includes/Contact/Form.php:276
 msgid "Please check your entries and send the form again."
 msgstr "Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut."
 
-#: includes/Contact/Form.php:274
+#: includes/Contact/Form.php:277
 msgid ""
 "We received several messages from this connection. Please try again later or "
 "write to sales@de-linker.com."
@@ -730,7 +729,7 @@ msgstr ""
 "Von dieser Verbindung sind mehrere Nachrichten eingegangen. Bitte versuchen "
 "Sie es später erneut oder schreiben Sie an sales@de-linker.com."
 
-#: includes/Contact/Form.php:290
+#: includes/Contact/Form.php:293
 msgid "Send another message"
 msgstr "Weitere Nachricht senden"
 
@@ -3888,8 +3887,8 @@ msgstr ""
 msgid "Reference"
 msgstr "Verwendungszweck"
 
-#~ msgid "Send message"
-#~ msgstr "Nachricht senden"
+#~ msgid "Send enquiry"
+#~ msgstr "Anfrage senden"
 
 #~ msgid "Product questions"
 #~ msgstr "Produktfragen"

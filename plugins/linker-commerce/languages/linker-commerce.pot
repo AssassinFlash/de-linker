@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-14T18:17:56+00:00\n"
+"POT-Creation-Date: 2026-10-14T19:37:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -352,7 +352,7 @@ msgstr ""
 
 #: includes/Account/Menu.php:50
 #: includes/Account/Menu.php:86
-#: includes/Contact/Form.php:157
+#: includes/Contact/Form.php:160
 #: templates/emails/linker-new-customer.php:23
 #: templates/myaccount/auth/form-login.php:107
 msgid "Company"
@@ -538,140 +538,140 @@ msgstr ""
 msgid "New message from the contact form"
 msgstr ""
 
-#: includes/Contact/Form.php:134
+#: includes/Contact/Form.php:137
 #: includes/Presentation/ProductShortcodes.php:1507
 #: includes/Presentation/Shortcodes.php:258
 msgid "CONTACT LINKER"
 msgstr ""
 
-#: includes/Contact/Form.php:135
+#: includes/Contact/Form.php:138
 msgid "What can we help with?"
 msgstr ""
 
-#: includes/Contact/Form.php:136
+#: includes/Contact/Form.php:139
 msgid "Tell us what you need. We’ll use the email below for your reply."
 msgstr ""
 
-#: includes/Contact/Form.php:140
+#: includes/Contact/Form.php:143
 msgid "Your question"
 msgstr ""
 
-#: includes/Contact/Form.php:141
+#: includes/Contact/Form.php:144
 msgid "What would you like to know?"
 msgstr ""
 
-#: includes/Contact/Form.php:145
+#: includes/Contact/Form.php:148
 msgid "This is about"
 msgstr ""
 
-#: includes/Contact/Form.php:150
+#: includes/Contact/Form.php:153
 msgid "Where can we reply?"
 msgstr ""
 
-#: includes/Contact/Form.php:152
+#: includes/Contact/Form.php:155
 #: includes/Settings/SettingsTab.php:110
 #: templates/emails/linker-new-customer.php:25
 msgid "Name"
 msgstr ""
 
-#: includes/Contact/Form.php:154
+#: includes/Contact/Form.php:157
 msgid "Reply email"
 msgstr ""
 
-#: includes/Contact/Form.php:157
+#: includes/Contact/Form.php:160
 msgid "optional"
 msgstr ""
 
-#: includes/Contact/Form.php:159
+#: includes/Contact/Form.php:162
 msgid "No account or Project is needed to ask a question."
 msgstr ""
 
-#: includes/Contact/Form.php:165
-msgid "I agree that my details may be used to respond to this enquiry."
+#: includes/Contact/Form.php:168
+msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 
-#: includes/Contact/Form.php:167
+#: includes/Contact/Form.php:170
 #: templates/myaccount/auth/form-login.php:159
 msgid "Privacy"
 msgstr ""
 
-#: includes/Contact/Form.php:170
+#: includes/Contact/Form.php:173
 msgid "Website"
 msgstr ""
 
-#: includes/Contact/Form.php:171
-msgid "Send enquiry"
+#: includes/Contact/Form.php:174
+msgid "Send message"
 msgstr ""
 
-#: includes/Contact/Form.php:172
-msgid "Your question goes to the Linker team. Keep the receipt to check its progress."
-msgstr ""
-
-#: includes/Contact/Form.php:210
-msgid "Product guidance"
-msgstr ""
-
-#: includes/Contact/Form.php:211
-msgid "Price & availability"
-msgstr ""
-
-#: includes/Contact/Form.php:212
-msgid "Product documents"
+#: includes/Contact/Form.php:175
+msgid "Your message goes to the Linker team. We reply to the address you give here."
 msgstr ""
 
 #: includes/Contact/Form.php:213
-msgid "Discuss a project"
+msgid "Product guidance"
 msgstr ""
 
 #: includes/Contact/Form.php:214
-msgid "Support for an order"
+msgid "Price & availability"
 msgstr ""
 
 #: includes/Contact/Form.php:215
-msgid "Work with Linker"
+msgid "Product documents"
 msgstr ""
 
 #: includes/Contact/Form.php:216
+msgid "Discuss a project"
+msgstr ""
+
+#: includes/Contact/Form.php:217
+msgid "Support for an order"
+msgstr ""
+
+#: includes/Contact/Form.php:218
+msgid "Work with Linker"
+msgstr ""
+
+#: includes/Contact/Form.php:219
 msgid "A question"
 msgstr ""
 
-#: includes/Contact/Form.php:229
+#: includes/Contact/Form.php:232
 msgid "Prefer email?"
 msgstr ""
 
-#: includes/Contact/Form.php:231
+#: includes/Contact/Form.php:234
 msgid "Send your question directly to our team. Opening your email app does not send a message."
 msgstr ""
 
-#: includes/Contact/Form.php:234
+#: includes/Contact/Form.php:237
 msgid "Still exploring?"
 msgstr ""
 
-#: includes/Contact/Form.php:235
+#: includes/Contact/Form.php:238
 msgid "Take your time."
 msgstr ""
 
-#: includes/Contact/Form.php:236
+#: includes/Contact/Form.php:239
 msgid "Use Genie to explore the options, then return to your question."
 msgstr ""
 
-#: includes/Contact/Form.php:237
+#: includes/Contact/Form.php:240
 msgid "Explore with Genie"
 msgstr ""
 
-#: includes/Contact/Form.php:272
+#: includes/Contact/Form.php:275
 msgid "Thank you. Your message is with the Linker team."
 msgstr ""
 
-#: includes/Contact/Form.php:273
+#: includes/Contact/Form.php:276
 msgid "Please check your entries and send the form again."
 msgstr ""
 
-#: includes/Contact/Form.php:274
+#: includes/Contact/Form.php:277
 msgid "We received several messages from this connection. Please try again later or write to sales@de-linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:290
+#: includes/Contact/Form.php:293
 msgid "Send another message"
 msgstr ""
 
