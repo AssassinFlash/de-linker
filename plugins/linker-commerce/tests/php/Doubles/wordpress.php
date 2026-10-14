@@ -107,6 +107,7 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 			public $name     = '';
 			public $slug     = '';
 			public $taxonomy = '';
+			public $parent   = 0;
 
 			/**
 			 * WordPress's own constructor: the term row, as an object.

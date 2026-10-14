@@ -2054,10 +2054,6 @@ msgstr "Genauigkeitsklasse, Blindenergie"
 msgid "Battery type"
 msgstr "Batterietyp"
 
-#: includes/Products/Materials.php:804
-msgid "System nominal voltage"
-msgstr "Systemnennspannung"
-
 #: includes/Products/Materials.php:805
 msgid "Backup apparent power"
 msgstr "Notstrom-Scheinleistung"
@@ -3829,6 +3825,26 @@ msgstr "Projekt besprechen"
 #: includes/Presentation/Shortcodes.php
 msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
 msgstr "Sie können die Produkte durchsuchen und eine Artikelnummernliste abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der Kontoprüfung möglich."
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Reset"
+msgstr "Reset"
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Clear all"
+msgstr "Alle zurücksetzen"
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Product actions"
+msgstr "Produktaktionen"
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "kW"
+msgstr "kW"
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "kWh"
+msgstr "kWh"
 
 #: includes/Presentation/template-functions.php
 msgid "Browse the products now. Adding to the solution draft is possible only after your account has been reviewed."

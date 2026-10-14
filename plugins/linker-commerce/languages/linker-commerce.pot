@@ -1903,10 +1903,6 @@ msgstr ""
 msgid "Battery type"
 msgstr ""
 
-#: includes/Products/Materials.php:804
-msgid "System nominal voltage"
-msgstr ""
-
 #: includes/Products/Materials.php:805
 msgid "Backup apparent power"
 msgstr ""

@@ -161,6 +161,26 @@
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
+/* The tool row's third entry is the assistant's own chip, whose bundle
+ * skin (linker-tools/build/genie.css) is the workspace's, not the tool
+ * row's: inside the row it takes the row's button look, as the live
+ * page's third chip did (class wb-act wb-act--ai, the live shop's
+ * toolbar). Scoped to the row; the dock and the product page keep the
+ * chip's own look. */
+#linker-products .wb-acts .linker-genie-chip {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-radius);
+  background: var(--sf-bg);
+  color: var(--sf-fg);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
 #linker-products .wb-scope { display: none; }
 
 #linker-products .product-mobile-actions {
@@ -425,7 +445,7 @@
   cursor: pointer;
   z-index: 2;
 }
-#linker-products .card-compare-checkbox.selected {
+#linker-products .card-compare-checkbox[data-compare-selected="true"] {
   background: var(--sf-fg);
   color: #fff;
 }
@@ -1983,9 +2003,9 @@ body.single-product #tv-storefront-pdp h1 {
 }
 @media (max-width: 860px) {
   #linker-products .sidebar-filters { z-index: 1100; }
-  body.tv-product-filter-open { overflow: hidden; }
-  body.tv-product-filter-open .lia-launch { visibility: hidden; }
-  body.tv-product-filter-open::before {
+  body.product-filter-open { overflow: hidden; }
+  body.product-filter-open .lia-launch { visibility: hidden; }
+  body.product-filter-open::before {
     content: "";
     position: fixed;
     z-index: 1090;
