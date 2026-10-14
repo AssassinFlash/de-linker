@@ -1,0 +1,191 @@
+/*
+ * [linker_contact_invitation].
+ *
+ * The shortcode appears on five surfaces. Four of them style the band in the
+ * page, and the product list styles its own, so nothing in this file may
+ * reach them. Fetched 2026-10-14 from the live HTML:
+ *
+ *   /solution/utility-storage/  root #tv-utility-page-v1, utility-journal.css
+ *     #tv-utility-page-v1 .linker-contact-solution   (1,1,0)
+ *     display:grid; grid-template-columns:minmax(0,1fr) 230px; gap:65px;
+ *     width:calc(100% - 80px); max-width:1240px; margin:0 auto 30px;
+ *     padding:40px 45px; border:1px solid #d8e4da; border-radius:28px;
+ *     background:linear-gradient(120deg,#eef4ed,#f8faf7);
+ *     button min-height 48px, border-radius 999px, fill #0c7f73.
+ *
+ *   /for-epc/  root #tv-solutions-developers-v1, epc-journal.css
+ *     #tv-solutions-developers-v1 .linker-contact-invitation   (1,1,0)
+ *     grid, gap 36px, padding 45px, background #edf2eb,
+ *     border-block:1px solid #d6ded7. The intake sits in the template's own
+ *     <section class="lk-bottom-cta">, and
+ *     #tv-solutions-developers-v1 .lk-bottom-cta .linker-contact-invitation
+ *     is (1,2,0): top rule #bdcdbf, no card, actions in a column.
+ *
+ *   /services-support/  root #service-redesign, service-redesign.css
+ *     #service-redesign .linker-contact-invitation   (1,1,0)
+ *     grid, gap 28px, margin-top 48px, padding 31px 38px, border-radius 8px,
+ *     border 1px #e5eadf, background #edf2eb.
+ *
+ *   the product list  .linker-contact-products inside #linker-products,
+ *     styled by products-mounts.css.
+ *
+ * The article template is the one surface without a page rule for the band,
+ * so the band's own shape lives here — scoped to that template's wrapper,
+ * #tv-blog-single-v1 .tv-blog-single-content, which no other page has. The
+ * band's markup lands inside the template's prose rules, which are (1,1,1)
+ * and would otherwise take it over:
+ *
+ *   #tv-blog-single-v1 .tv-blog-single-content h2
+ *     { margin:2.5rem 0 1rem; font-size:clamp(1.5rem,3vw,2rem);
+ *       font-weight:600; letter-spacing:-0.02em; line-height:1.15;
+ *       color:var(--proto-navy-deep) }             → 32px at 1440
+ *   #tv-blog-single-v1 .tv-blog-single-content p { margin:0 0 1.25rem }
+ *   #tv-blog-single-v1 .tv-blog-single-content a
+ *     { color:var(--proto-teal-600); text-decoration:underline;
+ *       text-underline-offset:3px;
+ *       text-decoration-color:rgba(12,127,115,0.35) }
+ *
+ * The band keeps its own hierarchy because its rules are (1,3,0) on the box
+ * and (1,3,1)/(1,4,1) on the elements inside it: 23px heading, white label
+ * on the #12664f button.
+ *
+ * Geometry and colour, measured on the 2026-10-13 live capture
+ * blogpost-en-1440-live.png — the build whose article page rendered the
+ * band; the current live article page prints the shortcode as text:
+ *
+ *   top rule 1px #cfded9 rgb(207,222,217), x483–1306. That span is the
+ *     article card's content column (the card is x443–1346 and
+ *     .tv-blog-single-main-card pads clamp(1.5rem,3vw,2.5rem) = 40px at
+ *     1440). The x442/x1347 verticals are the card's own border, not the
+ *     band's; the band has no side borders and no horizontal padding.
+ *   ink eyebrow top y2005; h2 y2035–2055 and y2065–2085; p y2104–2115 and
+ *     y2126–2137 — every one of them starts at x484, the content column's
+ *     left edge + the glyph's bearing.
+ *   button x1060–1306 × y2028–2071 (247×44), fill #12664f, label #fff.
+ *   e-mail x1060, y2088–2102, 12px under the button, #12664f underlined.
+ *   below the next rule (y2182, #d6ded7) is the article meta block's own
+ *     border-top: it is there on the current live article page too, where
+ *     no band renders. The band carries no bottom border.
+ *   ink colours eyebrow #203a32, h2 #102c30, p #536b62.
+ *   vertical rule→eyebrow ink 39px, rule→button 62px, rule→p ink bottom
+ *     171px: padding 24px above and none below, with the eyebrow as an
+ *     inline span — the band's own line box then sets the space the
+ *     heading starts in, and the actions centred on the box — reproduces
+ *     all three. A block eyebrow shortens that line box by the inherited
+ *     leading and lifts the heading 5px; 32px of padding pushes the meta
+ *     block below the band 24px too far.
+ *
+ * 760px and below: measured on the 2026-10-13 live capture
+ * blogpost-en-390-live.png. The band stacks, 20px apart; the button
+ * stretches across the content column (x41–348) and the e-mail centres
+ * under it; the 23px heading, the 13px body and the 24px top padding are
+ * unchanged, and the words keep the block's own height (flex:auto, or the
+ * 280px flex base becomes the block's height in a column). The page's own
+ * 760px rules for a band's h2 (22px) and padding (23px) do not apply here:
+ * one is (1,1,1) and one is (0,1,0), both below the rules in this file.
+ */
+
+/* The band's box: the article column, a rule above it, nothing else. */
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 30px;
+	box-sizing: border-box;
+	width: 100%;
+	margin: 28px 0 0;
+	padding: 24px 0 0;
+	border: 0;
+	border-top: 1px solid #cfded9;
+	border-radius: 0;
+	background: transparent;
+	color: #203a32;
+	font-family: system-ui, sans-serif;
+}
+
+/* The words take the room the actions leave. */
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article > div:first-child {
+	flex: 1 1 280px;
+	min-width: 0;
+	max-width: 700px;
+}
+
+/* The button with the address under it, both left-aligned. */
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article .linker-contact-invitation-actions {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	flex-shrink: 0;
+	gap: 12px;
+}
+
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article .linker-contact-eyebrow {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .13em;
+	text-transform: uppercase;
+}
+
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article h2 {
+	margin: 9px 0;
+	font: 700 23px/1.3 system-ui, sans-serif;
+	letter-spacing: -.02em;
+	color: #102c30;
+}
+
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article p {
+	margin: 0;
+	font: 400 13px/1.7 system-ui, sans-serif;
+	color: #536b62;
+}
+
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article a.linker-contact-primary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	box-sizing: border-box;
+	padding: 12px 17px;
+	border: 0;
+	border-radius: 7px;
+	background: #12664f;
+	color: #fff;
+	font: 600 13px/1.5 system-ui, sans-serif;
+	text-align: center;
+	text-decoration: none;
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article a.linker-contact-primary:hover {
+	background: #0e513f;
+	color: #fff;
+}
+
+#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article a.linker-contact-email {
+	font-size: 13px;
+	color: #12664f;
+	text-decoration: underline;
+	overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+	#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 20px;
+	}
+
+	#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article > div:first-child {
+		flex: auto;
+	}
+
+	#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article .linker-contact-invitation-actions {
+		align-items: stretch;
+	}
+
+	#tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article a {
+		text-align: center;
+	}
+}

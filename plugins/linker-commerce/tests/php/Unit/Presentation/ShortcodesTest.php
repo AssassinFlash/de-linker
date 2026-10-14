@@ -44,11 +44,12 @@ final class ShortcodesTest extends TestCase {
 		$codes = $this->shortcodes();
 		foreach (
 		array(
-			'linker_price'        => 'price',
-			'linker_checkout'     => 'checkout',
-			'linker_draft_empty'  => 'draft_empty',
-			'linker_faqs'         => 'faqs',
-			'linker_contact_link' => 'contact_link',
+			'linker_price'              => 'price',
+			'linker_checkout'           => 'checkout',
+			'linker_draft_empty'        => 'draft_empty',
+			'linker_faqs'               => 'faqs',
+			'linker_contact_link'       => 'contact_link',
+			'linker_contact_invitation' => 'contact_invitation',
 		) as $tag => $method
 		) {
 			WP_Mock::userFunction(
@@ -329,8 +330,350 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The shortcodes under test.
+	 * Each surface prints the live band's English words, the button and the
+	 * team mailbox. Words read off the old live pages (2026-10-12/13 captures).
+	 *
+	 * @dataProvider invitation_surfaces_english
+	 * @param string $surface The shortcode's surface.
+	 * @param string $eyebrow The band's eyebrow.
+	 * @param string $heading The band's heading.
+	 * @param string $button  The band's button.
 	 */
+	public function test_invitation_prints_the_english_band( string $surface, string $eyebrow, string $heading, string $button ): void {
+		$this->invitation_page( 'en' );
+
+		$html = $this->shortcodes()->contact_invitation( array( 'surface' => $surface ) );
+
+		$this->assertStringContainsString( 'linker-contact-invitation linker-contact-' . $surface, $html );
+		if ( '' !== $eyebrow ) {
+			$this->assertStringContainsString( $eyebrow, $html );
+		} else {
+			$this->assertStringNotContainsString( 'linker-contact-eyebrow', $html );
+		}
+		$this->assertStringContainsString( $heading, $html );
+		$this->assertStringContainsString( '>' . $button . '</a>', $html );
+		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
+		$this->assertStringContainsString( 'sales@de-linker.com', $html );
+		$this->assertStringNotContainsString( '<style', $html );
+		$this->assertStringNotContainsString( 'style=', $html );
+	}
+
+	/**
+	 * Each surface prints the live band's German words on a German page.
+	 *
+	 * @dataProvider invitation_surfaces_german
+	 * @param string $surface The shortcode's surface.
+	 * @param string $eyebrow The band's eyebrow.
+	 * @param string $heading The band's heading.
+	 * @param string $button  The band's button.
+	 */
+	public function test_invitation_prints_the_german_band( string $surface, string $eyebrow, string $heading, string $button ): void {
+		$this->invitation_page( 'de' );
+
+		$html = $this->shortcodes()->contact_invitation( array( 'surface' => $surface ) );
+
+		if ( '' !== $eyebrow ) {
+			$this->assertStringContainsString( $eyebrow, $html );
+		} else {
+			$this->assertStringNotContainsString( 'linker-contact-eyebrow', $html );
+		}
+		$this->assertStringContainsString( $heading, $html );
+		$this->assertStringContainsString( '>' . $button . '</a>', $html );
+		$this->assertStringNotContainsString( 'A storage solution built around the whole project.', $html );
+		$this->assertStringNotContainsString( 'Discuss an EPC requirement', $html );
+		$this->assertStringNotContainsString( 'Talk to our technical team', $html );
+		$this->assertStringNotContainsString( 'Talk through your storage options', $html );
+		$this->assertStringNotContainsString( 'Discuss your project', $html );
+	}
+
+	/**
+	 * The five surfaces the live pages print, parsed by WordPress's own
+	 * shortcode_parse_atts and sanitize_html_class — not by the identity
+	 * stand-ins invitation_page() installs for the copy tests.
+	 *
+	 * The stored form is straight quotes (the EPC page). The form the
+	 * current live HTML shows for an unregistered tag is wptexturize's
+	 * &#8221; (services and solution, fetched 2026-10-14). Both must
+	 * render. A stored entity that survives into the attribute value must
+	 * not come back empty.
+	 *
+	 * @dataProvider invitation_sources_wordpress_parses
+	 * @param string $source  The attribute source, as stored or as texturized.
+	 * @param string $surface The class the band must carry.
+	 * @param string $heading A word only that surface prints.
+	 */
+	public function test_invitation_renders_after_wordpress_parses_the_attribute( string $source, string $surface, string $heading ): void {
+		$this->invitation_page( 'en' );
+		WP_Mock::userFunction( 'sanitize_html_class' )->andReturnUsing(
+			static function ( string $classname ): string {
+				$sanitized = preg_replace( '|%[a-fA-F0-9][a-fA-F0-9]|', '', $classname );
+				$sanitized = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $sanitized );
+				return (string) $sanitized;
+			}
+		);
+		WP_Mock::userFunction( 'shortcode_atts' )->andReturnUsing(
+			static function ( array $pairs, array $atts ): array {
+				$out = array();
+				foreach ( $pairs as $name => $default ) {
+					$out[ $name ] = array_key_exists( $name, $atts ) ? $atts[ $name ] : $default;
+				}
+				return $out;
+			}
+		);
+
+		$parsed = $this->wordpress_shortcode_atts( $source );
+		$html   = $this->shortcodes()->contact_invitation( $parsed );
+
+		$this->assertNotSame( '', $html, $source );
+		$this->assertStringContainsString( 'linker-contact-' . $surface, $html );
+		$this->assertStringContainsString( $heading, $html );
+		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
+	}
+
+	/**
+	 * Attribute sources. The texturized ones are the bytes on the current
+	 * live pages; the straight-quote ones are the stored EPC tags.
+	 *
+	 * @return array<string, array{string, string, string}>
+	 */
+	public static function invitation_sources_wordpress_parses(): array {
+		return array(
+			'solution straight'   => array( 'surface="solution"', 'solution', 'A storage solution built around the whole project.' ),
+			'solution texturized' => array( 'surface=&#8221;solution&#8221;', 'solution', 'A storage solution built around the whole project.' ),
+			'epc straight'        => array( 'surface="epc"', 'epc', 'Discuss the project before preparing the full brief.' ),
+			'epc intake'          => array( 'surface="epc-intake" compact="1"', 'epc-intake', 'An early question is enough.' ),
+			'services texturized' => array( 'surface=&#8221;services&#8221;', 'services', 'A technical partner, wherever your project stands.' ),
+			'article straight'    => array( 'surface="article"', 'article', 'What could the right storage solution do for your site?' ),
+		);
+	}
+
+	/**
+	 * WordPress's shortcode_parse_atts (wp-includes/shortcodes.php). The
+	 * unit double of that function is an identity, so this copies the
+	 * real attribute regex and runs it here.
+	 *
+	 * @param string $text The inside of the shortcode tag.
+	 * @return array<string, string>
+	 */
+	private function wordpress_shortcode_atts( string $text ): array {
+		$pattern = '/([\w-]+)\s*=\s*"([^"]*)"(?:\s|$)|([\w-]+)\s*=\s*\'([^\']*)\'(?:\s|$)|([\w-]+)\s*=\s*([^\s\'"]+)(?:\s|$)|"([^"]*)"(?:\s|$)|\'([^\']*)\'(?:\s|$)|(\S+)(?:\s|$)/';
+		$text    = preg_replace( "/[\x{00a0}\x{200b}]+/u", ' ', $text );
+		$atts    = array();
+		if ( is_string( $text ) && preg_match_all( $pattern, $text, $match, PREG_SET_ORDER ) ) {
+			foreach ( $match as $m ) {
+				$parts = array_pad( array_values( $m ), 7, '' );
+				$name  = '';
+				$value = '';
+				if ( '' !== $parts[1] ) {
+					$name  = strtolower( $parts[1] );
+					$value = stripcslashes( $parts[2] );
+				} elseif ( '' !== $parts[3] ) {
+					$name  = strtolower( $parts[3] );
+					$value = stripcslashes( $parts[4] );
+				} elseif ( '' !== $parts[5] ) {
+					$name  = strtolower( $parts[5] );
+					$value = stripcslashes( $parts[6] );
+				}
+				if ( '' !== $name ) {
+					$atts[ $name ] = $value;
+				}
+			}
+		}
+		return $atts;
+	}
+
+		/**
+		 * An unknown surface prints nothing. It must not borrow another
+		 * surface's words — that is how the EPC intake was rendered as the
+		 * solution band.
+		 */
+	public function test_invitation_of_an_unknown_surface_is_empty(): void {
+		$this->invitation_page( 'en' );
+
+		$html = $this->shortcodes()->contact_invitation( array( 'surface' => 'not-a-surface' ) );
+
+		$this->assertSame( '', $html );
+	}
+
+	/**
+	 * An omitted surface is not the solution band. The pages that want
+	 * that band pass surface="solution".
+	 */
+	public function test_invitation_without_a_surface_is_empty(): void {
+		$this->invitation_page( 'en' );
+
+		$this->assertSame( '', $this->shortcodes()->contact_invitation() );
+	}
+
+	/**
+	 * The EPC page's second band is its own surface with no eyebrow. Its
+	 * shape comes from the page's own `.lk-bottom-cta` rule, so the markup
+	 * carries no shape class: the template's stray compact="1" is ignored
+	 * by shortcode_atts, not turned into a class. Words read off
+	 * epc-en/de-1440-live.png above the footer.
+	 */
+	public function test_invitation_epc_intake_is_the_intake_band(): void {
+		$this->invitation_page( 'en' );
+
+		$html = $this->shortcodes()->contact_invitation(
+			array(
+				'surface' => 'epc-intake',
+				'compact' => '1',
+			)
+		);
+
+		$this->assertStringContainsString( 'linker-contact-epc-intake', $html );
+		$this->assertStringContainsString( 'An early question is enough.', $html );
+		$this->assertStringContainsString( 'Share what you already know. Project location and timing are optional in the short form.', $html );
+		$this->assertStringContainsString( '>Discuss your project</a>', $html );
+		$this->assertStringNotContainsString( 'linker-contact-compact', $html );
+		$this->assertStringNotContainsString( 'linker-contact-eyebrow', $html );
+		$this->assertStringNotContainsString( 'A storage solution built around the whole project.', $html );
+	}
+
+	/**
+	 * The German intake band is the live page's own wording, not the English band.
+	 */
+	public function test_invitation_epc_intake_uses_the_german_words(): void {
+		$this->invitation_page( 'de' );
+
+		$html = $this->shortcodes()->contact_invitation(
+			array(
+				'surface' => 'epc-intake',
+				'compact' => '1',
+			)
+		);
+
+		$this->assertStringContainsString( 'Eine frühe Frage reicht aus.', $html );
+		$this->assertStringContainsString( 'Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im Kurzformular optional.', $html );
+		$this->assertStringContainsString( '>Projekt besprechen</a>', $html );
+		$this->assertStringNotContainsString( 'An early question is enough.', $html );
+	}
+
+	/**
+	 * The article band opens a product request and carries its surface
+	 * class; the others open a project request and carry the page as
+	 * context.
+	 */
+	public function test_invitation_carries_the_page_and_the_request_kind(): void {
+		$this->invitation_page( 'en' );
+
+		$article = $this->shortcodes()->contact_invitation( array( 'surface' => 'article' ) );
+		$epc     = $this->shortcodes()->contact_invitation( array( 'surface' => 'epc' ) );
+
+		$this->assertStringContainsString( 'linker-contact-article', $article );
+		$this->assertStringContainsString( 'intent=product', $article );
+		$this->assertStringContainsString( 'intent=project', $epc );
+		$this->assertStringContainsString( 'Utility storage', $epc );
+		$this->assertStringContainsString( 'source=https%3A%2F%2Fexample.test%2Fsolutions%2Futility-storage%2F', $epc );
+		$this->assertStringContainsString( 'source_id=746', $epc );
+		$this->assertStringContainsString( 'linker-contact-epc', $epc );
+	}
+
+	/**
+	 * The band stylesheet claims the article surface and nothing else.
+	 *
+	 * The band's markup lands inside the article template's prose rules,
+	 * which are (1,1,1) — #tv-blog-single-v1 .tv-blog-single-content h2,
+	 * p and a — and would otherwise take the band over: under them the
+	 * heading renders at the page's 32px and the button's label is teal on
+	 * the teal fill. Every selector here carries that wrapper's id and its
+	 * two classes, so every one of them is (1,3,0) or higher and wins; the
+	 * same wrapper is what keeps the file off the four surfaces the page
+	 * styles itself, and off .linker-contact-products, which
+	 * products-mounts.css styles with its container.
+	 */
+	public function test_the_band_stylesheet_claims_the_article_surface_only(): void {
+		$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/contact-invitation.css' );
+		$css = (string) preg_replace( '~/\*.*?\*/~s', '', $css );
+		preg_match_all( '/^([^\{\}\s@][^\{\}]*?)\s*\{/m', $css, $matches );
+
+		$this->assertNotEmpty( $matches[1], 'the stylesheet should still declare selectors' );
+		foreach ( $matches[1] as $selector ) {
+			$selector = trim( (string) preg_replace( '/\s+/', ' ', $selector ) );
+			foreach ( array(
+				'#tv-blog-single-v1',
+				'.tv-blog-single-content',
+				'>',
+				'.linker-contact-invitation',
+				'.linker-contact-article',
+			) as $part ) {
+				$this->assertStringContainsString( $part, $selector, $selector );
+			}
+			$this->assertSame( 1, substr_count( $selector, '#' ), $selector );
+			$this->assertGreaterThanOrEqual( 3, substr_count( $selector, '.' ), $selector );
+			$this->assertStringNotContainsString( '.linker-contact-products', $selector );
+		}
+	}
+
+	/**
+	 * English bands, verbatim from the old live pages.
+	 *
+	 * @return array<string, array{string, string, string, string}>
+	 */
+	public static function invitation_surfaces_english(): array {
+		return array(
+			'solution'   => array( 'solution', 'UTILITY-SCALE SOLUTIONS', 'A storage solution built around the whole project.', 'Explore your project with us' ),
+			'epc'        => array( 'epc', 'CONTACT LINKER', 'Discuss the project before preparing the full brief.', 'Discuss an EPC requirement' ),
+			'services'   => array( 'services', 'TECHNICAL PARTNERSHIP', 'A technical partner, wherever your project stands.', 'Talk to our technical team' ),
+			'article'    => array( 'article', 'YOUR PROJECT, IN PRACTICE', 'What could the right storage solution do for your site?', 'Talk through your storage options' ),
+			'epc-intake' => array( 'epc-intake', '', 'An early question is enough.', 'Discuss your project' ),
+		);
+	}
+
+	/**
+	 * German bands, the live page's own wording.
+	 *
+	 * @return array<string, array{string, string, string, string}>
+	 */
+	public static function invitation_surfaces_german(): array {
+		return array(
+			'solution'   => array( 'solution', 'LÖSUNGEN FÜR GROSSSPEICHER', 'Ihr Großspeicherprojekt als Gesamtlösung gedacht.', 'Ihr Projekt gemeinsam entwickeln' ),
+			'epc'        => array( 'epc', 'KONTAKT ZU LINKER', 'Das Projekt vor dem vollständigen Briefing besprechen.', 'EPC-Anforderung besprechen' ),
+			'services'   => array( 'services', 'TECHNISCHE ZUSAMMENARBEIT', 'Ein technischer Partner in jeder Projektphase.', 'Mit unserem Technikteam sprechen' ),
+			'article'    => array( 'article', 'IHR PROJEKT IN DER PRAXIS', 'Was kann die passende Speicherlösung an Ihrem Standort leisten?', 'Ihre Speicheroptionen besprechen' ),
+			'epc-intake' => array( 'epc-intake', '', 'Eine frühe Frage reicht aus.', 'Projekt besprechen' ),
+		);
+	}
+
+	/**
+	 * A page the band can name, in the given language.
+	 *
+	 * @param string $language `en` or `de`.
+	 */
+	private function invitation_page( string $language ): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => $language ) );
+		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 746 ) );
+		WP_Mock::userFunction( 'get_the_title', array( 'return' => 'Utility storage' ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/solutions/utility-storage/' ) );
+		WP_Mock::userFunction( 'is_singular', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'sanitize_html_class', array( 'return' => fn ( string $value ): string => $value ) );
+		WP_Mock::userFunction( 'shortcode_atts', array( 'return' => fn ( array $pairs, array $atts ): array => array_merge( $pairs, $atts ) ) );
+		WP_Mock::userFunction(
+			'add_query_arg',
+			array(
+				'return' => function ( array $args, string $url ): string {
+					return $url . '?' . http_build_query( $args );
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => fn ( $value ): string => (string) json_encode( $value ) ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'sanitize_email', array( 'return' => fn ( string $email ): string => $email ) );
+		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => null ) );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/contact/' ) );
+	}
+
+	/**
+	 * Shortcodes under test.
+	 */
+
+
+
+		/**
+		 * The shortcodes under test.
+		 */
 	private function shortcodes(): Shortcodes {
 		return new Shortcodes( new LoginGate( new Approval() ), new Approval() );
 	}
