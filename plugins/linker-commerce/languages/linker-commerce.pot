@@ -749,6 +749,7 @@ msgid "the service answered HTTP %d instead of 200"
 msgstr ""
 
 #: includes/Health/Monitor.php:142
+#: includes/Presentation/LoginGate.php
 msgid "Genie"
 msgstr ""
 
@@ -1131,22 +1132,21 @@ msgstr ""
 msgid "Multilingual"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:63
+#: includes/Presentation/LoginGate.php
+#: includes/Presentation/Shortcodes.php
 msgid "Empty solution draft"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:64
+#: includes/Presentation/LoginGate.php
 msgid "Nothing to submit yet."
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:65
+#: includes/Presentation/LoginGate.php
 msgid "Your solution draft is empty. Add matched systems, then come back for your Proforma."
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:67
-#: includes/Presentation/LoginGate.php:79
-#: includes/Presentation/LoginGate.php:118
-#: includes/Presentation/LoginGate.php:128
+#: includes/Presentation/LoginGate.php
+#: includes/Presentation/Shortcodes.php
 #: includes/Vocabulary/Terms.php:38
 #: templates/emails/linker-approval-approved.php:26
 #: templates/emails/linker-registration-received.php:27
@@ -1161,8 +1161,8 @@ msgstr ""
 msgid "Get your Proforma"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:74
-msgid "Sign in with your partner account, add matched systems, and your Proforma is one step away."
+#: includes/Presentation/LoginGate.php
+msgid "Sign in to get your Proforma."
 msgstr ""
 
 #: includes/Presentation/LoginGate.php:75
@@ -3201,4 +3201,13 @@ msgstr ""
 
 #: includes/Presentation/LibraryPage.php
 msgid "No matching entries. Try another search term."
+msgstr ""
+
+#: includes/Vocabulary/Terms.php:37
+#: includes/Presentation/Shortcodes.php
+msgid "Your solution draft is empty."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
 msgstr ""

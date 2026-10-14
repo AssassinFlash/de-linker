@@ -135,9 +135,17 @@ final class PendingGateTest extends TestCase {
 		( new PendingGate( new Approval() ) )->render();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'Your account is under review', $html );
-		$this->assertStringContainsString( 'https://example.test/products/', $html );
-		$this->assertStringNotContainsString( 'Inquiry received', $html );
+			$this->assertStringContainsString( 'Your account is under review', $html );
+			$this->assertStringContainsString( 'https://example.test/products/', $html );
+			$this->assertStringNotContainsString( 'Inquiry received', $html );
+			// The account page is not inside #tv-woo-b2b-checkout, so the
+			// review page carries the classes the account container styles.
+			$this->assertStringContainsString( 'sf-checkout-empty', $html );
+			$this->assertStringContainsString( 'sf-checkout-btn', $html );
+			$this->assertStringNotContainsString( 'style=', $html );
+			$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/storefront.css' );
+			$this->assertStringContainsString( '#container-content-account .sf-checkout-empty', $css );
+			$this->assertStringContainsString( '#container-content-account .sf-checkout-btn', $css );
 	}
 
 	/**

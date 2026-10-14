@@ -797,6 +797,7 @@ msgid "the service answered HTTP %d instead of 200"
 msgstr "der Dienst antwortete mit HTTP %d statt 200"
 
 #: includes/Health/Monitor.php:142
+#: includes/Presentation/LoginGate.php
 msgid "Genie"
 msgstr "Genie"
 
@@ -1209,15 +1210,16 @@ msgstr "Deutsch"
 msgid "Multilingual"
 msgstr "Mehrsprachig"
 
-#: includes/Presentation/LoginGate.php:63
+#: includes/Presentation/LoginGate.php
+#: includes/Presentation/Shortcodes.php
 msgid "Empty solution draft"
 msgstr "Leerer Lösungsentwurf"
 
-#: includes/Presentation/LoginGate.php:64
+#: includes/Presentation/LoginGate.php
 msgid "Nothing to submit yet."
 msgstr "Noch nichts zum Absenden."
 
-#: includes/Presentation/LoginGate.php:65
+#: includes/Presentation/LoginGate.php
 msgid ""
 "Your solution draft is empty. Add matched systems, then come back for your "
 "Proforma."
@@ -1225,10 +1227,9 @@ msgstr ""
 "Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie "
 "dann für Ihre Proformarechnung zurück."
 
-#: includes/Presentation/LoginGate.php:67
-#: includes/Presentation/LoginGate.php:79
-#: includes/Presentation/LoginGate.php:118
-#: includes/Presentation/LoginGate.php:128 includes/Vocabulary/Terms.php:38
+#: includes/Presentation/LoginGate.php
+#: includes/Presentation/Shortcodes.php
+#: includes/Vocabulary/Terms.php:38
 #: templates/emails/linker-approval-approved.php:26
 #: templates/emails/linker-registration-received.php:27
 msgid "Browse products"
@@ -1242,13 +1243,9 @@ msgstr "Anmeldung zur Proforma-Anfrage"
 msgid "Get your Proforma"
 msgstr "Proformarechnung anfordern"
 
-#: includes/Presentation/LoginGate.php:74
-msgid ""
-"Sign in with your partner account, add matched systems, and your Proforma is "
-"one step away."
-msgstr ""
-"Melden Sie sich mit Ihrem Partnerkonto an, fügen Sie passende Systeme hinzu, "
-"und Ihre Proformarechnung ist nur noch einen Schritt entfernt."
+#: includes/Presentation/LoginGate.php
+msgid "Sign in to get your Proforma."
+msgstr "Melden Sie sich an, um Ihre Proformarechnung zu erhalten."
 
 #: includes/Presentation/LoginGate.php:75
 msgid ""
@@ -2922,6 +2919,7 @@ msgid "Solution draft updated."
 msgstr "Lösungsentwurf aktualisiert."
 
 #: includes/Vocabulary/Terms.php:37
+#: includes/Presentation/Shortcodes.php
 msgid "Your solution draft is empty."
 msgstr "Ihr Lösungsentwurf ist leer."
 
@@ -3640,3 +3638,7 @@ msgstr "Passende Einträge: %d"
 #: includes/Presentation/LibraryPage.php
 msgid "No matching entries. Try another search term."
 msgstr "Keine passenden Einträge. Versuchen Sie einen anderen Suchbegriff."
+
+#: includes/Presentation/Shortcodes.php
+msgid "You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed."
+msgstr "Sie können die Produkte durchsuchen und eine Artikelnummernliste abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der Kontoprüfung möglich."
