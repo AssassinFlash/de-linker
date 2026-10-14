@@ -675,6 +675,13 @@ final class AccountTemplates {
 	 * @param array<string, mixed> $query Woo's account query.
 	 * @return array<string, mixed>
 	 */
+	/**
+	 * Adds the selected status to the query Woo runs, if there is a valid
+	 * selection; anything unselected or invalid leaves the query untouched.
+	 *
+	 * @param array<string, mixed> $query Query as passed to wc_get_orders().
+	 * @return array<string, mixed>
+	 */
 	public function orders_query( array $query ): array {
 		if ( $this->open_only() ) {
 			$query['status'] = array( Statuses::RECEIVED, Statuses::PROFORMA );

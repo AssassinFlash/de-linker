@@ -108,8 +108,9 @@ final class EngineProxy {
 	 * content type the payload is echoed as it came and the encoder stands
 	 * down; everything else is served the normal way.
 	 *
-	 * @param bool             $served Whether something served the request already.
-	 * @param WP_REST_Response $result The response the route built.
+	 * @param mixed $served What the filter passes as the served flag.
+	 * @param mixed $result The response the route built; the guard is here
+	 *                      because a filter hands whatever it was given.
 	 * @return bool
 	 */
 	public static function serve_pdf( $served, $result ): bool {

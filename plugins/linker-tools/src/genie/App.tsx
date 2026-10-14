@@ -790,7 +790,9 @@ export function App( { config }: { config: GenieConfig } ) {
 								 * The blocks own what the thread item cannot
 								 * carry: chips, cards, compare, handoff. */ }
 								{ turn?.blocks
-									.filter( ( block ) => 'text' !== block.type )
+									.filter(
+										( block ) => 'text' !== block.type
+									)
 									.map( ( block, index ) => (
 										<BlockView
 											key={ index }

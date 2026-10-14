@@ -134,6 +134,7 @@ final class EngineProxyTest extends TestCase {
 		$response = $proxy->forward( $request );
 
 		$this->assertSame( $body, $caught );
+		$this->assertInstanceOf( WP_REST_Response::class, $response );
 		$this->assertSame( 422, $response->get_status() );
 		$this->assertSame( array( 'detail' => array( 'field' => 'pv_kwp' ) ), $response->get_data() );
 		$this->assertConditionsMet();
@@ -185,6 +186,7 @@ final class EngineProxyTest extends TestCase {
 
 		$response = $proxy->forward( $request );
 
+		$this->assertInstanceOf( WP_REST_Response::class, $response );
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame( $bytes, $response->get_data() );
 		$this->assertStringStartsWith( 'application/pdf', (string) ( $response->get_headers()['Content-Type'] ?? '' ) );

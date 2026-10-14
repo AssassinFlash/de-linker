@@ -196,9 +196,9 @@ final class ApprovalTest extends TestCase {
 	 * visitor cannot tell a missing username from a wrong password.
 	 */
 	public function test_the_sign_in_message_is_the_refusal_or_one_generic_line(): void {
-		$approval     = new Approval();
-		$customer     = new WP_User();
-		$customer->ID = 5;
+		$approval                             = new Approval();
+		$customer                             = new WP_User();
+		$customer->ID                         = 5;
 		$this->store[ Approval::STATUS_META ] = Approval::REJECTED;
 
 		$refused = $approval->gate_login( $customer );

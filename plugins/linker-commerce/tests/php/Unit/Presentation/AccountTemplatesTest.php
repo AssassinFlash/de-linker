@@ -105,6 +105,7 @@ final class AccountTemplatesTest extends TestCase {
 			$_GET['inquiry-status'] = 'processing';
 			$this->assertSame( $query, $adapter->orders_query( $query ) );
 			$_GET['inquiry-status'] = array( 'completed' );
+			// @phpstan-ignore method.alreadyNarrowedType (the guard is the point: an array in $_GET must be ignored, not fatal. PHPStan proves the guarded branch dead and reads the assertion as redundant; at runtime it is the assertion.)
 			$this->assertSame( $query, $adapter->orders_query( $query ) );
 		} finally {
 			unset( $_GET['inquiry-status'] );
