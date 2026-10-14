@@ -65,7 +65,7 @@ Woo 默认的 `orders`/`view-order` 端点在本站 404（`/my-account/orders/` 
 | # | 行 | 结论 | 证据 |
 |---|---|---|---|
 | C1 | Registration 五态 | captured+功能核验：本构建的注册是三段式表单（`ol.linker-auth-steps`：1 Company / 2 Contact and address / 3 Sign-in details，全部同屏可填），五态按此拍：①step1 空 ②公司已填 ③联系/地址已填 ④提交待审（页转「Your account is under review」/「Ihr Konto wird geprüft」，且 WP-CLI 读回 `linker_approval_status=pending`）⑤校验错误（`x@y` → 「Error: Please provide a valid email address.」/「Fehler: Bitte geben Sie eine gültige E-Mail-Adresse an.」） | `registration-step1-empty-*`、`-step2-company-*`、`-step3-account-*`、`-submitted-pending-*`、`-validation-error-*`（EN/DE × 1440/390，20 张）；`probe-C1.json` |
-| C2 | Commerce approval admin 三态 | **captured+功能核验失败 → 本轮修复**：后台档案页 `wp-admin/user-edit.php` 的三个按钮（approve/restrict/reject）在本构建里点不动（POST 落到 WordPress 错误页，状态保持 pending）；根因 = 插件块的 `action=linker_approval` 之后还有核心自己的隐藏 `action=update`，PHP 重复键取末值 → 请求路由到 `admin_post_update`。修复见 §5-2；修后单键 POST 实测 `restricted` + 原因落库成功（WP-CLI 读回），三个按钮走同一条 `handle()` | 修复前 `approval-admin-{approve,restrict,reject}-1440-en-{before,after}.png`（after 均为 WordPress 错误页）；实测对照：`wp eval` 只带 `action=linker_approval` 的 POST → 302 且状态 `restricted`（§4 命令 2） |
+| C2 | Commerce approval admin 三态 | **captured+功能核验失败 → 本轮修复**：后台档案页 `wp-admin/user-edit.php` 的三个按钮（approve/restrict/reject）在本构建里点不动（POST 落到 WordPress 错误页，状态保持 pending）；根因 = 插件块的 `action=linker_approval` 之后还有核心自己的隐藏 `action=update`，PHP 重复键取末值 → 请求路由到 `admin_post_update`。修复见 §5-2。**证据链**：①修复前三个按钮的 POST 体实测 `action=["linker_approval","update"]`、响应 400、状态保持 `pending`（截图 after 均为 WordPress 错误页）②同字段、只留 `action=linker_approval` 发一次 → 302 且状态 `restricted` + 原因落库（WP-CLI 读回）——即根因成立、单键路径可用 ③修复本身由单测覆盖（§5-2）。**未做**：把 t110 指向本分支后的实机三态复拍（实例插件软链属并行泳道，不擅自改指向） | `approval-admin-{approve,restrict,reject}-1440-en-{before,after}.png`；§4 命令 2 |
 | C3 | Commerce price gate 三态 | captured+功能核验（商品页 `/product/chint-dtsu666/`，DE `/de/produkt/chint-dtsu666/`，EN/DE × 1440/390）：价格位被替换为设计化 CTA，**三态三种文案**——guest「Sign in for partner pricing」/ DE 登录入口；pending「Prices after approval」/「Preise nach Freigabe」；restricted「Not available for your account」/「Für Ihr Konto nicht verfügbar」（pending 与 restricted 文案不同，实测三态三样）；rejected 登录拦截：EN「This account is not approved for sign-in. We have emailed you the reason.」/ DE「Dieses Konto ist nicht zur Anmeldung freigegeben. …」 | `price-gate-{guest,pending,restricted}-*`（12 张）、`price-gate-rejected-login-*`（4 张）；`probe-C2-price.json` + 复核命令：`node .scratch/coverage/verify-price-gate.mjs`（输出即三态文本） |
 | C4 | Proforma request approved filled / 校验错误 | captured+功能核验：已批准账户草稿 2 件时表单按公司数据预填（`#billing_company=Coverage Installer GmbH`、`#billing_first_name=Carla`、`#billing_city=Muenchen`）；未勾条款提交 → 「Please read and accept the terms and conditions to send your inquiry.」（四格同文本） | `proforma-request-filled-*`、`proforma-request-validation-error-*`；`probe-C2-funnel.json` |
 | C5 | Thank-you order-received with key | captured+功能核验：本站端点被词汇表改名，收讫 URL = `<checkout>/inquiry-received/<id>/?key=…`（`wc_get_order()->get_checkout_order_received_url()` 实测输出）；EN `/proforma-request/inquiry-received/7147/?key=…`、DE `/de/proforma-anfrage/inquiry-received/7151/?key=…`，四格均 200 且渲染「Inquiry details / Details der Anfrage + 明细」 | `thankyou-order-received-*`；`probe-C2-thankyou.json` |
@@ -123,7 +123,7 @@ Woo 默认的 `orders`/`view-order` 端点在本站 404（`/my-account/orders/` 
 | A3 · 复刻像素门缺可复核终局包 | **本行产出 PDP 的成对包**（三套对拍此前不含 PDP）：`h-pairs/pdp-{en,de}-{1440,390}-{local,live}.png` + 指标。**量出的差异（结构对照）**：EN 1440 全页差 14.71%（802 506 px，页高 3977 vs 3789）、EN 390 14.13%、DE 1440 14.38%、DE 390 14.79%；差异不是整页位移（最优位移 0），集中在两带：y≈1744–1843（**本地面板少一个规格组**：本地 Technical data 两组「Grid, back-up and smart port / Switching and environment」，线上三组，中间多「Inverter side」；DE 同形 y≈1792–1848）与页尾（本地比线上高 188 px，尾部整体下移）。两侧产品 id 不同（本地 6575 / 线上 6565）→ 快照与线上是两条产品行，差异至少部分是内容/构建漂移。**结论**：终局包已建立且可重跑（§4 命令 5），但掩膜与「允许差异」须由业主裁定后才能给过门结论——本行不自行判 PASS | `h-pairs-metrics.json`；`pdp-en-1440-{local,live}.png` 的 1650–1900 / 3150–3600 裁片 |
 | A4 · 列表页 390 终局判定待核（默认态 shop/archive 390） | **已判（像素零差异）**：390 默认态 `/products/`、`/de/produkte/`、`/product-category/inverters/`、`/de/produkt-kategorie/wechselrichter/` 四格 local vs live **差异像素 = 0（0.0000%）**、页高逐格相等（12252 / 12590 / 12270 / 12619） | `h-pairs-metrics.json` 的 `shop-*-390`、`archive-*-390`；`h-pairs/*.png` |
 | A6 · 条带口径 vs 全页口径 | **两口径逐项呈报（本轮 9 面）**：见下表。口径定义：全页 = 整页逐像素（阈值 >2/255）；条带 = 先取最优整页垂直位移后的逐像素。9 面里 5 面两口径同为 0；PDP 四面最优位移均为 0（不是位移问题），两口径数值相同 | 下表（数字源 `h-pairs-metrics.json`） |
-| C6 · 商城样式 fresh authoring（代码形态债） | **已定性（代码面）**：`storefront.css`/`catalogue.css` 的复制基座**不在本仓库树**（`git ls-files` 下无这两个文件；插件 `assets/` 只有 `present`/`genie`/`search-ask` 等领域资源），商城样式由 LC 模板 + WindPress 管线产出。原条目「无专属成对截图」因此不是视觉缺口，而是该条目的载体本就不存在；视觉差异由分类/商城面族的行承载（本轮 A4 已给 390 默认态成对零差异） | `git -C /Users/chesterjohn/Documents/de-linker ls-files \| grep -c 'storefront\.css\|catalogue\.css'` → 0（§4 命令 6） |
+| C6 · 商城样式 fresh authoring（代码形态债） | **已定性（代码面）**：两份卷**已重写为新作者版**，旧出处字符串不再存在——`content/windpress/storefront.css`（4 627 行）在树，`catalogue.css` 已不在卷里（`git ls-files \| grep -c 'catalogue\.css'` = 0）；`grep 'terravolt-b2b-core\|0\.12\.413' content/windpress/` 无命中。作者记录见 `docs/audit/2026-10-13-storefront-fresh-author.md`（选择器与声明保持不变、注释按卷职责重写）。原条目「代码形态债、不直接证明用户视觉缺陷、无专属成对截图」由此收口为：**该条目不是视觉缺口**，视觉差异由分类/商城面族的行承载；本轮 A4 已给四个 390 默认态列表页 local vs live 差异像素 = 0 | `ls content/windpress/`；`wc -l content/windpress/storefront.css`；`git ls-files \| grep -c 'catalogue\.css'` → 0；`grep -rn 'terravolt-b2b-core' content/windpress/` → 空（§4 命令 6） |
 
 A6 两口径数字（同一批成对图，同协议）：
 
@@ -144,10 +144,19 @@ A6 两口径数字（同一批成对图，同协议）：
 ## 4. 复跑命令（每一行都能重跑）
 
 ```bash
-# 1 · PI 下载（B4）：登录态下取链接并读字节
-just wp t110 eval 'echo wc_get_order(7148)->get_order_key();'
-curl -s -D- -o /tmp/pi.pdf "http://127.0.0.1:8975/?linker-document=proforma&id=7148" | head -3
-file /tmp/pi.pdf        # → PDF document, version 1.7, 26603 bytes
+# 1 · PI 下载（B4）：下载是会话绑定的（无 cookie 的 curl 得到 403，实测），
+#     所以走浏览器上下文取字节；命令即采集脚本里那一段
+node - <<'JS'
+import { chromium, BASE, loginLink } from '/Users/chesterjohn/Documents/de-linker/.scratch/coverage/lib.mjs';
+const b = await chromium.launch(); const c = await b.newContext();
+await (await c.newPage()).goto(loginLink('coverage-full'), { waitUntil: 'domcontentloaded' });
+const r = await c.request.get(BASE + '/?linker-document=proforma&id=7148');
+const buf = await r.body();
+console.log('status', r.status(), r.headers()['content-type'], buf.length, 'B', buf.slice(0, 8).toString());
+await b.close();
+JS
+# → status 200 application/pdf 26603 B %PDF-1.7
+# 无会话对照（同一 URL）：curl -s -o /dev/null -w '%{http_code}\n' "http://127.0.0.1:8975/?linker-document=proforma&id=7148" → 403
 
 # 2 · 审批三态（C2）：单键 POST 真的落状态（修复前的症状与修复后的路径）
 just wp t110 eval 'echo wc_get_order(7150)->get_status();'   # 任一探针用账号
@@ -173,7 +182,9 @@ node .scratch/coverage/capture-H.mjs && python3 .scratch/coverage/analyse-pairs.
 node .scratch/coverage/verify-price-gate.mjs
 
 # 6 · C6 的代码面事实
-git -C /Users/chesterjohn/Documents/de-linker ls-files | grep -c 'storefront\.css\|catalogue\.css'   # → 0
+git -C /Users/chesterjohn/Documents/de-linker ls-files | grep -c 'catalogue\.css'          # → 0
+wc -l /Users/chesterjohn/Documents/de-linker/plugins/linker-commerce/content/windpress/storefront.css   # → 4627
+grep -rn 'terravolt-b2b-core\|0\.12\.413' /Users/chesterjohn/Documents/de-linker/plugins/linker-commerce/content/windpress/   # → 空
 ```
 
 ## 5. 本轮修的两处（都由本泳道的补拍发现，含单测）
