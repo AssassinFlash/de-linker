@@ -25,11 +25,18 @@ LINKER_WP_ROOT=~/de-linker-local/contactdesign/wordpress \
 
 ## 截图（1440×900 / 390×844，EN / DE，视口对准卡）
 
+每格两张，同一脚本同一轮拍：`<name>.png` 视口对准卡的顶端，`<name>-submit.png`
+对准提交条（`scrollIntoView` 到 `.linker-form-primary`）——提交条在 390 的视口里不在卡顶那张
+的范围内，故它由上表第二行与「实现值」段的探针数字共同作证。
+
 | 文件 | 展示 |
 |---|---|
-| `en-1440.png` | 卡：眉题 CONTACT LINKER、What can we help with?、Your question（占位 What would you like to know?）、This is about（A question）、分隔线、Where can we reply?（Name/Reply email 同行、Company optional）、免账号说明、同意句、Send message 通栏条（箭头在右） |
-| `de-1440.png` | 同一张卡的德语：Wie können wir helfen?、Ihre Frage / Was möchten Sie wissen?、Es geht um / Eine Frage、Wohin dürfen wir antworten?、Unternehmen optional、…weder ein Konto noch ein **Projekt**、…Beantwortung dieser **Nachricht**…、Nachricht senden 通栏条 |
-| `en-390.png` / `de-390.png` | 390：字段单列、双列折成一列（Name → Reply email → Company）、提交条通栏 |
+| `en-1440.png` | 卡顶：眉题 CONTACT LINKER、What can we help with?、Your question（占位 What would you like to know?）、This about（A question）、分隔线、Where can we reply? 起始（Name / Reply email 同行） |
+| `en-1440-submit.png` | 卡下：Company optional、免账号说明、同意行、Send message 通栏条（箭头在右）、脚注、两张副卡 |
+| `de-1440.png` | 卡顶的德语：Wie können wir helfen?、Ihre Frage / Was möchten Sie wissen?、Es geht um / Eine Frage、Wohin dürfen wir antworten? 起始 |
+| `de-1440-submit.png` | 卡下的德语：Unternehmen optional、…weder ein Konto noch ein **Projekt**、同意行（…Beantwortung dieser **Nachricht**… + Datenschutz）、Nachricht senden 通栏条、脚注、两张副卡 |
+| `en-390.png` / `de-390.png` | 390 卡顶：字段单列（Your question → This is about → Where can we reply?）、Name 起 |
+| `en-390-submit.png` / `de-390-submit.png` | 390 卡下：Reply email、Company optional、免账号说明、同意行、**Send message / Nachricht senden 通栏条（312 = 表单内宽）**、脚注、Prefer email? 副卡 |
 
 ## 浏览器里量到的实现值（与 `content/windpress/contact-card.css` 一致）
 
@@ -39,6 +46,7 @@ form  { padding: 32px 32px, gap: 24px, radius: 22px, background: #fff, border: 1
 rail  { columns: 347.203px 347.203px } # 卡下两张副卡，16px 间距
 fields{ columns: 314.203px 314.203px } # Name / Reply email 同行（801px 以下折一列）
 button{ width: 644, justify: space-between }   # 644 = 卡内宽 − 2×32，通栏条（与旧线上同形）
+                                               # 390：submit 312 = 表单内宽，见 *-390-submit.png 与探针 metrics
 ```
 
 ## 同意行的实现值（本轮机读，1440/390 × EN/DE 四格一致）
@@ -55,7 +63,8 @@ box     { 18×18px, margin-top: 2px, accent-color: rgb(12,127,115) = --proto-acc
 link    { color: rgb(12,127,115) = --proto-teal-600, text-decoration: underline, text-underline-offset: 3px }
 ```
 
-选择理由（也写在 `copy-review.md` §3）：/contact/ 是复刻面、像素门按旧线上卡逐行比，
+选择理由（也写在 `copy-review.md` 的 **§2b「同意行的取值选择」**；§3 是另一件事——相对
+旧线上的「有意差异」登记，本行与旧线上同值、不在其中）：/contact/ 是复刻面、像素门按旧线上卡逐行比，
 同意行是可见面，取旧线上的几何；站内现行 tokens 提供颜色。另一条候选（#68 登记的
 12px/neutral-600 + 浏览器默认 13px 方框）不取，故不上台账——本行与旧线上同值。
 
@@ -97,14 +106,16 @@ inside  #theme-main: { display: block, fontSize: 16px, color: ink(#0c0f0f), marg
 
 **范围（不是孤立一处）**：插件的短代码输出里仍有多处把样式/布局交给工具类。本机复跑
 `grep -rno 'class="[^"]*\(grid\|flex\|text-\|mt-\|p-[0-9]\|gap-\)[^"]*"' plugins/linker-commerce/includes --include="*.php"`
-的命中分布：`Contact/Form.php` 2 处（`linker-form-consent … text-xs text-neutral-600`、
-`mt-1`；`linker-form-submit grid gap-2` 已由卡自带规则覆盖）、
-`Presentation/ComparePage.php` 12 处（`linker-compare-cell … p-3 …`、
-`linker-compare-chip … inline-flex …` 等）、`Presentation/LibraryPage.php` 11 处
+的**命中数/行数**（`grep -o` 计命中、`grep -c` 计行）：`Presentation/ComparePage.php`
+**13 命中 / 12 行**（:209 一行两个 class 属性：`linker-compare-actions mb-4 text-sm` 与
+`text-(--proto-accent) underline`；其余为 `linker-compare-cell … p-3 …`、
+`linker-compare-chip … inline-flex …` 等）、`Presentation/LibraryPage.php` 11 命中 / 11 行
 （`linker-documents … gap-6`、`linker-documents-count text-sm …` 等）、
-`Presentation/Shortcodes.php` 1 处（`linker-price font-semibold text-[#0c7f73]`）。
-在 `#theme-main` 内这些类同样失效；是否有卷内 CSS 兜住，本票只核了 contact 卡这一面
-（已改为卡自带规则），其余面未逐面核，故此处按面登记，不按"已关闭"记。
+`Presentation/Shortcodes.php` 1 命中 / 1 行（`linker-price font-semibold text-[#0c7f73]`）。
+`Contact/Form.php` 3 命中 / 2 行（:167 同意行与 `mt-1`、:174 提交条）**本轮已全部由
+`contact-card.css` 的自带规则承接**，不再依赖工具类。
+在 `#theme-main` 内上面这些仍未覆盖的类同样失效；是否有卷内 CSS 兜住，本票只核了
+contact 卡这一面，其余面未逐面核，故此处按面登记，不按"已关闭"记。
 
 **处置与本票的范围**：contact 卡的所有可见组成（卡框、块间距、字段布局、提交条、同意行、
 副卡、链接）现在都由 `content/windpress/contact-card.css` 自带规则承载，不再依赖工具类；

@@ -33,10 +33,18 @@ for (const [name, route, width, height] of shots) {
 		await page.goto(`${base}${route}?cbq=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
 		await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
 		await page.evaluate(async () => { if (document.fonts?.ready) await document.fonts.ready; });
+		// Two alignments per viewport: the card's top (eyebrow..topic) and the
+		// submit row (reply..rail), so the shots show what the README's table
+		// says they show — including the submit bar, which is below the fold
+		// when the card's top is in view.
 		await page.evaluate(() => document.querySelector('.linker-contact-card')?.scrollIntoView({ block: 'start' }));
 		await page.waitForTimeout(700);
 		const file = path.join(out, `${name}.png`);
 		await page.screenshot({ path: file });
+		await page.evaluate(() => document.querySelector('.linker-contact-card .linker-form-primary')?.scrollIntoView({ block: 'center' }));
+		await page.waitForTimeout(400);
+		const lower = path.join(out, `${name}-submit.png`);
+		await page.screenshot({ path: lower });
 		const metrics = await page.evaluate(() => {
 			const box = (selector) => {
 				const node = document.querySelector(selector);
@@ -91,7 +99,7 @@ for (const [name, route, width, height] of shots) {
 				controlProbe,
 			};
 		});
-		console.log(JSON.stringify({ name, file, metrics }));
+		console.log(JSON.stringify({ name, file, submitShot: lower, metrics }));
 	} catch (error) {
 		console.log(JSON.stringify({ name, error: String(error).split('\n')[0] }));
 	} finally {
