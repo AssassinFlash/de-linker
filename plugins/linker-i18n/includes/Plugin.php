@@ -158,7 +158,7 @@ final class Plugin {
 		add_action( 'admin_notices', array( $column, 'notice' ) );
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			\WP_CLI::add_command( 'linker-i18n', new Command( $languages, new Setup(), $translator, $jobs, $state, $links ) );
+			\WP_CLI::add_command( 'linker-i18n', new Command( $languages, new Setup(), $translator, $jobs, $state, $links, $twins ) );
 		}
 	}
 }

@@ -457,6 +457,13 @@ class Migration:
             )
             results += out if isinstance(out, list) else []
             print(f"imported {min(start + 20, len(items))}/{len(items)}", flush=True)
+        # After the posts exist. The category copy during import finds nothing
+        # when the English relationships are already gone, and the insert of a
+        # German post clears them (see Twins::post()). This write uses the
+        # snapshot's post→term list, not the rows in the database.
+        print(
+            self.wp.run("linker-i18n", "repair-post-categories", as_user=True).strip()
+        )
         print(self.wp.run("linker-i18n", "relink").strip())
         return results
 

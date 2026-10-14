@@ -108,6 +108,31 @@ def test_post_category_slugs_are_the_live_german_archive_slugs() -> None:
         assert german_name
 
 
+def test_apply_repairs_post_categories_after_the_import(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The repair runs after the posts exist, and does not read the database.
+
+    A lookup of the English term is empty on the live database, so the repair
+    has to be its own step, after import, signed in as the administrator.
+    """
+    seen = _capture(monkeypatch)
+    monkeypatch.setattr(
+        i18n.WP,
+        "json",
+        lambda self, *args, **kwargs: [],
+    )
+
+    i18n.Migration(i18n.WP(LOCAL, user="local-admin")).apply([])
+
+    commands = [call[1:] for call in seen]
+    assert ["linker-i18n", "repair-post-categories", "--user=local-admin"] in commands
+    repair = commands.index(
+        ["linker-i18n", "repair-post-categories", "--user=local-admin"]
+    )
+    assert commands.index(["linker-i18n", "relink"]) > repair
+
+
 def test_a_local_prefix_keeps_argv_semantics(monkeypatch: pytest.MonkeyPatch) -> None:
     """The drill's local instance is not a shell: quoting there would change the
     argument the program receives."""

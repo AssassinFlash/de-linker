@@ -9,10 +9,11 @@ declare( strict_types = 1 );
 
 namespace Linker\I18n\Cli;
 
-use Linker\I18n\Jobs;
-use Linker\I18n\Languages;
-use Linker\I18n\LinkLocalizer;
-use Linker\I18n\Setup;
+	use Linker\I18n\Jobs;
+	use Linker\I18n\Languages;
+	use Linker\I18n\LinkLocalizer;
+	use Linker\I18n\Setup;
+	use Linker\I18n\Twins;
 use Linker\I18n\Translation\State;
 use Linker\I18n\Translation\TranslationFailed;
 use Linker\I18n\Translation\Translator;
@@ -33,6 +34,7 @@ final class Command {
 	 * @param Jobs          $jobs       The translation queue.
 	 * @param State         $state      Translation state.
 	 * @param LinkLocalizer $links      Rewrites links to German pages.
+	 * @param Twins|null    $twins      Writes the German versions, for the category repair.
 	 */
 	public function __construct(
 		private readonly Languages $languages,
@@ -40,7 +42,8 @@ final class Command {
 		private readonly Translator $translator,
 		private readonly Jobs $jobs,
 		private readonly State $state,
-		private readonly LinkLocalizer $links
+		private readonly LinkLocalizer $links,
+		private readonly ?Twins $twins = null,
 	) {}
 
 	/**
@@ -243,6 +246,30 @@ final class Command {
 			}
 		}
 		WP_CLI::success( sprintf( 'LiveCanvas partial pairs: %d repairs, %d roles left alone.', $repaired, $skipped ) );
+	}
+
+	/**
+	 * Puts the published posts back on the categories the pre-cutover
+	 * snapshot records (posts 551–560 on terms 10–14, two each), and their
+	 * German versions on the German terms. Does not read the relationships
+	 * already in the database: those rows are gone, so a lookup by the
+	 * English term finds nothing.
+	 *
+	 * @subcommand repair-post-categories
+	 *
+	 * @param array<int, string>    $args       Positional arguments.
+	 * @param array<string, string> $assoc_args Options.
+	 */
+	public function repair_post_categories( array $args, array $assoc_args ): void {
+		unset( $args, $assoc_args );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			WP_CLI::error( 'Run as an administrator: wp linker-i18n repair-post-categories --user=<admin>.' );
+		}
+		if ( ! $this->twins instanceof Twins ) {
+			WP_CLI::error( 'No writer for the post categories.' );
+		}
+		$restored = $this->twins->restore_post_categories();
+		WP_CLI::success( sprintf( 'Post categories restored for %d published posts.', $restored ) );
 	}
 
 	/**
