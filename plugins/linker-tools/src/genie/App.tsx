@@ -782,14 +782,23 @@ export function App( { config }: { config: GenieConfig } ) {
 										) }
 									</p>
 								) : null }
-								{ turn?.blocks.map( ( block, index ) => (
-									<BlockView
-										key={ index }
-										block={ block }
-										accountUrl={ config.accountUrl }
-										onAsk={ ask }
-									/>
-								) ) }
+								{ /* The turn's text already stands in the thread
+								 * item above (assistantMessage carries the text
+								 * blocks); rendering the blocks verbatim printed
+								 * every answer twice, on the reference instance
+								 * and in production alike (seen 2026-10-14).
+								 * The blocks own what the thread item cannot
+								 * carry: chips, cards, compare, handoff. */ }
+								{ turn?.blocks
+									.filter( ( block ) => 'text' !== block.type )
+									.map( ( block, index ) => (
+										<BlockView
+											key={ index }
+											block={ block }
+											accountUrl={ config.accountUrl }
+											onAsk={ ask }
+										/>
+									) ) }
 								{ turn?.blocks.some(
 									( block ) => 'cards' === block.type
 								) ? (
