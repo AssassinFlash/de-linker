@@ -27,6 +27,15 @@ The suite resolves the instance from `~/de-linker-local/instances.toml`
 A missing instance, a missing service or a typo in the name fails the run with
 the command that fixes it — nothing is skipped silently.
 
+`LINKER_E2E_SKIP_SERVICES=1` is the one declared exception, for a page spec
+that renders WordPress only and never talks to the engine or Genie
+(`specs/empty-draft.spec.ts`; run it as
+`LINKER_E2E_SKIP_SERVICES=1 just e2e <name> specs/empty-draft.spec.ts`). It
+drops the two service health checks from the gate and keeps WordPress's: the
+instance must still answer `/wp-json/`, and a name that is not registered
+still fails. Any other value, or a service suite that needs the engine, runs
+the full gate.
+
 ## What it needs from the machine
 
 - The site answering on the instance's port, and `just serve`'s two services.

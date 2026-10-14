@@ -17,6 +17,8 @@ use Mockery;
 use WC_Product;
 use WP_Mock;
 
+require_once dirname( __DIR__, 4 ) . '/includes/Presentation/template-functions.php';
+
 /**
  * Tests for Shortcodes.
  *
@@ -34,11 +36,12 @@ final class ShortcodesTest extends TestCase {
 
 	/**
 	 * The shortcodes this plugin adds — the two the exported templates consume.
+	 * The cart template's conditions are the global functions in
+	 * template-functions.php; no filter under a condition name exists, because
+	 * LiveCanvas resolves lc_if with function_exists().
 	 */
 	public function test_register_adds_the_shortcodes(): void {
 		$codes = $this->shortcodes();
-		WP_Mock::expectFilterAdded( 'lc_define_condition_linker_commerce_draft_empty', array( $codes, 'draft_is_empty' ) );
-		WP_Mock::expectFilterAdded( 'lc_define_condition_linker_commerce_draft_filled', array( $codes, 'draft_is_filled' ) );
 		foreach (
 		array(
 			'linker_price'        => 'price',
@@ -126,7 +129,8 @@ final class ShortcodesTest extends TestCase {
 		/**
 		 * An empty solution draft is the designed empty state: icon, title,
 		 * the review note, and the two ways back that still have a page.
-		 * The retired batch import is not one of them.
+		 * The retired batch import is neither a button nor a promise in the
+		 * note (GAP-11, owner 2026-10-11).
 		 */
 	public function test_empty_draft_is_the_designed_empty_state(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
@@ -135,40 +139,43 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		$this->cart_is( true );
 
-		$shortcodes = $this->shortcodes();
-		$html       = $shortcodes->draft_empty();
+		$html = $this->shortcodes()->draft_empty();
 
-		$this->assertTrue( $shortcodes->draft_is_empty() );
-		$this->assertFalse( $shortcodes->draft_is_filled() );
 		$this->assertStringContainsString( 'sf-cart-empty__icon', $html );
 		$this->assertStringContainsString( '<h1>Your solution draft is empty.</h1>', $html );
-		$this->assertStringContainsString( 'match an item-number list now', $html );
+		$this->assertStringContainsString( 'Browse the products now.', $html );
 		$this->assertStringContainsString( 'href="https://example.test/products/"', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/"', $html );
 		$this->assertStringContainsString( 'Sign in or register', $html );
 		$this->assertStringNotContainsString( 'bulk-order', $html );
 		$this->assertStringNotContainsString( 'Batch item-number import', $html );
+		$this->assertStringNotContainsString( 'item-number', $html );
 		$this->assertSame( 2, substr_count( $html, 'class="sf-cart-btn' ) );
 		$this->assertStringNotContainsString( 'style=', $html );
 	}
 
 		/**
-		 * A filled draft, and a confirmation page, are not the empty state.
-		 * The two conditions never agree.
+		 * The gate reads the same condition functions the cart template's
+		 * [lc_if] calls, so it can never disagree with the branch the visitor
+		 * sees: with a filled draft the filled branch holds and the checkout
+		 * shortcode stays WooCommerce's own. (The empty side is the login
+		 * gate test above; the confirmation side is TemplateFunctionsTest's.)
 		 */
-	public function test_a_filled_draft_is_not_the_empty_state(): void {
+	public function test_the_gate_agrees_with_the_condition_on_a_filled_draft(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		$this->cart_is( false );
+		WP_Mock::userFunction(
+			'do_shortcode',
+			array(
+				'args'   => array( '[woocommerce_checkout]' ),
+				'return' => '<form class="checkout">pay</form>',
+			)
+		);
 
-		$shortcodes = $this->shortcodes();
-
-		$this->assertFalse( $shortcodes->draft_is_empty() );
-		$this->assertTrue( $shortcodes->draft_is_filled() );
-
-		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
-		$this->cart_is( true );
-		$this->assertFalse( $shortcodes->draft_is_empty() );
-		$this->assertTrue( $shortcodes->draft_is_filled() );
+		$this->assertTrue( linker_commerce_draft_filled() );
+		$this->assertFalse( linker_commerce_draft_empty() );
+		$this->assertSame( '<form class="checkout">pay</form>', $this->shortcodes()->checkout() );
 	}
 
 	/**
@@ -180,20 +187,7 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => fn (): int => $this->signed_in_user ) );
 		$this->signed_in( 0 );
 		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
-		$cart = new class() {
-			/**
-			 * Filled draft.
-			 */
-			public function is_empty(): bool {
-				return false;
-			}
-		};
-		WP_Mock::userFunction(
-			'WC',
-			array(
-				'return' => (object) array( 'cart' => $cart ),
-			)
-		);
+		$this->cart_is( false );
 		WP_Mock::userFunction(
 			'do_shortcode',
 			array(
@@ -334,38 +328,9 @@ final class ShortcodesTest extends TestCase {
 		unset( $GLOBALS['product'] );
 	}
 
-		/**
-		 * The request's cart, empty or not.
-		 *
-		 * @param bool $vacant Whether the draft has no lines.
-		 */
-	private function cart_is( bool $vacant ): void {
-		$cart = new class( $vacant ) {
-			/**
-			 * Sets whether the draft has no lines.
-			 *
-			 * @param bool $vacant Whether the draft has no lines.
-			 */
-			public function __construct( private bool $vacant ) {}
-
-			/**
-			 * Whether the draft has no lines.
-			 */
-			public function is_empty(): bool {
-				return $this->vacant;
-			}
-		};
-			WP_Mock::userFunction(
-				'WC',
-				array(
-					'return' => (object) array( 'cart' => $cart ),
-				)
-			);
-	}
-
-		/**
-		 * The shortcodes under test.
-		 */
+	/**
+	 * The shortcodes under test.
+	 */
 	private function shortcodes(): Shortcodes {
 		return new Shortcodes( new LoginGate( new Approval() ), new Approval() );
 	}
