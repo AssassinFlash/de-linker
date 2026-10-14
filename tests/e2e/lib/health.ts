@@ -20,6 +20,22 @@ export const INSTANCE_READY =
 	'the instance answers /wp-json/ and both services report healthy';
 
 export default async function globalSetup(): Promise<void> {
+	// A page spec that does not talk to the engine or Genie sets this. The
+	// commercial-chain suites render WordPress only, so their health gate
+	// stays: WordPress must answer, the services may not exist.
+	if (process.env.LINKER_E2E_SKIP_SERVICES === '1') {
+		const name = instanceName();
+		const target = instance(name);
+		const context = await request.newContext({ timeout: 20_000 });
+		const wordpress = await context.get(`${target.url}/wp-json/`);
+		await context.dispose();
+		if (!wordpress.ok()) {
+			throw new Error(
+				`instance ${name} does not answer ${target.url}/wp-json/ (${wordpress.status()}) — start it with \`just up ${name}\` (docs/local-stack.md).`
+			);
+		}
+		return;
+	}
 	const name = instanceName();
 	const target = instance(name);
 	const context = await request.newContext({ timeout: 20_000 });
