@@ -61,7 +61,13 @@ final class ModuleTest extends TestCase {
 	}
 
 	/**
-	 * The form, the VAT ID field, the address rules and the two notifications are hooked.
+	 * The form, the VAT ID field, the address rules and the two notifications
+	 * are hooked — and the approval side carries two doors on purpose: the
+	 * users list's one-click link arrives on `admin_post_linker_approval`, and
+	 * the profile screen's three buttons ride WordPress's own form, whose
+	 * trailing `action=update` wins over the block's field, so those requests
+	 * arrive on `admin_post_update` (measured 2026-10-15; ApprovalAdminTest
+	 * walks both).
 	 */
 	public function test_register_adds_the_hooks(): void {
 		[ $fields, $vat_field, $address ] = $this->parts;
@@ -92,6 +98,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'edit_user_profile', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'profile_block' ) );
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 		WP_Mock::expectActionAdded( 'admin_post_linker_approval', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'handle' ) );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectActionAdded( 'admin_post_update', array( new WP_Mock\Matcher\AnyInstance( ApprovalAdmin::class ), 'handle_profile_form' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_actions', array( $this->module, 'email_actions' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $this->module, 'add_emails' ) );
 		WP_Mock::expectFilterAdded( 'linker_commerce_digest_blocks', array( $this->module, 'digest_blocks' ) );

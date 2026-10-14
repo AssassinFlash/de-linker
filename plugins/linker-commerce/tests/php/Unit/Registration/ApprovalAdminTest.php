@@ -283,6 +283,58 @@ final class ApprovalAdminTest extends TestCase {
 	}
 
 	/**
+	 * The profile screen's buttons post WordPress's own form, whose trailing
+	 * hidden `action=update` is the value PHP keeps: the request arrives on
+	 * admin_post_update, and the door for it runs the very same handler
+	 * (measured 2026-10-15; before this, no button of the profile block did
+	 * anything and the request ended in WordPress's error page).
+	 */
+	public function test_the_profile_forms_buttons_arrive_under_wordpresss_own_action(): void {
+		$admin = new ApprovalAdmin( new Approval() );
+		WP_Mock::expectAction( Approval::CHANGED_ACTION, 5, Approval::PENDING, Approval::RESTRICTED, 'No fit yet.' );
+		$this->request(
+			array(
+				'action'                   => 'update',
+				'user'                     => '5',
+				'linker_approval_action'   => 'restrict',
+				'linker_approval_reason'   => 'No fit yet.',
+				ApprovalAdmin::NONCE_FIELD => 't',
+			)
+		);
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'redirect' );
+		try {
+			$admin->handle_profile_form();
+		} finally {
+			$this->assertSame( Approval::RESTRICTED, $this->store[ Approval::STATUS_META ] ?? '' );
+			$this->assertSame( 'No fit yet.', $this->store[ Approval::REASON_META ] ?? '' );
+		}
+	}
+
+	/**
+	 * WordPress's own profile save (or any other "update" request) is not this
+	 * plugin's: nothing is read, nothing dies, no state changes.
+	 */
+	public function test_the_update_door_stands_down_for_wordpresss_own_request(): void {
+		$admin                                = new ApprovalAdmin( new Approval() );
+		$this->store[ Approval::STATUS_META ] = Approval::PENDING;
+		WP_Mock::userFunction( 'check_admin_referer', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'wp_die', array( 'times' => 0 ) );
+		$this->request(
+			array(
+				'action'  => 'update',
+				'user_id' => '5',
+			)
+		);
+
+		$admin->handle_profile_form();
+
+		$this->assertSame( Approval::PENDING, $this->store[ Approval::STATUS_META ] ?? '' );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * The handler refuses an unknown action and a reason-less restriction; the
 	 * nonce comes first.
 	 */
