@@ -249,7 +249,7 @@ final class Command {
 	}
 
 	/**
-	 * Puts the published posts back on the categories the pre-cutover
+	 * Puts the snapshot's posts back on the categories the pre-cutover
 	 * snapshot records (posts 551–560 on terms 10–14, two each), and their
 	 * German versions on the German terms. Does not read the relationships
 	 * already in the database: those rows are gone, so a lookup by the

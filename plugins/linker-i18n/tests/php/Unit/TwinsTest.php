@@ -61,6 +61,9 @@ final class TwinsTest extends TestCase {
 		WP_Mock::userFunction( 'get_post_type', array( 'return' => 'page' ) );
 		WP_Mock::userFunction( 'get_children', array( 'return' => array() ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		// The fill-only guard of Twins::post(): these tests' posts are not in
+		// the snapshot, so an empty answer (or any answer) writes nothing.
+		WP_Mock::userFunction( 'get_the_terms', array( 'return' => array() ) );
 	}
 
 	/**
@@ -286,6 +289,9 @@ final class TwinsTest extends TestCase {
 	 * the snapshot list (docs/debt/DE-PARITY-2026-10-13.md §2: 551 and 552
 	 * on term 10, and the German twins 6893 and 6895), and it replaces what
 	 * is on the post — append would leave 558 on Uncategorized as well.
+	 * The CLI is the migration's authority: it writes without asking what
+	 * the post currently carries (docs/specs/9-i18n.md, 2026-10-15 修订), pinned
+	 * by get_the_terms never being called.
 	 */
 	public function test_empty_english_relationships_are_restored_from_the_snapshot(): void {
 		PolylangDouble::mock(
@@ -313,6 +319,7 @@ final class TwinsTest extends TestCase {
 			array( 10 => array( 'slug' => 'system-design' ) )
 		);
 		WP_Mock::userFunction( 'get_objects_in_term', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'get_the_terms', array( 'times' => 0 ) );
 		$assigned = array();
 		WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
 			static function ( int $object_id, array $terms, string $taxonomy, bool $append ) use ( &$assigned ): array {
@@ -458,6 +465,8 @@ final class TwinsTest extends TestCase {
 	 * and a named slug must rename the German term (the live German
 	 * archive is /de/category/system-design/, not
 	 * /de/category/systemauslegung/; docs/debt/DE-PARITY-2026-10-13.md §4.1).
+	 * The runtime write is fill-only (docs/specs/9-i18n.md, 2026-10-15 修订): both
+	 * posts carry no category yet, which is the state the write may fill.
 	 */
 	public function test_an_existing_category_is_reassigned_from_empty_relationships(): void {
 		PolylangDouble::mock(
@@ -480,6 +489,7 @@ final class TwinsTest extends TestCase {
 		WP_Mock::userFunction( 'get_term_meta', array( 'return' => '' ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_objects_in_term', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'get_the_terms', array( 'return' => array() ) );
 		WP_Mock::userFunction(
 			'wp_update_term',
 			array(
@@ -532,7 +542,9 @@ final class TwinsTest extends TestCase {
 	 * A re-run writes the German post while the English post has no
 	 * category. terms() must not copy that empty list onto the German post:
 	 * the snapshot says 551 is on term 10, so 6893 is written the German
-	 * term. get_object_taxonomies is registered once here — the shared
+	 * term. The runtime restore is fill-only (docs/specs/9-i18n.md,
+	 * 2026-10-15 修订): neither post carries a category, so the fill writes.
+	 * get_object_taxonomies is registered once here — the shared
 	 * helper also registers it, and WP_Mock keeps the first registration,
 	 * so this test does not call that helper.
 	 */
@@ -577,6 +589,7 @@ final class TwinsTest extends TestCase {
 		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'category' ) ) );
 		WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_the_terms', array( 'return' => array() ) );
 		WP_Mock::userFunction(
 			'wp_get_object_terms',
 			array(
@@ -616,9 +629,10 @@ final class TwinsTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				// restore_post_category() runs before the insert, so the
-				// language sync copies the snapshot category instead of
-				// clearing it (Twins::post()).
+				// restore_post_category() runs before the update, because
+				// neither post carries a category (fill-only): the language
+				// sync copies the snapshot category instead of clearing it
+				// (Twins::post()).
 				array( 551, array( 10 ), 'category', false ),
 				array( 6893, array( 557 ), 'category', false ),
 				// terms() writes three arguments. The empty English list is
@@ -635,8 +649,9 @@ final class TwinsTest extends TestCase {
 	 * 10 → de pair). terms() must leave the German post alone: writing the
 	 * empty English list would clear the German post's category, and there
 	 * is no German term to write instead. The English restore before the
-	 * insert is the whole write — the German post 6893 receives no
-	 * wp_set_object_terms call at all.
+	 * update is the whole write — the German post 6893 receives no
+	 * wp_set_object_terms call at all. Fill-only (docs/specs/9-i18n.md,
+	 * 2026-10-15 修订): both posts carry no category, so the fill writes.
 	 */
 	public function test_a_missing_german_category_term_leaves_the_german_post_alone(): void {
 		PolylangDouble::mock(
@@ -676,6 +691,7 @@ final class TwinsTest extends TestCase {
 		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'category' ) ) );
 		WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_the_terms', array( 'return' => array() ) );
 		WP_Mock::userFunction(
 			'wp_get_object_terms',
 			array(
@@ -715,10 +731,236 @@ final class TwinsTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				// The English restore runs before the insert (Twins::post()).
+				// The English restore runs before the update (Twins::post()),
+				// because neither post carries a category (fill-only).
 				// With no German term in the database this is the whole write:
 				// the empty English list never reaches the German post.
 				array( 551, array( 10 ), 'category', false ),
+			),
+			$assigned
+		);
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * An editor's category survives a later translate. The runtime restore
+	 * is fill-only (docs/specs/9-i18n.md, 2026-10-15 修订): an English post that
+	 * already carries a category is not replaced by the snapshot's — the
+	 * guard short-circuits on the English post, so the German version is
+	 * not even asked. The only write left is terms()'s ordinary copy of the
+	 * English categories onto the German post.
+	 */
+	public function test_a_post_with_an_edited_category_is_not_replaced_by_the_runtime_write(): void {
+		PolylangDouble::mock(
+			array(
+				551  => 'en',
+				6893 => 'de',
+			),
+			array( 551 => 6893 ),
+			array(
+				10  => 'en',
+				557 => 'de',
+			),
+			array( 10 => 557 ),
+			'en',
+			array(),
+			array(
+				551  => array(
+					'post_type'      => 'post',
+					'post_status'    => 'publish',
+					'post_parent'    => 0,
+					'post_author'    => 1,
+					'menu_order'     => 0,
+					'comment_status' => 'closed',
+					'ping_status'    => 'closed',
+					'post_password'  => '',
+					'post_title'     => 'How to Choose',
+				),
+				6893 => array(
+					'post_type'   => 'post',
+					'post_status' => 'publish',
+					'post_title'  => 'So wählen Sie',
+				),
+			),
+			array( 10 => array( 'slug' => 'system-design' ) )
+		);
+		WP_Mock::passthruFunction( 'wp_slash' );
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
+		WP_Mock::userFunction( 'remove_action', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'category' ) ) );
+		WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		// The English post carries a category: the guard answers on it alone
+		// and never asks the German version (times: 1).
+		WP_Mock::userFunction(
+			'get_the_terms',
+			array(
+				'times'  => 1,
+				'return' => array( 999 ),
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_get_object_terms',
+			array(
+				'return' => array( 10 ),
+				'args'   => array( 551, 'category', array( 'fields' => 'ids' ) ),
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'times' => 1,
+				'args'  => array(
+					Mockery::on( static fn( array $postarr ): bool => 6893 === $postarr['ID'] ),
+					true,
+				),
+			)
+		);
+		$assigned = array();
+		WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+			static function ( int $object_id, array $terms, string $taxonomy, bool $append = false ) use ( &$assigned ): array {
+				$assigned[] = array( $object_id, $terms, $taxonomy, $append );
+				return $terms;
+			}
+		);
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+		$twins->post(
+			551,
+			array(
+				'post_title'   => 'So wählen Sie',
+				'post_excerpt' => '',
+				'post_content' => '<p>Deutsch.</p>',
+			),
+			'hybridwechselrichter-vs-ac-speicher'
+		);
+
+		$this->assertSame(
+			array(
+				// No restore: 551 is never written. The German post only
+				// receives terms()'s ordinary copy of the English categories.
+				array( 6893, array( 557 ), 'category', false ),
+			),
+			$assigned
+		);
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * An editor's German category survives a later term translate. The
+	 * runtime write is fill-only (docs/specs/9-i18n.md, 2026-10-15 修订): the
+	 * English post is empty, but its German version already carries a
+	 * category, so assign_term() leaves the pair alone — the whole term()
+	 * call makes no wp_set_object_terms write at all.
+	 */
+	public function test_a_german_post_with_a_category_is_not_replaced_by_the_term_write(): void {
+		PolylangDouble::mock(
+			array(
+				551  => 'en',
+				6893 => 'de',
+			),
+			array( 551 => 6893 ),
+			array(
+				10  => 'en',
+				557 => 'de',
+			),
+			array( 10 => 557 ),
+			'en',
+			array(),
+			array( 551 => array( 'post_type' => 'post' ) ),
+			array( 10 => array( 'slug' => 'system-design' ) )
+		);
+		// Registered by hand, not through the shared helper: WP_Mock keeps the
+		// first registration of a function, and this test's get_the_terms
+		// answers differently per post.
+		WP_Mock::passthruFunction( 'wp_slash' );
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
+		WP_Mock::userFunction( 'remove_action', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_term_meta', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'get_objects_in_term', array( 'times' => 0 ) );
+		// 551 is empty, its German version is not: the fill writes nothing.
+		WP_Mock::userFunction( 'get_the_terms' )->andReturnUsing(
+			static fn( int $post_id ): array => 551 === $post_id ? array() : array( 999 )
+		);
+		WP_Mock::userFunction(
+			'wp_update_term',
+			array(
+				'times'  => 1,
+				'return' => array(
+					'term_id'          => 557,
+					'term_taxonomy_id' => 557,
+				),
+				'args'   => array(
+					557,
+					'category',
+					Mockery::on(
+						static fn( array $args ): bool => 'system-design' === ( $args['slug'] ?? '' )
+							&& 'Systemauslegung' === ( $args['name'] ?? '' )
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction( 'wp_set_object_terms', array( 'times' => 0 ) );
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+		$twin      = $twins->term(
+			10,
+			array(
+				'name'        => 'Systemauslegung',
+				'description' => '',
+			),
+			'system-design'
+		);
+
+		$this->assertSame( 557, $twin );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The CLI repair is the migration's authority and stays full (closure
+	 * decision 4, 2026-10-15): it replaces whatever is on the post and does
+	 * not consult the current categories at all — get_the_terms is never
+	 * called, and the write lands even though a runtime hook would have
+	 * skipped it.
+	 */
+	public function test_the_cli_repair_replaces_categories_that_are_already_there(): void {
+		PolylangDouble::mock(
+			array(
+				551  => 'en',
+				6893 => 'de',
+			),
+			array( 551 => 6893 ),
+			array(
+				10  => 'en',
+				557 => 'de',
+			),
+			array( 10 => 557 ),
+			'en',
+			array(),
+			array( 551 => array( 'post_type' => 'post' ) ),
+			array( 10 => array( 'slug' => 'system-design' ) )
+		);
+		WP_Mock::userFunction( 'get_the_terms', array( 'times' => 0 ) );
+		$assigned = array();
+		WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+			static function ( int $object_id, array $terms, string $taxonomy, bool $append = false ) use ( &$assigned ): array {
+				$assigned[] = array( $object_id, $terms, $taxonomy, $append );
+				return $terms;
+			}
+		);
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+
+		$this->assertSame( 1, $twins->restore_post_categories() );
+		$this->assertSame(
+			array(
+				array( 551, array( 10 ), 'category', false ),
+				array( 6893, array( 557 ), 'category', false ),
 			),
 			$assigned
 		);

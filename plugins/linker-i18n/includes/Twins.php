@@ -113,6 +113,24 @@ final class Twins {
 	private bool $writing = false;
 
 	/**
+	 * Whether the post currently carries no category at all.
+	 *
+	 * The runtime hooks (post() and assign_term()) are fill-only: they write
+	 * the snapshot's category only into emptiness, never over something. Any
+	 * category already on the post — a previous repair's or an editor's — is
+	 * left alone, so a person's manual categorization survives later
+	 * translates (docs/specs/9-i18n.md, 2026-10-15 修订: the runtime hooks
+	 * restore only while the post has no categories; repair-post-categories,
+	 * the migration's authority, stays full and does not consult this check).
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	private function post_has_no_category( int $post_id ): bool {
+		$terms = get_the_terms( $post_id, 'category' );
+		return false === $terms || array() === $terms;
+	}
+
+	/**
 	 * Sets up the writer.
 	 *
 	 * @param Languages     $languages  The site's languages.
@@ -172,7 +190,13 @@ final class Twins {
 			// of clearing it. Measured on the 2026-10-14 cutover: categories
 			// were imported before posts 551–560, and those posts then had
 			// no category.
-			$this->restore_post_category( $source_id );
+			// Fill-only: the write happens only while neither the English
+			// post nor its German version carries a category — anything
+			// already there is an editor's choice (or an earlier repair)
+			// and must stay (docs/specs/9-i18n.md, 2026-10-15 修订).
+			if ( $this->post_has_no_category( $source_id ) && ( null === $twin || $this->post_has_no_category( $twin ) ) ) {
+				$this->restore_post_category( $source_id );
+			}
 			if ( null === $twin ) {
 				$postarr['post_date']     = $source->post_date;
 				$postarr['post_date_gmt'] = $source->post_date_gmt;
@@ -292,12 +316,14 @@ final class Twins {
 					update_term_meta( $twin, $key, $value );
 				}
 			}
-			// Every write, not only the first: the German term may already
+			// On every write, not only the first: the German term may already
 			// exist when the English posts get their categories (the
 			// migration creates the term before the posts), and a later
 			// adopt() must put the posts back. Polylang's term sync runs on
 			// set_object_terms while writing is still true, so it does not
-			// treat this as a person's edit.
+			// treat this as a person's edit. assign_term() itself is
+			// fill-only (docs/specs/9-i18n.md, 2026-10-15 修订): it writes only a
+			// post that carries no category on either side.
 			$this->assign_term( $source );
 		} finally {
 			$this->restore_kses( $kses );
@@ -487,8 +513,8 @@ final class Twins {
 	}
 
 	/**
-	 * Puts one published post back on the category the snapshot records,
-	 * and its German version on that category's German term.
+	 * Puts one of the snapshot's posts back on the category the snapshot
+	 * records, and its German version on that category's German term.
 	 *
 	 * Does not read the relationships that are already there: on the live
 	 * database those rows are gone, so a lookup by the English term finds
@@ -528,7 +554,7 @@ final class Twins {
 	}
 
 	/**
-	 * Puts every published post of POST_CATEGORIES back on its category.
+	 * Puts every post of POST_CATEGORIES back on its category.
 	 *
 	 * @return int How many English posts were written. A post that is
 	 *             missing, is not a post, or whose term does not carry the
@@ -567,7 +593,15 @@ final class Twins {
 			if ( $term_id !== $source->term_id ) {
 				continue;
 			}
-			$this->restore_post_category( $post_id );
+			// Fill-only: a post that already carries a category — on either
+			// side — is an editor's choice or an earlier repair, and the
+			// runtime write must not replace it (docs/specs/9-i18n.md,
+			// 2026-10-15). The migration's repair-post-categories command
+			// stays the full authority and skips no such post.
+			$twin = $this->languages->post_translation( $post_id, Languages::TARGET );
+			if ( $this->post_has_no_category( $post_id ) && ( null === $twin || $this->post_has_no_category( $twin ) ) ) {
+				$this->restore_post_category( $post_id );
+			}
 		}
 	}
 
