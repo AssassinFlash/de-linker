@@ -505,21 +505,23 @@
 
 ### 修复队列（全部 reproduced 与 partial 条目，共 16 条；fixNote 照抄复核结论——仅族 11 一条经二轮审读收敛措辞，见文末「复核轮审读处置」第 10 条）
 
+> **2026-10-15 校正（主会话按裁定记录）：** ①族 13/20 空态 CTA 实为**两枚**——第三枚原指 batch import，业主 2026-10-11 终裁「不做」（`docs/audit/2026-10-11-surface-inventory.md` GAP-11），其原指向端点 /my-account/bulk-order/ 不存在；②族 2 的 Batch item numbers 与 Nameplate photo 按业主 2026-10-13 再确认「不补齐」（`docs/specs/13-genie.md` C 节），不再列为恢复项，工具行只修 Filters 徽标计数；③族 2 的 Application/Phase 改为逐货架旧线上证据口径；BAT-C 832.0 V 已按手册 Nominal Voltage 落定。
+
 | 族号 | 判定 | fixNote |
 |---|---|---|
 | 1 | reproduced | 在部署实例注册/修复 linker_contact_invitation 短代码处理器使中段 CTA 横带渲染，恢复缩略图一行四张栅格与页头透明压图形态，消除 390 下 444/412 画布横向溢出。 |
-| 2 | reproduced | 按旧线上恢复目录页模板组成：面包屑补父级分类段（term 父链）；工具行恢复 Batch item numbers 与 Nameplate photo 芯片并修 Filters 徽标计数（旧线上空态为 1）；侧栏恢复 Category 嵌套子项展开、Power 档位、AC power min/max 组件与 Project Brief CTA 盒，新增的 Application/Phase facet 及不收敛的 facet 计数（inv Home 38→49、1-phase 10→16）需逐项裁定或移除；卡片规格选列、SAJ 卡完整型号标题、GoodWe BAT-C 默认选型值按旧线上恢复（166.4 V 若为手册修正需补裁定记录）。 |
+| 2 | reproduced | 按旧线上恢复目录页模板组成：面包屑补父级分类段（term 父链）；工具行修 Filters 徽标计数（Batch item numbers 与 Nameplate photo **不恢复**——业主 2026-10-13 再确认不补齐，spec 13）；侧栏恢复 Category 嵌套子项展开、Power 档位、AC power min/max 组件与 Project Brief CTA 盒；Application/Phase 按旧线上逐货架证据处理（2026-10-15 校正：inverters 两维、accessories 仅 Application、cstorage/ems/ev/meters/aio/bat/backup 两维均无、商城两维）并补钉住该映射的夹具测试，facet 计数随筛选收敛（inv Home 38→49、1-phase 10→16 的漂移随之消失）；卡片规格选列、SAJ 卡完整型号标题按旧线上恢复；GoodWe BAT-C 832.0 V 已按手册 Nominal Voltage 落定为正确值（166.4 V 系 Pack 电压，不采用）。 |
 | 4 | reproduced | 注册 linker_contact_invitation 短代码使 EPC 色带（surface="epc"）正常渲染为设计化联系带，页高差随色带恢复收敛。 |
 | 9（EN 侧） | reproduced | 恢复商城/分类侧栏 Phase/Power/AC power/Usable energy/Project Brief 各段的完整渲染（当前 Brand 后截断、Phase 标题破损）；并核卡片 compare 控件 markup 变更后已选态（绿实心）是否仍生效。 |
 | 10（EN 侧） | reproduced | 让筛选态完整落地：渲染 GoodWe 芯片+Clear all 与 390 徽标计数；sort=name 真正作用到结果序（首卡应落 ESA）；facet 计数随激活筛选收敛；ESA Series 家族卡回到列表。 |
 | 11（EN 侧） | reproduced | 恢复 390 下筛选抽屉开启与面板：探针等待 #catalog-filter-open 8s 超时（选择器不存在或 markup 已变更，等价物存否未证实），原缺陷行自认的「采集点击未生效」疑点未排除——先人工点验当前线上 Filters 钮的开合行为，再修复/恢复点击后打开含 facet+Clear/Show products 的抽屉并复测。 |
 | 12 | partial | 缩略图空盒按 C8 缺图方向修线上菜单图片引用（面板/抽屉缩略图 src 不解析或懒加载未触发）；切换件形态、抽屉人形图标、390 圆钮存废三项线上已变成台账 t110 形态，连 Q5a 锁定清单报业主裁定是已锁微调还是线上改版。 |
-| 13 | reproduced | 按 2026-10-10 商务全链补充裁定，把旧线上空态设计层（图标+说明+三 CTA）与询盘入口左排布局+顾问药丸（现名 Genie）移植进新实现的 LC 模板/WindPress 层，措辞保留已裁定新名。 |
+| 13 | reproduced | 按 2026-10-10 商务全链补充裁定，把旧线上空态设计层（图标+说明+**两** CTA：Browse products / Sign in or register——第三枚原指 batch import，业主 2026-10-11 终裁不做、端点不存在，不再移植）与询盘入口左排布局+顾问药丸（现名 Genie）移植进新实现的 LC 模板/WindPress 层，措辞保留已裁定新名。 |
 | 14 | partial | 恢复 contact 页询盘表单块渲染（旧线上为完整表单卡 form=2），兜底行只在表单不可用时出现。 |
 | 15 | reproduced | 实现 linker_contact_invitation 短代码的设计化渲染（TECHNICAL PARTNERSHIP 联系带），390 英雄区恢复双列横排。 |
 | 16 | partial | 恢复文章→分类关系（归档卡与单页 Category/相关文章据此渲染），并渲染单页中部短代码块。 |
 | 17 | reproduced | 搜索结果集收回到博客文章范围（带图文章卡），移除产品条目与分页。 |
-| 20 | reproduced | 与族 13 同一修复在 DE 侧同步落地：空草稿恢复图标+说明+三 CTA 的设计化空态，Proforma-Anfrage 恢复左排布局+Genie 药丸入口，落点限 LC markup/WindPress 样式。 |
+| 20 | reproduced | 与族 13 同一修复在 DE 侧同步落地：空草稿恢复图标+说明+**两** CTA（Produkte ansehen / Anmelden oder registrieren）的设计化空态，Proforma-Anfrage 恢复左排布局+Genie 药丸入口，落点限 LC markup/WindPress 样式。 |
 | 21 | partial | contact-de 恢复表单块、services-de 实现短代码联系带（同 EN 族 14/15 的修复）。 |
 | 22 | partial | 消除 /de/category/ 英文 slug 的 301（按 DE-PARITY-2026-10-13 §4.1 二选一：德语词项 slug 对齐线上 URL 或补映射）；单页同族 16 修分类关系与短代码。 |
 | 23 | reproduced | 同族 17：德语搜索收回博客文章范围，移除产品条目与分页。 |
