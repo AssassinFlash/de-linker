@@ -691,22 +691,29 @@ IMAGE_TAG = re.compile(r"<img\b[^>]*>", re.S)
 def unresolved_menu_images(content: str) -> list[str]:
     """The header's images that would not load, one fault per image.
 
-    Spec 12 item 8 (2026-10-14) is the live site's own form: every menu
-    image resolves through a plain src, and the browser's own loading
-    attribute decides when it is fetched (the live checkpoint carries the
-    desktop menu cards as `src=... loading="lazy"` and the drawer rail as
-    plain `src`; see docs/specs/12-site-chrome.md item 8). There is no
-    hydration contract: a deferred data-src becomes a photo only if a
-    script sees the exact open event, which is how the panel and drawer
-    thumbnails rendered as empty boxes. This is the guard that keeps a
-    re-run or a hand edit from writing that form back.
+    Spec 12 item 8 (2026-10-14, closed out 2026-10-15) is the live site's
+    own form: every menu image resolves through a plain src, and the
+    browser's own loading attribute decides when it is fetched (the live
+    checkpoint carries the desktop menu cards as `src=... loading="lazy"`
+    and the drawer rail as plain `src`; see docs/specs/12-site-chrome.md
+    item 8). There is no hydration script at all — menu-images.js retired
+    with its enqueue (closure decision 8 of 2026-10-15): the review
+    harness proved the plain src resolves at load time (13/13 loaded) and
+    the script was inert without data-src. A deferred data-src renders as
+    an empty box on every open path, which is how the panel and drawer
+    thumbnails broke. This is the guard that keeps a re-run or a hand edit
+    from writing that form back. The src check reads the attribute value
+    quote-independently, so single- and double-quoted markup are both
+    judged by the value, not the quoting.
     """
 
     faults: list[str] = []
     for tag in IMAGE_TAG.findall(content):
         if "data-src" in tag:
             faults.append(f"deferred to data-src: {tag[:90]}")
-        elif 'src=""' in tag or 'src="' not in tag:
+            continue
+        src = re.search(r"""\bsrc\s*=\s*(["'])(.*?)\1""", tag)
+        if src is None or "" == src.group(2):
             faults.append(f"no resolving src: {tag[:90]}")
     return faults
 

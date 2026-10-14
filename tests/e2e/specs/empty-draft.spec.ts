@@ -110,13 +110,17 @@ for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
 		// on top of it.
 		expect(
 			await pill.getAttribute('aria-expanded'),
-			'nothing has opened the dock yet'
-		).not.toBe('true');
+			'nothing has opened the dock yet: the opener sits collapsed'
+		).toBe('false');
 		await pill.click();
 		await expect(
 			page.locator('[data-linker-genie-mount]'),
 			'the pill really opens the Genie panel'
 		).toBeVisible();
+		await expect(
+			page.locator('[data-linker-genie-load-error]'),
+			'the dock mounted without a load error'
+		).toHaveCount(0);
 		await expect(
 			pill,
 			'the opener that opened it is marked expanded'

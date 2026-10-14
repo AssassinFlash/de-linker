@@ -123,13 +123,19 @@ def test_the_menu_image_deferral_switch_is_gone() -> None:
 def test_the_verify_guard_refuses_the_deferred_empty_box_form() -> None:
     """do_verify runs unresolved_menu_images over both header partials on
     the instance; a re-run or a hand edit that defers an image again must
-    be caught there rather than shown as an empty box."""
+    be caught there rather than shown as an empty box. The src check is
+    quote-independent: single- and double-quoted markup are both judged by
+    the value, and a single-quoted resolving src is no fault (the review
+    round's item 7: the old substring check read it as missing)."""
     assert chrome.unresolved_menu_images('<img data-src="/x.webp" alt="">')
+    assert chrome.unresolved_menu_images("<img data-src='/x.webp' alt=''>")
     assert chrome.unresolved_menu_images('<img alt="" class="tv-mega-link-thumb">')
     assert chrome.unresolved_menu_images(
         '<img src="" alt="" class="tv-mega-link-thumb">'
     )
+    assert chrome.unresolved_menu_images("<img src='' alt=''>")
     assert chrome.unresolved_menu_images('<img src="/x.webp" alt="">') == []
+    assert chrome.unresolved_menu_images("<img src='/x.webp' alt=''>") == []
     for partial in HEADER_PARTIALS.values():
         assert chrome.unresolved_menu_images(partial.read_text()) == []
 

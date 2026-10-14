@@ -154,8 +154,11 @@ final class LoginGate {
 			$url = home_url( '/genie/' );
 		}
 		$mark = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.4 5v10.9a1.8 1.8 0 0 0 1.8 1.8H17"/><path d="M8.8 8.4C11.8 4.5 16.4 3.1 19.6 3.5"/><circle cx="20.7" cy="4.9" r="1.5" fill="currentColor" stroke="none"/></svg>';
+		// aria-expanded declares the collapsed state up front: the dock's
+		// shell() flips it to true only when it reports the panel open, so
+		// the opener never claims an expansion that never happened.
 		return sprintf(
-			'<p class="sf-checkout-genie"><a class="sf-checkout-genie__pill" href="%1$s" data-linker-genie-open>%2$s<span>%3$s</span></a></p>',
+			'<p class="sf-checkout-genie"><a class="sf-checkout-genie__pill" href="%1$s" data-linker-genie-open aria-expanded="false">%2$s<span>%3$s</span></a></p>',
 			esc_url( $url ),
 			$mark,
 			esc_html__( 'Genie', 'linker-commerce' )
