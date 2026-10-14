@@ -213,8 +213,13 @@ final class IssuerTest extends TestCase {
 		$issuer = $this->issuer();
 
 		$this->assertSame( '', $issuer->blocker( $this->inquiry() ) );
+		// already-has precedes the status rule: a second issue() after the first
+		// moved the inquiry to "Proforma invoice issued" must say "already has
+		// one", not the status error.
 		$this->assertSame( 'This inquiry already has a Proforma invoice.', $issuer->blocker( $this->inquiry( Statuses::RECEIVED, 'PI-2026-0001' ) ) );
-		$this->assertSame( 'Only a received inquiry gets a Proforma invoice.', $issuer->blocker( $this->inquiry( Statuses::PROFORMA, 'PI-2026-0001' ) ) );
+		$this->assertSame( 'This inquiry already has a Proforma invoice.', $issuer->blocker( $this->inquiry( Statuses::PROFORMA, 'PI-2026-0001' ) ) );
+		// Both errors stay reachable: a non-received inquiry without a Proforma
+		// still gets the status error.
 		$this->assertSame( 'Only a received inquiry gets a Proforma invoice.', $issuer->blocker( $this->inquiry( 'completed' ) ) );
 		$this->assertSame( 'Set a price for every product before issuing the Proforma invoice.', $issuer->blocker( $this->inquiry( Statuses::RECEIVED, '', false ) ) );
 		$this->option_values = array();
