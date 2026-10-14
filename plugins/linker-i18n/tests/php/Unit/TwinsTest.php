@@ -279,4 +279,223 @@ final class TwinsTest extends TestCase {
 		);
 		$this->assertConditionsMet();
 	}
+
+		/**
+		 * The live database has no category rows for posts 551–560. A repair
+		 * that looks those rows up finds nothing, so the write has to come
+		 * from the snapshot list (docs/debt/DE-PARITY-2026-10-13.md §2:
+		 * 551 and 552 on term 10, and the German twins 6893 and 6895).
+		 */
+	public function test_empty_english_relationships_are_restored_from_the_snapshot(): void {
+			PolylangDouble::mock(
+				array(
+					551  => 'en',
+					552  => 'en',
+					6893 => 'de',
+					6895 => 'de',
+				),
+				array(
+					551 => 6893,
+					552 => 6895,
+				),
+				array(
+					10  => 'en',
+					557 => 'de',
+				),
+				array( 10 => 557 ),
+				'en',
+				array(),
+				array(
+					551 => array( 'post_type' => 'post' ),
+					552 => array( 'post_type' => 'post' ),
+				)
+			);
+			WP_Mock::userFunction( 'get_objects_in_term', array( 'times' => 0 ) );
+			$assigned = array();
+			WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+				static function ( int $object_id, array $terms, string $taxonomy, bool $append ) use ( &$assigned ): array {
+					$assigned[] = array( $object_id, $terms, $taxonomy, $append );
+					return $terms;
+				}
+			);
+
+			$languages = new Languages();
+			$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+			$twins->restore_post_categories();
+
+			$this->assertSame(
+				array(
+					array( 551, array( 10 ), 'category', true ),
+					array( 6893, array( 557 ), 'category', true ),
+					array( 552, array( 10 ), 'category', true ),
+					array( 6895, array( 557 ), 'category', true ),
+				),
+				$assigned
+			);
+			$this->assertConditionsMet();
+	}
+
+		/**
+		 * An existing German category is written again, not only when it is
+		 * created. The English relationships are already gone, so the write
+		 * still has to put 551 back on term 10 and 6893 on the German term,
+		 * and a named slug must rename the German term (the live German
+		 * archive is /de/category/system-design/, not
+		 * /de/category/systemauslegung/; docs/debt/DE-PARITY-2026-10-13.md §4.1).
+		 */
+	public function test_an_existing_category_is_reassigned_from_empty_relationships(): void {
+			PolylangDouble::mock(
+				array(
+					551  => 'en',
+					6893 => 'de',
+				),
+				array( 551 => 6893 ),
+				array(
+					10  => 'en',
+					557 => 'de',
+				),
+				array( 10 => 557 ),
+				'en',
+				array(),
+				array( 551 => array( 'post_type' => 'post' ) )
+			);
+			$this->wordpress();
+			WP_Mock::userFunction( 'get_term_meta', array( 'return' => '' ) );
+			WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+			WP_Mock::userFunction( 'get_objects_in_term', array( 'times' => 0 ) );
+			WP_Mock::userFunction(
+				'wp_update_term',
+				array(
+					'times'  => 1,
+					'return' => array(
+						'term_id'          => 557,
+						'term_taxonomy_id' => 557,
+					),
+					'args'   => array(
+						557,
+						'category',
+						Mockery::on(
+							static fn( array $args ): bool => 'system-design' === ( $args['slug'] ?? '' )
+								&& 'Systemauslegung' === ( $args['name'] ?? '' )
+						),
+					),
+				)
+			);
+			$assigned = array();
+			WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+				static function ( int $object_id, array $terms, string $taxonomy, bool $append ) use ( &$assigned ): array {
+					$assigned[] = array( $object_id, $terms, $taxonomy, $append );
+					return $terms;
+				}
+			);
+
+			$languages = new Languages();
+			$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+			$twin      = $twins->term(
+				10,
+				array(
+					'name'        => 'Systemauslegung',
+					'description' => '',
+				),
+				'system-design'
+			);
+
+			$this->assertSame( 557, $twin );
+			$this->assertSame(
+				array(
+					array( 551, array( 10 ), 'category', true ),
+					array( 6893, array( 557 ), 'category', true ),
+				),
+				$assigned
+			);
+			$this->assertConditionsMet();
+	}
+		/**
+		 * A re-run writes the German post while the English post has no
+		 * category. terms() must not copy that empty list onto the German
+		 * post: the snapshot says 551 is on term 10, so 6893 stays on the
+		 * German term.
+		 */
+	public function test_an_empty_english_category_does_not_clear_the_german_post(): void {
+			PolylangDouble::mock(
+				array(
+					551  => 'en',
+					6893 => 'de',
+				),
+				array( 551 => 6893 ),
+				array(
+					10  => 'en',
+					557 => 'de',
+				),
+				array( 10 => 557 ),
+				'en',
+				array(),
+				array(
+					551  => array(
+						'post_type'      => 'post',
+						'post_status'    => 'publish',
+						'post_parent'    => 0,
+						'post_author'    => 1,
+						'menu_order'     => 0,
+						'comment_status' => 'closed',
+						'ping_status'    => 'closed',
+						'post_password'  => '',
+						'post_title'     => 'How to Choose',
+					),
+					6893 => array(
+						'post_type'   => 'post',
+						'post_status' => 'publish',
+						'post_title'  => 'So wählen Sie',
+					),
+				)
+			);
+			$this->wordpress();
+			WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'category' ) ) );
+			WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );
+			WP_Mock::userFunction(
+				'wp_get_object_terms',
+				array(
+					'return' => array(),
+					'args'   => array( 551, 'category', array( 'fields' => 'ids' ) ),
+				)
+			);
+			WP_Mock::userFunction(
+				'wp_update_post',
+				array(
+					'times' => 1,
+					'args'  => array(
+						Mockery::on( static fn( array $postarr ): bool => 6893 === $postarr['ID'] ),
+						true,
+					),
+				)
+			);
+			$assigned = array();
+			WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+				static function ( int $object_id, array $terms, string $taxonomy, bool $append ) use ( &$assigned ): array {
+					$assigned[] = array( $object_id, $terms, $taxonomy, $append );
+					return $terms;
+				}
+			);
+
+			$languages = new Languages();
+			$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+			$twins->post(
+				551,
+				array(
+					'post_title'   => 'So wählen Sie',
+					'post_excerpt' => '',
+					'post_content' => '<p>Deutsch.</p>',
+				),
+				'hybridwechselrichter-vs-ac-speicher'
+			);
+
+			$this->assertSame(
+				array(
+					array( 551, array( 10 ), 'category', true ),
+					array( 6893, array( 557 ), 'category', true ),
+				),
+				$assigned
+			);
+			$this->assertConditionsMet();
+	}
 }

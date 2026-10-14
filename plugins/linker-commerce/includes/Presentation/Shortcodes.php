@@ -34,9 +34,14 @@ final class Shortcodes {
 	public function register(): void {
 		add_shortcode( 'linker_price', array( $this, 'price' ) );
 		add_shortcode( 'linker_checkout', array( $this, 'checkout' ) );
+		add_shortcode( 'linker_draft_empty', array( $this, 'draft_empty' ) );
 		add_shortcode( 'linker_faqs', array( $this, 'faqs' ) );
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
 		add_shortcode( 'linker_contact_invitation', array( $this, 'contact_invitation' ) );
+		// LiveCanvas's native condition tag. Both names stay true or false
+		// together, so a template that lost one half still cannot print both.
+		add_filter( 'lc_define_condition_linker_commerce_draft_empty', array( $this, 'draft_is_empty' ) );
+		add_filter( 'lc_define_condition_linker_commerce_draft_filled', array( $this, 'draft_is_filled' ) );
 	}
 
 	/**
@@ -304,6 +309,63 @@ final class Shortcodes {
 			return $this->gate->html();
 		}
 		return do_shortcode( '[woocommerce_checkout]' );
+	}
+
+		/**
+		 * The empty solution draft: icon, title, the review note, and the two
+		 * ways back that still have a page. The LiveCanvas cart template
+		 * prints this when the draft is empty; a filled draft keeps
+		 * WooCommerce's cart.
+		 *
+		 * @param array<string, string>|string $atts Shortcode attributes.
+		 */
+	public function draft_empty( $atts = array() ): string {
+		unset( $atts );
+		return $this->empty_draft_html();
+	}
+
+	/**
+	 * Whether the solution draft has no lines. A confirmation or pay page is
+	 * not an empty draft: those pages share the cart's template family only
+	 * by accident, and the condition must not hide a receipt.
+	 */
+	public function draft_is_empty(): bool {
+		return $this->is_empty_request();
+	}
+
+	/**
+	 * The other half of the cart template's condition. Never true together
+	 * with draft_is_empty().
+	 */
+	public function draft_is_filled(): bool {
+		return ! $this->draft_is_empty();
+	}
+
+		/**
+		 * Markup of the empty solution draft.
+		 *
+		 * The live empty cart had three actions. The middle one opened a
+		 * batch item-number import the owner later ruled out (surface
+		 * inventory, 2026-10-11: not built). This page keeps the two
+		 * actions that still have a page: browse products, and sign in.
+		 * The heading names the solution draft. Classes only; the look
+		 * lives in the storefront volume.
+		 */
+	private function empty_draft_html(): string {
+		$products = (string) get_permalink( wc_get_page_id( 'shop' ) );
+		$account  = (string) wc_get_page_permalink( 'myaccount' );
+		$icon     = '<svg class="sf-cart-empty__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M3 4h2l2.2 11.2a1 1 0 0 0 1 .8h9.6a1 1 0 0 0 1-.8L21 8H7"/></svg>';
+		return sprintf(
+			'<section class="sf-cart-empty" aria-label="%1$s">%2$s<h1>%3$s</h1><p>%4$s</p><div class="sf-cart-empty__actions"><a class="sf-cart-btn" href="%5$s">%6$s</a><a class="sf-cart-btn sf-cart-btn--ghost" href="%7$s">%8$s</a></div></section>',
+			esc_attr__( 'Empty solution draft', 'linker-commerce' ),
+			$icon,
+			esc_html__( 'Your solution draft is empty.', 'linker-commerce' ),
+			esc_html__( 'You can browse the products and match an item-number list now. Adding to the solution draft is possible only after your account has been reviewed.', 'linker-commerce' ),
+			esc_url( $products ),
+			esc_html__( 'Browse products', 'linker-commerce' ),
+			esc_url( $account ),
+			esc_html__( 'Sign in or register', 'linker-commerce' )
+		);
 	}
 
 	/**

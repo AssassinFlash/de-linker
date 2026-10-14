@@ -37,14 +37,17 @@ final class ShortcodesTest extends TestCase {
 	 */
 	public function test_register_adds_the_shortcodes(): void {
 		$codes = $this->shortcodes();
+		WP_Mock::expectFilterAdded( 'lc_define_condition_linker_commerce_draft_empty', array( $codes, 'draft_is_empty' ) );
+		WP_Mock::expectFilterAdded( 'lc_define_condition_linker_commerce_draft_filled', array( $codes, 'draft_is_filled' ) );
 		foreach (
-				array(
-					'linker_price'              => 'price',
-					'linker_checkout'           => 'checkout',
-					'linker_faqs'               => 'faqs',
-					'linker_contact_link'       => 'contact_link',
-					'linker_contact_invitation' => 'contact_invitation',
-				) as $tag => $method
+		array(
+			'linker_price'              => 'price',
+			'linker_checkout'           => 'checkout',
+			'linker_draft_empty'        => 'draft_empty',
+			'linker_faqs'               => 'faqs',
+			'linker_contact_link'       => 'contact_link',
+			'linker_contact_invitation' => 'contact_invitation',
+		) as $tag => $method
 		) {
 			WP_Mock::userFunction(
 				'add_shortcode',
@@ -89,8 +92,10 @@ final class ShortcodesTest extends TestCase {
 	 */
 	public function test_checkout_of_an_empty_draft_is_the_login_gate(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
-		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
-		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+			WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+			WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/genie/' ) );
+			WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
@@ -109,11 +114,62 @@ final class ShortcodesTest extends TestCase {
 			)
 		);
 
-		$html = $this->shortcodes()->checkout();
+			$html = $this->shortcodes()->checkout();
 
-		$this->assertStringContainsString( 'Get your Proforma', $html );
-		$this->assertStringContainsString( 'Sign in with your partner account', $html );
-		$this->assertStringNotContainsString( 'woocommerce_checkout', $html );
+			$this->assertStringContainsString( 'Get your Proforma', $html );
+			$this->assertStringContainsString( 'Sign in to get your Proforma.', $html );
+			$this->assertStringContainsString( 'sf-checkout-genie__pill', $html );
+			$this->assertStringContainsString( 'data-linker-genie-open', $html );
+			$this->assertStringNotContainsString( 'rounded-xl border', $html );
+			$this->assertStringNotContainsString( 'woocommerce_checkout', $html );
+	}
+
+		/**
+		 * An empty solution draft is the designed empty state: icon, title,
+		 * the review note, and the two ways back that still have a page.
+		 * The retired batch import is not one of them.
+		 */
+	public function test_empty_draft_is_the_designed_empty_state(): void {
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		$this->cart_is( true );
+
+		$shortcodes = $this->shortcodes();
+		$html       = $shortcodes->draft_empty();
+
+		$this->assertTrue( $shortcodes->draft_is_empty() );
+		$this->assertFalse( $shortcodes->draft_is_filled() );
+		$this->assertStringContainsString( 'sf-cart-empty__icon', $html );
+		$this->assertStringContainsString( '<h1>Your solution draft is empty.</h1>', $html );
+		$this->assertStringContainsString( 'match an item-number list now', $html );
+		$this->assertStringContainsString( 'href="https://example.test/products/"', $html );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/"', $html );
+		$this->assertStringContainsString( 'Sign in or register', $html );
+		$this->assertStringNotContainsString( 'bulk-order', $html );
+		$this->assertStringNotContainsString( 'Batch item-number import', $html );
+		$this->assertSame( 2, substr_count( $html, 'class="sf-cart-btn' ) );
+		$this->assertStringNotContainsString( 'style=', $html );
+	}
+
+		/**
+		 * A filled draft, and a confirmation page, are not the empty state.
+		 * The two conditions never agree.
+		 */
+	public function test_a_filled_draft_is_not_the_empty_state(): void {
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		$this->cart_is( false );
+
+		$shortcodes = $this->shortcodes();
+
+		$this->assertFalse( $shortcodes->draft_is_empty() );
+		$this->assertTrue( $shortcodes->draft_is_filled() );
+
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
+		$this->cart_is( true );
+		$this->assertFalse( $shortcodes->draft_is_empty() );
+		$this->assertTrue( $shortcodes->draft_is_filled() );
 	}
 
 	/**
@@ -579,6 +635,39 @@ final class ShortcodesTest extends TestCase {
 	/**
 	 * Shortcodes under test.
 	 */
+
+		/**
+		 * The request's cart, empty or not.
+		 *
+		 * @param bool $vacant Whether the draft has no lines.
+		 */
+	private function cart_is( bool $vacant ): void {
+		$cart = new class( $vacant ) {
+			/**
+			 * Sets whether the draft has no lines.
+			 *
+			 * @param bool $vacant Whether the draft has no lines.
+			 */
+			public function __construct( private bool $vacant ) {}
+
+			/**
+			 * Whether the draft has no lines.
+			 */
+			public function is_empty(): bool {
+				return $this->vacant;
+			}
+		};
+			WP_Mock::userFunction(
+				'WC',
+				array(
+					'return' => (object) array( 'cart' => $cart ),
+				)
+			);
+	}
+
+		/**
+		 * The shortcodes under test.
+		 */
 	private function shortcodes(): Shortcodes {
 		return new Shortcodes( new LoginGate( new Approval() ), new Approval() );
 	}

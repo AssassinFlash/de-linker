@@ -50,6 +50,27 @@ final class Twins {
 	 */
 	private const LIVECANVAS_TYPES = array( 'lc_partial', 'lc_dynamic_template' );
 
+		/**
+		 * The published posts and their category, as the pre-cutover snapshot
+		 * records them (docs/debt/DE-PARITY-2026-10-13.md §2: posts 551–560 on
+		 * terms 10–14, two posts each). The live database no longer has these
+		 * rows, so a repair cannot discover them from the term.
+		 *
+		 * @var array<int, int>
+		 */
+	public const POST_CATEGORIES = array(
+		551 => 10,
+		552 => 10,
+		553 => 11,
+		554 => 11,
+		555 => 12,
+		556 => 12,
+		557 => 13,
+		558 => 13,
+		559 => 14,
+		560 => 14,
+	);
+
 	/**
 	 * Whether this class is writing (its own saves are not edits by a person).
 	 *
@@ -109,6 +130,15 @@ final class Twins {
 		$kses          = $this->suspend_kses();
 		$defaulting    = $this->suspend_default_category();
 		try {
+			// Before the insert. wp_insert_post() gives a new post with no
+			// category the default one, and Polylang's taxonomy sync
+			// (sync on, Setup::OPTIONS) then writes that empty category
+			// back onto the English post. The snapshot's category has to
+			// be on the English post first, so the sync copies it instead
+			// of clearing it. Measured on the 2026-10-14 cutover: categories
+			// were imported before posts 551–560, and those posts then had
+			// no category.
+			$this->restore_post_category( $source_id );
 			if ( null === $twin ) {
 				$postarr['post_date']     = $source->post_date;
 				$postarr['post_date_gmt'] = $source->post_date_gmt;
@@ -208,9 +238,15 @@ final class Twins {
 				$twin = (int) $created['term_id'];
 				$this->ensure_term_pair( $term_id, $twin );
 				$args['slug'] = $slug ?? sanitize_title( $args['name'] );
-				$this->assign_new_term( $source, $twin );
 			} else {
 				$this->ensure_term_pair( $term_id, $twin );
+				if ( null !== $slug ) {
+					// An adopt() that names a slug renames the German term:
+					// the migration is the authority for it (a re-run after a
+					// slug correction must take, or the first run's slug stays
+					// forever). translate() passes none and keeps the slug.
+					$args['slug'] = $slug;
+				}
 			}
 			$updated = wp_update_term( $twin, $source->taxonomy, wp_slash( $args ) );
 			if ( is_wp_error( $updated ) ) {
@@ -222,8 +258,16 @@ final class Twins {
 					update_term_meta( $twin, $key, $value );
 				}
 			}
+			// Every write, not only the first: the German term may already
+			// exist when the English posts get their categories (the
+			// migration creates the term before the posts), and a later
+			// adopt() must put the posts back. Polylang's term sync runs on
+			// set_object_terms while writing is still true, so it does not
+			// treat this as a person's edit.
+			$this->assign_term( $source, $twin );
 		} finally {
 			$this->restore_kses( $kses );
+			$this->restore_default_category( $defaulting );
 			$this->writing = false;
 		}
 		return $twin;
@@ -391,27 +435,87 @@ final class Twins {
 			if ( $this->languages->translates_taxonomy( $taxonomy ) ) {
 				$ids = array_values( array_filter( array_map( fn( int $id ): ?int => $this->languages->term_translation( $id, Languages::TARGET ), $ids ) ) );
 			}
+			// An empty category list is the English relationships already
+			// gone, not a post that has no category. Writing it would clear
+			// the German post too (append is false). The snapshot's
+			// category is the one to keep.
+			if ( 'category' === $taxonomy && array() === $ids && isset( self::POST_CATEGORIES[ $source->ID ] ) ) {
+				$german_term = $this->languages->term_translation( self::POST_CATEGORIES[ $source->ID ], Languages::TARGET );
+				if ( null !== $german_term ) {
+					$ids = array( $german_term );
+				}
+			}
 			wp_set_object_terms( $twin, $ids, $taxonomy );
 		}
 	}
 
 	/**
-	 * Gives a new German term to the German versions of the English posts
-	 * that have the English term (Polylang does this only for a user who may
-	 * assign terms, never in a background job).
+	 * Puts one published post back on the category the snapshot records,
+	 * and its German version on that category's German term.
+	 *
+	 * Does not read the relationships that are already there: on the live
+	 * database those rows are gone, so a lookup by the English term finds
+	 * nothing. A post or term that is not in this database is skipped.
+	 *
+	 * @param int $post_id English post ID.
+	 */
+	public function restore_post_category( int $post_id ): void {
+		$term_id = self::POST_CATEGORIES[ $post_id ] ?? 0;
+		if ( 0 === $term_id || ! get_post( $post_id ) instanceof \WP_Post ) {
+			return;
+		}
+		$source = get_term( $term_id, 'category' );
+		if ( ! $source instanceof \WP_Term || 'category' !== $source->taxonomy ) {
+			return;
+		}
+		wp_set_object_terms( $post_id, array( $source->term_id ), 'category', true );
+		$german_post = $this->languages->post_translation( $post_id, Languages::TARGET );
+		$german_term = $this->languages->term_translation( $source->term_id, Languages::TARGET );
+		if ( null !== $german_post && null !== $german_term ) {
+			wp_set_object_terms( $german_post, array( $german_term ), 'category', true );
+		}
+	}
+
+	/**
+	 * Puts every published post of POST_CATEGORIES back on its category.
+	 *
+	 * @return int How many English posts were written.
+	 */
+	public function restore_post_categories(): int {
+		$restored = 0;
+		foreach ( array_keys( self::POST_CATEGORIES ) as $post_id ) {
+			if ( ! get_post( $post_id ) instanceof \WP_Post ) {
+				continue;
+			}
+			$this->restore_post_category( $post_id );
+			++$restored;
+		}
+		return $restored;
+	}
+
+	/**
+	 * Gives the German term to the English posts the snapshot records for
+	 * it, and to their German versions.
+	 *
+	 * The posts are the snapshot list, not get_objects_in_term(): that
+	 * lookup is empty once the relationships are gone, which is the state
+	 * a re-run has to repair.
 	 *
 	 * @param \WP_Term $source English term.
 	 * @param int      $twin   German term ID.
 	 */
-	private function assign_new_term( \WP_Term $source, int $twin ): void {
-		$posts = get_objects_in_term( $source->term_id, $source->taxonomy );
-		if ( ! is_array( $posts ) ) {
+	private function assign_term( \WP_Term $source, int $twin ): void {
+		if ( 'category' !== $source->taxonomy ) {
 			return;
 		}
-		foreach ( $posts as $post_id ) {
-			$german = $this->languages->post_translation( (int) $post_id, Languages::TARGET );
+		foreach ( self::POST_CATEGORIES as $post_id => $term_id ) {
+			if ( $term_id !== $source->term_id || ! get_post( $post_id ) instanceof \WP_Post ) {
+				continue;
+			}
+			wp_set_object_terms( $post_id, array( $source->term_id ), 'category', true );
+			$german = $this->languages->post_translation( $post_id, Languages::TARGET );
 			if ( null !== $german ) {
-				wp_set_object_terms( $german, array( $twin ), $source->taxonomy, true );
+				wp_set_object_terms( $german, array( $twin ), 'category', true );
 			}
 		}
 	}

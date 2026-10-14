@@ -60,11 +60,13 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
   无价格——端点匿名且可缓存，价格在登录门后）。`?lang=en|de` 由 linker-i18n 的 RestLang 生效
   （德语返回德语孪生与 `/de/…` 地址）。
   archive 的 `q` 过滤与端点共用 `CatalogSearch::normalize()/matches()`（一条规则一处实现）。
-- **`?s=` 结果页范围（原 GAP-1 尾项，裁定落地）**：站内搜索的主查询若**未指名 post_type**，
-  限定为 `product` 与 `post`（`Linker\Commerce\Catalog\SearchScope`，`pre_get_posts`）。
-  依据：线上旧实现（i18n 的 search scope）为避免把页面与其他公开对象喂进文章模板，把隐式搜索
-  限定为文章；新站要搜索的两类内容=目录商品与博客文章，其余靠导航；显式指名 post_type 的请求
-  （集成、单类型搜索）不受影响。页面、LC 模板、attachment 等永不进结果。
+- **`?s=` 结果页范围（原 GAP-1 尾项，2026-10-14 按线上复核收回）**：站内搜索的主查询若**未指名 post_type**，
+  限定为 `post`（`Linker\Commerce\Products\SearchScope`，`pre_get_posts`）。
+  依据：线上旧实现把隐式搜索限定为文章，结果页是博客文章模板（带图文章卡、无分页）；
+  目录商品由目录搜索框（`q` 与 `linker/v1/catalog-search`）承担，不进 `?s=`。
+  2026-10-14 线上复核（缺陷族 17、23）确认当前线上 `?s=PV` 把商品渲染成文章卡并分页，
+  与旧线上 7 篇带图文章卡不符；本条因此从 `product`+`post` 收回为文章。
+  显式指名 post_type 的请求（集成、单类型搜索）不受影响。页面、LC 模板、attachment、商品永不进隐式结果。
 
 ### C. 壳与前端（`plugins/linker-tools`：PHP `Linker\Tools\Genie\{Proxy,Entries}`；React 入口 `genie`）
 - Proxy：`linker-ai/v1/genie/turn` → 服务（鉴权、locale、page_context、conversation_id、流式回传）；会话存储用 WP 原生：匿名以 cookie 绑定的自定义文章类型 `linker_conversation`，登录后归属用户（无自建表）。
@@ -96,6 +98,7 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - [ ] 视觉验收：四入口 + 常驻 × 状态 × EN/DE × 1440/390。
 
 ## 变更记录
+- 2026-10-14（线上复核族 17、23）：`?s=` 隐式主查询从 `product`+`post` 收回为 `post`。证据：旧线上 `?s=PV`（EN 与 DE）是 7 篇带图博客卡、无分页；当前线上同查询把 GoodWe ESA 商品渲染成文章卡并分页（1 2 3 … 8）。目录搜索仍走 `q` 与 `linker/v1/catalog-search`，不走 `?s=`。显式指名 post_type 的请求不动。
 - 2026-10-13（登记册 C2，PR #96 交回）：未登录德语「Wo steht meine Proforma?」不再能落到团队邮箱句。`facts.py` 已把 inquiry-status 的 401 记成 `inquiry.login_required`；提示词（`prompts/de/system.md`、`prompts/en/system.md`、`agent.py` 的每轮提醒）要求该事实只回答登录句，不得调用 handoff-team。grounding 拒掉邮箱句与任何其它形状，`template.login_required` 是兜底的唯一句子。兜底模板的其余两形留在协议集合内：有合格商品时只出合格卡片且正文引用它们，德语行不混英文功能词；无可引用事实时，本轮已有 handoff 句就出该邮箱句，仅当 handoff-team 没跑时出降级声明。判分测试：`tests/test_cycle.py`、`tests/test_ground.py`、`tests/test_agent.py`。
 - 2026-10-11（#16 回归套件段：R7 登录路径与消息 reload 行为落地）：
   - **消息 reload = 恢复线程**（原为"归 #16"）。理由：会话本来就是这个站点自己的记录（`linker_conversation` 文章，cookie 或登录用户绑定），而规格 §C 让客户从分类页／产品页／Lösungsentwurf／账户页四个入口反复打开同一个 Genie——刷新或换页就清空，等于把已建好的上下文丢掉。实现：`Proxy::turn` 把这一轮浏览器发来的 messages 与该轮 SSE 原文写在该会话文章的 meta（`Thread`，上限 60 条），新增只读路由 `GET linker-ai/v1/genie/conversation` 读回（`Conversations::existing_id()`——读回永不新建会话文章），前端挂载时 `readThread()` 用与实时轮次**同一个**解析器还原线程与最后一轮的可渲染块（`assistantMessage()` 是"助手消息正文"的唯一实现）。
