@@ -562,3 +562,25 @@
 12. **复核表族 3「Produktfamilien」未解释** → 成立，已改：族 3 行补注该词在新目录页结果计数行为合法用词（商品卡即产品家族卡，EN 对应行计数 7/7），错页指纹是深蓝 hero+「25 Produkte/4 Familien」计数条+页高 19029+data-compare-article=0 的组合而非单词本身。
 
 处置后五类计数不变（本轮全部为表述、出处与披露修订，未动任何复核判定）：reproduced 11、fixed 11、partial 5、needs-owner 1、无法核 0。
+
+## 修复与清账记录（2026-10-15）
+
+### 修复轮（七泳道，全部并入 main；终态时点 `13da63d`）
+
+- 短代码注册（#149）、contact 表单挂载（#159）、搜索范围（#158）、博客分类关系与 DE 301（#160）、页头缩略图（#153）、商城空态（#161）、目录页组成（#154）——各 PR 终审（Spec+Standards，评审模型经历 kimi→deepseek 接力，全部意见逐条处置）后合并；台账校正与 Q5a 收口（#162）。
+- **关键事实（主会话实证）**：LiveCanvas 的 `[lc_if]` 条件走 `call_user_func(同名 PHP 函数)`，**没有** `lc_define_condition_*` filter 机制（快照 `livecanvas/modules/shortcodes.php:887-921`）——注册 filter 会让模板打印 `Error: Invalid condition function.`；修法为全局函数 `linker_commerce_draft_empty/_filled`。
+- **裁定合规修正**：#154 分支曾新增 Batch item numbers 与 Nameplate photo 两芯片并改写 spec 13 记录；按业主 2026-10-13「不补齐」再确认被**删除**（芯片、测试、语言目录同步清），spec 13 记录复原。
+- **产品事实**：GoodWe BAT-C 默认选型 832.0 V=托管数据手册 Nominal Voltage（166.4 V 为 Pack 电压，不采用），随 #154 落地。
+- 被取代的前任 PR：#155/#156/#157 关闭（内容分别由 #161/#160/#159 收口）。
+
+### 清账轮 1（五泳道 + 取证，全部并入 main）
+
+- #163 Twins 运行语义 fill-only（有编辑分类不覆写；CLI 保留全量权威）；#164 横切小项（断言收紧、**menu-images.js 及 enqueue 删除**——新通道 src 直解析已由实测承载、contact 集成测试 skip→fail、curl_close 清红）；#165 contact 整卡设计移植（旧线上 What can we help with? 卡+副卡，文案三轮对抗评审保住 #68 定稿）；#166 博客模板搬进仓库（单页/归档，1440 与旧模板**逐像素 0 差**）；#167 未拍面 B–H 段 **34 行全关闭**（217 张截图+探针，0 行「拍不到」形态；补拍中当场修掉两处真缺陷）。
+- **取证两条纠错落案**：① #159 openQ 2 的「t110 重存」实为 contact-form 泳道自身夹具写探针在 **contactform 实例**所为（`post_author=0`、夹具文本逐字节）；t110 的 contact 页 `post_modified_gmt` 停在 2026-10-13，未被触碰——生产未受影响；② aio 的 Inverters 层级：生产/t110/快照三层一致为平层级，且旧线上 URL 亦为平（`legacy-redirects.json` 实证），**不改 term 数据**（避免断链），按旧线上截图做显示分组（修正轮执行中）。
+- **交付串对齐**：族 13/20 实交 CTA 以 copy-review 定稿为准（DE 实交「Zu den Produkten」等）；本台账括注引用的是旧线上标签（如「Produkte ansehen」），非本次交付串。
+
+### 在途（完成后本节补终态）
+
+- 修正轮：Proforma blocker 顺序回归（`Issuer.php` 状态门先于 already-has 检查，3d8d4e5 引入）+ aio 导航显示分组。
+- 登记册清零轮：`REGISTRY-2026-10-12.md` 54 条逐条终态（产出 `REGISTRY-CLOSEOUT-2026-10-15.md`；A3/A4/A6 终局像素包在部署后执行并回填）。
+- 部署（backup→deploy→present→WindPress 编译→缓存→verify）与线上探针复验。
