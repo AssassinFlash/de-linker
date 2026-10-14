@@ -169,6 +169,11 @@ def _repository(tmp_path: Path, *, recorder: bool = True, themes: bool = True) -
         (must_use / "linker-error-recorder.php").write_text(
             "<?php // the recorder", encoding="utf-8"
         )
+        # A certificate a plugin beside it verifies against travels with the
+        # same step; a PHP-only glob would leave it behind on the next run.
+        (must_use / "linker-engine-ca.pem").write_text(
+            "-----BEGIN CERTIFICATE-----", encoding="utf-8"
+        )
     if themes:
         theme = repository / plan.THEMES_REPO / "picostrap5-child-base"
         theme.mkdir(parents=True)
@@ -306,7 +311,13 @@ def test_the_deploy_installs_the_recorder_over_the_live_file(tmp_path: Path) -> 
     source, destination = target.rsyncs[0]
     assert Path(source).name == recorder
     assert destination == f"{target.root}/{plan.MU_PLUGINS_DIR}/{recorder}"
-    assert len(target.rsyncs) == 5, "the recorder, the theme file and the three plugins"
+    assert len(target.rsyncs) == 6, (
+        "the recorder, its certificate, the theme file and the three plugins"
+    )
+    pem = [
+        destination for _, destination in target.rsyncs if destination.endswith(".pem")
+    ]
+    assert pem == [f"{target.root}/{plan.MU_PLUGINS_DIR}/linker-engine-ca.pem"]
     assert result.actions[0] == (
         f"deployed {plan.MU_PLUGINS_REPO}/{recorder} to "
         f"{plan.MU_PLUGINS_DIR}/{recorder} (replaced the live file)"
@@ -358,8 +369,9 @@ def test_the_deploy_stops_when_the_checkout_has_no_theme_directory(
             staging=tmp_path / "staging",
         )
     assert [Path(source).name for source, _ in target.rsyncs] == [
-        "linker-error-recorder.php"
-    ], "the recorder goes first; the theme failure stops everything after it"
+        "linker-error-recorder.php",
+        "linker-engine-ca.pem",
+    ], "the must-use files go first; the theme failure stops everything after them"
 
 
 def test_the_deploy_stops_when_the_checkout_has_no_must_use_directory(

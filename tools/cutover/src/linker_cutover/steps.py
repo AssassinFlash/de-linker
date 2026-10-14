@@ -180,12 +180,18 @@ def deploy_mu_plugins(target: Target, *, repository: Path) -> list[str]:
     installing the recorder is a gap the step would be hiding.
     """
     source = Path(repository) / plan.MU_PLUGINS_REPO
-    files = sorted(source.glob("*.php")) if source.is_dir() else []
-    if not files:
+    # `*.php` are the plugins; a `*.pem` is a certificate a plugin next to it
+    # verifies against (the engine pin, 2026-10-14), and it must travel in the
+    # same step or the pin on the site has nothing to read. The guard below
+    # stays keyed on the PHP files: a directory of certificates is not a
+    # must-use deployment.
+    plugins = sorted(source.glob("*.php")) if source.is_dir() else []
+    if not plugins:
         raise CutoverError(
             f"{source} carries no must-use plugin — the switch deploys the error "
             "recorder PR #86 (ticket #80) ships there"
         )
+    files = plugins + (sorted(source.glob("*.pem")) if source.is_dir() else [])
     actions: list[str] = []
     for path in files:
         relative = f"{plan.MU_PLUGINS_DIR}/{path.name}"
