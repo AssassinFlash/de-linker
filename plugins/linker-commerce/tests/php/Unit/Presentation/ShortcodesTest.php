@@ -337,10 +337,106 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * An unknown surface prints nothing. It must not borrow another
-	 * surface's words — that is how the EPC intake was rendered as the
-	 * solution band.
+	 * The five surfaces the live pages print, parsed by WordPress's own
+	 * shortcode_parse_atts and sanitize_html_class — not by the identity
+	 * stand-ins invitation_page() installs for the copy tests.
+	 *
+	 * The stored form is straight quotes (the EPC page). The form the
+	 * current live HTML shows for an unregistered tag is wptexturize's
+	 * &#8221; (services and solution, fetched 2026-10-14). Both must
+	 * render. A stored entity that survives into the attribute value must
+	 * not come back empty.
+	 *
+	 * @dataProvider invitation_sources_wordpress_parses
+	 * @param string $source  The attribute source, as stored or as texturized.
+	 * @param string $surface The class the band must carry.
+	 * @param string $heading A word only that surface prints.
 	 */
+	public function test_invitation_renders_after_wordpress_parses_the_attribute( string $source, string $surface, string $heading ): void {
+		$this->invitation_page( 'en' );
+		WP_Mock::userFunction( 'sanitize_html_class' )->andReturnUsing(
+			static function ( string $classname ): string {
+				$sanitized = preg_replace( '|%[a-fA-F0-9][a-fA-F0-9]|', '', $classname );
+				$sanitized = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $sanitized );
+				return (string) $sanitized;
+			}
+		);
+		WP_Mock::userFunction( 'shortcode_atts' )->andReturnUsing(
+			static function ( array $pairs, array $atts ): array {
+				$out = array();
+				foreach ( $pairs as $name => $default ) {
+					$out[ $name ] = array_key_exists( $name, $atts ) ? $atts[ $name ] : $default;
+				}
+				return $out;
+			}
+		);
+
+		$parsed = $this->wordpress_shortcode_atts( $source );
+		$html   = $this->shortcodes()->contact_invitation( $parsed );
+
+		$this->assertNotSame( '', $html, $source );
+		$this->assertStringContainsString( 'linker-contact-' . $surface, $html );
+		$this->assertStringContainsString( $heading, $html );
+		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
+	}
+
+	/**
+	 * Attribute sources. The texturized ones are the bytes on the current
+	 * live pages; the straight-quote ones are the stored EPC tags.
+	 *
+	 * @return array<string, array{string, string, string}>
+	 */
+	public static function invitation_sources_wordpress_parses(): array {
+		return array(
+			'solution straight'   => array( 'surface="solution"', 'solution', 'A storage solution built around the whole project.' ),
+			'solution texturized' => array( 'surface=&#8221;solution&#8221;', 'solution', 'A storage solution built around the whole project.' ),
+			'epc straight'        => array( 'surface="epc"', 'epc', 'Discuss the project before preparing the full brief.' ),
+			'epc intake'          => array( 'surface="epc-intake" compact="1"', 'epc-intake', 'An early question is enough.' ),
+			'services texturized' => array( 'surface=&#8221;services&#8221;', 'services', 'A technical partner, wherever your project stands.' ),
+			'article straight'    => array( 'surface="article"', 'article', 'What could the right storage solution do for your site?' ),
+		);
+	}
+
+	/**
+	 * WordPress's shortcode_parse_atts (wp-includes/shortcodes.php). The
+	 * unit double of that function is an identity, so this copies the
+	 * real attribute regex and runs it here.
+	 *
+	 * @param string $text The inside of the shortcode tag.
+	 * @return array<string, string>
+	 */
+	private function wordpress_shortcode_atts( string $text ): array {
+		$pattern = '/([\w-]+)\s*=\s*"([^"]*)"(?:\s|$)|([\w-]+)\s*=\s*\'([^\']*)\'(?:\s|$)|([\w-]+)\s*=\s*([^\s\'"]+)(?:\s|$)|"([^"]*)"(?:\s|$)|\'([^\']*)\'(?:\s|$)|(\S+)(?:\s|$)/';
+		$text    = preg_replace( "/[\x{00a0}\x{200b}]+/u", ' ', $text );
+		$atts    = array();
+		if ( is_string( $text ) && preg_match_all( $pattern, $text, $match, PREG_SET_ORDER ) ) {
+			foreach ( $match as $m ) {
+				$parts = array_pad( array_values( $m ), 7, '' );
+				$name  = '';
+				$value = '';
+				if ( '' !== $parts[1] ) {
+					$name  = strtolower( $parts[1] );
+					$value = stripcslashes( $parts[2] );
+				} elseif ( '' !== $parts[3] ) {
+					$name  = strtolower( $parts[3] );
+					$value = stripcslashes( $parts[4] );
+				} elseif ( '' !== $parts[5] ) {
+					$name  = strtolower( $parts[5] );
+					$value = stripcslashes( $parts[6] );
+				}
+				if ( '' !== $name ) {
+					$atts[ $name ] = $value;
+				}
+			}
+		}
+		return $atts;
+	}
+
+		/**
+		 * An unknown surface prints nothing. It must not borrow another
+		 * surface's words — that is how the EPC intake was rendered as the
+		 * solution band.
+		 */
 	public function test_invitation_of_an_unknown_surface_is_empty(): void {
 		$this->invitation_page( 'en' );
 
@@ -414,9 +510,9 @@ final class ShortcodesTest extends TestCase {
 			$this->assertStringContainsString( 'linker-contact-article', $article );
 			$this->assertStringNotContainsString( 'linker-contact-editorial', $article );
 			$this->assertStringContainsString( 'intent=product', $article );
-		$this->assertStringContainsString( 'intent=project', $epc );
-		$this->assertStringContainsString( 'Utility storage', $epc );
-		$this->assertStringContainsString( 'source=https%3A%2F%2Fexample.test%2Fsolutions%2Futility-storage%2F', $epc );
+			$this->assertStringContainsString( 'intent=project', $epc );
+			$this->assertStringContainsString( 'Utility storage', $epc );
+			$this->assertStringContainsString( 'source=https%3A%2F%2Fexample.test%2Fsolutions%2Futility-storage%2F', $epc );
 			$this->assertStringContainsString( 'source_id=746', $epc );
 			$this->assertStringContainsString( 'linker-contact-epc', $epc );
 	}

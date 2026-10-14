@@ -116,8 +116,17 @@ final class Shortcodes {
 			(array) $atts,
 			'linker_contact_invitation'
 		);
-		$surface    = sanitize_html_class( (string) $attributes['surface'] );
-		$copy       = self::invitation_copy();
+		// Decode before sanitize_html_class. An unregistered tag is
+		// wptexturized to &#8221; (current /services-support/ and
+		// /solution/utility-storage/ HTML, 2026-10-14). A stored entity is
+		// not a quote to shortcode_parse_atts, so the value arrives as
+		// &#8221;services&#8221; and sanitizes to 8221services8221, which
+		// matches no surface and prints no band. WordPress's own
+		// shortcode_parse_atts / sanitize_html_class.
+		$surface = html_entity_decode( (string) $attributes['surface'], ENT_QUOTES, 'UTF-8' );
+		$surface = trim( $surface, "\"\'\xE2\x80\x9C\xE2\x80\x9D" );
+		$surface = sanitize_html_class( $surface );
+		$copy    = self::invitation_copy();
 		if ( ! isset( $copy[ $surface ] ) ) {
 			return '';
 		}
