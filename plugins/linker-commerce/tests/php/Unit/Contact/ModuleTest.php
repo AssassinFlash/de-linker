@@ -21,10 +21,10 @@ use WP_Post;
  * mount (measured 2026-10-14: form=0, the fallback line visible). The module
  * replaces that mount while the form shortcode can render, and leaves the
  * fallback when it cannot. The line survives in two stored shapes — wrapped
- * in `<noscript>` on the deployed pages and snapshot-loaded instances, and
- * as a bare paragraph after the contactform instance's kses-shaped re-save
- * of 2026-10-14 (reads: docs/acceptance/2026-10-14/contact-form/README.md)
- * — so both fixtures run the mount.
+ * in `<noscript>` on the deployed pages and in the stored snapshot content,
+ * and as a bare paragraph after the contactform instance's kses-shaped
+ * re-save of 2026-10-14 (reads: docs/acceptance/2026-10-14/contact-form/
+ * README.md) — so both fixtures run the mount.
  *
  * @covers \Linker\Commerce\Contact\Module
  */

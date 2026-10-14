@@ -162,16 +162,19 @@ final class Module {
 	 * verfügbar ist…").
 	 *
 	 * The line survives in two stored shapes. The deployed pages and the
-	 * snapshot-loaded instances wrap it in `<noscript>` (de-linker.com
-	 * /contact/ and /de/kontakt/, fetched 2026-10-14; the loader runs
-	 * `kses_remove_filters()` before it inserts — plugins/linker-i18n/tests/
-	 * fixtures/seed.php:78 — so t110 post 6917 keeps the wrapper). The bare
-	 * paragraph is what a re-save of the contactform instance left on posts
-	 * 10 and 11, 2026-10-14 13:26–13:33 UTC: `<script>`, `<style>` and
-	 * `<noscript>` dropped with their text kept — the shape a kses-filtered
-	 * save leaves. Which process ran that save is not recorded; the lane
-	 * README (docs/acceptance/2026-10-14/contact-form/) carries the reads
-	 * and the open question.
+	 * stored snapshot content wrap it in `<noscript>` (de-linker.com
+	 * /contact/ and /de/kontakt/ fetched 2026-10-14; plugins/linker-i18n/
+	 * tests/fixtures/live/pages.json, entry `contact`). The bare paragraph
+	 * is what a re-save of the contactform instance left on posts 10 and 11,
+	 * 2026-10-14 13:26–13:33 UTC: `<script>`, `<style>` and `<noscript>`
+	 * dropped with their text kept — the shape a kses-filtered save leaves.
+	 * The loader did not do that: it calls `kses_remove_filters()` before it
+	 * inserts (plugins/linker-i18n/tests/fixtures/seed.php:78), and t110's
+	 * snapshot-loaded pages keep `<script>`/`<style>` (post 6917, whose
+	 * fallback line the migration has already replaced with the shortcode).
+	 * Which process ran the stripping save is not recorded; the lane README
+	 * (docs/acceptance/2026-10-14/contact-form/) carries the reads and the
+	 * open question.
 	 *
 	 * Both shapes are this line, so both are matched.
 	 *
