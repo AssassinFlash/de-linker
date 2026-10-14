@@ -66,9 +66,9 @@ final class Module {
 	 * fallback and a noscript line — because the migration that swaps them
 	 * for `[linker_contact_form]` is not in the cutover list. The swap
 	 * happens here, on the way out, so a deploy renders the form without a
-	 * content write. A page that already carries the shortcode is left
-	 * alone. Any other page is left alone: the mount marker belongs to
-	 * these two pages.
+	 * content write. A page that already carries the shortcode keeps it —
+	 * only the fallback line left beside it goes. Any other page is left
+	 * alone: the mount marker belongs to these two pages.
 	 *
 	 * The fallback line stays in the page and is shown only when this
 	 * shortcode is not registered — the form really cannot render. While
