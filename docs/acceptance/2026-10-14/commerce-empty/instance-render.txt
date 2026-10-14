@@ -18,3 +18,8 @@
 ## e2e（LINKER_E2E_SKIP_SERVICES=1 just e2e shortcode empty-draft.spec.ts）
 
 EN 两用例过：空态构成（标题/说明/两链接/图标/恰 2 按钮/无 item-number/无 Invalid condition function）+ 询盘页左列与 Genie 药丸（含点击药丸后仍停在 /proforma-request/，验证锚点不再同时跳转）。德语两用例在本实例 404（实例没有德语页），在带德语页的实例上运行；德语行为以上面的 eval-file 证据为准。
+
+## 复核轮补记（2026-10-15，PR #161 落净项）
+
+- 药丸色四图取色 PIL 复核：四张 2026-10-12/13 抓图（freshdiff-rerun checkout-en-1440/-390-live、de-parity checkout-de-1440/-390-live）逐像素复测——填充 rgb(23,38,54)=#172636（6058/6058/5970/5970 px）、圆标 rgb(56,69,82)=#384552（471/471/470/470 px，= 白 14% 叠在填充上）；此前注释声明的 #1c2430/#2a3340 各 0 px。storefront.css 按实测值改为 `#172636` + `rgba(255,255,255,.14)`，来源注释写进文件（PR #161 正文）。
+- t110 e2e（德语树实例）：`LINKER_E2E_INSTANCE=t110 LINKER_E2E_SKIP_SERVICES=1 npx playwright test specs/empty-draft.spec.ts` → 4 passed（cart EN/DE 设计化空态 + proforma-request EN/DE 左排+药丸开面板）。

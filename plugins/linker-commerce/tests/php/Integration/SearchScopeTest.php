@@ -57,7 +57,8 @@ final class SearchScopeTest extends IntegrationTestCase {
 
 		// The live defect paginated the leaked products (1 2 3 … 8 »). A page
 		// size of one turns every leaked entry into its own page, so the
-		// one-page assertion in search() can only hold when nothing leaks.
+		// found_posts totals and the one-page assertion in search() can only
+		// hold when nothing leaks.
 		$per_page = (int) get_option( 'posts_per_page' );
 		update_option( 'posts_per_page', 1 );
 		$this->later(
@@ -66,8 +67,8 @@ final class SearchScopeTest extends IntegrationTestCase {
 			}
 		);
 
-		$english_hits = $this->search( 'en' );
-		$german_hits  = $this->search( 'de' );
+		list( $english_hits, $english_total ) = $this->search( 'en' );
+		list( $german_hits, $german_total )   = $this->search( 'de' );
 
 		$this->assertContains( $english, $english_hits, 'The English search includes the English article.' );
 		$this->assertNotContains( $german, $english_hits, 'The English search does not include the German article.' );
@@ -79,7 +80,12 @@ final class SearchScopeTest extends IntegrationTestCase {
 		$this->assertNotContains( $german_product, $german_hits, 'The German product never enters the German search.' );
 		$this->assertNotContains( $page, $english_hits, 'A page never enters the implicit search.' );
 		$this->assertNotContains( $page, $german_hits, 'A page never enters the German search.' );
-		$this->assertLessThanOrEqual( (int) get_option( 'posts_per_page' ), count( $english_hits ), 'The search uses the blog page size, not a product pager of its own.' );
+		// found_posts is the whole result set, not just the first page: the
+		// live defect (families 17 and 23) paginated the leaked products onto
+		// later pages, which a page-one assertion cannot see. A total of one
+		// proves nothing leaked anywhere in the set.
+		$this->assertSame( 1, $english_total, 'The English search counts only the English article: no product, page or German article in the result set.' );
+		$this->assertSame( 1, $german_total, 'The German search counts only the German article: no product or English article in the result set.' );
 	}
 
 	/**
@@ -160,7 +166,7 @@ final class SearchScopeTest extends IntegrationTestCase {
 	 * `WP::query_posts()`, which is what `?s=` runs.
 	 *
 	 * @param string $language Polylang language slug.
-	 * @return list<int>
+	 * @return array{0: list<int>, 1: int} The page's post IDs and the query's found_posts total.
 	 */
 	private function search( string $language ): array {
 		$this->as_language( $language );
@@ -176,7 +182,7 @@ final class SearchScopeTest extends IntegrationTestCase {
 		$this->assertSame( 1, (int) $query->max_num_pages, "The {$language} search is one page at a page size of one: nothing leaked to paginate it." );
 		$ids = $this->ids_of( $query );
 		sort( $ids );
-		return $ids;
+		return array( $ids, (int) $query->found_posts );
 	}
 
 	/**

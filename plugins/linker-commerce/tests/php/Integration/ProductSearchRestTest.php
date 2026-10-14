@@ -188,7 +188,10 @@ final class ProductSearchRestTest extends TestCase {
 		$response    = curl_exec( $handle );
 		$status      = (int) curl_getinfo( $handle, CURLINFO_RESPONSE_CODE );
 		$header_size = (int) curl_getinfo( $handle, CURLINFO_HEADER_SIZE );
-		curl_close( $handle );
+		// Released by unset(), not curl_close(): the close call was the phpcs
+		// deprecation report's target (#158 openQ 2), and dropping the
+		// reference frees the handle the same way at function scope.
+		unset( $handle );
      // phpcs:enable
 
 		if ( ! is_string( $response ) ) {
