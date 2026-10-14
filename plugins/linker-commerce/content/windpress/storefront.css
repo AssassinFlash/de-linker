@@ -2033,24 +2033,37 @@ body.woocommerce-cart #tv-storefront-cart h1 {
   font-weight: 500;
 }
 
+/*
+ * Empty solution draft. The live empty cart (measured 2026-10-12/13,
+ * cart-en/de 1440 and 390) is a centred block: a 48px cart stroke, a
+ * 20px/500 title, a muted two-line note capped at 28rem, then three
+ * 44px pills. At 390 the third pill wraps under the first two — flex
+ * wrap, not a second layout.
+ */
 #tv-storefront-cart .sf-cart-empty {
   grid-column: 1 / -1;
   width: 100%;
-  max-width: 36rem;
-  margin: 6rem auto;
+  max-width: 40rem;
+  margin: 4.5rem auto 5rem;
+  padding: 0 1rem;
   text-align: center;
 }
 #tv-storefront-cart .sf-cart-empty__icon {
   display: block;
+  width: 48px;
+  height: 48px;
   margin: 0 auto 1.25rem;
   color: var(--sf-fg);
 }
 #tv-storefront-cart .sf-cart-empty h1 {
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.75rem;
   font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.3;
 }
 #tv-storefront-cart .sf-cart-empty p {
-  margin: 0 0 1.25rem;
+  max-width: 28rem;
+  margin: 0 auto 1.5rem;
   color: var(--sf-muted);
   font-size: 0.95rem;
   line-height: 1.55;
@@ -2673,23 +2686,75 @@ body.woocommerce-order-received #container-content-page > div {
   max-width: 40rem;
 }
 
-#tv-woo-b2b-checkout .sf-checkout-empty { max-width: 28rem; }
-#tv-woo-b2b-checkout .sf-checkout-empty h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.125rem;
+/*
+ * Empty Proforma request. The live page (measured 2026-10-12/13,
+ * checkout-en/de 1440 and 390) is a left column inside the 1160px
+ * frame, not a centred card: title, the assistant pill, a bold
+ * sign-in line, the partner-account note, then two buttons. The pill
+ * is the live Advisor/Berater control under the current name.
+ * Approval gates share the column; they have no pill.
+ */
+#tv-woo-b2b-checkout .sf-checkout-empty {
+  max-width: 36rem;
+  margin: 1.5rem 0 3rem;
+  padding: 0.5rem 0 1rem;
+  text-align: left;
+  background: transparent;
+  border: 0;
+}
+#tv-woo-b2b-checkout .sf-checkout-empty h1 {
+  margin: 0 0 1.25rem;
+  color: var(--sf-fg);
+  font-size: 1.375rem;
   font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+#tv-woo-b2b-checkout .sf-checkout-genie {
+  margin: 0 0 1.75rem;
+}
+#tv-woo-b2b-checkout .sf-checkout-genie__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.4rem 1.1rem 0.4rem 0.45rem;
+  border-radius: 999px;
+  background: #1c2430;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+}
+#tv-woo-b2b-checkout .sf-checkout-genie__pill svg {
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  border-radius: 999px;
+  background: #2a3340;
+  color: #fff;
+}
+#tv-woo-b2b-checkout .sf-checkout-empty h2 {
+  margin: 0 0 0.65rem;
+  color: var(--sf-fg);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
 }
 #tv-woo-b2b-checkout .sf-checkout-empty p {
+  max-width: 34rem;
   margin: 0;
   color: var(--sf-muted);
-  font-size: 14px;
+  font-size: 0.95rem;
   line-height: 1.55;
 }
 #tv-woo-b2b-checkout .sf-checkout-empty__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1.25rem;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 #tv-woo-b2b-checkout .woocommerce-notices-wrapper { margin: 0 0 1.25rem; }

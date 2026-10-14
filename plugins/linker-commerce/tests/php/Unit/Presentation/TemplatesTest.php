@@ -66,7 +66,11 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( '[linker_products_families]', (string) file_get_contents( $paths['is_shop_page'] ) );
 		$this->assertStringContainsString( 'id="tv-storefront-pdp"', (string) file_get_contents( $paths['is_single_product'] ) );
 		$this->assertStringContainsString( 'id="linker-products"', (string) file_get_contents( $paths['is_shop_page'] ) );
-		$this->assertStringContainsString( '[woocommerce_cart]', (string) file_get_contents( $paths['is_cart_page'] ) );
+			$cart = (string) file_get_contents( $paths['is_cart_page'] );
+			$this->assertStringContainsString( '[linker_draft_empty]', $cart );
+			$this->assertStringContainsString( 'linker_commerce_draft_empty', $cart );
+			$this->assertStringContainsString( 'linker_commerce_draft_filled', $cart );
+			$this->assertStringContainsString( '[woocommerce_cart]', $cart );
 		$this->assertStringContainsString( '[linker_checkout]', (string) file_get_contents( $paths['is_checkout_page'] ) );
 		$this->assertStringContainsString( '[woocommerce_my_account]', (string) file_get_contents( $paths['is_account_page'] ) );
 		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $paths['linker-compare'] ) );

@@ -131,20 +131,57 @@ final class LoginGateTest extends TestCase {
 	 * A guest sees the live login-gate copy and the account + products links.
 	 */
 	public function test_guest_html(): void {
-		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
-		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+			WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+			WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/genie/' ) );
+			WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
 
+			$html = ( new LoginGate( $this->approval() ) )->html();
+
+			$this->assertStringContainsString( 'Get your Proforma', $html );
+			$this->assertStringContainsString( 'Sign in to get your Proforma.', $html );
+			$this->assertStringContainsString( 'reserved for Linker partner accounts', $html );
+			$this->assertStringContainsString( 'https://example.test/my-account/', $html );
+			$this->assertStringContainsString( 'https://example.test/products/', $html );
+			$this->assertStringContainsString( 'sf-checkout-empty', $html );
+			$this->assertStringContainsString( 'sf-checkout-genie__pill', $html );
+			$this->assertStringContainsString( 'data-linker-genie-open', $html );
+			$this->assertStringContainsString( '>Genie<', $html );
+			$this->assertStringContainsString( 'href="https://example.test/genie/"', $html );
+			$this->assertStringNotContainsString( 'mx-auto', $html );
+			$this->assertStringNotContainsString( 'border-neutral-200', $html );
+			$this->assertStringNotContainsString( 'style=', $html );
+	}
+
+		/**
+		 * On a German request the pill keeps its place and names Genie, and
+		 * its address is the German Genie page.
+		 */
+	public function test_guest_html_on_german_opens_the_german_genie_page(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/de/mein-konto/' ) );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'return' => static function ( int $id ): string {
+					return 77 === $id ? 'https://example.test/de/genie/' : 'https://example.test/de/produkte/';
+				},
+			)
+		);
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => new \WP_Post( (object) array( 'ID' => 40 ) ) ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 77 ) );
+
 		$html = ( new LoginGate( $this->approval() ) )->html();
 
-		$this->assertStringContainsString( 'Get your Proforma', $html );
-		$this->assertStringContainsString( 'Sign in with your partner account', $html );
-		$this->assertStringContainsString( 'reserved for Linker partner accounts', $html );
-		$this->assertStringContainsString( 'https://example.test/my-account/', $html );
-		$this->assertStringContainsString( 'https://example.test/products/', $html );
-		$this->assertStringContainsString( 'sf-checkout-empty', $html );
+		$this->assertStringContainsString( 'href="https://example.test/de/genie/"', $html );
+		$this->assertStringContainsString( 'sf-checkout-genie__pill', $html );
+		$this->assertStringContainsString( '>Genie<', $html );
+		$this->assertStringContainsString( 'Sign in to get your Proforma.', $html );
 	}
 
 	/**
