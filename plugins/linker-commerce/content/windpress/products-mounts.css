@@ -1,5 +1,5 @@
 /*
- * The catalogue's own styles. storefront.css and products.css carry the
+ * The product list's own styles. storefront.css and products.css carry the
  * rest of the list; this file holds only what the mounts of 2026-10-11 add,
  * each value measured on the live page.
  *
@@ -17,21 +17,21 @@
 }
 
 /*
- * The catalogue's contact invitation. The live page keeps it as the last
+ * The product list's contact invitation. The live page keeps it as the last
  * block of the results column, under the pagination, on the shop and on every
  * category page — a soft panel with the page as the request's context
- * (measured on the live catalogue 2026-10-12 at 1440: 958×145.67, margin
+ * (measured on the live product list 2026-10-12 at 1440: 958×145.67, margin
  * 36/20, padding 26/30, radius 14, bg #f7f8f9, line #d7dce1, gap 30; at 390:
  * column, padding 23, gap 20).
  *
- * Every rule is scoped to the catalogue root, because storefront.css
+ * Every rule is scoped to the product-list root, because storefront.css
  * carries its own link reset `#linker-products a { color: inherit;
  * text-decoration: none; }` (storefront.css). At (1,0,1) that reset beats an
  * unscoped `.linker-contact-invitation .linker-contact-primary` (0,2,0), and
  * the CTA rendered in the section's ink instead of the live's white-on-teal,
  * the mail address without its underline (measured 2026-10-12: live CTA
  * rgb(255,255,255) / mail rgb(18,102,79) underlined vs t16 rgb(32,58,50) /
- * no underline, on all four catalogue pages). The root id puts these rules at
+ * no underline, on all four product-list pages). The root id puts these rules at
  * (1,2,0) and the live's own look stands. Both mounts
  * (content/livecanvas/shop_page.html, archive_product.html) render the band
  * inside `#linker-products`.

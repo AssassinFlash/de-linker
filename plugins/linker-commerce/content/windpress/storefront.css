@@ -4210,8 +4210,8 @@ body.sf-account-page .linker-project-fact button {
 }
 body.sf-account-page .linker-project-fact button:disabled { cursor: progress; opacity: 0.6; }
 
-/* Bill of materials: the articles the customer put in, priced by the same
-   authority the catalogue reads. */
+/* Bill of materials: the products the customer put in, priced by the same
+   authority the product list reads. */
 body.sf-account-page .linker-project-materials-wrap { overflow-x: auto; }
 body.sf-account-page .linker-project-materials {
   width: 100%;
