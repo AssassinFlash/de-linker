@@ -20,34 +20,46 @@ use WP_Post;
  * The deployed contact pages still carry the previous runtime's fallback
  * mount (measured 2026-10-14: form=0, the fallback line visible). The module
  * replaces that mount while the form shortcode can render, and leaves the
- * fallback when it cannot.
+ * fallback when it cannot. The line survives in two stored shapes — the
+ * deployed pages wrap it in `<noscript>`, the snapshot loader keeps the bare
+ * paragraph (both measured 2026-10-14) — so both fixtures run the mount.
  *
  * @covers \Linker\Commerce\Contact\Module
  */
 final class ModuleTest extends TestCase {
 
 	/**
-	 * The English page as the deploy renders it, before this mount.
+	 * The English page as the deployed site stores it, before this mount.
 	 */
 	private const FIXTURE = __DIR__ . '/../../Fixtures/contact-page.html';
 
 	/**
-	 * The old mount becomes the form shortcode, and the fallback line goes.
+	 * The same region as the snapshot loader stores it: the noscript note
+	 * reduced to the bare paragraph (contactform instance, post 10).
+	 */
+	private const SNAPSHOT_FIXTURE = __DIR__ . '/../../Fixtures/contact-page-snapshot.html';
+
+	/**
+	 * The old mount becomes the form shortcode, and the fallback line goes —
+	 * in both stored shapes of the region.
 	 */
 	public function test_mounts_the_form_in_place_of_the_fallback(): void {
 		$this->on_contact_page();
 		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => true ) );
 
-		$html = $this->module()->mount_form( $this->fixture() );
+		foreach ( array( $this->fixture( self::FIXTURE ), $this->fixture( self::SNAPSHOT_FIXTURE ) ) as $content ) {
+			$html = $this->module()->mount_form( $content );
 
-		$this->assertStringContainsString(
-			'<div data-linker-contact-mount="">[' . Form::SHORTCODE . ']</div>',
-			$html
-		);
-		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
-		$this->assertStringNotContainsString( '<noscript>', $html );
-		$this->assertStringNotContainsString( 'If the form is unavailable', $html );
-		$this->assertStringContainsString( 'id="contact-form"', $html );
+			$this->assertStringContainsString(
+				'<div data-linker-contact-mount="">[' . Form::SHORTCODE . ']</div>',
+				$html
+			);
+			$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
+			$this->assertStringNotContainsString( '<noscript>', $html );
+			$this->assertStringNotContainsString( 'if the form cannot load', $html );
+			$this->assertStringNotContainsString( 'If the form is unavailable', $html );
+			$this->assertStringContainsString( 'id="contact-form"', $html );
+		}
 	}
 
 	/**
@@ -56,19 +68,30 @@ final class ModuleTest extends TestCase {
 	 */
 	public function test_leaves_a_page_that_already_mounts_the_shortcode(): void {
 		$this->on_contact_page();
-		$content = str_replace(
-			'<div class="cp-contact-fallback" data-contact-fallback="">' . "\n"
-			. '<p>Tell us what you need. If the form is unavailable, email <a href="mailto:sales@de-linker.com">sales@de-linker.com</a>.</p>' . "\n"
-			. '</div>',
-			'[' . Form::SHORTCODE . ']',
-			$this->fixture()
-		);
+		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => true ) );
+		$content = $this->with_shortcode_instead_of_fallback( $this->fixture() );
 
 		$html = $this->module()->mount_form( $content );
 
 		$this->assertSame( 1, substr_count( $html, '[' . Form::SHORTCODE . ']' ) );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
-		$this->assertStringNotContainsString( '<noscript>', $html );
+		$this->assertStringNotContainsString( 'if the form cannot load', $html );
+	}
+
+	/**
+	 * A shortcode already in the page is not a rendered form. While the tag
+	 * is not registered the fallback line stays, in both languages.
+	 */
+	public function test_keeps_the_fallback_when_the_shortcode_is_present_but_not_registered(): void {
+		$this->on_contact_page();
+		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => false ) );
+		$content = $this->with_shortcode_instead_of_fallback( $this->fixture() );
+
+		$html = $this->module()->mount_form( $content );
+
+		$this->assertStringContainsString( '[' . Form::SHORTCODE . ']', $html );
+		$this->assertStringContainsString( 'cp-contact-fallback', $html );
+		$this->assertStringContainsString( 'if the form cannot load', $html );
 	}
 
 	/**
@@ -83,17 +106,19 @@ final class ModuleTest extends TestCase {
 		$this->assertStringNotContainsString( '[' . Form::SHORTCODE . ']', $html );
 		$this->assertStringContainsString( 'cp-contact-fallback', $html );
 		$this->assertStringContainsString( 'If the form is unavailable', $html );
-		$this->assertStringContainsString( '<noscript>', $html );
+		$this->assertStringContainsString( 'if the form cannot load', $html );
 	}
 
 	/**
 	 * The German twin is the same page, resolved through Polylang, not a slug.
 	 */
 	public function test_mounts_the_form_on_the_german_twin(): void {
-			$this->on_contact_page( 6917, 6917 );
+		// The twin's own slug is kontakt (t110 post 6917). The English
+		// page is still the one get_page_by_path('contact') answers.
+		$this->on_page( 6917, 'kontakt', 6917 );
 		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => true ) );
 
-		$html = $this->module()->mount_form( $this->fixture() );
+		$html = $this->module()->mount_form( $this->fixture( self::SNAPSHOT_FIXTURE ) );
 
 		$this->assertStringContainsString( '[' . Form::SHORTCODE . ']', $html );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
@@ -104,6 +129,20 @@ final class ModuleTest extends TestCase {
 	 */
 	public function test_leaves_every_other_page_alone(): void {
 		$this->on_page( 99, 'about', null );
+		$fixture = $this->fixture();
+
+		$this->assertSame( $fixture, $this->module()->mount_form( $fixture ) );
+	}
+
+	/**
+	 * A contact request that renders some other post (a widget, a second
+	 * loop) does not rewrite that post, even when it carries the marker.
+	 */
+	public function test_leaves_another_posts_content_on_a_contact_request(): void {
+		$contact = $this->page( 28, 'contact' );
+		$other   = $this->page( 50, 'aside' );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $contact ) );
+		WP_Mock::userFunction( 'get_post', array( 'return' => $other ) );
 		$fixture = $this->fixture();
 
 		$this->assertSame( $fixture, $this->module()->mount_form( $fixture ) );
@@ -121,10 +160,28 @@ final class ModuleTest extends TestCase {
 	}
 
 	/**
-	 * The fixture is the deployed page's form region.
+	 * The region with the old mount swapped for the shortcode, the shape a
+	 * page has once the content migration has run.
+	 *
+	 * @param string $fixture The stored region.
 	 */
-	private function fixture(): string {
-		$fixture = file_get_contents( self::FIXTURE );
+	private function with_shortcode_instead_of_fallback( string $fixture ): string {
+		return str_replace(
+			'<div class="cp-contact-fallback" data-contact-fallback="">' . "\n"
+			. '<p>Tell us what you need. If the form is unavailable, email <a href="mailto:sales@de-linker.com">sales@de-linker.com</a>.</p>' . "\n"
+			. '</div>',
+			'[' . Form::SHORTCODE . ']',
+			$fixture
+		);
+	}
+
+	/**
+	 * A fixture file's contents.
+	 *
+	 * @param string $path The fixture to read; defaults to the deployed shape.
+	 */
+	private function fixture( string $path = self::FIXTURE ): string {
+		$fixture = file_get_contents( $path );
 		$this->assertIsString( $fixture );
 		return $fixture;
 	}
@@ -154,8 +211,11 @@ final class ModuleTest extends TestCase {
 	 * @param int|null $twin    The German twin of the English contact page.
 	 */
 	private function on_page( int $page_id, string $slug, ?int $twin ): void {
-		WP_Mock::userFunction( 'is_page', array( 'return' => true ) );
-		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $this->page( $page_id, $slug ) ) );
+		$page = $this->page( $page_id, $slug );
+		// the_content filters the post in the loop. The queried object is
+		// the same page here; a different loop post is a different test.
+		WP_Mock::userFunction( 'get_post', array( 'return' => $page ) );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $page ) );
 		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => $this->page( 28, 'contact' ) ) );
 		WP_Mock::userFunction(
 			'pll_get_post',
