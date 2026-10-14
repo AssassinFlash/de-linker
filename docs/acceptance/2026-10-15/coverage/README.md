@@ -277,8 +277,10 @@ $ /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpcs -q      # justfile 的 php�
 
 ## 6. 边界与未竟（逐项写明，不留 TODO 之外的模糊表述）
 
-1. **F2 / F3 的六个状态已补齐**（2026-10-15 二次补拍，触发与文本见 §3 的 F 段表），此前记的「未复现」说法已撤下。
-2. 见上：不再有属于「未复现」的 F 行。
+1. **F2 的 failed 与 F3 的七态已全部补齐**（2026-10-15 二次/三次补拍，触发、文本与语言覆盖见 §3 的 F 段表）：
+   history read 503 → 「Conversations could not be loaded. Try again」；卡片 pending/unverified/retry/saving/saved/failed
+   各由指定路由造态，EN/DE 两语言都有图。此前记的「未复现 / 需特定数据」说法已撤下。
+2. 见上：本包不再有属于「未复现」的 F 行。
 3. **D6 屋顶轮廓**（本包唯一的第三种形态行）：影像瓦片取不到（外部 WMS `geoservices.bayern.de`，画布灰底、点屋面无法定位），
    轮廓叠加拍不到；替代证据 = 引擎 `/roof/outline` 同坐标实测 `found:true`（§4 命令 4）。
 4. **A3 的 PDP 差异**：终局包、两口径数字与主因定性已齐（快照数据缺口；§3 H·A3），只剩「过不过像素门」需要掩膜与允许差异的
