@@ -45,7 +45,7 @@ final class ModuleTest extends TestCase {
 			$html
 		);
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
-		$this->assertStringNotContainsString( '<noscript>', $html );
+		$this->assertStringNotContainsString( 'if the form cannot load', $html );
 		$this->assertStringNotContainsString( 'If the form is unavailable', $html );
 		$this->assertStringContainsString( 'id="contact-form"', $html );
 	}
@@ -56,6 +56,7 @@ final class ModuleTest extends TestCase {
 	 */
 	public function test_leaves_a_page_that_already_mounts_the_shortcode(): void {
 		$this->on_contact_page();
+		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => true ) );
 		$content = str_replace(
 			'<div class="cp-contact-fallback" data-contact-fallback="">' . "\n"
 			. '<p>Tell us what you need. If the form is unavailable, email <a href="mailto:sales@de-linker.com">sales@de-linker.com</a>.</p>' . "\n"
@@ -68,12 +69,34 @@ final class ModuleTest extends TestCase {
 
 		$this->assertSame( 1, substr_count( $html, '[' . Form::SHORTCODE . ']' ) );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
-		$this->assertStringNotContainsString( '<noscript>', $html );
+		$this->assertStringNotContainsString( 'if the form cannot load', $html );
 	}
 
-	/**
-	 * The fallback line is what a visitor sees when the form cannot render.
-	 */
+		/**
+		 * A shortcode already in the page is not a rendered form. While the tag
+		 * is not registered the fallback line stays, in both languages.
+		 */
+	public function test_keeps_the_fallback_when_the_shortcode_is_present_but_not_registered(): void {
+		$this->on_contact_page();
+		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => false ) );
+		$content = str_replace(
+			'<div class="cp-contact-fallback" data-contact-fallback="">' . "\n"
+			. '<p>Tell us what you need. If the form is unavailable, email <a href="mailto:sales@de-linker.com">sales@de-linker.com</a>.</p>' . "\n"
+			. '</div>',
+			'[' . Form::SHORTCODE . ']',
+			$this->fixture()
+		);
+
+		$html = $this->module()->mount_form( $content );
+
+		$this->assertStringContainsString( '[' . Form::SHORTCODE . ']', $html );
+		$this->assertStringContainsString( 'cp-contact-fallback', $html );
+		$this->assertStringContainsString( 'if the form cannot load', $html );
+	}
+
+		/**
+		 * The fallback line is what a visitor sees when the form cannot render.
+		 */
 	public function test_keeps_the_fallback_when_the_form_is_not_registered(): void {
 		$this->on_contact_page();
 		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => false ) );
@@ -83,14 +106,16 @@ final class ModuleTest extends TestCase {
 		$this->assertStringNotContainsString( '[' . Form::SHORTCODE . ']', $html );
 		$this->assertStringContainsString( 'cp-contact-fallback', $html );
 		$this->assertStringContainsString( 'If the form is unavailable', $html );
-		$this->assertStringContainsString( '<noscript>', $html );
+		$this->assertStringContainsString( 'if the form cannot load', $html );
 	}
 
 	/**
 	 * The German twin is the same page, resolved through Polylang, not a slug.
 	 */
 	public function test_mounts_the_form_on_the_german_twin(): void {
-			$this->on_contact_page( 6917, 6917 );
+		// The twin's own slug is kontakt (t110 post 6917). The English
+		// page is still the one get_page_by_path('contact') answers.
+		$this->on_page( 6917, 'kontakt', 6917 );
 		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => true ) );
 
 		$html = $this->module()->mount_form( $this->fixture() );
@@ -104,6 +129,20 @@ final class ModuleTest extends TestCase {
 	 */
 	public function test_leaves_every_other_page_alone(): void {
 		$this->on_page( 99, 'about', null );
+		$fixture = $this->fixture();
+
+		$this->assertSame( $fixture, $this->module()->mount_form( $fixture ) );
+	}
+
+		/**
+		 * A contact request that renders some other post (a widget, a second
+		 * loop) does not rewrite that post, even when it carries the marker.
+		 */
+	public function test_leaves_another_posts_content_on_a_contact_request(): void {
+		$contact = $this->page( 28, 'contact' );
+		$other   = $this->page( 50, 'aside' );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $contact ) );
+		WP_Mock::userFunction( 'get_post', array( 'return' => $other ) );
 		$fixture = $this->fixture();
 
 		$this->assertSame( $fixture, $this->module()->mount_form( $fixture ) );
@@ -154,8 +193,11 @@ final class ModuleTest extends TestCase {
 	 * @param int|null $twin    The German twin of the English contact page.
 	 */
 	private function on_page( int $page_id, string $slug, ?int $twin ): void {
-		WP_Mock::userFunction( 'is_page', array( 'return' => true ) );
-		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $this->page( $page_id, $slug ) ) );
+		$page = $this->page( $page_id, $slug );
+		// the_content filters the post in the loop. The queried object is
+		// the same page here; a different loop post is a different test.
+		WP_Mock::userFunction( 'get_post', array( 'return' => $page ) );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $page ) );
 		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => $this->page( 28, 'contact' ) ) );
 		WP_Mock::userFunction(
 			'pll_get_post',
