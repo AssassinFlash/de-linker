@@ -49,7 +49,7 @@ final class PolylangInstance {
 			 * @param string $slug_or_locale Slug or WordPress locale.
 			 * @return \PLL_Language|false
 			 */
-			public function get_language( string $slug_or_locale ) {
+			public function get_language( string $slug_or_locale ): \PLL_Language|false {
 				$locales   = array(
 					'en_US'        => 'en',
 					'de_DE_formal' => 'de',

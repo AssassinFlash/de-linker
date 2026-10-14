@@ -70,14 +70,29 @@ PRODUCT_CATEGORIES: dict[str, tuple[str, str]] = {
     "backup-power": ("Notstrom", "notstrom"),
 }
 
-# Post category names from the same taxonomy-de.json; the live site has no
-# German category archive URLs, so the slug follows the German name.
-POST_CATEGORIES: dict[str, str] = {
-    "System Design": "Systemauslegung",
-    "Battery Storage": "Batteriespeicher",
-    "Installation & Commissioning": "Installation & Inbetriebnahme",
-    "Monitoring & Energy Management": "Überwachung & Energiemanagement",
-    "Applications": "Anwendungen",
+# Post category names from the same taxonomy-de.json, and the slug the live
+# German archive actually answers on. Measured 2026-10-13 (docs/debt/
+# DE-PARITY-2026-10-13.md §4.1): /de/category/system-design/ is 200 de-DE,
+# titled Systemauslegung; /de/category/systemauslegung/ is 404. The other four
+# live German archives are the same English slugs (applications-blog,
+# battery-storage-blog, installation-commissioning,
+# monitoring-energy-management). Sharing the English slug is allowed once the
+# term has its language (SameSlug\TermSlugs; product category ems-monitoring
+# already does this). The earlier "no German archive URL, slug follows the
+# German name" note was wrong: it minted systemauslegung, and Polylang then
+# 301'd /de/category/system-design/ back to the English term.
+POST_CATEGORIES: dict[str, tuple[str, str]] = {
+    "System Design": ("Systemauslegung", "system-design"),
+    "Battery Storage": ("Batteriespeicher", "battery-storage-blog"),
+    "Installation & Commissioning": (
+        "Installation & Inbetriebnahme",
+        "installation-commissioning",
+    ),
+    "Monitoring & Energy Management": (
+        "Überwachung & Energiemanagement",
+        "monitoring-energy-management",
+    ),
+    "Applications": ("Anwendungen", "applications-blog"),
 }
 
 # Attribute values have no German on the live site (it shows the old payload,
@@ -270,8 +285,16 @@ class Migration:
     def plan(self) -> list[dict[str, Any]]:
         # Every object of a translated type except the German versions a
         # previous run made: the plan does not depend on languages being set.
+        # A post category is the exception. Its German term is planned again
+        # even when it already exists: the first run minted a slug from the
+        # German name (systemauslegung) and copied the post relationships only
+        # while the term was new, so a re-run has to rename the term to the
+        # live German archive slug and put the posts back. import updates an
+        # existing twin instead of minting another.
         german_ids = {
-            (row["kind"], int(row["german"])) for row in self.status() if row["german"]
+            (row["kind"], int(row["german"]))
+            for row in self.status()
+            if row["german"] and row["kind"] != "category"
         }
         term_data: dict[int, dict[str, Any]] = {}
         terms: list[dict[str, Any]] = []
@@ -339,7 +362,7 @@ class Migration:
             if row["kind"] == "product_cat" and term["slug"] in PRODUCT_CATEGORIES:
                 de_name, de_slug = PRODUCT_CATEGORIES[term["slug"]]
             elif row["kind"] == "category" and name in POST_CATEGORIES:
-                de_name, de_slug = POST_CATEGORIES[name], ""
+                de_name, de_slug = POST_CATEGORIES[name]
             elif row["kind"] in ATTRIBUTE_TAXONOMIES and name in ATTRIBUTE_TERMS:
                 de_name, de_slug = ATTRIBUTE_TERMS[name], ""
             else:
@@ -434,6 +457,13 @@ class Migration:
             )
             results += out if isinstance(out, list) else []
             print(f"imported {min(start + 20, len(items))}/{len(items)}", flush=True)
+        # After the posts exist. The category copy during import finds nothing
+        # when the English relationships are already gone, and the insert of a
+        # German post clears them (see Twins::post()). This write uses the
+        # snapshot's post→term list, not the rows in the database.
+        print(
+            self.wp.run("linker-i18n", "repair-post-categories", as_user=True).strip()
+        )
         print(self.wp.run("linker-i18n", "relink").strip())
         return results
 

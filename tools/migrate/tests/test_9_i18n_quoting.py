@@ -81,6 +81,58 @@ def test_a_remote_admin_call_signs_in_after_quoting(
     assert " setup " in remote
 
 
+def test_post_category_slugs_are_the_live_german_archive_slugs() -> None:
+    """The live German archives answer on the English slugs.
+
+    Measured 2026-10-13 (docs/debt/DE-PARITY-2026-10-13.md §4.1):
+    /de/category/system-design/ is 200 de-DE; /de/category/systemauslegung/
+    is 404. A slug minted from the German name is what Polylang 301s back to
+    English.
+    """
+    assert i18n.POST_CATEGORIES == {
+        "System Design": ("Systemauslegung", "system-design"),
+        "Battery Storage": ("Batteriespeicher", "battery-storage-blog"),
+        "Installation & Commissioning": (
+            "Installation & Inbetriebnahme",
+            "installation-commissioning",
+        ),
+        "Monitoring & Energy Management": (
+            "Überwachung & Energiemanagement",
+            "monitoring-energy-management",
+        ),
+        "Applications": ("Anwendungen", "applications-blog"),
+    }
+    for _name, (german_name, slug) in i18n.POST_CATEGORIES.items():
+        assert slug
+        assert " " not in slug
+        assert german_name
+
+
+def test_apply_repairs_post_categories_after_the_import(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The repair runs after the posts exist, and does not read the database.
+
+    A lookup of the English term is empty on the live database, so the repair
+    has to be its own step, after import, signed in as the administrator.
+    """
+    seen = _capture(monkeypatch)
+    monkeypatch.setattr(
+        i18n.WP,
+        "json",
+        lambda self, *args, **kwargs: [],
+    )
+
+    i18n.Migration(i18n.WP(LOCAL, user="local-admin")).apply([])
+
+    commands = [call[1:] for call in seen]
+    assert ["linker-i18n", "repair-post-categories", "--user=local-admin"] in commands
+    repair = commands.index(
+        ["linker-i18n", "repair-post-categories", "--user=local-admin"]
+    )
+    assert commands.index(["linker-i18n", "relink"]) > repair
+
+
 def test_a_local_prefix_keeps_argv_semantics(monkeypatch: pytest.MonkeyPatch) -> None:
     """The drill's local instance is not a shell: quoting there would change the
     argument the program receives."""
