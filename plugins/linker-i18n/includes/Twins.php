@@ -208,9 +208,15 @@ final class Twins {
 				$twin = (int) $created['term_id'];
 				$this->ensure_term_pair( $term_id, $twin );
 				$args['slug'] = $slug ?? sanitize_title( $args['name'] );
-				$this->assign_new_term( $source, $twin );
 			} else {
 				$this->ensure_term_pair( $term_id, $twin );
+				if ( null !== $slug ) {
+					// An adopt() that names a slug renames the German term:
+					// the migration is the authority for it (a re-run after a
+					// slug correction must take, or the first run's slug stays
+					// forever). translate() passes none and keeps the slug.
+					$args['slug'] = $slug;
+				}
 			}
 			$updated = wp_update_term( $twin, $source->taxonomy, wp_slash( $args ) );
 			if ( is_wp_error( $updated ) ) {
@@ -222,8 +228,16 @@ final class Twins {
 					update_term_meta( $twin, $key, $value );
 				}
 			}
+			// Every write, not only the first: the German term may already
+			// exist when the English posts get their categories (the
+			// migration creates the term before the posts), and a later
+			// adopt() must put the posts back. Polylang's term sync runs on
+			// set_object_terms while writing is still true, so it does not
+			// treat this as a person's edit.
+			$this->assign_term( $source, $twin );
 		} finally {
 			$this->restore_kses( $kses );
+			$this->restore_default_category( $defaulting );
 			$this->writing = false;
 		}
 		return $twin;
@@ -396,20 +410,27 @@ final class Twins {
 	}
 
 	/**
-	 * Gives a new German term to the German versions of the English posts
-	 * that have the English term (Polylang does this only for a user who may
+	 * Gives the German term to the English posts that have the English term,
+	 * and to their German versions (Polylang does this only for a user who may
 	 * assign terms, never in a background job).
+	 *
+	 * Both sides: the English relationship is the source the archive and the
+	 * single page read, and the German version needs its own term of the same
+	 * taxonomy. A post that has no German version yet is covered when the post
+	 * itself is written (terms()).
 	 *
 	 * @param \WP_Term $source English term.
 	 * @param int      $twin   German term ID.
 	 */
-	private function assign_new_term( \WP_Term $source, int $twin ): void {
+	private function assign_term( \WP_Term $source, int $twin ): void {
 		$posts = get_objects_in_term( $source->term_id, $source->taxonomy );
 		if ( ! is_array( $posts ) ) {
 			return;
 		}
 		foreach ( $posts as $post_id ) {
-			$german = $this->languages->post_translation( (int) $post_id, Languages::TARGET );
+			$post_id = (int) $post_id;
+			wp_set_object_terms( $post_id, array( $source->term_id ), $source->taxonomy, true );
+			$german = $this->languages->post_translation( $post_id, Languages::TARGET );
 			if ( null !== $german ) {
 				wp_set_object_terms( $german, array( $twin ), $source->taxonomy, true );
 			}

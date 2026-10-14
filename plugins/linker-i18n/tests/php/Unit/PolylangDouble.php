@@ -172,8 +172,10 @@ final class PolylangDouble {
 	 * @return \WP_Term
 	 */
 	public static function term( int $id, array $fields = array() ) {
-		$term          = Mockery::mock( 'WP_Term' );
-		$term->term_id = $id;
+		$term           = Mockery::mock( 'WP_Term' );
+		$term->term_id  = $id;
+		$term->parent   = 0;
+		$term->taxonomy = 'category';
 		foreach ( $fields as $field => $value ) {
 			$term->$field = $value;
 		}

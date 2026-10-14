@@ -81,6 +81,33 @@ def test_a_remote_admin_call_signs_in_after_quoting(
     assert " setup " in remote
 
 
+def test_post_category_slugs_are_the_live_german_archive_slugs() -> None:
+    """The live German archives answer on the English slugs.
+
+    Measured 2026-10-13 (docs/debt/DE-PARITY-2026-10-13.md §4.1):
+    /de/category/system-design/ is 200 de-DE; /de/category/systemauslegung/
+    is 404. A slug minted from the German name is what Polylang 301s back to
+    English.
+    """
+    assert i18n.POST_CATEGORIES == {
+        "System Design": ("Systemauslegung", "system-design"),
+        "Battery Storage": ("Batteriespeicher", "battery-storage-blog"),
+        "Installation & Commissioning": (
+            "Installation & Inbetriebnahme",
+            "installation-commissioning",
+        ),
+        "Monitoring & Energy Management": (
+            "Überwachung & Energiemanagement",
+            "monitoring-energy-management",
+        ),
+        "Applications": ("Anwendungen", "applications-blog"),
+    }
+    for _name, (german_name, slug) in i18n.POST_CATEGORIES.items():
+        assert slug
+        assert " " not in slug
+        assert german_name
+
+
 def test_a_local_prefix_keeps_argv_semantics(monkeypatch: pytest.MonkeyPatch) -> None:
     """The drill's local instance is not a shell: quoting there would change the
     argument the program receives."""

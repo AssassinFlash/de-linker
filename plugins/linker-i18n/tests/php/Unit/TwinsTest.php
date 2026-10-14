@@ -279,4 +279,85 @@ final class TwinsTest extends TestCase {
 		);
 		$this->assertConditionsMet();
 	}
+
+	/**
+	 * An existing German category is written again, not only when it is
+	 * created: the first migration run minted the term before the posts
+	 * existed, and the copy then had nothing to attach. A later adopt()
+	 * must put the English post and its German version back on the
+	 * category, and a named slug must rename the German term (the live
+	 * German archive is /de/category/system-design/, not
+	 * /de/category/systemauslegung/; docs/debt/DE-PARITY-2026-10-13.md §4.1).
+	 */
+	public function test_an_existing_category_is_reassigned_and_renamed(): void {
+		PolylangDouble::mock(
+			array(
+				551  => 'en',
+				6893 => 'de',
+			),
+			array( 551 => 6893 ),
+			array(
+				10  => 'en',
+				557 => 'de',
+			),
+			array( 10 => 557 )
+		);
+		$this->wordpress();
+		WP_Mock::userFunction( 'get_term_meta', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction(
+			'wp_update_term',
+			array(
+				'times'  => 1,
+				'return' => array(
+					'term_id'          => 557,
+					'term_taxonomy_id' => 557,
+				),
+				'args'   => array(
+					557,
+					'category',
+					Mockery::on(
+						static fn( array $args ): bool => 'system-design' === ( $args['slug'] ?? '' )
+							&& 'Systemauslegung' === ( $args['name'] ?? '' )
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_objects_in_term',
+			array(
+				'times'  => 1,
+				'return' => array( 551 ),
+				'args'   => array( 10, 'category' ),
+			)
+		);
+		$assigned = array();
+		WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+			static function ( int $object_id, array $terms, string $taxonomy, bool $append ) use ( &$assigned ): array {
+				$assigned[] = array( $object_id, $terms, $taxonomy, $append );
+				return $terms;
+			}
+		);
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+		$twin      = $twins->term(
+			10,
+			array(
+				'name'        => 'Systemauslegung',
+				'description' => '',
+			),
+			'system-design'
+		);
+
+		$this->assertSame( 557, $twin );
+		$this->assertSame(
+			array(
+				array( 551, array( 10 ), 'category', true ),
+				array( 6893, array( 557 ), 'category', true ),
+			),
+			$assigned
+		);
+		$this->assertConditionsMet();
+	}
 }
