@@ -33,6 +33,31 @@ final class ProductShortcodes {
 	public const PER_PAGE_FAMILIES = 24;
 
 	/**
+	 * The rows the rail's Category section prints inside a group's expansion
+	 * although the term is not one of that group's children, keyed by the
+	 * group's English slug.
+	 *
+	 * The live rail expands Commercial Storage with three rows — Inverters,
+	 * All-in-One Systems, Battery Systems — on the category itself and on
+	 * every page of its branch (the captures of the live pages of
+	 * 2026-10-13, `cat-aio-en-1440-live.png` and `cat-aio-de-1440-live.png`:
+	 * Inverters / All-in-One Systems / Battery Systems under Commercial
+	 * Storage, German Wechselrichter / All-in-One-Systeme / Batteriesysteme
+	 * under Gewerbespeicher; the same three on the live Commercial Storage
+	 * page, `cat-cstorage-en-1440-live.png`). Two of the three are the
+	 * group's children in the data this build carries; Inverters is not —
+	 * its term is flat at the top level, and /product-category/inverters/ is
+	 * the address the products and the retired shelf slugs are served to, so
+	 * the term tree stays as it is and the row is built here, in the
+	 * navigation's own markup, as a second link to that term: the English
+	 * one on the English page, the term's German twin (Wechselrichter) on
+	 * the German one, the anchoring the crumb's name reads too.
+	 *
+	 * @var array<string, list<string>>
+	 */
+	private const RAIL_GROUP_ROWS = array( 'commercial-storage' => array( 'inverters' ) );
+
+	/**
 	 * Sets up the shortcodes.
 	 *
 	 * @param ProductFilters $filters The catalogue's facet data.
@@ -1551,16 +1576,26 @@ final class ProductShortcodes {
 	 * @param WP_Term $term The queried category.
 	 */
 	private function category_crumb_name( WP_Term $term ): string {
+		return (string) $this->english_term( $term )->name;
+	}
+
+	/**
+	 * A term's English side: the twin the language layer links in the site's
+	 * canonical language, the term itself where none runs.
+	 *
+	 * @param WP_Term $term The term.
+	 */
+	private function english_term( WP_Term $term ): WP_Term {
 		if ( \function_exists( 'pll_get_term' ) ) {
 			$english = (int) pll_get_term( (int) $term->term_id, 'en' );
 			if ( $english > 0 ) {
-				$source = get_term( $english );
+				$source = get_term( $english, 'product_cat' );
 				if ( $source instanceof WP_Term ) {
-					return (string) $source->name;
+					return $source;
 				}
 			}
 		}
-		return (string) $term->name;
+		return $term;
 	}
 
 	/**
@@ -2269,13 +2304,22 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * One row of the rail's Category section, with the live page's own
+	 * One row of the rail's Category section, with the reference rail's own
 	 * nesting: on a category page the branch the visitor is in expands — the
-	 * category's children indent under it (the live all-in-one page renders
-	 * Inverters / All-in-One Systems / Battery Systems under Commercial
-	 * Storage, the accessories page Meters & Current Transformers / Backup
-	 * Power under Accessories; measured 2026-10-12, recheck 2026-10-14 found
-	 * the deployed tree's list flat).
+	 * group's own rows first (RAIL_GROUP_ROWS), then the children the term
+	 * tree holds, the children indented under the group.
+	 *
+	 * Rows and indentation are the reference captures of 2026-10-13: the
+	 * all-in-one page prints Inverters / All-in-One Systems / Battery
+	 * Systems under Commercial Storage, the accessories page Meters &
+	 * Current Transformers / Backup Power under Accessories, each child
+	 * indented (measured 2026-10-12; `cat-aio-en-1440-live.png`,
+	 * `cat-aio-de-1440-live.png`, `cat-cstorage-en-1440-live.png`). The
+	 * deployed tree carries no such nesting — the recheck of 2026-10-14
+	 * found its rail a flat list there, the nested rows and the crumb's
+	 * parent segment gone (docs/debt/ADJUDICATION-2026-10-14.md, the
+	 * Category EN recheck row, still `reproduced`). This expansion restores
+	 * the reference's composition, not the deployed tree's.
 	 *
 	 * @param WP_Term      $category   The top-level category of this row.
 	 * @param WP_Term|null $current    The category on display, null on the shop.
@@ -2301,10 +2345,81 @@ final class ProductShortcodes {
 		if ( ! \is_array( $children ) ) {
 			return $row;
 		}
+		foreach ( $this->group_rows( $category, $children ) as $own ) {
+			$row .= $this->category_nav_link( $own, $current->term_id === $own->term_id, 'family-link--child' );
+		}
 		foreach ( $children as $child ) {
 			$row .= $this->category_nav_link( $child, $current->term_id === $child->term_id, 'family-link--child' );
 		}
 		return $row;
+	}
+
+	/**
+	 * The rows a group's expansion carries above the children the term tree
+	 * holds, in the order the live rail prints them.
+	 *
+	 * The map is a display addition, so a term the tree has since made a
+	 * child keeps its one row: a row the children already carry is left out.
+	 *
+	 * @param WP_Term             $group    The group whose expansion is being built.
+	 * @param array<int, WP_Term> $children The children the expansion carries.
+	 * @return list<WP_Term> The group's own rows; empty for every group but the one the map names.
+	 */
+	private function group_rows( WP_Term $group, array $children ): array {
+		$slugs = self::RAIL_GROUP_ROWS[ $this->english_term( $group )->slug ] ?? array();
+		if ( array() === $slugs ) {
+			return array();
+		}
+		$taken = array_map( static fn( WP_Term $child ): int => (int) $child->term_id, $children );
+		$rows  = array();
+		foreach ( $slugs as $slug ) {
+			$term = $this->localized_category( $slug );
+			if ( ! $term instanceof WP_Term || \in_array( (int) $term->term_id, $taken, true ) ) {
+				continue;
+			}
+			$rows[] = $term;
+		}
+		return $rows;
+	}
+
+	/**
+	 * A product category by its English slug, as the language on display
+	 * shows it; null when the catalogue holds no such term.
+	 *
+	 * The lookup is anchored on the canonical side where the site runs a
+	 * language layer — its `lang` argument narrows it, the scoping the
+	 * redirects' own term reads use — and the twin that answers is the one
+	 * the page prints.
+	 *
+	 * @param string $slug The term's English slug.
+	 */
+	private function localized_category( string $slug ): ?WP_Term {
+		$args = array(
+			'taxonomy'   => 'product_cat',
+			'slug'       => $slug,
+			'hide_empty' => true,
+			'number'     => 1,
+		);
+		if ( \function_exists( 'pll_languages_list' ) ) {
+			$args['lang'] = 'en';
+		}
+		$terms = get_terms( $args );
+		if ( ! \is_array( $terms ) || array() === $terms ) {
+			return null;
+		}
+		// A non-empty term answer carries terms; the read matches the
+		// redirects' own lookup.
+		$term = reset( $terms );
+		if ( \function_exists( 'pll_get_term' ) ) {
+			$twin = (int) pll_get_term( (int) $term->term_id );
+			if ( $twin > 0 ) {
+				$localized = get_term( $twin, 'product_cat' );
+				if ( $localized instanceof WP_Term ) {
+					return $localized;
+				}
+			}
+		}
+		return $term;
 	}
 
 	/**

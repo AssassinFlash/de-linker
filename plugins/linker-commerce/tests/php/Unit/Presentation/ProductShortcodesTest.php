@@ -267,12 +267,22 @@ final class ProductShortcodesTest extends TestCase {
 	 * The catalogue query's common reads: the queried object (or none), the
 	 * shop address, the category terms' reads and the helper shortcodes.
 	 *
-	 * @param WP_Term|null                    $term        The queried category, null on the shop.
-	 * @param array<int, WP_Term>             $top         The top-level categories.
-	 * @param array<int, array<int, WP_Term>> $children    Children by parent term id.
-	 * @param array<int, int>                 $product_ids The archive's products, in the order get_posts() answers them.
+	 * @param WP_Term|null                       $term        The queried category, null on the shop.
+	 * @param array<int, WP_Term>                $top         The top-level categories.
+	 * @param array<int, array<int, WP_Term>>    $children    Children by parent term id.
+	 * @param array<int, int>                    $product_ids The archive's products, in the order get_posts() answers them.
+	 * @param array<string, array<int, WP_Term>> $by_slug   The terms the rail's display map looks up by English slug; they answer get_term() by id too, so the English anchors of a translated lookup resolve.
+	 * @param callable(int, string): int|null    $twin        The twin the language layer links for a term id and the language a lookup asks for ('' for the language on display); null while the fixture runs without a language layer, where every lookup answers 0 — the definition of a stubbed pll_* function outlives the test that made it, so the rail's reads have to be answered here either way.
 	 */
-	private function mock_catalog_query( ?WP_Term $term, array $top = array(), array $children = array(), array $product_ids = array() ): void {
+	private function mock_catalog_query( ?WP_Term $term, array $top = array(), array $children = array(), array $product_ids = array(), array $by_slug = array(), ?callable $twin = null ): void {
+		WP_Mock::userFunction(
+			'pll_get_term',
+			array(
+				// Without a twin every lookup answers 0, the way a site whose
+				// terms carry no language layer answers.
+				'return' => static fn ( int $id, string $language = '' ): int => null === $twin ? 0 : $twin( $id, $language ),
+			)
+		);
 		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn( string $value ): string => $value ) );
@@ -296,7 +306,10 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_terms',
 			array(
-				'return' => static function ( array $args ) use ( $top, $children ) {
+				'return' => static function ( array $args ) use ( $top, $children, $by_slug ) {
+					if ( isset( $args['slug'] ) && isset( $by_slug[ $args['slug'] ] ) ) {
+						return $by_slug[ $args['slug'] ];
+					}
 					if ( isset( $args['parent'] ) && isset( $children[ $args['parent'] ] ) ) {
 						return $children[ $args['parent'] ];
 					}
@@ -311,7 +324,7 @@ final class ProductShortcodesTest extends TestCase {
 		if ( null !== $term ) {
 			$terms_by_id[ (int) $term->term_id ] = $term;
 		}
-		foreach ( array_merge( $top, ...array_values( $children ) ) as $term_row ) {
+		foreach ( array_merge( $top, ...array_values( $children ), ...array_values( $by_slug ) ) as $term_row ) {
 			$terms_by_id[ (int) $term_row->term_id ] = $term_row;
 			WP_Mock::userFunction(
 				'get_term_link',
@@ -642,11 +655,15 @@ final class ProductShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The rail's Category section nests the children of the branch the
-	 * visitor is in (the live all-in-one page renders the two siblings under
-	 * Commercial Storage, the current one marked), other branches flat.
+	 * The rail's Category section expands the branch the visitor is in with
+	 * exactly the three rows the live all-in-one page prints under Commercial
+	 * Storage, in that page's order: the Inverters row the display map adds
+	 * (the term itself is flat, RAIL_GROUP_ROWS), then the two children the
+	 * term tree holds, the current one marked. Other branches stay flat, and
+	 * the section's own top-level Inverters row keeps serving
+	 * /product-category/inverters/.
 	 */
-	public function test_category_section_nests_the_current_branch_children(): void {
+	public function test_category_section_expands_the_branch_with_the_live_rows(): void {
 		$this->mock_selection_facts(
 			array(
 				31 => array(
@@ -667,21 +684,227 @@ final class ProductShortcodesTest extends TestCase {
 		$inverters = $this->term( 449, 'Inverters', 'inverters' );
 		$aio       = $this->term( 452, 'All-in-One Systems', 'all-in-one-systems', 451 );
 		$battery   = $this->term( 453, 'Battery Systems', 'battery-systems', 451 );
+		$ems       = $this->term( 454, 'EMS & Monitoring', 'ems-monitoring' );
 		$this->mock_catalog_query(
 			$aio,
-			array( $storage, $inverters ),
+			array( $inverters, $storage, $ems ),
 			array(
 				451 => array( $aio, $battery ),
-			)
+			),
+			array(),
+			array( 'inverters' => array( $inverters ) )
 		);
 		$_GET = array();
 
 		$rail = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_filters();
 
-		$this->assertStringContainsString( 'family-link family-link--child is-current" href="http://linker.test/product-category/all-in-one-systems/" aria-current="page"><span>All-in-One Systems</span></a>', $rail );
-		$this->assertStringContainsString( 'family-link family-link--child" href="http://linker.test/product-category/battery-systems/">', $rail );
-		// Commercial Storage itself sits right before its expanded children.
-		$this->assertStringContainsString( 'Commercial Storage</span></a><a class="family-link family-link--child is-current"', $rail );
+		// The group's three rows, in the live page's order, between the group's
+		// own row and the next top-level category.
+		$this->assertStringContainsString(
+			'Commercial Storage</span></a>'
+			. '<a class="family-link family-link--child" href="http://linker.test/product-category/inverters/"><span>Inverters</span></a>'
+			. '<a class="family-link family-link--child is-current" href="http://linker.test/product-category/all-in-one-systems/" aria-current="page"><span>All-in-One Systems</span></a>'
+			. '<a class="family-link family-link--child" href="http://linker.test/product-category/battery-systems/"><span>Battery Systems</span></a>'
+			. '<a class="family-link" href="http://linker.test/product-category/ems-monitoring/"><span>EMS & Monitoring</span></a>',
+			$rail
+		);
+		// Three rows, no more: the branch carries no other category.
+		$this->assertSame( 3, substr_count( $rail, 'family-link--child' ) );
+		// Inverters is where the live page prints it twice: the section's own
+		// row, and the group's.
+		$this->assertSame( 2, substr_count( $rail, '<span>Inverters</span>' ) );
+	}
+
+	/**
+	 * The shop page enters no branch: every top-level category is a flat row,
+	 * and the Commercial Storage display row stays out of it.
+	 */
+	public function test_the_shop_section_stays_flat(): void {
+		$this->mock_selection_facts(
+			array(
+				31 => array(
+					'brand'       => 'saj',
+					'application' => 'commercial',
+					'phase'       => 3,
+					'kw'          => 50.0,
+				),
+			)
+		);
+		$storage   = $this->term( 451, 'Commercial Storage', 'commercial-storage' );
+		$inverters = $this->term( 449, 'Inverters', 'inverters' );
+		$this->mock_catalog_query(
+			null,
+			array( $storage, $inverters ),
+			array(),
+			array(),
+			array( 'inverters' => array( $inverters ) )
+		);
+		$_GET = array();
+
+		$rail = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_filters();
+
+		$this->assertStringNotContainsString( 'family-link--child', $rail );
+		$this->assertSame( 1, substr_count( $rail, '<span>Inverters</span>' ) );
+	}
+
+	/**
+	 * The Inverters page keeps the Commercial Storage branch closed, the row
+	 * itself marked current — the live Inverters rail is flat there too, the
+	 * row the display map adds is not a child of the group.
+	 */
+	public function test_the_inverters_page_keeps_the_group_closed(): void {
+		$this->mock_selection_facts(
+			array(
+				31 => array(
+					'brand'       => 'saj',
+					'application' => 'commercial',
+					'phase'       => 3,
+					'kw'          => 50.0,
+				),
+			)
+		);
+		$storage   = $this->term( 451, 'Commercial Storage', 'commercial-storage' );
+		$inverters = $this->term( 449, 'Inverters', 'inverters' );
+		$ems       = $this->term( 454, 'EMS & Monitoring', 'ems-monitoring' );
+		$this->mock_catalog_query(
+			$inverters,
+			array( $inverters, $storage, $ems ),
+			array(),
+			array(),
+			array( 'inverters' => array( $inverters ) )
+		);
+		$_GET = array();
+
+		$rail = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_filters();
+
+		// The group's row sits between its neighbours, with nothing under it.
+		$this->assertStringContainsString( 'Commercial Storage</span></a><a class="family-link" href="http://linker.test/product-category/ems-monitoring/"><span>EMS & Monitoring</span></a>', $rail );
+		$this->assertStringNotContainsString( 'family-link--child', $rail );
+	}
+
+	/**
+	 * The Accessories branch carries its own two children alone — the live
+	 * accessories page's composition, no row from the Commercial Storage map.
+	 */
+	public function test_the_accessories_branch_carries_its_own_two_children(): void {
+		$this->mock_selection_facts(
+			array(
+				31 => array(
+					'brand'       => 'saj',
+					'application' => 'commercial',
+					'phase'       => 3,
+					'kw'          => 50.0,
+				),
+			)
+		);
+		$inverters = $this->term( 449, 'Inverters', 'inverters' );
+		$storage   = $this->term( 451, 'Commercial Storage', 'commercial-storage' );
+		$accessory = $this->term( 456, 'Accessories', 'accessories' );
+		$meters    = $this->term( 457, 'Meters & Current Transformers', 'meters-current-transformers', 456 );
+		$backup    = $this->term( 458, 'Backup Power', 'backup-power', 456 );
+		$this->mock_catalog_query(
+			$accessory,
+			array( $inverters, $storage, $accessory ),
+			array( 456 => array( $meters, $backup ) ),
+			array(),
+			array( 'inverters' => array( $inverters ) )
+		);
+		$_GET = array();
+
+		$rail = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_filters();
+
+		$this->assertStringContainsString( 'Accessories</span></a><a class="family-link family-link--child" href="http://linker.test/product-category/meters-current-transformers/"><span>Meters & Current Transformers</span></a><a class="family-link family-link--child" href="http://linker.test/product-category/backup-power/"><span>Backup Power</span></a>', $rail );
+		$this->assertSame( 2, substr_count( $rail, 'family-link--child' ) );
+	}
+
+	/**
+	 * The group's added row is the term's own twin in the language on
+	 * display: the live Gewerbespeicher rail prints Wechselrichter above its
+	 * two German children (the German capture of 2026-10-13).
+	 */
+	public function test_rail_group_row_is_the_german_twin_on_the_german_page(): void {
+		$this->mock_selection_facts(
+			array(
+				31 => array(
+					'brand'       => 'saj',
+					'application' => 'commercial',
+					'phase'       => 3,
+					'kw'          => 50.0,
+				),
+			)
+		);
+		$wechs     = $this->term( 581, 'Wechselrichter', 'wechselrichter' );
+		$gewerbe   = $this->term( 587, 'Gewerbespeicher', 'gewerbespeicher' );
+		$systeme   = $this->term( 599, 'All-in-One-Systeme', 'all-in-one-systeme', 587 );
+		$batterien = $this->term( 601, 'Batteriesysteme', 'batteriesysteme', 587 );
+		$en_group  = $this->term( 451, 'Commercial Storage', 'commercial-storage' );
+		$en_inv    = $this->term( 449, 'Inverters', 'inverters' );
+		$this->mock_catalog_query(
+			$systeme,
+			array( $wechs, $gewerbe ),
+			array( 587 => array( $systeme, $batterien ) ),
+			array(),
+			array(
+				'inverters'          => array( $en_inv ),
+				'commercial-storage' => array( $en_group ),
+			),
+			// The links the language layer carries: the German group answers
+			// its English anchor, and the English Inverters term answers the
+			// German page's Wechselrichter.
+			static function ( int $id, string $language = '' ): int {
+				if ( 587 === $id && 'en' === $language ) {
+					return 451;
+				}
+				return 449 === $id ? 581 : 0;
+			}
+		);
+		$_GET = array();
+
+		$rail = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_filters();
+
+		$this->assertStringContainsString(
+			'Gewerbespeicher</span></a>'
+			. '<a class="family-link family-link--child" href="http://linker.test/product-category/wechselrichter/"><span>Wechselrichter</span></a>'
+			. '<a class="family-link family-link--child is-current" href="http://linker.test/product-category/all-in-one-systeme/" aria-current="page"><span>All-in-One-Systeme</span></a>'
+			. '<a class="family-link family-link--child" href="http://linker.test/product-category/batteriesysteme/"><span>Batteriesysteme</span></a>',
+			$rail
+		);
+		$this->assertSame( 3, substr_count( $rail, 'family-link--child' ) );
+	}
+
+	/**
+	 * A row the tree has since made a child keeps its single row: the map is
+	 * a display addition, not a second copy of a child.
+	 */
+	public function test_rail_group_row_is_left_out_when_the_tree_makes_it_a_child(): void {
+		$this->mock_selection_facts(
+			array(
+				31 => array(
+					'brand'       => 'saj',
+					'application' => 'commercial',
+					'phase'       => 3,
+					'kw'          => 50.0,
+				),
+			)
+		);
+		$storage   = $this->term( 451, 'Commercial Storage', 'commercial-storage' );
+		$inverters = $this->term( 449, 'Inverters', 'inverters', 451 );
+		$aio       = $this->term( 452, 'All-in-One Systems', 'all-in-one-systems', 451 );
+		$this->mock_catalog_query(
+			$aio,
+			array( $storage ),
+			array(
+				451 => array( $inverters, $aio ),
+			),
+			array(),
+			array( 'inverters' => array( $inverters ) )
+		);
+		$_GET = array();
+
+		$rail = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_filters();
+
+		$this->assertSame( 2, substr_count( $rail, 'family-link--child' ) );
+		$this->assertSame( 1, substr_count( $rail, '<span>Inverters</span>' ) );
 	}
 
 	/**
