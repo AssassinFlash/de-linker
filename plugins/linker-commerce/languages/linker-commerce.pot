@@ -3202,3 +3202,140 @@ msgstr ""
 #: includes/Presentation/LibraryPage.php
 msgid "No matching entries. Try another search term."
 msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "LÖSUNGEN FÜR GROSSSPEICHER"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher a"
+"n Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die Systema"
+"uswahl mit einer umsetzbaren Planung für die Lieferung."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Ihr Projekt gemeinsam entwickeln"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "KONTAKT ZU LINKER"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Das Projekt vor dem vollständigen Briefing besprechen."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden e"
+"ntfernen."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "EPC-Anforderung besprechen"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "TECHNISCHE ZUSAMMENARBEIT"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Ein technischer Partner in jeder Projektphase."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Unser Team arbeitet mit Ihrem Team an Systementscheidungen, Installationsfrag"
+"en und der Inbetriebnahme. Auch nach der Lieferung bleiben wir bei technische"
+"n Fragen an Ihrer Seite."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Mit unserem Technikteam sprechen"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "IHR PROJEKT IN DER PRAXIS"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu Ihr"
+"er Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Ihre Speicheroptionen besprechen"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "UTILITY-SCALE SOLUTIONS"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "A storage solution built around the whole project."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"We work alongside developers and EPC teams to shape battery storage around th"
+"e project’s energy goals, site conditions and integration needs. Together, we"
+" connect system choices with a practical plan for delivery."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Explore your project with us"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Discuss the project before preparing the full brief."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Discuss an EPC requirement"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "TECHNICAL PARTNERSHIP"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "A technical partner, wherever your project stands."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Our team works with yours on system choices, installation questions and commi"
+"ssioning, and stays involved when support is needed after delivery."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Talk to our technical team"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "YOUR PROJECT, IN PRACTICE"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "What could the right storage solution do for your site?"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"We’ll explore how hybrid or AC-coupled storage could work with your installat"
+"ion, your energy use and the outcome you want to achieve."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Talk through your storage options"
+msgstr ""

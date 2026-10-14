@@ -38,12 +38,13 @@ final class ShortcodesTest extends TestCase {
 	public function test_register_adds_the_shortcodes(): void {
 		$codes = $this->shortcodes();
 		foreach (
-			array(
-				'linker_price'        => 'price',
-				'linker_checkout'     => 'checkout',
-				'linker_faqs'         => 'faqs',
-				'linker_contact_link' => 'contact_link',
-			) as $tag => $method
+				array(
+					'linker_price'              => 'price',
+					'linker_checkout'           => 'checkout',
+					'linker_faqs'               => 'faqs',
+					'linker_contact_link'       => 'contact_link',
+					'linker_contact_invitation' => 'contact_invitation',
+				) as $tag => $method
 		) {
 			WP_Mock::userFunction(
 				'add_shortcode',
@@ -276,6 +277,157 @@ final class ShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'Welchen Strom führt die ATS1-T63-A?', $html );
 		$this->assertStringContainsString( 'Rated current is 50 A.', $html );
 		unset( $GLOBALS['product'] );
+	}
+
+	/**
+	 * Each surface prints the live band's English words, the button and the
+	 * team mailbox. Words read off the old live pages (2026-10-12/13 captures).
+	 *
+	 * @dataProvider invitation_surfaces_english
+	 * @param string $surface The shortcode's surface.
+	 * @param string $eyebrow The band's eyebrow.
+	 * @param string $heading The band's heading.
+	 * @param string $button  The band's button.
+	 */
+	public function test_invitation_prints_the_english_band( string $surface, string $eyebrow, string $heading, string $button ): void {
+		$this->invitation_page( 'en' );
+
+		$html = $this->shortcodes()->contact_invitation( array( 'surface' => $surface ) );
+
+		$this->assertStringContainsString( 'linker-contact-invitation linker-contact-' . $surface, $html );
+		$this->assertStringContainsString( $eyebrow, $html );
+		$this->assertStringContainsString( $heading, $html );
+		$this->assertStringContainsString( '>' . $button . '</a>', $html );
+		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
+		$this->assertStringContainsString( 'sales@de-linker.com', $html );
+		$this->assertStringNotContainsString( '<style', $html );
+		$this->assertStringNotContainsString( 'style=', $html );
+	}
+
+	/**
+	 * Each surface prints the live band's German words on a German page.
+	 *
+	 * @dataProvider invitation_surfaces_german
+	 * @param string $surface The shortcode's surface.
+	 * @param string $eyebrow The band's eyebrow.
+	 * @param string $heading The band's heading.
+	 * @param string $button  The band's button.
+	 */
+	public function test_invitation_prints_the_german_band( string $surface, string $eyebrow, string $heading, string $button ): void {
+		$this->invitation_page( 'de' );
+
+		$html = $this->shortcodes()->contact_invitation( array( 'surface' => $surface ) );
+
+		$this->assertStringContainsString( $eyebrow, $html );
+		$this->assertStringContainsString( $heading, $html );
+		$this->assertStringContainsString( '>' . $button . '</a>', $html );
+		$this->assertStringNotContainsString( 'A storage solution built around the whole project.', $html );
+		$this->assertStringNotContainsString( 'Discuss an EPC requirement', $html );
+		$this->assertStringNotContainsString( 'Talk to our technical team', $html );
+		$this->assertStringNotContainsString( 'Talk through your storage options', $html );
+	}
+
+	/**
+	 * An unknown surface uses the solution band, the page the shortcode was
+	 * written for. It does not echo the attribute back as text.
+	 */
+	public function test_invitation_of_an_unknown_surface_uses_the_solution_band(): void {
+		$this->invitation_page( 'en' );
+
+		$html = $this->shortcodes()->contact_invitation( array( 'surface' => 'not-a-surface' ) );
+
+		$this->assertStringContainsString( 'linker-contact-solution', $html );
+		$this->assertStringContainsString( 'A storage solution built around the whole project.', $html );
+		$this->assertStringNotContainsString( 'linker-contact-not-a-surface', $html );
+		$this->assertStringNotContainsString( 'not-a-surface', $html );
+	}
+
+	/**
+	 * An omitted surface is the solution band.
+	 */
+	public function test_invitation_without_a_surface_uses_the_solution_band(): void {
+		$this->invitation_page( 'en' );
+
+		$html = $this->shortcodes()->contact_invitation();
+
+		$this->assertStringContainsString( 'linker-contact-solution', $html );
+		$this->assertStringContainsString( 'Explore your project with us', $html );
+	}
+
+	/**
+	 * The article band is the editorial shape and opens a product request;
+	 * the others open a project request and carry the page as context.
+	 */
+	public function test_invitation_carries_the_page_and_the_request_kind(): void {
+		$this->invitation_page( 'en' );
+
+		$article = $this->shortcodes()->contact_invitation( array( 'surface' => 'article' ) );
+		$epc     = $this->shortcodes()->contact_invitation( array( 'surface' => 'epc' ) );
+
+		$this->assertStringContainsString( 'linker-contact-editorial', $article );
+		$this->assertStringContainsString( 'intent=product', $article );
+		$this->assertStringContainsString( 'intent=project', $epc );
+		$this->assertStringContainsString( 'Utility storage', $epc );
+		$this->assertStringContainsString( 'source=https%3A%2F%2Fexample.test%2Fsolutions%2Futility-storage%2F', $epc );
+		$this->assertStringContainsString( 'source_id=746', $epc );
+		$this->assertStringNotContainsString( 'linker-contact-editorial', $epc );
+	}
+
+	/**
+	 * English bands, verbatim from the old live pages.
+	 *
+	 * @return array<string, array{string, string, string, string}>
+	 */
+	public static function invitation_surfaces_english(): array {
+		return array(
+			'solution' => array( 'solution', 'UTILITY-SCALE SOLUTIONS', 'A storage solution built around the whole project.', 'Explore your project with us' ),
+			'epc'      => array( 'epc', 'CONTACT LINKER', 'Discuss the project before preparing the full brief.', 'Discuss an EPC requirement' ),
+			'services' => array( 'services', 'TECHNICAL PARTNERSHIP', 'A technical partner, wherever your project stands.', 'Talk to our technical team' ),
+			'article'  => array( 'article', 'YOUR PROJECT, IN PRACTICE', 'What could the right storage solution do for your site?', 'Talk through your storage options' ),
+		);
+	}
+
+	/**
+	 * German bands, the live page's own wording.
+	 *
+	 * @return array<string, array{string, string, string, string}>
+	 */
+	public static function invitation_surfaces_german(): array {
+		return array(
+			'solution' => array( 'solution', 'LÖSUNGEN FÜR GROSSSPEICHER', 'Ihr Großspeicherprojekt als Gesamtlösung gedacht.', 'Ihr Projekt gemeinsam entwickeln' ),
+			'epc'      => array( 'epc', 'KONTAKT ZU LINKER', 'Das Projekt vor dem vollständigen Briefing besprechen.', 'EPC-Anforderung besprechen' ),
+			'services' => array( 'services', 'TECHNISCHE ZUSAMMENARBEIT', 'Ein technischer Partner in jeder Projektphase.', 'Mit unserem Technikteam sprechen' ),
+			'article'  => array( 'article', 'IHR PROJEKT IN DER PRAXIS', 'Was kann die passende Speicherlösung an Ihrem Standort leisten?', 'Ihre Speicheroptionen besprechen' ),
+		);
+	}
+
+	/**
+	 * A page the band can name, in the given language.
+	 *
+	 * @param string $language `en` or `de`.
+	 */
+	private function invitation_page( string $language ): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => $language ) );
+		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 746 ) );
+		WP_Mock::userFunction( 'get_the_title', array( 'return' => 'Utility storage' ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/solutions/utility-storage/' ) );
+		WP_Mock::userFunction( 'is_singular', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => fn ( string $text ): string => $text ) );
+		WP_Mock::userFunction( 'sanitize_html_class', array( 'return' => fn ( string $value ): string => $value ) );
+		WP_Mock::userFunction( 'shortcode_atts', array( 'return' => fn ( array $pairs, array $atts ): array => array_merge( $pairs, $atts ) ) );
+		WP_Mock::userFunction(
+			'add_query_arg',
+			array(
+				'return' => function ( array $args, string $url ): string {
+					return $url . '?' . http_build_query( $args );
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => fn ( $value ): string => (string) json_encode( $value ) ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'sanitize_email', array( 'return' => fn ( string $email ): string => $email ) );
+		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => null ) );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/contact/' ) );
 	}
 
 	/**
