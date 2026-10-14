@@ -49,7 +49,22 @@ final class SearchScopeTest extends IntegrationTestCase {
 		$english = $this->entry( 'post', 'en', "English article about {$this->token}" );
 		$german  = $this->entry( 'post', 'de', "Deutscher Artikel über {$this->token}" );
 		$product = $this->entry( 'product', 'en', "English product about {$this->token}" );
-		$page    = $this->entry( 'page', 'en', "English page about {$this->token}" );
+		// A German product too: the live defect (families 17 and 23) paginated
+		// products on both languages' search pages, so the German search needs
+		// its own leak for the one-page assertion below to guard it.
+		$german_product = $this->entry( 'product', 'de', "Deutsches Produkt über {$this->token}" );
+		$page           = $this->entry( 'page', 'en', "English page about {$this->token}" );
+
+		// The live defect paginated the leaked products (1 2 3 … 8 »). A page
+		// size of one turns every leaked entry into its own page, so the
+		// one-page assertion in search() can only hold when nothing leaks.
+		$per_page = (int) get_option( 'posts_per_page' );
+		update_option( 'posts_per_page', 1 );
+		$this->later(
+			static function () use ( $per_page ): void {
+				update_option( 'posts_per_page', $per_page );
+			}
+		);
 
 		$english_hits = $this->search( 'en' );
 		$german_hits  = $this->search( 'de' );
@@ -60,6 +75,8 @@ final class SearchScopeTest extends IntegrationTestCase {
 		$this->assertNotContains( $english, $german_hits, 'The German search does not include the English article.' );
 		$this->assertNotContains( $product, $english_hits, 'A product never enters the implicit search.' );
 		$this->assertNotContains( $product, $german_hits, 'A product never enters the German search either.' );
+		$this->assertNotContains( $german_product, $english_hits, 'The German product never enters the English search.' );
+		$this->assertNotContains( $german_product, $german_hits, 'The German product never enters the German search.' );
 		$this->assertNotContains( $page, $english_hits, 'A page never enters the implicit search.' );
 		$this->assertNotContains( $page, $german_hits, 'A page never enters the German search.' );
 		$this->assertLessThanOrEqual( (int) get_option( 'posts_per_page' ), count( $english_hits ), 'The search uses the blog page size, not a product pager of its own.' );
@@ -84,9 +101,8 @@ final class SearchScopeTest extends IntegrationTestCase {
 		$GLOBALS['wp']->query_posts();
 		$query = $GLOBALS['wp_query'];
 		$this->assertInstanceOf( \WP_Query::class, $query );
-
-			$this->assertSame( 'product', $query->get( 'post_type' ), 'An explicit product search is not rewritten to posts.' );
-			$this->assertContains( $product, $this->ids_of( $query ), 'The named product search still finds the product.' );
+		$this->assertSame( 'product', $query->get( 'post_type' ), 'An explicit product search is not rewritten to posts.' );
+		$this->assertContains( $product, $this->ids_of( $query ), 'The named product search still finds the product.' );
 	}
 
 	/**
@@ -157,7 +173,7 @@ final class SearchScopeTest extends IntegrationTestCase {
 		$this->assertTrue( $query->is_main_query(), 'The results page query is the main query.' );
 		$this->assertTrue( $query->is_search(), 'The fixture query is a search.' );
 		$this->assertSame( array( 'post' ), (array) $query->get( 'post_type' ), "The {$language} search was scoped to posts." );
-		$this->assertSame( 1, (int) $query->max_num_pages, "The {$language} search is one page: no product pager." );
+		$this->assertSame( 1, (int) $query->max_num_pages, "The {$language} search is one page at a page size of one: nothing leaked to paginate it." );
 		$ids = $this->ids_of( $query );
 		sort( $ids );
 		return $ids;
