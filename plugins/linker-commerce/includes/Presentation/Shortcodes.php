@@ -106,8 +106,9 @@ final class Shortcodes {
 	 * The words are the live band's, read off the old live pages (utility
 	 * solution, EPC, the EPC intake, services, article; EN and DE,
 	 * 2026-10-12/13 captures). An unknown surface prints nothing: it must
-	 * not borrow another surface's words. `compact` is the intake's own
-	 * shape (no card, a rule above). Styles stay in WindPress
+	 * not borrow another surface's words. Each band's shape is the page's
+	 * own rule (the intake's sits on `.lk-bottom-cta`); the markup carries
+	 * no shape class beyond the surface. Styles stay in WindPress
 	 * (content/windpress/contact-invitation.css).
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
@@ -116,7 +117,6 @@ final class Shortcodes {
 		$attributes = shortcode_atts(
 			array(
 				'surface' => '',
-				'compact' => '',
 			),
 			(array) $atts,
 			'linker_contact_invitation'
@@ -150,9 +150,6 @@ final class Shortcodes {
 			self::contact_page_url()
 		);
 		$classes = 'linker-contact-invitation linker-contact-' . $surface;
-		if ( '' !== $attributes['compact'] ) {
-			$classes .= ' linker-contact-compact';
-		}
 
 		$html  = '<section class="' . esc_attr( $classes ) . '">';
 		$html .= '<div>';

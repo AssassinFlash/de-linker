@@ -512,10 +512,13 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The EPC page's second band is its own surface, compact, with no
-	 * eyebrow. Words read off epc-en/de-1440-live.png above the footer.
+	 * The EPC page's second band is its own surface with no eyebrow. Its
+	 * shape comes from the page's own `.lk-bottom-cta` rule, so the markup
+	 * carries no shape class: the template's stray compact="1" is ignored
+	 * by shortcode_atts, not turned into a class. Words read off
+	 * epc-en/de-1440-live.png above the footer.
 	 */
-	public function test_invitation_epc_intake_is_the_compact_band(): void {
+	public function test_invitation_epc_intake_is_the_intake_band(): void {
 		$this->invitation_page( 'en' );
 
 		$html = $this->shortcodes()->contact_invitation(
@@ -526,10 +529,10 @@ final class ShortcodesTest extends TestCase {
 		);
 
 		$this->assertStringContainsString( 'linker-contact-epc-intake', $html );
-		$this->assertStringContainsString( 'linker-contact-compact', $html );
 		$this->assertStringContainsString( 'An early question is enough.', $html );
 		$this->assertStringContainsString( 'Share what you already know. Project location and timing are optional in the short form.', $html );
 		$this->assertStringContainsString( '>Discuss your project</a>', $html );
+		$this->assertStringNotContainsString( 'linker-contact-compact', $html );
 		$this->assertStringNotContainsString( 'linker-contact-eyebrow', $html );
 		$this->assertStringNotContainsString( 'A storage solution built around the whole project.', $html );
 	}
@@ -563,14 +566,39 @@ final class ShortcodesTest extends TestCase {
 		$article = $this->shortcodes()->contact_invitation( array( 'surface' => 'article' ) );
 		$epc     = $this->shortcodes()->contact_invitation( array( 'surface' => 'epc' ) );
 
-			$this->assertStringContainsString( 'linker-contact-article', $article );
-			$this->assertStringNotContainsString( 'linker-contact-editorial', $article );
-			$this->assertStringContainsString( 'intent=product', $article );
-			$this->assertStringContainsString( 'intent=project', $epc );
-			$this->assertStringContainsString( 'Utility storage', $epc );
-			$this->assertStringContainsString( 'source=https%3A%2F%2Fexample.test%2Fsolutions%2Futility-storage%2F', $epc );
-			$this->assertStringContainsString( 'source_id=746', $epc );
-			$this->assertStringContainsString( 'linker-contact-epc', $epc );
+		$this->assertStringContainsString( 'linker-contact-article', $article );
+		$this->assertStringContainsString( 'intent=product', $article );
+		$this->assertStringContainsString( 'intent=project', $epc );
+		$this->assertStringContainsString( 'Utility storage', $epc );
+		$this->assertStringContainsString( 'source=https%3A%2F%2Fexample.test%2Fsolutions%2Futility-storage%2F', $epc );
+		$this->assertStringContainsString( 'source_id=746', $epc );
+		$this->assertStringContainsString( 'linker-contact-epc', $epc );
+	}
+
+	/**
+	 * The band stylesheet never claims the product-list band. That band is
+	 * the page rules' (.linker-contact-products, styled with its container
+	 * in products-mounts.css); every selector in this file either names
+	 * another surface or excludes the products band with :not(). The file
+	 * once shipped a body-scoped rule that outranked the page rules — this
+	 * assertion locks the exclusion in, not in memory.
+	 */
+	public function test_the_band_stylesheet_never_claims_the_products_band(): void {
+		$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/contact-invitation.css' );
+		$css = (string) preg_replace( '/\*.*?\*\//s', '', $css );
+		preg_match_all( '/^([^\{\}@][^\{\}]*)\{/m', $css, $matches );
+
+		$this->assertNotEmpty( $matches[1], 'the stylesheet should still declare selectors' );
+		$this->assertMatchesRegularExpression(
+			'/\.linker-contact-article:not\(\.linker-contact-products\)/',
+			$css
+		);
+		foreach ( $matches[1] as $selector ) {
+			$this->assertDoesNotMatchRegularExpression(
+				'/(?<!:not\()\.linker-contact-products/',
+				$selector
+			);
+		}
 	}
 
 	/**

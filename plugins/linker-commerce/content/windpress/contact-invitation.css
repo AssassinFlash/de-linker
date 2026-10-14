@@ -31,8 +31,10 @@
  *     #tv-solutions-developers-v1 .lk-bottom-cta .linker-contact-invitation
  *     is (1,2,0): top rule #bdcdbf, no card, actions in a column; at
  *     640px a white card, padding 24px, radius var(--proto-radius-lg)
- *     (12px, tokens.css). An unscoped .linker-contact-compact rule is
- *     (0,2,1) and loses, so none is declared.
+ *     (12px, tokens.css). The intake's shape is this page rule on the
+ *     template's own .lk-bottom-cta wrapper; the markup carries no
+ *     shape class beyond the surface (the template's stray compact="1"
+ *     is ignored by shortcode_atts).
  *
  *   /services-support/  root #service-redesign, service-redesign.css
  *     #service-redesign .linker-contact-invitation
@@ -73,7 +75,7 @@
 	justify-content: space-between;
 	gap: 30px;
 	box-sizing: border-box;
-	width: min(903px, 100%);
+	width: min(906px, 100%);
 	margin: 28px 0;
 	padding: 36px 42px;
 	border: 1px solid #d6ded7;

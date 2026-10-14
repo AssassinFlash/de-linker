@@ -2657,6 +2657,7 @@ msgid "Solution draft updated."
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:37
+#: includes/Presentation/Shortcodes.php
 msgid "Your solution draft is empty."
 msgstr ""
 
@@ -3366,10 +3367,6 @@ msgstr ""
 
 #: includes/Presentation/Shortcodes.php
 msgid "Discuss your project"
-
-#: includes/Vocabulary/Terms.php:37
-#: includes/Presentation/Shortcodes.php
-msgid "Your solution draft is empty."
 msgstr ""
 
 #: includes/Presentation/Shortcodes.php
