@@ -226,3 +226,14 @@ CN=linker-design-engine）。浏览器无法钉扎，需其一：
 - **服务器缓存生产态**：无读取端点，响应头亦无命中标记；以幂等开关
   `hosting_cache_toggle-website enabled=true` 置为生产态（文档：已在目标态则无操作），
   随后核心面无 cache-buster 复测全 200。
+
+### 深度审计（2026-10-14 晚，业主追问"确定没有欠账？"后的第二圈）
+
+按类底扫：**API 删除项**、仓库状态、本机进程、VPS、主机与本地临时件、旧仓回溯、账号级资产。结论：de-linker 本单范围内无欠账；账号级另有**非本单**遗留（已呈报、未擅动）。执行与发现：
+
+- **业主指令两项已执行**：① `staging.de-linker.com` 全清——安装删除（其独立库 `u388076051_Mx70Q` 随删，不在列表）、子域 vhost 删除（列表读回 `[]`）、目录 `public_html/staging/`（1.5 GB，含旧项目 `create_autologin_*.php` 与 500 状态残站）已删；路径 404、主站 200 复测。② 仓库根 228 B 的 `typescript` 残渣删除。③ DNS/LE 项按业主"先保留"挂存。
+- **本机**：无我的残留浏览器（现存 Chromium 进程为 WPS Office 自身）；8787 截图服务已不在；t110 及其引擎/genie（:8975/76/77）全在跑（参照实例完好）。
+- **VPS**：发布暂存 `/root/linker-release` 879 MB → 清空（8 KB）；探针文件清理。
+- **主机与本地**：/tmp 探针与临时件清空（主机 1 个 0 字节旧 temp、本地全部本次脚本/提取件；可复用脚本已在 `.scratch/cutover-run` 与本文档留档）。
+- **文档时效**：AGENTS.md 的呈现层描述修正一处过时（tokens 已从 Additional CSS 移入 WindPress 卷——以代码为准）。
+- **账号级盘点（de-linker 之外，呈报未动）**：账号另有 4 个站点与 6 个库。live de-linker.com = `u388076051_D5YLd` ✓（与安装同日创建，勿动）；`sunriver-inverter.com` + 其 staging `stg.sunriver-inverter.com`（"Website migrated by Hostinger"）+ 两个大库（557 MB/669 MB）= 另一在线项目，未触碰；`tvolt-energie.de`（旧品牌）——DNS 已不解析、vhost 与两个小库（71 MB/6 MB）尚存，连同预览域 `orchid-owl-…hostingersite.com` 与 `metal-divider.com`（builder 站），均为**业主侧处置项**：要不要清 tvolt 与预览域、sunriver 家族是否保留，等业主一句话即可执行。
