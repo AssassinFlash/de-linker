@@ -194,3 +194,14 @@ CN=linker-design-engine）。浏览器无法钉扎，需其一：
 **⑩ 德语 149 URL 全扫（改名与 present 之后的新 sitemap 全集）**：`evidence/de-sweep2.txt` ——
 149 检查中 1 处瞬时 `000`（`…/de/produkt/ecoflow-ocean-2…flagship/`，随即三次复测均 200 + lang=de-DE），
 其余全部 200 + lang=de。4 个退休工具别名已随改名/草稿化退出 sitemap（早前扫描的 151→149 正由此而来）。
+
+**⑨ 更新（2026-10-14 晚，业主指路后当晚关闭）**：业主指出"Genie 能通、配置器应同理"——正确。已按**同源路线**实现：`linker-tools` 新增
+`Configurator\EngineProxy`（`linker-ai/v1/engine/<path>`，GET+POST），由站点 PHP 转发引擎调用并复用既有证书钉扎；白名单只放
+`api/engine.ts` 实际调用的路径；上游状态码原样回传（422/404/503 语义不变）；`report/pdf` 以字节流经
+`rest_pre_serve_request` 直出（不能被 JSON 编码）。`Mount` 交给前端的 `data-engine-url` 改为该路由；选项
+`linker_engine_url` 保持为服务端地址（代理与健康监控读取）。实测（Playwright，线上）：`geo/plz` 200 →
+点图为 `roof/outline` 200（"Official building model found."，4 个屋面）→ `design/residential` 200（发电量/储能/自给率
++ 三件产品）→ `report/pdf` 200 且浏览器真实下载 `linker-design-report-10115-en.pdf`。过程中修复两处：
+`Plugin` 构造为固定类型参数导致新组件未被接线（首次调用 404，a5cc8b0 前后两提交）；`WP_REST_Response::get_header()`
+在核心不存在（测试双簧自造的方法骗过了单测，线上 500——错误记录器首日即定位到行，修理并让双簧镜像核心）。
+**DNS/Let's Encrypt 路线不再必需**（保留为日后管理面 TLS 正规化的可选项）。

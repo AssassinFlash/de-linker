@@ -42,3 +42,9 @@
 - 2026-10-12（业主裁定，slug 不保留）：页面地址 `/linker-planner/` → `/solution-configurator/`（德语 `/de/linker-planer/` → `/de/loesungskonfigurator/`）。旧地址入 `legacy-redirects.json` 的 `pages` 表 301（德语请求经 Polylang 孪生落到德语新址，一跳到 200）；页头/页脚、`SizeHint`、侧栏卡片链接与迁移工具 `12-site-chrome.py`（新增 slug 改名步，`resolve` 按新旧两种 slug 找页）同步。
 - 2026-10-13：页面装配入 `present`（上节）：`Templates::PAGES` 增两条指派、新增模板导出与 `[linker_configurator]`；证据为本机 t110 修改前后（修改前 `curl /linker-planner/` 出现旧应用标记 `qcfg-root` ×121 且无 `data-linker-app="configurator"`，修改后 1 处挂载点、0 处旧标记）。
 - 2026-10-09（#5）：引擎的地址在选项 `linker_engine_url`：本地由 `just serve <name>` 写入 `http://127.0.0.1:<端口>`，线上由切换（#17）写入 VPS 地址；调用引擎的代码从这个选项读。
+
+- 2026-10-14（线上引擎自签证书下浏览器直连不可行，实测后改道）：配置器不再由浏览器直连引擎，`Mount` 交给前端的
+  `data-engine-url` 是 `linker-tools` 自己的同源路由 `linker-ai/v1/engine/<path>`（`Configurator\EngineProxy`），
+  由站点 PHP 带着既有证书钉扎完成服务端跳跃（与 Genie 同一条路）；白名单=应用实际调用的路径集，状态码原样透传，
+  `report/pdf` 走字节流直出。选项 `linker_engine_url` 仍是服务端地址（代理与健康监控读它）。前端配置形状不变
+  （仍读 `data-engine-url`）。
