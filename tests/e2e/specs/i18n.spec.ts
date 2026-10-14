@@ -62,6 +62,25 @@ async function storeProducts(query: string): Promise<StoreProduct[]> {
 	return (await response.json()) as StoreProduct[];
 }
 
+/**
+ * The main-loop region of the blog archive: the theme's loop container
+ * (`#container-content-archive`) up to the closing of the main element.
+ * The full page also carries the header, footer and navigation, whose
+ * links could match a post URL, so the listing assertions run inside
+ * this region only — the recheck round's openQ on the full-page substring
+ * checks (fix/recheck-blog-relations, 2026-10-15).
+ */
+function archiveLoop(html: string): string {
+	const start = html.indexOf('id="container-content-archive"');
+	expect(start, 'the archive renders its loop container').toBeGreaterThan(0);
+	const end = html.indexOf('</main>', start);
+	expect(
+		end,
+		'the loop container closes before the page ends'
+	).toBeGreaterThan(start);
+	return html.slice(start, end);
+}
+
 test.describe('i18n', () => {
 	test('the 150 German addresses of the live sitemap answer 200', async () => {
 		test.setTimeout(900_000);
@@ -202,8 +221,10 @@ test.describe('i18n', () => {
 		// were lost (families 16 and 22). Post 551 sits on system-design in
 		// the snapshot; its German twin is /de/hybridwechselrichter-vs-ac-
 		// speicher/ (docs/debt/DE-PARITY-2026-10-13.md §2: en=551, de=6893).
+		// Scoped to the main-loop region: the full page's header and footer
+		// links must not satisfy this assertion.
 		expect(
-			archiveHtml,
+			archiveLoop(archiveHtml),
 			'the archive lists the German twin of a snapshot post of this category'
 		).toContain('/de/hybridwechselrichter-vs-ac-speicher/');
 	});
@@ -237,7 +258,7 @@ test.describe('i18n', () => {
 		);
 		const archiveHtml = await archive.text();
 		expect(
-			archiveHtml,
+			archiveLoop(archiveHtml),
 			'the archive lists a snapshot post of this category'
 		).toContain('/hybrid-inverter-vs-ac-coupled-storage/');
 		const post = await fetch(

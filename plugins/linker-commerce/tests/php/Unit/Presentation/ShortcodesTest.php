@@ -607,6 +607,94 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
+	 * The blog band's contact button prints the words its template passes.
+	 *
+	 * The live band's words are "Request a project quote →"; the live search
+	 * face calls the same shortcode with the same attribute. The shortcode
+	 * used to print the chrome's own words for every call, which is how the
+	 * live band came to read "Contact Linker".
+	 */
+	public function test_the_contact_link_prints_the_label_the_template_passes(): void {
+		$this->contact_page( 'en' );
+
+		$html = $this->shortcodes()->contact_link(
+			array(
+				'class' => 'tv-blog-single-btn-primary-lg',
+				'label' => 'Request a project quote →',
+			)
+		);
+
+		$this->assertSame(
+			'<a class="tv-blog-single-btn-primary-lg" href="https://example.test/contact/">Request a project quote →</a>',
+			$html
+		);
+	}
+
+	/**
+	 * On a German page the same call prints the German label.
+	 */
+	public function test_the_contact_link_prints_the_german_label_on_a_german_page(): void {
+		$this->contact_page( 'de' );
+
+		$html = $this->shortcodes()->contact_link(
+			array(
+				'class'    => 'tv-blog-single-btn-primary-lg',
+				'label'    => 'Request a project quote →',
+				'label_de' => 'Projektangebot anfragen →',
+			)
+		);
+
+		$this->assertSame(
+			'<a class="tv-blog-single-btn-primary-lg" href="https://example.test/contact/">Projektangebot anfragen →</a>',
+			$html
+		);
+	}
+
+	/**
+	 * A call without a label — the header and footer partials' — keeps the
+	 * chrome's own words, in both languages.
+	 */
+	public function test_the_contact_link_without_a_label_keeps_the_chrome_words(): void {
+		$this->contact_page( 'en' );
+
+		$this->assertSame(
+			'<a class="tv-header-cta" href="https://example.test/contact/">Contact Linker</a>',
+			$this->shortcodes()->contact_link()
+		);
+	}
+
+	/**
+	 * LiveCanvas renders a template's HTML through wptexturize, so an arrow
+	 * reaches the shortcode as an entity; it is printed as the character the
+	 * live band shows.
+	 */
+	public function test_the_contact_link_decodes_a_texturized_arrow(): void {
+		$this->contact_page( 'en' );
+
+		$html = $this->shortcodes()->contact_link(
+			array(
+				'class' => 'tv-blog-single-btn-primary-lg',
+				'label' => 'Request a project quote &rarr;',
+			)
+		);
+
+		$this->assertStringContainsString( '>Request a project quote →</a>', $html );
+	}
+
+	/**
+	 * A request on the site's contact page: no page object, so the link is the
+	 * site's own /contact/ address.
+	 *
+	 * @param string $language `en` or `de`.
+	 */
+	private function contact_page( string $language ): void {
+		WP_Mock::userFunction( 'shortcode_atts', array( 'return' => fn ( array $pairs, array $atts ): array => array_merge( $pairs, $atts ) ) );
+		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => null ) );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/contact/' ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => $language ) );
+	}
+
+	/**
 	 * English bands, verbatim from the old live pages.
 	 *
 	 * @return array<string, array{string, string, string, string}>

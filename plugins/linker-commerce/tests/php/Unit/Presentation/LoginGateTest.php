@@ -149,6 +149,10 @@ final class LoginGateTest extends TestCase {
 			$this->assertStringContainsString( 'sf-checkout-empty', $html );
 			$this->assertStringContainsString( 'sf-checkout-genie__pill', $html );
 			$this->assertStringContainsString( 'data-linker-genie-open', $html );
+			// The collapsed state is declared in the markup: the dock flips it
+			// to true only when it reports the panel open, and the e2e asserts
+			// the strict "false" before any click (closure decision 10).
+			$this->assertStringContainsString( 'aria-expanded="false"', $html );
 			$this->assertStringContainsString( '>Genie<', $html );
 			$this->assertStringContainsString( 'href="https://example.test/genie/"', $html );
 			$this->assertStringNotContainsString( 'mx-auto', $html );

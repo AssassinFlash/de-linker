@@ -1351,8 +1351,12 @@ msgstr "Deutsch"
 msgid "Multilingual"
 msgstr "Mehrsprachig"
 
-#: includes/Presentation/LoginGate.php:63
-#: includes/Presentation/Shortcodes.php:343
+#: includes/Presentation/BlogShortcodes.php
+msgid "Read article"
+msgstr "Artikel lesen"
+
+#: includes/Presentation/LoginGate.php
+#: includes/Presentation/Shortcodes.php
 msgid "Empty solution draft"
 msgstr "Leerer Lösungsentwurf"
 

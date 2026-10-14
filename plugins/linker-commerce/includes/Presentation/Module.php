@@ -29,6 +29,7 @@ final class Module {
 	 * @param ComparePage            $compare    The comparison page and its chip (#66).
 	 * @param LibraryPage            $library    The document library page (#66).
 	 * @param AccountTemplates       $account    Account content data for LC.
+	 * @param BlogShortcodes         $blog       The blog single template's data.
 	 */
 	public function __construct(
 		private readonly Shortcodes $shortcodes,
@@ -37,7 +38,8 @@ final class Module {
 		private readonly ?ProductShortcodes $products = null,
 		private readonly ComparePage $compare = new ComparePage(),
 		private readonly LibraryPage $library = new LibraryPage(),
-		private readonly AccountTemplates $account = new AccountTemplates()
+		private readonly AccountTemplates $account = new AccountTemplates(),
+		private readonly BlogShortcodes $blog = new BlogShortcodes()
 	) {}
 
 	/**
@@ -51,6 +53,7 @@ final class Module {
 		$this->compare->register();
 		$this->library->register();
 		$this->account->register();
+		$this->blog->register();
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 	}
 

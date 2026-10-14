@@ -81,6 +81,26 @@ final class ApprovalAdmin {
 		add_filter( 'user_row_actions', array( $this, 'row_action' ), 10, 2 );
 		add_action( 'edit_user_profile', array( $this, 'profile_block' ) );
 		add_action( 'admin_post_' . self::ACTION, array( $this, 'handle' ) );
+		// The profile block's buttons ride WordPress's own user-edit form, whose
+		// trailing hidden `action=update` follows this plugin's `action` field;
+		// PHP keeps the last value of a repeated POST key, so those requests
+		// arrive on admin_post_update (measured 2026-10-15). This second door
+		// runs the same handler for them and stands down for WordPress's own.
+		add_action( 'admin_post_update', array( $this, 'handle_profile_form' ) );
+	}
+
+	/**
+	 * The profile screen's buttons, which arrive under WordPress's own action.
+	 *
+	 * A request that carries no `linker_approval_action` is WordPress's own
+	 * (or another plugin's) and is left alone: this door only opens the way
+	 * the block's three buttons come through.
+	 */
+	public function handle_profile_form(): void {
+		if ( '' === $this->request( 'linker_approval_action' ) ) {
+			return;
+		}
+		$this->handle();
 	}
 
 	/**

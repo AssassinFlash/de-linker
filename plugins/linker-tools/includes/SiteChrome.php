@@ -10,16 +10,17 @@ declare( strict_types = 1 );
 namespace Linker\Tools;
 
 /**
- * Two interactions of the site's chrome that the pages themselves do not
- * carry (#12, docs/specs/12-site-chrome.md items 7 and 8):
+ * The site chrome's script (#12, docs/specs/12-site-chrome.md item 7):
+ * the marketing pages' content modules also switch on desktop hover (a
+ * hover clicks the module's own trigger, so the click, keyboard and touch
+ * behaviour is the page's own and unchanged).
  *
- * - the marketing pages' content modules also switch on desktop hover
- *   (a hover clicks the module's own trigger, so the click, keyboard and
- *   touch behaviour is the page's own and unchanged);
- * - the header's menu images load when their menu opens (a fallback for
- *   markup that carries them as data-src; the header's thumbnails resolve
- *   through their own src, so the hydrator currently finds nothing — it
- *   stays until an instance proves the visual parity without it).
+ * The header menu images carry no script of their own anymore: they
+ * resolve through their own src, the browser's loading attribute decides
+ * when they are fetched, and menu-images.js retired with its enqueue
+ * (closure decision 8 of 2026-10-15: the review harness proved the plain
+ * src resolves at load time — 13/13 loaded — and the script was inert
+ * without data-src).
  */
 final class SiteChrome {
 
@@ -56,21 +57,14 @@ final class SiteChrome {
 	}
 
 	/**
-	 * The chrome's scripts: the menu images everywhere the header renders,
-	 * the hover switching on the pages that hold the modules.
+	 * The chrome's script: the hover switching on the pages that hold the
+	 * modules. The header menu images need no script (see the class note).
 	 */
 	public function assets(): void {
-		$base = plugin_dir_path( $this->plugin_file );
-		wp_enqueue_script(
-			'linker-tools-menu-images',
-			plugins_url( 'assets/menu-images.js', $this->plugin_file ),
-			array(),
-			(string) filemtime( $base . 'assets/menu-images.js' ),
-			array( 'in_footer' => true )
-		);
 		if ( ! is_singular( 'page' ) || ! $this->has_modules() ) {
 			return;
 		}
+		$base = plugin_dir_path( $this->plugin_file );
 		wp_enqueue_script(
 			'linker-tools-marketing-hover',
 			plugins_url( 'assets/marketing-hover.js', $this->plugin_file ),
