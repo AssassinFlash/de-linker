@@ -3339,3 +3339,31 @@ msgstr ""
 #: includes/Presentation/Shortcodes.php
 msgid "Talk through your storage options"
 msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Eine frühe Frage reicht aus."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im K"
+"urzformular optional."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Projekt besprechen"
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "An early question is enough."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid ""
+"Share what you already know. Project location and timing are optional in the "
+"short form."
+msgstr ""
+
+#: includes/Presentation/Shortcodes.php
+msgid "Discuss your project"
+msgstr ""

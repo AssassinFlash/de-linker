@@ -295,7 +295,11 @@ final class ShortcodesTest extends TestCase {
 		$html = $this->shortcodes()->contact_invitation( array( 'surface' => $surface ) );
 
 		$this->assertStringContainsString( 'linker-contact-invitation linker-contact-' . $surface, $html );
-		$this->assertStringContainsString( $eyebrow, $html );
+		if ( '' !== $eyebrow ) {
+			$this->assertStringContainsString( $eyebrow, $html );
+		} else {
+			$this->assertStringNotContainsString( 'linker-contact-eyebrow', $html );
+		}
 		$this->assertStringContainsString( $heading, $html );
 		$this->assertStringContainsString( '>' . $button . '</a>', $html );
 		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
@@ -318,40 +322,83 @@ final class ShortcodesTest extends TestCase {
 
 		$html = $this->shortcodes()->contact_invitation( array( 'surface' => $surface ) );
 
-		$this->assertStringContainsString( $eyebrow, $html );
+		if ( '' !== $eyebrow ) {
+			$this->assertStringContainsString( $eyebrow, $html );
+		} else {
+			$this->assertStringNotContainsString( 'linker-contact-eyebrow', $html );
+		}
 		$this->assertStringContainsString( $heading, $html );
 		$this->assertStringContainsString( '>' . $button . '</a>', $html );
 		$this->assertStringNotContainsString( 'A storage solution built around the whole project.', $html );
 		$this->assertStringNotContainsString( 'Discuss an EPC requirement', $html );
 		$this->assertStringNotContainsString( 'Talk to our technical team', $html );
 		$this->assertStringNotContainsString( 'Talk through your storage options', $html );
+		$this->assertStringNotContainsString( 'Discuss your project', $html );
 	}
 
 	/**
-	 * An unknown surface uses the solution band, the page the shortcode was
-	 * written for. It does not echo the attribute back as text.
+	 * An unknown surface prints nothing. It must not borrow another
+	 * surface's words — that is how the EPC intake was rendered as the
+	 * solution band.
 	 */
-	public function test_invitation_of_an_unknown_surface_uses_the_solution_band(): void {
+	public function test_invitation_of_an_unknown_surface_is_empty(): void {
 		$this->invitation_page( 'en' );
 
 		$html = $this->shortcodes()->contact_invitation( array( 'surface' => 'not-a-surface' ) );
 
-		$this->assertStringContainsString( 'linker-contact-solution', $html );
-		$this->assertStringContainsString( 'A storage solution built around the whole project.', $html );
-		$this->assertStringNotContainsString( 'linker-contact-not-a-surface', $html );
-		$this->assertStringNotContainsString( 'not-a-surface', $html );
+		$this->assertSame( '', $html );
 	}
 
 	/**
-	 * An omitted surface is the solution band.
+	 * An omitted surface is not the solution band. The pages that want
+	 * that band pass surface="solution".
 	 */
-	public function test_invitation_without_a_surface_uses_the_solution_band(): void {
+	public function test_invitation_without_a_surface_is_empty(): void {
 		$this->invitation_page( 'en' );
 
-		$html = $this->shortcodes()->contact_invitation();
+		$this->assertSame( '', $this->shortcodes()->contact_invitation() );
+	}
 
-		$this->assertStringContainsString( 'linker-contact-solution', $html );
-		$this->assertStringContainsString( 'Explore your project with us', $html );
+	/**
+	 * The EPC page's second band is its own surface, compact, with no
+	 * eyebrow. Words read off epc-en/de-1440-live.png above the footer.
+	 */
+	public function test_invitation_epc_intake_is_the_compact_band(): void {
+		$this->invitation_page( 'en' );
+
+		$html = $this->shortcodes()->contact_invitation(
+			array(
+				'surface' => 'epc-intake',
+				'compact' => '1',
+			)
+		);
+
+		$this->assertStringContainsString( 'linker-contact-epc-intake', $html );
+		$this->assertStringContainsString( 'linker-contact-compact', $html );
+		$this->assertStringContainsString( 'An early question is enough.', $html );
+		$this->assertStringContainsString( 'Share what you already know. Project location and timing are optional in the short form.', $html );
+		$this->assertStringContainsString( '>Discuss your project</a>', $html );
+		$this->assertStringNotContainsString( 'linker-contact-eyebrow', $html );
+		$this->assertStringNotContainsString( 'A storage solution built around the whole project.', $html );
+	}
+
+	/**
+	 * The German intake band is the live page's own wording, not the English band.
+	 */
+	public function test_invitation_epc_intake_uses_the_german_words(): void {
+		$this->invitation_page( 'de' );
+
+		$html = $this->shortcodes()->contact_invitation(
+			array(
+				'surface' => 'epc-intake',
+				'compact' => '1',
+			)
+		);
+
+		$this->assertStringContainsString( 'Eine frühe Frage reicht aus.', $html );
+		$this->assertStringContainsString( 'Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im Kurzformular optional.', $html );
+		$this->assertStringContainsString( '>Projekt besprechen</a>', $html );
+		$this->assertStringNotContainsString( 'An early question is enough.', $html );
 	}
 
 	/**
@@ -364,13 +411,14 @@ final class ShortcodesTest extends TestCase {
 		$article = $this->shortcodes()->contact_invitation( array( 'surface' => 'article' ) );
 		$epc     = $this->shortcodes()->contact_invitation( array( 'surface' => 'epc' ) );
 
-		$this->assertStringContainsString( 'linker-contact-editorial', $article );
-		$this->assertStringContainsString( 'intent=product', $article );
+			$this->assertStringContainsString( 'linker-contact-article', $article );
+			$this->assertStringNotContainsString( 'linker-contact-editorial', $article );
+			$this->assertStringContainsString( 'intent=product', $article );
 		$this->assertStringContainsString( 'intent=project', $epc );
 		$this->assertStringContainsString( 'Utility storage', $epc );
 		$this->assertStringContainsString( 'source=https%3A%2F%2Fexample.test%2Fsolutions%2Futility-storage%2F', $epc );
-		$this->assertStringContainsString( 'source_id=746', $epc );
-		$this->assertStringNotContainsString( 'linker-contact-editorial', $epc );
+			$this->assertStringContainsString( 'source_id=746', $epc );
+			$this->assertStringContainsString( 'linker-contact-epc', $epc );
 	}
 
 	/**
@@ -380,10 +428,11 @@ final class ShortcodesTest extends TestCase {
 	 */
 	public static function invitation_surfaces_english(): array {
 		return array(
-			'solution' => array( 'solution', 'UTILITY-SCALE SOLUTIONS', 'A storage solution built around the whole project.', 'Explore your project with us' ),
-			'epc'      => array( 'epc', 'CONTACT LINKER', 'Discuss the project before preparing the full brief.', 'Discuss an EPC requirement' ),
-			'services' => array( 'services', 'TECHNICAL PARTNERSHIP', 'A technical partner, wherever your project stands.', 'Talk to our technical team' ),
-			'article'  => array( 'article', 'YOUR PROJECT, IN PRACTICE', 'What could the right storage solution do for your site?', 'Talk through your storage options' ),
+			'solution'   => array( 'solution', 'UTILITY-SCALE SOLUTIONS', 'A storage solution built around the whole project.', 'Explore your project with us' ),
+			'epc'        => array( 'epc', 'CONTACT LINKER', 'Discuss the project before preparing the full brief.', 'Discuss an EPC requirement' ),
+			'services'   => array( 'services', 'TECHNICAL PARTNERSHIP', 'A technical partner, wherever your project stands.', 'Talk to our technical team' ),
+			'article'    => array( 'article', 'YOUR PROJECT, IN PRACTICE', 'What could the right storage solution do for your site?', 'Talk through your storage options' ),
+			'epc-intake' => array( 'epc-intake', '', 'An early question is enough.', 'Discuss your project' ),
 		);
 	}
 
@@ -394,10 +443,11 @@ final class ShortcodesTest extends TestCase {
 	 */
 	public static function invitation_surfaces_german(): array {
 		return array(
-			'solution' => array( 'solution', 'LÖSUNGEN FÜR GROSSSPEICHER', 'Ihr Großspeicherprojekt als Gesamtlösung gedacht.', 'Ihr Projekt gemeinsam entwickeln' ),
-			'epc'      => array( 'epc', 'KONTAKT ZU LINKER', 'Das Projekt vor dem vollständigen Briefing besprechen.', 'EPC-Anforderung besprechen' ),
-			'services' => array( 'services', 'TECHNISCHE ZUSAMMENARBEIT', 'Ein technischer Partner in jeder Projektphase.', 'Mit unserem Technikteam sprechen' ),
-			'article'  => array( 'article', 'IHR PROJEKT IN DER PRAXIS', 'Was kann die passende Speicherlösung an Ihrem Standort leisten?', 'Ihre Speicheroptionen besprechen' ),
+			'solution'   => array( 'solution', 'LÖSUNGEN FÜR GROSSSPEICHER', 'Ihr Großspeicherprojekt als Gesamtlösung gedacht.', 'Ihr Projekt gemeinsam entwickeln' ),
+			'epc'        => array( 'epc', 'KONTAKT ZU LINKER', 'Das Projekt vor dem vollständigen Briefing besprechen.', 'EPC-Anforderung besprechen' ),
+			'services'   => array( 'services', 'TECHNISCHE ZUSAMMENARBEIT', 'Ein technischer Partner in jeder Projektphase.', 'Mit unserem Technikteam sprechen' ),
+			'article'    => array( 'article', 'IHR PROJEKT IN DER PRAXIS', 'Was kann die passende Speicherlösung an Ihrem Standort leisten?', 'Ihre Speicheroptionen besprechen' ),
+			'epc-intake' => array( 'epc-intake', '', 'Eine frühe Frage reicht aus.', 'Projekt besprechen' ),
 		);
 	}
 

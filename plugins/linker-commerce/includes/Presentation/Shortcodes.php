@@ -99,10 +99,10 @@ final class Shortcodes {
 	 * print as `[linker_contact_invitation surface="…"]`.
 	 *
 	 * The words are the live band's, read off the old live pages (utility
-	 * solution, EPC, services, article; EN and DE, 2026-10-12/13 captures).
-	 * An unknown surface uses the solution band, the page the shortcode was
-	 * written for. Markup is the product-list invitation's own: eyebrow, heading,
-	 * note, button, team mailbox. Styles stay in WindPress
+	 * solution, EPC, the EPC intake, services, article; EN and DE,
+	 * 2026-10-12/13 captures). An unknown surface prints nothing: it must
+	 * not borrow another surface's words. `compact` is the intake's own
+	 * shape (no card, a rule above). Styles stay in WindPress
 	 * (content/windpress/contact-invitation.css).
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
@@ -110,7 +110,8 @@ final class Shortcodes {
 	public function contact_invitation( $atts = array() ): string {
 		$attributes = shortcode_atts(
 			array(
-				'surface' => 'solution',
+				'surface' => '',
+				'compact' => '',
 			),
 			(array) $atts,
 			'linker_contact_invitation'
@@ -118,7 +119,7 @@ final class Shortcodes {
 		$surface    = sanitize_html_class( (string) $attributes['surface'] );
 		$copy       = self::invitation_copy();
 		if ( ! isset( $copy[ $surface ] ) ) {
-			$surface = 'solution';
+			return '';
 		}
 		$row     = $copy[ $surface ];
 		$intent  = self::invitation_intent( $surface );
@@ -135,13 +136,15 @@ final class Shortcodes {
 			self::contact_page_url()
 		);
 		$classes = 'linker-contact-invitation linker-contact-' . $surface;
-		if ( 'article' === $surface ) {
-			$classes .= ' linker-contact-editorial';
+		if ( '' !== $attributes['compact'] ) {
+			$classes .= ' linker-contact-compact';
 		}
 
 		$html  = '<section class="' . esc_attr( $classes ) . '">';
 		$html .= '<div>';
-		$html .= '<span class="linker-contact-eyebrow">' . esc_html( $row['eyebrow'] ) . '</span>';
+		if ( '' !== $row['eyebrow'] ) {
+			$html .= '<span class="linker-contact-eyebrow">' . esc_html( $row['eyebrow'] ) . '</span>';
+		}
 		$html .= '<h2>' . esc_html( $row['heading'] ) . '</h2>';
 		$html .= '<p>' . esc_html( $row['note'] ) . '</p>';
 		$html .= '</div>';
@@ -192,63 +195,75 @@ final class Shortcodes {
 	 * The live band's words, in the page's language.
 	 *
 	 * German is the page's own wording (Polylang `de`), not a translation of
-	 * the English string.
+	 * the English string. The intake band has no eyebrow.
 	 *
 	 * @return array<string, array{eyebrow: string, heading: string, note: string, button: string}>
 	 */
 	private static function invitation_copy(): array {
 		if ( function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
 			return array(
-				'solution' => array(
+				'solution'   => array(
 					'eyebrow' => __( 'LÖSUNGEN FÜR GROSSSPEICHER', 'linker-commerce' ),
 					'heading' => __( 'Ihr Großspeicherprojekt als Gesamtlösung gedacht.', 'linker-commerce' ),
 					'note'    => __( 'Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die Systemauswahl mit einer umsetzbaren Planung für die Lieferung.', 'linker-commerce' ),
 					'button'  => __( 'Ihr Projekt gemeinsam entwickeln', 'linker-commerce' ),
 				),
-				'epc'      => array(
+				'epc'        => array(
 					'eyebrow' => __( 'KONTAKT ZU LINKER', 'linker-commerce' ),
 					'heading' => __( 'Das Projekt vor dem vollständigen Briefing besprechen.', 'linker-commerce' ),
 					'note'    => __( 'Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen.', 'linker-commerce' ),
 					'button'  => __( 'EPC-Anforderung besprechen', 'linker-commerce' ),
 				),
-				'services' => array(
+				'services'   => array(
 					'eyebrow' => __( 'TECHNISCHE ZUSAMMENARBEIT', 'linker-commerce' ),
 					'heading' => __( 'Ein technischer Partner in jeder Projektphase.', 'linker-commerce' ),
 					'note'    => __( 'Unser Team arbeitet mit Ihrem Team an Systementscheidungen, Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben wir bei technischen Fragen an Ihrer Seite.', 'linker-commerce' ),
 					'button'  => __( 'Mit unserem Technikteam sprechen', 'linker-commerce' ),
 				),
-				'article'  => array(
+				'article'    => array(
 					'eyebrow' => __( 'IHR PROJEKT IN DER PRAXIS', 'linker-commerce' ),
 					'heading' => __( 'Was kann die passende Speicherlösung an Ihrem Standort leisten?', 'linker-commerce' ),
 					'note'    => __( 'Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt.', 'linker-commerce' ),
 					'button'  => __( 'Ihre Speicheroptionen besprechen', 'linker-commerce' ),
 				),
+				'epc-intake' => array(
+					'eyebrow' => '',
+					'heading' => __( 'Eine frühe Frage reicht aus.', 'linker-commerce' ),
+					'note'    => __( 'Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im Kurzformular optional.', 'linker-commerce' ),
+					'button'  => __( 'Projekt besprechen', 'linker-commerce' ),
+				),
 			);
 		}
 		return array(
-			'solution' => array(
+			'solution'   => array(
 				'eyebrow' => __( 'UTILITY-SCALE SOLUTIONS', 'linker-commerce' ),
 				'heading' => __( 'A storage solution built around the whole project.', 'linker-commerce' ),
 				'note'    => __( 'We work alongside developers and EPC teams to shape battery storage around the project’s energy goals, site conditions and integration needs. Together, we connect system choices with a practical plan for delivery.', 'linker-commerce' ),
 				'button'  => __( 'Explore your project with us', 'linker-commerce' ),
 			),
-			'epc'      => array(
+			'epc'        => array(
 				'eyebrow' => __( 'CONTACT LINKER', 'linker-commerce' ),
 				'heading' => __( 'Discuss the project before preparing the full brief.', 'linker-commerce' ),
 				'note'    => __( 'Your question includes this page as context. You can remove it before sending.', 'linker-commerce' ),
 				'button'  => __( 'Discuss an EPC requirement', 'linker-commerce' ),
 			),
-			'services' => array(
+			'services'   => array(
 				'eyebrow' => __( 'TECHNICAL PARTNERSHIP', 'linker-commerce' ),
 				'heading' => __( 'A technical partner, wherever your project stands.', 'linker-commerce' ),
 				'note'    => __( 'Our team works with yours on system choices, installation questions and commissioning, and stays involved when support is needed after delivery.', 'linker-commerce' ),
 				'button'  => __( 'Talk to our technical team', 'linker-commerce' ),
 			),
-			'article'  => array(
+			'article'    => array(
 				'eyebrow' => __( 'YOUR PROJECT, IN PRACTICE', 'linker-commerce' ),
 				'heading' => __( 'What could the right storage solution do for your site?', 'linker-commerce' ),
 				'note'    => __( 'We’ll explore how hybrid or AC-coupled storage could work with your installation, your energy use and the outcome you want to achieve.', 'linker-commerce' ),
 				'button'  => __( 'Talk through your storage options', 'linker-commerce' ),
+			),
+			'epc-intake' => array(
+				'eyebrow' => '',
+				'heading' => __( 'An early question is enough.', 'linker-commerce' ),
+				'note'    => __( 'Share what you already know. Project location and timing are optional in the short form.', 'linker-commerce' ),
+				'button'  => __( 'Discuss your project', 'linker-commerce' ),
 			),
 		);
 	}

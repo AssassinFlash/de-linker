@@ -1,29 +1,76 @@
 /*
- * The contact band `[linker_contact_invitation]` prints on the marketing
- * pages and in an article. Measured on the live product-list band
- * (products-mounts.css, 2026-10-12 at 1440: padding 26/30, radius 14,
- * gap 30, bg #f7f8f9, line #d7dce1; at 390: column, padding 23, gap 20)
- * and on the old live services/EPC/article bands (2026-10-12/13 captures).
+ * Contact bands printed by [linker_contact_invitation].
  *
- * Scoped under `body`, not under `#linker-products`: the product-list band
- * keeps its own rules, and an unscoped class loses to a theme link reset.
- * The PHP prints only these class names.
+ * Measured on the old live captures (1440, 2026-10-12/13), not copied from
+ * the product-list band in products-mounts.css. Each number below names the
+ * capture and the pixel it was read from.
+ *
+ * Shared:
+ * - Button fill #0c7f73 = (12,127,115), solution/epc/services.
+ *   sol-util-en-1440-live.png button y4885–4932; epc-en-1440-live.png
+ *   y2628–2671 x991–1329; services-en-1440-live.png y2854–2894 x993–1299.
+ * - Article button fill #12664f = (18,102,79).
+ *   blogpost-en-1440-live.png y2028–2072 x1060–1300.
+ * - Eyebrow #0c7f73. epc-en-1440-live.png y2541 x111, the CONTACT LINKER
+ *   glyphs, reads (12,127,115).
+ * - Card width about 1240. services-en-1440-live.png card x100–1339
+ *   (1240px) at y2800; sol-util-en-1440-live.png card x100–1339 at y4900.
+ * - Radius 14. sol-util-en-1440-live.png: top rule y4814 starts at x123,
+ *   side rule is x100, inset 23px over the corner.
+ * - Heading face is the theme face (Plus Jakarta Sans, tokens.css
+ *   --proto-font-sans). Colour is per surface, below.
+ *
+ * solution card (sol-util-en-1440-live.png y4814–5042, x100–1339):
+ * fill is a wash, not a flat field — x120 y4900 (239,245,238) = #eff5ee,
+ * x400 (241,246,240). Border (216,228,218) = #d8e4da at x100 y4900 and on
+ * the top rule y4814. Heading ink (21,53,47) = #15352f, 3356 pixels in
+ * y4860–4960. Actions stacked: button x1064–1264, mail under it.
+ *
+ * epc band (epc-en-1440-live.png y2484–2716, x0–1439): full-bleed wash,
+ * no card and no radius. Fill (237,242,235) = #edf2eb at x100 y2550.
+ * Hairline above and below (214,222,215) at y2483 and y2717 — the page
+ * seam, not a card stroke, so it is not drawn here. Button x991–1329,
+ * mail to its right (actions in a row). Heading ink (21,53,47).
+ *
+ * services card (services-en-1440-live.png y2696–2927, x100–1339):
+ * fill (237,242,235) = #edf2eb at x200 y2800. Border (229,234,223) =
+ * #e5eadf at x100 y2800 and on the top rule y2696. Button x993–1299,
+ * mail to its right. Heading ink in that card is (23,39,33), darker than
+ * the solution heading; the review's (16,44,48) family is the article
+ * heading, measured separately below.
+ *
+ * article card (blogpost-en-1440-live.png y1893–2182, x443–1346): white
+ * card on page (247,247,241), seam (214,222,215) at y1892. Button
+ * x1060–1300, mail to its right. Heading ink (16,44,48) = #102c30 at
+ * x550 y2040. The earlier editorial full-bleed rule was wrong: the live
+ * band is this card, and the teal banner under it is a different block.
+ *
+ * epc-intake (epc-en-1440-live.png, the band above the footer, button
+ * y8721–8768 x1100–1329): no card, page ground, a rule above, actions in
+ * a row, no eyebrow. The rule pixel at x200 y8685 is (189,205,191); the
+ * same seam family as the epc band hairline is used so the rule stays
+ * one colour.
+ *
+ * At 390 the row bands stack (the live 390 captures are a column). The
+ * 760px break is the product-list band's own break, reused here because
+ * these captures were not re-measured at 390 in this pass.
  */
-body .linker-contact-invitation {
+body .linker-contact-invitation,
+body :is(#tv-utility-page-v1, #tv-services-support-v1, #tv-epc-page-v1) .linker-contact-invitation {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 30px;
 	box-sizing: border-box;
-	width: calc(100% - 40px);
-	max-width: 1200px;
+	width: min(1240px, calc(100% - 40px));
+	max-width: 1240px;
 	margin: 36px auto;
 	padding: 26px 30px;
-	border: 1px solid #d7dce1;
+	border: 1px solid #d8e4da;
 	border-radius: 14px;
-	background: #f7f8f9;
-	color: #203a32;
-	font-family: system-ui, sans-serif;
+	background: #eff5ee;
+	color: #15352f;
+	font-family: var(--proto-font-sans, "Plus Jakarta Sans", system-ui, sans-serif);
 	font-size: 14px;
 	line-height: 1.55;
 }
@@ -31,10 +78,9 @@ body .linker-contact-invitation {
 body .linker-contact-invitation > div:first-child {
 	flex: 1 1 280px;
 	min-width: 0;
-	max-width: 700px;
+	max-width: 760px;
 }
 
-body .linker-contact-invitation > div:last-child,
 body .linker-contact-invitation .linker-contact-invitation-actions {
 	display: flex;
 	flex-direction: column;
@@ -46,20 +92,23 @@ body .linker-contact-invitation .linker-contact-invitation-actions {
 }
 
 body .linker-contact-invitation .linker-contact-eyebrow {
+	display: block;
 	font-size: 10px;
 	font-weight: 700;
 	letter-spacing: .13em;
 	line-height: 1.55;
+	color: #0c7f73;
 	text-transform: uppercase;
 }
 
 body .linker-contact-invitation h2 {
 	margin: 9px 0;
+	font-family: var(--proto-font-sans, "Plus Jakarta Sans", system-ui, sans-serif);
 	font-size: 23px;
 	font-weight: 700;
 	line-height: 1.3;
 	letter-spacing: -.02em;
-	color: #0a0a0a;
+	color: #15352f;
 }
 
 body .linker-contact-invitation p {
@@ -69,7 +118,8 @@ body .linker-contact-invitation p {
 	color: #536b62;
 }
 
-body .linker-contact-invitation a.linker-contact-primary {
+body .linker-contact-invitation a.linker-contact-primary,
+body #tv-utility-page-v1 .linker-contact-invitation a.linker-contact-primary {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -78,9 +128,9 @@ body .linker-contact-invitation a.linker-contact-primary {
 	padding: 12px 17px;
 	border: 0;
 	border-radius: 7px;
-	background: #12664f;
+	background: #0c7f73;
 	color: #fff;
-	font: 600 13px/1.5 system-ui, sans-serif;
+	font: 600 13px/1.5 var(--proto-font-sans, "Plus Jakarta Sans", system-ui, sans-serif);
 	text-align: center;
 	text-decoration: none;
 	white-space: normal;
@@ -88,30 +138,85 @@ body .linker-contact-invitation a.linker-contact-primary {
 }
 
 body .linker-contact-invitation a.linker-contact-primary:hover {
-	background: #0e513f;
+	background: #0a665c;
 	color: #fff;
 }
 
 body .linker-contact-invitation a.linker-contact-email {
 	font-size: 13px;
 	line-height: 1.55;
-	color: #12664f;
+	color: #0c7f73;
 	text-decoration: underline;
 	overflow-wrap: anywhere;
 }
 
+/* epc: full-bleed wash, no card. epc-en-1440-live.png y2484–2716 x0–1439. */
+body .linker-contact-invitation.linker-contact-epc,
+body #tv-epc-page-v1 .linker-contact-invitation.linker-contact-epc {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	background: #edf2eb;
+}
+
+body .linker-contact-invitation.linker-contact-epc .linker-contact-invitation-actions,
+body #tv-epc-page-v1 .linker-contact-invitation.linker-contact-epc .linker-contact-invitation-actions,
+body .linker-contact-invitation.linker-contact-services .linker-contact-invitation-actions,
+body #tv-services-support-v1 .linker-contact-invitation.linker-contact-services .linker-contact-invitation-actions,
+body .linker-contact-invitation.linker-contact-article .linker-contact-invitation-actions,
+body .linker-contact-invitation.linker-contact-compact .linker-contact-invitation-actions,
+body #tv-epc-page-v1 .linker-contact-invitation.linker-contact-compact .linker-contact-invitation-actions {
+	flex-direction: row;
+	align-items: center;
+	gap: 16px;
+}
+
+/* services card. services-en-1440-live.png fill #edf2eb, border #e5eadf. */
+body .linker-contact-invitation.linker-contact-services,
+body #tv-services-support-v1 .linker-contact-invitation.linker-contact-services {
+	background: #edf2eb;
+	border-color: #e5eadf;
+}
+
 /*
- * An article prints the band inside the piece, not as a page-width panel
- * (old live single, 2026-10-13: full width of the column, no card, a rule
- * above).
+ * article card. blogpost-en-1440-live.png y1893–2182 is white, heading
+ * (16,44,48), button (18,102,79).
  */
-body .linker-contact-invitation.linker-contact-editorial {
+body .linker-contact-invitation.linker-contact-article {
+	background: #fff;
+	border-color: #d6ded7;
+}
+
+body .linker-contact-invitation.linker-contact-article h2 {
+	color: #102c30;
+}
+
+body .linker-contact-invitation.linker-contact-article a.linker-contact-primary {
+	background: #12664f;
+}
+
+body .linker-contact-invitation.linker-contact-article a.linker-contact-primary:hover {
+	background: #0e513f;
+}
+
+body .linker-contact-invitation.linker-contact-article a.linker-contact-email {
+	color: #12664f;
+}
+
+/*
+ * intake: no card, a rule above, actions in a row, no eyebrow.
+ * epc-en-1440-live.png button y8721–8768.
+ */
+body .linker-contact-invitation.linker-contact-compact,
+body #tv-epc-page-v1 .linker-contact-invitation.linker-contact-compact {
 	width: 100%;
 	max-width: none;
 	margin: 28px 0 0;
-	padding: 24px 0 0;
+	padding: 28px 0 0;
 	border: 0;
-	border-top: 1px solid #cfded9;
+	border-top: 1px solid #d6ded7;
 	border-radius: 0;
 	background: transparent;
 }
@@ -132,12 +237,25 @@ body .linker-contact-invitation.linker-contact-editorial {
 		flex: auto;
 	}
 
-	body .linker-contact-invitation > div:last-child,
 	body .linker-contact-invitation .linker-contact-invitation-actions {
+		flex-direction: column;
 		align-items: stretch;
 	}
 
 	body .linker-contact-invitation a {
 		text-align: center;
 	}
+}
+
+/*
+ * The utility page ships its own #tv-utility-page-v1 .linker-contact-solution
+ * (gradient, 28px radius). That selector is (1,1,0) and beats the shared
+ * rule. These two declarations put the measured card back: border
+ * (216,228,218), radius 14, wash #eff5ee. Measured on
+ * sol-util-en-1440-live.png y4814–5042.
+ */
+body #tv-utility-page-v1 .linker-contact-invitation.linker-contact-solution {
+	border: 1px solid #d8e4da;
+	border-radius: 14px;
+	background: #eff5ee;
 }
