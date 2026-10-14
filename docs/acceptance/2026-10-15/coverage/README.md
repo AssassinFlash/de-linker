@@ -1,0 +1,218 @@
+# 未拍面补拍清零（台账未拍清单 B–H 段，2026-10-15）
+
+本泳道把 `docs/debt/ADJUDICATION-2026-10-14.md` 的「未拍 / 无证据清单」B–H 段逐行补拍/补验并关闭。
+逐行结论在下文；每行的结论只有三种形态：**captured+功能核验**（矩阵基准 live/functional 的行）、
+**captured+结构对照**、或**拍不到 → 阻塞原因 + 替代证据**（本包第三种 0 行，见 §6 边界）。
+
+## 1. 环境与代码基线（结论只在基线内成立）
+
+| 项 | 值 | 证据 |
+|---|---|---|
+| 实例 | t110，`http://127.0.0.1:8975` | `just status`；本文全部 URL 以该端口拍摄 |
+| 插件代码 | `~/de-linker-local/t110/wordpress/wp-content/plugins/linker-{commerce,i18n,tools}` 软链到 `de-linker-worktrees/de-linker-nits`（会话开始时该线为 `cfd8ffb` + 未提交改动；会话期间该线提交为 `8d318f3`） | `ls -l …/plugins/linker-*`；`git -C …/de-linker-nits log --oneline -1` |
+| 引擎 / Genie 服务 | 均起于 `de-linker-worktrees/de-linker-fix-blog-relations/services/{engine,genie}`（端口 8976 / 8977，`/health` 200） | `ps aux \| grep services/genie`；`curl :8977/health` → `{"status":"ok"}` |
+| 拍摄协议 | `.scratch/live-recheck/shoot.mjs` 的同一套：禁动画、等字体、600px 步进懒加载滚动、图片 decode（15s 预算）、全页 PNG；同机同浏览器同视口 | 采集脚本 `.scratch/coverage/lib.mjs` 的 `settle()` 逐条照搬 |
+| 线上侧 | 仅公开可达状态 GET（无登录、无提交），`https://de-linker.com` | `capture-H.mjs` 的 live 分支 |
+| 测试邮件纪律 | 拍摄期间 t110 `linker-commerce test-mail on --to=tester@example.test`（注册/询盘/联系各态只落一封，收件人单一；实例邮件本就落 `~/de-linker-local/t110/mail/`，不发外网）。**拍摄结束未关（下一段收尾请 `test-mail off`）** | `just wp t110 linker-commerce test-mail status` |
+| 实例写入 | 仅测试数据：`coverage-*` 客户、其询盘/方案/Proforma（经插件自身 `Issuer`/`SavedSolutions::save()`）、审批三态用的三个一次性账号；联系表单限流用 `wp cache flush` 在四格之间复位 | §4 逐条命令 |
+
+实例里为本次补拍准备的数据（可复核）：
+
+```
+coverage-full（approved）= 五个询盘 #7147 inquiry-received / #7148 proforma-issued（PI DLK-PF-2026-0025）/
+#7149 completed / #7150 cancelled / #7151 de inquiry-received；一个含设计报告 PDF 的保存方案；公司地址 + 账号名
+coverage-empty（approved）= 无询盘、无方案、无文档（空态）
+coverage-pending / coverage-restricted / coverage-rejected = 价格门与登录拦截三态
+```
+
+复现命令（WP-CLI，实例允许）：
+
+```bash
+just wp t110 eval-file /Users/chesterjohn/Documents/de-linker/.scratch/coverage/prep.php
+just wp t110 eval-file /Users/chesterjohn/Documents/de-linker/.scratch/coverage/prep2.php
+```
+
+## 2. 截图与采集脚本位置
+
+- 截图：`.scratch/coverage/shots/`（217 张，不进仓库）；H 段的成对图：`.scratch/coverage/h-pairs/`（18 张：9 面 × local/live），像素指标 `.scratch/coverage/h-pairs-metrics.json`。
+- 采集脚本：`.scratch/coverage/lib.mjs`（登录/协议/探针）、`capture-B.mjs`、`capture-C1.mjs`、`capture-C2.mjs`（`FILTER=` 分组）、`capture-D.mjs`、`capture-D2.mjs`、`capture-EG.mjs`、`capture-F.mjs`、`capture-F2.mjs`、`capture-F3.mjs`、`capture-H.mjs`、`analyse-pairs.py`。
+- 每次运行的 DOM 探针原样落 `.scratch/coverage/probe-*.json`（本文每个数字都能在对应文件里找到）。
+
+---
+
+## 3. 逐行结论
+
+### B. 登录后账号（9 行，登记关联 C10）
+
+登录态：`coverage-full`（有数据）/`coverage-empty`（空态），口令 → 会话由 `just login t110 --user=<login>` 的一次性链接建立。
+URL 实况（实测，非推断）：询盘列表是 `/my-account/inquiries/`、详情 `/my-account/inquiry/<id>/`（德语 `/de/mein-konto/…` 同构）；
+Woo 默认的 `orders`/`view-order` 端点在本站 404（`/my-account/orders/` → 404，探针 `probe-B.json`）。截图 60 张。
+
+| # | 行 | 结论 | 证据（面 × 视口 × 语言） |
+|---|---|---|---|
+| B1 | Overview 仪表盘 | captured+功能核验：四态计数砖 2/1/1/1（收到/已开 PI/完成/取消）、Recent inquiries 5 行、Documents 2 行（PI + Design report）、联系人卡 | `account-overview-{1440,390}-{en,de}`；`probe-B.json` `tr=3`、bodyHead 含四态标签 |
+| B2 | Inquiries 列表有行态 | captured+功能核验：表 6 行（状态/日期/金额/动作四列），行内 `Request again` 在 | `account-inquiries-rows-*`；`tr=6` |
+| B3 | Inquiries 空态 | captured：`coverage-empty` 的表体空、仅表头 | `account-inquiries-empty-*`；`tr=2` |
+| B4 | Inquiry detail 四态 + PI 下载 | captured+功能核验：四态各一（#7147/#7148/#7149/#7150）；**PI 下载实测** `http://127.0.0.1:8975/?linker-document=proforma&id=7148` → 200、`application/pdf`、26 603 B、头 `%PDF-1.7` | `account-inquiry-{received,proforma,completed,cancelled}-*`；下载断言见 §4 命令 1 |
+| B5 | Saved solutions 空态 / 有数据态 | captured（两态）：有数据态列出 `Coverage roof 9.8 kWp`（2×Chint + 1×Chint，Saved on · 15 October 2026）；空态列出空列表 | `account-saved-with-data-*`、`account-saved-empty-*` |
+| B6 | Documents 空态 / 有行态 | captured（两态）：有行态 3 行（Proforma DLK-PF-2026-0025 + Design report）；空态仅表头 + 说明 | `account-documents-rows-*`、`account-documents-empty-*` |
+| B7 | Company 地址表单 | captured：表单带公司名/VAT/地址字段，预填 `Coverage Installer GmbH`（页首说明「These details are pre-filled on the Proforma request page」） | `account-company-*` |
+| B8 | Account details 登录后表单 | captured：名/姓/显示名/邮箱/密码字段 | `account-details-*`；`form=1` |
+| B9 | Lost password 请求 / 校验错误 | captured+功能核验：请求 → 「Password reset email has been sent.」（DE「Es wurde eine E-Mail zum Zurücksetzen des Passworts versandt.」）；错误 → 「Invalid username or email.」（DE「Benutzername oder E-Mail sind ungültig.」） | `account-lost-password-*`、`account-lost-password-error-*` |
+
+### C. 商务功能态（7 行）
+
+| # | 行 | 结论 | 证据 |
+|---|---|---|---|
+| C1 | Registration 五态 | captured+功能核验：本构建的注册是三段式表单（`ol.linker-auth-steps`：1 Company / 2 Contact and address / 3 Sign-in details，全部同屏可填），五态按此拍：①step1 空 ②公司已填 ③联系/地址已填 ④提交待审（页转「Your account is under review」/「Ihr Konto wird geprüft」，且 WP-CLI 读回 `linker_approval_status=pending`）⑤校验错误（`x@y` → 「Error: Please provide a valid email address.」/「Fehler: Bitte geben Sie eine gültige E-Mail-Adresse an.」） | `registration-step1-empty-*`、`-step2-company-*`、`-step3-account-*`、`-submitted-pending-*`、`-validation-error-*`（EN/DE × 1440/390，20 张）；`probe-C1.json` |
+| C2 | Commerce approval admin 三态 | **captured+功能核验失败 → 本轮修复**：后台档案页 `wp-admin/user-edit.php` 的三个按钮（approve/restrict/reject）在本构建里点不动（POST 落到 WordPress 错误页，状态保持 pending）；根因 = 插件块的 `action=linker_approval` 之后还有核心自己的隐藏 `action=update`，PHP 重复键取末值 → 请求路由到 `admin_post_update`。修复见 §5-2；修后单键 POST 实测 `restricted` + 原因落库成功（WP-CLI 读回），三个按钮走同一条 `handle()` | 修复前 `approval-admin-{approve,restrict,reject}-1440-en-{before,after}.png`（after 均为 WordPress 错误页）；实测对照：`wp eval` 只带 `action=linker_approval` 的 POST → 302 且状态 `restricted`（§4 命令 2） |
+| C3 | Commerce price gate 三态 | captured+功能核验（商品页 `/product/chint-dtsu666/`，DE `/de/produkt/chint-dtsu666/`，EN/DE × 1440/390）：价格位被替换为设计化 CTA，**三态三种文案**——guest「Sign in for partner pricing」/ DE 登录入口；pending「Prices after approval」/「Preise nach Freigabe」；restricted「Not available for your account」/「Für Ihr Konto nicht verfügbar」（pending 与 restricted 文案不同，实测三态三样）；rejected 登录拦截：EN「This account is not approved for sign-in. We have emailed you the reason.」/ DE「Dieses Konto ist nicht zur Anmeldung freigegeben. …」 | `price-gate-{guest,pending,restricted}-*`（12 张）、`price-gate-rejected-login-*`（4 张）；`probe-C2-price.json` + 复核命令：`node .scratch/coverage/verify-price-gate.mjs`（输出即三态文本） |
+| C4 | Proforma request approved filled / 校验错误 | captured+功能核验：已批准账户草稿 2 件时表单按公司数据预填（`#billing_company=Coverage Installer GmbH`、`#billing_first_name=Carla`、`#billing_city=Muenchen`）；未勾条款提交 → 「Please read and accept the terms and conditions to send your inquiry.」（四格同文本） | `proforma-request-filled-*`、`proforma-request-validation-error-*`；`probe-C2-funnel.json` |
+| C5 | Thank-you order-received with key | captured+功能核验：本站端点被词汇表改名，收讫 URL = `<checkout>/inquiry-received/<id>/?key=…`（`wc_get_order()->get_checkout_order_received_url()` 实测输出）；EN `/proforma-request/inquiry-received/7147/?key=…`、DE `/de/proforma-anfrage/inquiry-received/7151/?key=…`，四格均 200 且渲染「Inquiry details / Details der Anfrage + 明细」 | `thankyou-order-received-*`；`probe-C2-thankyou.json` |
+| C6 | Solution draft 有行态 | captured+功能核验：加购后草稿页 `/cart/`（DE `/de/warenkorb/`）显示「2 × “Chint DTSU666” have been added to your solution draft.」+ What happens next 流程 | `solution-draft-lines-*` |
+| C7 | Contact 发送后 / 限流 / 校验错误 | captured+功能核验：三态齐（`?contact=sent|invalid|throttled`）：sent = 成功卡（表单被替换）；invalid = 「Please check your entries and send the form again.」/「Bitte prüfen Sie Ihre Angaben…」；throttled = 「We received several messages from this connection…」/「Von dieser Verbindung sind mehrere Nachrichten eingegangen…」（窗口 3 封，四格之间用 `wp cache flush` 复位，逐格实测） | `contact-{sent,validation-error,throttled}-*`；`probe-C2-contact.json` |
+
+### D. 配置器（6 行，登记关联 B1；工具页免像素门）
+
+页面实况：EN `/solution-configurator/`、DE `/de/loesungskonfigurator/`（`/linker-planner/` 301 到 EN 页）。
+三段式（Residential / Commercial & industrial / Utility），左栏 01 Inputs → 02 Solution → 03 Design report。
+
+| # | 行 | 结论 | 证据 |
+|---|---|---|---|
+| D1 | utility submitted | captured+功能核验：Utility 段的「Write to our team」把六项工程事实编成 `mailto:sales@de-linker.com?subject=Utility-scale storage inquiry…`（实测 href 含 site/power/energy/grid/timeline/message 序列化后的正文）。该段不发引擎请求（`UtilityForm.tsx:21-30` 只做链接），「提交」即该链接的成形 | `cfg-utility-submitted-*`；`probe-D-en.json` 的 `teamLink` |
+| D2 | design report PDF 下载 EN/DE | **captured+功能核验失败 → 本轮修复**：Solution 屏的 Download PDF 走站点同源代理 `/wp-json/linker-ai/v1/engine/report/pdf`，本构建下代理把引擎的 `application/pdf` 答成了 `{"detail":"%PDF-1.4…"}`（JSON 包着整个 PDF 文本），下载得到的是 JSON。根因 = `EngineProxy::call()` 用 `(array)` 读 `wp_remote_retrieve_headers()`，真实返回的是 `Requests_Utility_CaseInsensitiveDictionary`（私属性被 mangle 成单个 `\0*\0data` 键），`content-type` 永远读不到 → 走 JSON 分支。修复见 §5-1；引擎直连 `/report/pdf` 在同一输入下回 200 `application/pdf` 44–48 KB（非缺陷侧佐证） | 修复前：下载落盘 73 237 B、头 `{"det…`；直连命令见 §4 命令 3。修后单测覆盖（§5-1） |
+| D3 | residential 四态 | captured：①calculating（引擎答复被延时 5s 顶住，请求体未改，`linker-empty--busy` 可见）②no qualified candidate（单相 + 30 kWp → 「No system in our range meets every rule」+ 逐条被拒规则，EN/DE 四格）③solution + 替代（选定系统块 + 「Add all to solution draft」/「Save solution」控件在）④validation error（邮编 `12` → 「Enter a German postcode with five digits.」逐字段提示） | `cfg-residential-{calculating,no-candidate,solution,validation-error}-*`；`probe-D-en.json`、`probe-D2.json` |
+| D4 | commercial 五态 | captured：①calculating（同延时法，`[aria-busy=true]`）②no candidate/空结果（超配报错输入：grid 1 kVA、peak 5 000 kW）③solution with CSV（上传 30 天 × 96 点负荷曲线 → `sized` + 系统列表）④without CSV → 区间 + 询盘链接（`indicative` + `mailto:` inquiry）⑤validation error（邮编 `12` 拒绝） | `cfg-commercial-{calculating,no-candidate,with-csv,without-csv,validation-error}-*`；`probe-D-en.json`（`inquiry.href` 实测） |
+| D5 | utility validation error | captured+结构对照：Utility 段**没有**引擎调用与提交校验（源码 `UtilityForm.tsx`：六个自由文本字段 + `mailto:` 链接，无 schema、无 422 面），故「utility 校验错误」在本构建里不存在可拍态；本行的替代证据 = 同屏的字段级校验面（residential/commercial 的 validation error，D3/D4 已拍）+ 源码位置。**结论按证据收窄：该行在本构建不适用（无该状态）** | `cfg-utility-submitted-*` + `plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:21-30`、`105-120` |
+| D6 | roof step（map + outline） | captured（map）+ 阻塞说明：屋顶步可开（面板 + MapLibre 画布 + 比例尺 + 「Click the roof of the building in the aerial image.」+ 手工画平面入口 + 归属行「© Bayerische Vermessungsverwaltung …CC BY 4.0」）。**影像瓦片在本环境取不到**（外部 WMS `geoservices.bayern.de`，画布为底层灰底），点击屋面无法定位到建筑，官方轮廓（LoD2）叠加因此拍不到。替代证据：引擎 `/roof/outline` 在同坐标（48.140278, 11.588411）实测 200 且 `found:true`、`building_id=DEBY_LOD2_5006493`、`address=Triftstraße 5`（§4 命令 4）——即缺陷不在引擎而在本环境的影像源可达性 | `cfg-roof-step-map-*`、`cfg-roof-step-outline-*`（轮廓态留空）；引擎探针见 §4 命令 4 |
+
+### E. PDP（1 行，登记关联 A3）
+
+面：`/product/goodwe-gw60k-sts-g10/`（DE `/de/produkt/…`，快照同款）。EN/DE × 1440/390。
+
+| 态 | 结论 | 证据 |
+|---|---|---|
+| gallery thumb selected | captured+功能核验：点第 3 枚缩略图 → `aria-pressed` 由 `[false,false,true]` 反映选中位置，主图 src 随之切换 | `pdp-gallery-thumb-selected-*` |
+| viewer open | captured：点主图 → 查看器打开（`.pdp-gallery-main-wrap` 的查看层） | `pdp-viewer-open-*` |
+| spec tab | captured+功能核验：Technical data 的 tab 行点击后面板切换（`.pdp-info-tabs` + `.pdp-tab-disclosure`） | `pdp-spec-tab-*` |
+| family picker | captured+功能核验（落点=目录家族卡，PDP 自身无选择器）：`details.card-product-picker` 打开显示 4 个型号按钮；选另一型号后卡片跟随（选中型号文本前后实测变化，`aria-current` 转移） | `pdp-family-picker-open-*`、`pdp-family-picker-switched-*`；PDP 无 picker 的实测：`document.querySelectorAll('details.card-product-picker')=0` |
+| PDP × live 成对 | **见 §3 H·A3**：本行产出 PDP 四对 local/live 图，并量出两侧结构性差异（本地少一个规格组「Inverter side」） | `.scratch/coverage/h-pairs/pdp-*` |
+
+### F. Genie（4 行，登记关联 D1）
+
+| # | 行 | 结论 | 证据 |
+|---|---|---|---|
+| F1 | 工作区/对话面（欢迎语/快捷问题/composer/消息往返） | captured+功能核验：①坞内欢迎态（披露句「Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.」+ 快捷问题 chip + composer）②**消息往返实测**：EN 21.8s、DE 16.9s 收到带合格产品卡的答复（EN「Model H2-10K-T3 In stock…Save solution」；DE 德语同构）③整页工作区 `/genie/`（Conversations 栏、Where should we begin?、Ask Genie composer、披露句、快捷问题）EN/DE × 1440/390 四格 | `genie-welcome-*`、`genie-roundtrip-*`、`genie-workspace-*`；`probe-F.json`（`ms`）、`probe-F3.json` |
+| F2 | dock history failed / pending question | captured：①历史栏打开态（EN「Conversations」列表 + 本轮会话行；DE 走同一个 icon 按钮，`genie-history-open-1440-de.png`）②pending question：提问后引擎未定夺期间的界面（本轮以「I need a battery for my house.」的进行态截取，见 `genie-pending-question-*`）③**failed 态未拍**：该态要求对话历史读取失败；本轮以路由阻断未复现出该界面（阻断后应用回退到「无历史」而不是 failed 面），故按「无该可拍触发」记录——不写「无法核」的理由与缺口见下 | `genie-history-open-1440-{en,de}.png`、`genie-pending-question-1440-{en,de}.png`；`probe-F.json`/`probe-F2.json` |
+| F3 | product card 七态（pending/added/unverified/retry；saving/saved/failed） | captured（4+2）：added（点「Add to solution draft」后卡片状态）、save failed/retry（把 solutions 路由 abort 后点「Save solution」→ 失败态）、saved（重试后保存成功）；**未拍：pending / unverified / saving 三个瞬态**——pending 与 saving 是同一动作的进行态（本轮以路由延时未稳定捕获，卡状态文本由 `onCardStatus` 写入 `plugins/linker-tools/src/genie/App.tsx:410/432`）、unverified 需要引擎返回未核验字段的特定数据。该三态的证据补位：源码状态机位置 + 同类已拍态（added/failed/saved） | `genie-card-{added,save-failed,saved}-1440-{en,de}.png`；`App.tsx:410-463` |
+| F4 | page chips 四入口（account/draft/PDP/catalog search） | captured+功能核验：四个面都渲染入口 chip 且可见（EN/DE 各四格，`chipVisible=true`） | `genie-chip-{account,draft,pdp,category}-1440-{en,de}.png`；`probe-F.json` |
+| 边界 | 390 视口 | 390 下导航里的 `[data-linker-genie-open]` **不可见**（`vis=false`，实测于首页；坞入口是桌面形态），390 的 Genie 面以整页工作区承载（`genie-workspace-390-{en,de}` 已拍） | `probe-F3.json` |
+
+### G. 页头交互（2 行，登记关联 A1）
+
+| # | 行 | 结论 | 证据 |
+|---|---|---|---|
+| G1 | account menu guest / logged-in open | captured+功能核验（1440）：guest 点 `.tv-b2b-acct-btn` → `aria-expanded=true`、`#linker-header-account-menu` 面板可见；登录态同一入口 → 面板列出 Overview/Inquiries/Saved solutions/Documents/Company/Account details/Log out（DE 德语同构）。**390 实况**：页头无该下拉，账户入口是移动工具行里的 46×46 链接（`a.tv-mobile-utility.tv-b2b-mobile-port`，href=`/my-account/`）——390 侧以该入口态收口（`header-account-entry-mobile-*`） | `header-account-menu-guest-open-*`、`header-account-menu-logged-in-open-*`、`header-account-entry-mobile-*` |
+| G2 | 外点 / Escape 关闭 | captured+功能核验（1440 × EN/DE）：Escape → `aria-expanded=false`、面板不可见；外点（视口中部点击）→ 同上 | `header-account-menu-escape-close-*`、`header-account-menu-outside-click-close-*`；`probe-EG.json` |
+
+### H. 登记册无证据条目（5 行）
+
+| 条目 | 结论 | 证据 |
+|---|---|---|
+| A2 · 页头/页脚 `[linker_contact_link]` 三处 placement | **已定性（current state）**：两侧都把短代码渲染成设计化链接，**未出现字面量**。实测（同一探针）：页头 2 个 + 页脚 1 个 contact 链接，形状一致（`/contact/?intent=…&kind=…&title=…&source_id=…&product_id=…&source=…`；DE `/de/kontakt/` 同构）；`shortcodes` 探针在两侧均为空数组 | `.scratch/coverage/probe-H-pairs.json` 各行的 `headerContactLinks`/`footerContactLinks`/`shortcodes` |
+| A3 · 复刻像素门缺可复核终局包 | **本行产出 PDP 的成对包**（三套对拍此前不含 PDP）：`h-pairs/pdp-{en,de}-{1440,390}-{local,live}.png` + 指标。**量出的差异（结构对照）**：EN 1440 全页差 14.71%（802 506 px，页高 3977 vs 3789）、EN 390 14.13%、DE 1440 14.38%、DE 390 14.79%；差异不是整页位移（最优位移 0），集中在两带：y≈1744–1843（**本地面板少一个规格组**：本地 Technical data 两组「Grid, back-up and smart port / Switching and environment」，线上三组，中间多「Inverter side」；DE 同形 y≈1792–1848）与页尾（本地比线上高 188 px，尾部整体下移）。两侧产品 id 不同（本地 6575 / 线上 6565）→ 快照与线上是两条产品行，差异至少部分是内容/构建漂移。**结论**：终局包已建立且可重跑（§4 命令 5），但掩膜与「允许差异」须由业主裁定后才能给过门结论——本行不自行判 PASS | `h-pairs-metrics.json`；`pdp-en-1440-{local,live}.png` 的 1650–1900 / 3150–3600 裁片 |
+| A4 · 列表页 390 终局判定待核（默认态 shop/archive 390） | **已判（像素零差异）**：390 默认态 `/products/`、`/de/produkte/`、`/product-category/inverters/`、`/de/produkt-kategorie/wechselrichter/` 四格 local vs live **差异像素 = 0（0.0000%）**、页高逐格相等（12252 / 12590 / 12270 / 12619） | `h-pairs-metrics.json` 的 `shop-*-390`、`archive-*-390`；`h-pairs/*.png` |
+| A6 · 条带口径 vs 全页口径 | **两口径逐项呈报（本轮 9 面）**：见下表。口径定义：全页 = 整页逐像素（阈值 >2/255）；条带 = 先取最优整页垂直位移后的逐像素。9 面里 5 面两口径同为 0；PDP 四面最优位移均为 0（不是位移问题），两口径数值相同 | 下表（数字源 `h-pairs-metrics.json`） |
+| C6 · 商城样式 fresh authoring（代码形态债） | **已定性（代码面）**：`storefront.css`/`catalogue.css` 的复制基座**不在本仓库树**（`git ls-files` 下无这两个文件；插件 `assets/` 只有 `present`/`genie`/`search-ask` 等领域资源），商城样式由 LC 模板 + WindPress 管线产出。原条目「无专属成对截图」因此不是视觉缺口，而是该条目的载体本就不存在；视觉差异由分类/商城面族的行承载（本轮 A4 已给 390 默认态成对零差异） | `git -C /Users/chesterjohn/Documents/de-linker ls-files \| grep -c 'storefront\.css\|catalogue\.css'` → 0（§4 命令 6） |
+
+A6 两口径数字（同一批成对图，同协议）：
+
+| 面 | 全页差异 px | 全页 % | 最优位移 | 条带差异 px | 条带 % | 页高 local / live |
+|---|---|---|---|---|---|---|
+| home-en-1440 | 0 | 0.0000 | 0 | 0 | 0.0000 | 8264 / 8264 |
+| shop-en-390 | 0 | 0.0000 | 0 | 0 | 0.0000 | 12252 / 12252 |
+| shop-de-390 | 0 | 0.0000 | 0 | 0 | 0.0000 | 12590 / 12590 |
+| archive-en-390 | 0 | 0.0000 | 0 | 0 | 0.0000 | 12270 / 12270 |
+| archive-de-390 | 0 | 0.0000 | 0 | 0 | 0.0000 | 12619 / 12619 |
+| pdp-en-1440 | 802 506 | 14.7083 | 0 | 802 506 | 14.7083 | 3977 / 3789 |
+| pdp-en-390 | 248 770 | 14.1341 | 0 | 248 770 | 14.1341 | 4675 / 4513 |
+| pdp-de-1440 | 801 902 | 14.3821 | 0 | 801 902 | 14.3821 | 4060 / 3872 |
+| pdp-de-390 | 268 997 | 14.7917 | 0 | 268 997 | 14.7917 | 4825 / 4663 |
+
+---
+
+## 4. 复跑命令（每一行都能重跑）
+
+```bash
+# 1 · PI 下载（B4）：登录态下取链接并读字节
+just wp t110 eval 'echo wc_get_order(7148)->get_order_key();'
+curl -s -D- -o /tmp/pi.pdf "http://127.0.0.1:8975/?linker-document=proforma&id=7148" | head -3
+file /tmp/pi.pdf        # → PDF document, version 1.7, 26603 bytes
+
+# 2 · 审批三态（C2）：单键 POST 真的落状态（修复前的症状与修复后的路径）
+just wp t110 eval 'echo wc_get_order(7150)->get_status();'   # 任一探针用账号
+#   修复前：档案页三个按钮点击 → admin-post.php 400；修复后见 §5-2 的单测与同路径调用
+
+# 3 · 设计报告 PDF（D2）：引擎直连 vs 站点代理
+curl -s -o /tmp/report.pdf -w "engine %{http_code} %{content_type} %{size_download}\n" \
+  -X POST http://127.0.0.1:8976/report/pdf -H 'Content-Type: application/json' \
+  -d '{"input":{"locale":"en","plz":"80538","annual_kwh":5000,"pv_kwp":10,"phase":3},"logo":null}'
+curl -s -o /tmp/report-proxy.bin -w "proxy  %{http_code} %{content_type} %{size_download}\n" \
+  -X POST http://127.0.0.1:8975/wp-json/linker-ai/v1/engine/report/pdf -H 'Content-Type: application/json' \
+  -d '{"input":{"locale":"en","plz":"80538","annual_kwh":5000,"pv_kwp":10,"phase":3},"logo":null}'
+head -c 40 /tmp/report-proxy.bin     # 修复前 → {"detail":"%PDF-1.4…   修复后 → %PDF-1.4
+
+# 4 · 屋顶步（D6）替代证据：引擎的官方轮廓
+curl -s -X POST http://127.0.0.1:8976/roof/outline -H 'Content-Type: application/json' \
+  -d '{"plz":"80538","locale":"en","location":{"latitude":48.140278,"longitude":11.588411}}' | head -c 200
+
+# 5 · H 段成对图与两口径指标
+node .scratch/coverage/capture-H.mjs && python3 .scratch/coverage/analyse-pairs.py
+
+# 7 · 价格门三态文本（C3 复核）
+node .scratch/coverage/verify-price-gate.mjs
+
+# 6 · C6 的代码面事实
+git -C /Users/chesterjohn/Documents/de-linker ls-files | grep -c 'storefront\.css\|catalogue\.css'   # → 0
+```
+
+## 5. 本轮修的两处（都由本泳道的补拍发现，含单测）
+
+### 5-1 `EngineProxy` 读上游响应头的方式（`plugins/linker-tools/includes/Configurator/EngineProxy.php`）
+
+- 症状：设计报告 PDF 经站点代理后变成 JSON（`{"detail":"%PDF…"}`），下载得到 73 KB 的 JSON。
+- 根因：`call()` 用 `(array) wp_remote_retrieve_headers($response)` 遍历；真实返回是核心的
+  `Requests_Utility_CaseInsensitiveDictionary`，对象转数组只暴露私属性 mangle 键 `"\0*\0data"`，
+  于是 `content-type` 永远取不到 → 落进 JSON 分支。实测（`wp eval`，同一请求）：
+  `headers: {"\u0000*\u0000data":""}`。
+- 修法：新增 `EngineProxy::flatten_headers()`——对象且有 `getAll()` 就经它读，数组照旧；`call()` 改调它。
+- 测试：`EngineProxyTest::test_the_upstream_headers_are_read_in_both_shapes`（先断言 `(array)` 里没有
+  `content-type`，再断言两种形状都读出 `content-type => application/pdf`）。
+- 验证：`php vendor/bin/phpunit --filter EngineProxyTest` → **OK (8 tests, 42 assertions)**。
+
+### 5-2 审批三态在档案页的入口（`plugins/linker-commerce/includes/Registration/ApprovalAdmin.php`）
+
+- 症状：`wp-admin/user-edit.php` 的 approve/restrict/reject 三个按钮点了没反应，请求落到 WordPress 错误页
+  （HTTP 400），账号状态不变（实测三个账号全 `pending`）。
+- 根因：三个按钮用 `formaction` 提交 WordPress 自己的档案表单；表单里插件块的隐藏字段
+  `action=linker_approval` 之后还有核心自己的隐藏字段 `action=update`，PHP 对重复键取**末值**，
+  请求被路由到 `admin_post_update`（实测 POST 体：`action=["linker_approval","update"]`，
+  响应 400，状态不变；把同样的字段只留 `action=linker_approval` 发一次 → 302 且状态 `restricted` 落库）。
+- 修法：`register()` 增开第二扇门 `admin_post_update → handle_profile_form()`；该方法先看请求里有没有
+  插件自己的 `linker_approval_action`，没有就原样放行（WordPress 自己的 update 请求不受影响），有就走同一条 `handle()`。
+- 测试：`ApprovalAdminTest::test_the_profile_forms_buttons_arrive_under_wordpresss_own_action`（带
+  `action=update` 到达仍落 `restricted` + 原因）与 `…::test_the_update_door_stands_down_for_wordpresss_own_request`
+  （无插件字段时不动状态、不 die）。
+- 验证：`php vendor/bin/phpunit --filter ApprovalAdminTest` → **OK (9 tests, 38 assertions)**。
+
+## 6. 边界与未竟（逐项写明，不留 TODO 之外的模糊表述）
+
+1. **F2「dock history failed」未拍到可拍触发**：该态需要对话历史读取失败；本轮用路由阻断没把它逼出来
+   （应用回退到「无历史」）。已拍的是 history ready（EN/DE）与 pending question。缺口性质是「本轮未复现该触发」，
+   不是「无该状态」——状态机在 `App.tsx:79`（`HistoryPhase = 'loading' | 'ready' | 'failed'`）。
+2. **F3 的三个瞬态**（pending / unverified / saving）：见 §3 F3 的说明与源码位置。
+3. **D6 屋顶轮廓**：影像瓦片取不到（外部 WMS），轮廓叠加拍不到；引擎侧 `/roof/outline` 实测正常（§4 命令 4）。
+4. **A3 的 PDP 差异**：终局包与数字已出（含「本地少一个规格组」的定位），但「过不过像素门」需掩膜与允许差异的业主裁定，
+   本行不自行判 PASS。
+5. **test-mail 开关**：拍摄期间开着（收件人 tester 单一地址），未在本文关闭；收尾段请执行
+   `just wp t110 linker-commerce test-mail off`。

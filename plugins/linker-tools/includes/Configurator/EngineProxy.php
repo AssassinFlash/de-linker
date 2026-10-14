@@ -231,16 +231,38 @@ final class EngineProxy {
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
+		return array(
+			(int) wp_remote_retrieve_response_code( $response ),
+			self::flatten_headers( wp_remote_retrieve_headers( $response ) ),
+			(string) wp_remote_retrieve_body( $response ),
+		);
+	}
+
+	/**
+	 * The headers of an upstream answer as a flat lowercase map of single
+	 * strings.
+	 *
+	 * `wp_remote_retrieve_headers()` answers with core's
+	 * `Requests_Utility_CaseInsensitiveDictionary` in every real request
+	 * (measured 2026-10-15: casting that object to an array yields the single
+	 * mangled key `"\0*\0data"`, so a typed `content-type` lookup found
+	 * nothing and every PDF answer fell into the JSON branch), with a plain
+	 * array in the tests and other callers. Both shapes are read here, so the
+	 * seam and the wire agree.
+	 *
+	 * @param mixed $raw Whatever `wp_remote_retrieve_headers()` returned.
+	 * @return array<string, string>
+	 */
+	public static function flatten_headers( $raw ): array {
+		if ( is_object( $raw ) && method_exists( $raw, 'getAll' ) ) {
+			$raw = $raw->getAll();
+		}
 		$headers = array();
-		foreach ( (array) wp_remote_retrieve_headers( $response ) as $key => $value ) {
+		foreach ( (array) $raw as $key => $value ) {
 			$headers[ strtolower( (string) $key ) ] = strtolower(
 				is_array( $value ) ? (string) ( $value[0] ?? '' ) : (string) $value
 			);
 		}
-		return array(
-			(int) wp_remote_retrieve_response_code( $response ),
-			$headers,
-			(string) wp_remote_retrieve_body( $response ),
-		);
+		return $headers;
 	}
 }

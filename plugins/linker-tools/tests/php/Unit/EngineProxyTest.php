@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Tests\Unit;
 
 use Linker\Tools\Configurator\EngineProxy;
+use Linker\Tools\Tests\Doubles\HeaderDictionary;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 use WP_REST_Request;
@@ -190,6 +191,39 @@ final class EngineProxyTest extends TestCase {
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame( $bytes, $response->get_data() );
 		$this->assertStringStartsWith( 'application/pdf', (string) ( $response->get_headers()['Content-Type'] ?? '' ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The upstream's headers are read in both shapes they arrive in: core's
+	 * `Requests_Utility_CaseInsensitiveDictionary` on the wire (casting that
+	 * object to an array yields only the mangled key "\0*\0data", which is
+	 * how the pdf branch was lost on 2026-10-15), and the plain array the
+	 * doubles and other callers hand over.
+	 */
+	public function test_the_upstream_headers_are_read_in_both_shapes(): void {
+		$dictionary = new HeaderDictionary();
+
+		$this->assertArrayNotHasKey(
+			'content-type',
+			(array) $dictionary,
+			'Casting the dictionary hides its headers: private storage, one mangled key.'
+		);
+		$this->assertSame(
+			array(
+				'content-type'   => 'application/pdf',
+				'content-length' => '48835',
+			),
+			EngineProxy::flatten_headers( $dictionary ),
+			'A dictionary with getAll() is read through it.'
+		);
+		$this->assertSame(
+			array( 'content-type' => 'application/pdf' ),
+			EngineProxy::flatten_headers(
+				array( 'Content-Type' => array( 'application/pdf' ) )
+			),
+			'A plain array keeps working, first value of a list.'
+		);
 		$this->assertConditionsMet();
 	}
 
