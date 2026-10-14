@@ -55,6 +55,11 @@ jobs:
           # The just the justfile is written for.
           tool: just@1.58.0
 
+      # The German-coverage gate reads the .po catalogs with gettext's own
+      # tools (msgattrib, msgfmt); the runner image does not carry them.
+      - name: gettext for the i18n coverage gate
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
       - name: just check
         run: just check
 
