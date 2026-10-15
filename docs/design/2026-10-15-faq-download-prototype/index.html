@@ -1,0 +1,2525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>FAQ prototype</title>
+<!--
+  PROTOTYPE — throwaway, not production.
+  Five variants of the FAQ + Download page, switchable via ?variant=1|2|3|4|5&lang=en|de
+  and the bar (arrows, or ← → when not typing). Question: which structure should this library use?
+  1 Sectioned handbook · 2 The register · 3 Brand workspaces · 4 Two halves · 5 Tabs
+  Variant 5 also reads &tab=faq|documents (default faq).
+  Variant 5 document rows use thumbs/manifest.json (page 1 of each PDF). Missing entries use the type tile.
+-->
+<style>
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:400;font-display:swap;src:url("../../../plugins/linker-commerce/assets/fonts/plus-jakarta-sans-400.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:500;font-display:swap;src:url("../../../plugins/linker-commerce/assets/fonts/plus-jakarta-sans-500.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:600;font-display:swap;src:url("../../../plugins/linker-commerce/assets/fonts/plus-jakarta-sans-600.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:700;font-display:swap;src:url("../../../plugins/linker-commerce/assets/fonts/plus-jakarta-sans-700.ttf") format("truetype")}
+
+:root{
+  --ink:#15352f;
+  --accent:#0c7f73;
+  --accent-dark:#0a5c53;
+  --paper-journal:#f6f8fa;
+  --paper-mist:#edf1f5;
+  --cream:#f7f7f1;
+  --line:#d7dde4;
+  --navy:#102c30;
+  --muted:#5c6e68;
+  --white:#fff;
+  --radius:18px;
+  --shadow:0 2px 8px rgba(21,53,47,.06);
+  --container:1360px;
+  --pad-inline:clamp(20px,4vw,40px);
+  --header-h:72px;
+  --sticky-extra:0px;
+  --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:var(--font);
+  font-size:15px;
+  line-height:1.5;
+  color:var(--ink);
+  background:var(--paper-journal);
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:88px;
+}
+img{max-width:100%;display:block}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::selection{background:rgba(12,127,115,.18)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.wrap{width:min(var(--container),100%);margin-inline:auto;padding-inline:var(--pad-inline)}
+
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:var(--white);
+  border-bottom:1px solid var(--line);
+}
+.nav-frame{display:flex;align-items:center;gap:12px;min-height:64px}
+.brand{font-size:22px;font-weight:700;letter-spacing:-.04em;text-decoration:none;color:var(--ink);line-height:1;flex:none}
+.desk-nav{display:none;align-items:center;gap:2px;margin-left:8px;min-width:0}
+.desk-nav a{
+  display:inline-flex;align-items:center;height:40px;padding:0 10px;border-radius:8px;
+  text-decoration:none;font-size:14.5px;font-weight:600;white-space:nowrap;
+}
+.desk-nav a:hover{color:var(--accent);background:rgba(12,127,115,.08)}
+.nav-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
+.lang-toggle{display:none;align-items:center}
+.lang-toggle a{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;text-decoration:none;font-size:13px;font-weight:700;border-radius:8px;
+}
+.lang-toggle a[aria-current="true"]::after{
+  content:"";position:absolute;left:10px;right:10px;bottom:6px;height:2px;border-radius:2px;background:var(--accent);
+}
+.contact{
+  display:none;align-items:center;height:40px;padding:0 14px;border-radius:8px;
+  background:var(--accent);color:#fff;text-decoration:none;font-size:14px;font-weight:700;white-space:nowrap;
+}
+.contact:hover{background:var(--accent-dark)}
+.menu-btn{
+  display:inline-grid;place-items:center;width:40px;height:40px;padding:0;
+  border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;
+}
+.menu-btn[aria-expanded="true"] svg{display:none}
+.menu-btn[aria-expanded="true"]::before{content:"×";font-size:22px;line-height:1}
+.nav-panel{
+  position:absolute;left:0;right:0;top:100%;z-index:60;
+  background:#fff;border-bottom:1px solid var(--line);
+  box-shadow:0 16px 32px rgba(21,53,47,.08);
+  padding:8px var(--pad-inline) 16px;
+}
+.nav-panel nav{display:grid}
+.nav-panel nav a{
+  padding:12px 0;border-bottom:1px solid var(--paper-mist);
+  text-decoration:none;font-weight:600;font-size:16px;
+}
+.panel-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
+.panel-tools .lang-toggle{display:inline-flex}
+.panel-tools .contact{display:inline-flex}
+@media(min-width:1280px){
+  .nav-frame{min-height:72px;gap:16px}
+  .desk-nav,.lang-toggle,.contact{display:flex}
+  .menu-btn{display:none}
+}
+@media(max-width:860px){
+  .nav-actions{margin-left:8px}
+}
+
+.page-head{padding:28px 0 20px}
+.kicker{margin:0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.page-title{margin:6px 0 0;font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.12}
+.page-sub{margin:8px 0 0;max-width:62ch;font-size:15px;line-height:1.55;color:var(--muted)}
+.page-head .search{margin-top:16px;max-width:680px}
+
+.search{
+  display:flex;align-items:center;gap:8px;height:48px;padding:0 12px 0 14px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(12,127,115,.15)}
+.search svg{flex:none;color:#7d8d88}
+.search input{
+  flex:1;min-width:0;height:100%;border:0;background:transparent;outline:none;
+  font-size:16px;font-weight:500;
+}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none}
+.search input::placeholder{color:#8a9894}
+.search-clear{
+  flex:none;width:22px;height:22px;border:0;border-radius:50%;padding:0;
+  background:var(--paper-mist);cursor:pointer;font-size:14px;line-height:1;
+}
+.search-count{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:4px}
+
+.zone-title{margin:0;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.25;scroll-margin-top:calc(var(--header-h) + var(--sticky-extra) + 16px)}
+.group-head{margin:26px 0 2px;font-size:16px;font-weight:600;line-height:1.35;scroll-margin-top:calc(var(--header-h) + var(--sticky-extra) + 16px)}
+.group-head .n,.zone-title .n{font-weight:500;color:var(--muted);font-size:13px;margin-left:4px}
+.zone-label{margin:8px 0 0;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-dark)}
+.zone-rule{border:0;border-top:1px solid var(--line);margin:22px 0 8px}
+.zone-sub{margin:6px 0 0;font-size:14px;color:var(--muted)}
+
+.qa{border-bottom:1px solid var(--line)}
+.qa summary{
+  display:flex;align-items:flex-start;gap:14px;padding:18px 2px;cursor:pointer;list-style:none;
+}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::marker{content:""}
+.qa-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.qa-q{font-size:15px;font-weight:600;line-height:1.45}
+.qa-where{font-size:12px;font-weight:500;color:var(--muted)}
+.qa-mark{
+  width:22px;height:22px;margin-top:1px;flex:none;position:relative;
+  border:1px solid var(--line);border-radius:7px;background:#fff;
+}
+.qa-mark::before,.qa-mark::after{
+  content:"";position:absolute;background:var(--ink);border-radius:1px;
+}
+.qa-mark::before{left:5px;right:5px;top:10px;height:1.5px}
+.qa-mark::after{left:10px;top:5px;width:1.5px;height:12px}
+.qa[open] .qa-mark{background:var(--ink);border-color:var(--ink)}
+.qa[open] .qa-mark::before{background:#fff}
+.qa[open] .qa-mark::after{display:none}
+.qa-a{padding:0 40px 18px 0}
+.qa-a p{margin:0;max-width:68ch;font-size:15px;line-height:1.65;color:var(--muted)}
+.qa-product{
+  display:inline-flex;margin-top:10px;font-size:13px;font-weight:600;
+  color:var(--accent-dark);text-decoration:none;
+}
+.qa-product:hover{text-decoration:underline}
+mark{background:#e4f3f1;color:inherit;border-radius:2px;padding:0 1px}
+
+.doc{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:"lead dl" "meta dl";
+  gap:4px 14px;align-items:center;
+  padding:14px 0;border-bottom:1px solid var(--line);
+}
+.doc-lead{grid-area:lead;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:flex-start;min-width:0}
+.doc-title{margin:0;flex:1 1 180px;min-width:0;font-size:15px;font-weight:600;line-height:1.35}
+.doc-meta{grid-area:meta;display:flex;flex-wrap:wrap;gap:4px 10px;margin:0;font-size:13px;color:var(--muted)}
+.doc-lang{font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.doc-lang::before{content:"·";font-weight:400;letter-spacing:0;margin-right:8px;color:var(--muted)}
+.doc-dl{
+  grid-area:dl;align-self:center;justify-self:end;
+  display:inline-flex;align-items:center;gap:6px;
+  min-height:36px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+  background:#fff;color:var(--accent-dark);text-decoration:none;
+  font-size:13px;font-weight:700;white-space:nowrap;
+}
+.doc-dl:hover{border-color:var(--accent);background:#f3fbfa}
+.badge{
+  display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
+  background:var(--paper-mist);color:#3e524c;
+}
+.badge-datasheet{background:#e5f4f2;color:var(--accent-dark)}
+.badge-manual{background:#e8eef2;color:#1d3d4a}
+.badge-certificate{background:#f3efe4;color:#6a5420}
+.badge-compatibility{background:#e7eef6;color:#1e3f66}
+.badge-warranty{background:#f6ebe6;color:#7a3e2e}
+.badge-brochure{background:#eeeaf4;color:#3d3560}
+.badge-document{background:var(--paper-mist);color:#3e524c}
+
+.empty{text-align:center;padding:64px 16px}
+.empty p{margin:0 0 16px;font-size:15px;color:var(--muted)}
+.empty-soft{text-align:left;padding:18px 0;margin:0}
+.btn-genie{
+  display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;
+  border:1px solid var(--accent);background:#fff;color:var(--accent-dark);
+  font-size:14px;font-weight:700;text-decoration:none;
+}
+.btn-genie:hover{background:var(--accent);color:#fff}
+.loading,.load-error{padding:48px 0;color:var(--muted)}
+
+.chip{
+  display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;
+  border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);
+  text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;
+}
+.chip .n{font-weight:500;color:var(--muted)}
+.chip:hover{border-color:var(--accent)}
+.chip.is-active,.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.is-active .n,.chip[aria-pressed="true"] .n{color:rgba(255,255,255,.72)}
+.chip.is-dim{opacity:.35;pointer-events:none}
+
+.v1-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:40px;align-items:start;padding:28px 0 12px}
+.v1-rail{
+  position:sticky;top:calc(var(--header-h) + 24px);
+  max-height:calc(100vh - var(--header-h) - 48px);
+  overflow-x:hidden;overflow-y:auto;
+  padding-bottom:12px;scrollbar-width:thin;
+}
+.toc-label{
+  margin:18px 0 6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.toc-label:first-child{margin-top:0}
+.toc-label a{color:inherit;text-decoration:none}
+.toc-label a:hover{color:var(--accent-dark)}
+.toc a{
+  display:flex;justify-content:space-between;gap:8px;align-items:baseline;
+  padding:7px 8px;border-radius:8px;
+  text-decoration:none;font-size:14px;font-weight:500;line-height:1.3;
+}
+.toc a .n{font-size:12px;font-weight:500;color:var(--muted);flex:none}
+.toc a.is-active{background:rgba(12,127,115,.1);color:var(--accent-dark);font-weight:600;box-shadow:inset 2px 0 0 var(--accent)}
+.toc a.is-dim{opacity:.35;pointer-events:none}
+.v1-chips{display:none}
+.v1-zone+.v1-zone{border-top:1px solid var(--line);margin-top:40px;padding-top:32px}
+.v1-main{min-width:0}
+.v1 .page-head{padding-top:0}
+
+.v2-toolbar{
+  position:sticky;top:calc(var(--header-h) - 1px);z-index:40;
+  background:#fff;border-bottom:1px solid var(--line);
+}
+.toolbar-inner{display:grid;gap:10px;padding:12px 0}
+.v2-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.v2-toolbar .search{flex:1 1 280px;max-width:none;height:42px;margin:0;box-shadow:none}
+.seg{display:inline-flex;padding:3px;gap:2px;background:var(--paper-mist);border-radius:10px;flex:none}
+.seg button{
+  border:0;background:transparent;height:32px;padding:0 12px;border-radius:8px;
+  font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;
+}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(21,53,47,.08)}
+.brand-row{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;scrollbar-width:none}
+.brand-row::-webkit-scrollbar{display:none}
+.type-select{
+  height:36px;border:1px solid var(--line);border-radius:8px;padding:0 28px 0 10px;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235c6e68' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
+  font-size:13px;font-weight:600;appearance:none;cursor:pointer;
+}
+.v2 #results{padding-top:18px}
+.ledger{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:8px 18px 12px;
+}
+.v2 .qa summary{padding:10px 0}
+.v2 .qa-q{font-size:14px}
+.v2 .qa-a{padding-bottom:12px}
+.v2 .qa-a p{font-size:14px;line-height:1.6}
+.v2 .doc{padding:8px 0}
+.v2 .doc-title{font-size:14px}
+.v2 .group-head{margin-top:16px;font-size:15px}
+.hit-eye{margin:0;padding-top:10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a8b86}
+.hit{border-bottom:1px solid var(--line)}
+.hit .qa,.hit .doc{border-bottom:0}
+.v2 .hit .qa summary{padding-top:4px}
+
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.cat-card:last-child:nth-child(odd){grid-column:1 / -1}
+.cat-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:6px 18px 8px;min-width:0;
+}
+.cat-card h3{margin:12px 0 2px;font-size:16px;font-weight:600}
+.cat-card .qa:last-child{border-bottom:0}
+.v3-brands{margin-top:36px}
+.brand-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:14px}
+.brand-card{
+  display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+  min-height:132px;padding:16px;text-align:left;
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);cursor:pointer;
+}
+.brand-card:hover{border-color:var(--accent)}
+.brand-card.is-open{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.mark{
+  width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  background:var(--paper-mist);font-size:12px;font-weight:700;letter-spacing:.04em;
+}
+.brand-card.is-open .mark{background:var(--accent);color:#fff}
+.brand-name{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.brand-counts{font-size:13px;color:var(--muted)}
+.workspace{
+  margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px 20px 8px;
+  scroll-margin-top:calc(var(--header-h) + 16px);
+}
+.ws-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ws-head h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.02em}
+.ws-close{
+  border:0;background:transparent;color:var(--muted);font-size:13px;font-weight:600;
+  cursor:pointer;padding:6px 0;flex:none;
+}
+.ws-close:hover{color:var(--ink)}
+.tabs{display:flex;gap:4px;margin:12px 0 0;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.tabs button{
+  border:0;border-bottom:2px solid transparent;background:transparent;
+  padding:10px 12px;margin-bottom:-1px;cursor:pointer;
+  font-size:14px;font-weight:600;color:var(--muted);white-space:nowrap;
+}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.type-chips{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:12px 0 4px;scrollbar-width:none}
+.type-chips::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+.ws-line{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.v3 .flat-note{margin:0 0 10px;font-size:13px;color:var(--muted)}
+
+.v4 .page-head{padding-top:0;padding-bottom:8px}
+.v4 .v1-layout{padding-top:12px}
+.v4-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:14px 0 12px}
+.v4-tools .search{flex:1 1 220px;max-width:440px;height:40px;margin:0;box-shadow:none}
+.v4-textbtn{border:0;background:transparent;color:var(--accent-dark);font-size:13px;font-weight:700;cursor:pointer;padding:8px 2px;white-space:nowrap}
+.v4-textbtn:hover{color:var(--ink)}
+.v4-group{margin:12px 0 8px;font-size:15px;font-weight:600}
+.v4-catgrid,.v4-brandgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.v4-mini{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+  min-height:68px;padding:10px 12px;text-align:left;cursor:pointer;
+  background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+}
+.v4-mini.is-open{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.v4-mini strong{display:block;font-size:13px;font-weight:700;line-height:1.3}
+.v4-mini .sub{display:block;margin-top:2px;font-size:12px;font-weight:500;color:var(--muted)}
+.v4-mini .plus{flex:none;width:22px;height:22px;border:1px solid var(--line);border-radius:7px;position:relative;background:#fff}
+.v4-mini .plus::before,.v4-mini .plus::after{content:"";position:absolute;background:var(--ink);border-radius:1px}
+.v4-mini .plus::before{left:5px;right:5px;top:10px;height:1.5px}
+.v4-mini .plus::after{left:10px;top:5px;width:1.5px;height:12px}
+.v4-mini.is-open .plus{background:var(--ink);border-color:var(--ink)}
+.v4-mini.is-open .plus::before{background:#fff}
+.v4-mini.is-open .plus::after{display:none}
+.v4-brandmini{justify-content:flex-start}
+.v4-brandmini .mark{width:32px;height:32px;border-radius:9px;flex:none}
+.v4-brandmini.is-open .mark{background:var(--accent);color:#fff}
+.v4-panels{display:grid;gap:8px;margin-top:10px}
+.v4-panel{
+  background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:4px 16px 8px;
+}
+.v4-panel h3{margin:12px 0 0;font-size:15px;font-weight:600}
+.v4-panel .qa:last-child{border-bottom:0}
+.v4-rule{display:flex;align-items:center;gap:14px;margin:22px 0 0;color:var(--accent-dark);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.v4-rule::before,.v4-rule::after{content:"";height:2px;flex:1;background:var(--accent)}
+.v4-dl{
+  margin-top:10px;padding:20px 22px 12px;
+  background:#e5eeea;border:1px solid #c5d5cf;border-radius:24px;
+  box-shadow:inset 0 4px 0 var(--accent);
+}
+.v4-ws{
+  margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:18px;
+  box-shadow:var(--shadow);padding:16px 16px 8px;
+  scroll-margin-top:calc(var(--header-h) + var(--sticky-extra) + 16px);
+}
+.v4-ws-body{max-height:min(360px,46vh);overflow:auto;margin-top:8px;padding-right:4px}
+.v4-quiet{margin:8px 0 0;font-size:14px;color:var(--muted)}
+
+.site-footer{background:var(--navy);color:#d5e0dc;margin-top:48px;padding:36px 0 24px}
+.footer-grid{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-start;justify-content:space-between}
+.footer-brand{margin:0;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.03em}
+#footer-blurb{margin:6px 0 0;max-width:36ch;font-size:13px;line-height:1.55;color:#a8b8b3}
+#footer-links{display:flex;flex-wrap:wrap;gap:8px 16px}
+#footer-links a,#footer-mail{color:#d5e0dc;text-decoration:none;font-size:14px;font-weight:600}
+#footer-links a:hover,#footer-mail:hover{color:#fff}
+.footer-legal{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:#9aada8}
+
+.proto-bar{
+  position:fixed;z-index:80;left:50%;bottom:18px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:2px;max-width:calc(100% - 24px);
+  padding:6px;background:var(--navy);color:var(--cream);
+  border-radius:999px;box-shadow:0 10px 30px rgba(16,44,48,.28);
+  font-size:13px;font-weight:600;
+}
+.proto-bar button{
+  border:0;background:transparent;color:inherit;height:32px;min-width:32px;padding:0 8px;
+  border-radius:999px;cursor:pointer;
+}
+.proto-bar button:hover{background:rgba(255,255,255,.08)}
+.proto-bar button[aria-pressed="true"]{background:#fff;color:var(--navy)}
+.proto-label{padding:0 8px;white-space:nowrap}
+.proto-num{display:none;padding:0 4px}
+.proto-sep{width:1px;height:16px;background:rgba(255,255,255,.22);margin:0 2px;flex:none}
+.proto-vp{padding:0 8px;font-variant-numeric:tabular-nums;font-weight:500;opacity:.75}
+
+@media(max-width:1279px){
+  .v4-catgrid,.v4-brandgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:1099px){
+  .brand-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:1023px){
+  .v1-layout{grid-template-columns:1fr;gap:0;padding-top:8px}
+  .v1-rail{display:none}
+  .v1-chips{
+    display:block;position:sticky;top:calc(var(--header-h) - 1px);z-index:35;
+    margin-inline:calc(var(--pad-inline) * -1);
+    padding-inline:var(--pad-inline);
+    background:var(--paper-journal);
+    border-bottom:1px solid var(--line);
+  }
+  .v1-chips-scroll{
+    display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
+    padding:10px 0;scroll-snap-type:x mandatory;
+  }
+  .v1-chips-scroll::-webkit-scrollbar{display:none}
+  .v1-chips .chip{scroll-snap-align:start;flex:none}
+  .chip-gap{width:1px;background:var(--line);flex:none;align-self:stretch;margin:6px 2px}
+  .v1 .page-head,.v4 .page-head{padding-top:16px}
+  .v4-catgrid,.v4-brandgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:860px){
+  .proto-bar{top:10px;right:8px;bottom:auto;left:auto;transform:none;padding:4px;font-size:12px}
+  .proto-bar button{height:28px;min-width:28px;padding:0 6px}
+  .proto-full{display:none}
+  .proto-num{display:inline}
+  body{padding-bottom:28px}
+  .nav-frame{min-height:56px}
+}
+@media(max-width:720px){
+  .cat-grid{grid-template-columns:1fr}
+  .brand-grid{grid-template-columns:1fr}
+  .v4-catgrid,.v4-brandgrid{grid-template-columns:1fr 1fr}
+  .v4-dl{margin-inline:0;padding:20px 14px 8px}
+  .v4-tools .search{flex:1 0 100%;max-width:none}
+  .v4-textbtn{flex:0 0 auto;margin-left:0}
+  .brand-card{flex-direction:row;align-items:center;min-height:0;gap:12px}
+  .brand-counts{margin-left:auto;text-align:right}
+  .v2-controls .search{flex-basis:100%}
+  .seg{flex:1 1 auto}
+  .seg button{flex:1}
+  .type-select{flex:1 1 140px}
+  .page-head{padding-top:20px}
+  .qa-a{padding-right:0}
+}
+@media(max-width:520px){
+  .search{height:auto;flex-wrap:wrap;padding-block:8px;row-gap:2px}
+  .search input{flex:1 1 auto;height:28px}
+  .search-count{flex:1 0 100%;text-align:right;font-size:12px;padding:0 2px 2px}
+}
+@media(max-width:420px){
+  .doc{grid-template-areas:"lead lead" "meta dl";align-items:start}
+  .doc-dl{min-height:34px;padding:6px 10px}
+  .badge{font-size:10px;letter-spacing:.04em}
+  .doc-meta{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+
+/* Variant 5 only. Scoped so 1–4 keep their own chrome. */
+:root{--v5-tab-h:48px;--v5-canvas:#f1f4f3}
+body:has(.v5){
+  background:
+    radial-gradient(720px 480px at 8% 16%, rgba(12,127,115,.16), transparent 70%),
+    radial-gradient(560px 420px at 94% 6%, rgba(16,44,48,.10), transparent 68%),
+    radial-gradient(760px 520px at 78% 100%, rgba(12,127,115,.11), transparent 72%),
+    var(--v5-canvas);
+}
+body:has(.v5)::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(640px 420px at 18% 42%, rgba(12,127,115,.13), transparent 70%),
+    radial-gradient(520px 360px at 86% 62%, rgba(16,44,48,.08), transparent 72%);
+}
+body:has(.v5) > main,
+body:has(.v5) > footer{position:relative;z-index:1}
+.v5-hero{position:relative;padding:42px 0 6px;text-align:center}
+.v5-hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(to right, rgba(21,53,47,.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(21,53,47,.05) 1px, transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(ellipse 68% 78% at 50% 42%, #000 12%, transparent 74%);
+  mask-image:radial-gradient(ellipse 68% 78% at 50% 42%, #000 12%, transparent 74%);
+}
+.v5-hero-inner{position:relative}
+.v5-spark{display:inline-grid;place-items:center;width:36px;height:36px;margin-bottom:14px;border-radius:10px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.8);color:var(--accent);box-shadow:0 2px 8px rgba(21,53,47,.05)}
+.v5-hero .page-title{margin-inline:auto;max-width:16ch;font-size:clamp(34px,4.6vw,52px);letter-spacing:-.035em}
+.v5-hero .page-sub{margin:12px auto 0;max-width:46ch;font-size:16px;line-height:1.55}
+.v5-help{margin:10px auto 0;font-size:15px;color:var(--muted)}
+.v5-help a{color:var(--accent-dark);font-weight:700;text-underline-offset:3px}
+.v5-help a:hover{color:var(--accent)}
+.v5-searchbox{position:relative;z-index:46;width:min(640px,100%);margin:20px auto 8px;text-align:left}
+.v5 .v5-search{
+  height:56px;border-radius:14px;padding:0 8px 0 18px;max-width:none;
+  background:rgba(255,255,255,.82);
+  border-color:rgba(255,255,255,.9);
+  box-shadow:0 10px 32px rgba(21,53,47,.07);
+  backdrop-filter:blur(16px) saturate(1.3);
+}
+.v5 .v5-search input{font-size:16px}
+.v5 .search-count{
+  display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;
+  background:rgba(21,53,47,.06);font-size:12px;font-weight:600;
+}
+.v5-suggest{
+  position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:5;
+  max-height:min(360px,52vh);overflow:auto;
+  padding:6px;border-radius:16px;
+  background:rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.75);
+  box-shadow:0 18px 44px rgba(21,53,47,.14);
+  backdrop-filter:blur(20px) saturate(1.4);
+}
+.v5-sug-label{margin:8px 12px 2px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.v5-sug{
+  display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;
+  padding:10px 12px;border:0;border-radius:10px;background:transparent;text-align:left;cursor:pointer;
+}
+.v5-sug:hover,.v5-sug.is-active,.v5-sug:focus-visible{background:rgba(12,127,115,.09)}
+.v5-sug:active{background:rgba(12,127,115,.14)}
+.v5-sug-text{font-size:14px;font-weight:600;line-height:1.35}
+.v5-sug-meta{font-size:12px;color:var(--muted)}
+.v5-hero:has(.v5-suggest:not([hidden])){z-index:46}
+.v5-tabbar{
+  position:sticky;top:calc(var(--header-h) - 1px);z-index:45;
+  background:rgba(241,244,243,.84);
+  border-bottom:1px solid rgba(21,53,47,.08);
+  backdrop-filter:blur(16px) saturate(1.3);
+}
+.v5-tablist{display:flex;align-items:stretch;gap:2px;min-height:48px}
+.v5-tab{
+  position:relative;
+  display:inline-flex;align-items:center;gap:6px;
+  min-height:48px;padding:12px 16px 10px;margin-bottom:-1px;
+  border:0;border-bottom:2px solid transparent;border-radius:8px 8px 0 0;
+  background:transparent;color:var(--muted);
+  font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;cursor:pointer;
+}
+.v5-tab:hover{color:var(--ink);background:rgba(21,53,47,.04)}
+.v5-tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);background:transparent}
+.v5-tab .n{font-size:12px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.v5-tab[aria-selected="true"] .n{color:var(--accent-dark)}
+.v5 .v1-chips{background:rgba(241,244,243,.9);backdrop-filter:blur(16px) saturate(1.2)}
+@media(min-width:1024px){
+  .v5 .v1-layout{grid-template-columns:232px minmax(0,1fr);gap:32px;padding-top:18px}
+  .v5-searching.v1-layout{grid-template-columns:minmax(0,1fr);gap:0;padding-top:8px}
+}
+.v5 .v1-rail{
+  top:calc(var(--header-h) + var(--v5-tab-h) + 12px);
+  max-height:calc(100vh - var(--header-h) - var(--v5-tab-h) - 36px);
+  padding:2px 4px 20px 0;
+}
+.v5 .toc{display:grid;gap:2px}
+.v5 .toc-label{margin:16px 10px 6px;font-size:11px;letter-spacing:.08em}
+.v5 .toc-label:first-child{margin-top:2px}
+.v5 .toc a{
+  align-items:flex-start;
+  padding:8px 10px;border-radius:10px;
+  font-size:14px;font-weight:500;color:var(--ink);
+}
+.v5 .toc a .n{margin-top:1px;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums}
+.v5 .toc a:hover{background:rgba(21,53,47,.05)}
+.v5 .toc a.is-active{
+  background:#fff;color:var(--ink);font-weight:600;
+  box-shadow:0 1px 2px rgba(21,53,47,.06),0 0 0 1px var(--line);
+}
+.v5 .toc a.is-active:hover{background:#fff}
+.v5 .toc a.is-dim:hover{background:transparent}
+.v5-searching .v1-rail,
+.v5-searching .v1-chips{display:none!important}
+.v5-zone{margin-top:22px}
+.v5-zone:first-child{margin-top:16px}
+.v5 .zone-title{
+  margin:0 2px 10px;
+  font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.v5-stack{display:grid;gap:12px}
+.v5-card{
+  background:rgba(255,255,255,.52);
+  border:1px solid rgba(255,255,255,.6);
+  border-radius:16px;
+  box-shadow:0 8px 28px rgba(21,53,47,.05);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  overflow:hidden;
+  scroll-margin-top:calc(var(--header-h) + var(--sticky-extra) + 12px);
+}
+.v5 .ledger{
+  background:rgba(255,255,255,.52);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 8px 28px rgba(21,53,47,.05);
+  backdrop-filter:blur(20px) saturate(1.4);
+}
+.v5-logo{
+  flex:0 1 auto;display:flex;align-items:center;height:34px;
+  max-width:min(200px,46%);background:none;overflow:visible;
+}
+.v5-logo img{height:34px;width:auto;max-width:100%;object-fit:contain;object-position:left center;display:block}
+.v5-logo-fallback{
+  display:none;align-items:center;justify-content:center;
+  min-width:34px;height:34px;padding:0 8px;border-radius:9px;
+  background:#102c30;color:#fff;font-size:11px;font-weight:700;letter-spacing:.04em;
+}
+.v5-logo.is-fallback img{display:none}
+.v5-logo.is-fallback .v5-logo-fallback{display:inline-flex}
+.v5-thumb{
+  grid-area:thumb;
+  width:52px;height:72px;border-radius:3px;flex:none;
+  display:grid;place-items:center;overflow:hidden;position:relative;
+  border:1px solid rgba(21,53,47,.14);
+  box-shadow:0 1px 2px rgba(21,53,47,.05), 0 4px 12px rgba(21,53,47,.07);
+  background:#fff;color:var(--muted);
+}
+.v5-thumb img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:top center;opacity:0;
+}
+.v5-thumb img.is-in{opacity:1}
+.v5-thumb.has-src .v5-thumb-fallback,
+.v5-thumb.has-img .v5-thumb-fallback{visibility:hidden}
+.v5 .doc.doc-has-thumb{
+  grid-template-columns:52px minmax(0,1fr) auto;
+  grid-template-areas:"thumb lead dl" "thumb meta dl";
+  align-items:start;
+}
+.v5 .doc.doc-has-thumb .v5-thumb{margin-top:1px}
+.v5-pager{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:4px;
+  padding:10px 14px 14px;
+}
+.v5-pager button{
+  min-width:32px;height:32px;padding:0 8px;border:1px solid transparent;border-radius:8px;
+  background:transparent;font-size:13px;font-weight:600;cursor:pointer;
+}
+.v5-pager button:hover{background:rgba(21,53,47,.05)}
+.v5-pager button:active{background:rgba(21,53,47,.09)}
+.v5-pager button[aria-current="page"]{background:rgba(255,255,255,.9);border-color:var(--line);box-shadow:var(--shadow)}
+.v5-pager button:disabled{opacity:.35;cursor:default}
+.v5-pager .gap{width:12px;text-align:center;color:var(--muted)}
+.v5-empty{padding:8px 8px 4px}
+.v5-error{padding:72px 0;text-align:center}
+.v5-error p{margin:0 0 16px;color:var(--muted)}
+.v5-skel{border-radius:10px;background:linear-gradient(90deg, rgba(21,53,47,.05), rgba(21,53,47,.11), rgba(21,53,47,.05));background-size:200% 100%;animation:v5-shimmer 1.2s ease infinite}
+.v5-skel-icon{width:36px;height:36px;margin:0 auto 14px;border-radius:10px}
+.v5-skel-title{width:min(280px,70%);height:36px;margin:0 auto}
+.v5-skel-sub{width:min(420px,86%);height:16px;margin:14px auto 0}
+.v5-skel-card{height:132px;margin-top:16px}
+@keyframes v5-shimmer{to{background-position:-200% 0}}
+.v5-card-head{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-bottom:1px solid var(--paper-mist);
+}
+.v5-card-head h3{
+  margin:0;flex:1;min-width:0;
+  font-size:16px;font-weight:700;letter-spacing:-.02em;line-height:1.3;
+}
+.v5-card-head .n{flex:none;font-size:13px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.v5 .mark{width:32px;height:32px;border-radius:9px;background:#e7f3f1;color:var(--accent-dark);font-size:11px}
+.v5 .qa{border-bottom-color:var(--paper-mist)}
+.v5 .qa summary{align-items:center;gap:16px;padding:16px 18px}
+.v5 .qa{scroll-margin-top:calc(var(--header-h) + var(--sticky-extra) + 12px)}
+.v5 .qa summary:hover{background:rgba(255,255,255,.34)}
+.v5 .qa summary:active{background:rgba(12,127,115,.08)}
+.v5 .qa[open] summary{background:rgba(12,127,115,.08)}
+.v5 .qa-mark{display:none}
+.v5 .qa summary::after{
+  content:"";width:7px;height:7px;flex:none;margin-top:-4px;
+  border-right:1.5px solid #7d8d88;border-bottom:1.5px solid #7d8d88;
+  transform:rotate(45deg);transition:transform .16s ease;
+}
+.v5 .qa[open] summary::after{transform:rotate(225deg);margin-top:4px;border-color:var(--accent-dark)}
+.v5 .qa-q{font-size:15px;font-weight:600;line-height:1.45;overflow-wrap:anywhere}
+.v5 .qa-a{padding:0 46px 18px 18px}
+.v5 .qa-a p{font-size:15px;line-height:1.65}
+.v5 .qa:last-child,.v5 .doc:last-child{border-bottom:0}
+.v5 .doc{padding:14px 16px;border-bottom-color:var(--paper-mist);transition:background .12s ease}
+.v5 .doc:hover{background:rgba(255,255,255,.38)}
+.v5 .doc-dl:active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.v5 .doc-title{font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.v5 .doc-meta{align-items:center;font-size:13px}
+.v5 .doc-lang{
+  display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;
+  background:var(--paper-mist);color:#3e524c;
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+}
+.v5 .doc-lang::before{content:none;margin:0}
+.v5 .badge{font-size:11px;letter-spacing:.06em}
+.v5-filters{
+  display:flex;gap:4px;align-items:center;
+  margin:16px 0 2px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
+}
+.v5-filters::-webkit-scrollbar{display:none}
+.v5 .v5-filters .chip{
+  height:32px;padding:0 10px;background:transparent;border-color:transparent;color:var(--muted);font-weight:600;
+}
+.v5 .v5-filters .chip:hover{background:rgba(21,53,47,.05);border-color:transparent;color:var(--ink)}
+.v5 .v5-filters .chip[aria-pressed="true"]{
+  background:#fff;color:var(--ink);border-color:var(--line);
+  box-shadow:0 1px 2px rgba(21,53,47,.06);
+}
+.v5 .v5-filters .chip[aria-pressed="true"] .n{color:var(--muted)}
+.v5 .ledger{margin-top:16px}
+.v5 .v1-chips .chip.is-active,
+.v5 .v1-chips .chip.is-active:hover{
+  background:#fff;color:var(--ink);border-color:var(--line);box-shadow:var(--shadow);
+}
+.v5 .v1-chips .chip.is-active .n{color:var(--muted)}
+@media(max-width:1023px){
+  .v5 .v1-chips{top:calc(var(--header-h) + var(--v5-tab-h) - 2px);z-index:36}
+  .v5 .page-head{padding-top:18px}
+}
+@media(max-width:720px){
+  .v5-card-head{flex-wrap:wrap}
+  .v5-logo{flex:1 0 100%;max-width:240px;height:32px}
+  .v5-logo img{height:32px}
+}
+@media(max-width:520px){
+  .v5-hero{padding-top:28px}
+  .v5-hero .page-title{font-size:32px}
+  .v5 .v5-search{flex-wrap:nowrap;height:52px;min-height:0;padding-block:0}
+  .v5 .v5-search input{min-width:0}
+  .v5 .v5-search .search-count{flex:0 0 auto;width:auto;text-align:center;padding-bottom:0}
+}
+@media(max-width:420px){
+  .v5 .doc.doc-has-thumb{grid-template-columns:52px minmax(0,1fr) auto;grid-template-areas:"thumb lead dl" "thumb meta dl";align-items:start}
+  .v5-thumb{width:52px;height:72px}
+  .v5-tab{padding-inline:12px}
+  .v5-suggest{max-height:46vh}
+}
+@media(prefers-reduced-motion:reduce){
+  .v5-skel{animation:none}
+  .v5-thumb img{opacity:1}
+}
+</style>
+</head>
+<body>
+<header class="site-header" id="site-header">
+  <div class="wrap nav-frame">
+    <a class="brand" href="#top" id="top">Linker</a>
+    <nav class="desk-nav" id="desk-nav" aria-label="Primary"></nav>
+    <div class="nav-actions">
+      <div class="lang-toggle" id="header-lang"></div>
+      <a class="contact" id="header-contact" href="https://de-linker.com/contact/">Contact Linker</a>
+      <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav-panel" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="nav-panel" id="nav-panel" hidden></div>
+</header>
+<main id="app"><p class="loading wrap">Loading the library…</p></main>
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <p class="footer-brand">Linker</p>
+      <p id="footer-blurb"></p>
+    </div>
+    <nav id="footer-links" aria-label="Footer"></nav>
+    <a id="footer-mail" href="mailto:sales@de-linker.com">sales@de-linker.com</a>
+  </div>
+  <div class="wrap footer-legal">© 2026 Linker Technology GmbH</div>
+</footer>
+<div class="proto-bar" role="toolbar" aria-label="Prototype switcher">
+  <button type="button" data-cycle="-1" aria-label="Previous variant">←</button>
+  <span class="proto-label proto-full" id="proto-full">1 · Sectioned handbook</span>
+  <span class="proto-num" id="proto-num">1</span>
+  <button type="button" data-cycle="1" aria-label="Next variant">→</button>
+  <span class="proto-sep" aria-hidden="true"></span>
+  <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+  <button type="button" data-set-lang="de" aria-pressed="false">DE</button>
+  <span class="proto-sep" aria-hidden="true"></span>
+  <span class="proto-vp" id="vp" title="Viewport width">—</span>
+</div>
+<script>
+/* Throwaway prototype. Do not ship. */
+const VARIANTS = [
+  { id: '1', name: 'Sectioned handbook' },
+  { id: '2', name: 'The register' },
+  { id: '3', name: 'Brand workspaces' },
+  { id: '4', name: 'Two halves' },
+  { id: '5', name: 'Tabs' }
+];
+const BRAND_ORDER = ['Chint', 'EcoFlow', 'GoodWe', 'Pylontech', 'SAJ'];
+const TYPE_ORDER = ['brochure', 'certificate', 'compatibility', 'datasheet', 'document', 'manual', 'warranty'];
+const MARK = { Chint: 'CH', EcoFlow: 'EF', GoodWe: 'GW', Pylontech: 'PY', SAJ: 'SJ' };
+const I18N = {
+  en: {
+    kicker: 'FAQ & documents',
+    title: 'Answers and documents.',
+    sub: 'Datasheets, manuals and trade rules for the equipment on file.',
+    search: 'Search questions and documents',
+    searchLabel: 'Search',
+    clear: 'Clear search',
+    results: (n) => n === 1 ? '1 result' : n + ' results',
+    onFile: (n) => n + ' on file',
+    empty: 'Nothing on file matches that search.',
+    noneOfType: 'No documents of this type.',
+    askGenie: 'Ask Genie',
+    before: 'Before you order',
+    answers: 'Product answers',
+    documents: 'Documents',
+    byBrand: 'By brand',
+    byBrandSub: 'Documents and answers, one manufacturer at a time.',
+    download: 'Download',
+    scopeAll: 'All',
+    scopeQ: 'Questions',
+    scopeD: 'Documents',
+    allTypes: 'All types',
+    allBrands: 'All',
+    tabDocs: 'Documents',
+    tabAnswers: 'Answers',
+    allDocsFor: (b) => 'All documents for ' + b,
+    answersFor: (b) => 'Answers for ' + b,
+    countPair: (a, d) => a + (a === 1 ? ' answer' : ' answers') + ' · ' + d + (d === 1 ? ' document' : ' documents'),
+    nav: ['Products', 'Solutions', 'Plan with Linker', 'Services', 'For Partners', 'About'],
+    contact: 'Contact Linker',
+    contactHref: 'https://de-linker.com/contact/',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+    close: 'Close',
+    footerBlurb: 'Storage equipment for installers and EPCs in the EU.',
+    footerLinks: ['Products', 'FAQ & documents', 'Contact'],
+    types: {
+      brochure: 'Brochure', certificate: 'Certificate', compatibility: 'Compatibility',
+      datasheet: 'Datasheet', document: 'Document', manual: 'Manual', warranty: 'Warranty'
+    },
+    kindTrade: 'Trade rule',
+    kindAnswer: 'Answer',
+    kindDoc: 'Document',
+    inAnswer: 'In the answer',
+    genieHref: 'https://de-linker.com/genie/',
+    typeLabel: 'Document type',
+    faq: 'FAQ',
+    downloads: 'Downloads',
+    faqTitle: 'Questions.',
+    faqSub: 'Trade rules first, then what each brand is asked.',
+    dlTitle: 'Documents.',
+    dlSub: 'Datasheets, manuals and certificates, one brand at a time.',
+    filterHalf: 'Filter questions',
+    expandAll: 'Expand all',
+    collapseAll: 'Collapse all',
+    searchBrand: 'Search this brand',
+    halfEmpty: 'Nothing in this half matches that filter.',
+    nQuestions: (n) => n === 1 ? '1 question' : n + ' questions',
+    brands: 'Brands',
+    onThisPage: 'On this page',
+    cantFind: "Can't find what you're looking for?",
+    contactTeam: 'Contact the Linker team',
+    retry: 'Try again',
+    loadError: 'The list did not load.',
+    prevPage: 'Previous',
+    nextPage: 'Next',
+    pagesLabel: 'Pages',
+    loading: 'Loading the library…'
+  },
+  de: {
+    kicker: 'FAQ und Dokumente',
+    title: 'Antworten und Dokumente.',
+    sub: 'Datenblätter, Handbücher und Handelsregeln zu den Geräten im Bestand.',
+    search: 'Fragen und Dokumente suchen',
+    searchLabel: 'Suche',
+    clear: 'Suche leeren',
+    results: (n) => n === 1 ? '1 Ergebnis' : n + ' Ergebnisse',
+    onFile: (n) => n + ' im Bestand',
+    empty: 'Zu dieser Suche liegt nichts vor.',
+    noneOfType: 'Keine Dokumente dieses Typs.',
+    askGenie: 'Genie fragen',
+    before: 'Vor der Bestellung',
+    answers: 'Produktantworten',
+    documents: 'Dokumente',
+    byBrand: 'Nach Marke',
+    byBrandSub: 'Dokumente und Antworten, je Hersteller.',
+    download: 'Herunterladen',
+    scopeAll: 'Alle',
+    scopeQ: 'Fragen',
+    scopeD: 'Dokumente',
+    allTypes: 'Alle Typen',
+    allBrands: 'Alle',
+    tabDocs: 'Dokumente',
+    tabAnswers: 'Antworten',
+    allDocsFor: (b) => 'Alle Dokumente für ' + b,
+    answersFor: (b) => 'Antworten zu ' + b,
+    countPair: (a, d) => a + (a === 1 ? ' Antwort' : ' Antworten') + ' · ' + d + (d === 1 ? ' Dokument' : ' Dokumente'),
+    nav: ['Produkte', 'Lösungen', 'Planen mit Linker', 'Dienstleistungen', 'Für Partner', 'Über uns'],
+    contact: 'Linker kontaktieren',
+    contactHref: 'https://de-linker.com/de/kontakt/',
+    openMenu: 'Menü öffnen',
+    closeMenu: 'Menü schließen',
+    close: 'Schließen',
+    footerBlurb: 'Speichertechnik für Installateure und EPCs in der EU.',
+    footerLinks: ['Produkte', 'FAQ und Dokumente', 'Kontakt'],
+    types: {
+      brochure: 'Broschüre', certificate: 'Zertifikat', compatibility: 'Kompatibilität',
+      datasheet: 'Datenblatt', document: 'Dokument', manual: 'Handbuch', warranty: 'Garantie'
+    },
+    kindTrade: 'Handelsregel',
+    kindAnswer: 'Antwort',
+    kindDoc: 'Dokument',
+    inAnswer: 'In der Antwort',
+    genieHref: 'https://de-linker.com/de/genie/',
+    typeLabel: 'Dokumenttyp',
+    faq: 'FAQ',
+    downloads: 'Downloads',
+    faqTitle: 'Fragen.',
+    faqSub: 'Zuerst die Handelsregeln, dann die Fragen je Marke.',
+    dlTitle: 'Dokumente.',
+    dlSub: 'Datenblätter, Handbücher und Zertifikate, je Marke.',
+    filterHalf: 'Fragen filtern',
+    expandAll: 'Alle öffnen',
+    collapseAll: 'Alle schließen',
+    searchBrand: 'Diese Marke durchsuchen',
+    halfEmpty: 'In dieser Hälfte liegt dazu nichts vor.',
+    nQuestions: (n) => n === 1 ? '1 Frage' : n + ' Fragen',
+    brands: 'Marken',
+    onThisPage: 'Auf dieser Seite',
+    cantFind: 'Sie finden nicht, wonach Sie suchen?',
+    contactTeam: 'Kontakt zum Linker-Team',
+    retry: 'Erneut versuchen',
+    loadError: 'Die Liste konnte nicht geladen werden.',
+    prevPage: 'Zurück',
+    nextPage: 'Weiter',
+    pagesLabel: 'Seiten',
+    loading: 'Die Liste wird geladen…'
+  }
+};
+
+const cache = {};
+const state = {
+  variant: '1',
+  lang: 'en',
+  q: '',
+  scope: 'all',
+  brand: 'all',
+  type: 'all',
+  openBrand: null,
+  tab: 'docs',
+  pageTab: 'faq',
+  v5Type: 'all',
+  v5Pages: {},
+  v5SearchPage: 1,
+  suggestItems: [],
+  suggestIndex: -1,
+  suggestOpen: false,
+  docType: 'all',
+  faqOpenCats: new Set(),
+  faqBrand: null,
+  faqBrandQ: '',
+  faqHalfQ: '',
+  dlBrand: null,
+  dlType: 'all',
+  openIds: new Set(),
+  spyLock: 0,
+  rendering: false,
+  menuOpen: false,
+  data: null,
+  spy: null
+};
+
+function T() { return I18N[state.lang]; }
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function norm(s) {
+  return String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+function slug(s) {
+  return norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'item';
+}
+function safeUrl(u) {
+  try {
+    const url = new URL(u, location.href);
+    if (url.protocol === 'http:' || url.protocol === 'https:') return esc(url.href);
+  } catch (e) { /* ignore */ }
+  return '#';
+}
+function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function hi(text, q) {
+  let out = esc(text);
+  const query = (q || '').trim();
+  if (!query) return out;
+  norm(query).split(/\s+/).filter(Boolean).forEach((tok) => {
+    const re = new RegExp(escRe(tok), 'gi');
+    out = out.replace(re, (m) => '<mark>' + m + '</mark>');
+  });
+  return out;
+}
+function matches(text, q) {
+  const nq = norm(q).trim();
+  if (!nq) return true;
+  const n = norm(text);
+  return nq.split(/\s+/).every((tok) => n.includes(tok));
+}
+function score(title, body, q) {
+  const nq = norm(q).trim();
+  if (!nq) return 0;
+  const nt = norm(title);
+  const nb = norm(body || '');
+  let s = 0;
+  if (nt === nq) s += 100;
+  if (nt.startsWith(nq)) s += 40;
+  if (nt.includes(nq)) s += 24;
+  if (nb.includes(nq)) s += 8;
+  nq.split(/\s+/).forEach((tok) => {
+    if (nt.includes(tok)) s += 6;
+    else if (nb.includes(tok)) s += 2;
+  });
+  return s;
+}
+function orderBrands(list) {
+  const map = new Map((list || []).map((x) => [x.brand, x]));
+  const out = [];
+  BRAND_ORDER.forEach((b) => { if (map.has(b)) { out.push(map.get(b)); map.delete(b); } });
+  map.forEach((v) => out.push(v));
+  return out;
+}
+function prepare(raw) {
+  const trade = (raw.trade || []).map((cat, ci) => ({
+    name: cat.name,
+    id: 'trade-' + ci,
+    qas: (cat.qas || []).map((qa, qi) => ({ ...qa, id: 't-' + ci + '-' + qi }))
+  }));
+  const answers = orderBrands(raw.answers).map((b) => ({
+    brand: b.brand,
+    id: 'answers-' + slug(b.brand),
+    qas: (b.qas || []).map((qa, qi) => ({ ...qa, id: 'a-' + slug(b.brand) + '-' + qi }))
+  }));
+  const documents = orderBrands(raw.documents).map((b) => ({
+    brand: b.brand,
+    id: 'docs-' + slug(b.brand),
+    docs: (b.docs || []).map((doc, di) => ({ ...doc, id: 'd-' + slug(b.brand) + '-' + di }))
+  }));
+  return { trade, answers, documents };
+}
+function typeClass(type) { return 'badge-' + String(type || '').replace(/[^a-z]/g, ''); }
+function typeLabel(type) { return T().types[type] || type || ''; }
+function coversLine(covers) {
+  const c = covers || '';
+  if (state.lang === 'de') return c;
+  return 'covers ' + c;
+}
+function brandCounts(data, brand) {
+  const a = data.answers.find((b) => b.brand === brand);
+  const d = data.documents.find((b) => b.brand === brand);
+  return { answers: a ? a.qas.length : 0, docs: d ? d.docs.length : 0 };
+}
+function presentTypes(docs) {
+  const counts = {};
+  docs.forEach((d) => { counts[d.type] = (counts[d.type] || 0) + 1; });
+  const known = TYPE_ORDER.filter((t) => counts[t]);
+  Object.keys(counts).forEach((t) => { if (!known.includes(t)) known.push(t); });
+  return known.map((t) => ({ type: t, n: counts[t] }));
+}
+function searchIcon() {
+  return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2" stroke-linecap="round"/></svg>';
+}
+function dlIcon() {
+  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+function qaHTML(qa, q, product) {
+  const open = state.openIds.has(qa.id) ? ' open' : '';
+  const where = q && q.trim() && !matches(qa.q, q) ? '<span class="qa-where">' + esc(T().inAnswer) + '</span>' : '';
+  const prod = product && product.url
+    ? '<a class="qa-product" href="' + safeUrl(product.url) + '">' + hi(product.name, q) + '</a>'
+    : '';
+  return '<details class="qa" data-qid="' + esc(qa.id) + '"' + open + '>' +
+    '<summary><span class="qa-text"><span class="qa-q">' + hi(qa.q, q) + '</span>' + where + '</span><span class="qa-mark" aria-hidden="true"></span></summary>' +
+    '<div class="qa-a"><p>' + hi(qa.a, q) + '</p>' + prod + '</div></details>';
+}
+function docHTML(doc, q, opts) {
+  const thumb = opts && opts.thumb ? thumbHTML(doc) : '';
+  return '<article class="doc' + (thumb ? ' doc-has-thumb' : '') + '">' + thumb +
+    '<div class="doc-lead"><span class="badge ' + typeClass(doc.type) + '">' + esc(typeLabel(doc.type)) + '</span><p class="doc-title">' + hi(doc.title, q) + '</p></div>' +
+    '<p class="doc-meta"><span>' + hi(coversLine(doc.covers), q) + '</span>' + (doc.lang ? '<span class="doc-lang">' + esc(doc.lang) + '</span>' : '') + '</p>' +
+    '<a class="doc-dl" href="' + safeUrl(doc.url) + '" target="_blank" rel="noopener noreferrer">' + esc(T().download) + dlIcon() + '</a></article>';
+}
+function emptyHTML(soft) {
+  if (soft) return '<p class="empty empty-soft">' + esc(T().noneOfType) + '</p>';
+  return '<div class="empty"><p>' + esc(T().empty) + '</p><a class="btn-genie" href="' + esc(T().genieHref) + '">' + esc(T().askGenie) + '</a></div>';
+}
+function collect(data, opts) {
+  const q = opts.q || '';
+  const hits = [];
+  let i = 0;
+  if (opts.trade) {
+    data.trade.forEach((cat) => {
+      cat.qas.forEach((qa) => {
+        if (!matches([qa.q, qa.a, cat.name].join(' '), q)) return;
+        hits.push({ kind: 'trade', group: cat.name, qa, score: score(qa.q, qa.a, q), i: i++ });
+      });
+    });
+  }
+  if (opts.answers) {
+    data.answers.forEach((b) => {
+      if (opts.brand && opts.brand !== 'all' && b.brand !== opts.brand) return;
+      b.qas.forEach((qa) => {
+        if (!matches([qa.q, qa.a, qa.product, b.brand].join(' '), q)) return;
+        hits.push({ kind: 'answer', group: b.brand, qa, score: score(qa.q, [qa.a, qa.product].join(' '), q), i: i++ });
+      });
+    });
+  }
+  if (opts.docs) {
+    data.documents.forEach((b) => {
+      if (opts.brand && opts.brand !== 'all' && b.brand !== opts.brand) return;
+      b.docs.forEach((doc) => {
+        if (opts.type && opts.type !== 'all' && doc.type !== opts.type) return;
+        if (!matches([doc.title, doc.covers, doc.type, doc.lang, b.brand].join(' '), q)) return;
+        hits.push({ kind: 'doc', group: b.brand, doc, score: score(doc.title, [doc.covers, doc.type].join(' '), q), i: i++ });
+      });
+    });
+  }
+  return hits;
+}
+function flatHTML(hits) {
+  if (!hits.length) return emptyHTML();
+  const t = T();
+  const kind = { trade: t.kindTrade, answer: t.kindAnswer, doc: t.kindDoc };
+  const rows = hits.map((hit) => {
+    const eye = '<p class="hit-eye">' + esc(hit.group) + ' · ' + esc(kind[hit.kind]) + '</p>';
+    const body = hit.kind === 'doc'
+      ? docHTML(hit.doc, state.q, state.variant === '5' ? { thumb: true } : null)
+      : qaHTML(hit.qa, state.q, hit.kind === 'answer' ? { name: hit.qa.product, url: hit.qa.url } : null);
+    return '<div class="hit">' + eye + body + '</div>';
+  }).join('');
+  return '<div class="ledger">' + rows + '</div>';
+}
+function headHTML(withSearch) {
+  const t = T();
+  const search = withSearch ? searchHTML() : '';
+  return '<header class="page-head"><p class="kicker">' + esc(t.kicker) + '</p><h1 class="page-title">' + esc(t.title) + '</h1><p class="page-sub">' + esc(t.sub) + '</p>' + search + '</header>';
+}
+function searchHTML() {
+  const t = T();
+  return '<div class="search" role="search">' + searchIcon() +
+    '<label class="sr-only" for="q">' + esc(t.searchLabel) + '</label>' +
+    '<input id="q" class="q" type="search" placeholder="' + esc(t.search) + '" value="' + esc(state.q) + '" autocomplete="off" spellcheck="false">' +
+    '<button type="button" class="search-clear" data-clear aria-label="' + esc(t.clear) + '"' + (state.q ? '' : ' hidden') + '>×</button>' +
+    '<span class="search-count" id="result-count" aria-live="polite"></span></div>';
+}
+function countText(n, filtered) {
+  return filtered ? T().results(n) : T().onFile(n);
+}
+function setCount(n, filtered) {
+  const el = document.getElementById('result-count');
+  if (el) el.textContent = countText(n, filtered);
+  const clear = document.querySelector('.search-clear');
+  if (clear) clear.hidden = !state.q.trim();
+}
+
+function readParams() {
+  const p = new URLSearchParams(location.search);
+  state.variant = ['1', '2', '3', '4', '5'].includes(p.get('variant')) ? p.get('variant') : '1';
+  state.lang = p.get('lang') === 'de' ? 'de' : 'en';
+  const tab = p.get('tab');
+  if (tab === 'faq' || tab === 'documents') state.pageTab = tab;
+}
+function writeParams() {
+  const p = new URLSearchParams(location.search);
+  p.set('variant', state.variant);
+  p.set('lang', state.lang);
+  if (state.pageTab === 'documents') p.set('tab', 'documents');
+  else if (state.variant === '5') p.set('tab', 'faq');
+  else p.delete('tab');
+  const next = '?' + p.toString();
+  if (next !== location.search) history.replaceState(null, '', next + location.hash);
+}
+function measureHeader() {
+  const header = document.getElementById('site-header');
+  if (!header) return 72;
+  const h = Math.ceil(header.getBoundingClientRect().height);
+  document.documentElement.style.setProperty('--header-h', h + 'px');
+  return h;
+}
+function measureSticky() {
+  const chips = document.querySelector('.v1-chips');
+  let extra = 0;
+  if (chips && getComputedStyle(chips).display !== 'none') extra = Math.ceil(chips.getBoundingClientRect().height);
+  const tabbar = document.querySelector('.v5-tabbar');
+  const tabH = tabbar ? Math.round(tabbar.getBoundingClientRect().height) : 0;
+  document.documentElement.style.setProperty('--v5-tab-h', (tabH || 48) + 'px');
+  if (state.variant === '5') extra += tabH;
+  document.documentElement.style.setProperty('--sticky-extra', extra + 'px');
+}
+function scrollTopInstant() {
+  const root = document.documentElement;
+  const prev = root.style.scrollBehavior;
+  root.style.scrollBehavior = 'auto';
+  window.scrollTo(0, 0);
+  root.style.scrollBehavior = prev;
+}
+function scrollToEl(el) {
+  if (!el) return;
+  const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
+  const extra = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sticky-extra')) || 0;
+  const top = el.getBoundingClientRect().top + window.scrollY - headerH - extra - 16;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
+}
+function langLinks() {
+  return ['en', 'de'].map((l) => {
+    const on = l === state.lang ? ' aria-current="true"' : '';
+    return '<a href="?variant=' + state.variant + '&lang=' + l + '" data-set-lang="' + l + '" lang="' + l + '" hreflang="' + l + '"' + on + '>' + l.toUpperCase() + '</a>';
+  }).join('');
+}
+function renderChrome() {
+  const t = T();
+  document.documentElement.lang = state.lang;
+  document.getElementById('desk-nav').innerHTML = t.nav.map((label) => '<a href="#" data-noop>' + esc(label) + '</a>').join('');
+  document.getElementById('header-lang').innerHTML = langLinks();
+  const contact = document.getElementById('header-contact');
+  contact.textContent = t.contact;
+  contact.href = t.contactHref;
+  document.getElementById('nav-panel').innerHTML =
+    '<nav aria-label="Primary">' + t.nav.map((label) => '<a href="#" data-noop>' + esc(label) + '</a>').join('') + '</nav>' +
+    '<div class="panel-tools">' + langLinks() + '<a class="contact" href="' + esc(t.contactHref) + '">' + esc(t.contact) + '</a></div>';
+  document.getElementById('footer-blurb').textContent = t.footerBlurb;
+  document.getElementById('footer-links').innerHTML = t.footerLinks.map((label) => '<a href="#" data-noop>' + esc(label) + '</a>').join('');
+  const btn = document.getElementById('menu-btn');
+  btn.setAttribute('aria-label', state.menuOpen ? t.closeMenu : t.openMenu);
+  const v = VARIANTS.find((x) => x.id === state.variant);
+  document.getElementById('proto-full').textContent = v.id + ' · ' + v.name;
+  document.getElementById('proto-num').textContent = v.id;
+  document.title = 'Prototype · ' + v.name;
+  document.querySelectorAll('.proto-bar [data-set-lang]').forEach((el) => {
+    el.setAttribute('aria-pressed', el.dataset.setLang === state.lang ? 'true' : 'false');
+  });
+  document.getElementById('vp').textContent = String(window.innerWidth);
+}
+function setMenu(open) {
+  state.menuOpen = open;
+  const btn = document.getElementById('menu-btn');
+  const panel = document.getElementById('nav-panel');
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  btn.setAttribute('aria-label', open ? T().closeMenu : T().openMenu);
+  panel.hidden = !open;
+  measureHeader();
+}
+
+function v2Filtered() {
+  return !!(state.q.trim() || state.scope !== 'all' || state.brand !== 'all' || (state.scope !== 'questions' && state.type !== 'all'));
+}
+function docsMatching(data, brand) {
+  return data.documents
+    .filter((b) => brand === 'all' || b.brand === brand)
+    .reduce((n, b) => n + b.docs.filter((d) => state.type === 'all' || d.type === state.type).length, 0);
+}
+function chipCount(data, brand) {
+  const tradeN = data.trade.reduce((n, c) => n + c.qas.length, 0);
+  const ansN = brand === 'all'
+    ? data.answers.reduce((n, b) => n + b.qas.length, 0)
+    : brandCounts(data, brand).answers;
+  const docN = docsMatching(data, brand);
+  if (state.scope === 'questions') return (brand === 'all' ? tradeN : 0) + ansN;
+  if (state.scope === 'documents') return docN;
+  return (brand === 'all' ? tradeN : 0) + ansN + docN;
+}
+function toolbarHTML(data) {
+  const t = T();
+  const scopes = [['all', t.scopeAll], ['questions', t.scopeQ], ['documents', t.scopeD]];
+  const seg = '<div class="seg" role="group" aria-label="Scope">' + scopes.map(([id, label]) =>
+    '<button type="button" data-scope="' + id + '" aria-pressed="' + (state.scope === id ? 'true' : 'false') + '">' + esc(label) + '</button>'
+  ).join('') + '</div>';
+  const brands = ['all'].concat(data.answers.map((b) => b.brand));
+  const chips = '<div class="brand-row" role="group" aria-label="Brand">' + brands.map((b) => {
+    const label = b === 'all' ? t.allBrands : b;
+    const n = chipCount(data, b);
+    return '<button type="button" class="chip" data-brand="' + esc(b) + '" aria-pressed="' + (state.brand === b ? 'true' : 'false') + '">' + esc(label) + ' <span class="n">' + n + '</span></button>';
+  }).join('') + '</div>';
+  const showType = state.scope !== 'questions';
+  const pool = data.documents
+    .filter((b) => state.brand === 'all' || b.brand === state.brand)
+    .flatMap((b) => b.docs);
+  const types = presentTypes(pool);
+  const opts = '<option value="all">' + esc(t.allTypes) + '</option>' + types.map((tp) =>
+    '<option value="' + esc(tp.type) + '"' + (state.type === tp.type ? ' selected' : '') + '>' + esc(typeLabel(tp.type)) + ' · ' + tp.n + '</option>'
+  ).join('');
+  const select = '<select class="type-select" data-type aria-label="' + esc(t.typeLabel) + '"' + (showType ? '' : ' hidden') + '>' + opts + '</select>';
+  return '<div class="v2-toolbar"><div class="wrap toolbar-inner"><div class="v2-controls">' + searchHTML() + seg + select + '</div>' + chips + '</div></div>';
+}
+
+function tocNav(links, q) {
+  const shown = q ? links.filter((l) => l.n) : links;
+  if (!shown.length) return '';
+  return '<nav class="toc">' + shown.map((l) =>
+    '<a href="#' + l.id + '" data-spy-link data-count="' + l.n + '">' + esc(l.name) + '<span class="n">' + l.n + '</span></a>'
+  ).join('') + '</nav>';
+}
+function renderV1(data) {
+  const t = T();
+  const q = state.q.trim();
+  const zones = [];
+  const rail = [];
+
+  const tradeBlocks = [];
+  const tradeLinks = [];
+  data.trade.forEach((cat) => {
+    const qas = cat.qas.filter((qa) => matches([qa.q, qa.a, cat.name].join(' '), q));
+    tradeLinks.push({ id: cat.id, name: cat.name, n: qas.length });
+    if (!qas.length) return;
+    tradeBlocks.push('<h3 class="group-head" id="' + cat.id + '" data-spy>' + esc(cat.name) + ' <span class="n">· ' + qas.length + '</span></h3>' +
+      qas.map((qa) => qaHTML(qa, q, null)).join(''));
+  });
+  const tradeNav = tocNav(tradeLinks, q);
+  if (tradeNav) {
+    rail.push('<p class="toc-label"><a href="#zone-trade" data-spy-link>' + esc(t.before) + '</a></p>' + tradeNav);
+  }
+  if (tradeBlocks.length) {
+    zones.push('<section class="v1-zone" lang="en"><h2 class="zone-title" id="zone-trade" data-spy>' + esc(t.before) + '</h2>' + tradeBlocks.join('') + '</section>');
+  }
+
+  function brandZone(kind) {
+    const isDoc = kind === 'docs';
+    const blocks = [];
+    const links = [];
+    const source = isDoc ? data.documents : data.answers;
+    source.forEach((b) => {
+      const items = isDoc
+        ? b.docs.filter((doc) => matches([doc.title, doc.covers, doc.type, doc.lang, b.brand].join(' '), q))
+        : b.qas.filter((qa) => matches([qa.q, qa.a, qa.product, b.brand].join(' '), q));
+      const id = (isDoc ? 'docs-' : 'answers-') + slug(b.brand);
+      links.push({ id, name: b.brand, n: items.length });
+      if (!items.length) return;
+      const body = isDoc
+        ? items.map((doc) => docHTML(doc, q)).join('')
+        : items.map((qa) => qaHTML(qa, q, { name: qa.product, url: qa.url })).join('');
+      blocks.push('<h3 class="group-head" id="' + id + '" data-spy>' + esc(b.brand) + ' <span class="n">· ' + items.length + '</span></h3>' + body);
+    });
+    const zoneId = isDoc ? 'zone-docs' : 'zone-answers';
+    const label = isDoc ? t.documents : t.answers;
+    const nav = tocNav(links, q);
+    if (nav) rail.push('<p class="toc-label"><a href="#' + zoneId + '" data-spy-link>' + esc(label) + '</a></p>' + nav);
+    if (blocks.length) zones.push('<section class="v1-zone"><h2 class="zone-title" id="' + zoneId + '" data-spy>' + esc(label) + '</h2>' + blocks.join('') + '</section>');
+    return links;
+  }
+  brandZone('answers');
+  const docLinks = brandZone('docs');
+
+  const chips = [
+    '<a class="chip" href="#zone-trade" data-spy-link data-zone="zone-trade">' + esc(t.before) + '</a>',
+    '<a class="chip" href="#zone-answers" data-spy-link data-zone="zone-answers">' + esc(t.answers) + '</a>',
+    '<a class="chip" href="#zone-docs" data-spy-link data-zone="zone-docs">' + esc(t.documents) + '</a>',
+    '<span class="chip-gap" aria-hidden="true"></span>'
+  ].concat(data.answers.map((b) => {
+    const id = 'answers-' + slug(b.brand);
+    return '<a class="chip" href="#' + id + '" data-spy-link data-brand-chip="' + slug(b.brand) + '">' + esc(b.brand) + '</a>';
+  })).join('');
+
+  const shown = collect(data, { q, trade: true, answers: true, docs: true, brand: 'all', type: 'all' }).length;
+  const total = collect(data, { q: '', trade: true, answers: true, docs: true, brand: 'all', type: 'all' }).length;
+  const body = zones.length ? zones.join('') : emptyHTML();
+  const scroller = document.querySelector('.v1-chips-scroll');
+  const left = scroller ? scroller.scrollLeft : 0;
+  document.getElementById('rail').innerHTML = rail.join('');
+  document.getElementById('chips').innerHTML = '<div class="v1-chips-scroll">' + chips + '</div>';
+  document.getElementById('results').innerHTML = body;
+  const chipsEl = document.querySelector('.v1-chips-scroll');
+  if (chipsEl) chipsEl.scrollLeft = left;
+  setCount(q ? shown : total, !!q);
+  void docLinks;
+}
+function renderV2(data) {
+  const filtered = v2Filtered();
+  let html;
+  let n;
+  if (!filtered) {
+    const t = T();
+    const parts = ['<p class="zone-label">' + esc(t.before) + '</p>'];
+    data.trade.forEach((cat) => {
+      parts.push('<h3 class="group-head">' + esc(cat.name) + ' <span class="n">· ' + cat.qas.length + '</span></h3>');
+      parts.push(cat.qas.map((qa) => qaHTML(qa, '', null)).join(''));
+    });
+    parts.push('<hr class="zone-rule"><p class="zone-label">' + esc(t.answers) + '</p>');
+    data.answers.forEach((b) => {
+      parts.push('<h3 class="group-head">' + esc(b.brand) + ' <span class="n">· ' + b.qas.length + '</span></h3>');
+      parts.push(b.qas.map((qa) => qaHTML(qa, '', { name: qa.product, url: qa.url })).join(''));
+    });
+    parts.push('<hr class="zone-rule"><p class="zone-label">' + esc(t.documents) + '</p>');
+    data.documents.forEach((b) => {
+      parts.push('<h3 class="group-head">' + esc(b.brand) + ' <span class="n">· ' + b.docs.length + '</span></h3>');
+      parts.push(b.docs.map((doc) => docHTML(doc, '')).join(''));
+    });
+    html = '<div class="ledger">' + parts.join('') + '</div>';
+    n = chipCount(data, 'all');
+  } else {
+    const hits = collect(data, {
+      q: state.q,
+      trade: state.scope !== 'documents' && state.brand === 'all',
+      answers: state.scope !== 'documents',
+      docs: state.scope !== 'questions',
+      brand: state.brand,
+      type: state.scope === 'questions' ? 'all' : state.type
+    });
+    hits.sort((a, b) => b.score - a.score || a.i - b.i);
+    html = flatHTML(hits);
+    n = hits.length;
+  }
+  document.getElementById('results').innerHTML = html;
+  setCount(n, filtered);
+}
+function renderV3(data) {
+  const t = T();
+  const q = state.q.trim();
+  if (q) {
+    const hits = collect(data, { q, trade: true, answers: true, docs: true, brand: 'all', type: 'all' });
+    hits.sort((a, b) => b.score - a.score || a.i - b.i);
+    document.getElementById('results').innerHTML = '<p class="flat-note">' + esc(t.results(hits.length)) + '</p>' + flatHTML(hits);
+    setCount(hits.length, true);
+    return;
+  }
+  const cats = '<section lang="en"><h2 class="zone-title">' + esc(t.before) + '</h2><div class="cat-grid">' +
+    data.trade.map((cat) => '<article class="cat-card"><h3>' + esc(cat.name) + ' <span class="n">· ' + cat.qas.length + '</span></h3>' +
+      cat.qas.map((qa) => qaHTML(qa, '', null)).join('') + '</article>').join('') +
+    '</div></section>';
+  const cards = data.answers.map((b) => {
+    const bc = brandCounts(data, b.brand);
+    const open = state.openBrand === b.brand;
+    return '<button type="button" class="brand-card' + (open ? ' is-open' : '') + '" data-open-brand="' + esc(b.brand) + '" aria-expanded="' + (open ? 'true' : 'false') + '">' +
+      '<span class="mark" aria-hidden="true">' + esc(MARK[b.brand] || b.brand.slice(0, 2).toUpperCase()) + '</span>' +
+      '<span class="brand-name">' + esc(b.brand) + '</span>' +
+      '<span class="brand-counts">' + esc(t.countPair(bc.answers, bc.docs)) + '</span></button>';
+  }).join('');
+  let panel = '';
+  if (state.openBrand) {
+    const bAns = data.answers.find((b) => b.brand === state.openBrand);
+    const bDoc = data.documents.find((b) => b.brand === state.openBrand);
+    const docs = bDoc ? bDoc.docs : [];
+    const qas = bAns ? bAns.qas : [];
+    const types = presentTypes(docs);
+    if (state.docType !== 'all' && !types.some((tp) => tp.type === state.docType)) state.docType = 'all';
+    const chips = '<div class="type-chips" role="group" aria-label="' + esc(t.typeLabel) + '">' +
+      '<button type="button" class="chip" data-doc-type="all" aria-pressed="' + (state.docType === 'all' ? 'true' : 'false') + '">' + esc(t.allTypes) + ' <span class="n">' + docs.length + '</span></button>' +
+      types.map((tp) => '<button type="button" class="chip" data-doc-type="' + esc(tp.type) + '" aria-pressed="' + (state.docType === tp.type ? 'true' : 'false') + '">' + esc(typeLabel(tp.type)) + ' <span class="n">' + tp.n + '</span></button>').join('') +
+      '</div>';
+    const shownDocs = docs.filter((d) => state.docType === 'all' || d.type === state.docType);
+    const docsBody = '<p class="ws-line">' + esc(t.allDocsFor(state.openBrand)) + '</p>' + chips +
+      (shownDocs.length ? shownDocs.map((doc) => docHTML(doc, '')).join('') : emptyHTML(true));
+    const ansBody = '<p class="ws-line">' + esc(t.answersFor(state.openBrand)) + '</p>' +
+      (qas.length ? qas.map((qa) => qaHTML(qa, '', { name: qa.product, url: qa.url })).join('') : emptyHTML(true));
+    panel = '<section class="workspace" id="workspace"><div class="ws-head"><h2>' + esc(state.openBrand) + '</h2><button type="button" class="ws-close" data-close-ws>' + esc(t.close) + '</button></div>' +
+      '<div class="tabs" role="tablist"><button type="button" role="tab" data-tab="docs" aria-selected="' + (state.tab === 'docs' ? 'true' : 'false') + '">' + esc(t.tabDocs) + ' · ' + docs.length + '</button>' +
+      '<button type="button" role="tab" data-tab="answers" aria-selected="' + (state.tab === 'answers' ? 'true' : 'false') + '">' + esc(t.tabAnswers) + ' · ' + qas.length + '</button></div>' +
+      (state.tab === 'docs' ? docsBody : ansBody) + '</section>';
+  }
+  document.getElementById('results').innerHTML = cats +
+    '<section class="v3-brands"><h2 class="zone-title">' + esc(t.byBrand) + '</h2><p class="zone-sub">' + esc(t.byBrandSub) + '</p><div class="brand-grid">' + cards + '</div>' + panel + '</section>';
+  const total = collect(data, { q: '', trade: true, answers: true, docs: true, brand: 'all', type: 'all' }).length;
+  setCount(total, false);
+}
+
+function miniButton(opts) {
+  return '<button type="button" class="' + opts.cls + (opts.open ? ' is-open' : '') + '" ' + opts.attrs + ' aria-expanded="' + (opts.open ? 'true' : 'false') + '">' +
+    opts.inner + '<span class="plus" aria-hidden="true"></span></button>';
+}
+function localSearch(local, value, placeholder) {
+  const t = T();
+  return '<div class="search" role="search">' + searchIcon() +
+    '<label class="sr-only">' + esc(placeholder) + '</label>' +
+    '<input class="q-local" data-local="' + local + '" type="search" placeholder="' + esc(placeholder) + '" value="' + esc(value) + '" autocomplete="off" spellcheck="false">' +
+    '<button type="button" class="search-clear" data-v4-clear="' + local + '" aria-label="' + esc(t.clear) + '"' + (value ? '' : ' hidden') + '>×</button></div>';
+}
+function renderV4(data) {
+  const t = T();
+  const q = state.q.trim();
+  const halfQ = state.faqHalfQ.trim();
+  const tradeLinks = [];
+  const answerLinks = [];
+  const docLinks = [];
+  data.trade.forEach((cat, i) => {
+    const n = halfQ ? cat.qas.filter((qa) => matches([qa.q, qa.a, cat.name].join(' '), halfQ)).length : cat.qas.length;
+    tradeLinks.push({ id: 'faq-cat-' + i, name: cat.name, n: n, total: cat.qas.length });
+  });
+  data.answers.forEach((b) => {
+    const n = halfQ ? b.qas.filter((qa) => matches([qa.q, qa.a, qa.product, b.brand].join(' '), halfQ)).length : b.qas.length;
+    answerLinks.push({ id: 'faq-brand-' + slug(b.brand), name: b.brand, n: n, total: b.qas.length });
+  });
+  data.documents.forEach((b) => {
+    docLinks.push({ id: 'dl-brand-' + slug(b.brand), name: b.brand, n: b.docs.length, total: b.docs.length });
+  });
+  const dim = q ? ' is-dim' : '';
+  const link = (l) => '<a href="#' + l.id + '" data-spy-link class="' + dim.trim() + '" data-count="' + l.n + '">' + esc(l.name) + '<span class="n">' + l.n + '</span></a>';
+  const rail = '<p class="toc-label"><a href="#half-faq" data-spy-link data-zone="half-faq">' + esc(t.faq) + '</a></p><nav class="toc">' +
+    tradeLinks.map(link).join('') + answerLinks.map(link).join('') + '</nav>' +
+    '<p class="toc-label"><a href="#half-dl" data-spy-link data-zone="half-dl">' + esc(t.downloads) + '</a></p><nav class="toc">' +
+    docLinks.map(link).join('') + '</nav>';
+  const chips = '<a class="chip' + dim + '" href="#half-faq" data-spy-link data-zone="half-faq">' + esc(t.faq) + '</a>' +
+    '<a class="chip' + dim + '" href="#half-dl" data-spy-link data-zone="half-dl">' + esc(t.downloads) + '</a>' +
+    '<span class="chip-gap" aria-hidden="true"></span>' +
+    data.answers.map((b) => '<a class="chip' + dim + '" href="#faq-brand-' + slug(b.brand) + '" data-spy-link data-brand-chip="' + slug(b.brand) + '">' + esc(b.brand) + '</a>').join('');
+  const left = (document.querySelector('.v1-chips-scroll') || {}).scrollLeft || 0;
+  document.getElementById('rail').innerHTML = rail;
+  document.getElementById('chips').innerHTML = '<div class="v1-chips-scroll">' + chips + '</div>';
+  const scroller = document.querySelector('.v1-chips-scroll');
+  if (scroller) scroller.scrollLeft = left;
+
+  if (q) {
+    const hits = collect(data, { q, trade: true, answers: true, docs: true, brand: 'all', type: 'all' });
+    hits.sort((a, b) => b.score - a.score || a.i - b.i);
+    document.getElementById('results').innerHTML = flatHTML(hits);
+    setCount(hits.length, true);
+    return;
+  }
+
+  const allOpen = data.trade.every((_, i) => state.faqOpenCats.has(String(i)));
+  const catCards = tradeLinks.filter((l) => !halfQ || l.n).map((l) => {
+    const i = l.id.slice('faq-cat-'.length);
+    const open = state.faqOpenCats.has(i);
+    return '<div id="' + l.id + '" data-spy>' + miniButton({
+      cls: 'v4-mini',
+      open: open,
+      attrs: 'data-v4-cat="' + i + '"',
+      inner: '<span><strong>' + esc(l.name) + '</strong><span class="sub">' + l.n + '</span></span>'
+    }) + '</div>';
+  }).join('');
+  const catPanels = data.trade.map((cat, i) => {
+    if (!state.faqOpenCats.has(String(i))) return '';
+    const qas = cat.qas.filter((qa) => !halfQ || matches([qa.q, qa.a, cat.name].join(' '), halfQ));
+    if (!qas.length) return '';
+    return '<div class="v4-panel" lang="en"><h3>' + esc(cat.name) + ' <span class="n">· ' + qas.length + '</span></h3>' +
+      qas.map((qa) => qaHTML(qa, halfQ, null)).join('') + '</div>';
+  }).join('');
+  const faqBrands = answerLinks.filter((l) => !halfQ || l.n).map((l) => {
+    const brand = l.name;
+    const open = state.faqBrand === brand;
+    return '<div id="' + l.id + '" data-spy>' + miniButton({
+      cls: 'v4-mini v4-brandmini',
+      open: open,
+      attrs: 'data-v4-faq-brand="' + esc(brand) + '"',
+      inner: '<span class="mark" aria-hidden="true">' + esc(MARK[brand] || brand.slice(0, 2).toUpperCase()) + '</span><span><strong>' + esc(brand) + '</strong><span class="sub">' + esc(t.nQuestions(l.n)) + '</span></span>'
+    }) + '</div>';
+  }).join('');
+  let faqWs = '';
+  if (state.faqBrand) {
+    const b = data.answers.find((x) => x.brand === state.faqBrand);
+    const localQ = [halfQ, state.faqBrandQ.trim()].filter(Boolean).join(' ');
+    const qas = (b ? b.qas : []).filter((qa) => !localQ || matches([qa.q, qa.a, qa.product, state.faqBrand].join(' '), localQ));
+    faqWs = '<section class="v4-ws" id="v4-faq-ws"><div class="ws-head"><h2>' + esc(state.faqBrand) + '</h2><button type="button" class="ws-close" data-v4-close="faq">' + esc(t.close) + '</button></div>' +
+      '<p class="ws-line">' + esc(t.answersFor(state.faqBrand)) + ' · ' + qas.length + '</p>' +
+      localSearch('brand', state.faqBrandQ, t.searchBrand) +
+      '<div class="v4-ws-body">' + (qas.length ? qas.map((qa) => qaHTML(qa, localQ, { name: qa.product, url: qa.url })).join('') : emptyHTML(true)) + '</div></section>';
+  }
+  const faqBody = (catCards || faqBrands) ? catCards + '<div class="v4-panels">' + catPanels + '</div>' : '';
+  const faqEmpty = !catCards && !faqBrands ? '<p class="v4-quiet">' + esc(t.halfEmpty) + '</p>' : '';
+  const dlCards = docLinks.map((l) => {
+    const open = state.dlBrand === l.name;
+    return '<div id="' + l.id + '" data-spy>' + miniButton({
+      cls: 'v4-mini v4-brandmini',
+      open: open,
+      attrs: 'data-v4-dl-brand="' + esc(l.name) + '"',
+      inner: '<span class="mark" aria-hidden="true">' + esc(MARK[l.name] || l.name.slice(0, 2).toUpperCase()) + '</span><span><strong>' + esc(l.name) + '</strong><span class="sub">' + l.n + '</span></span>'
+    }) + '</div>';
+  }).join('');
+  let dlWs = '';
+  if (state.dlBrand) {
+    const b = data.documents.find((x) => x.brand === state.dlBrand);
+    const docs = b ? b.docs : [];
+    const types = presentTypes(docs);
+    if (state.dlType !== 'all' && !types.some((tp) => tp.type === state.dlType)) state.dlType = 'all';
+    const shown = docs.filter((d) => state.dlType === 'all' || d.type === state.dlType);
+    const chips = '<div class="type-chips" role="group" aria-label="' + esc(t.typeLabel) + '">' +
+      '<button type="button" class="chip" data-v4-type="all" aria-pressed="' + (state.dlType === 'all' ? 'true' : 'false') + '">' + esc(t.allTypes) + ' <span class="n">' + docs.length + '</span></button>' +
+      types.map((tp) => '<button type="button" class="chip" data-v4-type="' + esc(tp.type) + '" aria-pressed="' + (state.dlType === tp.type ? 'true' : 'false') + '">' + esc(typeLabel(tp.type)) + ' <span class="n">' + tp.n + '</span></button>').join('') +
+      '</div>';
+    dlWs = '<section class="v4-ws" id="v4-dl-ws"><div class="ws-head"><h2>' + esc(state.dlBrand) + '</h2><button type="button" class="ws-close" data-v4-close="dl">' + esc(t.close) + '</button></div>' +
+      '<p class="ws-line">' + esc(t.allDocsFor(state.dlBrand)) + '</p>' + chips +
+      '<div class="v4-ws-body">' + (shown.length ? shown.map((doc) => docHTML(doc, '')).join('') : emptyHTML(true)) + '</div></section>';
+  }
+  const faqHead = '<p class="kicker">01 · ' + esc(t.faq) + '</p><h2 class="zone-title">' + esc(t.faqTitle) + '</h2><p class="zone-sub">' + esc(t.faqSub) + '</p>';
+  const tools = '<div class="v4-tools">' + localSearch('half', state.faqHalfQ, t.filterHalf) +
+    '<button type="button" class="v4-textbtn" data-v4-expand>' + esc(allOpen ? t.collapseAll : t.expandAll) + '</button></div>';
+  document.getElementById('results').innerHTML =
+    '<section class="v4-faq" id="half-faq" data-spy>' + faqHead + tools +
+    '<h3 class="v4-group">' + esc(t.before) + '</h3><div class="v4-catgrid">' + catCards + '</div>' +
+    '<div class="v4-panels">' + catPanels + '</div>' +
+    '<h3 class="v4-group">' + esc(t.answers) + '</h3><div class="v4-brandgrid">' + faqBrands + '</div>' + faqWs + faqEmpty +
+    '</section>' +
+    '<div class="v4-rule"><span>02 · ' + esc(t.downloads) + '</span></div>' +
+    '<section class="v4-dl" id="half-dl" data-spy><p class="kicker">02 · ' + esc(t.downloads) + '</p><h2 class="zone-title">' + esc(t.dlTitle) + '</h2><p class="zone-sub">' + esc(t.dlSub) + '</p>' +
+    '<div class="v4-brandgrid" style="margin-top:14px">' + dlCards + '</div>' + dlWs + '</section>';
+  const total = collect(data, { q: '', trade: true, answers: true, docs: true, brand: 'all', type: 'all' }).length;
+  setCount(total, false);
+}
+
+const PAGE_SIZE = 20;
+let pageThumbs = null;
+let pageThumbsPromise = null;
+const TYPE_TINT = {
+  datasheet: ['#e5f4f2', '#0a5c53'],
+  manual: ['#e8eef2', '#1d3d4a'],
+  certificate: ['#f3efe4', '#6a5420'],
+  compatibility: ['#e7eef6', '#1e3f66'],
+  warranty: ['#f6ebe6', '#7a3e2e'],
+  brochure: ['#eeeaf4', '#3d3560'],
+  document: ['#edf1f5', '#3e524c']
+};
+function fileIcon() {
+  return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v6h6"/></svg>';
+}
+function sparkSVG() {
+  return '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.5l1.7 7.1L21 10.2l-7.3 1.6L12 19l-1.7-7.2L3 10.2l7.3-1.6L12 1.5z"/><path d="M18.5 15.2l.7 2.4 2.4.7-2.4.7-.7 2.4-.7-2.4-2.4-.7 2.4-.7.7-2.4z" opacity=".55"/></svg>';
+}
+function brandSlug(brand) {
+  return { Chint: 'chint', EcoFlow: 'ecoflow', GoodWe: 'goodwe', Pylontech: 'pylontech', SAJ: 'saj' }[brand] || '';
+}
+function brandLogoHTML(brand) {
+  const slug = brandSlug(brand);
+  const mono = MARK[brand] || String(brand || '').slice(0, 2).toUpperCase();
+  if (!slug) return '<span class="mark" aria-hidden="true">' + esc(mono) + '</span>';
+  const src = 'https://de-linker.com/wp-content/uploads/2026/07/our-brand-' + slug + '-mono-light.png';
+  return '<span class="v5-logo"><img src="' + esc(src) + '" alt=""><span class="v5-logo-fallback">' + esc(mono) + '</span></span>';
+}
+function loadPageThumbs() {
+  if (pageThumbsPromise) return pageThumbsPromise;
+  pageThumbsPromise = fetch('thumbs/manifest.json')
+    .then((res) => (res.ok ? res.json() : {}))
+    .then((data) => {
+      pageThumbs = data && typeof data === 'object' ? data : {};
+      return pageThumbs;
+    })
+    .catch(() => {
+      pageThumbs = {};
+      return pageThumbs;
+    });
+  return pageThumbsPromise;
+}
+function pageThumbFile(url) {
+  if (!pageThumbs || !url) return '';
+  const entry = pageThumbs[url];
+  const file = entry && entry.file;
+  return typeof file === 'string' && /^[a-f0-9]{40}\.png$/.test(file) ? file : '';
+}
+function thumbHTML(doc) {
+  const tint = TYPE_TINT[doc.type] || TYPE_TINT.document;
+  const file = pageThumbFile(doc.url);
+  const img = file ? '<img alt="" loading="lazy" decoding="async" src="thumbs/' + file + '">' : '';
+  const tone = file ? '' : ' style="background:' + tint[0] + ';color:' + tint[1] + '"';
+  return '<span class="v5-thumb' + (file ? ' has-src' : '') + '"' + tone + ' data-thumb-url="' + esc(doc.url || '') + '" data-thumb-type="' + esc(doc.type || 'document') + '" aria-hidden="true"><span class="v5-thumb-fallback">' + fileIcon() + '</span>' + img + '</span>';
+}
+function bindThumb(img) {
+  const done = () => {
+    img.classList.add('is-in');
+    if (img.parentElement) img.parentElement.classList.add('has-img');
+  };
+  const fail = () => {
+    img.hidden = true;
+    const tile = img.parentElement;
+    if (!tile) return;
+    tile.classList.remove('has-img', 'has-src');
+    const tint = TYPE_TINT[tile.dataset.thumbType] || TYPE_TINT.document;
+    tile.style.background = tint[0];
+    tile.style.color = tint[1];
+  };
+  if (img.complete && img.naturalWidth) done();
+  else if (img.complete && img.getAttribute('src')) fail();
+  else {
+    img.addEventListener('load', done, { once: true });
+    img.addEventListener('error', fail, { once: true });
+  }
+}
+function applyPageThumbs() {
+  if (!pageThumbs) return;
+  document.querySelectorAll('[data-thumb-url]').forEach((el) => {
+    const file = pageThumbFile(el.dataset.thumbUrl);
+    if (!file) return;
+    let img = el.querySelector('img');
+    if (!img) {
+      img = document.createElement('img');
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      el.appendChild(img);
+    }
+    const src = 'thumbs/' + file;
+    if (img.getAttribute('src') !== src) img.src = src;
+    img.hidden = false;
+    el.classList.add('has-src');
+    el.style.background = '';
+    el.style.color = '';
+    bindThumb(img);
+  });
+}
+function hydrateThumbs() {
+  document.querySelectorAll('.v5-logo img').forEach((img) => {
+    const fail = () => { if (img.parentElement) img.parentElement.classList.add('is-fallback'); };
+    if (img.complete && img.naturalWidth === 0) fail();
+    else img.addEventListener('error', fail, { once: true });
+  });
+  document.querySelectorAll('.v5-thumb img[src]').forEach(bindThumb);
+  if (pageThumbs) {
+    applyPageThumbs();
+    return;
+  }
+  loadPageThumbs().then(applyPageThumbs);
+}
+function pageWindow(page, pages) {
+  const set = new Set([1, pages, page - 1, page, page + 1].filter((n) => n >= 1 && n <= pages));
+  return [...set].sort((a, b) => a - b);
+}
+function pagerHTML(listId, page, pages) {
+  if (pages <= 1) return '';
+  const t = T();
+  const btn = (label, value, extra) => '<button type="button" data-v5-page="' + value + '" data-v5-list="' + esc(listId) + '"' + (extra || '') + '>' + label + '</button>';
+  const nums = pageWindow(page, pages);
+  let prev = 0;
+  const mid = nums.map((n) => {
+    const gap = prev && n - prev > 1 ? '<span class="gap" aria-hidden="true">…</span>' : '';
+    prev = n;
+    const cur = n === page ? ' aria-current="page"' : '';
+    return gap + btn(String(n), String(n), cur);
+  }).join('');
+  return '<nav class="v5-pager" aria-label="' + esc(t.pagesLabel) + '">' +
+    btn(esc(t.prevPage), 'prev', page <= 1 ? ' disabled' : '') + mid +
+    btn(esc(t.nextPage), 'next', page >= pages ? ' disabled' : '') + '</nav>';
+}
+function pagedRows(items, listId, renderRow, emptySoft) {
+  if (!items.length) return emptyHTML(!!emptySoft);
+  const pages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  let page = state.v5Pages[listId] || 1;
+  if (page > pages) page = pages;
+  if (page < 1) page = 1;
+  state.v5Pages[listId] = page;
+  const start = (page - 1) * PAGE_SIZE;
+  return items.slice(start, start + PAGE_SIZE).map(renderRow).join('') + pagerHTML(listId, page, pages);
+}
+function v5HeadHTML() {
+  const t = T();
+  return '<header class="v5-hero"><div class="wrap v5-hero-inner"><div class="v5-spark" aria-hidden="true">' + sparkSVG() + '</div>' +
+    '<h1 class="page-title">' + esc(t.title) + '</h1><p class="page-sub">' + esc(t.sub) + '</p>' +
+    '<p class="v5-help">' + esc(t.cantFind) + ' <a href="' + esc(t.contactHref) + '">' + esc(t.contactTeam) + '</a></p>' +
+    '<div class="v5-searchbox">' + v5SearchHTML() + '<div id="v5-suggest" class="v5-suggest" role="listbox" aria-label="' + esc(t.searchLabel) + '" hidden></div></div></div></header>';
+}
+function v5SearchHTML() {
+  const t = T();
+  return '<div class="search v5-search">' + searchIcon() +
+    '<label class="sr-only" for="q">' + esc(t.searchLabel) + '</label>' +
+    '<input id="q" class="q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="v5-suggest" aria-haspopup="listbox" placeholder="' + esc(t.search) + '" value="' + esc(state.q) + '" autocomplete="off" spellcheck="false">' +
+    '<button type="button" class="search-clear" data-clear aria-label="' + esc(t.clear) + '"' + (state.q ? '' : ' hidden') + '>×</button>' +
+    '<span class="search-count" id="result-count" aria-live="polite"></span></div>';
+}
+function v5Skeleton() {
+  return '<div class="v5" aria-busy="true"><header class="v5-hero"><div class="wrap v5-hero-inner"><div class="v5-skel v5-skel-icon"></div><div class="v5-skel v5-skel-title"></div><div class="v5-skel v5-skel-sub"></div></div></header><div class="wrap"><div class="v5-card v5-skel-card"></div><div class="v5-card v5-skel-card"></div><div class="v5-card v5-skel-card"></div></div></div>';
+}
+function v5Error(msg) {
+  return '<div class="v5"><div class="wrap v5-error"><p>' + esc(msg || T().loadError) + '</p><button type="button" class="btn-genie" data-v5-retry>' + esc(T().retry) + '</button></div></div>';
+}
+function suggestPool(data, q) {
+  const questions = collect(data, { q: q, trade: true, answers: true, docs: false, brand: 'all', type: 'all' });
+  const docs = collect(data, { q: q, trade: false, answers: false, docs: true, brand: 'all', type: 'all' });
+  questions.sort((a, b) => b.score - a.score || a.i - b.i);
+  docs.sort((a, b) => b.score - a.score || a.i - b.i);
+  return { questions: questions.slice(0, 6), docs: docs.slice(0, 6) };
+}
+function closeSuggest() {
+  state.suggestOpen = false;
+  state.suggestIndex = -1;
+  const box = document.getElementById('v5-suggest');
+  const input = document.getElementById('q');
+  if (box) {
+    box.hidden = true;
+    box.innerHTML = '';
+  }
+  if (input) {
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+  }
+}
+function renderSuggestions() {
+  const box = document.getElementById('v5-suggest');
+  const input = document.getElementById('q');
+  if (!box || !input || state.variant !== '5') return;
+  const q = state.q.trim();
+  if (!state.suggestOpen || !q || !state.data) {
+    if (!q) state.suggestItems = [];
+    state.suggestOpen = false;
+    box.hidden = true;
+    box.innerHTML = '';
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+    return;
+  }
+  const pool = suggestPool(state.data, q);
+  const items = [];
+  const t = T();
+  const row = (item, i) => {
+    const on = i === state.suggestIndex ? ' is-active' : '';
+    const text = item.kind === 'doc' ? hi(item.doc.title, q) : hi(item.qa.q, q);
+    const meta = item.kind === 'doc'
+      ? esc(item.group) + ' · ' + esc(typeLabel(item.doc.type))
+      : esc(item.group) + ' · ' + esc(item.kind === 'trade' ? t.kindTrade : t.kindAnswer);
+    return '<button type="button" class="v5-sug' + on + '" role="option" id="sug-' + i + '" data-v5-suggest="' + i + '" aria-selected="' + (on ? 'true' : 'false') + '"><span class="v5-sug-text">' + text + '</span><span class="v5-sug-meta">' + meta + '</span></button>';
+  };
+  let html = '';
+  if (pool.questions.length) {
+    html += '<div role="group" aria-label="' + esc(t.scopeQ) + '"><p class="v5-sug-label">' + esc(t.scopeQ) + '</p>';
+    pool.questions.forEach((item) => { items.push(item); html += row(item, items.length - 1); });
+    html += '</div>';
+  }
+  if (pool.docs.length) {
+    html += '<div role="group" aria-label="' + esc(t.documents) + '"><p class="v5-sug-label">' + esc(t.documents) + '</p>';
+    pool.docs.forEach((item) => { items.push(item); html += row(item, items.length - 1); });
+    html += '</div>';
+  }
+  state.suggestItems = items;
+  if (!items.length) {
+    state.suggestOpen = false;
+    box.hidden = true;
+    box.innerHTML = '';
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+    return;
+  }
+  if (state.suggestIndex >= items.length) state.suggestIndex = items.length - 1;
+  state.suggestOpen = true;
+  box.hidden = false;
+  box.innerHTML = html;
+  input.setAttribute('aria-expanded', 'true');
+  if (state.suggestIndex >= 0) input.setAttribute('aria-activedescendant', 'sug-' + state.suggestIndex);
+  else input.removeAttribute('aria-activedescendant');
+}
+function locateQA(data, id) {
+  for (let i = 0; i < data.trade.length; i++) {
+    const cat = data.trade[i];
+    const idx = cat.qas.findIndex((qa) => qa.id === id);
+    if (idx >= 0) return { card: 'v5-' + cat.id, index: idx };
+  }
+  for (let i = 0; i < data.answers.length; i++) {
+    const b = data.answers[i];
+    const idx = b.qas.findIndex((qa) => qa.id === id);
+    if (idx >= 0) return { card: 'v5-' + b.id, index: idx };
+  }
+  return null;
+}
+function activateSuggest(i) {
+  const item = state.suggestItems[i];
+  if (!item || !state.data) return;
+  state.suggestOpen = false;
+  state.suggestIndex = -1;
+  if (item.kind === 'doc') {
+    const url = rawUrl(item.doc.url);
+    if (url) window.open(url, '_blank', 'noopener');
+    renderSuggestions();
+    return;
+  }
+  const loc = locateQA(state.data, item.qa.id);
+  state.q = '';
+  state.pageTab = 'faq';
+  state.v5SearchPage = 1;
+  state.openIds.add(item.qa.id);
+  if (loc) state.v5Pages[loc.card] = Math.floor(loc.index / PAGE_SIZE) + 1;
+  writeParams();
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  renderApp();
+  const input = document.getElementById('q');
+  if (input) input.value = '';
+  requestAnimationFrame(() => {
+    const el = document.querySelector('details.qa[data-qid="' + item.qa.id + '"]');
+    if (!el) return;
+    el.open = true;
+    scrollToEl(el);
+  });
+}
+function rawUrl(u) {
+  try {
+    const url = new URL(u, location.href);
+    if (url.protocol === 'http:' || url.protocol === 'https:') return url.href;
+  } catch (err) { /* ignore */ }
+  return '';
+}
+function v5HitSplit(data, q) {
+  const hits = collect(data, { q: q, trade: true, answers: true, docs: true, brand: 'all', type: 'all' });
+  hits.sort((a, b) => b.score - a.score || a.i - b.i);
+  return {
+    all: hits,
+    faq: hits.filter((h) => h.kind !== 'doc'),
+    documents: hits.filter((h) => h.kind === 'doc')
+  };
+}
+function setTabCount(id, n) {
+  const btn = document.getElementById('v5-tab-' + id);
+  const num = btn && btn.querySelector('.n');
+  if (num) num.textContent = String(n);
+}
+
+function v5Tabbar(data) {
+  const t = T();
+  const faqN = data.trade.reduce((n, c) => n + c.qas.length, 0) + data.answers.reduce((n, b) => n + b.qas.length, 0);
+  const docN = data.documents.reduce((n, b) => n + b.docs.length, 0);
+  const tab = state.pageTab === 'documents' ? 'documents' : 'faq';
+  function btn(id, label, n) {
+    return '<button type="button" class="v5-tab" role="tab" id="v5-tab-' + id + '" data-v5-tab="' + id + '" aria-selected="' + (tab === id ? 'true' : 'false') + '" aria-controls="v5-panel">' +
+      esc(label) + '<span class="n">' + n + '</span></button>';
+  }
+  return '<div class="v5-tabbar"><div class="wrap"><div class="v5-tablist" role="tablist" aria-label="' + esc(t.kicker) + '">' +
+    btn('faq', t.faq, faqN) + btn('documents', t.documents, docN) + '</div></div></div>';
+}
+function v5RailLinks(items) {
+  return items.map((l) => {
+    const dim = l.n ? '' : ' is-dim';
+    return '<a href="#' + l.id + '" data-spy-link class="' + dim.trim() + '" data-count="' + l.n + '">' + esc(l.name) + '<span class="n">' + l.n + '</span></a>';
+  }).join('');
+}
+function v5Chips(items) {
+  return items.map((l) => {
+    const dim = l.n ? '' : ' is-dim';
+    return '<a class="chip' + dim + '" href="#' + l.id + '" data-spy-link>' + esc(l.name) + ' <span class="n">' + l.n + '</span></a>';
+  }).join('');
+}
+function v5Card(opts) {
+  const mark = opts.logo || (opts.mark ? '<span class="mark" aria-hidden="true">' + esc(opts.mark) + '</span>' : '');
+  return '<article class="v5-card" id="' + opts.id + '" data-spy>' +
+    '<header class="v5-card-head">' + mark + '<h3>' + esc(opts.title) + '</h3><span class="n">' + opts.n + '</span></header>' +
+    opts.body + '</article>';
+}
+function renderV5(data) {
+  const t = T();
+  const q = state.q.trim();
+  const tab = state.pageTab === 'documents' ? 'documents' : 'faq';
+  document.querySelectorAll('[data-v5-tab]').forEach((btn) => {
+    const on = btn.dataset.v5Tab === tab;
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    btn.tabIndex = on ? 0 : -1;
+  });
+  const panel = document.getElementById('v5-panel');
+  if (panel) panel.setAttribute('aria-labelledby', 'v5-tab-' + tab);
+  const layout = document.querySelector('.v5 .v1-layout');
+  const faqTotal = data.trade.reduce((n, c) => n + c.qas.length, 0) + data.answers.reduce((n, b) => n + b.qas.length, 0);
+  const docTotal = data.documents.reduce((n, b) => n + b.docs.length, 0);
+  if (q) {
+    const split = v5HitSplit(data, q);
+    setTabCount('faq', split.faq.length);
+    setTabCount('documents', split.documents.length);
+    if (layout) layout.classList.add('v5-searching');
+    document.getElementById('rail').innerHTML = '';
+    document.getElementById('chips').innerHTML = '';
+    const hits = tab === 'documents' ? split.documents : split.faq;
+    const pages = Math.max(1, Math.ceil(hits.length / PAGE_SIZE) || 1);
+    if (state.v5SearchPage > pages) state.v5SearchPage = pages;
+    if (state.v5SearchPage < 1) state.v5SearchPage = 1;
+    const start = (state.v5SearchPage - 1) * PAGE_SIZE;
+    const slice = hits.slice(start, start + PAGE_SIZE);
+    const list = slice.length
+      ? flatHTML(slice) + pagerHTML('search', state.v5SearchPage, pages)
+      : '<div class="v5-card v5-empty">' + emptyHTML() + '</div>';
+    document.getElementById('results').innerHTML = list;
+    setCount(split.all.length, true);
+    renderSuggestions();
+    hydrateThumbs();
+    return;
+  }
+  setTabCount('faq', faqTotal);
+  setTabCount('documents', docTotal);
+  if (layout) layout.classList.remove('v5-searching');
+  const left = (document.querySelector('.v1-chips-scroll') || {}).scrollLeft || 0;
+  let rail = '';
+  let chips = '';
+  let body = '';
+  if (tab === 'faq') {
+    const tradeLinks = data.trade.map((cat) => ({ id: 'v5-' + cat.id, name: cat.name, n: cat.qas.length }));
+    const answerLinks = data.answers.map((b) => ({ id: 'v5-' + b.id, name: b.brand, n: b.qas.length }));
+    rail = '<p class="toc-label"><a href="#v5-zone-trade" data-spy-link data-zone="v5-zone-trade">' + esc(t.before) + '</a></p><nav class="toc">' + v5RailLinks(tradeLinks) + '</nav>' +
+      '<p class="toc-label"><a href="#v5-zone-answers" data-spy-link data-zone="v5-zone-answers">' + esc(t.answers) + '</a></p><nav class="toc">' + v5RailLinks(answerLinks) + '</nav>';
+    chips = '<a class="chip" href="#v5-zone-trade" data-spy-link data-zone="v5-zone-trade">' + esc(t.before) + '</a>' +
+      v5Chips(tradeLinks) +
+      '<span class="chip-gap" aria-hidden="true"></span>' +
+      '<a class="chip" href="#v5-zone-answers" data-spy-link data-zone="v5-zone-answers">' + esc(t.answers) + '</a>' +
+      v5Chips(answerLinks);
+    const tradeCards = data.trade.map((cat) => v5Card({
+      id: 'v5-' + cat.id,
+      title: cat.name,
+      n: cat.qas.length,
+      body: pagedRows(cat.qas, 'v5-' + cat.id, (qa) => qaHTML(qa, '', null), true)
+    })).join('');
+    const answerCards = data.answers.map((b) => v5Card({
+      id: 'v5-' + b.id,
+      title: b.brand,
+      n: b.qas.length,
+      logo: brandLogoHTML(b.brand),
+      body: pagedRows(b.qas, 'v5-' + b.id, (qa) => qaHTML(qa, '', { name: qa.product, url: qa.url }), true)
+    })).join('');
+    body = '<section class="v5-zone" id="v5-zone-trade" lang="en"><h2 class="zone-title">' + esc(t.before) + '</h2><div class="v5-stack">' + tradeCards + '</div></section>' +
+      '<section class="v5-zone" id="v5-zone-answers"><h2 class="zone-title">' + esc(t.answers) + '</h2><div class="v5-stack">' + answerCards + '</div></section>';
+  } else {
+    const allDocs = data.documents.flatMap((b) => b.docs);
+    const types = presentTypes(allDocs);
+    const order = ['datasheet', 'manual', 'warranty', 'certificate', 'compatibility', 'brochure', 'document'];
+    types.sort((a, b) => (order.indexOf(a.type) < 0 ? 99 : order.indexOf(a.type)) - (order.indexOf(b.type) < 0 ? 99 : order.indexOf(b.type)));
+    if (state.v5Type !== 'all' && !types.some((tp) => tp.type === state.v5Type)) state.v5Type = 'all';
+    const shownDocs = (docs) => docs.filter((d) => state.v5Type === 'all' || d.type === state.v5Type);
+    const docLinks = data.documents.map((b) => ({ id: 'v5-' + b.id, name: b.brand, n: shownDocs(b.docs).length }));
+    rail = '<p class="toc-label"><a href="#v5-zone-docs" data-spy-link data-zone="v5-zone-docs">' + esc(t.brands) + '</a></p><nav class="toc">' + v5RailLinks(docLinks) + '</nav>';
+    chips = v5Chips(docLinks);
+    const typeChips = '<div class="v5-filters" role="group" aria-label="' + esc(t.typeLabel) + '">' +
+      '<button type="button" class="chip" data-v5-type="all" aria-pressed="' + (state.v5Type === 'all' ? 'true' : 'false') + '">' + esc(t.scopeAll) + ' <span class="n">' + allDocs.length + '</span></button>' +
+      types.map((tp) => '<button type="button" class="chip" data-v5-type="' + esc(tp.type) + '" aria-pressed="' + (state.v5Type === tp.type ? 'true' : 'false') + '">' + esc(typeLabel(tp.type)) + ' <span class="n">' + tp.n + '</span></button>').join('') +
+      '</div>';
+    const cards = data.documents.map((b) => {
+      const docs = shownDocs(b.docs);
+      const rows = docs.length
+        ? pagedRows(docs, 'v5-' + b.id, (doc) => docHTML(doc, '', { thumb: true }), true)
+        : '<div class="v5-empty">' + emptyHTML(true) + '</div>';
+      return v5Card({
+        id: 'v5-' + b.id,
+        title: b.brand,
+        n: docs.length,
+        logo: brandLogoHTML(b.brand),
+        body: rows
+      });
+    }).join('');
+    body = typeChips + '<section class="v5-zone" id="v5-zone-docs"><h2 class="zone-title">' + esc(t.brands) + '</h2><div class="v5-stack">' +
+      (cards || '<div class="v5-card v5-empty">' + emptyHTML(true) + '</div>') + '</div></section>';
+  }
+  document.getElementById('rail').innerHTML = rail;
+  document.getElementById('chips').innerHTML = '<div class="v1-chips-scroll">' + chips + '</div>';
+  const scroller = document.querySelector('.v1-chips-scroll');
+  if (scroller) scroller.scrollLeft = left;
+  document.getElementById('results').innerHTML = body;
+  setCount(faqTotal + docTotal, false);
+  renderSuggestions();
+  hydrateThumbs();
+}
+
+function renderApp() {
+  const data = state.data;
+  const v = state.variant;
+  if (v === '1') {
+    document.getElementById('app').innerHTML = '<div class="v1"><div class="wrap v1-layout"><aside class="v1-rail" id="rail" aria-label="On this page"></aside><div class="v1-main">' + headHTML(true) + '<nav class="v1-chips" id="chips" aria-label="On this page"></nav><div id="results"></div></div></div></div>';
+  } else if (v === '2') {
+    document.getElementById('app').innerHTML = '<div class="v2"><div class="wrap">' + headHTML(false) + '</div>' + toolbarHTML(data) + '<div class="wrap"><div id="results"></div></div></div>';
+  } else if (v === '4') {
+    document.getElementById('app').innerHTML = '<div class="v4"><div class="wrap v1-layout"><aside class="v1-rail" id="rail" aria-label="On this page"></aside><div class="v1-main">' + headHTML(true) + '<nav class="v1-chips" id="chips" aria-label="On this page"></nav><div id="results"></div></div></div></div>';
+  } else if (v === '5') {
+    document.getElementById('app').innerHTML = '<div class="v5">' + v5HeadHTML() + v5Tabbar(data) + '<div class="wrap v1-layout"><aside class="v1-rail" id="rail" aria-label="' + esc(T().onThisPage) + '"></aside><div class="v1-main"><nav class="v1-chips" id="chips" aria-label="' + esc(T().onThisPage) + '"></nav><div id="v5-panel" role="tabpanel"><div id="results"></div></div></div></div></div>';
+  } else {
+    document.getElementById('app').innerHTML = '<div class="v3"><div class="wrap">' + headHTML(true) + '<div id="results"></div></div></div>';
+  }
+  renderResults();
+  const hash = location.hash.slice(1);
+  const hashed = hash && document.getElementById(hash);
+  if (hashed) {
+    measureSticky();
+    const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
+    const extra = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sticky-extra')) || 0;
+    const top = hashed.getBoundingClientRect().top + window.scrollY - headerH - extra - 16;
+    window.scrollTo(0, Math.max(0, top));
+    setSpy(hash);
+  }
+}
+function renderResults(opts) {
+  if (!state.data) return;
+  state.rendering = true;
+  const y = opts && opts.keepScroll ? window.scrollY : null;
+  const active = document.activeElement;
+  const restore = active && active.classList && active.classList.contains('q-local')
+    ? { local: active.dataset.local, start: active.selectionStart }
+    : null;
+  if (state.variant === '1') renderV1(state.data);
+  else if (state.variant === '2') renderV2(state.data);
+  else if (state.variant === '4') renderV4(state.data);
+  else if (state.variant === '5') renderV5(state.data);
+  else renderV3(state.data);
+  state.rendering = false;
+  measureSticky();
+  bindSpy();
+  if (y != null) window.scrollTo(0, y);
+  if (opts && opts.scrollWorkspace) {
+    requestAnimationFrame(() => scrollToEl(document.getElementById('workspace')));
+  }
+  if (opts && opts.scrollTo) {
+    requestAnimationFrame(() => scrollToEl(document.getElementById(opts.scrollTo)));
+  }
+  if (restore) {
+    const next = document.querySelector('.q-local[data-local="' + restore.local + '"]');
+    if (next) {
+      next.focus();
+      try { next.setSelectionRange(restore.start, restore.start); } catch (err) { /* ignore */ }
+    }
+  }
+}
+function zoneOf(id) {
+  if (!id) return null;
+  if (id === 'zone-trade' || id.startsWith('trade-')) return 'zone-trade';
+  if (id === 'zone-answers' || id.startsWith('answers-')) return 'zone-answers';
+  if (id === 'zone-docs' || id.startsWith('docs-')) return 'zone-docs';
+  return null;
+}
+function setSpy(id) {
+  if (state.variant === '5') {
+    const idS = String(id || '');
+    const inTrade = idS === 'v5-zone-trade' || idS.startsWith('v5-trade-');
+    const inAns = idS === 'v5-zone-answers' || idS.startsWith('v5-answers-');
+    const inDocs = idS === 'v5-zone-docs' || idS.startsWith('v5-docs-');
+    document.querySelectorAll('[data-spy-link]').forEach((a) => {
+      const href = (a.getAttribute('href') || '').slice(1);
+      let on = href === idS;
+      if (a.dataset.zone === 'v5-zone-trade' && inTrade) on = true;
+      if (a.dataset.zone === 'v5-zone-answers' && inAns) on = true;
+      if (a.dataset.zone === 'v5-zone-docs' && inDocs) on = true;
+      a.classList.toggle('is-active', on);
+      if (on && href === idS) a.setAttribute('aria-current', 'location');
+      else a.removeAttribute('aria-current');
+    });
+    return;
+  }
+  if (state.variant === '4') {
+    const dl = id === 'half-dl' || String(id).startsWith('dl-');
+    document.querySelectorAll('[data-brand-chip]').forEach((a) => {
+      a.setAttribute('href', '#' + (dl ? 'dl-brand-' : 'faq-brand-') + a.dataset.brandChip);
+    });
+    document.querySelectorAll('[data-spy-link]').forEach((a) => {
+      const href = (a.getAttribute('href') || '').slice(1);
+      let on = href === id;
+      if (a.dataset.zone === 'half-faq' && (id === 'half-faq' || String(id).startsWith('faq-'))) on = true;
+      if (a.dataset.zone === 'half-dl' && dl) on = true;
+      a.classList.toggle('is-active', on);
+    });
+    return;
+  }
+  const zone = zoneOf(id);
+  const docMode = zone === 'zone-docs';
+  document.querySelectorAll('[data-brand-chip]').forEach((a) => {
+    a.setAttribute('href', '#' + (docMode ? 'docs-' : 'answers-') + a.dataset.brandChip);
+  });
+  document.querySelectorAll('[data-spy-link]').forEach((a) => {
+    const href = (a.getAttribute('href') || '').slice(1);
+    let on = href === id;
+    if (a.dataset.zone && a.dataset.zone === zone) on = true;
+    a.classList.toggle('is-active', on);
+  });
+}
+function pickSpy() {
+  if ((state.variant !== '1' && state.variant !== '4' && state.variant !== '5') || state.rendering || Date.now() < state.spyLock) return;
+  const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
+  const extra = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sticky-extra')) || 0;
+  const line = headerH + extra + 36;
+  const nodes = [...document.querySelectorAll('[data-spy]')];
+  if (!nodes.length) return;
+  let current = nodes[0];
+  nodes.forEach((n) => {
+    if (n.getBoundingClientRect().top <= line) current = n;
+  });
+  setSpy(current.id);
+}
+function bindSpy() { pickSpy(); }
+
+function cycle(dir) {
+  const i = VARIANTS.findIndex((v) => v.id === state.variant);
+  const next = VARIANTS[(i + dir + VARIANTS.length) % VARIANTS.length];
+  setVariant(next.id);
+}
+function setVariant(id) {
+  state.variant = id;
+  setMenu(false);
+  writeParams();
+  renderChrome();
+  renderApp();
+  scrollTopInstant();
+}
+async function setLang(lang) {
+  if (lang !== 'en' && lang !== 'de') return;
+  state.lang = lang;
+  state.openIds.clear();
+  state.faqHalfQ = '';
+  state.faqBrandQ = '';
+  state.suggestOpen = false;
+  state.suggestIndex = -1;
+  state.v5SearchPage = 1;
+  setMenu(false);
+  writeParams();
+  renderChrome();
+  document.getElementById('app').innerHTML = state.variant === '5' ? v5Skeleton() : '<p class="loading wrap">' + esc(T().loading) + '</p>';
+  try {
+    state.data = await load(lang);
+    renderApp();
+    scrollTopInstant();
+  } catch (err) {
+    document.getElementById('app').innerHTML = state.variant === '5' ? v5Error(T().loadError) : '<p class="load-error wrap">' + esc(err.message) + '</p>';
+  }
+}
+async function load(lang) {
+  if (!cache[lang]) {
+    const res = await fetch('./data.' + lang + '.json');
+    if (!res.ok) throw new Error('Could not load data.' + lang + '.json (' + res.status + ')');
+    cache[lang] = prepare(await res.json());
+  }
+  return cache[lang];
+}
+
+document.addEventListener('pointerdown', (e) => {
+  if (state.variant !== '5') return;
+  const clear = e.target && e.target.closest && e.target.closest('[data-clear]');
+  if (clear) {
+    e.preventDefault();
+    state.q = '';
+    state.suggestOpen = false;
+    state.suggestIndex = -1;
+    const input = document.getElementById('q');
+    if (input) input.value = '';
+    renderResults({ keepScroll: true });
+    return;
+  }
+  if (!state.suggestOpen) return;
+  if (e.target && e.target.closest && e.target.closest('.v5-searchbox')) return;
+  closeSuggest();
+}, true);
+document.addEventListener('focusin', (e) => {
+  if (!e.target || e.target.id !== 'q' || state.variant !== '5') return;
+  if (!state.q.trim()) return;
+  state.suggestOpen = true;
+  renderSuggestions();
+});
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'q' && state.variant === '5' && state.q.trim() && !state.suggestOpen) {
+    state.suggestOpen = true;
+    renderSuggestions();
+  }
+  const cycleBtn = e.target.closest('[data-cycle]');
+  if (cycleBtn) { cycle(Number(cycleBtn.dataset.cycle)); return; }
+  const langBtn = e.target.closest('[data-set-lang]');
+  if (langBtn) { e.preventDefault(); setLang(langBtn.dataset.setLang); return; }
+  if (e.target.closest('[data-noop]')) { e.preventDefault(); setMenu(false); return; }
+  if (e.target.closest('#menu-btn')) { setMenu(!state.menuOpen); return; }
+  if (state.menuOpen && !e.target.closest('#site-header')) setMenu(false);
+  if (e.target.closest('[data-clear]')) {
+    state.q = '';
+    state.suggestOpen = false;
+    state.suggestIndex = -1;
+    const input = document.getElementById('q');
+    if (input) { input.value = ''; input.focus(); }
+    renderResults({ keepScroll: true });
+    return;
+  }
+  const scopeBtn = e.target.closest('[data-scope]');
+  if (scopeBtn) {
+    state.scope = scopeBtn.dataset.scope;
+    if (state.scope === 'questions') state.type = 'all';
+    renderApp();
+    return;
+  }
+  const brandBtn = e.target.closest('[data-brand]');
+  if (brandBtn && state.variant === '2') {
+    state.brand = brandBtn.dataset.brand;
+    renderApp();
+    return;
+  }
+  const openBrand = e.target.closest('[data-open-brand]');
+  if (openBrand) {
+    const b = openBrand.dataset.openBrand;
+    const same = state.openBrand === b;
+    state.openBrand = same ? null : b;
+    state.tab = 'docs';
+    state.docType = 'all';
+    renderResults({ keepScroll: same, scrollWorkspace: !same });
+    return;
+  }
+  if (e.target.closest('[data-close-ws]')) {
+    state.openBrand = null;
+    renderResults({ keepScroll: true });
+    return;
+  }
+  const tab = e.target.closest('[data-tab]');
+  if (tab) {
+    state.tab = tab.dataset.tab;
+    renderResults({ keepScroll: true });
+    return;
+  }
+  const docType = e.target.closest('[data-doc-type]');
+  if (docType) {
+    state.docType = docType.dataset.docType;
+    renderResults({ keepScroll: true });
+    return;
+  }
+  const v4cat = e.target.closest('[data-v4-cat]');
+  if (v4cat) {
+    const id = v4cat.dataset.v4Cat;
+    if (state.faqOpenCats.has(id)) state.faqOpenCats.delete(id);
+    else state.faqOpenCats.add(id);
+    renderResults({ keepScroll: true });
+    return;
+  }
+  const v4faq = e.target.closest('[data-v4-faq-brand]');
+  if (v4faq) {
+    const b = v4faq.dataset.v4FaqBrand;
+    const same = state.faqBrand === b;
+    state.faqBrand = same ? null : b;
+    state.faqBrandQ = '';
+    renderResults(same ? { keepScroll: true } : { scrollTo: 'v4-faq-ws' });
+    return;
+  }
+  const v4dl = e.target.closest('[data-v4-dl-brand]');
+  if (v4dl) {
+    const b = v4dl.dataset.v4DlBrand;
+    const same = state.dlBrand === b;
+    state.dlBrand = same ? null : b;
+    state.dlType = 'all';
+    renderResults(same ? { keepScroll: true } : { scrollTo: 'v4-dl-ws' });
+    return;
+  }
+  const v4close = e.target.closest('[data-v4-close]');
+  if (v4close) {
+    if (v4close.dataset.v4Close === 'faq') state.faqBrand = null;
+    else state.dlBrand = null;
+    renderResults({ keepScroll: true });
+    return;
+  }
+  const v4type = e.target.closest('[data-v4-type]');
+  if (v4type) {
+    state.dlType = v4type.dataset.v4Type;
+    renderResults({ keepScroll: true });
+    return;
+  }
+  if (e.target.closest('[data-v4-expand]')) {
+    const cats = state.data ? state.data.trade : [];
+    const all = cats.every((_, i) => state.faqOpenCats.has(String(i)));
+    state.faqOpenCats.clear();
+    if (!all) cats.forEach((_, i) => state.faqOpenCats.add(String(i)));
+    renderResults({ keepScroll: true });
+    return;
+  }
+  const v4clear = e.target.closest('[data-v4-clear]');
+  if (v4clear) {
+    if (v4clear.dataset.v4Clear === 'half') state.faqHalfQ = '';
+    else state.faqBrandQ = '';
+    renderResults({ keepScroll: true });
+    return;
+  }
+  if (e.target.closest('[data-v5-retry]')) {
+    setLang(state.lang);
+    return;
+  }
+  const v5sug = e.target.closest('[data-v5-suggest]');
+  if (v5sug && state.variant === '5') {
+    activateSuggest(Number(v5sug.dataset.v5Suggest));
+    return;
+  }
+  if (state.variant === '5' && state.suggestOpen && !e.target.closest('.v5-searchbox')) {
+    closeSuggest();
+  }
+  const v5page = e.target.closest('[data-v5-page]');
+  if (v5page && state.variant === '5' && !v5page.disabled) {
+    const list = v5page.dataset.v5List;
+    const raw = v5page.dataset.v5Page;
+    if (list === 'search') {
+      const cur = state.v5SearchPage || 1;
+      state.v5SearchPage = raw === 'prev' ? cur - 1 : raw === 'next' ? cur + 1 : Number(raw);
+    } else {
+      const cur = state.v5Pages[list] || 1;
+      state.v5Pages[list] = raw === 'prev' ? cur - 1 : raw === 'next' ? cur + 1 : Number(raw);
+    }
+    renderResults({ scrollTo: list === 'search' ? 'results' : list });
+    return;
+  }
+  const v5tab = e.target.closest('[data-v5-tab]');
+  if (v5tab && state.variant === '5') {
+    const next = v5tab.dataset.v5Tab === 'documents' ? 'documents' : 'faq';
+    if (next !== state.pageTab) {
+      state.pageTab = next;
+      state.v5SearchPage = 1;
+      writeParams();
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+      renderResults();
+      const bar = document.querySelector('.v5-tabbar');
+      if (bar) {
+        const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
+        const top = bar.getBoundingClientRect().top + window.scrollY - headerH;
+        if (window.scrollY > top + 8) window.scrollTo(0, Math.max(0, top));
+      }
+    }
+    return;
+  }
+  const v5type = e.target.closest('[data-v5-type]');
+  if (v5type && state.variant === '5') {
+    state.v5Type = v5type.dataset.v5Type || 'all';
+    Object.keys(state.v5Pages).forEach((key) => {
+      if (key.indexOf('v5-docs-') === 0) delete state.v5Pages[key];
+    });
+    renderResults({ keepScroll: true });
+    return;
+  }
+  const spyLink = e.target.closest('a[data-spy-link]');
+  if (spyLink) {
+    e.preventDefault();
+    const id = (spyLink.getAttribute('href') || '').slice(1);
+    const el = document.getElementById(id);
+    if (!el) return;
+    history.replaceState(null, '', location.pathname + location.search + '#' + id);
+    state.spyLock = Date.now() + 1000;
+    setSpy(id);
+    measureSticky();
+    scrollToEl(el);
+  }
+});
+document.addEventListener('change', (e) => {
+  if (!e.target.matches('[data-type]')) return;
+  state.type = e.target.value;
+  renderResults({ keepScroll: true });
+  e.target.value = state.type;
+});
+document.addEventListener('input', (e) => {
+  if (e.target.classList.contains('q')) {
+    if (state.q !== e.target.value) {
+      state.v5SearchPage = 1;
+      state.suggestIndex = -1;
+    }
+    state.q = e.target.value;
+    state.suggestOpen = !!state.q.trim();
+    const clear = document.querySelector('#q') && document.querySelector('#q').parentElement.querySelector('.search-clear');
+    if (clear) clear.hidden = !state.q;
+    renderResults({ keepScroll: true });
+    return;
+  }
+  if (e.target.classList.contains('q-local')) {
+    if (e.target.dataset.local === 'half') state.faqHalfQ = e.target.value;
+    if (e.target.dataset.local === 'brand') state.faqBrandQ = e.target.value;
+    renderResults({ keepScroll: true });
+  }
+});
+document.addEventListener('toggle', (e) => {
+  if (state.rendering) return;
+  const d = e.target;
+  if (!d.matches || !d.matches('details.qa')) return;
+  const id = d.dataset.qid;
+  if (!id) return;
+  if (d.open) state.openIds.add(id); else state.openIds.delete(id);
+}, true);
+document.addEventListener('keydown', (e) => {
+  const inSearch = e.target && e.target.id === 'q' && state.variant === '5';
+  if (e.key === 'Escape') {
+    if (state.suggestOpen) {
+      closeSuggest();
+      return;
+    }
+    if (state.menuOpen) { setMenu(false); return; }
+    return;
+  }
+  if (inSearch && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    if (!state.q.trim()) return;
+    e.preventDefault();
+    state.suggestOpen = true;
+    const n = state.suggestItems.length;
+    if (!n) { renderSuggestions(); return; }
+    const dir = e.key === 'ArrowDown' ? 1 : -1;
+    if (state.suggestIndex < 0) state.suggestIndex = dir > 0 ? 0 : n - 1;
+    else state.suggestIndex = (state.suggestIndex + dir + n) % n;
+    renderSuggestions();
+    const row = document.getElementById('sug-' + state.suggestIndex);
+    if (row) row.scrollIntoView({ block: 'nearest' });
+    return;
+  }
+  if (inSearch && e.key === 'Enter' && state.suggestIndex >= 0) {
+    e.preventDefault();
+    activateSuggest(state.suggestIndex);
+    return;
+  }
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.target && e.target.closest && e.target.closest('.v5-tab')) {
+    e.preventDefault();
+    const tabs = [...document.querySelectorAll('.v5-tab')];
+    const i = tabs.indexOf(e.target);
+    const dest = tabs[i + (e.key === 'ArrowRight' ? 1 : -1)];
+    if (dest) { dest.focus(); dest.click(); }
+    return;
+  }
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  const t = e.target;
+  if (t && t.closest && t.closest('input, textarea, select, [contenteditable]')) return;
+  if (e.altKey || e.metaKey || e.ctrlKey) return;
+  e.preventDefault();
+  cycle(e.key === 'ArrowRight' ? 1 : -1);
+});
+window.addEventListener('resize', () => {
+  measureHeader();
+  measureSticky();
+  const vp = document.getElementById('vp');
+  if (vp) vp.textContent = String(window.innerWidth);
+  if (window.innerWidth >= 1280 && state.menuOpen) setMenu(false);
+  pickSpy();
+});
+window.addEventListener('scroll', () => { pickSpy(); }, { passive: true });
+
+async function boot() {
+  readParams();
+  writeParams();
+  measureHeader();
+  new ResizeObserver(() => { measureHeader(); measureSticky(); }).observe(document.getElementById('site-header'));
+  renderChrome();
+  document.getElementById('app').innerHTML = state.variant === '5' ? v5Skeleton() : '<p class="loading wrap">' + esc(T().loading) + '</p>';
+  const thumbsP = loadPageThumbs();
+  try {
+    const dataP = load(state.lang);
+    if (state.variant === '5') await thumbsP;
+    state.data = await dataP;
+    renderApp();
+  } catch (err) {
+    document.getElementById('app').innerHTML = state.variant === '5' ? v5Error(T().loadError) : '<p class="load-error wrap">' + esc(err.message) + '</p>';
+  }
+}
+boot();
+</script>
+</body>
+</html>

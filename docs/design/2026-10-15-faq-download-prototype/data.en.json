@@ -1,0 +1,2892 @@
+{
+ "trade": [
+  {
+   "name": "Ordering & delivery",
+   "qas": [
+    {
+     "q": "What is the minimum order quantity, and where does Linker deliver?",
+     "a": "There is no pallet minimum. Orders start from individual units, delivered across the EU. Equipment ships according to project schedules, with trade quotes detailing destination freight."
+    },
+    {
+     "q": "Can different brands be combined in one project order?",
+     "a": "Yes. Inverters, batteries, smart meters, and accessories from different brands can be combined in one order. They ship together under a unified invoice; check each pairing against the compatibility lists on file before ordering."
+    },
+    {
+     "q": "Does Linker supply complete storage packages or individual components?",
+     "a": "Both. Installers can order packaged systems with matching balance-of-system components, or source individual replacement units and accessories."
+    },
+    {
+     "q": "How are project quotations processed?",
+     "a": "Quotations include confirmed B2B net pricing, a full bill of materials, and applicable freight terms for the project destination."
+    }
+   ]
+  },
+  {
+   "name": "Accounts & pricing",
+   "qas": [
+    {
+     "q": "How do trade partners access net pricing?",
+     "a": "Wholesale net pricing is visible to verified partner accounts. Unregistered contractors can submit project parameters to receive a formal trade quotation."
+    },
+    {
+     "q": "Who is eligible for a Partner Account?",
+     "a": "Professional solar installers, electrical contractors (Elektrofachbetriebe), and EPCs operating within the EU. Registrations are reviewed individually before account activation."
+    }
+   ]
+  },
+  {
+   "name": "Shipping & logistics",
+   "qas": [
+    {
+     "q": "How are lithium battery systems transported?",
+     "a": "Batteries are classified as dangerous goods (Class 9) and transported via certified freight carriers. Systems carry UN38.3 transport certification, with compliant crating and documentation managed by Linker."
+    },
+    {
+     "q": "What is the procedure if transport damage occurs?",
+     "a": "Note visible packaging or pallet damage on the freight receipt (CMR) at delivery. Linker coordinates carrier claims and replacement units to avoid project downtime."
+    },
+    {
+     "q": "What delivery destinations are supported?",
+     "a": "Deliveries route directly to your company warehouse, branch location, or scheduled project sites across the European Union."
+    }
+   ]
+  },
+  {
+   "name": "Warranty & service",
+   "qas": [
+    {
+     "q": "Whose warranty applies to the supplied equipment?",
+     "a": "Statutory B2B warranty rights apply, and product guarantees apply as issued in the documents on the product pages and in this library. Linker handles any claim for you, from your order."
+    },
+    {
+     "q": "How are warranty claims processed?",
+     "a": "Open Warranty & Replacements from your order. The signed-in account confirms the order, and the form keeps the serial number, model, and fault description with that order. Linker handles the diagnostic exchange with the manufacturer's technical desk. Open Warranty & Replacements ."
+    },
+    {
+     "q": "What technical support is included with an order?",
+     "a": "Linker provides sizing tools and wiring references before the order, and live commissioning troubleshooting from the engineering desk in Germany."
+    }
+   ]
+  },
+  {
+   "name": "Compliance & documentation",
+   "qas": [
+    {
+     "q": "Is equipment certified for the German electrical grid?",
+     "a": "Grid compliance is documented per model: inverters for low-voltage connection need a Unit Certificate (Einheitenzertifikat) and NA-Schutz documentation under VDE-AR-N 4105, medium-voltage systems follow VDE-AR-N 4110. Linker requests the certificates for the models in your order."
+    },
+    {
+     "q": "Are documentation and manuals available in German?",
+     "a": "Datasheets and manuals are on file in English, and in German where a German edition exists. Linker's engineering desk helps with technical questions on any of them."
+    },
+    {
+     "q": "Are Declarations of Conformity provided with orders?",
+     "a": "Yes, on request: Linker requests the CE Declarations of Conformity and relevant test certificates for the models in your order."
+    },
+    {
+     "q": "What technical documentation is available through Genie?",
+     "a": "Genie indexes the datasheets, manuals, and compatibility matrices in this library, retrieving specific technical parameters and wiring requirements directly."
+    }
+   ]
+  }
+ ],
+ "answers": [
+  {
+   "brand": "Chint",
+   "qas": [
+    {
+     "q": "What is the maximum wire gauge accepted by the DTSU666 direct terminals?",
+     "a": "Up to 16 mm². The current terminals of the DTSU666 accept conductors with a cross-sectional area of up to 16 mm²; the RS485 terminals take 0.25 to 1 mm².",
+     "product": "Chint DTSU666",
+     "url": "https://de-linker.com/product/chint-dtsu666/"
+    }
+   ]
+  },
+  {
+   "brand": "EcoFlow",
+   "qas": [
+    {
+     "q": "Can one bridge join different battery models?",
+     "a": "No. The bridge guide requires the two units joined by one bracket to have the same model specification. It names EF BD-5.1-S1, EF BD-5-S2 and EF BD-8-S2 as applicable battery types.",
+     "product": "EcoFlow Battery Stack Bridge",
+     "url": "https://de-linker.com/product/ecoflow-battery-stack-bridge/"
+    },
+    {
+     "q": "How many bridge kits should I order for two towers?",
+     "a": "One ordered kit is the full pack shown in the manual: two bridge brackets, four M5 × 12 screws and four M5 studs. The guide recommends securing both sides of each module; its example of two six-module towers needs 12 brackets, or six of these kits.",
+     "product": "EcoFlow Battery Stack Bridge",
+     "url": "https://de-linker.com/product/ecoflow-battery-stack-bridge/"
+    },
+    {
+     "q": "What gap must I leave between the two tower bases?",
+     "a": "With PowerOcean bases, the bridge guide specifies 95.4–105.4 mm between bases; with OCEAN 2 bases, it specifies 94.6–104.5 mm. These are base-to-base gaps for the bridged layout.",
+     "product": "EcoFlow Battery Stack Bridge",
+     "url": "https://de-linker.com/product/ecoflow-battery-stack-bridge/"
+    },
+    {
+     "q": "How many EF BD-5-S2 modules fit one floor or wall tower?",
+     "a": "The 5 kWh battery manual permits up to six modules per floor-standing tower and up to three per wall-mounted tower. The inverter’s own module limit also applies to a multi-tower order.",
+     "product": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/"
+    },
+    {
+     "q": "Can an existing EF BD-5.1-S1 tower be extended with EF BD-5-S2?",
+     "a": "For the P1-S2 mixed-stack installation, the guide names exactly these two modules. It recommends the earlier EF BD-B-S1 base, with EF BD-5.1-S1 modules below and EF BD-5-S2 modules above. That installation order applies; an older stack does not necessarily have the same parts.",
+     "product": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/"
+    },
+    {
+     "q": "What should I record when planning an older tower extension?",
+     "a": "Use “Extend an existing system” from this product page and record the existing module model, base model, current count and intended new count. For the documented P1-S2 mixed stack, those identities are EF BD-5.1-S1, EF BD-B-S1 and this EF BD-5-S2. A Project sent to Linker is tied to its saved version, so the arrangement you describe stays identifiable. Our engineers recommend the arrangement from the installation guide before the order.",
+     "product": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/"
+    },
+    {
+     "q": "What warranty applies to the EF BD-5-S2?",
+     "a": "15 years retaining 60% of usable energy, or 21.9 MWh throughput, whichever comes first. The period starts on the earlier of commissioning (activation) and nine months after the production date, and it transfers with proof of ownership transfer. Coverage is Europe excluding Sweden.",
+     "product": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/"
+    },
+    {
+     "q": "Can the OCEAN 2 5 kWh and EF BD-8-S2 modules share a tower?",
+     "a": "The 8 kWh battery manual explicitly describes mixed stacking with the OCEAN 2 5 kWh battery. The complete installation drawing sets the module sequence, the tower height and the inverter limit before the order.",
+     "product": "EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/"
+    },
+    {
+     "q": "Is a battery base shown in the EF BD-8-S2 module box?",
+     "a": "No base is listed in the manual’s 8 kWh battery-module box: it shows the B1 module and its mounting pieces, bolts and screws. The same manual depicts the battery base as a separate system component, so include the required base in the tower parts list.",
+     "product": "EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/"
+    },
+    {
+     "q": "What site clearance matters for the 8 kWh module’s cooling?",
+     "a": "The illustrated single-tower layout needs at least 300 mm above and on both sides, with 65–85 mm to the rear wall. Side-by-side towers need at least 300 mm between them. The air exhausts need clear space; blocked airflow can cause overheating and power derating.",
+     "product": "EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/"
+    },
+    {
+     "q": "What warranty applies to the EF BD-8-S2?",
+     "a": "10 years retaining 70% of usable energy, or 29.97 MWh throughput, whichever comes first. An optional five-year extension to 15 years at 60% / 35.1 MWh is available through an authorized installer within 12 months of the warranty start date. The period starts on the earlier of commissioning (activation) and nine months after the production date, and it transfers with proof of ownership transfer. Coverage is Europe excluding Sweden.",
+     "product": "EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/"
+    },
+    {
+     "q": "Which circuits receive power through the 3K-S2 BACKUP connection?",
+     "a": "The unit has a dedicated BACKUP output rated 3,000 VA. The circuits wired to that output form the backup side; other building circuits are not made backup circuits by the inverter rating alone.",
+     "product": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "How many of these inverters can be cascaded?",
+     "a": "Up to three EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 units can be cascaded. Each cascaded inverter has its own RCD.",
+     "product": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Is the IOT dongle required?",
+     "a": "The EcoFlow IOT-Dongle ESS is in the inverter carton and must be configured. A 4G dongle ESS (EU) is optional and obtained separately.",
+     "product": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Which circuits receive power through the HD-P1-3K68-S2 BACKUP connection?",
+     "a": "The unit has a dedicated BACKUP output rated 3,680 VA. The circuits wired to that output form the backup side; other building circuits are not made backup circuits by the inverter rating alone.",
+     "product": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "How many of these inverters can be cascaded?",
+     "a": "Up to three EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 units can be cascaded. Each cascaded inverter has its own RCD.",
+     "product": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Is the IOT dongle required?",
+     "a": "The EcoFlow IOT-Dongle ESS is in the inverter carton and must be configured. A 4G dongle ESS (EU) is optional and obtained separately.",
+     "product": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Which circuits receive power through the HD-P1-4K6-S2 BACKUP connection?",
+     "a": "The unit has a dedicated BACKUP output rated 4,600 VA. The circuits wired to that output form the backup side; other building circuits are not made backup circuits by the inverter rating alone.",
+     "product": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "How many of these inverters can be cascaded?",
+     "a": "Up to three EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 units can be cascaded. Each cascaded inverter has its own RCD.",
+     "product": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Is the IOT dongle required?",
+     "a": "The EcoFlow IOT-Dongle ESS is in the inverter carton and must be configured. A 4G dongle ESS (EU) is optional and obtained separately.",
+     "product": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Which circuits receive power through the HD-P1-5K-S2 BACKUP connection?",
+     "a": "The unit has a dedicated BACKUP output rated 5,000 VA. The circuits wired to that output form the backup side; other building circuits are not made backup circuits by the inverter rating alone.",
+     "product": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "How many of these inverters can be cascaded?",
+     "a": "Up to three EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 units can be cascaded. Each cascaded inverter has its own RCD.",
+     "product": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Is the IOT dongle required?",
+     "a": "The EcoFlow IOT-Dongle ESS is in the inverter carton and must be configured. A 4G dongle ESS (EU) is optional and obtained separately.",
+     "product": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Which circuits receive power through the HD-P1-5K75-S2 BACKUP connection?",
+     "a": "The unit has a dedicated BACKUP output rated 5,750 VA. The circuits wired to that output form the backup side; other building circuits are not made backup circuits by the inverter rating alone.",
+     "product": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "How many of these inverters can be cascaded?",
+     "a": "Up to three EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 units can be cascaded. Each cascaded inverter has its own RCD.",
+     "product": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Is the IOT dongle required?",
+     "a": "The EcoFlow IOT-Dongle ESS is in the inverter carton and must be configured. A 4G dongle ESS (EU) is optional and obtained separately.",
+     "product": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Which circuits receive power through the HD-P1-6K-S2 BACKUP connection?",
+     "a": "The unit has a dedicated BACKUP output rated 6,000 VA. The circuits wired to that output form the backup side; other building circuits are not made backup circuits by the inverter rating alone.",
+     "product": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "How many of these inverters can be cascaded?",
+     "a": "Up to three EF HD-P1-(3K/3K68/4K6/5K/5K75/6K)-S2 units can be cascaded. Each cascaded inverter has its own RCD.",
+     "product": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "Is the IOT dongle required?",
+     "a": "The EcoFlow IOT-Dongle ESS is in the inverter carton and must be configured. A 4G dongle ESS (EU) is optional and obtained separately.",
+     "product": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/"
+    },
+    {
+     "q": "How many battery modules can the 10K0-S2 system take?",
+     "a": "The inverter specification lists up to 12 battery modules in total, with no more than six per tower. The tower installation method and selected module still need to fit their own limits.",
+     "product": "EcoFlow OCEAN 2 HD-P3-10K0-S2 (10 kW three-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/"
+    },
+    {
+     "q": "How do I specify a two-tower battery layout for a quote?",
+     "a": "Add the catalog products and total quantities to Linker Project; those material lines feed the quote. Note the planned modules and base for each tower in the Project, then send the saved Project version to Linker; our engineers recommend the tower layout with the quote. The inverter limit is 12 modules total and six per tower.",
+     "product": "EcoFlow OCEAN 2 HD-P3-10K0-S2 (10 kW three-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/"
+    },
+    {
+     "q": "Which circuits does the 12K0-S2 BACKUP output actually serve?",
+     "a": "BACKUP is a separate output. Only circuits wired to that output are on the protected side; its 12,000 W nominal rating is not a whole-building connection map.",
+     "product": "EcoFlow OCEAN 2 HD-P3-12K0-S2 (12 kW three-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/"
+    },
+    {
+     "q": "Do the AC switches shown for the 6K0-S2 arrive in the inverter box?",
+     "a": "No. The three-phase installation guide marks the AC switches as not included and recommends 63 A circuit breakers in its connection diagram. The electrician must choose the devices for the actual grid service, local code and inverter configuration.",
+     "product": "EcoFlow OCEAN 2 HD-P3-6K0-S2 (6 kW three-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/"
+    },
+    {
+     "q": "Which cables must be planned before the 8K0-S2 installation?",
+     "a": "The installation guide illustrates 16 mm² cable for grid and backup, 4–6 mm² PV cable, 6–10 mm² battery power cable, and 10 mm² grounding cable. It explicitly leaves the final AC conductor size to grid current, local electrical code and inverter specifications. The hosted V1.5 guide is available in this page’s Documents section for the installer’s own bill.",
+     "product": "EcoFlow OCEAN 2 HD-P3-8K0-S2 (8 kW three-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/"
+    },
+    {
+     "q": "How many OCEAN 2 floor bases does one battery tower use?",
+     "a": "The three-phase and Plus floor layouts show one OCEAN 2 LFP Battery Base under one tower. The number of towers sets the number of bases; the installation drawing sets the module stack.",
+     "product": "EcoFlow OCEAN 2 LFP Battery Base",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/"
+    },
+    {
+     "q": "Can this floor base be used for a wall-mounted tower?",
+     "a": "The installation guide specifies a separate wall-mounted battery base for wall installation, sold separately, with up to three batteries per wall tower. That layout follows the wall-base installation drawing.",
+     "product": "EcoFlow OCEAN 2 LFP Battery Base",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/"
+    },
+    {
+     "q": "How many PV strings can be routed to the 10K0-S2 inputs?",
+     "a": "The single-phase S2 specification lists three MPPT inputs, one string on each, with 16 A maximum input current per MPPT. The proposed strings stay within the voltage limits as well as the 20,000 W total PV input ceiling of this exact model.",
+     "product": "EcoFlow OCEAN 2 Plus HD-P1-10K0-S2 (10 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/"
+    },
+    {
+     "q": "Which cable cross-sections does the 12K0-S2 connection drawing show?",
+     "a": "The P1-S2 installation guide shows 16 mm² grid and backup cables, 4–6 mm² PV input cables, 6–10 mm² battery power cables and 10 mm² grounding cable. The grid and backup conductor sizes must still be selected for service current, local electrical code and inverter specifications.",
+     "product": "EcoFlow OCEAN 2 Plus HD-P1-12K0-S2 (12 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/"
+    },
+    {
+     "q": "Which circuits receive power through the 6K0-S2 BACKUP connection?",
+     "a": "The unit has a dedicated BACKUP output. The circuits wired to that output form the protected side; other building circuits are not made backup circuits by the inverter rating alone.",
+     "product": "EcoFlow OCEAN 2 Plus HD-P1-6K0-S2 (6 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/"
+    },
+    {
+     "q": "Which physical parts complete the floor-standing 8K0-S2 storage layout?",
+     "a": "The P1-S2 installation guide draws the inverter, OCEAN 2 battery module and battery base as separate component groups. The tower height sets the modules and one floor base for that tower. This page’s Linker product enquiry carries the inverter model and selected quantity; include the intended tower height there so the quote lists the remaining modules and the base for that tower.",
+     "product": "EcoFlow OCEAN 2 Plus HD-P1-8K0-S2 (8 kW single-phase hybrid)",
+     "url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/"
+    }
+   ]
+  },
+  {
+   "brand": "GoodWe",
+   "qas": [
+    {
+     "q": "What backup rating does GW10K-EHA-G20 have?",
+     "a": "Rated backup apparent power is 10.0 kVA . Maximum output is 10.0 (20.0, 10 s) . From-grid apparent power is 14.5 kVA (63 A internal bypass on this column). Switching time is <4 ms.",
+     "product": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW10K-EHA-G20 have?",
+     "a": "4 MPPTs, strings 1/1/1/1, 20 A maximum MPPT current and 26 A short-circuit current. Maximum PV input power is 20.0 kW. The MPPT window is 40–560 V; at nominal power it is 190~500 V.",
+     "product": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA 3–10 kW battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one stack and twelve in the system. Battery modules are sold separately.",
+     "product": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/"
+    },
+    {
+     "q": "How many BAT-D modules can one GW10K-ETA-G20 column take?",
+     "a": "The ESA manual permits up to six battery modules in one column and up to twelve in the system. A separate expansion column needs the installation components shown for that layout. The bill of materials names the module model and the column count.",
+     "product": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "What backup load can the GW10K-ETA-G20 design support?",
+     "a": "The GW10K-ETA-G20 has 10 kVA rated backup , with 11 kVA continuous and 20 kVA for 10 seconds listed as off-grid maxima. After a grid outage, connected loads above 1.1 times rated inverter power cause overload shutdown. Protected circuits are sized to the continuous limit, not the 10-second peak.",
+     "product": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "Which meter and CT arrangement must be planned for this inverter?",
+     "a": "The standard ETA inverter delivery includes a built-in meter, CT ×1 and a 10 m CT lead . An external GM330 is needed when more than two inverters are paralleled or the supplied CT does not suit the site current or cable diameter. The quote lists an external meter and any additional CTs as line items before installation.",
+     "product": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "What does one GW125/261-ESA-LCN-G10 cabinet contain?",
+     "a": "One cabinet holds the 125 kW power conversion system (PCS), five battery packs of 52.25 kWh each (261.25 kWh), the local control module for energy management, the liquid-cooling unit, a dehumidifier, the aerosol fire-extinguishing device with smoke and temperature detectors, and the AC and DC circuit breakers. Delivered with it are four expansion bolts, the Wi-Fi antenna, five MSD switches, cable terminals and the documentation. The AC cable, the protective earth conductor, the upstream circuit breaker, the meter with current transformers and a SEC3000C controller are not part of the cabinet.",
+     "product": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+    },
+    {
+     "q": "How is the cabinet connected to the grid?",
+     "a": "The cabinet is connected on the AC side to a 400 V three-phase supply (3L / N / PE). TN-S, TN-C, TN-C-S and TT systems are supported; an IT system needs an external isolation transformer. Plan a dedicated upstream circuit breaker for each cabinet (recommended rating 250 A) with no other loads on it. In TT systems a residual-current device is required; 100 mA at the upstream breaker is recommended. The cables enter the cabinet from below.",
+     "product": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+    },
+    {
+     "q": "Which VDE grid-connection certificates are available?",
+     "a": "Two documents are available as downloads on this page: the certificate of conformity for VDE-AR-N 4105:2018-11 (TÜV Rheinland, issued 20 May 2025) and the unit certificate for VDE-AR-N 4110, 4120 and 4130 (SGS, No. 250008RECO10-CER, valid until 12 December 2030). The VDE-AR-N 4105 certificate notes that above 30 kVA the integrated interface switch has to work together with a central grid and plant protection (NA-Schutz). The unit certificate notes that the cabinet has no test terminal block; one is fitted separately where required.",
+     "product": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+    },
+    {
+     "q": "What is needed for power limiting at the grid connection point and for several cabinets?",
+     "a": "For power limiting at the grid connection point, a meter with current transformers is installed there: a GM330 smart meter with CTs of ratio nA/5A, or, where the site cannot be switched off, a DTSD1352 secondary meter with secondary CTs fitted on the existing primary CTs. Several cabinets are run by a SEC3000C controller over LAN: up to 20 cabinets in a daisy-chain connection and up to 15 in a star connection, together with grid-tied PV inverters. A third-party energy management system is connected over LAN or RS485; it then sets the number of cabinets. The cabinet's communication protocols are Modbus TCP and Modbus RTU. Cabinets in one system should be the same model.",
+     "product": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+    },
+    {
+     "q": "Can the cabinet supply the site when the grid fails?",
+     "a": "Not on its own. Switching between grid-connected and off-grid operation needs a GoodWe STS switching cabinet, which is a separate device and not part of this article. The cabinet may stand at most 45 m from the STS when the two communicate directly, and the state-of-charge range is set to 10% to 90% for this mode. With an uninterruptible power supply between the STS and the SEC3000C, the system can be black-started remotely.",
+     "product": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+    },
+    {
+     "q": "What does the site need for delivery and installation?",
+     "a": "The cabinet measures 1050 × 2250 × 1400 mm (W × H × D) and weighs 2580 kg. It is moved by crane with lifting slings rated at 5 t or more each, or by a forklift with a load capacity of 5 t or more, and stands on a level, load-bearing foundation of concrete or another non-combustible material with a cable entry from below. It is suitable for indoor and outdoor installation (IP54) at -25 to +55 °C and up to 4000 m altitude (the datasheet notes derating at 2000 m). Noise emission is up to 70 dB: the cabinet is not meant for noise-sensitive areas such as housing, offices and schools, and where it has to stand in one, it is placed at least 40 m away from it. For sites within 5 km of the sea, the warranty terms set limits that depend on the corrosion class of the enclosure (C4 as standard, C5 optional); such sites are agreed before the order. Installation has to be completed within six months of the manufacturing date.",
+     "product": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+    },
+    {
+     "q": "What warranty applies to the cabinet?",
+     "a": "The GoodWe limited warranty for Europe applies: 5 years on the electronics hardware and the enclosure; 2 years on the liquid-cooling unit, the fire suppression system and the lock cylinder, or 5 years when the system is connected to SEMS+. The performance warranty covers the battery cells for 10 years: 70% of the usable energy of 261.25 kWh or 6000 full charge cycles, whichever comes first. The warranty starts with the first installation or six months after the production date, whichever is earlier. The terms cover up to two full cycles per day and operation with GoodWe inverters; inverters of other brands are checked for compatibility beforehand. The full terms are in the warranty document on this page.",
+     "product": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+    },
+    {
+     "q": "Does mixing BAT-D capacities change heating or firmware requirements on this 12 kW ESA?",
+     "a": "Different BAT-D-G20/G21 module models can be combined in one system, with up to six modules per column and a 5–108 kWh system range. The documented combination of GW5.1/GW8.3 G20 or G21 with GW6.0/GW9.0 G20 disables battery heating; mixed systems with separate expansion require BMS and DCDC software V06 or above.",
+     "product": "GoodWe ESA GW12K-ETA-G20 (12 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "What backup load can the GW12K-ETA-G20 design support?",
+     "a": "The GW12K-ETA-G20 has 12 kVA rated backup , with 13.2 kVA continuous and 24 kVA for 10 seconds listed as off-grid maxima. Connected loads above 1.1 times rated inverter power after a grid outage cause overload shutdown. Protected circuits are sized to the continuous limit.",
+     "product": "GoodWe ESA GW12K-ETA-G20 (12 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "Does the stacked battery need a separate DC cable run?",
+     "a": "The units use a blind-mate stacked connection . The installation sequence removes the connector cover, stacks each BAT-D module on the base and seats the inverter above the stack; it shows no separate battery DC cable between those adjacent units. The drawing of the stack applies.",
+     "product": "GoodWe ESA GW12K-ETA-G20 (12 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "Are the battery base and CT in the standard inverter kit, and are battery modules separate?",
+     "a": "The standard GW15K-ETA-G20 inverter kit includes the power module ×1, battery base ×1 and CT ×1 with a 10 m lead . BAT-D-G20/G21 battery modules are listed as separate battery delivery units. The quote lists the kit contents and the module quantity.",
+     "product": "GoodWe ESA GW15K-ETA-G20 (15 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "Which BAT-D module has the documented -20°C charging range?",
+     "a": "GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 have integrated heating and a -20 to +55°C charging range. The GW5.1/GW8.3 G20 modules list optional heating and -18 to +55°C; their G21 versions list +2 to +55°C. Heating is unavailable in the documented mixed combination, so choose module models against the site's temperature before ordering.",
+     "product": "GoodWe ESA GW15K-ETA-G20 (15 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "What backup load can the GW15K-ETA-G20 design support?",
+     "a": "The GW15K-ETA-G20 has 15 kVA rated backup , with 16.5 kVA continuous and 30 kVA for 10 seconds listed as off-grid maxima. After a grid outage, connected loads above 1.1 times rated inverter power cause overload shutdown. Protected circuits are sized to the continuous limit.",
+     "product": "GoodWe ESA GW15K-ETA-G20 (15 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "What backup rating does GW20K-ETA-G20 have?",
+     "a": "Rated backup apparent power is 20 kVA . Off-grid maxima are 22.0 kVA continuous and 30.0 kVA for 10 s . Switching time is <4 ms. The 63 A figure is the internal grid bypass, not the off-grid output.",
+     "product": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW20K-ETA-G20 have?",
+     "a": "4 MPPTs, strings 1/1/1/1, 21/21/21/21 A maximum MPPT current and 26/26/26/26 A short-circuit current. Maximum PV input power is 40 kW. The MPPT window is 120–950 V; at nominal power it is 400~850 V.",
+     "product": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one column and twelve in the system. Mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating; split expansion needs BMS and DCDC software V06 or later.",
+     "product": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW25K-ETA-G20 have?",
+     "a": "Rated backup apparent power is 25 kVA . Off-grid maxima are 27.5 kVA continuous and 45.0 kVA for 10 s . Switching time is <4 ms. The 80 A figure is the internal grid bypass, not the off-grid output.",
+     "product": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW25K-ETA-G20 have?",
+     "a": "4 MPPTs, strings 1/1/2/2, 21/21/42/42 A maximum MPPT current and 26/26/52/52 A short-circuit current. Maximum PV input power is 50 kW. The MPPT window is 120–950 V; at nominal power it is 400~850 V.",
+     "product": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one column and twelve in the system. Mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating; split expansion needs BMS and DCDC software V06 or later.",
+     "product": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW29.999K-ETA-G20 have?",
+     "a": "Rated backup apparent power is 30 kVA . Off-grid maxima are 33.0 kVA continuous and 45.0 kVA for 10 s . Switching time is <4 ms. The 80 A figure is the internal grid bypass, not the off-grid output.",
+     "product": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW29.999K-ETA-G20 have?",
+     "a": "4 MPPTs, strings 1/1/2/2, 21/21/42/42 A maximum MPPT current and 26/26/52/52 A short-circuit current. Maximum PV input power is 60 kW. The MPPT window is 120–950 V; at nominal power it is 450~850 V.",
+     "product": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one column and twelve in the system. Mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating; split expansion needs BMS and DCDC software V06 or later.",
+     "product": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW3.6K-EHA-G20 have?",
+     "a": "Rated backup apparent power is 3.6 kVA . Maximum output is 3.6 (7.2, 10 s) . From-grid apparent power is 7.2 kVA (this column’s from-grid current, not 63 A). Switching time is <4 ms.",
+     "product": "GoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW3.6K-EHA-G20 have?",
+     "a": "2 MPPTs, strings 1/1, 20 A maximum MPPT current and 26 A short-circuit current. Maximum PV input power is 7.2 kW. The MPPT window is 40–560 V; at nominal power it is 150~500 V.",
+     "product": "GoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA 3–10 kW battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one stack and twelve in the system. Battery modules are sold separately.",
+     "product": "GoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW30K-ETA-G20 have?",
+     "a": "Rated backup apparent power is 30 kVA . Off-grid maxima are 33.0 kVA continuous and 45.0 kVA for 10 s . Switching time is <4 ms. The 80 A figure is the internal grid bypass, not the off-grid output.",
+     "product": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW30K-ETA-G20 have?",
+     "a": "4 MPPTs, strings 1/1/2/2, 21/21/42/42 A maximum MPPT current and 26/26/52/52 A short-circuit current. Maximum PV input power is 60 kW. The MPPT window is 120–950 V; at nominal power it is 450~850 V.",
+     "product": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one column and twelve in the system. Mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating; split expansion needs BMS and DCDC software V06 or later.",
+     "product": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW3K-EHA-G20 have?",
+     "a": "Rated backup apparent power is 3.0 kVA . Maximum output is 3.0 (6.0, 10 s) . From-grid apparent power is 6.0 kVA (this column’s from-grid current, not 63 A). Switching time is <4 ms.",
+     "product": "GoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW3K-EHA-G20 have?",
+     "a": "2 MPPTs, strings 1/1, 20 A maximum MPPT current and 26 A short-circuit current. Maximum PV input power is 6.0 kW. The MPPT window is 40–560 V; at nominal power it is 150~500 V.",
+     "product": "GoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA 3–10 kW battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one stack and twelve in the system. Battery modules are sold separately.",
+     "product": "GoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW5K-EHA-G20 have?",
+     "a": "Rated backup apparent power is 5.0 kVA . Maximum output is 5.0 (10.0, 10 s) . From-grid apparent power is 10.0 kVA (this column’s from-grid current, not 63 A). Switching time is <4 ms.",
+     "product": "GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW5K-EHA-G20 have?",
+     "a": "2 MPPTs, strings 1/1, 20 A maximum MPPT current and 26 A short-circuit current. Maximum PV input power is 10.0 kW. The MPPT window is 40–560 V; at nominal power it is 170~500 V.",
+     "product": "GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA 3–10 kW battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one stack and twelve in the system. Battery modules are sold separately.",
+     "product": "GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW5K-ETA-G20 have?",
+     "a": "Rated backup apparent power is 5 kVA . Off-grid maxima are 5.5 kVA continuous and 10.0 kVA for 10 s . Switching time is <4 ms. The 63 A figure is the internal grid bypass, not the off-grid output.",
+     "product": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW5K-ETA-G20 have?",
+     "a": "3 MPPTs, strings 1/1/1, 21/21/21 A maximum MPPT current and 26/26/26 A short-circuit current. Maximum PV input power is 10 kW. The MPPT window is 120–950 V; at nominal power it is 185~850 V.",
+     "product": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one column and twelve in the system. Mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating; split expansion needs BMS and DCDC software V06 or later.",
+     "product": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW6K-EHA-G20 have?",
+     "a": "Rated backup apparent power is 6.0 kVA . Maximum output is 6.0 (12.0, 10 s) . From-grid apparent power is 12.0 kVA (50 A from grid on this column, not 63 A). Switching time is <4 ms.",
+     "product": "GoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW6K-EHA-G20 have?",
+     "a": "2 MPPTs, strings 1/1, 20 A maximum MPPT current and 26 A short-circuit current. Maximum PV input power is 12.0 kW. The MPPT window is 40–560 V; at nominal power it is 210~500 V.",
+     "product": "GoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA 3–10 kW battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one stack and twelve in the system. Battery modules are sold separately.",
+     "product": "GoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW6K-ETA-G20 have?",
+     "a": "Rated backup apparent power is 6 kVA . Off-grid maxima are 6.6 kVA continuous and 12.0 kVA for 10 s . Switching time is <4 ms. The 63 A figure is the internal grid bypass, not the off-grid output.",
+     "product": "GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw6k-eta-g20-6-kw-three-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW6K-ETA-G20 have?",
+     "a": "3 MPPTs, strings 1/1/1, 21/21/21 A maximum MPPT current and 26/26/26 A short-circuit current. Maximum PV input power is 12 kW. The MPPT window is 120–950 V; at nominal power it is 225~850 V.",
+     "product": "GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw6k-eta-g20-6-kw-three-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one column and twelve in the system. Mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating; split expansion needs BMS and DCDC software V06 or later.",
+     "product": "GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw6k-eta-g20-6-kw-three-phase-power-module/"
+    },
+    {
+     "q": "What backup rating does GW8K-EHA-G20 have?",
+     "a": "Rated backup apparent power is 8.0 kVA . Maximum output is 8.0 (16.0, 10 s) . From-grid apparent power is 14.5 kVA (63 A internal bypass on this column). Switching time is <4 ms.",
+     "product": "GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW8K-EHA-G20 have?",
+     "a": "4 MPPTs, strings 1/1/1/1, 20 A maximum MPPT current and 26 A short-circuit current. Maximum PV input power is 16.0 kW. The MPPT window is 40–560 V; at nominal power it is 170~500 V.",
+     "product": "GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA 3–10 kW battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one stack and twelve in the system. Battery modules are sold separately.",
+     "product": "GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/"
+    },
+    {
+     "q": "Can an 8 kW ESA stack be extended with a different BAT-D capacity?",
+     "a": "Different BAT-D-G20/G21 module models can be combined in one system, with up to six modules per column and a 5–108 kWh system range. The documented combination of GW5.1/GW8.3 G20 or G21 with GW6.0/GW9.0 G20 disables battery heating; mixed systems with separate expansion require BMS and DCDC software V06 or above.",
+     "product": "GoodWe ESA GW8K-ETA-G20 (8 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "What backup load can the GW8K-ETA-G20 design support?",
+     "a": "The GW8K-ETA-G20 has 8 kVA rated backup , with 8.8 kVA continuous and 16 kVA for 10 seconds listed as off-grid maxima. After a grid outage, connected loads above 1.1 times rated inverter power cause overload shutdown. Protected circuits are sized to the continuous limit.",
+     "product": "GoodWe ESA GW8K-ETA-G20 (8 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "Which meter and CT arrangement must be planned for this inverter?",
+     "a": "The standard ETA inverter delivery includes a built-in meter, CT ×1 and a 10 m CT lead . An external GM330 is needed when more than two inverters are paralleled or the supplied CT does not suit the site current or cable diameter. The quote lists an external meter and any additional CTs as line items before installation.",
+     "product": "GoodWe ESA GW8K-ETA-G20 (8 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one/"
+    },
+    {
+     "q": "What backup rating does GW9.999K-ETA-G20 have?",
+     "a": "Rated backup apparent power is 10 kVA . Off-grid maxima are 11.0 kVA continuous and 20.0 kVA for 10 s . Switching time is <4 ms. The 63 A figure is the internal grid bypass, not the off-grid output.",
+     "product": "GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module/"
+    },
+    {
+     "q": "How many MPPTs does GW9.999K-ETA-G20 have?",
+     "a": "4 MPPTs, strings 1/1/1/1, 21/21/21/21 A maximum MPPT current and 26/26/26/26 A short-circuit current. Maximum PV input power is 20 kW. The MPPT window is 120–950 V; at nominal power it is 250~850 V.",
+     "product": "GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module/"
+    },
+    {
+     "q": "Which battery modules stack with this power module?",
+     "a": "The ESA battery table names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20. Up to six modules in one column and twelve in the system. Mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating; split expansion needs BMS and DCDC software V06 or later.",
+     "product": "GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)",
+     "url": "https://de-linker.com/product/goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module/"
+    },
+    {
+     "q": "Will one EzManager3000 cover this inverter and device mix?",
+     "a": "The maxima apply separately: one hybrid inverter , one grid-tied inverter , two EV chargers , one SG-Ready heat pump and twelve Shelly devices . Mixed grid-tied and storage setups depend on the inverter model, and data from a third-party grid-tied inverter cannot be collected.",
+     "product": "GoodWe EzManager3000 HEMS Gateway",
+     "url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/"
+    },
+    {
+     "q": "What power supply does the gateway need?",
+     "a": "The manual specifies a 12 V / 1.5 A power adapter on the DC IN port, with 100 ~ 240 V AC input. The gateway can draw from the grid as a load or from the inverter's backup side; in a hybrid grid-tied setup the user manual does not support supply from the backup side.",
+     "product": "GoodWe EzManager3000 HEMS Gateway",
+     "url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/"
+    },
+    {
+     "q": "Does the gateway work with dynamic tariffs and trading platforms?",
+     "a": "Yes. The gateway offers automatic connection to electricity trading platforms, dynamic and negative tariff support and AI-optimised scheduling. The datasheet does not name specific trading platforms.",
+     "product": "GoodWe EzManager3000 HEMS Gateway",
+     "url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/"
+    },
+    {
+     "q": "How do the inverters, meters and heat pump connect?",
+     "a": "Meters and grid-tied inverters connect via RS485 ; storage inverters, AC chargers and smart sockets join through the router over Wi-Fi or LAN. The SG-Ready heat pump connects via DO.",
+     "product": "GoodWe EzManager3000 HEMS Gateway",
+     "url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/"
+    },
+    {
+     "q": "Are current transformers included with GM330?",
+     "a": "No. GM330 takes nA:5A CT input, and the Smart Meter user manual lists CT ×0 for the standard GM330 set; this Linker sale unit is that set. The CTs have a 5 A secondary and a primary rating between 200 and 5000 A that suits the measured current; the manual recommends CT accuracy 0.5/0.5s or 0.2/0.2s, and the extended CT cable must not exceed 30 m in total.",
+     "product": "GoodWe GM330",
+     "url": "https://de-linker.com/product/goodwe-gm330/"
+    },
+    {
+     "q": "Can GM330 replace the utility meter used for billing?",
+     "a": "No. The Smart Meter user manual says the generation and consumption readings are reference values for grid-tie power control, not billing. The utility company’s meter remains the billing basis.",
+     "product": "GoodWe GM330",
+     "url": "https://de-linker.com/product/goodwe-gm330/"
+    },
+    {
+     "q": "Which GoodWe inverters are listed for GM330?",
+     "a": "GoodWe's compatibility list of inverters and IoT products (Version 18, 30 September 2026) marks GM330 for ET, ET PLUS and BT 5–10 kW (inverter firmware ARM 31 or later), EHB, ES G2, SBP G2, ET 15–30 kW / ETT (ARM 07 or later), ET G2 6–15 kW, ES Uniq (ARM 08 or later), ET 25–50 kW / ETF (ARM 09 or later; ARM 10 or later for parallel systems), ET LV, ESA 3–10 kW, ESA 5–30 kW, ES LD, ET100, ETR125 and ETC/BTC. In the list, export limiting (the “Power limitation” column) applies only to systems with one inverter, and for ET LV, ESA 3–10 kW, ESA 5–30 kW, ES LD and ETR125 the export-limiting and load-monitoring cells are blank. EH, EH PLUS and BH are not marked for GM330. The list also marks GM330 in rows of further GoodWe series, among them EO G2, XS, DNS, MS, SDT, SMT and GT, with firmware and function conditions that differ from row to row; the full list is among the GM330 documents.",
+     "product": "GoodWe GM330",
+     "url": "https://de-linker.com/product/goodwe-gm330/"
+    },
+    {
+     "q": "Which CT version is included in this GMK330 order?",
+     "a": "This Linker GMK330 sale unit includes the meter with three 120 A:40 mA CTs . The user manual lists three CTs for the standard GMK330 set; the ratio stated here is that of the version supplied with this Linker sale unit.",
+     "product": "GoodWe GMK330",
+     "url": "https://de-linker.com/product/goodwe-gmk330/"
+    },
+    {
+     "q": "Can these GMK330 readings be used for utility billing?",
+     "a": "No. The generation and consumption readings are reference values for grid-tie point power control, not for billing. The utility company’s meter is the billing basis.",
+     "product": "GoodWe GMK330",
+     "url": "https://de-linker.com/product/goodwe-gmk330/"
+    },
+    {
+     "q": "Can a GW100K-ET-G10 PV string operate continuously near the 1,000 V maximum?",
+     "a": "No. The inverter enters standby from 950 to 1,000 V input and resumes normal operation when voltage returns to 950 V. Cold-string voltage is sized against that operating boundary.",
+     "product": "GoodWe GW100K-ET-G10",
+     "url": "https://de-linker.com/product/goodwe-gw100k-et-g10/"
+    },
+    {
+     "q": "Does GW100K-ET-G10 hold a German unit certificate for medium-voltage connection?",
+     "a": "GW75K/80K/99.99K/100K-ET-G10 hold SGS unit certificate 250008RECO14-CER for VDE-AR-N 4110 and 4120. The certified product has no test terminal; a connecting terminal plate is installed separately if needed.",
+     "product": "GoodWe GW100K-ET-G10",
+     "url": "https://de-linker.com/product/goodwe-gw100k-et-g10/"
+    },
+    {
+     "q": "Which BAT-C cabinet is listed for GW100K-ETR-G10?",
+     "a": "The Battery Compatibility Overview lists GW261.2-BAT-LCD-G10 for ETR 80–125 kW. With that cabinet, PV string open-circuit voltage must exceed 813 V .",
+     "product": "GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Is an external STS needed for the ETR backup path?",
+     "a": "Yes. An STS Box or STS Cabinet is required for the backup path. The inverter alone does not provide a complete backup path.",
+     "product": "GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Can PV strings operate in the 1000–1100 V band?",
+     "a": "No. GW100K-ETR-G10 has 1100 V as the maximum PV input , but stands by from 1000 to 1100 V ; operation resumes once voltage returns to 1000 V.",
+     "product": "GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Which BAT-C cabinet is listed for GW110K-ETR-G10?",
+     "a": "The Battery Compatibility Overview lists GW261.2-BAT-LCD-G10 for ETR 80–125 kW. With that cabinet, PV string open-circuit voltage must exceed 813 V .",
+     "product": "GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Is an external STS needed for the ETR backup path?",
+     "a": "Yes. An STS Box or STS Cabinet is required for the backup path. The inverter alone does not provide a complete backup path.",
+     "product": "GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Can PV strings operate in the 1000–1100 V band?",
+     "a": "No. GW110K-ETR-G10 has 1100 V as the maximum PV input , but stands by from 1000 to 1100 V ; operation resumes once voltage returns to 1000 V.",
+     "product": "GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "What site access must be allowed for the 112.6 kWh BAT-C cabinet?",
+     "a": "GW112.6-BAT-AC-G10 measures 1055 × 2000 × 1055 mm and weighs below 1400 kg. The enclosure is IP55 with air-conditioner cooling.",
+     "product": "GoodWe GW112.6-BAT-AC-G10",
+     "url": "https://de-linker.com/product/goodwe-gw112-6-bat-ac-g10/"
+    },
+    {
+     "q": "Which BAT-C cabinet is listed for GW124.99K-ETR-G10?",
+     "a": "The Battery Compatibility Overview lists GW261.2-BAT-LCD-G10 for ETR 80–125 kW. With that cabinet, PV string open-circuit voltage must exceed 813 V .",
+     "product": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Is an external STS needed for the ETR backup path?",
+     "a": "Yes. An STS Box or STS Cabinet is required for the backup path. The inverter alone does not provide a complete backup path.",
+     "product": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Can PV strings operate in the 1000–1100 V band?",
+     "a": "No. GW124.99K-ETR-G10 has 1100 V as the maximum PV input , but stands by from 1000 to 1100 V ; operation resumes once voltage returns to 1000 V.",
+     "product": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Which BAT-C cabinet does the Battery Compatibility Overview list for the ETR, and how is GW208.9-BAT-LCD-G10 documented?",
+     "a": "The Battery Compatibility Overview lists GW261.2-BAT-LCD-G10 for ETR 80–125 kW. With that cabinet, PV string open-circuit voltage must exceed 813 V . The ETR user manual also shows GW208.9-BAT-LCD-G10 in its system tables, but the compatibility overview does not list that model, and only listed batteries are approved under the GoodWe Limited Warranty. The EMEA ETR datasheet in the downloads (V1.1, 2026-09-02) names only the BAT-C 261 kWh battery system as compatible.",
+     "product": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/"
+    },
+    {
+     "q": "Is an external STS needed for the ETR backup path?",
+     "a": "Yes. The ETR installation document requires an STS Box or STS Cabinet for the backup path. The transfer unit belongs in the system bill of materials; the inverter alone does not provide a complete backup path.",
+     "product": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/"
+    },
+    {
+     "q": "Can PV strings operate in the 1000–1100 V band?",
+     "a": "No. The GW125K-ETR-G10 datasheet gives 1100 V as the maximum PV input , but specifies standby from 1000 to 1100 V ; operation resumes once voltage returns to 1000 V. The string design must account for that operating boundary.",
+     "product": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/"
+    },
+    {
+     "q": "Which GoodWe inverters is this transfer switch paired with?",
+     "a": "The GW125K-STS-G10 is designed for the GoodWe ET 80, 99.99 and 100 kW hybrid inverters.",
+     "product": "GoodWe GW125K-STS-G10",
+     "url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/"
+    },
+    {
+     "q": "What does the wall position need to allow for?",
+     "a": "The enclosure is 680 × 620 × 165 mm and is wall mounted, IP54, for indoor or outdoor installation. The datasheet gives the weight as 21 kg ; the mounting figure in the quick installation guide shows 28 kg. The wall and its fixings are planned for the higher 28 kg. The quick installation guide asks for at least 200 mm clearance above and at each side, 500 mm below and 800 mm in front, with a backward tilt of no more than 15°.",
+     "product": "GoodWe GW125K-STS-G10",
+     "url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/"
+    },
+    {
+     "q": "Can a generator or large loads be part of this backup design?",
+     "a": "Yes. The switch supports diesel generator control and large-load connection for C&I applications. The guide's power-on diagram shows a generator or large loads on their own breaker at the STS, next to the backup loads.",
+     "product": "GoodWe GW125K-STS-G10",
+     "url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/"
+    },
+    {
+     "q": "How does the switch communicate with the inverter?",
+     "a": "Over RS485 . In the installation guide, STS port COM-1 connects to the inverter's STS port and COM-2 to its Meter port.",
+     "product": "GoodWe GW125K-STS-G10",
+     "url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/"
+    },
+    {
+     "q": "Which LC system voltage and current limits matter for the inverter design?",
+     "a": "The operating voltage is 596.96–750.88 V and the maximum charging/discharging current 188.4/188.4 A. Actual current can be reduced by cell temperature and state of charge.",
+     "product": "GoodWe GW208.9-BAT-LC-G10",
+     "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lc-g10/"
+    },
+    {
+     "q": "Is this LC cabinet listed for GoodWe ETR inverters?",
+     "a": "No. The Battery Compatibility Overview lists GW208.9-BAT-LC-G10 under ET 80–100 kW only; for ETR 80–125 kW it lists GW261.2-BAT-LCD-G10.",
+     "product": "GoodWe GW208.9-BAT-LC-G10",
+     "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lc-g10/"
+    },
+    {
+     "q": "Which documents list this LCD cabinet with an inverter?",
+     "a": "The Battery Compatibility Overview (EMEA, 10 September 2026) does not list GW208.9-BAT-LCD-G10. The EMEA V1.0 datasheet still prints the model; later EMEA V1.1 and global V2.2 do not.",
+     "product": "GoodWe GW208.9-BAT-LCD-G10",
+     "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/"
+    },
+    {
+     "q": "What must the site accommodate for the 261.2 kWh cabinet?",
+     "a": "GW261.2-BAT-LCD-G10 has a 1050 × 2025 × 1565 mm enclosure and a maximum mass of 2440 kg. These are the cabinet figures to use for access and position planning.",
+     "product": "GoodWe GW261.2-BAT-LCD-G10",
+     "url": "https://de-linker.com/product/goodwe-gw261-2-bat-lcd-g10/"
+    },
+    {
+     "q": "What does the ETR pairing require?",
+     "a": "The Battery Compatibility Overview lists GW261.2-BAT-LCD-G10 under ETR 80–125 kW. With this cabinet connected, the ETR datasheet requires a PV string open-circuit voltage above 813 V. The BAT-C user manual separately asks for a PV-side voltage above 650 V on the ETR125, otherwise voltage-difference current limiting triggers. The 208.9 kWh section of that manual allows a maximum of four battery cabinet clusters in parallel.",
+     "product": "GoodWe GW261.2-BAT-LCD-G10",
+     "url": "https://de-linker.com/product/goodwe-gw261-2-bat-lcd-g10/"
+    },
+    {
+     "q": "Which inverters is GW30K-STS-G10 paired with?",
+     "a": "The EMEA datasheet designs this switch for the ESA Series all-in-one storage system (single- and three-phase). The ESA 5–30 kW manual names GW30K-STS-G10 at ≤ 30 kVA with one hybrid inverter. It is not the 125 kW STS used with ET 80–100 kW.",
+     "product": "GoodWe GW30K-STS-G10",
+     "url": "https://de-linker.com/product/goodwe-gw30k-sts-g10/"
+    },
+    {
+     "q": "Does GW5.1-BAT-D-G20 include heating?",
+     "a": "Heating (Optional); aerosol fire extinguishing (Integrated). Charging temperature range -18 ~ +55 °C; discharging −20 ~ +55 °C.",
+     "product": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/"
+    },
+    {
+     "q": "How many modules in one column?",
+     "a": "Up to six modules in one column and twelve in the system. Different BAT-D models can be mixed; mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating.",
+     "product": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/"
+    },
+    {
+     "q": "Does GW5.1-BAT-D-G21 include heating?",
+     "a": "Aerosol fire extinguishing (Integrated); no heating. Charging temperature range +2 ~ +55 °C; discharging −20 ~ +55 °C.",
+     "product": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/"
+    },
+    {
+     "q": "How many modules in one column?",
+     "a": "Up to six modules in one column and twelve in the system. Different BAT-D models can be mixed; mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating.",
+     "product": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/"
+    },
+    {
+     "q": "Is heating integrated in the GW6.0 ESA module?",
+     "a": "GW6.0-BAT-D-G20 has integrated heating. Aerosol fire extinguishing is also listed as integrated in the module's function configuration.",
+     "product": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh/"
+    },
+    {
+     "q": "Is the inverter port of GW60K-STS-G10 also 60 kW?",
+     "a": "No. The EMEA datasheet and the ESA 5–30 kW manual both print 30 kW on the inverter side for this Model. Grid, back-up and smart-port sides are 60 kW. Inverter-side maximum current is not stated here, because the two documents disagree.",
+     "product": "GoodWe GW60K-STS-G10",
+     "url": "https://de-linker.com/product/goodwe-gw60k-sts-g10/"
+    },
+    {
+     "q": "Which ET inverter ranges are documented for this 61.4 kWh BAT-C cabinet?",
+     "a": "The Battery Compatibility Overview marks GW61.4-BAT-AC-G10 under ET 40–50 kW (ARM10 or later) and ET 80–100 kW. Linker sells the ET 80–100 kW; with it, this cabinet cannot deliver the inverter's full power. On ET 50 kW the overview's formula is battery working voltage × MIN(battery charge/discharge current, 100 A).",
+     "product": "GoodWe GW61.4-BAT-AC-G10",
+     "url": "https://de-linker.com/product/goodwe-gw61-4-bat-ac-g10/"
+    },
+    {
+     "q": "How does GW75K-ET-G10 differ from GW80K-ET-G10?",
+     "a": "Nominal AC power is 75 kW (80 kW on GW80K-ET-G10). Maximum PV input is 150 kW rather than 160 kW. Battery current is 85 A × 2 rather than 100 A × 2. Apparent power to and from the grid is 75 kVA on both directions.",
+     "product": "GoodWe GW75K-ET-G10",
+     "url": "https://de-linker.com/product/goodwe-gw75k-et-g10/"
+    },
+    {
+     "q": "Does GW75K-ET-G10 hold a German unit certificate?",
+     "a": "Yes. SGS unit certificate 250008RECO14-CER names GW75K-ET-G10 for VDE-AR-N 4110 and 4120. The certified product has no test terminal; a connecting terminal plate is installed separately if needed.",
+     "product": "GoodWe GW75K-ET-G10",
+     "url": "https://de-linker.com/product/goodwe-gw75k-et-g10/"
+    },
+    {
+     "q": "Does GW8.3-BAT-D-G20 include heating?",
+     "a": "Heating (Optional); aerosol fire extinguishing (Integrated). Charging temperature range -18 ~ +55 °C; discharging −20 ~ +55 °C.",
+     "product": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/"
+    },
+    {
+     "q": "How many modules in one column?",
+     "a": "Up to six modules in one column and twelve in the system. Different BAT-D models can be mixed; mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating.",
+     "product": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/"
+    },
+    {
+     "q": "Does GW8.3-BAT-D-G21 include heating?",
+     "a": "Aerosol fire extinguishing (Integrated); no heating. Charging temperature range +2 ~ +55 °C; discharging −20 ~ +55 °C.",
+     "product": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/"
+    },
+    {
+     "q": "How many modules in one column?",
+     "a": "Up to six modules in one column and twelve in the system. Different BAT-D models can be mixed; mixing 5.1/8.3 G20 or G21 with 6.0/9.0 G20 disables battery heating.",
+     "product": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/"
+    },
+    {
+     "q": "How many PV string positions are available per MPPT on GW80K-ET-G10?",
+     "a": "The datasheet lists eight MPPTs with two string inputs per tracker. Every proposed string group stays within its current and voltage limits in the final array layout.",
+     "product": "GoodWe GW80K-ET-G10",
+     "url": "https://de-linker.com/product/goodwe-gw80k-et-g10/"
+    },
+    {
+     "q": "Does GW80K-ET-G10 hold a German unit certificate for medium-voltage connection?",
+     "a": "GW75K/80K/99.99K/100K-ET-G10 hold SGS unit certificate 250008RECO14-CER for VDE-AR-N 4110 and 4120. The certified product has no test terminal; a connecting terminal plate is installed separately if needed.",
+     "product": "GoodWe GW80K-ET-G10",
+     "url": "https://de-linker.com/product/goodwe-gw80k-et-g10/"
+    },
+    {
+     "q": "Which BAT-C cabinet is listed for GW80K-ETR-G10?",
+     "a": "The Battery Compatibility Overview lists GW261.2-BAT-LCD-G10 for ETR 80–125 kW. With that cabinet, PV string open-circuit voltage must exceed 813 V .",
+     "product": "GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Is an external STS needed for the ETR backup path?",
+     "a": "Yes. An STS Box or STS Cabinet is required for the backup path. The inverter alone does not provide a complete backup path.",
+     "product": "GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Can PV strings operate in the 1000–1100 V band?",
+     "a": "No. GW80K-ETR-G10 has 1100 V as the maximum PV input , but stands by from 1000 to 1100 V ; operation resumes once voltage returns to 1000 V.",
+     "product": "GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "What should the lifting route allow for this 9.0 kWh module?",
+     "a": "GW9.0-BAT-D-G20 weighs 77 ± 1 kg and measures 800 × 326 × 270 mm. The access route and the mounting support have to take that weight and size.",
+     "product": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+     "url": "https://de-linker.com/product/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/"
+    },
+    {
+     "q": "Which model figure should the grid application use for GW99.99K-ET-G10?",
+     "a": "This model is rated for 99.99 kVA maximum apparent power to and from the grid. The local connection rules apply, and the ratings of the separate GW100K-ET-G10 model do not stand in for it.",
+     "product": "GoodWe GW99.99K-ET-G10",
+     "url": "https://de-linker.com/product/goodwe-gw99-99k-et-g10/"
+    },
+    {
+     "q": "Does GW99.99K-ET-G10 hold a German unit certificate for medium-voltage connection?",
+     "a": "GW75K/80K/99.99K/100K-ET-G10 hold SGS unit certificate 250008RECO14-CER for VDE-AR-N 4110 and 4120. The certified product has no test terminal; a connecting terminal plate is installed separately if needed.",
+     "product": "GoodWe GW99.99K-ET-G10",
+     "url": "https://de-linker.com/product/goodwe-gw99-99k-et-g10/"
+    },
+    {
+     "q": "Which BAT-C cabinet is listed for GW99.99K-ETR-G10?",
+     "a": "The Battery Compatibility Overview lists GW261.2-BAT-LCD-G10 for ETR 80–125 kW. With that cabinet, PV string open-circuit voltage must exceed 813 V .",
+     "product": "GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Is an external STS needed for the ETR backup path?",
+     "a": "Yes. An STS Box or STS Cabinet is required for the backup path. The inverter alone does not provide a complete backup path.",
+     "product": "GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Can PV strings operate in the 1000–1100 V band?",
+     "a": "No. GW99.99K-ETR-G10 has 1100 V as the maximum PV input , but stands by from 1000 to 1100 V ; operation resumes once voltage returns to 1000 V.",
+     "product": "GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/"
+    },
+    {
+     "q": "Does the 11 kW charger still need an external Type A RCD?",
+     "a": "Yes. The charger lists AC 30 mA + DC 6 mA residual-current protection, and an external Type A RCD is still required. The RCD is not part of the delivery.",
+     "product": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/"
+    },
+    {
+     "q": "What comes with the charger?",
+     "a": "The charger is supplied with a fixed 7.5 m IEC Type 2 cable, 2 RFID cards, and the installation accessories and documents listed in the user manual. A stand or post, an RCBO distribution box, a MID meter and the external Type A RCD are not included.",
+     "product": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/"
+    },
+    {
+     "q": "Is GW11K-HCA-20 prepared for §14a EnWG?",
+     "a": "The charger has an EnWG §14a function: when enabled, it keeps the power drawn from the grid at or below 4.2 kW (user manual, p. 72). The communication protocol is Modbus TCP (user manual, p. 93). The control arrangement is agreed with the grid operator before the order.",
+     "product": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/"
+    },
+    {
+     "q": "What should be checked before ordering GW22K-HCA-20?",
+     "a": "Three things: a 400 V 3L/N/PE supply for 32 A, the external Type A RCD, and whether the vehicles on site charge on three phases. A car with a single-phase on-board charger draws at most one third of the 22,000 W rating.",
+     "product": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/"
+    },
+    {
+     "q": "What comes with the charger?",
+     "a": "The charger is supplied with a fixed 7.5 m IEC Type 2 cable, 2 RFID cards, and the installation accessories and documents listed in the user manual. A stand or post, an RCBO distribution box, a MID meter and the external Type A RCD are not included.",
+     "product": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/"
+    },
+    {
+     "q": "Is GW22K-HCA-20 prepared for §14a EnWG?",
+     "a": "The charger has an EnWG §14a function: when enabled, it keeps the power drawn from the grid at or below 4.2 kW (user manual, p. 72). The communication protocol is Modbus TCP (datasheet, p. 2). The control arrangement is agreed with the grid operator before the order.",
+     "product": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/"
+    },
+    {
+     "q": "Can GW7K-HCA-20 be specified for a 230 V single-phase charge point?",
+     "a": "Yes. It is rated 7,000 W at 32 A on 230 V L/N/PE. An external Type A RCD is also required and is not part of the delivery.",
+     "product": "GoodWe HCA G2 GW7K-HCA-20 (7 kW single-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger/"
+    },
+    {
+     "q": "What comes with the charger?",
+     "a": "The charger is supplied with a fixed 7.5 m IEC Type 2 cable, 2 RFID cards, and the installation accessories and documents listed in the user manual. A stand or post, an RCBO distribution box, a MID meter and the external Type A RCD are not included.",
+     "product": "GoodWe HCA G2 GW7K-HCA-20 (7 kW single-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger/"
+    },
+    {
+     "q": "Is GW7K-HCA-20 prepared for §14a EnWG?",
+     "a": "The charger has an EnWG §14a function: when enabled, it keeps the power drawn from the grid at or below 4.2 kW (user manual, p. 72). The communication protocol is Modbus TCP (user manual, p. 93). The control arrangement is agreed with the grid operator before the order.",
+     "product": "GoodWe HCA G2 GW7K-HCA-20 (7 kW single-phase EV charger, 7.5 m cable)",
+     "url": "https://de-linker.com/product/goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger/"
+    },
+    {
+     "q": "Does the planned inverter count fit one SEC3000C?",
+     "a": "There are two limits: up to 60 inverters on RS485 and up to 10 on LAN . On a single RS485 bus the manual allows up to 20 grid-tied inverters. Inverter models and software versions are governed by the compatibility list in the downloads, where some SEC3000C entries carry firmware conditions.",
+     "product": "GoodWe SEC3000C Smart Energy Controller",
+     "url": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/"
+    },
+    {
+     "q": "What sits inside the cabinet, and which CTs does the meter take?",
+     "a": "The standard configuration comprises EzLogger3000C × 1 , GM330 × 1 and a 15-port Ethernet switch . The meter reads current through CTs rated nA:5A with 200 ≤ n ≤ 5000 ; the manual's delivery list carries a 6-pin terminal for the meter CT, not the CTs. RS485 port A1/B1 is wired to the internal meter by default.",
+     "product": "GoodWe SEC3000C Smart Energy Controller",
+     "url": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/"
+    },
+    {
+     "q": "Where can the cabinet be installed?",
+     "a": "The cabinet is IP66 and mounts on a wall, a bracket or a pole; it measures 450 × 400 × 242 mm and weighs up to 16.9 kg. It is rated for -30 to +60 °C, 0 ~ 95 % relative humidity (non-condensing), and altitudes up to 3000 m.",
+     "product": "GoodWe SEC3000C Smart Energy Controller",
+     "url": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/"
+    }
+   ]
+  },
+  {
+   "brand": "Pylontech",
+   "qas": [
+    {
+     "q": "What are the physical dimensions and weight of the L260-OMNI station?",
+     "a": "The cabinet measures 950 × 1300 × 2480 mm (W × D × H) without the inverter and weighs 2.9 t. The installed footprint, clearances and lifting arrangement are planned in the project layout.",
+     "product": "Pylontech OPTIM US L260-OMNI",
+     "url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/"
+    }
+   ]
+  },
+  {
+   "brand": "SAJ",
+   "qas": [
+    {
+     "q": "What current does the ATS1-T63-A carry?",
+     "a": "The rated current is 50 A. The maximum current is 63 A at ambient temperatures from -25 to +30 °C; between +30 and +45 °C it falls gradually from 63 A to 50 A. The values apply at 380, 400 or 415 V, three-phase.",
+     "product": "SAJ ATS1-T63-A",
+     "url": "https://de-linker.com/product/saj-ats1-t63-a/"
+    },
+    {
+     "q": "Which circuit breakers does the installation need?",
+     "a": "Five, one each for the connections Inverter Backup, Hybrid inverter Grid, On-grid inverter Grid, Smart Load and Backup Load, whenever that connection is used. They are selected for the rated current of the connection and installed inside the panel or in the external distribution box. The cables between the terminal block and the circuit breakers are copper, 6 to 10 AWG. The circuit breakers are not part of the package.",
+     "product": "SAJ ATS1-T63-A",
+     "url": "https://de-linker.com/product/saj-ats1-t63-a/"
+    },
+    {
+     "q": "Where can the panel be installed?",
+     "a": "Indoors or outdoors, on a wall; the enclosure is IP54 and is cooled by natural convection. The noise level is ≤ 30 dB and may exceed 30 dB when the grid is unstable, so the panel is not installed in resting areas such as bedrooms. The clearances are 50 mm above and below, 30 mm at each side and 100 mm in front.",
+     "product": "SAJ ATS1-T63-A",
+     "url": "https://de-linker.com/product/saj-ats1-t63-a/"
+    },
+    {
+     "q": "Which inverter does the B2-10.0-HV1 work with?",
+     "a": "The B2 works only as a set with a SAJ H2 series storage inverter; with another inverter it cannot be used normally. The control module package contains the two battery cables and the 1,500 mm communication cable to the inverter. The communication cable is crimped at the battery end; the inverter end is crimped on site. The operating voltage of the B2-10.0-HV1 is 179.2 to 230.4 V; the battery voltage range of the H2 10-30K inverters begins at 180 V.",
+     "product": "SAJ B2-10.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-10-0-hv1/"
+    },
+    {
+     "q": "How tall and how heavy is the assembled B2-10.0-HV1?",
+     "a": "Control module and battery modules together measure 722 × 626 × 365 mm (H × W × D) and weigh 112 kg. The battery modules alone: 522 × 626 × 365 mm and 101 kg; the BC2-HV1 control module: 200 × 626 × 365 mm and 11 kg. These figures do not include the floor base of a ground-mounted stack.",
+     "product": "SAJ B2-10.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-10-0-hv1/"
+    },
+    {
+     "q": "Where and how is the stack installed?",
+     "a": "Vertically, on the ground or on a wall, indoors or outdoors, with 50 cm clearance above, on both sides and in front. An indoor or sheltered place away from direct sunlight, rain and snow is suggested; living and working areas such as bedrooms, living rooms, bathrooms and attics are excluded. For ground mounting the floor must be flat, the base stands 28 to 34 mm from the wall and the control module on top is fixed to the wall with locking brackets. For wall mounting a solid wall is recommended; cavity walls and timber walls are not allowed.",
+     "product": "SAJ B2-10.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-10-0-hv1/"
+    },
+    {
+     "q": "Which inverter does the B2-15.0-HV1 work with?",
+     "a": "The B2 works only as a set with a SAJ H2 series storage inverter; with another inverter it cannot be used normally. The control module package contains the two battery cables and the 1,500 mm communication cable to the inverter. The communication cable is crimped at the battery end; the inverter end is crimped on site.",
+     "product": "SAJ B2-15.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-15-0-hv1/"
+    },
+    {
+     "q": "How tall and how heavy is the assembled B2-15.0-HV1?",
+     "a": "Control module and battery modules together measure 983 × 626 × 365 mm (H × W × D) and weigh 162.5 kg. The battery modules alone: 783 × 626 × 365 mm and 151.5 kg; the BC2-HV1 control module: 200 × 626 × 365 mm and 11 kg. These figures do not include the floor base of a ground-mounted stack.",
+     "product": "SAJ B2-15.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-15-0-hv1/"
+    },
+    {
+     "q": "Where and how is the stack installed?",
+     "a": "Vertically, on the ground or on a wall, indoors or outdoors, with 50 cm clearance above, on both sides and in front. An indoor or sheltered place away from direct sunlight, rain and snow is suggested; living and working areas such as bedrooms, living rooms, bathrooms and attics are excluded. For ground mounting the floor must be flat, the base stands 28 to 34 mm from the wall and the control module on top is fixed to the wall with locking brackets. For wall mounting a solid wall is recommended; cavity walls and timber walls are not allowed.",
+     "product": "SAJ B2-15.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-15-0-hv1/"
+    },
+    {
+     "q": "Which inverter does the B2-20.0-HV1 work with?",
+     "a": "The B2 works only as a set with a SAJ H2 series storage inverter; with another inverter it cannot be used normally. The control module package contains the two battery cables and the 1,500 mm communication cable to the inverter. The communication cable is crimped at the battery end; the inverter end is crimped on site.",
+     "product": "SAJ B2-20.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-20-0-hv1/"
+    },
+    {
+     "q": "How tall and how heavy is the assembled B2-20.0-HV1?",
+     "a": "Control module and battery modules together measure 1244 × 626 × 365 mm (H × W × D) and weigh 213 kg. The battery modules alone: 1044 × 626 × 365 mm and 202 kg; the BC2-HV1 control module: 200 × 626 × 365 mm and 11 kg. These figures do not include the floor base of a ground-mounted stack.",
+     "product": "SAJ B2-20.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-20-0-hv1/"
+    },
+    {
+     "q": "Where and how is the stack installed?",
+     "a": "Vertically, on the ground or on a wall, indoors or outdoors, with 50 cm clearance above, on both sides and in front. An indoor or sheltered place away from direct sunlight, rain and snow is suggested; living and working areas such as bedrooms, living rooms, bathrooms and attics are excluded. For ground mounting the floor must be flat, the base stands 28 to 34 mm from the wall and the control module on top is fixed to the wall with locking brackets. For wall mounting a solid wall is recommended; cavity walls and timber walls are not allowed.",
+     "product": "SAJ B2-20.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-20-0-hv1/"
+    },
+    {
+     "q": "Which inverter does the B2-25.0-HV1 work with?",
+     "a": "The B2 works only as a set with a SAJ H2 series storage inverter; with another inverter it cannot be used normally. The control module package contains the two battery cables and the 1,500 mm communication cable to the inverter. The communication cable is crimped at the battery end; the inverter end is crimped on site.",
+     "product": "SAJ B2-25.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-25-0-hv1/"
+    },
+    {
+     "q": "How tall and how heavy is the assembled B2-25.0-HV1?",
+     "a": "Control module and battery modules together measure 1505 × 626 × 365 mm (H × W × D) and weigh 263.5 kg. The battery modules alone: 1305 × 626 × 365 mm and 252.5 kg; the BC2-HV1 control module: 200 × 626 × 365 mm and 11 kg. These figures do not include the floor base of a ground-mounted stack.",
+     "product": "SAJ B2-25.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-25-0-hv1/"
+    },
+    {
+     "q": "Where and how is the stack installed?",
+     "a": "Vertically, on the ground or on a wall, indoors or outdoors, with 50 cm clearance above, on both sides and in front. An indoor or sheltered place away from direct sunlight, rain and snow is suggested; living and working areas such as bedrooms, living rooms, bathrooms and attics are excluded. For ground mounting the floor must be flat, the base stands 28 to 34 mm from the wall and the control module on top is fixed to the wall with locking brackets. For wall mounting a solid wall is recommended; cavity walls and timber walls are not allowed.",
+     "product": "SAJ B2-25.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-25-0-hv1/"
+    },
+    {
+     "q": "Which inverter does the B2-5.0-HV1 work with?",
+     "a": "The B2 series works only as a set with a SAJ H2 series storage inverter; with another inverter it cannot be used normally. The operating voltage of the one-module B2-5.0-HV1, 89.6 to 115.2 V, lies below the battery voltage range of 180 to 800 V of the H2 10-30K inverters. The control module package contains the two battery cables and the 1,500 mm communication cable to the inverter. The communication cable is crimped at the battery end; the inverter end is crimped on site.",
+     "product": "SAJ B2-5.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-5-0-hv1/"
+    },
+    {
+     "q": "How tall and how heavy is the assembled B2-5.0-HV1?",
+     "a": "Control module and battery module together measure 461 × 626 × 365 mm (H × W × D) and weigh 61.5 kg. The battery module alone: 261 × 626 × 365 mm and 50.5 kg; the BC2-HV1 control module: 200 × 626 × 365 mm and 11 kg. These figures do not include the floor base of a ground-mounted stack.",
+     "product": "SAJ B2-5.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-5-0-hv1/"
+    },
+    {
+     "q": "Where and how is the stack installed?",
+     "a": "Vertically, on the ground or on a wall, indoors or outdoors, with 50 cm clearance above, on both sides and in front. An indoor or sheltered place away from direct sunlight, rain and snow is suggested; living and working areas such as bedrooms, living rooms, bathrooms and attics are excluded. For ground mounting the floor must be flat, the base stands 28 to 34 mm from the wall and the control module on top is fixed to the wall with locking brackets. For wall mounting a solid wall is recommended; cavity walls and timber walls are not allowed.",
+     "product": "SAJ B2-5.0-HV1",
+     "url": "https://de-linker.com/product/saj-b2-5-0-hv1/"
+    },
+    {
+     "q": "What is in the BC2-HV1 package?",
+     "a": "The battery control unit, two side covers, the documents (user manual and packaging list), one grounding cable, one communication cable, one 1,450 mm and one 150 mm power cable, two battery cables from the control unit to the inverter, one 1,500 mm communication cable from the control unit to the inverter, two RJ45 plugs, two locking brackets and the screws: 6 × M4*25, 2 × M10*80, 4 × M6*12 and 1 × M4*10.",
+     "product": "SAJ BC2-HV1",
+     "url": "https://de-linker.com/product/saj-bc2-hv1/"
+    },
+    {
+     "q": "Which battery systems use the BC2-HV1?",
+     "a": "The SAJ B2 systems B2-5.0-HV1, B2-10.0-HV1, B2-15.0-HV1, B2-20.0-HV1 and B2-25.0-HV1: each is one BC2-HV1 with one to five BU2-5.0-HV1 battery modules. The B2 works only as a set with a SAJ H2 series storage inverter.",
+     "product": "SAJ BC2-HV1",
+     "url": "https://de-linker.com/product/saj-bc2-hv1/"
+    },
+    {
+     "q": "How is the BC2-HV1 connected to the inverter?",
+     "a": "With the two battery cables and the 1,500 mm communication cable of its package. The communication cable is crimped at the battery end; the inverter end is crimped on site. In the RJ45 connector, pins 4 and 5 carry CAN-H and CAN-L, pins 7 and 8 RS485-A and RS485-B.",
+     "product": "SAJ BC2-HV1",
+     "url": "https://de-linker.com/product/saj-bc2-hv1/"
+    },
+    {
+     "q": "Which systems use the BU2-5.0-HV1?",
+     "a": "The SAJ B2 battery system and the SAJ HS2 all-in-one system. A B2 system is one BC2-HV1 control module with one to five BU2-5.0-HV1 modules and works only as a set with a SAJ H2 series storage inverter. An HS2 takes two to five modules.",
+     "product": "SAJ BU2-5.0-HV1",
+     "url": "https://de-linker.com/product/saj-bu2-5-0-hv1/"
+    },
+    {
+     "q": "What are the dimensions and the weight of one module?",
+     "a": "One BU2-5.0-HV1 measures 261 × 626 × 365 mm (H × W × D) and weighs 50.5 kg.",
+     "product": "SAJ BU2-5.0-HV1",
+     "url": "https://de-linker.com/product/saj-bu2-5-0-hv1/"
+    },
+    {
+     "q": "How is the module stored before installation?",
+     "a": "In a dry and ventilated place away from heat sources: at -20 to 40 °C and below 85 % relative humidity for up to three months, at -20 to 25 °C for three to six months. The battery leaves the factory at 50 % charge and is installed within six months of leaving the factory. Fewer than four battery cartons are stacked on one another.",
+     "product": "SAJ BU2-5.0-HV1",
+     "url": "https://de-linker.com/product/saj-bu2-5-0-hv1/"
+    },
+    {
+     "q": "Which inverters does the BU3-5.0-TV2-PRO work with?",
+     "a": "The BU3 is the battery of the SAJ HS3 system and is stacked under the HS3 inverter through its blind-mate connectors. In SAJ systems the HS3 series works with BU3 batteries and the HS2 series with BU2 batteries. The battery is used only with a compatible inverter.",
+     "product": "SAJ BU3-5.0-TV2-PRO",
+     "url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/"
+    },
+    {
+     "q": "What are the dimensions and the weight of a BU3 module?",
+     "a": "A BU3-5.0-TV2-PRO module measures 370 × 695 × 170 mm (H × W × D) and weighs 52 kg, without the battery base. The BE3-TV battery base is a separate part and weighs 2.8 kg.",
+     "product": "SAJ BU3-5.0-TV2-PRO",
+     "url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/"
+    },
+    {
+     "q": "Which warranty applies to the BU3 battery?",
+     "a": "For products purchased and installed in the European market, the SAJ limited warranty for HS3 covers the BU3 battery as part of the HS3 storage system with a standard warranty of ten years. The battery retains 60 % of its nominal energy for ten years from the commissioning date, for no more than 126 months from the date of shipment from SAJ or for 6000 charge-discharge cycles, whichever comes first. The battery has to be installed within 6 months of shipment from SAJ, and the system connected to the internet and registered with SAJ; without internet connection or registration the full ten years may not be honoured, and the warranty then applies for at least 5.5 years from the date of shipment. The full terms are in the downloads on this page.",
+     "product": "SAJ BU3-5.0-TV2-PRO",
+     "url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/"
+    },
+    {
+     "q": "Which inverters work with the CB2-100.3-HV5?",
+     "a": "The CB2 battery system works only as a set with SAJ CH2 high-voltage hybrid inverters; the CHS2 system is equipped with a CH2 inverter. One CH2 inverter takes up to four CB2 systems of the same rated energy, and one CHS2 system takes up to three further CB2 systems.",
+     "product": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-100-3-hv5/"
+    },
+    {
+     "q": "What are the dimensions and the weight of the cabinet?",
+     "a": "The cabinet measures 1980 × 988 × 1065 mm (H × W × D) and weighs 1260 kg. It is moved with a forklift or crane rated for more than two tons, and the ground needs a load-bearing capacity of 1.5 tons.",
+     "product": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-100-3-hv5/"
+    },
+    {
+     "q": "Can storage be added to an existing CB2 system later?",
+     "a": "For a later expansion, a cluster of batteries with the same configuration is added and used in parallel with the original batteries. Mixing old and new battery modules is not recommended.",
+     "product": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-100-3-hv5/"
+    },
+    {
+     "q": "Which inverters work with the CB2-57.3-HV5?",
+     "a": "The CB2 battery system works only as a set with SAJ CH2 high-voltage hybrid inverters; the CHS2 system is equipped with a CH2 inverter. One CH2 inverter takes up to four CB2 systems of the same rated energy, and one CHS2 system takes up to three further CB2 systems.",
+     "product": "SAJ CB2-57.3-HV5 (57.3 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-57-3-hv5/"
+    },
+    {
+     "q": "What are the dimensions and the weight of the cabinet?",
+     "a": "The cabinet measures 1980 × 988 × 1065 mm (H × W × D) and weighs 960 kg. It is moved with a forklift or crane rated for more than two tons, and the ground needs a load-bearing capacity of 1.5 tons.",
+     "product": "SAJ CB2-57.3-HV5 (57.3 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-57-3-hv5/"
+    },
+    {
+     "q": "Can storage be added to an existing CB2 system later?",
+     "a": "For a later expansion, a cluster of batteries with the same configuration is added and used in parallel with the original batteries. Mixing old and new battery modules is not recommended.",
+     "product": "SAJ CB2-57.3-HV5 (57.3 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-57-3-hv5/"
+    },
+    {
+     "q": "Which inverters work with the CB2-71.6-HV5?",
+     "a": "The CB2 battery system works only as a set with SAJ CH2 high-voltage hybrid inverters; the CHS2 system is equipped with a CH2 inverter. One CH2 inverter takes up to four CB2 systems of the same rated energy, and one CHS2 system takes up to three further CB2 systems.",
+     "product": "SAJ CB2-71.6-HV5 (71.6 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-71-6-hv5/"
+    },
+    {
+     "q": "What are the dimensions and the weight of the cabinet?",
+     "a": "The cabinet measures 1980 × 988 × 1065 mm (H × W × D) and weighs 1060 kg. It is moved with a forklift or crane rated for more than two tons, and the ground needs a load-bearing capacity of 1.5 tons.",
+     "product": "SAJ CB2-71.6-HV5 (71.6 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-71-6-hv5/"
+    },
+    {
+     "q": "Can storage be added to an existing CB2 system later?",
+     "a": "For a later expansion, a cluster of batteries with the same configuration is added and used in parallel with the original batteries. Mixing old and new battery modules is not recommended.",
+     "product": "SAJ CB2-71.6-HV5 (71.6 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-71-6-hv5/"
+    },
+    {
+     "q": "Which inverters work with the CB2-85.9-HV5?",
+     "a": "The CB2 battery system works only as a set with SAJ CH2 high-voltage hybrid inverters; the CHS2 system is equipped with a CH2 inverter. One CH2 inverter takes up to four CB2 systems of the same rated energy, and one CHS2 system takes up to three further CB2 systems.",
+     "product": "SAJ CB2-85.9-HV5 (85.9 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-85-9-hv5/"
+    },
+    {
+     "q": "What are the dimensions and the weight of the cabinet?",
+     "a": "The cabinet measures 1980 × 988 × 1065 mm (H × W × D) and weighs 1160 kg. It is moved with a forklift or crane rated for more than two tons, and the ground needs a load-bearing capacity of 1.5 tons.",
+     "product": "SAJ CB2-85.9-HV5 (85.9 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-85-9-hv5/"
+    },
+    {
+     "q": "Can storage be added to an existing CB2 system later?",
+     "a": "For a later expansion, a cluster of batteries with the same configuration is added and used in parallel with the original batteries. Mixing old and new battery modules is not recommended.",
+     "product": "SAJ CB2-85.9-HV5 (85.9 kWh C&amp;I battery cabinet)",
+     "url": "https://de-linker.com/product/saj-cb2-85-9-hv5/"
+    },
+    {
+     "q": "What does the X in CHS2-29.9K-T4-X stand for?",
+     "a": "X is the battery option. It stands for the rated voltage, rated capacity and usable energy of the built-in battery: 204.8 V / 280 Ah / 51.5 kWh, 256.0 V / 280 Ah / 64.4 kWh, 307.2 V / 280 Ah / 77.3 kWh or 358.4 V / 280 Ah / 90.2 kWh. The rated energy is 57.3, 71.6, 85.9 or 100.3 kWh.",
+     "product": "SAJ CHS2-29.9K-T4-X",
+     "url": "https://de-linker.com/product/saj-chs2-29-9k-t4-x/"
+    },
+    {
+     "q": "Which grid-connection certificate is on file for the CHS2-29.9K-T4-X?",
+     "a": "A certificate of conformity to VDE-AR-N 4105:2018-11, tested to DIN VDE V 0124-100:2020-06, was issued by TÜV Rheinland LGA Products on 20.01.2025 under registration no. A3 50661614 0001. It names the CHS2-29.9K-T4-X with firmware V1.023, a maximum active power PEmax of 29.999 kW, a maximum apparent power SEmax of 29.999 kVA and integrated NA protection.",
+     "product": "SAJ CHS2-29.9K-T4-X",
+     "url": "https://de-linker.com/product/saj-chs2-29-9k-t4-x/"
+    },
+    {
+     "q": "How is the cabinet moved and secured?",
+     "a": "The cabinet is moved with a forklift that has a load capacity of more than two tons and fork blades longer than 1.2 m, or with a crane. It stands vertically on flat ground with a load-bearing capacity of 1.5 tons and is secured with six M12*80 expansion bolts or with four mounting brackets.",
+     "product": "SAJ CHS2-29.9K-T4-X",
+     "url": "https://de-linker.com/product/saj-chs2-29-9k-t4-x/"
+    },
+    {
+     "q": "What does the X in CHS2-30K-T4-X stand for?",
+     "a": "X is the battery option. It stands for the rated voltage, rated capacity and usable energy of the built-in battery: 204.8 V / 280 Ah / 51.5 kWh, 256.0 V / 280 Ah / 64.4 kWh, 307.2 V / 280 Ah / 77.3 kWh or 358.4 V / 280 Ah / 90.2 kWh. The rated energy is 57.3, 71.6, 85.9 or 100.3 kWh.",
+     "product": "SAJ CHS2-30K-T4-X",
+     "url": "https://de-linker.com/product/saj-chs2-30k-t4-x/"
+    },
+    {
+     "q": "Which grid-connection certificate is on file for the CHS2-30K-T4-X?",
+     "a": "A certificate of conformity to VDE-AR-N 4105:2018-11, tested to DIN VDE V 0124-100:2020-06, was issued by TÜV Rheinland LGA Products on 20.01.2025 under registration no. A3 50661614 0001. It names the CHS2-30K-T4-X with firmware V1.023, a maximum active power PEmax of 30 kW, a maximum apparent power SEmax of 33 kVA and integrated NA protection.",
+     "product": "SAJ CHS2-30K-T4-X",
+     "url": "https://de-linker.com/product/saj-chs2-30k-t4-x/"
+    },
+    {
+     "q": "How is the cabinet moved and secured?",
+     "a": "The cabinet is moved with a forklift that has a load capacity of more than two tons and fork blades longer than 1.2 m, or with a crane. It stands vertically on flat ground with a load-bearing capacity of 1.5 tons and is secured with six M12*80 expansion bolts or with four mounting brackets.",
+     "product": "SAJ CHS2-30K-T4-X",
+     "url": "https://de-linker.com/product/saj-chs2-30k-t4-x/"
+    },
+    {
+     "q": "What does the X in CHS2-50K-T6-X stand for?",
+     "a": "X is the battery option. It stands for the rated voltage, rated capacity and usable energy of the built-in battery: 204.8 V / 280 Ah / 51.5 kWh, 256.0 V / 280 Ah / 64.4 kWh, 307.2 V / 280 Ah / 77.3 kWh or 358.4 V / 280 Ah / 90.2 kWh. The rated energy is 57.3, 71.6, 85.9 or 100.3 kWh.",
+     "product": "SAJ CHS2-50K-T6-X",
+     "url": "https://de-linker.com/product/saj-chs2-50k-t6-x/"
+    },
+    {
+     "q": "Which grid-connection certificate is on file for the CHS2-50K-T6-X?",
+     "a": "A certificate of conformity to VDE-AR-N 4105:2018-11, tested to DIN VDE V 0124-100:2020-06, was issued by TÜV Rheinland LGA Products on 20.01.2025 under registration no. A3 50661614 0001. It names the CHS2-50K-T6-X with firmware V1.023, a maximum active power PEmax of 50 kW, a maximum apparent power SEmax of 55 kVA and integrated NA protection.",
+     "product": "SAJ CHS2-50K-T6-X",
+     "url": "https://de-linker.com/product/saj-chs2-50k-t6-x/"
+    },
+    {
+     "q": "How is the cabinet moved and secured?",
+     "a": "The cabinet is moved with a forklift that has a load capacity of more than two tons and fork blades longer than 1.2 m, or with a crane. It stands vertically on flat ground with a load-bearing capacity of 1.5 tons and is secured with six M12*80 expansion bolts or with four mounting brackets.",
+     "product": "SAJ CHS2-50K-T6-X",
+     "url": "https://de-linker.com/product/saj-chs2-50k-t6-x/"
+    },
+    {
+     "q": "How many inverters does one eManager manage in a parallel system?",
+     "a": "Up to six. Over RS485 the eManager has three port pairs (A1/B1, A2/B2 and A3/B3); each pair takes at most two inverters, and they must be of the same type. The HS2-(5K-10K)-T2 systems connect over RS485; the H2-(10K-30K)-(T2, T3) hybrid inverters connect over the LAN port and a network switch.",
+     "product": "SAJ eManager (energy management system module)",
+     "url": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/"
+    },
+    {
+     "q": "Which inverter firmware does the eManager need?",
+     "a": "The inverter firmware must not be earlier than: H2-(10K-30K)-(T2, T3): DSP V3.061 and ARM V8.035; HS2-(5K-10K)-T2: DSP V4.066 and ARM V1.070; HS3-(5K-12K)-T2: DSP V2.103 and ARM V2.030. An earlier version is upgraded remotely on the elekeeper web platform or locally over Bluetooth with the elekeeper app.",
+     "product": "SAJ eManager (energy management system module)",
+     "url": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/"
+    },
+    {
+     "q": "When does the eManager need external current transformers?",
+     "a": "The built-in current transformers are for a nominal current of 63 A per line conductor. Above 63 A, external current transformers of the type 50×N A / 50 mA with N of 2 or more are connected to the CT ports.",
+     "product": "SAJ eManager (energy management system module)",
+     "url": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/"
+    },
+    {
+     "q": "What does the eManager-C1 Pro contain?",
+     "a": "The smart communication box eManager-C1 Pro contains the EMS controller eManager-C1. An Ethernet switch and smart meters are optional.",
+     "product": "SAJ eManager-C1 Pro",
+     "url": "https://de-linker.com/product/saj-emanager-c1-pro/"
+    },
+    {
+     "q": "For how many CHS2 systems is the eManager-C1 Pro meant?",
+     "a": "The eManager-C1 Pro is recommended for 2 to 10 CHS2 systems in parallel connection.",
+     "product": "SAJ eManager-C1 Pro",
+     "url": "https://de-linker.com/product/saj-emanager-c1-pro/"
+    },
+    {
+     "q": "How is the eManager-C1 Pro supplied and mounted?",
+     "a": "The box takes 9 to 36 V DC or 176 to 300 V AC at 50/60 Hz, with a maximum power of 50 W. It is wall-mounted and has ingress protection IP65.",
+     "product": "SAJ eManager-C1 Pro",
+     "url": "https://de-linker.com/product/saj-emanager-c1-pro/"
+    },
+    {
+     "q": "Which SAJ inverters take the eSolar AIO3?",
+     "a": "The H2-(10K-30K)-(T2, T3) hybrid inverters take it on the 4G/WIFI port and have one in their package. The HS2-(5K-10K)-T2 systems support it as a communication module. The HS3 models with W in the designation have an AIO3 module built in. One module connects one inverter.",
+     "product": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+     "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/"
+    },
+    {
+     "q": "What do the LEDs on the module show?",
+     "a": "Green stands for Ethernet, blue for Wi-Fi. Green, slow blink: Ethernet is working; green, fast blink: firmware is upgrading; green, solid: the module is not connected to the server; off: no power supply or program fault. Blue, slow blink: Wi-Fi is working; blue, fast blink: Bluetooth is connected. Slow blink is 1 s on and 1 s off, fast blink 200 ms on and 200 ms off.",
+     "product": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+     "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/"
+    },
+    {
+     "q": "How is the module installed and connected to the network?",
+     "a": "The hexagon nut of the module is turned to the horizontal position, the module is inserted into the USB interface of the inverter and the nut is fastened clockwise. For Ethernet, the RJ45 connector is connected to the router. After the inverter is powered on, a slowly blinking signal light after 2 minutes shows that the module is working normally. In the app, the module is selected over Bluetooth and Wi-Fi or Ethernet is chosen for internet access.",
+     "product": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+     "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/"
+    },
+    {
+     "q": "What does the H2-10K-T3 package contain?",
+     "a": "The package contains the inverter, the mounting bracket, one eSolar AIO3 communication module, one smart meter, three current transformers and a 10 m meter communication cable. It also contains the PV connectors, two positive and two negative battery connectors, ten AC terminals, ten RJ45 plugs, the waterproof covers for the AC and communication terminals and the documents (user manual, quick installation guide, warranty card and packing list).",
+     "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-h2-10k-t3/"
+    },
+    {
+     "q": "Which circuit breaker and AC cable does the H2-10K-T3 need?",
+     "a": "A 50 A circuit breaker is recommended between the grid and the inverter; each inverter has its own breaker. The AC cable cross-section is 10–16 mm² (16 mm² recommended) and the additional grounding cable 8 mm². An external RCD is not required because a residual current monitoring unit is integrated; where local regulations require one, a type A or type B RCD with 300 mA can be installed.",
+     "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-h2-10k-t3/"
+    },
+    {
+     "q": "Which battery connection does the H2-10K-T3 have?",
+     "a": "The inverter has two battery inputs (BAT1 and BAT2) for LiFePO4 batteries with a battery voltage range of 180–800 V and a maximum charge and discharge current of 50 A. The SAJ B2 high-voltage battery, a BC2-HV1 control unit with BU2-5.0-HV1 modules, is used as a set with the H2; the B2's maximum charge and discharge current is 30 A. The battery cable cross-section is 8–10 mm² (8 mm² recommended).",
+     "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-h2-10k-t3/"
+    },
+    {
+     "q": "What does the H2-12K-T3 package contain?",
+     "a": "The package contains the inverter, the mounting bracket, one eSolar AIO3 communication module, one smart meter, three current transformers and a 10 m meter communication cable. It also contains the PV connectors, two positive and two negative battery connectors, ten AC terminals, ten RJ45 plugs, the waterproof covers for the AC and communication terminals and the documents (user manual, quick installation guide, warranty card and packing list).",
+     "product": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-h2-12k-t3/"
+    },
+    {
+     "q": "Which circuit breaker and AC cable does the H2-12K-T3 need?",
+     "a": "A 50 A circuit breaker is recommended between the grid and the inverter; each inverter has its own breaker. The AC cable cross-section is 10–16 mm² (16 mm² recommended) and the additional grounding cable 8 mm². An external RCD is not required because a residual current monitoring unit is integrated; where local regulations require one, a type A or type B RCD with 300 mA can be installed.",
+     "product": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-h2-12k-t3/"
+    },
+    {
+     "q": "Which battery connection does the H2-12K-T3 have?",
+     "a": "The inverter has two battery inputs (BAT1 and BAT2) for LiFePO4 batteries with a battery voltage range of 180–800 V and a maximum charge and discharge current of 50 A. The SAJ B2 high-voltage battery, a BC2-HV1 control unit with BU2-5.0-HV1 modules, is used as a set with the H2; the B2's maximum charge and discharge current is 30 A. The battery cable cross-section is 8–10 mm² (8 mm² recommended).",
+     "product": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-h2-12k-t3/"
+    },
+    {
+     "q": "What does the H2-15K-T3 package contain?",
+     "a": "The package contains the inverter, the mounting bracket, one eSolar AIO3 communication module, one smart meter, three current transformers and a 10 m meter communication cable. It also contains the PV connectors, two positive and two negative battery connectors, ten AC terminals, ten RJ45 plugs, the waterproof covers for the AC and communication terminals and the documents (user manual, quick installation guide, warranty card and packing list).",
+     "product": "SAJ H2-15K-T3",
+     "url": "https://de-linker.com/product/saj-h2-15k-t3/"
+    },
+    {
+     "q": "Which circuit breaker and AC cable does the H2-15K-T3 need?",
+     "a": "A 50 A circuit breaker is recommended between the grid and the inverter; each inverter has its own breaker. The AC cable cross-section is 10–16 mm² (16 mm² recommended) and the additional grounding cable 8 mm². An external RCD is not required because a residual current monitoring unit is integrated; where local regulations require one, a type A or type B RCD with 300 mA can be installed.",
+     "product": "SAJ H2-15K-T3",
+     "url": "https://de-linker.com/product/saj-h2-15k-t3/"
+    },
+    {
+     "q": "Which battery connection does the H2-15K-T3 have?",
+     "a": "The inverter has two battery inputs (BAT1 and BAT2) for LiFePO4 batteries with a battery voltage range of 180–800 V and a maximum charge and discharge current of 50 A. The SAJ B2 high-voltage battery, a BC2-HV1 control unit with BU2-5.0-HV1 modules, is used as a set with the H2; the B2's maximum charge and discharge current is 30 A. The battery cable cross-section is 8–10 mm² (8 mm² recommended).",
+     "product": "SAJ H2-15K-T3",
+     "url": "https://de-linker.com/product/saj-h2-15k-t3/"
+    },
+    {
+     "q": "What does the H2-20K-T3 package contain?",
+     "a": "The package contains the inverter, the mounting bracket, one eSolar AIO3 communication module, one smart meter, three current transformers and a 10 m meter communication cable. It also contains the PV connectors, two positive and two negative battery connectors, ten AC terminals, ten RJ45 plugs, the waterproof covers for the AC and communication terminals and the documents (user manual, quick installation guide, warranty card and packing list).",
+     "product": "SAJ H2-20K-T3",
+     "url": "https://de-linker.com/product/saj-h2-20k-t3/"
+    },
+    {
+     "q": "Which circuit breaker and AC cable does the H2-20K-T3 need?",
+     "a": "A 50 A circuit breaker is recommended between the grid and the inverter; each inverter has its own breaker. The AC cable cross-section is 10–16 mm² (16 mm² recommended) and the additional grounding cable 8 mm². An external RCD is not required because a residual current monitoring unit is integrated; where local regulations require one, a type A or type B RCD with 300 mA can be installed.",
+     "product": "SAJ H2-20K-T3",
+     "url": "https://de-linker.com/product/saj-h2-20k-t3/"
+    },
+    {
+     "q": "Which battery connection does the H2-20K-T3 have?",
+     "a": "The inverter has two battery inputs (BAT1 and BAT2) for LiFePO4 batteries with a battery voltage range of 180–800 V and a maximum charge and discharge current of 50 A. The SAJ B2 high-voltage battery, a BC2-HV1 control unit with BU2-5.0-HV1 modules, is used as a set with the H2; the B2's maximum charge and discharge current is 30 A. The battery cable cross-section is 8–10 mm² (8 mm² recommended).",
+     "product": "SAJ H2-20K-T3",
+     "url": "https://de-linker.com/product/saj-h2-20k-t3/"
+    },
+    {
+     "q": "What does the H2-25K-T3 package contain?",
+     "a": "The package contains the inverter, the mounting bracket, one eSolar AIO3 communication module, one smart meter, three current transformers and a 10 m meter communication cable. It also contains the PV connectors, two positive and two negative battery connectors, ten AC terminals, ten RJ45 plugs, the waterproof covers for the AC and communication terminals and the documents (user manual, quick installation guide, warranty card and packing list).",
+     "product": "SAJ H2-25K-T3",
+     "url": "https://de-linker.com/product/saj-h2-25k-t3/"
+    },
+    {
+     "q": "Which circuit breaker and AC cable does the H2-25K-T3 need?",
+     "a": "A 63 A circuit breaker is recommended between the grid and the inverter; each inverter has its own breaker. The AC cable cross-section is 10–16 mm² (16 mm² recommended) and the additional grounding cable 8 mm². An external RCD is not required because a residual current monitoring unit is integrated; where local regulations require one, a type A or type B RCD with 300 mA can be installed.",
+     "product": "SAJ H2-25K-T3",
+     "url": "https://de-linker.com/product/saj-h2-25k-t3/"
+    },
+    {
+     "q": "Which battery connection does the H2-25K-T3 have?",
+     "a": "The inverter has two battery inputs (BAT1 and BAT2) for LiFePO4 batteries with a battery voltage range of 180–800 V and a maximum charge and discharge current of 50 A. The SAJ B2 high-voltage battery, a BC2-HV1 control unit with BU2-5.0-HV1 modules, is used as a set with the H2; the B2's maximum charge and discharge current is 30 A. The battery cable cross-section is 8–10 mm² (8 mm² recommended).",
+     "product": "SAJ H2-25K-T3",
+     "url": "https://de-linker.com/product/saj-h2-25k-t3/"
+    },
+    {
+     "q": "What are the rated AC power and the maximum apparent power of the H2-30K-T3-DE?",
+     "a": "The H2-30K-T3-DE has 29,999 W rated AC power and 29,999 VA maximum apparent power. Its rated and maximum output current are both 43.4 A (rated current at 230 V AC). The backup output supplies up to 29,999 VA, with a peak apparent power of 45,000 VA for 3 s.",
+     "product": "SAJ H2-30K-T3-DE",
+     "url": "https://de-linker.com/product/saj-h2-30k-t3-de/"
+    },
+    {
+     "q": "What does the H2-30K-T3-DE package contain?",
+     "a": "The package contains the inverter, the mounting bracket, one eSolar AIO3 communication module, one smart meter, three current transformers and a 10 m meter communication cable. It also contains the PV connectors, two positive and two negative battery connectors, ten AC terminals, ten RJ45 plugs, the waterproof covers for the AC and communication terminals and the documents (user manual, quick installation guide, warranty card and packing list).",
+     "product": "SAJ H2-30K-T3-DE",
+     "url": "https://de-linker.com/product/saj-h2-30k-t3-de/"
+    },
+    {
+     "q": "Which circuit breaker and AC cable does the H2-30K-T3-DE need?",
+     "a": "A 63 A circuit breaker is recommended between the grid and the inverter; each inverter has its own breaker. The AC cable cross-section is 10–16 mm² (16 mm² recommended) and the additional grounding cable 8 mm². An external RCD is not required because a residual current monitoring unit is integrated; where local regulations require one, a type A or type B RCD with 300 mA can be installed.",
+     "product": "SAJ H2-30K-T3-DE",
+     "url": "https://de-linker.com/product/saj-h2-30k-t3-de/"
+    },
+    {
+     "q": "Which battery modules does the HS2-10K-T2-X take, and how many?",
+     "a": "The HS2-10K-T2-X works with BU2-5.0-HV1 battery modules. One inverter takes two to five modules, which gives 10.0 to 25.0 kWh nominal and 9.0 to 22.5 kWh usable energy. The battery port works from 180 to 600 V with a maximum charging and discharging current of 30 A.",
+     "product": "SAJ HS2-10K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-10k-t2-x/"
+    },
+    {
+     "q": "What does the backup output of the HS2-10K-T2-X deliver when the grid fails?",
+     "a": "The backup connection supplies up to 10000 VA at a maximum output current of 15.9 A, with a peak apparent power of 16500 VA for 60 s. With the UPS function, the switch time is ≤ 10 ms. The backup PE conductor and the earthing bar are earthed properly; otherwise the backup function may not be active during a power failure. The ATS1-T63-A automatic transfer switch is compatible with the HS2-10K-T2-X; its switching time is 50 ms.",
+     "product": "SAJ HS2-10K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-10k-t2-x/"
+    },
+    {
+     "q": "What does the AC side of the HS2-10K-T2-X need at installation?",
+     "a": "An air circuit breaker of 63 A or more is installed between the grid and the inverter; in parallel operation, several inverters are not connected to one AC circuit breaker. An external residual-current device is not mandatory, because the inverter has an integrated residual-current monitoring unit (RCMU); where local rules require one, a type A or type B device with a tripping current of 300 mA or more can be installed. The recommended AC cable is copper with a cross-section of 4 mm² (range 2.5 to 6.0 mm²).",
+     "product": "SAJ HS2-10K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-10k-t2-x/"
+    },
+    {
+     "q": "Which battery modules does the HS2-5K-T2-X take, and how many?",
+     "a": "The HS2-5K-T2-X works with BU2-5.0-HV1 battery modules. One inverter takes two to five modules, which gives 10.0 to 25.0 kWh nominal and 9.0 to 22.5 kWh usable energy. The battery port works from 180 to 600 V with a maximum charging and discharging current of 30 A.",
+     "product": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-hs2-5k-t2-x/"
+    },
+    {
+     "q": "What does the backup output of the HS2-5K-T2-X deliver when the grid fails?",
+     "a": "The backup connection supplies up to 5000 VA at a maximum output current of 8.0 A, with a peak apparent power of 10000 VA for 60 s. With the UPS function, the switch time is ≤ 10 ms. The backup PE conductor and the earthing bar are earthed properly; otherwise the backup function may not be active during a power failure. The ATS1-T63-A automatic transfer switch is compatible with the HS2-5K-T2-X; its switching time is 50 ms.",
+     "product": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-hs2-5k-t2-x/"
+    },
+    {
+     "q": "What does the AC side of the HS2-5K-T2-X need at installation?",
+     "a": "An air circuit breaker of 63 A or more is installed between the grid and the inverter; in parallel operation, several inverters are not connected to one AC circuit breaker. An external residual-current device is not mandatory, because the inverter has an integrated residual-current monitoring unit (RCMU); where local rules require one, a type A or type B device with a tripping current of 300 mA or more can be installed. The recommended AC cable is copper with a cross-section of 4 mm² (range 2.5 to 6.0 mm²).",
+     "product": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+     "url": "https://de-linker.com/product/saj-hs2-5k-t2-x/"
+    },
+    {
+     "q": "Which battery modules does the HS2-6K-T2-X take, and how many?",
+     "a": "The HS2-6K-T2-X works with BU2-5.0-HV1 battery modules. One inverter takes two to five modules, which gives 10.0 to 25.0 kWh nominal and 9.0 to 22.5 kWh usable energy. The battery port works from 180 to 600 V with a maximum charging and discharging current of 30 A.",
+     "product": "SAJ HS2-6K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-6k-t2-x/"
+    },
+    {
+     "q": "What does the backup output of the HS2-6K-T2-X deliver when the grid fails?",
+     "a": "The backup connection supplies up to 6000 VA at a maximum output current of 9.6 A, with a peak apparent power of 12000 VA for 60 s. With the UPS function, the switch time is ≤ 10 ms. The backup PE conductor and the earthing bar are earthed properly; otherwise the backup function may not be active during a power failure. The ATS1-T63-A automatic transfer switch is compatible with the HS2-6K-T2-X; its switching time is 50 ms.",
+     "product": "SAJ HS2-6K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-6k-t2-x/"
+    },
+    {
+     "q": "What does the AC side of the HS2-6K-T2-X need at installation?",
+     "a": "An air circuit breaker of 63 A or more is installed between the grid and the inverter; in parallel operation, several inverters are not connected to one AC circuit breaker. An external residual-current device is not mandatory, because the inverter has an integrated residual-current monitoring unit (RCMU); where local rules require one, a type A or type B device with a tripping current of 300 mA or more can be installed. The recommended AC cable is copper with a cross-section of 4 mm² (range 2.5 to 6.0 mm²).",
+     "product": "SAJ HS2-6K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-6k-t2-x/"
+    },
+    {
+     "q": "Which battery modules does the HS2-8K-T2-X take, and how many?",
+     "a": "The HS2-8K-T2-X works with BU2-5.0-HV1 battery modules. One inverter takes two to five modules, which gives 10.0 to 25.0 kWh nominal and 9.0 to 22.5 kWh usable energy. The battery port works from 180 to 600 V with a maximum charging and discharging current of 30 A.",
+     "product": "SAJ HS2-8K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-8k-t2-x/"
+    },
+    {
+     "q": "What does the backup output of the HS2-8K-T2-X deliver when the grid fails?",
+     "a": "The backup connection supplies up to 8000 VA at a maximum output current of 12.8 A, with a peak apparent power of 16000 VA for 60 s. With the UPS function, the switch time is ≤ 10 ms. The backup PE conductor and the earthing bar are earthed properly; otherwise the backup function may not be active during a power failure. The ATS1-T63-A automatic transfer switch is compatible with the HS2-8K-T2-X; its switching time is 50 ms.",
+     "product": "SAJ HS2-8K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-8k-t2-x/"
+    },
+    {
+     "q": "What does the AC side of the HS2-8K-T2-X need at installation?",
+     "a": "An air circuit breaker of 63 A or more is installed between the grid and the inverter; in parallel operation, several inverters are not connected to one AC circuit breaker. An external residual-current device is not mandatory, because the inverter has an integrated residual-current monitoring unit (RCMU); where local rules require one, a type A or type B device with a tripping current of 300 mA or more can be installed. The recommended AC cable is copper with a cross-section of 4 mm² (range 2.5 to 6.0 mm²).",
+     "product": "SAJ HS2-8K-T2-X",
+     "url": "https://de-linker.com/product/saj-hs2-8k-t2-x/"
+    },
+    {
+     "q": "How many BU3 battery modules does the HS3-10K-T2-W/G-PX take, and how are they stacked?",
+     "a": "One inverter takes one to eight BU3-5.0-TV2-PRO modules; the X in the designation stands for the number of battery modules. A ground-mounted stack holds at most four modules and a wall-mounted stack at most three. Further modules go into additional stacks, each closed with a BC3-TV battery junction box. The power and communication cables between two stacks are at most 5 m long; the cables in the package are 2 m long. Each stack stands on a BE3-TV battery base.",
+     "product": "SAJ HS3-10K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/"
+    },
+    {
+     "q": "What does the HS3-10K-T2-W/G-PX package contain?",
+     "a": "The inverter package contains the inverter, the 24-pin communication cable connector, 22 insulated terminals, four PV connectors, the grid connector kit, the backup load connector kit, the communication cable kit, a meter kit and the printed documents. The meter kit holds a three-phase smart meter and a 10 m communication cable and, depending on the shipment, current transformers. The W version has a built-in AIO3 module for Wi-Fi and Ethernet, the G version a built-in 4G module. The battery modules, the BE3-TV battery base, the BT3-TV wall-mounting bracket and the BC3-TV battery junction box are separate packages.",
+     "product": "SAJ HS3-10K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/"
+    },
+    {
+     "q": "Which warranty applies to the HS3 inverter?",
+     "a": "For products purchased and installed in the European market, the SAJ limited warranty for HS3 gives a standard warranty of ten years. It starts on the date of first installation or six months after the date of production, whichever is earlier. The system has to be installed and commissioned by a professional installer, connected to the internet and registered with SAJ; without internet connection or registration the full ten years may not be honoured, and the warranty then applies for at least 5.5 years from the date of shipment from SAJ. A defect has to be reported within 30 days. The full terms are in the downloads on this page.",
+     "product": "SAJ HS3-10K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/"
+    },
+    {
+     "q": "How many BU3 battery modules does the HS3-12K-T2-W/G-PX take, and how are they stacked?",
+     "a": "One inverter takes one to eight BU3-5.0-TV2-PRO modules; the X in the designation stands for the number of battery modules. A ground-mounted stack holds at most four modules and a wall-mounted stack at most three. Further modules go into additional stacks, each closed with a BC3-TV battery junction box. The power and communication cables between two stacks are at most 5 m long; the cables in the package are 2 m long. Each stack stands on a BE3-TV battery base.",
+     "product": "SAJ HS3-12K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-12k-t2-w-p/"
+    },
+    {
+     "q": "What does the HS3-12K-T2-W/G-PX package contain?",
+     "a": "The inverter package contains the inverter, the 24-pin communication cable connector, 22 insulated terminals, four PV connectors, the grid connector kit, the backup load connector kit, the communication cable kit, a meter kit and the printed documents. The meter kit holds a three-phase smart meter and a 10 m communication cable and, depending on the shipment, current transformers. The W version has a built-in AIO3 module for Wi-Fi and Ethernet, the G version a built-in 4G module. The battery modules, the BE3-TV battery base, the BT3-TV wall-mounting bracket and the BC3-TV battery junction box are separate packages.",
+     "product": "SAJ HS3-12K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-12k-t2-w-p/"
+    },
+    {
+     "q": "Which warranty applies to the HS3 inverter?",
+     "a": "For products purchased and installed in the European market, the SAJ limited warranty for HS3 gives a standard warranty of ten years. It starts on the date of first installation or six months after the date of production, whichever is earlier. The system has to be installed and commissioned by a professional installer, connected to the internet and registered with SAJ; without internet connection or registration the full ten years may not be honoured, and the warranty then applies for at least 5.5 years from the date of shipment from SAJ. A defect has to be reported within 30 days. The full terms are in the downloads on this page.",
+     "product": "SAJ HS3-12K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-12k-t2-w-p/"
+    },
+    {
+     "q": "How many BU3 battery modules does the HS3-5K-T2-W/G-PX take, and how are they stacked?",
+     "a": "One inverter takes one to eight BU3-5.0-TV2-PRO modules; the X in the designation stands for the number of battery modules. A ground-mounted stack holds at most four modules and a wall-mounted stack at most three. Further modules go into additional stacks, each closed with a BC3-TV battery junction box. The power and communication cables between two stacks are at most 5 m long; the cables in the package are 2 m long. Each stack stands on a BE3-TV battery base.",
+     "product": "SAJ HS3-5K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-5k-t2-w-p/"
+    },
+    {
+     "q": "What does the HS3-5K-T2-W/G-PX package contain?",
+     "a": "The inverter package contains the inverter, the 24-pin communication cable connector, 22 insulated terminals, four PV connectors, the grid connector kit, the backup load connector kit, the communication cable kit, a meter kit and the printed documents. The meter kit holds a three-phase smart meter and a 10 m communication cable and, depending on the shipment, current transformers. The W version has a built-in AIO3 module for Wi-Fi and Ethernet, the G version a built-in 4G module. The battery modules, the BE3-TV battery base, the BT3-TV wall-mounting bracket and the BC3-TV battery junction box are separate packages.",
+     "product": "SAJ HS3-5K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-5k-t2-w-p/"
+    },
+    {
+     "q": "Which warranty applies to the HS3 inverter?",
+     "a": "For products purchased and installed in the European market, the SAJ limited warranty for HS3 gives a standard warranty of ten years. It starts on the date of first installation or six months after the date of production, whichever is earlier. The system has to be installed and commissioned by a professional installer, connected to the internet and registered with SAJ; without internet connection or registration the full ten years may not be honoured, and the warranty then applies for at least 5.5 years from the date of shipment from SAJ. A defect has to be reported within 30 days. The full terms are in the downloads on this page.",
+     "product": "SAJ HS3-5K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-5k-t2-w-p/"
+    },
+    {
+     "q": "How many BU3 battery modules does the HS3-6K-T2-W/G-PX take, and how are they stacked?",
+     "a": "One inverter takes one to eight BU3-5.0-TV2-PRO modules; the X in the designation stands for the number of battery modules. A ground-mounted stack holds at most four modules and a wall-mounted stack at most three. Further modules go into additional stacks, each closed with a BC3-TV battery junction box. The power and communication cables between two stacks are at most 5 m long; the cables in the package are 2 m long. Each stack stands on a BE3-TV battery base.",
+     "product": "SAJ HS3-6K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-6k-t2-w-p/"
+    },
+    {
+     "q": "What does the HS3-6K-T2-W/G-PX package contain?",
+     "a": "The inverter package contains the inverter, the 24-pin communication cable connector, 22 insulated terminals, four PV connectors, the grid connector kit, the backup load connector kit, the communication cable kit, a meter kit and the printed documents. The meter kit holds a three-phase smart meter and a 10 m communication cable and, depending on the shipment, current transformers. The W version has a built-in AIO3 module for Wi-Fi and Ethernet, the G version a built-in 4G module. The battery modules, the BE3-TV battery base, the BT3-TV wall-mounting bracket and the BC3-TV battery junction box are separate packages.",
+     "product": "SAJ HS3-6K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-6k-t2-w-p/"
+    },
+    {
+     "q": "Which warranty applies to the HS3 inverter?",
+     "a": "For products purchased and installed in the European market, the SAJ limited warranty for HS3 gives a standard warranty of ten years. It starts on the date of first installation or six months after the date of production, whichever is earlier. The system has to be installed and commissioned by a professional installer, connected to the internet and registered with SAJ; without internet connection or registration the full ten years may not be honoured, and the warranty then applies for at least 5.5 years from the date of shipment from SAJ. A defect has to be reported within 30 days. The full terms are in the downloads on this page.",
+     "product": "SAJ HS3-6K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-6k-t2-w-p/"
+    },
+    {
+     "q": "How many BU3 battery modules does the HS3-8K-T2-W/G-PX take, and how are they stacked?",
+     "a": "One inverter takes one to eight BU3-5.0-TV2-PRO modules; the X in the designation stands for the number of battery modules. A ground-mounted stack holds at most four modules and a wall-mounted stack at most three. Further modules go into additional stacks, each closed with a BC3-TV battery junction box. The power and communication cables between two stacks are at most 5 m long; the cables in the package are 2 m long. Each stack stands on a BE3-TV battery base.",
+     "product": "SAJ HS3-8K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-8k-t2-w-p/"
+    },
+    {
+     "q": "What does the HS3-8K-T2-W/G-PX package contain?",
+     "a": "The inverter package contains the inverter, the 24-pin communication cable connector, 22 insulated terminals, four PV connectors, the grid connector kit, the backup load connector kit, the communication cable kit, a meter kit and the printed documents. The meter kit holds a three-phase smart meter and a 10 m communication cable and, depending on the shipment, current transformers. The W version has a built-in AIO3 module for Wi-Fi and Ethernet, the G version a built-in 4G module. The battery modules, the BE3-TV battery base, the BT3-TV wall-mounting bracket and the BC3-TV battery junction box are separate packages.",
+     "product": "SAJ HS3-8K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-8k-t2-w-p/"
+    },
+    {
+     "q": "Which warranty applies to the HS3 inverter?",
+     "a": "For products purchased and installed in the European market, the SAJ limited warranty for HS3 gives a standard warranty of ten years. It starts on the date of first installation or six months after the date of production, whichever is earlier. The system has to be installed and commissioned by a professional installer, connected to the internet and registered with SAJ; without internet connection or registration the full ten years may not be honoured, and the warranty then applies for at least 5.5 years from the date of shipment from SAJ. A defect has to be reported within 30 days. The full terms are in the downloads on this page.",
+     "product": "SAJ HS3-8K-T2-W/G-PX",
+     "url": "https://de-linker.com/product/saj-hs3-8k-t2-w-p/"
+    }
+   ]
+  }
+ ],
+ "documents": [
+  {
+   "brand": "Chint",
+   "docs": [
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "Chint DTSU666 catalog (EN)",
+     "covers": "Chint DTSU666",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "Chint DTSU666 / DSSU666 user manual (EN)",
+     "covers": "Chint DTSU666",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf"
+    }
+   ]
+  },
+  {
+   "brand": "GoodWe",
+   "docs": [
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, DE, V1.1)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.0)",
+     "covers": "GoodWe GW208.9-BAT-LCD-G10",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.1)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "GoodWe BAT-C Series 61.4–112.6 kWh Datasheet (EMEA, DE, V1.1)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Datasheet_EMEA-DE_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe BAT-C Series 61.4–112.6 kWh Datasheet (EMEA, EN, V1.1)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "GoodWe ESA 125 kW / 261 kWh datasheet, EMEA, V1.1 (DE)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-DE_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe ESA 125 kW / 261 kWh datasheet, EMEA, V1.1 (EN)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "GoodWe ESA Serie 5–30 kW datasheet (DE)",
+     "covers": "13 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Datasheet_EMEA-DE_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe ESA Series 3–10 kW datasheet (EN, EMEA V1.1)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe ESA Series 5–30 kW datasheet (EN)",
+     "covers": "17 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe ET Series 75–100 kW datasheet (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, DE)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Datasheet_EMEA-DE_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe EzManager3000 Datasheet (EMEA, EN)",
+     "covers": "GoodWe EzManager3000 HEMS Gateway",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_EzManager3000_Datasheet_EMEA-EN_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe GM330 Datasheet (EN)",
+     "covers": "GoodWe GM330",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gm330_datasheet_en-1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe GMK330 Datasheet (EMEA, EN)",
+     "covers": "GoodWe GMK330",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_GMK330_Datasheet_EMEA-EN_V1.0.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "GoodWe HCA G2 Datasheet (EMEA, DE)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-DE_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe HCA G2 Datasheet (EMEA, EN)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe Lynx D G2 datasheet (EN, EMEA)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe SEC3000C Datasheet (EMEA, EN)",
+     "covers": "GoodWe SEC3000C Smart Energy Controller",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe STS Series 30/60 kW datasheet (EMEA, EN)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "GoodWe STS Series GW125K-STS-G10 datasheet (EMEA, EN)",
+     "covers": "GoodWe GW125K-STS-G10",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE",
+     "title": "GoodWe BAT-C 208–261 kWh User Manual (DE)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_User-Manual-DE_V1.0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe BAT-C 208–261 kWh User Manual (EN)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "MUL",
+     "title": "GoodWe BAT-C 61.4–112.6 kWh Quick Installation Guide",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ESA 261 kWh maintenance manual, V1.0 (EN)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Maintenance-Manual-EN_V1.0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ESA 261 kWh microgrid user manual, V1.1 (EN)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Microgrid-User-Manual-EN_V1.1.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ESA 261 kWh on-grid solution user manual, V1.0 (EN)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_On-grid_User-Manual-EN_V1.0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "MUL",
+     "title": "GoodWe ESA 261 kWh quick installation guide, V1.5",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Quick-Installation-Guide-POLY_V1.5.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE",
+     "title": "GoodWe ESA 261 kWh user manual, V1.6 (DE)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-DE_V1.6.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ESA 261 kWh user manual, V1.6 (EN)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE",
+     "title": "GoodWe ESA Serie 5–30 kW Benutzerhandbuch (DE, V1.4)",
+     "covers": "17 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-DE_V1.4.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5)",
+     "covers": "17 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ET 50–100 kW solution manual (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ET 50–100 kW user manual (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE",
+     "title": "GoodWe ETR 50–125 kW User Manual (DE)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR-50-125kW_User-Manual-DE.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe ETR 50–125 kW User Manual (EN)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe EzManager3000 User Manual (EN)",
+     "covers": "GoodWe EzManager3000 HEMS Gateway",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_EzManager3000_User-Manual-EN_V1.3.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "MUL",
+     "title": "GoodWe GW125K-STS-G10 quick installation guide (multilingual)",
+     "covers": "GoodWe GW125K-STS-G10",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_STS-125kW_Quick-Installation-Guide-Multilingual_V1.0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE",
+     "title": "GoodWe HCA G2 User Manual (DE)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_User-Manual-DE.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe HCA G2 User Manual (EN)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe SEC3000C User Manual (EN)",
+     "covers": "GoodWe SEC3000C Smart Energy Controller",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "GoodWe Smart Meter User Manual: GM330 / GMK330 / GMK360 (EN)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Smart-Meter_User-Manual-EN_V1.5.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "Certificate of conformity, Low Voltage Directive, AN 50703461 0001",
+     "covers": "GoodWe GW125K-STS-G10",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-125kW_Certificate_CE-LVD.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "Certificate VDE-AR-N 4105, A3 50694726 0001",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-75-100kW_Certificate_VDE-AR-N-4105.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "EN 50549-1 certificate — ESA 5–30 kW ETA-G20 (A3 50705507)",
+     "covers": "11 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Certificate_EN-50549-1_EN-50549-10.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "EN 50549-2 certificate — ESA 5–30 kW ETA-G20 (A3 50706340)",
+     "covers": "11 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Certificate_EN-50549-2_EN-50549-10.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "EU declaration of conformity — ESA 5–30 kW power modules",
+     "covers": "11 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_EU-Declaration-of-Conformity_POLY.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "EU Declaration of Conformity, ET-G10 hybrid inverters",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-G10_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe BAT-AC-G10 EU Declaration of Conformity",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-AC-G10_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe BAT-C 208–261 kWh EU Declaration of Conformity",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe ESA 261 kWh certificate of conformity EN 50549-1 / EN 50549-10 (EN)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Certificate_EN-50549-1_EN-50549-10.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe ETR EN 50549-1 certificate",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Certificate_EN-50549-1_EN-50549-10.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe ETR EN 50549-2 certificate",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Certificate_EN-50549-2_EN-50549-10.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe ETR IEC 61727 / IEC 62116 certificate",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Certificate_IEC-61727_IEC-62116.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe ETR VDE-AR-N 4105 certificate",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Certificate_VDE-AR-N-4105.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe ETR-G10 EU Declaration of Conformity",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-G10_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe EzManager3000 EU type examination certificate EN 18031 (EN)",
+     "covers": "GoodWe EzManager3000 HEMS Gateway",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_EzManager3000_Certificate_EN-18031.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe GM330 certificate IEC 61010-1 (EN)",
+     "covers": "GoodWe GM330",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_GM330_Certificate_IEC-61010-1.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe GM330 EU Declaration of Conformity (EN)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Smart-Meter-EU_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe GMK330 certificate IEC 61010-1 (EN)",
+     "covers": "GoodWe GMK330",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_GMK120-330-360_Certificate_IEC-61010-1.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe GW112.6-BAT-AC-G10 UN38.3 Test Report",
+     "covers": "GoodWe GW112.6-BAT-AC-G10",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW112.6-BAT-AC-G10_UN38.3_Test-Report.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe GW125/261-ESA-LCN-G10 certificate IEC 62619 / IEC 62477-1 with LVD certificate of conformity (multilingual)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Certificate_IEC-62619_IEC-62477-1_LVD_2025.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe GW125/261-ESA-LCN-G10 certificate of conformity VDE-AR-N 4105 (multilingual)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Certificate_VDE-AR-N-4105.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe GW125/261-ESA-LCN-G10 EU declaration of conformity (multilingual)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "GoodWe GW125/261-ESA-LCN-G10 unit certificate VDE-AR-N 4110 / 4120 / 4130 (multilingual)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Certificate_VDE-AR-N-4110-4120-4130.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe HCA G2 EN 303 645 attestation",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_Certificate_EN-303645.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe HCA G2 IEC 61851-1 CB certificate",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_Certificate_IEC-61851-1-CB.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe HCA G2 RED EU type-examination certificate",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_Certificate_EN-18031.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe SEC3000C attestation EN 303 645 (EN)",
+     "covers": "GoodWe SEC3000C Smart Energy Controller",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_SEC3000C_Certificate_EN-303645.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "GoodWe SEC3000C certificate IEC 61010-1 (EN)",
+     "covers": "GoodWe SEC3000C Smart Energy Controller",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_SEC3000C_Certificate_IEC-61010-1.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "IEC 62109 certificate — ESA 5–30 kW ETA-G20",
+     "covers": "11 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Certificate_IEC-62109.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "IEC 62619 CB certificate — Lynx D G2 5.1/8.3 (includes G21)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Certificate_IEC-62619-CB.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "IEC 63027 certificate — ESA 5–30 kW ETA-G20",
+     "covers": "11 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Certificate_IEC-63027.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "Unit certificate VDE-AR-N 4110 / 4120, SGS 250008RECO14-CER",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-75-100kW_Certificate_VDE-AR-N-4110-4120.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "VDE-AR-N 4105 certificate — ESA 5–30 kW ETA-G20 (A3 50706429)",
+     "covers": "11 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Certificate_VDE-AR-N-4105.pdf"
+    },
+    {
+     "type": "compatibility",
+     "lang": "EN",
+     "title": "GoodWe BAT-AC-G10 compatibility statement (EN)",
+     "covers": "5 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf"
+    },
+    {
+     "type": "compatibility",
+     "lang": "DE",
+     "title": "GoodWe Battery Compatibility Overview (EMEA, DE)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-DE_20260910.pdf"
+    },
+    {
+     "type": "compatibility",
+     "lang": "EN",
+     "title": "GoodWe Battery Compatibility Overview (EMEA, EN)",
+     "covers": "14 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf"
+    },
+    {
+     "type": "warranty",
+     "lang": "EN",
+     "title": "GoodWe limited warranty for ESA 261 kWh, Europe, Rev. 1.4 (EN)",
+     "covers": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Limited-Warranty-Europe_Rev1.4.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "GoodWe BAT-C 208–261 kWh Limited Warranty (Europe)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_Limited-Warranty-Europe.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "GoodWe BAT-C 61.4–112.6 kWh Limited Warranty (Europe)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Limited-Warranty-Europe.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "GoodWe Compatibility List of Inverters and IoT Products, Version 18 (EN)",
+     "covers": "5 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Compatibility-list-of-GoodWe-inverters-and-IoT-products-EN_V18.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "MUL",
+     "title": "GoodWe ESA 5–30 kW quick installation guide (V1.7)",
+     "covers": "11 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Quick-Installation-Guide-POLY_V1.7.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "MUL",
+     "title": "GoodWe ETR quick installation guide",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR_Quick-Installation-Guide-POLY.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "GoodWe EV Charger Limited Warranty (Europe)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_EV-Charger_Europe.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "DE",
+     "title": "GoodWe inverter limited warranty for Europe (DE)",
+     "covers": "17 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe_DE.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "GoodWe inverter limited warranty for Europe (EN)",
+     "covers": "23 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "GoodWe LX D G2 battery limited warranty for the EU (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_LX-D-G2-Battery_EU.pdf"
+    }
+   ]
+  },
+  {
+   "brand": "EcoFlow",
+   "docs": [
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "OCEAN 2 Plus Single-Phase Brochure 2026-08-26 (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-plus-single-phase-brochure-en-20260826.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "OCEAN 2 Plus Single-Phase Datasheet (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "OCEAN 2 Single-Phase Hybrid Inverter Datasheet (EN)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-datasheet-en.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "OCEAN 2 three-phase datasheet (DE)",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "OCEAN 2 three-phase datasheet (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "Battery Stack Bridge Installation Guide (EN)",
+     "covers": "EcoFlow Battery Stack Bridge",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "OCEAN 2 EF BD-8-S2 User Manual V1.1 (EN)",
+     "covers": "EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "OCEAN 2 LFP Battery 5 kWh user manual V1.0 (EN, DE, FR, IT, ES, NL, SV)",
+     "covers": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "OCEAN 2 Plus P1-S2 User Manual V1.0 (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-plus-p1-s2-user-manual-v1-0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "OCEAN 2 Plus Single-Phase Installation Guide (EN)",
+     "covers": "5 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/05/EcoFlow-OCEAN-2-Plus-Single-Phase_Installation-Guide.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE",
+     "title": "OCEAN 2 Single-Phase Hybrid Inverter User Manual V1.3 (DE)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-user-manual-de-v1-3.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE",
+     "title": "OCEAN 2 Single-Phase Installation Guide V1.7 (DE)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-installation-guide-de-v1-7.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "OCEAN 2 three-phase installation guide V1.5 (EN, DE, FR, IT, ES, NL, SV)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-installation-guide-v1-5.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "OCEAN 2 three-phase user manual V1.1 (EN, DE, FR, IT, ES, NL, SV)",
+     "covers": "5 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-user-manual-v1-1.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "DEKRA Certificate of Conformity 4951182.02COC (EN 50549-1/-10)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-en50549-coc-dekra-4951182.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "OCEAN 2 Plus single-phase EN 50549-1/-10 certificate of conformity CN-PVES-260170",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-plus-single-phase-en50549-coc-cn-pves-260170.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN/DE",
+     "title": "OCEAN 2 three-phase certificate of network and system protection (NA-Schutz) CN-PVES-260043",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-na-schutz-cn-pves-260043.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "OCEAN 2 three-phase EN 50549-1/-10 certificate of conformity CN-PVES-260056R1",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-en50549-coc-cn-pves-260056r1.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN",
+     "title": "OCEAN 2 three-phase VDE-AR-N 4105 unit certificate CN-PVES-260042",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-vde-ar-n-4105-einheitenzertifikat-cn-pves-260042.pdf"
+    },
+    {
+     "type": "warranty",
+     "lang": "EN",
+     "title": "OCEAN 2 battery warranty policy for Europe, excluding Sweden, V1.7 (EN)",
+     "covers": "2 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-battery-warranty-policy-europe-v1-7-en.pdf"
+    },
+    {
+     "type": "brochure",
+     "lang": "EN",
+     "title": "OCEAN 2 Single-Phase brochure (EN)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-brochure-en.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "EU Declaration of Conformity — OCEAN 2 LFP Battery 5 kWh (EN)",
+     "covers": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-ce-declaration-en-20260402.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "OCEAN 2 Plus Single-Phase EU Declaration of Conformity (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-plus-single-phase-ce-declaration-en-20260423.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "DE",
+     "title": "OCEAN 2 three-phase EU Declaration of Conformity (DE)",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-ce-declaration-de-20260611.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "OCEAN 2 three-phase EU Declaration of Conformity (EN)",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-ce-declaration-en-20260610.pdf"
+    }
+   ]
+  },
+  {
+   "brand": "Pylontech",
+   "docs": [
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet (dimensions without inverter) (EN)",
+     "covers": "Pylontech OPTIM US L260-OMNI",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+     "covers": "Pylontech OPTIM US L260-OMNI",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)",
+     "covers": "Pylontech OPTIM US L260-OMNI",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-utility-ci-ess-product-portfolio-py2412en-sd.pdf"
+    }
+   ]
+  },
+  {
+   "brand": "SAJ",
+   "docs": [
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ ATS1 datasheet for ATS1-S63-A and ATS1-T63-A (English)",
+     "covers": "SAJ ATS1-T63-A",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0 with BU2-5.0 and BC2-HV1: datasheet (English)",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0 with BU2-5.0 and BC2-HV1: datasheet (German)",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_B2_5-25kWh_HV1-HV5_Datasheet_DE.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ CHS2 30-50K datasheet with the CB2 battery table, English (covers the CB2-100.3-HV5)",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "SAJ CHS2 30-50K datasheet with the CB2 battery table, German (covers the CB2-100.3-HV5)",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_DE.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ eManager datasheet (English)",
+     "covers": "SAJ eManager (energy management system module)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_datasheet_en_beu.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ eManager-C1 Pro datasheet, English",
+     "covers": "SAJ eManager-C1 Pro",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_emanager-datasheet.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "SAJ eManager-C1 Pro datasheet, German",
+     "covers": "SAJ eManager-C1 Pro",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_eManager-C1-Pro_Datasheet_DE.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ eSolar AIO3 datasheet (English)",
+     "covers": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ H2 10-30K datasheet, English (covers the H2-10K-T3)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "SAJ H2 15-30K datasheet, German (covers the H2-15K-T3)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_15-30K-T3_Datasheet_DE.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ HS2 three-phase all-in-one datasheet, HS2-5K to HS2-10K-T2-X (EN)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "SAJ HS2 three-phase datasheet, HS2-6K, HS2-8K and HS2-10K-T2-X (DE)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ HS3 5-12K three-phase datasheet, English (covers the HS3-10K-T2-W/G-PX)",
+     "covers": "5 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "DE",
+     "title": "SAJ HS3 5-12K three-phase datasheet, German (covers the HS3-10K-T2-W/G-PX)",
+     "covers": "5 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_5-12K-T2_Datasheet_DE.pdf"
+    },
+    {
+     "type": "datasheet",
+     "lang": "EN",
+     "title": "SAJ HS3 battery module datasheet, English, V2.1 (BU3-5.0-TV2-PRO, BC3-TV, BE3-TV)",
+     "covers": "SAJ BU3-5.0-TV2-PRO",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "SAJ ATS1-T63-A user manual, version 3.0 (English)",
+     "covers": "SAJ ATS1-T63-A",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1-T63-A_User-Manual_EN_V3.0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "SAJ B2 high-voltage battery, B2-5.0 to B2-25.0: user manual V1.2 (English)",
+     "covers": "7 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "SAJ CB2 57.3-100.3-HV5 quick installation guide, English (covers the CB2-100.3-HV5)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_Quick-Installation-Guide_EN.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "SAJ CHS2 29.9-50K user manual, English, V0.2 (covers the CHS2-29.9K-T4-X)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "SAJ eManager user manual (English)",
+     "covers": "SAJ eManager (energy management system module)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_manual_en_v3.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "SAJ eSolar AIO3 quick installation guide (English)",
+     "covers": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_quick-install-guide_en.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE/EN",
+     "title": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "DE",
+     "title": "SAJ HS2/AS2 user manual V0.3, HS2-5K to HS2-10K-T2 (DE)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf"
+    },
+    {
+     "type": "manual",
+     "lang": "EN",
+     "title": "SAJ HS3 three-phase user manual, English, V4 (covers the BU3-5.0-TV2-PRO)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "DE/EN",
+     "title": "Certificate of conformity VDE-AR-N 4105:2018-11 for the SAJ CHS2 series, German and English (names the CHS2-29.9K-T4-X)",
+     "covers": "3 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_Certificate_VDE-AR-N-4105.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN/DE",
+     "title": "EU declaration of conformity for the SAJ BU3 battery and the BC3-TV, several languages including English and German (names the BU3-5.0-TV2-PRO)",
+     "covers": "SAJ BU3-5.0-TV2-PRO",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_BU3-5.0_BC3-TV_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN/DE",
+     "title": "EU declaration of conformity for the SAJ CB2 battery systems, 13 languages including English and German (names the CB2-100.3-HV5)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN/DE",
+     "title": "EU declaration of conformity for the SAJ eManager-C1 Pro, 8 languages including English and German",
+     "covers": "SAJ eManager-C1 Pro",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_eManager-C1-Pro_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN/DE",
+     "title": "EU declaration of conformity for the SAJ H2 inverters, 13 languages including English and German (names the H2-10K-T3)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "EN/DE",
+     "title": "EU declaration of conformity for the SAJ HS3 systems, several languages including English and German (names the HS3-10K-T2-W/G-PX)",
+     "covers": "5 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_BU3_BC3-TV_EU-Declaration-of-Conformity_V2.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "EU declaration of conformity, HS2-5K to HS2-10K-T2-X (multilingual)",
+     "covers": "4 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2_BU2_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "SAJ ATS1-T63 EU declaration of conformity (multilingual)",
+     "covers": "SAJ ATS1-T63-A",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1-T63_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "SAJ B2 battery systems and BC2-HV1 control module: EU declaration of conformity (multilingual)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_B2_BC2-HV1_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "SAJ B2 battery systems and BU2-5.0 battery modules: EU declaration of conformity (multilingual)",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_B2_BU2-5.0_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "certificate",
+     "lang": "MUL",
+     "title": "SAJ eSolar AIO3 EU declaration of conformity (multilingual)",
+     "covers": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_eSolar-AIO3_EU-Declaration-of-Conformity.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "SAJ Configuration Instructions for H2, HS2/AS2 and HS3/AS3 systems, with the eManager in parallel systems (English)",
+     "covers": "16 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
+    },
+    {
+     "type": "document",
+     "lang": "EN",
+     "title": "SAJ limited warranty terms for HS3 products in the European market, English",
+     "covers": "6 products",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3_warranty_en_2025-08.pdf"
+    }
+   ]
+  }
+ ]
+}
