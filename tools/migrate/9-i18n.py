@@ -127,7 +127,13 @@ PAGE_BASES: dict[str, str] = {
     "products": "produkte",
 }
 
-TRANSLATED_TYPES = ("page", "post", "product", "lc_partial", "lc_dynamic_template")
+# Content types the migration translates. lc_partial and lc_dynamic_template
+# are NOT here on purpose: their German twins are owned by the repository's
+# presentation channel (`present`), and this script writing their post_content
+# made it the second writer — on 2026-10-15 it overwrote the freshly deployed
+# German header, footer and page-type templates with the old site's payload
+# (issue #182). Pairing of those objects is `linker-i18n repair-partials`' job.
+TRANSLATED_TYPES = ("page", "post", "product")
 # What the old German sitemap lists (/de-sitemap.xml: pages, posts, products, product categories).
 SITEMAP_KINDS = ("page", "post", "product", "product_cat")
 PRODUCT_TAXONOMIES = ("product_cat",)
