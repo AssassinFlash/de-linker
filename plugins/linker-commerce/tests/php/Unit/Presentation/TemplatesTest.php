@@ -60,7 +60,7 @@ final class TemplatesTest extends TestCase {
 			$this->assertNotSame( '', trim( $html ) );
 		}
 		$single = (string) file_get_contents( $paths['is_single_product'] );
-		$this->assertStringContainsString( 'class="pdp-layout"', $single );
+		$this->assertStringContainsString( 'class="pdp-layout sf-container"', $single );
 		$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $single );
 		$this->assertStringContainsString( '[linker_pdp_tools]', $single );
 		$this->assertStringContainsString( '[lc_if condition="linker_commerce_pdp_has_pairings"]', $single );
@@ -102,6 +102,63 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( '>Produkte</a>', $german );
 		$this->assertStringContainsString( '[linker_pdp_gallery_pair]', $german );
 		$this->assertStringNotContainsString( '>Products</a>', $german );
+
+		// The product page's upper half ends with the inquiry rail (#174): the
+		// gallery, the intro and the rail are the page's one grid, the sticky
+		// section nav and every content block sit after it, and the rail keeps
+		// the inquiry copy in its own order. The rail is sticky inside that
+		// grid only, which is what keeps it off the blocks below.
+		foreach ( array( 'is_single_product', 'is_single_product__de' ) as $page ) {
+			$html = (string) file_get_contents( $paths[ $page ] );
+
+			$upper   = strpos( $html, 'class="pdp-layout sf-container"' );
+			$gallery = strpos( $html, 'class="pdp-gallery"' );
+			$rail    = strpos( $html, 'class="pdp-purchase"' );
+			$intro   = strpos( $html, 'class="pdp-intro"' );
+			$nav     = strpos( $html, 'class="pdp-section-nav"' );
+			$content = strpos( $html, 'class="pdp-content"' );
+			$stats   = strpos( $html, 'id="stats"' );
+
+			$this->assertNotFalse( $upper );
+			$this->assertNotFalse( $gallery );
+			$this->assertNotFalse( $rail );
+			$this->assertNotFalse( $intro );
+			$this->assertNotFalse( $nav );
+			$this->assertNotFalse( $content );
+			$this->assertNotFalse( $stats );
+			// The three upper children, then the nav and the lower blocks.
+			$this->assertLessThan( $rail, $gallery );
+			$this->assertLessThan( $intro, $rail );
+			$this->assertLessThan( $nav, $intro );
+			$this->assertLessThan( $content, $nav );
+			$this->assertLessThan( $stats, $content );
+
+			$this->assertStringContainsString( 'class="pdp-rail-fade pdp-rail-fade-top"', $html );
+			$this->assertStringContainsString( 'class="pdp-rail-fade pdp-rail-fade-bottom"', $html );
+
+			// The rail's own order: identity, price, key figures, availability,
+			// the primary action, the contact action, the tool row, the project
+			// entry — unchanged by the redesign, design only.
+			$sequence = array(
+				'[linker_pdp_price]',
+				'[linker_pdp_key_stats]',
+				'[linker_pdp_availability]',
+				'[linker_pdp_cta]',
+				'[linker_pdp_ask]',
+				'[linker_pdp_tools]',
+				'class="pdp-project-check"',
+			);
+			$position = strpos( $html, (string) $sequence[0] );
+			$this->assertNotFalse( $position );
+			foreach ( \array_slice( $sequence, 1 ) as $step ) {
+				$next = strpos( $html, (string) $step );
+				$this->assertNotFalse( $next );
+				$this->assertGreaterThan( $position, $next );
+				$position = $next;
+			}
+			// The project entry closes the rail, before the nav.
+			$this->assertLessThan( $nav, $position );
+		}
 
 		// The blog single face: the article's two data areas are the plugin's
 		// own shortcodes (the live face resolved them with template loops),
