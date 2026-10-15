@@ -33,14 +33,27 @@ function submit(form){
  return event;
 }
 
-test('a submitted account form marks its button as loading',()=>{
+test('a submitted account form marks its button as loading, and never disables it',()=>{
  const win=account();
  const button=win.document.querySelector('button[type="submit"]');
  win.document.querySelector('[name="username"]').value='maria@muster-solar.de';
  submit(win.document.getElementById('signin'));
  assert.equal(button.classList.contains('is-loading'),true);
  assert.equal(button.getAttribute('aria-busy'),'true');
- assert.equal(button.disabled,true);
+ // WooCommerce reads the pressed button's own name and value, and a disabled
+ // control is left out of the submission.
+ assert.equal(button.disabled,false);
+});
+
+test('a second submit while the first is in flight does not post again',()=>{
+ const win=account();
+ const form=win.document.getElementById('signin');
+ form.querySelector('[name="username"]').value='maria@muster-solar.de';
+ const first=submit(form);
+ assert.equal(first.defaultPrevented,false);
+ const second=submit(form);
+ assert.equal(second.defaultPrevented,true);
+ assert.equal(form.dataset.accountState,'submitting');
 });
 
 test('a form the browser reports invalid keeps its button untouched',()=>{

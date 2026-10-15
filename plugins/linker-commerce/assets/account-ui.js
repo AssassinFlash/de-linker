@@ -32,6 +32,9 @@
 	// One submission at a time: the pressed button reports that it is working.
 	// The browser's own field validation still runs first, so an empty required
 	// field keeps its native message instead of a button that never lands.
+	// The button is never disabled: WooCommerce reads the pressed button's own
+	// name and value (`login`, `register`, `save_account_details`), and a
+	// disabled control is left out of the submission.
 	document.addEventListener(
 		'submit',
 		( event ) => {
@@ -53,13 +56,17 @@
 			if ( typeof form.checkValidity === 'function' && ! form.checkValidity() ) {
 				return;
 			}
+			if ( 'submitting' === form.dataset.accountState ) {
+				event.preventDefault();
+				return;
+			}
+			form.dataset.accountState = 'submitting';
 			const button = form.querySelector( 'button[type="submit"], input[type="submit"]' );
 			if ( ! button ) {
 				return;
 			}
 			button.classList.add( 'is-loading' );
 			button.setAttribute( 'aria-busy', 'true' );
-			button.disabled = true;
 		},
 		true
 	);
