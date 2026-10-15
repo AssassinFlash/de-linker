@@ -5,7 +5,7 @@
   "instance": {
     "name": "a176",
     "wordpress": "http://127.0.0.1:9018",
-    "assembly": "gzip-installed snapshot instance (uploads = the live files); plugins symlinked to this checkout; after the rework: `PHP=/opt/homebrew/opt/php@8.3/bin/php just present a176` and `just windpress-compile a176` (cache recompiled 1792073447 -> 1792078648, anchor classes present), `just serve a176` for the engine/Genie the e2e runner health-checks"
+    "assembly": "gzip-installed snapshot instance (uploads = the live files); plugins symlinked to this checkout; after the rework: `PHP=/opt/homebrew/opt/php@8.3/bin/php just present a176` and `just windpress-compile a176` (cache recompiled 1792073447 -> 1792078648, anchor classes present), `just serve a176` for the engine/Genie the e2e runner health-checks; a final `origin/main` merge was resolved in WindPressCacheTest's anchor list (#174's pdp-intro/pdp-section-nav together with this page's .linker-library-*), after which present + windpress-compile were re-run in that order and both pages re-checked (EN 709,972 bytes, DE 728,466 bytes, 160 rows all carrying has-tile)"
   },
   "checks": [
     {
@@ -46,7 +46,7 @@
     {
       "name": "linker-commerce: PHPCS, PHPStan, PHPUnit",
       "command": "cd plugins/linker-commerce && PHP=/opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpcs -q && vendor/bin/phpstan analyse --no-progress --memory-limit=-1 && vendor/bin/phpunit",
-      "result": "phpcs clean; PHPStan 0 errors; PHPUnit OK (1037 tests, 5018 assertions, 54 skipped — the skips are the instance-needing integration tests). New this round: DocumentThumbnailsTest (5), TradeRulesTest (4), plus the manifest-hit and constant-slot cases in LibraryPageTest, and the config's dead keys asserted absent."
+      "result": "phpcs clean; PHPStan 0 errors; PHPUnit OK (1037 tests, 5018 assertions at the rework commit, 1045 / 5109 on the delivered tree: #174's tests arrive with the origin/main merge; 54 skipped are the instance-needing integration tests). New this round: DocumentThumbnailsTest (5), TradeRulesTest (4), plus the manifest-hit and constant-slot cases in LibraryPageTest, and the config's dead keys asserted absent."
     },
     {
       "name": "The plugins' script tests (node --test, jsdom through plugins/linker-tools)",
