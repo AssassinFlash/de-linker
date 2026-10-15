@@ -102,8 +102,8 @@
 
 ## 六、测试与验收
 
-- PHP：`composer install` 后 `vendor/bin/phpcs -q`（0 error）、`vendor/bin/phpstan analyse --memory-limit=-1`（level 8，0 error）、`vendor/bin/phpunit --testsuite unit`（982 tests 全绿，含 `AuthTemplatesTest` / `PendingGateTest` / `LoginGateTest` / `AccountTemplatesTest` / `DocumentsTest` / 两个 `ModuleTest` 的新断言）。
-- JS：`node --test plugins/linker-commerce/tests/js/*.test.mjs`（25 tests，含 `account-ui.test.mjs` 的 7 条：提交态不禁用按钮、提交中不重发、原生校验优先、不一致阻止提交并给字段、不一致被打回后按钮复活、行随打字清除、一致时提交）。
+- PHP：`composer install` 后 `vendor/bin/phpcs -q`（0 error）、`vendor/bin/phpstan analyse --memory-limit=-1`（level 8，0 error）、`vendor/bin/phpunit --testsuite unit`（999 tests 全绿，含 `AuthTemplatesTest` / `PendingGateTest` / `LoginGateTest` / `AccountTemplatesTest` / `DocumentsTest` / 两个 `ModuleTest` 的新断言）。
+- JS：`node --test plugins/linker-commerce/tests/js/*.test.mjs`（45 tests，含 `account-ui.test.mjs` 的 7 条：提交态不禁用按钮、提交中不重发、原生校验优先、不一致阻止提交并给字段、不一致被打回后按钮复活、行随打字清除、一致时提交）。
 - e2e（`tests/e2e`，实例 a184 + `just serve`）：`specs/account.spec.ts` 12 项、`specs/empty-draft.spec.ts` 4 项、`specs/commerce.spec.ts` 2 项 **全过**。断言随新结构更新：登出选择器改 `action=logout`、登出后断言 signed-out notice、门禁选择器改 `.linker-gate` / `.linker-gate-genie-pill`、Proforma 下载从列表行（已无行内下载）改到询盘详情页的 `[data-action="proforma"]`。
 - **忘记密码的真实夹具（评审 S10）**：两个语言的用例续跑整条重置链——WP-CLI 读账号自己的 `get_password_reset_key()`，`goto <lost>?show-reset-form=true&key=…&id=…` 打开重置卡，断言卡标题 / `#password_1` / `#password_2` / `reset_key` / `reset_login` / `woocommerce-reset-password-nonce` 都非空；再断言弱密码被 Woo 自带强度计挡在页面内（按钮 disabled，服务端无强度门）、两个不同密码由链自己的行当场指出（不发请求），最后用同一个卡真正保存新密码 → 落到登录卡带 Woo 的确认条 → 用新密码登录成功。德语 restricted 门禁同样有真夹具用例（德语句子 + 邮件链接 + 原因 notice 有底色）。
 - **提交态不能禁用按钮**：WooCommerce 读的是被按下的按钮自身的 name/value（`login`、`register`、`save_account_details`），`disabled` 的控件不进提交数据——早先版本在提交瞬间禁用按钮，登录/注册会静默不生效（真实夹具 e2e 抓到）。`account-ui.js` 只用 `.is-loading` + `aria-busy` 表状态，重复提交由表单自身的 `data-account-state` 挡回；回归测试在 `tests/js/account-ui.test.mjs`。
