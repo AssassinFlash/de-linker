@@ -201,7 +201,7 @@ final class LoginGate {
 	 * @param string $text  The badge's word, escaped.
 	 */
 	private function badge( string $state, string $text ): string {
-		$clock = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.6V12l3.2 2"/></svg>';
+		$clock  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.6V12l3.2 2"/></svg>';
 		$shield = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 19 6v5.6c0 4.2-2.9 8-7 9.4-4.1-1.4-7-5.2-7-9.4V6Z"/><path d="M12 9.2v3.7"/><path d="M12 16.1h.01"/></svg>';
 		return sprintf(
 			'<span class="linker-gate-badge is-%1$s">%2$s<span>%3$s</span></span>',

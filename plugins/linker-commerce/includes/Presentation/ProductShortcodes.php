@@ -1875,7 +1875,7 @@ final class ProductShortcodes {
 			// The sign-out entry is Woo's nonce-carrying URL (one click, ticket
 			// #184); the plain endpoint URL would ask for confirmation first.
 			foreach ( wc_get_account_menu_items() as $endpoint => $label ) {
-				$url = 'customer-logout' === $endpoint && function_exists( 'linker_commerce_logout_url' ) ? linker_commerce_logout_url() : esc_url_raw( wc_get_account_endpoint_url( $endpoint ) );
+				$url   = 'customer-logout' === $endpoint && function_exists( 'linker_commerce_logout_url' ) ? linker_commerce_logout_url() : esc_url_raw( wc_get_account_endpoint_url( $endpoint ) );
 				$html .= '<a class="tv-b2b-acct-link' . ( 'customer-logout' === $endpoint ? ' is-out' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
 			}
 		} else {

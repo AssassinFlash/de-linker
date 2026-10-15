@@ -303,10 +303,10 @@ final class LoginGateTest extends TestCase {
 	 * The draft condition the gate reads, answered with the given draft. The
 	 * cart itself is the shared WC_Cart double.
 	 *
-	 * @param bool $empty Whether the solution draft holds nothing.
+	 * @param bool $vacant Whether the solution draft holds nothing.
 	 */
-	private function cart( bool $empty ): void {
+	private function cart( bool $vacant ): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
-		$this->cart_is( $empty );
+		$this->cart_is( $vacant );
 	}
 }

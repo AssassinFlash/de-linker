@@ -31,39 +31,39 @@ final class WindPressCache {
 	 * @var array<string, string>
 	 */
 	private const ANCHOR_CLASSES = array(
-		'py-10'                 => '.py-10',
-		'px-4'                  => '.px-4',
-		'bg-white'              => '.bg-white',
-		'max-w-[1160px]'        => '.max-w-\\[1160px\\]',
-		'text-[#0c7f73]'        => '.text-\\[\\#0c7f73\\]',
-		'lg:grid-cols-3'        => '.lg\\:grid-cols-3',
-		'text-(--proto-accent)' => '.text-\\(--proto-accent\\)',
-		'overflow-x-auto'       => '.overflow-x-auto',
-		'object-contain'        => '.object-contain',
-		'gap-8'                 => '.gap-8',
+		'py-10'                  => '.py-10',
+		'px-4'                   => '.px-4',
+		'bg-white'               => '.bg-white',
+		'max-w-[1160px]'         => '.max-w-\\[1160px\\]',
+		'text-[#0c7f73]'         => '.text-\\[\\#0c7f73\\]',
+		'lg:grid-cols-3'         => '.lg\\:grid-cols-3',
+		'text-(--proto-accent)'  => '.text-\\(--proto-accent\\)',
+		'overflow-x-auto'        => '.overflow-x-auto',
+		'object-contain'         => '.object-contain',
+		'gap-8'                  => '.gap-8',
 		// The replica templates' anchors (#16): their rules live in the
 		// WindPress volume stylesheets, so a missing selector is the alarm for
 		// a volume file that never made it into the compile, or a shortcode
 		// parser that ate a class out of a template.
-			'sf-products'       => '.sf-products',
-		'product-grid'          => '.product-grid',
-		'sf-card'               => '.sf-card',
-		'wb-strip'              => '.wb-strip',
-		'pdp-layout'            => '.pdp-layout',
-		'pdp-purchase'          => '.pdp-purchase',
-		'pdp-scene-reel'        => '.pdp-scene-reel',
-		'pdp-disclose'          => '.pdp-disclose',
+			'sf-products'        => '.sf-products',
+		'product-grid'           => '.product-grid',
+		'sf-card'                => '.sf-card',
+		'wb-strip'               => '.wb-strip',
+		'pdp-layout'             => '.pdp-layout',
+		'pdp-purchase'           => '.pdp-purchase',
+		'pdp-scene-reel'         => '.pdp-scene-reel',
+		'pdp-disclose'           => '.pdp-disclose',
 		// The blog single face: every one of its rules lives in the volume file
 		// blog.css, so this id is the alarm for that file never reaching the
 		// compile — the face would render as unstyled markup.
-		'tv-blog-single-v1'     => '#tv-blog-single-v1',
+		'tv-blog-single-v1'      => '#tv-blog-single-v1',
 		// The account chain (ticket #184): the guest cards and the gates live in
 		// auth.css, the workspace in account.css; each file's own anchor is the
 		// alarm for that file never reaching the compile.
-		'linker-auth-card'      => '.linker-auth-card',
-		'linker-gate'           => '.linker-gate',
+		'linker-auth-card'       => '.linker-auth-card',
+		'linker-gate'            => '.linker-gate',
 		'linker-account-welcome' => '.linker-account-welcome',
-		'linker-account-pill'   => '.linker-account-pill',
+		'linker-account-pill'    => '.linker-account-pill',
 	);
 
 	/**

@@ -23,12 +23,12 @@ ob_start();
 do_action( 'woocommerce_before_customer_login_form' );
 $auth_notices = (string) ob_get_clean();
 // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Presentation only; Woo owns verification and processing.
-$register_notice  = isset( $_POST['register'] );
-$registration     = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
-$brand_logo       = plugins_url( 'assets/linker-logo-wordmark.png', dirname( __DIR__, 3 ) . '/linker-commerce.php' );
-$brand_check      = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
-$brand_documents  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
-$brand_workspace  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>';
+$register_notice = isset( $_POST['register'] );
+$registration    = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
+$brand_logo      = plugins_url( 'assets/linker-logo-wordmark.png', dirname( __DIR__, 3 ) . '/linker-commerce.php' );
+$brand_check     = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+$brand_documents = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
+$brand_workspace = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>';
 ?>
 <div class="linker-auth" id="customer_login">
 	<div class="linker-auth-inner">

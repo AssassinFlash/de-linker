@@ -145,7 +145,7 @@ final class AccountTemplatesTest extends TestCase {
 		$order->allows( 'get_date_created' )->andReturn( null );
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
-		$first  = Mockery::mock( \WC_Order_Item_Product::class );
+		$first = Mockery::mock( \WC_Order_Item_Product::class );
 		$first->allows( 'get_quantity' )->andReturn( 2 );
 		$second = Mockery::mock( \WC_Order_Item_Product::class );
 		$second->allows( 'get_quantity' )->andReturn( 1 );

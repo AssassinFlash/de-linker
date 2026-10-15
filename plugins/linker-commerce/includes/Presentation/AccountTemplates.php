@@ -785,21 +785,21 @@ final class AccountTemplates {
 			$count += $item->get_quantity();
 		}
 			return array(
-				'order'          => $order,
-				'id'             => $order->get_id(),
-				'number'         => $order->get_order_number(),
-				'status'         => wc_get_order_status_name( $order->get_status() ),
-				'status-slug'    => $order->get_status(),
-				'date'           => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
-				'total'          => $order->get_formatted_order_total(),
-				'url'            => $order->get_view_order_url(),
-				'items-count'    => (string) $count,
-				'items-summary'  => self::items_summary( $count ),
+				'order'           => $order,
+				'id'              => $order->get_id(),
+				'number'          => $order->get_order_number(),
+				'status'          => wc_get_order_status_name( $order->get_status() ),
+				'status-slug'     => $order->get_status(),
+				'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
+				'total'           => $order->get_formatted_order_total(),
+				'url'             => $order->get_view_order_url(),
+				'items-count'     => (string) $count,
+				'items-summary'   => self::items_summary( $count ),
 				/* translators: %s: inquiry number. */
-				'view-aria'      => sprintf( __( 'View inquiry %s', 'linker-commerce' ), '#' . $order->get_order_number() ),
-				'proforma'       => InquiryList::has_proforma( $order ) ? '1' : '',
+				'view-aria'       => sprintf( __( 'View inquiry %s', 'linker-commerce' ), '#' . $order->get_order_number() ),
+				'proforma'        => InquiryList::has_proforma( $order ) ? '1' : '',
 				'proforma_number' => InquiryList::proforma_number( $order ),
-				'proforma_url'   => InquiryList::has_proforma( $order ) ? DocumentDownload::proforma_url( $order ) : '',
+				'proforma_url'    => InquiryList::has_proforma( $order ) ? DocumentDownload::proforma_url( $order ) : '',
 			);
 	}
 
