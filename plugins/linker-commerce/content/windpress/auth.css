@@ -70,7 +70,7 @@
 /* One button vocabulary for the chain: the prototype's pill, primary or ghost
  * (the workspace's own .linker-account-btn lives in account.css). */
 .linker-auth .linker-auth-card :is(.button, .linker-auth-btn),
-.linker-gate .linker-gate-col .linker-gate-btn,
+.linker-gate .linker-gate-btn,
 .linker-account .linker-account-content .button {
 	display: inline-flex;
 	align-items: center;
@@ -93,7 +93,7 @@
 }
 
 .linker-auth .linker-auth-card :is(.button, .linker-auth-btn):hover,
-.linker-gate .linker-gate-col .linker-gate-btn.is-primary:hover,
+.linker-gate .linker-gate-btn.is-primary:hover,
 .linker-account .linker-account-content .button:hover {
 	background: var(--proto-teal-700);
 	box-shadow: 0 8px 20px rgba(12, 127, 115, 0.32);
@@ -103,33 +103,33 @@
 }
 
 .linker-auth .linker-auth-card :is(.button, .linker-auth-btn):active,
-.linker-gate .linker-gate-col .linker-gate-btn:active,
+.linker-gate .linker-gate-btn:active,
 .linker-account .linker-account-content .button:active { transform: translateY(0) scale(0.99); }
 
 .linker-auth .linker-auth-card :is(.button, .linker-auth-btn):focus-visible,
-.linker-gate .linker-gate-col .linker-gate-btn:focus-visible,
+.linker-gate .linker-gate-btn:focus-visible,
 .linker-account .linker-account-content .button:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 3px; }
 
-.linker-gate .linker-gate-col .linker-gate-btn.is-ghost {
+.linker-gate .linker-gate-btn.is-ghost {
 	background: transparent;
 	color: var(--proto-teal-700);
 	box-shadow: inset 0 0 0 1.5px var(--proto-teal-200);
 }
 
-.linker-gate .linker-gate-col .linker-gate-btn.is-ghost:hover { background: var(--proto-teal-50); }
+.linker-gate .linker-gate-btn.is-ghost:hover { background: var(--proto-teal-50); }
 
 /* The submit state (assets/account-ui.js): the button reports the post it is
  * in, the way the prototype's .btn.is-loading does. */
 .linker-auth .linker-auth-card :is(.button, .linker-auth-btn),
-.linker-gate .linker-gate-col .linker-gate-btn,
+.linker-gate .linker-gate-btn,
 .linker-account .linker-account-content .button { position: relative; }
 
 .linker-auth .linker-auth-card :is(.button, .linker-auth-btn).is-loading,
-.linker-gate .linker-gate-col .linker-gate-btn.is-loading,
+.linker-gate .linker-gate-btn.is-loading,
 .linker-account .linker-account-content .button.is-loading { opacity: 0.75; pointer-events: none; }
 
 .linker-auth .linker-auth-card :is(.button, .linker-auth-btn).is-loading::after,
-.linker-gate .linker-gate-col .linker-gate-btn.is-loading::after,
+.linker-gate .linker-gate-btn.is-loading::after,
 .linker-account .linker-account-content .button.is-loading::after {
 	content: "";
 	width: 18px;
@@ -140,7 +140,7 @@
 	animation: linker-account-spin 0.8s linear infinite;
 }
 
-.linker-gate .linker-gate-col .linker-gate-btn.is-ghost.is-loading::after,
+.linker-gate .linker-gate-btn.is-ghost.is-loading::after,
 .linker-account .linker-account-content .button.is-ghost.is-loading::after {
 	border-color: var(--proto-teal-200);
 	border-top-color: var(--proto-teal-700);
