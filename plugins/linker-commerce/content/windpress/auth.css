@@ -251,11 +251,14 @@
 .linker-auth-brand { display: none; }
 
 /* The theme's own element rules (`p { color: … }`, `h1 { color: … }`) apply
- * directly to these children and beat the panel's inherited colour, so each
- * text line names its colour. */
+ * directly to these children and beat the panel's inherited colour, so the
+ * reset below makes the panel's own colour the default and each named line
+ * sets its own (both carry one more class than the reset). */
 .linker-auth-brand :is(h1, h2, p, span, strong) { color: inherit; }
 
-.linker-auth-brand-title { color: #eaf4f2; }
+.linker-auth-brand .linker-auth-brand-title { color: #eaf4f2; }
+
+.linker-auth-brand .linker-auth-brand-sub { color: #b9d6d1; }
 
 @media (min-width: 1080px) {
 	.linker-auth-brand {
@@ -286,7 +289,7 @@
 	letter-spacing: -0.02em;
 }
 
-.linker-auth-brand-sub { margin: 0; font-size: 15px; color: #b9d6d1; }
+.linker-auth-brand-sub { margin: 0; font-size: 15px; }
 
 .linker-auth-brand-points { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
 
