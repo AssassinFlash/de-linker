@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Documents · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Page-local additions to app.css (its tokens and components, unchanged):
+     .ws-main fills the workspace's second column; .doc-* is the document row. */
+  .ws-main { display: grid; gap: 24px; align-content: start; min-width: 0; }
+  .doc-list { list-style: none; margin: 0; padding: 6px 22px; }
+  .doc-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--teal-50); color: var(--teal-700); display: grid; place-items: center; flex: none; }
+  .doc-dl { min-height: 44px; padding: 0 20px; font-size: 14.5px; }
+  /* app.css ships the spinner in primary colours only; a ghost pill needs the teal one. */
+  .doc-dl .spinner { border-color: var(--teal-200); border-top-color: var(--teal-700); }
+  @media (max-width: 640px) {
+    .doc-row { flex-wrap: wrap; row-gap: 12px; }
+    .doc-row .r-end { flex: 1 1 100%; }
+    .doc-dl { width: 100%; }
+  }
+  .doc-empty p:last-child { margin-bottom: 0; }
+  /* the ?empty=1 view swap, applied before first paint by the head script */
+  html.is-empty #view-list, html.no-empty #view-empty { display: none; }
+  .proto-note a[aria-current="page"] { color: var(--teal-700); font-weight: 700; }
+</style>
+<script>document.documentElement.classList.add(new URLSearchParams(location.search).get("empty") === "1" ? "is-empty" : "no-empty");</script>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language" data-t-aria="langLabel">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<div class="ws">
+
+  <aside class="ws-side">
+    <nav class="ws-nav" aria-label="Account" data-t-aria="navAccount">
+      <div class="group" data-t="groupWork"></div>
+      <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span data-t="navOverview"></span>
+      </a>
+      <a href="inquiries.html" data-lang-href="inquiries.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span data-t="navInquiries"></span>
+      </a>
+      <a href="solutions.html" data-lang-href="solutions.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        <span data-t="navSolutions"></span>
+      </a>
+      <a href="documents.html" data-lang-href="documents.html" class="is-on" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        <span data-t="navDocuments"></span>
+      </a>
+      <div class="group" data-t="groupAccount"></div>
+      <a href="company.html" data-lang-href="company.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        <span data-t="navCompany"></span>
+      </a>
+      <a href="account-details.html" data-lang-href="account-details.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span data-t="navAccountDetails"></span>
+      </a>
+      <a href="login.html?state=signed-out" data-lang-href="login.html?state=signed-out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        <span data-t="navLogout"></span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="ws-main">
+    <header class="ws-head">
+      <h1 data-t="title"></h1>
+    </header>
+
+    <div id="view-list">
+      <div class="panel">
+        <ul class="doc-list">
+
+          <li class="row doc-row">
+            <span class="doc-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 15l3-3 2 2 3-4"/></svg>
+            </span>
+            <div class="r-main">
+              <div class="r-title" data-t="report1"></div>
+              <div class="r-sub" data-t="date1"></div>
+            </div>
+            <div class="r-end">
+              <a class="btn btn-ghost doc-dl" href="#" data-download>
+                <span class="spinner" hidden></span><span data-t="download"></span>
+              </a>
+            </div>
+          </li>
+
+          <li class="row doc-row">
+            <span class="doc-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg>
+            </span>
+            <div class="r-main">
+              <div class="r-title" data-t="proforma1"></div>
+              <div class="r-sub" data-t="date2"></div>
+            </div>
+            <div class="r-end">
+              <a class="btn btn-ghost doc-dl" href="#" data-download>
+                <span class="spinner" hidden></span><span data-t="download"></span>
+              </a>
+            </div>
+          </li>
+
+          <li class="row doc-row">
+            <span class="doc-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 15l3-3 2 2 3-4"/></svg>
+            </span>
+            <div class="r-main">
+              <div class="r-title" data-t="report2"></div>
+              <div class="r-sub" data-t="date3"></div>
+            </div>
+            <div class="r-end">
+              <a class="btn btn-ghost doc-dl" href="#" data-download>
+                <span class="spinner" hidden></span><span data-t="download"></span>
+              </a>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+
+    <div id="view-empty">
+      <div class="panel">
+        <div class="empty doc-empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-3a2 2 0 0 1-2-2V2"/><path d="M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h6.5L20 6v10a2 2 0 0 1-2 2Z"/><path d="M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8"/></svg>
+          <p data-t="emptyText"></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<nav class="ws-tabs" aria-label="Account menu" data-t-aria="tabAccount">
+  <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+    <span data-t="navOverview"></span>
+  </a>
+  <a href="inquiries.html" data-lang-href="inquiries.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+    <span data-t="navInquiries"></span>
+  </a>
+  <a href="documents.html" data-lang-href="documents.html" class="is-on" aria-current="page">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+    <span data-t="navDocuments"></span>
+  </a>
+  <a href="account-details.html" data-lang-href="account-details.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-t="navAccount"></span>
+  </a>
+</nav>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">three documents</a> ·
+  <a data-state-link="empty">empty</a> ·
+  <a data-state-link="loading">download loading</a>
+</p>
+
+<script>
+const STR = {
+  en: {
+    title: "Documents",
+    langLabel: "Language",
+    navAccount: "Account",
+    tabAccount: "Account menu",
+    groupWork: "Workplace",
+    groupAccount: "Account",
+    navOverview: "Overview",
+    navInquiries: "Inquiries",
+    navSolutions: "Saved solutions",
+    navDocuments: "Documents",
+    navCompany: "Company",
+    navAccountDetails: "Account details",
+    navLogout: "Log out",
+    report1: "Design report: Residential 10 kWh",
+    date1: "12 October 2026",
+    proforma1: "Proforma invoice PI-2026-041",
+    date2: "6 October 2026",
+    report2: "Design report: Residential 5 kWh",
+    date3: "28 September 2026",
+    download: "Download (PDF)",
+    emptyText: "Your Proforma invoices and the design reports of your saved solutions will appear here."
+  },
+  de: {
+    title: "Dokumente",
+    langLabel: "Sprache",
+    navAccount: "Konto",
+    tabAccount: "Kontomenü",
+    groupWork: "Arbeitsbereich",
+    groupAccount: "Konto",
+    navOverview: "Übersicht",
+    navInquiries: "Anfragen",
+    navSolutions: "Gespeicherte Lösungen",
+    navDocuments: "Dokumente",
+    navCompany: "Unternehmen",
+    navAccountDetails: "Kontodetails",
+    navLogout: "Abmelden",
+    report1: "Auslegungsbericht: Heimspeicher 10 kWh",
+    date1: "12. Oktober 2026",
+    proforma1: "Proformarechnung PI-2026-041",
+    date2: "6. Oktober 2026",
+    report2: "Auslegungsbericht: Heimspeicher 5 kWh",
+    date3: "28. September 2026",
+    download: "Herunterladen (PDF)",
+    emptyText: "Hier erscheinen Ihre Proformarechnungen und die Auslegungsberichte Ihrer gespeicherten Lösungen."
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const state = params.get("state") || "default";
+document.documentElement.lang = lang;
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const key = el.dataset.t;
+  if (STR[lang][key]) el.textContent = STR[lang][key];
+}
+for (const el of document.querySelectorAll("[data-t-aria]")) {
+  const key = el.dataset.tAria;
+  if (STR[lang][key]) el.setAttribute("aria-label", STR[lang][key]);
+}
+// every link to another prototype page keeps the language
+for (const el of document.querySelectorAll("[data-lang-href]")) {
+  const [path, query] = el.dataset.langHref.split("?");
+  const p = new URLSearchParams(query || "");
+  p.set("lang", lang);
+  el.href = path + "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search);
+  p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const target = el.dataset.stateLink;
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang);
+  if (target === "empty") { p.set("empty", "1"); p.delete("state"); }
+  else if (target === "default") { p.delete("empty"); p.delete("state"); }
+  else { p.delete("empty"); p.set("state", target); }
+  el.href = "?" + p.toString();
+  if (target === (params.get("empty") === "1" ? "empty" : state)) el.setAttribute("aria-current", "page");
+}
+
+function setLoading(button, on) {
+  button.classList.toggle("is-loading", on);
+  button.querySelector(".spinner").hidden = !on;
+}
+
+// the private, nonce-signed download URL is not on the prototype; the click shows the state.
+for (const link of document.querySelectorAll("[data-download]")) {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (link.classList.contains("is-loading")) return;
+    setLoading(link, true);
+    setTimeout(() => setLoading(link, false), 1200);
+  });
+}
+if (state === "loading") {
+  const button = document.querySelector("#view-list .doc-dl");
+  if (button) setLoading(button, true);
+}
+</script>
+</body>
+</html>

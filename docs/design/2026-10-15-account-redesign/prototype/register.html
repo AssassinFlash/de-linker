@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Create your business account · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Page-local additions (prefix .reg-). app.css has no legal-links row for
+     the block above a submit button, and no item spacing inside a notice list. */
+  .reg-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 20px; margin: 4px 0 16px; font-size: 13.5px; color: var(--muted); }
+  .reg-legal a { font-weight: 600; }
+  .reg-err-list li + li { margin-top: 6px; }
+  /* app.css marks [aria-invalid] on .input only; a select keeps its own rule. */
+  .reg-select[aria-invalid="true"] { background-color: var(--danger-bg); border-color: var(--danger); }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<main class="auth">
+  <div class="auth-inner">
+
+    <aside class="brand" aria-hidden="true">
+      <img src="assets/logo-wordmark.png" alt="">
+      <div>
+        <h1 data-t="brandTitle"></h1>
+        <p data-t="brandSub"></p>
+      </div>
+      <ul>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-t="brandPoint1"></span></li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span data-t="brandPoint2"></span></li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg><span data-t="brandPoint3"></span></li>
+      </ul>
+    </aside>
+
+    <section class="card" aria-labelledby="register-title">
+      <header>
+        <h1 id="register-title" data-t="title"></h1>
+        <p class="sub" data-t="sub"></p>
+      </header>
+
+      <div id="notice-slot"></div>
+
+      <form id="register-form" method="post" novalidate>
+        <ol class="steps">
+
+          <li class="step">
+            <h2 class="step-title"><span class="step-index" aria-hidden="true">1</span><span data-t="step1"></span></h2>
+
+            <div class="field">
+              <label for="billing_company"><span data-t="labelCompany"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="billing_company" name="billing_company" type="text" autocomplete="organization" value="Muster Solar GmbH" required aria-required="true">
+            </div>
+
+            <div class="field">
+              <label for="linker_customer_role"><span data-t="labelBusinessType"></span> <span class="req" aria-hidden="true">*</span></label>
+              <select class="reg-select" id="linker_customer_role" name="linker_customer_role" required aria-required="true">
+                <option value="" data-t="optChoose"></option>
+                <option value="installer" selected data-t="optInstaller"></option>
+                <option value="epc" data-t="optEpc"></option>
+                <option value="distributor" data-t="optDistributor"></option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="billing_vat_id" data-t="labelVat"></label>
+              <input class="input" id="billing_vat_id" name="billing_vat_id" type="text" value="DE143454214" aria-describedby="vat-hint">
+              <p class="hint" id="vat-hint" data-t="hintVat"></p>
+            </div>
+          </li>
+
+          <li class="step">
+            <h2 class="step-title"><span class="step-index" aria-hidden="true">2</span><span data-t="step2"></span></h2>
+
+            <div class="field-pair">
+              <div class="field">
+                <label for="billing_first_name"><span data-t="labelFirst"></span> <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="billing_first_name" name="billing_first_name" type="text" autocomplete="given-name" value="Maria" required aria-required="true">
+              </div>
+              <div class="field">
+                <label for="billing_last_name"><span data-t="labelLast"></span> <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="billing_last_name" name="billing_last_name" type="text" autocomplete="family-name" value="Muster" required aria-required="true">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="billing_country"><span data-t="labelCountry"></span> <span class="req" aria-hidden="true">*</span></label>
+              <select class="reg-select" id="billing_country" name="billing_country" autocomplete="country" required aria-required="true">
+                <!-- prototype subset of WooCommerce's country list, Germany selected -->
+                <option value="DE" selected data-t="cDE"></option>
+                <option value="AT" data-t="cAT"></option>
+                <option value="CH" data-t="cCH"></option>
+                <option value="NL" data-t="cNL"></option>
+                <option value="BE" data-t="cBE"></option>
+                <option value="FR" data-t="cFR"></option>
+                <option value="IT" data-t="cIT"></option>
+                <option value="ES" data-t="cES"></option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="billing_address_1"><span data-t="labelStreet"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="billing_address_1" name="billing_address_1" type="text" autocomplete="address-line1" value="Musterstraße 1" data-t-ph="phStreet" required aria-required="true">
+            </div>
+
+            <div class="field-pair">
+              <div class="field">
+                <label for="billing_postcode"><span data-t="labelPostcode"></span> <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="billing_postcode" name="billing_postcode" type="text" autocomplete="postal-code" value="12345" required aria-required="true">
+              </div>
+              <div class="field">
+                <label for="billing_city"><span data-t="labelCity"></span> <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="billing_city" name="billing_city" type="text" autocomplete="address-level2" value="Musterstadt" required aria-required="true">
+              </div>
+            </div>
+          </li>
+
+          <li class="step">
+            <h2 class="step-title"><span class="step-index" aria-hidden="true">3</span><span data-t="step3"></span></h2>
+
+            <div class="field">
+              <label for="reg_email"><span data-t="labelEmail"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="reg_email" name="email" type="email" autocomplete="email" value="maria@muster-solar.de" data-t-ph="phEmail" required aria-required="true">
+            </div>
+
+            <div class="field">
+              <label for="reg_password"><span data-t="labelPassword"></span> <span class="req" aria-hidden="true">*</span></label>
+              <div class="password-wrap">
+                <input class="input" id="reg_password" name="password" type="password" autocomplete="new-password" value="Muster-Solar-2026" required aria-required="true">
+                <button type="button" class="password-toggle" aria-label="Show password" data-eye>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+          </li>
+
+        </ol>
+
+        <div class="reg-legal">
+          <!-- prototype: the real page links to the Terms of Sale and the Privacy policy -->
+          <a href="#" data-t="terms"></a>
+          <a href="#" data-t="privacy"></a>
+        </div>
+
+        <button class="btn btn-primary btn-block" type="submit" id="submit-btn">
+          <span class="spinner" hidden></span><span data-t="submit"></span>
+        </button>
+
+        <div class="form-links">
+          <a href="login.html"><span data-t="haveAccount"></span> <strong data-t="signIn"></strong></a>
+        </div>
+      </form>
+    </section>
+
+  </div>
+</main>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">default</a> ·
+  <a data-state-link="errors">validation errors</a> ·
+  <a data-state-link="loading">submit loading</a> ·
+  <a data-state-link="password-shown">password shown</a>
+</p>
+
+<script>
+const STR = {
+  en: {
+    title: "Create your business account",
+    sub: "We review every new account before activation.",
+    step1: "Company",
+    labelCompany: "Company name",
+    labelBusinessType: "Business type",
+    optChoose: "Please choose",
+    optInstaller: "Installer",
+    optEpc: "EPC contractor",
+    optDistributor: "Distributor",
+    labelVat: "VAT ID",
+    hintVat: "We check EU VAT IDs in the European Commission's VIES system. You can register without one.",
+    step2: "Contact and address",
+    labelFirst: "First name",
+    labelLast: "Last name",
+    labelCountry: "Country / Region",
+    labelStreet: "Street address",
+    phStreet: "House number and street name",
+    labelPostcode: "Postcode / ZIP",
+    labelCity: "Town / City",
+    step3: "Sign-in details",
+    labelEmail: "Email address",
+    phEmail: "you@company.com",
+    labelPassword: "Password",
+    terms: "Terms of Sale",
+    privacy: "Privacy",
+    submit: "Register",
+    haveAccount: "Already have a partner account?",
+    signIn: "Sign in",
+    brandTitle: "Create your partner account",
+    brandSub: "For installers, EPCs and distributors: net prices, documents and inquiries in one workspace.",
+    brandPoint1: "You see net prices on every product after approval",
+    brandPoint2: "We answer inquiries within one working day",
+    brandPoint3: "We run the VAT ID check in VIES for you",
+    eyeShow: "Show password",
+    eyeHide: "Hide password",
+    errCompany: "<strong>Company name</strong> is a required field.",
+    errBusinessType: "<strong>Business type</strong> is a required field.",
+    errPostcode: "Please enter a valid postcode.",
+    errRequired: "This field is required.",
+    okSubmitted: "Registration received. We review every new account before activation. You will hear from us within one working day.",
+    cDE: "Germany", cAT: "Austria", cCH: "Switzerland", cNL: "Netherlands",
+    cBE: "Belgium", cFR: "France", cIT: "Italy", cES: "Spain"
+  },
+  de: {
+    title: "Erstellen Sie Ihr Firmenkonto",
+    sub: "Wir prüfen jedes neue Konto vor der Freischaltung.",
+    step1: "Unternehmen",
+    labelCompany: "Firmenname",
+    labelBusinessType: "Unternehmensart",
+    optChoose: "Bitte wählen",
+    optInstaller: "Installationsbetrieb",
+    optEpc: "EPC-Unternehmen",
+    optDistributor: "Händler",
+    labelVat: "USt-IdNr.",
+    hintVat: "Eine EU-USt-IdNr. prüfen wir im VIES-System der Europäischen Kommission. Sie können sich auch ohne USt-IdNr. registrieren.",
+    step2: "Kontakt und Adresse",
+    labelFirst: "Vorname",
+    labelLast: "Nachname",
+    labelCountry: "Land/Region",
+    labelStreet: "Straße und Hausnummer",
+    phStreet: "Straßenname und Hausnummer",
+    labelPostcode: "Postleitzahl",
+    labelCity: "Stadt",
+    step3: "Zugangsdaten",
+    labelEmail: "E-Mail-Adresse",
+    phEmail: "sie@firma.de",
+    labelPassword: "Passwort",
+    terms: "Verkaufsbedingungen",
+    privacy: "Datenschutz",
+    submit: "Registrieren",
+    haveAccount: "Sie haben bereits ein Partnerkonto?",
+    signIn: "Anmelden",
+    brandTitle: "Legen Sie Ihr Partnerkonto an",
+    brandSub: "Für Installationsbetriebe, EPC-Unternehmen und Händler: Nettopreise, Dokumente und Anfragen in einem Arbeitsbereich.",
+    brandPoint1: "Nettopreise sehen Sie zu jedem Produkt nach der Freigabe",
+    brandPoint2: "Wir beantworten Anfragen innerhalb eines Arbeitstages",
+    brandPoint3: "Die USt-IdNr.-Prüfung im VIES übernehmen wir",
+    eyeShow: "Passwort anzeigen",
+    eyeHide: "Passwort ausblenden",
+    errCompany: "<strong>Firmenname</strong> ist ein Pflichtfeld.",
+    errBusinessType: "<strong>Unternehmensart</strong> ist ein Pflichtfeld.",
+    errPostcode: "Bitte geben Sie eine gültige Postleitzahl ein.",
+    errRequired: "Dieses Feld ist erforderlich.",
+    okSubmitted: "Registrierung eingegangen. Wir prüfen jedes neue Konto vor der Freischaltung. Sie hören innerhalb eines Arbeitstages von uns.",
+    cDE: "Deutschland", cAT: "Österreich", cCH: "Schweiz", cNL: "Niederlande",
+    cBE: "Belgien", cFR: "Frankreich", cIT: "Italien", cES: "Spanien"
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const state = params.get("state") || "default";
+document.documentElement.lang = lang === "de" ? "de" : "en";
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const key = el.dataset.t;
+  if (STR[lang][key]) el.textContent = STR[lang][key];
+}
+for (const el of document.querySelectorAll("[data-t-ph]")) {
+  const key = el.dataset.tPh;
+  if (STR[lang][key]) el.placeholder = STR[lang][key];
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search); p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang); p.set("state", el.dataset.stateLink);
+  el.href = "?" + p.toString();
+}
+
+const ICON_ERR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>';
+const ICON_OK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>';
+
+const slot = document.getElementById("notice-slot");
+function notice(kind, text) {
+  slot.innerHTML = `<div class="notice notice-${kind}" role="${kind === "error" ? "alert" : "status"}">${kind === "error" ? ICON_ERR : ICON_OK}<div>${text}</div></div>`;
+}
+
+// field-level error: WooCommerce keeps its own error list, the card repeats the
+// message next to the field it belongs to.
+function fieldError(id, text) {
+  const input = document.getElementById(id);
+  input.setAttribute("aria-invalid", "true");
+  const p = document.createElement("p");
+  p.className = "error-text";
+  p.id = id + "-error";
+  p.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span>' + text + "</span>";
+  input.closest(".field").appendChild(p);
+  input.setAttribute("aria-describedby", p.id);
+}
+
+if (state === "errors") {
+  notice("error", `<ul class="reg-err-list"><li>${STR[lang].errCompany}</li><li>${STR[lang].errBusinessType}</li><li>${STR[lang].errPostcode}</li></ul>`);
+  document.getElementById("billing_company").value = "";
+  document.getElementById("linker_customer_role").value = "";
+  document.getElementById("billing_postcode").value = "1234";
+  fieldError("billing_company", STR[lang].errRequired);
+  document.getElementById("linker_customer_role").setAttribute("aria-invalid", "true");
+  document.getElementById("billing_postcode").setAttribute("aria-invalid", "true");
+}
+
+// password eye toggle
+const passInput = document.getElementById("reg_password");
+const eyeBtn = document.querySelector("[data-eye]");
+function setPasswordShown(show) {
+  passInput.type = show ? "text" : "password";
+  eyeBtn.setAttribute("aria-label", show ? STR[lang].eyeHide : STR[lang].eyeShow);
+  eyeBtn.style.color = show ? "var(--teal-700)" : "";
+}
+eyeBtn.setAttribute("aria-label", STR[lang].eyeShow);
+eyeBtn.addEventListener("click", () => setPasswordShown(passInput.type === "password"));
+if (state === "password-shown") setPasswordShown(true);
+
+// submit: the prototype demonstrates the loading state; the real form posts the page.
+const form = document.getElementById("register-form");
+const submitBtn = document.getElementById("submit-btn");
+function setLoading(on) {
+  submitBtn.classList.toggle("is-loading", on);
+  submitBtn.querySelector(".spinner").hidden = !on;
+}
+if (state === "loading") setLoading(true);
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setTimeout(() => {
+    setLoading(false);
+    notice("success", STR[lang].okSubmitted);
+  }, 1200);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inquiry #2418 · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Page-local additions to app.css (its tokens and components, unchanged):
+     .inqd-main stacks the workspace's content column; .inqd-* is the inquiry
+     page's own furniture — the price table with its datasheet links, the
+     totals block, the Proforma strip, the address block. app.css carries no
+     invoice line, no totals list and no dd reset, and its .panel-body alone
+     gives no separator under .stages. Hover/focus-visible/active feedback on
+     the shared components stays app.css's. */
+  .inqd-main { display: grid; gap: 20px; align-content: start; min-width: 0; }
+
+  .inqd-back { display: inline-flex; align-items: center; gap: 6px; }
+  .inqd-back svg { transition: translate var(--dur) var(--ease); }
+  .inqd-back:hover svg { translate: -2px 0; }
+
+  /* the key figures sit under the stage tracker: the panel-body carries the
+     divider the panel-head would otherwise draw */
+  .inqd-summary-body { border-top: 1px solid var(--line-soft); padding: 20px 22px 22px; }
+  .inqd-summary-body .kv { margin: 0; }
+  .inqd-kv .v, .inqd-totals dd { margin-inline-start: 0; }
+
+  .inqd-body { padding: 8px 22px 22px; }
+
+  /* one product per line: name and quantity left, the line amount right,
+     the product's datasheet underneath the name */
+  .inqd-lines { list-style: none; margin: 14px 0 0; padding: 0; }
+  .inqd-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--line-soft); }
+  .inqd-line:last-child { border-bottom: 0; }
+  .inqd-line-main { min-width: 0; }
+  .inqd-name { margin: 0; font-size: 15px; font-weight: 600; }
+  .inqd-qty { color: var(--muted); font-weight: 500; white-space: nowrap; }
+  .inqd-line-amount { font-size: 15px; font-weight: 600; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  .inqd-ds {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 32px;
+    margin: 4px 0 -6px -9px; padding: 0 9px; border-radius: 9px;
+    font-size: 13.5px; font-weight: 600; white-space: nowrap;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .inqd-ds svg { flex: none; }
+  .inqd-ds:hover { background: var(--teal-50); text-decoration: none; }
+  .inqd-ds:active { transform: translateY(1px); }
+  .inqd-ds:focus-visible { outline: 2px solid var(--teal-600); outline-offset: 2px; }
+
+  /* totals: full width on a phone, an invoice's right-hand block on desktop */
+  .inqd-totals { margin: 18px 0 0; }
+  .inqd-totals > div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 8px 0; }
+  .inqd-totals dt { font-size: 14.5px; color: var(--muted); }
+  .inqd-totals dd { margin: 0; font-size: 15px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .inqd-totals > div.inqd-grand { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 14px; }
+  .inqd-grand dt { color: var(--ink); font-weight: 600; font-size: 15.5px; }
+  .inqd-grand dd { font-size: 19px; }
+  @media (min-width: 700px) { .inqd-totals { max-width: 380px; margin-left: auto; } }
+
+  /* the issued Proforma: .notice-info as a strip that carries its download */
+  .inqd-proforma { flex-wrap: wrap; align-items: center; gap: 12px; margin: 22px 0 0; padding: 14px 16px; }
+  .inqd-proforma > svg { margin-top: 0; }
+  .inqd-proforma-text { margin: 0; flex: 1 1 220px; }
+  .inqd-dl { min-height: 44px; padding: 0 20px; font-size: 14.5px; }
+  @media (max-width: 640px) { .inqd-dl { width: 100%; } }
+
+  /* Request again: the button is WooCommerce's own on the inquiry page */
+  .inqd-actions { display: grid; gap: 14px; justify-items: start; }
+  .inqd-actions .notice { margin-bottom: 0; width: 100%; }
+  .inqd-again .spinner { border-color: var(--teal-200); border-top-color: var(--teal-700); }
+  @media (max-width: 560px) { .inqd-actions .btn { width: 100%; } }
+
+  .inqd-company { display: grid; gap: 3px; margin: 12px 0 0; font-style: normal; font-size: 15px; color: var(--ink-2); }
+  .inqd-company strong { font-size: 16px; font-weight: 600; color: var(--ink); }
+
+  /* app.css resets no list markers for .stages (an <ol>); its .stage-line
+     items keep display: list-item and would paint "2." and "4." */
+  .inqd-stages { list-style: none; }
+
+  /* a cancelled inquiry is not a step in progress: the current stage stays
+     neutral instead of taking the accent app.css uses for .is-now */
+  .inqd-stages[data-current="cancelled"] .stage.is-now { color: var(--muted); }
+  .inqd-stages[data-current="cancelled"] .stage.is-now .s-dot { background: var(--fill); border-color: var(--line); color: var(--muted); }
+
+  /* an author display rule would beat the hidden attribute otherwise */
+  .inqd-proforma[hidden] { display: none; }
+  .proto-note a[aria-current="page"] { color: var(--teal-700); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language" data-t-aria="langLabel">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<main class="ws">
+
+  <aside class="ws-side">
+    <nav class="ws-nav" aria-label="Account menu" data-t-aria="menu">
+      <div class="group" data-t="groupWorkplace"></div>
+
+      <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span data-t="navOverview"></span>
+      </a>
+      <a href="inquiries.html" data-lang-href="inquiries.html" class="is-on" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span data-t="navInquiries"></span>
+      </a>
+      <a href="solutions.html" data-lang-href="solutions.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        <span data-t="navSaved"></span>
+      </a>
+      <a href="documents.html" data-lang-href="documents.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        <span data-t="navDocuments"></span>
+      </a>
+
+      <div class="group" data-t="groupAccount"></div>
+
+      <a href="company.html" data-lang-href="company.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        <span data-t="navCompany"></span>
+      </a>
+      <a href="account-details.html" data-lang-href="account-details.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span data-t="navAccountDetails"></span>
+      </a>
+      <a href="login.html" data-lang-href="login.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        <span data-t="navLogout"></span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="inqd-main">
+
+    <header class="ws-head">
+      <h1 data-t="pageTitle"></h1>
+      <a class="back inqd-back" href="workspace-overview.html" data-lang-href="workspace-overview.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        <span data-t="back"></span>
+      </a>
+    </header>
+
+    <section class="panel">
+      <ol class="stages inqd-stages" id="inqd-stages" aria-label="Status" data-t-aria="statusLabel" data-current="proforma">
+        <li class="stage" data-stage="received">
+          <span class="s-dot" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span data-t="stReceived"></span>
+        </li>
+        <li class="stage-line" aria-hidden="true"></li>
+        <li class="stage" data-stage="proforma">
+          <span class="s-dot" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span data-t="stProforma"></span>
+        </li>
+        <li class="stage-line" aria-hidden="true"></li>
+        <li class="stage" data-stage="completed">
+          <span class="s-dot" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span data-t="stCompleted"></span>
+        </li>
+        <li class="stage-line" aria-hidden="true"></li>
+        <li class="stage" data-stage="cancelled">
+          <span class="s-dot" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span data-t="stCancelled"></span>
+        </li>
+      </ol>
+
+      <div class="inqd-summary-body">
+        <dl class="kv inqd-kv">
+          <div>
+            <dt class="k" data-t="kInquiry"></dt>
+            <dd class="v">#2418</dd>
+          </div>
+          <div>
+            <dt class="k" data-t="kDate"></dt>
+            <dd class="v"><time datetime="2026-10-12" data-t="date"></time></dd>
+          </div>
+          <div>
+            <dt class="k" data-t="kAmount"></dt>
+            <dd class="v" data-t="amount"></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="inqd-details-title">
+      <div class="panel-head">
+        <h2 id="inqd-details-title" data-t="detailsTitle"></h2>
+      </div>
+      <div class="panel-body inqd-body">
+
+        <ul class="inqd-lines">
+          <li class="inqd-line">
+            <div class="inqd-line-main">
+              <p class="inqd-name">SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) <span class="inqd-qty">× 2</span></p>
+              <a class="inqd-ds" href="#" data-download>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                <span data-t="dsLink"></span>
+              </a>
+            </div>
+            <span class="inqd-line-amount" data-t="line1"></span>
+          </li>
+          <li class="inqd-line">
+            <div class="inqd-line-main">
+              <p class="inqd-name">SAJ BU2-5.0-HV1 <span class="inqd-qty">× 3</span></p>
+              <a class="inqd-ds" href="#" data-download>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                <span data-t="dsLink"></span>
+              </a>
+            </div>
+            <span class="inqd-line-amount" data-t="line2"></span>
+          </li>
+          <li class="inqd-line">
+            <div class="inqd-line-main">
+              <p class="inqd-name">SAJ BC2-HV1 <span class="inqd-qty">× 1</span></p>
+              <a class="inqd-ds" href="#" data-download>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                <span data-t="dsLink"></span>
+              </a>
+            </div>
+            <span class="inqd-line-amount" data-t="line3"></span>
+          </li>
+        </ul>
+
+        <dl class="inqd-totals">
+          <div>
+            <dt data-t="subtotal"></dt>
+            <dd data-t="subtotalAmount"></dd>
+          </div>
+          <div>
+            <dt data-t="vat"></dt>
+            <dd data-t="vatAmount"></dd>
+          </div>
+          <div class="inqd-grand">
+            <dt data-t="total"></dt>
+            <dd data-t="totalAmount"></dd>
+          </div>
+        </dl>
+
+        <div class="notice notice-info inqd-proforma" id="inqd-proforma-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 15h6"/></svg>
+          <p class="inqd-proforma-text" data-t="proformaLine"></p>
+          <a class="btn btn-primary inqd-dl" href="#" data-download>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            <span data-t="download"></span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="inqd-actions">
+      <div id="notice-slot"></div>
+      <form id="inqd-again-form" method="post" action="#">
+        <button class="btn btn-ghost inqd-again" type="submit" id="inqd-again">
+          <span class="spinner" hidden></span><span data-t="again"></span>
+        </button>
+      </form>
+    </div>
+
+    <section class="panel" aria-labelledby="inqd-company-title">
+      <div class="panel-head">
+        <h2 id="inqd-company-title" data-t="companyTitle"></h2>
+      </div>
+      <div class="panel-body inqd-body">
+        <address class="inqd-company">
+          <strong>Muster Solar GmbH</strong>
+          <span>Maria Muster</span>
+          <span>Musterstraße 12, 10115 Berlin</span>
+        </address>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- the only account navigation on mobile: the old top fold-out menu is gone -->
+<nav class="ws-tabs" aria-label="Account menu" data-t-aria="menu">
+  <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+    <span data-t="navOverview"></span>
+  </a>
+  <a href="inquiries.html" data-lang-href="inquiries.html" class="is-on" aria-current="page">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+    <span data-t="navInquiries"></span>
+  </a>
+  <a href="documents.html" data-lang-href="documents.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+    <span data-t="navDocuments"></span>
+  </a>
+  <a href="account-details.html" data-lang-href="account-details.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-t="navAccount"></span>
+  </a>
+</nav>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">Proforma issued</a> ·
+  <a data-state-link="received">inquiry received</a> ·
+  <a data-state-link="completed">completed</a> ·
+  <a data-state-link="cancelled">cancelled</a> ·
+  <a data-state-link="loading">Request again loading</a>
+  <br>
+  Request again submits the demo form: the pill takes the loading state, then the result notice appears.
+</p>
+
+<script>
+const STR = {
+  en: {
+    langLabel: "Language",
+    menu: "Account menu",
+    groupWorkplace: "Workplace",
+    groupAccount: "Account",
+    navOverview: "Overview",
+    navInquiries: "Inquiries",
+    navSaved: "Saved solutions",
+    navDocuments: "Documents",
+    navCompany: "Company",
+    navAccountDetails: "Account details",
+    navLogout: "Log out",
+    navAccount: "Account",
+    pageTitle: "Inquiry #2418",
+    back: "Overview",
+    statusLabel: "Status",
+    stReceived: "Inquiry received",
+    stProforma: "Proforma invoice issued",
+    stCompleted: "Completed",
+    stCancelled: "Cancelled",
+    kInquiry: "Inquiry",
+    kDate: "Date",
+    kAmount: "Amount",
+    date: "12 October 2026",
+    amount: "€4,218.00",
+    detailsTitle: "Inquiry details",
+    dsLink: "Datasheet (PDF)",
+    line1: "€2,360.00",
+    line2: "€864.54",
+    line3: "€320.00",
+    subtotal: "Subtotal (net)",
+    subtotalAmount: "€3,544.54",
+    vat: "VAT 19%",
+    vatAmount: "€673.46",
+    total: "Total",
+    totalAmount: "€4,218.00",
+    proformaLine: "Proforma invoice PI-2026-041 · issued 14 October 2026",
+    download: "Download (PDF)",
+    again: "Request again",
+    companyTitle: "Company details",
+    okAgain: "Your solution draft has been replaced with the products of the earlier inquiry."
+  },
+  de: {
+    langLabel: "Sprache",
+    menu: "Kontomenü",
+    groupWorkplace: "Arbeitsbereich",
+    groupAccount: "Konto",
+    navOverview: "Übersicht",
+    navInquiries: "Anfragen",
+    navSaved: "Gespeicherte Lösungen",
+    navDocuments: "Dokumente",
+    navCompany: "Unternehmen",
+    navAccountDetails: "Kontodetails",
+    navLogout: "Abmelden",
+    navAccount: "Konto",
+    pageTitle: "Anfrage #2418",
+    back: "Übersicht",
+    statusLabel: "Status",
+    stReceived: "Anfrage eingegangen",
+    stProforma: "Proformarechnung ausgestellt",
+    stCompleted: "Abgeschlossen",
+    stCancelled: "Storniert",
+    kInquiry: "Anfrage",
+    kDate: "Datum",
+    kAmount: "Betrag",
+    date: "12. Oktober 2026",
+    amount: "4.218,00\u00a0€",
+    detailsTitle: "Details der Anfrage",
+    dsLink: "Datenblatt (PDF)",
+    line1: "2.360,00\u00a0€",
+    line2: "864,54\u00a0€",
+    line3: "320,00\u00a0€",
+    subtotal: "Zwischensumme (netto)",
+    subtotalAmount: "3.544,54\u00a0€",
+    vat: "USt. 19 %",
+    vatAmount: "673,46\u00a0€",
+    total: "Gesamtbetrag",
+    totalAmount: "4.218,00\u00a0€",
+    proformaLine: "Proformarechnung PI-2026-041 · ausgestellt am 14. Oktober 2026",
+    download: "Herunterladen (PDF)",
+    again: "Erneut anfragen",
+    companyTitle: "Unternehmensdaten",
+    // the site's own message for this action has no German entry in
+    // linker-commerce-de_DE_formal.po yet; this sentence is written here
+    okAgain: "In Ihrem Lösungsentwurf liegen jetzt die Produkte Ihrer früheren Anfrage."
+  }
+};
+
+// the tracker's four stages, in the order the DOM lists them. An inquiry that
+// was cancelled never reached Completed, so the reached stages are stated per
+// state instead of derived from the current stage's position.
+const STAGES = ["received", "proforma", "completed", "cancelled"];
+const STATES = ["default", "received", "completed", "cancelled", "loading"];
+const CURRENT = {
+  default: { now: "proforma", reached: ["received", "proforma"] },
+  received: { now: "received", reached: ["received"] },
+  completed: { now: "completed", reached: ["received", "proforma", "completed"] },
+  cancelled: { now: "cancelled", reached: ["received", "proforma", "cancelled"] },
+  loading: { now: "proforma", reached: ["received", "proforma"] }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const asked = params.get("state") || "default";
+const state = STATES.includes(asked) ? asked : "default";
+const current = CURRENT[state].now;
+const reached = (name) => CURRENT[state].reached.includes(name);
+document.documentElement.lang = lang;
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const text = STR[lang][el.dataset.t];
+  if (text) el.textContent = text;
+}
+for (const el of document.querySelectorAll("[data-t-aria]")) {
+  const text = STR[lang][el.dataset.tAria];
+  if (text) el.setAttribute("aria-label", text);
+}
+// every link to another prototype page keeps the language
+for (const el of document.querySelectorAll("[data-lang-href]")) {
+  const [path, query] = el.dataset.langHref.split("?");
+  const p = new URLSearchParams(query || "");
+  p.set("lang", lang);
+  el.href = path + "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search); p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const target = el.dataset.stateLink;
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang); p.set("state", target);
+  el.href = "?" + p.toString();
+  if (target === state) el.setAttribute("aria-current", "page");
+}
+
+// the tracker: the stages the inquiry reached are done, the one it stands in
+// is now, the rest are open. A line is tinted only between two stages the
+// inquiry actually reached.
+const stageEls = Array.from(document.querySelectorAll(".stage"));
+const lineEls = Array.from(document.querySelectorAll(".stage-line"));
+stageEls.forEach((el, i) => {
+  const name = STAGES[i];
+  const isNow = name === current;
+  el.classList.toggle("is-done", reached(name) && !isNow);
+  el.classList.toggle("is-now", isNow);
+  if (isNow) el.setAttribute("aria-current", "step");
+});
+lineEls.forEach((el, i) => el.classList.toggle("is-done", reached(STAGES[i]) && reached(STAGES[i + 1])));
+document.getElementById("inqd-stages").dataset.current = current;
+
+// no Proforma yet: the download strip belongs to issued Proformas only
+document.getElementById("inqd-proforma-bar").hidden = "received" === current;
+
+const ICON_OK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>';
+const slot = document.getElementById("notice-slot");
+const againBtn = document.getElementById("inqd-again");
+const againSpinner = againBtn.querySelector(".spinner");
+
+// Request again: the prototype shows the loading state, then the result notice.
+const form = document.getElementById("inqd-again-form");
+if ("loading" === state) {
+  againBtn.classList.add("is-loading");
+  againSpinner.hidden = false;
+}
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  againBtn.classList.add("is-loading");
+  againSpinner.hidden = false;
+  slot.innerHTML = "";
+  setTimeout(() => {
+    againBtn.classList.remove("is-loading");
+    againSpinner.hidden = true;
+    slot.innerHTML = `<div class="notice notice-success" role="status">${ICON_OK}<div>${STR[lang].okAgain}</div></div>`;
+  }, 1200);
+});
+
+// the downloads are the prototype's dead end: the live site serves the PDFs
+// from signed URLs, so here the links only keep their press feedback
+for (const el of document.querySelectorAll("[data-download]")) {
+  el.addEventListener("click", (e) => e.preventDefault());
+}
+</script>
+</body>
+</html>

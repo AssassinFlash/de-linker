@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Account details · Linker account prototype</title>
+<link rel="canonical" href="account.html">
+<meta http-equiv="refresh" content="0; url=account.html">
+<script>
+  // The rest of the swarm links to account-details.html, this shard's page is
+  // account.html. The shim keeps those links alive and hands the query on, so
+  // ?lang and ?state survive. The page itself is account.html.
+  location.replace("account.html" + location.search);
+</script>
+</head>
+<body>
+<p><a href="account.html">Account details</a></p>
+</body>
+</html>

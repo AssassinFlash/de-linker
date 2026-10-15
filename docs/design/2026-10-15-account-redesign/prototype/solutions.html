@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Saved solutions · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Page-local additions to app.css (its tokens and components, unchanged):
+     .ws-main fills the workspace's second column; .sol-* is the solution card. */
+  .ws-main { display: grid; gap: 24px; align-content: start; min-width: 0; }
+  /* an empty notice must not open a grid row of its own; the gap owns the spacing */
+  #notice-slot:empty { display: none; }
+  #notice-slot .notice { margin-bottom: 0; }
+  .sol-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .sol-grid { grid-template-columns: repeat(2, 1fr); } }
+  .sol-date { margin: 5px 0 0; font-size: 13px; color: var(--muted); }
+  .sol-items { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+  .sol-items li { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; font-size: 14.5px; }
+  .sol-items .sol-qty { flex: none; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .sol-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line-soft); }
+  .sol-actions .sol-form { flex: 1 1 220px; }
+  .sol-actions .sol-form .btn { width: 100%; }
+  .sol-actions .sol-report { font-size: 14.5px; font-weight: 600; }
+  /* the ?empty=1 view swap, applied before first paint by the head script */
+  html.is-empty #view-list, html.no-empty #view-empty { display: none; }
+  .proto-note a[aria-current="page"] { color: var(--teal-700); font-weight: 700; }
+</style>
+<script>document.documentElement.classList.add(new URLSearchParams(location.search).get("empty") === "1" ? "is-empty" : "no-empty");</script>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language" data-t-aria="langLabel">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<div class="ws">
+
+  <aside class="ws-side">
+    <nav class="ws-nav" aria-label="Account" data-t-aria="navAccount">
+      <div class="group" data-t="groupWork"></div>
+      <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span data-t="navOverview"></span>
+      </a>
+      <a href="inquiries.html" data-lang-href="inquiries.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span data-t="navInquiries"></span>
+      </a>
+      <a href="solutions.html" data-lang-href="solutions.html" class="is-on" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        <span data-t="navSolutions"></span>
+      </a>
+      <a href="documents.html" data-lang-href="documents.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        <span data-t="navDocuments"></span>
+      </a>
+      <div class="group" data-t="groupAccount"></div>
+      <a href="company.html" data-lang-href="company.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        <span data-t="navCompany"></span>
+      </a>
+      <a href="account-details.html" data-lang-href="account-details.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span data-t="navAccountDetails"></span>
+      </a>
+      <a href="login.html?state=signed-out" data-lang-href="login.html?state=signed-out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        <span data-t="navLogout"></span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="ws-main">
+    <header class="ws-head">
+      <h1 data-t="title"></h1>
+    </header>
+
+    <div id="notice-slot"></div>
+
+    <div id="view-list">
+      <div class="sol-grid">
+
+        <article class="panel">
+          <header class="panel-head">
+            <div>
+              <h2 data-t="cardTitle1"></h2>
+              <p class="sol-date" data-t="savedOn1"></p>
+            </div>
+          </header>
+          <div class="panel-body">
+            <ul class="sol-items">
+              <li><span>SAJ HS3-10K-T2-W/G-PX</span><span class="sol-qty">1 ×</span></li>
+              <li><span>SAJ B2-10.0-HV1</span><span class="sol-qty">1 ×</span></li>
+              <li><span>SAJ BC2-HV1</span><span class="sol-qty">1 ×</span></li>
+            </ul>
+            <div class="sol-actions">
+              <form method="post" class="sol-form">
+                <button class="btn btn-primary" type="submit">
+                  <span class="spinner" hidden></span><span data-t="addToDraft"></span>
+                </button>
+              </form>
+              <a class="sol-report" href="#" data-report><span data-t="reportPdf"></span></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <header class="panel-head">
+            <div>
+              <h2 data-t="cardTitle2"></h2>
+              <p class="sol-date" data-t="savedOn2"></p>
+            </div>
+          </header>
+          <div class="panel-body">
+            <ul class="sol-items">
+              <li><span>EcoFlow EF HD-P1-6K0-S2</span><span class="sol-qty">1 ×</span></li>
+              <li><span>EcoFlow EF BD-5-S2</span><span class="sol-qty">1 ×</span></li>
+              <li><span>EcoFlow OCEAN 2 LFP Battery Base</span><span class="sol-qty">1 ×</span></li>
+            </ul>
+            <div class="sol-actions">
+              <form method="post" class="sol-form">
+                <button class="btn btn-primary" type="submit">
+                  <span class="spinner" hidden></span><span data-t="addToDraft"></span>
+                </button>
+              </form>
+              <a class="sol-report" href="#" data-report><span data-t="reportPdf"></span></a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <div id="view-empty">
+      <div class="panel">
+        <div class="empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg>
+          <p data-t="emptyText"></p>
+          <a class="btn btn-primary" href="https://de-linker.com/solution-configurator/" target="_blank" rel="noopener"><span data-t="openConfigurator"></span></a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<nav class="ws-tabs" aria-label="Account menu" data-t-aria="tabAccount">
+  <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+    <span data-t="navOverview"></span>
+  </a>
+  <a href="inquiries.html" data-lang-href="inquiries.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+    <span data-t="navInquiries"></span>
+  </a>
+  <a href="documents.html" data-lang-href="documents.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+    <span data-t="navDocuments"></span>
+  </a>
+  <a href="account-details.html" data-lang-href="account-details.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-t="navAccount"></span>
+  </a>
+</nav>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">two solutions</a> ·
+  <a data-state-link="empty">empty</a> ·
+  <a data-state-link="loading">add loading</a> ·
+  <a data-state-link="added">added to solution draft</a>
+</p>
+
+<script>
+const STR = {
+  en: {
+    title: "Saved solutions",
+    langLabel: "Language",
+    navAccount: "Account",
+    tabAccount: "Account menu",
+    groupWork: "Workplace",
+    groupAccount: "Account",
+    navOverview: "Overview",
+    navInquiries: "Inquiries",
+    navSolutions: "Saved solutions",
+    navDocuments: "Documents",
+    navCompany: "Company",
+    navAccountDetails: "Account details",
+    navLogout: "Log out",
+    cardTitle1: "Residential 10 kWh rooftop",
+    savedOn1: "Saved on 12 October 2026",
+    cardTitle2: "Residential 5 kWh rooftop",
+    savedOn2: "Saved on 28 September 2026",
+    addToDraft: "Add to solution draft",
+    reportPdf: "Design report (PDF)",
+    emptyText: "Solutions you save in the Solution Configurator appear here, with their design report.",
+    openConfigurator: "Open the Solution Configurator",
+    okAdded: "The products of the saved solution are in your solution draft."
+  },
+  de: {
+    title: "Gespeicherte Lösungen",
+    langLabel: "Sprache",
+    navAccount: "Konto",
+    tabAccount: "Kontomenü",
+    groupWork: "Arbeitsbereich",
+    groupAccount: "Konto",
+    navOverview: "Übersicht",
+    navInquiries: "Anfragen",
+    navSolutions: "Gespeicherte Lösungen",
+    navDocuments: "Dokumente",
+    navCompany: "Unternehmen",
+    navAccountDetails: "Kontodetails",
+    navLogout: "Abmelden",
+    cardTitle1: "Heimspeicher 10 kWh",
+    savedOn1: "Gespeichert am 12. Oktober 2026",
+    cardTitle2: "Heimspeicher 5 kWh",
+    savedOn2: "Gespeichert am 28. September 2026",
+    addToDraft: "Zum Lösungsentwurf hinzufügen",
+    reportPdf: "Auslegungsbericht (PDF)",
+    emptyText: "Lösungen, die Sie im Lösungskonfigurator speichern, erscheinen hier mit ihrem Auslegungsbericht.",
+    openConfigurator: "Lösungskonfigurator öffnen",
+    okAdded: "Die Produkte der gespeicherten Lösung liegen jetzt in Ihrem Lösungsentwurf."
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const state = params.get("state") || "default";
+document.documentElement.lang = lang;
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const key = el.dataset.t;
+  if (STR[lang][key]) el.textContent = STR[lang][key];
+}
+for (const el of document.querySelectorAll("[data-t-aria]")) {
+  const key = el.dataset.tAria;
+  if (STR[lang][key]) el.setAttribute("aria-label", STR[lang][key]);
+}
+// every link to another prototype page keeps the language
+for (const el of document.querySelectorAll("[data-lang-href]")) {
+  const [path, query] = el.dataset.langHref.split("?");
+  const p = new URLSearchParams(query || "");
+  p.set("lang", lang);
+  el.href = path + "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search);
+  p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const target = el.dataset.stateLink;
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang);
+  if (target === "empty") { p.set("empty", "1"); p.delete("state"); }
+  else if (target === "default") { p.delete("empty"); p.delete("state"); }
+  else { p.delete("empty"); p.set("state", target); }
+  el.href = "?" + p.toString();
+  if (target === (params.get("empty") === "1" ? "empty" : state)) el.setAttribute("aria-current", "page");
+}
+
+const ICON_OK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>';
+
+const slot = document.getElementById("notice-slot");
+function notice(kind, text, icon) {
+  slot.innerHTML = `<div class="notice notice-${kind}" role="${kind === "error" ? "alert" : "status"}">${icon}<div>${text}</div></div>`;
+}
+if (state === "added") notice("success", STR[lang].okAdded, ICON_OK);
+
+function setLoading(button, on) {
+  button.classList.toggle("is-loading", on);
+  button.querySelector(".spinner").hidden = !on;
+}
+
+// the prototype demonstrates the state; the real form posts the page.
+for (const form of document.querySelectorAll(".sol-form")) {
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const button = form.querySelector("button[type=submit]");
+    setLoading(button, true);
+    setTimeout(() => {
+      setLoading(button, false);
+      notice("success", STR[lang].okAdded, ICON_OK);
+      slot.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }, 1200);
+  });
+}
+for (const link of document.querySelectorAll("[data-report]")) {
+  // the report URL is a private, nonce-signed download; the prototype stays put.
+  link.addEventListener("click", (e) => e.preventDefault());
+}
+if (state === "loading") {
+  const button = document.querySelector("#view-list .sol-form button[type=submit]");
+  if (button) setLoading(button, true);
+}
+</script>
+</body>
+</html>

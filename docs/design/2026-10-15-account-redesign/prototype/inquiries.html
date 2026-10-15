@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inquiries · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Page-local pieces app.css does not carry: the workspace content column,
+     the compact inquiry row (one line per inquiry — no product breakdown) and
+     the pager. Sizes only; hover/focus-visible/active feedback stays app.css. */
+  .inq-main { display: grid; gap: 20px; align-content: start; min-width: 0; }
+  .inq-block { display: grid; gap: 12px; align-content: start; }
+  .inq-back { display: inline-flex; align-items: center; gap: 6px; }
+  .inq-panel { padding: 8px; }
+  .inq-list { list-style: none; margin: 0; padding: 0; }
+
+  .inq-row {
+    position: relative;
+    display: grid; align-items: center;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "num pill" "sub sub" "amount view";
+    gap: 8px 14px; padding: 14px;
+    border-radius: var(--r-md);
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .inq-row:not([hidden]) + .inq-row:not([hidden]) { box-shadow: inset 0 1px 0 var(--line-soft); }
+  .inq-row:hover, .inq-row:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 1px 2px rgba(12, 15, 15, 0.05), 0 10px 26px rgba(12, 15, 15, 0.1);
+  }
+  .inq-row:active { transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .inq-row:hover, .inq-row:focus-within { transform: none; }
+  }
+
+  .inq-num { grid-area: num; justify-self: start; font-size: 16px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+  /* the number link stretches over the row: one large touch target per inquiry */
+  .inq-num::after { content: ""; position: absolute; inset: 0; }
+  .inq-num:hover { color: var(--teal-700); }
+  /* the same focus ring the buttons carry in app.css */
+  .inq-num:focus-visible, .inq-view:focus-visible { outline: 2px solid var(--teal-600); outline-offset: 3px; border-radius: 6px; }
+  .inq-row .pill { grid-area: pill; justify-self: end; }
+  .inq-sub { grid-area: sub; margin: 0; font-size: 13.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .inq-amount { grid-area: amount; justify-self: start; font-size: 15.5px; font-weight: 600; white-space: nowrap; }
+  .inq-view { grid-area: view; justify-self: end; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .inq-view svg { transition: translate var(--dur) var(--ease); }
+  .inq-row:hover .inq-view svg, .inq-view:focus-visible svg { translate: 2px 0; }
+
+  @media (min-width: 760px) {
+    .inq-row {
+      grid-template-columns: minmax(0, 1fr) auto minmax(96px, auto) auto;
+      grid-template-areas: "num pill amount view" "sub pill amount view";
+      gap: 4px 20px; padding: 15px 16px;
+    }
+    .inq-amount { justify-self: end; }
+  }
+
+  .inq-pager {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px;
+    padding: 14px 8px 8px; margin-top: 6px; border-top: 1px solid var(--line-soft);
+  }
+  .inq-pager > a:first-child { justify-self: start; }
+  .inq-pager > a:last-child { justify-self: end; }
+  .inq-page { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .inq-btn-sm { min-height: 44px; padding: 0 20px; font-size: 14.5px; gap: 6px; }
+  .inq-btn-off { opacity: 0.55; pointer-events: none; }
+
+  /* an author display rule would beat the hidden attribute otherwise */
+  .inq-row[hidden], .inq-list[hidden], .inq-pager[hidden] { display: none; }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<main class="ws">
+
+  <aside class="ws-side">
+    <nav class="ws-nav" aria-label="Account menu" data-t-aria="accountMenu">
+      <div class="group" data-t="groupWorkplace">Workplace</div>
+      <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span data-t="navOverview">Overview</span>
+      </a>
+      <a href="inquiries.html" data-lang-href="inquiries.html" class="is-on" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span data-t="navInquiries">Inquiries</span>
+      </a>
+      <a href="solutions.html" data-lang-href="solutions.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        <span data-t="navSaved">Saved solutions</span>
+      </a>
+      <a href="documents.html" data-lang-href="documents.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        <span data-t="navDocuments">Documents</span>
+      </a>
+      <div class="group" data-t="groupAccount">Account</div>
+      <a href="company.html" data-lang-href="company.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        <span data-t="navCompany">Company</span>
+      </a>
+      <a href="account-details.html" data-lang-href="account-details.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span data-t="navAccountDetails">Account details</span>
+      </a>
+      <a href="login.html?state=signed-out" data-lang-href="login.html?state=signed-out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        <span data-t="navLogout">Log out</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="inq-main">
+
+    <header class="ws-head">
+      <h1 id="page-title" data-t="title">Inquiries</h1>
+      <a class="back inq-back" href="workspace-overview.html" data-lang-href="workspace-overview.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        <span data-t="back">Overview</span>
+      </a>
+    </header>
+
+    <div class="inq-block">
+
+      <nav class="tabs" aria-label="Inquiries" data-t-aria="title">
+        <a href="?tab=all&amp;lang=en" data-tab-link="all" data-t="tabAll">All inquiries</a>
+        <a href="?tab=open&amp;lang=en" data-tab-link="open" data-t="tabOpen">Open inquiries</a>
+      </nav>
+
+      <section class="panel inq-panel" aria-labelledby="page-title">
+
+        <ul class="inq-list">
+          <li class="inq-row" data-status="proforma-issued">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2418" data-lang-href="inquiry-detail.html?id=2418" data-t-aria="inquiryAria" data-t-aria-arg="2418">#2418</a>
+            <span class="pill is-proforma"><span class="dot" aria-hidden="true"></span><span data-t="stProforma">Proforma invoice issued</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="3">3 products</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-10-15">15 October 2026</time></p>
+            <span class="inq-amount" data-amount="4218.00">€4,218.00</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2418" data-lang-href="inquiry-detail.html?id=2418" data-t-aria="viewAria" data-t-aria-arg="2418"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+          <li class="inq-row" data-status="inquiry-received">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2417" data-lang-href="inquiry-detail.html?id=2417" data-t-aria="inquiryAria" data-t-aria-arg="2417">#2417</a>
+            <span class="pill is-received"><span class="dot" aria-hidden="true"></span><span data-t="stReceived">Inquiry received</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="5">5 products</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-10-12">12 October 2026</time></p>
+            <span class="inq-amount" data-amount="12940.00">€12,940.00</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2417" data-lang-href="inquiry-detail.html?id=2417" data-t-aria="viewAria" data-t-aria-arg="2417"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+          <li class="inq-row" data-status="completed">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2412" data-lang-href="inquiry-detail.html?id=2412" data-t-aria="inquiryAria" data-t-aria-arg="2412">#2412</a>
+            <span class="pill is-completed"><span class="dot" aria-hidden="true"></span><span data-t="stCompleted">Completed</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="2">2 products</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-10-06">6 October 2026</time></p>
+            <span class="inq-amount" data-amount="8475.50">€8,475.50</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2412" data-lang-href="inquiry-detail.html?id=2412" data-t-aria="viewAria" data-t-aria-arg="2412"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+          <li class="inq-row" data-status="cancelled">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2405" data-lang-href="inquiry-detail.html?id=2405" data-t-aria="inquiryAria" data-t-aria-arg="2405">#2405</a>
+            <span class="pill is-cancelled"><span class="dot" aria-hidden="true"></span><span data-t="stCancelled">Cancelled</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="4">4 products</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-09-29">29 September 2026</time></p>
+            <span class="inq-amount" data-amount="6340.25">€6,340.25</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2405" data-lang-href="inquiry-detail.html?id=2405" data-t-aria="viewAria" data-t-aria-arg="2405"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+          <li class="inq-row" data-status="completed">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2401" data-lang-href="inquiry-detail.html?id=2401" data-t-aria="inquiryAria" data-t-aria-arg="2401">#2401</a>
+            <span class="pill is-completed"><span class="dot" aria-hidden="true"></span><span data-t="stCompleted">Completed</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="2">2 products</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-09-24">24 September 2026</time></p>
+            <span class="inq-amount" data-amount="5240.00">€5,240.00</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2401" data-lang-href="inquiry-detail.html?id=2401" data-t-aria="viewAria" data-t-aria-arg="2401"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+          <li class="inq-row" data-status="inquiry-received">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2399" data-lang-href="inquiry-detail.html?id=2399" data-t-aria="inquiryAria" data-t-aria-arg="2399">#2399</a>
+            <span class="pill is-received"><span class="dot" aria-hidden="true"></span><span data-t="stReceived">Inquiry received</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="1">1 product</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-09-18">18 September 2026</time></p>
+            <span class="inq-amount" data-amount="2180.00">€2,180.00</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2399" data-lang-href="inquiry-detail.html?id=2399" data-t-aria="viewAria" data-t-aria-arg="2399"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+          <li class="inq-row" data-status="completed">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2391" data-lang-href="inquiry-detail.html?id=2391" data-t-aria="inquiryAria" data-t-aria-arg="2391">#2391</a>
+            <span class="pill is-completed"><span class="dot" aria-hidden="true"></span><span data-t="stCompleted">Completed</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="3">3 products</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-09-15">15 September 2026</time></p>
+            <span class="inq-amount" data-amount="9120.00">€9,120.00</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2391" data-lang-href="inquiry-detail.html?id=2391" data-t-aria="viewAria" data-t-aria-arg="2391"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+          <li class="inq-row" data-status="completed">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2388" data-lang-href="inquiry-detail.html?id=2388" data-t-aria="inquiryAria" data-t-aria-arg="2388">#2388</a>
+            <span class="pill is-completed"><span class="dot" aria-hidden="true"></span><span data-t="stCompleted">Completed</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="2">2 products</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-09-11">11 September 2026</time></p>
+            <span class="inq-amount" data-amount="4380.50">€4,380.50</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2388" data-lang-href="inquiry-detail.html?id=2388" data-t-aria="viewAria" data-t-aria-arg="2388"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+          <li class="inq-row" data-status="completed">
+            <a class="inq-num" href="inquiry-detail.html?lang=en&amp;id=2385" data-lang-href="inquiry-detail.html?id=2385" data-t-aria="inquiryAria" data-t-aria-arg="2385">#2385</a>
+            <span class="pill is-completed"><span class="dot" aria-hidden="true"></span><span data-t="stCompleted">Completed</span></span>
+            <p class="inq-sub"><span class="inq-sum" data-count="1">1 product</span><span aria-hidden="true"> · </span><time class="inq-date" datetime="2026-09-08">8 September 2026</time></p>
+            <span class="inq-amount" data-amount="1690.00">€1,690.00</span>
+            <a class="inq-view" href="inquiry-detail.html?lang=en&amp;id=2385" data-lang-href="inquiry-detail.html?id=2385" data-t-aria="viewAria" data-t-aria-arg="2385"><span data-t="view">View</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+          </li>
+        </ul>
+
+        <div class="empty" id="inq-empty" hidden>
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          <p data-t="empty">No inquiries yet.</p>
+          <a class="btn btn-primary" id="inq-empty-cta" href="https://de-linker.com/products/" data-t="emptyCta">Browse products</a>
+        </div>
+
+        <nav class="inq-pager" id="inq-pager" aria-label="Inquiries (page 1)">
+          <a class="btn btn-ghost inq-btn-sm" id="inq-prev" href="?lang=en&amp;page=1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            <span data-t="prev">Previous</span>
+          </a>
+          <span class="inq-page" id="inq-page-number">1 / 2</span>
+          <a class="btn btn-ghost inq-btn-sm" id="inq-next" href="?lang=en&amp;page=2">
+            <span data-t="next">Next</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+        </nav>
+
+      </section>
+    </div>
+
+  </div>
+
+</main>
+
+<nav class="ws-tabs" aria-label="Account menu" data-t-aria="accountMenu">
+  <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+    <span data-t="navOverview">Overview</span>
+  </a>
+  <a href="inquiries.html" data-lang-href="inquiries.html" class="is-on" aria-current="page">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+    <span data-t="navInquiries">Inquiries</span>
+  </a>
+  <a href="documents.html" data-lang-href="documents.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+    <span data-t="navDocuments">Documents</span>
+  </a>
+  <a href="account-details.html" data-lang-href="account-details.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-t="navAccount">Account</span>
+  </a>
+</nav>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">default</a> ·
+  <a data-state-link="open">open only</a> ·
+  <a data-state-link="status">one status (tile handoff)</a> ·
+  <a data-state-link="empty">empty</a> ·
+  <a data-state-link="page2">page 2</a>
+</p>
+
+<script>
+const STR = {
+  en: {
+    docTitle: "Inquiries · Linker account prototype",
+    accountMenu: "Account menu",
+    navAccount: "Account",
+    groupWorkplace: "Workplace",
+    groupAccount: "Account",
+    navOverview: "Overview",
+    navInquiries: "Inquiries",
+    navSaved: "Saved solutions",
+    navDocuments: "Documents",
+    navCompany: "Company",
+    navAccountDetails: "Account details",
+    navLogout: "Log out",
+    title: "Inquiries",
+    back: "Overview",
+    tabAll: "All inquiries",
+    tabOpen: "Open inquiries",
+    stReceived: "Inquiry received",
+    stProforma: "Proforma invoice issued",
+    stCompleted: "Completed",
+    stCancelled: "Cancelled",
+    countOne: "1 product",
+    countMany: "%d products",
+    prev: "Previous",
+    next: "Next",
+    pagerLabel: "Inquiries (page %d)",
+    empty: "No inquiries yet.",
+    emptyCta: "Browse products",
+    inquiryAria: "Inquiry #%s",
+    viewAria: "View inquiry %s",
+    view: "View",
+    locale: "en-GB",
+    shop: "https://de-linker.com/products/"
+  },
+  de: {
+    docTitle: "Anfragen · Linker-Konto-Prototyp",
+    accountMenu: "Kontomenü",
+    navAccount: "Konto",
+    groupWorkplace: "Arbeitsbereich",
+    groupAccount: "Konto",
+    navOverview: "Übersicht",
+    navInquiries: "Anfragen",
+    navSaved: "Gespeicherte Lösungen",
+    navDocuments: "Dokumente",
+    navCompany: "Unternehmen",
+    navAccountDetails: "Kontodetails",
+    navLogout: "Abmelden",
+    title: "Anfragen",
+    back: "Übersicht",
+    tabAll: "Alle Anfragen",
+    tabOpen: "Offene Anfragen",
+    stReceived: "Anfrage eingegangen",
+    stProforma: "Proformarechnung ausgestellt",
+    stCompleted: "Abgeschlossen",
+    stCancelled: "Storniert",
+    countOne: "1 Produkt",
+    countMany: "%d Produkte",
+    prev: "Zurück",
+    next: "Weiter",
+    pagerLabel: "Anfragen (Seite %d)",
+    empty: "Sie haben noch keine Anfrage gesendet.",
+    emptyCta: "Zu den Produkten",
+    inquiryAria: "Anfrage #%s",
+    viewAria: "Anfrage %s ansehen",
+    view: "Ansehen",
+    locale: "de-DE",
+    shop: "https://de-linker.com/de/produkte/"
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const isEmpty = params.get("empty") === "1";
+const PER_PAGE = 6;
+const OPEN_STATUSES = ["inquiry-received", "proforma-issued"];
+const STATUS_KEYS = {
+  "inquiry-received": "stReceived",
+  "proforma-issued": "stProforma",
+  completed: "stCompleted",
+  cancelled: "stCancelled"
+};
+// the real chain filters with ?inquiry-status= (the dashboard tiles link that way);
+// ?tab=open is the prototype's own state shortcut for the same view
+const requested = params.get("inquiry-status") || "";
+const activeStatus = STATUS_KEYS[requested] ? requested : "";
+const openOnly = !activeStatus && (params.get("tab") === "open" || requested === "open");
+
+document.documentElement.lang = lang;
+document.title = STR[lang].docTitle;
+
+// text, placeholders, accessible names
+for (const el of document.querySelectorAll("[data-t]")) {
+  const key = el.dataset.t;
+  if (STR[lang][key]) el.textContent = STR[lang][key];
+}
+for (const el of document.querySelectorAll("[data-t-aria]")) {
+  const text = STR[lang][el.dataset.tAria];
+  if (text) el.setAttribute("aria-label", el.dataset.tAriaArg ? text.replace("%s", el.dataset.tAriaArg) : text);
+}
+// a single status shows in the heading, as the live list does
+if (activeStatus) document.getElementById("page-title").textContent += " · " + STR[lang][STATUS_KEYS[activeStatus]];
+
+// rows: product count, date and amount in the page language
+const money = new Intl.NumberFormat(STR[lang].locale, { style: "currency", currency: "EUR" });
+const dateFmt = new Intl.DateTimeFormat(STR[lang].locale, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+for (const el of document.querySelectorAll("[data-count]")) {
+  const n = Number(el.dataset.count);
+  el.textContent = (n === 1 ? STR[lang].countOne : STR[lang].countMany).replace("%d", String(n));
+}
+for (const el of document.querySelectorAll("[data-amount]")) {
+  el.textContent = money.format(Number(el.dataset.amount));
+}
+for (const el of document.querySelectorAll("time[datetime]")) {
+  el.textContent = dateFmt.format(new Date(el.getAttribute("datetime") + "T12:00:00Z"));
+}
+
+// links that carry the page language
+for (const el of document.querySelectorAll("[data-lang-href]")) {
+  const [path, query] = el.dataset.langHref.split("?");
+  const p = new URLSearchParams(query || "");
+  p.set("lang", lang);
+  el.href = path + "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search);
+  p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+
+// rows of the current filter, then the current page of them
+const rows = [...document.querySelectorAll(".inq-row")];
+const matches = (row) => activeStatus ? row.dataset.status === activeStatus
+  : openOnly ? OPEN_STATUSES.includes(row.dataset.status)
+  : true;
+const filtered = rows.filter(matches);
+const pages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+const page = Math.min(pages, Math.max(1, Number(params.get("page")) || 1));
+const onPage = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+for (const row of rows) row.hidden = !onPage.includes(row);
+
+// filter tabs
+for (const el of document.querySelectorAll("[data-tab-link]")) {
+  const on = !activeStatus && (el.dataset.tabLink === "open" ? openOnly : !openOnly);
+  el.classList.toggle("is-on", on);
+  if (on) el.setAttribute("aria-current", "true");
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang);
+  p.delete("inquiry-status");
+  if (el.dataset.tabLink === "open") p.set("tab", "open"); else p.delete("tab");
+  p.delete("page");
+  el.href = "?" + p.toString();
+}
+
+// empty state
+if (isEmpty) {
+  document.querySelector(".inq-list").hidden = true;
+  document.getElementById("inq-pager").hidden = true;
+  document.getElementById("inq-empty").hidden = false;
+}
+document.getElementById("inq-empty-cta").href = STR[lang].shop;
+
+// pager; both bound states are reachable in the prototype
+const pager = document.getElementById("inq-pager");
+pager.setAttribute("aria-label", STR[lang].pagerLabel.replace("%d", String(page)));
+document.getElementById("inq-page-number").textContent = page + " / " + pages;
+for (const [el, target] of [[document.getElementById("inq-prev"), page - 1], [document.getElementById("inq-next"), page + 1]]) {
+  if (target < 1 || target > pages) {
+    el.classList.add("inq-btn-off");
+    el.setAttribute("aria-disabled", "true");
+    el.tabIndex = -1;
+  } else {
+    const p = new URLSearchParams(location.search);
+    p.set("lang", lang);
+    p.set("page", String(target));
+    el.href = "?" + p.toString();
+  }
+}
+
+// prototype state navigation
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang);
+  p.delete("tab");
+  p.delete("inquiry-status");
+  p.delete("empty");
+  p.delete("page");
+  if (el.dataset.stateLink === "open") p.set("tab", "open");
+  if (el.dataset.stateLink === "status") p.set("inquiry-status", "proforma-issued");
+  if (el.dataset.stateLink === "empty") p.set("empty", "1");
+  if (el.dataset.stateLink === "page2") p.set("page", "2");
+  el.href = "?" + p.toString();
+}
+</script>
+</body>
+</html>

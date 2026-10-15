@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Company details · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Local to company-edit.html: app.css gives .ws its two columns but no stack
+     inside the second one, no form body for a .panel and no row for the card's
+     one action. Hover/focus/active feedback stays app.css. */
+  .co-main { display: grid; gap: 20px; align-content: start; min-width: 0; }
+  .co-body { padding: 22px; }
+  .co-opt { color: var(--muted); font-weight: 500; }
+  .co-actions { margin-top: 10px; padding-top: 22px; border-top: 1px solid var(--line-soft); }
+  .co-actions .btn { width: 100%; }
+  @media (min-width: 560px) { .co-actions .btn { width: auto; min-width: 260px; } }
+  /* an author display rule would beat the hidden attribute on .error-text */
+  .co-panel .error-text[hidden] { display: none; }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language" data-t-aria="langLabel">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<main class="ws">
+
+  <aside class="ws-side">
+    <nav class="ws-nav" aria-label="Account menu" data-t-aria="accountMenu">
+      <p class="group" data-t="groupWorkplace"></p>
+
+      <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span data-t="navOverview"></span>
+      </a>
+      <a href="inquiries.html" data-lang-href="inquiries.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span data-t="navInquiries"></span>
+      </a>
+      <a href="solutions.html" data-lang-href="solutions.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        <span data-t="navSaved"></span>
+      </a>
+      <a href="documents.html" data-lang-href="documents.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        <span data-t="navDocuments"></span>
+      </a>
+
+      <p class="group" data-t="groupAccount"></p>
+
+      <a href="company.html" data-lang-href="company.html" class="is-on" aria-current="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        <span data-t="navCompany"></span>
+      </a>
+      <a href="account.html" data-lang-href="account.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span data-t="navAccountDetails"></span>
+      </a>
+      <a href="login.html?state=signed-out" data-lang-href="login.html?state=signed-out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        <span data-t="navLogout"></span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="co-main">
+
+    <header class="ws-head">
+      <h1 data-t="pageTitle"></h1>
+    </header>
+
+    <div id="notice-slot"></div>
+
+    <section class="panel co-panel" aria-labelledby="co-form-title">
+      <div class="panel-head">
+        <h2 id="co-form-title" data-t="cardTitle"></h2>
+      </div>
+
+      <div class="panel-body co-body">
+        <form id="company-form" novalidate>
+
+          <div class="field-pair">
+            <div class="field">
+              <label for="f-first"><span data-t="labelFirst"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-first" name="billing_first_name" type="text" autocomplete="given-name" value="Maria" required>
+            </div>
+            <div class="field">
+              <label for="f-last"><span data-t="labelLast"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-last" name="billing_last_name" type="text" autocomplete="family-name" value="Muster" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-company"><span data-t="labelCompany"></span> <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-company" name="billing_company" type="text" autocomplete="organization" value="Muster Solar GmbH" required>
+          </div>
+
+          <div class="field">
+            <label for="f-vat"><span data-t="labelVat"></span> <span class="co-opt" data-t="optional"></span></label>
+            <input class="input" id="f-vat" name="billing_vat_id" type="text" value="DE123456789" aria-describedby="vat-hint">
+            <p class="hint" id="vat-hint" data-t="vatHint"></p>
+          </div>
+
+          <div class="field">
+            <label for="f-country"><span data-t="labelCountry"></span> <span class="req" aria-hidden="true">*</span></label>
+            <select class="input" id="f-country" name="billing_country" autocomplete="country" required>
+              <option value="DE" data-t="cDE" selected>Germany</option>
+              <option value="AT" data-t="cAT">Austria</option>
+              <option value="CH" data-t="cCH">Switzerland</option>
+              <option value="NL" data-t="cNL">Netherlands</option>
+              <option value="FR" data-t="cFR">France</option>
+              <option value="IT" data-t="cIT">Italy</option>
+              <option value="PL" data-t="cPL">Poland</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="f-street"><span data-t="labelStreet"></span> <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-street" name="billing_address_1" type="text" autocomplete="street-address" value="Musterstraße 1" required>
+          </div>
+
+          <div class="field-pair">
+            <div class="field">
+              <label for="f-postcode"><span data-t="labelPostcode"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-postcode" name="billing_postcode" type="text" autocomplete="postal-code" value="12345" required>
+              <p class="error-text" id="err-postcode" hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                <span data-t="errPostcode"></span>
+              </p>
+            </div>
+            <div class="field">
+              <label for="f-city"><span data-t="labelCity"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-city" name="billing_city" type="text" autocomplete="address-level2" value="Musterstadt" required>
+            </div>
+          </div>
+
+          <div class="co-actions">
+            <button class="btn btn-primary" type="submit" id="submit-btn">
+              <span class="spinner" hidden></span><span data-t="submit"></span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- the only account navigation on mobile: the old top fold-out menu is gone -->
+<nav class="ws-tabs" aria-label="Account menu" data-t-aria="accountMenu">
+  <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+    <span data-t="navOverview"></span>
+  </a>
+  <a href="inquiries.html" data-lang-href="inquiries.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+    <span data-t="navInquiries"></span>
+  </a>
+  <a href="documents.html" data-lang-href="documents.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+    <span data-t="navDocuments"></span>
+  </a>
+  <a href="account.html" data-lang-href="account.html" class="is-on" aria-current="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-t="navAccount"></span>
+  </a>
+</nav>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">default</a> ·
+  <a data-state-link="saved">saved</a> ·
+  <a data-state-link="error">postcode error</a> ·
+  <a data-state-link="loading">save loading</a>
+  <br>
+  Saving keeps you on this form and shows the notice above it. The read-only view is the
+  <a href="company.html" data-lang-href="company.html">company card</a>.
+</p>
+
+<script>
+const STR = {
+  en: {
+    pageTitle: "Company",
+    cardTitle: "Company details",
+    labelFirst: "First name",
+    labelLast: "Last name",
+    labelCompany: "Company name",
+    labelVat: "VAT ID",
+    optional: "(optional)",
+    vatHint: "We check EU VAT IDs in the European Commission's VIES system.",
+    labelCountry: "Country / Region",
+    labelStreet: "Street address",
+    labelPostcode: "Postcode / ZIP",
+    labelCity: "Town / City",
+    submit: "Save company details",
+    okSaved: "Company details updated.",
+    errPostcode: "Please enter a valid postcode / ZIP.",
+    cDE: "Germany", cAT: "Austria", cCH: "Switzerland", cNL: "Netherlands",
+    cFR: "France", cIT: "Italy", cPL: "Poland",
+    // the shell
+    langLabel: "Language",
+    accountMenu: "Account menu",
+    groupWorkplace: "Workplace",
+    groupAccount: "Account",
+    navOverview: "Overview",
+    navInquiries: "Inquiries",
+    navSaved: "Saved solutions",
+    navDocuments: "Documents",
+    navCompany: "Company",
+    navAccountDetails: "Account details",
+    navLogout: "Log out",
+    navAccount: "Account"
+  },
+  de: {
+    pageTitle: "Unternehmen",
+    cardTitle: "Unternehmensdaten",
+    labelFirst: "Vorname",
+    labelLast: "Nachname",
+    labelCompany: "Firmenname",
+    labelVat: "USt-IdNr.",
+    optional: "(optional)",
+    vatHint: "Eine EU-USt-IdNr. prüfen wir im VIES-System der Europäischen Kommission.",
+    labelCountry: "Land/Region",
+    labelStreet: "Straße und Hausnummer",
+    labelPostcode: "Postleitzahl",
+    labelCity: "Stadt",
+    submit: "Unternehmensdaten speichern",
+    okSaved: "Unternehmensdaten aktualisiert.",
+    errPostcode: "Bitte geben Sie eine gültige Postleitzahl ein.",
+    cDE: "Deutschland", cAT: "Österreich", cCH: "Schweiz", cNL: "Niederlande",
+    cFR: "Frankreich", cIT: "Italien", cPL: "Polen",
+    langLabel: "Sprache",
+    accountMenu: "Kontomenü",
+    groupWorkplace: "Arbeitsbereich",
+    groupAccount: "Konto",
+    navOverview: "Übersicht",
+    navInquiries: "Anfragen",
+    navSaved: "Gespeicherte Lösungen",
+    navDocuments: "Dokumente",
+    navCompany: "Unternehmen",
+    navAccountDetails: "Kontodetails",
+    navLogout: "Abmelden",
+    navAccount: "Konto"
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const state = params.get("state") || "default";
+document.documentElement.lang = lang;
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const text = STR[lang][el.dataset.t];
+  if (text) el.textContent = text;
+}
+// the two navs and the language switch are named regions with no visible label
+for (const el of document.querySelectorAll("[data-t-aria]")) {
+  const text = STR[lang][el.dataset.tAria];
+  if (text) el.setAttribute("aria-label", text);
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search); p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+// every link to another prototype page keeps the language
+for (const el of document.querySelectorAll("[data-lang-href]")) {
+  const [path, query] = el.dataset.langHref.split("?");
+  const p = new URLSearchParams(query || "");
+  p.set("lang", lang);
+  el.href = path + "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const target = el.dataset.stateLink;
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang); p.set("state", target);
+  el.href = "?" + p.toString();
+  if (target === state) el.setAttribute("aria-current", "page");
+}
+
+const ICON_ERR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>';
+const ICON_OK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>';
+
+const slot = document.getElementById("notice-slot");
+function notice(kind, text) {
+  slot.innerHTML = `<div class="notice notice-${kind}" role="${kind === "error" ? "alert" : "status"}">${kind === "error" ? ICON_ERR : ICON_OK}<div>${text}</div></div>`;
+}
+
+const form = document.getElementById("company-form");
+const submitBtn = document.getElementById("submit-btn");
+const postcodeInput = document.getElementById("f-postcode");
+const postcodeError = document.getElementById("err-postcode");
+
+// the field-level error is described only while it shows: a hidden #err-postcode
+// would still be read out through aria-describedby
+function setPostcodeError(on) {
+  if (on) {
+    postcodeInput.setAttribute("aria-invalid", "true");
+    postcodeInput.setAttribute("aria-describedby", "err-postcode");
+  } else {
+    postcodeInput.removeAttribute("aria-invalid");
+    postcodeInput.removeAttribute("aria-describedby");
+  }
+  postcodeError.hidden = !on;
+}
+
+if (state === "error") {
+  postcodeInput.value = "1234";
+  setPostcodeError(true);
+}
+if (state === "saved") notice("success", STR[lang].okSaved);
+if (state === "loading") {
+  submitBtn.classList.add("is-loading");
+  submitBtn.querySelector(".spinner").hidden = false;
+}
+
+postcodeInput.addEventListener("input", () => {
+  if (!postcodeError.hidden && /^\d{5}$/.test(postcodeInput.value.trim())) setPostcodeError(false);
+});
+
+// the prototype demonstrates the loading state, then lands on the saved state
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!/^\d{5}$/.test(postcodeInput.value.trim())) {
+    setPostcodeError(true);
+    postcodeInput.focus();
+    return;
+  }
+  setPostcodeError(false);
+  submitBtn.classList.add("is-loading");
+  submitBtn.querySelector(".spinner").hidden = false;
+  setTimeout(() => { location.href = "company-edit.html?lang=" + lang + "&state=saved"; }, 1200);
+});
+</script>
+</body>
+</html>

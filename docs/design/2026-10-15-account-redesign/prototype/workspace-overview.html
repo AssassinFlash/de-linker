@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Overview · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Local to workspace-overview.html: app.css has no content stack for .ws
+     (the grid's columns are the sidebar and a single second child, so the
+     column's own sections need their stack), no colours for the tile dots,
+     no meta line inside a row, no text-only panel body, no download text
+     button and no contact line. Everything else comes from app.css. */
+  .ov-main { display: grid; gap: 20px; align-content: start; }
+
+  /* app.css lays .row out as one flex line. Measured in Plus Jakarta Sans 600:
+     "Proformarechnung ausgestellt" is 221px at 12.5px, and at 390px the row
+     leaves only 220px beside the amount — the pill would shrink and wrap its
+     own text. The grid gives the status line the full row width; the meta line
+     wraps inside itself when the date no longer fits beside the pill. */
+  .ov-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 14px; row-gap: 7px; align-items: center; }
+  .ov-row .r-main { display: contents; }
+  .ov-row .r-title { grid-area: 1 / 1; }
+  .ov-row .r-end { grid-area: 1 / 2; }
+  .ov-row .ov-meta { grid-area: 2 / 1 / 3 / 3; }
+  .ov-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .ov-meta .r-sub { margin-top: 0; }
+  .ov-amount { font-size: 15px; font-weight: 600; white-space: nowrap; }
+  .ov-row:hover .r-title { color: var(--teal-700); }
+  /* .tile (a lift) and .row (no underline) already state their own hover in
+     app.css; the generic a:hover underline would land on top of both */
+  .ov-tile:hover, .ov-row:hover { text-decoration: none; }
+  .ov-tile:focus-visible, .ov-row:focus-visible { outline: 2px solid var(--teal-600); outline-offset: 3px; }
+
+  /* the document titles are 287px (EN) and 321px (DE) at 15px/600, so below
+     560px the button drops to its own line instead of squeezing the title */
+  @media (max-width: 560px) {
+    .ov-doc-row { flex-wrap: wrap; row-gap: 2px; }
+    .ov-doc-row .r-main { flex: 1 1 100%; }
+    .ov-doc-row .r-end { margin-left: auto; }
+  }
+
+  /* the German tile label wraps at every width ("Proformarechnung ausgestellt"
+     is 191px in the 165px label box): the dot rides the first line and the four
+     counters share one baseline instead of drifting apart */
+  .ov-tiles { grid-auto-rows: 1fr; }
+  .ov-tile { display: flex; flex-direction: column; gap: 8px; }
+  .ov-tile .t-label { align-items: flex-start; }
+  .ov-tile .t-label .dot { margin-top: 6px; }
+  .ov-tile .t-count { margin-top: auto; }
+  .ov-dot[data-status="inquiry-received"] { background: var(--teal-500); }
+  .ov-dot[data-status="proforma-issued"] { background: var(--warn); }
+  .ov-dot[data-status="completed"] { background: var(--ok); }
+  .ov-dot[data-status="cancelled"] { background: var(--faint); }
+
+  .ov-body { padding: 22px; }
+  .ov-empty { padding: 0; }
+  .ov-contact { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 15px; font-weight: 500; }
+  .ov-contact svg { flex: none; color: var(--teal-600); }
+  .ov-dl {
+    display: inline-flex; align-items: center; gap: 7px; min-height: 44px; margin-right: -10px; padding: 0 10px;
+    border-radius: 10px; font-size: 13.5px; font-weight: 600; color: var(--teal-700); white-space: nowrap;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .ov-dl:hover { background: var(--teal-50); text-decoration: none; }
+  .ov-dl:active { transform: translateY(1px); }
+  .ov-dl:focus-visible { outline: 2px solid var(--teal-600); outline-offset: 2px; }
+  .proto-note a[aria-current="page"] { color: var(--teal-700); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<main class="ws">
+
+  <aside class="ws-side">
+    <nav class="ws-nav" aria-label="Account menu" data-t-aria="accountMenu">
+      <!-- div, not p: app.css's .ws-nav .group carries no margin reset and a p
+           would take the browser's own 1em margins -->
+      <div class="group" data-t="groupWorkplace"></div>
+
+      <a href="workspace-overview.html" data-lang-href="workspace-overview.html" class="is-on" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span data-t="navOverview"></span>
+      </a>
+      <a href="inquiries.html" data-lang-href="inquiries.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span data-t="navInquiries"></span>
+      </a>
+      <a href="solutions.html" data-lang-href="solutions.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        <span data-t="navSaved"></span>
+      </a>
+      <a href="documents.html" data-lang-href="documents.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        <span data-t="navDocuments"></span>
+      </a>
+
+      <div class="group" data-t="groupAccount"></div>
+
+      <a href="company.html" data-lang-href="company.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        <span data-t="navCompany"></span>
+      </a>
+      <a href="account-details.html" data-lang-href="account-details.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span data-t="navAccountDetails"></span>
+      </a>
+      <a href="login.html?state=signed-out" data-lang-href="login.html?state=signed-out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        <span data-t="navLogout"></span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="ov-main">
+
+    <header class="ws-head">
+      <h1 data-t="pageTitle"></h1>
+    </header>
+
+    <header class="welcome">
+      <span class="avatar" aria-hidden="true">M</span>
+      <div>
+        <p class="hi" data-t="welcome"></p>
+        <p class="name">Maria Muster</p>
+        <p class="where" data-t="workspace"></p>
+      </div>
+    </header>
+
+    <section class="tiles ov-tiles" aria-label="Status" data-t-aria="statusLabel">
+      <a class="tile ov-tile" href="inquiries.html?inquiry-status=inquiry-received" data-lang-href="inquiries.html?inquiry-status=inquiry-received">
+        <span class="t-label"><span class="dot ov-dot" data-status="inquiry-received" aria-hidden="true"></span><span data-t="tReceived"></span></span>
+        <div class="t-count" data-count="received">2</div>
+      </a>
+      <a class="tile ov-tile" href="inquiries.html?inquiry-status=proforma-issued" data-lang-href="inquiries.html?inquiry-status=proforma-issued">
+        <span class="t-label"><span class="dot ov-dot" data-status="proforma-issued" aria-hidden="true"></span><span data-t="tProforma"></span></span>
+        <div class="t-count" data-count="proforma">1</div>
+      </a>
+      <a class="tile ov-tile" href="inquiries.html?inquiry-status=completed" data-lang-href="inquiries.html?inquiry-status=completed">
+        <span class="t-label"><span class="dot ov-dot" data-status="completed" aria-hidden="true"></span><span data-t="tCompleted"></span></span>
+        <div class="t-count" data-count="completed">5</div>
+      </a>
+      <a class="tile ov-tile" href="inquiries.html?inquiry-status=cancelled" data-lang-href="inquiries.html?inquiry-status=cancelled">
+        <span class="t-label"><span class="dot ov-dot" data-status="cancelled" aria-hidden="true"></span><span data-t="tCancelled"></span></span>
+        <div class="t-count" data-count="cancelled">1</div>
+      </a>
+    </section>
+
+    <section class="panel" aria-labelledby="ov-recent-title">
+      <div class="panel-head">
+        <h2 id="ov-recent-title" data-t="recentTitle"></h2>
+        <a href="inquiries.html" data-lang-href="inquiries.html" data-t="viewAll"></a>
+      </div>
+
+      <div class="panel-body" data-when="default">
+        <a class="row ov-row" href="inquiry-detail.html?id=2418" data-lang-href="inquiry-detail.html?id=2418">
+          <span class="r-main">
+            <span class="r-title">#2418</span>
+            <span class="ov-meta">
+              <span class="pill is-proforma"><span class="dot" aria-hidden="true"></span><span data-t="tProforma"></span></span>
+              <span class="r-sub" data-t="date2418"></span>
+            </span>
+          </span>
+          <span class="r-end"><span class="ov-amount" data-t="amount2418"></span></span>
+        </a>
+        <a class="row ov-row" href="inquiry-detail.html?id=2412" data-lang-href="inquiry-detail.html?id=2412">
+          <span class="r-main">
+            <span class="r-title">#2412</span>
+            <span class="ov-meta">
+              <span class="pill is-completed"><span class="dot" aria-hidden="true"></span><span data-t="tCompleted"></span></span>
+              <span class="r-sub" data-t="date2412"></span>
+            </span>
+          </span>
+          <span class="r-end"><span class="ov-amount" data-t="amount2412"></span></span>
+        </a>
+        <a class="row ov-row" href="inquiry-detail.html?id=2399" data-lang-href="inquiry-detail.html?id=2399">
+          <span class="r-main">
+            <span class="r-title">#2399</span>
+            <span class="ov-meta">
+              <span class="pill is-received"><span class="dot" aria-hidden="true"></span><span data-t="tReceived"></span></span>
+              <span class="r-sub" data-t="date2399"></span>
+            </span>
+          </span>
+          <span class="r-end"><span class="ov-amount" data-t="amount2399"></span></span>
+        </a>
+      </div>
+
+      <div class="panel-body ov-empty" data-when="empty" hidden>
+        <div class="empty">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          <p data-t="emptyInquiries"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="ov-docs-title">
+      <div class="panel-head">
+        <h2 id="ov-docs-title" data-t="documentsTitle"></h2>
+        <a href="documents.html" data-lang-href="documents.html" data-t="viewAll"></a>
+      </div>
+
+      <div class="panel-body" data-when="default">
+        <div class="row ov-doc-row">
+          <span class="r-main"><span class="r-title" data-t="docProforma"></span></span>
+          <span class="r-end"><a class="ov-dl" href="#" data-download>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            <span data-t="download"></span>
+          </a></span>
+        </div>
+        <div class="row ov-doc-row">
+          <span class="r-main"><span class="r-title" data-t="docReport"></span></span>
+          <span class="r-end"><a class="ov-dl" href="#" data-download>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            <span data-t="download"></span>
+          </a></span>
+        </div>
+      </div>
+
+      <div class="panel-body ov-empty" data-when="empty" hidden>
+        <div class="empty">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+          <p data-t="emptyDocuments"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="ov-contact-title">
+      <div class="panel-head">
+        <h2 id="ov-contact-title" data-t="contactTitle"></h2>
+      </div>
+      <div class="panel-body ov-body">
+        <p class="ov-contact">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <a href="mailto:sales@de-linker.com">sales@de-linker.com</a>
+        </p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- the only account navigation on mobile: the old top fold-out menu is gone -->
+<nav class="ws-tabs" aria-label="Account menu" data-t-aria="accountMenu">
+  <a href="workspace-overview.html" data-lang-href="workspace-overview.html" class="is-on" aria-current="page">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+    <span data-t="navOverview"></span>
+  </a>
+  <a href="inquiries.html" data-lang-href="inquiries.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+    <span data-t="navInquiries"></span>
+  </a>
+  <a href="documents.html" data-lang-href="documents.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+    <span data-t="navDocuments"></span>
+  </a>
+  <a href="account-details.html" data-lang-href="account-details.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-t="navAccount"></span>
+  </a>
+</nav>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">default</a> ·
+  <a data-state-link="empty">new account, nothing yet</a>
+  <br>
+  Mobile: the bottom capsule bar is the only account navigation (the old top fold-out menu is gone).
+</p>
+
+<script>
+const STR = {
+  en: {
+    pageTitle: "Overview",
+    // the sidebar's two groups and its seven entries
+    groupWorkplace: "Workplace",
+    groupAccount: "Account",
+    navOverview: "Overview",
+    navInquiries: "Inquiries",
+    navSaved: "Saved solutions",
+    navDocuments: "Documents",
+    navCompany: "Company",
+    navAccountDetails: "Account details",
+    navLogout: "Log out",
+    // the bottom bar's fourth entry reads "Account", not "Account details"
+    navAccount: "Account",
+    accountMenu: "Account menu",
+    statusLabel: "Status",
+    // welcome header
+    welcome: "Welcome back",
+    workspace: "Your account workspace",
+    // the four inquiry states
+    tReceived: "Inquiry received",
+    tProforma: "Proforma invoice issued",
+    tCompleted: "Completed",
+    tCancelled: "Cancelled",
+    // recent inquiries, newest first
+    recentTitle: "Recent inquiries",
+    viewAll: "View all",
+    date2418: "15 October 2026",
+    amount2418: "€4,218.00",
+    date2412: "6 October 2026",
+    amount2412: "€8,475.50",
+    date2399: "18 September 2026",
+    amount2399: "€2,180.00",
+    // documents
+    documentsTitle: "Documents",
+    docProforma: "Proforma invoice PI-2026-041 (PDF)",
+    docReport: "Design report · Residential 10 kWh (PDF)",
+    download: "Download",
+    // contact person
+    contactTitle: "Your contact person",
+    // a new account before its first inquiry
+    emptyInquiries: "No inquiries yet.",
+    emptyDocuments: "Your Proforma invoices and the design reports of your saved solutions will appear here."
+  },
+  de: {
+    pageTitle: "Übersicht",
+    groupWorkplace: "Arbeitsbereich",
+    groupAccount: "Konto",
+    navOverview: "Übersicht",
+    navInquiries: "Anfragen",
+    navSaved: "Gespeicherte Lösungen",
+    navDocuments: "Dokumente",
+    navCompany: "Unternehmen",
+    navAccountDetails: "Kontodetails",
+    navLogout: "Abmelden",
+    navAccount: "Konto",
+    accountMenu: "Kontomenü",
+    statusLabel: "Status",
+    welcome: "Willkommen zurück",
+    workspace: "Ihr persönlicher Arbeitsbereich",
+    tReceived: "Anfrage eingegangen",
+    tProforma: "Proformarechnung ausgestellt",
+    tCompleted: "Abgeschlossen",
+    tCancelled: "Storniert",
+    recentTitle: "Neueste Anfragen",
+    viewAll: "Alle anzeigen",
+    date2418: "15. Oktober 2026",
+    amount2418: "4.218,00\u00a0€",
+    date2412: "6. Oktober 2026",
+    amount2412: "8.475,50\u00a0€",
+    date2399: "18. September 2026",
+    amount2399: "2.180,00\u00a0€",
+    documentsTitle: "Dokumente",
+    docProforma: "Proformarechnung PI-2026-041 (PDF)",
+    docReport: "Auslegungsbericht · Wohnhaus 10 kWh (PDF)",
+    download: "Herunterladen",
+    contactTitle: "Ihre Ansprechperson",
+    emptyInquiries: "Noch keine Anfragen.",
+    // no msgstr in linker-commerce-de_DE_formal.po — written here for the
+    // formal voice; the .po line needs the same fix
+    emptyDocuments: "Ihre Proformarechnungen und die Auslegungsberichte Ihrer gespeicherten Lösungen erscheinen hier."
+  }
+};
+
+const STATES = ["default", "empty"];
+const COUNTS = {
+  default: { received: 2, proforma: 1, completed: 5, cancelled: 1 },
+  empty: { received: 0, proforma: 0, completed: 0, cancelled: 0 }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const asked = params.get("state") || "default";
+const state = STATES.includes(asked) ? asked : "default";
+document.documentElement.lang = lang;
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const text = STR[lang][el.dataset.t];
+  if (text) el.textContent = text;
+}
+// aria-labels are translated too: the two navs and the tiles region are the
+// only named regions this page has that carry no visible label of their own
+for (const el of document.querySelectorAll("[data-t-aria]")) {
+  const text = STR[lang][el.dataset.tAria];
+  if (text) el.setAttribute("aria-label", text);
+}
+for (const el of document.querySelectorAll("[data-count]")) {
+  el.textContent = COUNTS[state][el.dataset.count];
+}
+for (const el of document.querySelectorAll("[data-when]")) {
+  el.hidden = el.dataset.when !== state;
+}
+// every link to another prototype page keeps the language
+for (const el of document.querySelectorAll("[data-lang-href]")) {
+  const [path, query] = el.dataset.langHref.split("?");
+  const p = new URLSearchParams(query || "");
+  p.set("lang", lang);
+  el.href = path + "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search); p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const target = el.dataset.stateLink;
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang); p.set("state", target);
+  el.href = "?" + p.toString();
+  if (target === state) el.setAttribute("aria-current", "page");
+}
+// the download buttons are the prototype's dead end: the live site serves the
+// PDF from a signed URL, so here they only keep their press feedback
+for (const el of document.querySelectorAll("[data-download]")) {
+  el.addEventListener("click", (e) => e.preventDefault());
+}
+</script>
+</body>
+</html>

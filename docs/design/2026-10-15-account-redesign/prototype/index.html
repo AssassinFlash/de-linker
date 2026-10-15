@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Account chain redesign · prototype index</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .idx { max-width: 1060px; margin: 0 auto; padding: clamp(20px, 4vw, 48px); }
+  .idx h1 { font-size: clamp(26px, 3vw, 34px); letter-spacing: -0.02em; margin: 0 0 6px; }
+  .idx .lede { color: var(--muted); margin: 0 0 28px; max-width: 720px; }
+  .idx-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 800px) { .idx-grid { grid-template-columns: 1fr 1fr; } }
+  .idx h2 { font-size: 16px; margin: 0 0 4px; }
+  .idx .card { padding: 22px; }
+  .idx .who { font-size: 12.5px; color: var(--faint); margin: 0 0 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .idx ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .idx li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .idx li a { font-weight: 600; }
+  .idx li .st { color: var(--muted); font-size: 12.5px; text-align: right; }
+  .idx .langs { color: var(--faint); font-size: 12px; }
+</style>
+</head>
+<body>
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language"><span style="padding:6px 14px;font-size:13px;color:var(--muted)">every page: ?lang=en|de</span></nav>
+</header>
+<main class="idx">
+  <h1>Account chain redesign — prototype</h1>
+  <p class="lede">Ticket #180. Every page and state of the sign-in / register / account chain, desktop + mobile, EN + DE. Direction (#179): light card structure with a deliberate app feel. Desktop extends the same language: brand panel on auth pages, sidebar workspace.</p>
+  <div class="idx-grid">
+
+    <section class="card">
+      <p class="who">Guest · sign in</p>
+      <h2>Sign in</h2>
+      <ul>
+        <li><a href="login.html?lang=en">login.html</a><span class="st">default · error · rejected · reset-success · signed-out · loading</span></li>
+      </ul>
+      <h2 style="margin-top:18px">Register</h2>
+      <ul>
+        <li><a href="register.html?lang=en">register.html</a><span class="st">default · errors · loading · password-shown</span></li>
+      </ul>
+      <h2 style="margin-top:18px">Lost &amp; reset password</h2>
+      <ul>
+        <li><a href="lost-password.html?lang=en">lost-password.html</a><span class="st">default · sent · invalid-key · loading</span></li>
+        <li><a href="reset.html?lang=en">reset.html</a><span class="st">default · mismatch · weak · loading (strength meter live)</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <p class="who">Gates</p>
+      <h2>Approval &amp; access gates</h2>
+      <ul>
+        <li><a href="gates.html?lang=en&gate=pending">pending review</a><span class="st">after registration / pending login</span></li>
+        <li><a href="gates.html?lang=en&gate=restricted">restricted</a><span class="st">reason block + contact</span></li>
+        <li><a href="gates.html?lang=en&gate=empty-proforma">empty Proforma request</a><span class="st">guest · Genie pill carried over</span></li>
+        <li><a href="gates.html?lang=en&gate=guest-draft">guest with a draft</a><span class="st">sign in to request</span></li>
+      </ul>
+      <h2 style="margin-top:18px">Site chrome entries</h2>
+      <ul>
+        <li><a href="chrome.html?lang=en">chrome.html</a><span class="st">header dropdown guest/customer · one-click sign-out</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <p class="who">Workspace</p>
+      <h2>Overview</h2>
+      <ul>
+        <li><a href="workspace-overview.html?lang=en">workspace-overview.html</a><span class="st">default · empty</span></li>
+      </ul>
+      <h2 style="margin-top:18px">Inquiries</h2>
+      <ul>
+        <li><a href="inquiries.html?lang=en">inquiries.html</a><span class="st">default · tab=open · inquiry-status=* · page=2 · empty=1</span></li>
+        <li><a href="inquiry-detail.html?lang=en">inquiry-detail.html</a><span class="st">default (proforma) · received · completed · cancelled · loading</span></li>
+      </ul>
+      <h2 style="margin-top:18px">Solutions &amp; documents</h2>
+      <ul>
+        <li><a href="solutions.html?lang=en">solutions.html</a><span class="st">default · empty=1 · loading · added</span></li>
+        <li><a href="documents.html?lang=en">documents.html</a><span class="st">default · empty=1 · loading</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <p class="who">Workspace · account</p>
+      <h2>Company</h2>
+      <ul>
+        <li><a href="company.html?lang=en">company.html</a><span class="st">address card</span></li>
+        <li><a href="company-edit.html?lang=en">company-edit.html</a><span class="st">default · saved · error · loading</span></li>
+      </ul>
+      <h2 style="margin-top:18px">Account details</h2>
+      <ul>
+        <li><a href="account.html?lang=en">account.html</a><span class="st">default · saved · pw-error · loading · strength meter</span></li>
+      </ul>
+      <p style="margin:18px 0 0;font-size:12.5px;color:var(--faint)">Sign-out is one click: account menu → Log out → <a href="login.html?lang=en&state=signed-out">login.html?state=signed-out</a> (no confirm step).</p>
+    </section>
+
+  </div>
+  <p class="proto-note">Prototype only — no live page is touched. States are reached via <code>?state=</code> / <code>?gate=</code> / <code>?tab=</code> / <code>?empty=1</code>; language via <code>?lang=</code> (kept across links).</p>
+</main>
+</body>
+</html>

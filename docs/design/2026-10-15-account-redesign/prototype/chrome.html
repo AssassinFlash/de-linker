@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Account entry in the site header · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+/* chrome.html only, prefix chrome-. The page's own top bar is the demo: the
+   header's tool area has no component in app.css, and the dropdown panel is
+   there only as the --shadow-pop token. The live header already floats this
+   panel (chrome.css: absolute, 292px, 14px radius, its own shadow); here it
+   takes the design system's radius and elevation, and gains the open/close
+   transition. */
+.chrome-tools { display: flex; align-items: center; gap: 6px; }
+.chrome-ib {
+  display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  border: 0; border-radius: 999px; background: transparent; color: var(--ink-2);
+  cursor: pointer; text-decoration: none;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.chrome-ib:hover { background: var(--fill); color: var(--ink); text-decoration: none; }
+.chrome-ib:active { background: var(--line); }
+.chrome-ib:focus-visible { outline: 2px solid var(--teal-600); outline-offset: 2px; }
+.chrome-ib[aria-expanded="true"] { background: var(--fill); color: var(--ink); }
+.chrome-ic { display: grid; place-items: center; }
+.chrome-ava { width: 40px; height: 40px; font-size: 16px; }
+
+/* The panel. visibility: hidden keeps the closed entries out of the tab order;
+   on close it flips after the fade (0s linear delay), on open immediately. */
+.chrome-acct { position: relative; }
+.chrome-pop {
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 20;
+  min-width: 264px; max-width: min(320px, calc(100vw - 40px));
+  padding: 8px; background: var(--card); border: 1px solid var(--line-soft);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-pop);
+  visibility: hidden; opacity: 0; translate: 0 -6px; pointer-events: none;
+  transition: opacity var(--dur) var(--ease), translate var(--dur) var(--ease), visibility 0s linear var(--dur);
+}
+.chrome-pop.is-open { visibility: visible; opacity: 1; translate: 0; pointer-events: auto; transition: opacity var(--dur) var(--ease), translate var(--dur) var(--ease), visibility 0s; }
+.chrome-item { display: block; padding: 11px 14px; border-radius: 12px; font-size: 15px; font-weight: 500; color: var(--ink-2); text-decoration: none; }
+.chrome-item:hover { background: var(--fill); text-decoration: none; }
+.chrome-item:focus-visible { outline: 2px solid var(--teal-600); outline-offset: -2px; }
+.chrome-item.is-out { color: var(--danger); font-weight: 600; }
+.chrome-item.is-out:hover { background: var(--danger-bg); }
+.chrome-sep { height: 1px; background: var(--line); margin: 6px 10px; }
+
+/* the documentation under the demo: two columns from 900px, one below */
+.chrome-wrap { max-width: 1000px; margin: 0 auto; padding: clamp(20px, 4vw, 44px) clamp(16px, 3vw, 32px) 4px; display: grid; gap: 18px; }
+@media (min-width: 900px) {
+  .chrome-wrap { grid-template-columns: 1fr 1fr; }
+  .chrome-lede { grid-column: 1 / -1; }
+}
+.chrome-kind { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal-700); }
+.chrome-hint { margin: 0; font-size: 14px; color: var(--muted); }
+.chrome-sub2 { margin: 24px 0 0; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+.chrome-points { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+.chrome-points li { display: flex; gap: 10px; font-size: 14.5px; }
+.chrome-points li::before { content: ""; flex: none; width: 6px; height: 6px; margin-top: 9px; border-radius: 99px; background: var(--teal-400); }
+.chrome-was { margin: 18px 0 0; padding: 12px 14px; background: var(--fill); border-radius: var(--r-md); font-size: 13.5px; color: var(--muted); }
+.chrome-menu { list-style: none; margin: 10px 0 0; padding: 0; border: 1px solid var(--line-soft); border-radius: var(--r-md); overflow: hidden; }
+.chrome-menu li { padding: 11px 14px; font-size: 14.5px; font-weight: 500; color: var(--ink-2); border-bottom: 1px solid var(--line-soft); }
+.chrome-menu li:last-child { border-bottom: 0; }
+.chrome-menu li.is-out { border-top: 1px solid var(--line); color: var(--danger); font-weight: 600; }
+.chrome-cta { margin-top: 20px; }
+.chrome-notice { margin-top: 10px; }
+.chrome-url { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+.chrome-url code { padding: 3px 7px; border-radius: 6px; background: var(--fill); color: var(--ink-2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+
+/* the mobile illustration: a still of the drawer, no behaviour */
+.chrome-mock { max-width: 340px; margin: 12px 0 0; border: 1px solid var(--line-soft); border-radius: var(--r-lg); overflow: hidden; background: var(--card); box-shadow: var(--shadow-card); }
+.chrome-mock-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--line-soft); }
+.chrome-mock-bar img { height: 22px; width: auto; }
+.chrome-mock-burger { display: grid; place-items: center; width: 32px; height: 32px; color: var(--ink-2); }
+.chrome-mock-body { padding: 14px; background: var(--canvas); }
+.chrome-mock-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: var(--r-md); background: var(--card); font-size: 14.5px; font-weight: 600; color: var(--ink-2); }
+.chrome-mock-row + .chrome-mock-row { margin-top: 8px; }
+.chrome-mock-row svg { color: var(--faint); }
+.chrome-mock-row.is-on { background: var(--teal-50); color: var(--teal-800); }
+.chrome-mock-row.is-on svg { color: var(--teal-600); }
+
+/* app.css paints several components with display rules, so `hidden` has to win
+   for the guest / signed-in swap in the header and in the drawer still. */
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <div class="chrome-tools">
+    <nav class="shell-lang" aria-label="Language">
+      <a href="?lang=en" data-lang-link="en">EN</a>
+      <a href="?lang=de" data-lang-link="de">DE</a>
+    </nav>
+    <div class="chrome-acct" data-acct>
+      <button type="button" class="chrome-ib" id="chrome-acct-btn" aria-haspopup="true" aria-controls="chrome-acct-menu" aria-expanded="false">
+        <span class="chrome-ic" data-as="guest" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path stroke-linecap="round" d="M5.2 19.4a7 7 0 0 1 13.6 0"/></svg>
+        </span>
+        <span class="avatar chrome-ava" data-as="customer" hidden aria-hidden="true">M</span>
+      </button>
+      <div class="chrome-pop" id="chrome-acct-menu">
+        <div data-as="guest">
+          <a class="chrome-item" data-page-link="login.html" data-t="signIn"></a>
+        </div>
+        <div data-as="customer" hidden>
+          <a class="chrome-item" data-page-link="workspace-overview.html" data-t="itemOverview"></a>
+          <a class="chrome-item" data-page-link="inquiries.html" data-t="itemInquiries"></a>
+          <a class="chrome-item" data-page-link="solutions.html" data-t="itemSaved"></a>
+          <a class="chrome-item" data-page-link="documents.html" data-t="itemDocuments"></a>
+          <a class="chrome-item" data-page-link="company.html" data-t="itemCompany"></a>
+          <a class="chrome-item" data-page-link="account-details.html" data-t="itemAccount"></a>
+          <div class="chrome-sep" role="separator"></div>
+          <a class="chrome-item is-out" data-page-link="login.html" data-state="signed-out" data-t="itemLogOut"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="chrome-wrap">
+
+  <section class="card chrome-lede" aria-labelledby="chrome-title">
+    <header>
+      <p class="chrome-kind" data-t="kind"></p>
+      <h1 id="chrome-title" data-t="title"></h1>
+      <p class="sub" data-t="sub"></p>
+    </header>
+    <p class="chrome-hint" data-t="hint"></p>
+    <h3 class="chrome-sub2" data-t="changesTitle"></h3>
+    <ul class="chrome-points">
+      <li data-t="change1"></li>
+      <li data-t="change2"></li>
+      <li data-t="change3"></li>
+      <li data-t="change4"></li>
+      <li data-t="change5"></li>
+    </ul>
+  </section>
+
+  <section class="card" aria-labelledby="guest-title">
+    <header>
+      <h2 id="guest-title" data-t="guestTitle"></h2>
+      <p class="sub" data-t="guestSub"></p>
+    </header>
+    <ul class="chrome-points">
+      <li data-t="guestPoint1"></li>
+      <li data-t="guestPoint2"></li>
+      <li data-t="guestPoint3"></li>
+      <li data-t="guestPoint4"></li>
+    </ul>
+    <h3 class="chrome-sub2" data-t="menuCap"></h3>
+    <ul class="chrome-menu">
+      <li data-t="signIn"></li>
+    </ul>
+    <p class="chrome-was" data-t="guestWas"></p>
+  </section>
+
+  <section class="card" aria-labelledby="cust-title">
+    <header>
+      <h2 id="cust-title" data-t="custTitle"></h2>
+      <p class="sub" data-t="custSub"></p>
+    </header>
+    <ul class="chrome-points">
+      <li data-t="custPoint1"></li>
+      <li data-t="custPoint2"></li>
+      <li data-t="custPoint3"></li>
+      <li data-t="custPoint4"></li>
+    </ul>
+    <h3 class="chrome-sub2" data-t="menuCap"></h3>
+    <ul class="chrome-menu">
+      <li data-t="itemOverview"></li>
+      <li data-t="itemInquiries"></li>
+      <li data-t="itemSaved"></li>
+      <li data-t="itemDocuments"></li>
+      <li data-t="itemCompany"></li>
+      <li data-t="itemAccount"></li>
+      <li class="is-out" data-t="itemLogOut"></li>
+    </ul>
+  </section>
+
+  <section class="card" aria-labelledby="mobile-title">
+    <header>
+      <h2 id="mobile-title" data-t="mobileTitle"></h2>
+      <p class="sub" data-t="mobileSub"></p>
+    </header>
+    <ul class="chrome-points">
+      <li data-t="mobilePoint1"></li>
+      <li data-t="mobilePoint2"></li>
+      <li data-t="mobilePoint3"></li>
+    </ul>
+    <h3 class="chrome-sub2" data-t="mobileMockCap"></h3>
+    <div class="chrome-mock">
+      <div class="chrome-mock-bar">
+        <img src="assets/logo.webp" alt="">
+        <span class="chrome-mock-burger" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </span>
+      </div>
+      <div class="chrome-mock-body">
+        <div class="chrome-mock-row">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6L5 3H2"/></svg>
+          <span data-t="itemDraft"></span>
+        </div>
+        <div class="chrome-mock-row is-on">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path stroke-linecap="round" d="M5.2 19.4a7 7 0 0 1 13.6 0"/></svg>
+          <span data-as="guest" data-t="signIn"></span>
+          <span data-as="customer" data-t="itemOverview"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="out-title">
+    <header>
+      <h2 id="out-title" data-t="outTitle"></h2>
+      <p class="sub" data-t="outSub"></p>
+    </header>
+    <ul class="chrome-points">
+      <li data-t="outPoint1"></li>
+      <li data-t="outPoint2"></li>
+      <li data-t="outPoint3"></li>
+    </ul>
+    <h3 class="chrome-sub2" data-t="outNoticeCap"></h3>
+    <div class="notice notice-info chrome-notice" role="status">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <div data-t="outNotice"></div>
+    </div>
+    <p class="chrome-was" data-t="outWas"></p>
+    <a class="btn btn-primary chrome-cta" data-page-link="login.html" data-state="signed-out" data-t="outCta"></a>
+    <p class="chrome-url"><span data-t="outNoteTop"></span> <code>login.html?state=signed-out</code></p>
+  </section>
+
+</main>
+
+<p class="proto-note">
+  States:
+  <a data-as-link="guest">guest</a> ·
+  <a data-as-link="customer">signed in</a>
+</p>
+
+<script>
+const STR = {
+  en: {
+    kind: "Prototype · account entry",
+    title: "The account entry in the site header",
+    sub: "Where the account chain starts: the button at the top right of the header, the menu behind it, and what signing out does.",
+    hint: "Click the button at the top right to open the menu.",
+    changesTitle: "What changes against today",
+    change1: "Not signed in: one entry in the menu. Today “Sign in” and “My account” both lead to the same page.",
+    change2: "Signed in: the button carries the account initial, and the menu keeps the workspace order with Log out behind a divider.",
+    change3: "Signing out: one tap, no confirmation step, and an info notice on the sign-in page.",
+    change4: "Mobile: the account row stays in the hamburger menu next to the Solution draft.",
+    change5: "The menu opens on click. The live header also opens it on hover; the pointer alone no longer does.",
+
+    guestTitle: "Not signed in",
+    guestSub: "One button, one entry.",
+    guestPoint1: "A person-icon button sits in the tool area next to the language switch. Its hit area is 44 × 44 px.",
+    guestPoint2: "The menu holds exactly one entry: Sign in, leading to the sign-in page.",
+    guestPoint3: "Keyboard: Enter or Space opens the menu, Escape closes it and puts focus back on the button.",
+    guestPoint4: "A click anywhere outside closes the menu.",
+    guestWas: "Today the same dropdown holds two entries, “Sign in” and “My account”, both pointing at the same page.",
+    menuCap: "Menu contents",
+
+    custTitle: "Signed in",
+    custSub: "The button becomes your initial, the menu becomes your account.",
+    custPoint1: "The button carries the account initial, the same letter the workspace shows.",
+    custPoint2: "The same order as the workspace sidebar, with Log out last.",
+    custPoint3: "A divider sets Log out apart, the only red entry.",
+    custPoint4: "The button opens the menu only; it leads nowhere by itself.",
+
+    mobileTitle: "On mobile",
+    mobileSub: "The entry sits in the hamburger menu.",
+    mobilePoint1: "The top bar keeps the logo, the language switch and the menu button.",
+    mobilePoint2: "Inside the menu, the account row sits next to the Solution draft.",
+    mobilePoint3: "That row is a plain link, not a dropdown: to the sign-in page, or into the workspace when signed in.",
+    mobileMockCap: "Mobile bar, and the bottom of the hamburger menu",
+
+    outTitle: "Signing out",
+    outSub: "One tap, no second question.",
+    outPoint1: "Log out in the menu signs the customer out straight away.",
+    outPoint2: "The sign-in page opens with one info notice.",
+    outPoint3: "Nothing else moves: inquiries, saved solutions and documents stay with the account.",
+    outNoticeCap: "What the sign-in page shows",
+    outNotice: "You have been signed out.",
+    outWas: "Today the shop asks for confirmation first, on a page of its own.",
+    outCta: "Open the sign-in page with that notice",
+    outNoteTop: "Where the menu row points:",
+
+    signIn: "Sign in",
+    itemOverview: "Overview",
+    itemInquiries: "Inquiries",
+    itemSaved: "Saved solutions",
+    itemDocuments: "Documents",
+    itemCompany: "Company",
+    itemAccount: "Account details",
+    itemLogOut: "Log out",
+    itemDraft: "Solution draft",
+    ariaAccount: "Account menu: Maria Muster"
+  },
+  de: {
+    kind: "Prototyp · Kontozugang",
+    title: "Der Kontozugang im Seitenkopf",
+    sub: "Hier beginnt der Weg ins Konto: der Button oben rechts im Seitenkopf, das Menü dahinter und der Ablauf beim Abmelden.",
+    hint: "Klicken Sie oben rechts auf den Button, um das Menü zu öffnen.",
+    changesTitle: "Was sich gegenüber heute ändert",
+    change1: "Nicht angemeldet: ein Eintrag im Menü. Heute führen „Anmelden“ und „Mein Konto“ auf dieselbe Seite.",
+    change2: "Angemeldet: der Button trägt die Initiale des Kontos. Das Menü behält die Reihenfolge des Arbeitsbereichs, „Abmelden“ steht hinter einer Trennlinie.",
+    change3: "Abmelden: ein Klick, kein Bestätigungsschritt und ein Info-Hinweis auf der Anmeldeseite.",
+    change4: "Mobil: die Kontozeile bleibt im Hamburgermenü neben dem Lösungsentwurf.",
+    change5: "Das Menü öffnet ein Klick. Beim bloßen Überfahren mit der Maus bleibt es zu.",
+
+    guestTitle: "Nicht angemeldet",
+    guestSub: "Ein Button, ein Eintrag.",
+    guestPoint1: "Im Werkzeugbereich steht ein Button mit Personen-Symbol neben dem Sprachumschalter. Die Trefferfläche misst 44 × 44 px.",
+    guestPoint2: "Das Menü enthält genau einen Eintrag: Anmelden, der zur Anmeldeseite führt.",
+    guestPoint3: "Tastatur: Enter oder Leertaste öffnen das Menü, Escape schließt es und setzt den Fokus zurück auf den Button.",
+    guestPoint4: "Ein Klick außerhalb schließt das Menü.",
+    guestWas: "Heute enthält dasselbe Menü zwei Einträge, „Anmelden“ und „Mein Konto“, beide mit demselben Ziel.",
+    menuCap: "Inhalt des Menüs",
+
+    custTitle: "Angemeldet",
+    custSub: "Der Button wird zur Initiale, das Menü zum Konto.",
+    custPoint1: "Der Button trägt die Initiale des Kontos, denselben Buchstaben wie im Arbeitsbereich.",
+    custPoint2: "Dieselbe Reihenfolge wie in der Seitenleiste des Arbeitsbereichs, „Abmelden“ am Ende.",
+    custPoint3: "Eine Trennlinie grenzt „Abmelden“ ab, den einzigen roten Eintrag.",
+    custPoint4: "Der Button öffnet nur das Menü; er führt zu keiner Seite.",
+
+    mobileTitle: "Mobil",
+    mobileSub: "Der Einstieg liegt im Hamburgermenü.",
+    mobilePoint1: "In der oberen Leiste bleiben Logo, Sprachumschalter und die Menü-Schaltfläche.",
+    mobilePoint2: "Im Hamburgermenü steht die Kontozeile neben dem Lösungsentwurf.",
+    mobilePoint3: "Diese Zeile ist ein einfacher Link, kein Auswahlmenü: zur Anmeldeseite oder, angemeldet, in den Arbeitsbereich.",
+    mobileMockCap: "Mobile Leiste und das untere Ende des Hamburgermenüs",
+
+    outTitle: "Abmelden",
+    outSub: "Ein Klick, keine Rückfrage.",
+    outPoint1: "Der Eintrag „Abmelden“ im Menü meldet sofort ab.",
+    outPoint2: "Die Anmeldeseite öffnet sich mit einem Info-Hinweis.",
+    outPoint3: "Sonst ändert sich nichts: Anfragen, gespeicherte Lösungen und Dokumente bleiben erhalten.",
+    outNoticeCap: "Was die Anmeldeseite zeigt",
+    outNotice: "Sie wurden abgemeldet.",
+    outWas: "Heute fragt der Shop zuerst auf einer eigenen Seite nach einer Bestätigung.",
+    outCta: "Anmeldeseite mit dem Hinweis öffnen",
+    outNoteTop: "Ziel des Menüeintrags:",
+
+    signIn: "Anmelden",
+    itemOverview: "Übersicht",
+    itemInquiries: "Anfragen",
+    itemSaved: "Gespeicherte Lösungen",
+    itemDocuments: "Dokumente",
+    itemCompany: "Unternehmen",
+    itemAccount: "Kontodetails",
+    itemLogOut: "Abmelden",
+    itemDraft: "Lösungsentwurf",
+    ariaAccount: "Kontomenü: Maria Muster"
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const state = params.get("as") === "customer" ? "customer" : "guest";
+document.documentElement.lang = lang;
+const isCustomer = state === "customer";
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const key = el.dataset.t;
+  if (STR[lang][key]) el.textContent = STR[lang][key];
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search); p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-as-link]")) {
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang); p.set("as", el.dataset.asLink);
+  el.href = "?" + p.toString();
+}
+// Sibling prototypes of the same set; the sign-out target carries the state the
+// sign-in page reports back with.
+for (const el of document.querySelectorAll("[data-page-link]")) {
+  const p = new URLSearchParams();
+  p.set("lang", lang);
+  if (el.dataset.state) p.set("state", el.dataset.state);
+  el.href = el.dataset.pageLink + "?" + p.toString();
+}
+
+/* the header demo: one button, one panel */
+for (const el of document.querySelectorAll("[data-as]")) {
+  el.hidden = (el.dataset.as === "customer") !== isCustomer;
+}
+const acct = document.querySelector("[data-acct]");
+const btn = document.getElementById("chrome-acct-btn");
+const pop = document.getElementById("chrome-acct-menu");
+const menu = pop.querySelector(isCustomer ? '[data-as="customer"]' : '[data-as="guest"]');
+btn.setAttribute("aria-label", STR[lang][isCustomer ? "ariaAccount" : "signIn"]);
+
+let open = false;
+function setOpen(next) {
+  open = next;
+  btn.setAttribute("aria-expanded", String(open));
+  pop.classList.toggle("is-open", open);
+}
+btn.addEventListener("click", () => setOpen(!open));
+document.addEventListener("click", (e) => { if (!acct.contains(e.target)) setOpen(false); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && open) {
+    setOpen(false);
+    btn.focus();
+  }
+});
+acct.addEventListener("focusout", (e) => { if (!acct.contains(e.relatedTarget)) setOpen(false); });
+// arrow keys walk the entries of the open menu; the closed button is left alone
+acct.addEventListener("keydown", (e) => {
+  if (!open || !["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+  const links = [...menu.querySelectorAll("a[href]")];
+  e.preventDefault();
+  const at = links.indexOf(document.activeElement);
+  const next = e.key === "Home" ? 0 : e.key === "End" ? links.length - 1 : e.key === "ArrowDown" ? (at + 1) % links.length : (at <= 0 ? links.length : at) - 1;
+  links[next].focus();
+});
+</script>
+</body>
+</html>

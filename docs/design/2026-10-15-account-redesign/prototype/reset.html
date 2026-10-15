@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Choose a new password · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+/* reset.html only. app.css's desktop auth grid is the two-column brand-panel
+   variant, so the single-column shell has to neutralise it and hand the card
+   back its own border/shadow (same shape as lost-password.html's .lp-solo:
+   auxiliary auth pages keep the centred card at every width, no brand aside).
+   Plus [hidden] support for .error-text and the strength meter, which app.css
+   has no component for. */
+@media (min-width: 1080px) {
+  .auth-inner.reset-shell {
+    max-width: 480px; grid-template-columns: minmax(0, 1fr);
+    border-radius: 0; overflow: visible; box-shadow: none;
+  }
+  .auth-inner.reset-shell > .card { border: 1px solid var(--line-soft); border-radius: var(--r-xl); box-shadow: var(--shadow-card); }
+}
+.reset-shell .error-text[hidden] { display: none; }
+
+.reset-strength { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.reset-bars { display: flex; gap: 5px; flex: 1; min-width: 0; }
+.reset-bars i { flex: 1; height: 5px; border-radius: 99px; background: var(--line); transition: background var(--dur) var(--ease); }
+/* fixed height and min-width: the row must not resize when the label appears or
+   changes level, otherwise everything below it jumps on the first keystroke.
+   60px covers the widest label a locale uses here (DE "Schwach" renders 55.6px). */
+.reset-strength-note { display: inline-flex; align-items: center; height: 18px; min-width: 60px; justify-content: flex-end; font-size: 12.5px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.reset-strength.is-weak .reset-bars i:nth-child(-n+1) { background: var(--danger); }
+.reset-strength.is-medium .reset-bars i:nth-child(-n+2) { background: var(--warn); }
+.reset-strength.is-strong .reset-bars i:nth-child(-n+4) { background: var(--ok); }
+.reset-strength.is-weak .reset-strength-note { color: #7c3526; }
+.reset-strength.is-medium .reset-strength-note { color: #7a6020; }
+.reset-strength.is-strong .reset-strength-note { color: #1d5239; }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" data-nav-label aria-label="Language">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<main class="auth">
+  <div class="auth-inner reset-shell">
+
+    <section class="card" aria-labelledby="reset-title">
+      <header>
+        <h1 id="reset-title" data-t="title"></h1>
+        <p class="sub" data-t="sub"></p>
+      </header>
+
+      <div id="notice-slot"></div>
+
+      <form id="reset-form" novalidate>
+        <div class="field">
+          <label for="f-new"><span data-t="labelNew"></span> <span class="req" aria-hidden="true">*</span></label>
+          <div class="password-wrap">
+            <input class="input" id="f-new" name="pass1" type="password" autocomplete="new-password" aria-describedby="new-hint" required>
+            <button type="button" class="password-toggle" data-eye="f-new" aria-label="Show password">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="reset-strength" id="strength">
+            <span class="reset-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span class="reset-strength-note" id="strength-note" role="status"></span>
+          </div>
+          <p class="hint" id="new-hint" data-t="passHint"></p>
+        </div>
+
+        <div class="field">
+          <label for="f-repeat"><span data-t="labelRepeat"></span> <span class="req" aria-hidden="true">*</span></label>
+          <div class="password-wrap">
+            <input class="input" id="f-repeat" name="pass2" type="password" autocomplete="new-password" required>
+            <button type="button" class="password-toggle" data-eye="f-repeat" aria-label="Show password">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <p class="error-text" id="err-repeat" hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            <span data-t="errMismatch"></span>
+          </p>
+        </div>
+
+        <button class="btn btn-primary btn-block" type="submit" id="submit-btn">
+          <span class="spinner" hidden></span><span data-t="submit"></span>
+        </button>
+      </form>
+    </section>
+
+  </div>
+</main>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">default</a> ·
+  <a data-state-link="mismatch">passwords differ</a> ·
+  <a data-state-link="weak">password too weak</a> ·
+  <a data-state-link="loading">save loading</a>
+  <br>
+  Saved: success does not come back here — it lands on the sign-in card with the green bar.
+  <a data-lang-href="login.html" data-lang-state="reset-success">sign in · reset ok</a> — a valid Save above goes there too.
+</p>
+
+<script>
+const STR = {
+  en: {
+    title: "Choose a new password",
+    sub: "Enter a new password below.",
+    labelNew: "New password",
+    labelRepeat: "Re-enter new password",
+    passHint: "Use at least 8 characters with a mix of letters, numbers and symbols.",
+    submit: "Save",
+    showPass: "Show password",
+    hidePass: "Hide password",
+    strengthWeak: "Weak",
+    strengthMedium: "Medium",
+    strengthStrong: "Strong",
+    errMismatch: "The passwords do not match.",
+    noticeMismatch: "Your new password was not saved. Check both fields below.",
+    noticeWeak: "Your new password was not saved. It is too weak.",
+    navLabel: "Language"
+  },
+  de: {
+    title: "Wählen Sie ein neues Passwort",
+    sub: "Geben Sie unten ein neues Passwort ein.",
+    labelNew: "Neues Passwort",
+    labelRepeat: "Neues Passwort wiederholen",
+    passHint: "Verwenden Sie mindestens 8 Zeichen mit Buchstaben, Zahlen und Sonderzeichen.",
+    submit: "Speichern",
+    showPass: "Passwort anzeigen",
+    hidePass: "Passwort verbergen",
+    strengthWeak: "Schwach",
+    strengthMedium: "Mittel",
+    strengthStrong: "Stark",
+    errMismatch: "Die Passwörter stimmen nicht überein.",
+    noticeMismatch: "Ihr neues Passwort wurde nicht gespeichert. Bitte prüfen Sie beide Felder.",
+    noticeWeak: "Ihr neues Passwort wurde nicht gespeichert. Es ist zu schwach.",
+    navLabel: "Sprache"
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const state = params.get("state") || "default";
+document.documentElement.lang = lang;
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const key = el.dataset.t;
+  if (STR[lang][key]) el.textContent = STR[lang][key];
+}
+for (const el of document.querySelectorAll("[data-nav-label]")) {
+  el.setAttribute("aria-label", STR[lang].navLabel);
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search); p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang); p.set("state", el.dataset.stateLink);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-lang-href]")) {
+  el.href = el.dataset.langHref + "?lang=" + lang + "&state=" + el.dataset.langState;
+}
+
+const ICON_ERR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>';
+const ICON_OK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>';
+
+const slot = document.getElementById("notice-slot");
+function notice(kind, text) {
+  slot.innerHTML = `<div class="notice notice-${kind}" role="${kind === "error" ? "alert" : "status"}">${kind === "error" ? ICON_ERR : ICON_OK}<div>${text}</div></div>`;
+}
+
+const form = document.getElementById("reset-form");
+const submitBtn = document.getElementById("submit-btn");
+const newInput = document.getElementById("f-new");
+const repeatInput = document.getElementById("f-repeat");
+const repeatError = document.getElementById("err-repeat");
+const strength = document.getElementById("strength");
+const strengthNote = document.getElementById("strength-note");
+
+// mismatch: second field only; the description is attached while the error shows,
+// because a hidden #err-repeat would still be read out through aria-describedby.
+function setMismatch(on) {
+  if (on) {
+    repeatInput.setAttribute("aria-invalid", "true");
+    repeatInput.setAttribute("aria-describedby", "err-repeat");
+  } else {
+    repeatInput.removeAttribute("aria-invalid");
+    repeatInput.removeAttribute("aria-describedby");
+  }
+  repeatError.hidden = !on;
+}
+
+// strength: demo rule, length only — <8 weak, 8-11 medium, 12+ strong
+const LEVELS = ["is-weak", "is-medium", "is-strong"];
+const levelOf = (value) => (!value ? 0 : value.length < 8 ? 1 : value.length < 12 ? 2 : 3);
+function paintStrength() {
+  const n = levelOf(newInput.value);
+  strength.classList.remove(...LEVELS);
+  if (n) strength.classList.add(LEVELS[n - 1]);
+  strengthNote.textContent = n ? STR[lang]["strength" + ["", "Weak", "Medium", "Strong"][n]] : "";
+}
+
+// password eye toggles
+for (const btn of document.querySelectorAll("[data-eye]")) {
+  const input = document.getElementById(btn.dataset.eye);
+  btn.setAttribute("aria-label", STR[lang].showPass);
+  btn.addEventListener("click", () => {
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    btn.setAttribute("aria-label", show ? STR[lang].hidePass : STR[lang].showPass);
+    btn.style.color = show ? "var(--teal-700)" : "";
+  });
+}
+
+const DEMO = {
+  mismatch: { pass1: "MusterSolar!2026", pass2: "MusterSolar!2025" },
+  weak: { pass1: "muster", pass2: "muster" },
+  loading: { pass1: "MusterSolar!2026", pass2: "MusterSolar!2026" }
+};
+if (DEMO[state]) {
+  newInput.value = DEMO[state].pass1;
+  repeatInput.value = DEMO[state].pass2;
+}
+paintStrength();
+if (state === "mismatch") { setMismatch(true); notice("error", STR[lang].noticeMismatch); }
+if (state === "weak") notice("error", STR[lang].noticeWeak);
+if (state === "loading") {
+  submitBtn.classList.add("is-loading");
+  submitBtn.querySelector(".spinner").hidden = false;
+}
+
+newInput.addEventListener("input", paintStrength);
+for (const input of [newInput, repeatInput]) {
+  input.addEventListener("input", () => {
+    if (!repeatError.hidden && newInput.value === repeatInput.value) setMismatch(false);
+  });
+}
+
+// the prototype demonstrates the loading state and then hands over to the sign-in
+// card, which is where a real reset lands; a mismatch or a weak password stays here.
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (newInput.value !== repeatInput.value) {
+    setMismatch(true);
+    notice("error", STR[lang].noticeMismatch);
+    repeatInput.focus();
+    return;
+  }
+  setMismatch(false);
+  if (levelOf(newInput.value) < 2) {
+    notice("error", STR[lang].noticeWeak);
+    newInput.focus();
+    return;
+  }
+  submitBtn.classList.add("is-loading");
+  submitBtn.querySelector(".spinner").hidden = false;
+  setTimeout(() => { location.href = "login.html?lang=" + lang + "&state=reset-success"; }, 1200);
+});
+</script>
+</body>
+</html>

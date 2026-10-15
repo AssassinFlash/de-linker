@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Account details · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Local to account.html: app.css gives .ws its two columns but no stack
+     inside the second one, no form body for a .panel, no row for the page's
+     one action and no strength meter (same component reset.html carries).
+     Hover/focus/active feedback stays app.css. */
+  .acc-main { display: grid; gap: 20px; align-content: start; min-width: 0; }
+  .acc-form { display: grid; gap: 20px; align-content: start; }
+  .acc-body { padding: 22px; }
+  .acc-note { margin: 0 0 20px; font-size: 14px; color: var(--muted); }
+  .acc-actions { margin-top: 10px; padding-top: 22px; border-top: 1px solid var(--line-soft); }
+  .acc-actions .btn { width: 100%; }
+  @media (min-width: 560px) { .acc-actions .btn { width: auto; min-width: 240px; } }
+  /* an author display rule would beat the hidden attribute on .error-text */
+  .acc-panel .error-text[hidden] { display: none; }
+
+  .acc-strength { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+  .acc-bars { display: flex; gap: 5px; flex: 1; min-width: 0; }
+  .acc-bars i { flex: 1; height: 5px; border-radius: 99px; background: var(--line); transition: background var(--dur) var(--ease); }
+  /* fixed height and min-width: the row must not resize when the label appears
+     or changes level, otherwise everything below it jumps on the first keystroke. */
+  .acc-strength-note { display: inline-flex; align-items: center; height: 18px; min-width: 60px; justify-content: flex-end; font-size: 12.5px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+  .acc-strength.is-weak .acc-bars i:nth-child(-n+1) { background: var(--danger); }
+  .acc-strength.is-medium .acc-bars i:nth-child(-n+2) { background: var(--warn); }
+  .acc-strength.is-strong .acc-bars i:nth-child(-n+4) { background: var(--ok); }
+  .acc-strength.is-weak .acc-strength-note { color: #7c3526; }
+  .acc-strength.is-medium .acc-strength-note { color: #7a6020; }
+  .acc-strength.is-strong .acc-strength-note { color: #1d5239; }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language" data-t-aria="langLabel">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<main class="ws">
+
+  <aside class="ws-side">
+    <nav class="ws-nav" aria-label="Account menu" data-t-aria="accountMenu">
+      <p class="group" data-t="groupWorkplace"></p>
+
+      <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span data-t="navOverview"></span>
+      </a>
+      <a href="inquiries.html" data-lang-href="inquiries.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span data-t="navInquiries"></span>
+      </a>
+      <a href="solutions.html" data-lang-href="solutions.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        <span data-t="navSaved"></span>
+      </a>
+      <a href="documents.html" data-lang-href="documents.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        <span data-t="navDocuments"></span>
+      </a>
+
+      <p class="group" data-t="groupAccount"></p>
+
+      <a href="company.html" data-lang-href="company.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        <span data-t="navCompany"></span>
+      </a>
+      <a href="account.html" data-lang-href="account.html" class="is-on" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span data-t="navAccountDetails"></span>
+      </a>
+      <a href="login.html?state=signed-out" data-lang-href="login.html?state=signed-out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        <span data-t="navLogout"></span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="acc-main">
+
+    <header class="ws-head">
+      <h1 data-t="pageTitle"></h1>
+    </header>
+
+    <div id="notice-slot"></div>
+
+    <form id="account-form" class="acc-form" novalidate>
+
+      <section class="panel acc-panel" aria-label="Your details" data-t-aria="cardProfile">
+        <div class="panel-body acc-body">
+
+          <div class="field-pair">
+            <div class="field">
+              <label for="f-first"><span data-t="labelFirst"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-first" name="account_first_name" type="text" autocomplete="given-name" value="Maria" required>
+            </div>
+            <div class="field">
+              <label for="f-last"><span data-t="labelLast"></span> <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-last" name="account_last_name" type="text" autocomplete="family-name" value="Muster" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-display"><span data-t="labelDisplay"></span> <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-display" name="account_display_name" type="text" autocomplete="nickname" value="Maria Muster" aria-describedby="display-hint" required>
+            <p class="hint" id="display-hint" data-t="displayHint"></p>
+          </div>
+
+          <div class="field">
+            <label for="f-email"><span data-t="labelEmail"></span> <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-email" name="account_email" type="email" autocomplete="email" value="maria@muster-solar.de" required>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="panel acc-panel" aria-labelledby="acc-pw-title">
+        <div class="panel-head">
+          <h2 id="acc-pw-title" data-t="pwTitle"></h2>
+        </div>
+
+        <div class="panel-body acc-body">
+          <p class="acc-note" data-t="pwNote"></p>
+
+          <div class="field">
+            <label for="f-current"><span data-t="labelCurrent"></span></label>
+            <div class="password-wrap">
+              <input class="input" id="f-current" name="password_current" type="password" autocomplete="current-password">
+              <button type="button" class="password-toggle" data-eye="f-current" aria-label="Show password">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-new"><span data-t="labelNew"></span></label>
+            <div class="password-wrap">
+              <input class="input" id="f-new" name="password_1" type="password" autocomplete="new-password" aria-describedby="acc-pass-hint">
+              <button type="button" class="password-toggle" data-eye="f-new" aria-label="Show password">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="acc-strength" id="strength">
+              <span class="acc-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="acc-strength-note" id="strength-note" role="status"></span>
+            </div>
+            <p class="hint" id="acc-pass-hint" data-t="passHint"></p>
+          </div>
+
+          <div class="field">
+            <label for="f-repeat"><span data-t="labelRepeat"></span></label>
+            <div class="password-wrap">
+              <input class="input" id="f-repeat" name="password_2" type="password" autocomplete="new-password">
+              <button type="button" class="password-toggle" data-eye="f-repeat" aria-label="Show password">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <p class="error-text" id="err-repeat" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <span data-t="errMismatch"></span>
+            </p>
+          </div>
+
+          <div class="acc-actions">
+            <button class="btn btn-primary" type="submit" id="submit-btn">
+              <span class="spinner" hidden></span><span data-t="submit"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </form>
+
+  </div>
+</main>
+
+<!-- the only account navigation on mobile: the old top fold-out menu is gone -->
+<nav class="ws-tabs" aria-label="Account menu" data-t-aria="accountMenu">
+  <a href="workspace-overview.html" data-lang-href="workspace-overview.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+    <span data-t="navOverview"></span>
+  </a>
+  <a href="inquiries.html" data-lang-href="inquiries.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+    <span data-t="navInquiries"></span>
+  </a>
+  <a href="documents.html" data-lang-href="documents.html">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+    <span data-t="navDocuments"></span>
+  </a>
+  <a href="account.html" data-lang-href="account.html" class="is-on" aria-current="page">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-t="navAccount"></span>
+  </a>
+</nav>
+
+<p class="proto-note">
+  States:
+  <a data-state-link="default">default</a> ·
+  <a data-state-link="saved">saved</a> ·
+  <a data-state-link="pw-error">wrong current password</a> ·
+  <a data-state-link="loading">save loading</a>
+  <br>
+  The strength meter is the one from reset.html; the password fields stay blank in the saved state,
+  because nothing is written back to them.
+</p>
+
+<script>
+const STR = {
+  en: {
+    pageTitle: "Account details",
+    // card 1 has no visible heading (the form starts right under the page title);
+    // the label below is what names it for the screen reader
+    cardProfile: "Your details",
+    labelFirst: "First name",
+    labelLast: "Last name",
+    labelDisplay: "Display name",
+    displayHint: "This will be how your name will be displayed in the account section and in reviews",
+    labelEmail: "Email address",
+    // card 2
+    pwTitle: "Password change",
+    pwNote: "Leave the password fields blank to keep your current password.",
+    labelCurrent: "Current password",
+    labelNew: "New password",
+    labelRepeat: "Confirm new password",
+    passHint: "Use at least 8 characters with a mix of letters, numbers and symbols.",
+    showPass: "Show password",
+    hidePass: "Hide password",
+    strengthWeak: "Weak",
+    strengthMedium: "Medium",
+    strengthStrong: "Strong",
+    errMismatch: "The passwords do not match.",
+    noticeMismatch: "Your changes were not saved. Check the password fields below.",
+    submit: "Save changes",
+    okSaved: "Account details changed successfully.",
+    errCurrent: "Your current password is incorrect.",
+    // the shell
+    langLabel: "Language",
+    accountMenu: "Account menu",
+    groupWorkplace: "Workplace",
+    groupAccount: "Account",
+    navOverview: "Overview",
+    navInquiries: "Inquiries",
+    navSaved: "Saved solutions",
+    navDocuments: "Documents",
+    navCompany: "Company",
+    navAccountDetails: "Account details",
+    navLogout: "Log out",
+    // the bottom bar's fourth entry reads "Account", not "Account details"
+    navAccount: "Account"
+  },
+  de: {
+    pageTitle: "Kontodetails",
+    cardProfile: "Ihre Angaben",
+    labelFirst: "Vorname",
+    labelLast: "Nachname",
+    labelDisplay: "Anzeigename",
+    displayHint: "So wird Ihr Name im Kontoabschnitt und in den Rezensionen angezeigt",
+    labelEmail: "E-Mail-Adresse",
+    pwTitle: "Passwort ändern",
+    pwNote: "Lassen Sie die Passwortfelder leer, um Ihr aktuelles Passwort zu behalten.",
+    labelCurrent: "Aktuelles Passwort",
+    labelNew: "Neues Passwort",
+    labelRepeat: "Neues Passwort bestätigen",
+    passHint: "Verwenden Sie mindestens 8 Zeichen mit Buchstaben, Zahlen und Sonderzeichen.",
+    showPass: "Passwort anzeigen",
+    hidePass: "Passwort verbergen",
+    strengthWeak: "Schwach",
+    strengthMedium: "Mittel",
+    strengthStrong: "Stark",
+    errMismatch: "Die Passwörter stimmen nicht überein.",
+    noticeMismatch: "Ihre Änderungen wurden nicht gespeichert. Bitte prüfen Sie die Passwortfelder unten.",
+    submit: "Änderungen speichern",
+    okSaved: "Kontodetails erfolgreich geändert.",
+    errCurrent: "Ihr derzeitiges Passwort ist nicht korrekt.",
+    langLabel: "Sprache",
+    accountMenu: "Kontomenü",
+    groupWorkplace: "Arbeitsbereich",
+    groupAccount: "Konto",
+    navOverview: "Übersicht",
+    navInquiries: "Anfragen",
+    navSaved: "Gespeicherte Lösungen",
+    navDocuments: "Dokumente",
+    navCompany: "Unternehmen",
+    navAccountDetails: "Kontodetails",
+    navLogout: "Abmelden",
+    navAccount: "Konto"
+  }
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+const state = params.get("state") || "default";
+document.documentElement.lang = lang;
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const text = STR[lang][el.dataset.t];
+  if (text) el.textContent = text;
+}
+// the two navs, the language switch and the first card are named regions with
+// no visible label of their own
+for (const el of document.querySelectorAll("[data-t-aria]")) {
+  const text = STR[lang][el.dataset.tAria];
+  if (text) el.setAttribute("aria-label", text);
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search); p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+// every link to another prototype page keeps the language
+for (const el of document.querySelectorAll("[data-lang-href]")) {
+  const [path, query] = el.dataset.langHref.split("?");
+  const p = new URLSearchParams(query || "");
+  p.set("lang", lang);
+  el.href = path + "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-state-link]")) {
+  const target = el.dataset.stateLink;
+  const p = new URLSearchParams(location.search);
+  p.set("lang", lang); p.set("state", target);
+  el.href = "?" + p.toString();
+  if (target === state) el.setAttribute("aria-current", "page");
+}
+
+const ICON_ERR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>';
+const ICON_OK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>';
+
+const slot = document.getElementById("notice-slot");
+function notice(kind, text) {
+  slot.innerHTML = `<div class="notice notice-${kind}" role="${kind === "error" ? "alert" : "status"}">${kind === "error" ? ICON_ERR : ICON_OK}<div>${text}</div></div>`;
+}
+
+const form = document.getElementById("account-form");
+const submitBtn = document.getElementById("submit-btn");
+const currentInput = document.getElementById("f-current");
+const newInput = document.getElementById("f-new");
+const repeatInput = document.getElementById("f-repeat");
+const repeatError = document.getElementById("err-repeat");
+const strength = document.getElementById("strength");
+const strengthNote = document.getElementById("strength-note");
+
+// the second field's error is described only while it shows: a hidden
+// #err-repeat would still be read out through aria-describedby
+function setMismatch(on) {
+  if (on) {
+    repeatInput.setAttribute("aria-invalid", "true");
+    repeatInput.setAttribute("aria-describedby", "err-repeat");
+  } else {
+    repeatInput.removeAttribute("aria-invalid");
+    repeatInput.removeAttribute("aria-describedby");
+  }
+  repeatError.hidden = !on;
+}
+
+// strength: demo rule, length only — <8 weak, 8-11 medium, 12+ strong
+const LEVELS = ["is-weak", "is-medium", "is-strong"];
+const levelOf = (value) => (!value ? 0 : value.length < 8 ? 1 : value.length < 12 ? 2 : 3);
+function paintStrength() {
+  const n = levelOf(newInput.value);
+  strength.classList.remove(...LEVELS);
+  if (n) strength.classList.add(LEVELS[n - 1]);
+  strengthNote.textContent = n ? STR[lang]["strength" + ["", "Weak", "Medium", "Strong"][n]] : "";
+}
+
+// password eye toggles
+for (const btn of document.querySelectorAll("[data-eye]")) {
+  const input = document.getElementById(btn.dataset.eye);
+  btn.setAttribute("aria-label", STR[lang].showPass);
+  btn.addEventListener("click", () => {
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    btn.setAttribute("aria-label", show ? STR[lang].hidePass : STR[lang].showPass);
+    btn.style.color = show ? "var(--teal-700)" : "";
+  });
+}
+
+if (state === "pw-error") {
+  currentInput.value = "MusterSolar!2024";
+  currentInput.setAttribute("aria-invalid", "true");
+  notice("error", STR[lang].errCurrent);
+}
+if (state === "saved") notice("success", STR[lang].okSaved);
+if (state === "loading") {
+  submitBtn.classList.add("is-loading");
+  submitBtn.querySelector(".spinner").hidden = false;
+}
+
+newInput.addEventListener("input", paintStrength);
+for (const input of [currentInput, newInput, repeatInput]) {
+  input.addEventListener("input", () => {
+    if (!repeatError.hidden && newInput.value === repeatInput.value) setMismatch(false);
+  });
+}
+
+// the prototype demonstrates the loading state, then lands on the saved state;
+// filled password fields must match, because filling them means changing them
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if ((newInput.value || repeatInput.value) && newInput.value !== repeatInput.value) {
+    setMismatch(true);
+    notice("error", STR[lang].noticeMismatch);
+    repeatInput.focus();
+    return;
+  }
+  setMismatch(false);
+  submitBtn.classList.add("is-loading");
+  submitBtn.querySelector(".spinner").hidden = false;
+  setTimeout(() => { location.href = "account.html?lang=" + lang + "&state=saved"; }, 1200);
+});
+</script>
+</body>
+</html>

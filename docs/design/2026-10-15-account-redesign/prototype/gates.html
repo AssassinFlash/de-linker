@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Account gates · Linker account prototype</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* Local to gates.html: app.css has no wrapper for a single-column auth card
+     (.auth-inner turns into a two-column brand+card grid from 1080px up, so a
+     lone card would sit in its left half), no text block for gate copy and no
+     link row under the gate actions. Everything else comes from app.css. */
+  .gate-col { width: 100%; max-width: 480px; display: grid; gap: 20px; }
+  .gate-body { display: grid; gap: 12px; }
+  .gate-body p { margin: 0; color: var(--muted); font-size: 15px; }
+  .gate-body > .notice { margin-bottom: 0; }
+  .gate-actions .btn { flex: 1 1 190px; }
+  /* The Genie entry under the title, the live page's pill carried over */
+  .gate-genie { margin: 14px 0 0; }
+  .gate-genie a {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+    border-radius: 999px; background: var(--teal-900); color: #d7e9e6;
+    font-size: 13.5px; font-weight: 600; text-decoration: none;
+    transition: background var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .gate-genie a:hover { background: var(--teal-800); transform: translateY(-1px); }
+  .gate-genie a:focus-visible { outline: 2px solid var(--teal-600); outline-offset: 3px; }
+  .gate-genie svg { color: var(--teal-300); }
+  .gate-links { margin-top: 18px; font-size: 14px; }
+  .gate-links a { font-weight: 600; }
+  .proto-note a[aria-current="page"] { color: var(--teal-700); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="shell-head">
+  <img src="assets/logo.webp" alt="Linker">
+  <nav class="shell-lang" aria-label="Language">
+    <a href="?lang=en" data-lang-link="en">EN</a>
+    <a href="?lang=de" data-lang-link="de">DE</a>
+  </nav>
+</header>
+
+<main class="auth">
+  <div class="gate-col">
+
+    <!-- pending: registered, waiting for the team's review -->
+    <section class="card gate" data-gate="pending" aria-labelledby="gate-pending-title" hidden>
+      <header>
+        <span class="gate-badge is-pending">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.6V12l3.2 2"/></svg>
+          <span data-t="pendingBadge"></span>
+        </span>
+        <h1 id="gate-pending-title" data-t="pendingTitle"></h1>
+      </header>
+      <div class="gate-body">
+        <p data-t="pendingBody1"></p>
+        <p data-t="pendingBody2"></p>
+      </div>
+      <div class="gate-actions">
+        <a class="btn btn-primary" href="#" data-t="browse"></a>
+      </div>
+    </section>
+
+    <!-- restricted: the workspace stays, prices and the Proforma request are paused -->
+    <section class="card gate" data-gate="restricted" aria-labelledby="gate-restricted-title" hidden>
+      <header>
+        <span class="gate-badge is-restricted">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 19 6v5.6c0 4.2-2.9 8-7 9.4-4.1-1.4-7-5.2-7-9.4V6Z"/><path d="M12 9.2v3.7"/><path d="M12 16.1h.01"/></svg>
+          <span data-t="restrictedBadge"></span>
+        </span>
+        <h1 id="gate-restricted-title" data-t="restrictedTitle"></h1>
+      </header>
+      <div class="gate-body">
+        <p data-t="restrictedBody"></p>
+        <div class="notice notice-info" role="status">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16.5V11"/><path d="M12 7.6h.01"/></svg>
+          <div><strong data-t="reasonLabel"></strong> <span data-t="reasonSample"></span></div>
+        </div>
+        <p data-t="restrictedContact"></p>
+      </div>
+      <div class="gate-actions">
+        <a class="btn btn-primary" href="#" data-t="browse"></a>
+      </div>
+    </section>
+
+    <!-- empty Proforma request: guest with an empty solution draft -->
+    <section class="card gate" data-gate="empty-proforma" aria-labelledby="gate-proforma-title" hidden>
+      <header>
+        <h1 id="gate-proforma-title" data-t="proformaTitle"></h1>
+        <p class="sub" data-t="proformaSub"></p>
+        <p class="gate-genie"><a href="https://de-linker.com/genie/" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.4 5v10.9a1.8 1.8 0 0 0 1.8 1.8H17"/><path d="M8.8 8.4C11.8 4.5 16.4 3.1 19.6 3.5"/><circle cx="20.7" cy="4.9" r="1.5" fill="currentColor" stroke="none"/></svg><span>Genie</span></a></p>
+      </header>
+      <div class="gate-body">
+        <p data-t="proformaBody"></p>
+      </div>
+      <div class="gate-actions">
+        <a class="btn btn-primary" href="login.html" data-to="login.html" data-t="signIn"></a>
+        <a class="btn btn-ghost" href="#" data-t="browse"></a>
+      </div>
+    </section>
+
+    <!-- guest with a filled solution draft: the draft waits, the account is missing -->
+    <section class="card gate" data-gate="guest-draft" aria-labelledby="gate-draft-title" hidden>
+      <header>
+        <h1 id="gate-draft-title" data-t="draftTitle"></h1>
+      </header>
+      <div class="gate-body">
+        <p data-t="draftBody"></p>
+      </div>
+      <div class="gate-actions">
+        <a class="btn btn-primary" href="login.html" data-to="login.html" data-t="signIn"></a>
+        <a class="btn btn-ghost" href="#" data-t="browse"></a>
+      </div>
+      <p class="gate-links"><a href="lost-password.html" data-to="lost-password.html" data-t="lostPassword"></a></p>
+    </section>
+
+  </div>
+</main>
+
+<p class="proto-note">
+  Gates:
+  <a data-gate-link="pending">account under review</a> ·
+  <a data-gate-link="restricted">access limited</a> ·
+  <a data-gate-link="empty-proforma">empty Proforma request</a> ·
+  <a data-gate-link="guest-draft">guest with a solution draft</a>
+</p>
+
+<script>
+const STR = {
+  en: {
+    // ① pending — and LoginGate.php's own copy
+    pendingBadge: "Under review",
+    pendingTitle: "Your account is under review",
+    pendingBody1: "We are reviewing your partner account. Net prices and the Proforma request open as soon as it is approved, and we will email you.",
+    pendingBody2: "Until then, browse the products and write to sales@de-linker.com with any question.",
+    // ② restricted
+    restrictedBadge: "Access currently limited",
+    restrictedTitle: "Access currently limited",
+    restrictedBody: "Your partner account is limited for now: the products and your questions stay open, net prices and the Proforma request are paused.",
+    reasonLabel: "Our reason:",
+    reasonSample: "VAT ID could not be verified with VIES.",
+    restrictedContact: "Write to sales@de-linker.com and we will look at your account again.",
+    // ③ empty Proforma request
+    proformaTitle: "Get your Proforma",
+    proformaSub: "Sign in to get your Proforma.",
+    proformaBody: "The Proforma request is reserved for Linker partner accounts. Register, add your systems, and return here — VAT and delivery are ours to handle.",
+    // ④ guest with a solution draft
+    draftTitle: "Sign in to request your Proforma",
+    draftBody: "Your solution draft is saved. Log in with your partner account to send the inquiry — no account yet? Register on the account page; the draft waits for you.",
+    // shared actions
+    signIn: "Sign in or register",
+    browse: "Browse products",
+    lostPassword: "Lost your password?"
+  },
+  de: {
+    // German from linker-commerce-de_DE_formal.po where the string already
+    // ships; new strings written for the formal Sie voice.
+    pendingBadge: "In Prüfung",
+    pendingTitle: "Ihr Konto wird geprüft",
+    pendingBody1: "Wir prüfen Ihr Partner-Konto. Nettopreise und die Proforma-Anfrage öffnen sich mit der Freigabe; wir melden uns per E-Mail.",
+    pendingBody2: "Bis dahin können Sie die Produkte ansehen und Ihre Fragen an sales@de-linker.com schreiben.",
+    restrictedBadge: "Zugriff derzeit eingeschränkt",
+    restrictedTitle: "Zugriff derzeit eingeschränkt",
+    restrictedBody: "Ihr Partner-Konto ist vorerst eingeschränkt: Produkte und Ihre Fragen bleiben offen, Nettopreise und Proforma-Anfrage sind pausiert.",
+    reasonLabel: "Unser Grund:",
+    reasonSample: "Die USt-IdNr. konnte im VIES nicht bestätigt werden.",
+    restrictedContact: "Schreiben Sie an sales@de-linker.com, und wir sehen uns Ihr Konto erneut an.",
+    proformaTitle: "Proformarechnung anfordern",
+    proformaSub: "Melden Sie sich an, um Ihre Proformarechnung zu erhalten.",
+    proformaBody: "Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren Sie sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — Umsatzsteuer und Lieferung übernehmen wir.",
+    draftTitle: "Melden Sie sich an, um Ihre Proformarechnung anzufordern",
+    draftBody: "Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partnerkonto an, um die Anfrage abzusenden. Noch kein Konto? Registrieren Sie sich auf der Kontoseite — Ihr Entwurf wartet dort auf Sie.",
+    signIn: "Anmelden oder registrieren",
+    browse: "Zu den Produkten",
+    lostPassword: "Passwort vergessen?"
+  }
+};
+
+const GATES = ["pending", "restricted", "empty-proforma", "guest-draft"];
+const params = new URLSearchParams(location.search);
+const lang = params.get("lang") === "de" ? "de" : "en";
+// ?gate= is this page's parameter; ?state= is honoured so a link written for
+// the chain's other prototype pages still lands on the gate it names.
+const asked = params.get("gate") || params.get("state") || "pending";
+const gate = GATES.indexOf(asked) > -1 ? asked : "pending";
+document.documentElement.lang = lang;
+
+for (const el of document.querySelectorAll("[data-t]")) {
+  const text = STR[lang][el.dataset.t];
+  if (!text) continue;
+  const [head, tail] = text.split("sales@de-linker.com");
+  el.append(head);
+  if (tail !== undefined) {
+    const mail = document.createElement("a");
+    mail.href = "mailto:sales@de-linker.com";
+    mail.textContent = "sales@de-linker.com";
+    el.append(mail, tail);
+  }
+}
+for (const el of document.querySelectorAll("[data-lang-link]")) {
+  const target = el.dataset.langLink;
+  el.classList.toggle("is-on", target === lang);
+  const p = new URLSearchParams(location.search); p.set("lang", target);
+  el.href = "?" + p.toString();
+}
+for (const el of document.querySelectorAll("[data-gate-link]")) {
+  const target = el.dataset.gateLink;
+  const p = new URLSearchParams(location.search);
+  // both keys: this page reads ?gate=, the chain's other prototype pages ?state=
+  p.set("lang", lang); p.set("gate", target); p.set("state", target);
+  el.href = "?" + p.toString();
+  if (target === gate) el.setAttribute("aria-current", "page");
+}
+// the account chain's pages read ?lang= too
+for (const el of document.querySelectorAll("[data-to]")) {
+  el.href = el.dataset.to + "?lang=" + lang;
+}
+for (const section of document.querySelectorAll("[data-gate]")) {
+  section.hidden = section.dataset.gate !== gate;
+}
+</script>
+</body>
+</html>
