@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<!--
+  PROTOTYPE — PDP redesign, throwaway. Not production code.
+  Question: what should the redone PDP look like?
+  Three variants of the single-product page, switchable via ?variant=a|b|c,
+  bilingual via ?lang=en|de, on a static HTML page with real product data
+  (GoodWe GW60K-STS-G10, id 6530).
+  Run: open this file in a browser, or `just` nothing — double-click.
+-->
+<html lang="en" data-variant="a">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GW60K-STS-G10 — PDP prototype</title>
+<style>
+/* ---------- fonts (repo assets, relative path; fallback sans) ---------- */
+@font-face{font-family:"Plus Jakarta Sans";font-weight:400;src:url("../../../plugins/linker-commerce/assets/fonts/plus-jakarta-sans-400.ttf")}
+@font-face{font-family:"Plus Jakarta Sans";font-weight:500;src:url("../../../plugins/linker-commerce/assets/fonts/plus-jakarta-sans-500.ttf")}
+@font-face{font-family:"Plus Jakarta Sans";font-weight:600;src:url("../../../plugins/linker-commerce/assets/fonts/plus-jakarta-sans-600.ttf")}
+@font-face{font-family:"Plus Jakarta Sans";font-weight:700;src:url("../../../plugins/linker-commerce/assets/fonts/plus-jakarta-sans-700.ttf")}
+
+/* ---------- shared tokens (from content/windpress/tokens.css) ---------- */
+:root{
+  --ink:#15352f;
+  --ink-muted:#596e67;
+  --accent:#0c7f73;
+  --accent-dark:#0a5c53;
+  --accent-on:#f3fbfa;
+  --paper:#ffffff;
+  --paper-journal:#f6f8fa;
+  --paper-mist:#edf1f5;
+  --cream:#f7f7f1;
+  --line:#d7dde4;
+  --navy:#102c30;
+  --warn:#b97a0f;
+  --radius-card:18px;
+  --radius-panel:22px;
+  --radius-round:999px;
+  --shadow-1:0 2px 8px rgba(21,53,47,.06);
+  --shadow-2:0 10px 28px rgba(21,53,47,.08);
+  --container:1360px;
+  --pad-inline:clamp(20px,4vw,40px);
+  --header-h:80px; /* JS measures the real header into this */
+  --gap-section:clamp(48px,7vw,88px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
+  color:var(--ink);
+  background:var(--paper);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+.container{max-width:var(--container);margin-inline:auto;padding-inline:var(--pad-inline)}
+.l-de{display:none}
+html[lang="de"] .l-en{display:none}
+html[lang="de"] .l-de{display:revert}
+
+.kicker{
+  font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-muted);margin-bottom:12px;
+}
+.section-title{font-size:clamp(26px,3.4vw,40px);font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-weight:600;font-size:15px;border-radius:12px;padding:14px 22px;
+  border:1px solid transparent;cursor:pointer;text-align:center;
+}
+.btn-primary{background:var(--accent-dark);color:#fff;width:100%}
+.btn-primary:hover{background:var(--accent)}
+.btn-secondary{background:#fff;border-color:var(--line);color:var(--ink);width:100%}
+.btn-secondary:hover{border-color:var(--ink)}
+
+/* ---------- header (context replica, static) ---------- */
+.site-header{
+  position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--line);
+}
+.site-header .container{
+  display:flex;align-items:center;gap:28px;height:var(--header-h);
+}
+.logo{font-weight:700;font-size:24px;color:var(--accent-dark);font-style:italic;flex-shrink:0}
+.logo small{display:block;font-size:9px;font-style:normal;font-weight:500;letter-spacing:.08em;color:var(--ink-muted)}
+.main-nav{display:flex;gap:22px;font-size:15px;font-weight:500;flex:1}
+.main-nav a{white-space:nowrap;color:var(--ink)}
+.header-actions{display:flex;gap:10px;align-items:center;flex-shrink:0}
+.icon-btn{width:40px;height:40px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;background:#fff}
+.lang-switch{display:flex;gap:2px;font-size:13px;font-weight:600}
+.lang-switch a{padding:6px 8px;border-radius:6px;color:var(--ink-muted)}
+.lang-switch a[aria-current="true"]{color:var(--accent-dark);box-shadow:inset 0 -2px 0 var(--accent)}
+.contact-btn{background:var(--accent-dark);color:#fff;border-radius:10px;padding:11px 20px;font-weight:600;font-size:14px}
+@media (max-width:1100px){.main-nav{display:none}}
+
+/* ---------- breadcrumb ---------- */
+.crumbs{padding-block:20px;font-size:14px;color:var(--ink-muted);display:flex;gap:8px;flex-wrap:wrap}
+.crumbs a:hover{color:var(--accent-dark)}
+
+/* ================================================================
+   UPPER — gallery + intro left, inquiry rail right.
+   The rail's sticky context ends with .upper: it can never travel
+   into the lower sections. This is the overlap fix, structurally.
+   ================================================================ */
+.upper{
+  display:grid;
+  grid-template-columns:minmax(0,2fr) minmax(0,1fr);
+  grid-template-areas:"gallery rail" "intro rail";
+  column-gap:clamp(32px,4vw,64px);
+  align-items:start;
+  padding-bottom:var(--gap-section);
+}
+.gallery{grid-area:gallery}
+.intro{grid-area:intro}
+.rail{grid-area:rail}
+
+.gallery-main{
+  border-radius:var(--radius-card);overflow:hidden;background:var(--paper-journal);
+  border:1px solid var(--line);aspect-ratio:4/3;
+}
+.gallery-main img{width:100%;height:100%;object-fit:contain;padding:32px}
+.gallery-thumbs{display:flex;gap:12px;margin-top:12px}
+.gallery-thumbs button{
+  width:84px;height:64px;border-radius:12px;border:1px solid var(--line);
+  background:var(--paper-journal);overflow:hidden;cursor:pointer;padding:6px;
+}
+.gallery-thumbs button[aria-current="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.gallery-thumbs img{width:100%;height:100%;object-fit:contain}
+
+.intro{padding-top:36px}
+.intro .lede{font-size:clamp(17px,1.6vw,20px);line-height:1.65;max-width:62ch;color:var(--ink)}
+
+/* inquiry rail — sticky, capped, backgrounded, only within .upper */
+.rail-inner{
+  position:sticky;
+  top:calc(var(--header-h) + 16px);
+  max-height:calc(100dvh - var(--header-h) - 32px);
+  overflow-y:auto;
+  scrollbar-width:thin;
+  overscroll-behavior:contain;
+  background:var(--paper); /* opaque: nothing shows through, ever */
+}
+.rail-brand{height:26px;margin-bottom:10px}
+.rail-brand img{height:100%;width:auto}
+.rail h1{font-size:clamp(24px,2.4vw,32px);font-weight:700;letter-spacing:-.01em}
+.rail .designation{color:var(--ink-muted);margin-top:4px;font-size:15px}
+.rail .sku{font-size:13px;color:var(--ink-muted);margin-top:10px}
+.rail .price{margin-top:16px;font-size:15px}
+.rail .price a{color:var(--accent-dark);font-weight:600;border-bottom:1px solid var(--accent)}
+.key-stats{margin-top:20px;border-top:1px solid var(--line)}
+.key-stats > div{
+  display:flex;justify-content:space-between;gap:16px;
+  padding-block:10px;border-bottom:1px solid var(--line);font-size:14px;
+}
+.key-stats dt{color:var(--ink-muted)}
+.key-stats dd{font-weight:600;text-align:right}
+.avail{margin-top:18px;font-size:14px}
+.avail .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:8px}
+.avail .delivery{color:var(--ink-muted);margin-top:8px;font-size:13px;line-height:1.5}
+.rail .btn-primary{margin-top:20px}
+.rail .btn-secondary{margin-top:10px}
+.tools-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.tools-row a{
+  border:1px solid var(--line);border-radius:12px;padding:10px 6px;
+  font-size:12.5px;font-weight:600;text-align:center;background:#fff;
+}
+.tools-row a:hover{border-color:var(--accent);color:var(--accent-dark)}
+.plan-with{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--paper-journal)}
+.plan-with summary{
+  cursor:pointer;list-style:none;padding:14px 16px;font-weight:600;font-size:14px;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+}
+.plan-with summary::-webkit-details-marker{display:none}
+.plan-with summary::after{content:"+";font-size:18px;color:var(--ink-muted)}
+.plan-with[open] summary::after{content:"–"}
+.plan-with .body{padding:0 16px 16px;font-size:13.5px;color:var(--ink-muted)}
+.plan-with .choices{display:grid;gap:8px;margin-top:10px}
+.plan-with .choices button{
+  text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+  background:#fff;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;
+}
+
+/* ================================================================
+   SECTION NAV — repaired: sticks below the measured header,
+   has scrollspy (JS), opaque background, own hairline.
+   ================================================================ */
+.section-nav{
+  position:sticky;top:var(--header-h);z-index:50;
+  background:var(--paper);border-block:1px solid var(--line);
+}
+.section-nav .container{display:flex;gap:4px;overflow-x:auto}
+.section-nav a{
+  padding:14px 16px;font-size:14px;font-weight:600;color:var(--ink-muted);
+  white-space:nowrap;box-shadow:inset 0 -2px 0 transparent;
+}
+.section-nav a[aria-current="true"]{color:var(--accent-dark);box-shadow:inset 0 -2px 0 var(--accent)}
+
+/* ================================================================
+   LOWER — full-width container, unified spacing rhythm.
+   ================================================================ */
+.lower > section{padding-block:var(--gap-section)}
+.lower > section + section{border-top:1px solid var(--line)}
+
+/* benefits */
+.benefit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:36px}
+.benefit-card{
+  border:1px solid var(--line);border-radius:var(--radius-card);
+  padding:24px;background:#fff;display:flex;gap:14px;align-items:flex-start;
+}
+.benefit-card .check{
+  flex-shrink:0;width:26px;height:26px;border-radius:50%;
+  background:var(--accent);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:700;
+}
+.benefit-card p{font-size:15px;line-height:1.6}
+
+/* feature band — big image, big headline (yoga rhythm) */
+.band{
+  border-radius:var(--radius-panel);overflow:hidden;position:relative;
+  min-height:clamp(320px,44vw,520px);display:flex;align-items:flex-end;
+  background:var(--navy);
+}
+.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.92}
+.band .band-copy{
+  position:relative;padding:clamp(24px,4vw,56px);color:#fff;max-width:640px;
+}
+.band .band-copy .kicker{color:rgba(255,255,255,.75)}
+.band .band-copy h2{font-size:clamp(28px,4.2vw,52px);line-height:1.08;letter-spacing:-.015em;font-weight:700}
+
+/* technical data */
+.spec-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+.spec-group{border:1px solid var(--line);border-radius:var(--radius-card);overflow:hidden;background:#fff}
+.spec-group h3{
+  font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:16px 20px;background:var(--paper-journal);border-bottom:1px solid var(--line);
+}
+.spec-group table{width:100%;border-collapse:collapse;font-size:14px}
+.spec-group th,.spec-group td{padding:10px 20px;text-align:left;vertical-align:top}
+.spec-group th{font-weight:500;color:var(--ink-muted);width:46%}
+.spec-group td{font-weight:600}
+.spec-group tr + tr th,.spec-group tr + tr td{border-top:1px solid var(--paper-mist)}
+
+/* project fit */
+.fit-card{margin-top:36px;border-radius:var(--radius-panel);background:var(--paper-journal);padding:clamp(24px,4vw,48px)}
+.fit-num{
+  font-size:clamp(44px,6vw,72px);font-weight:700;color:transparent;
+  -webkit-text-stroke:1.5px var(--accent);line-height:1;margin-bottom:16px;
+}
+.fit-card h3{font-size:clamp(22px,2.6vw,32px);line-height:1.2;max-width:22ch}
+.fit-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:28px}
+.fit-cols .lbl{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:10px}
+.fit-cols p,.fit-cols li{font-size:15px;line-height:1.6}
+.fit-limits li{padding-left:22px;position:relative;margin-bottom:8px}
+.fit-limits li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.fit-read{
+  margin-top:28px;background:#fff;border-left:4px solid var(--accent-dark);
+  border-radius:0 var(--radius-card) var(--radius-card) 0;padding:20px 24px;
+}
+.fit-read .lbl{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px}
+.fit-read p{font-size:17px;font-weight:600}
+
+/* documents */
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:36px}
+.doc-card{
+  display:flex;align-items:center;gap:16px;border:1px solid var(--line);
+  border-radius:var(--radius-card);padding:20px;background:#fff;
+}
+.doc-card:hover{border-color:var(--accent)}
+.doc-icon{
+  flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--paper-journal);
+  display:grid;place-items:center;font-size:20px;color:var(--accent-dark);
+}
+.doc-card .name{font-weight:600;font-size:15px}
+.doc-card .meta{font-size:13px;color:var(--ink-muted);margin-top:2px}
+.doc-card .dl{margin-left:auto;color:var(--ink-muted);font-size:18px}
+
+/* FAQ accordion */
+.faq-wrap{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:clamp(24px,4vw,64px);margin-top:8px}
+.faq-list details{border-bottom:1px solid var(--line)}
+.faq-list summary{
+  cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;
+  padding:20px 4px;font-weight:600;font-size:16px;align-items:center;
+}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{content:"+";font-size:22px;font-weight:400;color:var(--ink-muted);flex-shrink:0}
+.faq-list details[open] summary::after{content:"–"}
+.faq-list .answer{padding:0 4px 22px;color:var(--ink-muted);font-size:15px;line-height:1.65;max-width:70ch}
+.faq-side{border-radius:var(--radius-panel);overflow:hidden;background:var(--paper-mist);min-height:280px}
+.faq-side img{width:100%;height:100%;object-fit:cover}
+
+/* footer (context) */
+.site-footer{background:var(--navy);color:#cfdde0;padding-block:56px;margin-top:var(--gap-section)}
+.site-footer .container{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:14px}
+
+/* mobile fixed action bar */
+.mobile-action{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);padding:12px var(--pad-inline) calc(12px + env(safe-area-inset-bottom));
+  gap:12px;align-items:center;
+}
+.mobile-action .price{font-size:13px;font-weight:600}
+.mobile-action .btn-primary{width:auto;flex:1;padding-block:12px}
+
+/* ================================================================
+   RESPONSIVE — mobile keeps current structure, fixes edge glue.
+   ================================================================ */
+@media (max-width:1023px){
+  .upper{grid-template-columns:1fr;grid-template-areas:"gallery" "rail" "intro";row-gap:32px}
+  .rail-inner{position:static;max-height:none;overflow:visible}
+  .spec-groups{grid-template-columns:1fr}
+  .fit-cols{grid-template-columns:1fr}
+  .faq-wrap{grid-template-columns:1fr}
+  .faq-side{min-height:200px}
+}
+@media (max-width:860px){
+  .mobile-action{display:flex}
+  body{padding-bottom:88px}
+  .benefit-grid{grid-template-columns:1fr}
+  .gallery-main{aspect-ratio:1/1}
+}
+
+/* ================================================================
+   VARIANT B — "App cards": mist canvas, everything is a floating
+   rounded card; pill controls; the app-screenshot direction.
+   ================================================================ */
+html[data-variant="b"] body{background:var(--cream)}
+html[data-variant="b"] .site-header{background:rgba(255,255,255,.85);backdrop-filter:blur(14px)}
+html[data-variant="b"] .rail-inner{
+  background:#fff;border-radius:var(--radius-panel);box-shadow:var(--shadow-2);
+  padding:24px;border:1px solid rgba(215,221,228,.6);
+}
+html[data-variant="b"] .gallery-main{border:none;border-radius:var(--radius-panel);box-shadow:var(--shadow-1)}
+html[data-variant="b"] .gallery-thumbs button{border-radius:10px}
+html[data-variant="b"] .lower > section + section{border-top:none}
+html[data-variant="b"] .lower > section{padding-block:calc(var(--gap-section)/2)}
+html[data-variant="b"] .benefit-card{border:none;box-shadow:var(--shadow-1);border-radius:var(--radius-panel)}
+html[data-variant="b"] .spec-group{border:none;box-shadow:var(--shadow-1);border-radius:var(--radius-panel)}
+html[data-variant="b"] .spec-group h3{background:var(--cream)}
+html[data-variant="b"] .fit-card{box-shadow:var(--shadow-1);background:#fff}
+html[data-variant="b"] .fit-read{box-shadow:var(--shadow-1);border-left-width:6px;border-radius:var(--radius-card)}
+html[data-variant="b"] .doc-card{border:none;box-shadow:var(--shadow-1);border-radius:var(--radius-panel)}
+html[data-variant="b"] .faq-list details{
+  border-bottom:none;background:#fff;border-radius:var(--radius-card);
+  box-shadow:var(--shadow-1);margin-bottom:12px;
+}
+html[data-variant="b"] .faq-list summary{padding:18px 20px}
+html[data-variant="b"] .faq-list .answer{padding:0 20px 20px}
+html[data-variant="b"] .btn{border-radius:var(--radius-round)}
+html[data-variant="b"] .tools-row a{border-radius:var(--radius-round)}
+html[data-variant="b"] .section-nav{background:transparent;border-block:none}
+html[data-variant="b"] .section-nav .container{gap:8px;padding-block:8px}
+html[data-variant="b"] .section-nav a{
+  background:#fff;border-radius:var(--radius-round);padding:10px 18px;
+  box-shadow:var(--shadow-1);
+}
+html[data-variant="b"] .section-nav a[aria-current="true"]{background:var(--accent-dark);color:#fff;box-shadow:none}
+
+/* ================================================================
+   VARIANT C — "Editorial": quiet page, hairline structure,
+   alternating split bands, oversized outline numerals, no cards.
+   ================================================================ */
+html[data-variant="c"] .rail-inner{
+  background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent-dark);
+  border-radius:4px;padding:24px;
+}
+html[data-variant="c"] .lower > section{padding-block:calc(var(--gap-section)*1.15)}
+html[data-variant="c"] .benefit-grid{grid-template-columns:1fr;gap:0}
+html[data-variant="c"] .benefit-card{
+  border:none;border-top:1px solid var(--line);border-radius:0;padding:22px 0;
+  align-items:baseline;
+}
+html[data-variant="c"] .benefit-card .check{background:none;color:var(--accent-dark);border-radius:0}
+html[data-variant="c"] .band{border-radius:0;margin-inline:calc(var(--pad-inline)*-1);min-height:clamp(360px,52vw,620px)}
+html[data-variant="c"] .spec-groups{grid-template-columns:1fr;gap:0}
+html[data-variant="c"] .spec-group{border:none;border-radius:0;border-top:1px solid var(--line)}
+html[data-variant="c"] .spec-group h3{background:none;padding-inline:0;border-bottom:none}
+html[data-variant="c"] .spec-group th,html[data-variant="c"] .spec-group td{padding-inline:0}
+html[data-variant="c"] .fit-card{background:none;padding:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(24px,5vw,72px)}
+html[data-variant="c"] .fit-num{font-size:clamp(72px,10vw,128px);margin-bottom:0}
+html[data-variant="c"] .fit-read{border-radius:0}
+html[data-variant="c"] .doc-card{border:none;border-radius:0;border-top:1px solid var(--line);padding-inline:0}
+html[data-variant="c"] .faq-wrap{grid-template-columns:1fr}
+html[data-variant="c"] .faq-side{display:none}
+html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
+@media (max-width:1023px){
+  html[data-variant="c"] .fit-card{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <div class="logo">Linker<small>Linking Value, Serving You.</small></div>
+    <nav class="main-nav">
+      <a href="#"><span class="l l-en">Products</span><span class="l l-de">Produkte</span></a>
+      <a href="#"><span class="l l-en">Solutions</span><span class="l l-de">Lösungen</span></a>
+      <a href="#"><span class="l l-en">Plan with Linker</span><span class="l l-de">Planen mit Linker</span></a>
+      <a href="#"><span class="l l-en">Services</span><span class="l l-de">Services</span></a>
+      <a href="#"><span class="l l-en">For Partners</span><span class="l l-de">Für Partner</span></a>
+      <a href="#"><span class="l l-en">About</span><span class="l l-de">Über uns</span></a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch">
+        <a href="#" data-lang-link="en" aria-current="true">EN</a>
+        <a href="#" data-lang-link="de" aria-current="false">DE</a>
+      </div>
+      <a class="contact-btn" href="#"><span class="l l-en">Contact Linker</span><span class="l l-de">Kontakt</span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <nav class="crumbs container" aria-label="Breadcrumb">
+    <a href="#"><span class="l l-en">Products</span><span class="l l-de">Produkte</span></a>
+    <span aria-hidden="true">/</span>
+    <a href="#">GoodWe</a>
+    <span aria-hidden="true">/</span>
+    <span>GW60K-STS-G10</span>
+  </nav>
+
+  <!-- ================= UPPER ================= -->
+  <div class="upper container">
+    <div class="gallery">
+      <div class="gallery-main">
+        <img id="main-img"
+             src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01.png"
+             alt="GoodWe GW60K-STS-G10">
+      </div>
+      <div class="gallery-thumbs">
+        <button aria-current="true" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01.png"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01-300x232.png" alt=""></button>
+        <button aria-current="false" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02.png"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02-300x232.png" alt=""></button>
+        <button aria-current="false" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01.png"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01-300x300.png" alt=""></button>
+      </div>
+    </div>
+
+    <aside class="rail">
+      <div class="rail-inner">
+        <div class="rail-brand"><img src="https://de-linker.com/wp-content/uploads/2026/07/our-brand-goodwe-mono-light.png" alt="GoodWe" style="filter:invert(.9) hue-rotate(180deg) saturate(.4)"></div>
+        <h1>GW60K-STS-G10</h1>
+        <p class="designation">
+          <span class="l l-en">60 kW static transfer switch for the ESA Series</span>
+          <span class="l l-de">60-kW-Statikumschalter für die ESA-Serie</span>
+        </p>
+        <p class="sku">
+          <span class="l l-en">Item number: DLK-GOODWE-GW60KSTSG10</span>
+          <span class="l l-de">Artikelnummer: DLK-GOODWE-GW60KSTSG10</span>
+        </p>
+        <p class="price">
+          <a href="#"><span class="l l-en">Net price after partner sign-in</span><span class="l l-de">Nettopreis nach Partner-Anmeldung</span></a>
+        </p>
+        <dl class="key-stats">
+          <div><dt><span class="l l-en">Communication</span><span class="l l-de">Kommunikation</span></dt><dd>RS485</dd></div>
+          <div><dt><span class="l l-en">Ingress protection</span><span class="l l-de">Schutzart</span></dt><dd>IP54</dd></div>
+          <div><dt><span class="l l-en">Weight</span><span class="l l-de">Gewicht</span></dt><dd>15 kg</dd></div>
+          <div><dt><span class="l l-en">Dimensions</span><span class="l l-de">Abmessungen</span></dt><dd>506 × 590 × 180 mm</dd></div>
+        </dl>
+        <div class="avail">
+          <span><span class="dot" aria-hidden="true"></span><span class="l l-en">In stock</span><span class="l l-de">Auf Lager</span></span>
+          <p class="delivery">
+            <span class="l l-en">Delivery to Germany · Parcel rate for one eligible item within Germany: €14.90 when you submit. Freight for multiple items is confirmed separately.</span>
+            <span class="l l-de">Lieferung nach Deutschland · Paketpreis für einen qualifizierten Artikel innerhalb Deutschlands: 14,90 € bei Übermittlung. Fracht für mehrere Artikel wird separat bestätigt.</span>
+          </p>
+        </div>
+        <a class="btn btn-primary" href="#"><span class="l l-en">Sign in for partner pricing</span><span class="l l-de">Anmelden für Partnerpreise</span></a>
+        <a class="btn btn-secondary" href="#"><span class="l l-en">Ask about this product</span><span class="l l-de">Frage zu diesem Produkt</span></a>
+        <div class="tools-row">
+          <a href="#"><span class="l l-en">Compare</span><span class="l l-de">Vergleichen</span></a>
+          <a href="#">Ask Genie</a>
+          <a href="#downloads"><span class="l l-en">Documents</span><span class="l l-de">Dokumente</span></a>
+        </div>
+        <details class="plan-with">
+          <summary><span class="l l-en">Plan with GW60K-STS-G10</span><span class="l l-de">Planen mit GW60K-STS-G10</span></summary>
+          <div class="body">
+            <p>
+              <span class="l l-en">New system, extension or replacement? Genie starts from this model and asks only for what is still open.</span>
+              <span class="l l-de">Neuanlage, Erweiterung oder Austausch? Genie startet mit diesem Modell und fragt nur, was noch offen ist.</span>
+            </p>
+            <div class="choices">
+              <button><span class="l l-en">New system</span><span class="l l-de">Neuanlage</span></button>
+              <button><span class="l l-en">Extend an existing system</span><span class="l l-de">Anlage erweitern</span></button>
+              <button><span class="l l-en">Replace a unit</span><span class="l l-de">Gerät ersetzen</span></button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </aside>
+
+    <div class="intro">
+      <p class="kicker"><span class="l l-en">Description</span><span class="l l-de">Beschreibung</span></p>
+      <p class="lede">
+        <span class="l l-en">GoodWe GW60K-STS-G10 is a 60 kW static transfer switch for the ESA Series all-in-one storage system: 100 A on the grid, back-up and smart-port sides, on/off-grid transfer in ≤ 4 ms, wall-mounted IP54.</span>
+        <span class="l l-de">Der GoodWe GW60K-STS-G10 ist ein 60-kW-Statikumschalter für das All-in-one-Speichersystem der ESA-Serie: 100 A auf Netz-, Notstrom- und Smart-Port-Seite, Netzumschaltung in ≤ 4 ms, Wandmontage, IP54.</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ================= SECTION NAV ================= -->
+  <nav class="section-nav" aria-label="Product sections">
+    <div class="container">
+      <a href="#overview" aria-current="true"><span class="l l-en">Overview</span><span class="l l-de">Überblick</span></a>
+      <a href="#stats" aria-current="false"><span class="l l-en">Technical data</span><span class="l l-de">Technische Daten</span></a>
+      <a href="#fit" aria-current="false"><span class="l l-en">Project fit</span><span class="l l-de">Projekteinsatz</span></a>
+      <a href="#downloads" aria-current="false"><span class="l l-en">Documents</span><span class="l l-de">Dokumente</span></a>
+      <a href="#faq" aria-current="false">FAQ</a>
+    </div>
+  </nav>
+
+  <!-- ================= LOWER ================= -->
+  <div class="lower">
+
+    <section id="overview" class="container">
+      <p class="kicker"><span class="l l-en">Why this switch</span><span class="l l-de">Warum dieser Umschalter</span></p>
+      <h2 class="section-title">
+        <span class="l l-en">Built for 60 kW backup switching.</span>
+        <span class="l l-de">Gebaut für 60 kW Notstromumschaltung.</span>
+      </h2>
+      <div class="benefit-grid">
+        <div class="benefit-card"><span class="check">✓</span><p>
+          <span class="l l-en">60 kW rated on the grid, back-up and smart-port sides; the inverter side is rated 30 kW in both the STS datasheet and the ESA 5–30 kW user manual.</span>
+          <span class="l l-de">60 kW Nennleistung auf Netz-, Notstrom- und Smart-Port-Seite; die Wechselrichterseite ist sowohl im STS-Datenblatt als auch im ESA-Handbuch 5–30 kW mit 30 kW bemessen.</span>
+        </p></div>
+        <div class="benefit-card"><span class="check">✓</span><p>
+          <span class="l l-en">Maximum current 100 A on grid, back-up and smart port; rated 87.0 A at 400 V.</span>
+          <span class="l l-de">Maximalstrom 100 A auf Netz, Notstrom und Smart Port; Nennstrom 87,0 A bei 400 V.</span>
+        </p></div>
+        <div class="benefit-card"><span class="check">✓</span><p>
+          <span class="l l-en">On/off-grid transfer ≤ 4 ms.</span>
+          <span class="l l-de">Netzumschaltung in ≤ 4 ms.</span>
+        </p></div>
+        <div class="benefit-card"><span class="check">✓</span><p>
+          <span class="l l-en">Wall-mounted IP54 enclosure, 506 × 590 × 180 mm, 15 kg, natural convection.</span>
+          <span class="l l-de">Wandgehäuse IP54, 506 × 590 × 180 mm, 15 kg, Naturkonvektion.</span>
+        </p></div>
+      </div>
+    </section>
+
+    <section class="container" aria-label="Feature">
+      <div class="band">
+        <img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01.png" alt="" style="object-fit:contain;object-position:right center;padding:5%;opacity:1">
+        <div class="band-copy">
+          <p class="kicker"><span class="l l-en">ESA Series</span><span class="l l-de">ESA-Serie</span></p>
+          <h2>
+            <span class="l l-en">Backup switching on an ESA system up to 60 kW.</span>
+            <span class="l l-de">Notstromumschaltung an einer ESA-Anlage bis 60 kW.</span>
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <section id="stats" class="container">
+      <p class="kicker"><span class="l l-en">Technical data</span><span class="l l-de">Technische Daten</span></p>
+      <h2 class="section-title">
+        <span class="l l-en">Every number from the datasheet.</span>
+        <span class="l l-de">Jede Zahl aus dem Datenblatt.</span>
+      </h2>
+      <div class="spec-groups">
+        <div class="spec-group">
+          <h3><span class="l l-en">Grid, back-up and smart port</span><span class="l l-de">Netz, Notstrom und Smart Port</span></h3>
+          <table>
+            <tr><th><span class="l l-en">Nominal voltage</span><span class="l l-de">Nennspannung</span></th><td>220/380, 230/400, 240/415 V · 3L/N/PE</td></tr>
+            <tr><th><span class="l l-en">Rated current</span><span class="l l-de">Nennstrom</span></th><td>91.0 A @ 380 V; 87.0 A @ 400 V; 83.4 A @ 415 V</td></tr>
+            <tr><th><span class="l l-en">Max. current</span><span class="l l-de">Max. Strom</span></th><td>100 A</td></tr>
+            <tr><th><span class="l l-en">Rated power</span><span class="l l-de">Nennleistung</span></th><td>60 kW</td></tr>
+            <tr><th><span class="l l-en">Max. bypass current (back-up)</span><span class="l l-de">Max. Bypassstrom (Notstrom)</span></th><td>100 A</td></tr>
+          </table>
+        </div>
+        <div class="spec-group">
+          <h3><span class="l l-en">Inverter side</span><span class="l l-de">Wechselrichterseite</span></h3>
+          <table>
+            <tr><th><span class="l l-en">Rated power</span><span class="l l-de">Nennleistung</span></th><td>30 kW</td></tr>
+            <tr><th><span class="l l-en">Rated current</span><span class="l l-de">Nennstrom</span></th><td>43.5 A @ 400 V</td></tr>
+            <tr><th><span class="l l-en">Max. current</span><span class="l l-de">Max. Strom</span></th><td>100 A</td></tr>
+          </table>
+        </div>
+        <div class="spec-group">
+          <h3><span class="l l-en">Switching and environment</span><span class="l l-de">Umschaltung und Umgebung</span></h3>
+          <table>
+            <tr><th><span class="l l-en">Transfer time</span><span class="l l-de">Umschaltzeit</span></th><td>≤ 4 ms</td></tr>
+            <tr><th><span class="l l-en">Ingress protection</span><span class="l l-de">Schutzart</span></th><td>IP54</td></tr>
+            <tr><th><span class="l l-en">Mounting</span><span class="l l-de">Montage</span></th><td><span class="l l-en">Wall-mounted</span><span class="l l-de">Wandmontage</span></td></tr>
+            <tr><th><span class="l l-en">Cooling</span><span class="l l-de">Kühlung</span></th><td><span class="l l-en">Natural convection</span><span class="l l-de">Naturkonvektion</span></td></tr>
+            <tr><th><span class="l l-en">Weight</span><span class="l l-de">Gewicht</span></th><td>15 kg</td></tr>
+            <tr><th><span class="l l-en">Dimensions</span><span class="l l-de">Abmessungen</span></th><td>506 × 590 × 180 mm</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="fit" class="container">
+      <p class="kicker"><span class="l l-en">Project fit</span><span class="l l-de">Projekteinsatz</span></p>
+      <h2 class="section-title">
+        <span class="l l-en">Where this model fits.</span>
+        <span class="l l-de">Wo dieses Modell passt.</span>
+      </h2>
+      <div class="fit-card">
+        <div class="fit-num">01</div>
+        <div>
+          <p class="kicker"><span class="l l-en">Project scenario</span><span class="l l-de">Projektszenario</span></p>
+          <h3>
+            <span class="l l-en">Backup switching on an ESA system up to 60 kW</span>
+            <span class="l l-de">Notstromumschaltung an einer ESA-Anlage bis 60 kW</span>
+          </h3>
+          <div class="fit-cols">
+            <div>
+              <p class="lbl"><span class="l l-en">Project</span><span class="l l-de">Projekt</span></p>
+              <p>
+                <span class="l l-en">An ESA all-in-one storage system needs a wall-mounted transfer switch for grid and backup operation up to 60 kW on the grid side.</span>
+                <span class="l l-de">Ein ESA-All-in-one-Speichersystem braucht einen wandmontierten Umschalter für Netz- und Notstrombetrieb bis 60 kW auf der Netzseite.</span>
+              </p>
+              <p style="margin-top:12px">
+                <span class="l l-en">GW60K-STS-G10 is the 60 kW column of the EMEA 30/60 kW STS datasheet.</span>
+                <span class="l l-de">Der GW60K-STS-G10 ist die 60-kW-Spalte des EMEA-Datenblatts STS 30/60 kW.</span>
+              </p>
+            </div>
+            <div>
+              <p class="lbl"><span class="l l-en">Limits for the configuration</span><span class="l l-de">Grenzen der Konfiguration</span></p>
+              <ul class="fit-limits">
+                <li><span class="l l-en">One hybrid inverter, ≤ 60 kVA on the grid side.</span><span class="l l-de">Ein Hybrid-Wechselrichter, ≤ 60 kVA auf der Netzseite.</span></li>
+                <li><span class="l l-en">Wall: 506 × 590 × 180 mm, 15 kg, IP54.</span><span class="l l-de">Wand: 506 × 590 × 180 mm, 15 kg, IP54.</span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="fit-read">
+            <p class="lbl">Linker's read</p>
+            <p>
+              <span class="l l-en">The 60 kW ESA STS; not the 125 kW ET STS.</span>
+              <span class="l l-de">Der 60-kW-ESA-STS; nicht der 125-kW-ET-STS.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="downloads" class="container">
+      <p class="kicker"><span class="l l-en">Documents</span><span class="l l-de">Dokumente</span></p>
+      <h2 class="section-title">
+        <span class="l l-en">Datasheets and warranty.</span>
+        <span class="l l-de">Datenblätter und Garantie.</span>
+      </h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf" target="_blank" rel="noopener">
+          <span class="doc-icon">↓</span>
+          <span>
+            <span class="name">GoodWe STS Series 30/60 kW datasheet (EMEA, EN)</span>
+            <span class="meta" style="display:block"><span class="l l-en">Datasheet · PDF · EN</span><span class="l l-de">Datenblatt · PDF · EN</span></span>
+          </span>
+          <span class="dl">↧</span>
+        </a>
+        <a class="doc-card" href="#">
+          <span class="doc-icon">↓</span>
+          <span>
+            <span class="name"><span class="l l-en">GOODWE limited warranty for inverter system (Europe)</span><span class="l l-de">GOODWE beschränkte Garantie für Wechselrichtersysteme (Europa)</span></span>
+            <span class="meta" style="display:block"><span class="l l-en">Document · PDF · EN</span><span class="l l-de">Dokument · PDF · EN</span></span>
+          </span>
+          <span class="dl">↧</span>
+        </a>
+      </div>
+    </section>
+
+    <section id="faq" class="container">
+      <div class="faq-wrap">
+        <div class="faq-side">
+          <img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02.png" alt="" style="object-fit:contain;padding:12%">
+        </div>
+        <div>
+          <p class="kicker">FAQ</p>
+          <h2 class="section-title">
+            <span class="l l-en">Product questions</span>
+            <span class="l l-de">Produktfragen</span>
+          </h2>
+          <div class="faq-list" style="margin-top:24px">
+            <details open>
+              <summary><span class="l l-en">Is the inverter port of the GW60K-STS-G10 also 60 kW?</span><span class="l l-de">Ist der Wechselrichteranschluss des GW60K-STS-G10 ebenfalls 60 kW?</span></summary>
+              <div class="answer">
+                <span class="l l-en">No. The inverter side is rated 30 kW, and both hosted documents print it: page 2 of the STS datasheet puts 30 kW in the Inverter side block across the whole table, and the ESA 5–30 kW user manual, section 9.3, puts 30 kW in the GW60K-STS-G10 column of the Inverter side block.</span>
+                <span class="l l-de">Nein. Die Wechselrichterseite ist mit 30 kW bemessen, und beide von uns gehosteten Dokumente geben das an: Seite 2 des STS-Datenblatts führt 30 kW im Block „Inverter side“ über die ganze Tabelle, und das ESA-Handbuch 5–30 kW führt in Abschnitt 9.3 30 kW in der Spalte GW60K-STS-G10 der Wechselrichterseite.</span>
+              </div>
+            </details>
+            <details>
+              <summary><span class="l l-en">How fast does it switch between grid and backup?</span><span class="l l-de">Wie schnell schaltet er zwischen Netz und Notstrom um?</span></summary>
+              <div class="answer">
+                <span class="l l-en">The datasheet rates the on/off-grid transfer at ≤ 4 ms.</span>
+                <span class="l l-de">Das Datenblatt gibt die Umschaltzeit Netz/Notstrom mit ≤ 4 ms an.</span>
+              </div>
+            </details>
+            <details>
+              <summary><span class="l l-en">Which inverter does it pair with?</span><span class="l l-de">Mit welchem Wechselrichter wird er kombiniert?</span></summary>
+              <div class="answer">
+                <span class="l l-en">One GoodWe ESA hybrid inverter, ≤ 60 kVA on the grid side. The inverter side of the switch is rated 30 kW.</span>
+                <span class="l l-de">Ein GoodWe-ESA-Hybrid-Wechselrichter, ≤ 60 kVA auf der Netzseite. Die Wechselrichterseite des Umschalters ist mit 30 kW bemessen.</span>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="logo" style="color:#fff">Linker<small style="color:#8fb5ad">Linking Value, Serving You.</small></div>
+    <div><span class="l l-en">B2B energy storage · Inquiry only</span><span class="l l-de">B2B-Energiespeicher · Nur Anfragen</span></div>
+  </div>
+</footer>
+
+<div class="mobile-action">
+  <span class="price"><span class="l l-en">Net price after sign-in</span><span class="l l-de">Nettopreis nach Anmeldung</span></span>
+  <a class="btn btn-primary" href="#"><span class="l l-en">Sign in for partner pricing</span><span class="l l-de">Anmelden für Partnerpreise</span></a>
+</div>
+
+<!-- ================= PROTOTYPE SWITCHER (not part of the design) ================= -->
+<style>
+.proto-bar{
+  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;
+  display:flex;align-items:center;gap:10px;background:#111;color:#fff;
+  border-radius:999px;padding:8px 12px;box-shadow:0 8px 30px rgba(0,0,0,.35);
+  font:600 13px/1 system-ui;white-space:nowrap;
+}
+.proto-bar button{background:#2b2b2b;color:#fff;border:none;border-radius:999px;padding:8px 12px;cursor:pointer;font:inherit}
+.proto-bar button:hover{background:#3d3d3d}
+.proto-bar .vlabel{min-width:150px;text-align:center}
+.proto-bar .sep{width:1px;height:18px;background:#444}
+.proto-bar .meta{color:#999;font-weight:400}
+@media (max-width:860px){
+  /* keep the switcher clear of the mobile action bar being evaluated */
+  .proto-bar{top:calc(var(--header-h) + 8px);bottom:auto;left:auto;right:8px;transform:none;padding:6px 8px;gap:6px}
+  .proto-bar .vlabel{min-width:0}
+  .proto-bar .meta{display:none}
+}
+</style>
+<div class="proto-bar" id="proto-bar">
+  <button id="pv-prev" aria-label="Previous variant">←</button>
+  <span class="vlabel" id="pv-label">A · Baseline</span>
+  <button id="pv-next" aria-label="Next variant">→</button>
+  <span class="sep"></span>
+  <button id="pv-lang">EN / DE</button>
+  <span class="sep"></span>
+  <span class="meta" id="pv-vp"></span>
+</div>
+
+<script>
+(function(){
+  var VARIANTS = {a:'A · Baseline', b:'B · App cards', c:'C · Editorial'};
+  var root = document.documentElement;
+  var params = new URLSearchParams(location.search);
+  var variant = VARIANTS[params.get('variant')] ? params.get('variant') : 'a';
+  var lang = params.get('lang') === 'de' ? 'de' : 'en';
+
+  function apply(){
+    root.dataset.variant = variant;
+    root.lang = lang;
+    document.querySelectorAll('[data-lang-link]').forEach(function(a){
+      a.setAttribute('aria-current', a.dataset.langLink === lang ? 'true' : 'false');
+    });
+    document.getElementById('pv-label').textContent = VARIANTS[variant];
+    var p = new URLSearchParams(location.search);
+    p.set('variant', variant); p.set('lang', lang);
+    history.replaceState(null, '', location.pathname + '?' + p.toString());
+  }
+  function cycle(dir){
+    var keys = Object.keys(VARIANTS);
+    variant = keys[(keys.indexOf(variant) + dir + keys.length) % keys.length];
+    apply();
+  }
+  document.getElementById('pv-prev').addEventListener('click', function(){ cycle(-1); });
+  document.getElementById('pv-next').addEventListener('click', function(){ cycle(1); });
+  document.getElementById('pv-lang').addEventListener('click', function(){ lang = lang === 'en' ? 'de' : 'en'; apply(); });
+  document.addEventListener('keydown', function(e){
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key === 'ArrowLeft') cycle(-1);
+    if (e.key === 'ArrowRight') cycle(1);
+  });
+  document.querySelectorAll('[data-lang-link]').forEach(function(a){
+    a.addEventListener('click', function(e){ e.preventDefault(); lang = a.dataset.langLink; apply(); });
+  });
+
+  // viewport readout
+  var vp = document.getElementById('pv-vp');
+  function setVp(){ vp.textContent = window.innerWidth + 'px'; }
+  window.addEventListener('resize', setVp); setVp();
+
+  // real header height drives the rail offset — no hardcoded 84px
+  var header = document.querySelector('.site-header');
+  function measure(){ root.style.setProperty('--header-h', header.offsetHeight + 'px'); }
+  window.addEventListener('resize', measure); measure();
+
+  // gallery thumbs
+  var main = document.getElementById('main-img');
+  document.querySelectorAll('.gallery-thumbs button').forEach(function(b){
+    b.addEventListener('click', function(){
+      main.src = b.dataset.src;
+      document.querySelectorAll('.gallery-thumbs button').forEach(function(x){ x.setAttribute('aria-current','false'); });
+      b.setAttribute('aria-current','true');
+    });
+  });
+
+  // scrollspy for the repaired section nav
+  var links = Array.prototype.slice.call(document.querySelectorAll('.section-nav a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting && map[en.target.id]) {
+        links.forEach(function(a){ a.setAttribute('aria-current','false'); });
+        map[en.target.id].setAttribute('aria-current','true');
+      }
+    });
+  }, {rootMargin: '-30% 0px -60% 0px'});
+  Object.keys(map).forEach(function(id){ var el = document.getElementById(id); if (el) io.observe(el); });
+
+  apply();
+})();
+</script>
+</body>
+</html>
