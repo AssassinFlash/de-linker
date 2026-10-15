@@ -51,7 +51,8 @@ final class WindPressCache {
 		'wb-strip'              => '.wb-strip',
 		'pdp-layout'            => '.pdp-layout',
 		'pdp-purchase'          => '.pdp-purchase',
-		'pdp-scene-reel'        => '.pdp-scene-reel',
+		'pdp-intro'             => '.pdp-intro',
+		'pdp-section-nav'       => '.pdp-section-nav',
 		'pdp-disclose'          => '.pdp-disclose',
 		// The blog single face: every one of its rules lives in the volume file
 		// blog.css, so this id is the alarm for that file never reaching the

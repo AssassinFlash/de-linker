@@ -29,7 +29,7 @@ final class PresentCommandTest extends TestCase {
 	 * The compiled selectors of every anchor class, as Tailwind emits them.
 	 */
 	private const COMPILED_ALL = '.sf-products{}.product-grid{}.sf-card{}.wb-strip{}'
-		. '.pdp-layout{}.pdp-purchase{}.pdp-scene-reel{}.pdp-disclose{}';
+		. '.pdp-layout{}.pdp-purchase{}.pdp-intro{}.pdp-section-nav{}.pdp-disclose{}';
 
 	/**
 	 * The option name of the staged backup.
