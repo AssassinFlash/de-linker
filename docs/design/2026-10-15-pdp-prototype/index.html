@@ -10,7 +10,7 @@
 <html lang="en" data-variant="a">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>GW60K-STS-G10 — PDP prototype</title>
 <style>
 /* ---------- fonts (repo assets, relative path; fallback sans) ---------- */
@@ -41,10 +41,13 @@
   --container:1360px;
   --pad-inline:clamp(20px,4vw,40px);
   --header-h:80px; /* JS measures the real header into this */
+  --snav-h:52px; /* JS measures the section nav; used by scroll-padding */
+  --action-h:0px;
+  --proto-w:0px;
   --gap-section:clamp(48px,7vw,88px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + var(--snav-h) + 12px)}
 body{
   font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
   color:var(--ink);
@@ -72,8 +75,10 @@ html[lang="de"] .l-de{display:revert}
 }
 .btn-primary{background:var(--accent-dark);color:#fff;width:100%}
 .btn-primary:hover{background:var(--accent)}
+.btn-primary:active{background:#08443e}
 .btn-secondary{background:#fff;border-color:var(--line);color:var(--ink);width:100%}
 .btn-secondary:hover{border-color:var(--ink)}
+.btn-secondary:active{background:var(--paper-mist)}
 
 /* ---------- header (context replica, static) ---------- */
 .site-header{
@@ -86,12 +91,16 @@ html[lang="de"] .l-de{display:revert}
 .logo small{display:block;font-size:9px;font-style:normal;font-weight:500;letter-spacing:.08em;color:var(--ink-muted)}
 .main-nav{display:flex;gap:22px;font-size:15px;font-weight:500;flex:1}
 .main-nav a{white-space:nowrap;color:var(--ink)}
+.main-nav a:hover{color:var(--accent-dark)}
 .header-actions{display:flex;gap:10px;align-items:center;flex-shrink:0}
 .icon-btn{width:40px;height:40px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;background:#fff}
 .lang-switch{display:flex;gap:2px;font-size:13px;font-weight:600}
 .lang-switch a{padding:6px 8px;border-radius:6px;color:var(--ink-muted)}
+.lang-switch a:hover{color:var(--ink)}
 .lang-switch a[aria-current="true"]{color:var(--accent-dark);box-shadow:inset 0 -2px 0 var(--accent)}
 .contact-btn{background:var(--accent-dark);color:#fff;border-radius:10px;padding:11px 20px;font-weight:600;font-size:14px}
+.contact-btn:hover{background:var(--accent)}
+.contact-btn:active{background:#08443e}
 @media (max-width:1100px){.main-nav{display:none}}
 
 /* ---------- breadcrumb ---------- */
@@ -111,21 +120,37 @@ html[lang="de"] .l-de{display:revert}
   align-items:start;
   padding-bottom:var(--gap-section);
 }
-.gallery{grid-area:gallery}
-.intro{grid-area:intro}
-.rail{grid-area:rail}
+.gallery{grid-area:gallery;min-width:0}
+.intro{grid-area:intro;min-width:0}
+.rail{grid-area:rail;min-width:0;min-height:0}
 
 .gallery-main{
   border-radius:var(--radius-card);overflow:hidden;background:var(--paper-journal);
   border:1px solid var(--line);aspect-ratio:4/3;
 }
+button.gallery-main{
+  display:block;width:100%;padding:0;margin:0;appearance:none;-webkit-appearance:none;
+  font:inherit;color:inherit;text-align:start;cursor:zoom-in;position:relative;
+}
 .gallery-main img{width:100%;height:100%;object-fit:contain;padding:32px}
-.gallery-thumbs{display:flex;gap:12px;margin-top:12px}
+.gallery-fallback{
+  display:none;position:absolute;left:16px;right:16px;bottom:16px;
+  text-align:center;color:var(--ink-muted);font-size:14px;font-weight:600;line-height:1.4;
+}
+.gallery-main.is-fallback .gallery-fallback{display:block}
+.gallery-thumbs{
+  display:flex;gap:12px;margin-top:12px;overflow-x:auto;overscroll-behavior-x:contain;
+  scrollbar-width:thin;
+}
 .gallery-thumbs button{
-  width:84px;height:64px;border-radius:12px;border:1px solid var(--line);
+  flex:0 0 auto;width:84px;height:64px;border-radius:12px;border:1px solid var(--line);
   background:var(--paper-journal);overflow:hidden;cursor:pointer;padding:6px;
 }
-.gallery-thumbs button[aria-current="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.gallery-thumbs button:hover{border-color:var(--ink)}
+.gallery-thumbs button:active{background:var(--paper-mist)}
+.gallery-thumbs button[aria-current="true"],
+.gallery-thumbs button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.gallery-thumbs button[aria-current="true"]:hover{border-color:var(--accent-dark)}
 .gallery-thumbs img{width:100%;height:100%;object-fit:contain}
 
 .intro{padding-top:36px}
@@ -135,7 +160,7 @@ html[lang="de"] .l-de{display:revert}
 .rail-inner{
   position:sticky;
   top:calc(var(--header-h) + 16px);
-  max-height:calc(100dvh - var(--header-h) - 32px);
+  max-height:var(--rail-max, calc(100dvh - var(--header-h) - 32px));
   overflow-y:auto;
   scrollbar-width:thin;
   overscroll-behavior:contain;
@@ -145,7 +170,7 @@ html[lang="de"] .l-de{display:revert}
 .rail-brand img{height:100%;width:auto}
 .rail h1{font-size:clamp(24px,2.4vw,32px);font-weight:700;letter-spacing:-.01em}
 .rail .designation{color:var(--ink-muted);margin-top:4px;font-size:15px}
-.rail .sku{font-size:13px;color:var(--ink-muted);margin-top:10px}
+.rail .sku{font-size:13px;color:var(--ink-muted);margin-top:10px;overflow-wrap:anywhere}
 .rail .price{margin-top:16px;font-size:15px}
 .rail .price a{color:var(--accent-dark);font-weight:600;border-bottom:1px solid var(--accent)}
 .key-stats{margin-top:20px;border-top:1px solid var(--line)}
@@ -166,12 +191,15 @@ html[lang="de"] .l-de{display:revert}
   font-size:12.5px;font-weight:600;text-align:center;background:#fff;
 }
 .tools-row a:hover{border-color:var(--accent);color:var(--accent-dark)}
+.tools-row a:active{background:var(--paper-mist)}
 .plan-with{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--paper-journal)}
 .plan-with summary{
   cursor:pointer;list-style:none;padding:14px 16px;font-weight:600;font-size:14px;
   display:flex;justify-content:space-between;align-items:center;gap:8px;
 }
 .plan-with summary::-webkit-details-marker{display:none}
+.plan-with summary:hover{color:var(--accent-dark)}
+.plan-with summary:active{background:var(--paper-mist)}
 .plan-with summary::after{content:"+";font-size:18px;color:var(--ink-muted)}
 .plan-with[open] summary::after{content:"–"}
 .plan-with .body{padding:0 16px 16px;font-size:13.5px;color:var(--ink-muted)}
@@ -180,6 +208,8 @@ html[lang="de"] .l-de{display:revert}
   text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
   background:#fff;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;
 }
+.plan-with .choices button:hover{border-color:var(--accent);color:var(--accent-dark)}
+.plan-with .choices button:active{background:var(--paper-journal)}
 
 /* ================================================================
    SECTION NAV — repaired: sticks below the measured header,
@@ -189,11 +219,12 @@ html[lang="de"] .l-de{display:revert}
   position:sticky;top:var(--header-h);z-index:50;
   background:var(--paper);border-block:1px solid var(--line);
 }
-.section-nav .container{display:flex;gap:4px;overflow-x:auto}
+.section-nav .container{display:flex;gap:4px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
 .section-nav a{
   padding:14px 16px;font-size:14px;font-weight:600;color:var(--ink-muted);
   white-space:nowrap;box-shadow:inset 0 -2px 0 transparent;
 }
+.section-nav a:hover{color:var(--ink)}
 .section-nav a[aria-current="true"]{color:var(--accent-dark);box-shadow:inset 0 -2px 0 var(--accent)}
 
 /* ================================================================
@@ -235,7 +266,7 @@ html[lang="de"] .l-de{display:revert}
   padding:16px 20px;background:var(--paper-journal);border-bottom:1px solid var(--line);
 }
 .spec-group table{width:100%;border-collapse:collapse;font-size:14px}
-.spec-group th,.spec-group td{padding:10px 20px;text-align:left;vertical-align:top}
+.spec-group th,.spec-group td{padding:10px 20px;text-align:left;vertical-align:top;overflow-wrap:break-word}
 .spec-group th{font-weight:500;color:var(--ink-muted);width:46%}
 .spec-group td{font-weight:600}
 .spec-group tr + tr th,.spec-group tr + tr td{border-top:1px solid var(--paper-mist)}
@@ -266,6 +297,7 @@ html[lang="de"] .l-de{display:revert}
   border-radius:var(--radius-card);padding:20px;background:#fff;
 }
 .doc-card:hover{border-color:var(--accent)}
+.doc-card:active{background:var(--paper-journal)}
 .doc-icon{
   flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--paper-journal);
   display:grid;place-items:center;font-size:20px;color:var(--accent-dark);
@@ -282,6 +314,8 @@ html[lang="de"] .l-de{display:revert}
   padding:20px 4px;font-weight:600;font-size:16px;align-items:center;
 }
 .faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary:hover{color:var(--accent-dark)}
+.faq-list summary:active{background:var(--paper-mist)}
 .faq-list summary::after{content:"+";font-size:22px;font-weight:400;color:var(--ink-muted);flex-shrink:0}
 .faq-list details[open] summary::after{content:"–"}
 .faq-list .answer{padding:0 4px 22px;color:var(--ink-muted);font-size:15px;line-height:1.65;max-width:70ch}
@@ -299,14 +333,14 @@ html[lang="de"] .l-de{display:revert}
   border-top:1px solid var(--line);padding:12px var(--pad-inline) calc(12px + env(safe-area-inset-bottom));
   gap:12px;align-items:center;
 }
-.mobile-action .price{font-size:13px;font-weight:600}
-.mobile-action .btn-primary{width:auto;flex:1;padding-block:12px}
+.mobile-action .price{font-size:13px;font-weight:600;min-width:0;flex:0 1 auto;line-height:1.25;overflow-wrap:anywhere}
+.mobile-action .btn-primary{width:auto;flex:1 1 auto;min-width:0;padding-block:12px}
 
 /* ================================================================
    RESPONSIVE — mobile keeps current structure, fixes edge glue.
    ================================================================ */
 @media (max-width:1023px){
-  .upper{grid-template-columns:1fr;grid-template-areas:"gallery" "rail" "intro";row-gap:32px}
+  .upper{grid-template-columns:minmax(0,1fr);grid-template-areas:"gallery" "rail" "intro";row-gap:32px}
   .rail-inner{position:static;max-height:none;overflow:visible}
   .spec-groups{grid-template-columns:1fr}
   .fit-cols{grid-template-columns:1fr}
@@ -314,10 +348,12 @@ html[lang="de"] .l-de{display:revert}
   .faq-side{min-height:200px}
 }
 @media (max-width:860px){
+  :root{--action-h:88px}
   .mobile-action{display:flex}
-  body{padding-bottom:88px}
+  body{padding-bottom:calc(var(--action-h) + 16px)}
   .benefit-grid{grid-template-columns:1fr}
   .gallery-main{aspect-ratio:1/1}
+  .section-nav .container{padding-right:max(var(--pad-inline), calc(var(--proto-w) + 16px))}
 }
 
 /* ================================================================
@@ -386,6 +422,98 @@ html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
 @media (max-width:1023px){
   html[data-variant="c"] .fit-card{grid-template-columns:1fr}
 }
+
+/* ---------- interaction states (no resting-layout change) ---------- */
+:focus{outline:none}
+:focus-visible{
+  outline:2px solid var(--ink);
+  outline-offset:3px;
+}
+.btn-primary:focus-visible,
+.contact-btn:focus-visible,
+.mobile-action .btn-primary:focus-visible{
+  outline:2px solid var(--ink);
+  outline-offset:3px;
+}
+button.gallery-main:focus-visible{
+  outline:3px solid var(--ink);
+  outline-offset:-6px;
+}
+.gallery-thumbs button:focus-visible,
+.section-nav a:focus-visible{
+  outline:2px solid var(--ink);
+  outline-offset:-3px;
+}
+.rail-inner :focus-visible{scroll-margin-block:12px}
+html[data-variant="b"] .section-nav a[aria-current="true"]:focus-visible{
+  outline:2px solid #fff;
+  outline-offset:2px;
+}
+html[data-variant="b"] .section-nav a:hover{color:var(--accent-dark)}
+html[data-variant="b"] .section-nav a[aria-current="true"]:hover{color:#fff}
+
+.rail-fade{
+  position:sticky;left:0;right:0;height:28px;z-index:3;display:block;
+  pointer-events:none;opacity:0;
+}
+.rail-fade-top{top:0;margin-bottom:-28px;background:linear-gradient(#fff, rgba(255,255,255,0))}
+.rail-fade-bottom{bottom:0;margin-top:-28px;background:linear-gradient(rgba(255,255,255,0), #fff)}
+.rail-inner.show-top-fade .rail-fade-top,
+.rail-inner.show-bottom-fade .rail-fade-bottom{opacity:1}
+
+.visually-hidden{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+.img-dialog{
+  border:none;padding:0;background:transparent;color:var(--ink);
+  max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);
+}
+.img-dialog::backdrop{background:rgba(16,44,48,.78)}
+.img-dialog[open]{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;max-width:100%;max-height:100%;
+  margin:0;padding:0;border:none;background:transparent;
+}
+.img-dialog-sheet{
+  position:relative;background:#fff;border-radius:var(--radius-card);
+  box-shadow:var(--shadow-2);padding:12px 12px 16px;
+  max-width:calc(100vw - 24px);
+}
+.dialog-close{
+  position:absolute;top:10px;right:10px;z-index:2;
+  width:44px;height:44px;border:none;border-radius:999px;
+  background:#fff;color:var(--ink);font:600 22px/1 system-ui,sans-serif;
+  cursor:pointer;box-shadow:var(--shadow-1);display:grid;place-items:center;
+}
+.dialog-close:hover{background:var(--paper-mist)}
+.dialog-close:active{background:var(--line)}
+.dialog-close:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.img-dialog-stage{
+  display:grid;place-items:center;background:var(--paper-journal);
+  border-radius:12px;min-width:min(280px,72vw);min-height:min(200px,36vh);
+  overflow:hidden;
+}
+.img-dialog-stage img{
+  grid-area:1 / 1;width:auto;height:auto;max-width:min(880px, calc(100vw - 72px));
+  max-height:calc(100dvh - 168px);object-fit:contain;background:var(--paper-journal);
+}
+.img-dialog-stage img.is-loading{visibility:hidden}
+.img-dialog-status{
+  grid-area:1 / 1;z-index:1;color:var(--ink-muted);font-size:14px;font-weight:600;
+  padding:16px;text-align:center;
+}
+.img-dialog-status[hidden]{display:none !important}
+.img-dialog-caption{
+  margin-top:12px;font-size:14px;color:var(--ink-muted);text-align:center;max-width:62ch;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto !important}
+}
+@media (forced-colors: active){
+  :focus-visible{outline:2px solid CanvasText}
+}
 </style>
 </head>
 <body>
@@ -416,26 +544,31 @@ html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
     <span aria-hidden="true">/</span>
     <a href="#">GoodWe</a>
     <span aria-hidden="true">/</span>
-    <span>GW60K-STS-G10</span>
+    <span aria-current="page">GW60K-STS-G10</span>
   </nav>
 
   <!-- ================= UPPER ================= -->
   <div class="upper container">
     <div class="gallery">
-      <div class="gallery-main">
+      <button type="button" class="gallery-main" id="gallery-open" aria-haspopup="dialog" aria-controls="img-dialog" aria-label="Enlarge image: GoodWe GW60K-STS-G10, three-quarter view from the left, cable glands along the bottom">
         <img id="main-img"
              src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01.png"
-             alt="GoodWe GW60K-STS-G10">
-      </div>
-      <div class="gallery-thumbs">
-        <button aria-current="true" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01.png"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01-300x232.png" alt=""></button>
-        <button aria-current="false" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02.png"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02-300x232.png" alt=""></button>
-        <button aria-current="false" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01.png"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01-300x300.png" alt=""></button>
+             alt="GoodWe GW60K-STS-G10, three-quarter view from the left, cable glands along the bottom">
+        <span class="gallery-fallback" aria-hidden="true">
+          <span class="l l-en">Image unavailable</span>
+          <span class="l l-de">Bild nicht verfügbar</span>
+        </span>
+      </button>
+      <div class="gallery-thumbs" id="gallery-thumbs" role="group" aria-label="Product images">
+        <button type="button" aria-current="true" aria-pressed="true" aria-label="Image 1 of 3: GoodWe GW60K-STS-G10, three-quarter view from the left, cable glands along the bottom" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01.png" data-alt-en="GoodWe GW60K-STS-G10, three-quarter view from the left, cable glands along the bottom" data-alt-de="GoodWe GW60K-STS-G10, Schrägansicht von links, Kabelverschraubungen unten"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01-300x232.png" alt=""></button>
+        <button type="button" aria-current="false" aria-pressed="false" aria-label="Image 2 of 3: GoodWe GW60K-STS-G10, three-quarter view from the right, wall brackets on the side" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02.png" data-alt-en="GoodWe GW60K-STS-G10, three-quarter view from the right, wall brackets on the side" data-alt-de="GoodWe GW60K-STS-G10, Schrägansicht von rechts, Wandhalter seitlich"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02-300x232.png" alt=""></button>
+        <button type="button" aria-current="false" aria-pressed="false" aria-label="Image 3 of 3: GoodWe GW60K-STS-G10, front view" data-src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01.png" data-alt-en="GoodWe GW60K-STS-G10, front view" data-alt-de="GoodWe GW60K-STS-G10, Frontansicht"><img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01-300x300.png" alt=""></button>
       </div>
     </div>
 
     <aside class="rail">
       <div class="rail-inner">
+        <div class="rail-fade rail-fade-top" aria-hidden="true"></div>
         <div class="rail-brand"><img src="https://de-linker.com/wp-content/uploads/2026/07/our-brand-goodwe-mono-light.png" alt="GoodWe" style="filter:invert(.9) hue-rotate(180deg) saturate(.4)"></div>
         <h1>GW60K-STS-G10</h1>
         <p class="designation">
@@ -477,12 +610,13 @@ html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
               <span class="l l-de">Neuanlage, Erweiterung oder Austausch? Genie startet mit diesem Modell und fragt nur, was noch offen ist.</span>
             </p>
             <div class="choices">
-              <button><span class="l l-en">New system</span><span class="l l-de">Neuanlage</span></button>
-              <button><span class="l l-en">Extend an existing system</span><span class="l l-de">Anlage erweitern</span></button>
-              <button><span class="l l-en">Replace a unit</span><span class="l l-de">Gerät ersetzen</span></button>
+              <button type="button"><span class="l l-en">New system</span><span class="l l-de">Neuanlage</span></button>
+              <button type="button"><span class="l l-en">Extend an existing system</span><span class="l l-de">Anlage erweitern</span></button>
+              <button type="button"><span class="l l-en">Replace a unit</span><span class="l l-de">Gerät ersetzen</span></button>
             </div>
           </div>
         </details>
+        <div class="rail-fade rail-fade-bottom" aria-hidden="true"></div>
       </div>
     </aside>
 
@@ -640,6 +774,8 @@ html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
       </h2>
       <div class="doc-grid">
         <a class="doc-card" href="https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf" target="_blank" rel="noopener">
+          <span class="visually-hidden l l-en">Opens in a new tab. </span>
+          <span class="visually-hidden l l-de">Öffnet in einem neuen Tab. </span>
           <span class="doc-icon">↓</span>
           <span>
             <span class="name">GoodWe STS Series 30/60 kW datasheet (EMEA, EN)</span>
@@ -710,6 +846,17 @@ html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
   <a class="btn btn-primary" href="#"><span class="l l-en">Sign in for partner pricing</span><span class="l l-de">Anmelden für Partnerpreise</span></a>
 </div>
 
+<dialog class="img-dialog" id="img-dialog" aria-labelledby="img-dialog-caption">
+  <div class="img-dialog-sheet">
+    <button type="button" class="dialog-close" id="img-dialog-close" aria-label="Close"><span aria-hidden="true">✕</span></button>
+    <div class="img-dialog-stage">
+      <p class="img-dialog-status" id="img-dialog-status" role="status" hidden>Loading image</p>
+      <img id="dialog-img" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+    </div>
+    <p class="img-dialog-caption" id="img-dialog-caption"></p>
+  </div>
+</dialog>
+
 <!-- ================= PROTOTYPE SWITCHER (not part of the design) ================= -->
 <style>
 .proto-bar{
@@ -720,22 +867,24 @@ html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
 }
 .proto-bar button{background:#2b2b2b;color:#fff;border:none;border-radius:999px;padding:8px 12px;cursor:pointer;font:inherit}
 .proto-bar button:hover{background:#3d3d3d}
+.proto-bar button:active{background:#555}
+.proto-bar button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .proto-bar .vlabel{min-width:150px;text-align:center}
 .proto-bar .sep{width:1px;height:18px;background:#444}
 .proto-bar .meta{color:#999;font-weight:400}
 @media (max-width:860px){
   /* keep the switcher clear of the mobile action bar being evaluated */
-  .proto-bar{top:calc(var(--header-h) + 8px);bottom:auto;left:auto;right:8px;transform:none;padding:6px 8px;gap:6px}
-  .proto-bar .vlabel{min-width:0}
+  .proto-bar{top:calc(var(--header-h) + 8px);bottom:auto;left:auto;right:8px;transform:none;padding:6px 8px;gap:6px;max-width:min(196px, calc(100% - 16px));z-index:120}
+  .proto-bar .vlabel{min-width:0;max-width:72px;overflow:hidden;text-overflow:ellipsis}
   .proto-bar .meta{display:none}
 }
 </style>
 <div class="proto-bar" id="proto-bar">
-  <button id="pv-prev" aria-label="Previous variant">←</button>
+  <button type="button" id="pv-prev" aria-label="Previous variant">←</button>
   <span class="vlabel" id="pv-label">A · Baseline</span>
-  <button id="pv-next" aria-label="Next variant">→</button>
+  <button type="button" id="pv-next" aria-label="Next variant">→</button>
   <span class="sep"></span>
-  <button id="pv-lang">EN / DE</button>
+  <button type="button" id="pv-lang" aria-label="Language: English. Switch to German">EN / DE</button>
   <span class="sep"></span>
   <span class="meta" id="pv-vp"></span>
 </div>
@@ -745,19 +894,108 @@ html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
   var VARIANTS = {a:'A · Baseline', b:'B · App cards', c:'C · Editorial'};
   var root = document.documentElement;
   var params = new URLSearchParams(location.search);
-  var variant = VARIANTS[params.get('variant')] ? params.get('variant') : 'a';
-  var lang = params.get('lang') === 'de' ? 'de' : 'en';
+  function readVariant(value){
+    var raw = (value || '').trim().toLowerCase();
+    return Object.prototype.hasOwnProperty.call(VARIANTS, raw) ? raw : 'a';
+  }
+  var variant = readVariant(params.get('variant'));
+  var lang = (params.get('lang') || '').trim().toLowerCase() === 'de' ? 'de' : 'en';
 
-  function apply(){
-    root.dataset.variant = variant;
-    root.lang = lang;
+  var header = document.querySelector('.site-header');
+  var snav = document.querySelector('.section-nav');
+  var railInner = document.querySelector('.rail-inner');
+  var main = document.getElementById('main-img');
+  var openBtn = document.getElementById('gallery-open');
+  var thumbs = Array.prototype.slice.call(document.querySelectorAll('.gallery-thumbs button'));
+  var dialog = document.getElementById('img-dialog');
+  var dialogImg = document.getElementById('dialog-img');
+  var dialogStatus = document.getElementById('img-dialog-status');
+  var dialogCaption = document.getElementById('img-dialog-caption');
+  var dialogClose = document.getElementById('img-dialog-close');
+  var dialogTrigger = null;
+  var links = Array.prototype.slice.call(document.querySelectorAll('.section-nav a'));
+  var PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">' +
+    '<rect width="800" height="600" fill="#f6f8fa"/>' +
+    '<rect x="24" y="24" width="752" height="552" rx="16" fill="none" stroke="#d7dde4" stroke-width="2"/>' +
+    '<rect x="330" y="230" width="140" height="104" rx="8" fill="none" stroke="#596e67" stroke-width="3"/>' +
+    '<circle cx="366" cy="262" r="8" fill="#596e67"/>' +
+    '<path d="M348 316l26-30 18 20 14-12 46 38H348z" fill="#596e67"/>' +
+    '</svg>'
+  );
+
+  function t(en, de){ return lang === 'de' ? de : en; }
+  function unavailableAlt(){ return t('Image unavailable', 'Bild nicht verfügbar'); }
+  function loadingText(){ return t('Loading image', 'Bild wird geladen'); }
+  function currentThumb(){
+    for (var i = 0; i < thumbs.length; i++) {
+      if (thumbs[i].getAttribute('aria-current') === 'true') return thumbs[i];
+    }
+    return thumbs[0];
+  }
+  function altOf(btn){
+    if (!btn) return '';
+    return btn.getAttribute(lang === 'de' ? 'data-alt-de' : 'data-alt-en') || '';
+  }
+  function syncChrome(){
     document.querySelectorAll('[data-lang-link]').forEach(function(a){
       a.setAttribute('aria-current', a.dataset.langLink === lang ? 'true' : 'false');
     });
     document.getElementById('pv-label').textContent = VARIANTS[variant];
+    var langBtn = document.getElementById('pv-lang');
+    if (langBtn) langBtn.setAttribute('aria-label', t('Language: English. Switch to German', 'Sprache: Deutsch. Auf Englisch umschalten'));
+    if (snav) snav.setAttribute('aria-label', t('Product sections', 'Produktabschnitte'));
+    var crumbs = document.querySelector('.crumbs');
+    if (crumbs) crumbs.setAttribute('aria-label', t('Breadcrumb', 'Brotkrumen'));
+    var group = document.getElementById('gallery-thumbs');
+    if (group) group.setAttribute('aria-label', t('Product images', 'Produktbilder'));
+    thumbs.forEach(function(b, i){
+      var desc = altOf(b);
+      b.setAttribute('aria-label', t(
+        'Image ' + (i + 1) + ' of ' + thumbs.length + ': ' + desc,
+        'Bild ' + (i + 1) + ' von ' + thumbs.length + ': ' + desc
+      ));
+    });
+    var selected = currentThumb();
+    var alt = altOf(selected);
+    var broken = main.dataset.fallback === '1';
+    var shown = broken ? unavailableAlt() : alt;
+    main.alt = shown;
+    if (openBtn) {
+      openBtn.setAttribute('aria-label', broken ? shown : t('Enlarge image: ' + alt, 'Bild vergrößern: ' + alt));
+    }
+    if (dialogClose) dialogClose.setAttribute('aria-label', t('Close', 'Schließen'));
+    if (dialog.open) {
+      if (dialogImg.dataset.fallback === '1') {
+        dialogCaption.textContent = unavailableAlt();
+        if (!dialogStatus.hidden) dialogStatus.textContent = unavailableAlt();
+      } else {
+        dialogCaption.textContent = alt;
+        if (!dialogStatus.hidden) dialogStatus.textContent = loadingText();
+      }
+    }
     var p = new URLSearchParams(location.search);
-    p.set('variant', variant); p.set('lang', lang);
-    history.replaceState(null, '', location.pathname + '?' + p.toString());
+    p.set('variant', variant);
+    p.set('lang', lang);
+    var next = location.pathname + '?' + p.toString() + location.hash;
+    if ((location.pathname + location.search + location.hash) !== next) history.replaceState(null, '', next);
+  }
+  function apply(){
+    var x = window.scrollX, y = window.scrollY;
+    var hashId = (location.hash || '').slice(1);
+    var anchor = hashId ? document.getElementById(hashId) : null;
+    var anchorTop = anchor ? anchor.getBoundingClientRect().top : null;
+    root.dataset.variant = variant;
+    root.lang = lang;
+    syncChrome();
+    if (anchor && anchorTop !== null) {
+      var drift = anchor.getBoundingClientRect().top - anchorTop;
+      if (Math.abs(drift) > 1) window.scrollBy(0, drift);
+    } else if (window.scrollX !== x || window.scrollY !== y) {
+      window.scrollTo(x, y);
+    }
+    measure();
+    updateRailCue();
   }
   function cycle(dir){
     var keys = Object.keys(VARIANTS);
@@ -768,50 +1006,227 @@ html[data-variant="c"] .band .band-copy{padding:clamp(24px,6vw,72px)}
   document.getElementById('pv-next').addEventListener('click', function(){ cycle(1); });
   document.getElementById('pv-lang').addEventListener('click', function(){ lang = lang === 'en' ? 'de' : 'en'; apply(); });
   document.addEventListener('keydown', function(e){
-    var t = e.target;
-    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (dialog.open) return;
+    var target = e.target;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+    if (target && target.closest && (target.closest('.gallery-thumbs') || target.closest('.section-nav'))) return;
     if (e.key === 'ArrowLeft') cycle(-1);
     if (e.key === 'ArrowRight') cycle(1);
   });
   document.querySelectorAll('[data-lang-link]').forEach(function(a){
     a.addEventListener('click', function(e){ e.preventDefault(); lang = a.dataset.langLink; apply(); });
   });
+  document.addEventListener('click', function(e){
+    var link = e.target.closest && e.target.closest('a[href="#"]');
+    if (link) e.preventDefault();
+  });
 
-  // viewport readout
   var vp = document.getElementById('pv-vp');
   function setVp(){ vp.textContent = window.innerWidth + 'px'; }
   window.addEventListener('resize', setVp); setVp();
 
-  // real header height drives the rail offset — no hardcoded 84px
-  var header = document.querySelector('.site-header');
-  function measure(){ root.style.setProperty('--header-h', header.offsetHeight + 'px'); }
-  window.addEventListener('resize', measure); measure();
+  function measure(){
+    root.style.setProperty('--header-h', header.offsetHeight + 'px');
+    var extra = 0;
+    var proto = document.getElementById('proto-bar');
+    if (proto) {
+      root.style.setProperty('--proto-w', proto.offsetWidth + 'px');
+      var protoCss = getComputedStyle(proto);
+      if (protoCss.bottom === 'auto' && protoCss.top !== 'auto') {
+        var hang = proto.getBoundingClientRect().bottom - (header.offsetHeight + snav.offsetHeight);
+        if (hang > 0) extra = hang;
+      }
+    }
+    root.style.setProperty('--snav-h', (snav.offsetHeight + extra) + 'px');
+    var bar = document.querySelector('.mobile-action');
+    if (bar && getComputedStyle(bar).display !== 'none') root.style.setProperty('--action-h', bar.offsetHeight + 'px');
+    else root.style.setProperty('--action-h', '0px');
+    if (railInner && getComputedStyle(railInner).position === 'sticky') {
+      var planOpen = document.querySelector('.plan-with');
+      if (planOpen && planOpen.open) {
+        var docTop = 0;
+        var node = railInner;
+        while (node) { docTop += node.offsetTop || 0; node = node.offsetParent; }
+        root.style.setProperty('--rail-max', Math.max(280, Math.floor(window.innerHeight - docTop - 16)) + 'px');
+      } else {
+        root.style.removeProperty('--rail-max');
+      }
+    }
+  }
+  window.addEventListener('resize', measure);
 
-  // gallery thumbs
-  var main = document.getElementById('main-img');
-  document.querySelectorAll('.gallery-thumbs button').forEach(function(b){
-    b.addEventListener('click', function(){
-      main.src = b.dataset.src;
-      document.querySelectorAll('.gallery-thumbs button').forEach(function(x){ x.setAttribute('aria-current','false'); });
-      b.setAttribute('aria-current','true');
+  function updateRailCue(){
+    var overflow = railInner.scrollHeight > railInner.clientHeight + 1;
+    var atTop = railInner.scrollTop <= 1;
+    var atBottom = railInner.scrollTop + railInner.clientHeight >= railInner.scrollHeight - 1;
+    railInner.classList.toggle('show-top-fade', overflow && !atTop);
+    railInner.classList.toggle('show-bottom-fade', overflow && !atBottom);
+  }
+  railInner.addEventListener('scroll', updateRailCue, {passive:true});
+  if (window.ResizeObserver) new ResizeObserver(updateRailCue).observe(railInner);
+  var plan = document.querySelector('.plan-with');
+  if (plan) plan.addEventListener('toggle', function(){ measure(); updateRailCue(); });
+
+  function selectThumb(btn){
+    thumbs.forEach(function(x){
+      var on = x === btn;
+      x.setAttribute('aria-current', on ? 'true' : 'false');
+      x.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    main.dataset.fallback = '';
+    openBtn.classList.remove('is-fallback');
+    main.alt = altOf(btn);
+    if (main.getAttribute('src') !== btn.dataset.src) main.src = btn.dataset.src;
+    else if (main.complete && main.naturalWidth === 0) {
+      main.dataset.fallback = '1';
+      openBtn.classList.add('is-fallback');
+    }
+    syncChrome();
+  }
+  main.addEventListener('error', function(){
+    if (main.dataset.fallback === '1') return;
+    main.dataset.fallback = '1';
+    main.src = PLACEHOLDER;
+    openBtn.classList.add('is-fallback');
+    syncChrome();
+  });
+  thumbs.forEach(function(b, i){
+    b.addEventListener('click', function(){ selectThumb(b); });
+    b.addEventListener('keydown', function(e){
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      e.stopPropagation();
+      var next = thumbs[(i + (e.key === 'ArrowRight' ? 1 : -1) + thumbs.length) % thumbs.length];
+      selectThumb(next);
+      next.focus();
+    });
+    var img = b.querySelector('img');
+    if (!img) return;
+    img.addEventListener('error', function(){
+      if (img.dataset.fallback === '1') return;
+      img.dataset.fallback = '1';
+      img.src = PLACEHOLDER;
     });
   });
 
-  // scrollspy for the repaired section nav
-  var links = Array.prototype.slice.call(document.querySelectorAll('.section-nav a'));
-  var map = {};
-  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if (en.isIntersecting && map[en.target.id]) {
-        links.forEach(function(a){ a.setAttribute('aria-current','false'); });
-        map[en.target.id].setAttribute('aria-current','true');
-      }
-    });
-  }, {rootMargin: '-30% 0px -60% 0px'});
-  Object.keys(map).forEach(function(id){ var el = document.getElementById(id); if (el) io.observe(el); });
+  function settleDialog(ok){
+    dialogImg.classList.remove('is-loading');
+    if (!ok) {
+      dialogImg.dataset.fallback = '1';
+      dialogImg.src = PLACEHOLDER;
+      dialogImg.alt = unavailableAlt();
+      dialogStatus.hidden = false;
+      dialogStatus.textContent = unavailableAlt();
+      dialogCaption.textContent = unavailableAlt();
+    } else {
+      dialogImg.dataset.fallback = '';
+      dialogStatus.hidden = true;
+      dialogCaption.textContent = dialogImg.alt;
+    }
+  }
+  function openDialog(){
+    dialogTrigger = document.activeElement && document.activeElement !== document.body ? document.activeElement : openBtn;
+    var failed = main.dataset.fallback === '1';
+    var alt = failed ? unavailableAlt() : (main.alt || altOf(currentThumb()));
+    dialogCaption.textContent = alt;
+    dialogClose.setAttribute('aria-label', t('Close', 'Schließen'));
+    dialogImg.dataset.fallback = failed ? '1' : '';
+    dialogImg.alt = alt;
+    dialogImg.classList.add('is-loading');
+    dialogStatus.hidden = false;
+    dialogStatus.textContent = failed ? unavailableAlt() : loadingText();
+    if (!dialog.open) dialog.showModal();
+    dialogClose.focus();
+    if (failed) {
+      dialogImg.src = PLACEHOLDER;
+      dialogImg.classList.remove('is-loading');
+      return;
+    }
+    var src = main.currentSrc || main.getAttribute('src');
+    var settled = false;
+    function finish(ok){
+      if (settled) return;
+      settled = true;
+      dialogImg.onload = null;
+      dialogImg.onerror = null;
+      settleDialog(ok);
+    }
+    dialogImg.onload = function(){ finish(true); };
+    dialogImg.onerror = function(){ finish(false); };
+    if (dialogImg.getAttribute('src') !== src) dialogImg.src = src;
+    if (dialogImg.complete) finish(dialogImg.naturalWidth > 0);
+  }
+  openBtn.addEventListener('click', openDialog);
+  dialogClose.addEventListener('click', function(){ dialog.close(); });
+  dialog.addEventListener('click', function(e){ if (e.target === dialog) dialog.close(); });
+  dialog.addEventListener('close', function(){
+    if (dialogTrigger && typeof dialogTrigger.focus === 'function') dialogTrigger.focus();
+  });
 
+  document.querySelectorAll('img').forEach(function(img){
+    if (img === main || img === dialogImg || (img.closest && img.closest('.gallery-thumbs'))) return;
+    img.addEventListener('error', function(){
+      if (img.dataset.fallback === '1') return;
+      img.dataset.fallback = '1';
+      img.src = PLACEHOLDER;
+    });
+  });
+
+  function spy(){
+    var offset = Math.max(header.offsetHeight + snav.offsetHeight + 16, Math.round(window.innerHeight * 0.34));
+    var current = links[0];
+    var doc = document.documentElement;
+    var atBottom = window.scrollY > 40 && (window.innerHeight + window.scrollY >= doc.scrollHeight - 2);
+    if (atBottom) current = links[links.length - 1];
+    else {
+      links.forEach(function(a){
+        var id = (a.getAttribute('href') || '').slice(1);
+        var el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= offset) current = a;
+      });
+    }
+    links.forEach(function(a){ a.setAttribute('aria-current', a === current ? 'true' : 'false'); });
+    var container = snav.querySelector('.container');
+    if (!container || !current) return;
+    var cRect = container.getBoundingClientRect();
+    var lRect = current.getBoundingClientRect();
+    var limitRight = cRect.right - 8;
+    var proto = document.getElementById('proto-bar');
+    if (proto) {
+      var pRect = proto.getBoundingClientRect();
+      if (pRect.bottom > cRect.top && pRect.top < cRect.bottom && pRect.left < cRect.right) {
+        limitRight = Math.min(limitRight, pRect.left - 8);
+      }
+    }
+    if (lRect.right > limitRight || lRect.left < cRect.left + 4) {
+      container.scrollLeft += lRect.right - limitRight;
+    }
+  }
+  var spyScheduled = false;
+  window.addEventListener('scroll', function(){
+    if (spyScheduled) return;
+    spyScheduled = true;
+    requestAnimationFrame(function(){ spyScheduled = false; spy(); });
+  }, {passive:true});
+  links.forEach(function(a){
+    a.addEventListener('click', function(){
+      links.forEach(function(x){ x.setAttribute('aria-current', x === a ? 'true' : 'false'); });
+    });
+  });
+  snav.addEventListener('keydown', function(e){
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    var container = snav.querySelector('.container');
+    if (container.scrollWidth <= container.clientWidth + 1) return;
+    e.preventDefault();
+    container.scrollLeft += e.key === 'ArrowRight' ? 96 : -96;
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function(){ measure(); updateRailCue(); spy(); });
+  }
+  window.addEventListener('load', function(){ measure(); updateRailCue(); spy(); });
   apply();
+  spy();
 })();
 </script>
 </body>
