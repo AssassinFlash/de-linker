@@ -1,7 +1,9 @@
 /**
  * The product pages of the review site (docs/specs/16-review-acceptance.md):
- * the category page's filters, the gated price, and the button copy, once as
- * a guest and once as a signed-in, approved customer, in both languages.
+ * the category page's filters, the gated price, the button copy, once as a
+ * guest and once as a signed-in, approved customer, in both languages — and
+ * the page frame the redesign fixes (docs/specs/174-pdp.md): the inquiry rail
+ * sticks inside the upper half only, at 1440 and at 390.
  */
 
 /**
@@ -208,5 +210,103 @@ test.describe('the products', () => {
 				`the price is an amount (${price})`
 			).toBeGreaterThan(1000);
 		});
+	}
+
+	/**
+	 * The page's own frame (docs/specs/174-pdp.md): the inquiry rail sticks
+	 * inside the upper half only, so no scroll position puts it over a block
+	 * below, and the page keeps its one container at 390 as well. Both
+	 * languages, both widths.
+	 */
+	for (const locale of ['en', 'de'] as Locale[]) {
+		for (const viewport of [
+			{ width: 1440, height: 900 },
+			{ width: 390, height: 844 },
+		]) {
+			test(`${locale}: the inquiry rail never covers the blocks at ${viewport.width}`, async ({
+				page,
+			}) => {
+				await page.setViewportSize(viewport);
+				await page.goto(`${instance().url}${PRODUCT[locale]}`);
+
+				// One container: nothing sticks out of the viewport.
+				const overflow = await page.evaluate(
+					() =>
+						document.documentElement.scrollWidth - window.innerWidth
+				);
+				expect(overflow, 'no horizontal overflow').toBeLessThanOrEqual(
+					1
+				);
+
+				// The upper half holds the rail; the nav and the blocks are
+				// outside it.
+				const structure = await page.evaluate(() => {
+					const layout = document.querySelector('.pdp-layout');
+					const blocks = document.querySelectorAll(
+						'.pdp-content > .pdp-block'
+					);
+					return {
+						upper: Boolean(layout?.querySelector('.pdp-purchase')),
+						navOutside: !document
+							.querySelector('.pdp-section-nav')
+							?.closest('.pdp-layout'),
+						allOutside: Array.from(blocks).every(
+							(block) => !block.closest('.pdp-layout')
+						),
+						blocks: blocks.length,
+					};
+				});
+				expect(structure.upper, 'the rail is in the upper grid').toBe(
+					true
+				);
+				expect(structure.navOutside, 'the nav is below it').toBe(true);
+				expect(structure.allOutside, 'the blocks are below it').toBe(
+					true
+				);
+				expect(structure.blocks).toBeGreaterThan(0);
+
+				// Walking the page: the rail's box stays inside the upper half,
+				// and never intersects a block or the sticky nav.
+				const overlaps = await page.evaluate(async () => {
+					const rail = document.querySelector('.pdp-purchase');
+					const seen: string[] = [];
+					const step = Math.round(window.innerHeight / 2);
+					for (
+						let y = 0;
+						y < document.documentElement.scrollHeight;
+						y += step
+					) {
+						window.scrollTo(0, y);
+						await new Promise((done) =>
+							requestAnimationFrame(() => done(null))
+						);
+						const box = rail!.getBoundingClientRect();
+						document
+							.querySelectorAll(
+								'.pdp-content > .pdp-block, .pdp-section-nav'
+							)
+							.forEach((other) => {
+								const target = other.getBoundingClientRect();
+								const hit =
+									box.bottom > target.top + 1 &&
+									box.top < target.bottom - 1 &&
+									box.right > target.left + 1 &&
+									box.left < target.right - 1;
+								if (hit) {
+									seen.push(
+										`${other.className} at scrollY ${y}`
+									);
+								}
+							});
+					}
+					window.scrollTo(0, 0);
+					return Array.from(new Set(seen));
+				});
+				expect(
+					overlaps,
+					'the rail covers nothing below it'
+				).toStrictEqual([]);
+			});
+		}
 	}
 });

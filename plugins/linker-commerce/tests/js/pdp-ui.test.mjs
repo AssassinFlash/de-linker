@@ -33,3 +33,58 @@ test('swipe without a synthetic click does not swallow a later activation',()=>{
  touch('touchstart',250);touch('touchend',100);now+=400;main.click();
  assert.equal(viewer.open,true);
 });
+
+test('the viewer closes on a backdrop click and hands focus back to the picture',()=>{
+ const loaded=new JSDOM(`<div id="tv-storefront-pdp"><button data-pdp-image data-pdp-main data-src="a"><img class="pdp-gallery-main" src="a"></button><dialog id="pdp-image-viewer"><img><button data-pdp-close-image></button></dialog></div>`,{runScripts:'outside-only'});
+ const {window}=loaded;window.matchMedia=()=>({matches:true});
+ const viewer=window.document.querySelector('dialog');
+ let closed=0;
+ viewer.showModal=()=>{viewer.open=true;};
+ viewer.close=()=>{viewer.open=false;closed+=1;};
+ window.eval(readFileSync(new URL('../../assets/pdp-ui.js',import.meta.url),'utf8'));
+ const trigger=window.document.querySelector('[data-pdp-main]');
+ trigger.focus=()=>{trigger.dataset.focused='1';};
+ trigger.click();
+ assert.equal(viewer.open,true);
+ viewer.dispatchEvent(new window.MouseEvent('click',{bubbles:true}));
+ assert.equal(viewer.open,false);
+ assert.equal(closed,1);
+ viewer.dispatchEvent(new window.Event('close'));
+ assert.equal(trigger.dataset.focused,'1');
+});
+
+test('a tab shows its own panel and leaves the other deck alone',()=>{
+ const dom=new JSDOM(`<div id="tv-storefront-pdp">
+  <div class="pdp-info-deck pdp-spec-deck"><div class="pdp-info-tabs" role="tablist"><button id="pdp-spec-tab-0" role="tab" aria-controls="pdp-spec-panel-0" aria-selected="true"></button><button id="pdp-spec-tab-1" role="tab" aria-controls="pdp-spec-panel-1" aria-selected="false"></button></div><div class="pdp-info-panel" id="pdp-spec-panel-0"></div><div class="pdp-info-panel" id="pdp-spec-panel-1" hidden></div></div>
+  <div class="pdp-info-deck pdp-project-deck pdp-all-panels"><div class="pdp-info-tabs" role="tablist" hidden><button id="pdp-project-0-tab-0" role="tab" aria-controls="pdp-project-0-panel-0" aria-selected="true"></button></div><div class="pdp-info-panel" id="pdp-project-0-panel-0"></div><div class="pdp-info-panel" id="pdp-project-0-panel-1"></div></div>
+ </div>`,{runScripts:'outside-only'});
+ const {window}=dom;window.matchMedia=()=>({matches:false});
+ window.eval(readFileSync(new URL('../../assets/pdp-ui.js',import.meta.url),'utf8'));
+ const doc=window.document;
+ doc.querySelector('#pdp-spec-tab-1').click();
+ assert.equal(doc.querySelector('#pdp-spec-panel-0').hidden,true);
+ assert.equal(doc.querySelector('#pdp-spec-panel-1').hidden,false);
+ assert.equal(doc.querySelector('#pdp-spec-tab-1').getAttribute('aria-selected'),'true');
+ // The project deck below shows every panel and keeps showing them.
+ assert.equal(doc.querySelector('#pdp-project-0-panel-0').hidden,false);
+ assert.equal(doc.querySelector('#pdp-project-0-panel-1').hidden,false);
+});
+
+test('the section nav marks the section in view and measures the chrome',()=>{
+ const dom=new JSDOM(`<header id="lc-header"></header><div id="tv-storefront-pdp"><nav class="pdp-section-nav"><div class="sf-container"><a class="pdp-section-link" href="#description"></a><a class="pdp-section-link" href="#stats"></a></div></nav><section id="description"></section><section id="stats"></section></div>`,{runScripts:'outside-only'});
+ const {window}=dom;window.matchMedia=()=>({matches:false});
+ const doc=window.document;
+ // jsdom lays nothing out: the heights the page reports are the test's own.
+ Object.defineProperty(doc.querySelector('#lc-header'),'offsetHeight',{value:96});
+ Object.defineProperty(doc.querySelector('.pdp-section-nav'),'offsetHeight',{value:54});
+ ['#description','#stats'].forEach((id)=>{
+  Object.defineProperty(doc.querySelector(id),'getBoundingClientRect',{value:()=>({top:id==='#stats'?-30:600})});
+ });
+ window.eval(readFileSync(new URL('../../assets/pdp-ui.js',import.meta.url),'utf8'));
+ const style=doc.documentElement.style;
+ assert.equal(style.getPropertyValue('--lk-header-h'),'96px');
+ assert.equal(style.getPropertyValue('--pdp-snav-h'),'54px');
+ const links=doc.querySelectorAll('.pdp-section-link');
+ assert.equal(links[0].getAttribute('aria-current'),'false');
+ assert.equal(links[1].getAttribute('aria-current'),'true');
+});
