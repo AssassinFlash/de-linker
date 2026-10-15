@@ -172,12 +172,27 @@ final class Materials {
 	 * @return array{brand: string, model: string, kind: string, material_id: string}
 	 */
 	public static function identity( WC_Product $product ): array {
-		$id          = (int) $product->get_id();
-		$material    = self::material_for_product( $id );
-		$identity    = \is_array( $material ) && \is_array( $material['identity'] ?? null ) ? $material['identity'] : array();
-		$brand       = (string) ( $identity['manufacturer'] ?? '' );
-		$model       = (string) ( $identity['model'] ?? '' );
-		$kind        = (string) ( $identity['kind'] ?? 'other' );
+		$id       = (int) $product->get_id();
+		$material = self::material_for_product( $id );
+		$identity = \is_array( $material ) && \is_array( $material['identity'] ?? null ) ? $material['identity'] : array();
+		$brand    = (string) ( $identity['manufacturer'] ?? '' );
+		$model    = (string) ( $identity['model'] ?? '' );
+		$kind     = (string) ( $identity['kind'] ?? '' );
+		if ( '' === $kind ) {
+			// A product with no registry material (or one whose binding still
+			// names a pre-migration product id) carries the old system's own
+			// type: _delinker_type, the vocabulary behind the delivered
+			// product sets (inverter / battery / system / meter / ems / ct —
+			// 265 products on the 2026-10-15 production read). The card's
+			// order table is read by this value, so without the fallback
+			// every such card fell to 'other' and swapped its fourth row
+			// (measured: the ESA cabinet's card showed Max. efficiency where
+			// the live card shows Ingress protection IP54).
+			$kind = (string) \get_post_meta( $id, '_delinker_type', true );
+		}
+		if ( '' === $kind ) {
+			$kind = 'other';
+		}
 		$own_figures = \is_array( \json_decode( (string) \get_post_meta( $id, '_tv_b2b_figures', true ), true ) );
 		if ( $own_figures ) {
 			$own_model = \trim( (string) \get_post_meta( $id, '_delinker_model', true ) );
