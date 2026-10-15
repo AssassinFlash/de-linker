@@ -31,6 +31,16 @@ final class PdpStylesTest extends TestCase {
 	private const STOREFRONT_CSS = 'content/windpress/storefront.css';
 
 	/**
+	 * The stylesheet without its comments: the assertions below read the
+	 * rules, not the prose that explains what was removed.
+	 *
+	 * @param string $file Relative path under the plugin.
+	 */
+	private function rules( string $file ): string {
+		return (string) preg_replace( '#/\*.*?\*/#s', '', $this->css( $file ) );
+	}
+
+	/**
 	 * A stylesheet's text, comments included.
 	 *
 	 * @param string $file Relative path under the plugin.
@@ -102,6 +112,54 @@ final class PdpStylesTest extends TestCase {
 
 		$this->assertStringContainsString( 'repeat(auto-fit, minmax(300px, 1fr))', $css );
 		$this->assertStringNotContainsString( '670px', $css );
+	}
+
+	/**
+	 * The technical data is the prototype's contract: three spec-group cards
+	 * side by side with no tab strip (docs/design/2026-10-15-pdp-prototype,
+	 * `.spec-groups`). The deck's markup is the shortcode's tab deck, so the
+	 * stylesheet carries the transform — the strip hidden, every panel a card,
+	 * and the row full width (the former .9fr/1.1fr pair, with the empty
+	 * summary folded out of it, left the deck in the narrow column and the
+	 * rest of the row empty).
+	 */
+	public function test_the_technical_data_is_three_cards_without_tabs(): void {
+		$css   = $this->css( self::PDP_CSS );
+		$rules = $this->rules( self::PDP_CSS );
+
+		$layout = strpos( $rules, '#tv-storefront-pdp .pdp-stats-layout {' );
+		$this->assertNotFalse( $layout );
+		$rule = substr( $rules, (int) $layout, 220 );
+		$this->assertStringContainsString( 'grid-template-columns: minmax(0, 1fr);', $rule );
+		$this->assertStringNotContainsString( '0.9fr', $rules );
+
+		$this->assertStringContainsString( 'grid-template-columns: repeat(3, minmax(0, 1fr));', $rules );
+		$this->assertMatchesRegularExpression(
+			'/#tv-storefront-pdp \.pdp-spec-deck \.pdp-info-tabs \{\s*display: none;/',
+			$rules
+		);
+		$this->assertMatchesRegularExpression(
+			'/@layer base \{\s*#tv-storefront-pdp \.pdp-spec-deck \.pdp-info-panel,\s*#tv-storefront-pdp \.pdp-spec-deck \.pdp-info-panel\[hidden\] \{\s*display: grid !important;/',
+			$rules
+		);
+		// The card's own parts: a banded head over a hairlined run of rows.
+		$this->assertStringContainsString( 'details.pdp-tab-disclosure > summary', $rules );
+		$this->assertStringContainsString( 'background: var(--pdp-journal);', $rules );
+		$this->assertStringContainsString( '.pdp-stat-row + .pdp-stat-row', $rules );
+	}
+
+	/**
+	 * The comparison chip clears the phone action bar by the class the markup
+	 * really carries (`linker-compare-chip`, ComparePage::chip()); the former
+	 * `.sf-compare-chip` selector matched nothing at all.
+	 */
+	public function test_the_compare_chip_selector_matches_the_markup(): void {
+		$this->assertStringContainsString(
+			'body:has(#tv-storefront-pdp) #compare-chip.linker-compare-chip',
+			$this->rules( self::PDP_CSS )
+		);
+		$this->assertDoesNotMatchRegularExpression( '/\.sf-compare-chip/', $this->rules( self::PDP_CSS ) );
+		$this->assertDoesNotMatchRegularExpression( '/\.sf-compare-chip/', $this->rules( self::STOREFRONT_CSS ) );
 	}
 
 	/**

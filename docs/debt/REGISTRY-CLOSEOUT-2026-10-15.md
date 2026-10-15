@@ -29,7 +29,7 @@
 |---|---|---|---|---|
 | A1 | 页头与线上差异 | closed | Q5a 收口（ADJUDICATION 族 24 收口段，`docs/acceptance/2026-10-12/header-live-sync/ACCEPTANCE.md:5`）：五点位重量后两非差异（激活色、字重），三属重建件内部视觉微调（下划线几何、分隔线、390 位移）判 intentional；切换后线上页头即新树形态（cutover ⑦-4 present+WindPress 编译）。 | 无；若业主日后要求与旧线上逐像素对齐，一条独立小修回改 |
 | A2 | 页头/页脚 `[linker_contact_link]` 两侧行为 | closed | 本轮 curl 实测：live 首页/imprint/privacy/impressum/datenschutz 五页 `linker_contact_link` 字面量计数 **0**；live 渲染 `<a class="tv-header-cta"…>Contact Linker</a>`、`tv-header-cta tv-mobile-cta`、`<a class="footer-contact-link"…>` 三处（与新树 shortcode 输出同形）。代码：`Shortcodes.php:39,71-111`；placement 三处 `partials/header.html:199,281` + `partials/footer.html`（de 孪生同）；单测 `ShortcodesTest.php:617-671+`。补拍包同结论：`docs/acceptance/2026-10-15/coverage/README.md` §3 H·A2（两侧均渲染设计化链接、shortcodes 探针空数组）。 | 无 |
-| A3 | 复刻像素门缺可复核终局包 | delegated | 已建立并已可重跑：`docs/acceptance/2026-10-15/coverage/README.md` §3 H·A3（PDP 四对 local/live + `h-pairs-metrics.json`；结构差主因=实例侧缺「Inverter side」规格组，已恢复+复拍；残余=FAQ 带 2,132px + 页尾 188px 位移）；过门结论仍须业主掩膜/允许差异裁定。**部署后终局包清单见 §2**，由主会话执行并回填。 | 本文件 §2；`docs/acceptance/2026-10-15/coverage/README.md` §3 H·A3、§6-4 |
+| A3 | 复刻像素门缺可复核终局包 | delegated | 已建立并已可重跑：`docs/acceptance/2026-10-15/coverage/README.md` §3 H·A3（PDP 四对 local/live + `h-pairs-metrics.json`；结构差主因=实例侧缺「Inverter side」规格组，已恢复+复拍；残余=FAQ 带 2,132px + 页尾 188px 位移）；过门结论仍须业主掩膜/允许差异裁定。**PDP 面作废：#174 业主裁定 2026-10-15**（PDP 验收基准改为该票验收过的原型变体 A，见 `docs/specs/174-pdp.md` §变更台账条目），本条只余 PDP 之外的复刻面。**部署后终局包清单见 §2**，由主会话执行并回填。 | 本文件 §2；`docs/acceptance/2026-10-15/coverage/README.md` §3 H·A3、§6-4；`docs/specs/174-pdp.md` |
 | A4 | 列表页 390 终局像素门判定 | closed | 四个默认态 390 面 local vs live **差异像素 = 0（0.0000%）**、页高逐格相等（12252/12590/12270/12619）：`coverage/README.md` §3 H·A4 + `h-pairs-metrics.json`。 | 无 |
 | A6 | 条带对齐 vs 全页像素门口径 | closed | 两口径逐项呈报（9 面）：5 面两口径同为 0；PDP 四面最优位移=0、两口径数值相同：`coverage/README.md` §3 H·A6 表。与 A3 同根不相加。 | 无 |
 | B1 | Genie/配置器三屏可重设计 | closed（记录） | 裁定 8（工具页免像素门+已重设计）：Genie PR #123/#139、配置器 PR #126/#122/#121 + configurator-mobile 已并。 | 无 |
@@ -84,8 +84,9 @@
 
 ## 2. A3/A4/A6 部署后终局包清单（主会话执行并回填）
 
-已建立部分（2026-10-15 coverage 包）：PDP 四对（A3）、列表 390 四默认面 0px（A4）、9 面两口径表（A6）——
-`docs/acceptance/2026-10-15/coverage/README.md` §3 H + `.scratch/coverage/h-pairs-metrics.json`。
+已建立部分（2026-10-15 coverage 包）：PDP 四对（A3；**PDP 面已随 #174 作废，见 §1 A3 行**——不再参与终局包）、
+列表 390 四默认面 0px（A4）、9 面两口径表（A6）——`docs/acceptance/2026-10-15/coverage/README.md` §3 H +
+`.scratch/coverage/h-pairs-metrics.json`。
 
 **回填义务（部署 recheck 修复 + closure 修复之后，主会话执行）**：
 

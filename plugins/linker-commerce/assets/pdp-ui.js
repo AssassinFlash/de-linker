@@ -1,13 +1,14 @@
 /**
  * Storefront product page: the gallery viewer and thumbnails, the
- * specification tab decks, the assistant entries, the sticky navigation and
- * the rail's own cues. One block per behaviour, everything read from the
- * markup the template and the data shortcodes wrote - no markup is invented
- * here.
+ * specification cards, the assistant entries, the sticky navigation and the
+ * rail's own cues. One block per behaviour, everything read from the markup
+ * the template and the data shortcodes wrote - no markup is invented here.
  *
  * The page's sticky offsets are assets, not guesses: the header and the
  * section nav are measured into the CSS variables their rules read
- * (--lk-header-h, --pdp-snav-h).
+ * (--lk-header-h, --pdp-snav-h). The scrollspy's reach below the chrome is the
+ * prototype's own threshold - 34% of the viewport, whichever is larger
+ * (docs/design/2026-10-15-pdp-prototype/index.html, spy()).
  */
 (function () {
 	"use strict";
@@ -146,31 +147,11 @@
 		});
 	}
 
-	/* Specification decks: a tab shows the panel it names, in its own deck
-	   only - the project decks below carry a hidden tab strip and show every
-	   panel. */
-	root.querySelectorAll('.pdp-info-tabs [role="tab"]').forEach(function (tab) {
-		tab.addEventListener("click", function () {
-			var deck = tab.closest(".pdp-info-deck");
-			if (!deck) {
-				return;
-			}
-			var target = tab.getAttribute("aria-controls");
-			deck.querySelectorAll('[role="tab"]').forEach(function (other) {
-				var active = other === tab;
-				other.setAttribute("aria-selected", active ? "true" : "false");
-				other.setAttribute("tabindex", active ? "0" : "-1");
-			});
-			deck.querySelectorAll(".pdp-info-panel").forEach(function (panel) {
-				panel.hidden = panel.id !== target;
-			});
-		});
-	});
-
 	/* The assistant entries: the tool row's ask button and the project
 	   choices hand their message to the assistant. */
 	function ask(message, trigger) {
-		/* The Genie dock listens for linker-genie-ask (App.tsx); the old
+		/* The Genie dock listens for linker-genie-ask
+		   (plugins/linker-tools/includes/Genie/Entries.php); the old
 		   assistant's lia:ask name died with its plugin. */
 		window.dispatchEvent(
 			new CustomEvent("linker-genie-ask", { detail: { message: message, trigger: trigger } })
@@ -225,6 +206,9 @@
 		if (!sectionLinks.length) {
 			return;
 		}
+		// The chrome below the header, or 34% of the viewport - the
+		// prototype's own reach (docs/design/2026-10-15-pdp-prototype,
+		// index.html spy()).
 		var reach = Math.max(
 			(header ? header.offsetHeight : 0) + (sectionNav ? sectionNav.offsetHeight : 0) + 16,
 			Math.round(window.innerHeight * 0.34)

@@ -651,6 +651,10 @@
 
 #tv-storefront-pdp .pdp-reading p {
 	margin: 0 0 12px;
+	/* The site prints paragraphs in its own soft ink; the page's copy keeps
+	   the colour of the block it sits in (dark on white, white on the feature
+	   band), which is what the prototype's `.lede`/`.band-copy` do. */
+	color: inherit;
 }
 
 #tv-storefront-pdp .pdp-reading p:last-child {
@@ -811,15 +815,28 @@
 	line-height: 1.6;
 }
 
-/* Technical data */
+/* The copy sits on the navy panel: its paragraphs take the band's colour,
+   not the site's default ink (the feature body prints as `pdp-reading`). */
+#tv-storefront-pdp .pdp-feature-body p {
+	color: inherit;
+}
+
+/* Technical data — the prototype's contract (docs/specs/174-pdp.md): three
+   spec-group cards side by side, no tab strip. The deck's markup is the
+   shortcode's tab deck; the rules below are the transform — the strip is
+   hidden and every panel shows as a card. The former two-column
+   (.9fr/1.1fr) layout with the empty summary folded out was what left the
+   deck in a 0.9fr column and 730px of empty container beside it. */
 #tv-storefront-pdp .pdp-stats-layout {
 	display: grid;
-	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+	grid-template-columns: minmax(0, 1fr);
 	align-items: start;
-	gap: clamp(28px, 4vw, 64px);
+	gap: clamp(28px, 4vw, 48px);
 	margin-top: 36px;
 }
 
+/* A product without a stats claim prints the summary shell empty; the
+   single-column grid asks it to take no room. */
 #tv-storefront-pdp .pdp-stats-summary:empty {
 	display: none;
 }
@@ -849,6 +866,35 @@
 	margin-top: 12px;
 }
 
+/* The three cards. */
+#tv-storefront-pdp .pdp-spec-deck {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	align-items: stretch;
+	gap: 16px;
+}
+
+#tv-storefront-pdp .pdp-spec-deck .pdp-info-tabs {
+	display: none;
+}
+
+/* Every panel is a card. The shortcode marks the second and later ones
+   `hidden`, and Tailwind's preflight turns that attribute into
+   `display: none !important` from inside `@layer base` — a layered important
+   declaration beats an unlayered one whatever the specificity, so the card
+   display is written with the same importance and in the same layer, where
+   this selector's own specificity decides. The panel is a grid so its card
+   stretches to the row's height. (The contract is asserted live in
+   tests/e2e/specs/products.spec.ts — a preflight that moved layers would
+   fail it.) */
+@layer base {
+	#tv-storefront-pdp .pdp-spec-deck .pdp-info-panel,
+	#tv-storefront-pdp .pdp-spec-deck .pdp-info-panel[hidden] {
+		display: grid !important;
+		min-width: 0;
+	}
+}
+
 #tv-storefront-pdp .pdp-stat-wrap {
 	margin: 0;
 	border: 1px solid var(--pdp-line);
@@ -860,8 +906,8 @@
 #tv-storefront-pdp .pdp-stat-row {
 	display: grid;
 	grid-template-columns: minmax(0, 46%) minmax(0, 1fr);
-	gap: 20px;
-	padding: 12px 20px;
+	gap: 16px;
+	padding: 10px 20px;
 	font-size: 14px;
 	line-height: 1.5;
 }
@@ -889,45 +935,6 @@
 	line-height: 1.5;
 }
 
-#tv-storefront-pdp .pdp-info-tabs {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	margin-bottom: 16px;
-}
-
-#tv-storefront-pdp .pdp-info-tabs [role="tab"] {
-	flex: 1 1 auto;
-	min-width: 0;
-	min-height: 44px;
-	padding: 10px 16px;
-	border: 1px solid var(--pdp-line);
-	border-radius: var(--proto-radius-round);
-	background: var(--pdp-paper);
-	color: var(--pdp-muted);
-	font-family: inherit;
-	font-size: 14px;
-	font-weight: 600;
-	line-height: 1.4;
-	overflow-wrap: anywhere;
-	cursor: pointer;
-}
-
-#tv-storefront-pdp .pdp-info-tabs [role="tab"]:hover {
-	border-color: var(--pdp-teal);
-	color: var(--pdp-teal-dark);
-}
-
-#tv-storefront-pdp .pdp-info-tabs [role="tab"][aria-selected="true"] {
-	background: var(--pdp-teal-dark);
-	border-color: var(--pdp-teal-dark);
-	color: #fff;
-}
-
-#tv-storefront-pdp .pdp-info-panel[hidden] {
-	display: none;
-}
-
 #tv-storefront-pdp details.pdp-tab-disclosure {
 	border: 1px solid var(--pdp-line);
 	border-radius: var(--proto-radius-card);
@@ -944,9 +951,13 @@
 	font-weight: 700;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
+	cursor: default;
 }
 
-#tv-storefront-pdp details.pdp-tab-disclosure > summary::after {
+/* The card head is a title bar, not a toggle: no +/− marker (the accordion's
+   own [open] rule is the one this has to out-specify). */
+#tv-storefront-pdp details.pdp-tab-disclosure > summary::after,
+#tv-storefront-pdp details.pdp-tab-disclosure[open] > summary::after {
 	content: none;
 }
 
@@ -1329,9 +1340,8 @@
 		padding-top: 0;
 	}
 
-	#tv-storefront-pdp .pdp-stats-layout {
+	#tv-storefront-pdp .pdp-spec-deck {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 32px;
 	}
 
 	#tv-storefront-pdp .pdp-project-deck {
@@ -1629,13 +1639,6 @@
 		margin-top: 24px;
 	}
 
-	#tv-storefront-pdp .pdp-info-tabs [role="tab"] {
-		flex: 1 1 0;
-		min-height: 48px;
-		padding: 10px 8px;
-		font-size: 12px;
-	}
-
 	#tv-storefront-pdp details.pdp-tab-disclosure > summary {
 		padding: 14px 16px;
 	}
@@ -1744,8 +1747,10 @@
 		white-space: normal;
 	}
 
-	/* The comparison chip and the assistant launcher clear the pill. */
-	body:has(#tv-storefront-pdp) #compare-chip.sf-compare-chip,
+	/* The comparison chip and the assistant launcher clear the pill. The
+	   chip's own class is the one ComparePage prints (`linker-compare-chip`);
+	   its Tailwind `bottom-24` would otherwise ride on the measured bar. */
+	body:has(#tv-storefront-pdp) #compare-chip.linker-compare-chip,
 	body:has(#tv-storefront-pdp) .linker-genie {
 		bottom: calc(var(--pdp-action-height, 64px) + 28px);
 	}
