@@ -8,14 +8,16 @@
 
 - **范围**：`AuthTemplates`（端点登记 / 端点 URL / 模板分流 / 已登录重定向）、
   `Menu`（`register` 不成行）、`DraftSummary`（空草稿框的 Register 指向端点）、
-  `form-login.php`（只留登录单元）、`form-register.php`（新增）、两条 e2e、四条单测、
-  `.pot`/`.po`/`.mo`。
+  `form-login.php`（只留登录单元）、`form-register.php`（新增）、一条死 CSS 规则
+  （`auth.css` 的 `.linker-auth-register { scroll-margin-top }`——它服务的页内锚点跳转
+  随拆页消失，`chrome.css` 的 `:where([id])` 已覆盖任何将来的锚点）、两条 e2e、
+  四条单测、`.pot`/`.po`/`.mo`。
 - **Woo 原生优先**：端点走 `woocommerce_get_query_vars`（站点既有先例 saved-solutions /
   documents），URL 走 `wc_get_account_endpoint_url()`，判定走 `is_wc_endpoint_url()`，
   重写缓存由 `Settings\WooOptions` 的既有签名机制重建；表单的 nonce、字段、name、hook
   序列照抄 Woo 11.2 的 `templates/myaccount/form-login.php`（版本 9.9.0），逐条保留。
-- **零回流**：本票未触碰 `storefront.css`/LC 模板/旧标识符；`grep -rn "tv_b2b_|Linker_AI_|dlk-"`
-  命中数与 main 相同（既有复刻层，不属本票）。
+- **零回流**：本票未触碰 `storefront.css`/LC 模板；`git diff origin/main...HEAD` 的新增行
+  `grep -E "tv_b2b_|Linker_AI_|dlk-"` 零命中（`CommerceState` 里的既有 meta 键属未改动面）。
 - **PHP 零设计**：两个模板只排布 Woo 的字段，无内联样式；样式仍只在
   `content/windpress/auth.css`。
 
