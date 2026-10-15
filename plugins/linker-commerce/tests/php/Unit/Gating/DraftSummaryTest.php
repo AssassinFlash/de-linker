@@ -34,7 +34,9 @@ final class DraftSummaryTest extends TestCase {
 	}
 
 	/**
-	 * Guests get the login box instead of the totals.
+	 * Guests get the login box instead of the totals. "Register" is the
+	 * account's own register page (AuthTemplates::register_url), not the
+	 * sign-in page (owner ruling 2026-10-16: sign-in and sign-up split).
 	 */
 	public function test_guests_see_the_login_box(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
@@ -46,14 +48,14 @@ final class DraftSummaryTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
-		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
 
 		ob_start();
 		( new DraftSummary( $this->approved_state(), new PriceDisplay( $this->approved_state() ) ) )->guest_totals();
 		$html = (string) ob_get_clean();
 
 		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Log in and request a Proforma</a>', $html );
-		$this->assertStringContainsString( 'href="https://example.test/my-account/">No account yet? Register</a>', $html );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">No account yet? Register</a>', $html );
 	}
 
 	/**

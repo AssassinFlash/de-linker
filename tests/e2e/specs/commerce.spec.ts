@@ -153,6 +153,7 @@ type Locale = 'en' | 'de';
 const PAGES = {
 	en: {
 		account: '/my-account/',
+		register: '/my-account/register/',
 		product: '/product/saj-h2-10k-t3/',
 		draft: '/cart/',
 		request: '/proforma-request/',
@@ -162,6 +163,7 @@ const PAGES = {
 	},
 	de: {
 		account: '/de/mein-konto/',
+		register: '/de/mein-konto/register/',
 		product: '/de/produkt/saj-h2-10k-t3/',
 		draft: '/de/warenkorb/',
 		request: '/de/proforma-anfrage/',
@@ -182,7 +184,9 @@ async function register(
 	stamp: number
 ): Promise<string> {
 	const email = `e2e-${locale}-${stamp}@example.test`;
-	await page.goto(url(PAGES[locale].account));
+	// The sign-up card sits on the account's own register page (owner ruling
+	// 2026-10-16); the sign-in card is the account page itself.
+	await page.goto(url(PAGES[locale].register));
 	await page.fill('#billing_company', `E2E ${locale} ${stamp} GmbH`);
 	// The role select carries select2, so its native element cannot be
 	// clicked; the value is what the form posts either way.

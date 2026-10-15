@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Account;
 
+use Linker\Commerce\Account\AuthTemplates;
 use Linker\Commerce\Account\Menu;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
@@ -43,6 +44,9 @@ final class MenuTest extends TestCase {
 				'payment-methods' => 'Payment methods',
 				'edit-account'    => 'Account details',
 				'genie'           => 'Genie',
+				// The register page is the guests' sign-up (owner ruling
+				// 2026-10-16): a row offered for it never reaches the menu.
+				'register'        => 'Create your business account',
 				'customer-logout' => 'Log out',
 			)
 		);
@@ -60,10 +64,12 @@ final class MenuTest extends TestCase {
 			),
 			$items
 		);
+		$this->assertArrayNotHasKey( AuthTemplates::REGISTER_ENDPOINT, $items, 'the register page is not a menu row' );
 	}
 
 	/**
-	 * The two endpoints of this plugin join WooCommerce's.
+	 * The two endpoints of this plugin join WooCommerce's. The register page
+	 * registers its own query var (AuthTemplates), not this menu.
 	 */
 	public function test_query_vars(): void {
 		$this->assertSame(

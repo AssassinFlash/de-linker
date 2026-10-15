@@ -121,6 +121,7 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - [ ] 视觉验收：注册、产品页、Lösungsentwurf、提交页、账户 × EN/DE × 1440/390；以及访客提交后邮件确认链接（带 key）**未登录**打开的状态（评审 2026-10-10：此前重放全程登录态，该页漏扫）× EN/DE。
 
 ## 变更记录
+- 2026-10-16：登录与注册拆成两个页面（业主裁定）。`/my-account/` 只出登录卡；注册卡移到账号页的 `register` 端点（EN `/my-account/register/`，DE `/de/mein-konto/register/`，slug 跨语言共享），两页互跳。注册的处理链（Woo 的 nonce、字段、校验、建号、自动登录、pending 门禁）逐字不动，只有呈现分置两个请求。规格：`docs/specs/split-login-register.md`。
 - 2026-10-13：Proforma 号与 PDF 不再只挂在 Issue 按钮上。状态进入 `wc-proforma-issued` 时 `Issuer::ensure_issued` 补签发（已有号或 PDF 的不动，避免按钮路径签两次）。客户侧询盘详情（摘要卡号 + 下载链接）与 Documents 只读 `_linker_proforma_number`；Completed 后号还在，下载仍在。银行账户缺失时按钮隐藏、状态路径不签发，配置键见上节，不补造账户。默认号前缀由 `PI` 改为 `DLK-PF`，与线上 `DLK-PF-年份-…` 一致；空前缀走默认，已保存的自定义前缀不动。
 - 2026-10-13（#138）：注册邮件改为注册确认（`RegistrationReceivedEmail`；Woo 原生欢迎信仍关）。邮件清单补第 5 封。pending 停在审核页；restricted 保留工作台，Proforma request 显示限制原因。文案定稿 `docs/acceptance/2026-10-13/138/copy-review.md`。
 - 2026-10-11（#67，GAP-16）：新增 `Health` 模块（服务健康告警最小件）。WordPress/Woo 没有外部服务健康监视的原生能力，检查本身是本插件的；机制全部原生：调度 WP cron daily（`init` 懒登记 + 停用 `wp_clear_scheduled_hook`），HTTP 走 WP HTTP API，邮件走 `wp_mail` 即 #11 的 Outbox 队列（复用限流与重试）。验收：单元 `MonitorTest`（7 项）+ 实例集成 `HealthMonitorTest`（cron 钩子触发路径、失败一封 To 对接人+Bcc、健康零邮件、每日事件在排期），实例级 `wp cron event run linker_commerce_health_check` 健康/失败两跑实证。
