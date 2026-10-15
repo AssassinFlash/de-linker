@@ -44,10 +44,11 @@
   --snav-h:52px; /* JS measures the section nav; used by scroll-padding */
   --action-h:0px;
   --proto-w:0px;
+  --proto-dock:0px;
   --gap-section:clamp(48px,7vw,88px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + var(--snav-h) + 12px)}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + var(--proto-dock) + var(--snav-h) + 12px)}
 body{
   font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
   color:var(--ink);
@@ -251,7 +252,7 @@ button.gallery-main{
   min-height:clamp(320px,44vw,520px);display:flex;align-items:flex-end;
   background:var(--navy);
 }
-.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.92}
+.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:right center;padding:5%;opacity:1}
 .band .band-copy{
   position:relative;padding:clamp(24px,4vw,56px);color:#fff;max-width:640px;
 }
@@ -348,12 +349,15 @@ button.gallery-main{
   .faq-side{min-height:200px}
 }
 @media (max-width:860px){
-  :root{--action-h:88px}
+  :root{--action-h:88px;--proto-dock:48px}
   .mobile-action{display:flex}
   body{padding-bottom:calc(var(--action-h) + 16px)}
+  .site-header{top:var(--proto-dock)}
+  .site-header .container{gap:10px;padding-inline:12px}
+  .contact-btn{padding:8px 12px;font-size:13px}
+  .section-nav{top:calc(var(--header-h) + var(--proto-dock))}
   .benefit-grid{grid-template-columns:1fr}
   .gallery-main{aspect-ratio:1/1}
-  .section-nav .container{padding-right:max(var(--pad-inline), calc(var(--proto-w) + 16px))}
 }
 
 /* ================================================================
@@ -514,9 +518,79 @@ html[data-variant="b"] .section-nav a[aria-current="true"]:hover{color:#fff}
 @media (forced-colors: active){
   :focus-visible{outline:2px solid CanvasText}
 }
+
+/* Mobile only. Desktop overlay (headline over the image, bottom-left) stays. */
+@media (max-width:860px){
+  html[data-variant="b"] .section-nav{
+    background:var(--cream);
+    border-bottom:1px solid var(--line);
+  }
+  .band,
+  html[data-variant="c"] .band{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    justify-content:flex-start;
+    min-height:0;
+  }
+  .band img{
+    position:relative;
+    inset:auto;
+    width:100%;
+    max-width:100%;
+    height:auto;
+    max-height:none;
+    object-fit:contain;
+    object-position:center;
+    padding:16px;
+    background:#fff;
+  }
+  .band .band-copy,
+  html[data-variant="c"] .band .band-copy{
+    position:relative;
+    max-width:none;
+  }
+}
 </style>
 </head>
 <body>
+<!-- Prototype switcher. Not part of the page design. -->
+<style>
+.proto-bar{
+  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;
+  display:flex;align-items:center;gap:10px;background:#111;color:#fff;
+  border-radius:999px;padding:8px 12px;box-shadow:0 8px 30px rgba(0,0,0,.35);
+  font:600 13px/1 system-ui;white-space:nowrap;
+}
+.proto-bar button{background:#2b2b2b;color:#fff;border:none;border-radius:999px;padding:8px 12px;cursor:pointer;font:inherit}
+.proto-bar button:hover{background:#3d3d3d}
+.proto-bar button:active{background:#555}
+.proto-bar button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.proto-bar .vlabel{min-width:150px;text-align:center}
+.proto-bar .sep{width:1px;height:18px;background:#444}
+.proto-bar .meta{color:#999;font-weight:400}
+@media (max-width:860px){
+  /* Own row above the sticky header. A corner pill covers section-nav chips. */
+  .proto-bar{
+    position:sticky;top:0;bottom:auto;left:auto;right:auto;transform:none;
+    width:100%;max-width:none;border-radius:0;box-shadow:none;
+    padding:8px 10px;padding-top:max(8px, env(safe-area-inset-top));
+    gap:6px;z-index:110;justify-content:center;flex-wrap:nowrap;
+  }
+  .proto-bar button{flex:0 0 auto;padding:8px 10px}
+  .proto-bar .vlabel{min-width:0;flex:1 1 auto;max-width:none;overflow:hidden;text-overflow:ellipsis}
+  .proto-bar .sep:last-of-type,.proto-bar .meta{display:none}
+}
+</style>
+<div class="proto-bar" id="proto-bar">
+  <button type="button" id="pv-prev" aria-label="Previous variant">←</button>
+  <span class="vlabel" id="pv-label">A · Baseline</span>
+  <button type="button" id="pv-next" aria-label="Next variant">→</button>
+  <span class="sep"></span>
+  <button type="button" id="pv-lang" aria-label="Language: English. Switch to German">EN / DE</button>
+  <span class="sep"></span>
+  <span class="meta" id="pv-vp"></span>
+</div>
 <header class="site-header">
   <div class="container">
     <div class="logo">Linker<small>Linking Value, Serving You.</small></div>
@@ -671,7 +745,7 @@ html[data-variant="b"] .section-nav a[aria-current="true"]:hover{color:#fff}
 
     <section class="container" aria-label="Feature">
       <div class="band">
-        <img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01.png" alt="" style="object-fit:contain;object-position:right center;padding:5%;opacity:1">
+        <img src="https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01.png" alt="">
         <div class="band-copy">
           <p class="kicker"><span class="l l-en">ESA Series</span><span class="l l-de">ESA-Serie</span></p>
           <h2>
@@ -857,38 +931,6 @@ html[data-variant="b"] .section-nav a[aria-current="true"]:hover{color:#fff}
   </div>
 </dialog>
 
-<!-- ================= PROTOTYPE SWITCHER (not part of the design) ================= -->
-<style>
-.proto-bar{
-  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;
-  display:flex;align-items:center;gap:10px;background:#111;color:#fff;
-  border-radius:999px;padding:8px 12px;box-shadow:0 8px 30px rgba(0,0,0,.35);
-  font:600 13px/1 system-ui;white-space:nowrap;
-}
-.proto-bar button{background:#2b2b2b;color:#fff;border:none;border-radius:999px;padding:8px 12px;cursor:pointer;font:inherit}
-.proto-bar button:hover{background:#3d3d3d}
-.proto-bar button:active{background:#555}
-.proto-bar button:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.proto-bar .vlabel{min-width:150px;text-align:center}
-.proto-bar .sep{width:1px;height:18px;background:#444}
-.proto-bar .meta{color:#999;font-weight:400}
-@media (max-width:860px){
-  /* keep the switcher clear of the mobile action bar being evaluated */
-  .proto-bar{top:calc(var(--header-h) + 8px);bottom:auto;left:auto;right:8px;transform:none;padding:6px 8px;gap:6px;max-width:min(196px, calc(100% - 16px));z-index:120}
-  .proto-bar .vlabel{min-width:0;max-width:72px;overflow:hidden;text-overflow:ellipsis}
-  .proto-bar .meta{display:none}
-}
-</style>
-<div class="proto-bar" id="proto-bar">
-  <button type="button" id="pv-prev" aria-label="Previous variant">←</button>
-  <span class="vlabel" id="pv-label">A · Baseline</span>
-  <button type="button" id="pv-next" aria-label="Next variant">→</button>
-  <span class="sep"></span>
-  <button type="button" id="pv-lang" aria-label="Language: English. Switch to German">EN / DE</button>
-  <span class="sep"></span>
-  <span class="meta" id="pv-vp"></span>
-</div>
-
 <script>
 (function(){
   var VARIANTS = {a:'A · Baseline', b:'B · App cards', c:'C · Editorial'};
@@ -1027,17 +1069,16 @@ html[data-variant="b"] .section-nav a[aria-current="true"]:hover{color:#fff}
 
   function measure(){
     root.style.setProperty('--header-h', header.offsetHeight + 'px');
-    var extra = 0;
     var proto = document.getElementById('proto-bar');
     if (proto) {
       root.style.setProperty('--proto-w', proto.offsetWidth + 'px');
-      var protoCss = getComputedStyle(proto);
-      if (protoCss.bottom === 'auto' && protoCss.top !== 'auto') {
-        var hang = proto.getBoundingClientRect().bottom - (header.offsetHeight + snav.offsetHeight);
-        if (hang > 0) extra = hang;
+      if (window.matchMedia('(max-width:860px)').matches && proto.offsetHeight) {
+        root.style.setProperty('--proto-dock', proto.offsetHeight + 'px');
+      } else if (!window.matchMedia('(max-width:860px)').matches) {
+        root.style.setProperty('--proto-dock', '0px');
       }
     }
-    root.style.setProperty('--snav-h', (snav.offsetHeight + extra) + 'px');
+    root.style.setProperty('--snav-h', snav.offsetHeight + 'px');
     var bar = document.querySelector('.mobile-action');
     if (bar && getComputedStyle(bar).display !== 'none') root.style.setProperty('--action-h', bar.offsetHeight + 'px');
     else root.style.setProperty('--action-h', '0px');
