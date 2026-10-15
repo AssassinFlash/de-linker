@@ -210,8 +210,11 @@
 #linker-faq-page .linker-library-thumb.is-type.is-warranty { background: #f6ebe6; color: #7a3e2e; }
 #linker-faq-page .linker-library-thumb.is-type.is-brochure { background: #eeeaf4; color: #3d3560; }
 #linker-faq-page .linker-library-thumb.is-type.is-document { background: var(--ll-mist); color: #3e524c; }
-#linker-faq-page .linker-library-doc.has-thumb { grid-template-columns: 52px minmax(0, 1fr) auto; grid-template-areas: "thumb lead dl" "thumb meta dl"; align-items: start; }
-#linker-faq-page .linker-library-doc.has-thumb .linker-library-thumb { margin-top: 1px; }
+/* Every row has the tile slot (the fragments print `has-tile` on all of them):
+ * a row without a thumbnail keeps the same 52x72 column with its type icon in
+ * it, so the rows do not shift between one and two grid columns. */
+#linker-faq-page .linker-library-doc.has-tile { grid-template-columns: 52px minmax(0, 1fr) auto; grid-template-areas: "thumb lead dl" "thumb meta dl"; align-items: start; }
+#linker-faq-page .linker-library-doc.has-tile .linker-library-thumb { margin-top: 1px; }
 
 /* ---- the search's flat result list ---- */
 #linker-faq-page .linker-library-results { margin-top: 16px; }
@@ -268,7 +271,11 @@
 	#linker-faq-page .linker-library-suggest { max-height: 46vh; }
 }
 @media (max-width: 420px) {
-	#linker-faq-page .linker-library-doc { grid-template-areas: "lead lead" "meta dl"; align-items: start; padding-inline: 14px; }
+	/* The rows keep their tile column here too (the prototype re-states its own
+	 * thumb areas at this breakpoint for the same reason); only the paddings
+	 * and the badges tighten. The .has-tile selector outranks the bare row. */
+	#linker-faq-page .linker-library-doc.has-tile { grid-template-columns: 52px minmax(0, 1fr) auto; grid-template-areas: "thumb lead dl" "thumb meta dl"; align-items: start; }
+	#linker-faq-page .linker-library-doc { padding-inline: 14px; }
 	#linker-faq-page .linker-library-dl { min-height: 34px; padding: 6px 10px; }
 	#linker-faq-page .linker-library-badge { font-size: 10px; letter-spacing: 0.04em; }
 	#linker-faq-page .linker-library-doc-meta { font-size: 12px; }

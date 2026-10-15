@@ -83,6 +83,27 @@ def run(args: list[str], timeout: int) -> subprocess.CompletedProcess[str]:
     )
 
 
+def select(
+    urls: list[str], probes: dict[str, dict[str, Any]], cap: int
+) -> tuple[set[str], list[str]]:
+    """The cap's decision: the URLs it defers, and the ones to download.
+
+    A file is deferred when the cap is set and the HEAD's Content-Length is
+    strictly over it; a URL whose HEAD was not a 200 is never downloaded (the
+    file is not there to render). The order of `urls` is kept, so a run's
+    output reads the same on a second pass.
+    """
+    deferred = {
+        url
+        for url in urls
+        if cap
+        and isinstance(probes[url].get("length"), int)
+        and int(probes[url]["length"]) > cap
+    }
+    targets = [url for url in urls if url not in deferred and probes[url]["ok"]]
+    return deferred, targets
+
+
 def last_line(text: str | None) -> str:
     """The last non-empty line of a command's output, for a failure's reason."""
     lines = [line.strip() for line in (text or "").splitlines() if line.strip()]
@@ -322,11 +343,7 @@ def main() -> int:
         int(p["length"]) for p in probes.values() if isinstance(p.get("length"), int)
     )
     bad = [url for url, p in probes.items() if not p["ok"]]
-    deferred = {
-        url
-        for url, p in probes.items()
-        if cap and isinstance(p.get("length"), int) and int(p["length"]) > cap
-    }
+    deferred, targets = select(urls, probes, cap)
     print(
         f"known size {known / 1024 / 1024:.1f} MB; HEAD not 200: {len(bad)}; "
         f"over {args.max_file_mb:g} MB: {len(deferred)}",
@@ -342,7 +359,6 @@ def main() -> int:
     if args.probe_only:
         return 0
 
-    targets = [url for url in urls if url not in deferred and probes[url]["ok"]]
     args.cache.mkdir(parents=True, exist_ok=True)
     print(f"downloading into {args.cache} ({WORKERS}-way, skip cached)…", flush=True)
     downloaded: dict[str, tuple[bool, str]] = {}

@@ -14,13 +14,16 @@ DE 独立撰写非翻译（Sie 体、`de_DE_formal`）；基准 = linker-copywri
 
 ## 1. 页头（hero）
 
-| 位置 | 初稿（原型 EN） | 评审意见 | 定稿 |
-|---|---|---|---|
-| H1 | `Answers and documents.` | 原型已验收；两句并列名词、句号收尾，无排比腔、无 slogan 公式（Hard Stop 9 清单无 `One X. One Y.` 之类结构，此项是「Answers and documents」一个并列短语）。工具页重设计范围，标题可自定。 | `Answers and documents.` |
-| 副标题 | `Datasheets, manuals and trade rules for the equipment on file.` | 「on file」是站点既有口径（文档目录与 FAQ 一直说 on file / im Bestand），保留；三名词并列是内容清单不是排比修辞。 | 同初稿 |
-| 联系行 | `Can't find what you're looking for?` + `Contact the Linker team` | 疑问句把主动方留给客户（Hard Stop 6 禁的是 `Get help checking…` 这类"乞求许可"；这里是陈述出路，不是让客户做作业）；链接名与页脚/页头联系入口的既有措辞一致。**定稿**：`Can't find what you're looking for? Contact the Linker team.` | 同初稿 |
-| 搜索框 label（仅读屏） | `Search` | 与 aria 名一致，`Search questions and documents` 作 placeholder。 | `Search` |
-| 搜索框 placeholder | `Search questions and documents` | 旧页是 `Search questions or models`——「models」在本页不成立（本页不按型号搜，型号搜索是目录页与 Genie 的事），改为本页真实对象：问题与文档。 | `Search questions and documents` |
+EN 先行的定稿与德语独立撰写并列如下（DE 不是 EN 的翻译，逐条给出德语侧自己的理由；与
+原型 DE 不一致的地方单独标注）。
+
+| 位置 | EN 初稿（原型） | 评审意见（EN） | EN 定稿 | DE 初稿（独立撰写） | 评审意见（DE） | DE 定稿 |
+|---|---|---|---|---|---|---|
+| H1 | `Answers and documents.` | 原型已验收；两个并列名词、句号收尾，无排比腔、无 slogan 公式（Hard Stop 9 清单里没有这种结构）。工具页重设计范围，标题可自定。 | `Answers and documents.` | `Antworten und Dokumente.` | 原型 DE 同词；两个名词并列、Sie 体语境中性，`Antworten` 与 tab 的第二区名 `Produktantworten` 同根，读作同一件事的泛称。 | `Antworten und Dokumente.` |
+| 副标题 | `Datasheets, manuals and trade rules for the equipment on file.` | 「on file」是站点既有口径（文档目录与 FAQ 一直说 on file / im Bestand），保留；三名词并列是内容清单不是排比修辞。 | 同初稿 | `Datenblätter, Handbücher und Handelsregeln zu den Geräten im Bestand.` | 原型 DE 同词；`im Bestand` 与计数 `%d im Bestand` 同口径，`Handelsregeln` 与第一区名同词。 | `Datenblätter, Handbücher und Handelsregeln zu den Geräten im Bestand.` |
+| 联系行 | `Can't find what you're looking for?` + `Contact the Linker team` | 疑问句把主动方留给客户（Hard Stop 6 禁的是 `Get help checking…` 这类"乞求许可"；这里是陈述出路，不是让客户做作业）；链接名与页头/页脚联系入口的既有措辞一致。 | `Can't find what you're looking for? Contact the Linker team.` | `Sie finden nicht, wonach Sie suchen?` + `Kontakt zum Linker-Team` | 原型 DE 同词。疑问句在德语里用陈述语序（`Sie finden nicht…?`）是自然的反问，不用 `Können Sie nicht…` 这种英文语序；链接名 `Kontakt zum Linker-Team` 沿用站上团队口径（不是 `Kontaktieren Sie…`，那是让客户做作业）。 | `Sie finden nicht, wonach Sie suchen? Kontakt zum Linker-Team.` |
+| 搜索框 label（仅读屏） | `Search` | 与组合框的 aria 名一致，placeholder 说清搜什么。 | `Search` | `Suche` | 页头搜索的既有德语名词；不用 `Suchen`（那是动词/按钮语气）。 | `Suche` |
+| 搜索框 placeholder | `Search questions and documents` | 旧页是 `Search questions or models`——「models」在本页不成立（本页不按型号搜，型号搜索是目录页与 Genie 的事），改为本页真实对象：问题与文档。 | `Search questions and documents` | `Fragen und Dokumente suchen` | 原型 DE 同词；动词后置的德语疑问式 placeholder（`Fragen und Dokumente suchen`），与 tab 名 `Dokumente` 同词。 | `Fragen und Dokumente suchen` |
 
 ## 2. tab 栏
 
@@ -28,12 +31,13 @@ DE 独立撰写非翻译（Sie 体、`de_DE_formal`）；基准 = linker-copywri
 |---|---|---|---|
 | 两个 tab 名 | `FAQ` / `Documents` | AGENTS §3 用词：产品/分类不说 catalogue，文档说 documents；`FAQ` 是站点既有词（页脚、SEO 标题、旧页导航都是 FAQ）。DE 用站点既有 `FAQ` / `Dokumente`。 | `FAQ` / `Documents` · `FAQ` / `Dokumente` |
 | tablist aria-label | `FAQ & documents` | 页面名；DE `FAQ & Dokumente`（与 `Templates::PAGES` 里的德语模板标题一致）。 | 同初稿 |
+| 目录/chip 栏 aria-label（读屏） | `On this page` | 原型同词；读屏可读的新串，故入记录。DE `Auf dieser Seite`（德语页的导航标签惯用说法）。 | `On this page` / `Auf dieser Seite` |
 
 ## 3. 目录、分区与卡片（区标题）
 
 | 位置 | 初稿 | 评审意见 | 定稿（EN / DE） |
 |---|---|---|---|
-| 第一区（16 条商务规则） | `Before you order` | 旧页与冻结内容的既有说法（旧模板 heading `Before you order` / `Bevor Sie bestellen`），逐字保留——这是内容分区名，不是新文案。 | `Before you order` / `Vor der Bestellung` |
+| 第一区（16 条商务规则） | `Before you order` | EN 侧是旧页与冻结内容的既有说法（旧模板 heading `Before you order`），逐字保留。德语侧**不是**逐字保留：线上德文页写 `Bevor Sie bestellen`（2026-10-15 拉 `https://de-linker.com/de/faq-download/` 核过，页面里 2 处），本票出货的是原型（变体 5，业主验收）的 `Vor der Bestellung`——一个更像栏目标签的名词短语，与德语 tab/芯片条的短标签体例一致；这是一处**裁定过的客户可见变更**，已列入 spec §7 变更台账。 | `Before you order` / `Vor der Bestellung` |
 | 第二区（产品问答） | `Product answers` | 旧页 `Product answers` / `Produktantworten`，逐字保留。 | `Product answers` / `Produktantworten` |
 | 文档区 | `Brands` | 文档按品牌分卡，区标题就是 `Brands` / `Marken`；原型同词。 | `Brands` / `Marken` |
 | 空态（搜索无命中） | `Nothing on file matches that search.` + `Ask Genie` | 原型 EN 已验收；`Ask Genie` 是站点既有按钮词（`.po` 既有 msgstr `Genie fragen`）。不写"请换个词"（把作业推回客户）。 | 同初稿 / `Zu dieser Suche liegt nichts vor.` + `Genie fragen` |
@@ -42,7 +46,7 @@ DE 独立撰写非翻译（Sie 体、`de_DE_formal`）；基准 = linker-copywri
 | 搜索结果分组眉题 | `<品牌/分类> · <Trade rule｜Answer｜Document>` | 三个类别词都是既有词（`.po`：`Handelsregel`、`Antwort`、`Dokument`）。 | 同初稿 |
 | 文档行类型徽章 | `Datasheet｜Manual｜Certificate｜Compatibility｜Warranty｜Brochure｜Document` | 全部沿用 `.po` 既有 msgstr（`Datenblatt｜Handbuch｜Zertifikat｜Kompatibilität｜Garantie｜Broschüre｜Dokument`），不新增词。 | 同既有 |
 | 下载按钮 | `Download` | `.po` 既有 msgstr `Herunterladen`。 | 同既有 |
-| 语言胶囊 | `EN｜DE｜MUL`（视觉）＋读屏全称 `English｜German｜Multilingual` | 视觉用代码、读屏用全称；全称沿用 `.po` 既有 msgstr（`Englisch｜Deutsch｜Mehrsprachig`）。 | 同既有 |
+| 语言胶囊 | `EN｜DE｜MUL`（视觉）＋读屏全称 `English｜German｜Multilingual` | 视觉用代码、读屏用全称；全称沿用 `.po` 既有 msgstr（`Englisch｜Deutsch｜Mehrsprachig`）。**评审提"读屏实际拿裸码"，实测不成立（2026-10-15 本轮复测）**：片段印的是 `<span aria-hidden="true">EN</span><span class="linker-library-sr">English</span>`，代码在 `aria-hidden` 里，可访问名是那枚全称 span——Playwright 的可访问性快照读到的正是 `English`（EN 页）/ `Englisch`（DE 页），见 `docs/acceptance/2026-10-15/176/checks.json` 的 `a11y` 项。**决定：保留代码作视觉、全称给读屏**，即映射到全称这条已生效，无需改动。 | 同既有 |
 
 ## 4. 脚本自绘的部分（`.po` 新串，15 条）
 

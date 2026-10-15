@@ -59,14 +59,6 @@ test('the tab round-trips through the URL, documents named and faq the default',
  assert.equal(library.tabUrl('/de/faq-download/', '?tab=documents', '#linker-library-zone-documents', 'documents'), '/de/faq-download/?tab=documents#linker-library-zone-documents');
 });
 
-test('a spy target names its zone', () => {
- assert.equal(library.zoneOf('linker-library-zone-trade'), 'linker-library-zone-trade');
- assert.equal(library.zoneOf('linker-library-trade-2'), 'linker-library-zone-trade');
- assert.equal(library.zoneOf('linker-library-answers-goodwe'), 'linker-library-zone-answers');
- assert.equal(library.zoneOf('linker-library-docs-goodwe'), 'linker-library-zone-documents');
- assert.equal(library.zoneOf(''), '');
-});
-
 /** The page's own markup, as the template and the fragments print it. */
 function page(rows) {
  return `<!doctype html><html><body>
@@ -90,24 +82,24 @@ function page(rows) {
    <div class="linker-library-main">
     <nav class="linker-library-chips"><div class="linker-library-chips-scroll" data-library-nav="faq"><a class="linker-library-chip" href="#linker-library-zone-trade" data-library-spy-link data-library-zone="linker-library-zone-trade">Before you order</a></div><div class="linker-library-chips-scroll" data-library-nav="documents"><a class="linker-library-chip" href="#linker-library-docs-chint" data-library-spy-link>Chint <span class="linker-library-n">3</span></a></div></nav>
     <div class="linker-library-panel" id="linker-library-panel-faq" data-library-panel="faq">
-     <section class="linker-library-zone" id="linker-library-zone-trade" data-library-spy>
+     <section class="linker-library-zone" id="linker-library-zone-trade" data-library-spy data-library-zone="linker-library-zone-trade">
       <h2 class="linker-library-zone-title">Before you order</h2><div class="linker-library-stack">
-      <article class="linker-library-card" id="linker-library-trade-0" data-library-card data-library-kind="trade">
+      <article class="linker-library-card" id="linker-library-trade-0" data-library-card data-library-kind="trade" data-library-spy data-library-zone="linker-library-zone-trade">
        <header class="linker-library-card-head"><h3 class="linker-library-card-title">Ordering</h3><span class="linker-library-n" data-library-card-count>2</span></header>
        <div class="linker-library-rows">${rows.trade}</div>
       </article></div></section>
-     <section class="linker-library-zone" id="linker-library-zone-answers" data-library-spy>
+     <section class="linker-library-zone" id="linker-library-zone-answers" data-library-spy data-library-zone="linker-library-zone-answers">
       <h2 class="linker-library-zone-title">Product answers</h2><div class="linker-library-stack">
-      <article class="linker-library-card" id="linker-library-answers-chint" data-library-card data-library-kind="answer">
+      <article class="linker-library-card" id="linker-library-answers-chint" data-library-card data-library-kind="answer" data-library-spy data-library-zone="linker-library-zone-answers">
        <header class="linker-library-card-head"><h3 class="linker-library-card-title">Chint</h3><span class="linker-library-n" data-library-card-count>1</span></header>
        <div class="linker-library-rows">${rows.answers}</div>
       </article></div></section>
     </div>
     <div class="linker-library-panel" id="linker-library-panel-documents" data-library-panel="documents" hidden>
      <div class="linker-library-filters" data-library-filters hidden><button type="button" data-library-type="all" aria-pressed="true">All</button><button type="button" data-library-type="datasheet" aria-pressed="false">Datasheet</button><button type="button" data-library-type="manual" aria-pressed="false">Manual</button></div>
-     <section class="linker-library-zone" id="linker-library-zone-documents" data-library-spy>
+     <section class="linker-library-zone" id="linker-library-zone-documents" data-library-spy data-library-zone="linker-library-zone-documents">
       <h2 class="linker-library-zone-title">Brands</h2><div class="linker-library-stack">
-      <article class="linker-library-card" id="linker-library-docs-chint" data-library-card data-library-kind="document">
+      <article class="linker-library-card" id="linker-library-docs-chint" data-library-card data-library-kind="document" data-library-spy data-library-zone="linker-library-zone-documents">
        <header class="linker-library-card-head"><h3 class="linker-library-card-title">Chint</h3><span class="linker-library-n" data-library-card-count>3</span></header>
        <div class="linker-library-rows"><ul class="linker-library-doc-list">${rows.documents}</ul></div>
       </article></div></section>
@@ -119,7 +111,7 @@ function page(rows) {
 }
 
 const QA = (question, answer) => `<details class="linker-library-qa" data-library-item data-library-group="Ordering"><summary class="linker-library-qa-head"><span class="linker-library-qa-text"><span class="linker-library-qa-q">${question}</span><span class="linker-library-qa-where" hidden>In the answer</span></span></summary><div class="linker-library-qa-a"><p>${answer}</p></div></details>`;
-const DOC = (title, type) => `<li class="linker-library-doc" data-library-item data-library-type="${type}"><span class="linker-library-thumb is-type"></span><span class="linker-library-doc-lead"><span class="linker-library-badge is-${type}">${type}</span><span class="linker-library-doc-title">${title}</span></span><p class="linker-library-doc-meta"><span class="linker-library-doc-covers">covers 2 products</span><span class="linker-library-lang">EN</span></p><a class="linker-library-dl" href="https://de-linker.test/a.pdf">Download</a></li>`;
+const DOC = (title, type) => `<li class="linker-library-doc has-tile" data-library-item data-library-type="${type}"><span class="linker-library-thumb is-type"></span><span class="linker-library-doc-lead"><span class="linker-library-badge is-${type}">${type}</span><span class="linker-library-doc-title">${title}</span></span><p class="linker-library-doc-meta"><span class="linker-library-doc-covers">covers 2 products</span><span class="linker-library-lang">EN</span></p><a class="linker-library-dl" href="https://de-linker.test/a.pdf">Download</a></li>`;
 
 /** The page with rows: 25 documents so the pager has two pages. */
 function fixture() {
@@ -182,6 +174,22 @@ test('a card paginates its rows 20 at a time and the pager clamps', () => {
  assert.equal(doc.querySelector('#linker-library-docs-chint .linker-library-pager [aria-current="page"]').textContent, '2');
 });
 
+test('the type chips own aria-pressed, and the rows never get one', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const rows = [...doc.querySelectorAll('#linker-library-docs-chint [data-library-item]')];
+ const chip = doc.querySelector('[data-library-filters] [data-library-type="datasheet"]');
+ // The rows state their type in data-library-type — the same attribute the
+ // chips use — so a whole-page selector would write aria-pressed onto every
+ // one of them. Nothing but a chip may carry it.
+ assert.equal(chip.getAttribute('aria-pressed'), 'false');
+ chip.dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
+ assert.equal(chip.getAttribute('aria-pressed'), 'true');
+ assert.equal(doc.querySelector('[data-library-type="all"]').getAttribute('aria-pressed'), 'false');
+ assert.equal(rows.some((row) => row.hasAttribute('aria-pressed')), false, 'no row carries aria-pressed');
+ assert.equal(doc.querySelectorAll('[data-library-type][aria-pressed]').length, 3, 'exactly the three chips');
+});
+
 test('a type chip filters the rows, the card count and the rail link together', () => {
  const dom = fixture();
  const doc = boot(dom);
@@ -196,23 +204,63 @@ test('a type chip filters the rows, the card count and the rail link together', 
  assert.ok(empty && empty.hidden, 'the soft empty stays hidden while rows match');
 });
 
-test('the search lists hits from both kinds, marked, paginated, with the tab counts split', () => {
+test('a document row keeps its tile slot in the flat result list, thumbnail or not', () => {
  const dom = fixture();
  const doc = boot(dom);
  const input = doc.querySelector('.linker-library-q');
  input.value = 'dtsu666';
  input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ // The documents are the documents tab's half of the hits.
+ doc.querySelector('#linker-library-tab-documents').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
+ const rows = [...doc.querySelectorAll('[data-library-results] .linker-library-doc')];
+ assert.ok(rows.length > 0, 'the search lists document rows');
+ rows.forEach((row) => assert.equal(row.classList.contains('has-tile'), true, 'every cloned row carries the slot'));
+ assert.ok(rows.some((row) => row.querySelector('.linker-library-thumb.is-type')), 'a row without a page image keeps its type tile');
+});
+
+test('the rail marks the zone of the card the reader is in', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ // jsdom has no layout, so the spy reads every target's top as 0 and marks the
+ // last one; what this asserts is that the zone comes off the element and not
+ // off an id's prefix.
+ const links = [...doc.querySelectorAll('.linker-library-rail [data-library-spy-link]')];
+ const zone = doc.querySelector('#linker-library-zone-documents');
+ assert.equal(zone.getAttribute('data-library-zone'), 'linker-library-zone-documents');
+ assert.equal(doc.querySelector('#linker-library-docs-chint').getAttribute('data-library-zone'), 'linker-library-zone-documents');
+ assert.equal(doc.querySelector('#linker-library-trade-0').getAttribute('data-library-zone'), 'linker-library-zone-trade');
+ assert.ok(links.length > 0);
+ doc.querySelector('#linker-faq-page').dispatchEvent(new dom.window.Event('scroll'));
+});
+
+test('the search lists the active tab\'s hits, marked and paginated, and splits the counts', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'dtsu666';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ // The FAQ tab holds no match at all: its list is the empty state, and its
+ // count says 0 while the documents tab keeps the 25 hits.
+ assert.equal(doc.querySelectorAll('[data-library-results] .linker-library-doc').length, 0);
+ assert.ok(doc.querySelector('[data-library-results] .linker-library-empty'));
+ assert.equal(doc.querySelector('#linker-library-tab-faq .linker-library-n').textContent, '0');
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '25');
+ assert.equal(doc.querySelector('#linker-library-result-count').textContent, '25 results');
+
+ doc.querySelector('#linker-library-tab-documents').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
  const host = doc.querySelector('[data-library-results]');
  assert.equal(host.hidden, false);
  assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, true);
  assert.equal(doc.querySelector('#linker-faq-page').classList.contains('is-searching'), true);
- assert.equal(host.querySelectorAll('.linker-library-hit').length, 20);
+ assert.equal(host.querySelectorAll('.linker-library-hit').length, 20, '20 rows a page');
  assert.equal(host.querySelectorAll('.linker-library-hit-eye').length, 20);
  assert.equal(host.querySelector('.linker-library-hit .linker-library-hit-eye').textContent, 'Chint · Document');
  assert.ok(host.querySelector('mark').textContent.toLowerCase() === 'dtsu666');
- assert.equal(doc.querySelector('#linker-library-result-count').textContent, '25 results');
- assert.equal(doc.querySelector('#linker-library-tab-faq .linker-library-n').textContent, '0');
  assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '25');
+ // The second page is the remaining five.
+ assert.ok(host.querySelector('.linker-library-pager'), 'the results paginate');
+ host.querySelector('[data-library-page="next"]').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
+ assert.equal(doc.querySelectorAll('[data-library-results] .linker-library-hit').length, 5);
 });
 
 test('a question searched in the answer shows where it matched', () => {
@@ -225,6 +273,39 @@ test('a question searched in the answer shows where it matched', () => {
  assert.ok(hit, 'the answer row matched');
  const where = hit.querySelector('.linker-library-qa-where');
  assert.equal(where.hidden, false);
+});
+
+test('a tab switch re-halves the search results, not just the counts', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const input = doc.querySelector('.linker-library-q');
+ const docs = () => [...doc.querySelectorAll('[data-library-results] .linker-library-doc')];
+ const questions = () => [...doc.querySelectorAll('[data-library-results] .linker-library-qa')];
+ const tabTo = (id) => doc.querySelector('#linker-library-tab-' + id).dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
+
+ // A documents-only query.
+ input.value = 'dtsu666';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ assert.equal(docs().length, 0, 'the FAQ tab lists no document');
+ tabTo('documents');
+ assert.ok(docs().length > 0, 'the documents tab lists them');
+ assert.equal(docs().length, 20, 'the first page of them');
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '25', 'the tab counts the whole half');
+ tabTo('faq');
+ assert.equal(docs().length, 0, 'and the FAQ tab hides them again');
+
+ // A query both halves match.
+ input.value = 'chint';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ tabTo('faq');
+ const questionHits = questions().length;
+ assert.equal(questionHits, 1, 'the FAQ half holds the one answer');
+ assert.equal(docs().length, 0);
+ tabTo('documents');
+ assert.equal(questions().length, 0, 'the documents tab lists no question');
+ assert.equal(docs().length, 20, 'the documents page is still the first one');
+ assert.equal(doc.querySelector('#linker-library-tab-faq .linker-library-n').textContent, '1');
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '25');
 });
 
 test('an empty result offers Genie, and clearing restores the tabs', () => {

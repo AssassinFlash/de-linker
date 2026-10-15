@@ -1,61 +1,97 @@
 {
   "ticket": 176,
   "date": "2026-10-15",
+  "round": "review rework (Standards T1–T9 + Spec S1–S10)",
   "instance": {
     "name": "a176",
     "wordpress": "http://127.0.0.1:9018",
-    "assembly": "gzip-installed snapshot instance (uploads = the live files); plugins symlinked to this checkout, linker-commerce/linker-i18n/linker-tools active; after the change: `PHP=/opt/homebrew/opt/php@8.3/bin/php just present a176` then `just windpress-compile a176` (both green: 15 templates unchanged/updated, cache recompiled 1792073331 -> 1792073447, anchor classes present)"
+    "assembly": "gzip-installed snapshot instance (uploads = the live files); plugins symlinked to this checkout; after the rework: `PHP=/opt/homebrew/opt/php@8.3/bin/php just present a176` and `just windpress-compile a176` (cache recompiled 1792073447 -> 1792078648, anchor classes present), `just serve a176` for the engine/Genie the e2e runner health-checks"
   },
   "checks": [
     {
       "name": "EN page: 200, tab counts, rows, thumbnails, chips, config, script",
       "command": "curl -s -o /tmp/faq-en.html -w '%{http_code}' http://127.0.0.1:9018/faq-download/",
-      "result": "HTTP 200, 708480 bytes; tab counts FAQ 288 / Documents 159; 288 question rows, 159 document rows, 147 rows with a thumbnail (12 type tiles = the documents over the build cap), 7 type chips, the JSON config and the script present"
+      "result": "HTTP 200; tab counts FAQ 288 / Documents 159; 288 question rows, 159 document rows, every row carries `linker-library-doc has-tile`, 147 rows carry a page image (12 keep the type tile inside the same slot), 7 type chips, the JSON config and the script present"
     },
     {
       "name": "DE page: 200 and its own German words (independent writing, not a translation of EN)",
       "command": "curl -s -o /tmp/faq-de.html -w '%{http_code}' http://127.0.0.1:9018/de/faq-download/",
-      "result": "HTTP 200, 725457 bytes; H1 'Antworten und Dokumente.', zones 'Vor der Bestellung' / 'Produktantworten' / 'Marken', tabs FAQ 288 / Dokumente 160, placeholder 'Fragen und Dokumente suchen', counter '448 im Bestand', 147 thumbnails + 13 type tiles"
+      "result": "HTTP 200; H1 'Antworten und Dokumente.', zones 'Vor der Bestellung' / 'Produktantworten' / 'Marken', tabs FAQ 288 / Dokumente 160, placeholder 'Fragen und Dokumente suchen', counter '448 im Bestand', aria-labels 'Auf dieser Seite'"
+    },
+    {
+      "name": "S1 (review blocker): a row without a thumbnail keeps the same 52x72 slot as a row with one",
+      "command": "node /tmp/geom.mjs (Playwright, 1440x900 and 390x844, /faq-download/?tab=documents)",
+      "result": "@1440: 159 rows, all with `has-tile`; both kinds share `grid-template-columns: 52px 790.8px 111.2px` and `grid-template-areas: \"thumb lead dl\" \"thumb meta dl\"`; heights 101-102px with an image, 102px with the type tile (was 155 vs 102). @390 the tile column is still 52px and type-tile rows measure 203-204px against 143-264px for image rows (the spread is text wrapping)."
+    },
+    {
+      "name": "Anchor landing = target top at or below the sticky stack's bottom edge",
+      "command": "node /tmp/geom.mjs + tests/e2e/specs/faq-download.spec.ts (both widths, both locales)",
+      "result": "@1440 margin +13px (target top 150 vs sticky bottom 137); @390 margin +24px with the chip row pinned (206 vs 182). The e2e spec asserts `top >= sticky - 1` and that the page actually scrolled, at 1440 and 390, EN and DE."
+    },
+    {
+      "name": "Language pill's accessible name (the review asked whether it is the bare code)",
+      "command": "playwright ariaSnapshot() on a document row's .linker-library-lang, EN and DE",
+      "result": "EN page: innerHTML `<span aria-hidden=\"true\">EN</span><span class=\"linker-library-sr\">English</span>`, accessible text 'English'. DE page: accessible text 'Englisch'. The bare code is aria-hidden decoration; the mapping to the full name is already what the reader gets, so the copy record documents it rather than changing it."
+    },
+    {
+      "name": "The search's flat list is the active tab's half (regression the new e2e caught)",
+      "command": "LINKER_E2E_INSTANCE=a176 playwright test specs/faq-download.spec.ts",
+      "result": "before the fix: a documents-only query listed 4 hits on the FAQ tab and only 1 of them was a document row. After: the FAQ half shows its own rows (0 for a documents-only query, with the empty state) and the documents tab lists the other half; checked in the e2e spec and in tests/js/library-ui.test.mjs."
     },
     {
       "name": "WindPress compiled cache: the page's rules, its anchor classes and its own scroll-margin",
       "command": "grep -c '#linker-faq-page' ~/de-linker-local/a176/wordpress/wp-content/uploads/windpress/cache/tailwind.css",
-      "result": "181 rule blocks scoped to the page; the three anchor classes are present (.linker-library-tabbar 1, .linker-library-card 5, .linker-library-thumb 15); 3 rules carry `scroll-margin-top: calc(var(--ll-header-h) + var(--ll-sticky) + 12px)` (page ids, cards, questions)"
-    },
-    {
-      "name": "a shipped thumbnail is served by the instance",
-      "command": "curl -s -o /dev/null -w '%{http_code} %{content_type}' http://127.0.0.1:9018/wp-content/plugins/linker-commerce/assets/faq-thumbs/0961161c6afae01a8e431a3853c8cf788ff05376.webp",
-      "result": "HTTP 200, image/webp, 5162 bytes"
+      "result": "the page's rule blocks are in the shipped cache; the three anchor classes present (.linker-library-tabbar, .linker-library-card, .linker-library-thumb); the page's own `scroll-margin-top: calc(var(--ll-header-h) + var(--ll-sticky) + 12px)` rules present"
     },
     {
       "name": "linker-commerce: PHPCS, PHPStan, PHPUnit",
       "command": "cd plugins/linker-commerce && PHP=/opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpcs -q && vendor/bin/phpstan analyse --no-progress --memory-limit=-1 && vendor/bin/phpunit",
-      "result": "phpcs clean; PHPStan 0 errors; PHPUnit OK (1027 tests, 4933 assertions, 54 skipped — the skips are the instance-needing integration tests)"
+      "result": "phpcs clean; PHPStan 0 errors; PHPUnit OK (1037 tests, 5018 assertions, 54 skipped — the skips are the instance-needing integration tests). New this round: DocumentThumbnailsTest (5), TradeRulesTest (4), plus the manifest-hit and constant-slot cases in LibraryPageTest, and the config's dead keys asserted absent."
     },
     {
-      "name": "the plugins' script tests (node --test, jsdom through plugins/linker-tools)",
+      "name": "The plugins' script tests (node --test, jsdom through plugins/linker-tools)",
       "command": "cd plugins/linker-tools && node --test ../../plugins/linker-commerce/tests/js/*.test.mjs",
-      "result": "# tests 33 / pass 33 / fail 0 (19 of them library-ui.test.mjs)"
+      "result": "# tests 36 / pass 36 / fail 0 (22 of them library-ui.test.mjs, incl. the new guards: aria-pressed belongs to the chips alone; every cloned row keeps its tile slot; the rail's mark reads data-library-zone off the elements; a tab switch re-halves the search list)"
     },
     {
-      "name": "i18n gates",
+      "name": "tools/faq: the thumbnail pipeline's own tests and the Python gates",
+      "command": "cd tools/faq && uv run --locked pytest -q && uv run --locked ruff check . && uv run --locked ruff format --check . && uv run --locked mypy .",
+      "result": "20 tests pass (11 of test_thumbs.py: key/file_name/webp_size/is_pdf, the cap's select(), the probe-only branch driving main() and proving nothing is written, the cleanup rule, and the committed manifest's mutual consistency with the committed files); ruff clean and formatted; mypy clean"
+    },
+    {
+      "name": "The shipped data file is the extraction it claims to be",
+      "command": "python3 tools/faq/extract-trade.py --check",
+      "result": "the committed data/faq-trade.json matches the templates at 08997063 byte for byte (tools/faq/extract-trade.py is the extractor now, with the revision and a --check mode)"
+    },
+    {
+      "name": "e2e: the page's own suite (tests/e2e/specs/faq-download.spec.ts)",
+      "command": "LINKER_E2E_INSTANCE=a176 ./tests/e2e/node_modules/.bin/playwright test --config tests/e2e/playwright.config.ts specs/faq-download.spec.ts",
+      "result": "10 passed (13.5s), EN and DE: the tab switch and the URL round-trip (faq takes no parameter, documents is recorded, reload and back both land right), the search with its split counts (a tab switch re-halves the list, clearing restores the register), 20 rows a page with the last page short and aria-current on the pager, the type chips filtering every visible row and updating the counts, and the anchor landing at or below the sticky stack at 1440 and 390"
+    },
+    {
+      "name": "i18n gates and the banned-word gate",
       "command": "python3 tools/checks/i18n-coverage.py && python3 tools/checks/i18n-validity.py && just banned-words",
-      "result": "i18n-coverage clean (the 15 new strings all carry a German msgstr); i18n-validity clean (5 catalogs); banned-words clean"
+      "result": "clean (the 15 new strings all carry a German msgstr; catalogs compile), banned-words clean"
     },
     {
-      "name": "thumbnail build (rerunnable)",
-      "command": "python3 tools/faq/thumbs.py --wp 'just wp a176' --out plugins/linker-commerce/assets/faq-thumbs",
-      "result": "147/159 files, 984 KB, 12 skipped over the 15 MB cap, 0 failures; the manifest is keyed by the document URL's path"
+      "name": "the 351 MB PDF cache cannot enter git",
+      "command": "git check-ignore -v .scratch/faq-pdf-cache/ && git status --short",
+      "result": "`.gitignore:34:.scratch/faq-pdf-cache/` ignores it; the prototype copy (.scratch/faq-wt) and the scratch extractor are removed from the worktree, and the extractor now lives in tools/faq/extract-trade.py"
+    },
+    {
+      "name": "thumbnail build (rerunnable, idempotent)",
+      "command": "python3 tools/faq/thumbs.py --wp 'just wp a176'",
+      "result": "147/159 files, 984 KB, 12 skipped over the 15 MB cap, 0 failures; re-running writes nothing (every row reports 'cached', the manifest stays byte-identical)"
     }
   ],
   "visual": {
-    "status": "screenshots taken this session at 1440 and 390 (EN), plus the documents tab and the search dropdown, for a first look; the full per-state visual acceptance (1440/390 x EN/DE) is the main line's session, baseline = the accepted prototype (prototype/faq-download-redesign: docs/design/2026-10-15-faq-download-prototype/index.html?variant=5)",
+    "status": "geometry and interaction verified on a176 this round (row layout, anchor margins, tab/search/filter/pagination in the e2e spec, plus the a11y snapshot). The full per-state visual acceptance (1440/390 x EN/DE) remains the main line's session, baseline = the accepted prototype (prototype/faq-download-redesign: docs/design/2026-10-15-faq-download-prototype/index.html?variant=5)",
     "observed": [
       "hero (spark, title, subtitle, contact line, grid backdrop, centred search) renders; the search field and the type chips are revealed by the script only",
       "tab switching writes ?tab=documents, hides the other panel and swaps the rail/chip group",
-      "documents tab: brand logos (our-brand-*-mono-light at 34px), type chips with counts, PDF page-1 thumbnails in 52x72 tiles, language pills, standing Download buttons",
-      "390px: rail folds into the pinned chip row under the tab bar, cards stack, the brand lockup takes its own line above the brand name (a card-head overlap the first pass showed was fixed before this run)",
-      "search 'goodwe battery': 44 results, tab counts split to FAQ 41 / Documents 3, flat ledger with group eyebrows, suggestions grouped Questions/Documents with <mark> highlights"
+      "documents tab: brand logos (our-brand-*-mono-light at 34px), type chips with counts, PDF page-1 thumbnails in 52x72 tiles, language pills, standing Download buttons; rows without a page image keep the same tile column",
+      "390px: rail folds into the pinned chip row under the tab bar, cards stack, the brand lockup takes its own line above the brand name",
+      "search: the flat ledger carries group eyebrows and <mark> highlights, the tab counts split, and a tab switch re-halves the list"
     ]
   },
   "copy_review": "docs/acceptance/2026-10-15/176/copy-review.md",

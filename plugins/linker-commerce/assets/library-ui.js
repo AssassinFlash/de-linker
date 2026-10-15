@@ -153,21 +153,6 @@
 		return String(pathname || "") + base + named + (hash || "");
 	}
 
-	/** The zone a spy target belongs to, from its id. */
-	function zoneOf(id) {
-		var value = String(id || "");
-		if (value === "linker-library-zone-trade" || value.indexOf("linker-library-trade-") === 0) {
-			return "linker-library-zone-trade";
-		}
-		if (value === "linker-library-zone-answers" || value.indexOf("linker-library-answers-") === 0) {
-			return "linker-library-zone-answers";
-		}
-		if (value === "linker-library-zone-documents" || value.indexOf("linker-library-docs-") === 0) {
-			return "linker-library-zone-documents";
-		}
-		return "";
-	}
-
 	if (typeof module !== "undefined" && module.exports) {
 		module.exports = {
 			normalize: normalize,
@@ -179,7 +164,6 @@
 			paginate: paginate,
 			tabFromSearch: tabFromSearch,
 			tabUrl: tabUrl,
-			zoneOf: zoneOf,
 			PAGE_SIZE: PAGE_SIZE,
 		};
 	}
@@ -395,6 +379,13 @@
 				tabUrl(scope.location.pathname, scope.location.search, options.keepHash ? scope.location.hash : "", next)
 			);
 		}
+		if (state.q.trim()) {
+			// Searching: the tab picks the half of the match set the flat list
+			// shows, from its first page.
+			state.searchPage = 1;
+			renderSearch();
+			return;
+		}
 		if (moved) {
 			// The list starts where the tab bar does: a reader who switched tabs
 			// from further down the page sees the first card, not the middle of
@@ -491,7 +482,10 @@
 
 	function setType(type) {
 		state.type = type || "all";
-		slice.call(root.querySelectorAll("[data-library-type]")).forEach(function (chip) {
+		// The rows carry `data-library-type` too (it is what they are filtered
+		// by); aria-pressed is the chips' alone, so the selector is scoped to
+		// the container the fragments print them in.
+		slice.call(root.querySelectorAll("[data-library-filters] [data-library-type]")).forEach(function (chip) {
 			chip.setAttribute("aria-pressed", chip.getAttribute("data-library-type") === state.type ? "true" : "false");
 		});
 		cards.forEach(function (card) {
@@ -532,6 +526,7 @@
 		return host;
 	}
 
+	/** The hits of a query: every matching row, best match first. */
 	function searchHits(query) {
 		var hits = index.filter(function (hit) {
 			return matches(hit.text, query);
@@ -540,6 +535,18 @@
 			return score(b.title, b.text, query) - score(a.title, a.text, query) || a.order - b.order;
 		});
 		return hits;
+	}
+
+	/** Whether a hit is the tab's: documents belong to the documents tab. */
+	function inTab(hit, tab) {
+		return tab === "documents" ? hit.kind === "document" : hit.kind !== "document";
+	}
+
+	/** A tab's share of a query's hits, best match first. */
+	function hitsOfTab(query, tab) {
+		return searchHits(query).filter(function (hit) {
+			return inTab(hit, tab);
+		});
 	}
 
 	function topHits(pool, query) {
@@ -575,7 +582,9 @@
 
 	function renderSearch() {
 		var query = state.q.trim();
-		var hits = searchHits(query);
+		// The list is the active tab's half of the hits (the tab's own count is
+		// that half's size), and the field's counter is the whole match set.
+		var hits = hitsOfTab(query, state.tab);
 		var host = resultsHost();
 		var window_ = paginate(hits, state.searchPage, pageSize);
 		state.searchPage = window_.page;
@@ -601,19 +610,9 @@
 			}
 		}
 		host.hidden = false;
-		countOf(resultCount, plural("resultsOne", "resultsOther", hits.length));
-		countOf(
-			tabCount("faq"),
-			hits.filter(function (hit) {
-				return hit.kind !== "document";
-			}).length
-		);
-		countOf(
-			tabCount("documents"),
-			hits.filter(function (hit) {
-				return hit.kind === "document";
-			}).length
-		);
+		countOf(resultCount, plural("resultsOne", "resultsOther", searchHits(query).length));
+		countOf(tabCount("faq"), hitsOfTab(query, "faq").length);
+		countOf(tabCount("documents"), hitsOfTab(query, "documents").length);
 	}
 
 	function resetCounts() {
@@ -835,7 +834,7 @@
 			}
 		});
 		var id = current.id;
-		var zone = zoneOf(id);
+		var zone = current.getAttribute("data-library-zone") || "";
 		slice.call(root.querySelectorAll("[data-library-spy-link]")).forEach(function (link) {
 			var href = (link.getAttribute("href") || "").slice(1);
 			var linkZone = link.getAttribute("data-library-zone") || "";

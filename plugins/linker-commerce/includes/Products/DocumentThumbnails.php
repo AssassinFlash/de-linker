@@ -24,6 +24,10 @@ namespace Linker\Commerce\Products;
  * The manifest's key is the document URL's path, not the URL: the same file is
  * served by the live host and by a local instance, and a thumbnail belongs to
  * the file. That is also why one build serves both language pages.
+ *
+ * The manifest is read once per instance, and the path is the constructor's:
+ * the plugin's own shipped file by default, a fixture in tests (the same seam
+ * WindPressCache takes for its cache file).
  */
 final class DocumentThumbnails {
 
@@ -39,11 +43,28 @@ final class DocumentThumbnails {
 	public const MANIFEST = 'manifest.json';
 
 	/**
-	 * The decoded manifest, read once per request.
+	 * Absolute path of the manifest.
+	 *
+	 * @var string
+	 */
+	private readonly string $path;
+
+	/**
+	 * The decoded manifest, read on first use.
 	 *
 	 * @var array<string, array{file: string, width: int, height: int}>|null
 	 */
-	private static ?array $files = null;
+	private ?array $files = null;
+
+	/**
+	 * Sets up the reader.
+	 *
+	 * @param string|null $manifest_path Manifest override (tests); the shipped
+	 *                                   file when null.
+	 */
+	public function __construct( ?string $manifest_path = null ) {
+		$this->path = $manifest_path ?? dirname( __DIR__, 2 ) . '/' . self::DIRECTORY . '/' . self::MANIFEST;
+	}
 
 	/**
 	 * The thumbnail of a document URL, or null when the build shipped none.
@@ -51,8 +72,8 @@ final class DocumentThumbnails {
 	 * @param string $url Document URL as the register states it.
 	 * @return array{src: string, width: int, height: int}|null
 	 */
-	public static function of( string $url ): ?array {
-		$manifest = self::manifest();
+	public function of( string $url ): ?array {
+		$manifest = $this->manifest();
 		$key      = self::key( $url );
 		if ( ! isset( $manifest[ $key ] ) ) {
 			return null;
@@ -67,7 +88,8 @@ final class DocumentThumbnails {
 
 	/**
 	 * A document URL's manifest key: its path, so the live host and a local
-	 * instance resolve the same file to the same thumbnail.
+	 * instance resolve the same file to the same thumbnail. A URL without a
+	 * path is its own key, which no pipeline entry can be named after.
 	 *
 	 * @param string $url Document URL.
 	 */
@@ -80,21 +102,24 @@ final class DocumentThumbnails {
 	/**
 	 * The manifest's entries: URL path → {file, width, height}. A name that is
 	 * not the pipeline's own `<sha1>.webp` is dropped here — the manifest is a
-	 * build artifact on disk, and only that shape reaches a URL.
+	 * build artifact on disk, and only that shape reaches a URL; a row that is
+	 * not an object, or a key that is not a string, is dropped with it. An
+	 * unreadable or absent manifest is no entries, not an error: the rows then
+	 * show their type tiles, which is what the design says for a document
+	 * without a thumbnail.
 	 *
 	 * @return array<string, array{file: string, width: int, height: int}>
 	 */
-	public static function manifest(): array {
-		if ( null !== self::$files ) {
-			return self::$files;
+	public function manifest(): array {
+		if ( null !== $this->files ) {
+			return $this->files;
 		}
-		self::$files = array();
-		$path        = dirname( __DIR__, 2 ) . '/' . self::DIRECTORY . '/' . self::MANIFEST;
-		if ( ! is_readable( $path ) ) {
-			return self::$files;
+		$this->files = array();
+		if ( ! is_readable( $this->path ) ) {
+			return $this->files;
 		}
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin asset on disk, not a remote URL.
-		$payload = json_decode( (string) file_get_contents( $path ), true );
+		$payload = json_decode( (string) file_get_contents( $this->path ), true );
 		foreach ( is_array( $payload ) ? $payload : array() as $key => $entry ) {
 			if ( ! is_string( $key ) || ! is_array( $entry ) ) {
 				continue;
@@ -103,13 +128,13 @@ final class DocumentThumbnails {
 			if ( ! is_string( $file ) || 1 !== preg_match( '/^[a-f0-9]{40}\.webp$/', $file ) ) {
 				continue;
 			}
-			self::$files[ $key ] = array(
+			$this->files[ $key ] = array(
 				'file'   => $file,
 				'width'  => (int) ( $entry['width'] ?? 0 ),
 				'height' => (int) ( $entry['height'] ?? 0 ),
 			);
 		}
 
-		return self::$files;
+		return $this->files;
 	}
 }

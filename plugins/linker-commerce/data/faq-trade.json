@@ -1,7 +1,7 @@
 {
-  "_why": "The trade rules of /faq-download/ ('Before you order'): the 16 B2B questions the live page carries, frozen. Content moved verbatim out of the LiveCanvas templates on 2026-10-15 (#176) so the rail, the mobile chips, the card headings and the answers read one source; de-linker has no lab and the register states what the documents state.",
+  "_why": "The trade rules of /faq-download/ ('Before you order'): the 16 B2B questions the page carries, frozen. Content moved verbatim out of the LiveCanvas templates on 2026-10-15 (#176) so the rail, the mobile chip row, the card headings and the answers read one source; de-linker has no lab and the register states what the documents state.",
   "_rule": "Verbatim copy of the page's own questions and answers; wording is approved content and is not edited here. Answers may carry inline links to the contact page.",
-  "_source": "plugins/linker-commerce/content/livecanvas/faq_page.html and de/faq_page.html at 08997063 (#176 extraction, .scratch/faq-176/extract-trade.py).",
+  "_source": "plugins/linker-commerce/content/livecanvas/faq_page.html and de/faq_page.html at 08997063 (#176 extraction, tools/faq/extract-trade.py --rev 08997063).",
   "categories": [
     {
       "name": {

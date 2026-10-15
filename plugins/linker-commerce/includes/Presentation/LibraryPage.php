@@ -38,11 +38,6 @@ use Linker\Commerce\Products\TradeRules;
 final class LibraryPage {
 
 	/**
-	 * What `[linker_library_count of="all"]` states.
-	 */
-	public const COUNT_ALL = 'all';
-
-	/**
 	 * Rows one page of a card or of the search results shows: the accepted
 	 * prototype's page size.
 	 */
@@ -95,6 +90,20 @@ final class LibraryPage {
 	private readonly DocumentLibrary $library;
 
 	/**
+	 * The page's own trade rules.
+	 *
+	 * @var TradeRules
+	 */
+	private readonly TradeRules $rules;
+
+	/**
+	 * The register's first-page thumbnails.
+	 *
+	 * @var DocumentThumbnails
+	 */
+	private readonly DocumentThumbnails $thumbs;
+
+	/**
 	 * The page's model, assembled once per request.
 	 *
 	 * @var array{
@@ -110,10 +119,18 @@ final class LibraryPage {
 	/**
 	 * Sets up the page.
 	 *
-	 * @param DocumentLibrary|null $library Register override (tests).
+	 * @param DocumentLibrary|null    $library Register override (tests).
+	 * @param TradeRules|null         $rules   Trade-rule data override (tests).
+	 * @param DocumentThumbnails|null $thumbs  Thumbnail-manifest override (tests).
 	 */
-	public function __construct( ?DocumentLibrary $library = null ) {
+	public function __construct(
+		?DocumentLibrary $library = null,
+		?TradeRules $rules = null,
+		?DocumentThumbnails $thumbs = null
+	) {
 		$this->library = $library ?? new DocumentLibrary();
+		$this->rules   = $rules ?? new TradeRules();
+		$this->thumbs  = $thumbs ?? new DocumentThumbnails();
 	}
 
 	/**
@@ -130,21 +147,17 @@ final class LibraryPage {
 	}
 
 	/**
-	 * A count the template prints: one tab's entries, or everything on file.
+	 * A tab's entry count, as the tab bar prints it. `of` is `faq` or
+	 * `documents`; anything else is the FAQ tab, the one that opens.
 	 *
-	 * @param array<string, string>|string $atts Shortcode attributes: `of` is
-	 *                                           `faq`, `documents` or `all`.
+	 * @param array<string, string>|string $atts Shortcode attributes: `of`.
 	 */
 	public function count( $atts = array() ): string {
 		$atts  = is_array( $atts ) ? $atts : array();
 		$of    = is_string( $atts['of'] ?? null ) ? $atts['of'] : 'faq';
 		$model = $this->model();
 
-		return (string) match ( $of ) {
-			'documents'     => $model['document_total'],
-			self::COUNT_ALL => $model['faq_total'] + $model['document_total'],
-			default         => $model['faq_total'],
-		};
+		return (string) ( 'documents' === $of ? $model['document_total'] : $model['faq_total'] );
 	}
 
 	/**
@@ -233,9 +246,9 @@ final class LibraryPage {
 		}
 
 		$out  = '<div class="linker-library-chips-scroll" data-library-nav="faq">';
-		$out .= $this->chip( self::ZONE_TRADE, $trade, null ) . $trade_chips;
+		$out .= $this->chip( self::ZONE_TRADE, $trade, null, self::ZONE_TRADE ) . $trade_chips;
 		$out .= '<span class="linker-library-chip-gap" aria-hidden="true"></span>';
-		$out .= $this->chip( self::ZONE_ANSWERS, $faq, null ) . $answer_chips;
+		$out .= $this->chip( self::ZONE_ANSWERS, $faq, null, self::ZONE_ANSWERS ) . $answer_chips;
 		$out .= '</div>';
 		$out .= '<div class="linker-library-chips-scroll" data-library-nav="documents">' . $document_chips . '</div>';
 
@@ -317,9 +330,7 @@ final class LibraryPage {
 			}
 			$cards .= $this->card( $brand['documents_id'], 'document', $brand['name'], count( $documents ), $brand['logo'], $rows, $brand['mark'] );
 		}
-		$out .= '<section class="linker-library-zone" id="' . esc_attr( self::ZONE_DOCUMENTS ) . '" data-library-spy>';
-		$out .= '<h2 class="linker-library-zone-title">' . esc_html( (string) __( 'Brands', 'linker-commerce' ) ) . '</h2>';
-		$out .= '<div class="linker-library-stack">' . $cards . '</div></section>';
+		$out .= $this->zone( self::ZONE_DOCUMENTS, (string) __( 'Brands', 'linker-commerce' ), $cards );
 
 		return $out;
 	}
@@ -358,8 +369,6 @@ final class LibraryPage {
 				'empty'        => __( 'Nothing on file matches that search.', 'linker-commerce' ),
 				'emptySoft'    => __( 'No documents of this type.', 'linker-commerce' ),
 				'askGenie'     => __( 'Ask Genie', 'linker-commerce' ),
-				'clear'        => __( 'Clear search', 'linker-commerce' ),
-				'inAnswer'     => __( 'In the answer', 'linker-commerce' ),
 				'trade'        => __( 'Trade rule', 'linker-commerce' ),
 				'answer'       => __( 'Answer', 'linker-commerce' ),
 				'document'     => __( 'Document', 'linker-commerce' ),
@@ -375,21 +384,24 @@ final class LibraryPage {
 	}
 
 	/**
-	 * One zone: its heading and its stack of cards.
+	 * One zone: its heading, its stack of cards, and the zone it belongs to —
+	 * the rail and the chip row mark the link of the zone the reader is in, and
+	 * every spy target states its own rather than having it guessed from an id.
 	 *
-	 * @param string $id    Anchor id.
+	 * @param string $id    Anchor id (the zone's own).
 	 * @param string $title Zone title.
 	 * @param string $cards The cards.
 	 */
 	private function zone( string $id, string $title, string $cards ): string {
-		return '<section class="linker-library-zone" id="' . esc_attr( $id ) . '" data-library-spy>' .
+		return '<section class="linker-library-zone" id="' . esc_attr( $id ) . '" data-library-spy data-library-zone="' . esc_attr( $id ) . '">' .
 			'<h2 class="linker-library-zone-title">' . esc_html( $title ) . '</h2>' .
 			'<div class="linker-library-stack">' . $cards . '</div></section>';
 	}
 
 	/**
 	 * One card: its heading (the brand's logo or initials, its name, the row
-	 * count the search and the type chips update) and the rows themselves.
+	 * count the search and the type chips update), its zone, and the rows
+	 * themselves.
 	 *
 	 * @param string $id    Anchor id.
 	 * @param string $kind  `trade`, `answer` or `document`.
@@ -411,7 +423,13 @@ final class LibraryPage {
 
 		$list = 'document' === $kind ? '<ul class="linker-library-doc-list">' . $rows . '</ul>' : $rows;
 
-		return '<article class="linker-library-card" id="' . esc_attr( $id ) . '" data-library-card data-library-kind="' . esc_attr( $kind ) . '">' . $head .
+		$zone = match ( $kind ) {
+			'document' => self::ZONE_DOCUMENTS,
+			'trade'    => self::ZONE_TRADE,
+			default    => self::ZONE_ANSWERS,
+		};
+
+		return '<article class="linker-library-card" id="' . esc_attr( $id ) . '" data-library-card data-library-kind="' . esc_attr( $kind ) . '" data-library-spy data-library-zone="' . esc_attr( $zone ) . '">' . $head .
 			'<div class="linker-library-rows">' . $list . '</div></article>';
 	}
 
@@ -422,9 +440,11 @@ final class LibraryPage {
 	 * @param array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, thumb: array{src: string, width: int, height: int}|null} $document Document.
 	 */
 	private function document( array $document ): string {
-		$has_thumb = null !== $document['thumb'];
-		$out       = '<li class="linker-library-doc' . ( $has_thumb ? ' has-thumb' : '' ) . '" data-library-item data-library-type="' . esc_attr( $document['type'] ) . '">';
-		if ( $has_thumb ) {
+		// `has-tile` is constant: the design gives every row the same 52x72
+		// slot, and what varies is only whether a page image fills it (the
+		// fragments' `has-src`) or the type tile stands alone.
+		$out = '<li class="linker-library-doc has-tile" data-library-item data-library-type="' . esc_attr( $document['type'] ) . '">';
+		if ( null !== $document['thumb'] ) {
 			// `has-src` is what hides the tile's icon while the page image is
 			// there; a reader without the script sees the image, and the
 			// script's error path takes the class back off.
@@ -443,16 +463,20 @@ final class LibraryPage {
 	}
 
 	/**
-	 * One chip of a chip row: a zone link, or a card link carrying its count.
+	 * One chip of a chip row. A chip that points at a zone states that zone, so
+	 * the spy can mark it whenever the reader stands anywhere inside it; a chip
+	 * that points at a card carries the card's count instead.
 	 *
-	 * @param string   $id    Anchor id.
-	 * @param string   $label Visible words.
-	 * @param int|null $count Count, null for a zone link.
+	 * @param string      $id    Anchor id.
+	 * @param string      $label Visible words.
+	 * @param int|null    $count Count, null for a zone link.
+	 * @param string|bool $zone  The zone a zone link belongs to; false for a
+	 *                           card link.
 	 */
-	private function chip( string $id, string $label, ?int $count ): string {
+	private function chip( string $id, string $label, ?int $count, string|bool $zone = false ): string {
 		$out = '<a class="linker-library-chip" href="#' . esc_attr( $id ) . '" data-library-spy-link';
-		if ( str_starts_with( $id, self::ID_PREFIX . 'zone-' ) ) {
-			$out .= ' data-library-zone="' . esc_attr( $id ) . '"';
+		if ( is_string( $zone ) ) {
+			$out .= ' data-library-zone="' . esc_attr( $zone ) . '"';
 		}
 		$out .= '>' . esc_html( $label );
 		if ( null !== $count ) {
@@ -591,7 +615,7 @@ final class LibraryPage {
 		$language = $this->german() ? 'de' : 'en';
 
 		$trade = array();
-		foreach ( TradeRules::categories( $language ) as $index => $category ) {
+		foreach ( $this->rules->categories( $language ) as $index => $category ) {
 			$questions = array();
 			foreach ( $category['questions'] as $question ) {
 				$questions[] = array(
@@ -641,7 +665,7 @@ final class LibraryPage {
 				'language'       => $document['language'],
 				'language_label' => self::language_label( $document['language'] ),
 				'covers'         => self::covers( $document['covers'] ),
-				'thumb'          => DocumentThumbnails::of( $document['url'] ),
+				'thumb'          => $this->thumbs->of( $document['url'] ),
 			);
 		}
 
@@ -659,6 +683,8 @@ final class LibraryPage {
 		foreach ( $trade as $category ) {
 			$faq_total += $category['count'];
 		}
+		// The trade rules are the page's own; every other count comes from the
+		// register below.
 		foreach ( $names as $brand ) {
 			$rows  = $answers[ $brand ] ?? null;
 			$files = $documents[ $brand ] ?? null;

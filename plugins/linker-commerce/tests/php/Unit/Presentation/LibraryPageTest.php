@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\LibraryPage;
 use Linker\Commerce\Products\DocumentLibrary;
+use Linker\Commerce\Products\DocumentThumbnails;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
@@ -31,6 +32,13 @@ final class LibraryPageTest extends TestCase {
 	 * @var int
 	 */
 	private int $post_queries = 0;
+
+	/**
+	 * Thumbnail-manifest fixtures this test wrote.
+	 *
+	 * @var list<string>
+	 */
+	private array $thumb_paths = array();
 
 	/**
 	 * A product of one brand with two files and one answer, the shape the
@@ -161,6 +169,17 @@ final class LibraryPageTest extends TestCase {
 	}
 
 	/**
+	 * Removes the fixtures.
+	 */
+	public function tearDown(): void {
+		foreach ( $this->thumb_paths as $path ) {
+			unlink( $path );
+		}
+		$this->thumb_paths = array();
+		parent::tearDown();
+	}
+
+	/**
 	 * The FAQ tab: the trade rules from the page's own data file, then the
 	 * products' answers — each as a card with its own count, all open to
 	 * search-engine and no-JS readers.
@@ -213,15 +232,57 @@ final class LibraryPageTest extends TestCase {
 	}
 
 	/**
-	 * A row with no shipped thumbnail keeps the type tile the design shows in
-	 * its place — the build's own gap, printed rather than left blank.
+	 * Every document row carries the tile slot (the design gives each one a
+	 * 52x72 column): a row without a shipped thumbnail keeps the type tile
+	 * inside it, and the rows never change their shape between the two.
 	 */
 	public function test_a_document_without_a_thumbnail_keeps_its_type_tile(): void {
 		$html = ( new LibraryPage( $this->library() ) )->documents();
 
+		$this->assertSame( 2, substr_count( $html, '<li class="linker-library-doc has-tile"' ), 'one row class for every row' );
 		$this->assertStringContainsString( 'linker-library-thumb is-type is-datasheet', $html );
 		$this->assertStringNotContainsString( 'has-src', $html );
 		$this->assertStringNotContainsString( '<img src="https://de-linker.test/wp-content/plugins/linker-commerce/assets/faq-thumbs/', $html );
+	}
+
+	/**
+	 * A manifest hit: the row's tile carries the page image (`has-src` hides the
+	 * type icon while it is there) and the image states the size the pipeline
+	 * recorded.
+	 */
+	public function test_a_document_with_a_thumbnail_prints_its_page_image(): void {
+		$page = new LibraryPage( $this->library(), null, new DocumentThumbnails( $this->manifest() ) );
+		$html = $page->documents();
+
+		$this->assertStringContainsString(
+			'<span class="linker-library-thumb has-src" aria-hidden="true"><img src="https://de-linker.test/wp-content/plugins/linker-commerce/assets/faq-thumbs/0123456789abcdef0123456789abcdef01234567.webp" alt="" width="153" height="216" loading="lazy" decoding="async">',
+			$html
+		);
+		$this->assertStringContainsString( 'has-tile', $html, "the tile slot is the row's, thumbnail or not" );
+		$this->assertStringContainsString( 'linker-library-thumb is-type is-certificate', $html, 'the file with no manifest entry keeps its type tile' );
+	}
+
+	/**
+	 * A manifest carrying the two files the register lists: one entry, and the
+	 * certificate left out.
+	 */
+	private function manifest(): string {
+		$path = sys_get_temp_dir() . '/linker-commerce-library-thumbs-' . bin2hex( random_bytes( 6 ) ) . '.json';
+		file_put_contents( // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a temp fixture on this machine.
+			$path,
+			(string) json_encode(
+				array(
+					'/media/900.pdf' => array(
+						'file'   => '0123456789abcdef0123456789abcdef01234567.webp',
+						'width'  => 153,
+						'height' => 216,
+					),
+				)
+			)
+		);
+		$this->thumb_paths[] = $path;
+
+		return $path;
 	}
 
 	/**
@@ -271,6 +332,8 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( '"genieUrl":"https:\/\/de-linker.test\/genie\/"', $html );
 		$this->assertStringContainsString( '"empty":"Nothing on file matches that search."', $html );
 		$this->assertStringContainsString( '"pages":"Pages"', $html );
+		$this->assertStringNotContainsString( '"clear"', $html, 'the template owns the clear button\'s label' );
+		$this->assertStringNotContainsString( '"inAnswer"', $html, 'the fragment owns the hint' );
 	}
 
 	/**

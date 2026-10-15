@@ -1,11 +1,22 @@
 <?php
 /**
- * The WordPress side of tools/faq/export.py and import.py: reads existing
- * questions from the legacy ACF JSON, or writes `_linker_faqs`.
+ * The WordPress side of the tools/faq scripts: they hand this file to
+ * `wp eval-file -` with the request (JSON, base64) in place of the
+ * placeholder at the end. Evaluated code cannot start with a strict_types
+ * declaration.
  *
- * The Python scripts hand this file to `wp eval-file -` with the request
- * (JSON, base64) in place of the placeholder at the end. Evaluated code
- * cannot start with a strict_types declaration.
+ * Three actions, one per caller:
+ *
+ * - `export` (export.py): every published product's existing questions, read
+ *   out of the legacy ACF JSON, with the German question paired by position
+ *   when the two lists are the same length.
+ * - `import` (import.py): writes `_linker_faqs` through the plugin's own
+ *   Faqs::encode()/mirror_to_twin(), after checking the record still names the
+ *   product it was written for.
+ * - `documents` (thumbs.py): the document register's own reading
+ *   (DocumentLibrary::documents()) — the URLs and types the thumbnail
+ *   pipeline downloads and renders, so the pipeline sees exactly the files
+ *   the page lists.
  *
  * @package Linker\Commerce
  */

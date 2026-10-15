@@ -14,13 +14,18 @@ use Linker\Commerce\Abilities\ProductText;
 /**
  * The page's own 16 B2B questions in 5 categories (data/faq-trade.json). The
  * answers are frozen approved content and read verbatim; the file is the one
- * source for the register's rail, its mobile chips, the card headings and the
- * answers, so a card's count cannot disagree with the entries under it.
+ * source for the register's rail, its mobile chip row, the card headings and
+ * the answers, so a card's count cannot disagree with the entries under it.
  *
  * Until #176 these questions lived in the two LiveCanvas templates, one
  * language per file, and the counts around them were hand-written. The
  * templates now carry the page's structure and headline copy; this data file
- * carries the rules themselves.
+ * carries the rules themselves, and tools/faq/extract-trade.py is where the
+ * file came from (it re-reads the templates at the revision that still had
+ * them, so the move is reproducible).
+ *
+ * The file is read once per instance, and its path is the constructor's: the
+ * plugin's own shipped file by default, a fixture in tests.
  */
 final class TradeRules {
 
@@ -30,11 +35,28 @@ final class TradeRules {
 	public const FILE = 'faq-trade.json';
 
 	/**
-	 * The decoded categories, read once per request.
+	 * Absolute path of the data file.
+	 *
+	 * @var string
+	 */
+	private readonly string $path;
+
+	/**
+	 * The well-formed categories, read on first use.
 	 *
 	 * @var list<array{name: array{en: string, de: string}, qas: list<array{question: array{en: string, de: string}, answer: array{en: string, de: string}}>}>|null
 	 */
-	private static ?array $categories = null;
+	private ?array $categories = null;
+
+	/**
+	 * Sets up the reader.
+	 *
+	 * @param string|null $path Data-file override (tests); the shipped file
+	 *                          when null.
+	 */
+	public function __construct( ?string $path = null ) {
+		$this->path = $path ?? dirname( __DIR__, 2 ) . '/data/' . self::FILE;
+	}
 
 	/**
 	 * The categories in stored order, each with its questions in `$lang`.
@@ -42,10 +64,10 @@ final class TradeRules {
 	 * @param string $lang Language of the words ('de' or 'en').
 	 * @return list<array{name: string, questions: list<array{question: string, answer: string}>}>
 	 */
-	public static function categories( string $lang = 'en' ): array {
+	public function categories( string $lang = 'en' ): array {
 		$language = ProductText::lang( $lang );
 		$out      = array();
-		foreach ( self::raw() as $category ) {
+		foreach ( $this->raw() as $category ) {
 			$questions = array();
 			foreach ( $category['qas'] as $qa ) {
 				$questions[] = array(
@@ -65,9 +87,9 @@ final class TradeRules {
 	/**
 	 * The question count over every category.
 	 */
-	public static function count(): int {
+	public function count(): int {
 		$count = 0;
-		foreach ( self::raw() as $category ) {
+		foreach ( $this->raw() as $category ) {
 			$count += count( $category['qas'] );
 		}
 
@@ -76,7 +98,8 @@ final class TradeRules {
 
 	/**
 	 * A stored pair of words in the page's language, the English one when the
-	 * German side is empty (the data is written in pairs).
+	 * German side is empty (the data is written in pairs, and a half-written
+	 * row must not blank the page).
 	 *
 	 * @param array{en: string, de: string} $pair Stored pair.
 	 * @param 'en'|'de'                     $language Page language.
@@ -86,20 +109,20 @@ final class TradeRules {
 	}
 
 	/**
-	 * The well-formed categories of the shipped file; rows the file states
-	 * wrongly are dropped rather than printed.
+	 * The well-formed categories of the data file; rows the file states
+	 * wrongly are dropped rather than printed. An unreadable file is no
+	 * categories, not an error.
 	 *
 	 * @return list<array{name: array{en: string, de: string}, qas: list<array{question: array{en: string, de: string}, answer: array{en: string, de: string}}>}>
 	 */
-	private static function raw(): array {
-		if ( null !== self::$categories ) {
-			return self::$categories;
+	private function raw(): array {
+		if ( null !== $this->categories ) {
+			return $this->categories;
 		}
-		$path = dirname( __DIR__, 2 ) . '/data/' . self::FILE;
-		$out  = array();
-		if ( is_readable( $path ) ) {
+		$out = array();
+		if ( is_readable( $this->path ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin data file on disk, not a remote URL.
-			$payload = json_decode( (string) file_get_contents( $path ), true );
+			$payload = json_decode( (string) file_get_contents( $this->path ), true );
 			foreach ( is_array( $payload ) ? (array) ( $payload['categories'] ?? array() ) : array() as $category ) {
 				$row = self::category( $category );
 				if ( null !== $row ) {
@@ -107,13 +130,14 @@ final class TradeRules {
 				}
 			}
 		}
-		self::$categories = $out;
+		$this->categories = $out;
 
 		return $out;
 	}
 
 	/**
-	 * One well-formed category, or null.
+	 * One well-formed category, or null: a category needs a named pair of
+	 * words and at least one question whose own pair is complete.
 	 *
 	 * @param mixed $category Decoded row.
 	 * @return array{name: array{en: string, de: string}, qas: list<array{question: array{en: string, de: string}, answer: array{en: string, de: string}}>}|null
@@ -152,7 +176,8 @@ final class TradeRules {
 	}
 
 	/**
-	 * A decoded {en, de} pair, or null when the row is not one.
+	 * A decoded {en, de} pair, or null when the row is not one: an empty
+	 * English side is a missing word, not a translation gap.
 	 *
 	 * @param mixed $pair Decoded row.
 	 * @return array{en: string, de: string}|null

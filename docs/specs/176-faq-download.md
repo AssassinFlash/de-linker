@@ -33,7 +33,7 @@
 | 页头 ✦ 图标、浅网格底纹、居中大搜索 | LC 模板 markup + `faq.css` 的 `#linker-faq-page .linker-library-hero::before`（mask 网格） | 1:1 |
 | 搜索建议下拉：问答/文档各 ≤6、命中 `<mark>`、↑↓、Enter、Esc、点外部关闭、"渲染函数不得因残留查询自动重开" | `renderSuggestions()` 只在 `state.suggestOpen` 为真时展开；`suggestOpen` 只由 input/focus/ArrowDown 置位；`applySearch()` 末尾调用的 `renderSuggestions()` 不置位 | 原型那条坑以状态机形式保持 |
 | Enter 打开建议项 | 文档项：新标签打开该 PDF（原型的 `window.open`）；问答项：切到 FAQ tab、清搜索、定位到卡、翻到该行所在页、展开并按 sticky 偏移滚动 | 定位用 `visibleRows()` 下标算页 |
-| tab 计数联动（搜索时显示分流数） | `renderSearch()` 更新两 tab 的 `.linker-library-n`；清空恢复 `totals` | FAQ 计数 = 商务规则 + 产品问答（288），与原型 `faqN` 同义 |
+| tab 计数联动（搜索时显示分流数） | `renderSearch()` 更新两 tab 的 `.linker-library-n`；清空恢复 `totals`。**列表本身也按 tab 分流**：搜索中切 tab 重画该 tab 的那一半（`hitsOfTab()`），字段计数仍是命中总数 | FAQ 计数 = 商务规则 + 产品问答（288），与原型 `faqN` 同义；分流是原型 `renderV5` 搜索分支的规则（`split.faq` / `split.documents`），评审轮的 e2e 抓到本实现漏了它 |
 | 结果扁平列表带分组 eyebrow | `.linker-library-hit` + `.linker-library-hit-eye`（`<组名> · <Trade rule｜Answer｜Document>`），行由原始 DOM **克隆**而来（保留链接、details、缩略图、类名） | 克隆而非重绘：内容永不两份 |
 | 全列表 20 条/页分页器 | `PAGE_SIZE = 20`（`LibraryPage::PAGE_SIZE`，经 config 传给脚本）；每卡一个 pager，搜索结果一个 pager；窗口 `1 … n-1 n n+1 … last` | 行用 `hidden` 收放，DOM 不重建 |
 | 类型筛选芯片（带计数） | `[data-library-filters]`（服务端渲染，含 `All` 与各类型计数）；点击置 `aria-pressed`、按 `data-library-type` 过滤行、更新卡计数与 rail/芯片条的品牌计数、重置分页、空品牌显示 soft empty | 芯片顺序取设计序（datasheet→manual→warranty→certificate→compatibility→brochure→document） |
@@ -43,6 +43,7 @@
 | 锚点 scroll-margin = 页头 + tab 栏 + 芯片条 | CSS `scroll-margin-top: calc(var(--ll-header-h) + var(--ll-sticky) + 12px)`；脚本 `measureSticky()` 实测 header 底边 + tab 栏高 +（可见时）芯片条高写入 `--ll-sticky`；点击目录/芯片条链接走 JS 精确滚动 | 无 JS 时回落到 CSS 值（`--ll-tab-h` + 窄屏芯片条估算） |
 | 品牌 logo 锁定 34px（mono-light 实为深色字标，直接放浅底） | `card()` 印 `<img height="34">`；取件用 PDP 的同一读取（`get_posts` + `_wp_attached_file LIKE our-brand-<slug>-mono-light`）；媒体库没有则退回头字缩写 `.linker-library-mark` | 无 JS 时 img 直接显示 |
 | 缩略图 52×72、失败退类型图标块 | 服务端印 `<span class="linker-library-thumb has-src"><img …><图标></span>`；`has-src` 隐藏图标；脚本 load 后加 `has-img`（淡入）、error 时移除 `has-src`/`has-img` 让图标回来 | 与原型 `has-src`/`has-img` 同名同义 |
+| 每行都有 52×72 槽位（无图时类型块在槽内） | **行类恒定**：片段给每一行印 `linker-library-doc has-tile`（不是"有图才带行类"），网格与 `grid-template-areas` 挂 `.has-tile`，有无图只由 tile 上的 `has-src` 区分 | 评审抓到第一版把行类绑在 manifest 命中上：12 行无图行退回两列网格、tile 排到行尾下方（实测 row h=155 vs 有图 102）。现在实测两行同网格同高（1440：有图 101~102、类型块 102） |
 | 移动端目录变芯片横条钉页头下 | `@media (max-width:1023px)`：rail 隐藏、`[data-library-nav]` 分组芯片横条 `position:sticky`（top = header + tab 栏），横向滚动 + snap | 两 tab 各一组芯片，`setTab()` 切组 |
 | 原型顶栏/页脚/原型切换条 | 不移植：本站已有 LC 页头页脚 partial | 页面本体只有 `#linker-faq-page` |
 
@@ -55,9 +56,10 @@
   `pdftoppm` 渲染第 1 页 → `magick` 缩到高 216px、quality 80 编 **WebP** →
   `<sha1(URL path)>.webp` + `manifest.json`（URL path → file/width/height）。
 - 尺寸与格式依据：行内显示 52×72 CSS px，216px 高 = 3×（Retina 与 200% 缩放都够）。
-  实测全量 148 张 **总量 984 KB**（PNG 原样为 12 MB，约为其 1/12）；WebP 的浏览器门槛
+  实测全量 **147 张、总量 984 KB**（PNG 原样为 12 MB，约为其 1/12）；WebP 的浏览器门槛
   （Safari 14+）低于本页已依赖的 `:has()`／`backdrop-filter`（Safari 15.4+），故不设
-  PNG 兜底。
+  PNG 兜底。张数以 `manifest.json` 为准（147 条）：脚本结尾按品牌打印的覆盖率会把同一份
+  被多个品牌共用的文件各算一次，逐品牌相加会多出一张（首次记录写成 148 即此因）。
 - 键是 **URL 的 path**（不是整条 URL）：同一份文件在线上与本地实例由不同 host 提供，
   缩略图属于文件而不属于 host —— 因此一次构建同时服务线上与本地、EN 与 DE。
 - 上限与失败回退：`--max-file-mb 15` 默认跳过大手册（实测 12 份、450 MB），
@@ -109,6 +111,12 @@
 ——这两个类在本票改版后再没有任何模板/片段使用（它们原先只出现在本页），留着会让
 `just windpress-compile` 永远失败。测试同步更新。
 
+**锚点落点**：`scroll-margin-top` 是三处（区标题、卡、问题行）= 页头 + sticky 栈 + 12px；
+脚本 `measureSticky()` 把实测量的页头底边、tab 栏高、（窄屏可见时）芯片条高写进
+`--ll-header-h` / `--ll-sticky`，并在链接点击与分页时用它算落点。实测（a176，
+`tests/e2e/specs/faq-download.spec.ts` 也逐宽度断言 `目标 top ≥ sticky 栈底`）：
+1440 落点余量 +13px，390 +15~24px（芯片条是否已钉住而异）。
+
 ## 7. 变更台账（允许的像素差异）
 
 本页属**工具页重设计**裁定（2026-10-10：Genie / Solution Configurator 等工具页可有自己的
@@ -122,25 +130,36 @@
 | 导航药丸顺序与内容顺序不一致（旧页问题） | 已消除：rail/芯片条的组与顺序 = 面板内容顺序 |
 | 锚点跳转被页头吃掉（旧页问题） | 已消除：`scroll-margin` = 页头 + tab 栏 + 芯片条（模板与脚本双路径） |
 | 新增文案：页头标题/副标题/联系行、tab 名、区名、15 条 `.po` 新串 | `docs/acceptance/2026-10-15/176/copy-review.md` |
+| 德语第一区名 `Vor der Bestellung`（线上德文页写 `Bevor Sie bestellen`） | 原型（变体 5）的德语措辞，业主验收；EN 侧 `Before you order` 与线上逐字一致。评审指出记录曾误写"逐字保留"，已改正并列入本条 |
 | 移除：旧 `[linker_faq_help]` 搜索卡与 `assets/faq-ui.js`、旧文档/问答/规则片段短代码 | 被新片段取代；无其他消费方（grep 确认） |
 | 保留：16 条商务规则逐字、272 条产品问答与文档数据 | 冻结内容与已评审数据 |
 
 ## 8. 已知数据缺口（票里点名，本轮如实呈现不掩盖）
 
-- **德语商务规则 16 条目前是英文**：抽取数据如实反映（`data/faq-trade.json` 的 `de` 侧就是
-  线上德文页现有的英文内容），本票不擅自翻译冻结内容——逐条改写属内容层的对抗评审，归
-  #15 的流程。
+- **票里"德语商务规则 16 条目前是英文"的前提不成立，已核否**：`data/faq-trade.json` 的
+  16 条 `de` 侧全部是德语，抽取源（我们自己的 `de/faq_page.html`，08997063）本来就是德语；
+  线上德文页也逐字一致（2026-10-15 拉 `https://de-linker.com/de/faq-download/` 核对：
+  16 条问题全部在页面文本里命中，无一英文起句）。故此项不是数据缺口。
 - **德语文档类型字段几乎全为 `document`**（160 份里绝大多数）：类型芯片在德语下区分度低，
   是源数据类型字段的缺口（线上同），非本票引入。
 
 ## 9. 验收与验证
 
-- 夹具/单测：`LibraryPageTest`（7）、`WindPressCacheTest`（9）、`DocumentLibraryTest`、
-  `TemplatesTest`、`ModuleTest`；`tests/js/library-ui.test.mjs`（19 条：匹配/排序/高亮/
-  分页窗口/tab URL/zone、tab 切换与 URL、卡内分页、类型筛选联动计数、搜索结果与 tab 分流、
+- 夹具/单测：`LibraryPageTest`（8）、`WindPressCacheTest`（9）、`DocumentLibraryTest`、
+  `DocumentThumbnailsTest`（5）、`TradeRulesTest`（4）、`TemplatesTest`、`ModuleTest`；
+  `tests/js/library-ui.test.mjs`（22 条：匹配/排序/高亮/
+  分页窗口/tab URL、tab 切换与 URL、卡内分页、类型筛选联动计数（含"aria-pressed 只属于芯片"）、
+  搜索结果与 tab 分流（含切 tab 重画那一半）、行槽位恒定（克隆后仍是 has-tile）、
   答案命中提示、空态与清空、建议下拉与点外部关闭、键盘 ↑↓+Enter、文档建议打开 PDF、
   开合态保留、脚本零客户串）。
 - i18n：`tools/checks/i18n-coverage.py` clean；`msgfmt --check-format` 重生成 `.mo`。
 - 本地实例 a176 真实夹具：EN/DE 页 200；tab 标记、卡、文档行带缩略图 img、
   147 张 webp 服务 200；`present` + `windpress-compile` 通过（锚类命中）。
+- e2e（`tests/e2e/specs/faq-download.spec.ts`，EN+DE 共 10 条）：tab 往返与 URL、搜索与
+  分流计数（含切 tab 后列表只剩该 tab 的一半）、20 条/页分页、类型芯片筛选与计数、
+  1440/390 锚点落点 ≥ sticky 栈底。
+- 缩略图管线：`tools/faq` 的 `test_thumbs.py`（11 条：key/file_name/webp_size/is_pdf、
+  上限选择 `select()`、probe-only 不落盘、清理只留 manifest 命名的文件、提交的
+  manifest 与提交的文件互相自洽）；`extract-trade.py --check` 证明 `data/faq-trade.json`
+  就是 08997063 的抽取结果。
 - 视觉验收（1440/390，EN/DE，逐状态）归主线会话，基准 = 本仓库原型变体 5。
