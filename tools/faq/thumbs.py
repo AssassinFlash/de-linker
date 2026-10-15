@@ -36,7 +36,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import shutil
 import subprocess
 import sys
 import threading
@@ -79,7 +78,15 @@ def pdf_name(url: str) -> str:
 
 
 def run(args: list[str], timeout: int) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(args, text=True, capture_output=True, timeout=timeout, check=False)
+    return subprocess.run(
+        args, text=True, capture_output=True, timeout=timeout, check=False
+    )
+
+
+def last_line(text: str | None) -> str:
+    """The last non-empty line of a command's output, for a failure's reason."""
+    lines = [line.strip() for line in (text or "").splitlines() if line.strip()]
+    return lines[-1] if lines else ""
 
 
 def register_urls(wp: str) -> list[dict[str, str]]:
@@ -90,7 +97,11 @@ def register_urls(wp: str) -> list[dict[str, str]]:
         sys.exit("thumbs: the instance did not return a documents list")
     rows: list[dict[str, str]] = []
     for entry in documents:
-        if isinstance(entry, dict) and isinstance(entry.get("url"), str) and entry["url"]:
+        if (
+            isinstance(entry, dict)
+            and isinstance(entry.get("url"), str)
+            and entry["url"]
+        ):
             rows.append({"url": entry["url"], "type": str(entry.get("type") or "")})
     return rows
 
@@ -98,9 +109,20 @@ def register_urls(wp: str) -> list[dict[str, str]]:
 def probe(url: str) -> dict[str, Any]:
     proc = run(
         [
-            "curl", "-sI", "-L", "--max-redirs", "5",
-            "--connect-timeout", "12", "--max-time", str(HEAD_TIMEOUT),
-            "-A", USER_AGENT, "-w", "\n__META__ %{http_code}", url,
+            "curl",
+            "-sI",
+            "-L",
+            "--max-redirs",
+            "5",
+            "--connect-timeout",
+            "12",
+            "--max-time",
+            str(HEAD_TIMEOUT),
+            "-A",
+            USER_AGENT,
+            "-w",
+            "\n__META__ %{http_code}",
+            url,
         ],
         HEAD_TIMEOUT + 5,
     )
@@ -118,7 +140,13 @@ def probe(url: str) -> dict[str, Any]:
             raw = line.split(":", 1)[1].strip()
             if raw.isdigit():
                 length = int(raw)
-    error = "" if code == 200 else f"HTTP {code}" if code else (proc.stderr or "").strip()[:200]
+    error = (
+        ""
+        if code == 200
+        else f"HTTP {code}"
+        if code
+        else (proc.stderr or "").strip()[:200]
+    )
     return {"url": url, "ok": code == 200, "length": length, "error": error}
 
 
@@ -138,15 +166,27 @@ def download(url: str, dest: Path) -> tuple[bool, str]:
     part.unlink(missing_ok=True)
     proc = run(
         [
-            "curl", "-fsSL", "--retry", "2", "--retry-delay", "1",
-            "--connect-timeout", "15", "--max-time", str(DOWNLOAD_TIMEOUT),
-            "-A", USER_AGENT, "-o", str(part), url,
+            "curl",
+            "-fsSL",
+            "--retry",
+            "2",
+            "--retry-delay",
+            "1",
+            "--connect-timeout",
+            "15",
+            "--max-time",
+            str(DOWNLOAD_TIMEOUT),
+            "-A",
+            USER_AGENT,
+            "-o",
+            str(part),
+            url,
         ],
         DOWNLOAD_TIMEOUT + 15,
     )
     if proc.returncode != 0 or not part.exists():
         part.unlink(missing_ok=True)
-        return False, (proc.stderr or "").strip().splitlines()[-1:] [0] if proc.stderr else f"curl exit {proc.returncode}"
+        return False, last_line(proc.stderr) or f"curl exit {proc.returncode}"
     if not is_pdf(part):
         part.unlink(missing_ok=True)
         return False, "response was not a PDF"
@@ -172,7 +212,9 @@ def webp_size(path: Path) -> tuple[int, int]:
     raise ValueError("unsupported webp variant")
 
 
-def render(pdf: Path, png: Path, webp: Path) -> tuple[bool, str, tuple[int, int] | None]:
+def render(
+    pdf: Path, png: Path, webp: Path
+) -> tuple[bool, str, tuple[int, int] | None]:
     if webp.exists() and webp.stat().st_size > 64:
         try:
             return True, "cached", webp_size(webp)
@@ -181,17 +223,31 @@ def render(pdf: Path, png: Path, webp: Path) -> tuple[bool, str, tuple[int, int]
     png.unlink(missing_ok=True)
     proc = run(
         [
-            "pdftoppm", "-f", "1", "-l", "1", "-png", "-singlefile",
-            str(pdf), str(png.with_suffix("")),
+            "pdftoppm",
+            "-f",
+            "1",
+            "-l",
+            "1",
+            "-png",
+            "-singlefile",
+            str(pdf),
+            str(png.with_suffix("")),
         ],
         RENDER_TIMEOUT,
     )
     if proc.returncode != 0 or not png.exists():
-        reason = (proc.stderr or proc.stdout or "").strip().splitlines()[-1:] or ["pdftoppm failed"]
-        return False, reason[0] if isinstance(reason, list) and reason else "pdftoppm failed", None
+        return False, last_line(proc.stderr or proc.stdout) or "pdftoppm failed", None
     webp.parent.mkdir(parents=True, exist_ok=True)
     proc = run(
-        ["magick", str(png), "-resize", f"x{HEIGHT}", "-quality", str(QUALITY), str(webp)],
+        [
+            "magick",
+            str(png),
+            "-resize",
+            f"x{HEIGHT}",
+            "-quality",
+            str(QUALITY),
+            str(webp),
+        ],
         RENDER_TIMEOUT,
     )
     png.unlink(missing_ok=True)
@@ -206,16 +262,36 @@ def render(pdf: Path, png: Path, webp: Path) -> tuple[bool, str, tuple[int, int]
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build the register's page-1 thumbnails.")
-    parser.add_argument("--wp", required=True, help="WP-CLI invocation of the instance, e.g. 'just wp a176'")
-    parser.add_argument("--base", default="", help="Base URL to download from; the instance's own default")
-    parser.add_argument("--out", type=Path, default=Path("plugins/linker-commerce/assets/faq-thumbs"))
-    parser.add_argument("--cache", type=Path, default=Path.home() / ".cache" / "de-linker-faq-thumbs")
-    parser.add_argument("--max-file-mb", type=float, default=15.0, help="Skip PDFs over this size (0 = no cap)")
-    parser.add_argument("--probe-only", action="store_true", help="Report sizes; download nothing")
+    parser = argparse.ArgumentParser(
+        description="Build the register's page-1 thumbnails."
+    )
+    parser.add_argument(
+        "--wp",
+        required=True,
+        help="WP-CLI invocation of the instance, e.g. 'just wp a176'",
+    )
+    parser.add_argument(
+        "--base",
+        default="",
+        help="Base URL to download from; the instance's own default",
+    )
+    parser.add_argument(
+        "--out", type=Path, default=Path("plugins/linker-commerce/assets/faq-thumbs")
+    )
+    parser.add_argument(
+        "--cache", type=Path, default=Path.home() / ".cache" / "de-linker-faq-thumbs"
+    )
+    parser.add_argument(
+        "--max-file-mb",
+        type=float,
+        default=15.0,
+        help="Skip PDFs over this size (0 = no cap)",
+    )
+    parser.add_argument(
+        "--probe-only", action="store_true", help="Report sizes; download nothing"
+    )
     args = parser.parse_args()
 
-    root = Path(__file__).resolve().parents[2]
     documents = register_urls(args.wp)
     # One entry per file: the register lists a file once, and the two pages
     # (EN/DE) share it.
@@ -227,20 +303,28 @@ def main() -> int:
     print(f"probing {len(urls)} URLs ({WORKERS}-way)…", flush=True)
     probes: dict[str, dict[str, Any]] = {}
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
-        futures = {pool.submit(probe, url): url for url in urls}
-        for done, future in enumerate(as_completed(futures), start=1):
-            url = futures[future]
+        probes_started = {pool.submit(probe, url): url for url in urls}
+        for done, probe_future in enumerate(as_completed(probes_started), start=1):
+            url = probes_started[probe_future]
             try:
-                probes[url] = future.result()
+                probes[url] = probe_future.result()
             except Exception as exc:  # noqa: BLE001 — one bad HEAD must not abort the probe
-                probes[url] = {"url": url, "ok": False, "length": None, "error": str(exc)}
+                probes[url] = {
+                    "url": url,
+                    "ok": False,
+                    "length": None,
+                    "error": str(exc),
+                }
             if done % 25 == 0 or done == len(urls):
                 print(f"  probed {done}/{len(urls)}", flush=True)
 
-    known = sum(int(p["length"]) for p in probes.values() if isinstance(p.get("length"), int))
+    known = sum(
+        int(p["length"]) for p in probes.values() if isinstance(p.get("length"), int)
+    )
     bad = [url for url, p in probes.items() if not p["ok"]]
     deferred = {
-        url for url, p in probes.items()
+        url
+        for url, p in probes.items()
         if cap and isinstance(p.get("length"), int) and int(p["length"]) > cap
     }
     print(
@@ -251,7 +335,10 @@ def main() -> int:
     for url in bad[:10]:
         print(f"  HEAD fail  {probes[url]['error']}  {url}", flush=True)
     for url in sorted(deferred):
-        print(f"  skip (over cap)  {int(probes[url]['length']) / 1024 / 1024:.1f} MB  {url}", flush=True)
+        print(
+            f"  skip (over cap)  {int(probes[url]['length']) / 1024 / 1024:.1f} MB  {url}",
+            flush=True,
+        )
     if args.probe_only:
         return 0
 
@@ -271,13 +358,16 @@ def main() -> int:
         return url, ok, reason
 
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
-        futures = [pool.submit(fetch, url) for url in targets]
-        for done, future in enumerate(as_completed(futures), start=1):
-            url, ok, reason = future.result()
+        downloads = [pool.submit(fetch, url) for url in targets]
+        for done, download_future in enumerate(as_completed(downloads), start=1):
+            url, ok, reason = download_future.result()
             downloaded[url] = (ok, reason)
             if done % 10 == 0 or done == len(targets) or not ok:
                 size = args.cache / pdf_name(url)
-                print(f"  [{done}/{len(targets)}] {'ok' if ok else 'FAIL'} {reason} {size.stat().st_size if ok else 0}  {url.split('/')[-1]}", flush=True)
+                print(
+                    f"  [{done}/{len(targets)}] {'ok' if ok else 'FAIL'} {reason} {size.stat().st_size if ok else 0}  {url.split('/')[-1]}",
+                    flush=True,
+                )
 
     print("rendering page 1 and encoding…", flush=True)
     args.out.mkdir(parents=True, exist_ok=True)
@@ -287,27 +377,40 @@ def main() -> int:
     for index, url in enumerate(urls, start=1):
         if url in deferred:
             continue
-        ok, reason = downloaded.get(url, (False, "not downloaded"))
-        if not ok:
+        if not downloaded.get(url, (False, "not downloaded"))[0]:
+            reason = downloaded.get(url, (False, "not downloaded"))[1]
             failures.append({"url": url, "reason": reason})
+            print(
+                f"  [{index}/{len(urls)}] FAIL {reason}  {url.split('/')[-1]}",
+                flush=True,
+            )
             continue
         try:
-            ok, reason, size = render(
+            rendered, why, size = render(
                 args.cache / pdf_name(url),
                 scratch.with_name(f"{file_name(url)}.png"),
                 args.out / file_name(url),
             )
         except subprocess.TimeoutExpired:
-            ok, reason, size = False, f"timed out after {RENDER_TIMEOUT}s", None
+            rendered, why, size = False, f"timed out after {RENDER_TIMEOUT}s", None
         except Exception as exc:  # noqa: BLE001 — one bad PDF must not abort the build
-            ok, reason, size = False, str(exc), None
-        if not ok or size is None:
-            failures.append({"url": url, "reason": reason})
-            print(f"  [{index}/{len(urls)}] FAIL {reason}  {url.split('/')[-1]}", flush=True)
+            rendered, why, size = False, str(exc), None
+        if not rendered or size is None:
+            failures.append({"url": url, "reason": why})
+            print(
+                f"  [{index}/{len(urls)}] FAIL {why}  {url.split('/')[-1]}", flush=True
+            )
             continue
-        manifest[key(url)] = {"file": file_name(url), "width": size[0], "height": size[1]}
-        if index % 20 == 0 or index == len(urls) or reason != "cached":
-            print(f"  [{index}/{len(urls)}] {reason} {size[0]}x{size[1]}  {url.split('/')[-1]}", flush=True)
+        manifest[key(url)] = {
+            "file": file_name(url),
+            "width": size[0],
+            "height": size[1],
+        }
+        if index % 20 == 0 or index == len(urls) or why != "cached":
+            print(
+                f"  [{index}/{len(urls)}] {why} {size[0]}x{size[1]}  {url.split('/')[-1]}",
+                flush=True,
+            )
 
     # Only files the manifest names stay; the target is a published asset.
     keep = {entry["file"] for entry in manifest.values()}
@@ -315,8 +418,12 @@ def main() -> int:
         if path.name not in keep:
             path.unlink()
     manifest_path = args.out / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    bytes_out = sum((args.out / name).stat().st_size for name in keep if (args.out / name).exists())
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    bytes_out = sum(
+        (args.out / name).stat().st_size for name in keep if (args.out / name).exists()
+    )
     print(
         f"thumbnails: {len(manifest)}/{len(by_url)} files, {bytes_out / 1024:.0f} KB -> {manifest_path}",
         flush=True,
@@ -334,4 +441,4 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except KeyboardInterrupt:
         print("interrupted", file=sys.stderr)
-        raise SystemExit(130)
+        raise SystemExit(130) from None
