@@ -349,9 +349,31 @@ button.gallery-main{
   .faq-side{min-height:200px}
 }
 @media (max-width:860px){
-  :root{--action-h:88px;--proto-dock:48px}
-  .mobile-action{display:flex}
-  body{padding-bottom:calc(var(--action-h) + 16px)}
+  :root{--action-h:64px;--proto-dock:48px}
+  .mobile-action{
+    display:flex;
+    left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+    padding:6px 6px 6px 16px;gap:10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.72);
+    -webkit-backdrop-filter:blur(20px) saturate(1.6);
+    backdrop-filter:blur(20px) saturate(1.6);
+    border:1px solid rgba(255,255,255,.55);
+    box-shadow:0 8px 28px rgba(21,53,47,.14);
+  }
+  .mobile-action .price{
+    flex:1 1 auto;min-width:0;
+    font-size:13px;font-weight:600;line-height:1.25;
+    overflow-wrap:normal;white-space:normal;
+    display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+    overflow:hidden;
+  }
+  .mobile-action .btn-primary{
+    width:auto;flex:0 0 auto;max-width:10.5rem;
+    padding:10px 16px;font-size:14px;line-height:1.15;
+    border-radius:999px;white-space:normal;text-align:center;
+  }
+  body{padding-bottom:calc(var(--action-h) + 24px + env(safe-area-inset-bottom))}
   .site-header{top:var(--proto-dock)}
   .site-header .container{gap:10px;padding-inline:12px}
   .contact-btn{padding:8px 12px;font-size:13px}
@@ -1080,8 +1102,15 @@ html[data-variant="b"] .section-nav a[aria-current="true"]:hover{color:#fff}
     }
     root.style.setProperty('--snav-h', snav.offsetHeight + 'px');
     var bar = document.querySelector('.mobile-action');
-    if (bar && getComputedStyle(bar).display !== 'none') root.style.setProperty('--action-h', bar.offsetHeight + 'px');
-    else root.style.setProperty('--action-h', '0px');
+    function measureAction(){
+      if (bar && getComputedStyle(bar).display !== 'none') root.style.setProperty('--action-h', bar.offsetHeight + 'px');
+      else root.style.setProperty('--action-h', '0px');
+    }
+    measureAction();
+    if (bar && window.ResizeObserver && !bar.dataset.observed) {
+      bar.dataset.observed = '1';
+      new ResizeObserver(measureAction).observe(bar);
+    }
     if (railInner && getComputedStyle(railInner).position === 'sticky') {
       var planOpen = document.querySelector('.plan-with');
       if (planOpen && planOpen.open) {
