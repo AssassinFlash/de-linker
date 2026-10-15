@@ -50,6 +50,7 @@ final class ShortcodesTest extends TestCase {
 			'linker_faqs'               => 'faqs',
 			'linker_contact_link'       => 'contact_link',
 			'linker_contact_invitation' => 'contact_invitation',
+			'linker_site_url'           => 'site_url',
 		) as $tag => $method
 		) {
 			WP_Mock::userFunction(
@@ -64,6 +65,30 @@ final class ShortcodesTest extends TestCase {
 		$codes->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The site origin is the data the blog index's JSON-LD composes: every
+	 * instance answers with its own address, so no repository file carries a
+	 * host.
+	 */
+	public function test_site_url_is_the_home_url(): void {
+		$codes = new Shortcodes( new LoginGate() );
+		WP_Mock::userFunction(
+			'home_url',
+			array(
+				'args'   => array( '/' ),
+				'return' => 'https://example.test/',
+			)
+		);
+		WP_Mock::userFunction(
+			'esc_url',
+			array(
+				'return' => static fn( string $url ): string => $url,
+			)
+		);
+
+		$this->assertSame( 'https://example.test/', $codes->site_url() );
 	}
 
 	/**

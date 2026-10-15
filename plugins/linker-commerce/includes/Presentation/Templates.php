@@ -38,6 +38,12 @@ final class Templates {
 
 	/**
 	 * LiveCanvas assignment meta key → filename (without .html).
+	 *
+	 * The three blog faces below are the assignments the instance's old
+	 * templates carried (`is_blog_posts_index`, `is_search`,
+	 * `is_archive_for_tax_category`): sync() reclaims those posts by their own
+	 * key, so `present` replaces the old implementation in place instead of
+	 * installing a second template (#175).
 	 */
 	private const FILES = array(
 		'is_shop_page'                     => 'shop_page',
@@ -47,6 +53,9 @@ final class Templates {
 		'is_single_product'                => 'single_product',
 		'is_archive_for_post_type_product' => 'archive_product',
 		'is_single_post'                   => 'blog_single',
+		'is_blog_posts_index'              => 'blog_index',
+		'is_search'                        => 'search',
+		'is_archive_for_tax_category'      => 'category_archive',
 	);
 
 	/**
@@ -60,6 +69,9 @@ final class Templates {
 		'is_single_product'                => 'Single product',
 		'is_archive_for_post_type_product' => 'Product archive',
 		'is_single_post'                   => 'Blog single post',
+		'is_blog_posts_index'              => 'Blog posts index',
+		'is_search'                        => 'Blog search results',
+		'is_archive_for_tax_category'      => 'Blog category archive',
 	);
 
 	/**
@@ -96,11 +108,24 @@ final class Templates {
 	 * needs a file of its own. The sync reclaims the legacy templates the
 	 * snapshot carries by the same `is_single_post` key (the live pair), which
 	 * is what closes the blog face out of the instance's old implementation.
+	 *
+	 * The blog posts index, the search results and the category archive are
+	 * the three faces #175 brought in. Their markup is English words too (the
+	 * hero, the section headings, the card labels), the instance's old
+	 * template pair carries each of their assignments (`is_blog_posts_index`,
+	 * `is_search`, `is_archive_for_tax_category`), and the German twin holds
+	 * the German export the way the faces above do. Their card links were the
+	 * defect: the old templates wrote `/{Field name}/`, the slug under the
+	 * site root, so every article a German archive listed linked out of the
+	 * German tree into a 404 (issue #175).
 	 */
 	private const DE_FILES = array(
 		'is_single_product'                => 'de/single_product',
 		'is_archive_for_post_type_product' => 'de/archive_product',
 		'is_single_post'                   => 'de/blog_single',
+		'is_blog_posts_index'              => 'de/blog_index',
+		'is_search'                        => 'de/search',
+		'is_archive_for_tax_category'      => 'de/category_archive',
 	);
 
 	/**

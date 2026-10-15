@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\Templates;
+use Linker\Commerce\Presentation\WindPressVolume;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WP_Mock;
@@ -37,6 +38,9 @@ final class TemplatesTest extends TestCase {
 				'is_single_product',
 				'is_archive_for_post_type_product',
 				'is_single_post',
+				'is_blog_posts_index',
+				'is_search',
+				'is_archive_for_tax_category',
 				'linker-compare',
 				'linker-compare-de',
 				'linker-faq',
@@ -46,11 +50,14 @@ final class TemplatesTest extends TestCase {
 				'linker-configurator',
 				'linker-configurator-de',
 				// The German exports of page types are sources of their own:
-				// the product page's, the product archive's and the blog single
-				// face's German twins are rendered from them.
+				// the product page's, the product archive's, the blog single
+				// face's and the three blog faces #175 brought in.
 				'is_single_product__de',
 				'is_archive_for_post_type_product__de',
 				'is_single_post__de',
+				'is_blog_posts_index__de',
+				'is_search__de',
+				'is_archive_for_tax_category__de',
 			),
 			array_keys( $paths )
 		);
@@ -191,6 +198,117 @@ final class TemplatesTest extends TestCase {
 	}
 
 	/**
+	 * The three blog faces #175 brought into the tree: the blog posts index,
+	 * the search results and the category archive, each with its German twin.
+	 *
+	 * The contract of every file: the live face's ids and section markers, no
+	 * style block and no inline declaration (styling is the face's WindPress
+	 * volume file), the terms of the face's own loops still in place, and
+	 * `{Field url}` on every article card — the live templates wrote
+	 * `/{Field name}/`, which on a German face is a 404.
+	 */
+	public function test_the_three_blog_faces_carry_the_live_markup_and_lingual_links(): void {
+		$paths = Templates::paths();
+		$faces = array(
+			'is_blog_posts_index'         => array( 'tv-blog-index-v1', 'blog-index.css' ),
+			'is_search'                   => array( 'tv-blog-search-v1', 'blog-search.css' ),
+			'is_archive_for_tax_category' => array( 'tv-blog-category-v1', 'blog-category.css' ),
+		);
+		foreach ( $faces as $meta => $face ) {
+			list( $anchor, $stylesheet ) = $face;
+			foreach ( array( '', '__de' ) as $suffix ) {
+				$html = (string) file_get_contents( $paths[ $meta . $suffix ] );
+				$this->assertStringContainsString( 'id="' . $anchor . '"', $html, $meta . $suffix );
+				$this->assertStringContainsString( '<tangible class="live-refresh">', $html );
+				$this->assertStringContainsString( '[lc_the_pagination]', $html );
+				$this->assertStringNotContainsString( '<style', $html );
+				$this->assertStringNotContainsString( ' style="', $html );
+				$this->assertStringNotContainsString( '/{Field name}/', $html );
+				// Every card of the face links the post's own permalink: the
+				// language layer answers a German article with the /de/ address.
+				$this->assertStringContainsString( 'href="{Field url}"', $html );
+				$this->assertStringNotContainsString( '127.0.0.1', $html, 'a repository file cannot carry an instance host' );
+			}
+			// The face's rules are the volume file's, scoped to the face's own
+			// id, and they are the live rules — not a second design.
+			$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/' . $stylesheet );
+			$this->assertStringContainsString( '#' . $anchor . ' ', $css, $stylesheet );
+			$this->assertStringContainsString( 'The face\'s own rules.', $css );
+			$this->assertStringNotContainsString( '<style', $css );
+		}
+
+		// The German files are the German faces, not the English ones re-used.
+		$this->assertStringContainsString( 'Artikel lesen', (string) file_get_contents( $paths['is_blog_posts_index__de'] ) );
+		$this->assertStringNotContainsString( 'Read article', (string) file_get_contents( $paths['is_blog_posts_index__de'] ) );
+		$this->assertStringContainsString( 'Artikel lesen', (string) file_get_contents( $paths['is_archive_for_tax_category__de'] ) );
+		$this->assertStringNotContainsString( 'Read article', (string) file_get_contents( $paths['is_archive_for_tax_category__de'] ) );
+		$this->assertStringContainsString( 'Suche', (string) file_get_contents( $paths['is_search__de'] ) );
+		$this->assertStringNotContainsString( 'Search articles', (string) file_get_contents( $paths['is_search__de'] ) );
+
+		// The blog index's structured data names the site through the data
+		// shortcode, so every instance answers with its own address; the
+		// template engine resolves nothing inside a script block, and the live
+		// template carried the host it was authored on.
+		foreach ( array( 'is_blog_posts_index', 'is_blog_posts_index__de' ) as $index ) {
+			$html = (string) file_get_contents( $paths[ $index ] );
+			$this->assertStringContainsString( '"url": "[linker_site_url]blog/"', $html );
+			$this->assertStringContainsString( '"url": "[linker_site_url]"', $html );
+			$this->assertStringNotContainsString( '<site url', $html );
+		}
+	}
+
+	/**
+	 * Every prefixed declaration pair the volume publishes is ordered the way
+	 * the compile keeps it: the `-webkit-` one first.
+	 *
+	 * WindPress compiles the volume with Lightning CSS, which drops the
+	 * standard declaration of a pair written the other way round — it ships
+	 * `-webkit-backdrop-filter` alone, Chromium computes `backdrop-filter:
+	 * none`, and the frosted panel loses its blur. The blog single face hit
+	 * this first (its context card), and the three faces #175 brought in hit it
+	 * again: measured on the blogs instance 2026-10-16, the blog index rendered
+	 * 188 804 pixels differently from the same rules delivered inline, and the
+	 * only computed-style difference over the face's 290 elements was
+	 * `backdrop-filter: blur(18px)` → `none`. The comment above each pair is
+	 * not the guard; this is.
+	 */
+	public function test_volume_stylesheets_order_prefixed_pairs_the_way_the_compile_keeps_them(): void {
+		$files = WindPressVolume::files();
+		$this->assertNotSame( array(), $files );
+		foreach ( $files as $path ) {
+			$css    = (string) file_get_contents( $path );
+			$lines  = explode( "\n", $css );
+			$prefix = array();
+			foreach ( $lines as $index => $line ) {
+				$trimmed = trim( $line );
+				if ( 1 !== preg_match( '/^-webkit-([a-z-]+):/', $trimmed, $match ) ) {
+					continue;
+				}
+				$prefix[ $match[1] ] = $index;
+			}
+			foreach ( $prefix as $property => $index ) {
+				// The standard twin must sit after its prefixed one; a pair in
+				// the other order is the defect this test exists for.
+				$standard = -1;
+				foreach ( $lines as $candidate => $line ) {
+					if ( trim( $line ) === $property . ':' . substr( trim( $lines[ $index ] ), strlen( '-webkit-' . $property . ':' ) ) ) {
+						$standard = $candidate;
+						break;
+					}
+				}
+				if ( -1 === $standard ) {
+					continue; // A prefixed declaration without a standard twin: the compiler adds one.
+				}
+				$this->assertGreaterThan(
+					$index,
+					$standard,
+					sprintf( '%s: %s must follow its -webkit- twin', basename( $path ), $property )
+				);
+			}
+		}
+	}
+
+	/**
 	 * A missing template is created with its meta key — its content slashed
 	 * like every write — and an insert WordPress refuses stops the run.
 	 */
@@ -306,14 +424,14 @@ final class TemplatesTest extends TestCase {
 		$first     = $templates->sync();
 		$second    = $templates->sync();
 
-			$this->assertSame( 15, $created, 'the six Woo templates, the blog single face and the eight tool-page templates' );
-			$this->assertSame( 15, $first['created'] );
+			$this->assertSame( 18, $created, 'the ten templates and the eight tool-page templates' );
+			$this->assertSame( 18, $first['created'] );
 		$this->assertSame( 0, $first['updated'] );
 		$this->assertSame( 0, $second['created'] );
-			$this->assertSame( 15, $second['updated'] );
-			$this->assertSame( 15, $updated );
+			$this->assertSame( 18, $second['updated'] );
+			$this->assertSame( 18, $updated );
 			// Every insert and every update slashes its content — both write paths.
-			$this->assertSame( 30, $slashes );
+			$this->assertSame( 36, $slashes );
 	}
 
 	/**
@@ -384,7 +502,7 @@ final class TemplatesTest extends TestCase {
 
 		$this->assertSame( 0, $report['created'] );
 		$this->assertSame( 0, $report['updated'] );
-			$this->assertSame( 15, $report['unchanged'] );
+			$this->assertSame( 18, $report['unchanged'] );
 		$this->assertSame( 0, $inserts + $updated );
 	}
 
@@ -488,8 +606,8 @@ final class TemplatesTest extends TestCase {
 
 		( new Templates() )->sync();
 
-			$this->assertCount( 15, $assigned, 'the six Woo templates, the blog single face and the eight tool-page templates' );
-			$this->assertSame( array_fill( 0, 15, 'en' ), array_values( $assigned ) );
+			$this->assertCount( 18, $assigned, 'the ten templates and the eight tool-page templates' );
+			$this->assertSame( array_fill( 0, 18, 'en' ), array_values( $assigned ) );
 	}
 
 	/**
@@ -532,7 +650,7 @@ final class TemplatesTest extends TestCase {
 		$report = ( new Templates() )->sync();
 
 		$this->assertSame( array(), $assigned );
-			$this->assertSame( 15, $report['created'] );
+			$this->assertSame( 18, $report['created'] );
 	}
 
 	/**

@@ -38,6 +38,7 @@ final class Shortcodes {
 		add_shortcode( 'linker_faqs', array( $this, 'faqs' ) );
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
 		add_shortcode( 'linker_contact_invitation', array( $this, 'contact_invitation' ) );
+		add_shortcode( 'linker_site_url', array( $this, 'site_url' ) );
 		// The cart template's [lc_if] conditions are the global functions in
 		// template-functions.php (linker_commerce_draft_empty/_filled):
 		// LiveCanvas resolves a condition with function_exists(), never a
@@ -351,6 +352,26 @@ final class Shortcodes {
 	public function draft_empty( $atts = array() ): string {
 		unset( $atts );
 		return $this->empty_draft_html();
+	}
+
+	/**
+	 * The site's own origin, for the templates whose markup has to print an
+	 * absolute URL.
+	 *
+	 * One place needs it: the blog posts index's `CollectionPage` JSON-LD
+	 * carries `"url"` and `"isPartOf.url"`, and a JSON-LD block is inside a
+	 * `<script>`, where neither a LiveCanvas/Tangible tag nor a data field
+	 * resolves (the template engine leaves script contents alone — measured
+	 * 2026-10-16: `<site url />` inside the block renders literally). The live
+	 * template carried the host it was authored on, which a repository file
+	 * cannot; this is the data the two templates compose, not a design
+	 * decision.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function site_url( $atts = array() ): string {
+		unset( $atts );
+		return esc_url( home_url( '/' ) );
 	}
 
 		/**

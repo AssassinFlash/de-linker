@@ -1,0 +1,222 @@
+<!--
+  Blog category archive, German.
+
+  The German twin of content/livecanvas/category_archive.html, written by the
+  same `present` run onto the English template's Polylang twin. Same
+  composition, German words; styling is the WindPress volume file
+  blog-category.css. The feed cards are the ten article links #175 is about.
+-->
+<tangible class="live-refresh">
+<section id="tv-blog-category-v1">
+
+  <!-- ============================================================
+       MODULE 1 — CATEGORY MASTHEAD
+  ============================================================ -->
+  <div id="tv-blog-cat-masthead">
+    <div class="tv-blog-container">
+      <div class="tv-blog-masthead-grid">
+        <div class="lc-block">
+          <loop type="taxonomy_term" taxonomy="category" terms="current">
+            <p class="tv-blog-masthead-eyebrow">Linker Blog / Kategorie</p>
+            <h1 class="tv-blog-masthead-title">
+              <field name="title"></field>
+            </h1>
+            <if field="description">
+              <p class="tv-blog-masthead-lead">
+                <field name="description"></field>
+              </p>
+              <else>
+                <p class="tv-blog-masthead-lead">
+                  Technische Artikel, Systemhinweise und Anwendungshinweise zu diesem Thema.
+                </p>
+              </else>
+            </if>
+          </loop>
+        </div>
+        <div>
+          <form role="search" method="get" action="/" class="lc-block">
+            <input type="hidden" name="post_type" value="post">
+            <label for="tv-blog-search" class="sr-only">Artikel suchen</label>
+            <div class="tv-blog-search">
+              <input id="tv-blog-search" type="search" name="s" placeholder="Technische Artikel finden">
+              <button type="submit" aria-label="Suche">
+                <svg aria-hidden="true" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 2 — CATEGORY NAV RAIL
+  ============================================================ -->
+  <div id="tv-blog-cat-nav">
+    <div class="tv-blog-container">
+      <div class="lc-block tv-blog-cat-nav-inner">
+        <a href="/blog/" class="tv-blog-cat-nav-all">Alle Artikel</a>
+        <loop type="taxonomy_term" taxonomy="category" count="8" orderby="name" order="asc">
+          <a href="{Field url}" class="tv-blog-cat-nav-item">
+            <field name="title"></field>
+          </a>
+        </loop>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 3 — CATEGORY FEED
+  ============================================================ -->
+  <div id="tv-blog-cat-feed">
+    <div class="tv-blog-container">
+      <div class="lc-block">
+        <p class="tv-blog-mono-eyebrow">/ Artikel in dieser Kategorie</p>
+      </div>
+
+      <div class="tv-blog-feed-grid">
+        <loop class="contents">
+          <article class="lc-block">
+            <a href="{Field url}" class="tv-blog-feed-card">
+              <div class="tv-blog-feed-img">
+                <if field="image">
+                  <img src="{Field image_url size='medium_large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="lazy" alt="{Field image_alt}">
+                  <else>
+                    <div class="tv-blog-img-fallback">
+                      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                      </svg>
+                    </div>
+                  </else>
+                </if>
+              </div>
+              <div class="tv-blog-feed-body">
+                <div class="tv-blog-feed-meta">
+                  <field name="publish_date" date_format="M j, Y"></field>
+                  <span aria-hidden="true">·</span>
+                  <span class="tv-blog-card-cat-mono"><field name="category"></field></span>
+                </div>
+                <h3 class="tv-blog-feed-title"><field name="title"></field></h3>
+                <div class="tv-blog-feed-excerpt">
+                  <field name="excerpt" auto="true" words="18" more="..."></field>
+                </div>
+                <span class="tv-blog-feed-arrow">
+                  Artikel lesen
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                  </svg>
+                </span>
+              </div>
+            </a>
+          </article>
+        </loop>
+      </div>
+
+      <div class="lc-block tv-blog-pagination">
+        [lc_the_pagination]
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 4 — SPECIFICATION RESOURCES STRIP
+  ============================================================ -->
+  <div id="tv-blog-resources">
+    <div class="tv-blog-container">
+      <div class="lc-block">
+        <p class="tv-blog-mono-eyebrow">/ Ressourcen</p>
+        <h2 class="tv-blog-section-heading">Spezifikationsressourcen</h2>
+      </div>
+      <div class="tv-blog-resources-grid">
+        <a href="/de/faq-download/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">FAQ &amp; Downloads</p>
+          <h3 class="tv-blog-resource-card-title">Datenblätter, Handbücher und FAQ</h3>
+          <span class="tv-blog-resource-link-label">Ressourcen ansehen
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+        <a href="/product/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">Produkte</p>
+          <h3 class="tv-blog-resource-card-title">Unsere Produkte ansehen</h3>
+          <span class="tv-blog-resource-link-label">Produkte ansehen
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+        <a href="/de/loesung/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">Anwendungen</p>
+          <h3 class="tv-blog-resource-card-title">Einsatzszenarien ansehen</h3>
+          <span class="tv-blog-resource-link-label">Anwendungen entdecken
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 5 — FINAL CTA
+  ============================================================ -->
+  <div id="tv-blog-final">
+    <div class="tv-blog-container">
+      <div class="tv-blog-final-inner">
+        <div class="lc-block">
+          <h2 class="tv-blog-final-title">
+            Vom Lesen zum Projektangebot.
+          </h2>
+          <p class="tv-blog-final-body">
+            Teilen Sie Ihre Projektparameter – Lastanforderungen, Standortbedingungen oder Produktfragen –, und ein Kollege antwortet mit Verfügbarkeit, Preis und dem nächsten Schritt.
+          </p>
+        </div>
+        <div class="lc-block tv-blog-final-cta-row">
+          [linker_contact_link intent="project" class="tv-blog-btn-primary-lg" label="Request a project quote →" label_de="Projektangebot anfragen →"]
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('tv-blog-category-v1');
+      if (!root) return;
+
+      var feed = root.querySelector('#tv-blog-cat-feed');
+      if (!feed) return;
+
+      function appendFeedAnchor(anchor) {
+        if (!(anchor instanceof HTMLAnchorElement)) return;
+        var href = anchor.getAttribute('href');
+        if (!href) return;
+        if (href.indexOf('#') === -1) {
+          anchor.setAttribute('href', href + '#tv-blog-cat-feed');
+        }
+      }
+
+      var pagination = root.querySelector('.tv-blog-pagination');
+      if (pagination) {
+        var links = pagination.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) {
+          appendFeedAnchor(links[i]);
+        }
+      }
+
+      var hashTarget = window.location.hash;
+      if (hashTarget === '#tv-blog-cat-feed') {
+        feed.scrollIntoView({ behavior: 'auto', block: 'start' });
+      } else if (window.location.search.indexOf('paged=') > -1 || window.location.pathname.indexOf('/page/') > -1) {
+        var isCatPage = window.location.pathname.indexOf('/category/') > -1;
+        if (isCatPage) {
+          feed.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
+      }
+    })();
+  </script>
+</section>
+</tangible>

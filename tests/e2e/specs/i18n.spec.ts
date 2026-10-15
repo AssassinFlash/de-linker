@@ -63,22 +63,67 @@ async function storeProducts(query: string): Promise<StoreProduct[]> {
 }
 
 /**
- * The main-loop region of the blog archive: the theme's loop container
- * (`#container-content-archive`) up to the closing of the main element.
- * The full page also carries the header, footer and navigation, whose
- * links could match a post URL, so the listing assertions run inside
- * this region only — the recheck round's openQ on the full-page substring
- * checks (fix/recheck-blog-relations, 2026-10-15).
+ * The rendered region of a blog face: from the template's root id up to the
+ * resource strip that closes it. The old faces rendered the theme's loop
+ * container (`#container-content-archive`); since #175 the blog index, the
+ * search results and the category archive are LiveCanvas templates from the
+ * repository, so the region is the template's own. The full page also carries
+ * the header, the footer and the navigation, whose links could match a post
+ * URL, so the listing assertions run inside this region only — the recheck
+ * round's openQ on the full-page substring checks (fix/recheck-blog-relations,
+ * 2026-10-15), kept when the faces moved (#175).
  */
-function archiveLoop(html: string): string {
-	const start = html.indexOf('id="container-content-archive"');
-	expect(start, 'the archive renders its loop container').toBeGreaterThan(0);
-	const end = html.indexOf('</main>', start);
-	expect(
-		end,
-		'the loop container closes before the page ends'
-	).toBeGreaterThan(start);
-	return html.slice(start, end);
+function faceRegion(html: string, rootId: string, end: string): string {
+	const start = html.indexOf(`id="${rootId}"`);
+	expect(start, `the face renders ${rootId}`).toBeGreaterThan(0);
+	const stop = html.indexOf(`id="${end}"`, start);
+	expect(stop, `${rootId} closes before ${end}`).toBeGreaterThan(start);
+	return html.slice(start, stop);
+}
+
+/**
+ * The article card links of a face region, by card class, in document order.
+ *
+ * @param region    The face region (faceRegion()).
+ * @param className The card's class, e.g. tv-blog-feed-card.
+ */
+function cardLinks(region: string, className: string): string[] {
+	const pattern = new RegExp(
+		`<a[^>]*href="([^"]+)"[^>]*class="[^"]*${className}[^"]*"`,
+		'g'
+	);
+	const found: string[] = [];
+	for (const match of region.matchAll(pattern)) {
+		found.push(match[1]!);
+	}
+	return found;
+}
+
+/**
+ * The slugs of the posts the REST API serves in a language. The German faces'
+ * article links are judged against this list, not against a fixture: the
+ * ticket's assertion is that a German article is never linked through its
+ * English-tree address.
+ */
+async function postSlugs(lang: 'en' | 'de'): Promise<string[]> {
+	const response = await fetch(
+		`${instance().url}/wp-json/wp/v2/posts?lang=${lang}&per_page=100`
+	);
+	expect(response.status, `the REST posts answer in ${lang}`).toBe(200);
+	const posts = (await response.json()) as Array<{ slug: string }>;
+	expect(posts.length, `there are ${lang} posts`).toBeGreaterThan(0);
+	return posts.map((post) => post.slug);
+}
+
+/**
+ * Every url a page links that is one of the given posts' English-tree
+ * addresses. A German face that links this way is the #175 defect: the address
+ * is a 404 because the article lives under /de/.
+ */
+function bareArticleLinks(html: string, slugs: string[]): string[] {
+	const origin = instance().url;
+	const bare = slugs.map((slug) => `${origin}/${slug}/`);
+	return bare.filter((url) => html.includes(`href="${url}"`));
 }
 
 test.describe('i18n', () => {
@@ -221,12 +266,115 @@ test.describe('i18n', () => {
 		// were lost (families 16 and 22). Post 551 sits on system-design in
 		// the snapshot; its German twin is /de/hybridwechselrichter-vs-ac-
 		// speicher/ (docs/debt/DE-PARITY-2026-10-13.md §2: en=551, de=6893).
-		// Scoped to the main-loop region: the full page's header and footer
-		// links must not satisfy this assertion.
+		// Scoped to the face's feed: the full page's header and footer links
+		// must not satisfy this assertion.
+		const feed = faceRegion(
+			archiveHtml,
+			'tv-blog-category-v1',
+			'tv-blog-resources'
+		);
 		expect(
-			archiveLoop(archiveHtml),
+			feed,
 			'the archive lists the German twin of a snapshot post of this category'
 		).toContain('/de/hybridwechselrichter-vs-ac-speicher/');
+
+		// The ticket's defect (#175): every card linked the slug under the site
+		// root, which on this page is an English-tree address and a 404. Each
+		// card now carries the article's own, language-resolved permalink.
+		const cards = cardLinks(feed, 'tv-blog-feed-card');
+		expect(
+			cards.length,
+			'the German archive lists its cards'
+		).toBeGreaterThan(0);
+		for (const href of cards) {
+			expect(
+				new URL(href).pathname,
+				`${href} is a German address`
+			).toMatch(/^\/de\//);
+			const article = await fetch(href, { redirect: 'manual' });
+			expect(article.status, `${href} answers`).toBe(200);
+			expect(await article.text(), `${href} is German`).toMatch(
+				/<html[^>]*lang="de/i
+			);
+		}
+		expect(
+			bareArticleLinks(archiveHtml, await postSlugs('de')),
+			'the German archive links no article through its English-tree address'
+		).toEqual([]);
+	});
+
+	test('the German blog index links its articles in German', async () => {
+		// The blog posts index (#175): the live face's five card sections —
+		// the featured article, the compact list, the practical list, the guide
+		// card and the browse grid. Every one of them wrote the slug under the
+		// site root, so on the German index every card led to a 404.
+		const response = await fetch(`${instance().url}/de/blog/`, {
+			redirect: 'manual',
+		});
+		expect(response.status, 'the German blog index answers').toBe(200);
+		const html = await response.text();
+		expect(html, 'the index stays German').toMatch(/<html[^>]*lang="de/i);
+		const region = faceRegion(
+			html,
+			'tv-blog-index-v1',
+			'tv-blog-resources'
+		);
+		const cards = [
+			...cardLinks(region, 'tv-blog-featured-card'),
+			...cardLinks(region, 'tv-blog-compact-item'),
+			...cardLinks(region, 'tv-blog-practical-item'),
+			...cardLinks(region, 'tv-blog-guide-card'),
+			...cardLinks(region, 'tv-blog-browse-card-link'),
+		];
+		expect(
+			cards.length,
+			'the German index lists its cards'
+		).toBeGreaterThan(0);
+		for (const href of new Set(cards)) {
+			expect(
+				new URL(href).pathname,
+				`${href} is a German address`
+			).toMatch(/^\/de\//);
+			const article = await fetch(href, { redirect: 'manual' });
+			expect(article.status, `${href} answers`).toBe(200);
+		}
+		expect(
+			bareArticleLinks(html, await postSlugs('de')),
+			'the German index links no article through its English-tree address'
+		).toEqual([]);
+	});
+
+	test('the German blog search links its results in German', async () => {
+		// The search face (#175): same template engine, same defect — the
+		// result cards wrote the slug under the site root.
+		const response = await fetch(
+			`${instance().url}/de/?s=wechselrichter&post_type=post`,
+			{ redirect: 'manual' }
+		);
+		expect(response.status, 'the German search answers').toBe(200);
+		const html = await response.text();
+		expect(html, 'the search stays German').toMatch(/<html[^>]*lang="de/i);
+		const region = faceRegion(
+			html,
+			'tv-blog-search-v1',
+			'tv-blog-search-cta'
+		);
+		const cards = cardLinks(region, 'tv-blog-search-result-card');
+		expect(cards.length, 'the German search lists results').toBeGreaterThan(
+			0
+		);
+		for (const href of new Set(cards)) {
+			expect(
+				new URL(href).pathname,
+				`${href} is a German address`
+			).toMatch(/^\/de\//);
+			const article = await fetch(href, { redirect: 'manual' });
+			expect(article.status, `${href} answers`).toBe(200);
+		}
+		expect(
+			bareArticleLinks(html, await postSlugs('de')),
+			'the German search links no article through its English-tree address'
+		).toEqual([]);
 	});
 
 	test('a German post names its category', async () => {
@@ -257,10 +405,30 @@ test.describe('i18n', () => {
 			200
 		);
 		const archiveHtml = await archive.text();
+		const feed = faceRegion(
+			archiveHtml,
+			'tv-blog-category-v1',
+			'tv-blog-resources'
+		);
 		expect(
-			archiveLoop(archiveHtml),
+			feed,
 			'the archive lists a snapshot post of this category'
 		).toContain('/hybrid-inverter-vs-ac-coupled-storage/');
+		// The English face is unchanged by #175: its cards keep the English
+		// addresses, which are the ones that answer.
+		const cards = cardLinks(feed, 'tv-blog-feed-card');
+		expect(
+			cards.length,
+			'the English archive lists its cards'
+		).toBeGreaterThan(0);
+		for (const href of cards) {
+			expect(
+				new URL(href).pathname,
+				`${href} is the English address`
+			).not.toMatch(/^\/de\//);
+			const article = await fetch(href, { redirect: 'manual' });
+			expect(article.status, `${href} answers`).toBe(200);
+		}
 		const post = await fetch(
 			`${instance().url}/hybrid-inverter-vs-ac-coupled-storage/`
 		);

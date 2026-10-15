@@ -56,6 +56,14 @@ final class WindPressCache {
 		// blog.css, so this id is the alarm for that file never reaching the
 		// compile — the face would render as unstyled markup.
 		'tv-blog-single-v1'      => '#tv-blog-single-v1',
+		// The three faces #175 brought in (the blog posts index, the search
+		// results and the category archive) follow the same split, each with
+		// its own volume file: blog-index.css, blog-search.css and
+		// blog-category.css. One anchor per face, so a compile that missed one
+		// file names it instead of leaving that page unstyled.
+		'tv-blog-index-v1'       => '#tv-blog-index-v1',
+		'tv-blog-search-v1'      => '#tv-blog-search-v1',
+		'tv-blog-category-v1'    => '#tv-blog-category-v1',
 		// The FAQ + document library (#176). Its page is a component face the
 		// way the PDP and the blog single are: the template prints the ids and
 		// classes below and faq.css carries their rules, so a compile that

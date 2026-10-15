@@ -1,0 +1,611 @@
+<!--
+  Linker Blog Category Archive Dynamic Template v1
+  Deploy: LiveCanvas Dynamic Templates → Category Archive → Edit HTML
+  Target URL: http://127.0.0.1:9027/category/<slug>/
+  Rendering: scoped inline CSS + scoped vanilla JS (pagination anchor/scroll only)
+  Pagination: server-side via WordPress main query + [lc_the_pagination]
+-->
+<tangible class="live-refresh">
+<section id="tv-blog-category-v1">
+  <style>
+    /* ============================================================
+       Linker Blog Category Archive Dynamic Template v1
+       All selectors scoped to #tv-blog-category-v1
+       No Bootstrap/Picostrap/DaisyUI component classes.
+       No external image URLs.
+    ============================================================ */
+    /* --- root / shared --- */
+    #tv-blog-category-v1 { font-family: Inter, system-ui, -apple-system, sans-serif; background: #f5f7fb; color: #102033; }
+    #tv-blog-category-v1 .tv-blog-container { max-width: 1320px; margin: 0 auto; padding: 0 clamp(1rem, 3vw, 2rem); }
+    #tv-blog-category-v1 .tv-blog-section-pad { padding-block: clamp(2.5rem, 5vw, 4.5rem); }
+    /* --- shared typography --- */
+    #tv-blog-category-v1 .tv-blog-mono-eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.18em; line-height: 1.4;
+      text-transform: uppercase; color: #0c7f73;
+      margin: 0 0 1.25rem 0;
+    }
+    @media (min-width: 768px) {
+      #tv-blog-category-v1 .tv-blog-mono-eyebrow { font-size: 0.72rem; }
+    }
+    #tv-blog-category-v1 .tv-blog-card-cat-mono {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.64rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: #0c7f73;
+    }
+    #tv-blog-category-v1 .tv-blog-card-cat-mono-muted {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: #607086;
+    }
+    /* ============================================================
+       MODULE 1 — CATEGORY MASTHEAD
+       Frosted technical hero shell with glass panel.
+     ============================================================ */
+     #tv-blog-category-v1 #tv-blog-cat-masthead {
+       position: relative; overflow: hidden;
+       padding-block: clamp(3.5rem, 6vw, 5.5rem) clamp(1.5rem, 3vw, 2.5rem);
+       background: linear-gradient(150deg, #edf3fb 0%, #e3edf9 30%, #dae8ff 100%);
+     }
+     /* frosted glow behind glass */
+     #tv-blog-category-v1 #tv-blog-cat-masthead::before {
+       content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+       background:
+         radial-gradient(600px 400px at 85% 10%, rgba(31,99,255,0.13), transparent 58%),
+         radial-gradient(520px 360px at 12% 92%, rgba(14,165,183,0.10), transparent 60%);
+     }
+     /* subtle grid-line texture */
+     #tv-blog-category-v1 #tv-blog-cat-masthead::after {
+       content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+       background-image:
+         linear-gradient(rgba(16,32,51,0.04) 1px, transparent 1px),
+         linear-gradient(90deg, rgba(16,32,51,0.04) 1px, transparent 1px);
+       background-size: 64px 64px;
+       -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 78%);
+       mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 78%);
+     }
+     /* glass panel wrapping content */
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-masthead-grid {
+       position: relative; z-index: 1;
+       display: grid; gap: 2.5rem;
+       background: rgba(255,255,255,0.68);
+       backdrop-filter: blur(18px);
+       -webkit-backdrop-filter: blur(18px);
+       border: 1px solid rgba(216,226,240,0.78);
+       border-radius: 28px;
+       box-shadow: 0 18px 48px rgba(23,47,89,0.10), 0 8px 20px rgba(23,47,89,0.06);
+       padding: clamp(1.5rem, 3vw, 2.25rem);
+     }
+     @media (min-width: 1024px) {
+       #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-masthead-grid {
+         grid-template-columns: 8fr 4fr; align-items: end;
+         padding: clamp(2rem, 4vw, 2.75rem);
+       }
+     }
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-masthead-eyebrow {
+       display: inline-block; margin: 0 0 0.5rem;
+       font-family: "JetBrains Mono", monospace;
+       font-size: 0.68rem; font-weight: 600;
+       letter-spacing: 0.18em; text-transform: uppercase;
+       color: #607086;
+     }
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-masthead-title {
+       margin: 0;
+       font-size: clamp(2rem, 5vw, 4rem); font-weight: 700;
+       letter-spacing: -0.03em; line-height: 1.05;
+       max-width: 22ch; color: #102033;
+     }
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-masthead-lead {
+       margin: 1.25rem 0 0;
+       max-width: 38rem;
+       font-size: 1rem; line-height: 1.65;
+       color: #607086;
+     }
+     @media (min-width: 768px) {
+       #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-masthead-lead { font-size: 1.125rem; }
+     }
+     /* masthead search */
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-search {
+       display: flex; align-items: flex-end; gap: 0.75rem;
+       border-bottom: 1.5px solid #13b8a6; padding-bottom: 0.625rem;
+     }
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-search input {
+       flex: 1; background: transparent; border: none; outline: none;
+       font-family: Inter, system-ui, sans-serif;
+       font-size: 0.9375rem; color: #102033;
+     }
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-search input::placeholder { color: #607086; }
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-search button {
+       display: inline-flex; align-items: center; justify-content: center;
+       width: 2.5rem; height: 2.5rem; border-radius: 50%;
+       border: none; background: transparent; color: #0c7f73; cursor: pointer;
+       transition: background 0.2s, color 0.2s;
+     }
+     #tv-blog-category-v1 #tv-blog-cat-masthead .tv-blog-search button:hover {
+       background: #13b8a6; color: #0b2233;
+     }
+    /* ============================================================
+       MODULE 2 — CATEGORY NAV RAIL
+     ============================================================ */
+    #tv-blog-category-v1 #tv-blog-cat-nav {
+      background: #f5f7fb;
+      padding-block: clamp(1rem, 2vw, 1.5rem);
+    }
+    #tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-inner {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      padding: 0.75rem clamp(1rem, 3vw, 1.25rem);
+      background: rgba(255,255,255,0.52);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(216,226,240,0.64);
+      border-radius: 20px;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-all {
+      display: inline-flex; align-items: center; min-height: 2rem;
+      padding: 0 0.875rem; border-radius: 9999px;
+      background: #13b8a6; color: #0b2233;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 0.75rem; font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-all:hover { background: #0c7f73; }
+    #tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-item {
+      display: inline-flex; align-items: center; min-height: 2rem;
+      padding: 0 0.875rem; border-radius: 9999px;
+      border: 1px solid #c3d1e4; color: #344459;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 0.75rem; font-weight: 500;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-item:hover {
+      border-color: #0c7f73; color: #0c7f73;
+    }
+    /* ============================================================
+       MODULE 3 — CATEGORY FEED
+     ============================================================ */
+    #tv-blog-category-v1 #tv-blog-cat-feed {
+      background: #f5f7fb;
+      padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-grid {
+      display: grid;
+      gap: clamp(1.5rem, 3vw, 2.25rem);
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) {
+      #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-card {
+      display: block;
+      border-radius: 24px; overflow: hidden;
+      border: 1px solid #d8e2f0; background: #ffffff;
+      box-shadow: 0 14px 36px rgba(23,47,89,0.07);
+      text-decoration: none; color: inherit;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 44px rgba(23,47,89,0.12);
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-img {
+      position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.3s;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-card:hover .tv-blog-feed-img img {
+      transform: scale(1.03);
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-img .tv-blog-img-fallback {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #e3edf9 0%, #d8e2f0 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-img .tv-blog-img-fallback svg {
+      width: 3rem; height: 3rem; color: #a0b4cc;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-body {
+      padding: 1.5rem;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-meta {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; color: #607086;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-title {
+      margin: 0.625rem 0 0;
+      font-size: 1.125rem; font-weight: 600;
+      line-height: 1.3; color: #102033;
+      transition: color 0.2s;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-card:hover .tv-blog-feed-title {
+      color: #0c7f73;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-excerpt {
+      margin-top: 0.5rem;
+      font-size: 0.875rem; line-height: 1.55; color: #607086;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-feed-arrow {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      margin-top: 1rem;
+      font-size: 0.8125rem; font-weight: 600; color: #0c7f73;
+    }
+    /* pagination */
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination {
+      margin-top: 2.5rem;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 1rem;
+    }
+    /* reset WP pagination markup */
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination h2 { display: none; }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination .screen-reader-text { display: none; }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination .navigation { margin: 0; }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination .pagination { margin: 0; }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination .nav-links { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination ul { margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; list-style: none; }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination li { margin: 0; list-style: none; }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination a,
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination .page-numbers {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 2.25rem; min-height: 2.75rem; padding: 0 0.375rem;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 1.25rem; font-weight: 600; line-height: 1;
+      color: #102033; background: transparent; text-decoration: none;
+      transition: color 0.2s;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination a:hover { color: #0ea5b7; }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination .current {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 2.25rem; min-height: 2.75rem; padding: 0 0.375rem;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 1.25rem; font-weight: 600; line-height: 1;
+      color: #0ea5b7; background: transparent;
+    }
+    #tv-blog-category-v1 #tv-blog-cat-feed .tv-blog-pagination .dots { color: #607086; background: transparent; }
+    /* ============================================================
+       MODULE 4 — SPECIFICATION RESOURCES STRIP
+     ============================================================ */
+    #tv-blog-category-v1 #tv-blog-resources {
+      background: #f5f7fb;
+      padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    }
+    #tv-blog-category-v1 #tv-blog-resources .tv-blog-resources-grid {
+      display: grid; gap: 1px; overflow: hidden;
+      border-radius: 24px; border: 1px solid #d8e2f0;
+      background: #d8e2f0;
+    }
+    @media (min-width: 768px) {
+      #tv-blog-category-v1 #tv-blog-resources .tv-blog-resources-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    #tv-blog-category-v1 #tv-blog-resources .tv-blog-resource-card {
+      padding: 1.5rem 1.5rem 1.75rem;
+      background: #ffffff; text-decoration: none;
+      transition: background 0.2s;
+    }
+    #tv-blog-category-v1 #tv-blog-resources .tv-blog-resource-card:hover { background: #edf3fb; }
+    @media (min-width: 768px) {
+      #tv-blog-category-v1 #tv-blog-resources .tv-blog-resource-card { padding: 1.75rem 2rem 2rem; }
+    }
+    #tv-blog-category-v1 #tv-blog-resources .tv-blog-resource-card-title {
+      margin-top: 1.75rem;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 1.125rem; font-weight: 600; color: #102033;
+    }
+    #tv-blog-category-v1 #tv-blog-resources .tv-blog-resource-link-label {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      margin-top: 1rem;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
+      color: #0c7f73; transition: color 0.2s;
+    }
+    #tv-blog-category-v1 #tv-blog-resources .tv-blog-resource-card:hover .tv-blog-resource-link-label { color: #0ea5b7; }
+    /* ============================================================
+       MODULE 5 — FINAL CTA
+       Linker ctaBand shell with subtle image depth.
+     ============================================================ */
+     #tv-blog-category-v1 #tv-blog-final {
+       padding-block: clamp(2.5rem, 5vw, 4.5rem);
+     }
+     #tv-blog-category-v1 #tv-blog-final .tv-blog-final-inner {
+       position: relative;
+       overflow: hidden;
+       display: grid;
+       gap: 1.75rem;
+       align-items: center;
+       padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 2.5rem);
+       border-radius: 32px;
+       background: linear-gradient(135deg, #0c7f73 0%, #13b8a6 100%);
+       box-shadow: 0 24px 60px rgba(19,73,173,0.24);
+     }
+     @media (min-width: 1024px) {
+       #tv-blog-category-v1 #tv-blog-final .tv-blog-final-inner {
+         grid-template-columns: 6fr 5fr;
+         gap: 2rem;
+       }
+     }
+     /* subtle product image on the right */
+     #tv-blog-category-v1 #tv-blog-final .tv-blog-final-inner::before {
+       content: '';
+       position: absolute;
+       top: 0; right: 0; bottom: 0;
+       width: 55%;
+       background: url('http://127.0.0.1:9027/wp-content/uploads/2026/05/h5-product-photo.jpg') center / cover no-repeat;
+       opacity: 0.12;
+       -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 40%);
+       mask-image: linear-gradient(90deg, transparent 0%, black 40%);
+     }
+     #tv-blog-category-v1 #tv-blog-final .tv-blog-final-title {
+       position: relative; z-index: 1;
+       font-family: Inter, system-ui, sans-serif;
+       font-size: clamp(1.75rem, 4vw, 3rem);
+       font-weight: 600;
+       letter-spacing: -0.02em;
+       line-height: 1.12;
+       color: #ffffff;
+     }
+     #tv-blog-category-v1 #tv-blog-final .tv-blog-final-body {
+       position: relative; z-index: 1;
+       margin-top: 0.75rem;
+       font-size: 1rem;
+       line-height: 1.6;
+       color: rgba(255,255,255,0.78);
+     }
+     @media (min-width: 768px) {
+       #tv-blog-category-v1 #tv-blog-final .tv-blog-final-body { font-size: 1.125rem; }
+     }
+     #tv-blog-category-v1 #tv-blog-final .tv-blog-final-cta-row {
+       position: relative; z-index: 1;
+       display: flex;
+       flex-direction: column;
+       gap: 0.75rem;
+     }
+     #tv-blog-category-v1 #tv-blog-final .tv-blog-btn-primary-lg {
+       display: inline-flex;
+       align-items: center;
+       justify-content: center;
+       gap: 0.5rem;
+       padding: 0.875rem 2rem;
+       border-radius: 18px;
+       border: none;
+       background: #ffffff;
+       color: #0c7f73;
+       font-family: Inter, system-ui, sans-serif;
+       font-size: 1rem;
+       font-weight: 600;
+       text-decoration: none;
+       cursor: pointer;
+       white-space: nowrap;
+       transition: background 0.2s, transform 0.2s, color 0.2s;
+       box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+     }
+     #tv-blog-category-v1 #tv-blog-final .tv-blog-btn-primary-lg:hover {
+       background: #f5f7fb;
+       color: #0c7f73;
+       transform: translateY(-1px);
+     }
+  </style>
+
+  <!-- ============================================================
+       MODULE 1 — CATEGORY MASTHEAD
+  ============================================================ -->
+  <div id="tv-blog-cat-masthead">
+    <div class="tv-blog-container">
+      <div class="tv-blog-masthead-grid">
+        <div class="lc-block">
+          <loop type="taxonomy_term" taxonomy="category" terms="current">
+            <p class="tv-blog-masthead-eyebrow">Linker Blog / Kategorie</p>
+            <h1 class="tv-blog-masthead-title">
+              <field name="title"></field>
+            </h1>
+            <if field="description">
+              <p class="tv-blog-masthead-lead">
+                <field name="description"></field>
+              </p>
+              <else>
+                <p class="tv-blog-masthead-lead">
+                  Technische Artikel, Systemhinweise und Anwendungshinweise zu diesem Thema.
+                </p>
+              </else>
+            </if>
+          </loop>
+        </div>
+        <div>
+          <form role="search" method="get" action="/" class="lc-block">
+            <input type="hidden" name="post_type" value="post">
+            <label for="tv-blog-search" class="sr-only">Artikel suchen</label>
+            <div class="tv-blog-search">
+              <input id="tv-blog-search" type="search" name="s" placeholder="Technische Artikel finden">
+              <button type="submit" aria-label="Suche">
+                <svg aria-hidden="true" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 2 — CATEGORY NAV RAIL
+  ============================================================ -->
+  <div id="tv-blog-cat-nav">
+    <div class="tv-blog-container">
+      <div class="lc-block tv-blog-cat-nav-inner">
+        <a href="/blog/" class="tv-blog-cat-nav-all">Alle Artikel</a>
+        <loop type="taxonomy_term" taxonomy="category" count="8" orderby="name" order="asc">
+          <a href="{Field url}" class="tv-blog-cat-nav-item">
+            <field name="title"></field>
+          </a>
+        </loop>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 3 — CATEGORY FEED
+  ============================================================ -->
+  <div id="tv-blog-cat-feed">
+    <div class="tv-blog-container">
+      <div class="lc-block">
+        <p class="tv-blog-mono-eyebrow">/ Artikel in dieser Kategorie</p>
+      </div>
+
+      <div class="tv-blog-feed-grid">
+        <loop class="contents">
+          <article class="lc-block">
+            <a href="/{Field name}/" class="tv-blog-feed-card">
+              <div class="tv-blog-feed-img">
+                <if field="image">
+                  <img src="{Field image_url size='medium_large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="lazy" alt="{Field image_alt}">
+                  <else>
+                    <div class="tv-blog-img-fallback">
+                      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                      </svg>
+                    </div>
+                  </else>
+                </if>
+              </div>
+              <div class="tv-blog-feed-body">
+                <div class="tv-blog-feed-meta">
+                  <field name="publish_date" date_format="M j, Y"></field>
+                  <span aria-hidden="true">·</span>
+                  <span class="tv-blog-card-cat-mono"><field name="category"></field></span>
+                </div>
+                <h3 class="tv-blog-feed-title"><field name="title"></field></h3>
+                <div class="tv-blog-feed-excerpt">
+                  <field name="excerpt" auto="true" words="18" more="..."></field>
+                </div>
+                <span class="tv-blog-feed-arrow">
+                  Artikel lesen
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.75rem; height: 0.75rem;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                  </svg>
+                </span>
+              </div>
+            </a>
+          </article>
+        </loop>
+      </div>
+
+      <div class="lc-block tv-blog-pagination">
+        [lc_the_pagination]
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 4 — SPECIFICATION RESOURCES STRIP
+  ============================================================ -->
+  <div id="tv-blog-resources">
+    <div class="tv-blog-container">
+      <div class="lc-block">
+        <p class="tv-blog-mono-eyebrow">/ Ressourcen</p>
+        <h2 class="tv-blog-section-heading" style="margin-bottom: 2.5rem;">Spezifikationsressourcen</h2>
+      </div>
+      <div class="tv-blog-resources-grid">
+        <a href="/de/faq-download/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">FAQ &amp; Downloads</p>
+          <h3 class="tv-blog-resource-card-title">Datenblätter, Handbücher und FAQ</h3>
+          <span class="tv-blog-resource-link-label">Ressourcen ansehen
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.75rem; height: 0.75rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+        <a href="/product/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">Produkte</p>
+          <h3 class="tv-blog-resource-card-title">Unsere Produkte ansehen</h3>
+          <span class="tv-blog-resource-link-label">Produkte ansehen
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.75rem; height: 0.75rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+        <a href="/de/loesung/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">Anwendungen</p>
+          <h3 class="tv-blog-resource-card-title">Einsatzszenarien ansehen</h3>
+          <span class="tv-blog-resource-link-label">Anwendungen entdecken
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.75rem; height: 0.75rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 5 — FINAL CTA
+  ============================================================ -->
+  <div id="tv-blog-final">
+    <div class="tv-blog-container">
+      <div class="tv-blog-final-inner">
+        <div class="lc-block">
+          <h2 class="tv-blog-final-title">
+            Vom Lesen zum Projektangebot.
+          </h2>
+          <p class="tv-blog-final-body">
+            Teilen Sie Ihre Projektparameter – Lastanforderungen, Standortbedingungen oder Produktfragen –, und ein Kollege antwortet mit Verfügbarkeit, Preis und dem nächsten Schritt.
+          </p>
+        </div>
+        <div class="lc-block tv-blog-final-cta-row">
+          [linker_contact_link intent="project" class="tv-blog-btn-primary-lg" label="Request a project quote →" label_de="Projektangebot anfragen →"]
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('tv-blog-category-v1');
+      if (!root) return;
+
+      var feed = root.querySelector('#tv-blog-cat-feed');
+      if (!feed) return;
+
+      function appendFeedAnchor(anchor) {
+        if (!(anchor instanceof HTMLAnchorElement)) return;
+        var href = anchor.getAttribute('href');
+        if (!href) return;
+        if (href.indexOf('#') === -1) {
+          anchor.setAttribute('href', href + '#tv-blog-cat-feed');
+        }
+      }
+
+      var pagination = root.querySelector('.tv-blog-pagination');
+      if (pagination) {
+        var links = pagination.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) {
+          appendFeedAnchor(links[i]);
+        }
+      }
+
+      var hashTarget = window.location.hash;
+      if (hashTarget === '#tv-blog-cat-feed') {
+        feed.scrollIntoView({ behavior: 'auto', block: 'start' });
+      } else if (window.location.search.indexOf('paged=') > -1 || window.location.pathname.indexOf('/page/') > -1) {
+        var isCatPage = window.location.pathname.indexOf('/category/') > -1;
+        if (isCatPage) {
+          feed.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
+      }
+    })();
+  </script>
+</section>
+</tangible>
+
+

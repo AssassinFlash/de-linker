@@ -1,0 +1,415 @@
+<!--
+  Blog posts index, German.
+
+  The German twin of content/livecanvas/blog_index.html, written by the same
+  `present` run onto the English template's Polylang twin. Same composition,
+  German words; styling is the WindPress volume file blog-index.css. The
+  article links are `{Field url}` here too — the face that made the missing
+  language prefix a 404 (#175).
+-->
+<tangible class="live-refresh">
+<section id="tv-blog-index-v1">
+
+  <!-- ============================================================
+       MODULE 1 — BLOG MASTHEAD
+  ============================================================ -->
+  <div id="tv-blog-masthead">
+    <div class="tv-blog-container">
+      <div class="tv-blog-masthead-grid">
+        <div class="lc-block">
+          <p class="tv-blog-masthead-eyebrow">Linker Journal</p>
+          <h1 class="tv-blog-masthead-title">
+            Lesen Sie, bevor Sie dimensionieren, kombinieren oder anbieten.
+          </h1>
+          <p class="tv-blog-masthead-lead">
+            Artikel zu Systemdimensionierung, Wechselrichter-Batterie-Kombination, Inbetriebnahme und Monitoring, geschrieben für Installateure und EPCs, die das Projekt nach der Übergabe betreuen.
+          </p>
+          <div class="tv-blog-masthead-chips">
+            <span class="tv-blog-chip">Hybrid-Wechselrichter</span>
+            <span class="tv-blog-chip">Batteriedimensionierung</span>
+            <span class="tv-blog-chip">Inbetriebnahme</span>
+            <span class="tv-blog-chip">Überwachung</span>
+          </div>
+        </div>
+        <div>
+          <form role="search" method="get" action="/" class="lc-block">
+            <input type="hidden" name="post_type" value="post">
+            <label for="tv-blog-search" class="sr-only">Artikel suchen</label>
+            <div class="tv-blog-search">
+              <input id="tv-blog-search" type="search" name="s" placeholder="Technische Artikel finden">
+              <button type="submit" aria-label="Suche">
+                <svg aria-hidden="true" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 2 — LATEST ARTICLES SPLIT
+  ============================================================ -->
+  <div id="tv-blog-latest">
+    <div class="tv-blog-container">
+      <div class="tv-blog-latest-grid">
+        <div>
+          <div class="lc-block">
+            <p class="tv-blog-mono-eyebrow">/ Aktuelle Lektüre</p>
+            <h2 class="tv-blog-section-heading">Neueste Artikel</h2>
+          </div>
+
+          <loop type="post" count="1" orderby="date" order="desc">
+            <article class="lc-block">
+              <a href="{Field url}" class="tv-blog-featured-card">
+                <div class="tv-blog-featured-img">
+                  <if field="image">
+                    <img src="{Field image_url size='large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="eager" alt="{Field image_alt}">
+                    <else>
+                      <div class="tv-blog-img-fallback">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
+                      </div>
+                    </else>
+                  </if>
+                </div>
+                <div class="tv-blog-featured-body">
+                  <div class="tv-blog-featured-meta">
+                    <field name="publish_date" date_format="M j, Y"></field>
+                    <span aria-hidden="true">·</span>
+                    <loop type="taxonomy_term" taxonomy="category" post="current" count="1">
+                      <span class="tv-blog-card-cat-mono"><field name="title"></field></span>
+                    </loop>
+                  </div>
+                  <h3 class="tv-blog-featured-title"><field name="title"></field></h3>
+                  <div class="tv-blog-featured-excerpt">
+                    <field name="excerpt" auto="true" words="28" more="..."></field>
+                  </div>
+                  <span class="tv-blog-featured-link">Artikel lesen
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                    </svg>
+                  </span>
+                </div>
+              </a>
+            </article>
+          </loop>
+        </div>
+
+        <aside>
+          <div class="lc-block">
+            <h2 class="tv-blog-section-heading">Mehr aus dem Journal</h2>
+          </div>
+          <loop type="post" count="4" offset="1" orderby="date" order="desc" class="tv-blog-compact-list">
+            <article class="lc-block">
+              <a href="{Field url}" class="tv-blog-compact-item">
+                <div>
+                  <div class="tv-blog-card-cat-mono-muted">
+                    <loop type="taxonomy_term" taxonomy="category" post="current" count="1">
+                      <field name="title"></field>
+                    </loop>
+                  </div>
+                  <h3 class="tv-blog-compact-title"><field name="title"></field></h3>
+                </div>
+                <span class="tv-blog-compact-arrow">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                  </svg>
+                </span>
+              </a>
+            </article>
+          </loop>
+        </aside>
+      </div>
+
+      <div class="lc-block tv-blog-inquiry-strip">
+        <div class="tv-blog-inquiry-inner">
+          <div>
+            <span class="tv-blog-inquiry-label">Wenn aus dem Lesen ein Projekt wird.</span><span class="tv-blog-inquiry-text">Senden Sie die Projektdaten. Ein Kollege antwortet mit Verfügbarkeit, Preis und dem nächsten Schritt.</span>
+          </div>
+          <a href="/linker-planner/" class="tv-blog-btn-primary">Linker Planer öffnen<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7m0 0H9m8 0v8" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 3 — PRACTICAL READING
+  ============================================================ -->
+  <div id="tv-blog-practical">
+    <div class="tv-blog-container">
+      <div class="tv-blog-practical-grid">
+        <div>
+          <div class="lc-block">
+            <p class="tv-blog-mono-eyebrow">/ Praktische Lektüre</p>
+            <h2 class="tv-blog-section-heading">Weitere praktische Lektüre</h2>
+          </div>
+          <loop type="post" count="4" offset="5" orderby="date" order="desc" class="tv-blog-practical-list">
+            <article class="lc-block">
+              <a href="{Field url}" class="tv-blog-practical-item">
+                <div class="tv-blog-practical-thumb">
+                  <if field="image">
+                    <img src="{Field image_url size='medium'}" srcset="{Field image_srcset}" sizes="120px" loading="lazy" alt="{Field image_alt}">
+                    <else>
+                      <div class="tv-blog-img-fallback-sm"></div>
+                    </else>
+                  </if>
+                </div>
+                <div>
+                  <div class="tv-blog-card-cat-mono-muted">
+                    <loop type="taxonomy_term" taxonomy="category" post="current" count="1">
+                      <field name="title"></field>
+                    </loop>
+                  </div>
+                  <h3 class="tv-blog-practical-title"><field name="title"></field></h3>
+                </div>
+                <span class="tv-blog-practical-arrow">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                  </svg>
+                </span>
+              </a>
+            </article>
+          </loop>
+        </div>
+
+        <aside>
+          <div class="lc-block">
+            <h2 class="tv-blog-section-heading">Aus dem Archiv</h2>
+          </div>
+          <loop type="post" count="1" offset="9" orderby="date" order="desc">
+            <article class="lc-block">
+              <a href="{Field url}" class="tv-blog-guide-card">
+                <div class="tv-blog-guide-img">
+                  <if field="image">
+                    <img src="{Field image_url size='large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="lazy" alt="{Field image_alt}">
+                    <else>
+                      <div class="tv-blog-img-fallback-lg"></div>
+                    </else>
+                  </if>
+                  <div class="tv-blog-guide-overlay"></div>
+                </div>
+                <div class="tv-blog-guide-body">
+                  <h3 class="tv-blog-guide-title"><field name="title"></field></h3>
+                  <div class="tv-blog-guide-excerpt">
+                    <field name="excerpt" auto="true" words="24" more="..."></field>
+                  </div>
+                </div>
+              </a>
+            </article>
+          </loop>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 4 — EDITORIAL METHOD SPOTLIGHT
+  ============================================================ -->
+  <div id="tv-blog-editorial">
+    <div class="tv-blog-container">
+      <div class="tv-blog-editorial-grid">
+        <div class="lc-block tv-blog-editorial-visual">
+          <div class="tv-blog-editorial-panel">
+            <img src="/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65-768x1024.jpg" loading="lazy" alt="Hybridwechselrichter und zwei Batterietürme in einer Garage installiert">
+            <div class="tv-blog-editorial-panel-inner">
+              <span class="tv-blog-editorial-panel-label">Systemdesign</span>
+            </div>
+          </div>
+          <div class="tv-blog-editorial-panel">
+            <img src="/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-768x1024.jpg" loading="lazy" alt="Batteriespeicherschrank bei der Verkabelung während der Inbetriebnahme">
+            <div class="tv-blog-editorial-panel-inner">
+              <span class="tv-blog-editorial-panel-label">Inbetriebnahme</span>
+            </div>
+          </div>
+        </div>
+        <div class="lc-block tv-blog-editorial-content">
+          <p class="tv-blog-mono-eyebrow">/ Redaktionelle Methode</p>
+          <h2 class="tv-blog-editorial-title">
+            Treffen Sie die Entscheidung vor dem Vor-Ort-Termin.
+          </h2>
+          <p class="tv-blog-editorial-body">
+            Jeder Artikel behandelt eine Entscheidung, die Installateure und EPCs bei laufenden Projekten treffen: Wechselrichterauswahl und Batteriedimensionierung vor der Bestellung, Inbetriebnahme und Monitoring danach. Was am Schreibtisch geklärt ist, muss nicht auf dem Dach entdeckt werden.
+          </p>
+          <a href="#tv-blog-browse" class="tv-blog-editorial-link">
+            Artikel durchsuchen
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 5 — BROWSE ALL GRID
+  ============================================================ -->
+  <div id="tv-blog-browse">
+    <div class="tv-blog-container">
+      <div class="lc-block tv-blog-browse-header">
+        <h2 class="tv-blog-browse-title">Alle Artikel durchsuchen</h2>
+        <form role="search" method="get" action="/" class="tv-blog-search-sm">
+          <input type="hidden" name="post_type" value="post">
+          <label for="tv-blog-search-bottom" class="sr-only">Alle Artikel suchen</label>
+          <input id="tv-blog-search-bottom" type="search" name="s" placeholder="Nach einem Artikel suchen">
+          <button type="submit" aria-label="Alle Artikel suchen">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <div class="tv-blog-browse-grid">
+        <loop class="contents">
+          <article class="lc-block tv-blog-browse-card">
+            <a href="{Field url}" class="tv-blog-browse-card-link">
+              <div class="tv-blog-browse-img">
+                <if field="image">
+                  <img src="{Field image_url size='medium_large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="lazy" alt="{Field image_alt}">
+                  <else>
+                    <div class="tv-blog-img-fallback-grid"></div>
+                  </else>
+                </if>
+              </div>
+              <div class="tv-blog-browse-body">
+                <div class="tv-blog-card-cat-mono">
+                  <loop type="taxonomy_term" taxonomy="category" post="current" count="1">
+                    <field name="title"></field>
+                  </loop>
+                </div>
+                <h3 class="tv-blog-browse-card-title"><field name="title"></field></h3>
+                <div class="tv-blog-browse-card-excerpt">
+                  <field name="excerpt" auto="true" words="18" more="..."></field>
+                </div>
+              </div>
+            </a>
+          </article>
+        </loop>
+      </div>
+
+      <div class="lc-block tv-blog-pagination">
+        [lc_the_pagination]
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 6 — SPECIFICATION RESOURCES STRIP
+  ============================================================ -->
+  <div id="tv-blog-resources">
+    <div class="tv-blog-container">
+      <div class="lc-block">
+        <h2 class="tv-blog-section-heading">Spezifikationsressourcen</h2>
+      </div>
+      <div class="tv-blog-resources-grid">
+        <a href="/de/faq-download/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">FAQ &amp; Downloads</p>
+          <h3 class="tv-blog-resource-card-title">Datenblätter, Handbücher und FAQ</h3>
+          <span class="tv-blog-resource-link-label">Ressourcen ansehen
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+        <a href="/de/produkte/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">Produkte</p>
+          <h3 class="tv-blog-resource-card-title">Unsere Produkte ansehen</h3>
+          <span class="tv-blog-resource-link-label">Produkte ansehen
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+        <a href="/de/loesung/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">Anwendungen</p>
+          <h3 class="tv-blog-resource-card-title">Beginnen Sie mit der Anwendung</h3>
+          <span class="tv-blog-resource-link-label">Anwendungen entdecken
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 7 — FINAL CTA
+  ============================================================ -->
+  <div id="tv-blog-final">
+    <div class="tv-blog-container">
+      <div class="tv-blog-final-inner">
+        <div class="lc-block">
+          <p class="tv-blog-final-eyebrow">Projekt starten</p>
+          <h2 class="tv-blog-final-title">
+            Setzen Sie das Gelesene in einen Systemplan um.
+          </h2>
+          <p class="tv-blog-final-body">
+            Senden Sie Lasten, Phasenversorgung und Zeitplan. Ein Kollege antwortet mit Verfügbarkeit, Preis und dem nächsten Schritt, und für den Start ist kein Konto nötig.
+          </p>
+        </div>
+        <div class="lc-block tv-blog-final-cta-row">
+          <a href="/linker-planner/" class="tv-blog-btn-primary-lg">Linker Planer öffnen<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7m0 0H9m8 0v8" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["CollectionPage", "WebPage"],
+      "name": "Linker Journal",
+      "url": "[linker_site_url]blog/",
+      "description": "Technical articles on system sizing, inverter-battery pairing, commissioning and monitoring for installers, EPCs and energy partners working with photovoltaic and energy-storage solutions.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Linker",
+        "url": "[linker_site_url]"
+      }
+    }
+  </script>
+
+  <script>
+    (function () {
+      var root = document.getElementById('tv-blog-index-v1');
+      if (!root) return;
+      var browse = root.querySelector('#tv-blog-browse');
+      if (!browse) return;
+      function appendBrowseAnchor(anchor) {
+        if (!(anchor instanceof HTMLAnchorElement)) return;
+        var href = anchor.getAttribute('href');
+        if (!href) return;
+        if (href.indexOf('#') === -1) {
+          anchor.setAttribute('href', href + '#tv-blog-browse');
+        }
+      }
+      var pagination = root.querySelector('.tv-blog-pagination');
+      if (pagination) {
+        var links = pagination.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) {
+          appendBrowseAnchor(links[i]);
+        }
+      }
+      var hashTarget = window.location.hash;
+      if (hashTarget === '#tv-blog-browse') {
+        browse.scrollIntoView({ behavior: 'auto', block: 'start' });
+      } else if (window.location.search.indexOf('paged=') > -1 || window.location.pathname.indexOf('/page/') > -1) {
+        var isBlogPage = window.location.pathname.indexOf('/blog') > -1;
+        if (isBlogPage) {
+          browse.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
+      }
+    })();
+  </script>
+</section>
+</tangible>
