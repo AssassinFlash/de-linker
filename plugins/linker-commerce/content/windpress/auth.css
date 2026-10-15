@@ -338,8 +338,6 @@
 
 .linker-auth-card-heading p { margin: 0; font-size: 15px; color: var(--acct-muted); }
 
-.linker-auth-register { scroll-margin-top: 96px; }
-
 /* ── Fields (WooCommerce's own form rows, in the chain's language) ─────── */
 /* WooCommerce draws its own box around the login and register forms; the card
  * is the box here. (`.woocommerce form.login` is 0,2,1, so this rule carries
