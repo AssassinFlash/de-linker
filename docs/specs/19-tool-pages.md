@@ -30,6 +30,11 @@
 
 ## 3. /faq-download/（en / de）——静态目录化
 
+> **2026-10-15：本节的三段式组成已被票 #176 重做取代**（页头 + tab + 左目录右内容 +
+> 毛玻璃卡；短代码换成 `[linker_library_*]` 七枚，16 条商务规则移入
+> `data/faq-trade.json`）。当前实现与逐项映射见 `docs/specs/176-faq-download.md`；
+> 本节余下文字只作为 #66 当时那一步的记录。
+
 **保 URL**（en `/faq-download/`、de `/de/faq-download/`，页面对象不动）；**内容冻结用现有内容**；工作台 JS 随旧插件死亡，页面必须自己成立（无脚本即完整）。同样是 LC 每页模板（slug `linker-faq` / `linker-faq-de`）。
 
 页面由三段组成：

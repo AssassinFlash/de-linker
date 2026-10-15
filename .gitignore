@@ -25,3 +25,10 @@ storybook-static/
 *.sql.gz
 de-linker-data/
 __pycache__/
+
+# .scratch/ is where working material may be committed on purpose (the
+# prototype checkouts, capture scripts, evidence), so it is not ignored as a
+# whole. Caches are: the FAQ thumbnail pipeline's PDF cache is the live
+# uploads (hundreds of MB), and it is rebuilt on demand (tools/faq/thumbs.py
+# --cache). Never commit it.
+.scratch/faq-pdf-cache/
