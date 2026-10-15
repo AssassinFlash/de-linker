@@ -45,13 +45,14 @@ final class WindPressCache {
 		// WindPress volume stylesheets, so a missing selector is the alarm for
 		// a volume file that never made it into the compile, or a shortcode
 		// parser that ate a class out of a template.
-			'sf-products'        => '.sf-products',
+		'sf-products'            => '.sf-products',
 		'product-grid'           => '.product-grid',
 		'sf-card'                => '.sf-card',
 		'wb-strip'               => '.wb-strip',
 		'pdp-layout'             => '.pdp-layout',
 		'pdp-purchase'           => '.pdp-purchase',
-		'pdp-scene-reel'         => '.pdp-scene-reel',
+		'pdp-intro'              => '.pdp-intro',
+		'pdp-section-nav'        => '.pdp-section-nav',
 		'pdp-disclose'           => '.pdp-disclose',
 		// The blog single face: every one of its rules lives in the volume file
 		// blog.css, so this id is the alarm for that file never reaching the
