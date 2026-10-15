@@ -49,7 +49,7 @@
     }
   ],
   "visual": {
-    "status": "screenshots taken this session at 1440 and 390 (EN), plus the documents tab and the search dropdown, for a first look; the full per-state visual acceptance (1440/390 × EN/DE) is the main line's session, baseline = the accepted prototype at .scratch/faq-wt/docs/design/2026-10-15-faq-download-prototype/index.html?variant=5",
+    "status": "screenshots taken this session at 1440 and 390 (EN), plus the documents tab and the search dropdown, for a first look; the full per-state visual acceptance (1440/390 x EN/DE) is the main line's session, baseline = the accepted prototype (prototype/faq-download-redesign: docs/design/2026-10-15-faq-download-prototype/index.html?variant=5)",
     "observed": [
       "hero (spark, title, subtitle, contact line, grid backdrop, centred search) renders; the search field and the type chips are revealed by the script only",
       "tab switching writes ?tab=documents, hides the other panel and swaps the rail/chip group",
