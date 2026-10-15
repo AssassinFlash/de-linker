@@ -1,10 +1,7 @@
-<tr class="linker-account-card" data-inquiry="[linker_account_field key='id']">
-	<td class="linker-account-cell-inquiry">
-		<a class="linker-account-cell-number" href="[linker_account_field key='url']">#[linker_account_field key="number"]</a>
-		<ul class="linker-account-products">[linker_account_field key="items"]</ul>
-	</td>
-	<td class="linker-account-cell-status"><span class="linker-account-row-status" data-status="[linker_account_field key='status-slug']">[linker_account_field key="status"]</span></td>
-	<td class="linker-account-cell-date">[linker_account_field key="date"]</td>
-	<td class="linker-account-cell-amount">[linker_account_field key="total"]</td>
-	<td class="linker-account-cell-actions"><div class="linker-account-actions">[linker_account_rows type="actions"]</div></td>
-</tr>
+<li class="linker-account-row linker-account-inquiry" data-inquiry="[linker_account_field key='id']">
+	<a class="linker-account-row-number" href="[linker_account_field key='url']" aria-label="[linker_account_field key='view-aria']">#[linker_account_field key="number"]</a>
+	<span class="linker-account-pill" data-status="[linker_account_field key='status-slug']"><span class="linker-account-pill-dot" aria-hidden="true"></span>[linker_account_field key="status"]</span>
+	<p class="linker-account-row-sub"><span class="linker-account-row-count">[linker_account_field key="items-summary"]</span><span aria-hidden="true"> · </span><span class="linker-account-row-date">[linker_account_field key="date"]</span></p>
+	<span class="linker-account-row-amount">[linker_account_field key="total"]</span>
+	<a class="linker-account-row-view" href="[linker_account_field key='url']">[linker_account_text key="view"]<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+</li>

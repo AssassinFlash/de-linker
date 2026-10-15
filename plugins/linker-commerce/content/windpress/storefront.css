@@ -1682,7 +1682,6 @@ body.woocommerce-order-received #container-content-page > div {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-#tv-woo-b2b-checkout .sf-checkout-btn,
 #tv-woo-b2b-checkout #place_order,
 #tv-woo-b2b-checkout .tv-woo-button {
   display: inline-flex;
@@ -1698,13 +1697,11 @@ body.woocommerce-order-received #container-content-page > div {
   font-weight: 500;
   text-decoration: none;
 }
-#tv-woo-b2b-checkout .sf-checkout-btn--ghost,
 #tv-woo-b2b-checkout .tv-woo-button--ghost {
   background: var(--sf-bg);
   border-color: var(--sf-line);
   color: var(--sf-fg);
 }
-#tv-woo-b2b-checkout .sf-checkout-btn:not(.sf-checkout-btn--ghost):hover,
 #tv-woo-b2b-checkout #place_order:not(:disabled):hover,
 #tv-woo-b2b-checkout .tv-woo-button:not(.tv-woo-button--ghost):hover {
   background: var(--sf-primary-hover);
@@ -1718,138 +1715,6 @@ body.woocommerce-order-received #container-content-page > div {
   max-width: 40rem;
 }
 
-/*
- * Empty Proforma request. The live page (measured 2026-10-12/13,
- * checkout-en/de 1440 and 390) is a left column inside the 1160px
- * frame, not a centred card: title, the assistant pill, a bold
- * sign-in line, the partner-account note, then two buttons. The pill
- * is the live Advisor/Berater control under the current name.
- * Approval gates share the column; they have no pill.
- */
-#tv-woo-b2b-checkout .sf-checkout-empty {
-  max-width: 36rem;
-  margin: 1.5rem 0 3rem;
-  padding: 0.5rem 0 1rem;
-  text-align: left;
-  background: transparent;
-  border: 0;
-}
-#tv-woo-b2b-checkout .sf-checkout-empty h1 {
-  margin: 0 0 1.25rem;
-  color: var(--sf-fg);
-  font-size: 1.375rem;
-  font-weight: 500;
-  line-height: 1.3;
-  letter-spacing: 0;
-}
-#tv-woo-b2b-checkout .sf-checkout-genie {
-  margin: 0 0 1.75rem;
-}
-#tv-woo-b2b-checkout .sf-checkout-genie__pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  min-height: 44px;
-  padding: 0.4rem 1.1rem 0.4rem 0.45rem;
-  border-radius: 999px;
-  /* The live request page's Advisor pill: on all four 2026-10-12/13 captures
-     of the old live page (freshdiff-rerun checkout-en-1440/-390-live.png,
-     de-parity checkout-de-1440/-390-live.png) the fill samples rgb(23,38,54)
-     = #172636 — the same dark the live Advisor bubble carries
-     (plugins/linker-tools/src/genie/genie.css, .linker-genie-open). Not a
-     site token; the pill is that control, not a button of the storefront
-     palette. */
-  background: #172636;
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1;
-  text-decoration: none;
-}
-#tv-woo-b2b-checkout .sf-checkout-genie__pill svg {
-  width: 28px;
-  height: 28px;
-  padding: 5px;
-  border-radius: 999px;
-  /* The mark disc on the same four captures samples rgb(56,69,82) — white 14%
-     over the fill above, to the bit (±1 per channel: the composite rounds) —
-     as the live bubble's own disc is built (.linker-genie-open-mark, same
-     file). */
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-}
-#tv-woo-b2b-checkout .sf-checkout-empty h2 {
-  margin: 0 0 0.65rem;
-  color: var(--sf-fg);
-  font-size: 1.05rem;
-  font-weight: 600;
-  line-height: 1.35;
-}
-#tv-woo-b2b-checkout .sf-checkout-empty p {
-  max-width: 34rem;
-  margin: 0;
-  color: var(--sf-muted);
-  font-size: 0.95rem;
-  line-height: 1.55;
-}
-#tv-woo-b2b-checkout .sf-checkout-empty__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-#tv-woo-b2b-checkout .sf-checkout-empty__reason {
-  margin: 0.75rem 0 0;
-}
-
-/*
- * The same gate on the account page. PendingGate prints LoginGate's
- * pending markup into woocommerce_account_content (#container-content-account),
- * outside #tv-woo-b2b-checkout, so the column and its button have to
- * exist here too or the review page is bare text. Measured as the
- * shared markup, not a second design: left column, 44px button.
- */
-#container-content-account .sf-checkout-empty {
-  max-width: 36rem;
-  margin: 1.5rem 0 3rem;
-  padding: 0.5rem 0 1rem;
-  text-align: left;
-}
-#container-content-account .sf-checkout-empty h1 {
-  margin: 0 0 1rem;
-  color: var(--sf-fg);
-  font-size: 1.375rem;
-  font-weight: 500;
-  line-height: 1.3;
-}
-#container-content-account .sf-checkout-empty p {
-  max-width: 34rem;
-  margin: 0.75rem 0 0;
-  color: var(--sf-muted);
-  font-size: 0.95rem;
-  line-height: 1.55;
-}
-#container-content-account .sf-checkout-empty__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-#container-content-account .sf-checkout-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--sf-primary);
-  border-radius: var(--sf-radius);
-  background: var(--sf-primary);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-}
 
 #tv-woo-b2b-checkout .woocommerce-notices-wrapper { margin: 0 0 1.25rem; }
 #tv-woo-b2b-checkout .woocommerce-error,
@@ -3492,89 +3357,7 @@ body.sf-account-page .linker-project-detail__orders article > div:last-child {
   body.sf-account-page .linker-project-card__actions .sf-account-btn { flex: 1 1 auto; }
 }
 
-/* Account content sync. Measured live visual vocabulary, current rebuilt data.
-   The header owns navigation. Woo owns forms, authorisation and endpoint dispatch. */
-body.woocommerce-account.logged-in .linker-account.woocommerce { width: 100% !important; padding: 0 !important; background: transparent; }
-.linker-account { font-family: var(--shop-sans); color: var(--sf-fg); }
-.linker-account #container-content-account { width: 100%; max-width: 1072px; margin: auto; padding: 40px 24px 80px; }
-.linker-account .woocommerce { width: 100% !important; padding: 0 !important; background: transparent; }
-.linker-account *, .linker-account *::before, .linker-account *::after { box-sizing: border-box; }
-.linker-account .woocommerce-MyAccount-content { float: none !important; width: 100% !important; min-width: 0; }
-.linker-account a { color: inherit; text-underline-offset: 4px; }
-.linker-account :where(a, button, input, textarea, select, summary):focus-visible { outline: 2px solid var(--sf-primary); outline-offset: 3px; }
-.linker-account .linker-account-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
-.linker-account .linker-account-heading h1 { margin: 0; font: 500 20px/1.4 var(--shop-sans); color: var(--sf-fg); letter-spacing: 0; }
-.linker-account .linker-account-back { font-size: 14px; }
-.linker-account .linker-contact-card { margin: 0 0 32px; padding-bottom: 16px; border-bottom: 1px solid var(--sf-line); }
-.linker-account .linker-contact-card h2 { margin: 0 0 8px; font-size: 15px; font-weight: 500; }
-.linker-account .linker-contact-card p { margin: 0; font-size: 14px; color: var(--sf-muted); }
-.linker-account .linker-account-group { margin-bottom: 40px; }
-.linker-account .linker-account-group-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-.linker-account .linker-account-group-heading h2 { margin: 0; font-size: 18px; font-weight: 500; line-height: 1.4; }
-.linker-account .linker-account-group-heading a { font-size: 14px; }
-.linker-account .linker-account-cards { display: grid; gap: 20px; }
-.linker-account .linker-account-card { padding: 6px; background: var(--sf-soft); border: 1px solid var(--sf-line); border-radius: 16px; }
-.linker-account .linker-account-card-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 20px; margin: 0; padding: 12px 16px; }
-.linker-account .linker-account-card-meta dt { margin-bottom: 4px; color: var(--sf-muted); font-size: 12px; font-weight: 400; }
-.linker-account .linker-account-card-meta dd { margin: 0; font-size: 13.5px; font-weight: 500; overflow-wrap: anywhere; }
-.linker-account .linker-account-card-meta dd a { text-decoration: none; }
-.linker-account .linker-account-card-body { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; padding: 16px 20px 20px; background: #fff; border-radius: 12px; box-shadow: 0 1px 2px rgb(15 23 42 / .04); }
-.linker-account .linker-account-products { min-width: 0; flex: 1 1 320px; padding: 0; margin: 0; list-style: none; font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
-.linker-account .linker-account-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.linker-account .linker-account-actions form { margin: 0; }
-.linker-account .linker-account-action,
-.linker-account button[type="submit"],
-.linker-account .woocommerce-Button,
-.linker-account .order-again .button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 16px; border: 1px solid var(--sf-primary); border-radius: 8px; background: var(--sf-primary); color: #fff; font: 500 14px/1.4 var(--shop-sans); text-decoration: none; white-space: normal; cursor: pointer; }
-.linker-account .linker-account-action[data-action="request-again"],
-.linker-account .linker-account-action[data-action="report"],
-.linker-account .order-again .button { border-color: var(--sf-line); background: #fff; color: var(--sf-fg); }
-.linker-account .linker-account-action:hover, .linker-account button[type="submit"]:hover { filter: brightness(.94); }
-.linker-account .linker-account-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 20px; padding-bottom: 8px; border-bottom: 1px solid var(--sf-line); }
-.linker-account .linker-account-tabs a { padding: 7px 12px; border-radius: 8px; color: var(--sf-muted); font-size: 14px; text-decoration: none; }
-.linker-account .linker-account-tabs [aria-current="page"] { background: var(--sf-soft); color: var(--sf-fg); font-weight: 500; }
-.linker-account .linker-account-pagination { display: flex; gap: 12px; margin-top: 24px; }
-.linker-account .linker-account-pagination a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border: 1px solid var(--sf-line); border-radius: 8px; font-size: 14px; }
-.linker-account .linker-account-empty { margin: 0; padding: 24px 16px; color: var(--sf-muted); font-size: 14px; }
-.linker-account .linker-account-table-wrap { overflow-x: auto; }
-.linker-account .linker-account-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.linker-account .linker-account-table th, .linker-account .linker-account-table td { padding: 16px; border-bottom: 1px solid var(--sf-line); text-align: left; vertical-align: top; font-size: 14px; font-weight: 400; overflow-wrap: anywhere; }
-.linker-account .linker-account-table thead th { color: var(--sf-muted); font-size: 12px; font-weight: 500; }
-.linker-account .linker-account-table th:first-child { width: 55%; }
-.linker-account .linker-account-table td:last-child { font-size: 13px; }
-.linker-account .linker-account-solution-meta { padding: 12px 16px; }
-.linker-account .linker-account-solution-meta h2 { margin: 0 0 4px; font-size: 15px; font-weight: 500; }
-.linker-account .linker-account-solution-meta p { margin: 0; font-size: 12px; color: var(--sf-muted); }
-.linker-account .linker-account-stagebar { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; margin: 0; list-style: none; }
-.linker-account .linker-account-stagebar li { flex: 1 1 160px; padding: 8px 12px; border: 1px solid var(--sf-line); border-radius: 8px; background: #fff; color: var(--sf-muted); font-size: 12px; }
-.linker-account .linker-account-stagebar [aria-current="step"] { border-color: #9fd5ca; background: #f2f6f9; color: #176457; font-weight: 500; }
-.linker-account .linker-account-summary .linker-account-card-body { display: block; }
-.linker-account .linker-account-summary .linker-account-card-meta { padding: 0 0 20px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.linker-account .linker-account-detail .woocommerce-order-details { margin: 24px 0; padding: 20px; background: #fff; border: 1px solid var(--sf-line); border-radius: 12px; }
-.linker-account .linker-account-detail h2 { font-size: 18px; font-weight: 500; }
-.linker-account table.shop_table { border-collapse: collapse; border: 0; font-size: 14px; }
-.linker-account table.shop_table th, .linker-account table.shop_table td { padding: 12px 16px; border-color: var(--sf-soft); }
-.linker-account .linker-account-detail table.shop_table thead th { background: var(--sf-soft); color: var(--sf-primary); font-size: 11.5px; font-weight: 800; }
-.linker-account .woocommerce-EditAccountForm, .linker-account .woocommerce-address-fields { padding: 24px; border: 1px solid var(--sf-line); border-radius: 16px; background: #fff; }
-.linker-account .woocommerce form .form-row { padding: 0; margin-bottom: 20px; }
-.linker-account .woocommerce form .form-row label { font-size: 14px; font-weight: 500; }
-.linker-account .woocommerce form .input-text, .linker-account .woocommerce select { min-height: 52px; padding: 12px 16px; border: 1px solid var(--sf-line); border-radius: 8px; background: #fff; color: var(--sf-fg); font: 400 14px/1.5 var(--shop-sans); width: 100%; }
-.linker-account fieldset { margin: 24px 0; padding: 20px 0 0; border: 0; border-top: 1px solid var(--sf-line); }
-.linker-account legend, .linker-account .woocommerce-Address-title h2 { font-size: 18px; font-weight: 500; }
-.linker-account .woocommerce-Address { padding: 24px; background: #fff; border: 1px solid var(--sf-line); border-radius: 16px; }
-.linker-account .woocommerce-Address address { margin-top: 16px; font-size: 14px; line-height: 1.7; }
-@media (max-width: 639px) {
-  .linker-account #container-content-account { padding: 32px 24px 64px; }
-  .linker-account .linker-account-card-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px; }
-  .linker-account .linker-account-card-body { padding: 16px; }
-  .linker-account .linker-account-summary .linker-account-card-meta { grid-template-columns: 1fr; }
-  .linker-account .linker-account-actions { width: 100%; }
-  .linker-account .linker-account-table th, .linker-account .linker-account-table td { padding: 12px 6px; font-size: 12px; }
-  .linker-account .linker-account-table th:first-child { width: 46%; }
-  .linker-account .linker-account-detail .woocommerce-order-details { padding: 12px; }
-  .linker-account .linker-account-detail table.shop_table th, .linker-account .linker-account-detail table.shop_table td { padding: 10px 6px; }
-  .linker-account .woocommerce-EditAccountForm, .linker-account .woocommerce-address-fields, .linker-account .woocommerce-Address { padding: 16px; }
-}
+
 
 /* Cart, checkout, order received and My Account sit on the same paper as the
    product list and the product page. */

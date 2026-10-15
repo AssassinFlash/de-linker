@@ -99,6 +99,7 @@ final class ShortcodesTest extends TestCase {
 			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 			WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/genie/' ) );
 			WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+			WP_Mock::userFunction( 'get_page_by_path', array( 'return' => null ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
@@ -121,7 +122,7 @@ final class ShortcodesTest extends TestCase {
 
 			$this->assertStringContainsString( 'Get your Proforma', $html );
 			$this->assertStringContainsString( 'Sign in to get your Proforma.', $html );
-			$this->assertStringContainsString( 'sf-checkout-genie__pill', $html );
+			$this->assertStringContainsString( 'linker-gate-genie-pill', $html );
 			$this->assertStringContainsString( 'data-linker-genie-open', $html );
 			$this->assertStringNotContainsString( 'rounded-xl border', $html );
 			$this->assertStringNotContainsString( 'woocommerce_checkout', $html );
@@ -158,35 +159,38 @@ final class ShortcodesTest extends TestCase {
 		/**
 		 * The gate reads the same condition functions the cart template's
 		 * [lc_if] calls, so it can never disagree with the branch the visitor
-		 * sees: with a filled draft the filled branch holds and the checkout
-		 * shortcode stays WooCommerce's own. (The empty side is the login
-		 * gate test above; the confirmation side is TemplateFunctionsTest's.)
+		 * sees. A guest never reaches the checkout — the request belongs to a
+		 * partner account — so a filled draft reads the draft gate, naming the
+		 * draft that waits (ticket #184). (The empty side is the login gate
+		 * test above; the confirmation side is TemplateFunctionsTest's.)
 		 */
-	public function test_the_gate_agrees_with_the_condition_on_a_filled_draft(): void {
+	public function test_a_guest_with_a_filled_draft_reads_the_draft_gate(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
+		WP_Mock::userFunction( 'wp_lostpassword_url', array( 'return' => 'https://example.test/my-account/lost-password/' ) );
 		$this->cart_is( false );
-		WP_Mock::userFunction(
-			'do_shortcode',
-			array(
-				'args'   => array( '[woocommerce_checkout]' ),
-				'return' => '<form class="checkout">pay</form>',
-			)
-		);
 
 		$this->assertTrue( linker_commerce_draft_filled() );
 		$this->assertFalse( linker_commerce_draft_empty() );
-		$this->assertSame( '<form class="checkout">pay</form>', $this->shortcodes()->checkout() );
+
+		$html = $this->shortcodes()->checkout();
+		$this->assertStringContainsString( 'Sign in to request your Proforma', $html );
+		$this->assertStringContainsString( 'Your solution draft is saved.', $html );
+		$this->assertStringNotContainsString( 'woocommerce_checkout', $html );
+		$this->assertStringNotContainsString( 'Get your Proforma', $html );
 	}
 
 	/**
-	 * A filled draft, or the confirmation, still uses WooCommerce's checkout
-	 * shortcode; a signed-in account without approval gets the gate instead.
+	 * An approved account's filled draft uses WooCommerce's checkout shortcode;
+	 * a signed-in account without approval gets the gate instead.
 	 */
 	public function test_checkout_of_a_filled_draft_uses_woocommerce(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => fn (): int => $this->signed_in_user ) );
-		$this->signed_in( 0 );
+		$this->signed_in( 5 );
 		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
 		$this->cart_is( false );
 		WP_Mock::userFunction(

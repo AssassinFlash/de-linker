@@ -1872,12 +1872,16 @@ final class ProductShortcodes {
 		$html .= '<div id="linker-header-account-menu" class="tv-b2b-acct-menu" hidden>';
 		if ( $logged_in ) {
 			// Account\\Menu filters Woo's one menu; every account surface reads it.
+			// The sign-out entry is Woo's nonce-carrying URL (one click, ticket
+			// #184); the plain endpoint URL would ask for confirmation first.
 			foreach ( wc_get_account_menu_items() as $endpoint => $label ) {
-				$html .= '<a class="tv-b2b-acct-link' . ( 'customer-logout' === $endpoint ? ' is-out' : '' ) . '" href="' . esc_url( wc_get_account_endpoint_url( $endpoint ) ) . '">' . esc_html( $label ) . '</a>';
+				$url   = 'customer-logout' === $endpoint && function_exists( 'linker_commerce_logout_url' ) ? linker_commerce_logout_url() : esc_url_raw( wc_get_account_endpoint_url( $endpoint ) );
+				$html .= '<a class="tv-b2b-acct-link' . ( 'customer-logout' === $endpoint ? ' is-out' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
 			}
 		} else {
+			// One entry, one address: the same page twice ("Sign in" and "My
+			// account") was the redundancy the redesign removes.
 			$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>';
-			$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'My account', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</div></div>';
 		return $html . $this->language_toggle( 'lnk-lang-toggle--desktop' );
@@ -2147,19 +2151,7 @@ final class ProductShortcodes {
 	 * does not exist.
 	 */
 	public static function compare_page_url(): string {
-		$page = get_page_by_path( 'compare-products' );
-		if ( ! $page instanceof \WP_Post ) {
-			return '';
-		}
-		$id = (int) $page->ID;
-		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = (int) pll_get_post( $id, 'de' );
-			if ( $twin > 0 ) {
-				$id = $twin;
-			}
-		}
-		$link = get_permalink( $id );
-		return \is_string( $link ) ? $link : '';
+		return PageUrls::translated( 'compare-products' );
 	}
 
 	/**
@@ -2167,19 +2159,7 @@ final class ProductShortcodes {
 	 * when the page does not exist (the sidebar tool card links here).
 	 */
 	public static function configurator_page_url(): string {
-		$page = get_page_by_path( 'solution-configurator' );
-		if ( ! $page instanceof \WP_Post ) {
-			return '';
-		}
-		$id = (int) $page->ID;
-		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = (int) pll_get_post( $id, 'de' );
-			if ( $twin > 0 ) {
-				$id = $twin;
-			}
-		}
-		$link = get_permalink( $id );
-		return \is_string( $link ) ? $link : '';
+		return PageUrls::translated( 'solution-configurator' );
 	}
 
 	/**

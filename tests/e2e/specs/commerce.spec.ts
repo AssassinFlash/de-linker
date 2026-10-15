@@ -225,7 +225,7 @@ async function register(
 			.first()
 			.click();
 		await expect(
-			page.locator('a[href*="customer-logout"]').first(),
+			page.locator('a[href*="action=logout"]').first(),
 			'the customer is signed in after registering'
 		).toBeVisible({ timeout: 60_000 });
 	} catch (error) {
@@ -465,11 +465,15 @@ test.describe('the commercial chain', () => {
 				`to ${email} with the Proforma`
 			);
 
-			// 8. The customer downloads it; a guest cannot.
+			// 8. The customer downloads it; a guest cannot. The download lives on
+			// the inquiry's own page (the list row carries number, status, summary,
+			// date, amount and View — ticket #184's compact row).
 			await openInquiries(page, locale);
-			const download = page
-				.locator('a[href*="linker-document=proforma"]')
-				.first();
+			await page
+				.locator('a[href*="/inquiry/"], a[href*="view-order/"]')
+				.first()
+				.click();
+			const download = page.locator('[data-action="proforma"]').first();
 			await expect(
 				download,
 				'the Proforma is downloadable'

@@ -49,9 +49,9 @@ final class ModuleTest extends TestCase {
 		foreach ( array( 'orders', 'view-order', 'saved-solutions', 'documents', 'edit-address', 'edit-account' ) as $endpoint ) {
 			WP_Mock::expectFilterAdded( 'woocommerce_endpoint_' . $endpoint . '_title', array( $menu, 'title' ), 10, 2 );
 		}
-			$pending = new PendingGate();
-			WP_Mock::expectActionAdded( 'template_redirect', array( $pending, 'redirect' ) );
-			WP_Mock::expectActionAdded( 'linker_account_after_content', array( $contact, 'render' ) );
+		$pending = new PendingGate();
+		WP_Mock::expectActionAdded( 'template_redirect', array( $pending, 'redirect' ) );
+		WP_Mock::expectActionAdded( 'linker_account_after_content', array( $contact, 'render' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_account_orders_columns', array( $inquiries, 'columns' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_actions', array( $inquiries, 'actions' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'woocommerce_order_item_meta_end', array( $inquiries, 'datasheet_link' ), 10, 4 );
@@ -63,6 +63,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'woocommerce_account_documents_endpoint', array( $documents, 'render' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $download, 'serve' ), 1 );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
+		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
 
 		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth ) )->register();
 

@@ -1,16 +1,13 @@
 [linker_account_hook name="before-orders"]
-<nav class="linker-account-tabs" aria-label="[linker_account_text key='inquiries']">
-	<a href="[linker_account_url endpoint='orders']" aria-current="[linker_account_field key='all-current']">[linker_account_text key="all"]</a>
-	<a href="[linker_account_field key='open-url']" aria-current="[linker_account_field key='open-current']">[linker_account_text key="open"]</a>
-</nav>
-<div class="linker-account-table-card">
-	<div class="linker-account-table-wrap">
-		<table class="linker-account-table linker-account-table-inquiries">
-			<thead><tr><th scope="col">[linker_account_text key="number"]</th><th scope="col">[linker_account_text key="status"]</th><th scope="col">[linker_account_text key="date"]</th><th scope="col">[linker_account_text key="amount"]</th><th scope="col">[linker_account_text key="actions"]</th></tr></thead>
-			<tbody>[linker_account_rows type="inquiries"]</tbody>
-		</table>
-	</div>
+<div class="linker-account-inquiry-block">
+	<nav class="linker-account-tabs" aria-label="[linker_account_text key='inquiries']">
+		<a href="[linker_account_url endpoint='orders']" aria-current="[linker_account_field key='all-current']">[linker_account_text key="all"]</a>
+		<a href="[linker_account_field key='open-url']" aria-current="[linker_account_field key='open-current']">[linker_account_text key="open"]</a>
+	</nav>
+	<section class="linker-account-panel linker-account-inquiry-panel">
+		<ul class="linker-account-rows linker-account-inquiry-list">[linker_account_rows type="inquiries"]</ul>
+		[linker_account_hook name="pagination"]
+		<nav class="linker-account-pagination" aria-label="[linker_account_text key='inquiries']">[linker_account_rows type="pagination"]</nav>
+	</section>
 </div>
-[linker_account_hook name="pagination"]
-<nav class="linker-account-pagination" aria-label="[linker_account_text key='inquiries']">[linker_account_rows type="pagination"]</nav>
 [linker_account_hook name="after-orders"]

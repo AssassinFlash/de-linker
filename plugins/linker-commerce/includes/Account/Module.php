@@ -50,7 +50,7 @@ final class Module {
 		foreach ( array( 'orders', 'view-order', 'saved-solutions', 'documents', 'edit-address', 'edit-account' ) as $endpoint ) {
 			add_filter( 'woocommerce_endpoint_' . $endpoint . '_title', array( $this->menu, 'title' ), 10, 2 );
 		}
-		add_action( 'template_redirect', array( $this->pending, 'redirect' ) );
+		$this->pending->register();
 		add_action( 'linker_account_after_content', array( $this->contact, 'render' ) );
 		$this->auth->register();
 

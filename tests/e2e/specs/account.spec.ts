@@ -22,6 +22,9 @@ import { instance, wp } from '../lib/instance';
 
 const PASSWORD = 'e2e-Account-2026!';
 
+/** The password the reset chain writes and then signs in with. */
+const NEW_PASSWORD = 'e2e-Reset-2026!x';
+
 function url(path: string): string {
 	return `${instance().url}${path}`;
 }
@@ -66,10 +69,11 @@ async function signIn(
 	await page.waitForLoadState('load');
 	// The session settles on the rendered page: the account menu carries the
 	// sign-out link once WordPress has the cookie (its own row, hidden until
-	// the menu opens — the count is the signal, not its visibility).
+	// the menu opens — the count is the signal, not its visibility). The entry
+	// is the one-click URL (ticket #184): WordPress's own logout action with
+	// its nonce, not the endpoint URL that asks for confirmation first.
 	await page.waitForFunction(
-		() =>
-			document.querySelectorAll('a[href*="customer-logout"]').length >= 1,
+		() => document.querySelectorAll('a[href*="action=logout"]').length >= 1,
 		null,
 		{ timeout: 30_000 }
 	);
@@ -112,7 +116,9 @@ for (const { locale, account, lost } of LOCALES) {
 		await shot(page, `${locale}-wrong-password`);
 	});
 
-	test(`${locale}: the lost-password request answers`, async ({ page }) => {
+	test(`${locale}: the lost-password request answers and its link opens the new-password card`, async ({
+		page,
+	}) => {
 		const login = createCustomer(Date.now(), locale);
 		await page.goto(url(lost));
 		const field = page.locator(
@@ -134,6 +140,105 @@ for (const { locale, account, lost } of LOCALES) {
 			'an existing account is not refused'
 		).toHaveCount(0);
 		await shot(page, `${locale}-lost-password`);
+
+		// The link the mail carries, opened for real. The key is the account's
+		// own (get_password_reset_key through WP-CLI) and the fixture is the
+		// account this test just created — never a made-up key the chain would
+		// only have to reject.
+		const id = wp(['user', 'get', login, '--field=ID']).trim();
+		if (!/^\d+$/.test(id)) {
+			throw new Error(`the fixture account has no id: ${id}`);
+		}
+		const key = wp([
+			'eval',
+			`$u = get_user_by( 'login', '${login}' ); echo get_password_reset_key( $u );`,
+		]).trim();
+		expect(key, 'the fixture account carries a reset key').not.toBe('');
+
+		await page.goto(
+			url(
+				`${lost}?show-reset-form=true&key=${encodeURIComponent(key)}&id=${id}`
+			)
+		);
+		await page.waitForLoadState('load');
+
+		// The redesigned card, with Woo's own hidden credentials inside it.
+		const card = page.locator('.linker-auth-inner--solo .linker-auth-card');
+		await expect(
+			card,
+			'the reset link lands on the card, not on bare WooCommerce markup'
+		).toBeVisible();
+		await expect(
+			card.locator('h1'),
+			'the card titles the new password'
+		).toHaveText(
+			locale === 'de'
+				? 'Wählen Sie ein neues Passwort'
+				: 'Choose a new password'
+		);
+		await expect(page.locator('#password_1')).toBeVisible();
+		await expect(page.locator('#password_2')).toBeVisible();
+		await expect(
+			page.locator('input[name="reset_key"]'),
+			'the key from the link rides along'
+		).toHaveValue(key);
+		await expect(
+			page.locator('input[name="reset_login"]'),
+			'the login from the link rides along'
+		).toHaveValue(login);
+		await expect(
+			page.locator('input[name="woocommerce-reset-password-nonce"]'),
+			'the form posts with WooCommerce own nonce'
+		).not.toHaveValue('');
+		await shot(page, `${locale}-reset-form`);
+
+		// A password below the site's minimum never leaves the page: the meter
+		// is WooCommerce's own (min_password_strength 3) and it holds the form's
+		// button. There is no server-side strength gate to reach — WooCommerce
+		// refuses nothing weaker than the empty string.
+		await page.fill('#password_1', 'abc');
+		await page.fill('#password_2', 'abc');
+		await expect(
+			page.locator(
+				'form.woocommerce-ResetPassword button[type="submit"]'
+			),
+			'WooCommerce own meter holds a weak password on the page'
+		).toBeDisabled();
+
+		// Two different passwords: the chain's own line names the mismatch and
+		// the form stays put (no round trip, no lost key).
+		await page.fill('#password_1', NEW_PASSWORD);
+		await page.fill('#password_2', `${NEW_PASSWORD}x`);
+		await page.locator('button[type="submit"]').click();
+		await expect(
+			page.locator('[data-password-mismatch]'),
+			'the mismatch is named under the field it belongs to'
+		).toBeVisible();
+		await expect(page).toHaveURL(/show-reset-form/);
+		await shot(page, `${locale}-reset-mismatch`);
+
+		// The real save: the same card resets the password, WooCommerce's own
+		// confirmation opens the sign-in card, and the new password signs in —
+		// the whole chain, with the account this test created.
+		await page.fill('#password_2', NEW_PASSWORD);
+		await page.locator('button[type="submit"]').click();
+		await page.waitForLoadState('load');
+		await expect(
+			page.locator('.woocommerce-message, .woocommerce-info').first(),
+			'the reset is confirmed on the sign-in card'
+		).toBeVisible();
+		await expect(page.locator('#username')).toBeVisible();
+		await shot(page, `${locale}-reset-done`);
+
+		await page.fill('#username', login);
+		await page.fill('#password', NEW_PASSWORD);
+		await page.locator('button[name="login"]').focus();
+		await page.keyboard.press('Enter');
+		await page.waitForLoadState('load');
+		await expect(
+			page.locator('a[href*="action=logout"]'),
+			'the password the reset saved is the one that signs in'
+		).not.toHaveCount(0);
 	});
 }
 
@@ -176,7 +281,7 @@ test('en: an approved partner saves account details and company, and signs out',
 	const login = createCustomer(Date.now(), 'en');
 	await signIn(page, login, PASSWORD);
 	await expect(
-		page.locator('a[href*="customer-logout"]'),
+		page.locator('a[href*="action=logout"]'),
 		'the customer is signed in'
 	).not.toHaveCount(0);
 
@@ -225,17 +330,22 @@ test('en: an approved partner saves account details and company, and signs out',
 	);
 	await shot(page, 'en-company-saved');
 
-	// Sign out returns to the form — through the menu's own link, which
-	// carries the nonce WooCommerce's endpoint requires.
+	// Sign out is one click (ticket #184): the menu's own link carries
+	// WordPress's logout nonce, the sign-in form opens with the signed-out
+	// notice, and no confirmation page stands in between.
 	const logout = await page
-		.locator('a[href*="customer-logout"]')
+		.locator('a[href*="action=logout"]')
 		.first()
 		.getAttribute('href');
-	await page.goto(logout ?? url('/my-account/customer-logout/'));
+	await page.goto(logout ?? url('/my-account/'));
 	await page.waitForLoadState('load');
 	await expect(
 		page.locator('#username'),
 		'the sign-out lands back on the form'
+	).toBeVisible();
+	await expect(
+		page.locator('.woocommerce-info'),
+		'the page says the visitor has been signed out'
 	).toBeVisible();
 	await shot(page, 'en-signed-out');
 });
@@ -384,7 +494,7 @@ test('en: a restricted account signs in, keeps the workplace and reads its gate 
 
 	await signIn(page, login, PASSWORD);
 	await expect(
-		page.locator('a[href*="customer-logout"]'),
+		page.locator('a[href*="action=logout"]'),
 		'a restricted account still signs in'
 	).not.toHaveCount(0);
 	await expect(
@@ -407,7 +517,75 @@ test('en: a restricted account signs in, keeps the workplace and reads its gate 
 	await expect(gate, 'the gate carries the reason').toContainText(
 		/E2E: documents under review/
 	);
+	// The reason is a coloured notice card, and the contact sentence links its
+	// own address (the message carries the placeholder, so the wording cannot
+	// drop the link): both as the prototype draws them.
+	const notice = gate.locator('.notice-info');
+	await expect(notice, "the reason is the card's info notice").toBeVisible();
+	await expect(notice, 'the notice names the reason').toContainText(
+		/Our reason:/
+	);
+	await expect(
+		gate.locator('a[href="mailto:sales@de-linker.com"]'),
+		'the gate links the team mailbox'
+	).toBeVisible();
+	const noticeBackground = await notice.evaluate(
+		(node) => getComputedStyle(node).backgroundColor
+	);
+	expect(noticeBackground, 'the notice is tinted, not bare text').not.toBe(
+		'rgba(0, 0, 0, 0)'
+	);
 	await shot(page, 'en-restricted-proforma-gate');
+});
+
+test('de: the restricted gate speaks German and links its own address', async ({
+	page,
+}) => {
+	const login = createCustomer(Date.now(), 'de');
+	wp([
+		'user',
+		'meta',
+		'update',
+		login,
+		'linker_approval_status',
+		'restricted',
+	]);
+	wp([
+		'user',
+		'meta',
+		'update',
+		login,
+		'linker_approval_reason',
+		'E2E: Unterlagen in Prüfung',
+	]);
+
+	await signIn(page, login, PASSWORD);
+	await page.goto(url('/de/proforma-anfrage/'));
+	await page.waitForLoadState('load');
+
+	const gate = page.locator(
+		'section[aria-label="Konto mit eingeschränktem Zugriff"]'
+	);
+	await expect(
+		gate,
+		'the German Proforma request reads the gate'
+	).toBeVisible();
+	await expect(gate, 'the gate names the limit in German').toContainText(
+		/Zugriff derzeit eingeschränkt/
+	);
+	await expect(gate, 'the gate carries the team reason').toContainText(
+		/E2E: Unterlagen in Prüfung/
+	);
+	// The German sentence carries the placeholder, so the reviewed wording is
+	// what shows and the address is still the link (ticket #184 review, St-4).
+	await expect(
+		gate.locator('a[href="mailto:sales@de-linker.com"]'),
+		'the German sentence links the team mailbox'
+	).toBeVisible();
+	await expect(gate, 'the sentence reads as reviewed').toContainText(
+		/Schreiben Sie an sales@de-linker.com/
+	);
+	await shot(page, 'de-restricted-proforma-gate');
 });
 
 test('en: a rejected account cannot sign in and reads the refusal', async ({
@@ -444,7 +622,7 @@ test('en: a rejected account cannot sign in and reads the refusal', async ({
 		'the rejected account stays on the form'
 	).toBeVisible();
 	await expect(
-		page.locator('a[href*="customer-logout"]'),
+		page.locator('a[href*="action=logout"]'),
 		'no session was opened'
 	).toHaveCount(0);
 	await shot(page, 'en-rejected-sign-in');

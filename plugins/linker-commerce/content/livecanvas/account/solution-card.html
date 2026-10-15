@@ -1,9 +1,11 @@
-<article id="linker-solution-[linker_account_field key='id']" class="linker-account-card linker-account-solution">
-	<header class="linker-account-solution-meta"><h2>[linker_account_field key="title"]</h2><p>[linker_account_text key="saved"] · [linker_account_field key="date"]</p></header>
-	<div class="linker-account-card-body">
+<article id="linker-solution-[linker_account_field key='id']" class="linker-account-panel linker-account-solution">
+	<header class="linker-account-panel-heading">
+		<span><h2>[linker_account_field key="title"]</h2><p class="linker-account-solution-date">[linker_account_text key="saved"] · [linker_account_field key="date"]</p></span>
+	</header>
+	<div class="linker-account-panel-body">
 		<ul class="linker-account-products">[linker_account_field key="items"]</ul>
 		<div class="linker-account-actions">
-			<form method="post">[linker_account_field key="nonce"]<button class="linker-account-action" data-action="add" name="linker_solution_to_draft" value="[linker_account_field key='id']" type="submit">[linker_account_text key="add"]</button></form>
+			<form method="post" class="linker-account-form">[linker_account_field key="nonce"]<button class="linker-account-btn is-primary" data-action="add" name="linker_solution_to_draft" value="[linker_account_field key='id']" type="submit"><span>[linker_account_text key="add"]</span></button></form>
 			[linker_account_rows type="report"]
 		</div>
 	</div>

@@ -1,8 +1,648 @@
-/* Owner's 2026-10-13 mobile reference: Hommlie auth/payment/success screens.
- * Guest auth, public contact and Proforma request only. No account editor rules.
+/* The account chain (ticket #184): the design layer, the guest cards and the
+ * gates. The owner-accepted prototype is the source —
+ * docs/design/2026-10-15-account-redesign/prototype/assets/app.css — and its
+ * values are the ones below: the teal ramp, the ease and the duration are the
+ * site's own tokens (content/windpress/tokens.css), everything the tokens do
+ * not carry is named --acct-* here, once, for both this file and account.css.
+ *
+ * This file also carries the contact form and the Proforma request's own
+ * rules; they are the replica surfaces and stay as they are.
  * This file is discovered by WindPressVolume::files() and compiled via main.css.
  */
-.linker-auth-mobile-links,
+
+/* ── The account chain's design layer ──────────────────────────────────── */
+:root {
+	--acct-canvas: var(--proto-canvas-zebra);      /* #f4f6f6 · the chain's page ground */
+	--acct-ink: var(--proto-ink);
+	--acct-ink-2: var(--proto-neutral-700);
+	--acct-muted: var(--proto-neutral-500);
+	--acct-faint: var(--proto-neutral-400);
+	--acct-line: var(--proto-neutral-200);
+	--acct-line-soft: var(--proto-neutral-100);
+	--acct-card: var(--proto-canvas-white);
+	--acct-fill: #eef1f1;                          /* the prototype's input/soft fill */
+	--acct-fill-hover: #e7eaea;
+	--acct-ok: var(--proto-sem-ok);
+	--acct-ok-ink: #1d5239;
+	--acct-ok-bg: #edf6f1;
+	--acct-warn: var(--proto-sem-warn);
+	--acct-warn-ink: #7a6020;
+	--acct-warn-bg: #faf5e8;
+	--acct-danger: var(--proto-sem-danger);
+	--acct-danger-ink: #7c3526;
+	--acct-danger-bg: #faf0ed;
+	--acct-r-sm: 10px;
+	--acct-r-md: 14px;
+	--acct-r-lg: 20px;
+	--acct-r-xl: 28px;
+	--acct-shadow-card: 0 1px 2px rgba(12, 15, 15, 0.04), 0 12px 40px rgba(12, 15, 15, 0.07);
+	--acct-shadow-pop: 0 4px 12px rgba(12, 15, 15, 0.08), 0 24px 64px rgba(12, 15, 15, 0.14);
+}
+
+/* ── The account chain's shared components ─────────────────────────────── */
+.linker-auth .linker-auth-hint,
+.linker-account .linker-account-hint,
+.linker-account .linker-account-note {
+	display: block;
+	margin: 6px 0 0;
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: var(--acct-muted);
+}
+
+.linker-auth .linker-auth-error,
+.linker-account .linker-account-error {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+	margin: 6px 0 0;
+	font-size: 12.5px;
+	font-weight: 500;
+	color: var(--acct-danger);
+}
+
+.linker-auth .linker-auth-error[hidden],
+.linker-account .linker-account-error[hidden] { display: none; }
+
+.linker-auth .linker-auth-error svg,
+.linker-account .linker-account-error svg { flex: none; }
+
+/* One button vocabulary for the chain: the prototype's pill, primary or ghost
+ * (the workspace's own .linker-account-btn lives in account.css). */
+.linker-auth .linker-auth-card :is(.button, .linker-auth-btn),
+.linker-gate .linker-gate-btn,
+.linker-account .linker-account-content .button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 52px;
+	padding: 0 28px;
+	border: 0;
+	border-radius: var(--proto-radius-round);
+	background: var(--proto-teal-600);
+	color: #fff;
+	box-shadow: 0 6px 16px rgba(12, 127, 115, 0.28);
+	font-family: inherit;
+	font-size: 15.5px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	cursor: pointer;
+	transition: transform var(--proto-duration) var(--proto-ease), background var(--proto-duration) var(--proto-ease), box-shadow var(--proto-duration) var(--proto-ease), color var(--proto-duration) var(--proto-ease);
+}
+
+.linker-auth .linker-auth-card :is(.button, .linker-auth-btn):hover,
+.linker-gate .linker-gate-btn.is-primary:hover,
+.linker-account .linker-account-content .button:hover {
+	background: var(--proto-teal-700);
+	box-shadow: 0 8px 20px rgba(12, 127, 115, 0.32);
+	color: #fff;
+	text-decoration: none;
+	transform: translateY(-1px);
+}
+
+.linker-auth .linker-auth-card :is(.button, .linker-auth-btn):active,
+.linker-gate .linker-gate-btn:active,
+.linker-account .linker-account-content .button:active { transform: translateY(0) scale(0.99); }
+
+.linker-auth .linker-auth-card :is(.button, .linker-auth-btn):focus-visible,
+.linker-gate .linker-gate-btn:focus-visible,
+.linker-account .linker-account-content .button:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 3px; }
+
+.linker-gate .linker-gate-btn.is-ghost {
+	background: transparent;
+	color: var(--proto-teal-700);
+	box-shadow: inset 0 0 0 1.5px var(--proto-teal-200);
+}
+
+.linker-gate .linker-gate-btn.is-ghost:hover { background: var(--proto-teal-50); }
+
+/* The submit state (assets/account-ui.js): the button reports the post it is
+ * in, the way the prototype's .btn.is-loading does. */
+.linker-auth .linker-auth-card :is(.button, .linker-auth-btn),
+.linker-gate .linker-gate-btn,
+.linker-account .linker-account-content .button { position: relative; }
+
+.linker-auth .linker-auth-card :is(.button, .linker-auth-btn).is-loading,
+.linker-gate .linker-gate-btn.is-loading,
+.linker-account .linker-account-content .button.is-loading { opacity: 0.75; pointer-events: none; }
+
+.linker-auth .linker-auth-card :is(.button, .linker-auth-btn).is-loading::after,
+.linker-gate .linker-gate-btn.is-loading::after,
+.linker-account .linker-account-content .button.is-loading::after {
+	content: "";
+	width: 18px;
+	height: 18px;
+	border: 2px solid rgba(255, 255, 255, 0.35);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: linker-account-spin 0.8s linear infinite;
+}
+
+.linker-gate .linker-gate-btn.is-ghost.is-loading::after,
+.linker-account .linker-account-content .button.is-ghost.is-loading::after {
+	border-color: var(--proto-teal-200);
+	border-top-color: var(--proto-teal-700);
+}
+
+@keyframes linker-account-spin { to { rotate: 360deg; } }
+
+/* WooCommerce's notices, in the chain's language. Woo prints the markup (and
+ * its own leading icon), so only the frame and the palette are set here. */
+.linker-auth :is(.woocommerce-error, .woocommerce-message, .woocommerce-info),
+.linker-gate :is(.woocommerce-error, .woocommerce-message, .woocommerce-info),
+.linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	margin: 0 0 20px;
+	padding: 14px 16px;
+	border: 1px solid transparent;
+	border-radius: var(--acct-r-md);
+	font-size: 14px;
+	line-height: 1.45;
+}
+
+.linker-auth .woocommerce-error,
+.linker-gate .woocommerce-error,
+.linker-account .woocommerce-error { background: var(--acct-danger-bg); border-color: #eed5cd; color: var(--acct-danger-ink); }
+
+.linker-auth .woocommerce-message,
+.linker-gate .woocommerce-message,
+.linker-account .woocommerce-message { background: var(--acct-ok-bg); border-color: #d3e8dc; color: var(--acct-ok-ink); }
+
+.linker-auth .woocommerce-info,
+.linker-gate .woocommerce-info,
+.linker-account .woocommerce-info { background: var(--proto-teal-50); border-color: var(--proto-teal-100); color: var(--proto-teal-800); }
+
+/* WooCommerce's own leading mark is absolutely placed at 1.5em/1em for the
+ * padding box of its stock notice (1em 2em 1em 3.5em). The chain's notices are
+ * flex rows with their own 14px/16px padding, so the mark is brought back into
+ * the flow as the row's first item — the prototype's icon-beside-text shape —
+ * instead of landing on top of the first word. */
+.linker-auth :is(.woocommerce-error, .woocommerce-message, .woocommerce-info)::before,
+.linker-gate :is(.woocommerce-error, .woocommerce-message, .woocommerce-info)::before,
+.linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info)::before {
+	position: static;
+	display: block;
+	flex: none;
+	margin: 1px 0 0;
+	font-size: 18px;
+	line-height: 1;
+	color: currentColor;
+}
+
+.linker-auth :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) ul,
+.linker-gate :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) ul,
+.linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) ul { margin: 0; padding-left: 18px; }
+
+.linker-auth .woocommerce-notices-wrapper:empty,
+.linker-account .woocommerce-notices-wrapper:empty { display: none; }
+
+/* WooCommerce's own notice element (wc_print_notice), used unwrapped by the
+ * lost-password confirmation. */
+.linker-auth > .linker-auth-inner .woocommerce-message,
+.linker-auth > .linker-auth-inner .woocommerce-info,
+.linker-auth > .linker-auth-inner .woocommerce-error { display: flex; }
+
+/* ── The guest chain: the frame ────────────────────────────────────────── */
+.linker-auth {
+	display: grid;
+	place-items: center;
+	padding: clamp(20px, 4vw, 48px) 0;
+}
+
+.linker-auth-inner {
+	display: grid;
+	gap: 20px;
+	width: 100%;
+	max-width: 480px;
+	margin: 0 auto;
+}
+
+/* One card and the brand panel that belongs to it. Stacked on the phone (the
+ * panel is hidden there), a two-column frame from 1080px up: the panel takes
+ * the card's own height and no other card's. */
+.linker-auth-unit {
+	display: grid;
+	gap: 20px;
+	min-width: 0;
+}
+
+@media (min-width: 1080px) {
+	.linker-auth-inner { max-width: 1060px; }
+
+	.linker-auth-unit {
+		grid-template-columns: 460px minmax(0, 1fr);
+		gap: 0;
+		align-items: stretch;
+		border-radius: var(--acct-r-xl);
+		overflow: hidden;
+		box-shadow: var(--acct-shadow-card);
+	}
+
+	.linker-auth-unit > .linker-auth-card {
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
+	}
+
+	/* A page with one card (lost password, the new password, the confirmation)
+	 * keeps the centred card at every width, with no brand panel. */
+	.linker-auth-inner--solo {
+		max-width: 480px;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 20px;
+		overflow: visible;
+		border-radius: 0;
+		box-shadow: none;
+	}
+
+	.linker-auth-inner--solo > .linker-auth-card {
+		border: 1px solid var(--acct-line-soft);
+		border-radius: var(--acct-r-xl);
+		box-shadow: var(--acct-shadow-card);
+	}
+}
+
+/* ── The brand panel (desktop only) ────────────────────────────────────── */
+.linker-auth-brand { display: none; }
+
+/* The theme's own element rules (`p { color: … }`, `h1 { color: … }`) apply
+ * directly to these children and beat the panel's inherited colour, so the
+ * reset below makes the panel's own colour the default and each named line
+ * sets its own (both carry one more class than the reset). */
+.linker-auth-brand :is(h1, h2, p, span, strong) { color: inherit; }
+
+.linker-auth-brand .linker-auth-brand-title { color: #eaf4f2; }
+
+.linker-auth-brand .linker-auth-brand-sub { color: #b9d6d1; }
+
+@media (min-width: 1080px) {
+	.linker-auth-brand {
+		display: flex;
+		flex-direction: column;
+		gap: 52px;
+		padding: 48px 44px;
+		background:
+			radial-gradient(120% 90% at 0% 0%, rgba(61, 175, 159, 0.25) 0%, transparent 55%),
+			linear-gradient(160deg, var(--proto-teal-900) 0%, var(--proto-teal-800) 60%, #063f38 100%);
+		color: #eaf4f2;
+	}
+}
+
+.linker-auth-brand-logo {
+	display: block;
+	width: 124px;
+	height: auto;
+	filter: brightness(0) invert(1);
+	opacity: 0.96;
+}
+
+.linker-auth-brand-title {
+	margin: 0 0 14px;
+	font-size: 30px;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+}
+
+.linker-auth-brand-sub { margin: 0; font-size: 15px; }
+
+.linker-auth-brand-points { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+
+.linker-auth-brand-points li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: #d7e9e6; }
+
+.linker-auth-brand-points svg { flex: none; margin-top: 2px; color: var(--proto-teal-300); }
+
+/* ── The card ──────────────────────────────────────────────────────────── */
+.linker-auth-card {
+	padding: clamp(24px, 4vw, 40px);
+	background: var(--acct-card);
+	border: 1px solid var(--acct-line-soft);
+	border-radius: var(--acct-r-xl);
+	box-shadow: var(--acct-shadow-card);
+}
+
+.linker-auth-card-heading { margin-bottom: 24px; }
+
+.linker-auth-card-heading :is(h1, h2) {
+	margin: 0 0 6px;
+	font-size: clamp(24px, 2.6vw, 30px);
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	color: var(--acct-ink);
+}
+
+.linker-auth-card-heading p { margin: 0; font-size: 15px; color: var(--acct-muted); }
+
+.linker-auth-register { scroll-margin-top: 96px; }
+
+/* ── Fields (WooCommerce's own form rows, in the chain's language) ─────── */
+/* WooCommerce draws its own box around the login and register forms; the card
+ * is the box here. (`.woocommerce form.login` is 0,2,1, so this rule carries
+ * one more class.) */
+.linker-auth .linker-auth-card form:is(.login, .register, .woocommerce-ResetPassword, .lost_reset_password) {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	text-align: left;
+}
+
+.linker-auth .form-row,
+.linker-account .form-row {
+	display: block;
+	float: none;
+	width: 100%;
+	margin: 0 0 18px;
+	padding: 0;
+}
+
+.linker-auth .form-row label,
+.linker-account .form-row label {
+	display: block;
+	margin-bottom: 7px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--acct-ink-2);
+}
+
+.linker-auth .form-row :is(input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="number"], input[type="search"], input[type="url"], select, textarea),
+.linker-account .form-row :is(input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="number"], input[type="search"], input[type="url"], select, textarea) {
+	width: 100%;
+	height: 52px;
+	min-height: 52px;
+	padding: 0 18px;
+	border: 1.5px solid transparent;
+	border-radius: var(--acct-r-md);
+	background: var(--acct-fill);
+	color: var(--acct-ink);
+	font-family: inherit;
+	font-size: 15px;
+	line-height: 1.2;
+	box-shadow: none;
+	appearance: none;
+	transition: background var(--proto-duration) var(--proto-ease), border-color var(--proto-duration) var(--proto-ease), box-shadow var(--proto-duration) var(--proto-ease);
+}
+
+.linker-auth .form-row textarea,
+.linker-account .form-row textarea { height: auto; min-height: 6.5rem; padding: 14px 18px; }
+
+.linker-auth .form-row select,
+.linker-account .form-row select {
+	background-image: linear-gradient(45deg, transparent 50%, var(--acct-muted) 50%), linear-gradient(135deg, var(--acct-muted) 50%, transparent 50%);
+	background-position: calc(100% - 21px) 50%, calc(100% - 16px) 50%;
+	background-size: 5px 5px, 5px 5px;
+	background-repeat: no-repeat;
+	padding-right: 44px;
+}
+
+.linker-auth .form-row :is(input, select, textarea):hover,
+.linker-account .form-row :is(input, select, textarea):hover { background-color: var(--acct-fill-hover); }
+
+.linker-auth .form-row :is(input, select, textarea):focus,
+.linker-account .form-row :is(input, select, textarea):focus {
+	background-color: var(--acct-card);
+	border-color: var(--proto-teal-600);
+	box-shadow: 0 0 0 4px var(--proto-teal-100);
+	outline: none;
+}
+
+.linker-auth .form-row .required,
+.linker-account .form-row .required { color: var(--acct-danger); }
+
+/* WooCommerce's own invalid state reads as the prototype's red field. */
+.linker-auth .woocommerce-invalid :is(input, select, textarea),
+.linker-account .woocommerce-invalid :is(input, select, textarea),
+.linker-auth :is(input, select)[aria-invalid="true"],
+.linker-account :is(input, select)[aria-invalid="true"] {
+	border-color: var(--acct-danger);
+	background-color: var(--acct-danger-bg);
+}
+
+/* The eye toggle is WooCommerce's own (.show-password-input, drawn with Woo's
+ * own icon): only its place and its hit area are set here. */
+.linker-auth .password-input,
+.linker-account .password-input { position: relative; display: block; width: 100%; }
+
+.linker-auth .password-input .input-text,
+.linker-account .password-input .input-text { padding-right: 56px; }
+
+.linker-auth button.show-password-input,
+.linker-account button.show-password-input {
+	top: 26px;
+	right: 6px;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	min-height: 44px;
+	padding: 0;
+	border: 0;
+	border-radius: var(--acct-r-sm);
+	background: transparent;
+	transform: translateY(-50%);
+}
+
+.linker-auth button.show-password-input:hover,
+.linker-account button.show-password-input:hover { background: rgba(12, 15, 15, 0.05); }
+
+.linker-auth button.show-password-input:focus-visible,
+.linker-account button.show-password-input:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 2px; }
+
+/* The checkbox: WooCommerce's own input, drawn as the prototype's box. */
+.linker-auth .woocommerce-form-login__rememberme,
+.linker-account .woocommerce-form-login__rememberme {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 44px;
+	margin: 0;
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--acct-ink-2);
+	cursor: pointer;
+}
+
+.linker-auth input[type="checkbox"],
+.linker-account input[type="checkbox"] {
+	position: relative;
+	flex: none;
+	width: 22px;
+	height: 22px;
+	margin: 0;
+	border: 1.5px solid var(--acct-line);
+	border-radius: 7px;
+	background: var(--acct-card);
+	appearance: none;
+	cursor: pointer;
+	transition: background var(--proto-duration) var(--proto-ease), border-color var(--proto-duration) var(--proto-ease);
+}
+
+.linker-auth input[type="checkbox"]:checked,
+.linker-account input[type="checkbox"]:checked { background: var(--proto-teal-600); border-color: var(--proto-teal-600); }
+
+.linker-auth input[type="checkbox"]:checked::after,
+.linker-account input[type="checkbox"]:checked::after {
+	content: "";
+	position: absolute;
+	inset: 3px;
+	background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>') center / contain no-repeat;
+}
+
+.linker-auth input[type="checkbox"]:focus-visible,
+.linker-account input[type="checkbox"]:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 2px; }
+
+/* ── The register card's three steps ───────────────────────────────────── */
+.linker-auth-steps { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+
+.linker-auth-step { padding-top: 20px; }
+
+.linker-auth-step + .linker-auth-step { margin-top: 4px; border-top: 1px solid var(--acct-line-soft); }
+
+.linker-auth-step-title { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-size: 15px; font-weight: 600; color: var(--acct-ink); }
+
+.linker-auth-step-index {
+	display: grid;
+	place-items: center;
+	flex: none;
+	width: 26px;
+	height: 26px;
+	border-radius: var(--proto-radius-round);
+	background: var(--proto-teal-100);
+	color: var(--proto-teal-800);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+/* WooCommerce prints one form row per field, and two of the pairs stand side
+ * by side on a wide screen (the field ids are WooCommerce's own). */
+.linker-auth-step-fields { display: grid; gap: 0 14px; grid-template-columns: minmax(0, 1fr); }
+
+@media (min-width: 560px) {
+	.linker-auth-step-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+	.linker-auth-step-fields > * { grid-column: 1 / -1; }
+
+	.linker-auth-step-fields > :is(#billing_first_name_field, #billing_last_name_field, #billing_postcode_field, #billing_city_field) { grid-column: auto; }
+}
+
+.linker-auth-step-fields .form-row:last-child { margin-bottom: 0; }
+
+/* ── The guest cards' links ────────────────────────────────────────────── */
+.linker-auth-links {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	align-items: center;
+	margin: 20px 0 0;
+	font-size: 14px;
+	text-align: center;
+}
+
+.linker-auth .linker-auth-links a { color: var(--proto-teal-700); font-weight: 600; }
+.linker-auth .linker-auth-links a:hover { color: var(--proto-teal-800); }
+
+.linker-auth-links.linker-auth-legal { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 4px 20px; margin: 4px 0 16px; font-size: 13.5px; color: var(--acct-muted); }
+
+.linker-auth .linker-auth-submit { margin: 0; }
+
+.linker-auth .linker-auth-submit :is(.button, .linker-auth-btn) { width: 100%; }
+
+/* ── The gates (pending, restricted, the two Proforma gates) ───────────── */
+.linker-gate-col { width: 100%; max-width: 480px; margin: 0 auto; }
+
+.linker-gate {
+	padding: clamp(24px, 4vw, 40px);
+	background: var(--acct-card);
+	border: 1px solid var(--acct-line-soft);
+	border-radius: var(--acct-r-xl);
+	box-shadow: var(--acct-shadow-card);
+}
+
+.linker-gate h1 {
+	margin: 0;
+	font-size: clamp(24px, 2.6vw, 30px);
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	color: var(--acct-ink);
+}
+
+.linker-gate-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 18px;
+	padding: 7px 14px;
+	border-radius: var(--proto-radius-round);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.linker-gate-badge.is-pending { background: var(--acct-warn-bg); color: var(--acct-warn-ink); }
+.linker-gate-badge.is-restricted { background: var(--acct-danger-bg); color: var(--acct-danger-ink); }
+
+.linker-gate-sub { margin: 6px 0 0; font-size: 15px; color: var(--acct-muted); }
+
+.linker-gate-body { display: grid; gap: 12px; margin-top: 18px; }
+
+.linker-gate-body p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--acct-muted); }
+
+/* The gate's own notice — the restricted account's reason (ticket #184). It is
+ * our element, so it carries the frame and the palette Woo's notices get; the
+ * body grid already spaces the card's lines, so it needs no own margin. */
+.linker-gate .notice {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	padding: 14px 16px;
+	border: 1px solid transparent;
+	border-radius: var(--acct-r-md);
+	font-size: 14px;
+	line-height: 1.45;
+}
+
+.linker-gate .notice-info { background: var(--proto-teal-50); border-color: var(--proto-teal-100); color: var(--proto-teal-800); }
+
+.linker-gate .notice svg { flex: none; margin-top: 1px; }
+
+.linker-gate .notice strong { font-weight: 600; }
+
+.linker-gate-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+
+.linker-gate-actions .linker-gate-btn { flex: 1 1 190px; }
+
+.linker-gate-links { margin: 18px 0 0; font-size: 14px; }
+.linker-gate .linker-gate-links a { color: var(--proto-teal-700); font-weight: 600; }
+
+/* The Genie entry under the title, the live page's pill carried over */
+.linker-gate-genie { margin: 14px 0 0; }
+
+.linker-gate-genie-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border-radius: var(--proto-radius-round);
+	background: var(--proto-teal-900);
+	color: #d7e9e6;
+	font-size: 13.5px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background var(--proto-duration) var(--proto-ease), transform var(--proto-duration) var(--proto-ease);
+}
+
+.linker-gate-genie-pill:hover { background: var(--proto-teal-800); color: #d7e9e6; text-decoration: none; transform: translateY(-1px); }
+.linker-gate-genie-pill:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 3px; }
+.linker-gate-genie-pill svg { width: 16px; height: 16px; color: var(--proto-teal-300); }
+
+/* ── The guest account page's own ground ───────────────────────────────── */
+body.woocommerce-account:not(.logged-in) .linker-account #container-content-account { padding: clamp(20px, 4vw, 48px) 1rem; }
+
 .linker-proforma-success { display: none; }
 
 /* Replace the contact shortcode's literal palette with the site's tokens.
@@ -73,154 +713,36 @@
 	background: var(--proto-neutral-50);
 	color: var(--proto-sem-danger);
 }
-.linker-auth-legal {
-	display: flex;
-	justify-content: center;
-	gap: var(--proto-space-5);
-}
 
 /* 639px matches the existing auth card breakpoint; desktop remains untouched.
  * 52px = 44px touch floor + 8px breathing room, measured in metrics.md. */
 @media (max-width: 639px) {
-	body.woocommerce-account:not(.logged-in) #container-content-account {
-		padding: var(--proto-space-5) var(--proto-space-4) var(--proto-space-7);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth {
-		gap: var(--proto-space-6);
-		padding: 0;
-	}
-	.linker-account .linker-auth-card {
-		max-width: none;
-		padding: var(--proto-space-5) var(--proto-space-4);
-		border-radius: var(--proto-radius-panel);
-		box-shadow: none;
-	}
-	.linker-account .linker-auth-card-heading { margin-bottom: var(--proto-space-6); }
-	.linker-account .linker-auth-card-heading :is(h1, h2) {
-		font-size: var(--proto-size-2xl);
-		line-height: var(--proto-leading-title);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth form {
-		border: 0;
-		padding: 0;
-		margin: 0;
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .form-row {
-		display: block;
-		float: none;
-		width: 100%;
-		padding: 0;
-		margin: 0 0 var(--proto-space-5);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .form-row label:not(.woocommerce-form-login__rememberme) {
-		display: block;
-		margin-bottom: var(--proto-space-2);
-		font-size: var(--proto-size-sm);
-		font-weight: var(--proto-weight-medium);
-		color: var(--proto-ink-deep);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth :is(.input-text, select, .select2-selection--single),
-	#contact-form .linker-contact-form .linker-form-input,
-	#tv-woo-b2b-checkout form.checkout :is(input.input-text, select, textarea, .select2-selection--single) {
-		width: 100%;
-		min-height: 3.25rem;
-		padding: var(--proto-space-3) var(--proto-space-4);
-		border: 1px solid var(--proto-input-line);
-		border-radius: var(--proto-radius-card);
-		background: var(--proto-input-bg);
-		font-size: var(--proto-size-md);
-		line-height: var(--proto-leading-tight);
-		color: var(--proto-ink-deep);
-		box-shadow: none;
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .password-input { width: 100%; }
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth button.show-password-input {
-		display: grid;
-		place-items: center;
-		width: var(--proto-control-height);
-		height: 3.25rem;
-		top: 0;
-		right: 0;
-		transform: none;
-		padding: 0;
-		border-radius: var(--proto-radius-card);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .select2-selection__rendered,
-	#tv-woo-b2b-checkout form.checkout .select2-selection__rendered {
-		padding: 0 var(--proto-space-5) 0 0;
-		line-height: var(--proto-leading-tight);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .select2-selection__arrow,
-	#tv-woo-b2b-checkout form.checkout .select2-selection__arrow { height: 100%; }
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .woocommerce-form-login__rememberme {
-		display: flex;
-		align-items: center;
-		gap: var(--proto-space-3);
-		min-height: var(--proto-control-height);
-		margin: 0;
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth input[type="checkbox"],
-	#contact-form .linker-contact-form input[type="checkbox"] {
-		width: var(--proto-space-5);
-		height: var(--proto-space-5);
-		margin: 0;
-		flex: none;
-		accent-color: var(--proto-accent);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .linker-auth-submit,
-	#contact-form .linker-contact-form .linker-form-submit {
-		position: sticky;
-		bottom: 0;
-		z-index: 2;
-		margin: 0;
-		padding: var(--proto-space-3) 0 max(var(--proto-space-3), env(safe-area-inset-bottom));
-		background: var(--proto-canvas-white);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .linker-auth-submit .button,
-	#contact-form .linker-contact-form .linker-form-primary,
-	#tv-woo-b2b-checkout form.checkout #place_order,
-	#tv-woo-b2b-checkout .linker-proforma-success .linker-form-primary {
-		width: 100%;
-		min-height: 3.25rem;
-		border-radius: var(--proto-radius-card);
-		font-size: var(--proto-size-md);
-		line-height: var(--proto-leading-tight);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth :is(.lost_password, .linker-auth-links) {
-		margin: var(--proto-space-3) 0 0;
-		font-size: var(--proto-size-xs);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth :is(.lost_password, .linker-auth-links) a {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-height: var(--proto-control-height);
-	}
-	.linker-auth-mobile-links { display: block; }
-	.linker-account .linker-auth-steps { gap: var(--proto-space-6); }
-	.linker-account .linker-auth-step { padding-top: var(--proto-space-5); }
-	.linker-account .linker-auth-step-title { margin-bottom: var(--proto-space-5); }
-	.linker-account .linker-auth-step-fields .form-row:last-child { margin-bottom: 0; }
-	.linker-account .linker-auth-step-index {
-		width: var(--proto-space-6);
-		height: var(--proto-space-6);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .woocommerce-notices-wrapper { max-width: none; }
-	body.woocommerce-account:not(.logged-in) .linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info),
-	#tv-woo-b2b-checkout .woocommerce-error {
-		border-radius: var(--proto-radius-card);
-		/* 3.5em keeps WooCommerce’s status icon clear of the text. */
-		padding: var(--proto-space-4) var(--proto-space-4) var(--proto-space-4) 3.5em;
-		margin: 0 0 var(--proto-space-5);
-		background: var(--proto-neutral-50);
-		border-color: var(--proto-line-journal);
-		font-size: var(--proto-size-sm);
-		line-height: var(--proto-leading-body);
-	}
-	body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .woocommerce-invalid :is(.input-text, select),
-	#tv-woo-b2b-checkout form.checkout .woocommerce-invalid :is(.input-text, select) {
-		border-color: var(--proto-sem-danger);
-	}
+	/* The guest cards fill the phone's width; the register steps keep their
+	 * rhythm and the two-card spacing stays the chain's own. */
+	body.woocommerce-account:not(.logged-in) .linker-account #container-content-account { padding: 1.25rem 1rem 3rem; }
+
+	.linker-auth { padding: 0; }
+
+	.linker-auth-inner { gap: var(--proto-space-6); }
+
+	.linker-auth-card { border-radius: var(--acct-r-lg); box-shadow: none; padding: 1.5rem 1rem; }
+
+	.linker-auth-steps { gap: var(--proto-space-6); }
+
+	.linker-auth-step { padding-top: var(--proto-space-5); }
+
+	.linker-auth-step-title { margin-bottom: var(--proto-space-5); }
+
+	.linker-account .linker-auth-step-index { width: var(--proto-space-6); height: var(--proto-space-6); }
+
+	.linker-gate { border-radius: var(--acct-r-lg); }
+
+	.linker-gate-actions { display: grid; grid-template-columns: minmax(0, 1fr); }
+
+	.linker-gate-actions .linker-gate-btn { flex: none; width: 100%; }
+
+	.linker-gate-actions .linker-gate-btn.is-ghost { order: 1; }
+
 	#contact-form .linker-contact-form {
 		display: grid;
 		gap: var(--proto-space-5);
@@ -232,7 +754,6 @@
 	#contact-form { padding-inline: var(--proto-space-4); }
 	#contact-form .linker-contact-form .linker-form-label { gap: var(--proto-space-2); }
 		#contact-form .linker-contact-form .linker-form-consent a,
-		body.woocommerce-account:not(.logged-in) .linker-account .linker-auth .woocommerce-privacy-policy-text a,
 		#tv-woo-b2b-checkout .woocommerce-privacy-policy-text a {
 			display: inline-flex;
 			align-items: center;
@@ -295,7 +816,7 @@
 		padding: var(--proto-space-5) var(--proto-space-4);
 		background: var(--proto-neutral-50);
 	}
-	#tv-woo-b2b-checkout form.checkout #payment .place-order {
+	#tv-woo-b2b-checkout #payment .place-order {
 		position: sticky;
 		bottom: 0;
 		z-index: 2;

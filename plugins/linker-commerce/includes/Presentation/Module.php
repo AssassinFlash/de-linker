@@ -55,6 +55,24 @@ final class Module {
 		$this->account->register();
 		$this->blog->register();
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_account_scripts' ) );
+	}
+
+	/**
+	 * The account chain's interaction layer (ticket #184): the submit state and
+	 * the two-field password check of the guest cards, the gates and the
+	 * workspace forms. The strength meter is WooCommerce's own
+	 * (wc-password-strength-meter), which Woo enqueues on the pages that carry
+	 * a password field. Only the account chain loads this file.
+	 */
+	public function enqueue_account_scripts(): void {
+		$is_chain = ( function_exists( 'is_account_page' ) && is_account_page() )
+			|| ( function_exists( 'is_checkout' ) && is_checkout() );
+		if ( ! $is_chain ) {
+			return;
+		}
+		$base = plugins_url( 'assets/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+		wp_enqueue_script( 'linker-account-ui', $base . 'account-ui.js', array(), (string) filemtime( dirname( __DIR__, 2 ) . '/assets/account-ui.js' ), true );
 	}
 
 	/**

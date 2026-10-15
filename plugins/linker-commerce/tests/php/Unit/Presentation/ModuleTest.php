@@ -59,6 +59,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $compare, 'assets' ) );
 		WP_Mock::expectActionAdded( 'wp_footer', array( $compare, 'standing_chip' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_product_scripts' ) );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_account_scripts' ) );
 
 		$module->register();
 

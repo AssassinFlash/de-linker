@@ -85,11 +85,13 @@ final class DocumentsTest extends TestCase {
 					'title' => 'Design report: House Barleben',
 					'date'  => 1770000000,
 					'url'   => 'https://example.test/?linker-document=report&id=45',
+					'kind'  => 'report',
 				),
 				array(
 					'title' => 'Proforma invoice PI-2026-0001 (inquiry #20)',
 					'date'  => 1760000000,
 					'url'   => 'https://example.test/?linker-document=proforma&id=20',
+					'kind'  => 'proforma',
 				),
 			),
 			$documents,
@@ -131,6 +133,7 @@ final class DocumentsTest extends TestCase {
 						'title' => 'Proforma invoice PI-2026-0009 (inquiry #21)',
 						'date'  => 1760001000,
 						'url'   => 'https://example.test/?linker-document=proforma&id=21',
+						'kind'  => 'proforma',
 					),
 				),
 				$documents
@@ -165,6 +168,7 @@ final class DocumentsTest extends TestCase {
 					'title' => 'Proforma invoice DLK-PF-2026-0002 (inquiry #23)',
 					'date'  => 1760002000,
 					'url'   => 'https://example.test/?linker-document=proforma&id=23',
+					'kind'  => 'proforma',
 				),
 			),
 			$documents
