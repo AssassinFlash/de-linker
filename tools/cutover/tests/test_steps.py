@@ -352,6 +352,37 @@ def test_the_deploy_installs_the_theme_file_over_the_live_one(tmp_path: Path) ->
     )
 
 
+def test_the_deploy_installs_the_german_language_packs(tmp_path: Path) -> None:
+    """WordPress's and WooCommerce's German live in the site-wide packs.
+
+    Without them the German pages render every `woocommerce` and `default`
+    string in English (the 2026-10-15 incident on plan.LANGUAGE_PACK_LOCALE);
+    the plugins' own translations travel inside the plugins and are not this
+    step's business. The step installs only — activating a core pack would
+    switch the site's own default locale, which stays English while Polylang
+    switches the front end per page.
+    """
+    target = _fake(tmp_path)
+    repository = _repository(tmp_path)
+
+    result = steps.deploy(target, repository=repository, staging=tmp_path / "staging")
+
+    calls = [args for _, args in target.calls]
+    assert ("core", "language", "install", plan.LANGUAGE_PACK_LOCALE) in calls
+    for plugin in plan.LANGUAGE_PACK_PLUGINS:
+        assert (
+            "language",
+            "plugin",
+            "install",
+            plugin,
+            plan.LANGUAGE_PACK_LOCALE,
+        ) in calls
+    assert not any(
+        args[:2] == ("core", "language") and "activate" in args for args in calls
+    ), "install only: the site's default locale stays English"
+    assert f"wp core language install {plan.LANGUAGE_PACK_LOCALE}" in result.actions
+
+
 def test_the_deploy_stops_when_the_checkout_has_no_theme_directory(
     tmp_path: Path,
 ) -> None:
