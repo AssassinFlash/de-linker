@@ -127,10 +127,14 @@ def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:
 
 
 def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
-    """Step 3's file half: the three plugins, the must-use recorder, the theme file, and Polylang.
+    """Step 3's file half: the three plugins, the must-use recorder, the theme
+    file, Polylang, and the de_DE_formal language packs.
 
     The translations travel inside each plugin's `languages/` directory, so
-    "new .po/.mo" needs no separate copy. Polylang is installed by WP-CLI from
+    "new .po/.mo" needs no separate copy. WordPress's and WooCommerce's own
+    strings are different: their German lives in the site-wide language packs,
+    which `deploy_language_packs` installs (the 2026-10-15 incident is on
+    plan.LANGUAGE_PACK_LOCALE). Polylang is installed by WP-CLI from
     wordpress.org: the native installer verifies the package, and a copy rsynced
     from a checkout would be a second, unverifiable source of the same plugin.
     A site that already has it gets the activation alone — the local drill's
@@ -163,7 +167,27 @@ def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
 
     target.wp("plugin", "activate", *plan.NEW_PLUGINS)
     actions.append("wp plugin activate " + " ".join(plan.NEW_PLUGINS))
+    actions += deploy_language_packs(target)
     return Result("deploy", actions, [])
+
+
+def deploy_language_packs(target: Target) -> list[str]:
+    """The de_DE_formal packs of WordPress core and WooCommerce (plan.LANGUAGE_PACK_*).
+
+    Idempotent: WP-CLI answers "already installed" with success, so the step is
+    safe to re-run and a site that carries the packs is untouched. Without them
+    the German pages render every WooCommerce and WordPress core string in
+    English — see the incident note on plan.LANGUAGE_PACK_LOCALE.
+    """
+    actions: list[str] = []
+    target.wp("core", "language", "install", plan.LANGUAGE_PACK_LOCALE)
+    actions.append(f"wp core language install {plan.LANGUAGE_PACK_LOCALE}")
+    for plugin in plan.LANGUAGE_PACK_PLUGINS:
+        target.wp("language", "plugin", "install", plugin, plan.LANGUAGE_PACK_LOCALE)
+        actions.append(
+            f"wp language plugin install {plugin} {plan.LANGUAGE_PACK_LOCALE}"
+        )
+    return actions
 
 
 def deploy_mu_plugins(target: Target, *, repository: Path) -> list[str]:

@@ -63,6 +63,21 @@ THEMES_DIR = "wp-content/themes"
 # would be an unverifiable second source of the same plugin.
 INSTALLED_PLUGINS = ("polylang",)
 
+# The German (Formal) language packs, installed by WP-CLI from the translation
+# API (like INSTALLED_PLUGINS, the native installer is the verified channel):
+# WordPress core's and WooCommerce's de_DE_formal. The site is English and
+# German at equal rank and German runs in the formal register (AGENTS.md §3);
+# without these packs every string of the `default` and `woocommerce` text
+# domains falls back to English on the German pages (the 2026-10-15 incident:
+# the switch had left the host without any pack, and the German account pages
+# read English until the packs were installed by hand). The local stack
+# installs the same two packs at instance creation (tools/local
+# linker_local/wordpress.py install_language_packs), so a drill proves the
+# step the window runs. Install only, never activate: Polylang switches the
+# front-end locale per page, the site's own default stays English.
+LANGUAGE_PACK_LOCALE = "de_DE_formal"
+LANGUAGE_PACK_PLUGINS = ("woocommerce",)
+
 # Deactivated and deleted: the old tree's plugins, plus the two the new tree
 # does not use. Order matters — deactivate everything first, then delete, so a
 # plugin that still holds a hook cannot fatal while its neighbour disappears.
