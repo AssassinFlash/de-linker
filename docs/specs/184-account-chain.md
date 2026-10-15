@@ -103,7 +103,9 @@
 
 - PHP：`composer install` 后 `vendor/bin/phpcs -q`（0 error）、`vendor/bin/phpstan analyse --memory-limit=-1`（level 8，0 error）、`vendor/bin/phpunit --testsuite unit`（974 tests 全绿，含 `AuthTemplatesTest` / `PendingGateTest` / `LoginGateTest` / `AccountTemplatesTest` / `DocumentsTest` / 两个 `ModuleTest` 的新断言）。
 - JS：`node --test plugins/linker-commerce/tests/js/*.test.mjs`（21 tests，含 `account-ui.test.mjs` 的 5 条：提交态、原生校验优先、不一致阻止提交并给字段、行随打字清除、一致时提交）。
-- e2e（`tests/e2e`）：账号链相关断言已随新结构更新（登出选择器改 `action=logout`、签名后断言 signed-out notice、门禁选择器改 `.linker-gate` / `.linker-gate-genie-pill`）。
+- e2e（`tests/e2e`，实例 a184 + `just serve`）：`specs/account.spec.ts` 11 项、`specs/empty-draft.spec.ts` 4 项、`specs/commerce.spec.ts` 2 项 **全过**。断言随新结构更新：登出选择器改 `action=logout`、登出后断言 signed-out notice、门禁选择器改 `.linker-gate` / `.linker-gate-genie-pill`、Proforma 下载从列表行（已无行内下载）改到询盘详情页的 `[data-action="proforma"]`。
+- **提交态不能禁用按钮**：WooCommerce 读的是被按下的按钮自身的 name/value（`login`、`register`、`save_account_details`），`disabled` 的控件不进提交数据——早先版本在提交瞬间禁用按钮，登录/注册会静默不生效（真实夹具 e2e 抓到）。`account-ui.js` 只用 `.is-loading` + `aria-busy` 表状态，重复提交由表单自身的 `data-account-state` 挡回；回归测试在 `tests/js/account-ui.test.mjs`。
+- `specs/chrome.spec.ts` 的两项（德语工具页重定向）在本实例 404：该 spec 需要跑过 `tools/migrate/*.py` 的实例（tests/e2e/README 明列），a184 只装了快照 + `present`，与本票无关。
 - 本地实例验证（a184，快照 2026-10-15-1852 + 本票分支）：guest 两语言登录/注册/忘记密码/重置全链、pending/restricted/两种 guest 门禁、工作台各端点 EN+DE、页头 guest/customer 下拉、一键登出落回带提示、账号四态询盘与空态。
 
 ## 七、变更台账（业主过目）
