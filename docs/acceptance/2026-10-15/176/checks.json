@@ -1,0 +1,63 @@
+{
+  "ticket": 176,
+  "date": "2026-10-15",
+  "instance": {
+    "name": "a176",
+    "wordpress": "http://127.0.0.1:9018",
+    "assembly": "gzip-installed snapshot instance (uploads = the live files); plugins symlinked to this checkout, linker-commerce/linker-i18n/linker-tools active; after the change: `PHP=/opt/homebrew/opt/php@8.3/bin/php just present a176` then `just windpress-compile a176` (both green: 15 templates unchanged/updated, cache recompiled 1792073331 -> 1792073447, anchor classes present)"
+  },
+  "checks": [
+    {
+      "name": "EN page: 200, tab counts, rows, thumbnails, chips, config, script",
+      "command": "curl -s -o /tmp/faq-en.html -w '%{http_code}' http://127.0.0.1:9018/faq-download/",
+      "result": "HTTP 200, 708480 bytes; tab counts FAQ 288 / Documents 159; 288 question rows, 159 document rows, 147 rows with a thumbnail (12 type tiles = the documents over the build cap), 7 type chips, the JSON config and the script present"
+    },
+    {
+      "name": "DE page: 200 and its own German words (independent writing, not a translation of EN)",
+      "command": "curl -s -o /tmp/faq-de.html -w '%{http_code}' http://127.0.0.1:9018/de/faq-download/",
+      "result": "HTTP 200, 725457 bytes; H1 'Antworten und Dokumente.', zones 'Vor der Bestellung' / 'Produktantworten' / 'Marken', tabs FAQ 288 / Dokumente 160, placeholder 'Fragen und Dokumente suchen', counter '448 im Bestand', 147 thumbnails + 13 type tiles"
+    },
+    {
+      "name": "WindPress compiled cache: the page's rules, its anchor classes and its own scroll-margin",
+      "command": "grep -c '#linker-faq-page' ~/de-linker-local/a176/wordpress/wp-content/uploads/windpress/cache/tailwind.css",
+      "result": "181 rule blocks scoped to the page; the three anchor classes are present (.linker-library-tabbar 1, .linker-library-card 5, .linker-library-thumb 15); 3 rules carry `scroll-margin-top: calc(var(--ll-header-h) + var(--ll-sticky) + 12px)` (page ids, cards, questions)"
+    },
+    {
+      "name": "a shipped thumbnail is served by the instance",
+      "command": "curl -s -o /dev/null -w '%{http_code} %{content_type}' http://127.0.0.1:9018/wp-content/plugins/linker-commerce/assets/faq-thumbs/0961161c6afae01a8e431a3853c8cf788ff05376.webp",
+      "result": "HTTP 200, image/webp, 5162 bytes"
+    },
+    {
+      "name": "linker-commerce: PHPCS, PHPStan, PHPUnit",
+      "command": "cd plugins/linker-commerce && PHP=/opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpcs -q && vendor/bin/phpstan analyse --no-progress --memory-limit=-1 && vendor/bin/phpunit",
+      "result": "phpcs clean; PHPStan 0 errors; PHPUnit OK (1027 tests, 4933 assertions, 54 skipped — the skips are the instance-needing integration tests)"
+    },
+    {
+      "name": "the plugins' script tests (node --test, jsdom through plugins/linker-tools)",
+      "command": "cd plugins/linker-tools && node --test ../../plugins/linker-commerce/tests/js/*.test.mjs",
+      "result": "# tests 33 / pass 33 / fail 0 (19 of them library-ui.test.mjs)"
+    },
+    {
+      "name": "i18n gates",
+      "command": "python3 tools/checks/i18n-coverage.py && python3 tools/checks/i18n-validity.py && just banned-words",
+      "result": "i18n-coverage clean (the 15 new strings all carry a German msgstr); i18n-validity clean (5 catalogs); banned-words clean"
+    },
+    {
+      "name": "thumbnail build (rerunnable)",
+      "command": "python3 tools/faq/thumbs.py --wp 'just wp a176' --out plugins/linker-commerce/assets/faq-thumbs",
+      "result": "147/159 files, 984 KB, 12 skipped over the 15 MB cap, 0 failures; the manifest is keyed by the document URL's path"
+    }
+  ],
+  "visual": {
+    "status": "screenshots taken this session at 1440 and 390 (EN), plus the documents tab and the search dropdown, for a first look; the full per-state visual acceptance (1440/390 × EN/DE) is the main line's session, baseline = the accepted prototype at .scratch/faq-wt/docs/design/2026-10-15-faq-download-prototype/index.html?variant=5",
+    "observed": [
+      "hero (spark, title, subtitle, contact line, grid backdrop, centred search) renders; the search field and the type chips are revealed by the script only",
+      "tab switching writes ?tab=documents, hides the other panel and swaps the rail/chip group",
+      "documents tab: brand logos (our-brand-*-mono-light at 34px), type chips with counts, PDF page-1 thumbnails in 52x72 tiles, language pills, standing Download buttons",
+      "390px: rail folds into the pinned chip row under the tab bar, cards stack, the brand lockup takes its own line above the brand name (a card-head overlap the first pass showed was fixed before this run)",
+      "search 'goodwe battery': 44 results, tab counts split to FAQ 41 / Documents 3, flat ledger with group eyebrows, suggestions grouped Questions/Documents with <mark> highlights"
+    ]
+  },
+  "copy_review": "docs/acceptance/2026-10-15/176/copy-review.md",
+  "spec": "docs/specs/176-faq-download.md"
+}
