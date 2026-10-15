@@ -1,11 +1,22 @@
 <?php
 /**
- * The WordPress side of tools/faq/export.py and import.py: reads existing
- * questions from the legacy ACF JSON, or writes `_linker_faqs`.
+ * The WordPress side of the tools/faq scripts: they hand this file to
+ * `wp eval-file -` with the request (JSON, base64) in place of the
+ * placeholder at the end. Evaluated code cannot start with a strict_types
+ * declaration.
  *
- * The Python scripts hand this file to `wp eval-file -` with the request
- * (JSON, base64) in place of the placeholder at the end. Evaluated code
- * cannot start with a strict_types declaration.
+ * Three actions, one per caller:
+ *
+ * - `export` (export.py): every published product's existing questions, read
+ *   out of the legacy ACF JSON, with the German question paired by position
+ *   when the two lists are the same length.
+ * - `import` (import.py): writes `_linker_faqs` through the plugin's own
+ *   Faqs::encode()/mirror_to_twin(), after checking the record still names the
+ *   product it was written for.
+ * - `documents` (thumbs.py): the document register's own reading
+ *   (DocumentLibrary::documents()) — the URLs and types the thumbnail
+ *   pipeline downloads and renders, so the pipeline sees exactly the files
+ *   the page lists.
  *
  * @package Linker\Commerce
  */
@@ -110,6 +121,24 @@ defined( 'ABSPATH' ) || exit;
 		}
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON for tools/faq/export.py on the command line, not HTML.
 		echo $marker . wp_json_encode( array( 'products' => $products ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "\n";
+		return;
+	}
+
+	if ( 'documents' === $action ) {
+		if ( ! class_exists( \Linker\Commerce\Products\DocumentLibrary::class ) ) {
+			// The register's URLs are the plugin's own reading; without the
+			// plugin the eval'd script would drift from it.
+			throw new RuntimeException( 'linker-commerce must be active on the thumbnails target.' );
+		}
+		$register = array();
+		foreach ( ( new \Linker\Commerce\Products\DocumentLibrary() )->documents() as $document ) {
+			$register[] = array(
+				'url'  => (string) $document['url'],
+				'type' => (string) $document['type'],
+			);
+		}
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON for tools/faq/thumbs.py on the command line, not HTML.
+		echo $marker . wp_json_encode( array( 'documents' => $register ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "\n";
 		return;
 	}
 

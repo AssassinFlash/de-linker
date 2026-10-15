@@ -36,11 +36,9 @@ final class WindPressCache {
 		'bg-white'              => '.bg-white',
 		'max-w-[1160px]'        => '.max-w-\\[1160px\\]',
 		'text-[#0c7f73]'        => '.text-\\[\\#0c7f73\\]',
-		'lg:grid-cols-3'        => '.lg\\:grid-cols-3',
 		'text-(--proto-accent)' => '.text-\\(--proto-accent\\)',
 		'overflow-x-auto'       => '.overflow-x-auto',
 		'object-contain'        => '.object-contain',
-		'gap-8'                 => '.gap-8',
 		// The replica templates' anchors (#16): their rules live in the
 		// WindPress volume stylesheets, so a missing selector is the alarm for
 		// a volume file that never made it into the compile, or a shortcode
@@ -58,6 +56,14 @@ final class WindPressCache {
 		// blog.css, so this id is the alarm for that file never reaching the
 		// compile — the face would render as unstyled markup.
 		'tv-blog-single-v1'     => '#tv-blog-single-v1',
+		// The FAQ + document library (#176). Its page is a component face the
+		// way the PDP and the blog single are: the template prints the ids and
+		// classes below and faq.css carries their rules, so a compile that
+		// missed either the template or the volume file leaves one of them
+		// out — the page would render as unstyled markup.
+		'linker-library-tabbar' => '.linker-library-tabbar',
+		'linker-library-card'   => '.linker-library-card',
+		'linker-library-thumb'  => '.linker-library-thumb',
 	);
 
 	/**

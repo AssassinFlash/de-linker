@@ -227,6 +227,7 @@ final class DocumentLibraryTest extends TestCase {
 
 		$this->assertSame( 'Is the module stackable?', $english[0]['question'] );
 		$this->assertSame( 'GoodWe GW5.1-BAT-D-G21', $english[0]['product'] );
+		$this->assertSame( 'GoodWe', $english[0]['brand'], 'the row names its product brand, so the register files it' );
 		$this->assertSame( 'Ist das Modul stapelbar?', $german[0]['question'] );
 		$this->assertSame( 'ESA battery manual, p. 12', $english[0]['source'], 'the answer cites the document it came from' );
 		$this->assertSame( 'Legacy question?', $english[1]['question'], 'the field is empty, so the product FAQ answers' );
