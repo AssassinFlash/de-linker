@@ -1,0 +1,207 @@
+{
+  "_why": "The trade rules of /faq-download/ ('Before you order'): the 16 B2B questions the live page carries, frozen. Content moved verbatim out of the LiveCanvas templates on 2026-10-15 (#176) so the rail, the mobile chips, the card headings and the answers read one source; de-linker has no lab and the register states what the documents state.",
+  "_rule": "Verbatim copy of the page's own questions and answers; wording is approved content and is not edited here. Answers may carry inline links to the contact page.",
+  "_source": "plugins/linker-commerce/content/livecanvas/faq_page.html and de/faq_page.html at 08997063 (#176 extraction, .scratch/faq-176/extract-trade.py).",
+  "categories": [
+    {
+      "name": {
+        "en": "Ordering & delivery",
+        "de": "Bestellung & Lieferung"
+      },
+      "qas": [
+        {
+          "question": {
+            "en": "What is the minimum order quantity, and where does Linker deliver?",
+            "de": "Was ist die Mindestbestellmenge, und wohin liefert Linker?"
+          },
+          "answer": {
+            "en": "There is no pallet minimum. Orders start from individual units, delivered across the EU. Equipment ships according to project schedules, with trade quotes detailing destination freight.",
+            "de": "Es gibt kein Palettenminimum. Bestellungen starten ab einzelnen Einheiten, geliefert in der gesamten EU. Ausrüstung wird gemäß Projektzeitplänen versandt, wobei Handelsangebote die Frachtkosten zum Zielort ausweisen."
+          }
+        },
+        {
+          "question": {
+            "en": "Can different brands be combined in one project order?",
+            "de": "Können verschiedene Marken in einer Projektbestellung kombiniert werden?"
+          },
+          "answer": {
+            "en": "Yes. Inverters, batteries, smart meters, and accessories from different brands can be combined in one order. They ship together under a unified invoice; check each pairing against the compatibility lists on file before ordering.",
+            "de": "Ja. Wechselrichter, Batteriespeicher, Smart Meter und Zubehör verschiedener Marken können in einer Bestellung kombiniert werden. Sie werden zusammen mit einer einheitlichen Rechnung geliefert; prüfen Sie jede Kombination vor der Bestellung anhand der hinterlegten Kompatibilitätslisten."
+          }
+        },
+        {
+          "question": {
+            "en": "Does Linker supply complete storage packages or individual components?",
+            "de": "Liefert Linker komplette Speicher-Pakete oder einzelne Komponenten?"
+          },
+          "answer": {
+            "en": "Both. Installers can order packaged systems with matching balance-of-system components, or source individual replacement units and accessories.",
+            "de": "Beides. Installateure können paketierte Systeme mit passenden Balance-of-System-Komponenten bestellen oder einzelne Ersatzeinheiten und Zubehör beziehen."
+          }
+        },
+        {
+          "question": {
+            "en": "How are project quotations processed?",
+            "de": "Wie werden Projektangebote bearbeitet?"
+          },
+          "answer": {
+            "en": "Quotations include confirmed B2B net pricing, a full bill of materials, and applicable freight terms for the project destination.",
+            "de": "Angebote enthalten bestätigte B2B-Nettopreise, eine vollständige Stückliste und geltende Frachtbedingungen für das Projektziel."
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Accounts & pricing",
+        "de": "Konten & Preise"
+      },
+      "qas": [
+        {
+          "question": {
+            "en": "How do trade partners access net pricing?",
+            "de": "Wie erhalten Handelspartner Zugang zu Nettopreisen?"
+          },
+          "answer": {
+            "en": "Wholesale net pricing is visible to verified partner accounts. Unregistered contractors can submit project parameters to receive a formal trade quotation.",
+            "de": "Die Netto-Großhandelspreise sind für verifizierte Partnerkonten sichtbar. Nicht registrierte Installateure können Projektparameter einreichen, um ein formelles Handelsangebot zu erhalten."
+          }
+        },
+        {
+          "question": {
+            "en": "Who is eligible for a Partner Account?",
+            "de": "Wer ist für ein Partnerkonto berechtigt?"
+          },
+          "answer": {
+            "en": "Professional solar installers, electrical contractors (Elektrofachbetriebe), and EPCs operating within the EU. Registrations are reviewed individually before account activation.",
+            "de": "Professionelle Solarinstallateure, Elektrofachbetriebe und EPCs, die innerhalb der EU tätig sind. Registrierungen werden vor der Kontoaktivierung einzeln geprüft."
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Shipping & logistics",
+        "de": "Versand & Logistik"
+      },
+      "qas": [
+        {
+          "question": {
+            "en": "How are lithium battery systems transported?",
+            "de": "Wie werden Lithium-Batteriespeichersysteme transportiert?"
+          },
+          "answer": {
+            "en": "Batteries are classified as dangerous goods (Class 9) and transported via certified freight carriers. Systems carry UN38.3 transport certification, with compliant crating and documentation managed by Linker.",
+            "de": "Batteriespeicher sind als Gefahrgut (Klasse 9) eingestuft und werden über zertifizierte Frachtführer transportiert. Die Systeme verfügen über die UN38.3-Transportzertifizierung, wobei konforme Verpackung und Dokumentation von Linker verwaltet werden."
+          }
+        },
+        {
+          "question": {
+            "en": "What is the procedure if transport damage occurs?",
+            "de": "Wie ist das Verfahren bei Transportschäden?"
+          },
+          "answer": {
+            "en": "Note visible packaging or pallet damage on the freight receipt (CMR) at delivery. Linker coordinates carrier claims and replacement units to avoid project downtime.",
+            "de": "Vermerken Sie sichtbare Verpackungs- oder Palettenschäden bei der Lieferung auf dem Frachtbrief (CMR). Linker koordiniert Frachtführeransprüche und Ersatzgeräte, um Projektausfälle zu vermeiden."
+          }
+        },
+        {
+          "question": {
+            "en": "What delivery destinations are supported?",
+            "de": "Welche Lieferziele werden unterstützt?"
+          },
+          "answer": {
+            "en": "Deliveries route directly to your company warehouse, branch location, or scheduled project sites across the European Union.",
+            "de": "Lieferungen erfolgen direkt an Ihr Firmenlager, Ihren Standort oder geplante Projektstandorte in der gesamten Europäischen Union."
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Warranty & service",
+        "de": "Garantie & Service"
+      },
+      "qas": [
+        {
+          "question": {
+            "en": "Whose warranty applies to the supplied equipment?",
+            "de": "Wessen Garantie gilt für die gelieferte Ausrüstung?"
+          },
+          "answer": {
+            "en": "Statutory B2B warranty rights apply, and product guarantees apply as issued in the documents on the product pages and in this library. Linker handles any claim for you, from your order.",
+            "de": "Es gelten die gesetzlichen Gewährleistungsrechte im B2B-Geschäft; Produktgarantien gelten so, wie sie in den Unterlagen auf den Produktseiten und in dieser Bibliothek ausgestellt sind. Linker wickelt jeden Anspruch für Sie ab, ausgehend von Ihrer Bestellung."
+          }
+        },
+        {
+          "question": {
+            "en": "How are warranty claims processed?",
+            "de": "Wie werden Garantieansprüche bearbeitet?"
+          },
+          "answer": {
+            "en": "Open Warranty & Replacements from your order. The signed-in account confirms the order, and the form keeps the serial number, model, and fault description with that order. Linker handles the diagnostic exchange with the manufacturer's technical desk. <a href=\"/contact/?intent=support\">Open Warranty & Replacements</a>.",
+            "de": "Öffnen Sie Garantie & Ersatz aus Ihrer Bestellung. Das angemeldete Konto bestätigt die Bestellung, und das Formular hält Seriennummer, Modell und Fehlerbeschreibung bei dieser Bestellung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href=\"/de/kontakt/?intent=support\">Garantie & Ersatz öffnen</a>."
+          }
+        },
+        {
+          "question": {
+            "en": "What technical support is included with an order?",
+            "de": "Welcher technische Support ist bei einer Bestellung enthalten?"
+          },
+          "answer": {
+            "en": "Linker provides sizing tools and wiring references before the order, and live commissioning troubleshooting from the engineering desk in Germany.",
+            "de": "Linker stellt vor der Bestellung Auslegungswerkzeuge und Verdrahtungsunterlagen bereit und unterstützt bei der Inbetriebnahme mit Live-Fehlersuche durch das technische Team in Deutschland."
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Compliance & documentation",
+        "de": "Konformität & Dokumentation"
+      },
+      "qas": [
+        {
+          "question": {
+            "en": "Is equipment certified for the German electrical grid?",
+            "de": "Ist die Ausrüstung für das deutsche Stromnetz zertifiziert?"
+          },
+          "answer": {
+            "en": "Grid compliance is documented per model: inverters for low-voltage connection need a Unit Certificate (Einheitenzertifikat) and NA-Schutz documentation under VDE-AR-N 4105, medium-voltage systems follow VDE-AR-N 4110. Linker requests the certificates for the models in your order.",
+            "de": "Die Netzkonformität wird pro Modell dokumentiert: Wechselrichter für den Niederspannungsanschluss benötigen ein Einheitenzertifikat und NA-Schutz-Dokumentation gemäß VDE-AR-N 4105, Mittelspannungssysteme folgen der VDE-AR-N 4110. Linker fordert die Zertifikate für die Modelle in Ihrer Bestellung an."
+          }
+        },
+        {
+          "question": {
+            "en": "Are documentation and manuals available in German?",
+            "de": "Sind Dokumentation und Handbücher auf Deutsch verfügbar?"
+          },
+          "answer": {
+            "en": "Datasheets and manuals are on file in English, and in German where a German edition exists. Linker's engineering desk helps with technical questions on any of them.",
+            "de": "Datenblätter und Handbücher liegen auf Englisch vor und auf Deutsch, wo es eine deutsche Ausgabe gibt. Das technische Team von Linker hilft bei technischen Fragen zu jedem dieser Dokumente."
+          }
+        },
+        {
+          "question": {
+            "en": "Are Declarations of Conformity provided with orders?",
+            "de": "Werden Konformitätserklärungen mit Bestellungen bereitgestellt?"
+          },
+          "answer": {
+            "en": "Yes, on request: Linker requests the CE Declarations of Conformity and relevant test certificates for the models in your order.",
+            "de": "Ja, auf Anfrage: Linker fordert die CE-Konformitätserklärungen und relevanten Prüfzertifikate für die Modelle in Ihrer Bestellung an."
+          }
+        },
+        {
+          "question": {
+            "en": "What technical documentation is available through Genie?",
+            "de": "Welche technische Dokumentation ist über Genie verfügbar?"
+          },
+          "answer": {
+            "en": "Genie indexes the datasheets, manuals, and compatibility matrices in this library, retrieving specific technical parameters and wiring requirements directly.",
+            "de": "Genie indexiert die Datenblätter, Handbücher und Kompatibilitätsmatrizen in dieser Bibliothek und ruft technische Parameter und Verdrahtungsanforderungen direkt ab."
+          }
+        }
+      ]
+    }
+  ]
+}

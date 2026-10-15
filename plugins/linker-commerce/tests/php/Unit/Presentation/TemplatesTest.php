@@ -77,8 +77,18 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( '[woocommerce_my_account]', (string) file_get_contents( $paths['is_account_page'] ) );
 		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $paths['linker-compare'] ) );
 		$this->assertStringContainsString( '[linker_compare_table]', (string) file_get_contents( $paths['linker-compare-de'] ) );
-		$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $paths['linker-faq'] ) );
-		$this->assertStringContainsString( '[linker_document_register]', (string) file_get_contents( $paths['linker-faq-de'] ) );
+		// The library page's two panels: the FAQ tab's fragments and the
+		// documents tab's, each language its own template (docs/specs/176-).
+		foreach ( array( 'linker-faq', 'linker-faq-de' ) as $slug ) {
+			$face = (string) file_get_contents( $paths[ $slug ] );
+			$this->assertStringContainsString( '[linker_library_faq]', $face );
+			$this->assertStringContainsString( '[linker_library_documents]', $face );
+			$this->assertStringContainsString( '[linker_library_rail]', $face );
+			$this->assertStringContainsString( '[linker_library_chips]', $face );
+			$this->assertStringContainsString( '[linker_library_config]', $face );
+			$this->assertStringContainsString( 'data-library-panel="faq"', $face );
+			$this->assertStringContainsString( 'data-library-panel="documents"', $face );
+		}
 		$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $paths['linker-advisor'] ) );
 		$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $paths['linker-advisor-de'] ) );
 		// The configurator's page is the application's mount point, in both

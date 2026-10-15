@@ -113,6 +113,24 @@ defined( 'ABSPATH' ) || exit;
 		return;
 	}
 
+	if ( 'documents' === $action ) {
+		if ( ! class_exists( \Linker\Commerce\Products\DocumentLibrary::class ) ) {
+			// The register's URLs are the plugin's own reading; without the
+			// plugin the eval'd script would drift from it.
+			throw new RuntimeException( 'linker-commerce must be active on the thumbnails target.' );
+		}
+		$register = array();
+		foreach ( ( new \Linker\Commerce\Products\DocumentLibrary() )->documents() as $document ) {
+			$register[] = array(
+				'url'  => (string) $document['url'],
+				'type' => (string) $document['type'],
+			);
+		}
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON for tools/faq/thumbs.py on the command line, not HTML.
+		echo $marker . wp_json_encode( array( 'documents' => $register ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "\n";
+		return;
+	}
+
 	if ( 'import' !== $action ) {
 		throw new RuntimeException( 'Unknown FAQ WP-CLI action.' );
 	}

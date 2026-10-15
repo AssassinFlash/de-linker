@@ -157,8 +157,12 @@ final class DocumentLibrary {
 	 * The product answers of every published product, in product order: the
 	 * #15 FAQ field where it is filled, the legacy product FAQ until then.
 	 *
+	 * Each row names its product's brand (the pa_brand term, the first word of
+	 * the name without one), so the register can file an answer under the
+	 * brand its product states — the same reading documents() files by.
+	 *
 	 * @param 'en'|'de' $lang Language of question and answer.
-	 * @return list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>
+	 * @return list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>
 	 */
 	public function answers( string $lang = 'en' ): array {
 		$german  = 'de' === ProductText::lang( $lang );
@@ -166,11 +170,13 @@ final class DocumentLibrary {
 		foreach ( $this->products() as $id ) {
 			$product = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
 			$url     = (string) get_permalink( $id );
+			$brand   = self::brand( self::source( $id ) );
 			foreach ( self::faq_items( self::source( $id ), $german ) as $item ) {
 				$answers[] = array(
 					'question'   => $item['question'],
 					'answer'     => $item['answer'],
 					'product'    => $product,
+					'brand'      => $brand,
 					'url'        => $url,
 					'source'     => $item['source'],
 					'source_url' => $item['source_url'],
