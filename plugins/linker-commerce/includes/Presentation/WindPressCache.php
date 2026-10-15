@@ -57,6 +57,13 @@ final class WindPressCache {
 		// blog.css, so this id is the alarm for that file never reaching the
 		// compile — the face would render as unstyled markup.
 		'tv-blog-single-v1'     => '#tv-blog-single-v1',
+		// The account chain (ticket #184): the guest cards and the gates live in
+		// auth.css, the workspace in account.css; each file's own anchor is the
+		// alarm for that file never reaching the compile.
+		'linker-auth-card'      => '.linker-auth-card',
+		'linker-gate'           => '.linker-gate',
+		'linker-account-welcome' => '.linker-account-welcome',
+		'linker-account-pill'   => '.linker-account-pill',
 	);
 
 	/**

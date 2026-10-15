@@ -119,6 +119,19 @@ if ( ! function_exists( 'linker_commerce_draft_filled' ) ) {
 	}
 }
 
+if ( ! function_exists( 'linker_commerce_logout_url' ) ) {
+	/**
+	 * The one-click sign-out (ticket #184, owner ruling 2026-10-15): Woo's own
+	 * nonce-carrying logout URL, landing back on the account page with the
+	 * state the sign-in card reads. The account menu's plain endpoint URL
+	 * carries no nonce, so the shop asks "Are you sure you want to log out?"
+	 * on a page of its own first — the confirmation this replaces.
+	 */
+	function linker_commerce_logout_url(): string {
+		return wc_logout_url( add_query_arg( 'signed-out', 'true', wc_get_page_permalink( 'myaccount' ) ) );
+	}
+}
+
 if ( ! function_exists( 'linker_commerce_pdp_has_faqs' ) ) {
 	/**
 	 * Whether the product carries FAQ rows.

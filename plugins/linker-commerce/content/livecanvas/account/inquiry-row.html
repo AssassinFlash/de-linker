@@ -1,6 +1,7 @@
 <a class="linker-account-row" data-inquiry="[linker_account_field key='id']" href="[linker_account_field key='url']">
-	<span class="linker-account-row-number">#[linker_account_field key="number"]</span>
-	<span class="linker-account-row-status" data-status="[linker_account_field key='status-slug']">[linker_account_field key="status"]</span>
-	<span class="linker-account-row-date">[linker_account_field key="date"]</span>
+	<span class="linker-account-row-main">
+		<span class="linker-account-row-number">#[linker_account_field key="number"]</span>
+		<span class="linker-account-row-meta"><span class="linker-account-pill" data-status="[linker_account_field key='status-slug']"><span class="linker-account-pill-dot" aria-hidden="true"></span>[linker_account_field key="status"]</span><span class="linker-account-row-sub">[linker_account_field key="date"]</span></span>
+	</span>
 	<span class="linker-account-row-amount">[linker_account_field key="total"]</span>
 </a>

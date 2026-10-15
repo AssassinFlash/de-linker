@@ -3887,6 +3887,109 @@ msgstr ""
 msgid "Reference"
 msgstr "Verwendungszweck"
 
+#: includes/Account/AuthTemplates.php
+msgid "Your partner account"
+msgstr "Ihr Partner-Konto"
+
+#: includes/Account/AuthTemplates.php
+msgid "The workspace for installers, EPCs and distributors."
+msgstr ""
+"Der Arbeitsbereich für Installationsbetriebe, EPC-Unternehmen und "
+"Händler."
+
+#: includes/Account/AuthTemplates.php
+msgid "Net prices and Proforma requests once approved"
+msgstr "Nettopreise und Proforma-Anfragen nach Freischaltung"
+
+#: includes/Account/AuthTemplates.php
+msgid "Every inquiry and document in one place"
+msgstr "Alle Anfragen und Dokumente an einem Ort"
+
+#: includes/Account/AuthTemplates.php
+msgid "We answer inquiries within one working day"
+msgstr "Wir beantworten Anfragen innerhalb eines Arbeitstages"
+
+#: includes/Account/AuthTemplates.php
+msgid "No partner account yet?"
+msgstr "Noch kein Partner-Konto?"
+
+#: includes/Account/AuthTemplates.php
+msgid "Already have a partner account?"
+msgstr "Sie haben bereits ein Partner-Konto?"
+
+#: includes/Account/AuthTemplates.php
+msgid "Use at least 8 characters with a mix of letters, numbers and symbols."
+msgstr ""
+"Verwenden Sie mindestens 8 Zeichen mit Buchstaben, Zahlen und "
+"Sonderzeichen."
+
+#: includes/Account/AuthTemplates.php
+msgid "Choose a new password"
+msgstr "Wählen Sie ein neues Passwort"
+
+#: includes/Account/AuthTemplates.php
+msgid "New password"
+msgstr "Neues Passwort"
+
+#: includes/Account/AuthTemplates.php
+msgid "Re-enter new password"
+msgstr "Neues Passwort wiederholen"
+
+#: includes/Account/AuthTemplates.php
+msgid "The passwords do not match."
+msgstr "Die Passwörter stimmen nicht überein."
+
+#: includes/Account/AuthTemplates.php
+msgid "Your details"
+msgstr "Ihre Angaben"
+
+#: includes/Account/AuthTemplates.php
+msgid "Password change"
+msgstr "Passwort ändern"
+
+#: includes/Account/AuthTemplates.php
+msgid "Leave the password fields blank to keep your current password."
+msgstr ""
+"Lassen Sie die Passwortfelder leer, um Ihr aktuelles Passwort zu "
+"behalten."
+
+#: includes/Account/AuthTemplates.php
+msgid "Current password"
+msgstr "Aktuelles Passwort"
+
+#: includes/Account/AuthTemplates.php
+msgid "Confirm new password"
+msgstr "Neues Passwort bestätigen"
+
+#: includes/Account/AuthTemplates.php
+msgid "Under review"
+msgstr "In Prüfung"
+
+#: includes/Account/AuthTemplates.php
+msgid "Sign in to request your Proforma"
+msgstr "Melden Sie sich an, um Ihre Proformarechnung anzufordern"
+
+#: includes/Account/AuthTemplates.php
+msgid ""
+"Your solution draft is saved. Log in with your partner account to "
+"send the inquiry — no account yet? Register on the account page; the "
+"draft waits for you."
+msgstr ""
+"Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem "
+"Partner-Konto an, um die Anfrage abzusenden — noch kein Konto? "
+"Registrieren Sie sich auf der Kontoseite; Ihr Entwurf wartet dort "
+"auf Sie."
+
+#: includes/Account/AuthTemplates.php
+msgid "You have been signed out."
+msgstr "Sie wurden abgemeldet."
+
+#: includes/Presentation/AccountTemplates.php
+msgid "%s product"
+msgid_plural "%s products"
+msgstr[0] "%s Produkt"
+msgstr[1] "%s Produkte"
+
 #~ msgid "Send enquiry"
 #~ msgstr "Anfrage senden"
 

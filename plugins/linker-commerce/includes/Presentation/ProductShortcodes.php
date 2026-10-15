@@ -1872,12 +1872,16 @@ final class ProductShortcodes {
 		$html .= '<div id="linker-header-account-menu" class="tv-b2b-acct-menu" hidden>';
 		if ( $logged_in ) {
 			// Account\\Menu filters Woo's one menu; every account surface reads it.
+			// The sign-out entry is Woo's nonce-carrying URL (one click, ticket
+			// #184); the plain endpoint URL would ask for confirmation first.
 			foreach ( wc_get_account_menu_items() as $endpoint => $label ) {
-				$html .= '<a class="tv-b2b-acct-link' . ( 'customer-logout' === $endpoint ? ' is-out' : '' ) . '" href="' . esc_url( wc_get_account_endpoint_url( $endpoint ) ) . '">' . esc_html( $label ) . '</a>';
+				$url = 'customer-logout' === $endpoint && function_exists( 'linker_commerce_logout_url' ) ? linker_commerce_logout_url() : esc_url_raw( wc_get_account_endpoint_url( $endpoint ) );
+				$html .= '<a class="tv-b2b-acct-link' . ( 'customer-logout' === $endpoint ? ' is-out' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
 			}
 		} else {
+			// One entry, one address: the same page twice ("Sign in" and "My
+			// account") was the redundancy the redesign removes.
 			$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>';
-			$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'My account', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</div></div>';
 		return $html . $this->language_toggle( 'lnk-lang-toggle--desktop' );

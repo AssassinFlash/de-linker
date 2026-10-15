@@ -331,14 +331,17 @@ final class Shortcodes {
 
 	/**
 	 * The Proforma request: the gate when the draft is empty or the account
-	 * may not send, otherwise WooCommerce's checkout.
+	 * may not send, otherwise WooCommerce's checkout. A guest never reaches
+	 * the checkout — the request belongs to a partner account, so guests read
+	 * the gate: with products in the draft it names the draft, without them
+	 * the Proforma request itself (ticket #184).
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
 	public function checkout( $atts = array() ): string {
 		unset( $atts );
 		$user_id = get_current_user_id();
-		if ( $this->is_empty_request() || ( $user_id > 0 && ! $this->approval->sees_prices( $user_id ) ) ) {
+		if ( $user_id <= 0 || $this->is_empty_request() || ! $this->approval->sees_prices( $user_id ) ) {
 			return $this->gate->html();
 		}
 		return do_shortcode( '[woocommerce_checkout]' );

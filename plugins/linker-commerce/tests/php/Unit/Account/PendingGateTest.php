@@ -93,19 +93,25 @@ final class PendingGateTest extends TestCase {
 	}
 
 	/**
-	 * The account page itself is not redirected: that is where the review page is shown.
+	 * The account page itself is not redirected: there the account template is
+	 * swapped for the review card, and the workplace shell never starts.
 	 */
-	public function test_the_account_page_itself_stays(): void {
+	public function test_the_account_page_swaps_its_template(): void {
 		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
 		$this->signed_in( 5 );
 			WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
 			WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
-			WP_Mock::userFunction( 'remove_all_actions' );
 			// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
-			WP_Mock::expectActionAdded( 'woocommerce_account_content', array( new WP_Mock\Matcher\AnyInstance( PendingGate::class ), 'render' ), 1 );
+			WP_Mock::expectFilterAdded( 'wc_get_template', array( new WP_Mock\Matcher\AnyInstance( PendingGate::class ), 'template' ), 40, 2 );
 
-			( new PendingGate( new Approval() ) )->redirect();
+			$gate = new PendingGate( new Approval() );
+			$gate->redirect();
 			$this->assertConditionsMet();
+
+			// The account page's own template is the review card; every other
+			// template keeps WooCommerce's path.
+			$this->assertStringEndsWith( '/templates/myaccount/auth/pending.php', $gate->template( '/woo/my-account.php', 'myaccount/my-account.php' ) );
+			$this->assertSame( '/woo/orders.php', $gate->template( '/woo/orders.php', 'myaccount/orders.php' ) );
 	}
 
 	/**
@@ -122,30 +128,29 @@ final class PendingGateTest extends TestCase {
 	}
 
 	/**
-	 * The review page replaces the workplace, and names the review rather than the inquiries.
+	 * The review page is one card that names the review rather than the
+	 * inquiries, and its look is auth.css's own (ticket #184).
 	 */
-	public function test_render_replaces_the_workplace(): void {
+	public function test_render_is_the_review_card(): void {
 		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
 		$this->signed_in( 5 );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
-		WP_Mock::userFunction( 'remove_all_actions' );
 
 		ob_start();
 		( new PendingGate( new Approval() ) )->render();
 		$html = (string) ob_get_clean();
 
 			$this->assertStringContainsString( 'Your account is under review', $html );
+			$this->assertStringContainsString( 'Under review', $html );
+			$this->assertStringContainsString( 'linker-gate-badge is-pending', $html );
 			$this->assertStringContainsString( 'https://example.test/products/', $html );
 			$this->assertStringNotContainsString( 'Inquiry received', $html );
-			// The account page is not inside #tv-woo-b2b-checkout, so the
-			// review page carries the classes the account container styles.
-			$this->assertStringContainsString( 'sf-checkout-empty', $html );
-			$this->assertStringContainsString( 'sf-checkout-btn', $html );
+			$this->assertStringContainsString( 'linker-gate-btn is-primary', $html );
 			$this->assertStringNotContainsString( 'style=', $html );
-			$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/storefront.css' );
-			$this->assertStringContainsString( '#container-content-account .sf-checkout-empty', $css );
-			$this->assertStringContainsString( '#container-content-account .sf-checkout-btn', $css );
+			$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/auth.css' );
+			$this->assertStringContainsString( '.linker-gate {', $css );
+			$this->assertStringContainsString( '.linker-gate-badge.is-pending', $css );
 	}
 
 	/**

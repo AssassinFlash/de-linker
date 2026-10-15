@@ -132,6 +132,32 @@ final class AccountTemplatesTest extends TestCase {
 		}
 	}
 
+	/** The inquiry row's own summary: how many products, and the number behind it. */
+	public function test_inquiry_row_carries_the_product_count_and_the_view_label(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_id' )->andReturn( 20 );
+		$order->allows( 'get_order_number' )->andReturn( '20' );
+		$order->allows( 'get_status' )->andReturn( Statuses::RECEIVED );
+		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
+		$order->allows( 'get_date_created' )->andReturn( null );
+		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
+		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
+		$first  = Mockery::mock( \WC_Order_Item_Product::class );
+		$first->allows( 'get_quantity' )->andReturn( 2 );
+		$second = Mockery::mock( \WC_Order_Item_Product::class );
+		$second->allows( 'get_quantity' )->andReturn( 1 );
+		$order->allows( 'get_items' )->andReturn( array( $first, $second ) );
+
+		$row = ( new AccountTemplates() )->inquiry_row( $order );
+
+		$this->assertSame( '3', $row['items-count'] );
+		$this->assertSame( '3 products', $row['items-summary'] );
+		$this->assertSame( 'View inquiry #20', $row['view-aria'] );
+	}
+
 	/** Shortcode attributes cannot choose an arbitrary PHP action. */
 	public function test_arbitrary_hook_is_not_invoked(): void {
 		$this->assertSame( '', ( new AccountTemplates() )->hook( array( 'name' => 'delete_user' ) ) );
@@ -142,7 +168,9 @@ final class AccountTemplatesTest extends TestCase {
 	 * A received inquiry renders neither. The number is the order meta, never invented.
 	 */
 	public function test_proforma_issued_renders_the_download_and_the_number(): void {
+		$this->plain_text();
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction(
 			'add_query_arg',
@@ -180,6 +208,7 @@ final class AccountTemplatesTest extends TestCase {
 		 */
 	public function test_detail_and_documents_both_carry_the_number_and_the_link(): void {
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction(
 			'add_query_arg',
@@ -267,6 +296,17 @@ final class AccountTemplatesTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => static fn ( string $endpoint ): string => 'https://example.test/my-account/' . $endpoint . '/' ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction(
+			'add_query_arg',
+			array(
+				/* Both shapes in use: (array, url) and (key, value, url). */
+				'return' => static function ( $first, $second = '', string $third = '' ): string {
+					return is_array( $first ) ? $second . '?' . http_build_query( $first ) : $third . '?' . $first . '=' . $second;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wc_logout_url', array( 'return' => static fn ( string $redirect ): string => 'https://example.test/logout/?redirect_to=' . rawurlencode( $redirect ) . '&_wpnonce=abc' ) );
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 		$adapter = new AccountTemplates();
 		$this->expand_fields( $adapter );
@@ -276,7 +316,11 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertSame( 2, substr_count( $html, 'linker-account-nav-group' ) );
 		$this->assertStringContainsString( 'Workplace', $html );
 		$this->assertStringContainsString( 'https://example.test/my-account/orders/', $html );
-		$this->assertStringContainsString( 'https://example.test/my-account/customer-logout/', $html );
+		// Sign-out is the nonce-carrying one-click URL, back on the account page
+		// with the state the sign-in card reads. The plain endpoint URL would
+		// ask for confirmation first.
+		$this->assertStringContainsString( 'https://example.test/logout/?redirect_to=https%3A%2F%2Fexample.test%2Fmy-account%2F%3Fsigned-out%3Dtrue&_wpnonce=abc', $html );
+		$this->assertStringNotContainsString( 'https://example.test/my-account/customer-logout/', $html );
 		$this->assertStringContainsString( 'aria-current="page"', $html );
 	}
 
@@ -289,6 +333,7 @@ final class AccountTemplatesTest extends TestCase {
 		$this->plain_text();
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
 		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => static fn ( string $endpoint ): string => 'https://example.test/my-account/' . $endpoint . '/' ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction(

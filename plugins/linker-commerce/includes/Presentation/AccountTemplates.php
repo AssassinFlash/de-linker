@@ -167,16 +167,38 @@ final class AccountTemplates {
 			}
 		} elseif ( 'open-url' === $key ) {
 			$value = add_query_arg( 'inquiry-status', 'open', wc_get_account_endpoint_url( 'orders' ) );
+		} elseif ( 'products-url' === $key ) {
+			$value = (string) get_permalink( (int) wc_get_page_id( 'shop' ) );
+		} elseif ( 'configurator-url' === $key ) {
+			$value = $this->translated_page_url( 'solution-configurator' );
 		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
 			$value = ( 'open-current' === $key ? $this->open_only() : '' === $this->selected_status() ) ? 'page' : 'false';
 		}
-		if ( 'icon' === $key ) {
-			return (string) $value; // Fixed SVG from nav_icon() below; never request data.
-		}
-		if ( in_array( $key, array( 'total', 'items', 'nonce', 'tiles', 'rows' ), true ) ) {
+		if ( in_array( $key, array( 'icon', 'total', 'items', 'nonce', 'tiles', 'rows' ), true ) ) {
+			// 'icon' is fixed markup from nav_icon()/document_icon(), never request
+			// data; the allowlist carries the SVG elements either way.
 			return 'nonce' === $key ? (string) $value : wp_kses( (string) $value, self::allowed_html() );
 		}
-		return in_array( $key, array( 'url', 'open-url', 'report' ), true ) ? esc_url( (string) $value ) : esc_attr( (string) $value );
+		return in_array( $key, array( 'url', 'open-url', 'products-url', 'configurator-url', 'report' ), true ) ? esc_url( (string) $value ) : esc_attr( (string) $value );
+	}
+
+	/**
+	 * The current language's address of one of the site's own pages, resolved
+	 * through Polylang's own translation link like the header's own links are.
+	 * Without the translation the page's own path stands.
+	 *
+	 * @param string $slug The page's path.
+	 */
+	private function translated_page_url( string $slug ): string {
+		$page = get_page_by_path( $slug );
+		if ( $page instanceof \WP_Post && function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
+			$twin = (int) pll_get_post( (int) $page->ID, 'de' );
+			$link = $twin > 0 ? get_permalink( $twin ) : false;
+			if ( is_string( $link ) && '' !== $link ) {
+				return $link;
+			}
+		}
+		return (string) home_url( '/' . $slug . '/' );
 	}
 
 	/**
@@ -247,7 +269,7 @@ final class AccountTemplates {
 		}
 		$items = wc_get_account_menu_items();
 		$html  = '';
-		if ( in_array( $atts['type'] ?? '', array( 'mobile', 'shortcuts' ), true ) ) {
+		if ( 'mobile' === ( $atts['type'] ?? '' ) ) {
 			foreach ( array( 'dashboard', 'orders', 'documents', 'edit-account' ) as $endpoint ) {
 				if ( isset( $items[ $endpoint ] ) ) {
 					$current = 'orders' === $endpoint && is_wc_endpoint_url( 'view-order' ) ? 'page' : $this->endpoint_current( $endpoint );
@@ -257,6 +279,8 @@ final class AccountTemplates {
 					$html .= $this->fragment(
 						'nav-item',
 						array(
+							// The tab bar's four entries carry no sign-out; that
+							// lives in the sidebar and the header menu.
 							'url'     => wc_get_account_endpoint_url( $endpoint ),
 							'label'   => 'edit-account' === $endpoint ? __( 'Account', 'linker-commerce' ) : $items[ $endpoint ],
 							'current' => $current,
@@ -265,7 +289,7 @@ final class AccountTemplates {
 					);
 				}
 			}
-			return $this->fragment( 'shortcuts' === $atts['type'] ? 'shortcuts' : 'mobile-nav', array( 'items' => $html ) );
+			return $this->fragment( 'mobile-nav', array( 'items' => $html ) );
 		}
 		foreach ( $this->nav_groups() as $group => $endpoints ) {
 			$links = '';
@@ -276,7 +300,7 @@ final class AccountTemplates {
 				$links .= $this->fragment(
 					'nav-item',
 					array(
-						'url'     => wc_get_account_endpoint_url( $endpoint ),
+						'url'     => 'customer-logout' === $endpoint ? linker_commerce_logout_url() : wc_get_account_endpoint_url( $endpoint ),
 						'label'   => $items[ $endpoint ],
 						'current' => $this->endpoint_current( $endpoint ),
 						'icon'    => $this->nav_icon( $endpoint ),
@@ -451,6 +475,8 @@ final class AccountTemplates {
 			'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
 			'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
 			'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
+			'browse'          => __( 'Browse products', 'linker-commerce' ),
+			'configurator'    => __( 'Open the Solution Configurator', 'linker-commerce' ),
 			'empty-documents' => __( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
 			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
 			'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
@@ -483,15 +509,6 @@ final class AccountTemplates {
 					}
 				}
 				return '' === $html ? $this->fragment( 'empty-inquiries' ) : $html;
-			case 'actions':
-				$order = $this->row['order'] ?? null;
-				if ( $order instanceof WC_Order ) {
-					foreach ( wc_get_account_orders_actions( $order ) as $kind => $action ) {
-						$action['kind'] = $kind;
-						$html          .= $this->fragment( 'action', $action );
-					}
-				}
-				return $html;
 			case 'summary':
 				$order = $this->args['order'] ?? null;
 				// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Woo's per-order meta capability.
@@ -512,14 +529,25 @@ final class AccountTemplates {
 			case 'stages':
 				$order = $this->row['order'] ?? null;
 				if ( $order instanceof WC_Order ) {
-					// Only the stored status is current; no invented transition history.
+					// Only the stored status is current; no invented transition
+					// history. A stage is reached when the record says so: the
+					// inquiry arrived, its Proforma number is stored, its status
+					// is completed or it was cancelled.
+					$reached = array(
+						Statuses::RECEIVED => true,
+						Statuses::PROFORMA => InquiryList::has_proforma( $order ),
+						'completed'        => $order->has_status( 'completed' ),
+						'cancelled'        => $order->has_status( 'cancelled' ),
+					);
 					foreach ( $this->statuses() as $status ) {
-						$html .= $this->fragment(
+						$current = $order->has_status( $status );
+						$html   .= $this->fragment(
 							'stage',
 							array(
 								'label'   => wc_get_order_status_name( $status ),
-								'current' => $order->has_status( $status ) ? 'step' : 'false',
+								'current' => $current ? 'step' : 'false',
 								'status'  => $status,
+								'state'   => $current ? 'now' : ( ( $reached[ $status ] ?? false ) ? 'done' : 'todo' ),
 							)
 						);
 					}
@@ -527,8 +555,7 @@ final class AccountTemplates {
 				return $html;
 			case 'documents':
 				foreach ( $this->args['documents'] ?? array() as $document ) {
-					$document['date'] = wp_date( LocaleFormat::date_format(), $document['date'] );
-					$html            .= $this->fragment( 'document-row', $document );
+					$html .= $this->fragment( 'document-row', $this->document_row( $document ) );
 				}
 				return '' === $html ? $this->fragment( 'empty-documents' ) : $html;
 			case 'solutions':
@@ -628,8 +655,7 @@ final class AccountTemplates {
 		}
 		$documents = '';
 		foreach ( array_slice( $this->documents()->for_customer( $customer ), 0, 3 ) as $document ) {
-			$document['date'] = wp_date( LocaleFormat::date_format(), $document['date'] );
-			$documents       .= $this->fragment( 'document-row', $document );
+			$documents .= $this->fragment( 'document-row', $this->document_row( $document ) );
 		}
 		return $this->fragment( 'tiles', array( 'tiles' => $tiles ) )
 			. $this->fragment(
@@ -754,29 +780,73 @@ final class AccountTemplates {
 	 * @return array<string, mixed>
 	 */
 	private function order_row( WC_Order $order ): array {
-		$items = '';
+		$count = 0;
 		foreach ( $order->get_items() as $item ) {
-			$items .= $this->fragment(
-				'product-line',
-				array(
-					'quantity' => $item->get_quantity(),
-					'name'     => $item->get_name(),
-				)
-			);
+			$count += $item->get_quantity();
 		}
 			return array(
-				'order'           => $order,
-				'id'              => $order->get_id(),
-				'number'          => $order->get_order_number(),
-				'status'          => wc_get_order_status_name( $order->get_status() ),
-				'status-slug'     => $order->get_status(),
-				'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
-				'total'           => $order->get_formatted_order_total(),
-				'items'           => $items,
-				'url'             => $order->get_view_order_url(),
-				'proforma'        => InquiryList::has_proforma( $order ) ? '1' : '',
+				'order'          => $order,
+				'id'             => $order->get_id(),
+				'number'         => $order->get_order_number(),
+				'status'         => wc_get_order_status_name( $order->get_status() ),
+				'status-slug'    => $order->get_status(),
+				'date'           => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
+				'total'          => $order->get_formatted_order_total(),
+				'url'            => $order->get_view_order_url(),
+				'items-count'    => (string) $count,
+				'items-summary'  => self::items_summary( $count ),
+				/* translators: %s: inquiry number. */
+				'view-aria'      => sprintf( __( 'View inquiry %s', 'linker-commerce' ), '#' . $order->get_order_number() ),
+				'proforma'       => InquiryList::has_proforma( $order ) ? '1' : '',
 				'proforma_number' => InquiryList::proforma_number( $order ),
-				'proforma_url'    => InquiryList::has_proforma( $order ) ? DocumentDownload::proforma_url( $order ) : '',
+				'proforma_url'   => InquiryList::has_proforma( $order ) ? DocumentDownload::proforma_url( $order ) : '',
 			);
+	}
+
+	/**
+	 * How many products an inquiry holds, as the list reads it: "3 products",
+	 * "1 product".
+	 *
+	 * @param int $count The inquiry's product quantity.
+	 */
+	private static function items_summary( int $count ): string {
+		return sprintf(
+			/* translators: %s: number of products in the inquiry. */
+			_n( '%s product', '%s products', $count, 'linker-commerce' ),
+			number_format_i18n( $count )
+		);
+	}
+
+	/**
+	 * A document row: the stored values plus the date and the icon its kind
+	 * carries. The Documents assembly reads the same rows for the Documents
+	 * page and for the overview's entry, so the two can never disagree.
+	 *
+	 * @param array{title: string, date: int, url: string, kind?: string} $document Document.
+	 * @return array<string, mixed>
+	 */
+	private function document_row( array $document ): array {
+		$document['date'] = wp_date( LocaleFormat::date_format(), $document['date'] );
+		$document['icon'] = self::document_icon( (string) ( $document['kind'] ?? '' ) );
+		return $document;
+	}
+
+	/**
+	 * The document's own mark: the receipt for a Proforma invoice, the report
+	 * sheet for a design report, a download sheet when the kind is not one of
+	 * the two.
+	 *
+	 * @param string $kind proforma or report.
+	 */
+	private static function document_icon( string $kind ): string {
+		$paths = array(
+			'proforma' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
+			'report'   => '<path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 15l3-3 2 2 3-4"/>',
+		);
+		$path  = $paths[ $kind ] ?? '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>';
+		return sprintf(
+			'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%s</svg>',
+			$path // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed markup from the map above.
+		);
 	}
 }

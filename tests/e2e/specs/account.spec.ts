@@ -66,10 +66,11 @@ async function signIn(
 	await page.waitForLoadState('load');
 	// The session settles on the rendered page: the account menu carries the
 	// sign-out link once WordPress has the cookie (its own row, hidden until
-	// the menu opens — the count is the signal, not its visibility).
+	// the menu opens — the count is the signal, not its visibility). The entry
+	// is the one-click URL (ticket #184): WordPress's own logout action with
+	// its nonce, not the endpoint URL that asks for confirmation first.
 	await page.waitForFunction(
-		() =>
-			document.querySelectorAll('a[href*="customer-logout"]').length >= 1,
+		() => document.querySelectorAll('a[href*="action=logout"]').length >= 1,
 		null,
 		{ timeout: 30_000 }
 	);
@@ -176,7 +177,7 @@ test('en: an approved partner saves account details and company, and signs out',
 	const login = createCustomer(Date.now(), 'en');
 	await signIn(page, login, PASSWORD);
 	await expect(
-		page.locator('a[href*="customer-logout"]'),
+		page.locator('a[href*="action=logout"]'),
 		'the customer is signed in'
 	).not.toHaveCount(0);
 
@@ -225,17 +226,22 @@ test('en: an approved partner saves account details and company, and signs out',
 	);
 	await shot(page, 'en-company-saved');
 
-	// Sign out returns to the form — through the menu's own link, which
-	// carries the nonce WooCommerce's endpoint requires.
+	// Sign out is one click (ticket #184): the menu's own link carries
+	// WordPress's logout nonce, the sign-in form opens with the signed-out
+	// notice, and no confirmation page stands in between.
 	const logout = await page
-		.locator('a[href*="customer-logout"]')
+		.locator('a[href*="action=logout"]')
 		.first()
 		.getAttribute('href');
-	await page.goto(logout ?? url('/my-account/customer-logout/'));
+	await page.goto(logout ?? url('/my-account/'));
 	await page.waitForLoadState('load');
 	await expect(
 		page.locator('#username'),
 		'the sign-out lands back on the form'
+	).toBeVisible();
+	await expect(
+		page.locator('.woocommerce-info'),
+		'the page says the visitor has been signed out'
 	).toBeVisible();
 	await shot(page, 'en-signed-out');
 });
@@ -384,7 +390,7 @@ test('en: a restricted account signs in, keeps the workplace and reads its gate 
 
 	await signIn(page, login, PASSWORD);
 	await expect(
-		page.locator('a[href*="customer-logout"]'),
+		page.locator('a[href*="action=logout"]'),
 		'a restricted account still signs in'
 	).not.toHaveCount(0);
 	await expect(
@@ -444,7 +450,7 @@ test('en: a rejected account cannot sign in and reads the refusal', async ({
 		'the rejected account stays on the form'
 	).toBeVisible();
 	await expect(
-		page.locator('a[href*="customer-logout"]'),
+		page.locator('a[href*="action=logout"]'),
 		'no session was opened'
 	).toHaveCount(0);
 	await shot(page, 'en-rejected-sign-in');

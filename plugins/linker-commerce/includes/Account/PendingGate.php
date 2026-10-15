@@ -19,8 +19,18 @@ use Linker\Commerce\Registration\Approval;
  * is written. A rejected account never reaches this page: Approval keeps it
  * out at sign-in. A restricted account keeps the workplace and reads its own
  * gate on the Proforma request.
+ *
+ * The page is replaced as a whole (ticket #184): the account template is
+ * swapped for the review card, so the workplace shell — sidebar, heading and
+ * every endpoint hook — never renders for this account. An endpoint request
+ * is sent back to the account page.
  */
 final class PendingGate {
+
+	/**
+	 * Woo template this gate replaces.
+	 */
+	private const ACCOUNT_TEMPLATE = 'myaccount/my-account.php';
 
 	/**
 	 * Sets up the gate.
@@ -45,11 +55,9 @@ final class PendingGate {
 
 	/**
 	 * Holds a pending account on the review page. Runs on template_redirect,
-	 * before any account template prints. An endpoint request is sent back to
-	 * the account page. On the account page itself the workplace hooks are
-	 * cleared — an older account view prints the inquiries from the dashboard
-	 * hook, which fires before the account content — and the review page is
-	 * printed in their place.
+	 * before any account template prints: an endpoint request is sent back to
+	 * the account page, and the account page's own template is swapped for
+	 * the review card, so the workplace never starts rendering.
 	 */
 	public function redirect(): void {
 		if ( ! function_exists( 'is_account_page' ) || ! \is_account_page() || ! $this->holds() ) {
@@ -59,32 +67,39 @@ final class PendingGate {
 			\wp_safe_redirect( \wc_get_page_permalink( 'myaccount' ) );
 			exit;
 		}
-		$this->close_workplace();
-		\add_action( 'woocommerce_account_content', array( $this, 'render' ), 1 );
+		\add_filter( 'wc_get_template', array( $this, 'template' ), 40, 2 );
 	}
 
 	/**
-	 * The review page. The workplace hooks were already cleared, so this is
-	 * the only account content a pending account reads.
+	 * The account page's own template becomes the review card: the workplace
+	 * shell (AccountTemplates, priority 20) never gets the request. Woo's
+	 * other templates keep their path.
+	 *
+	 * @param string $path Located template.
+	 * @param string $name Woo template name.
+	 */
+	public function template( string $path, string $name ): string {
+		return self::ACCOUNT_TEMPLATE === $name
+			? dirname( __DIR__, 2 ) . '/templates/myaccount/auth/pending.php'
+			: $path;
+	}
+
+	/**
+	 * Called by the account template Woo already loaded. No markup is produced
+	 * outside that template.
+	 */
+	public static function output(): void {
+		( new self() )->render();
+	}
+
+	/**
+	 * The review page: LoginGate's one pending card.
 	 */
 	public function render(): void {
 		if ( ! $this->holds() ) {
 			return;
 		}
-		$products = function_exists( 'wc_get_page_id' ) ? (string) \get_permalink( (int) \wc_get_page_id( 'shop' ) ) : '';
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- LoginGate escapes every value it prints.
-		echo $this->login->pending_html( $products );
-	}
-
-	/**
-	 * Stops the account workplace printing for a pending account. An approved
-	 * account never enters here, so its workplace stays.
-	 */
-	public function close_workplace(): void {
-		if ( ! $this->holds() ) {
-			return;
-		}
-		\remove_all_actions( 'woocommerce_account_content' );
-		\remove_all_actions( 'woocommerce_account_dashboard' );
+		echo $this->login->pending_html();
 	}
 }

@@ -47,6 +47,7 @@ final class Documents {
 				'title' => sprintf( __( 'Proforma invoice %1$s (inquiry #%2$s)', 'linker-commerce' ), InquiryList::proforma_number( $order ), $order->get_order_number() ),
 				'date'  => self::issued_at( $order ),
 				'url'   => DocumentDownload::proforma_url( $order ),
+				'kind'  => 'proforma',
 			);
 		}
 		foreach ( $this->solutions->for_customer( $customer_id ) as $solution ) {
@@ -57,6 +58,7 @@ final class Documents {
 					'title' => sprintf( __( 'Design report: %s', 'linker-commerce' ), $solution->post_title ),
 					'date'  => (int) get_post_timestamp( $solution ),
 					'url'   => DocumentDownload::report_url( $solution->ID ),
+					'kind'  => 'report',
 				);
 			}
 		}

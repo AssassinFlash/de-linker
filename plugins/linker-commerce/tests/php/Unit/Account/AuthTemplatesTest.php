@@ -22,21 +22,46 @@ use WP_Mock;
  */
 final class AuthTemplatesTest extends TestCase {
 
-	/** The template filter is registered after AccountTemplates' (20). */
-	public function test_register_hooks_the_template_filter(): void {
+	/** The template filter (after AccountTemplates' 20) and the sign-out notice. */
+	public function test_register_hooks_the_template_filter_and_the_notice(): void {
 		$auth = new AuthTemplates();
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
+		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
 		$auth->register();
 		$this->assertConditionsMet();
 	}
 
-	/** A guest on the account page gets the plugin's sign-in and lost-password cards. */
+	/**
+	 * A guest on the account page gets the plugin's own cards: sign-in,
+	 * register, the lost-password request, its confirmation and the new-password
+	 * form the reset link lands on (ticket #184).
+	 */
 	public function test_guest_account_page_uses_the_plugin_templates(): void {
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		$auth   = new AuthTemplates();
+		$mapped = array(
+			'myaccount/form-login.php'                 => '/templates/myaccount/auth/form-login.php',
+			'myaccount/form-lost-password.php'         => '/templates/myaccount/auth/form-lost-password.php',
+			'myaccount/lost-password-confirmation.php' => '/templates/myaccount/auth/lost-password-confirmation.php',
+			'myaccount/form-reset-password.php'        => '/templates/myaccount/auth/form-reset-password.php',
+		);
+		foreach ( $mapped as $name => $path ) {
+			$this->assertStringEndsWith( $path, $auth->template( '/woo/native.php', $name ) );
+		}
+	}
+
+	/** The signed-in account-details form is the plugin's own two-panel layout. */
+	public function test_signed_in_account_details_uses_the_plugin_template(): void {
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		$auth = new AuthTemplates();
-		$this->assertStringEndsWith( '/templates/myaccount/auth/form-login.php', $auth->template( '/woo/form-login.php', 'myaccount/form-login.php' ) );
-		$this->assertStringEndsWith( '/templates/myaccount/auth/form-lost-password.php', $auth->template( '/woo/form-lost-password.php', 'myaccount/form-lost-password.php' ) );
+		$this->assertStringEndsWith(
+			'/templates/myaccount/account/form-edit-account.php',
+			$auth->template( '/woo/native.php', 'myaccount/form-edit-account.php' )
+		);
+		// The guest cards are not for a signed-in request.
+		$this->assertSame( '/woo/native.php', $auth->template( '/woo/native.php', 'myaccount/form-login.php' ) );
 	}
 
 	/** Signed-in requests, other pages and other templates keep Woo's path. */
@@ -54,6 +79,53 @@ final class AuthTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		$auth = new AuthTemplates();
 		$this->assertSame( '/woo/form-login.php', $auth->template( '/woo/form-login.php', 'myaccount/form-login.php' ) );
+	}
+
+	/**
+	 * The one-click sign-out lands with `signed-out`: the account page adds
+	 * WooCommerce's own notice, once, and only for a guest.
+	 */
+	public function test_the_sign_out_notice_lands_on_the_guest_account_page(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+
+		$_GET['signed-out'] = 'true';
+		try {
+			WP_Mock::userFunction(
+				'wc_add_notice',
+				array(
+					'args'  => array( 'You have been signed out.', 'notice' ),
+					'times' => 1,
+				)
+			);
+			( new AuthTemplates() )->signed_out_notice();
+		} finally {
+			unset( $_GET['signed-out'] );
+		}
+
+		// Without the state, nothing is added.
+		WP_Mock::userFunction( 'wc_add_notice', array( 'times' => 0 ) );
+		( new AuthTemplates() )->signed_out_notice();
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A signed-in request never reads the sign-out notice: the card it belongs
+	 * to is not on that page.
+	 */
+	public function test_a_signed_in_request_gets_no_sign_out_notice(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		$_GET['signed-out'] = 'true';
+		try {
+			WP_Mock::userFunction( 'wc_add_notice', array( 'times' => 0 ) );
+			( new AuthTemplates() )->signed_out_notice();
+		} finally {
+			unset( $_GET['signed-out'] );
+		}
+		$this->assertConditionsMet();
 	}
 
 	/** The split puts the company fields before the first-name row and the rest after. */

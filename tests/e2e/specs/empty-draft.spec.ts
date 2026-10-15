@@ -83,7 +83,7 @@ for (const [locale, pageCopy] of Object.entries(DRAFTS)) {
 }
 
 for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
-	test(`${locale}: an empty Proforma request is the left column with its Genie pill`, async ({
+	test(`${locale}: an empty Proforma request is the gate card with its Genie pill`, async ({
 		page,
 	}) => {
 		await page.context().clearCookies();
@@ -92,11 +92,11 @@ for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
 		const body = page.locator('body');
 		await expect(body).not.toContainText('Invalid condition function');
 		await expect(
-			page.locator('.sf-checkout-empty'),
-			'the gate column, not a centred card'
+			page.locator('.linker-gate'),
+			"the request gate's own card"
 		).toBeVisible();
 		await expect(page.locator('h1')).toHaveText(pageCopy.title);
-		const pill = page.locator('.sf-checkout-genie__pill');
+		const pill = page.locator('.linker-gate-genie-pill');
 		await expect(
 			pill,
 			'the dark pill under the title, in the site’s current name'

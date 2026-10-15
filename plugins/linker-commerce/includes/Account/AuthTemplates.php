@@ -11,41 +11,87 @@ namespace Linker\Commerce\Account;
 
 /**
  * Woo owns these forms — every field, nonce, hook and validation stays exactly
- * where Woo and the registration module put it. This class only points the two
- * guest templates at this plugin's copies, whose markup arranges the same form
- * into a centred card, and the register form's own fields (printed by
+ * where Woo and the registration module put it. This class points the guest
+ * templates at this plugin's copies, whose markup arranges the same form into
+ * the account's card, and the register form's own fields (printed by
  * Registration\Fields on woocommerce_register_form_start) into the three steps
  * the account sign-up reads: company, contact and address, sign-in details.
+ * The reset form is included (ticket #184): the live chain landed on Woo's
+ * bare markup, the one page of the chain without a card.
  */
 final class AuthTemplates {
 
 	/**
-	 * Woo template to this plugin's copy.
+	 * Woo template to this plugin's copy. The guest forms are the account's
+	 * sign-in chain; the account-details form is WooCommerce's own signed-in
+	 * form, which the redesign lays out as two panels (ticket #184).
 	 *
 	 * @var array<string, string>
 	 */
 	private const FILES = array(
-		'myaccount/form-login.php'         => 'auth/form-login.php',
-		'myaccount/form-lost-password.php' => 'auth/form-lost-password.php',
+		'myaccount/form-login.php'                 => 'auth/form-login.php',
+		'myaccount/form-lost-password.php'         => 'auth/form-lost-password.php',
+		'myaccount/lost-password-confirmation.php' => 'auth/lost-password-confirmation.php',
+		'myaccount/form-reset-password.php'        => 'auth/form-reset-password.php',
+		'myaccount/form-edit-account.php'          => 'account/form-edit-account.php',
 	);
 
 	/**
-	 * Maps the guest templates. Runs after AccountTemplates (20), which passes
-	 * guests through, so the two adapters never compete for a request.
+	 * The templates only a guest may see; the others are the signed-in
+	 * account's own forms.
+	 *
+	 * @var list<string>
+	 */
+	private const GUEST_ONLY = array(
+		'myaccount/form-login.php',
+		'myaccount/form-lost-password.php',
+		'myaccount/lost-password-confirmation.php',
+		'myaccount/form-reset-password.php',
+	);
+
+	/**
+	 * Maps the account's own templates. Runs after AccountTemplates (20),
+	 * which passes the account forms through, so the two adapters never
+	 * compete for a request.
 	 */
 	public function register(): void {
 		add_filter( 'wc_get_template', array( $this, 'template' ), 30, 2 );
+		add_action( 'template_redirect', array( $this, 'signed_out_notice' ) );
 	}
 
 	/**
-	 * Only the guest account page; signed-in requests and every other template
-	 * (checkout, emails, password reset with key) keep Woo's path.
+	 * The one-click sign-out lands back on the account page with `signed-out`
+	 * and reads one notice there (ticket #184, owner ruling 2026-10-15). The
+	 * notice is Woo's own, so it is printed and cleared the way every other
+	 * account notice is.
+	 */
+	public function signed_out_notice(): void {
+		if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || is_user_logged_in() ) {
+			return;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only UI state, set by the sign-out redirect.
+		if ( ! isset( $_GET['signed-out'] ) ) {
+			return;
+		}
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own notice API.
+		wc_add_notice( __( 'You have been signed out.', 'linker-commerce' ), 'notice' );
+	}
+
+	/**
+	 * The account page's own templates: the guest ones for a guest, the
+	 * account-details form for a signed-in account. Every other template
+	 * (checkout, emails, the endpoint content Woo routes elsewhere) keeps
+	 * Woo's path.
 	 *
 	 * @param string $path Located template.
 	 * @param string $name Woo template name.
 	 */
 	public function template( string $path, string $name ): string {
-		if ( ! isset( self::FILES[ $name ] ) || ! function_exists( 'is_account_page' ) || ! is_account_page() || is_user_logged_in() ) {
+		if ( ! isset( self::FILES[ $name ] ) || ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
+			return $path;
+		}
+		$guest_only = in_array( $name, self::GUEST_ONLY, true );
+		if ( is_user_logged_in() === $guest_only ) {
 			return $path;
 		}
 		return dirname( __DIR__, 2 ) . '/templates/myaccount/' . self::FILES[ $name ];
