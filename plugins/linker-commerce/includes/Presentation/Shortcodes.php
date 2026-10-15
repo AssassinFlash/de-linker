@@ -49,15 +49,8 @@ final class Shortcodes {
 	 * chrome's, the product list's invitation) resolves its target here.
 	 */
 	public static function contact_page_url(): string {
-		$page = get_page_by_path( 'contact' );
-		$id   = $page instanceof \WP_Post ? (int) $page->ID : 0;
-		if ( $id > 0 && function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = (int) pll_get_post( $id, 'de' );
-			if ( $twin > 0 ) {
-				$id = $twin;
-			}
-		}
-		return $id > 0 ? (string) get_permalink( $id ) : home_url( '/contact/' );
+		$translated = PageUrls::translated( 'contact' );
+		return '' === $translated ? (string) home_url( '/contact/' ) : $translated;
 	}
 
 	/**

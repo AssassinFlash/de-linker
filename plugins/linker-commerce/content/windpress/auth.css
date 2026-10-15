@@ -176,9 +176,22 @@
 .linker-gate .woocommerce-info,
 .linker-account .woocommerce-info { background: var(--proto-teal-50); border-color: var(--proto-teal-100); color: var(--proto-teal-800); }
 
+/* WooCommerce's own leading mark is absolutely placed at 1.5em/1em for the
+ * padding box of its stock notice (1em 2em 1em 3.5em). The chain's notices are
+ * flex rows with their own 14px/16px padding, so the mark is brought back into
+ * the flow as the row's first item — the prototype's icon-beside-text shape —
+ * instead of landing on top of the first word. */
 .linker-auth :is(.woocommerce-error, .woocommerce-message, .woocommerce-info)::before,
 .linker-gate :is(.woocommerce-error, .woocommerce-message, .woocommerce-info)::before,
-.linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info)::before { color: currentColor; }
+.linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info)::before {
+	position: static;
+	display: block;
+	flex: none;
+	margin: 1px 0 0;
+	font-size: 18px;
+	line-height: 1;
+	color: currentColor;
+}
 
 .linker-auth :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) ul,
 .linker-gate :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) ul,
@@ -208,9 +221,19 @@
 	margin: 0 auto;
 }
 
+/* One card and the brand panel that belongs to it. Stacked on the phone (the
+ * panel is hidden there), a two-column frame from 1080px up: the panel takes
+ * the card's own height and no other card's. */
+.linker-auth-unit {
+	display: grid;
+	gap: 20px;
+	min-width: 0;
+}
+
 @media (min-width: 1080px) {
-	.linker-auth-inner {
-		max-width: 1060px;
+	.linker-auth-inner { max-width: 1060px; }
+
+	.linker-auth-unit {
 		grid-template-columns: 460px minmax(0, 1fr);
 		gap: 0;
 		align-items: stretch;
@@ -219,15 +242,11 @@
 		box-shadow: var(--acct-shadow-card);
 	}
 
-	.linker-auth-inner > .linker-auth-card {
+	.linker-auth-unit > .linker-auth-card {
 		border: 0;
 		border-radius: 0;
 		box-shadow: none;
 	}
-
-	/* The two cards of the guest page share the second column; the brand panel
-	 * spans them both. */
-	.linker-auth-brand { grid-row: 1 / span 2; }
 
 	/* A page with one card (lost password, the new password, the confirmation)
 	 * keeps the centred card at every width, with no brand panel. */
@@ -573,7 +592,25 @@
 
 .linker-gate-body p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--acct-muted); }
 
-.linker-gate-body .notice { margin-bottom: 0; }
+/* The gate's own notice — the restricted account's reason (ticket #184). It is
+ * our element, so it carries the frame and the palette Woo's notices get; the
+ * body grid already spaces the card's lines, so it needs no own margin. */
+.linker-gate .notice {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	padding: 14px 16px;
+	border: 1px solid transparent;
+	border-radius: var(--acct-r-md);
+	font-size: 14px;
+	line-height: 1.45;
+}
+
+.linker-gate .notice-info { background: var(--proto-teal-50); border-color: var(--proto-teal-100); color: var(--proto-teal-800); }
+
+.linker-gate .notice svg { flex: none; margin-top: 1px; }
+
+.linker-gate .notice strong { font-weight: 600; }
 
 .linker-gate-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
 

@@ -812,3 +812,21 @@ body.woocommerce-account.logged-in .linker-account #container-content-account {
  * meter; its error suffix stays on the meter's own label. */
 .linker-auth .woocommerce-password-hint,
 .linker-account .woocommerce-password-hint { display: none; }
+
+/* ── The contact person card ──────────────────────────────────────────── */
+/* The workspace's third panel on the overview (ticket #184, the prototype's
+ * contact card): the heading's own rule, then one line with the letter mark.
+ * The body keeps the panel's own padding rather than the rows' tighter one. */
+.linker-account .linker-account-contact .linker-account-panel-body { padding: 22px; }
+
+.linker-account .linker-account-contact-line {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	font-size: 15px;
+	font-weight: 500;
+	color: var(--acct-ink);
+}
+
+.linker-account .linker-account-contact-line svg { flex: none; color: var(--proto-teal-600); }

@@ -153,8 +153,8 @@ final class AccountTemplatesTest extends TestCase {
 
 		$row = ( new AccountTemplates() )->inquiry_row( $order );
 
-		$this->assertSame( '3', $row['items-count'] );
 		$this->assertSame( '3 products', $row['items-summary'] );
+		$this->assertArrayNotHasKey( 'items-count', $row, 'The row carries the summary the list shows, not a second count nothing reads.' );
 		$this->assertSame( 'View inquiry #20', $row['view-aria'] );
 	}
 

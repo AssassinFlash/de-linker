@@ -45,7 +45,7 @@ final class ContactCardTest extends TestCase {
 		ob_start();
 		( new ContactCard( new Options() ) )->render();
 
-		$this->assertSame( '<section class="linker-contact-card" aria-labelledby="linker-contact-card-title"><h2 id="linker-contact-card-title">Your contact person</h2><p><strong>Anna Muster</strong><br><a href="mailto:anna@de-linker.com">anna@de-linker.com</a><br><a href="tel:+493920312345">+49 39203 123-45</a></p></section>', ob_get_clean() );
+		$this->assertSame( '<section class="linker-account-panel linker-account-contact" aria-labelledby="linker-contact-card-title"><header class="linker-account-panel-heading"><h2 id="linker-contact-card-title">Your contact person</h2></header><div class="linker-account-panel-body"><p class="linker-account-contact-line"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><strong>Anna Muster</strong><br><a href="mailto:anna@de-linker.com">anna@de-linker.com</a><br><a href="tel:+493920312345">+49 39203 123-45</a></span></p></div></section>', ob_get_clean() );
 	}
 
 	/**
@@ -57,6 +57,6 @@ final class ContactCardTest extends TestCase {
 		ob_start();
 		( new ContactCard( new Options() ) )->render();
 
-		$this->assertStringContainsString( '<p><a href="mailto:sales@de-linker.com">sales@de-linker.com</a></p>', (string) ob_get_clean() );
+		$this->assertStringContainsString( '<p class="linker-account-contact-line"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><a href="mailto:sales@de-linker.com">sales@de-linker.com</a></span></p>', (string) ob_get_clean() );
 	}
 }

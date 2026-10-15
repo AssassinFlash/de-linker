@@ -81,6 +81,22 @@ test('two different passwords keep the form on the page and name the mismatch',(
  assert.equal(form.querySelector('button[type="submit"]').classList.contains('is-loading'),false);
 });
 
+test('a blocked mismatch clears the disabled state WooCommerce\'s own script leaves',async()=>{
+ const win=resetForm();
+ const form=win.document.querySelector('form');
+ const button=form.querySelector('button[type="submit"]');
+ // WooCommerce's own frontend/lost-password.js disables the reset form's
+ // button on every submit, assuming the page is leaving.
+ form.addEventListener('submit',()=>{button.disabled=true;});
+ form.querySelector('#password_1').value='Muster-Solar-2026';
+ form.querySelector('#password_2').value='Muster-Solar-2025';
+ const event=submit(form);
+ assert.equal(event.defaultPrevented,true);
+ assert.equal(button.disabled,true,'the third-party handler ran after this file');
+ await new Promise((resolve)=>win.setTimeout(resolve,0));
+ assert.equal(button.disabled,false,'the corrected attempt can post again');
+});
+
 test('the mismatch line follows the typing and clears when they agree',()=>{
  const win=resetForm();
  const first=win.document.querySelector('#password_1');

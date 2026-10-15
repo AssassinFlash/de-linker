@@ -2151,19 +2151,7 @@ final class ProductShortcodes {
 	 * does not exist.
 	 */
 	public static function compare_page_url(): string {
-		$page = get_page_by_path( 'compare-products' );
-		if ( ! $page instanceof \WP_Post ) {
-			return '';
-		}
-		$id = (int) $page->ID;
-		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = (int) pll_get_post( $id, 'de' );
-			if ( $twin > 0 ) {
-				$id = $twin;
-			}
-		}
-		$link = get_permalink( $id );
-		return \is_string( $link ) ? $link : '';
+		return PageUrls::translated( 'compare-products' );
 	}
 
 	/**
@@ -2171,19 +2159,7 @@ final class ProductShortcodes {
 	 * when the page does not exist (the sidebar tool card links here).
 	 */
 	public static function configurator_page_url(): string {
-		$page = get_page_by_path( 'solution-configurator' );
-		if ( ! $page instanceof \WP_Post ) {
-			return '';
-		}
-		$id = (int) $page->ID;
-		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = (int) pll_get_post( $id, 'de' );
-			if ( $twin > 0 ) {
-				$id = $twin;
-			}
-		}
-		$link = get_permalink( $id );
-		return \is_string( $link ) ? $link : '';
+		return PageUrls::translated( 'solution-configurator' );
 	}
 
 	/**

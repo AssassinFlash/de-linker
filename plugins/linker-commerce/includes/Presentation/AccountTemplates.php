@@ -183,22 +183,14 @@ final class AccountTemplates {
 	}
 
 	/**
-	 * The current language's address of one of the site's own pages, resolved
-	 * through Polylang's own translation link like the header's own links are.
-	 * Without the translation the page's own path stands.
+	 * One of the site's own pages in the reader's language; without the page or
+	 * its address, the English path stands (the workspace always shows a link).
 	 *
 	 * @param string $slug The page's path.
 	 */
 	private function translated_page_url( string $slug ): string {
-		$page = get_page_by_path( $slug );
-		if ( $page instanceof \WP_Post && function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$twin = (int) pll_get_post( (int) $page->ID, 'de' );
-			$link = $twin > 0 ? get_permalink( $twin ) : false;
-			if ( is_string( $link ) && '' !== $link ) {
-				return $link;
-			}
-		}
-		return (string) home_url( '/' . $slug . '/' );
+		$translated = PageUrls::translated( $slug );
+		return '' === $translated ? (string) home_url( '/' . $slug . '/' ) : $translated;
 	}
 
 	/**
@@ -793,7 +785,6 @@ final class AccountTemplates {
 				'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
 				'total'           => $order->get_formatted_order_total(),
 				'url'             => $order->get_view_order_url(),
-				'items-count'     => (string) $count,
 				'items-summary'   => self::items_summary( $count ),
 				/* translators: %s: inquiry number. */
 				'view-aria'       => sprintf( __( 'View inquiry %s', 'linker-commerce' ), '#' . $order->get_order_number() ),

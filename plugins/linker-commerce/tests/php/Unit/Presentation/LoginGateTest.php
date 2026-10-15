@@ -135,6 +135,9 @@ final class LoginGateTest extends TestCase {
 			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 			WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/genie/' ) );
 			WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+			// The language layer resolves a page by slug first (PageUrls);
+			// without one the pill keeps the site's own /genie/.
+			WP_Mock::userFunction( 'get_page_by_path', array( 'return' => null ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
@@ -273,6 +276,31 @@ final class LoginGateTest extends TestCase {
 		$this->assertStringContainsString( 'linker-gate-btn is-ghost', $html );
 		// The Genie pill belongs to the request itself, not to a draft that exists.
 		$this->assertStringNotContainsString( 'linker-gate-genie-pill', $html );
+	}
+
+	/**
+	 * The sentence links its own address: the message carries `%s` and the
+	 * link is filled in after translation (ticket #184 review, St-4) — the
+	 * German wording in the same shape is what the German e2e reads.
+	 */
+	public function test_the_sentence_links_its_own_address(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
+		$this->approval_meta(
+			array(
+				Approval::STATUS_META => Approval::RESTRICTED,
+				Approval::REASON_META => 'VAT ID not confirmed.',
+			)
+		);
+
+		$html = ( new LoginGate( new Approval() ) )->html();
+
+		// The link sits where the placeholder was, inside the sentence.
+		$this->assertStringContainsString( 'Write to <a href="mailto:sales@de-linker.com">sales@de-linker.com</a> and we will look at your account again.', $html );
+		// The mailto link and the notice's reason are the only places the
+		// address appears: no second, unlinked copy is left behind.
+		$this->assertSame( 1, substr_count( $html, 'mailto:sales@de-linker.com' ), 'the address is linked exactly once' );
 	}
 
 	/**

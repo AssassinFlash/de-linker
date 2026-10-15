@@ -29,12 +29,24 @@
 		}
 	}
 
+	// WooCommerce's own frontend/lost-password.js disables the reset form's button
+	// on every submit — it assumes the page is leaving. A mismatching attempt stays
+	// on the page instead, so the button is cleared once the whole dispatch is over
+	// (the timer runs after every handler, WooCommerce's included) and the
+	// corrected attempt can post again.
+	function keepButtonLive( form ) {
+		const button = form.querySelector( 'button[type="submit"], input[type="submit"]' );
+		if ( ! button ) {
+			return;
+		}
+		setTimeout( () => button.removeAttribute( 'disabled' ), 0 );
+	}
+
 	// One submission at a time: the pressed button reports that it is working.
 	// The browser's own field validation still runs first, so an empty required
 	// field keeps its native message instead of a button that never lands.
 	// The button is never disabled: WooCommerce reads the pressed button's own
 	// name and value (`login`, `register`, `save_account_details`), and a
-	// disabled control is left out of the submission.
 	document.addEventListener(
 		'submit',
 		( event ) => {
@@ -48,6 +60,7 @@
 				event.preventDefault();
 				showMismatch( error, pair.second, true );
 				pair.second.focus();
+				keepButtonLive( form );
 				return;
 			}
 			if ( error && pair ) {

@@ -1430,10 +1430,9 @@ msgstr ""
 "Ihr Partner-Konto ist vorerst eingeschränkt: Produkte und Ihre Fragen "
 "bleiben offen, Nettopreise und Proforma-Anfrage sind pausiert."
 
-#: includes/Presentation/LoginGate.php:117
-msgid "Write to sales@de-linker.com and we will look at your account again."
-msgstr ""
-"Schreiben Sie an sales@de-linker.com, und wir sehen uns Ihr Konto erneut an."
+#: includes/Presentation/LoginGate.php
+msgid "Write to %s and we will look at your account again."
+msgstr "Schreiben Sie an %s, und wir sehen uns Ihr Konto erneut an."
 
 #: includes/Presentation/LoginGate.php:124
 msgid "Account under review"
@@ -1452,14 +1451,10 @@ msgstr ""
 "Wir prüfen Ihr Partner-Konto. Nettopreise und die Proforma-Anfrage öffnen "
 "sich mit der Freigabe; wir melden uns per E-Mail."
 
-#: includes/Presentation/LoginGate.php:127
-#: templates/emails/linker-registration-received.php:25
-msgid ""
-"Until then, browse the products and write to sales@de-linker.com with any "
-"question."
-msgstr ""
-"Bis dahin können Sie die Produkte ansehen und Ihre Fragen an sales@de-"
-"linker.com schreiben."
+#: includes/Presentation/LoginGate.php
+#: templates/emails/linker-registration-received.php
+msgid "Until then, browse the products and write to %s with any question."
+msgstr "Bis dahin können Sie die Produkte ansehen und Ihre Fragen an %s schreiben."
 
 #: includes/Presentation/ProductShortcodes.php:112
 #: includes/Storefront/ArchiveSchema.php:90
@@ -3887,89 +3882,96 @@ msgstr ""
 msgid "Reference"
 msgstr "Verwendungszweck"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-login.php:63
 msgid "Your partner account"
 msgstr "Ihr Partner-Konto"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-login.php:64
 msgid "The workspace for installers, EPCs and distributors."
 msgstr ""
 "Der Arbeitsbereich für Installationsbetriebe, EPC-Unternehmen und "
 "Händler."
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-login.php:66
 msgid "Net prices and Proforma requests once approved"
-msgstr "Nettopreise und Proforma-Anfragen nach Freischaltung"
+msgstr "Nettopreise und Proforma-Anfragen nach Freigabe"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-login.php:67
 msgid "Every inquiry and document in one place"
 msgstr "Alle Anfragen und Dokumente an einem Ort"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-login.php:68
+#: templates/myaccount/auth/form-login.php:145
 msgid "We answer inquiries within one working day"
 msgstr "Wir beantworten Anfragen innerhalb eines Arbeitstages"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-login.php:130
 msgid "No partner account yet?"
 msgstr "Noch kein Partner-Konto?"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-login.php:230
 msgid "Already have a partner account?"
 msgstr "Sie haben bereits ein Partner-Konto?"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/account/form-edit-account.php:83
+#: templates/myaccount/auth/form-login.php:201
+#: templates/myaccount/auth/form-reset-password.php:41
 msgid "Use at least 8 characters with a mix of letters, numbers and symbols."
 msgstr ""
 "Verwenden Sie mindestens 8 Zeichen mit Buchstaben, Zahlen und "
 "Sonderzeichen."
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-reset-password.php:31
 msgid "Choose a new password"
 msgstr "Wählen Sie ein neues Passwort"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/account/form-edit-account.php:81
+#: templates/myaccount/auth/form-reset-password.php:39
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/auth/form-reset-password.php:44
 msgid "Re-enter new password"
 msgstr "Neues Passwort wiederholen"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/account/form-edit-account.php:88
+#: templates/myaccount/auth/form-reset-password.php:46
 msgid "The passwords do not match."
 msgstr "Die Passwörter stimmen nicht überein."
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/account/form-edit-account.php:29
 msgid "Your details"
 msgstr "Ihre Angaben"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/account/form-edit-account.php:71
 msgid "Password change"
 msgstr "Passwort ändern"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/account/form-edit-account.php:74
 msgid "Leave the password fields blank to keep your current password."
 msgstr ""
 "Lassen Sie die Passwortfelder leer, um Ihr aktuelles Passwort zu "
 "behalten."
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/account/form-edit-account.php:77
 msgid "Current password"
 msgstr "Aktuelles Passwort"
 
-#: includes/Account/AuthTemplates.php
+#: templates/myaccount/account/form-edit-account.php:86
 msgid "Confirm new password"
 msgstr "Neues Passwort bestätigen"
 
-#: includes/Account/AuthTemplates.php
+#: includes/Presentation/LoginGate.php:107
+#: includes/Presentation/LoginGate.php:110
 msgid "Under review"
 msgstr "In Prüfung"
 
-#: includes/Account/AuthTemplates.php
+#: includes/Presentation/LoginGate.php:167
 msgid "Sign in to request your Proforma"
 msgstr "Melden Sie sich an, um Ihre Proformarechnung anzufordern"
 
-#: includes/Account/AuthTemplates.php
+#: includes/Presentation/LoginGate.php:169
+#: includes/Presentation/LoginGate.php:175
 msgid ""
 "Your solution draft is saved. Log in with your partner account to "
 "send the inquiry — no account yet? Register on the account page; the "
@@ -3980,15 +3982,33 @@ msgstr ""
 "Registrieren Sie sich auf der Kontoseite; Ihr Entwurf wartet dort "
 "auf Sie."
 
-#: includes/Account/AuthTemplates.php
+#: includes/Account/AuthTemplates.php:77
 msgid "You have been signed out."
 msgstr "Sie wurden abgemeldet."
 
-#: includes/Presentation/AccountTemplates.php
+#: includes/Presentation/AccountTemplates.php:805
 msgid "%s product"
 msgid_plural "%s products"
 msgstr[0] "%s Produkt"
 msgstr[1] "%s Produkte"
+
+#: templates/myaccount/auth/form-login.php:141
+msgid "Create your partner account"
+msgstr "Legen Sie Ihr Partner-Konto an"
+
+#: templates/myaccount/auth/form-login.php:142
+msgid "For installers, EPCs and distributors: net prices, documents and inquiries in one workspace."
+msgstr ""
+"Für Installationsbetriebe, EPC-Unternehmen und Händler: Nettopreise, "
+"Dokumente und Anfragen in einem Arbeitsbereich."
+
+#: templates/myaccount/auth/form-login.php:144
+msgid "You see net prices on every product after approval"
+msgstr "Nettopreise sehen Sie zu jedem Produkt nach der Freigabe"
+
+#: templates/myaccount/auth/form-login.php:146
+msgid "We run the VAT ID check in VIES for you"
+msgstr "Wir prüfen die USt-IdNr. im VIES für Sie"
 
 #~ msgid "Send enquiry"
 #~ msgstr "Anfrage senden"

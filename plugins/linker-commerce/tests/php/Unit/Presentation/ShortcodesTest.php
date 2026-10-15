@@ -99,6 +99,7 @@ final class ShortcodesTest extends TestCase {
 			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 			WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/genie/' ) );
 			WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+			WP_Mock::userFunction( 'get_page_by_path', array( 'return' => null ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );

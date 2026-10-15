@@ -154,6 +154,30 @@ final class PendingGateTest extends TestCase {
 	}
 
 	/**
+	 * The account template prints through the gate the module registered
+	 * (PendingGate::output): the instance on the hook is the one that renders,
+	 * and a request that registers nothing prints nothing.
+	 */
+	public function test_output_prints_through_the_registered_gate(): void {
+		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
+		$this->signed_in( 5 );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectActionAdded( 'template_redirect', array( new WP_Mock\Matcher\AnyInstance( PendingGate::class ), 'redirect' ) );
+
+		$registered = new PendingGate( new Approval() );
+		$registered->register();
+
+		ob_start();
+		PendingGate::output();
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'Your account is under review', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * A restricted account is not replaced by the pending page.
 	 */
 	public function test_a_restricted_account_is_not_replaced(): void {

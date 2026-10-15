@@ -37,8 +37,10 @@ Lösungsentwurf、Auslegungsbericht、Unternehmensdaten、Zu den Produkten …�
   评审：`Installateure` 与 .po 的注册选项不一致——.po 里 Installer =
   `Installationsbetrieb`、EPC contractor = `EPC-Unternehmen`、Distributor =
   `Händler`（票 #73 注册链的定名）。三个词改成 .po 术语；`der Arbeitsbereich`
-  与 .po 的 `Workplace` = `Arbeitsbereich` 同源。名词堆两句连排可接受（列表
-  短语，非排比句）。**定稿**：`Ihr Partnerkonto` /
+  与 .po 的 `Workplace` = `Arbeitsbereich` 同源。`Partnerkonto` 连写与站上
+  既有术语不符——pending 页与审批邮件都是 `Partner-Konto`（带连字符），
+  统一为站上形态。名词堆两句连排可接受（列表短语，非排比句）。
+  **定稿**：`Ihr Partner-Konto` /
   `Der Arbeitsbereich für Installationsbetriebe, EPC-Unternehmen und Händler.`
 
 ### 1b. 品牌面板三条要点
@@ -54,10 +56,47 @@ Lösungsentwurf、Auslegungsbericht、Unternehmensdaten、Zu den Produkten …�
   `Alle Anfragen und Dokumente an einem Ort` /
   `Wir beantworten Anfragen innerhalb eines Arbeitstages`
   评审：`Proforma-Anfragen` 是站上页面名（`Proforma-Anfrage` 德语页），保留；
-  `nach Freischaltung` 比 `nach der Freigabe` 短且同义（.po 用
-  `Freischaltung`：注册页 "Wir prüfen jedes neue Konto vor der Freischaltung"）。
-  `Alle Anfragen und Dokumente an einem Ort` 与登录卡德语副文案
-  `Ihre Anfragen, Dokumente und Preise an einem Ort.` 同构。**定稿**：同初稿。
+  `Freischaltung` 初判与注册卡副文案同族，但 .po 里**价格的既有说法是
+  `Preise nach Freigabe`**（价格门）；本句讲的是价格可见性，改用 `Freigabe`
+  与既有术语一致（`Freischaltung` 专指账号开通，仍留在注册卡副文案与
+  pending 句式里）。`Alle Anfragen und Dokumente an einem Ort` 与登录卡德语
+  副文案 `Ihre Anfragen, Dokumente und Preise an einem Ort.` 同构。
+  **定稿**：`Nettopreise und Proforma-Anfragen nach Freigabe` /
+  `Alle Anfragen und Dokumente an einem Ort` /
+  `Wir beantworten Anfragen innerhalb eines Arbeitstages`。
+
+### 1c. 注册卡的品牌面板（本轮返工新增：每张卡自己的面板）
+
+V1 偏差修正：品牌面板不再横跨两卡，登录卡与注册卡各带自己的面板
+（原型 login.html 与 register.html 各自的 `.brand` 内容），故注册侧文案
+本轮新入 .po。四条新串：
+
+- EN 初稿（原型）：`Create your partner account`（面板标题）/
+  `For installers, EPCs and distributors: net prices, documents and inquiries
+  in one workspace.` / `You see net prices on every product after approval` /
+  `We run the VAT ID check in VIES for you`
+  评审：面板标题与卡标题 `Create your business account` 不重复——面板讲身份
+  （partner account），卡讲动作（business account）；副文案与登录面板
+  `The workspace for installers, EPCs and distributors.` 同族（同一批受众）。
+  第二条要点 "net prices … after approval" 与登录面板第一条同义，但在这里
+  是"你能看到什么"（注册者视角），第三条 VIES 检查是本票既有机制的实话
+  （`Registration\VatProfile` 在注册时调 VIES，e2e 有夹具）。
+  **定稿**：同初稿。
+- DE 初稿（原型）：`Legen Sie Ihr Partnerkonto an` /
+  `Für Installationsbetriebe, EPC-Unternehmen und Händler: Nettopreise,
+  Dokumente und Anfragen in einem Arbeitsbereich.` /
+  `Nettopreise sehen Sie zu jedem Produkt nach der Freigabe` /
+  `Die USt-IdNr.-Prüfung im VIES übernehmen wir`
+  评审：`Partnerkonto` 连写改站上既有形态 `Partner-Konto`（同 §1）；
+  受众三词沿用 .po 术语（`Installationsbetriebe` / `EPC-Unternehmen` /
+  `Händler`）；第二条 `nach der Freigabe` 与既有 `Preise nach Freigabe` 同源；
+  第四条改为动词在前的 `Wir prüfen die USt-IdNr. im VIES für Sie`——与同列表
+  的 `Wir beantworten Anfragen innerhalb eines Arbeitstages` 同构，德语读起来
+  不吊尾。**定稿**：`Legen Sie Ihr Partner-Konto an` /
+  `Für Installationsbetriebe, EPC-Unternehmen und Händler: Nettopreise,
+  Dokumente und Anfragen in einem Arbeitsbereich.` /
+  `Nettopreise sehen Sie zu jedem Produkt nach der Freigabe` /
+  `Wir prüfen die USt-IdNr. im VIES für Sie`。
 
 ## 2. 登录卡 · 双入口
 
@@ -68,16 +107,18 @@ Lösungsentwurf、Auslegungsbericht、Unternehmensdaten、Zu den Produkten …�
   评审：`.po` 里 `Create your business account` = `Erstellen Sie Ihr
   Firmenkonto`（既有条目，不动）；引导句与 .po 的
   `Noch kein Konto? Registrieren Sie sich auf der Kontoseite.` 同族，缩为
-  `Noch kein Partnerkonto?`。**定稿**：`Noch kein Partnerkonto?` +
+  `Noch kein Partner-Konto?`（`Partnerkonto` 连写改站上既有形态
+  `Partner-Konto`）。**定稿**：`Noch kein Partner-Konto?` +
   `Erstellen Sie Ihr Firmenkonto`。
 
 - EN 初稿：`Already have a partner account?` + `Sign in`
   评审：与登录卡引导句成对，动词词组 `Sign in` 用 .po 既有 `Sign in` =
   `Anmelden`，不新造。**定稿**：同初稿。
-- DE：`Sie haben bereits ein Partnerkonto?` + `Anmelden`
+- DE：`Sie haben bereits ein Partner-Konto?` + `Anmelden`
   评审：`.po` 既有 `Returning customer?` 的替换是
   `Already have an account?` = `Sie haben bereits ein Konto?`（Proforma 页），
-  这里加 `Partner` 与登录卡引导句对称，句法沿用既有条目。**定稿**：同初稿。
+  这里加 `Partner`（`Partner-Konto`，站上既有形态）与登录卡引导句对称，
+  句法沿用既有条目。**定稿**：同初稿。
 
 ## 3. 密码说明行（注册、重置、账户细节三处共用）
 
@@ -100,10 +141,11 @@ Lösungsentwurf、Auslegungsbericht、Unternehmensdaten、Zu den Produkten …�
   / `The passwords do not match.`
   评审：标题不再用 Woo 的 "Reset password"（与请求页 `Reset your
   password` 重复）；`Choose a new password` 是德语链路的对应动词。
-  字段标签沿用 Woo 的 `New password` 与 `Re-enter new password`（.po 无
-  条目，它们是 Woo 域字符串，德语由 Woo 语言包提供 —— 但它们**同时**是本
-  模板显式写的 linker-commerce 字面量，故补 .po）。
-  **定稿**：同初稿。
+  字段标签的英文沿用 Woo 的 `New password` 与 `Re-enter new password` 措辞，
+  但**由本模板以 linker-commerce 域打印**（不是 Woo 域）：德语定稿
+  `Neues Passwort wiederholen` 要说得出，就得走我们自己的 .po——留在 Woo 域
+  只会落到 Woo 语言包的 `Neues Passwort erneut eingeben`，定稿变成死条目。
+  **定稿**：同初稿（域名见 §10 表注）。
 - DE 初稿：`Wählen Sie ein neues Passwort` / `Neues Passwort` / `Neues
   Passwort wiederholen` / `Die Passwörter stimmen nicht überein.`
   评审：`wiederholen` 与 Woo 德语的 `Neues Passwort bestätigen` 及
@@ -127,10 +169,11 @@ Lösungsentwurf、Auslegungsbericht、Unternehmensdaten、Zu den Produkten …�
   / `Aktuelles Passwort` / `Neues Passwort` / `Neues Passwort bestätigen`
   评审：`Passwort ändern` 与 .po 的
   `ändern Ihr Passwort und Ihre Kontodetails` 同源；`Ihre Angaben` 是德语界面
-  对 "your details" 的常规说法（.po 无条目）。第三字段统一为
-  `Neues Passwort bestätigen`（Woo 德语习惯），与 §4 的
-  `Neues Passwort wiederholen` 并存会分叉 —— 决定：**两处都写
-  `Neues Passwort wiederholen`**（原型用语，短、动词明确）。**定稿**：见 .po。
+  对 "your details" 的常规说法（.po 无条目）。第三字段在改密语境用
+  `Neues Passwort bestätigen`（Woo 德语习惯）；与 §4 重置语境的
+  `Neues Passwort wiederholen` 并存——EN 侧本就分叉
+  （`Confirm new password` vs `Re-enter new password`），两页不同屏不同时机
+  出现，按 §10 补记允许分叉。**定稿**：见 .po。
 
 ## 6. 门禁（gates.html 四态）
 
@@ -151,7 +194,7 @@ Lösungsentwurf、Auslegungsbericht、Unternehmensdaten、Zu den Produkten …�
   `woocommerce_load_cart_from_session`（SavedSolutions::claim），故这句话
   有机制支撑。**定稿**：同初稿。
   DE：`Melden Sie sich an, um Ihre Proformarechnung anzufordern` /
-  `Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partnerkonto
+  `Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partner-Konto
   an, um die Anfrage abzusenden — noch kein Konto? Registrieren Sie sich auf
   der Kontoseite; Ihr Entwurf wartet dort auf Sie.`
   评审：`abzusenden` 对应站上 "send the inquiry" 的既有说法
@@ -209,17 +252,20 @@ Lösungsentwurf、Auslegungsbericht、Unternehmensdaten、Zu den Produkten …�
 ## 10. 新增 .po 条目（本轮）
 
 入门：`plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po`
-（20 条，全部为客户可见字符串，故按覆盖门必须翻译）：
+（**26 条** = 25 条单数 msgid + 1 条 `_n` 复数，全部为客户可见字符串，
+故按覆盖门必须翻译）。其中 22 条是首轮评审的交付内容（S6 计数的 21+1），
+另 4 条是 V1 返工后注册卡自带品牌面板新增的串（§1c），本轮一并入 .po。
+下表 26 行与 .po 当前树逐条对应：
 
 | msgid (EN) | msgstr (DE, 定稿) |
 | :--- | :--- |
-| `Your partner account` | `Ihr Partnerkonto` |
+| `Your partner account` | `Ihr Partner-Konto` |
 | `The workspace for installers, EPCs and distributors.` | `Der Arbeitsbereich für Installationsbetriebe, EPC-Unternehmen und Händler.` |
 | `Net prices and Proforma requests once approved` | `Nettopreise und Proforma-Anfragen nach Freischaltung` |
 | `Every inquiry and document in one place` | `Alle Anfragen und Dokumente an einem Ort` |
 | `We answer inquiries within one working day` | `Wir beantworten Anfragen innerhalb eines Arbeitstages` |
-| `No partner account yet?` | `Noch kein Partnerkonto?` |
-| `Already have a partner account?` | `Sie haben bereits ein Partnerkonto?` |
+| `No partner account yet?` | `Noch kein Partner-Konto?` |
+| `Already have a partner account?` | `Sie haben bereits ein Partner-Konto?` |
 | `Use at least 8 characters with a mix of letters, numbers and symbols.` | `Verwenden Sie mindestens 8 Zeichen mit Buchstaben, Zahlen und Sonderzeichen.` |
 | `Choose a new password` | `Wählen Sie ein neues Passwort` |
 | `New password` | `Neues Passwort` |
@@ -232,9 +278,27 @@ Lösungsentwurf、Auslegungsbericht、Unternehmensdaten、Zu den Produkten …�
 | `Confirm new password` | `Neues Passwort bestätigen` |
 | `Under review` | `In Prüfung` |
 | `Sign in to request your Proforma` | `Melden Sie sich an, um Ihre Proformarechnung anzufordern` |
-| `Your solution draft is saved. Log in with your partner account to send the inquiry — no account yet? Register on the account page; the draft waits for you.` | `Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partnerkonto an, um die Anfrage abzusenden — noch kein Konto? Registrieren Sie sich auf der Kontoseite; Ihr Entwurf wartet dort auf Sie.` |
+| `Your solution draft is saved. Log in with your partner account to send the inquiry — no account yet? Register on the account page; the draft waits for you.` | `Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partner-Konto an, um die Anfrage abzusenden — noch kein Konto? Registrieren Sie sich auf der Kontoseite; Ihr Entwurf wartet dort auf Sie.` |
 | `You have been signed out.` | `Sie wurden abgemeldet.` |
 | `%s product` / `%s products`（`_n` 复数） | `%s Produkt` / `%s Produkte` |
+| `Create your partner account` | `Legen Sie Ihr Partner-Konto an` |
+| `For installers, EPCs and distributors: net prices, documents and inquiries in one workspace.` | `Für Installationsbetriebe, EPC-Unternehmen und Händler: Nettopreise, Dokumente und Anfragen in einem Arbeitsbereich.` |
+| `You see net prices on every product after approval` | `Nettopreise sehen Sie zu jedem Produkt nach der Freigabe` |
+| `We run the VAT ID check in VIES for you` | `Wir prüfen die USt-IdNr. im VIES für Sie` |
+
+表注（域名与占位符，两条本轮修正）：
+
+- `Net prices and Proforma requests once approved` 的德语由
+  `nach Freischaltung` 改为 `nach Freigabe`（§1b：与既有 `Preise nach Freigabe`
+  一致）。
+- `New password` / `Re-enter new password` 由重置卡以 **linker-commerce 域**
+  打印（§4），德语才落到本表定稿；此前模板用的是 Woo 域，本表条目不可达。
+- 门禁两句（§6）的邮箱改为占位符：`Write to %s and we will look at your
+  account again.` / `Until then, browse the products and write to %s with any
+  question.` —— 地址由 `sprintf` 填入并把整句做成 mailto 链接，翻译改词或
+  换序都不会静默吞掉链接。德语 msgstr 同位置 `%s`（`Schreiben Sie an %s,
+  und wir sehen uns Ihr Konto erneut an.` / `Bis dahin können Sie die Produkte
+  ansehen und Ihre Fragen an %s schreiben.`）。
 
 补记（一致性）：`Confirm new password` 与 `Re-enter new password` 是同一字段
 在两个表单里的两个上下文（改密 vs 重置）。德语定稿分别

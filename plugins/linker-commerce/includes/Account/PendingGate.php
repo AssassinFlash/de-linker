@@ -33,6 +33,15 @@ final class PendingGate {
 	private const ACCOUNT_TEMPLATE = 'myaccount/my-account.php';
 
 	/**
+	 * The instance the account module registered; the template prints through
+	 * it (the same adapter shape AccountTemplates uses), so the wired Approval
+	 * and LoginGate are the ones that render.
+	 *
+	 * @var self|null
+	 */
+	private static ?self $adapter = null;
+
+	/**
 	 * Sets up the gate.
 	 *
 	 * @param Approval  $approval The account approval rule.
@@ -42,6 +51,15 @@ final class PendingGate {
 		private readonly Approval $approval = new Approval(),
 		private readonly LoginGate $login = new LoginGate()
 	) {}
+
+	/**
+	 * Registers the gate as the request's own instance and adds its hook; runs
+	 * from the account module's register().
+	 */
+	public function register(): void {
+		self::$adapter = $this;
+		add_action( 'template_redirect', array( $this, 'redirect' ) );
+	}
 
 	/**
 	 * Whether the signed-in account is still under review. Guests and staff
@@ -89,7 +107,7 @@ final class PendingGate {
 	 * outside that template.
 	 */
 	public static function output(): void {
-		( new self() )->render();
+		self::$adapter?->render();
 	}
 
 	/**

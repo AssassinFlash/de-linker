@@ -13,7 +13,7 @@
 
 | 面 | 现状载体 | 新载体 |
 | :--- | :--- | :--- |
-| 登录 + 注册卡 | `templates/myaccount/auth/form-login.php`（居中两卡列） | 同文件重写：桌面 = 左深绿品牌面板 + 右两张卡（`≥1080px`），移动 = 两卡竖排；注册三步编号组保留，只重排呈现 |
+| 登录 + 注册卡 | `templates/myaccount/auth/form-login.php`（居中两卡列） | 同文件重写：桌面 = **每张卡自带一个深绿品牌面板**（登录单元 = 登录文案，注册单元 = 注册文案，各自面板高度随各自的卡），移动 = 两卡竖排且无面板；注册三步编号组保留，只重排呈现 |
 | 忘记密码请求 | `templates/myaccount/auth/form-lost-password.php` | 同文件重写：单卡（`.linker-auth--solo`），`Back to sign in` 留在卡内 |
 | 发送成功确认 | Woo 默认 `myaccount/lost-password-confirmation.php`（裸文本落在页底） | **新增覆写** `templates/myaccount/auth/lost-password-confirmation.php`：同一张卡，Woo 的 notice + 过滤后的说明句进卡头 |
 | 重置密码表单 | Woo 默认 `myaccount/form-reset-password.php`（裸模板，链路最差一环） | **新增覆写** `templates/myaccount/auth/form-reset-password.php`：卡 + 双密码字段 + Woo 自带眼睛 + Woo 自带强度计 |
@@ -25,7 +25,7 @@
 | 工作台其余片段 | `overview/tiles/tile/recent/inquiry-row/summary/stage/proforma/documents/document-row/solutions/solution-card/empty*` | 全部按原型重写；`shortcuts.html` 删除（原型没有该组件） |
 | 页头账户入口 | `ProductShortcodes::header_utilities`：guest 两条同址 + 登出走 Woo 端点的二次确认页 | guest 一条 `Sign in`；登出改 `linker_commerce_logout_url()`（`wc_logout_url()`，带 nonce），落回 `my-account/?signed-out=true` |
 | 登出提示 | Woo 的确认页 | `AuthTemplates::signed_out_notice()` 在账号页加一条 Woo notice（`You have been signed out.`） |
-| 样式 | `storefront.css` 的 account 块 + `auth.css` 的 639px 规则 + `account.css` | `auth.css` / `account.css` 整体重写为设计层（token 对齐 `tokens.css`）；`storefront.css` 删掉 account/gate 相关块 |
+| 样式 | `storefront.css` 的 account 块 + `auth.css` 的 639px 规则 + `account.css` | `auth.css` / `account.css` 整体重写为设计层（token 对齐 `tokens.css`）；`storefront.css` 删掉 account/gate 相关块（`.sf-account-*` / `body.sf-account-page` 一族见 §九） |
 | JS | 无（整页 POST） | 新增 `assets/account-ui.js`：提交 is-loading（渐进增强）、双密码字段不一致行、随打字清错；强度计用 Woo 自带 |
 
 ## 二、原型态 → 实现映射
@@ -94,16 +94,18 @@
 ## 五、文案
 
 `docs/acceptance/2026-10-15/184/copy-review.md`（EN 先行、DE 独立撰写、Sie 体、
-逐条 初稿→评审→定稿）。新增 21 条 msgid 已入
-`plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po` 并编译 `.mo`
-（`_n` 复数条目一条）。`just i18n-coverage` / `just i18n-validity` 全绿。
+逐条 初稿→评审→定稿）。本轮共 **26 条**新串（25 单数 + 1 条 `_n` 复数）已入
+`plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po` 并编译 `.mo`；
+入门 `linker-commerce.pot` 同步重新生成（`wp i18n make-pot --merge`）。
+`just i18n-coverage` / `just i18n-validity` 全绿。
 #180 所列两处 .po 缺口经当前树核实已由上游关闭（评审记录 §9）。
 
 ## 六、测试与验收
 
-- PHP：`composer install` 后 `vendor/bin/phpcs -q`（0 error）、`vendor/bin/phpstan analyse --memory-limit=-1`（level 8，0 error）、`vendor/bin/phpunit --testsuite unit`（974 tests 全绿，含 `AuthTemplatesTest` / `PendingGateTest` / `LoginGateTest` / `AccountTemplatesTest` / `DocumentsTest` / 两个 `ModuleTest` 的新断言）。
-- JS：`node --test plugins/linker-commerce/tests/js/*.test.mjs`（21 tests，含 `account-ui.test.mjs` 的 5 条：提交态、原生校验优先、不一致阻止提交并给字段、行随打字清除、一致时提交）。
-- e2e（`tests/e2e`，实例 a184 + `just serve`）：`specs/account.spec.ts` 11 项、`specs/empty-draft.spec.ts` 4 项、`specs/commerce.spec.ts` 2 项 **全过**。断言随新结构更新：登出选择器改 `action=logout`、登出后断言 signed-out notice、门禁选择器改 `.linker-gate` / `.linker-gate-genie-pill`、Proforma 下载从列表行（已无行内下载）改到询盘详情页的 `[data-action="proforma"]`。
+- PHP：`composer install` 后 `vendor/bin/phpcs -q`（0 error）、`vendor/bin/phpstan analyse --memory-limit=-1`（level 8，0 error）、`vendor/bin/phpunit --testsuite unit`（982 tests 全绿，含 `AuthTemplatesTest` / `PendingGateTest` / `LoginGateTest` / `AccountTemplatesTest` / `DocumentsTest` / 两个 `ModuleTest` 的新断言）。
+- JS：`node --test plugins/linker-commerce/tests/js/*.test.mjs`（25 tests，含 `account-ui.test.mjs` 的 7 条：提交态不禁用按钮、提交中不重发、原生校验优先、不一致阻止提交并给字段、不一致被打回后按钮复活、行随打字清除、一致时提交）。
+- e2e（`tests/e2e`，实例 a184 + `just serve`）：`specs/account.spec.ts` 12 项、`specs/empty-draft.spec.ts` 4 项、`specs/commerce.spec.ts` 2 项 **全过**。断言随新结构更新：登出选择器改 `action=logout`、登出后断言 signed-out notice、门禁选择器改 `.linker-gate` / `.linker-gate-genie-pill`、Proforma 下载从列表行（已无行内下载）改到询盘详情页的 `[data-action="proforma"]`。
+- **忘记密码的真实夹具（评审 S10）**：两个语言的用例续跑整条重置链——WP-CLI 读账号自己的 `get_password_reset_key()`，`goto <lost>?show-reset-form=true&key=…&id=…` 打开重置卡，断言卡标题 / `#password_1` / `#password_2` / `reset_key` / `reset_login` / `woocommerce-reset-password-nonce` 都非空；再断言弱密码被 Woo 自带强度计挡在页面内（按钮 disabled，服务端无强度门）、两个不同密码由链自己的行当场指出（不发请求），最后用同一个卡真正保存新密码 → 落到登录卡带 Woo 的确认条 → 用新密码登录成功。德语 restricted 门禁同样有真夹具用例（德语句子 + 邮件链接 + 原因 notice 有底色）。
 - **提交态不能禁用按钮**：WooCommerce 读的是被按下的按钮自身的 name/value（`login`、`register`、`save_account_details`），`disabled` 的控件不进提交数据——早先版本在提交瞬间禁用按钮，登录/注册会静默不生效（真实夹具 e2e 抓到）。`account-ui.js` 只用 `.is-loading` + `aria-busy` 表状态，重复提交由表单自身的 `data-account-state` 挡回；回归测试在 `tests/js/account-ui.test.mjs`。
 - `specs/chrome.spec.ts` 的两项（德语工具页重定向）在本实例 404：该 spec 需要跑过 `tools/migrate/*.py` 的实例（tests/e2e/README 明列），a184 只装了快照 + `present`，与本票无关。
 - 本地实例验证（a184，快照 2026-10-15-1852 + 本票分支）：guest 两语言登录/注册/忘记密码/重置全链、pending/restricted/两种 guest 门禁、工作台各端点 EN+DE、页头 guest/customer 下拉、一键登出落回带提示、账号四态询盘与空态。
@@ -119,8 +121,35 @@
 本票是"工具页重设计"裁定（2026-10-10）与"登出一键化"裁定（2026-10-15）的落地：
 账号链属工具面（非复刻面），像素门不适用；登出二次确认按裁定去除。
 
-## 八、可翻案处
+## 八、返工轮（2026-10-16，双评审 + 视觉验收）
 
-- 桌面品牌面板（≥1080px）只在登录/注册两页出现；辅助页（忘记密码、重置、确认）保持居中单卡，与原型一致。
+### 视觉（主线验收偏差）
+
+- **V1 每张卡自带品牌面板**：`form-login.php` 的外层从"一个面板跨两卡"改为两个 `.linker-auth-unit` 单元——登录单元（面板文案 = 登录语义）与注册单元（面板文案 = 注册语义，来自原型 `register.html` 的 `.brand`）；`auth.css` 里 `.linker-auth-unit`（≥1080px 两列、`align-items: stretch`、圆角与阴影落在单元上）取代原 `.linker-auth-inner` 的两列规则，`grid-row: 1 / span 2` 删除。移动端结构不变（面板 `display: none`，两卡竖排）。
+- **V2 联系人卡回到 `.panel` 骨架**：`Account/ContactCard.php` 输出 `.linker-account-panel` + `-heading` + `-body`（原型 `workspace-overview.html` 的 contact panel），body 里一行 `.linker-account-contact-line`（信封图标 + 邮箱链接；设了姓名/电话时同格排列）；样式在 `account.css`。
+- **V3 restricted 原因块**：`.notice.notice-info` 的底色/边框/圆角/图标排布写进 `auth.css`（原先只有 Woo notice 的样式，我方 notice 元素是裸文本），并把 reason 块移回正文之后（原型顺序：正文 → reason → 联系方式）。
+
+### 评审（Spec / Standards）
+
+- **St1 目录**：`linker-commerce.pot` 用 `wp i18n make-pot … --merge` 重新生成（799 条，含本轮全部新串）；`.po` 里 26 条新条目的 `#:` 引用改为真实来源（`templates/myaccount/**`、`LoginGate.php`、`AccountTemplates.php`、`AuthTemplates.php`），句柄 `%s` 的两条串已同步 `translators:` 注释；`.mo` 重新编译；`just i18n-validity` / `just i18n-coverage` 全绿。
+- **St2 页面地址解析收成一处**：新增 `Presentation/PageUrls::translated( $slug ): string`（'' 表示没有），`AccountTemplates`、`ProductShortcodes::{compare_page_url,configurator_page_url}`、`Shortcodes::contact_page_url`、`LoginGate::genie_pill` 五处调用它，回退由各调用方自己给。
+- **St3 `PendingGate::output()` 委托已注册实例**：`PendingGate::register()` 记 `self::$adapter` 并挂 `template_redirect`（`Account\Module` 调它），模板只走 `self::$adapter?->render()`——不再现场 new 一个 Approval/LoginGate 与线上实例不同源的 PendingGate。
+- **St4 邮件地址走占位符**：门禁两句改为 `Write to %s …` / `Until then, … write to %s …`，`mailto_sentence()` 用 `sprintf` 把 `<a mailto>` 填进去；翻译改词或换序都不会静默吞掉链接（`mails/linker-registration-received.php` 共用同一 msgid，按纯文本地址填）。德语 msgstr 同步为 `%s` 形态（copy-review §10 表注）。
+- **St5 `data-count` 无消费者**：删掉 `inquiry-card.html` 的 `data-count` 与 `AccountTemplates::order_row()` 里配套的 `items-count`（列表显示的是 `items-summary` 文本），单测改为断言该键不存在。
+- **S6 文案记录与实交对齐**：德语统一 `Partner-Konto`（记录 11 处）；重置卡的两个字段标签改由 linker-commerce 域打印，`Re-enter new password` 的德语定稿 `Neues Passwort wiederholen` 因此真的可达（原先落在 Woo 语言包）；计数统一为 **26 条 = 25 单数 + 1 `_n` 复数**（首轮 22 条 + V1 注册面板 4 条）。§4/§5 的字段名分叉说法改为按交付（改密语境 `bestätigen`、重置语境 `wiederholen`，与 EN 侧一致）。
+- **信息项**：品牌面板 logo 换成 WebP（`assets/linker-logo-wordmark.webp`，248×94 @2x，10 KB；原 PNG 717×273 319 KB，按 124px 展示），标记 `width="124" height="47"` 不变。
+
+### 视觉走查中自己抓到、并修掉的两处
+
+- **Woo notice 的图标压到首字上**：WooCommerce 自带的 `.woocommerce-error/-message/-info::before` 是 `position: absolute; top: 1em; left: 1.5em`（配它自己 `padding: 1em 2em 1em 3.5em` 的盒子），而链上的 notice 是 `display: flex` + `padding: 14px 16px` 的行——图标因此正压在首词上（"You have been signed out." 的 Y 上）。修法：把 `::before` 拉回文档流（`position: static; display: block; flex: none; margin-top: 1px; font-size: 18px; line-height: 1`），成为 flex 行的第一项，与原型"图标 + 12px 间隙 + 文字"一致。
+- **Woo 自己的 `frontend/lost-password.js` 在每次 submit 时禁用重置按钮**（`$('.lost_reset_password').on('submit', … attr('disabled','disabled'))`，假定页面即将离开）。重置卡在两个密码不一致时**留在页面上**，于是修正后再次点 Save 毫无反应（按钮已被禁用，只有刷新才能继续）。修法：`account-ui.js` 在打回不一致提交时调 `keepButtonLive()`，用 `setTimeout(…, 0)` 在该次事件派发全部处理完之后把按钮清回来（Woo 的处理在同一次派发内、晚于本文件）。回归测试在 `account-ui.test.mjs`：夹具照抄 Woo 的行为（submit 时禁用按钮），断言打回后按钮复活、可再次提交。e2e 的整条重置链（两个语言）也覆盖到这一步。
+
+## 九、存量死 CSS（本轮记录，不属本票清理）
+
+`content/windpress/storefront.css` 里 329 处 `body.sf-account-page`（及 `body.sf-account-inner` / `body.sf-account-home`）选择器**没有任何生产者**：`sf-account-page` body 类随旧 storefront 层退役（`Presentation\Module` 的 body_class 过滤器已删，`ModuleTest` 有对应说明），仓库内除 storefront.css 与该测试注释外零引用。它们是复刻层遗留的死规则，但**不属本票清理范围**：这些选择器与仍在用的规则（`.tv-b2b-*` 项目面、`body.sf-account-inner`…）混在同一条选择器列表里（例如 `body.sf-account-page .tv-b2b-bulk-order, body.sf-account-page .tv-b2b-bulk-result {}`），逐个摘除等于重写 3400 行复刻样式表里的大量混合规则，风险面远大于收益。归后续一次专门的死 CSS 清理（附像素回归）。
+
+## 十、可翻案处
+
+- 桌面品牌面板（≥1080px）只在登录/注册两页出现，且每张卡一个（V1）；辅助页（忘记密码、重置、确认）保持居中单卡，与原型一致。
 - 移动端工作台导航只有底部胶囊栏；1024px 是侧栏/胶囊的切换点（与原型 `app.css` 一致）。
 - 强度计复用 Woo 的判分与文案（`pwsL10n`），不自定义阈值；`min_password_strength` 沿用 Woo 默认 3。

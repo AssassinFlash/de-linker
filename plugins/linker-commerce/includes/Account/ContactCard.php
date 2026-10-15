@@ -27,6 +27,10 @@ final class ContactCard {
 
 	/**
 	 * Prints the card; runs on linker_account_after_content, after the page's content.
+	 * The frame is the workspace's own panel (ticket #184, the owner-accepted
+	 * prototype's contact card): a heading with its rule, then the line — the
+	 * team's mailbox with the prototype's own letter mark, and the stored name
+	 * and phone above or below it when an operator set them.
 	 */
 	public function render(): void {
 		$contact = $this->options->contact();
@@ -39,8 +43,9 @@ final class ContactCard {
 			$lines[] = sprintf( '<a href="tel:%1$s">%2$s</a>', esc_attr( (string) preg_replace( '/[^0-9+]/', '', $contact['phone'] ) ), esc_html( $contact['phone'] ) );
 		}
 		printf(
-			'<section class="linker-contact-card" aria-labelledby="linker-contact-card-title"><h2 id="linker-contact-card-title">%1$s</h2><p>%2$s</p></section>',
+			'<section class="linker-account-panel linker-account-contact" aria-labelledby="linker-contact-card-title"><header class="linker-account-panel-heading"><h2 id="linker-contact-card-title">%1$s</h2></header><div class="linker-account-panel-body"><p class="linker-account-contact-line">%2$s<span>%3$s</span></p></div></section>',
 			esc_html__( 'Your contact person', 'linker-commerce' ),
+			'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
 			implode( '<br>', $lines ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each line escaped above.
 		);
 	}

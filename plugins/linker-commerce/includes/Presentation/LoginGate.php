@@ -27,6 +27,12 @@ use Linker\Commerce\Registration\Approval;
 final class LoginGate {
 
 	/**
+	 * The public mailbox every gate names (the site's sales address, the same
+	 * one the refusal notice and the contact form print).
+	 */
+	private const TEAM_ADDRESS = 'sales@de-linker.com';
+
+	/**
 	 * Sets up the gate.
 	 *
 	 * @param Approval $approval The account approval rule.
@@ -90,9 +96,12 @@ final class LoginGate {
 				$this->badge( 'restricted', esc_html__( 'Access currently limited', 'linker-commerce' ) ),
 				esc_html__( 'Access currently limited', 'linker-commerce' ),
 				'',
-				$this->reason_notice( $reason )
-					. '<p>' . esc_html__( 'Your partner account is limited for now: the products and your questions stay open, net prices and the Proforma request are paused.', 'linker-commerce' ) . '</p>'
-					. '<p>' . $this->mailto_link( esc_html__( 'Write to sales@de-linker.com and we will look at your account again.', 'linker-commerce' ) ) . '</p>',
+				'<p>' . esc_html__( 'Your partner account is limited for now: the products and your questions stay open, net prices and the Proforma request are paused.', 'linker-commerce' ) . '</p>'
+					. $this->reason_notice( $reason )
+					. '<p>' . $this->mailto_sentence(
+						/* translators: %s: the team's email address. */
+						__( 'Write to %s and we will look at your account again.', 'linker-commerce' )
+					) . '</p>',
 				$this->action( $products, esc_html__( 'Browse products', 'linker-commerce' ), 'primary' )
 			);
 		}
@@ -102,23 +111,26 @@ final class LoginGate {
 			esc_html__( 'Your account is under review', 'linker-commerce' ),
 			'',
 			'<p>' . esc_html__( 'We are reviewing your partner account. Net prices and the Proforma request open as soon as it is approved, and we will email you.', 'linker-commerce' ) . '</p>'
-				. '<p>' . $this->mailto_link( esc_html__( 'Until then, browse the products and write to sales@de-linker.com with any question.', 'linker-commerce' ) ) . '</p>',
+				. '<p>' . $this->mailto_sentence(
+					/* translators: %s: the team's email address. */
+					__( 'Until then, browse the products and write to %s with any question.', 'linker-commerce' )
+				) . '</p>',
 			$this->action( $products, esc_html__( 'Browse products', 'linker-commerce' ), 'primary' )
 		);
 	}
 
 	/**
-	 * The team's mailbox inside an already-escaped sentence becomes the mailto
-	 * link the prototype draws (gates.html wraps the same address). The
-	 * sentence stays one translatable string; only the address is wrapped.
+	 * The team's mailbox as the linkable part of a sentence. The address is the
+	 * message's own placeholder, never a word inside it: the sentence links the
+	 * mailbox whatever a translation does with the words around it, so a
+	 * reworded or reordered translation can never silently swallow the link.
 	 *
-	 * @param string $sentence The escaped sentence.
+	 * @param string $message The translated sentence with one %s for the address.
 	 */
-	private function mailto_link( string $sentence ): string {
-		return str_replace(
-			'sales@de-linker.com',
-			'<a href="mailto:sales@de-linker.com">sales@de-linker.com</a>',
-			$sentence
+	private function mailto_sentence( string $message ): string {
+		return sprintf(
+			esc_html( $message ),
+			'<a href="mailto:' . esc_attr( self::TEAM_ADDRESS ) . '">' . esc_html( self::TEAM_ADDRESS ) . '</a>'
 		);
 	}
 
@@ -254,20 +266,8 @@ final class LoginGate {
 	 * control is the Genie page, so the entry is not JavaScript-only.
 	 */
 	private function genie_pill(): string {
-		$url = '';
-		if ( function_exists( 'pll_current_language' ) && 'de' === pll_current_language() && function_exists( 'pll_get_post' ) ) {
-			$page = get_page_by_path( 'genie' );
-			if ( $page instanceof \WP_Post ) {
-				$twin = (int) pll_get_post( (int) $page->ID, 'de' );
-				$link = $twin > 0 ? get_permalink( $twin ) : false;
-				if ( is_string( $link ) && '' !== $link ) {
-					$url = $link;
-				}
-			}
-		}
-		if ( '' === $url ) {
-			$url = home_url( '/genie/' );
-		}
+		$url  = PageUrls::translated( 'genie' );
+		$url  = '' === $url ? (string) home_url( '/genie/' ) : $url;
 		$mark = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.4 5v10.9a1.8 1.8 0 0 0 1.8 1.8H17"/><path d="M8.8 8.4C11.8 4.5 16.4 3.1 19.6 3.5"/><circle cx="20.7" cy="4.9" r="1.5" fill="currentColor" stroke="none"/></svg>';
 		// aria-expanded declares the collapsed state up front: the dock's
 		// shell() flips it to true only when it reports the panel open, so
