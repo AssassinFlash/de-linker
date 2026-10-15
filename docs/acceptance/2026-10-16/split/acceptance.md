@@ -83,7 +83,7 @@
 
 ## 5. 结论
 
-通过。PR：[见提交记录]。
+通过。PR #188（`fix/split-login-register`）。
 
 ## 6. 附注
 
