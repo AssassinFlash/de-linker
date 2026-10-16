@@ -1,0 +1,120 @@
+header-en #17: nothing to do
+header-de #6909: nothing to do
+footer-en #18: nothing to do
+footer-de #6911: nothing to do
+linker-advisor-en #4083: nothing to do
+linker-berater-de #6633: nothing to do
+linker-planner-en #3302: nothing to do
+    seo title: already new
+linker-planer-de #6693: nothing to do
+    seo title: meta absent (the i18n import wipes it); left alone
+design-canvas-en #3198: nothing to do
+    seo title: already new
+design-canvas-de #6696: nothing to do
+    seo title: already new
+quote-configurator-en #3998: nothing to do
+    seo desc: already new
+quote-configurator-de #6637: nothing to do
+    seo desc: already new
+quote-configurator-2-en #3999: nothing to do
+quote-configurator-2-de #6635: nothing to do
+request-a-project-en #2747: nothing to do
+request-a-project-de #6702: nothing to do
+utility-storage-en #1755: nothing to do
+    seo desc: already new
+utility-storage-de #6917: nothing to do
+    seo desc: already new
+terms-of-sale-en #1674: nothing to do
+terms-of-sale-de #6825: nothing to do
+home-en #13: nothing to do
+home-de #6913: nothing to do
+solution-en #746: nothing to do
+solution-de #6871: nothing to do
+residential-storage-en #749: nothing to do
+residential-storage-de #6923: nothing to do
+commercial-storage-en #792: nothing to do
+commercial-storage-de #6921: nothing to do
+for-installer-en #826: nothing to do
+for-installer-de #6869: nothing to do
+about-en #862: nothing to do
+about-de #6865: nothing to do
+capability-en #874: nothing to do
+capability-de #6919: nothing to do
+faq-download-en #932: nothing to do
+faq-download-de #6863: nothing to do
+privacy-policy-en #1673: nothing to do
+privacy-policy-de #6827: nothing to do
+services-support-en #2748: nothing to do
+services-support-de #6700: nothing to do
+gateway-post-en #558: nothing to do
+gateway-post-de #6897: nothing to do
+blog-index-template-en #574: nothing to do
+blog-index-template-de #6881: nothing to do
+thank-you-en #623: nothing to do
+thank-you-de #6873: nothing to do
+    german source #17 `_linker_de_content`: 2x 'Linker Berater', 2x 'Linker Planer', 2x 'Linker Standortdetails', 2x '/linker-advisor/', 2x '/linker-planner/' -> follows the German page
+    german source #18 `_linker_de_content`: 1x 'Linker Berater', 1x 'Linker Planer', 1x 'Linker Standortdetails', 1x '/linker-advisor/', 1x '/linker-planner/' -> follows the German page
+    german source #4083 `_linker_de_content`: 1x 'Linker Berater' -> follows the German page
+    german source #4083 `_linker_de_title`: -> 'Genie – der KI-Assistent von Linker'
+    german source #3302 `_linker_de_content`: 1x 'Linker Berater', 1x '/linker-planner/', 2x '/linker-planer/' -> follows the German page
+    german source #3302 `_linker_de_title`: -> 'Lösungskonfigurator'
+    german source #3198 `_linker_de_content`: 3x 'Linker Planer' -> follows the German page
+    german source #3998 `_linker_de_content`: 1x 'Linker Planner', 2x 'Linker Planer', 3x '/linker-planner/' -> follows the German page
+    german source #3998 `_linker_de_title`: -> 'Der Lösungskonfigurator ist umgezogen'
+    german source #3999 `_linker_de_content`: 3x 'Linker Planner', 3x '/linker-planner/' -> follows the German page
+    german source #3999 `_linker_de_title`: -> 'Der Lösungskonfigurator ist umgezogen'
+    german source #2747 `_linker_de_content`: 2x 'Linker Planner', 3x '/linker-planner/' -> follows the German page
+    german source #2747 `_linker_de_title`: -> 'Lösungskonfigurator'
+    german source #1755 `_linker_de_content`: no old tokens -> follows the German page
+    german source #1674 `_linker_de_content`: no old tokens -> follows the German page
+    german source #13 `_linker_de_content`: 2x 'Linker Planer', 4x '/linker-advisor/' -> follows the German page
+    german source #746 `_linker_de_content`: 1x 'Linker Berater', 5x 'Linker Planer', 2x 'Linker Standortdetails', 2x '/linker-planner/' -> follows the German page
+    german source #749 `_linker_de_content`: 4x 'Linker Berater', 12x 'Linker Planer', 5x '/linker-advisor/', 5x '/linker-planner/' -> follows the German page
+    german source #792 `_linker_de_content`: 3x 'Linker Berater', 14x 'Linker Planer', 5x '/linker-advisor/', 8x '/linker-planner/' -> follows the German page
+    german source #826 `_linker_de_content`: 7x 'Linker Berater', 14x 'Linker Planer', 6x 'Linker Standortdetails', 2x '/linker-advisor/', 3x '/linker-planner/' -> follows the German page
+    german source #862 `_linker_de_content`: 1x 'Linker Planer' -> follows the German page
+    german source #874 `_linker_de_content`: 1x 'Linker Planer' -> follows the German page
+    german source #932 `_linker_de_content`: 4x 'Linker Berater' -> follows the German page
+    german source #1673 `_linker_de_content`: 2x 'Linker Berater' -> follows the German page
+    german source #2748 `_linker_de_content`: 3x 'Linker Berater', 8x 'Linker Planer', 3x 'Linker Standortdetails', 1x '/linker-planner/' -> follows the German page
+    german source #558 `_linker_de_content`: 1x 'Linker Berater', 1x '/linker-advisor/' -> follows the German page
+    german source #574 `_linker_de_content`: 2x 'Linker Planer', 2x '/linker-planner/' -> follows the German page
+    german source #623 `_linker_de_content`: 4x '/linker-planner/' -> follows the German page
+german source metas: 28 values refreshed
+media #3461: 'Linker Advisor sizing assistant widget featuring a GoodWe GW8K-ET invert' -> 'Genie sizing assistant widget featuring a GoodWe GW8K-ET inverter and Go'
+media #3475: 'Linker Advisor interface displaying the GoodWe ET inverter and Pylontech' -> 'Genie interface displaying the GoodWe ET inverter and Pylontech battery '
+media #4838: 'Written quotation in Linker Planner' -> 'Written quotation in Solution Configurator'
+media #4839: 'Written quotation in Linker Planner' -> 'Written quotation in Solution Configurator'
+media #4840: 'Written quotation in Linker Planner' -> 'Written quotation in Solution Configurator'
+media #4881: 'Linker Advisor' -> 'Genie'
+media #4882: 'Linker Advisor' -> 'Genie'
+media #4901: 'Linker Planner commercial peak-demand brief' -> 'Solution Configurator commercial peak-demand brief'
+media #4902: 'Linker Planner commercial peak-demand brief' -> 'Solution Configurator commercial peak-demand brief'
+media #4903: 'Linker Advisor answering a SAJ CH3 VDE-AR-N 4110 query' -> 'Genie answering a SAJ CH3 VDE-AR-N 4110 query'
+media #4904: 'Linker Advisor answering a SAJ CH3 VDE-AR-N 4110 query' -> 'Genie answering a SAJ CH3 VDE-AR-N 4110 query'
+media #5005: 'Linker Planner: site details and the first sizing result' -> 'Solution Configurator: site details and the first sizing result'
+media #5006: 'Linker Planner: site details and the first sizing result' -> 'Solution Configurator: site details and the first sizing result'
+media #5007: 'Linker Planner (German): site details and the first sizing result' -> 'Solution Configurator (German): site details and the first sizing result'
+media #5008: 'Linker Planner (German): site details and the first sizing result' -> 'Solution Configurator (German): site details and the first sizing result'
+media #5065: 'Linker Advisor tutorial: asking a pairing question and reading the sourc' -> 'Genie tutorial: asking a pairing question and reading the sourced answer'
+media #5066: 'Linker Advisor tutorial: asking a pairing question and reading the sourc' -> 'Genie tutorial: asking a pairing question and reading the sourced answer'
+media #5067: 'Linker Advisor tutorial (German): asking a pairing question and reading ' -> 'Genie tutorial (German): asking a pairing question and reading the sourc'
+media #5068: 'Linker Advisor tutorial (German): asking a pairing question and reading ' -> 'Genie tutorial (German): asking a pairing question and reading the sourc'
+media #5069: 'Linker Planner tutorial: three project facts to a complete system and it' -> 'Solution Configurator tutorial: three project facts to a complete system'
+media #5070: 'Linker Planner tutorial: three project facts to a complete system and it' -> 'Solution Configurator tutorial: three project facts to a complete system'
+media #5071: 'Linker Planner tutorial (German): three project facts to a complete syst' -> 'Solution Configurator tutorial (German): three project facts to a comple'
+media #5072: 'Linker Planner tutorial (German): three project facts to a complete syst' -> 'Solution Configurator tutorial (German): three project facts to a comple'
+media #5073: 'Linker Site Detail tutorial: tracing the roof on aerial imagery and savi' -> 'Solution Configurator tutorial: tracing the roof on aerial imagery and s'
+media #5074: 'Linker Site Detail tutorial: tracing the roof on aerial imagery and savi' -> 'Solution Configurator tutorial: tracing the roof on aerial imagery and s'
+media #5075: 'Linker Site Detail tutorial (German): tracing the roof on aerial imagery' -> 'Solution Configurator tutorial (German): tracing the roof on aerial imag'
+media #5076: 'Linker Site Detail tutorial (German): tracing the roof on aerial imagery' -> 'Solution Configurator tutorial (German): tracing the roof on aerial imag'
+media #6194: 'Linker Planner listing the inverter and battery sized for a home project' -> 'Solution Configurator listing the inverter and battery sized for a home '
+media #6195: 'Storage sizes compared in Linker Planner for a home project' -> 'Storage sizes compared in Solution Configurator for a home project'
+media #6272: 'Linker Advisor technical lookup result preview' -> 'Genie technical lookup result preview'
+media alts: 30 refreshed
+linker-planner-en #3302: slug already solution-configurator
+linker-planer-de #6693: slug already loesungskonfigurator
+linker-advisor-en #4083: slug already genie
+linker-berater-de #6633: slug already genie
+translation state: {'marked': 23}
+exit=0

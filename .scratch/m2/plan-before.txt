@@ -1,0 +1,83 @@
+header-en #17: no change
+header-de #6909: no change
+footer-en #18: no change
+footer-de #6911: no change
+linker-advisor-en #4083: no change
+linker-berater-de #6633: content, title
+    linker-berater-de: 'Der Linker Berater benötigt JavaScript, um ausgeführt zu werden.' -> 'Genie benötigt JavaScript, um zu funktionieren.'
+    linker-berater-de: 'Ohne dieses können Sie <a href="/products/">unsere Produkte</a> ansehen ' -> 'Ohne JavaScript können Sie <a href="/de/produkte/">unsere Produkte</a> a'
+linker-planner-en #3302: seo
+linker-planer-de #6693: content, title, seo
+    linker-planer-de: 'unsicher? Linker Berater fragen' -> 'unsicher? Genie fragen'
+design-canvas-en #3198: no change
+design-canvas-de #6696: no change
+quote-configurator-en #3998: no change
+quote-configurator-de #6637: no change
+home-en #13: no change
+home-de #6913: content
+    home-de: 2x 'Linker Planer' -> 'Lösungskonfigurator'
+solution-en #746: no change
+solution-de #6871: content
+    solution-de: 'Linker Standortdetails:</strong>' -> 'Lösungskonfigurator, Schritt Dachdetails:</strong>'
+    solution-de: 'mit den Linker Standortdetails' -> 'im Schritt Dachdetails'
+    solution-de: 'Linker Berater:</strong>' -> 'Genie:</strong>'
+    solution-de: 'Linker Planer:</strong>' -> 'Lösungskonfigurator:</strong>'
+    solution-de: 'antwortet der Berater sofort' -> 'antwortet Genie sofort'
+    solution-de: 4x 'Linker Planer' -> 'Lösungskonfigurator'
+residential-storage-en #749: no change
+residential-storage-de #6923: content
+    residential-storage-de: 2x 'Der Linker Berater' -> 'Genie'
+    residential-storage-de: 2x 'Linker Berater' -> 'Genie'
+    residential-storage-de: 12x 'Linker Planer' -> 'Lösungskonfigurator'
+commercial-storage-en #792: no change
+commercial-storage-de #6921: content
+    commercial-storage-de: 1x 'der Linker Berater' -> 'Genie'
+    commercial-storage-de: 2x 'Linker Berater' -> 'Genie'
+    commercial-storage-de: 14x 'Linker Planer' -> 'Lösungskonfigurator'
+for-installer-en #826: no change
+for-installer-de #6869: content
+    for-installer-de: '<span>01</span>Standortdetails</button>' -> '<span>01</span>Dachdetails</button>'
+    for-installer-de: '<span>02</span>Planer</button>' -> '<span>02</span>Konfigurator</button>'
+    for-installer-de: '<span>03</span>Berater</button>' -> '<span>03</span>Genie</button>'
+    for-installer-de: 'Linker Standortdetails</h3>' -> 'Lösungskonfigurator – Dachdetails</h3>'
+    for-installer-de: 'Linker Planer</h3>' -> 'Lösungskonfigurator</h3>'
+    for-installer-de: 'Linker Berater</h3>' -> 'Genie</h3>'
+    for-installer-de: 'Linker Standortdetails öffnen →' -> 'Dachdetail-Schritt öffnen →'
+    for-installer-de: 'aria-label="Vorschau von Linker Standortdetails abspielen"' -> 'aria-label="Vorschau des Dachdetail-Schritts abspielen"'
+    for-installer-de: 'alt="Vorschau der Dachplanung in Linker Standortdetails"' -> 'alt="Vorschau der Dachplanung im Lösungskonfigurator"'
+    for-installer-de: 'aria-label="Linker Standortdetails Dachplanung"' -> 'aria-label="Dachplanung im Lösungskonfigurator"'
+    for-installer-de: 'Site Detail erfasst das Layout, der Linker Planer legt die Elektrik aus,' -> 'Der Schritt Dachdetails erfasst das Layout, der Lösungskonfigurator legt'
+    for-installer-de: 'Die Linker Standortdetails erfassen die nutzbare Dachfläche' -> 'Der Schritt Dachdetails im Lösungskonfigurator erfasst die nutzbare Dach'
+    for-installer-de: 'Linker Berater · Technische Ressourcen' -> 'Genie · Technische Ressourcen'
+    for-installer-de: 'Linker Planer · Lösungsauslegung' -> 'Lösungskonfigurator · Lösungsauslegung'
+    for-installer-de: 1x 'des Linker Beraters' -> 'von Genie'
+    for-installer-de: 1x 'im Linker Berater' -> 'von Genie'
+    for-installer-de: 3x 'Linker Berater' -> 'Genie'
+    for-installer-de: 11x 'Linker Planer' -> 'Lösungskonfigurator'
+about-en #862: no change
+about-de #6865: content
+    about-de: 1x 'Linker Planer' -> 'Lösungskonfigurator'
+capability-en #874: no change
+capability-de #6919: content
+    capability-de: 1x 'Linker Planer' -> 'Lösungskonfigurator'
+faq-download-en #932: no change
+faq-download-de #6863: content
+    faq-download-de: 1x 'Der Linker Berater' -> 'Genie'
+    faq-download-de: 2x 'den Linker Berater' -> 'Genie'
+    faq-download-de: 1x 'Linker Berater' -> 'Genie'
+privacy-policy-en #1673: no change
+privacy-policy-de #6827: content
+    privacy-policy-de: 1x 'den Linker Berater' -> 'Genie'
+    privacy-policy-de: 1x 'Linker Berater' -> 'Genie'
+services-support-en #2748: no change
+services-support-de #6700: content
+    services-support-de: 'Drei Werkzeuge für Ihr eigenes Tempo: Legen Sie ein System im Linker Pla' -> 'Zwei Werkzeuge für Ihr eigenes Tempo: Legen Sie ein System aus und erfas'
+    services-support-de: 'Dacherfassung mit Linker Standortdetails' -> 'Dacherfassung im Lösungskonfigurator'
+    services-support-de: 'Linker Planer · Linker Standortdetails · Linker Berater' -> 'Lösungskonfigurator · Genie'
+    services-support-de: 1x 'Linker Berater' -> 'Genie'
+    services-support-de: 6x 'Linker Planer' -> 'Lösungskonfigurator'
+gateway-post-en #558: no change
+gateway-post-de #6897: content
+    gateway-post-de: 1x 'Linker Berater' -> 'Genie'
+blog-index-template-en #574: no change
+blog-index-template-de #6881: no change

@@ -1,0 +1,27 @@
+header-en #17: nothing to do
+header-de #6909: nothing to do
+footer-en #18: nothing to do
+footer-de #6911: nothing to do
+linker-advisor-en #4083: nothing to do
+linker-berater-de #6633: nothing to do
+linker-planner-en #3302: nothing to do
+    seo title: already new
+linker-planer-de #6693: nothing to do
+    seo title: meta absent (the i18n import wipes it); left alone
+design-canvas-en #3198: nothing to do
+    seo title: already new
+design-canvas-de #6696: nothing to do
+    seo title: already new
+quote-configurator-en #3998: nothing to do
+    seo desc: already new
+quote-configurator-de #6637: nothing to do
+    seo desc: already new
+quote-configurator-2-en #3999: nothing to do
+quote-configurator-2-de #6635: nothing to do
+request-a-project-en #2747: nothing to do
+request-a-project-de #6702: nothing to do
+utility-storage-en #1755: nothing to do
+    seo desc: already new
+wp post get 6917 failed:
+Connection closed by 46.202.156.7 port 65002
+exit=1

@@ -1,0 +1,254 @@
+header-en #17: no change
+header-de #6909: no change
+footer-en #18: no change
+footer-de #6911: no change
+linker-advisor-en #4083: no change
+linker-berater-de #6633: content, title
+    linker-berater-de: 'Der Linker Berater benötigt JavaScript, um ausgeführt zu werden.' -> 'Genie benötigt JavaScript, um zu funktionieren.'
+    linker-berater-de: 'Ohne dieses können Sie <a href="/products/">unsere Produkte</a> ansehen ' -> 'Ohne JavaScript können Sie <a href="/de/produkte/">unsere Produkte</a> a'
+linker-planner-en #3302: content
+    linker-planner-en: 2x '/de/linker-planer/' -> '/de/loesungskonfigurator/'
+    linker-planner-en: 1x '/linker-planner/' -> '/solution-configurator/'
+    seo title: already new
+linker-planer-de #6693: content, title
+    linker-planer-de: 'unsicher? Linker Berater fragen' -> 'unsicher? Genie fragen'
+    linker-planer-de: 2x '/de/linker-planer/' -> '/de/loesungskonfigurator/'
+    linker-planer-de: 1x '/linker-planner/' -> '/de/loesungskonfigurator/'
+    seo title: meta absent (the i18n import wipes it); left alone
+design-canvas-en #3198: content
+    design-canvas-en: 'for Linker Planner and your Project request.' -> 'for the Solution Configurator and your Project request.'
+    design-canvas-en: 1x 'in Linker Planner' -> 'in the Solution Configurator'
+    seo title: 'Linker Site Detail: Trace the Roof, Sharpen the Sizing' -> 'Solution Configurator: Trace the Roof, Sharpen the Sizing'
+design-canvas-de #6696: content
+    design-canvas-de: 'für Linker Planer und Ihre Projektanfrage.' -> 'für den Lösungskonfigurator und Ihre Projektanfrage.'
+    design-canvas-de: 2x 'Linker Planer' -> 'Lösungskonfigurator'
+    seo title: 'Linker Standortdetails: Dach einzeichnen, Auslegung schärfen' -> 'Dachdetails: Dach einzeichnen, Auslegung schärfen'
+quote-configurator-en #3998: content, title
+    quote-configurator-en: 1x 'the Linker Planner' -> 'the Solution Configurator'
+    quote-configurator-en: 2x 'Linker Planner' -> 'Solution Configurator'
+    quote-configurator-en: 1x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+    quote-configurator-en: 2x '/linker-planner/' -> '/solution-configurator/'
+    seo desc: 'The Linker Planner has moved: open the Linker Planner to siz' -> 'The Solution Configurator has moved: open the Solution Confi'
+quote-configurator-de #6637: content, title
+    quote-configurator-de: 2x 'Linker Planer' -> 'Lösungskonfigurator'
+    quote-configurator-de: 1x 'Linker Planner' -> 'Lösungskonfigurator'
+    quote-configurator-de: 1x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+    quote-configurator-de: 2x '/linker-planner/' -> '/de/loesungskonfigurator/'
+    seo desc: 'Der Linker Planer ist umgezogen: Öffnen Sie den Linker Plane' -> 'Der Lösungskonfigurator ist umgezogen: Öffnen Sie den Lösung'
+quote-configurator-2-en #3999: content, title
+    quote-configurator-2-en: 1x 'the Linker Planner' -> 'the Solution Configurator'
+    quote-configurator-2-en: 2x 'Linker Planner' -> 'Solution Configurator'
+    quote-configurator-2-en: 1x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+    quote-configurator-2-en: 2x '/linker-planner/' -> '/solution-configurator/'
+quote-configurator-2-de #6635: content, title
+    quote-configurator-2-de: 3x 'Linker Planner' -> 'Lösungskonfigurator'
+    quote-configurator-2-de: 1x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+    quote-configurator-2-de: 2x '/linker-planner/' -> '/de/loesungskonfigurator/'
+request-a-project-en #2747: content, title
+    request-a-project-en: 1x 'in the Linker Planner' -> 'in the Solution Configurator'
+    request-a-project-en: 1x 'the Linker Planner' -> 'the Solution Configurator'
+    request-a-project-en: 1x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+    request-a-project-en: 2x '/linker-planner/' -> '/solution-configurator/'
+request-a-project-de #6702: content, title
+    request-a-project-de: 2x 'Linker Planner' -> 'Lösungskonfigurator'
+    request-a-project-de: 1x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+    request-a-project-de: 2x '/linker-planner/' -> '/de/loesungskonfigurator/'
+utility-storage-en #1755: meta only
+    seo desc: 'CRRC, Pylontech and GoodWe container BESS from 1.0 to 6.9 MW' -> 'CRRC, Pylontech and GoodWe container BESS from 1.0 to 6.9 MW'
+utility-storage-de #6917: meta only
+    seo desc: 'Container-Batteriespeicher von CRRC, Pylontech und GoodWe mi' -> 'Container-Batteriespeicher von CRRC, Pylontech und GoodWe mi'
+terms-of-sale-en #1674: content
+    terms-of-sale-en: 'apply automatically in the cart' -> 'apply automatically in the solution draft'
+terms-of-sale-de #6825: content
+    terms-of-sale-de: 'werden im Warenkorb automatisch' -> 'werden im Lösungsentwurf automatisch'
+home-en #13: content
+    home-en: '<li>Quoted per site, not from the cart</li>' -> '<li>A project quote for each site</li>'
+    home-en: 4x 'href="/linker-advisor/"' -> 'href="/genie/"'
+home-de #6913: content
+    home-de: '<li>Angebot pro Standort, nicht aus dem Warenkorb</li>' -> '<li>Projektangebot pro Standort</li>'
+    home-de: 2x 'Linker Planer' -> 'Lösungskonfigurator'
+    home-de: 4x 'href="/linker-advisor/"' -> 'href="/de/genie/"'
+solution-en #746: content
+    solution-en: 'Design with Planner →' -> 'Plan with the Solution Configurator →'
+    solution-en: '<td>Storage packages, Planner tools, and Partner pricing</td>' -> '<td>Storage packages, sizing tools, and Partner pricing</td>'
+    solution-en: 'cannot simply be placed into an online shopping cart.' -> 'are quoted per project.'
+    solution-en: 2x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+solution-de #6871: content
+    solution-de: 'Linker Standortdetails:</strong>' -> 'Lösungskonfigurator, Schritt Dachdetails:</strong>'
+    solution-de: 'mit den Linker Standortdetails' -> 'im Schritt Dachdetails'
+    solution-de: 'Linker Berater:</strong>' -> 'Genie:</strong>'
+    solution-de: 'Linker Planer:</strong>' -> 'Lösungskonfigurator:</strong>'
+    solution-de: 'antwortet der Berater sofort' -> 'antwortet Genie sofort'
+    solution-de: 'Der Planer modelliert geeignete' -> 'Der Lösungskonfigurator modelliert geeignete'
+    solution-de: '<td>Speicherpakete, Planer-Werkzeuge und Partnerpreise</td>' -> '<td>Speicherpakete, Auslegungswerkzeuge und Partnerpreise</td>'
+    solution-de: 'lassen sich nicht einfach in einen Online-Warenkorb legen.' -> 'werden projektbezogen angeboten.'
+    solution-de: 4x 'Linker Planer' -> 'Lösungskonfigurator'
+    solution-de: 2x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+residential-storage-en #749: content
+    residential-storage-en: 5x 'href="/linker-advisor/"' -> 'href="/genie/"'
+    residential-storage-en: 5x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+residential-storage-de #6923: content
+    residential-storage-de: 2x 'Der Linker Berater' -> 'Genie'
+    residential-storage-de: 2x 'Linker Berater' -> 'Genie'
+    residential-storage-de: 12x 'Linker Planer' -> 'Lösungskonfigurator'
+    residential-storage-de: 5x 'href="/linker-advisor/"' -> 'href="/de/genie/"'
+    residential-storage-de: 5x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+commercial-storage-en #792: content
+    commercial-storage-en: 'Model Project in Planner →' -> 'Model the project in the Solution Configurator →'
+    commercial-storage-en: 5x 'href="/linker-advisor/"' -> 'href="/genie/"'
+    commercial-storage-en: 8x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+commercial-storage-de #6921: content
+    commercial-storage-de: 1x 'der Linker Berater' -> 'Genie'
+    commercial-storage-de: 2x 'Linker Berater' -> 'Genie'
+    commercial-storage-de: 14x 'Linker Planer' -> 'Lösungskonfigurator'
+    commercial-storage-de: 5x 'href="/linker-advisor/"' -> 'href="/de/genie/"'
+    commercial-storage-de: 8x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+for-installer-en #826: content
+    for-installer-en: 'Site Detail maps usable roof space, module placement around obstructions' -> 'The Roof detail step maps usable roof space, module placement around obs'
+    for-installer-en: 2x 'href="/linker-advisor/"' -> 'href="/genie/"'
+    for-installer-en: 3x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+for-installer-de #6869: content
+    for-installer-de: '<span>01</span>Standortdetails</button>' -> '<span>01</span>Dachdetails</button>'
+    for-installer-de: '<span>02</span>Planer</button>' -> '<span>02</span>Konfigurator</button>'
+    for-installer-de: '<span>03</span>Berater</button>' -> '<span>03</span>Genie</button>'
+    for-installer-de: 'Linker Standortdetails</h3>' -> 'Lösungskonfigurator – Dachdetails</h3>'
+    for-installer-de: 'Linker Planer</h3>' -> 'Lösungskonfigurator</h3>'
+    for-installer-de: 'Linker Berater</h3>' -> 'Genie</h3>'
+    for-installer-de: 'Linker Standortdetails öffnen →' -> 'Dachdetail-Schritt öffnen →'
+    for-installer-de: 'aria-label="Vorschau von Linker Standortdetails abspielen"' -> 'aria-label="Vorschau des Dachdetail-Schritts abspielen"'
+    for-installer-de: 'alt="Vorschau der Dachplanung in Linker Standortdetails"' -> 'alt="Vorschau der Dachplanung im Lösungskonfigurator"'
+    for-installer-de: 'aria-label="Linker Standortdetails Dachplanung"' -> 'aria-label="Dachplanung im Lösungskonfigurator"'
+    for-installer-de: 'Site Detail erfasst das Layout, der Linker Planer legt die Elektrik aus,' -> 'Der Schritt Dachdetails erfasst das Layout, der Lösungskonfigurator legt'
+    for-installer-de: 'Die Linker Standortdetails erfassen die nutzbare Dachfläche' -> 'Der Schritt Dachdetails im Lösungskonfigurator erfasst die nutzbare Dach'
+    for-installer-de: 'Linker Berater · Technische Ressourcen' -> 'Genie · Technische Ressourcen'
+    for-installer-de: 'Linker Planer · Lösungsauslegung' -> 'Lösungskonfigurator · Lösungsauslegung'
+    for-installer-de: '<a class="lk-btn-primary" href="/de/">' -> '<a class="lk-btn-primary" href="/de/loesungskonfigurator/?step=roof">'
+    for-installer-de: 1x 'des Linker Beraters' -> 'von Genie'
+    for-installer-de: 1x 'im Linker Berater' -> 'von Genie'
+    for-installer-de: 3x 'Linker Berater' -> 'Genie'
+    for-installer-de: 11x 'Linker Planer' -> 'Lösungskonfigurator'
+    for-installer-de: 2x 'href="/linker-advisor/"' -> 'href="/de/genie/"'
+    for-installer-de: 3x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+about-en #862: no change
+about-de #6865: content
+    about-de: 1x 'Linker Planer' -> 'Lösungskonfigurator'
+capability-en #874: no change
+capability-de #6919: content
+    capability-de: 1x 'Linker Planer' -> 'Lösungskonfigurator'
+faq-download-en #932: content
+    faq-download-en: 'href="/products/" data-linker-assistant-open' -> 'href="/genie/" data-linker-assistant-open'
+faq-download-de #6863: content
+    faq-download-de: 'href="/de/produkte/" data-linker-assistant-open' -> 'href="/de/genie/" data-linker-assistant-open'
+    faq-download-de: 1x 'Der Linker Berater' -> 'Genie'
+    faq-download-de: 2x 'den Linker Berater' -> 'Genie'
+    faq-download-de: 1x 'Linker Berater' -> 'Genie'
+privacy-policy-en #1673: content
+    privacy-policy-en: 'put to the Genie' -> 'put to Genie'
+    privacy-policy-en: 'the Advisor button' -> 'the Genie button'
+    privacy-policy-en: 'Advisor button zone' -> 'Genie button zone'
+    privacy-policy-en: '(session, cart, and login cookies)' -> '(session, solution draft, and login cookies)'
+    privacy-policy-en: 'When you ask the Advisor a question' -> 'When you ask Genie a question'
+    privacy-policy-en: 'not sent with Advisor messages' -> 'not sent with your messages to Genie'
+    privacy-policy-en: 'Advisor conversations belonging to a signed-in account' -> 'Conversations with Genie belonging to a signed-in account'
+    privacy-policy-en: "from the Advisor's history" -> 'from your Genie history'
+    privacy-policy-en: 2x 'the Advisor zone' -> 'the Genie zone'
+privacy-policy-de #6827: content
+    privacy-policy-de: '(Session-, Warenkorb- und Login-Cookies)' -> '(Session-, Lösungsentwurf- und Login-Cookies)'
+    privacy-policy-de: 'Wenn Sie dem Berater eine Frage stellen' -> 'Wenn Sie Genie eine Frage stellen'
+    privacy-policy-de: 'nicht mit Berater-Nachrichten übermittelt' -> 'nicht mit Ihren Nachrichten an Genie übermittelt'
+    privacy-policy-de: 'Berater-Konversationen, die zu einem angemeldeten Konto gehören' -> 'Konversationen mit Genie, die zu einem angemeldeten Konto gehören'
+    privacy-policy-de: 'aus dem Verlauf des Beraters löschen' -> 'aus Ihrem Genie-Verlauf löschen'
+    privacy-policy-de: 'the Advisor button' -> 'the Genie button'
+    privacy-policy-de: 'Advisor button zone' -> 'Genie button zone'
+    privacy-policy-de: 1x 'den Linker Berater' -> 'Genie'
+    privacy-policy-de: 1x 'Linker Berater' -> 'Genie'
+    privacy-policy-de: 2x 'the Advisor zone' -> 'the Genie zone'
+services-support-en #2748: content
+    services-support-en: '<h3>Planner Sizing &amp; Compatibility Lists</h3>' -> '<h3>System Sizing &amp; Compatibility Lists</h3>'
+    services-support-en: 'aria-label="Planner sizing and compatibility lists"' -> 'aria-label="System sizing and compatibility lists"'
+    services-support-en: '<b>Planner Sizing and Compatibility Lists</b>' -> '<b>System Sizing and Compatibility Lists</b>'
+    services-support-en: '<h3 class="lk-sstage-h3">Planner Sizing and Compatibility Lists</h3>' -> '<h3 class="lk-sstage-h3">System Sizing and Compatibility Lists</h3>'
+    services-support-en: '<strong>Deliverable:</strong> Planner Sizing · Complete Parts List' -> '<strong>Deliverable:</strong> System Sizing · Complete Parts List'
+    services-support-en: 1x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+services-support-de #6700: content
+    services-support-de: 'Drei Werkzeuge für Ihr eigenes Tempo: Legen Sie ein System im Linker Pla' -> 'Zwei Werkzeuge für Ihr eigenes Tempo: Legen Sie ein System aus und erfas'
+    services-support-de: 'Dacherfassung mit Linker Standortdetails' -> 'Dacherfassung im Lösungskonfigurator'
+    services-support-de: 'Linker Planer · Linker Standortdetails · Linker Berater' -> 'Lösungskonfigurator · Genie'
+    services-support-de: '<h3>Planer-Auslegung &amp; Kompatibilitätslisten</h3>' -> '<h3>Systemauslegung &amp; Kompatibilitätslisten</h3>'
+    services-support-de: 'aria-label="Planer-Auslegung und Kompatibilitätslisten"' -> 'aria-label="Systemauslegung und Kompatibilitätslisten"'
+    services-support-de: '<b>Planer-Auslegung und Kompatibilitätslisten</b>' -> '<b>Systemauslegung und Kompatibilitätslisten</b>'
+    services-support-de: '<h3 class="lk-sstage-h3">Planer-Auslegung und Kompatibilitätslisten</h3>' -> '<h3 class="lk-sstage-h3">Systemauslegung und Kompatibilitätslisten</h3>'
+    services-support-de: '<strong>Ergebnis:</strong> Auslegung im Planer · Vollständige Stückliste' -> '<strong>Ergebnis:</strong> Systemauslegung · Vollständige Stückliste'
+    services-support-de: 1x 'Linker Berater' -> 'Genie'
+    services-support-de: 6x 'Linker Planer' -> 'Lösungskonfigurator'
+    services-support-de: 1x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+gateway-post-en #558: content
+    gateway-post-en: 1x 'href="/linker-advisor/"' -> 'href="/genie/"'
+gateway-post-de #6897: content
+    gateway-post-de: 1x 'Linker Berater' -> 'Genie'
+    gateway-post-de: 1x 'href="/linker-advisor/"' -> 'href="/de/genie/"'
+blog-index-template-en #574: no change
+blog-index-template-de #6881: no change
+thank-you-en #623: content
+    thank-you-en: 4x 'href="/linker-planner/"' -> 'href="/solution-configurator/"'
+thank-you-de #6873: content
+    thank-you-de: 4x 'href="/linker-planner/"' -> 'href="/de/loesungskonfigurator/"'
+    german source #17 `_linker_de_content`: 2x 'Linker Berater', 2x 'Linker Planer', 2x 'Linker Standortdetails', 2x '/linker-advisor/', 2x '/linker-planner/' -> follows the German page
+    german source #18 `_linker_de_content`: 1x 'Linker Berater', 1x 'Linker Planer', 1x 'Linker Standortdetails', 1x '/linker-advisor/', 1x '/linker-planner/' -> follows the German page
+    german source #4083 `_linker_de_content`: 1x 'Linker Berater' -> follows the German page
+    german source #4083 `_linker_de_title`: -> 'Genie – der KI-Assistent von Linker'
+    german source #3302 `_linker_de_content`: 1x 'Linker Berater', 1x '/linker-planner/', 2x '/linker-planer/' -> follows the German page
+    german source #3302 `_linker_de_title`: -> 'Lösungskonfigurator'
+    german source #3198 `_linker_de_content`: 3x 'Linker Planer' -> follows the German page
+    german source #3998 `_linker_de_content`: 1x 'Linker Planner', 2x 'Linker Planer', 3x '/linker-planner/' -> follows the German page
+    german source #3998 `_linker_de_title`: -> 'Der Lösungskonfigurator ist umgezogen'
+    german source #3999 `_linker_de_content`: 3x 'Linker Planner', 3x '/linker-planner/' -> follows the German page
+    german source #3999 `_linker_de_title`: -> 'Der Lösungskonfigurator ist umgezogen'
+    german source #2747 `_linker_de_content`: 2x 'Linker Planner', 3x '/linker-planner/' -> follows the German page
+    german source #2747 `_linker_de_title`: -> 'Lösungskonfigurator'
+    german source #1755 `_linker_de_content`: no old tokens -> follows the German page
+    german source #1674 `_linker_de_content`: no old tokens -> follows the German page
+    german source #13 `_linker_de_content`: 2x 'Linker Planer', 4x '/linker-advisor/' -> follows the German page
+    german source #746 `_linker_de_content`: 1x 'Linker Berater', 5x 'Linker Planer', 2x 'Linker Standortdetails', 2x '/linker-planner/' -> follows the German page
+    german source #749 `_linker_de_content`: 4x 'Linker Berater', 12x 'Linker Planer', 5x '/linker-advisor/', 5x '/linker-planner/' -> follows the German page
+    german source #792 `_linker_de_content`: 3x 'Linker Berater', 14x 'Linker Planer', 5x '/linker-advisor/', 8x '/linker-planner/' -> follows the German page
+    german source #826 `_linker_de_content`: 7x 'Linker Berater', 14x 'Linker Planer', 6x 'Linker Standortdetails', 2x '/linker-advisor/', 3x '/linker-planner/' -> follows the German page
+    german source #862 `_linker_de_content`: 1x 'Linker Planer' -> follows the German page
+    german source #874 `_linker_de_content`: 1x 'Linker Planer' -> follows the German page
+    german source #932 `_linker_de_content`: 4x 'Linker Berater' -> follows the German page
+    german source #1673 `_linker_de_content`: 2x 'Linker Berater' -> follows the German page
+    german source #2748 `_linker_de_content`: 3x 'Linker Berater', 8x 'Linker Planer', 3x 'Linker Standortdetails', 1x '/linker-planner/' -> follows the German page
+    german source #558 `_linker_de_content`: 1x 'Linker Berater', 1x '/linker-advisor/' -> follows the German page
+    german source #574 `_linker_de_content`: 2x 'Linker Planer', 2x '/linker-planner/' -> follows the German page
+    german source #623 `_linker_de_content`: 4x '/linker-planner/' -> follows the German page
+media #3461: 'Linker Advisor sizing assistant widget featuring a GoodWe GW8K-ET invert' -> 'Genie sizing assistant widget featuring a GoodWe GW8K-ET inverter and Go'
+media #3475: 'Linker Advisor interface displaying the GoodWe ET inverter and Pylontech' -> 'Genie interface displaying the GoodWe ET inverter and Pylontech battery '
+media #4838: 'Written quotation in Linker Planner' -> 'Written quotation in Solution Configurator'
+media #4839: 'Written quotation in Linker Planner' -> 'Written quotation in Solution Configurator'
+media #4840: 'Written quotation in Linker Planner' -> 'Written quotation in Solution Configurator'
+media #4881: 'Linker Advisor' -> 'Genie'
+media #4882: 'Linker Advisor' -> 'Genie'
+media #4901: 'Linker Planner commercial peak-demand brief' -> 'Solution Configurator commercial peak-demand brief'
+media #4902: 'Linker Planner commercial peak-demand brief' -> 'Solution Configurator commercial peak-demand brief'
+media #4903: 'Linker Advisor answering a SAJ CH3 VDE-AR-N 4110 query' -> 'Genie answering a SAJ CH3 VDE-AR-N 4110 query'
+media #4904: 'Linker Advisor answering a SAJ CH3 VDE-AR-N 4110 query' -> 'Genie answering a SAJ CH3 VDE-AR-N 4110 query'
+media #5005: 'Linker Planner: site details and the first sizing result' -> 'Solution Configurator: site details and the first sizing result'
+media #5006: 'Linker Planner: site details and the first sizing result' -> 'Solution Configurator: site details and the first sizing result'
+media #5007: 'Linker Planner (German): site details and the first sizing result' -> 'Solution Configurator (German): site details and the first sizing result'
+media #5008: 'Linker Planner (German): site details and the first sizing result' -> 'Solution Configurator (German): site details and the first sizing result'
+media #5065: 'Linker Advisor tutorial: asking a pairing question and reading the sourc' -> 'Genie tutorial: asking a pairing question and reading the sourced answer'
+media #5066: 'Linker Advisor tutorial: asking a pairing question and reading the sourc' -> 'Genie tutorial: asking a pairing question and reading the sourced answer'
+media #5067: 'Linker Advisor tutorial (German): asking a pairing question and reading ' -> 'Genie tutorial (German): asking a pairing question and reading the sourc'
+media #5068: 'Linker Advisor tutorial (German): asking a pairing question and reading ' -> 'Genie tutorial (German): asking a pairing question and reading the sourc'
+media #5069: 'Linker Planner tutorial: three project facts to a complete system and it' -> 'Solution Configurator tutorial: three project facts to a complete system'
+media #5070: 'Linker Planner tutorial: three project facts to a complete system and it' -> 'Solution Configurator tutorial: three project facts to a complete system'
+media #5071: 'Linker Planner tutorial (German): three project facts to a complete syst' -> 'Solution Configurator tutorial (German): three project facts to a comple'
+media #5072: 'Linker Planner tutorial (German): three project facts to a complete syst' -> 'Solution Configurator tutorial (German): three project facts to a comple'
+media #5073: 'Linker Site Detail tutorial: tracing the roof on aerial imagery and savi' -> 'Solution Configurator tutorial: tracing the roof on aerial imagery and s'
+media #5074: 'Linker Site Detail tutorial: tracing the roof on aerial imagery and savi' -> 'Solution Configurator tutorial: tracing the roof on aerial imagery and s'
+media #5075: 'Linker Site Detail tutorial (German): tracing the roof on aerial imagery' -> 'Solution Configurator tutorial (German): tracing the roof on aerial imag'
+media #5076: 'Linker Site Detail tutorial (German): tracing the roof on aerial imagery' -> 'Solution Configurator tutorial (German): tracing the roof on aerial imag'
+media #6194: 'Linker Planner listing the inverter and battery sized for a home project' -> 'Solution Configurator listing the inverter and battery sized for a home '
+media #6195: 'Storage sizes compared in Linker Planner for a home project' -> 'Storage sizes compared in Solution Configurator for a home project'
+media #6272: 'Linker Advisor technical lookup result preview' -> 'Genie technical lookup result preview'
+exit=0

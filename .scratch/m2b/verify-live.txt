@@ -1,0 +1,3 @@
+note linker-planer-de: seo title meta is absent (the i18n import wipes it)
+verify: OK
+exit=0
