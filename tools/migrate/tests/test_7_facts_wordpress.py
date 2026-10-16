@@ -126,3 +126,132 @@ def test_a_save_that_would_change_stock_writes_nothing(at_fixture: Path) -> None
             check=True,
             capture_output=True,
         )
+
+
+def wp_cli(*args: str) -> str:
+    """One WP-CLI command on the instance, output stripped."""
+    result = subprocess.run(
+        [*shlex.split(WP), *args], check=True, capture_output=True, text=True
+    )
+    return result.stdout.rstrip("\n")
+
+
+def test_the_group_rule_on_the_real_wordpress() -> None:
+    """The empty-group rule with the real 7-facts.php — what the fake covers, on WordPress.
+
+    A scratch product (created and deleted here; the plan's own products stay
+    untouched) carries a synthetic legacy table: a two-row group, a group that
+    is already empty, and a one-row group. One drop per outcome the rule
+    states: an unnamed drop that empties a group is refused with nothing
+    written; the same drop naming the group takes it with its last row; a
+    partial drop keeps the group's other row; a group that was already empty
+    stays unless the drop names it, and leaves when it does.
+    """
+    product = int(
+        wp_cli(
+            "post",
+            "create",
+            "--post_type=product",
+            "--post_status=draft",
+            "--post_title=scratch group rule",
+            "--porcelain",
+        )
+    )
+    figures = json.dumps({"scratch": {"value": "1", "unit": "kW"}})
+    try:
+        wp_cli("post", "meta", "update", str(product), facts.FIGURES_META_KEY, figures)
+        # The German twin is not this case's subject; an empty table makes the
+        # refusal walk skip it (it needs spec_groups).
+        wp_cli("post", "meta", "update", str(product), "_linker_de_acf_json", "{}")
+
+        def table() -> list[tuple[str, int]]:
+            raw = wp_cli("post", "meta", "get", str(product), "_tv_legacy_acf_json")
+            decoded = json.loads(raw)
+            return [
+                (
+                    str(group.get("spec_group_title", "")),
+                    len(group.get("spec_rows") or []),
+                )
+                for group in decoded["spec_groups"]
+            ]
+
+        def set_table(groups: list[dict[str, Any]]) -> None:
+            wp_cli(
+                "post",
+                "meta",
+                "update",
+                str(product),
+                "_tv_legacy_acf_json",
+                json.dumps({"spec_groups": groups}, ensure_ascii=False),
+            )
+
+        def drop(titles: list[str], labels: list[str], remove: list[str] | None) -> str:
+            change: dict[str, Any] = {
+                "product": product,
+                "group": "figures",
+                "key": "scratch",
+                "from": {"value": "1", "unit": "kW"},
+                "to": None,
+                "drop_legacy": {"titles": titles, "labels": labels},
+                "basis": "unverifiable",
+            }
+            if remove is not None:
+                change["drop_legacy"]["remove_groups"] = remove
+            try:
+                facts.wp_eval(
+                    shlex.split(WP),
+                    {
+                        "action": "write",
+                        "new_attribute": {},
+                        "attributes": [],
+                        "figures": [change],
+                        "legacy_copy": [],
+                    },
+                )
+            except SystemExit as refused:  # wp_eval exits with the WP-CLI failure
+                return str(refused.code)
+            return "ok"
+
+        base: list[dict[str, Any]] = [
+            {
+                "spec_group_title": "Inverter side",
+                "spec_rows": [
+                    {"spec_label": "Rated power"},
+                    {"spec_label": "Rated current"},
+                ],
+            },
+            {"spec_group_title": "Emptied earlier", "spec_rows": []},
+            {"spec_group_title": "Grid", "spec_rows": [{"spec_label": "Rated power"}]},
+        ]
+
+        set_table(base)
+        refused = drop(["Inverter side"], ["Rated power", "Rated current"], None)
+        assert "would remove the spec group" in refused
+        assert table() == [
+            ("Inverter side", 2),
+            ("Emptied earlier", 0),
+            ("Grid", 1),
+        ], "a refusal writes nothing"
+
+        set_table(base)
+        assert (
+            drop(["Inverter side"], ["Rated power", "Rated current"], ["Inverter side"])
+            == "ok"
+        )
+        assert table() == [("Emptied earlier", 0), ("Grid", 1)], (
+            "the named group leaves"
+        )
+
+        set_table(base)
+        assert drop(["Inverter side"], ["Rated current"], None) == "ok"
+        assert table() == [
+            ("Inverter side", 1),
+            ("Emptied earlier", 0),
+            ("Grid", 1),
+        ], "a partial drop keeps the other row"
+
+        set_table(base)
+        assert drop(["Grid"], ["Rated power"], ["Emptied earlier", "Grid"]) == "ok"
+        assert table() == [("Inverter side", 2)], "naming an empty group removes it"
+    finally:
+        wp_cli("post", "delete", str(product), "--force")
