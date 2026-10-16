@@ -71,3 +71,18 @@ test('the section nav marks the section in view and measures the chrome',()=>{
  assert.equal(links[0].getAttribute('aria-current'),'false');
  assert.equal(links[1].getAttribute('aria-current'),'true');
 });
+
+test('the project choices ask Genie and the retired nameplate entry is gone',()=>{
+ const dom=new JSDOM(`<div id="tv-storefront-pdp"><button data-project-message="New system with X">New system</button><button data-linker-assistant-open="nameplate">Identify a device from a nameplate photo</button></div>`,{runScripts:'outside-only'});
+ const {window}=dom;window.matchMedia=()=>({matches:false});
+ const seen=[];
+ ['linker-genie-ask','lia:open'].forEach((name)=>window.addEventListener(name,(event)=>seen.push([name,event.detail.message||event.detail.view])));
+ window.eval(readFileSync(new URL('../../assets/pdp-ui.js',import.meta.url),'utf8'));
+ window.document.querySelector('[data-project-message]').click();
+ // The nameplate chip had no listener left anywhere (owner 2026-10-13: not
+ // delivered); a button that still carried the attribute must stay inert.
+ window.document.querySelector('[data-linker-assistant-open]').click();
+ assert.deepEqual(seen,[['linker-genie-ask','New system with X']]);
+ const source=readFileSync(new URL('../../assets/pdp-ui.js',import.meta.url),'utf8');
+ assert.doesNotMatch(source,/lia:open|data-linker-assistant-open/);
+});

@@ -168,13 +168,6 @@
 			ask(choice.getAttribute("data-project-message") || "", choice);
 		});
 	});
-	root.querySelectorAll("[data-linker-assistant-open]").forEach(function (entry) {
-		entry.addEventListener("click", function () {
-			window.dispatchEvent(
-				new CustomEvent("lia:open", { detail: { view: entry.getAttribute("data-linker-assistant-open") } })
-			);
-		});
-	});
 
 	/* The rail's own cues: while the rail scrolls inside its sticky box, the
 	   fades mark the copy that is out of view. */

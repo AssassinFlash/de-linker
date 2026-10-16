@@ -467,4 +467,169 @@ test.describe('the products', () => {
 			).toBeGreaterThanOrEqual(8);
 		});
 	}
+
+	/**
+	 * The availability line's two states (owner ruling 2026-10-11: the
+	 * storefront states the status, never the quantity): the dot is the
+	 * prototype's accent for a product in stock and the live page's wait
+	 * colour for one that is not, and the wording is WooCommerce's own status
+	 * text. The fixture flips the English product's stock status through
+	 * WP-CLI — the side an ERP push lands on; linker-i18n's projection
+	 * carries it to the German twin — and puts it back.
+	 */
+	for (const locale of ['en', 'de'] as Locale[]) {
+		test(`${locale}: the availability dot follows the stock state`, async ({
+			page,
+		}) => {
+			const slug = PRODUCT[locale].split('/').filter(Boolean).pop()!;
+			// get_page_by_path answers the source object for the shared slug
+			// (the language layer's twins keep it, docs/specs/9-i18n.md).
+			const id = Number(
+				wp([
+					'eval',
+					`$en = get_page_by_path( '${slug}', OBJECT, 'product' );` +
+						`echo $en ? $en->ID : 0;`,
+				]).trim()
+			);
+			expect(
+				id,
+				`${PRODUCT[locale]} resolves to a product`
+			).toBeGreaterThan(0);
+			const before = wp([
+				'eval',
+				`echo wc_get_product( ${id} )->get_stock_status();`,
+			]).trim();
+			const labels: Record<Locale, [RegExp, RegExp]> = {
+				en: [/In stock/, /Currently unavailable/],
+				de: [/Auf Lager/, /Derzeit nicht verfügbar/],
+			};
+
+			const readDot = () =>
+				page.evaluate(() => {
+					const dot = document.querySelector(
+						'.pdp-avail-label .pdp-dot'
+					)!;
+					return {
+						className: dot.className,
+						color: getComputedStyle(dot).backgroundColor,
+						label: dot.parentElement!.textContent!.trim(),
+					};
+				});
+
+			const flip = (status: string) =>
+				wp([
+					'eval',
+					`$p = wc_get_product( ${id} ); $p->set_stock_status( '${status}' ); $p->save();`,
+				]);
+
+			try {
+				flip('instock');
+				await page.goto(`${instance().url}${PRODUCT[locale]}`);
+				const inStock = await readDot();
+				expect(inStock.className.trim(), 'the in-stock dot').toBe(
+					'pdp-dot'
+				);
+				expect(
+					inStock.label,
+					'the in-stock word is the status text'
+				).toMatch(labels[locale][0]);
+
+				flip('outofstock');
+				await page.goto(`${instance().url}${PRODUCT[locale]}`);
+				const outOfStock = await readDot();
+				expect(
+					outOfStock.className,
+					'the wait dot is marked'
+				).toContain('is-wait');
+				expect(
+					outOfStock.label,
+					'a product out of stock says so'
+				).toMatch(labels[locale][1]);
+				expect(
+					outOfStock.color,
+					'the two states differ in colour'
+				).not.toBe(inStock.color);
+			} finally {
+				flip(before);
+			}
+		});
+	}
+
+	/**
+	 * The FAQ block's prototype outline (docs/specs/174-pdp.md): the picture
+	 * panel stands beside the accordion for a product whose gallery holds a
+	 * picture beyond the featured one, and the panel takes the gallery's last
+	 * picture — the one the page nowhere else shows first. The rows are a
+	 * fixture written onto the product's own meta and removed again (the shape
+	 * tools/faq/import.py writes).
+	 */
+	test('the FAQ block carries the product picture beside its rows', async ({
+		page,
+	}) => {
+		const id = Number(
+			wp([
+				'eval',
+				`$en = get_page_by_path( 'goodwe-gw60k-sts-g10', OBJECT, 'product' );` +
+					`echo $en ? $en->ID : 0;`,
+			]).trim()
+		);
+		expect(id, 'the reference product resolves').toBeGreaterThan(0);
+		// The same write the ticket's own field writers use
+		// (tools/faq/wordpress.php: Faqs::encode(), wp_slash(), the twin
+		// mirror) — `wp post meta update` would unslash the JSON apart.
+		const fixture = (action: string) =>
+			wp([
+				'eval',
+				`$product = ${id};` +
+					`$rows = array( array( 'question' => 'Is the inverter port also 60 kW?',` +
+					` 'answer' => 'No. The inverter side is rated 30 kW.',` +
+					` 'citation' => array( 'url' => 'https://de-linker.com/doc.pdf', 'page' => 2 ) ) );` +
+					`$json = \\Linker\\Commerce\\Products\\Faqs::encode( $rows );` +
+					`$twin = (int) pll_get_post( $product, 'de' );` +
+					`if ( '${action}' === 'delete' ) {` +
+					` delete_post_meta( $product, '_linker_faqs' );` +
+					` if ( $twin ) { delete_post_meta( $twin, '_linker_faqs' ); }` +
+					`} else {` +
+					` update_post_meta( $product, '_linker_faqs', wp_slash( $json ) );` +
+					` if ( $twin ) { update_post_meta( $twin, '_linker_faqs', wp_slash( $json ) ); }` +
+					`}` +
+					`echo count( \\Linker\\Commerce\\Products\\Faqs::of( $product ) ) . '/';`,
+			]).trim();
+
+		try {
+			const written = fixture('write');
+			expect(written, 'the fixture lands as one readable row').toContain(
+				'1/'
+			);
+			await page.goto(`${instance().url}${NO_CLAIM.en}`);
+			const block = await page.evaluate(() => {
+				const section = document.querySelector('.pdp-faqs')!;
+				const side = section?.querySelector('.pdp-faq-side');
+				const main = section?.querySelector('.pdp-faq-main');
+				return {
+					exists: Boolean(section),
+					side: Boolean(side),
+					sidePicture:
+						side?.querySelector('img')?.getAttribute('src') ?? '',
+					sideBox: side?.getBoundingClientRect().width ?? 0,
+					mainBox: main?.getBoundingClientRect().width ?? 0,
+					rows:
+						section?.querySelectorAll('.pdp-disclose').length ?? 0,
+				};
+			});
+			expect(block.exists, 'the FAQ block is on the page').toBe(true);
+			expect(block.rows, 'the fixture row is rendered').toBe(1);
+			expect(block.side, 'the picture panel stands beside it').toBe(true);
+			expect(
+				block.sidePicture,
+				'the panel takes the gallery picture the top does not show first'
+			).toContain('goodwe-sts-30-60kw-g10-product-20261007-02');
+			expect(
+				block.sideBox,
+				'the picture panel is a column, not a full-width strip'
+			).toBeLessThan(block.mainBox);
+		} finally {
+			expect(fixture('delete'), 'the fixture is removed').toBe('0/');
+		}
+	});
 });
