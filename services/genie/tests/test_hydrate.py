@@ -96,10 +96,54 @@ def test_collect_search_products_records_released_pairings() -> None:
     assert gathered.facts["compat.condition.6519.0"].value == "Bridge required"
 
 
+def test_a_german_turn_reads_the_german_side_of_a_condition() -> None:
+    """R6-de (measured 2026-10-11): a German answer that cites a pairing
+    condition must not hydrate the English side - the English sentence in
+    German text is the row's failure. The data is English-first: a German
+    turn falls back to the English side of a half-written pair, and an
+    English turn never reads the German side."""
+    payload = {
+        "qualified": [
+            {
+                "product_id": 4107,
+                "facts": {},
+                "commerce": {"price_visible": False},
+                "pairings": [
+                    {
+                        "product_id": 3611,
+                        "verdict": "released",
+                        "conditions": [
+                            {
+                                "en": "A column holds six modules",
+                                "de": "Sechs Module je Säule",
+                            },
+                            {"en": "Meter required"},
+                            {"de": "Zähler erforderlich"},
+                        ],
+                    }
+                ],
+            }
+        ],
+    }
+
+    german = collect("linker/search-products", payload, "de")
+
+    assert german.facts["compat.condition.3611.0"].value == "Sechs Module je Säule"
+    # The half-written pair reads its English side rather than going empty.
+    assert german.facts["compat.condition.3611.1"].value == "Meter required"
+    assert german.facts["compat.condition.3611.2"].value == "Zähler erforderlich"
+    english = collect("linker/search-products", payload, "en")
+    assert (
+        english.facts["compat.condition.3611.0"].value == "A column holds six modules"
+    )
+    # The reverse leak is refused: no German sentence in an English answer.
+    assert "compat.condition.3611.2" not in english.facts
+
+
 def test_collect_check_compatibility_records_documents() -> None:
     payload = {
         "verdict": "released",
-        "conditions": [],
+        "conditions": [{"en": "Meter required", "de": "Zähler erforderlich"}],
         "documents": [
             {
                 "url": "https://de-linker.test/wp-content/uploads/datasheet.pdf",
@@ -110,6 +154,7 @@ def test_collect_check_compatibility_records_documents() -> None:
     }
     gathered = collect("linker/check-compatibility", payload)
 
+    assert gathered.facts["compat.condition.0"].value == "Meter required"
     assert (
         gathered.facts["compat.document.0"].value
         == "https://de-linker.test/wp-content/uploads/datasheet.pdf · p.2"
@@ -118,6 +163,9 @@ def test_collect_check_compatibility_records_documents() -> None:
         gathered.facts["compat.document.1"].value
         == "https://de-linker.test/wp-content/uploads/manual.pdf"
     )
+    # The same turn in German: the second call site reads the German side too.
+    german = collect("linker/check-compatibility", payload, "de")
+    assert german.facts["compat.condition.0"].value == "Zähler erforderlich"
 
 
 def test_illegal_structure_is_refused_by_the_schema() -> None:

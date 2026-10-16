@@ -65,6 +65,7 @@ def test_the_runner_answers_the_fifth_call_with_an_error_object() -> None:
             name: str,
             arguments: dict[str, Any] | None,
             user_context: str | None = None,
+            locale: str = "en",
         ) -> tuple[dict[str, Any], TurnFacts]:
             calls.append((name, arguments))
             facts = TurnFacts()
@@ -82,6 +83,36 @@ def test_the_runner_answers_the_fifth_call_with_an_error_object() -> None:
     assert "tool budget 4 exhausted" in fifth.get("error", "")
     assert len(calls) == 1
     assert budget.facts().facts.keys() == {"p4107.linker/get-product"}
+
+
+def test_the_runner_hands_the_turn_language_to_the_ability_client() -> None:
+    """A German turn's facts are collected in German: the pairing conditions
+    are bilingual and an English one hydrated into a German answer is the
+    R6-de failure (facts.collect; measured 2026-10-11)."""
+    seen: list[str] = []
+
+    class RecordingClient:
+        def record(
+            self,
+            name: str,
+            arguments: dict[str, Any] | None,
+            user_context: str | None = None,
+            locale: str = "en",
+        ) -> tuple[dict[str, Any], TurnFacts]:
+            seen.append(locale)
+            return {"ok": name}, TurnFacts()
+
+    budget = ToolBudget()
+    runner = _ability_runner(
+        RecordingClient(),  # type: ignore[arg-type]
+        budget,
+        "linker/search-products",
+        None,
+        "de",
+    )
+    runner({"lang": "de"})
+
+    assert seen == ["de"]
 
 
 def test_budget_facts_merge_the_parts_of_all_calls() -> None:

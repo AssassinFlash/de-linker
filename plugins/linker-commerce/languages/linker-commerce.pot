@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-15T17:51:46+00:00\n"
+"POT-Creation-Date: 2026-10-16T02:04:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -200,8 +200,8 @@ msgid "Returns chunks from the hosted PDF index. Cite only the returned chunk ID
 msgstr ""
 
 #: includes/Abilities/SearchProducts.php:118
-#: includes/Presentation/ProductShortcodes.php:155
-#: includes/Presentation/ProductShortcodes.php:1863
+#: includes/Presentation/ProductShortcodes.php:156
+#: includes/Presentation/ProductShortcodes.php:1910
 msgid "Search products"
 msgstr ""
 
@@ -223,6 +223,10 @@ msgstr ""
 
 #: includes/Abilities/SizeHint.php:81
 msgid "Solution Configurator URL with the fields as query arguments."
+msgstr ""
+
+#: includes/Account/AuthTemplates.php:153
+msgid "You have been signed out."
 msgstr ""
 
 #: includes/Account/ContactCard.php:47
@@ -348,7 +352,7 @@ msgstr ""
 #: includes/Admin/DocumentsMetaBox.php:52
 #: includes/Presentation/AccountTemplates.php:476
 #: includes/Presentation/LibraryPage.php:379
-#: includes/Presentation/ProductShortcodes.php:846
+#: includes/Presentation/ProductShortcodes.php:852
 msgid "Documents"
 msgstr ""
 
@@ -419,7 +423,7 @@ msgstr ""
 
 #: includes/Admin/DocumentsMetaBox.php:74
 #: includes/Admin/DocumentsMetaBox.php:123
-#: includes/Presentation/ProductShortcodes.php:1902
+#: includes/Presentation/ProductShortcodes.php:1949
 msgid "Language"
 msgstr ""
 
@@ -542,8 +546,8 @@ msgid "New message from the contact form"
 msgstr ""
 
 #: includes/Contact/Form.php:137
-#: includes/Presentation/ProductShortcodes.php:1532
-#: includes/Presentation/Shortcodes.php:285
+#: includes/Presentation/ProductShortcodes.php:1579
+#: includes/Presentation/Shortcodes.php:286
 msgid "CONTACT LINKER"
 msgstr ""
 
@@ -1062,7 +1066,7 @@ msgid "Saved on"
 msgstr ""
 
 #: includes/Presentation/AccountTemplates.php:465
-#: includes/Presentation/ProductShortcodes.php:622
+#: includes/Presentation/ProductShortcodes.php:623
 #: includes/Storefront/ProductView.php:306
 #: includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:43
@@ -1078,6 +1082,24 @@ msgstr ""
 
 #: includes/Presentation/AccountTemplates.php:469
 msgid "No inquiries yet."
+msgstr ""
+
+#: includes/Presentation/AccountTemplates.php:470
+#: includes/Presentation/LoginGate.php:105
+#: includes/Presentation/LoginGate.php:118
+#: includes/Presentation/LoginGate.php:147
+#: includes/Presentation/LoginGate.php:162
+#: includes/Presentation/LoginGate.php:177
+#: includes/Presentation/Shortcodes.php:399
+#: includes/Vocabulary/Terms.php:38
+#: templates/emails/linker-approval-approved.php:26
+#: templates/emails/linker-registration-received.php:38
+msgid "Browse products"
+msgstr ""
+
+#: includes/Presentation/AccountTemplates.php:471
+#: includes/Presentation/ProductShortcodes.php:318
+msgid "Open the Solution Configurator"
 msgstr ""
 
 #: includes/Presentation/AccountTemplates.php:472
@@ -1097,6 +1119,21 @@ msgstr ""
 #: includes/Presentation/AccountTemplates.php:475
 msgid "View all"
 msgstr ""
+
+#. translators: %s: inquiry number.
+#: includes/Presentation/AccountTemplates.php:790
+#: includes/Vocabulary/Terms.php:121
+#, php-format
+msgid "View inquiry %s"
+msgstr ""
+
+#. translators: %s: number of products in the inquiry.
+#: includes/Presentation/AccountTemplates.php:806
+#, php-format
+msgid "%s product"
+msgid_plural "%s products"
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/Presentation/BlogShortcodes.php:157
 msgid "Read article"
@@ -1121,10 +1158,10 @@ msgid "Product comparison table"
 msgstr ""
 
 #: includes/Presentation/ComparePage.php:212
-#: includes/Presentation/ProductShortcodes.php:139
-#: includes/Presentation/ProductShortcodes.php:145
-#: includes/Presentation/ProductShortcodes.php:149
-#: includes/Presentation/ProductShortcodes.php:1497
+#: includes/Presentation/ProductShortcodes.php:140
+#: includes/Presentation/ProductShortcodes.php:146
+#: includes/Presentation/ProductShortcodes.php:150
+#: includes/Presentation/ProductShortcodes.php:1544
 #: includes/Storefront/ArchiveSchema.php:174
 #: includes/Storefront/ProductView.php:642
 #: templates/myaccount/linker-saved-solutions.php:29
@@ -1133,7 +1170,7 @@ msgid "Products"
 msgstr ""
 
 #: includes/Presentation/ComparePage.php:225
-#: includes/Presentation/ProductShortcodes.php:1339
+#: includes/Presentation/ProductShortcodes.php:1386
 msgid "Item number"
 msgstr ""
 
@@ -1146,7 +1183,7 @@ msgid "Availability"
 msgstr ""
 
 #: includes/Presentation/ComparePage.php:311
-#: includes/Presentation/ProductShortcodes.php:842
+#: includes/Presentation/ProductShortcodes.php:848
 msgid "Compare"
 msgstr ""
 
@@ -1219,7 +1256,7 @@ msgid "No documents of this type."
 msgstr ""
 
 #: includes/Presentation/LibraryPage.php:371
-#: includes/Presentation/ProductShortcodes.php:844
+#: includes/Presentation/ProductShortcodes.php:850
 msgid "Ask Genie"
 msgstr ""
 
@@ -1232,12 +1269,12 @@ msgid "Trade rule"
 msgstr ""
 
 #: includes/Presentation/LibraryPage.php:375
-#: includes/Presentation/ProductShortcodes.php:1462
+#: includes/Presentation/ProductShortcodes.php:1509
 msgid "Previous"
 msgstr ""
 
 #: includes/Presentation/LibraryPage.php:376
-#: includes/Presentation/ProductShortcodes.php:1471
+#: includes/Presentation/ProductShortcodes.php:1518
 msgid "Next"
 msgstr ""
 
@@ -1303,7 +1340,6 @@ msgid "covers %s"
 msgstr ""
 
 #. translators: %d: number of products.
-#: includes/Presentation/LibraryPage.php:510
 #: includes/Presentation/LibraryPage.php:537
 #, php-format
 msgid "covers %d product"
@@ -1311,8 +1347,51 @@ msgid_plural "covers %d products"
 msgstr[0] ""
 msgstr[1] ""
 
+#: includes/Presentation/LoginGate.php:95
+msgid "Account with limited access"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:96
+#: includes/Presentation/LoginGate.php:97
+msgid "Access currently limited"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:99
+msgid "Your partner account is limited for now: the products and your questions stay open, net prices and the Proforma request are paused."
+msgstr ""
+
+#. translators: %s: the team's email address.
+#: includes/Presentation/LoginGate.php:103
+#, php-format
+msgid "Write to %s and we will look at your account again."
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:109
+msgid "Account under review"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:110
+msgid "Under review"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:111
+msgid "Your account is under review"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:113
+#: templates/emails/linker-registration-received.php:24
+msgid "We are reviewing your partner account. Net prices and the Proforma request open as soon as it is approved, and we will email you."
+msgstr ""
+
+#. translators: %s: the team's email address.
+#: includes/Presentation/LoginGate.php:116
+#: templates/emails/linker-registration-received.php:32
+#, php-format
+msgid "Until then, browse the products and write to %s with any question."
+msgstr ""
+
 #: includes/Presentation/LoginGate.php:142
-#: includes/Presentation/Shortcodes.php:373
+#: includes/Presentation/Shortcodes.php:394
 msgid "Empty solution draft"
 msgstr ""
 
@@ -1322,19 +1401,6 @@ msgstr ""
 
 #: includes/Presentation/LoginGate.php:146
 msgid "Your solution draft is empty. Add matched systems, then come back for your Proforma."
-msgstr ""
-
-#: includes/Presentation/AccountTemplates.php:470
-#: includes/Presentation/LoginGate.php:105
-#: includes/Presentation/LoginGate.php:118
-#: includes/Presentation/LoginGate.php:147
-#: includes/Presentation/LoginGate.php:162
-#: includes/Presentation/LoginGate.php:177
-#: includes/Presentation/Shortcodes.php:378
-#: includes/Vocabulary/Terms.php:38
-#: templates/emails/linker-approval-approved.php:26
-#: templates/emails/linker-registration-received.php:38
-msgid "Browse products"
 msgstr ""
 
 #: includes/Presentation/LoginGate.php:156
@@ -1356,8 +1422,16 @@ msgstr ""
 
 #: includes/Presentation/LoginGate.php:161
 #: includes/Presentation/LoginGate.php:176
-#: includes/Presentation/Shortcodes.php:380
+#: includes/Presentation/Shortcodes.php:401
 msgid "Sign in or register"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:173
+msgid "Sign in to request your Proforma"
+msgstr ""
+
+#: includes/Presentation/LoginGate.php:175
+msgid "Your solution draft is saved. Log in with your partner account to send the inquiry — no account yet? Register on the account page; the draft waits for you."
 msgstr ""
 
 #: includes/Presentation/LoginGate.php:239
@@ -1366,420 +1440,385 @@ msgstr ""
 msgid "Our reason:"
 msgstr ""
 
-#: includes/Presentation/LoginGate.php:95
-msgid "Account with limited access"
-msgstr ""
-
-#: includes/Presentation/LoginGate.php:96
-#: includes/Presentation/LoginGate.php:97
-msgid "Access currently limited"
-msgstr ""
-
-#: includes/Presentation/LoginGate.php:99
-msgid "Your partner account is limited for now: the products and your questions stay open, net prices and the Proforma request are paused."
-msgstr ""
-
-#: includes/Presentation/LoginGate.php:109
-msgid "Account under review"
-msgstr ""
-
-#: includes/Presentation/LoginGate.php:111
-msgid "Your account is under review"
-msgstr ""
-
-#: includes/Presentation/LoginGate.php:113
-#: templates/emails/linker-registration-received.php:24
-msgid "We are reviewing your partner account. Net prices and the Proforma request open as soon as it is approved, and we will email you."
-msgstr ""
-
-#: includes/Presentation/ProductShortcodes.php:137
+#: includes/Presentation/ProductShortcodes.php:138
 #: includes/Storefront/ArchiveSchema.php:90
 msgctxt "breadcrumb"
 msgid "Home"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:152
+#: includes/Presentation/ProductShortcodes.php:153
 #: includes/Storefront/ArchiveSchema.php:66
 msgid "Search products or filter by category and project requirements."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:155
+#: includes/Presentation/ProductShortcodes.php:156
 msgid "Search model or item number"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:156
-#: includes/Presentation/ProductShortcodes.php:1863
+#: includes/Presentation/ProductShortcodes.php:157
+#: includes/Presentation/ProductShortcodes.php:1910
 msgid "Search"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:188
+#: includes/Presentation/ProductShortcodes.php:189
 msgid "Product categories"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:189
-#: includes/Presentation/ProductShortcodes.php:261
+#: includes/Presentation/ProductShortcodes.php:190
+#: includes/Presentation/ProductShortcodes.php:262
 msgid "All products"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:216
+#: includes/Presentation/ProductShortcodes.php:217
 msgid "Close filters"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:229
-#: includes/Presentation/ProductShortcodes.php:238
-#: includes/Presentation/ProductShortcodes.php:430
+#: includes/Presentation/ProductShortcodes.php:230
+#: includes/Presentation/ProductShortcodes.php:239
+#: includes/Presentation/ProductShortcodes.php:431
 msgid "Filters"
 msgstr ""
 
 #. translators: %d: number of selected filters.
-#: includes/Presentation/ProductShortcodes.php:230
+#: includes/Presentation/ProductShortcodes.php:231
 #, php-format
 msgid "Filters (%d)"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:239
+#: includes/Presentation/ProductShortcodes.php:240
 msgid "Reset"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:252
+#: includes/Presentation/ProductShortcodes.php:253
 msgid "Category"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:274
+#: includes/Presentation/ProductShortcodes.php:275
 #: includes/Storefront/ProductView.php:241
 msgid "Application"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:275
+#: includes/Presentation/ProductShortcodes.php:276
 msgid "Brand"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:276
+#: includes/Presentation/ProductShortcodes.php:277
 #: includes/Products/Materials.php:775
 msgid "Phase"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:277
+#: includes/Presentation/ProductShortcodes.php:278
 msgid "Power"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:302
-#: includes/Presentation/ProductShortcodes.php:454
+#: includes/Presentation/ProductShortcodes.php:303
+#: includes/Presentation/ProductShortcodes.php:455
 #: includes/Storefront/ProductView.php:249
 msgid "AC power"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:302
+#: includes/Presentation/ProductShortcodes.php:303
 msgid "Minimum AC power in kilowatts"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:302
+#: includes/Presentation/ProductShortcodes.php:303
 msgid "Maximum AC power in kilowatts"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:305
-#: includes/Presentation/ProductShortcodes.php:455
+#: includes/Presentation/ProductShortcodes.php:306
+#: includes/Presentation/ProductShortcodes.php:456
 #: includes/Products/Materials.php:779
 msgid "Usable energy"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:305
+#: includes/Presentation/ProductShortcodes.php:306
 msgid "Minimum usable energy in kilowatt hours"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:305
+#: includes/Presentation/ProductShortcodes.php:306
 msgid "Maximum usable energy in kilowatt hours"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:315
+#: includes/Presentation/ProductShortcodes.php:316
 msgid "Plan with the Solution Configurator"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:316
+#: includes/Presentation/ProductShortcodes.php:317
 msgid "Configure a storage system from your site data; the result is a solution draft you can send as an inquiry."
 msgstr ""
 
-#: includes/Presentation/AccountTemplates.php:471
-#: includes/Presentation/ProductShortcodes.php:317
-msgid "Open the Solution Configurator"
-msgstr ""
-
-#: includes/Presentation/ProductShortcodes.php:321
+#: includes/Presentation/ProductShortcodes.php:322
 msgid "Clear"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:322
+#: includes/Presentation/ProductShortcodes.php:323
 msgid "Show products"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:350
+#: includes/Presentation/ProductShortcodes.php:351
 msgid "Set"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:380
+#: includes/Presentation/ProductShortcodes.php:381
 msgid "Recommended"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:381
+#: includes/Presentation/ProductShortcodes.php:382
 msgid "Newest first"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:382
+#: includes/Presentation/ProductShortcodes.php:383
 msgid "Name A-Z"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:383
+#: includes/Presentation/ProductShortcodes.php:384
 msgid "Power high-low"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:384
+#: includes/Presentation/ProductShortcodes.php:385
 msgid "Power low-high"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:390
+#: includes/Presentation/ProductShortcodes.php:391
 #: includes/Vocabulary/Terms.php:68
 msgid "Sort products"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:410
+#: includes/Presentation/ProductShortcodes.php:411
 msgid "No product matches these filters. Clear one to see more."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:429
+#: includes/Presentation/ProductShortcodes.php:430
 msgid "Product actions"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:454
+#: includes/Presentation/ProductShortcodes.php:455
 msgid "kW"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:455
+#: includes/Presentation/ProductShortcodes.php:456
 msgid "kWh"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:476
+#: includes/Presentation/ProductShortcodes.php:477
 msgid "Clear all"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/Presentation/ProductShortcodes.php:570
+#: includes/Presentation/ProductShortcodes.php:571
 #, php-format
 msgid "Compare: %s"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:592
-#: includes/Presentation/ProductShortcodes.php:1834
+#: includes/Presentation/ProductShortcodes.php:593
+#: includes/Presentation/ProductShortcodes.php:1881
 msgid "Item no."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:602
+#: includes/Presentation/ProductShortcodes.php:603
 msgid "Model"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:606
+#: includes/Presentation/ProductShortcodes.php:607
 msgid "Key product data"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:621
+#: includes/Presentation/ProductShortcodes.php:622
 msgid "View product"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:624
+#: includes/Presentation/ProductShortcodes.php:625
 msgid "Log in for pricing"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:820
+#: includes/Presentation/ProductShortcodes.php:826
 msgid "Ask about this product"
 msgstr ""
 
 #. translators: %s: product name with item number.
-#: includes/Presentation/ProductShortcodes.php:838
+#: includes/Presentation/ProductShortcodes.php:844
 #, php-format
 msgid "About %s: give me the key specs, which batteries or inverters it pairs with, and whether it fits my project."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:876
+#: includes/Presentation/ProductShortcodes.php:882
 msgid "New system"
 msgstr ""
 
 #. translators: %s: product name with item number.
-#: includes/Presentation/ProductShortcodes.php:878
+#: includes/Presentation/ProductShortcodes.php:884
 #, php-format
 msgid "I am planning a new system with %s."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:881
+#: includes/Presentation/ProductShortcodes.php:887
 msgid "Extend an existing system"
 msgstr ""
 
 #. translators: %s: product name with item number.
-#: includes/Presentation/ProductShortcodes.php:883
+#: includes/Presentation/ProductShortcodes.php:889
 #, php-format
 msgid "I am extending an existing system with %s."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:886
+#: includes/Presentation/ProductShortcodes.php:892
 msgid "Replace an existing unit"
 msgstr ""
 
 #. translators: %s: product name with item number.
-#: includes/Presentation/ProductShortcodes.php:888
+#: includes/Presentation/ProductShortcodes.php:894
 #, php-format
 msgid "I am replacing a unit in an existing system with %s."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:891
+#: includes/Presentation/ProductShortcodes.php:897
 msgid "Then ask one question at a time for what you still need (existing model, quantity, installation postcode, installation date) and check compatibility, missing system components and delivery windows against current Linker data."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:902
-msgid "Identify a device from a nameplate photo"
-msgstr ""
-
-#: includes/Presentation/ProductShortcodes.php:933
+#: includes/Presentation/ProductShortcodes.php:937
 msgid "Product photography for this model is in preparation."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:947
+#: includes/Presentation/ProductShortcodes.php:951
 msgid "Product image 2"
 msgstr ""
 
 #. translators: %d: image number.
-#: includes/Presentation/ProductShortcodes.php:992
+#: includes/Presentation/ProductShortcodes.php:996
 #, php-format
 msgid "Product image %d"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1016
+#: includes/Presentation/ProductShortcodes.php:1020
 msgid "Introduction in preparation. The specification below carries the values from the datasheet on file."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1136
+#: includes/Presentation/ProductShortcodes.php:1183
 msgid "Specifications"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1142
+#: includes/Presentation/ProductShortcodes.php:1189
 msgid "The specification table for this product is in preparation. Ask us for the datasheet."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1145
+#: includes/Presentation/ProductShortcodes.php:1192
 msgid "Specification group"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1185
+#: includes/Presentation/ProductShortcodes.php:1232
 msgid "About these specifications"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/Presentation/ProductShortcodes.php:1213
+#: includes/Presentation/ProductShortcodes.php:1260
 #, php-format
 msgid "Scenarios that show which projects the %s belongs in, and the limits behind our engineers' recommendation."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1219
+#: includes/Presentation/ProductShortcodes.php:1266
 msgid "Project scenario"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1219
+#: includes/Presentation/ProductShortcodes.php:1266
 msgid "Project note"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1226
+#: includes/Presentation/ProductShortcodes.php:1273
 msgid "Project"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1226
+#: includes/Presentation/ProductShortcodes.php:1273
 msgid "Checks"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1226
+#: includes/Presentation/ProductShortcodes.php:1273
 msgid "Linker view"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1228
+#: includes/Presentation/ProductShortcodes.php:1275
 msgid "Project information"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1246
+#: includes/Presentation/ProductShortcodes.php:1293
 msgid "Limits for the configuration"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1251
+#: includes/Presentation/ProductShortcodes.php:1298
 msgid "Linker's read"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1274
+#: includes/Presentation/ProductShortcodes.php:1321
 msgid "No documents are attached to this product yet. Ask us and we will add them."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1369
+#: includes/Presentation/ProductShortcodes.php:1416
 msgid "On the compatibility list on file"
 msgstr ""
 
 #. translators: %s: manufacturer
-#: includes/Presentation/ProductShortcodes.php:1371
+#: includes/Presentation/ProductShortcodes.php:1418
 #, php-format
 msgid "On %s's compatibility list"
 msgstr ""
 
 #. translators: %d: number of product families.
-#: includes/Presentation/ProductShortcodes.php:1440
+#: includes/Presentation/ProductShortcodes.php:1487
 #, php-format
 msgid "%d product family"
 msgid_plural "%d product families"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Presentation/ProductShortcodes.php:1458
+#: includes/Presentation/ProductShortcodes.php:1505
 msgid "Product pagination"
 msgstr ""
 
 #. translators: %s: product category name.
-#: includes/Presentation/ProductShortcodes.php:1500
+#: includes/Presentation/ProductShortcodes.php:1547
 #, php-format
 msgid "Category: %s"
 msgstr ""
 
 #. translators: %s: shop page title.
-#: includes/Presentation/ProductShortcodes.php:1502
+#: includes/Presentation/ProductShortcodes.php:1549
 #, php-format
 msgid "Archives: %s"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1533
+#: includes/Presentation/ProductShortcodes.php:1580
 msgid "Not sure which model to look for?"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1534
-#: includes/Presentation/Shortcodes.php:287
+#: includes/Presentation/ProductShortcodes.php:1581
+#: includes/Presentation/Shortcodes.php:288
 msgid "Your question includes this page as context. You can remove it before sending."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1537
+#: includes/Presentation/ProductShortcodes.php:1584
 msgid "Need help choosing?"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1828
+#: includes/Presentation/ProductShortcodes.php:1875
 msgid "All models"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1830
+#: includes/Presentation/ProductShortcodes.php:1877
 msgid "Selected model"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1857
+#: includes/Presentation/ProductShortcodes.php:1904
 msgid "My account"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1857
-#: includes/Presentation/ProductShortcodes.php:1884
+#: includes/Presentation/ProductShortcodes.php:1904
+#: includes/Presentation/ProductShortcodes.php:1931
 #: templates/myaccount/auth/form-login.php:69
 #: templates/myaccount/auth/form-register.php:134
 msgid "Sign in"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:1867
-#: includes/Presentation/ProductShortcodes.php:1869
+#: includes/Presentation/ProductShortcodes.php:1914
+#: includes/Presentation/ProductShortcodes.php:1916
 #: includes/Vocabulary/Labels.php:96
 #: includes/Vocabulary/Labels.php:171
 #: includes/Vocabulary/Labels.php:195
@@ -1787,160 +1826,160 @@ msgstr ""
 msgid "Solution draft"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:124
+#: includes/Presentation/Shortcodes.php:125
 msgid "Contact Linker"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:246
+#: includes/Presentation/Shortcodes.php:247
 msgid "LÖSUNGEN FÜR GROSSSPEICHER"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:247
+#: includes/Presentation/Shortcodes.php:248
 msgid "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:248
+#: includes/Presentation/Shortcodes.php:249
 msgid "Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die Systemauswahl mit einer umsetzbaren Planung für die Lieferung."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:249
+#: includes/Presentation/Shortcodes.php:250
 msgid "Ihr Projekt gemeinsam entwickeln"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:252
+#: includes/Presentation/Shortcodes.php:253
 msgid "KONTAKT ZU LINKER"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:253
+#: includes/Presentation/Shortcodes.php:254
 msgid "Das Projekt vor dem vollständigen Briefing besprechen."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:254
+#: includes/Presentation/Shortcodes.php:255
 msgid "Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:255
+#: includes/Presentation/Shortcodes.php:256
 msgid "EPC-Anforderung besprechen"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:258
+#: includes/Presentation/Shortcodes.php:259
 msgid "TECHNISCHE ZUSAMMENARBEIT"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:259
+#: includes/Presentation/Shortcodes.php:260
 msgid "Ein technischer Partner in jeder Projektphase."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:260
+#: includes/Presentation/Shortcodes.php:261
 msgid "Unser Team arbeitet mit Ihrem Team an Systementscheidungen, Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben wir bei technischen Fragen an Ihrer Seite."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:261
+#: includes/Presentation/Shortcodes.php:262
 msgid "Mit unserem Technikteam sprechen"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:264
+#: includes/Presentation/Shortcodes.php:265
 msgid "IHR PROJEKT IN DER PRAXIS"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:265
+#: includes/Presentation/Shortcodes.php:266
 msgid "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:266
+#: includes/Presentation/Shortcodes.php:267
 msgid "Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:267
+#: includes/Presentation/Shortcodes.php:268
 msgid "Ihre Speicheroptionen besprechen"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:271
+#: includes/Presentation/Shortcodes.php:272
 msgid "Eine frühe Frage reicht aus."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:272
+#: includes/Presentation/Shortcodes.php:273
 msgid "Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im Kurzformular optional."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:273
+#: includes/Presentation/Shortcodes.php:274
 msgid "Projekt besprechen"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:279
+#: includes/Presentation/Shortcodes.php:280
 msgid "UTILITY-SCALE SOLUTIONS"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:280
+#: includes/Presentation/Shortcodes.php:281
 msgid "A storage solution built around the whole project."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:281
+#: includes/Presentation/Shortcodes.php:282
 msgid "We work alongside developers and EPC teams to shape battery storage around the project’s energy goals, site conditions and integration needs. Together, we connect system choices with a practical plan for delivery."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:282
+#: includes/Presentation/Shortcodes.php:283
 msgid "Explore your project with us"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:286
+#: includes/Presentation/Shortcodes.php:287
 msgid "Discuss the project before preparing the full brief."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:288
+#: includes/Presentation/Shortcodes.php:289
 msgid "Discuss an EPC requirement"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:291
+#: includes/Presentation/Shortcodes.php:292
 msgid "TECHNICAL PARTNERSHIP"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:292
+#: includes/Presentation/Shortcodes.php:293
 msgid "A technical partner, wherever your project stands."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:293
+#: includes/Presentation/Shortcodes.php:294
 msgid "Our team works with yours on system choices, installation questions and commissioning, and stays involved when support is needed after delivery."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:294
+#: includes/Presentation/Shortcodes.php:295
 msgid "Talk to our technical team"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:297
+#: includes/Presentation/Shortcodes.php:298
 msgid "YOUR PROJECT, IN PRACTICE"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:298
+#: includes/Presentation/Shortcodes.php:299
 msgid "What could the right storage solution do for your site?"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:299
+#: includes/Presentation/Shortcodes.php:300
 msgid "We’ll explore how hybrid or AC-coupled storage could work with your installation, your energy use and the outcome you want to achieve."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:300
+#: includes/Presentation/Shortcodes.php:301
 msgid "Talk through your storage options"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:304
+#: includes/Presentation/Shortcodes.php:305
 msgid "An early question is enough."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:305
+#: includes/Presentation/Shortcodes.php:306
 msgid "Share what you already know. Project location and timing are optional in the short form."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:306
+#: includes/Presentation/Shortcodes.php:307
 msgid "Discuss your project"
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:375
+#: includes/Presentation/Shortcodes.php:396
 #: includes/Vocabulary/Terms.php:37
 msgid "Your solution draft is empty."
 msgstr ""
 
-#: includes/Presentation/Shortcodes.php:376
+#: includes/Presentation/Shortcodes.php:397
 msgid "Browse the products now. Adding to the solution draft is possible only after your account has been reviewed."
 msgstr ""
 
@@ -3197,13 +3236,6 @@ msgid "You have not sent an inquiry yet."
 msgstr ""
 
 #. translators: %s: inquiry number.
-#: includes/Presentation/AccountTemplates.php:790
-#: includes/Vocabulary/Terms.php:121
-#, php-format
-msgid "View inquiry %s"
-msgstr ""
-
-#. translators: %s: inquiry number.
 #: includes/Vocabulary/Terms.php:123
 #, php-format
 msgid "View inquiry number %s"
@@ -3411,13 +3443,100 @@ msgstr ""
 msgid "Before: %1$s. Now: %2$s."
 msgstr ""
 
+#: templates/myaccount/account/form-edit-account.php:29
+msgid "Your details"
+msgstr ""
+
+#: templates/myaccount/account/form-edit-account.php:71
+msgid "Password change"
+msgstr ""
+
+#: templates/myaccount/account/form-edit-account.php:74
+msgid "Leave the password fields blank to keep your current password."
+msgstr ""
+
+#: templates/myaccount/account/form-edit-account.php:77
+msgid "Current password"
+msgstr ""
+
+#: templates/myaccount/account/form-edit-account.php:81
+#: templates/myaccount/auth/form-reset-password.php:39
+msgid "New password"
+msgstr ""
+
+#: templates/myaccount/account/form-edit-account.php:83
+#: templates/myaccount/auth/form-register.php:105
+#: templates/myaccount/auth/form-reset-password.php:41
+msgid "Use at least 8 characters with a mix of letters, numbers and symbols."
+msgstr ""
+
+#: templates/myaccount/account/form-edit-account.php:86
+msgid "Confirm new password"
+msgstr ""
+
+#: templates/myaccount/account/form-edit-account.php:88
+#: templates/myaccount/auth/form-reset-password.php:46
+msgid "The passwords do not match."
+msgstr ""
+
+#: templates/myaccount/auth/form-login.php:57
+msgid "Your partner account"
+msgstr ""
+
+#: templates/myaccount/auth/form-login.php:58
+msgid "The workspace for installers, EPCs and distributors."
+msgstr ""
+
+#: templates/myaccount/auth/form-login.php:60
+msgid "Net prices and Proforma requests once approved"
+msgstr ""
+
+#: templates/myaccount/auth/form-login.php:61
+msgid "Every inquiry and document in one place"
+msgstr ""
+
+#: templates/myaccount/auth/form-login.php:62
+#: templates/myaccount/auth/form-register.php:51
+msgid "We answer inquiries within one working day"
+msgstr ""
+
 #: templates/myaccount/auth/form-login.php:70
 msgid "Your inquiries, documents and prices in one place."
 msgstr ""
 
 #: templates/myaccount/auth/form-login.php:122
+msgid "No partner account yet?"
+msgstr ""
+
+#: templates/myaccount/auth/form-login.php:122
 #: templates/myaccount/auth/form-register.php:58
 msgid "Create your business account"
+msgstr ""
+
+#: templates/myaccount/auth/form-lost-password.php:25
+#: templates/myaccount/auth/lost-password-confirmation.php:22
+msgid "Reset your password"
+msgstr ""
+
+#: templates/myaccount/auth/form-lost-password.php:53
+#: templates/myaccount/auth/lost-password-confirmation.php:29
+msgid "Back to sign in"
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:46
+msgid "Create your partner account"
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:47
+msgid "For installers, EPCs and distributors: net prices, documents and inquiries in one workspace."
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:50
+msgid "You see net prices on every product after approval"
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:52
+msgid "We run the VAT ID check in VIES for you"
 msgstr ""
 
 #: templates/myaccount/auth/form-register.php:59
@@ -3436,14 +3555,16 @@ msgstr ""
 msgid "Terms of Sale"
 msgstr ""
 
-#: templates/myaccount/auth/form-lost-password.php:25
-#: templates/myaccount/auth/lost-password-confirmation.php:22
-msgid "Reset your password"
+#: templates/myaccount/auth/form-register.php:134
+msgid "Already have a partner account?"
 msgstr ""
 
-#: templates/myaccount/auth/form-lost-password.php:53
-#: templates/myaccount/auth/lost-password-confirmation.php:29
-msgid "Back to sign in"
+#: templates/myaccount/auth/form-reset-password.php:31
+msgid "Choose a new password"
+msgstr ""
+
+#: templates/myaccount/auth/form-reset-password.php:44
+msgid "Re-enter new password"
 msgstr ""
 
 #: templates/myaccount/linker-saved-solutions.php:27
@@ -3517,130 +3638,4 @@ msgstr ""
 
 #: templates/proforma/proforma.php:177
 msgid "Reference"
-msgstr ""
-
-#: includes/Account/AuthTemplates.php:153
-msgid "You have been signed out."
-msgstr ""
-
-#. translators: %s: number of products in the inquiry.
-#: includes/Presentation/AccountTemplates.php:806
-#, php-format
-msgid "%s product"
-msgid_plural "%s products"
-msgstr[0] ""
-msgstr[1] ""
-
-#. translators: %s: the team's email address.
-#: includes/Presentation/LoginGate.php:103
-#, php-format
-msgid "Write to %s and we will look at your account again."
-msgstr ""
-
-#: includes/Presentation/LoginGate.php:110
-msgid "Under review"
-msgstr ""
-
-#. translators: %s: the team's email address.
-#: includes/Presentation/LoginGate.php:116
-#: templates/emails/linker-registration-received.php:32
-#, php-format
-msgid "Until then, browse the products and write to %s with any question."
-msgstr ""
-
-#: includes/Presentation/LoginGate.php:173
-msgid "Sign in to request your Proforma"
-msgstr ""
-
-#: includes/Presentation/LoginGate.php:175
-msgid "Your solution draft is saved. Log in with your partner account to send the inquiry — no account yet? Register on the account page; the draft waits for you."
-msgstr ""
-
-#: templates/myaccount/account/form-edit-account.php:29
-msgid "Your details"
-msgstr ""
-
-#: templates/myaccount/account/form-edit-account.php:71
-msgid "Password change"
-msgstr ""
-
-#: templates/myaccount/account/form-edit-account.php:74
-msgid "Leave the password fields blank to keep your current password."
-msgstr ""
-
-#: templates/myaccount/account/form-edit-account.php:77
-msgid "Current password"
-msgstr ""
-
-#: templates/myaccount/account/form-edit-account.php:81
-#: templates/myaccount/auth/form-reset-password.php:39
-msgid "New password"
-msgstr ""
-
-#: templates/myaccount/account/form-edit-account.php:83
-#: templates/myaccount/auth/form-register.php:105
-#: templates/myaccount/auth/form-reset-password.php:41
-msgid "Use at least 8 characters with a mix of letters, numbers and symbols."
-msgstr ""
-
-#: templates/myaccount/account/form-edit-account.php:86
-msgid "Confirm new password"
-msgstr ""
-
-#: templates/myaccount/account/form-edit-account.php:88
-#: templates/myaccount/auth/form-reset-password.php:46
-msgid "The passwords do not match."
-msgstr ""
-
-#: templates/myaccount/auth/form-login.php:57
-msgid "Your partner account"
-msgstr ""
-
-#: templates/myaccount/auth/form-login.php:58
-msgid "The workspace for installers, EPCs and distributors."
-msgstr ""
-
-#: templates/myaccount/auth/form-login.php:60
-msgid "Net prices and Proforma requests once approved"
-msgstr ""
-
-#: templates/myaccount/auth/form-login.php:61
-msgid "Every inquiry and document in one place"
-msgstr ""
-
-#: templates/myaccount/auth/form-login.php:62
-#: templates/myaccount/auth/form-register.php:51
-msgid "We answer inquiries within one working day"
-msgstr ""
-
-#: templates/myaccount/auth/form-login.php:122
-msgid "No partner account yet?"
-msgstr ""
-
-#: templates/myaccount/auth/form-register.php:46
-msgid "Create your partner account"
-msgstr ""
-
-#: templates/myaccount/auth/form-register.php:47
-msgid "For installers, EPCs and distributors: net prices, documents and inquiries in one workspace."
-msgstr ""
-
-#: templates/myaccount/auth/form-register.php:50
-msgid "You see net prices on every product after approval"
-msgstr ""
-
-#: templates/myaccount/auth/form-register.php:52
-msgid "We run the VAT ID check in VIES for you"
-msgstr ""
-
-#: templates/myaccount/auth/form-register.php:134
-msgid "Already have a partner account?"
-msgstr ""
-
-#: templates/myaccount/auth/form-reset-password.php:31
-msgid "Choose a new password"
-msgstr ""
-
-#: templates/myaccount/auth/form-reset-password.php:44
-msgid "Re-enter new password"
 msgstr ""

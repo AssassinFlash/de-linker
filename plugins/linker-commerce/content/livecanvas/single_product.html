@@ -83,8 +83,13 @@
 		</section>
 
 		[lc_if condition="linker_commerce_pdp_has_faqs"]<section class="pdp-block pdp-faqs sf-container">
-			<h2 class="pdp-section-title">Product questions</h2>
-			[linker_faqs]
+			<div class="pdp-faq-wrap">
+				[linker_pdp_faq_side]
+				<div class="pdp-faq-main">
+					<h2 class="pdp-section-title">Product questions</h2>
+					[linker_faqs]
+				</div>
+			</div>
 		</section>[/lc_if]
 
 		[lc_if condition="linker_commerce_pdp_has_pairings"]<section class="pdp-block sf-container">

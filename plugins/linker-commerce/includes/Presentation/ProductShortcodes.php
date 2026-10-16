@@ -106,6 +106,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_pdp_downloads', array( $this, 'pdp_downloads' ) );
 		add_shortcode( 'linker_pdp_pairings', array( $this, 'pdp_pairings' ) );
 		add_shortcode( 'linker_pdp_disclosures', array( $this, 'pdp_disclosures' ) );
+		add_shortcode( 'linker_pdp_faq_side', array( $this, 'pdp_faq_side' ) );
 		add_shortcode( 'linker_pdp_features', array( $this, 'pdp_features' ) );
 	}
 
@@ -762,7 +763,11 @@ final class ProductShortcodes {
 
 	/**
 	 * The availability line: the state with its dot and the delivery
-	 * sentence the freight policy derives.
+	 * sentence the freight policy derives. The dot's class follows the
+	 * product's own stock state (`WC_Product::is_in_stock()` — on a stock-
+	 * managed product WooCommerce derives the status from the quantity,
+	 * AGENTS.md §2's 2026-10-11 ruling); the stylesheet's `is-wait` rule is
+	 * the warn colour, the base dot the prototype's accent.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -773,7 +778,8 @@ final class ProductShortcodes {
 			return '';
 		}
 		$product = wc_get_product( (int) $view['id'] );
-		$html    = '<p class="pdp-avail-label"><span class="pdp-dot is-wait"></span>' . esc_html( (string) $view['availability'] ) . '</p>';
+		$dot     = 'pdp-dot' . ( $product instanceof WC_Product && ! $product->is_in_stock() ? ' is-wait' : '' );
+		$html    = '<p class="pdp-avail-label"><span class="' . esc_attr( $dot ) . '"></span>' . esc_html( (string) $view['availability'] ) . '</p>';
 		$note    = $product instanceof WC_Product ? self::delivery_note( $product ) : '';
 		if ( '' !== $note ) {
 			$html .= '<p class="pdp-avail-note">' . esc_html( $note ) . '</p>';
@@ -852,7 +858,7 @@ final class ProductShortcodes {
 
 	/**
 	 * The project entry's ways into the Advisor: one button per planning
-	 * stage, each with its own opening message, plus the nameplate entry.
+	 * stage, each with its own opening message.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -898,8 +904,6 @@ final class ProductShortcodes {
 			}
 			$html .= ' data-project-message="' . esc_attr( $message ) . '">' . esc_html( (string) $stage['label'] ) . '</button>';
 		}
-		$html .= '<button type="button" class="pdp-project-choice pdp-project-choice--nameplate" data-linker-assistant-open="nameplate">'
-			. esc_html__( 'Identify a device from a nameplate photo', 'linker-commerce' ) . '</button>';
 		return $html;
 	}
 
@@ -1060,9 +1064,49 @@ final class ProductShortcodes {
 	}
 
 	/**
+	 * The FAQ block's side panel: the product's gallery photo the accepted
+	 * prototype carries there (prototype/pdp-redesign: docs/design/2026-10-15-pdp-prototype/index.html,
+	 * variant A — `.faq-side` next to the accordion). The image is the last
+	 * one of the gallery the page renders — for the prototype's own reference
+	 * product GW60K-STS-G10 that is `…-product-20261007-02.png`, the last id
+	 * of `Materials::gallery_ids()`, so the panel repeats no picture from the
+	 * gallery or the feature band above it. A product whose gallery holds no
+	 * picture beyond the featured one gets no panel and the block stays one
+	 * column.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_faq_side( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$product = wc_get_product( (int) $view['id'] );
+		if ( ! $product instanceof WC_Product ) {
+			return '';
+		}
+		$ids = Materials::gallery_ids( $product, Materials::acf( (int) $view['id'] ) );
+		if ( \count( $ids ) < 2 ) {
+			return '';
+		}
+		return '<div class="pdp-faq-side">' . self::image_tag(
+			(int) $ids[ \count( $ids ) - 1 ],
+			'large',
+			array(
+				'alt'     => '',
+				'loading' => 'lazy',
+			)
+		) . '</div>';
+	}
+
+	/**
 	 * The description's feature sections: the feature cards that carry an
 	 * image, as the live page's `.pdp-feature` blocks (media beside the title
-	 * and body). The cards without an image render as disclosure rows.
+	 * and body). The cards without an image render as disclosure rows. The
+	 * copy's kicker is the product's series (`ProductView::fields()`'s
+	 * `series`; the prototype's band carries one, `.band-copy .kicker`), left
+	 * out where the product states no series.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -1072,7 +1116,8 @@ final class ProductShortcodes {
 		if ( null === $view ) {
 			return '';
 		}
-		$html = '';
+		$series = (string) ( $view['series'] ?? '' );
+		$html   = '';
 		foreach ( \is_array( $view['features'] ) ? $view['features'] : array() as $feature ) {
 			$image = (int) ( $feature['image'] ?? 0 );
 			if ( $image <= 0 ) {
@@ -1088,7 +1133,9 @@ final class ProductShortcodes {
 						'loading' => 'lazy',
 					)
 				)
-				. '</div><div class="pdp-feature-copy"><h3 class="pdp-section-title">' . esc_html( (string) $feature['title'] ) . '</h3>'
+				. '</div><div class="pdp-feature-copy">'
+				. ( '' !== $series ? '<p class="pdp-kicker">' . esc_html( $series ) . '</p>' : '' )
+				. '<h3 class="pdp-section-title">' . esc_html( (string) $feature['title'] ) . '</h3>'
 				. '<div class="pdp-reading pdp-muted pdp-feature-body"><p>' . esc_html( (string) $feature['body'] ) . '</p></div></div></section>';
 		}
 		return $html;

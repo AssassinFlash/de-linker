@@ -26,6 +26,10 @@
 	--pdp-soft: var(--proto-neutral-100);
 	--pdp-line: var(--proto-line-journal);
 	--pdp-navy: #102c30;
+	/* The availability dot's wait state: the live page's own measure of
+	   `.pdp-dot.is-wait` (rgb(249,115,22), docs/design/2026-10-11-replication-spec.md
+	   §2); the redesign's in-stock dot is the accepted prototype's accent. */
+	--pdp-wait: #f97316;
 	--pdp-font: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
 	/* One container rule for the whole page (the four former insets collapse
 	   into this pair). */
@@ -372,6 +376,12 @@
 	background: var(--pdp-teal);
 }
 
+/* The class the availability shortcode prints for a product that is not in
+   stock (`is_in_stock()` false): the live page's wait colour. */
+#tv-storefront-pdp .pdp-dot.is-wait {
+	background: var(--pdp-wait);
+}
+
 #tv-storefront-pdp .pdp-avail-note {
 	margin: 8px 0 0;
 	color: var(--pdp-muted);
@@ -714,7 +724,8 @@
 	border-bottom: 1px solid var(--pdp-line);
 }
 
-#tv-storefront-pdp .pdp-block > .pdp-disclose:first-of-type {
+#tv-storefront-pdp .pdp-block > .pdp-disclose:first-of-type,
+#tv-storefront-pdp .pdp-faq-main > .pdp-disclose:first-of-type {
 	margin-top: 32px;
 }
 
@@ -806,6 +817,12 @@
 	font-weight: 700;
 	line-height: 1.08;
 	letter-spacing: -0.015em;
+}
+
+/* The series kicker of the band copy (the prototype's `.band .band-copy
+   .kicker`): the dark panel's own text colour, not the page's muted ink. */
+#tv-storefront-pdp .pdp-feature-copy .pdp-kicker {
+	color: rgba(255, 255, 255, 0.75);
 }
 
 #tv-storefront-pdp .pdp-feature-body {
@@ -1177,6 +1194,37 @@
 	color: var(--pdp-muted);
 }
 
+/* FAQ — the prototype's left picture, right accordion (variant A,
+   `.faq-wrap`/`.faq-side`): two columns only when the side panel exists,
+   one column otherwise (a product whose gallery holds no second picture).
+   The panel is `.faq-side`'s mist rectangle with the picture contained
+   inside it. */
+#tv-storefront-pdp .pdp-faq-wrap {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: clamp(24px, 4vw, 64px);
+	margin-top: 8px;
+}
+
+#tv-storefront-pdp .pdp-faqs:has(.pdp-faq-side) .pdp-faq-wrap {
+	grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+}
+
+#tv-storefront-pdp .pdp-faq-side {
+	overflow: hidden;
+	min-height: 280px;
+	border-radius: var(--proto-radius-panel);
+	background: var(--proto-paper-mist);
+}
+
+#tv-storefront-pdp .pdp-faq-side img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 12%;
+	object-fit: contain;
+}
+
 /* Compatibility records */
 #tv-storefront-pdp .pdp-pairings {
 	display: grid;
@@ -1346,6 +1394,16 @@
 
 	#tv-storefront-pdp .pdp-project-deck {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* The FAQ's two columns stack; the picture keeps the prototype's own
+	   phone height (`.faq-side` 200px below 1024). */
+	#tv-storefront-pdp .pdp-faqs:has(.pdp-faq-side) .pdp-faq-wrap {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	#tv-storefront-pdp .pdp-faq-side {
+		min-height: 200px;
 	}
 }
 

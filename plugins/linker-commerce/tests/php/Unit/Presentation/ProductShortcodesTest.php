@@ -14,6 +14,8 @@ use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
 use Linker\Commerce\Tests\Support\MocksSelectionFacts;
 use Linker\Commerce\Tests\TestCase;
+use Mockery;
+use WC_Product;
 use WP_Mock;
 use WP_Post;
 use WP_Term;
@@ -28,6 +30,43 @@ use WP_Term;
 final class ProductShortcodesTest extends TestCase {
 
 	use MocksSelectionFacts;
+
+	/**
+	 * The product the product-page tests below read.
+	 */
+	private const PDP = 6530;
+
+	/**
+	 * The product mock the current test's reads answer with.
+	 *
+	 * @var WC_Product|null
+	 */
+	private ?WC_Product $pdp_product = null;
+
+	/**
+	 * The legacy ACF JSON the current test's reads answer with.
+	 *
+	 * @var array<string, mixed>
+	 */
+	private array $pdp_acf = array();
+
+	/**
+	 * The product's WooCommerce gallery field as the current test's reads
+	 * answer it (the comma-separated editor list).
+	 *
+	 * @var string
+	 */
+	private string $pdp_gallery = '6504,6505';
+
+	/**
+	 * The URL of an attachment in the fixture: it names the id, so a test can
+	 * tell which picture a shortcode printed.
+	 *
+	 * @param int $id The attachment.
+	 */
+	private function pdp_image_url( int $id ): string {
+		return 'http://linker.test/uploads/image-' . $id . '.png';
+	}
 
 	/**
 	 * Translation and escaping return their input; permalink helpers are the
@@ -54,9 +93,13 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction(
 			'add_query_arg',
 			array(
-				'return' => static function ( array $args, ?string $url = null ): string {
+				// Both forms the tree calls: add_query_arg( array $args, ?string $url )
+				// and WordPress's add_query_arg( string $key, $value, ?string $url )
+				// (ProductView's sign-in URL).
+				'return' => static function ( $first, $second = null, $third = null ): string {
+					$args     = \is_array( $first ) ? $first : array( (string) $first => $second );
 					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- the fixture sets this value.
-					$base_url = $url ?? (string) ( $_SERVER['REQUEST_URI'] ?? 'http://linker.test/' );
+					$base_url = ( \is_array( $first ) ? $second : $third ) ?? (string) ( $_SERVER['REQUEST_URI'] ?? 'http://linker.test/' );
 					$parts    = parse_url( $base_url );
 					$query    = array();
 					if ( is_array( $parts ) && isset( $parts['query'] ) ) {
@@ -1063,5 +1106,214 @@ final class ProductShortcodesTest extends TestCase {
 		$shortcodes = new ProductShortcodes( new ProductFilters(), new ProductView() );
 		$method     = new \ReflectionMethod( ProductShortcodes::class, 'language_url' );
 		return $method->invoke( $shortcodes, $lang );
+	}
+
+	/**
+	 * The product page shortcodes over one product, with the WordPress and
+	 * WooCommerce reads its view makes stubbed. Everything the page's data
+	 * assembly asks for beyond the product's own fields is empty: the tests
+	 * below read the availability dot, the feature band and the FAQ side
+	 * panel, not the catalogue data around them.
+	 *
+	 * @param bool                 $in_stock Whether WooCommerce calls the product in stock.
+	 * @param array<string, mixed> $acf      The product's legacy ACF JSON branches.
+	 */
+	private function pdp( bool $in_stock, array $acf = array() ): ProductShortcodes {
+		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( self::PDP );
+		$product->allows( 'get_name' )->andReturn( 'GoodWe GW60K-STS-G10' );
+		$product->allows( 'get_sku' )->andReturn( 'DLK-GOODWE-GW60KSTSG10' );
+		$product->allows( 'get_image_id' )->andReturn( 6503 );
+		$product->allows( 'get_gallery_image_ids' )->andReturn( array( 6504, 6505 ) );
+		$product->allows( 'get_short_description' )->andReturn( '<p>The intro.</p>' );
+		$product->allows( 'get_description' )->andReturn( '' );
+		$product->allows( 'get_price_html' )->andReturn( '<span>€ 100</span>' );
+		$product->allows( 'get_permalink' )->andReturn( 'http://linker.test/product/goodwe-gw60k-sts-g10/' );
+		$product->allows( 'get_attributes' )->andReturn( array() );
+		$product->allows( 'get_parent_id' )->andReturn( 0 );
+		$product->allows( 'is_in_stock' )->andReturn( $in_stock );
+
+		// WP_Mock keeps the first responder of a function, and this helper may
+		// run twice in one test (an in-stock product, then one that is not):
+		// the reads go through the properties, so the second call re-mocks the
+		// data and not the function.
+		$this->pdp_product = $product;
+		$this->pdp_acf     = $acf;
+
+		WP_Mock::userFunction( 'wc_get_product', array( 'return' => fn ( int $id ) => self::PDP === $id ? $this->pdp_product : false ) );
+		WP_Mock::userFunction( 'get_the_ID', array( 'return' => self::PDP ) );
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => fn ( int $id, string $key ) => match ( $key ) {
+					'_tv_legacy_acf_json'       => (string) json_encode( $this->pdp_acf ),
+					'_product_image_gallery'    => $this->pdp_gallery,
+					default                     => '',
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_get_post_terms',
+			array(
+				'return' => fn ( int $id, string $taxonomy ) => 'pa_model' === $taxonomy
+					? array(
+						(object) array(
+							'slug' => 'goodwe-gw60k-sts-g10',
+							'name' => 'GW60K-STS-G10',
+						),
+					)
+					: array(
+						(object) array(
+							'slug' => 'goodwe',
+							'name' => 'GoodWe',
+						),
+					),
+			)
+		);
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'get_the_title', array( 'return' => 'GoodWe GW60K-STS-G10' ) );
+		WP_Mock::userFunction( 'get_term_link', array( 'return' => 'http://linker.test/product-category/inverters/' ) );
+		WP_Mock::userFunction(
+			'wc_get_page_permalink',
+			array(
+				'return' => static fn ( string $page ): string => 'myaccount' === $page
+					? 'http://linker.test/my-account/'
+					: 'http://linker.test/products/',
+			)
+		);
+		WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'http://linker.test/proforma-request/' ) );
+		WP_Mock::userFunction( 'wc_attribute_label', array( 'return' => static fn ( string $name ): string => $name ) );
+		// The availability line's delivery note reads the product's own
+		// shipping meta through Materials::logistics (no mode and no weight in
+		// this fixture, so the note states the Proforma fallback).
+		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn ( $value ) => $value ) );
+		WP_Mock::userFunction( 'wc_string_to_bool', array( 'return' => static fn ( $value ) => in_array( $value, array( 'yes', 'true', '1' ), true ) ) );
+		WP_Mock::userFunction( 'wc_price', array( 'return' => static fn ( float $amount ): string => '€' . number_format( $amount, 2 ) ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn ( $value ) => strip_tags( (string) $value ) ) );
+		// Materials::gallery_ids's WordPress half and the image tags the two
+		// shortcodes print (the URL names its attachment, so a test can tell
+		// which picture the markup took).
+		WP_Mock::userFunction( 'wp_get_attachment_image_url', array( 'return' => fn ( int $id ): string => $this->pdp_image_url( $id ) ) );
+		WP_Mock::userFunction( 'wp_attachment_is_image', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_src', array( 'return' => fn ( int $id ): array => array( $this->pdp_image_url( $id ), 1024, 768, false ) ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_srcset', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_sizes', array( 'return' => '(max-width: 1024px) 100vw, 1024px' ) );
+
+		// The selection facts' own stubs come after the pair above, so the
+		// readers registered here are the ones that answer.
+		$this->mock_selection_facts(
+			array(
+				self::PDP => array(
+					'brand'       => 'goodwe',
+					'application' => 'commercial',
+					'phase'       => 3,
+				),
+			)
+		);
+
+		return new ProductShortcodes( new ProductFilters(), new ProductView() );
+	}
+
+	/**
+	 * The availability dot follows the product's own stock state: the base
+	 * class for a product in stock, `is-wait` for one that is not (the live
+	 * page's own two states; the shortcode printed `is-wait` on every product
+	 * until 2026-10-16, so the dot could never leave its warn colour). The
+	 * wording stays WooCommerce's own state text.
+	 */
+	public function test_the_availability_dot_follows_the_stock_state(): void {
+		unset( $GLOBALS['product'] );
+		$in_stock = $this->pdp( true )->pdp_availability();
+
+		$this->assertStringContainsString( '<span class="pdp-dot"></span>', $in_stock );
+		$this->assertStringContainsString( 'In stock', $in_stock );
+		$this->assertStringNotContainsString( 'is-wait', $in_stock );
+
+		$out_of_stock = $this->pdp( false )->pdp_availability();
+
+		$this->assertStringContainsString( '<span class="pdp-dot is-wait"></span>', $out_of_stock );
+		$this->assertStringContainsString( 'Currently unavailable', $out_of_stock );
+	}
+
+	/**
+	 * The nameplate entry is gone: no button, no attribute, no document
+	 * listener (owner ruling 2026-10-13: the nameplate chip is not
+	 * delivered, so no event may promise it).
+	 */
+	public function test_the_project_choices_carry_the_three_stages_alone(): void {
+		unset( $GLOBALS['product'] );
+		$html = $this->pdp( true )->pdp_project_choices();
+
+		$this->assertSame( 3, substr_count( $html, 'data-project-message=' ) );
+		$this->assertStringContainsString( 'New system', $html );
+		$this->assertStringNotContainsString( 'nameplate', $html );
+		$this->assertStringNotContainsString( 'data-linker-assistant-open', $html );
+	}
+
+	/**
+	 * The feature band's kicker names the product's series (`product_series`
+	 * of the product's own ACF JSON, the field the catalogue cards read),
+	 * and a product without one gets no kicker line.
+	 */
+	public function test_the_feature_band_takes_the_products_series_as_its_kicker(): void {
+		unset( $GLOBALS['product'] );
+		$html = $this->pdp(
+			true,
+			array(
+				'product_series' => 'STS Series',
+				'feature_cards'  => array(
+					array(
+						'feature_title' => 'Transfer in ≤ 4 ms.',
+						'feature_body'  => 'On/off-grid transfer time is ≤ 4 ms.',
+						'feature_image' => 4818,
+					),
+				),
+			)
+		)->pdp_features();
+
+		$this->assertStringContainsString( '<p class="pdp-kicker">STS Series</p>', $html );
+		$this->assertStringContainsString( 'Transfer in ≤ 4 ms.', $html );
+
+		$without = $this->pdp(
+			true,
+			array(
+				'feature_cards' => array(
+					array(
+						'feature_title' => 'Transfer in ≤ 4 ms.',
+						'feature_body'  => 'On/off-grid transfer time is ≤ 4 ms.',
+						'feature_image' => 4818,
+					),
+				),
+			)
+		)->pdp_features();
+
+		$this->assertStringNotContainsString( 'pdp-kicker', $without );
+	}
+
+	/**
+	 * The FAQ side panel repeats no picture from the gallery above it: it
+	 * takes the gallery's last id (the featured image and the first gallery
+	 * picture are the pair the page's top shows), and a product whose gallery
+	 * holds nothing beyond the featured picture gets no panel.
+	 */
+	public function test_the_faq_side_panel_takes_the_gallerys_last_picture(): void {
+		unset( $GLOBALS['product'] );
+
+		// The fixture's own gallery: 6503 is the featured image, 6504 and 6505
+		// the editor's list (the real product's data). The panel takes the
+		// last id, so it repeats neither the main picture nor the second one.
+		$html = $this->pdp( true )->pdp_faq_side();
+
+		$this->assertStringContainsString( '<div class="pdp-faq-side">', $html );
+		$this->assertStringContainsString( 'image-6505.png', $html );
+		$this->assertStringNotContainsString( 'image-6503.png', $html );
+		$this->assertStringNotContainsString( 'image-6504.png', $html );
+
+		// A product whose gallery holds the featured picture alone: no panel,
+		// and the block stays one column.
+		$this->pdp_gallery = '';
+		$this->assertSame( '', $this->pdp( true )->pdp_faq_side() );
 	}
 }
