@@ -63,7 +63,13 @@ no consumer after the storefront CSS was retired」。WP_Mock 严格模式会把
 
 `urls.sh` 从数据库取每个已发布对象（page / post / product 两语言）、每个非空 term 归档、
 首页、搜索页、购物车、结账、帐号端点，共 **335 个 URL**；`scan-classes.sh` 逐个抓取
-（`-L` 跟随 301）并 grep 三个载体类名：
+（`-L` 跟随 301）并 grep 三个载体类名。
+
+> 复现用的脚本在 `.scratch/h1-dead-css/`（该目录按仓库约定不进版本库，随会话留在工作机）：
+> `urls.sh`（取 URL 清单）、`scan-classes.sh`（全量抓取 + 类名扫描）、
+> `delete_dead.py`（删除 + 不变量断言）、`compare.py`（逐字节像素比对）、
+> `capture.sh` / `pairs-*.json`（12 配对拍摄）、`wrong-password.mjs`（通知态对照）、
+> `probe-rule.mjs`（承重性实测）。拍摄工具复用 `.scratch/acceptance-tools/shoot.mjs`。
 
 | 会话 | URL 数 | 载体类命中 | 非 200 |
 |---|---|---|---|
