@@ -25,34 +25,37 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 	 * legacy tables the product page still renders.
 	 *
 	 * The English table is `_tv_legacy_acf_json`. The German table is
-	 * `_linker_de_acf_json` on the English source row. A group left with no
-	 * rows is removed with the row. The source copy `_linker_de_source_acf_json`
-	 * is what the translation was made from; it is not rendered, and it stays.
+	 * `_linker_de_acf_json` on the English source row. The source copy
+	 * `_linker_de_source_acf_json` is what the translation was made from; it
+	 * is not rendered, and it stays.
+	 *
+	 * A drop may leave a group with no rows. Removing that group is a change
+	 * of the table's structure (a whole tab leaves the product page), so it
+	 * happens only where the drop names the group in `remove_groups`:
+	 * otherwise the write is refused before it touches a meta — the drop must
+	 * say out loud that the group leaves, or the group stays.
 	 *
 	 * @param int                  $product_id Product ID.
-	 * @param array<string, mixed> $drop       titles and labels, each a string or a list of strings.
+	 * @param array<string, mixed> $drop       titles, labels and remove_groups, each a string or a list of strings.
+	 *
+	 * @throws RuntimeException When the drop would remove a group it does not name.
 	 */
 	function seven_facts_drop_legacy_row( int $product_id, array $drop ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- This helper exists only inside this wp eval-file script; it is never part of the plugin's namespace.
 		$titles = array_map( 'strval', (array) ( $drop['titles'] ?? array() ) );
 		$labels = array_map( 'strval', (array) ( $drop['labels'] ?? array() ) );
+		$remove = array_map( 'strval', (array) ( $drop['remove_groups'] ?? array() ) );
 		$keys   = array( '_tv_legacy_acf_json', '_linker_de_acf_json' );
-		foreach ( $keys as $meta_key ) {
-			$decoded = json_decode( (string) get_post_meta( $product_id, $meta_key, true ), true );
-			if ( ! is_array( $decoded ) || ! isset( $decoded['spec_groups'] ) || ! is_array( $decoded['spec_groups'] ) ) {
-				continue;
-			}
+		$write  = static function ( int $product_id, string $meta_key, array $decoded, array $titles, array $labels ): void {
 			$groups = array();
 			foreach ( $decoded['spec_groups'] as $group ) {
 				if ( ! is_array( $group ) || ! isset( $group['spec_rows'] ) || ! is_array( $group['spec_rows'] ) ) {
 					$groups[] = $group;
 					continue;
 				}
-					$title          = (string) ( $group['spec_group_title'] ?? '' );
-					$is_named_group = in_array( $title, $titles, true );
-				$rows               = array();
+				$rows = array();
 				foreach ( $group['spec_rows'] as $row ) {
 					$row_label = is_array( $row ) ? (string) ( $row['spec_label'] ?? '' ) : '';
-					if ( $is_named_group && in_array( $row_label, $labels, true ) ) {
+					if ( in_array( (string) ( $group['spec_group_title'] ?? '' ), $titles, true ) && in_array( $row_label, $labels, true ) ) {
 						continue;
 					}
 					$rows[] = $row;
@@ -69,6 +72,40 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 				$meta_key,
 				wp_slash( (string) wp_json_encode( $decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) )
 			);
+		};
+		// The refusal walks both tables before the first meta is written, so
+		// a drop that refuses leaves the product as it was.
+		$tables = array();
+		foreach ( $keys as $meta_key ) {
+			$decoded = json_decode( (string) get_post_meta( $product_id, $meta_key, true ), true );
+			if ( ! is_array( $decoded ) || ! isset( $decoded['spec_groups'] ) || ! is_array( $decoded['spec_groups'] ) ) {
+				continue;
+			}
+			foreach ( $decoded['spec_groups'] as $group ) {
+				if ( ! is_array( $group ) || ! isset( $group['spec_rows'] ) || ! is_array( $group['spec_rows'] ) ) {
+					continue;
+				}
+				$title = (string) ( $group['spec_group_title'] ?? '' );
+				if ( ! in_array( $title, $titles, true ) ) {
+					continue;
+				}
+				$left = array_filter(
+					$group['spec_rows'],
+					static fn( $row ): bool => ! in_array( is_array( $row ) ? (string) ( $row['spec_label'] ?? '' ) : '', $labels, true )
+				);
+				if ( array() === $left && ! in_array( $title, $remove, true ) ) {
+					$refusal = "Dropping these rows would remove the spec group \"{$title}\" of product {$product_id} ({$meta_key}). Name the group in drop_legacy.remove_groups to remove it with the row.";
+					// An uncaught exception reaches the operator as WordPress's
+					// generic critical-error line; the reason goes to stderr first.
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- CLI refusal; there is no WP_Filesystem at this point.
+					fwrite( STDERR, $refusal . "\n" );
+					throw new RuntimeException( esc_html( $refusal ) );
+				}
+			}
+			$tables[ $meta_key ] = $decoded;
+		}
+		foreach ( $tables as $meta_key => $decoded ) {
+			$write( $product_id, $meta_key, $decoded, $titles, $labels );
 		}
 	}
 }

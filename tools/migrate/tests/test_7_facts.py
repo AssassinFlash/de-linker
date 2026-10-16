@@ -335,7 +335,11 @@ def test_a_deleted_figure_also_drops_the_legacy_row(tmp_path: Path) -> None:
                         "spec_label": "Rated power",
                         "spec_value": "30",
                         "spec_note": "Printed for this Model on the datasheet.",
-                    }
+                    },
+                    {
+                        "spec_label": "Rated current",
+                        "spec_value": "43.5",
+                    },
                 ],
             },
             {
@@ -377,8 +381,191 @@ def test_a_deleted_figure_also_drops_the_legacy_row(tmp_path: Path) -> None:
 
     stored = json.loads(site.state["products"]["6530"]["legacy"]["en"])
     titles = [group["spec_group_title"] for group in stored["spec_groups"]]
-    assert "Inverter side" not in titles
+    assert "Inverter side" in titles
     assert "Grid" in titles
+    rows = [
+        row["spec_label"]
+        for group in stored["spec_groups"]
+        if group["spec_group_title"] == "Inverter side"
+        for row in group["spec_rows"]
+    ]
+    assert "Rated power" not in rows
+    assert "Rated current" in rows
+
+
+def test_a_drop_that_would_remove_a_group_it_does_not_name_is_refused(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """2026-10-13: dropping the Inverter side group's only row took the whole group.
+
+    A group is a tab of the product page; the drop has to name it in
+    remove_groups to remove it, and an unnamed one must refuse before a write.
+    """
+    plan = {
+        "new_attribute": {},
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "inverter_side_rated_power_kw",
+                "from": {"value": "30", "unit": "kW"},
+                "to": None,
+                "drop_legacy": {
+                    "titles": ["Inverter side"],
+                    "labels": ["Rated power"],
+                },
+                "basis": "unverifiable",
+            }
+        ],
+        "basis": {"unverifiable": "not in the column"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    legacy = {
+        "spec_groups": [
+            {
+                "spec_group_title": "Inverter side",
+                "spec_rows": [{"spec_label": "Rated power", "spec_value": "30"}],
+            },
+            {
+                "spec_group_title": "Grid",
+                "spec_rows": [{"spec_label": "Rated power", "spec_value": "60"}],
+            },
+        ]
+    }
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": json.dumps(
+                    {"inverter_side_rated_power_kw": {"value": "30", "unit": "kW"}}
+                ),
+                "legacy": {"en": json.dumps(legacy), "de": "{}"},
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    with pytest.raises(SystemExit) as refused:
+        facts.main(
+            [
+                "--plan",
+                str(plan_path),
+                "--wp",
+                site.wp,
+                "--write",
+                "--backup-dir",
+                str(tmp_path),
+            ]
+        )
+
+    assert "would remove the spec group" in str(refused.value.code)
+    assert "Inverter side" in str(refused.value.code)
+    assert "remove_groups" in str(refused.value.code)
+    stored = json.loads(site.state["products"]["6530"]["legacy"]["en"])
+    titles = [group["spec_group_title"] for group in stored["spec_groups"]]
+    assert titles == ["Inverter side", "Grid"], "nothing was written"
+
+
+def test_a_named_group_leaves_with_its_last_row(tmp_path: Path) -> None:
+    """A drop that names the group in remove_groups removes it with its last row."""
+    plan = {
+        "new_attribute": {},
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "inverter_side_rated_power_kw",
+                "from": {"value": "30", "unit": "kW"},
+                "to": None,
+                "drop_legacy": {
+                    "titles": ["Inverter side"],
+                    "labels": ["Rated power"],
+                    "remove_groups": ["Inverter side"],
+                },
+                "basis": "unverifiable",
+            }
+        ],
+        "basis": {"unverifiable": "not in the column"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    legacy = {
+        "spec_groups": [
+            {
+                "spec_group_title": "Inverter side",
+                "spec_rows": [{"spec_label": "Rated power", "spec_value": "30"}],
+            },
+            {
+                "spec_group_title": "Grid",
+                "spec_rows": [{"spec_label": "Rated power", "spec_value": "60"}],
+            },
+        ]
+    }
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": json.dumps(
+                    {"inverter_side_rated_power_kw": {"value": "30", "unit": "kW"}}
+                ),
+                "legacy": {"en": json.dumps(legacy), "de": "{}"},
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    assert (
+        facts.main(
+            [
+                "--plan",
+                str(plan_path),
+                "--wp",
+                site.wp,
+                "--write",
+                "--backup-dir",
+                str(tmp_path),
+            ]
+        )
+        == 0
+    )
+
+    stored = json.loads(site.state["products"]["6530"]["legacy"]["en"])
+    titles = [group["spec_group_title"] for group in stored["spec_groups"]]
+    assert titles == ["Grid"]
+
+
+def test_the_read_back_refuses_an_undeclared_group_loss(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The read-back is the last gate: a write that loses an unnamed group fails the run.
+
+    The PHP side refuses first (the test above); this checks the Python gate
+    against a site whose groups left by some other path — e.g. a mechanism
+    that never went through that refusal.
+    """
+    state = copy.deepcopy(site_holding("from"))
+    product = state["products"]["1959"]
+    legacy = json.loads(product.get("legacy", {}).get("en") or "{}")
+    legacy["spec_groups"] = [
+        {
+            "spec_group_title": "Inverter side",
+            "spec_rows": [{"spec_label": "Rated power"}],
+        }
+    ]
+    product.setdefault("legacy", {})["en"] = json.dumps(legacy)
+    state["faults"] = ["remove-legacy-group"]
+    site = make_site(tmp_path, state)
+
+    assert facts.main(["--wp", site.wp, "--write", "--backup-dir", str(tmp_path)]) == 1
+
+    assert "removed spec groups the plan does not name" in capsys.readouterr().err
 
 
 def test_a_null_figure_is_deleted(tmp_path: Path) -> None:

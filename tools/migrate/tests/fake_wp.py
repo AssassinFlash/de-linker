@@ -11,7 +11,7 @@ answers as the real file does, reading from and writing to site.json:
                           "legacy": {"en": "<JSON object>", "de": "<JSON object>"},
                           "protected": {"<field>": ...}}},
      "term_counts": {"<taxonomy>:<slug>": <count>},
-     "faults": ["ignore-writes" | "touch-stock" | "fail-write"],
+     "faults": ["ignore-writes" | "touch-stock" | "fail-write" | "remove-legacy-group"],
      "writes": [<every write request>]}
 """
 
@@ -25,6 +25,17 @@ from pathlib import Path
 from typing import Any
 
 PAYLOAD = re.compile(r"\)\( '([A-Za-z0-9+/=]+)' \);\s*$")
+
+
+class LegacyGroupRefusal(Exception):
+    """A drop that would remove a spec group it does not name (7-facts.php throws too)."""
+
+    def __init__(self, product_id: str, title: str) -> None:
+        super().__init__(
+            f'Dropping these rows would remove the spec group "{title}" '
+            f"of product {product_id}. Name the group in drop_legacy.remove_groups "
+            "to remove it with the row."
+        )
 
 
 def write(site: dict[str, Any], request: dict[str, Any]) -> None:
@@ -48,6 +59,7 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
                 if isinstance(drop, dict):
                     titles = {str(item) for item in drop.get("titles") or []}
                     labels = {str(item) for item in drop.get("labels") or []}
+                    remove = {str(item) for item in drop.get("remove_groups") or []}
                     legacy = product.setdefault("legacy", {})
                     for side in ("en", "de"):
                         raw = legacy.get(side)
@@ -67,6 +79,13 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
                             if rows:
                                 group = {**group, "spec_rows": rows}
                                 groups.append(group)
+                            elif str(group.get("spec_group_title") or "") not in remove:
+                                # 7-facts.php refuses this before it writes:
+                                # a drop may remove a group only where it names it.
+                                raise LegacyGroupRefusal(
+                                    str(change["product"]),
+                                    str(group.get("spec_group_title") or ""),
+                                )
                         decoded["spec_groups"] = groups
                         legacy[side] = json.dumps(decoded, ensure_ascii=False)
             else:
@@ -99,6 +118,18 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
     if "touch-stock" in faults:
         for product in site["products"].values():
             product["protected"]["stock_status"] = "outofstock"
+    if "remove-legacy-group" in faults:
+        # A write that loses a spec group through a path the PHP guard does
+        # not see; the Python read-back must refuse the run.
+        for product in site["products"].values():
+            legacy = product.get("legacy") or {}
+            for side, raw in legacy.items():
+                if not raw:
+                    continue
+                decoded = json.loads(raw)
+                if decoded.get("spec_groups"):
+                    decoded["spec_groups"] = decoded["spec_groups"][1:]
+                    legacy[side] = json.dumps(decoded, ensure_ascii=False)
 
 
 def main() -> int:
@@ -132,7 +163,16 @@ def main() -> int:
         print("PHP Fatal error:  Uncaught RuntimeException: refused", file=sys.stderr)
         return 255
     else:
-        write(site, request)
+        try:
+            write(site, request)
+        except LegacyGroupRefusal as refusal:
+            # What WP-CLI does when the PHP side throws: an error, no answer,
+            # and nothing written.
+            print(
+                f"PHP Fatal error:  Uncaught RuntimeException: {refusal}",
+                file=sys.stderr,
+            )
+            return 255
         site_path.write_text(json.dumps(site, ensure_ascii=False))
         answer = {"written": True}
     print("\n" + request["marker"] + json.dumps(answer, ensure_ascii=False))

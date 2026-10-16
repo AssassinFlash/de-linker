@@ -305,8 +305,7 @@ $ /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpcs -q      # justfile 的 php�
 3. **D6 屋顶轮廓**（本包唯一的第三种形态行）：影像瓦片取不到（外部 WMS `geoservices.bayern.de`，画布灰底、点屋面无法定位），
    轮廓叠加拍不到；替代证据 = 引擎 `/roof/outline` 同坐标实测 `found:true`（§4 命令 4）。
 4. **A3 的 PDP 差异**：实例侧缺组已恢复并复验（§3 H·A3，`restore-inverter-side.php`），余下差异=页尾整段 188px 位移
-   （内容逐像素相同）。**缺陷候选（缺组发生在哪一步）**——挂给数据/切换泳道，可复核步骤：①判组（绑到 6530 那行，不是数行数）：`gzip -dc ~/de-linker-data/<dump>/db.sql.gz | grep '_tv_legacy_acf_json' | grep -m1 '6530' | grep -o 'Inverter side' | wc -l` → **1**（本线对 `20261010-0027` 与 `cutover-20261013-1759` 实测均为 1；只跑 `grep -o 'Inverter side' | wc -l` 不带前缀定位会得到 69，那是全库出现次数，判不了 6530）②在实例上读组数：`just wp t110 eval '$g = json_decode( (string) get_post_meta( 6530, "_tv_legacy_acf_json", true ), true ); echo count( $g["spec_groups"] );'`（本线实测 2，恢复后 3）③比对 `plugins/linker-i18n/tests/fixtures/live/products.json` 的
-   6530 条目（三组）④差异点定位后再决定是否需要一个「legacy 组完整性」判定进迁移检查。承担者：数据/切换泳道（本线只做实例侧恢复）。
+   （内容逐像素相同）。**缺组定位（2026-10-16 结案，见 `docs/debt/C15-phase-power-2026-10-13.md` 末节）**：消失点是 C15 的第三写——计划中 `to: null` 的变化带 `drop_legacy`，行删掉后只剩一行的组随之消失（`7-facts.php` 的删除器语义）；`pull load` 无责（同快照装进全新实例后两张表逐字节等于快照）。迁移检查侧已有防线：`7-facts.php` 对「会删空组而未点名」的删除在写前拒绝，`7-facts.py` 读回断言组完整性。可复核步骤：①判组（绑到 6530 那行，不是数行数）：`gzip -dc ~/de-linker-data/<dump>/db.sql.gz | grep '_tv_legacy_acf_json' | grep -m1 '6530' | grep -o 'Inverter side' | wc -l` → **1**（本线对 `20261010-0027` 与 `cutover-20261013-1759` 实测均为 1；只跑 `grep -o 'Inverter side' | wc -l` 不带前缀定位会得到 69，那是全库出现次数，判不了 6530）②在实例上读组数：`just wp t110 eval '$g = json_decode( (string) get_post_meta( 6530, "_tv_legacy_acf_json", true ), true ); echo count( $g["spec_groups"] );'`（本线实测 2，恢复后 3）③比对 `plugins/linker-i18n/tests/fixtures/live/products.json` 的 6530 条目（三组）④t110 的备份时间线即定位证据：`c15-facts-backup-…-032826.json` 三组 → `…-044057.json` 两组。
    「过不过像素门」仍须业主掩膜/允许差异裁定，本行不自行判 PASS。
 5. **test-mail 开关**：拍摄结束后已关（`off` 与 `status` 的实测输出见 §1 该行）；实例的插件软链也已还原到
    并行泳道的 `de-linker-nits`（§5bis 末尾），本次复验窗口之外未留改动。
