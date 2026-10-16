@@ -1,0 +1,83 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "https://api.deepseek.com/chat/completions",
+    "headers": {
+      "Authorization": "Bearer <DEEPSEEK_API_KEY>",
+      "Content-Type": "application/json"
+    },
+    "body_bytes": 204586,
+    "body": {
+      "model": "deepseek-flash",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "This photo shows the nameplate (rating label) of a device. Transcribe it exactly as printed: the brand, the model, the product type, every rating with its label and value, the serial number and any marks. Do not correct, complete or guess anything; write null for anything you cannot read. Answer in JSON: {\"brand\": str|null, \"model\": str|null, \"product_type\": str|null, \"ratings\": [{\"label\": str, \"value\": str}], \"serial\": str|null, \"marks\": [str]}"
+            },
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/png;base64,<base64 of raw/nameplate-probe.png: 152927 bytes, sha256 b67ceb771aa346726854bd40d2684fbcf9bc829eb7518641229c8927108278d0>"
+              }
+            }
+          ]
+        }
+      ],
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "requested_at_utc": "2026-10-16T17:19:56+00:00",
+  "wall_seconds": 2.3,
+  "status": 200,
+  "response_headers": {
+    "Server": "openresty",
+    "Content-Type": "application/json",
+    "vary": "accept-encoding",
+    "access-control-allow-credentials": "true",
+    "x-ds-trace-id": "84fa9ec9e7ad9b7522fba1dd3dd8bd60",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+    "X-Content-Type-Options": "nosniff",
+    "Transfer-Encoding": "chunked",
+    "Connection": "close",
+    "Date": "Fri, 16 Oct 2026 17:19:57 GMT",
+    "EO-LOG-UUID": "9330732255743661616",
+    "EO-Cache-Status": "MISS"
+  },
+  "response": {
+    "id": "5c9303f0-744c-4f9e-9be9-7ba3325d5e33",
+    "object": "chat.completion",
+    "created": 1792171197,
+    "model": "deepseek-flash",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"brand\": \"SAJ\", \"model\": \"H2-10K-T3\", \"product_type\": \"HYBRID INVERTER\", \"ratings\": [{\"label\": \"Max. PV input voltage\", \"value\": \"1000 V\"}, {\"label\": \"MPPT voltage range\", \"value\": \"160-950 V\"}, {\"label\": \"Battery voltage\", \"value\": \"180-750 V\"}, {\"label\": \"Rated power\", \"value\": \"10000 W\"}, {\"label\": \"Rated AC voltage\", \"value\": \"3/N/PE 230/400 V\"}, {\"label\": \"Rated frequency\", \"value\": \"50 Hz\"}, {\"label\": \"Max. AC output current\", \"value\": \"3 x 16 A\"}, {\"label\": \"Protective class\", \"value\": \"I\"}, {\"label\": \"Ingress protection\", \"value\": \"IP65\"}], \"serial\": \"H2T3K10A2609000123\", \"marks\": [\"CE\", \"IEC 62109\"]}",
+          "reasoning_content": "Let me transcribe the nameplate.\n\nBrand: SAJ\nProduct type: HYBRID INVERTER\nModel: H2-10K-T3\nRatings:\n- Max. PV input voltage: 1000 V\n- MPPT voltage range: 160-950 V\n- Battery voltage: 180-750 V\n- Rated power: 10000 W\n- Rated AC voltage: 3/N/PE 230/400 V\n- Rated frequency: 50 Hz\n- Max. AC output current: 3 x 16 A\n- Protective class: I\n- Ingress protection: IP65\nSerial: H2T3K10A2609000123\nMarks: CE, IEC 62109\n\nLet me double check serial: \"S/N: H2T3K10A2609000123\" — yes.\n\nMarks: CE, IEC 62109."
+        },
+        "logprobs": null,
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 611,
+      "completion_tokens": 414,
+      "total_tokens": 1025,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 190
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 611
+    },
+    "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+  }
+}

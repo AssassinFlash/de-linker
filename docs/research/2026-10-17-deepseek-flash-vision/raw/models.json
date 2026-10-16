@@ -1,0 +1,85 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://api.deepseek.com/models",
+    "headers": {
+      "Authorization": "Bearer <DEEPSEEK_API_KEY>"
+    }
+  },
+  "requested_at_utc": "2026-10-16T17:11:47+00:00",
+  "status": 200,
+  "response_headers": {
+    "Server": "openresty",
+    "Content-Type": "application/json",
+    "vary": "accept-encoding",
+    "access-control-allow-credentials": "true",
+    "x-ds-trace-id": "550407c18cc4f6abb5fc63047d2044fc",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+    "X-Content-Type-Options": "nosniff",
+    "Content-Length": "743",
+    "Connection": "close",
+    "Date": "Fri, 16 Oct 2026 17:11:47 GMT",
+    "EO-LOG-UUID": "3407492048412846345",
+    "EO-Cache-Status": "MISS"
+  },
+  "body": {
+    "object": "list",
+    "data": [
+      {
+        "id": "deepseek-flash",
+        "object": "model",
+        "owned_by": "deepseek",
+        "name": "DeepSeek-V4.1-Flash",
+        "context_window": 1048576,
+        "max_output_tokens": 393216,
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "effort": {
+          "supported_levels": [
+            "low",
+            "high",
+            "max"
+          ],
+          "default_level": "high"
+        },
+        "api_capabilities": {
+          "anthropic_messages": {
+            "system_prompt_update": "in-history"
+          }
+        }
+      },
+      {
+        "id": "deepseek-v4-pro",
+        "object": "model",
+        "owned_by": "deepseek",
+        "name": "DeepSeek-V4-Pro",
+        "context_window": 1048576,
+        "max_output_tokens": 393216,
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "effort": {
+          "supported_levels": [
+            "low",
+            "high",
+            "max"
+          ],
+          "default_level": "high"
+        },
+        "api_capabilities": {
+          "anthropic_messages": {
+            "system_prompt_update": "leading-only"
+          }
+        }
+      }
+    ]
+  }
+}

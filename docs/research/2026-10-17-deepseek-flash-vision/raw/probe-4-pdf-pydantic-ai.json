@@ -1,0 +1,55 @@
+{
+  "library": {
+    "pydantic_ai_slim": "2.55.0",
+    "openai": "3.28.0",
+    "model_class": "OpenAIChatModel",
+    "provider_class": "DeepSeekProvider",
+    "model_name": "deepseek-flash"
+  },
+  "requested_at_utc": "2026-10-16T17:21:44+00:00",
+  "wall_seconds": 0.25,
+  "outcome": "ModelHTTPError",
+  "error": {
+    "status_code": 400,
+    "model_name": "deepseek-flash",
+    "body": {
+      "message": ".messages[1]: file must have a file_id or file_data (request_id: 71e905f3-39f7-419d-91d3-a0f8167b8b9f)",
+      "type": "invalid_request_error",
+      "param": null,
+      "code": "invalid_request_error"
+    }
+  },
+  "wire": [
+    {
+      "method": "POST",
+      "url": "https://api.deepseek.com/v1/chat/completions",
+      "body": {
+        "model": "deepseek-flash",
+        "stream": false,
+        "messages": [
+          {
+            "role": "system",
+            "content": "You read photos and files that a customer attached to a question."
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "text": "What does the attached PDF say? Quote its text.",
+                "type": "text"
+              },
+              {
+                "file": {
+                  "file_data": "data:application/pdf;base64,<base64 of raw/datasheet-probe.pdf: 694 bytes, sha256 0624d8f422ce77ae6bf35c6364fede9015cc7742ce882ba847e9a87f21574df0>",
+                  "filename": "filename.pdf"
+                },
+                "type": "file"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400
+    }
+  ]
+}
