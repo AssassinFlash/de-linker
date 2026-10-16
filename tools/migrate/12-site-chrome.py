@@ -36,6 +36,20 @@ recorded in docs/acceptance/2026-10-10/12/copy-review.md):
    wording, with the names swapped (NAME_RULES) and Site Detail
    references folded into the configurator's roof step (BESPOKE). A
    marketing sentence that does not name a tool is not touched.
+6. The links follow the names. The 2026-10-14 production run renamed the
+   words and left every href on the retired addresses (`/linker-advisor/`,
+   `/linker-planner/` and their pre-move German forms) — the link rules
+   did not carry the addresses until now. The retired pages' comments and
+   redirect scripts spell the addresses in plain text too, and the FAQ
+   page's CTA opens Genie rather than the products page.
+7. The retired pages (design-canvas / Entwurfsfläche, the two "has moved"
+   notices) lose the old names and addresses from their content, titles
+   and SEO metas as well; they stay drafts.
+8. The media library's alternative texts that name an old tool get the
+   new names (file names stay), and the German sources' `_linker_de_content`
+   / `_linker_de_title` metas are refreshed to the German pages' new state:
+   the 9-i18n import reads them as its source, so a stale copy reverts
+   every rename here — the 2026-10-15 deploy's import did exactly that.
 
 After the writes, the German versions' translation state is marked
 hand-edited (all fields reviewed) with the new English fingerprint, so a
@@ -66,9 +80,32 @@ OLD_NAMES = (
     "Linker Standortdetails",
 )
 
+# The retired addresses of the two tools, in every spelling the content and
+# metas carry them (the `/de/` forms are covered as their own substrings).
+# The link rules rewrite them; verify refuses them.
+LEGACY_ADDRESSES = (
+    "/linker-advisor/",
+    "/linker-planner/",
+    "/linker-planer/",
+    "/linker-berater/",
+)
+
+
+def stale_tokens(text: str) -> list[str]:
+    """The old names and addresses still in one string, each with its count:
+    the report unit of plan, apply and verify."""
+    found: list[str] = []
+    for token in (*OLD_NAMES, *LEGACY_ADDRESSES):
+        count = text.count(token)
+        if count:
+            found.append(f"{count}x {token!r}")
+    return found
+
+
 # Published pages, posts and LiveCanvas templates whose content or title
-# names a tool, by step key: English slug. The header and footer partials
-# and the two tool pages resolve separately below.
+# names a tool (or, for the thank-you page, opens its address), by step
+# key: English slug. The header and footer partials and the two tool pages
+# resolve separately below.
 SURFACES: dict[str, str] = {
     "home": "home",
     "solution": "solution",
@@ -82,6 +119,7 @@ SURFACES: dict[str, str] = {
     "services-support": "services-support",
     "gateway-post": "gateway-meter-cloud-monitoring-data-layer",
     "blog-index-template": "template-for-blog-posts-index",
+    "thank-you": "thank-you",
 }
 
 # Page titles, English slug (or German slug) -> (old, new).
@@ -331,6 +369,14 @@ BESPOKE_EN: list[tuple[str, str, tuple[str, ...]]] = [
         ("solution",),
     ),
     ("Advisor answers instantly", "Genie answers instantly", ("solution",)),
+    # The retired design canvas: one sentence needs the article the renamed
+    # tool takes ("for the Solution Configurator") for its English to read
+    # whole; the rest of its old names follow the name rules.
+    (
+        "for Linker Planner and your Project request.",
+        "for the Solution Configurator and your Project request.",
+        ("design-canvas",),
+    ),
 ]
 
 # Ordered catch-alls for the remaining English mentions. Zero hits in a
@@ -423,6 +469,21 @@ BESPOKE_DE: list[tuple[str, str, tuple[str, ...]]] = [
         "Lösungskonfigurator · Lösungsauslegung",
         ("for-installer",),
     ),
+    # The roof step button: it opened the language home ("/de/"); it opens
+    # the configurator's roof step, as its renamed label says.
+    (
+        '<a class="lk-btn-primary" href="/de/">',
+        '<a class="lk-btn-primary" href="/de/loesungskonfigurator/?step=roof">',
+        ("for-installer",),
+    ),
+    # FAQ & documents: the Genie tile's CTA keeps its hook (the new tree
+    # consumes data-linker-assistant-open) and opens the Genie page rather
+    # than the products page when JavaScript does not run.
+    (
+        'href="/de/produkte/" data-linker-assistant-open',
+        'href="/de/genie/" data-linker-assistant-open',
+        ("faq-download",),
+    ),
     # Service & Support.
     (
         "Drei Werkzeuge für Ihr eigenes Tempo: Legen Sie ein System im Linker Planer aus, erfassen Sie Ihr Dach mit den Linker Standortdetails und fragen Sie den Linker Berater alles zu einem Produkt oder Datenblatt.",
@@ -449,10 +510,18 @@ BESPOKE_DE: list[tuple[str, str, tuple[str, ...]]] = [
     ("Linker Berater:</strong>", "Genie:</strong>", ("solution",)),
     ("Linker Planer:</strong>", "Lösungskonfigurator:</strong>", ("solution",)),
     ("antwortet der Berater sofort", "antwortet Genie sofort", ("solution",)),
+    # The retired design canvas: the honesty line needs the article the
+    # renamed tool takes ("für den Lösungskonfigurator").
+    (
+        "für Linker Planer und Ihre Projektanfrage.",
+        "für den Lösungskonfigurator und Ihre Projektanfrage.",
+        ("design-canvas",),
+    ),
 ]
 
 # German keeps the article, so the configurator is one catch-all; the
-# assistant drops its article with the name.
+# assistant drops its article with the name. The English spelling stays in
+# the rules for the retired pages, whose bodies and comments kept it.
 NAME_RULES_DE: list[tuple[str, str]] = [
     ("Der Linker Berater", "Genie"),
     ("der Linker Berater", "Genie"),
@@ -462,6 +531,7 @@ NAME_RULES_DE: list[tuple[str, str]] = [
     ("im Linker Berater", "von Genie"),
     ("Linker Berater", "Genie"),
     ("Linker Planer", "Lösungskonfigurator"),
+    ("Linker Planner", "Lösungskonfigurator"),
     ("Linker Standortdetails", "Dachdetails"),
 ]
 
@@ -530,6 +600,105 @@ foreach ($ids as $id) {
 }
 echo wp_json_encode(array('marked' => $done));
 """
+
+# Reads the German sources' legacy metas: `_linker_de_content` on every
+# listed English post, `_linker_de_title` where the key exists. The 9-i18n
+# import (tools/migrate/9-i18n.py, TRANSLATED_TYPES page/post/product) reads
+# exactly these when it makes or refreshes a German twin, so they must say
+# what the German page says — the 2026-10-15 deploy re-imported them and
+# reverted the 2026-10-14 rename of every German page.
+LEGACY_META_PHP = """
+$ids = json_decode(base64_decode($args[0]), true);
+$out = array();
+foreach ($ids as $id) {
+    $row = array(
+        'content' => (string) get_post_meta((int) $id, '_linker_de_content', true),
+    );
+    if (metadata_exists('post', (int) $id, '_linker_de_title')) {
+        $row['title'] = (string) get_post_meta((int) $id, '_linker_de_title', true);
+    }
+    $out[(string) $id] = $row;
+}
+echo wp_json_encode($out);
+"""
+
+# Writes metas: {post_id: {meta_key: value}}, skipping values already in
+# place. One call per batch of a few posts keeps the base64 payload well
+# under any argument limit (the largest `_linker_de_content` is ~125 KB).
+META_WRITE_PHP = """
+$payload = json_decode(base64_decode($args[0]), true);
+$written = 0;
+foreach ($payload as $id => $values) {
+    foreach ($values as $key => $value) {
+        if (get_post_meta((int) $id, $key, true) === $value) { continue; }
+        update_post_meta((int) $id, $key, wp_slash($value));
+        $written++;
+    }
+}
+echo wp_json_encode(array('written' => $written));
+"""
+
+# The media library's alternative texts that name an old tool, renamed with
+# the tool. Rules (every hit), aimed at `_wp_attachment_image_alt` alone:
+# the file names stay as they are — six pages reference the `linker-advisor-*`
+# media, and renaming files is link-breaking work this migration must not do.
+ALT_RULES: list[tuple[str, str]] = [
+    ("Linker Site Detail", "Solution Configurator"),
+    ("Linker Advisor", "Genie"),
+    ("Linker Planner", "Solution Configurator"),
+]
+
+ALT_READ_PHP = """
+// eval-file runs inside a function scope: $wpdb needs declaring (measured
+// 2026-10-16 — without this line the live plan ended in a critical error).
+global $wpdb;
+$needles = json_decode(base64_decode($args[0]), true);
+$conds = array();
+foreach ($needles as $needle) {
+    $conds[] = $wpdb->prepare('meta_value LIKE %s', '%' . $wpdb->esc_like($needle) . '%');
+}
+$rows = $wpdb->get_results(
+    "SELECT post_id, meta_value FROM {$wpdb->postmeta}"
+    . " WHERE meta_key = '_wp_attachment_image_alt' AND (" . implode(' OR ', $conds) . ")"
+);
+$out = array();
+foreach ($rows as $row) {
+    $out[(string) $row->post_id] = $row->meta_value;
+}
+echo wp_json_encode($out);
+"""
+
+
+def renamed_alt(alt: str) -> str:
+    """One alternative text with every old tool name replaced."""
+    for old, new in ALT_RULES:
+        alt = alt.replace(old, new)
+    return alt
+
+
+def legacy_meta_updates(
+    plan: list[Step],
+    german: dict[int, str],
+    metas: dict[str, dict[str, str]],
+) -> list[tuple[int, dict[str, str]]]:
+    """What the German sources' metas must say once this migration has run:
+    the German page's new content, and the new title where the source's
+    `_linker_de_title` still carries the old one. This is what keeps the
+    9-i18n import from writing the stale German back onto the pages."""
+    updates: list[tuple[int, dict[str, str]]] = []
+    for step in plan:
+        if step.lang != "de":
+            continue
+        row = metas.get(str(step.english_id)) or {}
+        values: dict[str, str] = {}
+        content = row.get("content", "")
+        if content and content != german.get(step.post_id, ""):
+            values["_linker_de_content"] = german.get(step.post_id, "")
+        if step.title and row.get("title") == step.title[0]:
+            values["_linker_de_title"] = step.title[1]
+        if any(values.values()):
+            updates.append((step.english_id, values))
+    return updates
 
 
 class WP:
@@ -603,6 +772,11 @@ def resolve(wp: WP) -> dict[str, dict[str, int]]:
         "linker-advisor": ("linker-advisor", "genie"),
         "design-canvas": "design-canvas",
         "quote-configurator": "quote-configurator",
+        # The duplicate "has moved" notice and the request-a-project
+        # placeholder: retired pages, but their content and metas still
+        # name the old tools, and the grep gate counts drafts too.
+        "quote-configurator-2": "quote-configurator-2",
+        "request-a-project": "request-a-project",
     }
     resolved: dict[str, dict[str, int]] = wp.eval_php(RESOLVE_PHP, slugs)
     missing = sorted(k for k, v in resolved.items() if not v["en"])
@@ -629,6 +803,7 @@ class Step:
         rules: list[tuple[str, str]] | None = None,
         title: tuple[str, str] | None = None,
         seo: tuple[str, str] | None = None,
+        seo_desc: tuple[str, str] | None = None,
         status: str | None = None,
     ) -> None:
         self.key = key
@@ -640,6 +815,7 @@ class Step:
         self.rules = rules or []
         self.title = title
         self.seo = seo
+        self.seo_desc = seo_desc
         self.status = status
 
     def planned(self, content: str) -> str:
@@ -718,13 +894,21 @@ def unresolved_menu_images(content: str) -> list[str]:
     return faults
 
 
-# The Site Detail links fold into the configurator's roof step. Rules, not
-# pairs: the target moved with the page (owner ruling 2026-10-12), and a
-# page an earlier run already rewrote carries the intermediate address — a
-# rule upgrades it, a strict pair would refuse the page.
+# The Site Detail links fold into the configurator's roof step, and the two
+# tools' addresses follow the pages. Rules, not pairs: the targets moved with
+# the pages (owner ruling 2026-10-12), and a page an earlier run already
+# rewrote carries the intermediate address — a rule upgrades it, a strict
+# pair would refuse the page. The bare address forms come last: they catch
+# the retired pages' comments and redirect scripts, and the media file names
+# (`linker-advisor-….mp4`) never match them because the pattern ends in a
+# slash.
 LINK_RULES_EN: list[tuple[str, str]] = [
     ('href="/design-canvas/"', 'href="/solution-configurator/?step=roof"'),
     ('href="/linker-planner/?step=roof"', 'href="/solution-configurator/?step=roof"'),
+    ('href="/linker-advisor/"', 'href="/genie/"'),
+    ('href="/linker-planner/"', 'href="/solution-configurator/"'),
+    ("/de/linker-planer/", "/de/loesungskonfigurator/"),
+    ("/linker-planner/", "/solution-configurator/"),
 ]
 LINK_RULES_DE: list[tuple[str, str]] = [
     ('href="/de/entwurfsflache/"', 'href="/de/loesungskonfigurator/?step=roof"'),
@@ -732,12 +916,24 @@ LINK_RULES_DE: list[tuple[str, str]] = [
         'href="/de/linker-planer/?step=roof"',
         'href="/de/loesungskonfigurator/?step=roof"',
     ),
+    ('href="/linker-advisor/"', 'href="/de/genie/"'),
+    ('href="/linker-planner/"', 'href="/de/loesungskonfigurator/"'),
+    ("/de/linker-planer/", "/de/loesungskonfigurator/"),
+    ("/linker-planer/", "/de/loesungskonfigurator/"),
+    ("/linker-planner/", "/de/loesungskonfigurator/"),
 ]
 
 
+def bespoke_pairs(
+    key: str, bespoke: list[tuple[str, str, tuple[str, ...]]]
+) -> list[tuple[str, str]]:
+    """The surface-specific pairs of one step key, in order."""
+    return [(old, new) for old, new, where in bespoke if key in where]
+
+
 def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
-    """The whole edit, in write order: partials, tool pages, then the
-    marketing surfaces.
+    """The whole edit, in write order: partials, tool pages, the retired
+    pages, then the marketing surfaces.
 
     The header's menu images are not this migration's business. Both
     partials resolve their thumbnails through their own src — the live
@@ -782,6 +978,7 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
             ids["linker-advisor"]["en"],
             ids["linker-advisor"]["en"],
             NOSCRIPT_EN,
+            rules=LINK_RULES_EN,
             title=PAGE_TITLES["linker-advisor"],
         ),
         Step(
@@ -789,6 +986,7 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
             ids["linker-advisor"]["de"],
             ids["linker-advisor"]["en"],
             NOSCRIPT_DE,
+            rules=LINK_RULES_DE,
             title=PAGE_TITLES["linker-berater"],
         ),
         Step(
@@ -796,6 +994,7 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
             ids["linker-planner"]["en"],
             ids["linker-planner"]["en"],
             PLANNER_INLINE_EN,
+            rules=LINK_RULES_EN,
             title=PAGE_TITLES["linker-planner"],
             seo=SEO_TITLES["linker-planner"],
         ),
@@ -804,31 +1003,96 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
             ids["linker-planner"]["de"],
             ids["linker-planner"]["en"],
             PLANNER_INLINE_DE,
+            rules=LINK_RULES_DE,
             title=PAGE_TITLES["linker-planer"],
             seo=SEO_TITLES["linker-planer"],
         ),
+        # The retired pages: their bodies, titles and SEO metas lose the old
+        # tool names and addresses; they stay drafts.
         Step(
             "design-canvas-en",
             ids["design-canvas"]["en"],
             ids["design-canvas"]["en"],
+            bespoke_pairs("design-canvas", BESPOKE_EN),
+            rules=NAME_RULES_EN + LINK_RULES_EN,
+            seo=(
+                "Linker Site Detail: Trace the Roof, Sharpen the Sizing",
+                "Solution Configurator: Trace the Roof, Sharpen the Sizing",
+            ),
             status="draft",
         ),
         Step(
             "design-canvas-de",
             ids["design-canvas"]["de"],
             ids["design-canvas"]["en"],
+            bespoke_pairs("design-canvas", BESPOKE_DE),
+            rules=NAME_RULES_DE + LINK_RULES_DE,
+            seo=(
+                "Linker Standortdetails: Dach einzeichnen, Auslegung schärfen",
+                "Dachdetails: Dach einzeichnen, Auslegung schärfen",
+            ),
             status="draft",
         ),
         Step(
             "quote-configurator-en",
             ids["quote-configurator"]["en"],
             ids["quote-configurator"]["en"],
+            rules=NAME_RULES_EN + LINK_RULES_EN,
+            title=("Linker Planner has moved", "Solution Configurator has moved"),
+            seo_desc=(
+                "The Linker Planner has moved: open the Linker Planner to size an inverter and battery system from your site data and get a bill of materials.",
+                "The Solution Configurator has moved: open the Solution Configurator to size an inverter and battery system from your site data and get a bill of materials.",
+            ),
             status="draft",
         ),
         Step(
             "quote-configurator-de",
             ids["quote-configurator"]["de"],
             ids["quote-configurator"]["en"],
+            rules=NAME_RULES_DE + LINK_RULES_DE,
+            title=(
+                "Der Linker Planner ist umgezogen",
+                "Der Lösungskonfigurator ist umgezogen",
+            ),
+            seo_desc=(
+                "Der Linker Planer ist umgezogen: Öffnen Sie den Linker Planer, um ein Wechselrichter- und Batteriesystem anhand Ihrer Standortdaten auszulegen und eine Stückliste zu erhalten.",
+                "Der Lösungskonfigurator ist umgezogen: Öffnen Sie den Lösungskonfigurator, um ein Wechselrichter- und Batteriesystem anhand Ihrer Standortdaten auszulegen und eine Stückliste zu erhalten.",
+            ),
+            status="draft",
+        ),
+        Step(
+            "quote-configurator-2-en",
+            ids["quote-configurator-2"]["en"],
+            ids["quote-configurator-2"]["en"],
+            rules=NAME_RULES_EN + LINK_RULES_EN,
+            title=("Linker Planner has moved", "Solution Configurator has moved"),
+            status="draft",
+        ),
+        Step(
+            "quote-configurator-2-de",
+            ids["quote-configurator-2"]["de"],
+            ids["quote-configurator-2"]["en"],
+            rules=NAME_RULES_DE + LINK_RULES_DE,
+            title=(
+                "Der Linker Planner ist umgezogen",
+                "Der Lösungskonfigurator ist umgezogen",
+            ),
+            status="draft",
+        ),
+        Step(
+            "request-a-project-en",
+            ids["request-a-project"]["en"],
+            ids["request-a-project"]["en"],
+            rules=NAME_RULES_EN + LINK_RULES_EN,
+            title=("Linker Planner", "Solution Configurator"),
+            status="draft",
+        ),
+        Step(
+            "request-a-project-de",
+            ids["request-a-project"]["de"],
+            ids["request-a-project"]["en"],
+            rules=NAME_RULES_DE + LINK_RULES_DE,
+            title=("Linker Planner", "Lösungskonfigurator"),
             status="draft",
         ),
     ]
@@ -840,7 +1104,7 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
             post_id = ids[key][lang]
             if not post_id:
                 continue
-            pairs = [(old, new) for old, new, where in bespoke if key in where]
+            pairs = bespoke_pairs(key, bespoke)
             plan.append(
                 Step(
                     f"{key}-{lang}",
@@ -906,34 +1170,161 @@ def read_post(wp: WP, post_id: int) -> dict[str, str]:
     }
 
 
+def apply_meta_pair(
+    wp: WP,
+    post_id: int,
+    field: str,
+    key: str,
+    pair: tuple[str, str],
+    write: bool,
+) -> str:
+    """One SEO meta pair, reported and — when asked — written. The three
+    states are the old value, the new value and absent; anything else is
+    refused rather than overwritten.
+
+    Absent is not a failure: the 2026-10-15 i18n import deletes a German
+    twin's SEO meta where the English carries one and the dictionary has
+    no German (Twins::meta deletes on an empty value; measured on #6693's
+    title and #6633's description). Writing it back would be deleted again
+    on that import's next run, so this reports it and leaves it alone."""
+    current = seo_meta(wp, post_id).get(field, "")
+    if current == pair[1]:
+        return f"seo {field}: already new"
+    if current == "":
+        return f"seo {field}: meta absent (the i18n import wipes it); left alone"
+    if current != pair[0]:
+        raise SystemExit(
+            f"post #{post_id}: seo {field} is neither old nor new: {current[:90]!r}"
+        )
+    if write:
+        wp.run("post", "meta", "update", str(post_id), key, pair[1], as_user=True)
+    return f"seo {field}: {pair[0][:60]!r} -> {pair[1][:60]!r}"
+
+
+def meta_lines(wp: WP, step: Step, write: bool) -> list[str]:
+    """The SEO meta pairs of one step, reported (and written when asked)."""
+    lines: list[str] = []
+    for field, key, pair in (
+        ("title", "_seopress_titles_title", step.seo),
+        ("desc", "_seopress_titles_desc", step.seo_desc),
+    ):
+        if pair:
+            lines.append(apply_meta_pair(wp, step.post_id, field, key, pair, write))
+    return lines
+
+
+def german_sources_phase(
+    wp: WP, plan: list[Step], german: dict[int, str], write: bool
+) -> None:
+    """The German sources' legacy metas: report the stale copies, and (on a
+    write) point them at the German pages' new state, so the 9-i18n import
+    keeps the rename instead of reverting it from them."""
+    sources = sorted({step.english_id for step in plan if step.lang == "de"})
+    metas: dict[str, dict[str, str]] = wp.eval_php(LEGACY_META_PHP, sources) or {}
+    updates = legacy_meta_updates(plan, german, metas)
+    wanted = {post_id for post_id, _values in updates}
+    for step in plan:
+        if step.lang != "de":
+            continue
+        row = metas.get(str(step.english_id)) or {}
+        if not row:
+            continue
+        new_title = (
+            step.title[1] if step.title and row.get("title") == step.title[0] else None
+        )
+        stale = stale_tokens(row.get("content", ""))
+        if step.english_id not in wanted and not stale and not new_title:
+            continue
+        state = (
+            "-> follows the German page"
+            if step.english_id in wanted
+            else "(already in step)"
+        )
+        print(
+            f"    german source #{step.english_id} `_linker_de_content`:"
+            f" {', '.join(stale) if stale else 'no old tokens'} {state}"
+        )
+        if new_title:
+            print(
+                f"    german source #{step.english_id} `_linker_de_title`:"
+                f" -> {new_title!r}"
+            )
+    if write and updates:
+        written = 0
+        # Four posts per call: the largest `_linker_de_content` is ~125 KB,
+        # and the payload travels as one base64 argument.
+        for start in range(0, len(updates), 4):
+            batch = {
+                str(post_id): values for post_id, values in updates[start : start + 4]
+            }
+            out = wp.eval_php(META_WRITE_PHP, batch)
+            written += int(out.get("written", 0)) if isinstance(out, dict) else 0
+        print(f"german source metas: {written} values refreshed", flush=True)
+
+
+def attachment_alts_phase(wp: WP, write: bool) -> None:
+    """The media library's alternative texts: report each stale alt, and
+    (on a write) store the renamed one. File names stay untouched."""
+    alts: dict[str, str] = wp.eval_php(ALT_READ_PHP, list(OLD_NAMES)) or {}
+    changes: dict[str, str] = {}
+    for post_id, alt in sorted(alts.items(), key=lambda row: int(row[0])):
+        new = renamed_alt(alt)
+        if new == alt:
+            continue
+        changes[post_id] = new
+        print(f"media #{post_id}: {alt[:72]!r} -> {new[:72]!r}")
+    if write and changes:
+        written = 0
+        items = list(changes.items())
+        # Eight alts per call; the payload stays small, alts are short.
+        for start in range(0, len(items), 8):
+            batch = {
+                post_id: {"_wp_attachment_image_alt": alt}
+                for post_id, alt in items[start : start + 8]
+            }
+            out = wp.eval_php(META_WRITE_PHP, batch)
+            written += int(out.get("written", 0)) if isinstance(out, dict) else 0
+        print(f"media alts: {written} refreshed", flush=True)
+
+
 def do_plan(wp: WP) -> int:
     ids = resolve(wp)
-    for step in steps(ids):
+    plan = steps(ids)
+    german: dict[int, str] = {}
+    for step in plan:
         post = read_post(wp, step.post_id)
         changes: list[str] = []
         new = step.apply(post["post_content"], changes.append)
-        content_changed = new != post["post_content"]
         fields = []
-        if content_changed:
+        if new != post["post_content"]:
             fields.append("content")
         if step.title and post["post_title"] == step.title[0]:
             fields.append("title")
         if step.status and post["post_status"] != step.status:
             fields.append(f"status->{step.status}")
-        if step.seo:
-            fields.append("seo")
-        print(
-            f"{step.key} #{step.post_id}: {', '.join(fields) if fields else 'no change'}"
+        metas = meta_lines(wp, step, write=False)
+        changing = [line for line in metas if "->" in line]
+        label = (
+            ", ".join(fields) if fields else ("meta only" if changing else "no change")
         )
+        print(f"{step.key} #{step.post_id}: {label}")
         for change in changes:
             print(f"    {change}")
+        for line in metas:
+            print(f"    {line}")
+        if step.lang == "de":
+            german[step.post_id] = new
+    german_sources_phase(wp, plan, german, write=False)
+    attachment_alts_phase(wp, write=False)
     return 0
 
 
 def do_apply(wp: WP, write: bool) -> int:
     ids = resolve(wp)
+    plan = steps(ids)
     touched: list[int] = []
-    for step in steps(ids):
+    german: dict[int, str] = {}
+    for step in plan:
         post = read_post(wp, step.post_id)
         changes: list[str] = []
         new_content = step.apply(post["post_content"], changes.append)
@@ -942,16 +1333,26 @@ def do_apply(wp: WP, write: bool) -> int:
             fields.append("content")
         if step.title and post["post_title"] == step.title[0]:
             fields.append(f"title -> {step.title[1]!r}")
-        if step.seo:
-            fields.append("seo")
         if step.status and post["post_status"] != step.status:
             fields.append(f"status -> {step.status}")
-        if not fields:
+        metas = meta_lines(wp, step, write=write)
+        changing = [line for line in metas if "->" in line]
+        if step.lang == "de":
+            german[step.post_id] = new_content
+        if not fields and not changing:
             print(f"{step.key} #{step.post_id}: nothing to do", flush=True)
+            for line in metas:
+                print(f"    {line}", flush=True)
             continue
-        print(f"{step.key} #{step.post_id}: {', '.join(fields)}", flush=True)
+        print(
+            f"{step.key} #{step.post_id}:"
+            f" {', '.join(fields) if fields else 'meta only'}",
+            flush=True,
+        )
         for change in changes:
             print(f"    {change}", flush=True)
+        for line in metas:
+            print(f"    {line}", flush=True)
         if not write:
             continue
         if new_content != post["post_content"] or (
@@ -963,7 +1364,7 @@ def do_apply(wp: WP, write: bool) -> int:
             if step.status:
                 args.append(f"--post_status={step.status}")
             wp.run(*args, "-", stdin=new_content, as_user=True)
-        elif step.status:
+        elif step.status and post["post_status"] != step.status:
             wp.run(
                 "post",
                 "update",
@@ -971,26 +1372,8 @@ def do_apply(wp: WP, write: bool) -> int:
                 f"--post_status={step.status}",
                 as_user=True,
             )
-        if step.seo:
-            current = wp.run(
-                "post", "meta", "get", str(step.post_id), "_seopress_titles_title"
-            ).strip()
-            if current == step.seo[0]:
-                wp.run(
-                    "post",
-                    "meta",
-                    "update",
-                    str(step.post_id),
-                    "_seopress_titles_title",
-                    step.seo[1],
-                    as_user=True,
-                )
-            elif current != step.seo[1]:
-                raise SystemExit(
-                    f"{step.key}: SEO title is neither old nor new: {current!r}"
-                )
         touched.append(step.post_id)
-    for step in steps(ids):
+    for step in plan:
         # The SEOPress description names the tools too; it gets the same
         # name rules as the body of its post.
         if not write or step.status:
@@ -1014,13 +1397,13 @@ def do_apply(wp: WP, write: bool) -> int:
             )
             print(f"{step.key}: seo desc renamed", flush=True)
             touched.append(step.post_id)
+    german_sources_phase(wp, plan, german, write=write)
+    attachment_alts_phase(wp, write=write)
     rename_slugs(wp, ids, write)
     if write and touched:
         # The German twins of every edited English post are marked as
         # hand-edited, with the fingerprint of the new English.
-        english = sorted(
-            {step.english_id for step in steps(ids) if step.post_id in touched}
-        )
+        english = sorted({step.english_id for step in plan if step.post_id in touched})
         marked = wp.eval_php(STATE_PHP, english)
         print(f"translation state: {marked}", flush=True)
     if not write:
@@ -1062,11 +1445,10 @@ def seo_meta(
 
 def do_verify(wp: WP) -> int:
     ids = resolve(wp)
+    plan = steps(ids)
     ok = True
-    for step in steps(ids):
+    for step in plan:
         post = read_post(wp, step.post_id)
-        if step.status:  # drafted: its content is retired with the page
-            continue
         if step.key.startswith("header-"):
             # The menu thumbnails of both header partials must resolve
             # through their own src (spec 12 item 8): the deferred form is
@@ -1078,10 +1460,9 @@ def do_verify(wp: WP) -> int:
                     " run `present` to write the repo partials"
                 )
                 ok = False
-        for name in OLD_NAMES:
-            if name in post["post_content"]:
-                print(f"FAIL {step.key}: old name still present: {name!r}")
-                ok = False
+        for token in stale_tokens(post["post_content"]):
+            print(f"FAIL {step.key}: {token} still present")
+            ok = False
         for _old, new in step.pairs:
             if new not in post["post_content"]:
                 print(f"FAIL {step.key}: new string missing: {new[:80]!r}")
@@ -1092,10 +1473,25 @@ def do_verify(wp: WP) -> int:
         if step.status and post["post_status"] != step.status:
             print(f"FAIL {step.key}: status is {post['post_status']!r}")
             ok = False
-        if step.seo:
-            current = seo_meta(wp, step.post_id).get("title", "")
-            if current != step.seo[1]:
-                print(f"FAIL {step.key}: SEO title is {current!r}")
+        for field, _key, pair in (
+            ("title", "_seopress_titles_title", step.seo),
+            ("desc", "_seopress_titles_desc", step.seo_desc),
+        ):
+            if not pair:
+                continue
+            current = seo_meta(wp, step.post_id).get(field, "")
+            if current == pair[0]:
+                print(
+                    f"FAIL {step.key}: old seo {field} still present: {current[:80]!r}"
+                )
+                ok = False
+            elif current == "":
+                print(
+                    f"note {step.key}: seo {field} meta is absent"
+                    " (the i18n import wipes it)"
+                )
+            elif current != pair[1]:
+                print(f"FAIL {step.key}: seo {field} is {current[:80]!r}")
                 ok = False
     for key, post_id, after in (
         ("linker-planner-en", ids["linker-planner"]["en"], "solution-configurator"),
@@ -1107,7 +1503,8 @@ def do_verify(wp: WP) -> int:
         if current != after:
             print(f"FAIL {key} #{post_id}: slug is {current!r}, expected {after!r}")
             ok = False
-    # Nothing published anywhere may still name a retired tool.
+    # Nothing published anywhere may still name a retired tool or open a
+    # retired address.
     posts = wp.json(
         "post",
         "list",
@@ -1121,14 +1518,30 @@ def do_verify(wp: WP) -> int:
     for row in posts:
         content = wp.run("post", "get", str(row["ID"]), "--field=post_content")
         seo = meta.get(str(row["ID"]), {})
-        for name in OLD_NAMES:
-            if (
-                name in content
-                or name in seo.get("title", "")
-                or name in seo.get("desc", "")
-            ):
-                print(f"FAIL post #{row['ID']} ({row['post_title']}): {name!r}")
-                ok = False
+        seen = (
+            stale_tokens(content)
+            + stale_tokens(seo.get("title", ""))
+            + stale_tokens(seo.get("desc", ""))
+        )
+        if seen:
+            print(f"FAIL post #{row['ID']} ({row['post_title']}): {', '.join(seen)}")
+            ok = False
+    # The German sources' legacy metas are what the 9-i18n import reads;
+    # a stale copy there reverts the German pages on the import's next run.
+    sources = sorted({step.english_id for step in plan if step.lang == "de"})
+    legacy = wp.eval_php(LEGACY_META_PHP, sources) or {}
+    for source_id, row in sorted(legacy.items(), key=lambda item: int(item[0])):
+        seen = stale_tokens(row.get("content", "")) + stale_tokens(row.get("title", ""))
+        if seen:
+            print(f"FAIL source #{source_id} legacy meta: {', '.join(seen)}")
+            ok = False
+    # The media alts too.
+    alts = wp.eval_php(ALT_READ_PHP, list(OLD_NAMES)) or {}
+    for post_id, alt in sorted(alts.items(), key=lambda item: int(item[0])):
+        seen = stale_tokens(alt)
+        if seen:
+            print(f"FAIL media #{post_id} alt: {', '.join(seen)} in {alt[:60]!r}")
+            ok = False
     print("verify: OK" if ok else "verify: FAILED")
     return 0 if ok else 1
 
