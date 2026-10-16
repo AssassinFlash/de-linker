@@ -197,7 +197,7 @@ final class Templates {
 			$this->drift_template_row( $rows, 'page type ' . $meta, dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/' . $file . '.html', $this->existing_id( $meta ) );
 		}
 		foreach ( self::PAGES as $slug => $page ) {
-			$this->drift_template_row( $rows, 'page ' . $slug, dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/' . $page[0] . '.html', $this->existing_id_by_slug( $slug ) );
+			$this->drift_template_row( $rows, 'page ' . $slug, dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/' . $page[0] . '.html', $this->existing_id_by_slug( $slug ), $page[1] );
 			list( , , $page_slug, $language ) = $page;
 			$page_id                          = $this->page_id( $page_slug, $language );
 			if ( 0 === $page_id ) {
@@ -230,15 +230,17 @@ final class Templates {
 	/**
 	 * One page-type or page template against its export: absent, or content
 	 * that differs from the file. The comparison is exactly what sync() writes
-	 * and can repair; nothing the repo file does not carry (a post title, a
-	 * status) is judged here.
+	 * and can repair: page templates carry a repo title sync_page_template()
+	 * also restores (a title-only drift there is drift), page-type templates
+	 * and their twins carry none — a status is never judged here.
 	 *
 	 * @param list<array{surface: string, target: string, detail: string}> $rows    Rows collected so far (by reference).
 	 * @param string                                                       $surface Row label.
 	 * @param string                                                       $path    The exported file.
 	 * @param int                                                          $id      The site's template post, 0 when absent.
+	 * @param string|null                                                  $title   The repo title, when sync writes one for this template.
 	 */
-	private function drift_template_row( array &$rows, string $surface, string $path, int $id ): void {
+	private function drift_template_row( array &$rows, string $surface, string $path, int $id, ?string $title = null ): void {
 		if ( 0 === $id ) {
 			$rows[] = $this->row( $surface, basename( $path ), 'not installed' );
 			return;
@@ -251,6 +253,9 @@ final class Templates {
 		$html = Tokens::read( $path );
 		if ( $post->post_content !== $html ) {
 			$rows[] = $this->row( $surface, sprintf( 'post %d', $id ), 'content differs from ' . basename( $path ) );
+		}
+		if ( null !== $title && $post->post_title !== $title ) {
+			$rows[] = $this->row( $surface, sprintf( 'post %d', $id ), 'title "' . $post->post_title . '" differs from "' . $title . '"' );
 		}
 	}
 

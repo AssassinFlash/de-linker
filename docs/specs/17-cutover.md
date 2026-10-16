@@ -50,7 +50,9 @@
 
 - 2026-10-14（夜窗口的实际执行记录在 `docs/acceptance/2026-10-14/17/README.md`，此处只补规格缺口）：
   演练里看不到、窗口里必须有的步骤此后按三步补全——`wp linker-commerce present --user=<admin>`（表现层：
-  LiveCanvas 模板 + partial + WindPress volume，`--allow-stale` 先行、浏览器编译后再净跑一次）、
+  LiveCanvas 模板 + partial + WindPress volume，`--allow-stale` 先行、浏览器编译后再净跑一次；
+  2026-10-16 起净跑之后并排跑 `wp linker-commerce check --user=<admin>`——只读断言，0 行 exit 0
+  才算部署面收口，见 `docs/acceptance/2026-10-16/h9-present-check/acceptance.md`）、
   WindPress 浏览器侧编译（唯一编译方式；线上以临时一次性登录桥驱动 `tools/windpress-compile.mjs`，用完即撤）、
   与 `12-site-chrome.py` / `page-template-empty.py`（改名与页模板，指向这两个脚本而非复制其规则）。
   服务侧两处必须在窗口内做、此前只写在运行面：`LINKER_ENGINE_CORS_ORIGINS` 之外，**PHP 侧对自签证书的

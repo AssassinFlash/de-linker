@@ -854,6 +854,27 @@ final class PresentCommandTest extends TestCase {
 	}
 
 	/**
+	 * A tool-page template whose content matches but whose title drifted is
+	 * still drift: sync_page_template() restores the title, so a check that
+	 * ignored it would report in sync on a site present would rewrite.
+	 */
+	public function test_check_reports_a_drifted_page_template_title(): void {
+		$state                        = $this->mock_synced_site();
+		$faq                          = $state->slug['linker-faq'];
+		$drifted                      = self::post_with( $faq, (string) file_get_contents( Templates::paths()['linker-faq'] ), 'lc_dynamic_template', '', 'An older title' );
+		$state->posts[ $faq ]         = $drifted;
+
+		try {
+			$this->check();
+			$this->fail( 'A title-drifted site should fail the check' );
+		} catch ( ExitException $e ) {
+			$this->assertStringContainsString( '1 presentation drift row(s)', $e->getMessage() );
+		}
+		$this->assertStringContainsString( 'page linker-faq — post ' . $faq . ': title "An older title" differs from "FAQ & documents"', $this->output() );
+		$this->assertSame( array(), $state->writes, 'check wrote nothing' );
+	}
+
+	/**
 	 * A template the site does not carry at all is drift, not a silent skip:
 	 * the deployed tree is not the exported one until present has created it.
 	 */
@@ -917,7 +938,8 @@ final class PresentCommandTest extends TestCase {
 		$state->language   = array();
 		$state->uploads    = sys_get_temp_dir() . '/linker-commerce-check-' . uniqid();
 
-		$next = 500;
+		$next   = 500;
+		$titles = ( new \ReflectionClass( Templates::class ) )->getConstant( 'PAGES' );
 		foreach ( Templates::paths() as $key => $path ) {
 			if ( str_ends_with( $key, '__de' ) ) {
 				continue;
@@ -926,10 +948,14 @@ final class PresentCommandTest extends TestCase {
 			$content = (string) file_get_contents( $path );
 			if ( str_starts_with( $key, 'linker-' ) ) {
 				$state->slug[ $key ] = $id;
-			} else {
-				$state->lookup[ $key ] = $id;
+				// Page templates carry the repo title sync_page_template()
+				// restores; the fixture must hold it, or every synced run
+				// would read as title drift.
+				$state->posts[ $id ] = self::post_with( $id, $content, 'lc_dynamic_template', '', $titles[ $key ][1] );
+				continue;
 			}
-			$state->posts[ $id ] = self::post_with( $id, $content );
+			$state->lookup[ $key ] = $id;
+			$state->posts[ $id ]   = self::post_with( $id, $content );
 		}
 		foreach ( Templates::paths() as $key => $path ) {
 			if ( ! str_ends_with( $key, '__de' ) ) {
@@ -1026,7 +1052,7 @@ final class PresentCommandTest extends TestCase {
 	 * @param string $type  Post type.
 	 * @param string $name  Post name.
 	 */
-	private static function post_with( int $id, string $body, string $type = 'lc_dynamic_template', string $name = '' ): WP_Post {
+	private static function post_with( int $id, string $body, string $type = 'lc_dynamic_template', string $name = '', string $title = 'Template' ): WP_Post {
 		return new WP_Post(
 			(object) array(
 				'ID'           => $id,
@@ -1034,7 +1060,7 @@ final class PresentCommandTest extends TestCase {
 				'post_status'  => 'publish',
 				'post_name'    => $name,
 				'post_content' => $body,
-				'post_title'   => 'Template',
+				'post_title'   => $title,
 			)
 		);
 	}

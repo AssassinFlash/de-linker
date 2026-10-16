@@ -16,24 +16,30 @@
 
 两个只读实现落点（与 `present` 共用同一批查找，避免「检查用一套、写用另一套」）：
 
-- `Presentation\Templates::drift()`：页型模板与工具页模板对导出文件、German
-  page-type twin 对它的翻译组、工具页的 `lc_use_template_of_slug` 指认、
-  header/footer partial 对（含 German twin 解析失败）。行的判定范围**等于 sync()
-  会写什么**：`check` 报的行 `present` 都能修，`present` 不修的事 `check` 不报
-  （例如内容已一致的 draft 模板）。
+- `Presentation\Templates::drift()`：页型模板与工具页模板对导出文件（工具页连
+  `post_title` 一起比——`sync_page_template()` 的 unchanged 判定就是
+  content+title 两条，评审轮补齐了这个同构）、German page-type twin 对它的
+  翻译组、工具页的 `lc_use_template_of_slug` 指认、header/footer partial 对
+  （含 German twin 解析失败）。行的判定范围＝**sync() 会写什么、以及它对缺失
+  页会静默跳过什么**：`check` 报的行要么 `present` 能修，要么是 `present`
+  当下根本不会去写、站点悄悄偏离仓库的面（例如「工具页本体未安装」——正是
+  #182 那次事故的形态）；`present` 既不修也不跳过的（例如内容已一致的 draft
+  模板）`check` 不报。
 - `Presentation\WindPressVolume::drift()`：卷内每个 `content/windpress/*.css`
   的 md5 与导入行；卷目录不存在时报一条，不创建。
 
 ## 2. 测试（进既有 `PresentCommandTest`，不新开文件）
 
-4 条新测试（commerce PHPUnit 1073 通过）：
+6 条新测试（commerce PHPUnit 1074 通过；第 5、6 条为评审轮补齐）：
 
 | 测试 | 断言 |
 |---|---|
 | `test_check_reports_a_synced_site_and_writes_nothing` | 全同步 fixture → `wp-cli success: presentation in sync`；`wp_update_post` / `wp_insert_post` / `update_post_meta` / `update_option` / `wp_update_custom_css_post` / `delete_option` 一次都没被调；备份 option 不存在 |
 | `test_check_names_drifted_templates_and_fails` | 改一条模板内容 → 恰 1 行漂移、消息带 `1 presentation drift row(s)`、指名 `page type is_shop_page — post N: content differs from shop_page.html`；check 没写 |
 | `test_check_reports_every_drift_surface` | 四个面各造一处漂移（German twin 丢失 / 工具页指认错误 / header twin 解析失败 / 卷文件缺失），四行全部出现 |
+| `test_check_reports_a_drifted_page_template_title` | 工具页模板**只**改标题（content 不动）→ 1 行 `title "…" differs from "…"`——`sync_page_template()` 连标题一起修，check 必须同样判定（评审轮补：否则标题漂移的站会误报 in sync） |
 | `test_check_reports_a_missing_template` | 模板整体不在 → `page type is_search — search.html: not installed` |
+| `test_check_refuses_a_non_administrator` | 非 `manage_options` → `Run as an administrator`（与 present/rollback 同形守卫；评审轮补进表） |
 
 fixture（`mock_synced_site()`）是一个「`present` 跑过之后」的完整站：18 个模板
 post + 8 个工具页 + header partial 对（live id 17/6919）+ 真实卷目录（跑真的
@@ -68,10 +74,13 @@ created 0 / updated 0 / unchanged 18——即今天的线上本就是 in sync，
 
 - `just php-check`：PHPCS + PHPStan level 8 全 `No errors`（新增代码包括
   只读侧的全部 docblock 类型）
-- `just php-test`：commerce 1073（+4）/ 152 / 113 / 6 通过，跳过 54
+- `just php-test`：commerce 1074（+6）/ 152 / 113 / 6 通过，跳过 54
 
 ## 5. 结论
 
 `wp linker-commerce check` 是 `present` 的只读孪生：同一批查找、同一套「什么算
-需要修」的判定、零写入。单元测试证明「全一致 exit 0 / 有漂移逐条列出 exit 1 /
-一个字节都不写」，真实例三幕证明它在真站上的读与报都对得上。
+需要修」的判定（sync 面：模板内容、工具页标题与指认、twin、卷哈希）、零写入。
+present 还做三件 check 刻意不报的事：置 `lc_settings` 的 dynamic-templating
+开关、清 Additional CSS 的遗留 tokens 块、`--detach-partials` 剥离——它们不是
+「仓库↔实例」漂移，是安装动作本身。单元测试证明「全一致 exit 0 / 有漂移逐条
+列出 exit 1 / 一个字节都不写」，真实例三幕证明它在真站上的读与报都对得上。
