@@ -18,7 +18,7 @@ import { expect, test, type Page } from '@playwright/test';
 /**
  * Internal dependencies
  */
-import { instance, wp } from '../lib/instance';
+import { instance, wp, REPO_ROOT } from '../lib/instance';
 
 const PASSWORD = 'e2e-Account-2026!';
 
@@ -36,9 +36,19 @@ function url(path: string): string {
 	return `${instance().url}${path}`;
 }
 
+/**
+ * A face's screenshot, into the run's own scratch directory under the repo
+ * root (`.scratch/`, the repository's working area — `.gitignore` keeps
+ * `.scratch/e2e-shots/` out of version control). The shots are evidence of
+ * what this run rendered, not a record to commit: they used to be written
+ * into `docs/acceptance/2026-10-13/account-auth/shots/`, where every run
+ * rewrote the committed PNGs and left a version-noise diff behind (ledger
+ * H10). The historical PNGs stay where they are, as that ticket's record;
+ * this spec no longer writes to them.
+ */
 function shot(page: Page, name: string): Promise<Buffer> {
 	return page.screenshot({
-		path: `../../docs/acceptance/2026-10-13/account-auth/shots/${name}.png`,
+		path: `${REPO_ROOT}/.scratch/e2e-shots/account-auth/${name}.png`,
 		fullPage: true,
 	});
 }

@@ -32,3 +32,8 @@ __pycache__/
 # uploads (hundreds of MB), and it is rebuilt on demand (tools/faq/thumbs.py
 # --cache). Never commit it.
 .scratch/faq-pdf-cache/
+
+# The e2e suite's screenshots: per-run evidence of what that run rendered, so
+# they belong in the working area and never in a commit (they used to land in
+# the acceptance docs and rewrote committed PNGs on every run — ledger H10).
+.scratch/e2e-shots/

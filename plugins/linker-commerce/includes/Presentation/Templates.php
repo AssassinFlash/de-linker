@@ -168,6 +168,159 @@ final class Templates {
 			return $this->created_ids;
 	}
 
+	/**
+	 * Whether the site's templates are what the exported files say they are:
+	 * the read-only twin of sync(), for a deploy to assert after it ran
+	 * instead of re-running the install to find out. Every lookup is sync()'s
+	 * own, and the comparison is the one thing a file carries: the post
+	 * content. A template the site does not carry, a German page-type twin the
+	 * anchor's translation group does not resolve, a tool page pointed at
+	 * another template, a partial pair whose German twin cannot be resolved,
+	 * and a volume file that is absent or hashes differently are each one drift
+	 * row. Nothing here writes.
+	 *
+	 * Rows follow sync()'s own write rule, not a stricter one: what check
+	 * reports, a present run repairs, and a row present would not repair is
+	 * not reported (a draft post whose content matches, for instance, is left
+	 * alone by sync()). A page type without a twin is drift only where sync()
+	 * would have one to write: a site without the language layer has no German
+	 * page for the twin to serve, and its absence is not a gap
+	 * (sync_page_type_twins()).
+	 *
+	 * @param list<string>|null $header_partials Header exports to compare against, the two files
+	 *                                           from header_partials() when null.
+	 * @return list<array{surface: string, target: string, detail: string}> Drift rows, empty when in sync.
+	 */
+	public function drift( ?array $header_partials = null ): array {
+		$rows = array();
+		foreach ( self::FILES as $meta => $file ) {
+			$this->drift_template_row( $rows, 'page type ' . $meta, dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/' . $file . '.html', $this->existing_id( $meta ) );
+		}
+		foreach ( self::PAGES as $slug => $page ) {
+			$this->drift_template_row( $rows, 'page ' . $slug, dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/' . $page[0] . '.html', $this->existing_id_by_slug( $slug ) );
+			list( , , $page_slug, $language ) = $page;
+			$page_id                          = $this->page_id( $page_slug, $language );
+			if ( 0 === $page_id ) {
+				$rows[] = $this->row( 'page assignment ' . $slug, $page_slug . ' (' . $language . ')', 'the page this template belongs to is not installed' );
+				continue;
+			}
+			if ( get_post_meta( $page_id, 'lc_use_template_of_slug', true ) !== $slug ) {
+				$rows[] = $this->row( 'page assignment ' . $slug, $page_slug . ' (' . $language . ')', sprintf( 'post %d points at another template (or none)', $page_id ) );
+			}
+		}
+		foreach ( self::DE_FILES as $meta => $file ) {
+			$anchor = $this->existing_id( $meta );
+			if ( 0 === $anchor ) {
+				continue; // The English row above already reported the missing anchor.
+			}
+			$twin = $this->german_twin( $anchor );
+			if ( 0 === $twin ) {
+				if ( function_exists( 'pll_get_post' ) ) {
+					$rows[] = $this->row( 'German twin ' . $meta, sprintf( 'post %d', $anchor ), 'the translation group carries no German twin for this page type' );
+				}
+				continue;
+			}
+			$this->drift_content_row( $rows, 'German twin ' . $meta, dirname( __DIR__, 2 ) . '/' . self::RELATIVE_DIR . '/' . $file . '.html', $twin );
+		}
+		$rows = array_merge( $rows, $this->drift_partial_rows( 'header', $header_partials ?? self::header_partials() ) );
+		$rows = array_merge( $rows, $this->drift_partial_rows( 'footer', self::footer_partials() ) );
+		return $rows;
+	}
+
+	/**
+	 * One page-type or page template against its export: absent, or content
+	 * that differs from the file. The comparison is exactly what sync() writes
+	 * and can repair; nothing the repo file does not carry (a post title, a
+	 * status) is judged here.
+	 *
+	 * @param list<array{surface: string, target: string, detail: string}> $rows    Rows collected so far (by reference).
+	 * @param string                                                       $surface Row label.
+	 * @param string                                                       $path    The exported file.
+	 * @param int                                                          $id      The site's template post, 0 when absent.
+	 */
+	private function drift_template_row( array &$rows, string $surface, string $path, int $id ): void {
+		if ( 0 === $id ) {
+			$rows[] = $this->row( $surface, basename( $path ), 'not installed' );
+			return;
+		}
+		$post = get_post( $id );
+		if ( ! $post instanceof WP_Post ) {
+			$rows[] = $this->row( $surface, sprintf( 'post %d', $id ), 'the template post cannot be read' );
+			return;
+		}
+		$html = Tokens::read( $path );
+		if ( $post->post_content !== $html ) {
+			$rows[] = $this->row( $surface, sprintf( 'post %d', $id ), 'content differs from ' . basename( $path ) );
+		}
+	}
+
+	/**
+	 * A translated template (a page-type twin) against its export.
+	 *
+	 * @param list<array{surface: string, target: string, detail: string}> $rows    Rows collected so far (by reference).
+	 * @param string                                                       $surface Row label.
+	 * @param string                                                       $path    The exported file.
+	 * @param int                                                          $id      The site's post id.
+	 */
+	private function drift_content_row( array &$rows, string $surface, string $path, int $id ): void {
+		$post = get_post( $id );
+		$html = Tokens::read( $path );
+		if ( ! $post instanceof WP_Post || $post->post_content !== $html ) {
+			$rows[] = $this->row( $surface, sprintf( 'post %d', $id ), 'content differs from ' . basename( $path ) );
+		}
+	}
+
+	/**
+	 * The English header/footer partial and its German twin against their
+	 * exports. A site without the partial has nothing to compare (sync writes
+	 * none either); an English partial whose German twin cannot be resolved is
+	 * drift, the same refusal sync_header_partials() raises as a write.
+	 *
+	 * @param string             $which 'header' or 'footer'.
+	 * @param array<int, string> $files The two exports, English then German.
+	 * @return list<array{surface: string, target: string, detail: string}>
+	 */
+	private function drift_partial_rows( string $which, array $files ): array {
+		$rows = array();
+		try {
+			$ids = 'header' === $which ? $this->header_partial_ids() : $this->footer_partial_ids();
+		} catch ( \RuntimeException $e ) {
+			return array( $this->row( $which . ' partial', $which, $e->getMessage() ) );
+		}
+		foreach ( $ids as $lang => $id ) {
+			$this->drift_content_row( $rows, $which . ' partial ' . $lang, $files[ 'de' === $lang ? 1 : 0 ], $id );
+		}
+		return $rows;
+	}
+
+	/**
+	 * The live template of a slug, 0 when there is none. The lookup is sync's
+	 * own (template_by_slug reads every status, because a tool page's template
+	 * is found by its post name and updated in place either way).
+	 *
+	 * @param string $slug Template slug (the post name).
+	 */
+	private function existing_id_by_slug( string $slug ): int {
+		$post = $this->template_by_slug( $slug );
+		return null === $post ? 0 : (int) $post->ID;
+	}
+
+	/**
+	 * One drift row.
+	 *
+	 * @param string $surface The kind of thing that drifted.
+	 * @param string $target  Which one.
+	 * @param string $detail  What is wrong.
+	 * @return array{surface: string, target: string, detail: string}
+	 */
+	private function row( string $surface, string $target, string $detail ): array {
+		return array(
+			'surface' => $surface,
+			'target'  => $target,
+			'detail'  => $detail,
+		);
+	}
+
 		/**
 		 * The header partials `present` installs, English then German. Both
 		 * must be readable and non-empty before a run may write: an empty

@@ -1559,7 +1559,6 @@ body.woocommerce-order-received #container-content-page > div {
 }
 
 #tv-woo-b2b-checkout {
-  --sf-action: #0c7f73;
   --sf-action-text: #fff;
   --sf-complete: #166534;
   --sf-complete-bg: #f1f5f8;
@@ -1570,15 +1569,7 @@ body.woocommerce-order-received #container-content-page > div {
   background: var(--sf-bg);
   padding: 2.5rem 0 5rem;
 }
-#tv-woo-b2b-checkout .sf-checkout-intro h1 {
-  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--sf-fg);
-}
-#tv-woo-b2b-checkout.sf-checkout--form .sf-checkout-intro > p:not(.sf-checkout-actions) { display: none; }
-#tv-woo-b2b-checkout .sf-checkout-intro,
-#tv-woo-b2b-checkout .sf-checkout-body,
+
 #tv-woo-b2b-checkout form.checkout,
 #tv-woo-b2b-checkout .form-row { box-sizing: border-box; }
 #tv-woo-b2b-checkout a { color: inherit; }
@@ -1586,55 +1577,6 @@ body.woocommerce-order-received #container-content-page > div {
   outline: 2px solid var(--sf-fg);
   outline-offset: 2px;
 }
-
-#tv-woo-b2b-checkout .sf-checkout-shell {
-  width: min(64rem, calc(100% - 2rem));
-  margin: 0 auto;
-}
-#tv-woo-b2b-checkout .sf-checkout-intro {
-  max-width: 40rem;
-  margin: 0 0 2rem;
-}
-#tv-woo-b2b-checkout .sf-checkout-intro h1 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--sf-fg);
-}
-#tv-woo-b2b-checkout.sf-checkout--receipt .sf-checkout-intro h1 {
-  font-size: 1.875rem;
-  font-weight: 600;
-}
-#tv-woo-b2b-checkout .sf-checkout-intro p {
-  margin: 0.75rem 0 0;
-  color: var(--sf-muted);
-  font-size: 14px;
-  line-height: 1.55;
-}
-#tv-woo-b2b-checkout .sf-checkout-facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem 1.25rem;
-  margin: 1.25rem 0 0;
-  padding: 0;
-}
-#tv-woo-b2b-checkout .sf-checkout-facts > div { min-width: 0; }
-#tv-woo-b2b-checkout .sf-checkout-facts dt {
-  margin: 0;
-  color: var(--sf-muted);
-  font-size: 12px;
-}
-#tv-woo-b2b-checkout .sf-checkout-facts dd {
-  margin: 0.2rem 0 0;
-  font-size: 13px;
-  font-weight: 500;
-  word-break: break-word;
-}
-#tv-woo-b2b-checkout .sf-checkout-facts dd[data-tv-status-tone="complete"] { color: var(--sf-complete); }
-#tv-woo-b2b-checkout .sf-checkout-facts dd[data-tv-status-tone="waiting"] { color: var(--sf-waiting); }
-#tv-woo-b2b-checkout .sf-checkout-facts dd[data-tv-status-tone="action"] { color: var(--sf-action); }
-#tv-woo-b2b-checkout .sf-checkout-facts dd[data-tv-status-tone="stopped"] { color: var(--sf-muted); }
 
 #tv-woo-b2b-checkout .tv-b2b-stagebar {
   display: flex;
@@ -1669,19 +1611,7 @@ body.woocommerce-order-received #container-content-page > div {
 #tv-woo-b2b-checkout .tv-b2b-stagebar li.is-stopped {
   text-decoration: line-through;
 }
-#tv-woo-b2b-checkout.tv-woo-status-complete .sf-checkout-intro h1 { color: var(--sf-complete); }
 
-#tv-woo-b2b-checkout .sf-checkout-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1.25rem 0 0;
-}
-#tv-woo-b2b-checkout .sf-checkout-link {
-  font-size: 14px;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
 #tv-woo-b2b-checkout #place_order,
 #tv-woo-b2b-checkout .tv-woo-button {
   display: inline-flex;
@@ -1711,10 +1641,6 @@ body.woocommerce-order-received #container-content-page > div {
   width: 100%;
   float: none;
 }
-#tv-woo-b2b-checkout.sf-checkout--pay form#order_review {
-  max-width: 40rem;
-}
-
 
 #tv-woo-b2b-checkout .woocommerce-notices-wrapper { margin: 0 0 1.25rem; }
 #tv-woo-b2b-checkout .woocommerce-error,
@@ -2104,8 +2030,7 @@ body.woocommerce-order-received #container-content-page > div {
   #tv-woo-b2b-checkout .woocommerce-billing-fields__field-wrapper,
   #tv-woo-b2b-checkout .woocommerce-shipping-fields__field-wrapper,
   #tv-woo-b2b-checkout .woocommerce-additional-fields__field-wrapper,
-  #tv-woo-b2b-checkout .woocommerce-customer-details .col2-set,
-  #tv-woo-b2b-checkout .sf-checkout-facts {
+  #tv-woo-b2b-checkout .woocommerce-customer-details .col2-set {
     grid-template-columns: 1fr;
   }
   #tv-woo-b2b-checkout .tv-b2b-stagebar { flex-wrap: wrap; }
