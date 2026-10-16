@@ -104,11 +104,9 @@ const genieMessages = germanGenie.locale_data.messages as Record<
 >;
 
 test( 'every genie text has a German translation', () => {
-	const missing = [
-		...used( [ 'src/genie', 'src/shared' ] )
-			.keys()
-			.filter( ( id ) => 'Linker Tools' !== id ),
-	].filter( ( id ) => ! ( id in genieMessages ) && ! ( id in messages ) );
+	const missing = [ ...used( [ 'src/genie', 'src/shared' ] ).keys() ].filter(
+		( id ) => ! ( id in genieMessages ) && ! ( id in messages )
+	);
 	expect( missing ).toEqual( [] );
 } );
 
