@@ -54,11 +54,15 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 			'https://www.wms.nrw.de',
 		)
 	);
+	// The blog authors' avatars the live pages load; the local replica paints
+	// the same faces, so pixel comparisons do not drift on empty heads
+	// (a3-final package §5-2, 2026-10-16).
+	$linker_local_avatars = 'https://secure.gravatar.com';
 	$linker_local_sources = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'";
 	header(
 		"Content-Security-Policy: default-src {$linker_local_sources}; " .
 		"script-src {$linker_local_sources} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com; " .
-		"img-src {$linker_local_sources} {$linker_local_imagery}; " .
+		"img-src {$linker_local_sources} {$linker_local_imagery} {$linker_local_avatars}; " .
 		"connect-src {$linker_local_sources} {$linker_local_imagery}; " .
 		"form-action 'self'"
 	);
