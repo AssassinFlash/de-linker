@@ -147,6 +147,9 @@ H1 的记录里写着「未构造『有询盘草稿的结账态』实跑」—�
   跳过 54（与 main 基线逐项相同）
 - `just check` 全绿（含 e2e-check、banned-words、i18n-coverage、build::check）
 - `just e2e nfinal specs/empty-draft.spec.ts`（结账门层）：**4 passed**；
+  `just e2e nfinal specs/commerce.spec.ts`（**完整商业链**：注册 → 价格 → 草稿 →
+  询盘 → Proforma → 下载，EN 与 DE 各 26s/20s）：**2 passed**——这条链真的把一个
+  询盘发出去过，是「有草稿的结账态」最强的一次真实走查；
   `just e2e nfinal specs/account.spec.ts`（账号链层，H10 输出路径同轮验证）：**13 passed**——
   被删 CSS 所在层的真实夹具测试
 
