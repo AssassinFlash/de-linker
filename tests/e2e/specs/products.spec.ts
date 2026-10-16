@@ -320,6 +320,74 @@ test.describe('the products', () => {
 	}
 
 	/**
+	 * The rail's pinned top is a measurement, not a constant
+	 * (docs/specs/174-pdp.md §吸住): scrolled into its sticky range, its box
+	 * sits exactly at the header the page measured plus 16px. EN at 1440 — the
+	 * DE twin and the narrow viewport carry the same rule off the same
+	 * variable, so one measurement is the check.
+	 */
+	test('en: the inquiry rail sticks at the measured header plus 16', async ({
+		page,
+	}) => {
+		await page.setViewportSize({ width: 1440, height: 900 });
+		await page.goto(`${instance().url}${PRODUCT.en}`);
+
+		const geometry = await page.evaluate(async () => {
+			const rail = document.querySelector('.pdp-buy-inner');
+			const layout = document.querySelector<HTMLElement>('.pdp-layout');
+			const header =
+				document.querySelector<HTMLElement>('header#lc-header') ??
+				document.querySelector<HTMLElement>('header');
+			if (!rail || !layout || !header) {
+				return null;
+			}
+			// The range the rail is pinned in: from the scroll that reaches its
+			// sticky top to the one that puts the layout's last pixel above it.
+			const layoutTop =
+				layout.getBoundingClientRect().top + window.scrollY;
+			const pinnedTop = header.offsetHeight + 16;
+			const start = layoutTop - pinnedTop;
+			const end =
+				layoutTop +
+				layout.offsetHeight -
+				rail.getBoundingClientRect().height -
+				pinnedTop;
+			if (end <= start) {
+				return null;
+			}
+			// `instant`: the document's `scroll-behavior: smooth` would leave
+			// the reads below at the pre-scroll position.
+			window.scrollTo({
+				top: Math.round((start + end) / 2),
+				behavior: 'instant',
+			});
+			await new Promise((done) =>
+				requestAnimationFrame(() => done(null))
+			);
+			return {
+				expected: pinnedTop,
+				header: header.offsetHeight,
+				actual: rail.getBoundingClientRect().top,
+				scrollY: window.scrollY,
+				start,
+			};
+		});
+
+		expect(
+			geometry,
+			'the rail, the layout and the header are on the page'
+		).not.toBeNull();
+		expect(
+			geometry!.scrollY,
+			'the scroll landed inside the pinned range'
+		).toBeGreaterThan(geometry!.start);
+		expect(
+			Math.abs(geometry!.actual - geometry!.expected),
+			`the rail's pinned top is the measured header (${geometry!.header}px) + 16`
+		).toBeLessThanOrEqual(1);
+	});
+
+	/**
 	 * The technical data is the prototype's three cards side by side, at 1440
 	 * and 390 (docs/specs/174-pdp.md): the tab strip is gone, every group is
 	 * visible, and the row is as wide as the container's content box — the
