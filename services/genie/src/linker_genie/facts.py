@@ -38,19 +38,28 @@ class TurnFacts:
         return set(self.facts) | {str(pid) for pid in self.product_ids} | self.chunk_ids
 
 
-def collect(name: str, payload: Any) -> TurnFacts:
-    """Facts and IDs from one ability JSON body."""
+def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
+    """Facts and IDs from one ability JSON body, in the turn's language.
+
+    The compatibility contract writes its conditions in pairs (`{en, de}`,
+    data/compatibility.json), and a German turn must read the German side:
+    a condition a placeholder hydrates into the answer is customer-visible
+    text, and an English sentence in a German answer fails the row the way
+    `german_is_clean` fails a fallback line (R6-de, measured 2026-10-11).
+    The locale is the request's, not the payload's; the abilities return
+    both sides and the choice belongs to the turn.
+    """
     gathered = TurnFacts()
     if not isinstance(payload, dict):
         return gathered
     if name.endswith("search-products"):
-        _from_search(gathered, payload)
+        _from_search(gathered, payload, locale)
     elif name.endswith("get-product"):
         _from_product(gathered, payload)
     elif name.endswith("compare-products"):
         _from_compare(gathered, payload)
     elif name.endswith("check-compatibility"):
-        _from_compatibility(gathered, payload)
+        _from_compatibility(gathered, payload, locale)
     elif name.endswith("size-hint"):
         _from_size_hint(gathered, payload)
     elif name.endswith("search-knowledge"):
@@ -76,7 +85,7 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
     return combined
 
 
-def _from_search(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> None:
     for item in payload.get("qualified") or []:
         if not isinstance(item, dict):
             continue
@@ -123,11 +132,7 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any]) -> None:
             for condition_index, condition in enumerate(
                 pairing.get("conditions") or []
             ):
-                text = ""
-                if isinstance(condition, dict):
-                    text = str(condition.get("en") or condition.get("text") or "")
-                elif isinstance(condition, str):
-                    text = condition
+                text = _condition_text(condition, locale)
                 if text:
                     gathered.add(
                         Fact(
@@ -175,7 +180,7 @@ def _from_compare(gathered: TurnFacts, payload: dict[str, Any]) -> None:
 
 
 def _from_compatibility(
-    gathered: TurnFacts, payload: dict[str, Any], inverter: Any = None
+    gathered: TurnFacts, payload: dict[str, Any], locale: str = "en"
 ) -> None:
     verdict = payload.get("verdict")
     if isinstance(verdict, str) and verdict:
@@ -185,11 +190,7 @@ def _from_compatibility(
     # Conditions carry numbers (module counts, voltage windows); they become
     # placeholder-able facts, otherwise the model quotes digits raw.
     for index, condition in enumerate(payload.get("conditions") or []):
-        text = ""
-        if isinstance(condition, dict):
-            text = str(condition.get("en") or condition.get("text") or "")
-        elif isinstance(condition, str):
-            text = condition
+        text = _condition_text(condition, locale)
         if text:
             gathered.add(
                 Fact(
@@ -278,6 +279,30 @@ def _from_handoff(gathered: TurnFacts, payload: dict[str, Any]) -> None:
         value = payload.get(key)
         if isinstance(value, str) and value:
             gathered.add(Fact(id=f"handoff.{key}", value=value, source="handoff-team"))
+
+
+def _condition_text(condition: Any, locale: str) -> str:
+    """A compatibility condition in the turn's language.
+
+    The contract's conditions are written as `{en, de}` pairs and the data is
+    written English-first: a German turn reads the German side, falling back
+    to the English one when the pair is half-written (`TradeRules::word`
+    reads the data the same way), while an English turn reads the English
+    side only - an English answer must not carry a German sentence any more
+    than the reverse. The older plain-string or `text` shapes stay readable;
+    an empty return means the condition is skipped.
+    """
+    if isinstance(condition, str):
+        return condition
+    if not isinstance(condition, dict):
+        return ""
+    sides = ("de", "en") if locale.startswith("de") else ("en",)
+    for side in sides:
+        value = condition.get(side)
+        if isinstance(value, str) and value:
+            return value
+    text = condition.get("text")
+    return str(text) if isinstance(text, str) else ""
 
 
 def _add_selection_facts(
