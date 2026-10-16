@@ -11,7 +11,7 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 | `plugins/linker-commerce` | 商务链、产品事实与 Abilities。PHP，`Linker\Commerce\` → `includes/` |
 | `plugins/linker-i18n` | Polylang 伴侣插件。PHP，`Linker\I18n\` → `includes/` |
 | `plugins/linker-tools` | Genie 与 Solution Configurator：PHP 壳（`Linker\Tools\` → `includes/`）和 React 应用（`src/`，入口 `genie`、`configurator`、`shared`），构建产物提交在 `build/` |
-| `mu-plugins/` | 生产环境的 must-use 插件，部署到 `wp-content/mu-plugins/`（`linker-error-recorder.php`：PHP 错误写进 `wp-content/linker-errors/php.log`，256 KB 轮转）。自己的 Composer 项目（静态检查 + PHPUnit；冒烟测试对着实例跑，`LINKER_MU_WP`） |
+| `mu-plugins/` | 生产环境的 must-use 插件，部署到 `wp-content/mu-plugins/`（`linker-error-recorder.php`：PHP 错误写进 `wp-content/linker-errors/php.log`，256 KB 轮转）。自己的 Composer 项目（静态检查 + PHPUnit；冒烟测试对着实例跑：`just mu-smoke <实例>`，CI 的 `mu-smoke` job 自建裸实例跑它） |
 | `services/genie` | Genie 的代理循环服务（FastAPI，`linker_genie`；与 `linker-tools` 里转发请求的 PHP 代理不是一回事） |
 | `services/engine` | Solution Configurator 的引擎（FastAPI，`linker_engine`） |
 | `themes/picostrap5-child-base` | 子主题：只有 `functions.php`（主题自身的行为，`just up` 与切换部署都把它覆写进实例主题的副本）；hreflang/canonical 归 Polylang 与 linker-i18n，结构化数据归 linker-commerce，安全头与 REST 守卫归 mu-plugins |
@@ -21,7 +21,7 @@ de-linker.com 的重建：WordPress + WooCommerce 上的德国 B2B 光伏储能�
 
 PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插件的 `phpcs.xml.dist`、`phpstan.neon.dist`、`tests/php/bootstrap.php` 只写本插件的文件、文本域与前缀，其余引用 `tools/php/`；`phpunit.xml.dist` 每个插件一份，因为 PHPUnit 9.6 的配置文件之间不能共享根元素属性。JS 单测是 `src/` 与 `bin/` 下的 `*.test.ts(x)`，端到端测试有两处：`plugins/linker-tools/tests/e2e/` 驱动 Storybook（工具应用自身），评审站整站回归套件在根 `tests/e2e/`（见目录表）。Python 服务是 uv 的 src 布局：规格里写作 `services/genie/retrieval.py` 的模块就是 `services/genie/src/linker_genie/retrieval.py`；包外的脚本（如 `services/genie/index/`）同样受 Ruff 与 mypy 检查（两者都对整个服务目录运行）；测试在各服务的 `tests/`。`tools/local` 同时是 uv 项目（`src/linker_local/`、`tests/`）与只做静态检查的 Composer 项目（实例用的 mu-plugin `mu/` 与 PHP 服务器路由 `router.php`）。
 
-`mu-plugins/` 与 `tools/local` 一样是只做静态检查与 PHPUnit 的 Composer 项目；它的单元测试用 PHP 自己建临时目录，冒烟测试对着本地实例（`LINKER_MU_WP`）确认真实请求里的错误确实落进记录件。
+`mu-plugins/` 与 `tools/local` 一样是只做静态检查与 PHPUnit 的 Composer 项目；它的单元测试用 PHP 自己建临时目录，冒烟测试对着本地实例确认真实请求里的属性（安全头与 REST 用户表守卫、记录件、证书钉扎文件就地安装）。跑法：`just up <实例>` 后 `just mu-smoke <实例>`（配方把 `LINKER_MU_WP` 接到 `just wp <实例>`，并以 `--testsuite integration` 运行集成套件）；CI 的 `mu-smoke` job 用裸实例跑同一配方。
 
 `tools/migrate` 是 uv 项目（测试在 `tools/migrate/tests/`）；它的 WordPress 侧 `*.php` 经 `wp eval-file` 运行，借用 `plugins/linker-commerce` 的 `phpcs.xml.dist`/`phpstan.neon.dist` 检查（迁移的是这个插件读的商品数据），不另设 Composer 项目。需要真实站点的测试——`linker-commerce` 的 `tests/php/Integration`（`LINKER_COMMERCE_TEST_SITE`，站点地址）与 `tools/migrate/tests/test_7_facts_wordpress.py`（`LINKER_MIGRATE_TEST_WP`，WP-CLI 命令）——在没有这两个环境变量时跳过，CI 上就是跳过。
 

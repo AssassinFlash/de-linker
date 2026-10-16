@@ -23,18 +23,21 @@ use PHPUnit\Framework\TestCase;
  * The engine pin is asserted as an installation, not as a behaviour: see the
  * test itself.
  *
- *     LINKER_MU_WP=~/de-linker-local/<instance>/wp.sh vendor/bin/phpunit --testsuite integration
+ *     LINKER_MU_WP='just wp <instance>' vendor/bin/phpunit --testsuite integration
  *
- * Without LINKER_MU_WP the tests are skipped.
+ * (`just mu-smoke <instance>` runs this suite with that variable set;
+ * LINKER_MU_WP is a command with arguments, read as a shell word list — `just
+ * wp <instance>` is the repo's WP-CLI entry.) Without LINKER_MU_WP the tests
+ * are skipped.
  */
 final class SiteGuardsSmokeTest extends TestCase {
 
 	/**
-	 * The WP-CLI command for the site.
+	 * The WP-CLI command for the site, as an argument list.
 	 *
-	 * @var string
+	 * @var array<int, string>
 	 */
-	private static string $wp = '';
+	private static array $wp = array();
 
 	/**
 	 * The site's wp-content directory.
@@ -63,10 +66,14 @@ final class SiteGuardsSmokeTest extends TestCase {
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
 		$wp = getenv( 'LINKER_MU_WP' );
-		if ( ! is_string( $wp ) || '' === $wp ) {
+		if ( ! is_string( $wp ) || '' === trim( $wp ) ) {
 			self::markTestSkipped( 'LINKER_MU_WP names no local site.' );
 		}
-		self::$wp      = $wp;
+		// A command with arguments is the useful form here (`just wp <instance>`
+		// runs the phar through the instance's PHP and php.ini); split it into
+		// the word list proc_open wants.
+		$words         = array_map( 'strval', (array) preg_split( '/\s+/', trim( $wp ) ) );
+		self::$wp      = array_values( array_filter( $words, static fn( string $word ): bool => '' !== $word ) );
 		self::$content = trim( self::wp( array( 'eval', 'echo WP_CONTENT_DIR;' ) ) );
 		self::$url     = trim( self::wp( array( 'eval', 'echo home_url();' ) ) );
 		self::assertDirectoryExists( self::$content );
@@ -205,7 +212,7 @@ final class SiteGuardsSmokeTest extends TestCase {
 	 */
 	private static function wp( array $args ): string {
 		$process = proc_open(
-			array_merge( array( self::$wp ), $args ),
+			array_merge( self::$wp, $args ),
 			array(
 				1 => array( 'pipe', 'w' ),
 				2 => array( 'pipe', 'w' ),

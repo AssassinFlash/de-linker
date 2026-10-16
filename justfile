@@ -257,6 +257,18 @@ php-test: php-install
         {{ php }} vendor/bin/phpunit
     done
 
+# The must-use plugins' smoke suite against a real instance (`just up <name>`
+# first): the guards' headers and closed REST user list, the recorder's file,
+# the engine pin's installation. LINKER_MU_WP is wired to the repo's WP-CLI
+# entry, `just wp <name>`; CI runs this recipe against an instance it builds
+# (.github/workflows/check.yml, the mu-smoke job).
+[positional-arguments]
+mu-smoke name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ justfile_directory() }}/mu-plugins"
+    LINKER_MU_WP="just wp {{ name }}" PHP={{ php }} {{ php }} vendor/bin/phpunit --testsuite integration
+
 # Installs node_modules from package-lock.json, unless the last install is newer than the lock file.
 [private]
 [working-directory("plugins/linker-tools")]
