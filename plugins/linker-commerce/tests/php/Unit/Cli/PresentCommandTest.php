@@ -859,10 +859,10 @@ final class PresentCommandTest extends TestCase {
 	 * ignored it would report in sync on a site present would rewrite.
 	 */
 	public function test_check_reports_a_drifted_page_template_title(): void {
-		$state                        = $this->mock_synced_site();
-		$faq                          = $state->slug['linker-faq'];
-		$drifted                      = self::post_with( $faq, (string) file_get_contents( Templates::paths()['linker-faq'] ), 'lc_dynamic_template', '', 'An older title' );
-		$state->posts[ $faq ]         = $drifted;
+		$state                = $this->mock_synced_site();
+		$faq                  = $state->slug['linker-faq'];
+		$content              = (string) file_get_contents( Templates::paths()['linker-faq'] );
+		$state->posts[ $faq ] = self::post_with( $faq, $content, 'lc_dynamic_template', '', 'An older title' );
 
 		try {
 			$this->check();
@@ -1051,6 +1051,7 @@ final class PresentCommandTest extends TestCase {
 	 * @param string $body  Post content.
 	 * @param string $type  Post type.
 	 * @param string $name  Post name.
+	 * @param string $title Post title, the fixture's generic one unless a test needs the repo's.
 	 */
 	private static function post_with( int $id, string $body, string $type = 'lc_dynamic_template', string $name = '', string $title = 'Template' ): WP_Post {
 		return new WP_Post(
