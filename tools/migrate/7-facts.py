@@ -18,10 +18,13 @@ the script reads the target site and reports one of
 Without --write it stops after the report (dry run). With --write it refuses
 on any drift, saves what the touched products hold now to a backup file in
 --backup-dir, writes, reads everything back and fails unless every change
-reads "done" and no product's name, SKU, status, descriptions, prices or stock
-fields changed. --reverse applies the plan backwards ("to" becomes "from"),
-which undoes a write. Writing to https://de-linker.com also needs
---production; until the cutover (#17) the target is a local instance:
+reads "done", no product's name, SKU, status, descriptions, prices or stock
+fields changed, and no spec group left a touched product's legacy tables
+(7-facts.php drops an emptied group only where the change names it in
+drop_legacy.remove_groups; the read-back refuses an undeclared loss too).
+--reverse applies the plan backwards ("to" becomes "from"), which undoes a
+write. Writing to https://de-linker.com also needs --production; until the
+cutover (#17) the target is a local instance:
 
   python3 tools/migrate/7-facts.py --wp ~/de-linker-local/t7/wp
   python3 tools/migrate/7-facts.py --wp ~/de-linker-local/t7/wp --write --backup-dir ~/de-linker-local/t7/backups
@@ -151,6 +154,11 @@ def current_value(site: dict[str, Any], group: str, change: dict[str, Any]) -> A
     if group == "legacy_copy":
         return legacy_value(site, change)
     figures = json.loads(product["figures"] or "{}")
+    # A product whose last figure was deleted stores "[]" — the write's own
+    # wp_json_encode of an emptied PHP array, not an object. An emptied map
+    # holds no keys; reading it must not crash the report.
+    if not isinstance(figures, dict):
+        figures = {}
     return figures.get(change["key"])
 
 
@@ -264,6 +272,58 @@ def protected_changes(before: dict[str, Any], after: dict[str, Any]) -> list[str
     return changes
 
 
+def legacy_groups(raw: Any) -> set[str]:
+    """The spec group titles one legacy table states."""
+    try:
+        decoded = json.loads(raw or "{}")
+    except json.JSONDecodeError:
+        return set()
+    if not isinstance(decoded, dict):
+        return set()
+    return {
+        str(group.get("spec_group_title") or "")
+        for group in decoded.get("spec_groups") or []
+        if isinstance(group, dict)
+    }
+
+
+def declared_removals(applied: list[dict[str, Any]]) -> dict[str, set[str]]:
+    """The groups each product's applied changes name in drop_legacy.remove_groups."""
+    declared: dict[str, set[str]] = {}
+    for change in applied:
+        drop = change.get("drop_legacy")
+        if isinstance(drop, dict):
+            declared.setdefault(str(change["product"]), set()).update(
+                str(item) for item in drop.get("remove_groups") or []
+            )
+    return declared
+
+
+def legacy_groups_lost(
+    before: dict[str, Any], after: dict[str, Any], applied: list[dict[str, Any]]
+) -> list[str]:
+    """Spec groups that a write removed from a touched product's legacy tables
+    without the change saying so (drop_legacy.remove_groups).
+
+    A group is a tab of the product page: a change that removes one changes
+    the page's structure, so the plan has to name it — a row drop that empties
+    its group and stays silent is the C15 accident (2026-10-13, the Inverter
+    side group left t110 with its last row).
+    """
+    declared = declared_removals(applied)
+    lost = []
+    for product_id, product in before["products"].items():
+        if product is None:
+            continue
+        legacy = product.get("legacy") or {}
+        now = (after["products"].get(product_id) or {}).get("legacy") or {}
+        for side, raw in legacy.items():
+            for title in sorted(legacy_groups(raw) - legacy_groups(now.get(side))):
+                if title not in declared.get(product_id, set()):
+                    lost.append(f"{product_id} {side}: {title!r}")
+    return lost
+
+
 def reversed_plan(plan: dict[str, Any]) -> dict[str, Any]:
     """The plan backwards: every change goes from its "to" to its "from"."""
     backwards = dict(plan)
@@ -373,6 +433,12 @@ def main(argv: list[str] | None = None) -> int:
     if changed:
         return refuse(
             "Fields the migration must not change changed:\n" + "\n".join(changed)
+        )
+    lost = legacy_groups_lost(site, after_site, by_status["apply"])
+    if lost:
+        return refuse(
+            "The write removed spec groups the plan does not name "
+            "(drop_legacy.remove_groups):\n" + "\n".join(lost)
         )
     total = sum(len(plan_changes(plan, group)) for group in GROUPS)
     return 0 if len(after["done"]) == total else refuse("Not every change reads done.")

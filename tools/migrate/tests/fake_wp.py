@@ -11,7 +11,7 @@ answers as the real file does, reading from and writing to site.json:
                           "legacy": {"en": "<JSON object>", "de": "<JSON object>"},
                           "protected": {"<field>": ...}}},
      "term_counts": {"<taxonomy>:<slug>": <count>},
-     "faults": ["ignore-writes" | "touch-stock" | "fail-write"],
+     "faults": ["ignore-writes" | "touch-stock" | "fail-write" | "remove-legacy-group"],
      "writes": [<every write request>]}
 """
 
@@ -27,9 +27,19 @@ from typing import Any
 PAYLOAD = re.compile(r"\)\( '([A-Za-z0-9+/=]+)' \);\s*$")
 
 
+class LegacyGroupRefusal(Exception):
+    """A drop that would remove a spec group it does not name (7-facts.php throws too)."""
+
+    def __init__(self, product_id: str, title: str) -> None:
+        super().__init__(
+            f'Dropping these rows would remove the spec group "{title}" '
+            f"of product {product_id}. Name the group in drop_legacy.remove_groups "
+            "to remove it with the row."
+        )
+
+
 def write(site: dict[str, Any], request: dict[str, Any]) -> None:
     """Applies a write request the way the migrations' PHP sides do."""
-    site["writes"].append(request)
     faults = site.get("faults", [])
     if "ignore-writes" not in faults:
         for change in request.get("attributes", []):
@@ -48,6 +58,7 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
                 if isinstance(drop, dict):
                     titles = {str(item) for item in drop.get("titles") or []}
                     labels = {str(item) for item in drop.get("labels") or []}
+                    remove = {str(item) for item in drop.get("remove_groups") or []}
                     legacy = product.setdefault("legacy", {})
                     for side in ("en", "de"):
                         raw = legacy.get(side)
@@ -56,22 +67,40 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
                         decoded = json.loads(raw)
                         groups = []
                         for group in decoded.get("spec_groups") or []:
-                            if str(group.get("spec_group_title") or "") not in titles:
+                            title = str(group.get("spec_group_title") or "")
+                            if title not in titles:
                                 groups.append(group)
                                 continue
+                            original = list(group.get("spec_rows") or [])
                             rows = [
                                 row
-                                for row in group.get("spec_rows") or []
+                                for row in original
                                 if str(row.get("spec_label") or "") not in labels
                             ]
-                            if rows:
-                                group = {**group, "spec_rows": rows}
-                                groups.append(group)
+                            if not rows:
+                                if original and title not in remove:
+                                    # 7-facts.php refuses this before it
+                                    # writes: a drop may remove a group
+                                    # with rows only where it names it.
+                                    raise LegacyGroupRefusal(
+                                        str(change["product"]), title
+                                    )
+                                if original or title in remove:
+                                    # The group leaves: the drop emptied it,
+                                    # or the drop names it for removal.
+                                    continue
+                                # A group that was already empty and is not
+                                # named stays as it is.
+                            group = {**group, "spec_rows": rows}
+                            groups.append(group)
                         decoded["spec_groups"] = groups
                         legacy[side] = json.dumps(decoded, ensure_ascii=False)
             else:
                 figures[change["key"]] = change["to"]
-            product["figures"] = json.dumps(figures, ensure_ascii=False)
+            # wp_json_encode of an emptied PHP array is "[]", not "{}".
+            product["figures"] = (
+                json.dumps(figures, ensure_ascii=False) if figures else "[]"
+            )
         for change in request.get("legacy_copy", []):
             product = site["products"][str(change["product"])]
             side = {"_tv_legacy_acf_json": "en", "_linker_de_acf_json": "de"}[
@@ -99,6 +128,21 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
     if "touch-stock" in faults:
         for product in site["products"].values():
             product["protected"]["stock_status"] = "outofstock"
+    if "remove-legacy-group" in faults:
+        # A write that loses a spec group through a path the PHP guard does
+        # not see; the Python read-back must refuse the run.
+        for product in site["products"].values():
+            legacy = product.get("legacy") or {}
+            for side, raw in legacy.items():
+                if not raw:
+                    continue
+                decoded = json.loads(raw)
+                if decoded.get("spec_groups"):
+                    decoded["spec_groups"] = decoded["spec_groups"][1:]
+                    legacy[side] = json.dumps(decoded, ensure_ascii=False)
+    # The request counts as this site's write only once it applied: a refusal
+    # is no write request seen (7-facts.php throws before any meta).
+    site["writes"].append(request)
 
 
 def main() -> int:
@@ -132,7 +176,16 @@ def main() -> int:
         print("PHP Fatal error:  Uncaught RuntimeException: refused", file=sys.stderr)
         return 255
     else:
-        write(site, request)
+        try:
+            write(site, request)
+        except LegacyGroupRefusal as refusal:
+            # What WP-CLI does when the PHP side throws: an error, no answer,
+            # and nothing written.
+            print(
+                f"PHP Fatal error:  Uncaught RuntimeException: {refusal}",
+                file=sys.stderr,
+            )
+            return 255
         site_path.write_text(json.dumps(site, ensure_ascii=False))
         answer = {"written": True}
     print("\n" + request["marker"] + json.dumps(answer, ensure_ascii=False))

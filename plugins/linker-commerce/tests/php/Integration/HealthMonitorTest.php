@@ -19,9 +19,35 @@ use Linker\Commerce\Settings\Options;
  * to the contact person, with the blind copies — and a healthy pair of
  * services produces none (issue #67, GAP-16).
  *
+ * The healthy side answers through the instance's own file server
+ * (healthy_url()): a lane's engine and Genie are not always running, and the
+ * addresses a snapshot restores point at the live services, which the local
+ * isolation refuses — either way the check would fail a service that the
+ * instance merely is not running today.
+ *
  * @coversNothing
  */
 final class HealthMonitorTest extends IntegrationTestCase {
+
+	/**
+	 * A URL of the instance that answers GET <base>/health with 200: a small
+	 * probe file under uploads, served by the instance's own web server.
+	 * Removed with the rest of the test's fixtures.
+	 */
+	private function healthy_url(): string {
+		$uploads = wp_upload_dir();
+		$name    = 'linker-it-health-' . self::tag();
+		$dir     = trailingslashit( (string) $uploads['basedir'] ) . $name;
+		wp_mkdir_p( $dir );
+		file_put_contents( $dir . '/health', 'ok' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a probe file of this test, not user content.
+		$this->later(
+			static function () use ( $dir ): void {
+				unlink( $dir . '/health' );
+				rmdir( $dir );
+			}
+		);
+		return trailingslashit( (string) $uploads['baseurl'] ) . $name;
+	}
 
 	/**
 	 * The instance's captured mail.
@@ -72,11 +98,14 @@ final class HealthMonitorTest extends IntegrationTestCase {
 			}
 		);
 
-		// The team addresses of this test, and a Genie that answers nothing:
-		// a port on this machine with no listener refuses at once.
+		// The team addresses of this test, a Genie that answers nothing (a
+		// port on this machine with no listener refuses at once) and an
+		// engine that answers 200: the healthy engine sends nothing even
+		// while the Genie fails.
 		update_option( Options::CONTACT_EMAIL, $contact );
 		update_option( Options::TEAM_BCC, $bcc );
 		update_option( Monitor::GENIE_URL_OPTION, 'http://127.0.0.1:9' );
+		update_option( Monitor::ENGINE_URL_OPTION, $this->healthy_url() );
 		delete_option( Throttle::OPTION );
 
 		$captured = self::captured_mail();
@@ -94,10 +123,9 @@ final class HealthMonitorTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'Genie uses this service.', $alert );
 		$this->assertStringNotContainsString( 'The engine service failed its health check', $alert, 'The healthy engine sends nothing.' );
 
-		// The healthy pair: with the instance's own service addresses, the
-		// same run sends nothing.
-		update_option( Monitor::GENIE_URL_OPTION, $saved[ Monitor::GENIE_URL_OPTION ] );
-		update_option( Monitor::ENGINE_URL_OPTION, $saved[ Monitor::ENGINE_URL_OPTION ] );
+		// The healthy pair: a Genie that answers 200 too, and the same run
+		// sends nothing.
+		update_option( Monitor::GENIE_URL_OPTION, $this->healthy_url() );
 		delete_option( Throttle::OPTION );
 
 		$captured = self::captured_mail();

@@ -44,3 +44,14 @@ t110 的写入历史（备份在 `~/de-linker-local/t110/backups/`）：
 2. 第二、三写（备份 `c15-facts-backup-…-032522.json` 与 `…-032826.json`）改成删键并删产品页 legacy 规格行——只读数据表，读漏了用户手册，过度更正。
 3. 第四写（备份 `c15-facts-backup-127.0.0.1_8975-20261013-044057.json`）按二次更正恢复：`inverter_side_rated_power_kw`=30 kW 带双来源，产品页四条文案行恢复；写回后逐条读回 done（20/20，0 drift）。写完后 `selection-facts` 与 `engineering-feed` 对五台的相位为 3；#1178/#2409 的 `ac_power_kw` 仍是 `unknown`；#6482/#6529/#6530 为 15/30/60；工程 feed 重新带 `inverter_side_rated_power_kw`（citation 指向数据表 p.2）。FAQ 经 `tools/faq/import.py --write` 写入 `_linker_faqs`（6530 与德语孪生 6575 同文）。
 4. 线上只做过一次只读 dry-run（`7-facts.py --plan tools/migrate/c15-facts.json --wp "ssh hostinger-de-linker /usr/local/bin/wp --path=/home/u388076051/domains/de-linker.com/public_html"`，无 `--write`）：**20 to apply, 0 done, 0 drifted**——线上持无 citation 的 30 kW 与两语言原句，计划逐条判 apply，切换时由同一份计划落地。未对 https://de-linker.com 写。
+
+## 组消失的定位与防线（2026-10-16 结案）
+
+「Inverter side 组从实例上消失」的缺陷候选（未拍面补拍包 §6-4）到此定位：**消失点就是本页写入历史的第二、三写**——计划里 `to: null` 的那条变化带 `drop_legacy`（`titles: ["Inverter side", "Wechselrichterseite"], labels: ["Rated power", "Nennleistung"]`，见提交 `e85ee87c`），`7-facts.php` 的删除器把行删掉后**组随之消失**（组只剩这一行）。证据链：备份时间线里 `…-032826`（第二、三写之间）两个语言表都是三组，`…-044057`（第四写前）都是两组；`pull load` 无责——同快照（`20261015-1852`）装入全新实例后两张表逐字节等于快照（5041 / 5242 B，三组）。第四写恢复了数据键与四条文案，但 `legacy_copy` 不插行，规格组因此没有回来；实例侧的补回见未拍面补拍包（`restore-inverter-side.php`）。
+
+防线（本轮加在迁移工具里，见 PR）：
+
+- **`7-facts.php`**：删除器算完每个表的结果后，**先**检查有没有组会因删行而空掉；**原本有行**的组必须在变化的 `drop_legacy.remove_groups` 里点名才删，否则**在任何 meta 被写之前**拒绝（理由打到 stderr，WP-CLI 以非零退出）。**写闭包只动行**：进写入时空着的组不是这次写的事，除非 `remove_groups` 点名，否则原样保留（评审发现 5——旧闭包会把任何空组一并吞掉）。
+- **`7-facts.py`**：写后读回增加「legacy 组完整性」断言——触碰过的商品、两张表，凡写前有、写后没的组，未在计划的 `remove_groups` 里点名就判失败（`The write removed spec groups the plan does not name`）。同一读回另修一处自伤：计划删掉某商品最后一个图值时，写入端把 `_tv_b2b_figures` 存成 `[]`（空 PHP 数组的 `wp_json_encode`），旧读回按对象读会崩（`'list' object has no attribute 'get'`）——现在 `[]` 读作「无键」。
+
+即：**迁移（改行、改文案）不再能无声地删掉一个规格组**；要删，计划必须写出来。C15 的第三次写入在今天会被这两道中的第一道直接挡下。

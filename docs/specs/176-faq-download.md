@@ -133,6 +133,7 @@
 | 德语第一区名 `Vor der Bestellung`（线上德文页写 `Bevor Sie bestellen`） | 原型（变体 5）的德语措辞，业主验收；EN 侧 `Before you order` 与线上逐字一致。评审指出记录曾误写"逐字保留"，已改正并列入本条 |
 | 移除：旧 `[linker_faq_help]` 搜索卡与 `assets/faq-ui.js`、旧文档/问答/规则片段短代码 | 被新片段取代；无其他消费方（grep 确认） |
 | 保留：16 条商务规则逐字、272 条产品问答与文档数据 | 冻结内容与已评审数据 |
+| 2026-10-16 N3：目录类型解析改 role 先行——EN 侧 12 行移动（8 document→compatibility、4 manual→document）；DE 芯片德语化（修复前 159 Dokument + 1 Garantie → 修复后 16 Dokument / 2 Garantie / 其余 142 行分入 Datasheet·Manual·Certificate·Compatibility·Brochure 五类）；另 6506 德语证书行 `download_role` 数据修正（document→certificate，线上+实例） | N3 复核（§8）；EN 侧移动与 PDP 文档卡既显示一致，DE 侧为修复目标本身 |
 
 ## 8. 已知数据缺口（票里点名，本轮如实呈现不掩盖）
 
@@ -140,8 +141,19 @@
   16 条 `de` 侧全部是德语，抽取源（我们自己的 `de/faq_page.html`，08997063）本来就是德语；
   线上德文页也逐字一致（2026-10-15 拉 `https://de-linker.com/de/faq-download/` 核对：
   16 条问题全部在页面文本里命中，无一英文起句）。故此项不是数据缺口。
-- **德语文档类型字段几乎全为 `document`**（160 份里绝大多数）：类型芯片在德语下区分度低，
-  是源数据类型字段的缺口（线上同），非本票引入。
+- **德语文档类型字段几乎全为 `document`**（160 份里绝大多数）：类型芯片在德语下区分度低——
+  本票记录时为「源数据类型字段的缺口」。**2026-10-16 复核推翻该归因**：德语表
+  （`_linker_de_acf_json.downloads[]`）每行本来就带 `download_role`（英文规范词），`download_type`
+  是德语词（`Datenblatt`/`Handbuch`/`Zertifikat`…），而目录的类型解析（`DocumentLibrary::type()`）
+  只认英文词表，于是除个位数外全部落到 `document`——数据不缺，是解析缺一张德语别名表。
+  修复＝解析改走产品页文档卡用的同一张映射（`Materials::document_kind()`，role 先、type 后；别名表
+  落在 `plugins/linker-commerce/includes/Products/Materials.php` 的 `document_kind()` 内），
+  再按目录自己的词表收口（PR #197）。
+  修复后 DE 目录与 EN 同分布：两表共享 230 个文件（EN-only 1、DE-only 2），**逐文件类型 100% 一致**
+  （914 对 (商品,文件) 全等，含把 6506 德语证书行的 `download_role` 由 `document` 修正为 `certificate`
+  后；该数据修正已写入线上与实例）；EN 侧另有 12 行按 role 修正（8 document→compatibility、4 manual→document）。
+  附录：`_linker_documents`（#8 字段）只在英文商品上（DE 是翻译孪生，经 `linker_commerce_facts_product_id` 取源），
+  EN 106 商品 210 行（datasheet 103 / manual 91 / warranty 15 / document 1），DE 0 行——按设计如此。
 
 ## 9. 验收与验证
 

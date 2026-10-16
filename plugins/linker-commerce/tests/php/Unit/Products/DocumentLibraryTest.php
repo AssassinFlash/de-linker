@@ -81,6 +81,30 @@ final class DocumentLibraryTest extends TestCase {
 					'download_type'     => 'leaflet',
 					'download_language' => '',
 				),
+				// The German table stores German type words with the row's
+				// role beside them; the register reads the same type as the
+				// English table does (2026-10-16).
+				array(
+					'download_file'     => 904,
+					'download_title'    => 'ESA-Batterie-Datenblatt (DE)',
+					'download_type'     => 'Datenblatt',
+					'download_role'     => 'datasheet',
+					'download_language' => 'DE',
+				),
+				array(
+					'download_file'     => 905,
+					'download_title'    => 'ESA-Batterie-Kompatibilitätsliste (DE)',
+					'download_type'     => 'Kompatibilitätsliste',
+					'download_role'     => 'compatibility_list',
+					'download_language' => 'DE',
+				),
+				array(
+					'download_file'     => 906,
+					'download_title'    => 'ESA-Batterie-Broschüre (DE)',
+					'download_type'     => 'Broschüre',
+					'download_role'     => 'brochure',
+					'download_language' => 'DE',
+				),
 			),
 			'faqs'      => array(),
 			'legacy'    => array(
@@ -173,7 +197,7 @@ final class DocumentLibraryTest extends TestCase {
 	public function test_documents_are_deduplicated_by_file_and_count_their_products(): void {
 		$documents = array_column( ( new DocumentLibrary() )->documents(), null, 'title' );
 
-		$this->assertCount( 4, $documents, 'five entries, one file stated by both products' );
+		$this->assertCount( 7, $documents, 'eight entries, one file stated by both products' );
 		$this->assertSame(
 			array( 'GoodWe GW5.1-BAT-D-G21', 'GoodWe GW8.3-BAT-D-G21' ),
 			$documents['ESA battery datasheet (EN)']['covers']
@@ -198,6 +222,26 @@ final class DocumentLibraryTest extends TestCase {
 	}
 
 	/**
+	 * A German row reads the same type as its English twin: the German table
+	 * stores German type words (`Datenblatt`, `Broschüre`) with the row's
+	 * role beside them, and the register resolves both through the mapping
+	 * the product page's document cards use. Until 2026-10-16 the register
+	 * knew only the English words, so every German row read `Document` and
+	 * the type chips had nothing to tell apart.
+	 */
+	public function test_german_rows_read_the_same_type_as_their_english_twin(): void {
+		$documents = array_column( ( new DocumentLibrary() )->documents(), null, 'title' );
+
+		$this->assertSame( 'datasheet', $documents['ESA-Batterie-Datenblatt (DE)']['type'] );
+		$this->assertSame( 'compatibility', $documents['ESA-Batterie-Kompatibilitätsliste (DE)']['type'] );
+		$this->assertSame( 'brochure', $documents['ESA-Batterie-Broschüre (DE)']['type'] );
+		// The vocabulary stays finite: a German word the mapping does not
+		// know (and the register's own list lacks) still reads `Document`.
+		$this->assertSame( 'document', DocumentLibrary::type( 'Installationshandbuch' ) );
+		$this->assertSame( 'manual', DocumentLibrary::type( 'Handbuch' ) );
+	}
+
+	/**
 	 * The register is ordered by type first, then by title — the order the
 	 * live register used.
 	 */
@@ -205,7 +249,7 @@ final class DocumentLibraryTest extends TestCase {
 		$documents = ( new DocumentLibrary() )->documents();
 
 		$this->assertSame(
-			array( 'datasheet', 'manual', 'certificate', 'document' ),
+			array( 'datasheet', 'datasheet', 'manual', 'certificate', 'compatibility', 'brochure', 'document' ),
 			array_map(
 				static function ( array $document ): string {
 					return $document['type'];
@@ -213,7 +257,7 @@ final class DocumentLibraryTest extends TestCase {
 				$documents
 			)
 		);
-		$this->assertSame( 'A brochure', $documents[3]['title'] );
+		$this->assertSame( 'A brochure', $documents[6]['title'] );
 	}
 
 	/**
