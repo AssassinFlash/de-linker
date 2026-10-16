@@ -593,7 +593,7 @@ final class RedirectsTest extends TestCase {
 		$this->permalinks[42]                                     = self::HOME . '/de/loesungskonfigurator/';
 		$this->current_language                                   = 'de';
 		$this->default_language                                   = 'en';
-		$this->languages                                          = array( 'en', 'de' );
+		$this->languages = array( 'en', 'de' );
 
 		$this->assertSame(
 			self::HOME . '/de/loesungskonfigurator/',
