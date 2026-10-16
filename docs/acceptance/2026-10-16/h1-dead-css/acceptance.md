@@ -42,7 +42,7 @@ no consumer after the storefront CSS was retired」。WP_Mock 严格模式会把
 - 字节：**102 368 → 60 080**，净删 **42 288 字节**（文件行数 3379 → 2148）。
   其中纯删除部分是 42 463 字节；改写的那条注释补回 175 字节。
   脚本口径（字符数）102 307 → 59 903，差值是删除区间里的多字节字符（`──` 等框线）。
-- 存活规则：**346 条前后逐字节一致**（脚本内置不变量：任何存活规则的文本必须与原文完全相同，
+- 存活规则：**375 个规则块（346 个唯一选择器清单）前后逐字节一致**（脚本内置不变量：任何存活规则的文本必须与原文完全相同；不变量在「无重复 prelude」前提下成立，本文件的 22 个重复 prelude 已由独立逐字节残留复核覆盖，
   否则拒绝写盘；`missing 0 / changed 0 / extra 0`）
 - 存活规则只有一处**注释**改写：`body.woocommerce-account.logged-in .woocommerce` 上方的
   旧注释写的是已删族（"Account home, inner navigation…"），改成描述这条规则现在的职责。
@@ -154,7 +154,7 @@ DE "Benutzername oder Passwort ist nicht korrekt."），像素 0 差异——
 - `just php-check`：五个 PHP 项目 PHPCS + PHPStan level 8 全 `No errors`
 - `just php-test`：1069 / 152 / 113 / 6 通过，跳过 54（与 main 基线逐项相同）
 - `ProductShortcodesTest` 的一处行号引用（`storefront.css:192`）在**本次改动之前就已失准**
-  （该规则实测在 212 行，且 c4489394 引入时同样是 212 行——引用写在更早的某次编辑里）。
+  （该规则实测在 212 行；`git log -S` 显示 c4489394 引入该引用时就已写 192——引入即失准）。
   按"本轮发现的问题本轮修"改正为 212，并在改动后的文件上复核。
 - 文件级测试 `PdpStylesTest::test_the_storefront_stylesheet_leaves_the_product_page_alone`
   读的就是这个文件，仍绿。
