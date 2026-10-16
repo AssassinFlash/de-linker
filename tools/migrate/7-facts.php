@@ -33,7 +33,9 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 	 * of the table's structure (a whole tab leaves the product page), so it
 	 * happens only where the drop names the group in `remove_groups`:
 	 * otherwise the write is refused before it touches a meta — the drop must
-	 * say out loud that the group leaves, or the group stays.
+	 * say out loud that the group leaves, or the group stays. The closure
+	 * edits rows; a group that was already empty before the drop is not this
+	 * write's to remove and stays unless `remove_groups` names it.
 	 *
 	 * @param int                  $product_id Product ID.
 	 * @param array<string, mixed> $drop       titles, labels and remove_groups, each a string or a list of strings.
@@ -45,7 +47,7 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 		$labels = array_map( 'strval', (array) ( $drop['labels'] ?? array() ) );
 		$remove = array_map( 'strval', (array) ( $drop['remove_groups'] ?? array() ) );
 		$keys   = array( '_tv_legacy_acf_json', '_linker_de_acf_json' );
-		$write  = static function ( int $product_id, string $meta_key, array $decoded, array $titles, array $labels ): void {
+		$write  = static function ( int $product_id, string $meta_key, array $decoded, array $titles, array $labels, array $remove ): void {
 			$groups = array();
 			foreach ( $decoded['spec_groups'] as $group ) {
 				if ( ! is_array( $group ) || ! isset( $group['spec_rows'] ) || ! is_array( $group['spec_rows'] ) ) {
@@ -61,7 +63,13 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 					$rows[] = $row;
 				}
 				if ( array() === $rows ) {
-					continue;
+					// The group leaves where the drop emptied it (the guard
+					// above has already refused the unnamed case) or where the
+					// drop names it in remove_groups; a group that was empty
+					// before the drop stays as it is.
+					if ( array() !== $group['spec_rows'] || in_array( (string) ( $group['spec_group_title'] ?? '' ), $remove, true ) ) {
+						continue;
+					}
 				}
 				$group['spec_rows'] = $rows;
 				$groups[]           = $group;
@@ -93,7 +101,7 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 					$group['spec_rows'],
 					static fn( $row ): bool => ! in_array( is_array( $row ) ? (string) ( $row['spec_label'] ?? '' ) : '', $labels, true )
 				);
-				if ( array() === $left && ! in_array( $title, $remove, true ) ) {
+				if ( array() === $left && array() !== $group['spec_rows'] && ! in_array( $title, $remove, true ) ) {
 					$refusal = "Dropping these rows would remove the spec group \"{$title}\" of product {$product_id} ({$meta_key}). Name the group in drop_legacy.remove_groups to remove it with the row.";
 					// An uncaught exception reaches the operator as WordPress's
 					// generic critical-error line; the reason goes to stderr first.
@@ -105,7 +113,7 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 			$tables[ $meta_key ] = $decoded;
 		}
 		foreach ( $tables as $meta_key => $decoded ) {
-			$write( $product_id, $meta_key, $decoded, $titles, $labels );
+			$write( $product_id, $meta_key, $decoded, $titles, $labels, $remove );
 		}
 	}
 }

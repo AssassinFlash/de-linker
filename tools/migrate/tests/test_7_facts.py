@@ -541,6 +541,91 @@ def test_a_named_group_leaves_with_its_last_row(tmp_path: Path) -> None:
     assert titles == ["Grid"]
 
 
+def test_a_group_that_was_already_empty_is_not_swallowed(tmp_path: Path) -> None:
+    """The closure edits rows; a group that entered the write empty stays.
+
+    The write closure used to drop every group left with no rows — including
+    one that was empty before the drop, whatever its title. Only a group the
+    drop empties (it had rows, and the guard made sure remove_groups names it)
+    or a group remove_groups names leaves the table.
+    """
+    plan = {
+        "new_attribute": {},
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "inverter_side_rated_power_kw",
+                "from": {"value": "30", "unit": "kW"},
+                "to": None,
+                "drop_legacy": {
+                    "titles": ["Inverter side"],
+                    "labels": ["Rated power"],
+                },
+                "basis": "unverifiable",
+            }
+        ],
+        "basis": {"unverifiable": "not in the column"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    legacy = {
+        "spec_groups": [
+            {
+                "spec_group_title": "Inverter side",
+                "spec_rows": [
+                    {"spec_label": "Rated power", "spec_value": "30"},
+                    {"spec_label": "Rated current", "spec_value": "43.5"},
+                ],
+            },
+            {"spec_group_title": "Emptied earlier", "spec_rows": []},
+            {
+                "spec_group_title": "Grid",
+                "spec_rows": [{"spec_label": "Rated power", "spec_value": "60"}],
+            },
+        ]
+    }
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": json.dumps(
+                    {"inverter_side_rated_power_kw": {"value": "30", "unit": "kW"}}
+                ),
+                "legacy": {"en": json.dumps(legacy), "de": "{}"},
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    assert (
+        facts.main(
+            [
+                "--plan",
+                str(plan_path),
+                "--wp",
+                site.wp,
+                "--write",
+                "--backup-dir",
+                str(tmp_path),
+            ]
+        )
+        == 0
+    )
+
+    stored = json.loads(site.state["products"]["6530"]["legacy"]["en"])
+    by_title = {group["spec_group_title"]: group for group in stored["spec_groups"]}
+    assert "Emptied earlier" in by_title, (
+        "an already-empty group is not the drop's to remove"
+    )
+    assert by_title["Emptied earlier"]["spec_rows"] == []
+    rows = [row["spec_label"] for row in by_title["Inverter side"]["spec_rows"]]
+    assert rows == ["Rated current"], "the drop took only the row it named"
+
+
 def test_the_read_back_refuses_an_undeclared_group_loss(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -626,6 +711,60 @@ def test_a_null_figure_is_deleted(tmp_path: Path) -> None:
     stored = json.loads(site.state["products"]["6530"]["figures"])
     assert "inverter_side_rated_power_kw" not in stored
     assert stored["rated_power_kw"]["value"] == "60"
+
+
+def test_a_figures_map_that_emptied_reads_back_as_no_keys(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A product's last figure gone stores "[]" (wp_json_encode of an emptied
+    PHP array). The report and the read-back must read that as "no keys" — the
+    tool itself writes the shape, and it used to crash on its own output."""
+    plan = {
+        "new_attribute": {},
+        "attributes": [],
+        "figures": [
+            {
+                "product": 6530,
+                "key": "last_figure",
+                "from": {"value": "1", "unit": "kW"},
+                "to": None,
+                "basis": "probe",
+            }
+        ],
+        "basis": {"probe": "the map empties"},
+    }
+    plan_path = tmp_path / "c15-facts.json"
+    plan_path.write_text(json.dumps(plan))
+    state = {
+        "siteurl": LOCAL,
+        "products": {
+            "6530": {
+                "attributes": {},
+                "figures": json.dumps({"last_figure": {"value": "1", "unit": "kW"}}),
+                "protected": {"sku": "SKU-6530"},
+            }
+        },
+        "writes": [],
+    }
+    site = make_site(tmp_path, state)
+
+    assert (
+        facts.main(
+            [
+                "--plan",
+                str(plan_path),
+                "--wp",
+                site.wp,
+                "--write",
+                "--backup-dir",
+                str(tmp_path),
+            ]
+        )
+        == 0
+    )
+
+    assert site.state["products"]["6530"]["figures"] == "[]"
+    assert "0 to apply, 1 done, 0 drifted." in capsys.readouterr().out
 
 
 def test_the_uncited_30_kw_is_apply_not_drift(

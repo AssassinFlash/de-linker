@@ -154,6 +154,11 @@ def current_value(site: dict[str, Any], group: str, change: dict[str, Any]) -> A
     if group == "legacy_copy":
         return legacy_value(site, change)
     figures = json.loads(product["figures"] or "{}")
+    # A product whose last figure was deleted stores "[]" — the write's own
+    # wp_json_encode of an emptied PHP array, not an object. An emptied map
+    # holds no keys; reading it must not crash the report.
+    if not isinstance(figures, dict):
+        figures = {}
     return figures.get(change["key"])
 
 

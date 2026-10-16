@@ -40,7 +40,6 @@ class LegacyGroupRefusal(Exception):
 
 def write(site: dict[str, Any], request: dict[str, Any]) -> None:
     """Applies a write request the way the migrations' PHP sides do."""
-    site["writes"].append(request)
     faults = site.get("faults", [])
     if "ignore-writes" not in faults:
         for change in request.get("attributes", []):
@@ -68,29 +67,40 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
                         decoded = json.loads(raw)
                         groups = []
                         for group in decoded.get("spec_groups") or []:
-                            if str(group.get("spec_group_title") or "") not in titles:
+                            title = str(group.get("spec_group_title") or "")
+                            if title not in titles:
                                 groups.append(group)
                                 continue
+                            original = list(group.get("spec_rows") or [])
                             rows = [
                                 row
-                                for row in group.get("spec_rows") or []
+                                for row in original
                                 if str(row.get("spec_label") or "") not in labels
                             ]
-                            if rows:
-                                group = {**group, "spec_rows": rows}
-                                groups.append(group)
-                            elif str(group.get("spec_group_title") or "") not in remove:
-                                # 7-facts.php refuses this before it writes:
-                                # a drop may remove a group only where it names it.
-                                raise LegacyGroupRefusal(
-                                    str(change["product"]),
-                                    str(group.get("spec_group_title") or ""),
-                                )
+                            if not rows:
+                                if original and title not in remove:
+                                    # 7-facts.php refuses this before it
+                                    # writes: a drop may remove a group
+                                    # with rows only where it names it.
+                                    raise LegacyGroupRefusal(
+                                        str(change["product"]), title
+                                    )
+                                if original or title in remove:
+                                    # The group leaves: the drop emptied it,
+                                    # or the drop names it for removal.
+                                    continue
+                                # A group that was already empty and is not
+                                # named stays as it is.
+                            group = {**group, "spec_rows": rows}
+                            groups.append(group)
                         decoded["spec_groups"] = groups
                         legacy[side] = json.dumps(decoded, ensure_ascii=False)
             else:
                 figures[change["key"]] = change["to"]
-            product["figures"] = json.dumps(figures, ensure_ascii=False)
+            # wp_json_encode of an emptied PHP array is "[]", not "{}".
+            product["figures"] = (
+                json.dumps(figures, ensure_ascii=False) if figures else "[]"
+            )
         for change in request.get("legacy_copy", []):
             product = site["products"][str(change["product"])]
             side = {"_tv_legacy_acf_json": "en", "_linker_de_acf_json": "de"}[
@@ -130,6 +140,9 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
                 if decoded.get("spec_groups"):
                     decoded["spec_groups"] = decoded["spec_groups"][1:]
                     legacy[side] = json.dumps(decoded, ensure_ascii=False)
+    # The request counts as this site's write only once it applied: a refusal
+    # is no write request seen (7-facts.php throws before any meta).
+    site["writes"].append(request)
 
 
 def main() -> int:
