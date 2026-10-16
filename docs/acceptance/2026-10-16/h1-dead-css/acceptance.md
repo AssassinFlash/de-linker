@@ -139,8 +139,9 @@ DE "Benutzername oder Passwort ist nicht korrekt."），像素 0 差异——
 ## 5. WindPress 编译验证
 
 - `just present h1clean` 把卷内 `storefront.css` 更新为分支版本（md5 与仓库一致：
-  `6e7027f2a87334a7620ab7f5394d5fbb`），并删掉 `main.css` 里指向它的旧 import 之外无改动；
-  卷内**其它 19 个文件与仓库逐一 md5 相等**（即两轮之间只有 storefront.css 变了）。
+  `6e7027f2a87334a7620ab7f5394d5fbb`）；卷内与仓库同名的样式文件共 16 个，**除 storefront.css
+  之外的 15 个逐一 md5 相等**——即两轮之间只有这一个文件变了。卷内另 4 个（`main.css`、
+  `terravolt-components.css`、`terravolt-theme.css`、`wizard.css`）是站点自带的，不属本仓。
 - `just windpress-compile h1clean`：`{"compiled":true,…,"file_size":678035}`，
   缓存 mtime 更新，anchor classes 检查通过。
 - 编译产物 `tailwind.css` 里 `sf-account` 出现次数：删前 **286** → 删后 **0**。
