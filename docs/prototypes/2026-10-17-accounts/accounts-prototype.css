@@ -28,10 +28,13 @@
 
 /* A — list table */
 .lap-table td { vertical-align: top; }
-.lap-col-company { width: 27%; }
-.lap-col-vat { width: 12%; }
-.lap-col-checks { width: 22%; }
-.lap-col-actions { width: 240px; }
+.lap-col-company { width: 24%; }
+.lap-col-type { width: 112px; }
+.lap-col-country { width: 72px; }
+.lap-col-vat { width: 128px; }
+.lap-col-reg { width: 96px; }
+.lap-col-actions { width: 236px; }
+.lap-cc { display: inline-block; font: 600 11px/1.6 Menlo, monospace; background: #f0f0f1; border: 1px solid #dcdcde; border-radius: 3px; padding: 0 5px; }
 .lap-table .row-actions.visible { left: 0; position: static; padding-top: 4px; }
 .lap-focus td { background: #f0f6fc !important; }
 .lap-focus td:first-child { box-shadow: inset 4px 0 0 #2271b1; }

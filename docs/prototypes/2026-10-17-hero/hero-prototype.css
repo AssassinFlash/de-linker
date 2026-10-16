@@ -1,0 +1,92 @@
+/* PROTOTYPE · map #220 · ticket #231 — throwaway. */
+.linker-genie-panel { display: none !important; } /* the site's own dock stays shut; the prototype's dock takes its place */
+html.hp-locked { overflow: hidden; }
+
+/* shared conversation look (follows the site's dock: white panel, navy user bubble, teal send) */
+.hp-dock, .hp-hero-thread, .hp-focus__panel { font-family: Inter, "Plus Jakarta Sans", Arial, sans-serif; color: #172636; text-align: left; }
+.hp-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px 8px 18px; border-bottom: 1px solid #eef1f3; }
+.hp-bar p { margin: 0; font-size: 13px; font-weight: 650; color: #0b1f33; }
+.hp-bar div { display: flex; align-items: center; gap: 2px; }
+.hp-icon { width: 32px; height: 32px; border: 0; background: transparent; border-radius: 9px; display: inline-grid; place-items: center; color: #5f6b7c; cursor: pointer; text-decoration: none; }
+.hp-icon:hover { background: #f1f4f6; color: #172636; }
+.hp-link { border: 0; background: none; color: #087c73; font-family: inherit; font-size: 13px; font-weight: 600; line-height: 1.2; cursor: pointer; padding: 6px 8px; border-radius: 8px; }
+.hp-link:hover { background: #eef7f6; }
+.hp-link kbd { font: 600 11px/1 Menlo, monospace; border: 1px solid #d7dfe1; border-radius: 4px; padding: 2px 4px; margin-left: 4px; color: #5f6b7c; }
+.hp-thread { flex: 1; overflow: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+.hp-intro { margin: 0; font-size: 12px; color: #5f6b7c; }
+.hp-origin { margin: 0; padding: 6px 18px; font-size: 12px; color: #087c73; background: #f2faf9; border-bottom: 1px solid #e3f1ef; }
+.hp-msg { font-size: 13.5px; line-height: 1.5; }
+.hp-msg p { margin: 0 0 8px; }
+.hp-msg--user { align-self: flex-end; max-width: 84%; background: #0b1f33; color: #fff; border-radius: 14px 14px 5px 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
+.hp-msg--genie { align-self: stretch; }
+.hp-thumb { width: 160px; border-radius: 8px; display: block; }
+.hp-attach { font-size: 12px; opacity: .85; }
+.hp-typing { display: inline-flex; gap: 4px; padding: 6px 0; }
+.hp-typing i { width: 6px; height: 6px; border-radius: 50%; background: #9aa6b2; animation: hp-dot 1s infinite ease-in-out; }
+.hp-typing i:nth-child(2) { animation-delay: .15s; }
+.hp-typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes hp-dot { 0%, 80%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+.hp-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 4px 0 8px; }
+.hp-card { display: flex; flex-direction: column; gap: 4px; border: 1px solid #e1e6e9; border-radius: 12px; padding: 8px; text-decoration: none; color: #172636; background: #fff; }
+.hp-card:hover { border-color: #087c73; }
+.hp-card img, .hp-card__noimg { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #f6f8f9; border-radius: 8px; }
+.hp-card__name { font-size: 12px; font-weight: 600; line-height: 1.35; }
+.hp-card__act { font-size: 11px; color: #087c73; font-weight: 600; }
+.hp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.hp-chip, .hp-step { border: 1px solid #dfe7ec; background: #fff; color: #172636; border-radius: 999px; padding: 6px 12px; font-family: inherit; font-size: 12.5px; font-weight: 500; line-height: 1.3; cursor: pointer; }
+.hp-chip:hover, .hp-step:hover { border-color: #087c73; color: #087c73; }
+.hp-composer { display: flex; align-items: flex-end; gap: 6px; margin: 8px 12px 12px; border: 1px solid #d7dfe1; border-radius: 16px; padding: 8px 10px; background: #fff; box-shadow: 0 3px 8px rgba(32, 51, 52, .024); }
+.hp-composer textarea { flex: 1; border: 0; resize: none; font: inherit; font-size: 14px; outline: none; padding: 7px 2px; background: transparent; color: #172636; min-height: 20px; }
+.hp-send { width: 34px; height: 34px; border-radius: 10px; border: 0; background: #087c73; color: #fff; display: inline-grid; place-items: center; cursor: pointer; flex: none; }
+.hp-listening { animation: hp-pulse 1s infinite; color: #d63638 !important; }
+@keyframes hp-pulse { 50% { box-shadow: 0 0 0 6px rgba(214, 54, 56, .18); } }
+
+/* A — the dock */
+.hp-dock { position: fixed; right: 20px; bottom: 84px; width: 400px; height: min(600px, calc(100vh - 110px)); background: #fff; border: 1px solid #e1e6e9; border-radius: 16px; box-shadow: 0 18px 64px rgba(18, 34, 56, .15), 0 4px 16px rgba(18, 34, 56, .08); z-index: 100050; display: flex; flex-direction: column; overflow: hidden; }
+.hp-dock[hidden] { display: none; }
+.hp-hint { margin: 10px auto 0; width: fit-content; color: #fff; background: rgba(8, 124, 115, .92); padding: 6px 14px; border-radius: 999px; font-size: 13px; opacity: 0; transition: opacity .3s; }
+.hp-hint.is-on { opacity: 1; }
+
+/* B — unfolds inside the hero */
+.hp-unfolded .hero-badge, .hp-unfolded .hero-title, .hp-unfolded .hero-subtitle, .hp-unfolded .hero-capsules, .hp-unfolded .hero-footnote { display: none !important; }
+.hp-unfolded .hero-stage { padding-top: 24px; padding-bottom: 24px; }
+.hp-unfolded .hero-dialog { width: min(960px, 92vw); max-width: none; }
+.hp-hero-thread { display: flex; flex-direction: column; margin: -8px -8px 8px; border-bottom: 1px solid #eef1f3; }
+.hp-bar--hero { border-bottom: 0; padding-left: 8px; }
+.hp-hero-thread .hp-thread { max-height: 52vh; padding: 4px 8px 12px; }
+.hp-hero-thread .hp-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* C — focus view over the page */
+.hp-focus { position: fixed; inset: 0; z-index: 100060; background: rgba(8, 18, 28, .55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; justify-content: center; padding: 28px; }
+.hp-focus[hidden] { display: none; }
+.hp-focus__panel { background: #fff; width: min(1180px, 100%); border-radius: 18px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, .35); }
+.hp-focus__body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 280px; min-height: 0; }
+.hp-focus .hp-thread { padding: 24px 40px; }
+.hp-focus .hp-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.hp-focus .hp-composer { margin: 0 auto 18px; width: min(820px, calc(100% - 48px)); }
+.hp-next { border-left: 1px solid #eef1f3; padding: 22px; background: #f8f9fa; display: flex; flex-direction: column; gap: 8px; }
+.hp-next h3 { margin: 0 0 4px; font-size: 13px; color: #5f6b7c; text-transform: uppercase; letter-spacing: .04em; }
+.hp-step { border-radius: 10px; text-align: left; padding: 10px 12px; }
+.hp-next__note { margin-top: auto; font-size: 12px; color: #5f6b7c; }
+
+/* the way back */
+.hp-pill { position: fixed; right: 86px; bottom: 26px; z-index: 100040; display: inline-flex; align-items: center; gap: 8px; background: #fff; color: #172636; border: 1px solid #dfe7ec; border-radius: 999px; padding: 9px 14px; font: 600 13px/1 Inter, Arial, sans-serif; box-shadow: 0 10px 26px rgba(11, 31, 51, .2); cursor: pointer; }
+.hp-pill[hidden] { display: none; }
+
+/* phones */
+@media (max-width: 600px) {
+	.hp-dock { inset: 0; width: auto; height: auto; border-radius: 0; bottom: 0; right: 0; }
+	.hp-focus { padding: 0; }
+	.hp-focus__panel { border-radius: 0; }
+	.hp-focus__body { grid-template-columns: 1fr; }
+	.hp-next { display: none; }
+	.hp-focus .hp-thread { padding: 16px; }
+	.hp-cards, .hp-hero-thread .hp-cards, .hp-focus .hp-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.hp-pill { right: 74px; }
+}
+
+/* prototype chrome */
+.hp-switcher { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 100100; background: #1d2327; color: #fff; border-radius: 999px; padding: 6px 8px; display: flex; gap: 12px; align-items: center; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); font: 13px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.hp-switcher button { background: #3c434a; color: #fff; border: 0; border-radius: 999px; width: 30px; height: 30px; cursor: pointer; font-size: 15px; }
+.hp-badge { position: fixed; left: 12px; bottom: 12px; z-index: 100100; margin: 0; background: #fff8e5; border: 1px solid #f0c33c; color: #3c434a; padding: 5px 9px; border-radius: 6px; font: 11px/1.3 -apple-system, BlinkMacSystemFont, sans-serif; max-width: 260px; }
+@media (max-width: 600px) { .hp-badge { display: none; } .hp-switcher { bottom: 76px; } }

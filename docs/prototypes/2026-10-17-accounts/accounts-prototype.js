@@ -38,7 +38,7 @@
 
 	const STATUS = { pending: 'Waiting', approved: 'Approved', restricted: 'Restricted', rejected: 'Rejected' };
 	const esc = ( s ) => String( s ?? '' ).replace( /[&<>"']/g, ( c ) => ( { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } )[ c ] );
-	const flag = ( cc ) => cc.replace( /./g, ( c ) => String.fromCodePoint( 127397 + c.charCodeAt( 0 ) ) );
+	const flag = ( cc ) => `<span class="lap-cc">${ cc }</span>`; // a code badge: WordPress swaps flag emoji for images the local instance blocks
 	const domainOf = ( a ) => a.email.split( '@' )[ 1 ] || '';
 	const isFreemail = ( a ) => FREEMAIL.includes( domainOf( a ) );
 	const byId = ( id ) => accounts.find( ( a ) => a.id === id );
@@ -172,7 +172,7 @@
 			<ul class="subsubsub">${ tabs.map( ( [ k, l ], i ) => `<li><a href="#" data-filter="${ k }" class="${ filterA === k ? 'current' : '' }">${ l } <span class="count">(${ count( k ) })</span></a>${ i < tabs.length - 1 ? ' |' : '' }</li>` ).join( '' ) }</ul>
 			<p class="search-box"><input type="search" id="lap-search" value="${ esc( searchA ) }" placeholder="Company or email"></p>
 			<table class="wp-list-table widefat fixed striped lap-table">
-				<thead><tr><th class="lap-col-company">Company</th><th>Type</th><th>Country</th><th class="lap-col-vat">VAT ID</th><th class="lap-col-checks">Checks</th><th>Registered</th><th class="lap-col-actions">Decision</th></tr></thead>
+				<thead><tr><th class="lap-col-company">Company</th><th class="lap-col-type">Type</th><th class="lap-col-country">Country</th><th class="lap-col-vat">VAT ID</th><th>Checks</th><th class="lap-col-reg">Registered</th><th class="lap-col-actions">Decision</th></tr></thead>
 				<tbody>${ rows.length ? rows.map( rowA ).join( '' ) : '<tr><td colspan="7">Nothing here.</td></tr>' }</tbody>
 			</table>`;
 	}
@@ -188,7 +188,7 @@
 					<div class="lap-sub">${ esc( a.contact ) } · ${ esc( a.email ) }</div>
 					<div class="row-actions visible"><a href="#" data-toggle="${ a.id }">${ open ? 'Hide details' : 'Details' }</a> | ${ lookups( a ).map( ( l ) => `<a href="${ l.href }" target="_blank" rel="noopener">${ l.label } ↗</a>` ).join( ' | ' ) }</div></td>
 				<td>${ esc( a.type ) }</td>
-				<td>${ flag( a.country ) } ${ a.country }</td>
+				<td>${ flag( a.country ) }</td>
 				<td>${ a.vat ? `<code>${ esc( a.vat ) }</code>` : '<span class="lap-muted">—</span>' }</td>
 				<td>${ signals( a ).map( chip ).join( '' ) }</td>
 				<td>${ ago( a.registered ) }</td>
