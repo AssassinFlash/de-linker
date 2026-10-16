@@ -72,6 +72,8 @@ def fake_ids() -> dict[str, dict[str, int]]:
         "quote-configurator",
         "quote-configurator-2",
         "request-a-project",
+        "utility-storage",
+        "terms-of-sale",
     ]
     keys += list(chrome.SURFACES)
     return {key: {"en": 0, "de": 0} for key in keys}

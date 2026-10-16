@@ -9,7 +9,9 @@ WP-CLI — the PHP must travel on standard input.
 
 from __future__ import annotations
 
+import base64
 import importlib.util
+import json
 import shlex
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
@@ -47,7 +49,15 @@ def _capture(monkeypatch: pytest.MonkeyPatch) -> tuple[list[list[str]], list[str
     def capture(command: list[str], **kwargs: object) -> object:
         commands.append(list(command))
         stdin = kwargs.get("input")
-        inputs.append(stdin if isinstance(stdin, str) else "")
+        if isinstance(stdin, str):
+            inputs.append(stdin)
+        else:
+            handle = kwargs.get("stdin")
+            if hasattr(handle, "read"):
+                data = handle.read()
+                inputs.append(data.decode() if isinstance(data, bytes) else data)
+            else:
+                inputs.append("")
         return SimpleNamespace(returncode=0, stdout="{}", stderr="")
 
     monkeypatch.setattr("subprocess.run", capture)
@@ -87,3 +97,39 @@ def test_a_local_prefix_keeps_argv_semantics(monkeypatch: pytest.MonkeyPatch) ->
     chrome.WP(LOCAL, user=None).run("post", "update", "4083", "--post_name=genie")
 
     assert commands[0] == [LOCAL, "post", "update", "4083", "--post_name=genie"]
+
+
+def test_a_large_payload_rides_the_stdin_php_not_one_argument(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The German source metas carry whole page bodies (the header partial
+    is 125 KB). Base64 in one argv died in `/bin/bash: Argument list too
+    long` on the 2026-10-16 apply; the payload boards the PHP source
+    itself, which travels on stdin."""
+    commands, inputs = _capture(monkeypatch)
+    body = "x" * 200_000
+    chrome.WP(REMOTE, user=None).eval_php_embedded(
+        "echo 1;", {"17": {"_linker_de_content": body}}
+    )
+
+    (command,) = commands
+    assert "eval-file" in command[4]
+    assert " - " in command[4] or command[4].endswith(" -"), "eval-file reads stdin"
+    assert inputs[0].startswith("<?php\n$args = array(0 => '")
+    # The payload text is in the PHP, not the command line.
+    assert json.loads(base64.b64decode(_blob_of(inputs[0]))) == {
+        "17": {"_linker_de_content": body}
+    }
+    assert body not in command[4]
+
+
+def _blob_of(php: str) -> str:
+    """The base64 blob the embedded channel set as $args[0]."""
+    start = php.index("'") + 1
+    return php[start : php.index("'", start)]
+
+
+def test_the_meta_writer_still_decodes_args0() -> None:
+    """One snippet form for both channels: the embedded channel sets
+    $args[0] itself, the snippet keeps decoding it."""
+    assert "base64_decode($args[0])" in chrome.META_WRITE_PHP

@@ -44,6 +44,8 @@ def fake_ids() -> dict[str, dict[str, int]]:
         "quote-configurator",
         "quote-configurator-2",
         "request-a-project",
+        "utility-storage",
+        "terms-of-sale",
     ]
     keys += list(chrome.SURFACES)
     return {key: {"en": 100 + i, "de": 300 + i} for i, key in enumerate(keys)}
@@ -394,3 +396,241 @@ def test_the_steps_carry_the_new_surfaces_and_retired_pages() -> None:
     assert moved.seo_desc is not None
     assert "Lösungskonfigurator" in moved.seo_desc[1]
     assert "Linker Planer" not in moved.seo_desc[1]
+
+
+# ---------------------------------------------------------------------------
+# The M2 copy batch (docs/acceptance/2026-10-16/m2-copy/copy-review.md):
+# 43 literal pairs, 42 via the exactly-once pair channel, "the Advisor zone"
+# (two hits per privacy page) via the rule channel.
+# ---------------------------------------------------------------------------
+
+M2_PAIRS: dict[str, list[tuple[str, str]]] = {
+    "home-en": [
+        (
+            "<li>Quoted per site, not from the cart</li>",
+            "<li>A project quote for each site</li>",
+        ),
+    ],
+    "home-de": [
+        (
+            "<li>Angebot pro Standort, nicht aus dem Warenkorb</li>",
+            "<li>Projektangebot pro Standort</li>",
+        ),
+    ],
+    "services-support-en": [
+        (
+            "<h3>Planner Sizing &amp; Compatibility Lists</h3>",
+            "<h3>System Sizing &amp; Compatibility Lists</h3>",
+        ),
+        (
+            'aria-label="Planner sizing and compatibility lists"',
+            'aria-label="System sizing and compatibility lists"',
+        ),
+        (
+            "<b>Planner Sizing and Compatibility Lists</b>",
+            "<b>System Sizing and Compatibility Lists</b>",
+        ),
+        (
+            '<h3 class="lk-sstage-h3">Planner Sizing and Compatibility Lists</h3>',
+            '<h3 class="lk-sstage-h3">System Sizing and Compatibility Lists</h3>',
+        ),
+        (
+            "<strong>Deliverable:</strong> Planner Sizing · Complete Parts List",
+            "<strong>Deliverable:</strong> System Sizing · Complete Parts List",
+        ),
+    ],
+    "services-support-de": [
+        (
+            "<h3>Planer-Auslegung &amp; Kompatibilitätslisten</h3>",
+            "<h3>Systemauslegung &amp; Kompatibilitätslisten</h3>",
+        ),
+        (
+            'aria-label="Planer-Auslegung und Kompatibilitätslisten"',
+            'aria-label="Systemauslegung und Kompatibilitätslisten"',
+        ),
+        (
+            "<b>Planer-Auslegung und Kompatibilitätslisten</b>",
+            "<b>Systemauslegung und Kompatibilitätslisten</b>",
+        ),
+        (
+            '<h3 class="lk-sstage-h3">Planer-Auslegung und Kompatibilitätslisten</h3>',
+            '<h3 class="lk-sstage-h3">Systemauslegung und Kompatibilitätslisten</h3>',
+        ),
+        (
+            "<strong>Ergebnis:</strong> Auslegung im Planer · Vollständige Stückliste",
+            "<strong>Ergebnis:</strong> Systemauslegung · Vollständige Stückliste",
+        ),
+    ],
+    "for-installer-en": [
+        (
+            "Site Detail maps usable roof space, module placement around obstructions, and physical dimensions before electrical sizing.",
+            "The Roof detail step maps usable roof space, module placement around obstructions, and physical dimensions before electrical sizing.",
+        ),
+    ],
+    "solution-en": [
+        ("Design with Planner →", "Plan with the Solution Configurator →"),
+        (
+            "<td>Storage packages, Planner tools, and Partner pricing</td>",
+            "<td>Storage packages, sizing tools, and Partner pricing</td>",
+        ),
+        (
+            "cannot simply be placed into an online shopping cart.",
+            "are quoted per project.",
+        ),
+    ],
+    "solution-de": [
+        (
+            "Der Planer modelliert geeignete",
+            "Der Lösungskonfigurator modelliert geeignete",
+        ),
+        (
+            "<td>Speicherpakete, Planer-Werkzeuge und Partnerpreise</td>",
+            "<td>Speicherpakete, Auslegungswerkzeuge und Partnerpreise</td>",
+        ),
+        (
+            "lassen sich nicht einfach in einen Online-Warenkorb legen.",
+            "werden projektbezogen angeboten.",
+        ),
+    ],
+    "commercial-storage-en": [
+        (
+            "Model Project in Planner →",
+            "Model the project in the Solution Configurator →",
+        ),
+    ],
+    "faq-download-en": [
+        (
+            'href="/products/" data-linker-assistant-open',
+            'href="/genie/" data-linker-assistant-open',
+        ),
+    ],
+    "faq-download-de": [
+        (
+            'href="/de/produkte/" data-linker-assistant-open',
+            'href="/de/genie/" data-linker-assistant-open',
+        ),
+    ],
+    "privacy-policy-en": [
+        ("put to the Genie", "put to Genie"),
+        ("the Advisor button", "the Genie button"),
+        ("Advisor button zone", "Genie button zone"),
+        (
+            "(session, cart, and login cookies)",
+            "(session, solution draft, and login cookies)",
+        ),
+        ("When you ask the Advisor a question", "When you ask Genie a question"),
+        ("not sent with Advisor messages", "not sent with your messages to Genie"),
+        (
+            "Advisor conversations belonging to a signed-in account",
+            "Conversations with Genie belonging to a signed-in account",
+        ),
+        ("from the Advisor's history", "from your Genie history"),
+    ],
+    "privacy-policy-de": [
+        (
+            "(Session-, Warenkorb- und Login-Cookies)",
+            "(Session-, Lösungsentwurf- und Login-Cookies)",
+        ),
+        (
+            "Wenn Sie dem Berater eine Frage stellen",
+            "Wenn Sie Genie eine Frage stellen",
+        ),
+        (
+            "nicht mit Berater-Nachrichten übermittelt",
+            "nicht mit Ihren Nachrichten an Genie übermittelt",
+        ),
+        (
+            "Berater-Konversationen, die zu einem angemeldeten Konto gehören",
+            "Konversationen mit Genie, die zu einem angemeldeten Konto gehören",
+        ),
+        ("aus dem Verlauf des Beraters löschen", "aus Ihrem Genie-Verlauf löschen"),
+        ("the Advisor button", "the Genie button"),
+        ("Advisor button zone", "Genie button zone"),
+    ],
+    "terms-of-sale-en": [
+        ("apply automatically in the cart", "apply automatically in the solution draft")
+    ],
+    "terms-of-sale-de": [
+        ("werden im Warenkorb automatisch", "werden im Lösungsentwurf automatisch")
+    ],
+}
+
+M2_SEO_DESC: dict[str, tuple[str, str]] = {
+    "utility-storage-en": (
+        "CRRC, Pylontech and GoodWe container BESS from 1.0 to 6.9 MWh, with datasheets on file, quoted per project, not from the cart.",
+        "CRRC, Pylontech and GoodWe container BESS from 1.0 to 6.9 MWh, with datasheets on file, quoted per project.",
+    ),
+    "utility-storage-de": (
+        "Container-Batteriespeicher von CRRC, Pylontech und GoodWe mit 1,0 bis 6,9 MWh, mit hinterlegten Datenblättern, projektbezogen angeboten statt über den Warenkorb.",
+        "Container-Batteriespeicher von CRRC, Pylontech und GoodWe mit 1,0 bis 6,9 MWh, mit hinterlegten Datenblättern, projektbezogen angeboten.",
+    ),
+}
+
+# "the Advisor zone" hits twice per privacy page: the rule channel, with
+# verify's required-rules check.
+M2_RULE = ("the Advisor zone", "the Genie zone")
+
+
+def test_the_m2_copy_pairs_are_the_review_table() -> None:
+    """Every content pair of the review's 43-row table sits in its step's
+    pair channel, byte for byte."""
+    count = 0
+    for step_key, pairs in M2_PAIRS.items():
+        step = step_named(step_key)
+        for pair in pairs:
+            assert pair in step.pairs, (step_key, pair)
+            count += 1
+    for step_key, pair in M2_SEO_DESC.items():
+        assert step_named(step_key).seo_desc == pair, step_key
+        count += 1
+    # 43 rows in the review's table: 41 count-1 pairs here, the zone's
+    # two rows (1673 + 6827) as one rule, and the two utility descs above.
+    assert count == 41, f"table drift: {count} pairs"
+
+
+def test_the_advisor_zone_travels_in_the_rule_channel() -> None:
+    """The review: two occurrences per privacy page, so a rule (any count),
+    never the exactly-once pair channel."""
+    for step_key in ("privacy-policy-en", "privacy-policy-de"):
+        step = step_named(step_key)
+        assert M2_RULE not in step.pairs
+        assert M2_RULE in step.rules
+        assert M2_RULE in step.required_rules
+
+
+def test_the_m2_sentence_pairs_rewrite_and_re_run_clean() -> None:
+    """Apply-then-re-apply on the settled strings: the pairs take, and a
+    re-run (the review's apply on an already-migrated site) writes nothing
+    and refuses nothing."""
+    step = step_named("privacy-policy-en")
+    content = (
+        "<td>When you ask the Advisor a question, your message travels on.</td>"
+        "<p>not sent with Advisor messages</p>"
+        "<p>Advisor conversations belonging to a signed-in account</p>"
+        "<p>from the Advisor's history</p>"
+        "<p>To answer a question put to the Genie, and to run the planning tools.</p>"
+        "<p>This shop uses only technically necessary cookies"
+        " (session, cart, and login cookies).</p>"
+        "/* focus clear of the Advisor button */"
+        "/* rails stop above the bottom 88px: the Advisor zone */"
+        "/* rails stop above the bottom 88px: the Advisor zone */"
+        "/* above the bottom-right Advisor button zone (88px) */"
+    )
+    out = step.planned(content)
+    assert "Advisor" not in out
+    assert "When you ask Genie a question" in out
+    assert "not sent with your messages to Genie" in out
+    assert out.count("the Genie zone") == 2
+    assert step.planned(out) == out  # re-run: pairs skip, rules find nothing
+
+
+def test_the_zone_rule_and_the_button_pairs_do_not_overlap() -> None:
+    """ "the Advisor button", "Advisor button zone" and "the Advisor zone"
+    are three distinct strings in the two mirrors; none contains the other,
+    so the pair's list order and the rule pass cannot consume each other."""
+    button = "the Advisor button"
+    both = "Advisor button zone"
+    zone = "the Advisor zone"
+    assert button not in both and both not in button
+    assert zone not in button and button not in zone
+    assert zone not in both and both not in zone

@@ -59,6 +59,8 @@ IDS: dict[str, dict[str, int]] = {
     "gateway-post": {"en": 558, "de": 6897},
     "blog-index-template": {"en": 574, "de": 6881},
     "thank-you": {"en": 623, "de": 6873},
+    "utility-storage": {"en": 1755, "de": 6917},
+    "terms-of-sale": {"en": 1674, "de": 6825},
 }
 
 SLUGS = {3302: "solution-configurator", 6693: "loesungskonfigurator", 4083: "genie",

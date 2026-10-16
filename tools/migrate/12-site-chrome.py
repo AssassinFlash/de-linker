@@ -50,6 +50,18 @@ recorded in docs/acceptance/2026-10-10/12/copy-review.md):
    / `_linker_de_title` metas are refreshed to the German pages' new state:
    the 9-i18n import reads them as its source, so a stale copy reverts
    every rename here — the 2026-10-15 deploy's import did exactly that.
+9. The M2 copy batch's 43 sentence pairs (reviewed and settled in
+   docs/acceptance/2026-10-16/m2-copy/copy-review.md; the review's table
+   is the authority for each string): the bare Planner/Advisor uses the
+   name rules did not reach (the two "Design with Planner" / "Model
+   Project in Planner" CTAs, the "Planner Sizing" stage tab, the two
+   "Storage packages, Planner tools" cells), the helper tools' remaining
+   sentences, the Privacy Policy's visible rows and its CSS comments (the
+   two mirrors stay byte-identical), the FAQ CTA's English twin, and the
+   banned cart/Warenkorb words (home bullet, the large-project answer,
+   the cookie sentence, the prices sentence; AGENTS.md §3). Both privacy
+   pages are legal copy, EN written first and DE independently — the
+   review records both sides.
 
 After the writes, the German versions' translation state is marked
 hand-edited (all fields reviewed) with the new English fingerprint, so a
@@ -338,6 +350,49 @@ BESPOKE_EN: list[tuple[str, str, tuple[str, ...]]] = [
         "Solution Configurator · System Sizing",
         ("for-installer",),
     ),
+    # The M2 copy batch (docs/acceptance/2026-10-16/m2-copy/copy-review.md,
+    # the 43-pair table). The strings the 2026-10-14 run's rules did not
+    # reach: bare Planner/Advisor uses, the cart ban, and the sentence
+    # rewrites the review settled.
+    (
+        "Site Detail maps usable roof space, module placement around obstructions, and physical dimensions before electrical sizing.",
+        "The Roof detail step maps usable roof space, module placement around obstructions, and physical dimensions before electrical sizing.",
+        ("for-installer",),
+    ),
+    # Services & Support: the stage tab keeps its neighbours' shape — a
+    # stage name, not the tool's.
+    (
+        "<h3>Planner Sizing &amp; Compatibility Lists</h3>",
+        "<h3>System Sizing &amp; Compatibility Lists</h3>",
+        ("services-support",),
+    ),
+    (
+        'aria-label="Planner sizing and compatibility lists"',
+        'aria-label="System sizing and compatibility lists"',
+        ("services-support",),
+    ),
+    (
+        "<b>Planner Sizing and Compatibility Lists</b>",
+        "<b>System Sizing and Compatibility Lists</b>",
+        ("services-support",),
+    ),
+    (
+        '<h3 class="lk-sstage-h3">Planner Sizing and Compatibility Lists</h3>',
+        '<h3 class="lk-sstage-h3">System Sizing and Compatibility Lists</h3>',
+        ("services-support",),
+    ),
+    (
+        "<strong>Deliverable:</strong> Planner Sizing · Complete Parts List",
+        "<strong>Deliverable:</strong> System Sizing · Complete Parts List",
+        ("services-support",),
+    ),
+    # FAQ & documents: the English twin of 6863's CTA (the no-JS fallback
+    # opens Genie's page, as the German one does).
+    (
+        'href="/products/" data-linker-assistant-open',
+        'href="/genie/" data-linker-assistant-open',
+        ("faq-download",),
+    ),
     # Services & Support: the three-tool pitch becomes two, the roof folds in.
     (
         "Three tools built for your own pace: size a system in the Linker Planner, map your roof with Site Detail, and ask the Advisor anything about a product or datasheet.",
@@ -369,6 +424,81 @@ BESPOKE_EN: list[tuple[str, str, tuple[str, ...]]] = [
         ("solution",),
     ),
     ("Advisor answers instantly", "Genie answers instantly", ("solution",)),
+    # Application, M2: the two CTAs and the table cell the name rules did not
+    # reach (bare Planner), and the large-project answer's positive form
+    # ("cart" is banned outright; AGENTS.md §3).
+    (
+        "Design with Planner →",
+        "Plan with the Solution Configurator →",
+        ("solution",),
+    ),
+    (
+        "<td>Storage packages, Planner tools, and Partner pricing</td>",
+        "<td>Storage packages, sizing tools, and Partner pricing</td>",
+        ("solution",),
+    ),
+    (
+        "cannot simply be placed into an online shopping cart.",
+        "are quoted per project.",
+        ("solution",),
+    ),
+    # Commercial Storage, M2: the same bare-Planner CTA.
+    (
+        "Model Project in Planner →",
+        "Model the project in the Solution Configurator →",
+        ("commercial-storage",),
+    ),
+    # Home, M2: the utility card's fourth bullet loses the cart negation.
+    (
+        "<li>Quoted per site, not from the cart</li>",
+        "<li>A project quote for each site</li>",
+        ("home",),
+    ),
+    # Privacy policy, M2: the bare Advisor uses (the visible table, the
+    # cookie sentence, the caption's article leftover) and the CSS comments
+    # that keep the two mirrors byte-identical. "the Advisor zone" appears
+    # twice and travels in the rule channel (BESPOKE_RULES_EN); these
+    # strings do not overlap it.
+    (
+        "put to the Genie",
+        "put to Genie",
+        ("privacy-policy",),
+    ),
+    (
+        "the Advisor button",
+        "the Genie button",
+        ("privacy-policy",),
+    ),
+    (
+        "Advisor button zone",
+        "Genie button zone",
+        ("privacy-policy",),
+    ),
+    (
+        "(session, cart, and login cookies)",
+        "(session, solution draft, and login cookies)",
+        ("privacy-policy",),
+    ),
+    (
+        "When you ask the Advisor a question",
+        "When you ask Genie a question",
+        ("privacy-policy",),
+    ),
+    (
+        "not sent with Advisor messages",
+        "not sent with your messages to Genie",
+        ("privacy-policy",),
+    ),
+    (
+        "Advisor conversations belonging to a signed-in account",
+        "Conversations with Genie belonging to a signed-in account",
+        ("privacy-policy",),
+    ),
+    (
+        "from the Advisor's history",
+        "from your Genie history",
+        ("privacy-policy",),
+    ),
     # The retired design canvas: one sentence needs the article the renamed
     # tool takes ("for the Solution Configurator") for its English to read
     # whole; the rest of its old names follow the name rules.
@@ -500,6 +630,34 @@ BESPOKE_DE: list[tuple[str, str, tuple[str, ...]]] = [
         "Lösungskonfigurator · Genie",
         ("services-support",),
     ),
+    # Service & Support, M2: the stage tab keeps its neighbours' shape — a
+    # stage name (Systemauslegung is the German site's own word), not the
+    # 56-character tool name.
+    (
+        "<h3>Planer-Auslegung &amp; Kompatibilitätslisten</h3>",
+        "<h3>Systemauslegung &amp; Kompatibilitätslisten</h3>",
+        ("services-support",),
+    ),
+    (
+        'aria-label="Planer-Auslegung und Kompatibilitätslisten"',
+        'aria-label="Systemauslegung und Kompatibilitätslisten"',
+        ("services-support",),
+    ),
+    (
+        "<b>Planer-Auslegung und Kompatibilitätslisten</b>",
+        "<b>Systemauslegung und Kompatibilitätslisten</b>",
+        ("services-support",),
+    ),
+    (
+        '<h3 class="lk-sstage-h3">Planer-Auslegung und Kompatibilitätslisten</h3>',
+        '<h3 class="lk-sstage-h3">Systemauslegung und Kompatibilitätslisten</h3>',
+        ("services-support",),
+    ),
+    (
+        "<strong>Ergebnis:</strong> Auslegung im Planer · Vollständige Stückliste",
+        "<strong>Ergebnis:</strong> Systemauslegung · Vollständige Stückliste",
+        ("services-support",),
+    ),
     # Anwendung.
     (
         "Linker Standortdetails:</strong>",
@@ -510,6 +668,70 @@ BESPOKE_DE: list[tuple[str, str, tuple[str, ...]]] = [
     ("Linker Berater:</strong>", "Genie:</strong>", ("solution",)),
     ("Linker Planer:</strong>", "Lösungskonfigurator:</strong>", ("solution",)),
     ("antwortet der Berater sofort", "antwortet Genie sofort", ("solution",)),
+    # Anwendung, M2: the bare Planer use and the table cell (the German
+    # mirrors of 746's pair), and the large-project answer's positive form
+    # (Warenkorb is banned outright; banned-de.json).
+    (
+        "Der Planer modelliert geeignete",
+        "Der Lösungskonfigurator modelliert geeignete",
+        ("solution",),
+    ),
+    (
+        "<td>Speicherpakete, Planer-Werkzeuge und Partnerpreise</td>",
+        "<td>Speicherpakete, Auslegungswerkzeuge und Partnerpreise</td>",
+        ("solution",),
+    ),
+    (
+        "lassen sich nicht einfach in einen Online-Warenkorb legen.",
+        "werden projektbezogen angeboten.",
+        ("solution",),
+    ),
+    # Startseite, M2: the utility card's fourth bullet loses the cart
+    # negation (the German mirror of 13's pair).
+    (
+        "<li>Angebot pro Standort, nicht aus dem Warenkorb</li>",
+        "<li>Projektangebot pro Standort</li>",
+        ("home",),
+    ),
+    # Datenschutz, M2: the German mirrors of 1673's sentence rewrites and
+    # the cookie sentence; the CSS comments stay English and byte-identical
+    # with the English page's. "the Advisor zone" appears twice and travels
+    # in the rule channel (BESPOKE_RULES_DE).
+    (
+        "(Session-, Warenkorb- und Login-Cookies)",
+        "(Session-, Lösungsentwurf- und Login-Cookies)",
+        ("privacy-policy",),
+    ),
+    (
+        "Wenn Sie dem Berater eine Frage stellen",
+        "Wenn Sie Genie eine Frage stellen",
+        ("privacy-policy",),
+    ),
+    (
+        "nicht mit Berater-Nachrichten übermittelt",
+        "nicht mit Ihren Nachrichten an Genie übermittelt",
+        ("privacy-policy",),
+    ),
+    (
+        "Berater-Konversationen, die zu einem angemeldeten Konto gehören",
+        "Konversationen mit Genie, die zu einem angemeldeten Konto gehören",
+        ("privacy-policy",),
+    ),
+    (
+        "aus dem Verlauf des Beraters löschen",
+        "aus Ihrem Genie-Verlauf löschen",
+        ("privacy-policy",),
+    ),
+    (
+        "the Advisor button",
+        "the Genie button",
+        ("privacy-policy",),
+    ),
+    (
+        "Advisor button zone",
+        "Genie button zone",
+        ("privacy-policy",),
+    ),
     # The retired design canvas: the honesty line needs the article the
     # renamed tool takes ("für den Lösungskonfigurator").
     (
@@ -534,6 +756,39 @@ NAME_RULES_DE: list[tuple[str, str]] = [
     ("Linker Planner", "Lösungskonfigurator"),
     ("Linker Standortdetails", "Dachdetails"),
 ]
+
+# M2 sentence pairs that occur more than once in one page and therefore
+# travel in the rule channel (any count, one report line per count), the
+# same shape as the name rules. Every entry is scoped to its surfaces and
+# must have hit: verify refuses both a leftover old string and a missing
+# new one.
+BESPOKE_RULES_EN: list[tuple[str, str, tuple[str, ...]]] = [
+    ("the Advisor zone", "the Genie zone", ("privacy-policy",)),
+]
+
+BESPOKE_RULES_DE: list[tuple[str, str, tuple[str, ...]]] = [
+    ("the Advisor zone", "the Genie zone", ("privacy-policy",)),
+]
+
+# M2's pair for each of the two posts outside the surfaces above — the
+# utility page's meta description and the terms page's price sentence (the
+# copy review's table C3, C4, D34, D35).
+UTILITY_STORAGE_DESC_EN = (
+    "CRRC, Pylontech and GoodWe container BESS from 1.0 to 6.9 MWh, with datasheets on file, quoted per project, not from the cart.",
+    "CRRC, Pylontech and GoodWe container BESS from 1.0 to 6.9 MWh, with datasheets on file, quoted per project.",
+)
+UTILITY_STORAGE_DESC_DE = (
+    "Container-Batteriespeicher von CRRC, Pylontech und GoodWe mit 1,0 bis 6,9 MWh, mit hinterlegten Datenblättern, projektbezogen angeboten statt über den Warenkorb.",
+    "Container-Batteriespeicher von CRRC, Pylontech und GoodWe mit 1,0 bis 6,9 MWh, mit hinterlegten Datenblättern, projektbezogen angeboten.",
+)
+TERMS_PRICES_EN = (
+    "apply automatically in the cart",
+    "apply automatically in the solution draft",
+)
+TERMS_PRICES_DE = (
+    "werden im Warenkorb automatisch",
+    "werden im Lösungsentwurf automatisch",
+)
 
 # A PHP diagnostic the WP-CLI phar may print into stdout ahead of the value
 # (9-i18n.py, same phar, same machine).
@@ -623,8 +878,11 @@ echo wp_json_encode($out);
 """
 
 # Writes metas: {post_id: {meta_key: value}}, skipping values already in
-# place. One call per batch of a few posts keeps the base64 payload well
-# under any argument limit (the largest `_linker_de_content` is ~125 KB).
+# place. The payload arrives base64 in $args[0]; the German sources carry
+# whole page bodies (the header partial is 125 KB), so callers deliver it
+# through eval_php_embedded, where the payload rides the stdin PHP text
+# instead of one execve argument (2026-10-16: the argv channel died with
+# `/bin/bash: Argument list too long` mid-apply).
 META_WRITE_PHP = """
 $payload = json_decode(base64_decode($args[0]), true);
 $written = 0;
@@ -750,12 +1008,36 @@ class WP:
         2026-10-14, this migration's first production run — the remote wp
         answered "'/var/folders/…' does not exist"). The base64 payload is an
         argument and stays safe either way.
+
+        For payloads measured in kilobytes rather than bytes use
+        `eval_php_embedded`: one execve argument has a size ceiling, and the
+        German source metas carry whole page bodies.
         """
         return self.json(
             "eval-file",
             "-",
             base64.b64encode(json.dumps(payload).encode()).decode(),
             stdin="<?php\n" + code,
+        )
+
+    def eval_php_embedded(self, code: str, payload: Any) -> Any:
+        """Runs PHP with the payload embedded in the source, which travels
+        on standard input (`eval-file -`).
+
+        For payloads measured in kilobytes rather than bytes: one execve
+        argument has a size ceiling, and the German source metas carry whole
+        page bodies. Measured 2026-10-16 (this migration's second production
+        apply): the first German-source batch, led by the 125 KB header
+        partial, died in `/bin/bash: Argument list too long` on the ssh
+        command line and the write phase never ran. Base64 inside the PHP
+        text has no such ceiling — stdin is a pipe, not an argument — and
+        `$args[0]` is set the same way, so the snippets stay one form.
+        """
+        blob = base64.b64encode(json.dumps(payload).encode()).decode()
+        return self.json(
+            "eval-file",
+            "-",
+            stdin=f"<?php\n$args = array(0 => '{blob}');\n" + code,
         )
 
 
@@ -777,6 +1059,10 @@ def resolve(wp: WP) -> dict[str, dict[str, int]]:
         # name the old tools, and the grep gate counts drafts too.
         "quote-configurator-2": "quote-configurator-2",
         "request-a-project": "request-a-project",
+        # M2's two pages outside the marketing surfaces (the utility page's
+        # meta description, the terms page's price sentence).
+        "utility-storage": "utility-storage",
+        "terms-of-sale": "terms-of-sale",
     }
     resolved: dict[str, dict[str, int]] = wp.eval_php(RESOLVE_PHP, slugs)
     missing = sorted(k for k, v in resolved.items() if not v["en"])
@@ -791,7 +1077,12 @@ def resolve(wp: WP) -> dict[str, dict[str, int]]:
 class Step:
     """One post's edit: literal pairs (each exactly once), regex removals
     (each exactly once) and ordered catch-all rules (any count). The
-    english_id is the source whose translation state the write marks."""
+    english_id is the source whose translation state the write marks.
+
+    required_rules are the rules this step's page must have taken once the
+    migration has run — the M2 sentence pairs that occur more than once.
+    They are checked by verify exactly like pairs' new strings; the rules
+    themselves are applied as part of `rules`."""
 
     def __init__(
         self,
@@ -801,6 +1092,7 @@ class Step:
         pairs: list[tuple[str, str]] | None = None,
         removes: list[str] | None = None,
         rules: list[tuple[str, str]] | None = None,
+        required_rules: list[tuple[str, str]] | None = None,
         title: tuple[str, str] | None = None,
         seo: tuple[str, str] | None = None,
         seo_desc: tuple[str, str] | None = None,
@@ -813,6 +1105,7 @@ class Step:
         self.pairs = pairs or []
         self.removes = removes or []
         self.rules = rules or []
+        self.required_rules = required_rules or []
         self.title = title
         self.seo = seo
         self.seo_desc = seo_desc
@@ -1095,23 +1388,65 @@ def steps(ids: dict[str, dict[str, int]]) -> list[Step]:
             title=("Linker Planner", "Lösungskonfigurator"),
             status="draft",
         ),
+        # M2's two posts outside the marketing surfaces: the utility page's
+        # meta description and the terms page's price sentence (the copy
+        # review's table C3, C4, D34, D35). These steps carry no name or
+        # link rules: the review scoped these pages to exactly these strings.
+        Step(
+            "utility-storage-en",
+            ids["utility-storage"]["en"],
+            ids["utility-storage"]["en"],
+            seo_desc=UTILITY_STORAGE_DESC_EN,
+        ),
+        Step(
+            "utility-storage-de",
+            ids["utility-storage"]["de"],
+            ids["utility-storage"]["en"],
+            seo_desc=UTILITY_STORAGE_DESC_DE,
+        ),
+        Step(
+            "terms-of-sale-en",
+            ids["terms-of-sale"]["en"],
+            ids["terms-of-sale"]["en"],
+            [TERMS_PRICES_EN],
+        ),
+        Step(
+            "terms-of-sale-de",
+            ids["terms-of-sale"]["de"],
+            ids["terms-of-sale"]["en"],
+            [TERMS_PRICES_DE],
+        ),
     ]
     for key in SURFACES:
-        for lang, rules, bespoke, links in (
-            ("en", NAME_RULES_EN, BESPOKE_EN, LINK_RULES_EN),
-            ("de", NAME_RULES_DE, BESPOKE_DE, LINK_RULES_DE),
+        for lang, rules, bespoke, links, surface_rules in (
+            (
+                "en",
+                NAME_RULES_EN,
+                BESPOKE_EN,
+                LINK_RULES_EN,
+                BESPOKE_RULES_EN,
+            ),
+            (
+                "de",
+                NAME_RULES_DE,
+                BESPOKE_DE,
+                LINK_RULES_DE,
+                BESPOKE_RULES_DE,
+            ),
         ):
             post_id = ids[key][lang]
             if not post_id:
                 continue
             pairs = bespoke_pairs(key, bespoke)
+            required = [(old, new) for old, new, where in surface_rules if key in where]
             plan.append(
                 Step(
                     f"{key}-{lang}",
                     post_id,
                     ids[key]["en"],
                     pairs,
-                    rules=rules + links,
+                    rules=rules + links + required,
+                    required_rules=required,
                 )
             )
     return plan
@@ -1215,10 +1550,12 @@ def meta_lines(wp: WP, step: Step, write: bool) -> list[str]:
 
 def german_sources_phase(
     wp: WP, plan: list[Step], german: dict[int, str], write: bool
-) -> None:
+) -> set[int]:
     """The German sources' legacy metas: report the stale copies, and (on a
     write) point them at the German pages' new state, so the 9-i18n import
-    keeps the rename instead of reverting it from them."""
+    keeps the rename instead of reverting it from them. Returns the English
+    ids it refreshed — the hand-edited marking needs them on a re-run,
+    where no content is `touched` any more."""
     sources = sorted({step.english_id for step in plan if step.lang == "de"})
     metas: dict[str, dict[str, str]] = wp.eval_php(LEGACY_META_PHP, sources) or {}
     updates = legacy_meta_updates(plan, german, metas)
@@ -1249,17 +1586,18 @@ def german_sources_phase(
                 f"    german source #{step.english_id} `_linker_de_title`:"
                 f" -> {new_title!r}"
             )
-    if write and updates:
-        written = 0
-        # Four posts per call: the largest `_linker_de_content` is ~125 KB,
-        # and the payload travels as one base64 argument.
-        for start in range(0, len(updates), 4):
-            batch = {
-                str(post_id): values for post_id, values in updates[start : start + 4]
-            }
-            out = wp.eval_php(META_WRITE_PHP, batch)
-            written += int(out.get("written", 0)) if isinstance(out, dict) else 0
-        print(f"german source metas: {written} values refreshed", flush=True)
+    if not write or not updates:
+        return set()
+    written = 0
+    # One post per call, payload embedded in the source (eval_php_embedded): the
+    # largest `_linker_de_content` is the 125 KB header partial, past
+    # the one-argument ceiling of the base64 channel (2026-10-16).
+    for post_id, values in updates:
+        batch = {str(post_id): values}
+        out = wp.eval_php_embedded(META_WRITE_PHP, batch)
+        written += int(out.get("written", 0)) if isinstance(out, dict) else 0
+    print(f"german source metas: {written} values refreshed", flush=True)
+    return {post_id for post_id, _values in updates}
 
 
 def attachment_alts_phase(wp: WP, write: bool) -> None:
@@ -1276,13 +1614,14 @@ def attachment_alts_phase(wp: WP, write: bool) -> None:
     if write and changes:
         written = 0
         items = list(changes.items())
-        # Eight alts per call; the payload stays small, alts are short.
+        # Eight alts per call; the payload travels as a file, the alts are
+        # short.
         for start in range(0, len(items), 8):
             batch = {
                 post_id: {"_wp_attachment_image_alt": alt}
                 for post_id, alt in items[start : start + 8]
             }
-            out = wp.eval_php(META_WRITE_PHP, batch)
+            out = wp.eval_php_embedded(META_WRITE_PHP, batch)
             written += int(out.get("written", 0)) if isinstance(out, dict) else 0
         print(f"media alts: {written} refreshed", flush=True)
 
@@ -1397,13 +1736,17 @@ def do_apply(wp: WP, write: bool) -> int:
             )
             print(f"{step.key}: seo desc renamed", flush=True)
             touched.append(step.post_id)
-    german_sources_phase(wp, plan, german, write=write)
+    refreshed = german_sources_phase(wp, plan, german, write=write)
     attachment_alts_phase(wp, write=write)
     rename_slugs(wp, ids, write)
-    if write and touched:
+    if write and (touched or refreshed):
         # The German twins of every edited English post are marked as
-        # hand-edited, with the fingerprint of the new English.
-        english = sorted({step.english_id for step in plan if step.post_id in touched})
+        # hand-edited, with the fingerprint of the new English. A re-run
+        # after an interrupted apply finds no content `touched` any more
+        # but still refreshes the sources; those count as edited here.
+        english = sorted(
+            {step.english_id for step in plan if step.post_id in touched} | refreshed
+        )
         marked = wp.eval_php(STATE_PHP, english)
         print(f"translation state: {marked}", flush=True)
     if not write:
@@ -1466,6 +1809,16 @@ def do_verify(wp: WP) -> int:
         for _old, new in step.pairs:
             if new not in post["post_content"]:
                 print(f"FAIL {step.key}: new string missing: {new[:80]!r}")
+                ok = False
+        # The multi-hit sentence rules (M2): once applied, the old string is
+        # gone and the new one is there. verify refuses both halves a miss —
+        # a typo in the old string would otherwise apply silently never.
+        for old, new in step.required_rules:
+            if old in post["post_content"]:
+                print(f"FAIL {step.key}: rule old string still present: {old[:80]!r}")
+                ok = False
+            if new not in post["post_content"]:
+                print(f"FAIL {step.key}: rule new string missing: {new[:80]!r}")
                 ok = False
         if step.title and post["post_title"] != step.title[1]:
             print(f"FAIL {step.key}: title is {post['post_title']!r}")
