@@ -19,6 +19,35 @@
 
 defined( 'ABSPATH' ) || exit;
 
+if ( ! function_exists( 'seven_facts_group_fate' ) ) {
+	/**
+	 * The empty-group rule, in one place for the write and the refusal: what
+	 * happens to a group the drop leaves with no rows.
+	 *
+	 * A group is a tab of the product page, so removing one is a change of the
+	 * table's structure, and a drop makes it only by saying so out loud: the
+	 * group leaves where the drop names it in `remove_groups`, and where the
+	 * drop emptied a group it does not name, the write is refused before it
+	 * touches a meta. A group that was already empty before the drop is not
+	 * this write's to remove and stays.
+	 *
+	 * @param array<string, mixed> $group  The group as stored, before the drop.
+	 * @param array<int, mixed>    $rows   The group's rows after the drop.
+	 * @param array<int, string>   $remove Titles the drop removes groups by.
+	 *
+	 * @return string 'leaves', 'refused', or 'stays'.
+	 */
+	function seven_facts_group_fate( array $group, array $rows, array $remove ): string { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- This helper exists only inside this wp eval-file script; it is never part of the plugin's namespace.
+		if ( array() !== $rows ) {
+			return 'stays';
+		}
+		if ( in_array( (string) ( $group['spec_group_title'] ?? '' ), $remove, true ) ) {
+			return 'leaves';
+		}
+		return array() !== $group['spec_rows'] ? 'refused' : 'stays';
+	}
+}
+
 if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 	/**
 	 * Removes one spec row, matched by its English or German label, from the
@@ -29,13 +58,9 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 	 * `_linker_de_source_acf_json` is what the translation was made from; it
 	 * is not rendered, and it stays.
 	 *
-	 * A drop may leave a group with no rows. Removing that group is a change
-	 * of the table's structure (a whole tab leaves the product page), so it
-	 * happens only where the drop names the group in `remove_groups`:
-	 * otherwise the write is refused before it touches a meta — the drop must
-	 * say out loud that the group leaves, or the group stays. The closure
-	 * edits rows; a group that was already empty before the drop is not this
-	 * write's to remove and stays unless `remove_groups` names it.
+	 * A drop may leave a group with no rows; whether the group then leaves the
+	 * table is one rule, stated in seven_facts_group_fate() and read here by
+	 * both the refusal and the write, so the two cannot drift.
 	 *
 	 * @param int                  $product_id Product ID.
 	 * @param array<string, mixed> $drop       titles, labels and remove_groups, each a string or a list of strings.
@@ -62,14 +87,8 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 					}
 					$rows[] = $row;
 				}
-				if ( array() === $rows ) {
-					// The group leaves where the drop emptied it (the guard
-					// above has already refused the unnamed case) or where the
-					// drop names it in remove_groups; a group that was empty
-					// before the drop stays as it is.
-					if ( array() !== $group['spec_rows'] || in_array( (string) ( $group['spec_group_title'] ?? '' ), $remove, true ) ) {
-						continue;
-					}
+				if ( 'leaves' === seven_facts_group_fate( $group, $rows, $remove ) ) {
+					continue;
 				}
 				$group['spec_rows'] = $rows;
 				$groups[]           = $group;
@@ -101,7 +120,7 @@ if ( ! function_exists( 'seven_facts_drop_legacy_row' ) ) {
 					$group['spec_rows'],
 					static fn( $row ): bool => ! in_array( is_array( $row ) ? (string) ( $row['spec_label'] ?? '' ) : '', $labels, true )
 				);
-				if ( array() === $left && array() !== $group['spec_rows'] && ! in_array( $title, $remove, true ) ) {
+				if ( 'refused' === seven_facts_group_fate( $group, $left, $remove ) ) {
 					$refusal = "Dropping these rows would remove the spec group \"{$title}\" of product {$product_id} ({$meta_key}). Name the group in drop_legacy.remove_groups to remove it with the row.";
 					// An uncaught exception reaches the operator as WordPress's
 					// generic critical-error line; the reason goes to stderr first.
