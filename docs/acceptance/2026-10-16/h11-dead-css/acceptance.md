@@ -131,7 +131,7 @@ H1 的记录里写着「未构造『有询盘草稿的结账态』实跑」—�
 3. **`compare.py` 的静默 PASS**：H1 脚本对尺寸不一致的配对只打一行 `SIZE` 就继续，
    末行仍可能显示 `PASS`。修成 mismatch 一旦出现即 FAIL（本轮实测触发了它）。
 
-这三处都在 `.scratch/h11-dead-css/` 的脚本里，随机器留在工作区（按仓库约定
+这三处都在 `.scratch/archive/h11-tools/`（原 hfinal worktree 的 `.scratch/h11-dead-css/`，worktree 收口时归档）的脚本里，随机器留在工作区（按仓库约定
 `.scratch/` 不进版本库）；`shoot.mjs` 与 `compare.py` 是从 H1 的会话目录复制的。
 
 ## 5. WindPress 编译验证
