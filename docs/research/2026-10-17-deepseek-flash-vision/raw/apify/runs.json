@@ -1,0 +1,143 @@
+[
+ {
+  "token_variable": "APIFY_TOKEN",
+  "actor_id": "aYG0l9s7dbB7j3gbS",
+  "run_id": "MIJhRxzpdljaeZqof",
+  "status": "SUCCEEDED",
+  "started_at_utc": "2026-10-16T17:12:47.048Z",
+  "finished_at_utc": "2026-10-16T17:13:50.611Z",
+  "dataset_id": "jt6LPEsB0tzo0IFTr",
+  "status_message": "Finished! Total 114 requests: 114 succeeded, 0 failed.",
+  "actor": "apify/website-content-crawler",
+  "input": {
+   "startUrls": [
+    {
+     "url": "https://api-docs.deepseek.com/"
+    },
+    {
+     "url": "https://api-docs.deepseek.com/zh-cn/"
+    },
+    {
+     "url": "https://api-docs.deepseek.com/quick_start/pricing"
+    },
+    {
+     "url": "https://api-docs.deepseek.com/api/create-chat-completion"
+    },
+    {
+     "url": "https://api-docs.deepseek.com/updates"
+    }
+   ],
+   "crawlerType": "cheerio",
+   "useSitemaps": true,
+   "maxCrawlDepth": 6,
+   "maxCrawlPages": 500,
+   "includeUrlGlobs": [
+    {
+     "glob": "https://api-docs.deepseek.com/**"
+    }
+   ],
+   "saveMarkdown": true,
+   "saveHtml": false,
+   "removeCookieWarnings": true,
+   "maxConcurrency": 10
+  },
+  "saved_as": "raw/apify/docs-crawl-cheerio.json"
+ },
+ {
+  "token_variable": "APIFY_TOKEN_PREV",
+  "actor_id": "3ox4R101TgZz67sLr",
+  "run_id": "E2NeWlXpFnZcAI3Xr",
+  "status": "SUCCEEDED",
+  "started_at_utc": "2026-10-16T17:13:01.884Z",
+  "finished_at_utc": "2026-10-16T17:13:21.182Z",
+  "dataset_id": "VktKrZtT2Q31yFCpZ",
+  "status_message": "Finished! Scraped 6 pages, 0 failed.",
+  "actor": "apify/rag-web-browser",
+  "input": {
+   "query": "DeepSeek API deepseek-flash image input image_url V4.1",
+   "maxResults": 6,
+   "outputFormats": [
+    "markdown"
+   ],
+   "scrapingTool": "raw-http",
+   "requestTimeoutSecs": 60
+  },
+  "saved_as": "raw/apify/search-deepseek-image-input.json"
+ },
+ {
+  "token_variable": "APIFY_TOKEN_ALT",
+  "actor_id": "3ox4R101TgZz67sLr",
+  "run_id": "xRPgsPlfQBWamjAzt",
+  "status": "SUCCEEDED",
+  "started_at_utc": "2026-10-16T17:13:24.839Z",
+  "finished_at_utc": "2026-10-16T17:13:50.278Z",
+  "dataset_id": "nFF4wL3zpbbQ669LU",
+  "status_message": "Finished! Scraped 6 pages, 0 failed.",
+  "actor": "apify/rag-web-browser",
+  "input": {
+   "query": "DeepSeek-V4.1-Flash multimodal vision release api-docs.deepseek.com news",
+   "maxResults": 6,
+   "outputFormats": [
+    "markdown"
+   ],
+   "scrapingTool": "raw-http",
+   "requestTimeoutSecs": 60
+  },
+  "saved_as": "raw/apify/search-deepseek-v41-vision.json"
+ },
+ {
+  "token_variable": "APIFY_TOKEN",
+  "actor_id": "aYG0l9s7dbB7j3gbS",
+  "run_id": "agng08l0hBGQphJGf",
+  "status": "SUCCEEDED",
+  "started_at_utc": "2026-10-16T17:16:19.873Z",
+  "finished_at_utc": "2026-10-16T17:16:39.178Z",
+  "dataset_id": "kpodyghIDELsCcfjD",
+  "status_message": "Finished! Total 3 requests: 3 succeeded, 0 failed.",
+  "actor": "apify/website-content-crawler",
+  "input": {
+   "startUrls": [
+    {
+     "url": "https://api-docs.deepseek.com/api/create-chat-completion"
+    },
+    {
+     "url": "https://api-docs.deepseek.com/zh-cn/api/create-chat-completion"
+    },
+    {
+     "url": "https://api-docs.deepseek.com/api/create-file"
+    }
+   ],
+   "crawlerType": "playwright:firefox",
+   "maxCrawlDepth": 0,
+   "maxCrawlPages": 3,
+   "saveMarkdown": true,
+   "saveHtml": true,
+   "htmlTransformer": "none",
+   "removeElementsCssSelector": "nav, footer, script, style, noscript, svg",
+   "clickElementsCssSelector": "[role=tab]",
+   "expandIframes": false
+  },
+  "saved_as": "raw/apify/docs-chat-reference-playwright.json"
+ },
+ {
+  "token_variable": "APIFY_TOKEN_PREV",
+  "actor_id": "3ox4R101TgZz67sLr",
+  "run_id": "KRsLr2MzCHaBqpnZK",
+  "status": "SUCCEEDED",
+  "started_at_utc": "2026-10-16T17:23:47.690Z",
+  "finished_at_utc": "2026-10-16T17:23:57.586Z",
+  "dataset_id": "cS9ah5TkcI0rgxmQP",
+  "status_message": "Finished! Scraped 4 pages, 0 failed.",
+  "actor": "apify/rag-web-browser",
+  "input": {
+   "query": "Pydantic AI docs image audio video document input BinaryContent ImageUrl DocumentUrl",
+   "maxResults": 4,
+   "outputFormats": [
+    "markdown"
+   ],
+   "scrapingTool": "raw-http",
+   "requestTimeoutSecs": 60
+  },
+  "saved_as": "raw/apify/search-pydantic-ai-input.json"
+ }
+]

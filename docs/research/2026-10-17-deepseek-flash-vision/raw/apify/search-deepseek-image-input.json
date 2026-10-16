@@ -1,0 +1,836 @@
+[{
+  "crawl": {
+    "httpStatusCode": 200,
+    "httpStatusMessage": "OK",
+    "loadedAt": "2026-10-16T17:13:17.323Z",
+    "uniqueKey": "EZhZMHuxMt",
+    "requestStatus": "handled"
+  },
+  "searchResult": {
+    "title": "DeepSeek-V4.1-Flash: Smarter, Faster, More Efficient",
+    "description": "Sep 10, 2026 — V4.1-Flash is now live on the DeepSeek API with native multimodal support. Set your model to deepseek-flash .",
+    "url": "http://www.google.com/goto?url=CAESaQHrOzAVGEwkunEGSljfEmeLGEkZYq6uuqoglc1h0s7rXePieYKjKeIivuHyDlCXvXYLds0C0TJgIre9tSLs0AEnRGCaW6UP8PgrAdzCUGE-eQzLc0Rt9ibeORoNgGahdpxrvGqBjDdNfw",
+    "resultType": "ORGANIC",
+    "rank": 2
+  },
+  "metadata": {
+    "title": "DeepSeek-V4.1-Flash: Smarter, Faster, More Efficient | DeepSeek API Docs",
+    "description": "🚀 Introducing DeepSeek-V4.1-Flash: smarter, faster, more efficient.",
+    "keywords": "news260910, news",
+    "languageCode": "en",
+    "url": "https://api-docs.deepseek.com/news/news260910/",
+    "redirectedUrl": "https://api-docs.deepseek.com/news/news260910/",
+    "canonicalUrl": "https://api-docs.deepseek.com/news/news260910",
+    "openGraph": [
+      {
+        "property": "og:image",
+        "content": "https://api-docs.deepseek.com/img/deepseek-social-card.jpeg"
+      },
+      {
+        "property": "og:url",
+        "content": "https://api-docs.deepseek.com/news/news260910"
+      },
+      {
+        "property": "og:locale",
+        "content": "en"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "zh_cn"
+      },
+      {
+        "property": "og:title",
+        "content": "DeepSeek-V4.1-Flash: Smarter, Faster, More Efficient | DeepSeek API Docs"
+      },
+      {
+        "property": "og:description",
+        "content": "🚀 Introducing DeepSeek-V4.1-Flash: smarter, faster, more efficient."
+      }
+    ],
+    "headers": {
+      "accept-ranges": "bytes",
+      "age": "195",
+      "cache-control": "max-age=0",
+      "content-encoding": "gzip",
+      "content-length": "6045",
+      "content-type": "text/html",
+      "date": "Fri, 16 Oct 2026 17:13:17 GMT",
+      "eo-cache-status": "HIT",
+      "eo-log-uuid": "13597703170239655621",
+      "etag": "\"9080fb60a7619cc185e3d6f708df1cf6\"",
+      "last-modified": "Fri, 16 Oct 2026 13:01:20 GMT",
+      "server": "tencent-cos",
+      "x-amz-hash-crc64ecma": "1022421319157336801",
+      "x-amz-request-id": "NmFkMjIwZmJfNDZiYzQ1MWVfMTJkZjVfMTE1MDllN2M=",
+      "x-amz-storage-class": "MAZ_STANDARD"
+    }
+  },
+  "query": "DeepSeek API deepseek-flash image input image_url V4.1",
+  "markdown": "DeepSeek-V4.1-Flash: Smarter, Faster, More Efficient | DeepSeek API Docs\n\nOn this page\n\n# DeepSeek-V4.1-Flash: Smarter, Faster, More Efficient\n\n🚀 Introducing DeepSeek-V4.1-Flash: smarter, faster, more efficient.\n\n🔹 Introducing the smallest model in our new architecture family, with native visual understanding.\n\n🔹 Designed for greater capability, faster inference, higher throughput, and scaling to larger models.\n\n![](/img/v4.1_260910_benchmark.png)\n\n* * *\n\n## 🧠 Asymmetric architecture. More intelligence, less cost.[​](https://api-docs.deepseek.com/news/news260910/#-asymmetric-architecture-more-intelligence-less-cost \"Direct link to 🧠 Asymmetric architecture. More intelligence, less cost.\")\n\n🔹 552B-parameter MoE.\n\n🔹 New Causal Encoder–Decoder architecture: just 8B active parameters for input, 16B for output.\n\n🔹 New pre-training methods + larger-scale RL post-training deliver benchmark results ahead of flagship models, including DeepSeek-V4-Pro.\n\n![](/img/v4.1_260910_benchmark_table_en.png)\n\n* * *\n\n## 💾 Smaller KV cache. Bigger savings.[​](https://api-docs.deepseek.com/news/news260910/#-smaller-kv-cache-bigger-savings \"Direct link to 💾 Smaller KV cache. Bigger savings.\")\n\nCompared with the previous generation, V4.1-Flash's KV cache needs just:\n\n🔹 1/4 the HBM\n\n🔹 1/8 the SSD storage\n\nCache-hit charges often account for a large share of agent costs. Compressing the cache cuts those costs significantly.\n\n![](/img/v4.1_260910_kvcache.png)\n\n* * *\n\n## ⚡ V4.1-Flash is now live on the DeepSeek API with native multimodal support.[​](https://api-docs.deepseek.com/news/news260910/#-v41-flash-is-now-live-on-the-deepseek-api-with-native-multimodal-support \"Direct link to ⚡ V4.1-Flash is now live on the DeepSeek API with native multimodal support.\")\n\nSet your model to `deepseek-flash`.\n\n🔹 V4-Flash & V4-Flash-Vision-Exp are retired. For compatibility, `deepseek-v4-flash` and `deepseek-v4-flash-vision-exp` temporarily route to V4.1-Flash.\n\n🔹 Tests by multiple parties put V4.1-Flash ahead of V4-Pro on performance, cost, speed & total runtime. We're phasing out V4-Pro.\n\n🔹 Starting at 04:00 UTC on Sept 14, 2026, all `deepseek-v4-pro` requests will route to V4.1-Flash at V4.1-Flash rates. This will continue until V4.1-Pro launches.\n\n🤝 Official partners WorkBuddy (including CodeBuddy) & OpenCode now fully support V4.1-Flash. Try it today!\n\n* * *\n\n## 💰 More efficient architecture. Lower API prices.[​](https://api-docs.deepseek.com/news/news260910/#-more-efficient-architecture-lower-api-prices \"Direct link to 💰 More efficient architecture. Lower API prices.\")\n\nV4.1-Flash lets us serve more users at a lower cost. We're passing the savings on to you.\n\n🔹 Peak/off-peak pricing continues to balance demand.\n\n🔹 Off-peak rates are 50% of peak rates. Schedule flexible workloads off-peak to save.\n\n🔹 New pricing takes effect at 04:00 UTC on Sept 10, 2026.\n\n![](/img/v4.1_260910_price_en.jpeg)\n\n* * *\n\n## 🌐 Supporting open source. Expanding deployment options.[​](https://api-docs.deepseek.com/news/news260910/#-supporting-open-source-expanding-deployment-options \"Direct link to 🌐 Supporting open source. Expanding deployment options.\")\n\nWe'll work closely with the open-source community on V4.1-Flash inference support and explore more deployment options.\n\nPlanning a large-scale deployment with 2,000 GPUs + a storage cluster? Let's talk.\n\n🔹 Model: [https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash)\n\n🔹 Paper: [https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/DeepSeek\\_V41\\_Tech\\_Report.pdf](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/DeepSeek_V41_Tech_Report.pdf)\n\n*   [🧠 Asymmetric architecture. More intelligence, less cost.](https://api-docs.deepseek.com/news/news260910/#-asymmetric-architecture-more-intelligence-less-cost)\n*   [💾 Smaller KV cache. Bigger savings.](https://api-docs.deepseek.com/news/news260910/#-smaller-kv-cache-bigger-savings)\n*   [⚡ V4.1-Flash is now live on the DeepSeek API with native multimodal support.](https://api-docs.deepseek.com/news/news260910/#-v41-flash-is-now-live-on-the-deepseek-api-with-native-multimodal-support)\n*   [💰 More efficient architecture. Lower API prices.](https://api-docs.deepseek.com/news/news260910/#-more-efficient-architecture-lower-api-prices)\n*   [🌐 Supporting open source. Expanding deployment options.](https://api-docs.deepseek.com/news/news260910/#-supporting-open-source-expanding-deployment-options)"
+},
+{
+  "crawl": {
+    "httpStatusCode": 200,
+    "httpStatusMessage": "OK",
+    "loadedAt": "2026-10-16T17:13:17.138Z",
+    "uniqueKey": "uqfy1sAnqz",
+    "requestStatus": "handled"
+  },
+  "searchResult": {
+    "title": "Vision | DeepSeek API Docs",
+    "description": "The deepseek-flash model accepts images alongside text, so you can ask the model to describe pictures, read text from screenshots, analyze charts, and more.",
+    "url": "http://www.google.com/goto?url=CAESZwHrOzAVqVxU5atNQfyk8fpprb9JzJ67YYuhHUXJENrdsxd7WxqC6CuiObX2ws1YtZ-D5qMzS7uS9TLD9ydMP5yJGfTaPZoDPaxqZUoiwpJ0K-hAnkbtBwwwsyB85IGVf79-dEfz1so",
+    "resultType": "ORGANIC",
+    "rank": 1
+  },
+  "metadata": {
+    "title": "Vision | DeepSeek API Docs",
+    "description": "The deepseek-flash model accepts images alongside text, so you can ask the model to describe pictures, read text from screenshots, analyze charts, and more. The legacy model name deepseek-v4-flash-vision-exp is still accepted, but the model has been retired and its requests are served by the latest Flash model as well.",
+    "keywords": "vision, guides",
+    "languageCode": "en",
+    "url": "https://api-docs.deepseek.com/guides/vision/",
+    "redirectedUrl": "https://api-docs.deepseek.com/guides/vision/",
+    "canonicalUrl": "https://api-docs.deepseek.com/guides/vision",
+    "openGraph": [
+      {
+        "property": "og:image",
+        "content": "https://api-docs.deepseek.com/img/deepseek-social-card.jpeg"
+      },
+      {
+        "property": "og:url",
+        "content": "https://api-docs.deepseek.com/guides/vision"
+      },
+      {
+        "property": "og:locale",
+        "content": "en"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "zh_cn"
+      },
+      {
+        "property": "og:title",
+        "content": "Vision | DeepSeek API Docs"
+      },
+      {
+        "property": "og:description",
+        "content": "The deepseek-flash model accepts images alongside text, so you can ask the model to describe pictures, read text from screenshots, analyze charts, and more. The legacy model name deepseek-v4-flash-vision-exp is still accepted, but the model has been retired and its requests are served by the latest Flash model as well."
+      }
+    ],
+    "headers": {
+      "accept-ranges": "bytes",
+      "age": "7",
+      "cache-control": "max-age=0",
+      "content-encoding": "br",
+      "content-length": "9787",
+      "content-type": "text/html",
+      "date": "Fri, 16 Oct 2026 17:13:16 GMT",
+      "eo-cache-status": "HIT",
+      "eo-log-uuid": "9974798499748973929",
+      "etag": "\"cb28a12ac5135c6f08e4710f2f9c00a2\"",
+      "last-modified": "Fri, 16 Oct 2026 13:01:34 GMT",
+      "server": "tencent-cos",
+      "x-amz-hash-crc64ecma": "12520750453748738325",
+      "x-amz-request-id": "NmFkMjViMjVfYzZiMDQ1MWVfZGUwNF8xZjYyNDIzMg==",
+      "x-amz-storage-class": "MAZ_STANDARD",
+      "x-amzindex-replication-status": "Complete"
+    }
+  },
+  "query": "DeepSeek API deepseek-flash image input image_url V4.1",
+  "markdown": "Vision | DeepSeek API Docs\n\nOn this page\n\n# Vision\n\nThe `deepseek-flash` model accepts images alongside text, so you can ask the model to describe pictures, read text from screenshots, analyze charts, and more. The legacy model name `deepseek-v4-flash-vision-exp` is still accepted, but the model has been retired and its requests are served by the latest Flash model as well.\n\nSupported image formats: **JPEG, PNG, GIF, and WebP**. The format is detected from the actual file content, not from the file name or the declared MIME type.\n\n* * *\n\n## Sending Images[​](https://api-docs.deepseek.com/guides/vision/#sending-images \"Direct link to Sending Images\")\n\nThere are three ways to provide an image to the model. All of them use the standard OpenAI-compatible Chat Completions format, where `content` is an array of blocks instead of a plain string. The same three methods are also available in the [Responses API](https://api-docs.deepseek.com/guides/responses_api#image-input), where images are carried in `input_image` content parts.\n\nThe `base_url` for the examples below is `https://api.deepseek.com`.\n\n### 1\\. Base64-encoded image (inline)[​](https://api-docs.deepseek.com/guides/vision/#1-base64-encoded-image-inline \"Direct link to 1. Base64-encoded image (inline)\")\n\nEncode the image and embed it directly in the request as a `data:` URL. This is the simplest option for local files. The encoded data counts toward the **48 MiB** request body limit (see [Limits](https://api-docs.deepseek.com/guides/vision/#limits)).\n\n```\nimport base64from openai import OpenAIclient = OpenAI(api_key=\"<DeepSeek API Key>\", base_url=\"https://api.deepseek.com\")with open(\"image.jpg\", \"rb\") as f:    b64 = base64.b64encode(f.read()).decode(\"utf-8\")response = client.chat.completions.create(    model=\"deepseek-flash\",    messages=[        {            \"role\": \"user\",            \"content\": [                {\"type\": \"text\", \"text\": \"What is in this image?\"},                {                    \"type\": \"image_url\",                    \"image_url\": {\"url\": f\"data:image/jpeg;base64,{b64}\"},                },            ],        },    ],)print(response.choices[0].message.content)\n```\n\n```\ncurl https://api.deepseek.com/chat/completions \\  -H \"Content-Type: application/json\" \\  -H \"Authorization: Bearer <DeepSeek API Key>\" \\  -d '{    \"model\": \"deepseek-flash\",    \"messages\": [      {        \"role\": \"user\",        \"content\": [          {\"type\": \"text\", \"text\": \"What is in this image?\"},          {\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/jpeg;base64,<BASE64_DATA>\"}}        ]      }    ]  }'\n```\n\n### 2\\. External image URL[​](https://api-docs.deepseek.com/guides/vision/#2-external-image-url \"Direct link to 2. External image URL\")\n\nPass a publicly accessible `http(s)` link and the model downloads the image for you. The URL must be at most **8192 characters**, the image file may be at most **32 MiB**, and the download must complete within **60 seconds**. If your link is longer, use a base64 data URL or the Files API instead.\n\n```\nresponse = client.chat.completions.create(    model=\"deepseek-flash\",    messages=[        {            \"role\": \"user\",            \"content\": [                {\"type\": \"text\", \"text\": \"Describe this image.\"},                {                    \"type\": \"image_url\",                    \"image_url\": {\"url\": \"https://example.com/image.jpg\"},                },            ],        },    ],)print(response.choices[0].message.content)\n```\n\n### 3\\. Reference a file uploaded via the Files API[​](https://api-docs.deepseek.com/guides/vision/#3-reference-a-file-uploaded-via-the-files-api \"Direct link to 3. Reference a file uploaded via the Files API\")\n\nUpload an image once with the [Files API](https://api-docs.deepseek.com/guides/files_api), then reference its `file_id` in your requests. This is the best option when you reuse the same image across multiple requests, or when the image pushes the request body over the 48 MiB inline limit. Unlike inline images, images referenced via Files API `file_id` may be up to 64 MiB and are not subject to the 32 MiB per-image check.\n\nUse a `file` content block with the returned `file_id` (which has the form `file-api-...`):\n\n```\nresponse = client.chat.completions.create(    model=\"deepseek-flash\",    messages=[        {            \"role\": \"user\",            \"content\": [                {\"type\": \"text\", \"text\": \"What is in this image?\"},                {\"type\": \"file\", \"file_id\": \"file-api-xxxxxxxxxxxxxxxx\"},            ],        },    ],)print(response.choices[0].message.content)\n```\n\nAlternatively, a `file` block can carry the image inline as base64 via `file_data` instead of `file_id` (the two are mutually exclusive):\n\n```\n{  \"type\": \"file\",  \"file_data\": \"data:image/jpeg;base64,<BASE64_DATA>\",  \"filename\": \"image.jpg\"}\n```\n\n* * *\n\n## Detail Level[​](https://api-docs.deepseek.com/guides/vision/#detail-level \"Direct link to Detail Level\")\n\nFor `image_url` inputs you can optionally set a `detail` field to control how the image is processed:\n\n| Value | Behavior |\n| --- | --- |\n| `low` | The image is downscaled to 512×512 before inference. Faster and cheaper when fine visual detail is not important. |\n| `high` | Keeps the original image. (Provided for compatibility; equivalent to `original`.) |\n| `original` | Keeps the original image. |\n| `auto` | Automatic selection. Currently equivalent to `original`. |\n\n```\n{  \"type\": \"image_url\",  \"image_url\": {\"url\": \"https://example.com/image.jpg\", \"detail\": \"low\"}}\n```\n\n* * *\n\n## When to Use the Files API[​](https://api-docs.deepseek.com/guides/vision/#when-to-use-the-files-api \"Direct link to When to Use the Files API\")\n\nInline images (base64 or `file_data`) count toward the request body size limit of **48 MiB**. Consider the [Files API](https://api-docs.deepseek.com/guides/files_api) when:\n\n*   A single request would exceed the body size limit.\n*   The image is larger than 32 MiB, which is only possible through the Files API.\n*   You reference the same image in multiple requests and want to avoid re-uploading it each time.\n\n* * *\n\n## Token Usage[​](https://api-docs.deepseek.com/guides/vision/#token-usage \"Direct link to Token Usage\")\n\nImages are converted into tokens based on their dimensions, and these tokens are billed together with your text tokens.\n\nBefore inference, every image is automatically resized:\n\n*   Images with a total pixel count below roughly 544×544 are scaled up while preserving their aspect ratio.\n*   Larger images are scaled down while preserving their aspect ratio, so that the total pixel count after resizing is roughly that of a **1300×1300** image.\n\nAs a result, there is an upper bound of **1024** tokens per image: for example, a 2000×2000 image and a 5000×5000 image consume the same number of tokens after resizing. When a request contains multiple images, each image is counted independently under the same rule — there is no separate calculation for multi-image requests.\n\nTo estimate the token cost of an image of a specific size, use the image token calculator on the [Token & Token Usage](https://api-docs.deepseek.com/quick_start/token_usage) page.\n\n* * *\n\n## Limits[​](https://api-docs.deepseek.com/guides/vision/#limits \"Direct link to Limits\")\n\n| Limit | Value |\n| --- | --- |\n| Supported formats | JPEG, PNG, GIF, WebP |\n| External URL length | 8192 characters |\n| Request body size | 48 MiB |\n| Max single image size (base64 / external URL) | 32 MiB |\n| Max single image size (Files API `file_id`) | 64 MiB |\n| Max images per request | 600 |\n| Max total image size per request | 64 MiB without `file_id` images; up to 200 MiB including `file_id` images |\n| Max image dimension | 8192 px per side; drops to 4096 px per side when a request contains 15 or more images |\n\nFor storage and upload quotas of files uploaded via the Files API, see [Files API: Limits](https://api-docs.deepseek.com/guides/files_api#limits).\n\n* * *\n\n## Restrictions[​](https://api-docs.deepseek.com/guides/vision/#restrictions \"Direct link to Restrictions\")\n\n*   Images are supported in `user` messages only. Images in `system` or `assistant` messages return a `400` error.\n\n* * *\n\n## Using Images with the Anthropic API[​](https://api-docs.deepseek.com/guides/vision/#using-images-with-the-anthropic-api \"Direct link to Using Images with the Anthropic API\")\n\nIn addition to the OpenAI-compatible endpoint above, you can send images through the Anthropic-compatible `/messages` endpoint (`base_url` = `https://api.deepseek.com/anthropic`). For general setup, see [Anthropic API](https://api-docs.deepseek.com/guides/anthropic_api).\n\nThe difference is the shape of the image content block. Instead of `image_url`, Anthropic uses an `image` block with a `source` object whose `type` is one of `base64`, `url`, or `file`:\n\n```\nimport anthropicclient = anthropic.Anthropic()  # ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropicmessage = client.messages.create(    model=\"deepseek-flash\",    max_tokens=1024,    messages=[        {            \"role\": \"user\",            \"content\": [                {\"type\": \"text\", \"text\": \"What is in this image?\"},                {                    \"type\": \"image\",                    \"source\": {                        \"type\": \"base64\",                        \"media_type\": \"image/jpeg\",                        \"data\": \"<BASE64_DATA>\",                    },                },            ],        },    ],)print(message.content)\n```\n\nThe three `source` variants mirror the OpenAI methods above:\n\n| `source.type` | Equivalent OpenAI method | Notes |\n| --- | --- | --- |\n| `base64` | Base64-encoded image | Requires a `media_type` field (`image/jpeg`, `image/png`, `image/gif`, or `image/webp`). |\n| `url` | External image URL | Max 8192 characters. |\n| `file` | Files API `file_id` | Requires the header `anthropic-beta: files-api-2025-04-14`. |\n\n* * *\n\n## Using Images with the Responses API[​](https://api-docs.deepseek.com/guides/vision/#responses-api \"Direct link to Using Images with the Responses API\")\n\nThe `deepseek-flash` model also accepts images through the OpenAI-compatible [Responses API](https://api-docs.deepseek.com/guides/responses_api#image-input). The same three input methods (base64 data URL, external `http(s)` URL, Files API `file_id`) and the same [limits](https://api-docs.deepseek.com/guides/vision/#limits) apply; only the content part shape differs — images are carried in `input_image` parts, either in `user` / `developer` messages or in the output of `function_call_output` / `custom_tool_call_output` items:\n\n```\nresponse = client.responses.create(    model=\"deepseek-flash\",    input=[        {            \"role\": \"user\",            \"content\": [                {\"type\": \"input_text\", \"text\": \"What is in this image?\"},                {\"type\": \"input_image\", \"image_url\": \"https://example.com/image.jpg\", \"detail\": \"low\"},            ],        },    ],)print(response.output_text)\n```\n\nThe `input_image` part supports a `detail` field with the same semantics as above (`low` / `high` / `original` / `auto`). `detail` is ignored when the image is provided via `file_id`, and `image_url` and `file_id` are mutually exclusive.\n\nFor field semantics, restrictions (images in `system` / `assistant` messages are rejected with a `400` error), and tool-output images, see the [Responses API guide](https://api-docs.deepseek.com/guides/responses_api#image-input).\n\n*   [Sending Images](https://api-docs.deepseek.com/guides/vision/#sending-images)\n    *   [1\\. Base64-encoded image (inline)](https://api-docs.deepseek.com/guides/vision/#1-base64-encoded-image-inline)\n    *   [2\\. External image URL](https://api-docs.deepseek.com/guides/vision/#2-external-image-url)\n    *   [3\\. Reference a file uploaded via the Files API](https://api-docs.deepseek.com/guides/vision/#3-reference-a-file-uploaded-via-the-files-api)\n*   [Detail Level](https://api-docs.deepseek.com/guides/vision/#detail-level)\n*   [When to Use the Files API](https://api-docs.deepseek.com/guides/vision/#when-to-use-the-files-api)\n*   [Token Usage](https://api-docs.deepseek.com/guides/vision/#token-usage)\n*   [Limits](https://api-docs.deepseek.com/guides/vision/#limits)\n*   [Restrictions](https://api-docs.deepseek.com/guides/vision/#restrictions)\n*   [Using Images with the Anthropic API](https://api-docs.deepseek.com/guides/vision/#using-images-with-the-anthropic-api)\n*   [Using Images with the Responses API](https://api-docs.deepseek.com/guides/vision/#responses-api)"
+},
+{
+  "crawl": {
+    "httpStatusCode": 200,
+    "httpStatusMessage": "OK",
+    "loadedAt": "2026-10-16T17:13:18.442Z",
+    "uniqueKey": "IoTOS0DjTX",
+    "requestStatus": "handled"
+  },
+  "searchResult": {
+    "title": "deepseek-ai/DeepSeek-V4.1-Flash",
+    "description": "Sep 10, 2026 — It converts Messages, Chat Completions, and Responses API requests into the Conversation format, encodes them into DeepSeek V4 and V4.1 prompts ...",
+    "url": "http://www.google.com/goto?url=CAEScQHrOzAV_7VAjcq6TpBlMa-nZj-vdJkKvJ7uHEkOEZYYXoGbWQqrlaalp2W-xFoitXpB7VZ710XsLyBpIctwxg6eaJM732M9wBjMgbjNLbPW8xPKLLvc26w3LBGqKAOOfpKubMHZV6A9_lanH5w7bigg",
+    "resultType": "ORGANIC",
+    "rank": 3
+  },
+  "metadata": {
+    "title": "deepseek-ai/DeepSeek-V4.1-Flash · Hugging Face",
+    "description": "We’re on a journey to advance and democratize artificial intelligence through open source and open science.",
+    "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash",
+    "redirectedUrl": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash",
+    "canonicalUrl": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash",
+    "openGraph": [
+      {
+        "property": "og:title",
+        "content": "deepseek-ai/DeepSeek-V4.1-Flash · Hugging Face"
+      },
+      {
+        "property": "og:description",
+        "content": "We’re on a journey to advance and democratize artificial intelligence through open source and open science."
+      },
+      {
+        "property": "og:type",
+        "content": "website"
+      },
+      {
+        "property": "og:url",
+        "content": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash"
+      },
+      {
+        "property": "og:image",
+        "content": "https://cdn-thumbnails.huggingface.co/social-thumbnails/models/deepseek-ai/DeepSeek-V4.1-Flash.png"
+      }
+    ],
+    "headers": {
+      "alt-svc": "h3=\":443\"; ma=86400",
+      "content-encoding": "gzip",
+      "content-type": "text/html; charset=utf-8",
+      "cross-origin-opener-policy": "same-origin",
+      "date": "Fri, 16 Oct 2026 17:13:17 GMT",
+      "etag": "W/\"6ee9f-tAzDszzeheWtLObcBG/sKrlRjwE\"",
+      "ratelimit": "\"pages\";r=99;t=63",
+      "ratelimit-policy": "\"fixed window\";\"pages\";q=100;w=300",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "strict-transport-security": "max-age=31536000",
+      "vary": "Accept-Encoding",
+      "via": "1.1 0310ec6230dcfed7d7078997d79d6f50.cloudfront.net (CloudFront)",
+      "x-amz-cf-id": "Pk6iYHB3VUiWt33snT9qRp7UxAkTloKG-omgkdB07wzBew_v_NiiJQ==",
+      "x-amz-cf-pop": "CMH51-P1",
+      "x-cache": "Miss from cloudfront",
+      "x-frame-options": "DENY",
+      "x-powered-by": "huggingface-moon",
+      "x-request-id": "Root=1-6ad25b2d-332c0d1465c67656416d15c8"
+    }
+  },
+  "query": "DeepSeek API deepseek-flash image input image_url V4.1",
+  "markdown": "deepseek-ai/DeepSeek-V4.1-Flash · Hugging Face\n\n [![Hugging Face's logo](/front/assets/huggingface_logo-noborder.svg) Hugging Face](https://huggingface.co/)\n\n \n\n# \n\n[\n\n![](https://cdn-avatars.huggingface.co/v1/production/uploads/6538815d1bdb3c40db94fbfa/xMBly9PUMphrFVMxLX4kq.png)\n\n](https://huggingface.co/deepseek-ai)\n\n[deepseek-ai](https://huggingface.co/deepseek-ai)\n\n/\n\n[DeepSeek-V4.1-Flash](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash)\n\nLike 4.56k\n\nFollow\n\n![](https://cdn-avatars.huggingface.co/v1/production/uploads/6538815d1bdb3c40db94fbfa/xMBly9PUMphrFVMxLX4kq.png) DeepSeek 150k\n\n[\n\nImage-Text-to-Text\n\n](https://huggingface.co/models?pipeline_tag=image-text-to-text)[\n\nTransformers\n\n](https://huggingface.co/models?library=transformers)[\n\nSafetensors\n\n](https://huggingface.co/models?library=safetensors)[\n\ndeepseek\\_v41\n\n](https://huggingface.co/models?other=deepseek_v41)[\n\ntext-generation\n\n](https://huggingface.co/models?other=text-generation)[\n\nconversational\n\n](https://huggingface.co/models?other=conversational)[\n\nEval Results\n\n](https://huggingface.co/models?other=eval-results)[\n\n8-bit precision\n\n](https://huggingface.co/models?other=8-bit)[\n\nfp8\n\n](https://huggingface.co/models?other=fp8)\n\nLicense: mit\n\n[Model card](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash) [Files Files and versions\n\nxet\n\n](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/tree/main)[Community\n\n73\n\n](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/discussions)\n\nDeploy\n\nCopy to bucket new\n\nUse this model\n\n# [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#deepseek-v41-flash-pushing-the-limits-of-kv-cache-compression)DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression\n\n![DeepSeek-V4.1](https://github.com/deepseek-ai/DeepSeek-V2/blob/main/figures/logo.svg?raw=true)\n\n* * *\n\n [![Homepage](https://github.com/deepseek-ai/DeepSeek-V2/blob/main/figures/badge.svg?raw=true)](https://www.deepseek.com/)[![Chat](https://img.shields.io/badge/🤖%20Chat-DeepSeek%20V4.1-536af5?color=536af5&logoColor=white)](https://chat.deepseek.com/)\n\n [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-DeepSeek%20AI-ffc107?color=ffc107&logoColor=white)](https://huggingface.co/deepseek-ai)[![Twitter Follow](https://img.shields.io/badge/Twitter-deepseek_ai-white?logo=x&logoColor=white)](https://twitter.com/deepseek_ai)\n\n[![License](https://img.shields.io/badge/License-MIT-f5de53?&color=f5de53)](https://huggingface.co/deepseek-ai/LICENSE)\n\n[**Technical Report** 👁️](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/DeepSeek_V41_Tech_Report.pdf)\n\n## [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#introduction)Introduction\n\nWe introduce **DeepSeek-V4.1-Flash**, a multimodal Mixture-of-Experts (MoE) model with 552B backbone parameters and support for contexts of up to one million tokens. The model natively processes images and text, and generates text autoregressively.\n\n**Architecture.** DeepSeek-V4.1-Flash adopts a **Causal Encoder-Decoder (CED)** architecture: a 40-layer Transformer organized as a 20-layer causal encoder followed by a 20-layer decoder. With CED, the decoder's global KV cache is projected from the final encoder hidden states rather than derived from each decoder layer's own hidden states. This allows the model to activate only **8B parameters per token during prefill** and **16B during decode**, substantially improving cost efficiency for input-heavy agentic workloads. **SWA Bounded Replay** reconstructs missing SWA KV states by replaying only the most recent _n_\\_win tokens, avoiding the need to persist SWA KV to SSD and reducing the persistent KV cache footprint to roughly **1/8** of that of DeepSeek-V4-Flash.\n\n**Compressed Sparse Attention 2 (CSA2).** DeepSeek-V4.1-Flash uses CSA2, which assigns each attention layer one of three static modes — **Full**, **Reindex**, or **Reuse** — to share main KV and indexer K across layers and reuse Top-K sparse-attention indices. In the decoder, a **Hierarchical Sparse Indexer** further restricts later indexing layers to a candidate pool constructed by the first Full Mode layer, bounding deeper indexer cost independently of context length. Combined with **FP4 main KV caching** (E2M1 format, one E4M3 scale per 16 channels), these designs reduce the global KV cache footprint to **890 bytes per token** — roughly **1/4** of DeepSeek-V4-Flash.\n\n**Additional architectural components** include Single-Pass mHC (revised residual-stream mixing with an efficient Mega-mHC kernel), Engram conditional memory (196B parameters, sparsely accessed via token-based lookup), and DSpark speculative decoding (semi-autoregressive draft generation with confidence-scheduled verification). The model uses 1 shared expert and 384 routed experts per MoE layer, activating 6 routed experts per token.\n\n**Multimodal architecture.** A vision encoder (DeepSeek-ViT, trained from scratch with 2D-RoPE and 3×3 pixel-unshuffle downsampling) and a two-layer MLP projector convert images into visual embeddings, processed jointly with text embeddings from the start of language-model pre-training.\n\n**Pre-training.** DeepSeek-V4.1-Flash is trained from scratch on a multimodal corpus comprising **45T tokens**, with sparse attention trained at a sequence length of 64K and context extended to 1M tokens at 34T tokens.\n\n**Post-training.** The post-training recipe follows the standard SFT → RL → on-policy distillation (OPD) paradigm without algorithmic modifications. All substantive changes lie instead in the data pipeline: large-scale automated synthesis of agent tasks and environments with progressive scaling of data, tasks, and rollouts. The model supports a **continuously controllable reasoning effort** setting (integer 1–100) that trades inference cost for accuracy.\n\n![DeepSeek-V4.1-Flash agentic benchmark performance](/deepseek-ai/DeepSeek-V4.1-Flash/resolve/main/assets/dsv41_agentic_performance.png) ![Global KV cache size per token across DeepSeek generations](/deepseek-ai/DeepSeek-V4.1-Flash/resolve/main/assets/dsv41_kv_cache.png)\n\n_Figure 1. (a) Performance of DeepSeek-V4.1-Flash and counterparts on agentic benchmarks. (b) Global KV cache size per token (bytes) across generations of DeepSeek models. DeepSeek-V4.1-Flash achieves approximately 4-fold and 437-fold reductions relative to DeepSeek-V4-Flash and DeepSeek-V1, respectively._\n\n## [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#evaluation-results)Evaluation Results\n\n### [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#base-model)Base Model\n\nAll base models are evaluated in our internal framework under the same evaluation settings. Scores within 0.3 of each other are considered equivalent.\n\nBenchmark (Metric)\n\n\\# Shots\n\nDeepSeek-V4-Flash-Base\n\nDeepSeek-V4-Pro-Base\n\nDeepSeek-V4.1-Flash-Base\n\nArchitecture\n\n—\n\nMoE\n\nMoE\n\nMoE\n\n\\# Backbone Params\n\n—\n\n284B\n\n1.6T\n\n552B\n\n\\# Activated Params\n\n—\n\n13B\n\n49B\n\n8B / 16B\n\n**World Knowledge**\n\nAGIEval (EM)\n\n3–5-shot\n\n83.9\n\n**84.4**\n\n83.4\n\nMMLU-Pro (EM)\n\n5-shot\n\n68.3\n\n73.5\n\n**74.1**\n\nC-Eval (EM)\n\n5-shot\n\n92.1\n\n**93.1**\n\n92.1\n\nMultiLoKo (LLM-Judge)\n\n5-shot\n\n42.6\n\n**50.9**\n\n45.5\n\nSimpleQA-Verified (EM)\n\n25-shot\n\n30.1\n\n**55.2**\n\n42.3\n\nSuperGPQA (EM)\n\n5-shot\n\n46.5\n\n**53.9**\n\n53.1\n\n**Language & Reasoning**\n\nBBH (EM)\n\n3-shot\n\n86.9\n\n**87.5**\n\n86.1\n\nBBEH (EM)\n\n1-shot\n\n25.4\n\n**29.8**\n\n27.2\n\nDROP (F1)\n\n1-shot\n\n**88.6**\n\n**88.7**\n\n87.9\n\nHellaSwag (EM)\n\n0-shot\n\n85.7\n\n**88.0**\n\n87.2\n\n**Code & Math**\n\nBigCodeBench (Pass@1)\n\n3-shot\n\n56.8\n\n59.2\n\n**60.6**\n\nHumanEval (Pass@1)\n\n0-shot\n\n69.5\n\n76.8\n\n**79.4**\n\nGSM8K (EM)\n\n8-shot\n\n90.8\n\n92.6\n\n**93.0**\n\nMATH (EM)\n\n4-shot\n\n57.4\n\n**64.5**\n\n61.1\n\nMGSM (EM)\n\n8-shot\n\n**85.7**\n\n84.4\n\n80.2\n\n**Long Context**\n\nLongBench-V2 (EM)\n\n1-shot\n\n44.7\n\n**51.5**\n\n45.2\n\n**Multimodal**\n\nMMMU-Pro (EM)\n\n4-shot\n\n—\n\n—\n\n56.5\n\nCVBench (EM)\n\n4-shot\n\n—\n\n—\n\n77.9\n\nDocVQA (LLM-Judge)\n\n4-shot\n\n—\n\n—\n\n95.6\n\nRefCOCO-avg ([Acc@0.5](mailto:Acc@0.5))\n\n0-shot\n\n—\n\n—\n\n86.0\n\n### [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#instruct-model)Instruct Model\n\nDeepSeek-V4.1-Flash supports a continuously controllable reasoning effort from 1 to 100. All instruct results below use the maximum effort setting (`reasoning_effort=100`). Evaluations use `temperature=1.0, top_p=0.95`.\n\nFor code agent benchmarks (Terminal-Bench 2.1/3.0/4.0, DeepSWE v1.1, NL2Repo-Bench, ProgramBench), the model is evaluated with the Minimal mode of DeepSeek Harness and a 1M-token context window. To align with official setup requirements, the mini-SWE harness is used for DeepSWE v1.1, and the Claude Code harness for SEC-Bench Pro. Visual agent benchmarks (Chartography, BabyVision, ZeroBench) use the Claude Code harness with a 512k-token context window. Agent's Last Exam and AutomationBench use their official scaffolds. All agentic evaluations use `temperature=1.0, top_p=0.95`.\n\n#### [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#comparison-with-frontier-models-max-reasoning-effort)Comparison with frontier models (Max reasoning effort)\n\nBenchmark (Metric)\n\nOpus-5.0\n\nGPT-5.6 Sol\n\nK3\n\nGLM-5.3\n\nDS-V4-Pro\n\nDS-V4-Flash\n\nDS-V4.1-Flash\n\n**Reasoning**\n\nGPQA Diamond (Pass@1)\n\n93.4\n\n**94.1**\n\n92.9\n\n88.1\n\n92.4\n\n89.9\n\n90.9\n\nHLE (Pass@1)\n\n**56.3**\n\n44.5\n\n43.5\n\n42.0†\n\n42.7†\n\n37.8†\n\n36.8 (39.1†)\n\nCodeforces (Rating)\n\n—\n\n—\n\n—\n\n—\n\n3348\n\n3289\n\n**3471**\n\nMathArena Apex (Pass@1)\n\n—\n\n—\n\n**65.6**\n\n—\n\n65.3\n\n58.6\n\n**65.6**\n\n**Agentic**\n\nTerminal-Bench 2.1 (Pass@1)\n\n89.1\n\n88.8\n\n88.3\n\n88.2\n\n87.9\n\n82.7\n\n**90.6**\n\nTerminal-Bench 3.0 (Pass@1)\n\n**43.3**\n\n34.4\n\n17.7\n\n28.3\n\n11.8\n\n7.6\n\n30.0\n\nTerminal-Bench 4.0 (Pass@1)\n\n**51.8**\n\n39.9\n\n12.6\n\n37.9\n\n12.4\n\n7.0\n\n31.2\n\nDeepSWE v1.1 (Resolved)\n\n74.0\n\n73.0\n\n67.5\n\n66.9\n\n62.7\n\n54.4\n\n**74.2**\n\nProgramBench (Almost@1)\n\n**37.0**\n\n23.0\n\n17.5\n\n19.0\n\n15.5\n\n—\n\n20.3\n\nNL2Repo-Bench (Score)\n\n**75.3**\n\n56.8\n\n58.0\n\n58.0\n\n61.5\n\n54.2\n\n64.0\n\nCyberGym (Pass@1)\n\n—\n\n84.5\n\n80.0\n\n84.5\n\n83.3\n\n76.7\n\n**88.1**\n\nSEC-Bench Pro (Pass@1)\n\n—\n\n**74.3**\n\n—\n\n—\n\n56.4\n\n30.9\n\n62.8\n\nExploitGym (Pass@1)\n\n22.1\n\n**33.7**\n\n—\n\n15.0\n\n5.4\n\n1.8\n\n15.3\n\nHLE w/ tools (Pass@1)\n\n63.6\n\n—\n\n59.8\n\n62.5\n\n60.0\n\n51.5\n\n**63.9**\n\nAutomationBench (Pass@1)\n\n50.3\n\n45.8\n\n46.7\n\n48.8\n\n43.2\n\n37.7\n\n**54.8**\n\nAgent's Last Exam (Pass@1)\n\n28.6\n\n26.7\n\n27.6\n\n28.5\n\n25.7\n\n25.2\n\n**31.8**\n\nChartography w/ tools (Pass@1)\n\n**84.0**\n\n79.9\n\n68.1\n\n—\n\n—\n\n—\n\n78.9\n\nBabyVision w/ tools (Pass@1)\n\n**94.1**\n\n88.9\n\n85.7\n\n—\n\n—\n\n—\n\n89.6\n\nZeroBench-main w/ tools (Pass@5)\n\n52.0\n\n**53.0**\n\n41.0\n\n—\n\n—\n\n—\n\n49.0\n\n_† Text-only subset of HLE._\n\n#### [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#performance-across-agent-scaffolds-deepswe-v11-and-terminal-bench-21-max-reasoning-effort)Performance across agent scaffolds (DeepSWE v1.1 and Terminal-Bench 2.1, Max reasoning effort)\n\nAll scaffolds use N=8 samples per task on DeepSWE v1.1 and N=3 on Terminal-Bench 2.1, with Linux containers, `temperature=1.0`, `top_p=0.95`, a 1M-token context limit, and max\\_steps=500 per agent. Terminal-Bench 2.1 is evaluated without network access.\n\nBenchmark (Metric)\n\nClaude Code\n\nCodex\n\nOpenCode\n\nPi\n\nmini-SWE\n\nDSH Minimal\n\nDSH Standard\n\nDSH PTC\n\nDeepSWE v1.1 (Resolved)\n\n69.8\n\n65.6\n\n65.5\n\n66.2\n\n74.2\n\n72.6\n\n70.5\n\n67.6\n\nTerminal-Bench 2.1 (Pass@1)\n\n88.0\n\n84.1\n\n85.0\n\n86.1\n\n90.3\n\n90.6\n\n85.8\n\n85.8\n\n## [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#prompt-encoding)Prompt Encoding\n\nThis release does not include a Jinja-format chat template. The [`encoding`](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/encoding/README.md) folder contains a self-contained Python reference implementation (`encoding.py`) with test cases for multi-turn conversations, tool calling, thinking mode, numeric reasoning effort, mid-conversation system messages, and interleaved image content.\n\nFor production use, we additionally release [deepseek-recipe](https://github.com/deepseek-ai/deepseek-recipe), a set of Rust libraries with Python bindings that provides the same prompt format as a maintained, protocol-aware toolkit. It converts Messages, Chat Completions, and Responses API requests into the Conversation format, encodes them into DeepSeek V4 and V4.1 prompts or token IDs, and parses model output back into complete or streamed responses — covering thinking, tool calls, images, and generation settings. Model inference, tool execution, and HTTP transport are left to the caller.\n\n## [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#minimal-inference)Minimal Inference\n\nPlease refer to the [`inference`](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/inference/README.md) folder for instructions on weight conversion and running inference locally.\n\n**Recommended sampling parameters:**\n\nParameter\n\nValue\n\n`temperature`\n\n1.0\n\n`top_p`\n\n0.95 or 1.0\n\n`context_window`\n\n1M tokens\n\n`max_tokens`\n\n≥ 256K\n\n## [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#reproducing-deepswe-benchmark-results)Reproducing DeepSWE Benchmark Results\n\nThe [`evaluation`](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/evaluation/README.md) folder contains step-by-step instructions for reproducing the DeepSWE v1.1 benchmark results, covering both the `dsh-minimal` agent and the official `mini-swe-agent`. The patch required to integrate `dsh-minimal` with [Pier](https://github.com/datacurve-ai/pier) is also included there.\n\n## [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#license)License\n\nThis repository and the model weights are licensed under the [MIT License](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/tree/main/LICENSE).\n\n## [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#citation)Citation\n\n```bibtex\n@misc{deepseekai2026deepseekv41flash,\n      title={DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression},\n      author={DeepSeek-AI},\n      year={2026},\n}\n```\n\n## [](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash#contact)Contact\n\nIf you have any questions, please raise an issue or contact us at [service@deepseek.com](mailto:service@deepseek.com).\n\nDownloads last month\n\n1,276,459\n\nSafetensors[](https://huggingface.co/docs/safetensors)\n\nModel size\n\n763B params\n\nTensor type\n\nBF16\n\n·\n\nF32\n\n·\n\nF8\\_E4M3\n\n·\n\nI8\n\n·\n\nChat template\n\nFiles info\n\nInference Providers [NEW](https://huggingface.co/docs/inference-providers)\n\nNovita\n\n*   +2\n\n[\n\nImage-Text-to-Text\n\n](https://huggingface.co/tasks/image-text-to-text \"Learn more about image-text-to-text\")\n\nExamples\n\nInput a message to start chatting with **deepseek-ai/DeepSeek-V4.1-Flash**.\n\nSend\n\nView Code Snippets\n\n[Compare providers](https://huggingface.co/inference/models?model=deepseek-ai%2FDeepSeek-V4.1-Flash)\n\n## Model tree for deepseek-ai/DeepSeek-V4.1-Flash[](https://huggingface.co/docs/hub/model-cards#specifying-a-base-model)\n\nFinetunes\n\n[25 models](https://huggingface.co/models?other=base_model:finetune:deepseek-ai/DeepSeek-V4.1-Flash)\n\nQuantizations\n\n[](https://huggingface.co/models?apps=llama.cpp&other=base_model:quantized:deepseek-ai/DeepSeek-V4.1-Flash \"Use with llama.cpp\")[](https://huggingface.co/models?apps=lmstudio&other=base_model:quantized:deepseek-ai/DeepSeek-V4.1-Flash \"Use with LM Studio\")[](https://huggingface.co/models?apps=jan&other=base_model:quantized:deepseek-ai/DeepSeek-V4.1-Flash \"Use with Jan\")[](https://huggingface.co/models?apps=ollama&other=base_model:quantized:deepseek-ai/DeepSeek-V4.1-Flash \"Use with Ollama\")\n\n[129 models](https://huggingface.co/models?other=base_model:quantized:deepseek-ai/DeepSeek-V4.1-Flash)\n\n## Spaces using deepseek-ai/DeepSeek-V4.1-Flash 54\n\n## Collection including deepseek-ai/DeepSeek-V4.1-Flash\n\n[\n\n#### DeepSeek-V4\n\nCollection\n\n10 items • Updated Sep 10 • 927\n\n](https://huggingface.co/collections/deepseek-ai/deepseek-v4)\n\n## Evaluation results[](https://huggingface.co/docs/hub/eval-results)\n\n*   [agents-last-exam/agents-last-exam](https://huggingface.co/datasets/agents-last-exam/agents-last-exam) · Ale Cli Pass Rate [View evaluation results](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/discussions/29) [leaderboard](https://huggingface.co/datasets/agents-last-exam/agents-last-exam?eval_result=deepseek-ai/DeepSeek-V4.1-Flash&leaderboard_task_id=ale-cli-pass-rate)\n    \n    [](https://huggingface.co/datasets/agents-last-exam/agents-last-exam?eval_result=deepseek-ai%2FDeepSeek-V4.1-Flash&leaderboard_task_id=ale-cli-pass-rate)31.8\n    \n*   [harborframework/terminal-bench-2.1](https://huggingface.co/datasets/harborframework/terminal-bench-2.1) · Terminalbench 2 1 [View evaluation results](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/discussions/29) [leaderboard](https://huggingface.co/datasets/harborframework/terminal-bench-2.1?eval_result=deepseek-ai/DeepSeek-V4.1-Flash&leaderboard_task_id=terminalbench_2_1)\n    \n    [](https://huggingface.co/datasets/harborframework/terminal-bench-2.1?eval_result=deepseek-ai%2FDeepSeek-V4.1-Flash&leaderboard_task_id=terminalbench_2_1)90.6 \\*\n    \n*   [Idavidrein/gpqa](https://huggingface.co/datasets/Idavidrein/gpqa) · Diamond [View evaluation results](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/discussions/29) [leaderboard](https://huggingface.co/datasets/Idavidrein/gpqa?eval_result=deepseek-ai/DeepSeek-V4.1-Flash&leaderboard_task_id=diamond)\n    \n    90.9\n    \n*   [llamaindex/ExtractBench](https://huggingface.co/datasets/llamaindex/ExtractBench) [leaderboard](https://huggingface.co/datasets/llamaindex/ExtractBench?eval_result=deepseek-ai/DeepSeek-V4.1-Flash)\n*   Mean [View evaluation results](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/discussions/45)[\n    \n    ![](https://cdn-avatars.huggingface.co/v1/production/uploads/6980fe7cc9e5d7013d527b3a/F5Z_0zjcdl0cIKIq-MvTR.jpeg)\n    \n    source](https://huggingface.co/datasets/llamaindex/ExtractBench)\n    \n    Pipeline name: deepseek\\_v4\\_1\\_flash\\_extract\\_oneshot\\_structured\\_output\\_file (served via the DeepSeek API, thinking disabled)\n    \n    87.11 \\*\n    \n*   Short [View evaluation results](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/discussions/45)[\n    \n    ![](https://cdn-avatars.huggingface.co/v1/production/uploads/6980fe7cc9e5d7013d527b3a/F5Z_0zjcdl0cIKIq-MvTR.jpeg)\n    \n    source](https://huggingface.co/datasets/llamaindex/ExtractBench)\n    \n    Pipeline name: deepseek\\_v4\\_1\\_flash\\_extract\\_oneshot\\_structured\\_output\\_file (served via the DeepSeek API, thinking disabled)\n    \n    94.44 \\*\n    \n*   Medium [View evaluation results](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/discussions/45)[\n    \n    ![](https://cdn-avatars.huggingface.co/v1/production/uploads/6980fe7cc9e5d7013d527b3a/F5Z_0zjcdl0cIKIq-MvTR.jpeg)\n    \n    source](https://huggingface.co/datasets/llamaindex/ExtractBench)\n    \n    Pipeline name: deepseek\\_v4\\_1\\_flash\\_extract\\_oneshot\\_structured\\_output\\_file (served via the DeepSeek API, thinking disabled)\n    \n    81.49 \\*\n    \n*   +1 more\n\nExpand 4 benchmarks"
+},
+{
+  "crawl": {
+    "httpStatusCode": 200,
+    "httpStatusMessage": "OK",
+    "loadedAt": "2026-10-16T17:13:19.087Z",
+    "uniqueKey": "KKuXBcX194",
+    "requestStatus": "handled"
+  },
+  "searchResult": {
+    "title": "Does DeepSeek V4 Have Vision? Image Input by Model",
+    "description": "Sep 16, 2026 — Two V4 models accept images. DeepSeek V4.1 Flash reads images natively and is the model to use for new image work.",
+    "url": "http://www.google.com/goto?url=CAEScgHrOzAVi6k9sQ4O3-u0EYhCUkdi0kVNRL-gZbNmRt3D_BHpg9LGBXgFygTHktAP3dEBwNHoSLsAUeNGAQiuZhHh4DTvn7E6UygACcrqanjtBcVifPDcoSJ2d7Aeg6Vesu-a3eBs5m_UpPRsvY70cWqeIA",
+    "resultType": "ORGANIC",
+    "rank": 4
+  },
+  "metadata": {
+    "title": "Does DeepSeek V4 Have Vision? Image Input by Model",
+    "description": "Which DeepSeek V4 models accept images on OpenRouter, with slugs, prices, and context limits, plus how to add image input to the text-only V4 models.",
+    "languageCode": "en",
+    "url": "https://openrouter.ai/blog/insights/deepseek-v4-vision/",
+    "redirectedUrl": "https://openrouter.ai/blog/insights/deepseek-v4-vision/",
+    "canonicalUrl": "https://openrouter.ai/blog/insights/deepseek-v4-vision/",
+    "openGraph": [
+      {
+        "property": "og:site_name",
+        "content": "OpenRouter Blog"
+      },
+      {
+        "property": "og:type",
+        "content": "article"
+      },
+      {
+        "property": "og:url",
+        "content": "https://openrouter.ai/blog/insights/deepseek-v4-vision/"
+      },
+      {
+        "property": "og:title",
+        "content": "Does DeepSeek V4 Have Vision? Image Input by Model"
+      },
+      {
+        "property": "og:description",
+        "content": "Which DeepSeek V4 models accept images on OpenRouter, with slugs, prices, and context limits, plus how to add image input to the text-only V4 models."
+      },
+      {
+        "property": "og:image",
+        "content": "https://openrouter.ai/blog/images/deepseek-v4-vision.png"
+      },
+      {
+        "property": "og:image:width",
+        "content": "1584"
+      },
+      {
+        "property": "og:image:height",
+        "content": "792"
+      },
+      {
+        "property": "og:image:alt",
+        "content": "Does DeepSeek V4 Have Vision?"
+      },
+      {
+        "property": "article:published_time",
+        "content": "2026-09-16T00:00:00.000Z"
+      },
+      {
+        "property": "article:modified_time",
+        "content": "2026-09-29T00:00:00.000Z"
+      },
+      {
+        "property": "article:author",
+        "content": "OpenRouter"
+      }
+    ],
+    "jsonLd": [
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Does DeepSeek V4 Have Vision?",
+        "description": "Which DeepSeek V4 models accept images on OpenRouter, with slugs, prices, and context limits, plus how to add image input to the text-only V4 models.",
+        "datePublished": "2026-09-16T00:00:00.000Z",
+        "dateModified": "2026-09-29T00:00:00.000Z",
+        "author": {
+          "@type": "Organization",
+          "name": "OpenRouter",
+          "url": "https://openrouter.ai"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "OpenRouter",
+          "url": "https://openrouter.ai",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://openrouter.ai/icon.png",
+            "width": 512,
+            "height": 512
+          }
+        },
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://openrouter.ai/blog/insights/deepseek-v4-vision/"
+        },
+        "image": {
+          "@type": "ImageObject",
+          "url": "https://openrouter.ai/blog/images/deepseek-v4-vision.png",
+          "width": 1584,
+          "height": 792
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does DeepSeek V4 Flash have vision?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It depends on the checkpoint. deepseek/deepseek-v4.1-flash and deepseek/deepseek-v4-flash-vision-exp accept text and images. deepseek/deepseek-v4-flash-0731 and deepseek/deepseek-v4-flash are text-only, and the ~deepseek/deepseek-v4-flash-latest alias resolved to Flash 0731 at the time of writing."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does DeepSeek V4 Pro have vision?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. deepseek/deepseek-v4-pro-0813 and the older deepseek/deepseek-v4-pro list text as their only input modality. To use Pro on an image, run a vision model first and pass its text description into Pro."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which DeepSeek V4 model should I use for images?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Use deepseek/deepseek-v4.1-flash. It reads images natively, it is not marked experimental, and it listed at $0.30 per million input tokens and $1.20 per million output tokens on 29 September 2026. deepseek/deepseek-v4-flash-vision-exp is the experimental alternative."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How much does DeepSeek V4 image input cost?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Image input is billed through the model's token prices. On 29 September 2026, V4.1 Flash listed at $0.30 in and $1.20 out per million tokens, and V4 Flash Vision Exp listed at $0.216 in and $0.647 out. Check the model page before you size a budget, because listed prices change."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can DeepSeek V4 handle video?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No V4 model on our catalog lists video as an input modality. For video, use a model that does, such as qwen/qwen3.8-27b or moonshotai/kimi-k3, then pass its text output into a V4 model."
+            }
+          }
+        ]
+      }
+    ],
+    "headers": {
+      "access-control-allow-origin": "*",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "cf-ray": "a4b8b185399b2cd5-DFW",
+      "content-encoding": "gzip",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Fri, 16 Oct 2026 17:13:18 GMT",
+      "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "strict-origin-when-cross-origin, no-referrer, strict-origin-when-cross-origin",
+      "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=uY%2FuSN6W4RtXB7uvbPevxObekjthM6611fP5mwGAOiVvF1M%2FNEn5Chn6qOcR7GiffxeNnyIOP4Zx%2BP6yW5gX601uxyZqSEz4oe0UjXko0xkYexnQzP96D9NG8Uu%2Byf4Ef%2FHyqTX8TPLPCsRbjMRDtsk%3D\"}]}",
+      "server": "cloudflare",
+      "server-timing": "cfEdge;dur=17,cfOrigin;dur=0,cfWorker;dur=24",
+      "x-content-type-options": "nosniff, nosniff",
+      "set-cookie": [
+        "or_consent_region=opt_out; Path=/; Max-Age=31536000; SameSite=Lax; Secure",
+        "__cf_bm=uOj4dridALE5__3giUtPqAbZmgDTFb3pv7cORxh4FrA-1792170798.917752-1.0.1.1-INA9mNih3C9IOABLrPtZVEIdx5rZMqPGqb.MSPuP8u1GVRQpI4csbzLqn4x9TbbELlzxhhHlMHYW8krYfDSpWTY5nz28IQYyGkoXmE5axMK1kP4lsvb1bqDvHOno_Dez; HttpOnly; SameSite=None; Secure; Path=/; Domain=openrouter.ai; Expires=Fri, 16 Oct 2026 17:43:18 GMT"
+      ]
+    }
+  },
+  "query": "DeepSeek API deepseek-flash image input image_url V4.1",
+  "markdown": "Does DeepSeek V4 Have Vision? Image Input by Model\n\n# Does DeepSeek V4 Have Vision?\n\nOpenRouter ·9/16/2026 · Updated 9/29/2026\n\n![Does DeepSeek V4 Have Vision?](/blog/images/deepseek-v4-vision.png)\n\nThe short answer, by model\n\nThe short answer, by modelWhich V4 models exist and what they acceptV4.1 Flash reads images nativelyV4 Flash Vision Exp is the experimental optionPut a vision model in front of a text-only V4 modelWhich route to useHow to check a model’s modalities yourselfFrequently asked questions\n\nDeepSeek V4 is not one model. On our catalog it is a family that includes V4.1 Flash, V4 Pro 0813, V4 Flash 0731, V4 Flash Vision Exp, two older 0423 checkpoints, and a Flash “latest” alias. The names tell you the tier and the release. They do not tell you which ones accept an image.\n\nThis guide goes through the family one model at a time, with the exact slugs from our catalog, and shows two ways to use V4 on an image. The first sends the image to a V4 model that reads images. The second runs a separate vision model in front of a text-only V4 model.\n\n## The short answer, by model\n\nTwo V4 models accept images. [DeepSeek V4.1 Flash](https://openrouter.ai/deepseek/deepseek-v4.1-flash) reads images natively and is the model to use for new image work. [DeepSeek V4 Flash Vision Exp](https://openrouter.ai/deepseek/deepseek-v4-flash-vision-exp) also reads images, and DeepSeek labels it experimental.\n\nEvery other V4 slug on our catalog is text in, text out. That includes [V4 Pro 0813](https://openrouter.ai/deepseek/deepseek-v4-pro-0813), [V4 Flash 0731](https://openrouter.ai/deepseek/deepseek-v4-flash-0731), the two 0423 checkpoints, and the [`~deepseek/deepseek-v4-flash-latest`](https://openrouter.ai/~deepseek/deepseek-v4-flash-latest) alias. A request that sends an `image_url` part to one of these models fails, because the model does not list `image` among its input modalities.\n\n![Diagram of the DeepSeek V4 family on OpenRouter split by input modality. V4.1 Flash and V4 Flash Vision Exp accept text and images. V4 Pro 0813, V4 Flash 0731, V4 Pro 0423, V4 Flash 0423, and the flash-latest alias accept text only.](/blog/images/deepseek-v4-vision-modalities.png)\n\n## Which V4 models exist and what they accept\n\nEmail address\n\nBy subscribing you agree to receive the OpenRouter newsletter: model usage data, product updates, and research reports, about one email a week. Unsubscribe anytime via the link in every email. See our [Privacy Policy](https://openrouter.ai/privacy).\n\nThe table lists each V4 model on our catalog with the modality column that answers the question. Prices are the listed catalog rates per million tokens on 29 September 2026, rounded to three decimal places where a listed rate has more digits.\n\n| Model | Slug | Input | Price in / out | Context | Image input |\n| --- | --- | --- | --- | --- | --- |\n| V4.1 Flash | `deepseek/deepseek-v4.1-flash` | text, image | $0.30 / $1.20 | 1,048,576 | Yes |\n| V4 Flash Vision Exp | `deepseek/deepseek-v4-flash-vision-exp` | text, image | $0.216 / $0.647 | 1,048,576 | Yes, experimental |\n| V4 Pro 0813 | `deepseek/deepseek-v4-pro-0813` | text | $0.395 / $3.490 | 1,048,576 | No  |\n| V4 Flash 0731 | `deepseek/deepseek-v4-flash-0731` | text | $0.018 / $0.320 | 1,310,720 | No  |\n| V4 Pro 0423 | `deepseek/deepseek-v4-pro` | text | $0.928 / $1.856 | 1,048,576 | No  |\n| V4 Flash 0423 | `deepseek/deepseek-v4-flash` | text | $0.076 / $0.153 | 1,048,576 | No  |\n\nThe two 0423 slugs have no date suffix. `deepseek/deepseek-v4-pro` and `deepseek/deepseek-v4-flash` are the original April 2026 V4 releases, and only the later checkpoints carry a date in the slug.\n\nAll six return text only. Each model page lists the current price, context length, and input modalities, and those values change as providers and checkpoints change. Read the page before you commit a slug to production.\n\nThe `~deepseek/deepseek-v4-flash-latest` alias redirects to the latest model in the V4 Flash family. At the time of writing it resolved to Flash 0731 and listed text as its only input modality. Do not use the alias for image requests. Pin `deepseek/deepseek-v4.1-flash` or `deepseek/deepseek-v4-flash-vision-exp` directly.\n\n## V4.1 Flash reads images natively\n\n[DeepSeek V4.1 Flash](https://openrouter.ai/deepseek/deepseek-v4.1-flash) is the first model built on DeepSeek’s Causal Encoder-Decoder architecture. It activates 8B parameters on input and 16B on output from a 552B-parameter backbone. Image understanding is part of the architecture, with visual and text embeddings trained jointly from the start of pre-training. It has a 1,048,576-token context window and a 384,000-token maximum output on the DeepSeek endpoint, and it supports tool calling, `response_format`, and structured outputs.\n\nCalling it with an image is the same chat request you already make, with an image part added to the message content. The TypeScript SDK nests the request body under `chatRequest` and uses camelCase field names, so the image part is `imageUrl` in the SDK and `image_url` on the wire.\n\n```\nimport { OpenRouter } from \"@openrouter/sdk\";\n\nconst openRouter = new OpenRouter({\n  apiKey: process.env.OPENROUTER_API_KEY,\n});\n\nconst result = await openRouter.chat.send({\n  chatRequest: {\n    model: \"deepseek/deepseek-v4.1-flash\",\n    messages: [\n      {\n        role: \"user\",\n        content: [\n          { type: \"text\", text: \"What error state is this screenshot showing?\" },\n          { type: \"image_url\", imageUrl: { url: \"https://example.com/screenshot.png\" } },\n        ],\n      },\n    ],\n    stream: false,\n  },\n});\n\nif (!(\"choices\" in result)) {\n  throw new Error(\"Expected a non-streaming response\");\n}\n\nconsole.log(result.choices[0]?.message.content);\n```\n\nThe `url` field accepts a public image URL or a base64 data URL. Send the text part before the image part. The [image inputs guide](https://openrouter.ai/docs/guides/overview/multimodal/image-understanding) covers the base64 form, supported image types, and sending several images in one request.\n\n## V4 Flash Vision Exp is the experimental option\n\n[DeepSeek V4 Flash Vision Exp](https://openrouter.ai/deepseek/deepseek-v4-flash-vision-exp) is an experimental vision-enabled version of V4 Flash 0731. It adds image understanding while matching the base model on text tasks. It shipped on 21 August 2026, and until V4.1 Flash shipped on 10 September 2026 it was the only V4 model that accepted images.\n\nIt takes the same request as the example above with the `model` field changed to `deepseek/deepseek-v4-flash-vision-exp`. It has a 1,048,576-token context window and supports tool calling, `response_format`, and structured outputs.\n\nDeepSeek labels this model experimental. Use V4.1 Flash for new image work unless you have a specific reason to test the experimental model, and pin the exact slug if you do.\n\n## Put a vision model in front of a text-only V4 model\n\nV4 Pro 0813, V4 Flash 0731, and the 0423 checkpoints do not accept images. If you want one of them to reason over an image, run a vision model first and pass its text output into the V4 model. The V4 model never sees the pixels. It reads the description.\n\nTwo models that accept image and video input are [Qwen3.8 27B](https://openrouter.ai/qwen/qwen3.8-27b) at `qwen/qwen3.8-27b` and [Kimi K3](https://openrouter.ai/moonshotai/kimi-k3) at `moonshotai/kimi-k3`. Our [vision models collection](https://openrouter.ai/collections/vision-models) lists every catalog model that accepts image input.\n\n```\nimport { OpenRouter } from \"@openrouter/sdk\";\n\nconst openRouter = new OpenRouter({\n  apiKey: process.env.OPENROUTER_API_KEY,\n});\n\nconst imageUrl = \"https://example.com/screenshot.png\";\nconst userTask = \"Explain the error and propose a fix.\";\n\n// Step 1: a vision model reads the image and returns a text description.\nconst seen = await openRouter.chat.send({\n  chatRequest: {\n    model: \"qwen/qwen3.8-27b\",\n    messages: [\n      {\n        role: \"user\",\n        content: [\n          {\n            type: \"text\",\n            text: \"Describe this screenshot for a reasoning model. Report only what is visible.\",\n          },\n          { type: \"image_url\", imageUrl: { url: imageUrl } },\n        ],\n      },\n    ],\n    stream: false,\n  },\n});\n\nif (!(\"choices\" in seen)) {\n  throw new Error(\"Expected a non-streaming response\");\n}\n\nconst description = seen.choices[0]?.message.content;\n\nif (typeof description !== \"string\") {\n  throw new Error(\"Expected a text description from the vision model\");\n}\n\n// Step 2: a text-only V4 model reasons over the description.\nconst reasoned = await openRouter.chat.send({\n  chatRequest: {\n    model: \"deepseek/deepseek-v4-pro-0813\",\n    messages: [\n      {\n        role: \"user\",\n        content: `Image notes:\\n${description}\\n\\nTask: ${userTask}`,\n      },\n    ],\n    stream: false,\n  },\n});\n\nif (!(\"choices\" in reasoned)) {\n  throw new Error(\"Expected a non-streaming response\");\n}\n\nconsole.log(reasoned.choices[0]?.message.content);\n```\n\nSwap `qwen/qwen3.8-27b` for `moonshotai/kimi-k3` to put Kimi K3 on the image, or swap `deepseek/deepseek-v4-pro-0813` for `deepseek/deepseek-v4-flash-0731` on the text turn.\n\nTwo calls cost more than one. On 29 September 2026, Qwen3.8 27B listed at $0.025 per million input tokens and $4.40 per million output tokens, and Kimi K3 listed at $3.00 and $15.00. You pay the V4 model on top of that. Use this pattern when you need a text-only V4 model or video input, not as the default way to read an image with V4.\n\n## Which route to use\n\nMatch the route to the model you need and the input you have.\n\n*   **A still image or document, and Flash-tier quality is enough.** Send it to `deepseek/deepseek-v4.1-flash` in one call.\n*   **A still image, and you want to test the experimental model.** Send it to `deepseek/deepseek-v4-flash-vision-exp` in one call, and pin the slug.\n*   **Pro-tier reasoning on an image.** No V4 Pro model accepts images. Run a vision model first and pass its text into `deepseek/deepseek-v4-pro-0813`.\n*   **Video input.** No V4 model accepts video. Run a model that does, such as Qwen3.8 27B or Kimi K3, and pass its text into a V4 model. The [video inputs guide](https://openrouter.ai/docs/guides/overview/multimodal/videos) covers the request shape.\n*   **Mixed text and image traffic.** Keep text-only requests on the text model you already use and send image requests to V4.1 Flash.\n\nIf images arrive without warning, check the message content in your own code and pick the model before you send the request. [Provider routing](https://openrouter.ai/docs/guides/routing/provider-selection) chooses between providers of the model you named. It does not switch to a different model, so it cannot turn an image request to a text-only model into a request to a vision model.\n\n## How to check a model’s modalities yourself\n\nThe model page and the models API are the source of truth for what a slug accepts. Each model page lists its input and output modalities. The models API returns the same data as `architecture.input_modalities` on every model.\n\n```\ncurl -s https://openrouter.ai/api/v1/models \\\n  | jq -r '.data[] | select(.id | startswith(\"deepseek/deepseek-v4\")) | \"\\(.id)\\t\\(.architecture.input_modalities | join(\",\"))\"'\n```\n\nThe [models page](https://openrouter.ai/models?input_modalities=image) filtered to image input shows every model on our catalog that accepts images. If a later V4 checkpoint adds image input, its model page and the API response will show it, and we will update this page.\n\n## Frequently asked questions\n\n### Does DeepSeek V4 Flash have vision?\n\nIt depends on the checkpoint. `deepseek/deepseek-v4.1-flash` and `deepseek/deepseek-v4-flash-vision-exp` accept text and images. `deepseek/deepseek-v4-flash-0731` and `deepseek/deepseek-v4-flash` are text-only, and the `~deepseek/deepseek-v4-flash-latest` alias resolved to Flash 0731 at the time of writing.\n\n### Does DeepSeek V4 Pro have vision?\n\nNo. `deepseek/deepseek-v4-pro-0813` and the older `deepseek/deepseek-v4-pro` list text as their only input modality. To use Pro on an image, run a vision model first and pass its text description into Pro.\n\n### Which DeepSeek V4 model should I use for images?\n\nUse `deepseek/deepseek-v4.1-flash`. It reads images natively, it is not marked experimental, and it listed at $0.30 per million input tokens and $1.20 per million output tokens on 29 September 2026. `deepseek/deepseek-v4-flash-vision-exp` is the experimental alternative.\n\n### How much does DeepSeek V4 image input cost?\n\nImage input is billed through the model’s token prices. On 29 September 2026, V4.1 Flash listed at $0.30 in and $1.20 out per million tokens, and V4 Flash Vision Exp listed at $0.216 in and $0.647 out. Check the model page before you size a budget, because listed prices change.\n\n### Can DeepSeek V4 handle video?\n\nNo V4 model on our catalog lists video as an input modality. For video, use a model that does, such as `qwen/qwen3.8-27b` or `moonshotai/kimi-k3`, then pass its text output into a V4 model.\n\nEmail address\n\nSubscribe\n\nBy subscribing you agree to receive the OpenRouter newsletter: model usage data, product updates, and research reports, about one email a week. Unsubscribe anytime via the link in every email. See our [Privacy Policy](https://openrouter.ai/privacy)."
+},
+{
+  "crawl": {
+    "httpStatusCode": 200,
+    "httpStatusMessage": "OK",
+    "loadedAt": "2026-10-16T17:13:20.719Z",
+    "uniqueKey": "uApqNg53qw",
+    "requestStatus": "handled"
+  },
+  "searchResult": {
+    "title": "DeepSeek V4 Flash Vision Exp - OmniaKey",
+    "description": "Aug 21, 2026 — DeepSeek V4 Flash Vision Exp explained: official API pricing, image input, OCR, limits, image cost, and V4 Flash vs V4 Pro guidance.",
+    "url": "http://www.google.com/goto?url=CAEScQHrOzAVrfeXDDizOVo0mhryRPUW-O6WGFnNog9o0rAlU1XfWRL_Jvef-iFT7zb41R8fCl3eQxOb-cLnPdzi3bV6FFi3jXZYmC2X4zA0HmVd9w_CUKhMFNjPVBxVUNMg3QKA_eqNDMScuFhRWdLBg88C",
+    "resultType": "ORGANIC",
+    "rank": 5
+  },
+  "metadata": {
+    "author": "OmniaKey",
+    "title": "DeepSeek V4 Flash Vision Exp: API Pricing, Image Input, OCR, and Limits · OmniaKey",
+    "description": "DeepSeek V4 Flash Vision Exp explained: official API pricing, image input, OCR, limits, image cost, and V4 Flash vs V4 Pro guidance.",
+    "keywords": "unified ai api,ai model api,ai api pricing,ai api for agents",
+    "languageCode": "en",
+    "url": "https://omniakey.com/blog/deepseek-v4-flash-vision-exp",
+    "redirectedUrl": "https://omniakey.com/blog/deepseek-v4-flash-vision-exp",
+    "canonicalUrl": "https://omniakey.com/blog/deepseek-v4-flash-vision-exp",
+    "openGraph": [
+      {
+        "property": "og:title",
+        "content": "DeepSeek V4 Flash Vision Exp: API Pricing, Image Input, OCR, and Limits"
+      },
+      {
+        "property": "og:description",
+        "content": "DeepSeek V4 Flash Vision Exp explained: official API pricing, image input, OCR, limits, image cost, and V4 Flash vs V4 Pro guidance."
+      },
+      {
+        "property": "og:url",
+        "content": "https://omniakey.com/blog/deepseek-v4-flash-vision-exp"
+      },
+      {
+        "property": "og:site_name",
+        "content": "OmniaKey"
+      },
+      {
+        "property": "og:locale",
+        "content": "en_US"
+      },
+      {
+        "property": "og:image",
+        "content": "https://omniakey.com/og.png"
+      },
+      {
+        "property": "og:image:width",
+        "content": "1200"
+      },
+      {
+        "property": "og:image:height",
+        "content": "630"
+      },
+      {
+        "property": "og:image:alt",
+        "content": "OmniaKey"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "ja_JP"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "ko_KR"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "es_ES"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "de_DE"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "fr_FR"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "pt_BR"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "ru_RU"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "tr_TR"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "id_ID"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "it_IT"
+      },
+      {
+        "property": "og:locale:alternate",
+        "content": "zh_CN"
+      },
+      {
+        "property": "og:type",
+        "content": "article"
+      }
+    ],
+    "jsonLd": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://omniakey.com/#organization",
+            "name": "OmniaKey",
+            "url": "https://omniakey.com",
+            "logo": "https://omniakey.com/logo.svg",
+            "sameAs": [
+              "https://t.me/OmniaKey",
+              "https://x.com/OmniaKey"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://omniakey.com/#website",
+            "name": "OmniaKey",
+            "url": "https://omniakey.com",
+            "publisher": {
+              "@id": "https://omniakey.com/#organization"
+            },
+            "inLanguage": "en"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://omniakey.com/#software",
+            "name": "OmniaKey",
+            "description": "Unified AI API for GPT, Claude, Gemini, images, video and music. One prepaid key for agents and apps, OpenAI-compatible endpoints and usage-based billing.",
+            "url": "https://omniakey.com",
+            "applicationCategory": "DeveloperApplication",
+            "applicationSubCategory": "Unified AI API platform",
+            "operatingSystem": "Web",
+            "featureList": [
+              "One API key for LLM, image, video and music models",
+              "OpenAI-compatible API",
+              "Anthropic-native API",
+              "Gemini-native API",
+              "Asynchronous image, video and music tasks",
+              "Claude Code, Codex and Cursor setup",
+              "Prepaid usage-based billing"
+            ],
+            "publisher": {
+              "@id": "https://omniakey.com/#organization"
+            }
+          }
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://omniakey.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blog",
+            "item": "https://omniakey.com/blog"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Deepseek V4 Flash Vision Exp",
+            "item": "https://omniakey.com/blog/deepseek-v4-flash-vision-exp"
+          }
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "DeepSeek V4 Flash Vision Exp: API Pricing, Image Input, OCR, and Limits",
+        "description": "DeepSeek V4 Flash Vision Exp explained: official API pricing, image input, OCR, limits, image cost, and V4 Flash vs V4 Pro guidance.",
+        "datePublished": "2026-08-21",
+        "dateModified": "2026-09-21",
+        "inLanguage": "en",
+        "author": {
+          "@type": "Person",
+          "name": "Kiki",
+          "jobTitle": "COO",
+          "worksFor": {
+            "@type": "Organization",
+            "name": "OmniaKey",
+            "url": "https://omniakey.com"
+          }
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "OmniaKey",
+          "url": "https://omniakey.com"
+        },
+        "mainEntityOfPage": "https://omniakey.com/blog/deepseek-v4-flash-vision-exp"
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Blog",
+            "item": "https://omniakey.com/blog"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guide",
+            "item": "https://omniakey.com/blog?category=guide"
+          }
+        ]
+      }
+    ],
+    "headers": {
+      "alt-svc": "h3=\":443\"; ma=86400",
+      "cache-control": "public, s-maxage=300, stale-while-revalidate=86400, no-transform",
+      "cdn-cache-control": "public, s-maxage=300, stale-while-revalidate=86400, no-transform",
+      "cf-cache-status": "DYNAMIC",
+      "cf-ray": "a4b8b18b3cf5395a-CLT",
+      "content-encoding": "gzip",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Fri, 16 Oct 2026 17:13:20 GMT",
+      "link": "</_next/static/media/22a5144ee8d83bca-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/css/6095a7890e456247.css>; rel=preload; as=\"style\", </_next/static/css/89e234a92ddf46b5.css>; rel=preload; as=\"style\"",
+      "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+      "permissions-policy": "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=magBvBXNR39PMFUYacpkmUCN2MLb0kwEY7Z9eHw1qnxNx5%2F4AZkXZ%2BuV%2FAVahDD%2B01OW6CmxDP9vsHaRveVIDMe9I7qsnU8jYUlcQpms1phqmZFXC1XVtI3kHaYYqow%3D\"}]}",
+      "server": "cloudflare",
+      "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=8,cfOrigin;dur=360",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "SAMEORIGIN",
+      "x-middleware-rewrite": "/en/blog/deepseek-v4-flash-vision-exp",
+      "x-pathname": "/blog/deepseek-v4-flash-vision-exp"
+    }
+  },
+  "query": "DeepSeek API deepseek-flash image input image_url V4.1",
+  "markdown": "DeepSeek V4 Flash Vision Exp: API Pricing, Image Input, OCR, and Limits · OmniaKey\n\n[GPT-6 Sol & Claude Opus 5.5 are liveGPT-6 Sol at half the price of 5.6 SolView pricing](https://omniakey.com/pricing)\n\n[OmniaKey](https://omniakey.com/)\n\n[Log in](https://omniakey.com/login)[Sign up](https://omniakey.com/register)\n\n# DeepSeek V4 Flash Vision Exp\n\nDeepSeek's experimental multimodal API model adds image input to V4-Flash at the same price tier. Here is what it can do, what it costs, and where the limits are.\n\nKiki, OmniaKey COO·Aug 21, 2026·12 min read·Updated Sep 21, 2026\n\nOn this page\n\n*   [What Is DeepSeek V4 Flash Vision Exp?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#what-is-deepseek-v4-flash-vision-exp)\n*   [What Can DeepSeek V4 Flash Vision Do?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#what-can-deepseek-v4-flash-vision-do)\n*   [Screenshot debugging and UI review](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#screenshot-debugging-and-ui-review)\n*   [OCR and document extraction](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#ocr-and-document-extraction)\n*   [Charts and dashboards](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#charts-and-dashboards)\n*   [Visual agents](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#visual-agents)\n*   [Batch image classification](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#batch-image-classification)\n*   [Does DeepSeek V4 Flash Have Vision?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#does-deepseek-v4-flash-have-vision)\n*   [Is It an Image Generation Model?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#is-it-an-image-generation-model)\n*   [DeepSeek V4 Flash Vision Exp API Pricing](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#deepseek-v4-flash-vision-exp-api-pricing)\n*   [How much does one image cost?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#how-much-does-one-image-cost)\n*   [How to Use the DeepSeek V4 Flash Vision Exp API](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#how-to-use-the-deepseek-v4-flash-vision-exp-api)\n*   [Choosing image detail](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#choosing-image-detail)\n*   [DeepSeek V4 Flash Vision Image Input Limits](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#deepseek-v4-flash-vision-image-input-limits)\n*   [DeepSeek V4 Flash Vision vs V4 Flash vs V4 Pro](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#deepseek-v4-flash-vision-vs-v4-flash-vs-v4-pro)\n*   [Is DeepSeek V4 Flash Vision Free? Can You Run It Locally?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#is-deepseek-v4-flash-vision-free-can-you-run-it-locally)\n*   [Production Checklist](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#production-checklist)\n*   [FAQ](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#faq)\n*   [Can DeepSeek V4 Flash Vision generate images?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#can-deepseek-v4-flash-vision-generate-images)\n*   [Does DeepSeek V4 Flash Vision support OCR?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#does-deepseek-v4-flash-vision-support-ocr)\n*   [What is the DeepSeek V4 Flash Vision API price?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#what-is-the-deepseek-v4-flash-vision-api-price)\n*   [Does regular DeepSeek V4 Flash support images?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#does-regular-deepseek-v4-flash-support-images)\n*   [Can I use it with Claude Code or Codex?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#can-i-use-it-with-claude-code-or-codex)\n*   [Is DeepSeek V4 Flash Vision open source?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#is-deepseek-v4-flash-vision-open-source)\n*   [What if DeepSeek will not upload an image or misses the text?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#what-if-deepseek-will-not-upload-an-image-or-misses-the-text)\n*   [Bottom Line](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#bottom-line)\n*   [Official Sources](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#official-sources)\n\nDeepSeek-V4-Flash-Vision-Exp is easy to misunderstand. It is not an image generator, and it is not simply the regular V4-Flash model with a new name. It is an experimental multimodal API model that keeps V4-Flash's text capabilities and adds image input.\n\nAs of August 21, 2026, the practical summary is:\n\n*   Model ID: `deepseek-v4-flash-vision-exp`.\n*   Text behavior: aligned with DeepSeek-V4-Flash, including agents, reasoning, and world knowledge.\n*   Vision: mixed text and image input for screenshots, charts, documents, and visual agent workflows.\n*   Pricing: the same tier as V4-Flash, with peak and off-peak rates.\n*   Status: experimental. Test it against real examples before making it a production default.\n\nThis guide answers the searches developers are most likely to make: What is DeepSeek V4 Flash Vision? Can DeepSeek V4 Flash view images? How much does the DeepSeek Vision API cost? How do you send an image? Does it support OCR, PDFs, Claude Code, or Codex? And is it actually better than V4-Pro, GPT, or Claude for visual tasks?\n\nFor anyone looking for a DeepSeek image recognition API, image analysis API, or image input endpoint, this is the model to evaluate first.\n\n## What Is DeepSeek V4 Flash Vision Exp?\n\nDeepSeek-V4-Flash-Vision-Exp is now live on the DeepSeek API Platform. It accepts images alongside text, then returns an answer or continues an agent workflow with tools.\n\nDeepSeek describes the model as matching V4-Flash on text capabilities. On multimodal agent benchmarks, the company says it makes a major jump over V4-Flash and approaches Opus-4.8. That is useful context, but it is still a vendor benchmark claim rather than a universal ranking. A visual benchmark result does not prove that the model is the best choice for every text, coding, or tool-use task.\n\nThe official model page lists a 1M-token context window and up to 384K output tokens. It supports thinking and non-thinking modes, JSON output, tool calls, the Responses API, and the Anthropic API. FIM completion is not supported, so a coding tool that depends on FIM should not be treated as automatically compatible.\n\nDeepSeek Harness 0.1.1 was released with out-of-the-box support on the same day as the model. Other agent frameworks still need their own compatibility check, especially around image content blocks and tool results.\n\n## What Can DeepSeek V4 Flash Vision Do?\n\nThe official Vision guide names image description, screenshot text recognition, and chart analysis. In a real developer workflow, the strongest use cases are a little more specific.\n\n### Screenshot debugging and UI review\n\nGive the model a browser screenshot, an error message, and the expected behavior. It can inspect the visible state before deciding which logs or tools to use next. This is more useful than a model that can only describe an image after a human has already diagnosed the problem.\n\n### OCR and document extraction\n\nThe model can read text from screenshots, scans, receipts, forms, and labels, then return structured fields. Treat that output as an extraction draft, not as a deterministic OCR result. Small fonts, glare, skew, blur, and dense tables still need verification.\n\n### Charts and dashboards\n\nIt can read a line chart, bar chart, table screenshot, or analytics dashboard and explain trends or anomalies. For financial, medical, or operational decisions, preserve the source numbers and have a person check the conclusion.\n\n### Visual agents\n\nThe model can combine an image with tools, which makes it useful for browser agents, UI testing, visual search, and workflows that need to act on what is on screen. The important upgrade is not just answering \"what is in this picture?\"; it is giving an agent visual context while it works.\n\n### Batch image classification\n\nThe API allows up to 600 images in one request. That can work for product grouping, asset triage, and bulk descriptions, although smaller batches are easier to retry and review.\n\n## Does DeepSeek V4 Flash Have Vision?\n\nThe ordinary `deepseek-v4-flash` model is the text model. To send an image, use the exact vision model ID:\n\ntext\n\n```\ndeepseek-v4-flash-vision-exp\n```\n\nIf a client sends an image to V4-Flash or V4-Pro, the API returns a model-does-not-support-image error. Do not infer vision support from the word \"V4\" alone; the model ID matters.\n\n## Is It an Image Generation Model?\n\nNo. DeepSeek-V4-Flash-Vision-Exp is an image-understanding model. It reads images and produces text or tool calls. It is not the right endpoint for generating a poster, avatar, product render, or other new image.\n\n## DeepSeek V4 Flash Vision Exp API Pricing\n\nThe official English pricing page lists prices per 1M tokens in US dollars. The vision model uses the same rates as V4-Flash:\n\n| Billing item | Off-peak | Peak |\n| --- | --- | --- |\n| Input, cache hit | $0.007 / 1M tokens | $0.014 / 1M tokens |\n| Input, cache miss | $0.22 / 1M tokens | $0.44 / 1M tokens |\n| Output | $0.66 / 1M tokens | $1.32 / 1M tokens |\n\nPeak hours are 01:00-04:00 and 06:00-10:00 UTC. All other hours are off-peak, and the off-peak rates are half of the peak rates. The official page can change, so check it again before budgeting a long-running application.\n\n### How much does one image cost?\n\nImages are converted to input tokens based on their dimensions. The current upper bound is 384 tokens per image. At the cache-miss input rate, a maximum-size image contributes approximately:\n\n*   Off-peak: `384 / 1,000,000 x $0.22 = $0.00008448`;\n*   Peak: `384 / 1,000,000 x $0.44 = $0.00016896`.\n\nThat is only the image-input component. The text prompt, output, conversation history, reasoning tokens, and tool calls are billed separately. In an agent workflow, long output and repeated calls usually cost more than the image itself.\n\nThe Files API is free to use for uploading and reusing a file. That does not make the model inference free: reading the image still consumes billable input tokens.\n\n## How to Use the DeepSeek V4 Flash Vision Exp API\n\nThe API supports three image input methods:\n\n1.  Base64 data URLs for local images;\n2.  Public external image URLs;\n3.  The Files API for large images or images reused across requests.\n\nHere is the smallest OpenAI-compatible Python example using a public image URL:\n\npython\n\n```\nimport os\nfrom openai import OpenAI\n\nclient = OpenAI(\n    api_key=os.environ[\"DEEPSEEK_API_KEY\"],\n    base_url=\"https://api.deepseek.com\",\n)\n\nresponse = client.chat.completions.create(\n    model=\"deepseek-v4-flash-vision-exp\",\n    messages=[\n        {\n            \"role\": \"user\",\n            \"content\": [\n                {\n                    \"type\": \"text\",\n                    \"text\": \"Read the error message and suggest the next debugging step.\",\n                },\n                {\n                    \"type\": \"image_url\",\n                    \"image_url\": {\n                        \"url\": \"https://example.com/screenshot.png\",\n                        \"detail\": \"high\",\n                    },\n                },\n            ],\n        }\n    ],\n)\n\nprint(response.choices[0].message.content)\n```\n\nReplace the example URL with a publicly reachable image, or use a Base64 data URL for a local file. The same three input methods are available through the Responses API. Anthropic-compatible Messages requests use a different image content-block shape, so do not copy an OpenAI block into an Anthropic request unchanged.\n\n### Choosing image detail\n\nThe `detail` field controls preprocessing for `image_url` inputs:\n\n| Value | Behavior | Use it when |\n| --- | --- | --- |\n| `low` | Downscales to 512 x 512 before inference | You need speed and fine detail is not important |\n| `high` | Keeps the original image | Small text or chart detail matters |\n| `original` | Keeps the original image | You want explicit full-detail behavior |\n| `auto` | Currently equivalent to `original` | You want the default behavior |\n\nFor repeated analysis of the same image, upload it once through the Files API and reuse its `file_id`. For a one-off small screenshot, an inline image or public URL is simpler.\n\n## DeepSeek V4 Flash Vision Image Input Limits\n\nThese limits matter more in production than the launch headline:\n\n| Limit | Current value |\n| --- | --- |\n| Supported formats | JPEG, PNG, GIF, WebP |\n| Maximum images per request | 600 |\n| Request body | 48 MiB |\n| One image via Base64 or external URL | 32 MiB |\n| One image via Files API | 64 MiB |\n| Total image size per request | 64 MiB without `file_id`; up to 200 MiB with `file_id` images |\n| Maximum image dimension | 8192 px per side |\n| With 15 or more images | 4096 px per side |\n| External URL length | 8192 characters |\n| External image download | Must finish within 60 seconds |\n\nImages are resized before inference. Small images are scaled up while preserving aspect ratio; larger images are scaled down to roughly the pixel count of an 800 x 800 image. That is why every image has a 384-token ceiling, and also why tiny text should be checked carefully.\n\nFor standard Chat Completions and Anthropic Messages requests, images belong in user messages. Images in system or assistant messages return a 400 error. The Responses API has its own documented rules for user, developer, and tool-output image parts.\n\nPDF is not listed among the supported image formats. If the input is a PDF, extract the relevant text or render the pages to JPEG/PNG first, then test the result on representative pages.\n\n## DeepSeek V4 Flash Vision vs V4 Flash vs V4 Pro\n\n| Task | Better starting point | Why |\n| --- | --- | --- |\n| Text-only bulk work and low-cost agents | V4-Flash | Same text tier without image processing |\n| Screenshots, photos, charts, and visual tools | V4-Flash-Vision-Exp | Adds image input at the V4-Flash price tier |\n| Complex text reasoning and final architecture review | V4-Pro | More headroom for difficult text-only tasks |\n\nVision Exp is not a more expensive V4-Flash upgrade. It keeps the Flash text tier and adds visual input. If a task contains no image, there is no reason to switch just because the model is newer.\n\nIt is also not a guaranteed V4-Pro replacement. The official \"close to Opus-4.8\" statement is about multimodal agent benchmarks. For a real application, compare the models on the same image set, prompts, tools, latency target, and acceptance criteria. DeepSeek has since released a newer Flash route. The [DeepSeek V4.1 Flash review](https://omniakey.com/blog/deepseek-v4-1-flash-review) covers its current model ID, native vision contract, prices, and separate V4 Pro status.\n\n## Is DeepSeek V4 Flash Vision Free? Can You Run It Locally?\n\n**The API is paid.** Input, image tokens, output, and tool calls are billed. The Files API upload feature is free, but inference is not.\n\n**The launch announcement confirms availability on the DeepSeek API Platform.** It does not say that this experimental vision model is available in the consumer web or app interface, so do not assume that the V4-Pro \"Expert Mode\" selector includes it.\n\n**Do not assume local deployment.** DeepSeek has published open-weight information for V4 text models, but the Vision Exp launch note does not announce open weights for this experimental API model. Until an official model card and license are available, \"available through the API\" and \"downloadable for local inference\" should be treated as different claims.\n\n## Production Checklist\n\nBefore using the model for real traffic, test at least 20-50 representative images and record:\n\n*   OCR accuracy on the fields that actually matter;\n*   chart and table interpretation accuracy;\n*   tool-call success rate after an image is supplied;\n*   latency and timeout behavior;\n*   input, output, and reasoning token usage;\n*   fallback behavior when the experimental model fails.\n\nKeep the original image and the model response together so a reviewer can see what the model actually saw. For sensitive documents, minimize retention and restrict access before sending them to any hosted model.\n\n## FAQ\n\n### Can DeepSeek V4 Flash Vision generate images?\n\nNo. It understands images and returns text or tool calls. Use an image-generation model for new visual assets.\n\n### Does DeepSeek V4 Flash Vision support OCR?\n\nIt can read text in screenshots and documents, but it is not a deterministic OCR engine. Validate small, rotated, blurred, or high-stakes text with a second method.\n\n### What is the DeepSeek V4 Flash Vision API price?\n\nThe current official rate is $0.22 per 1M uncached input tokens and $0.66 per 1M output tokens off-peak. Peak rates are $0.44 and $1.32. Cache-hit input is cheaper. Image tokens use the same V4-Flash pricing.\n\n### Does regular DeepSeek V4 Flash support images?\n\nNo. Use the exact `deepseek-v4-flash-vision-exp` model ID. Other DeepSeek models reject image input.\n\n### Can I use it with Claude Code or Codex?\n\nThe model supports Responses API, Anthropic API, and tool calls, so it can fit an agent workflow. Whether a particular client works reliably depends on its image-content and tool-result implementation. Test the actual client rather than assuming protocol compatibility equals a good user experience.\n\n### Is DeepSeek V4 Flash Vision open source?\n\nThe current Vision Exp launch announcement confirms an API release, not an open-weight release. Do not infer local-deployment support from the separate V4 text-model announcements.\n\n### What if DeepSeek will not upload an image or misses the text?\n\nCheck that the file is JPEG, PNG, GIF, or WebP, that it stays within the size limits, and that an external URL is reachable. For small text, try `detail=high` or `original`; use the Files API for a large image or a file you will reuse. Verify important fields with a second method.\n\n## Bottom Line\n\nDeepSeek-V4-Flash-Vision-Exp is most interesting when an agent needs to see: a browser screen, a chart, a receipt, a scanned form, or a product image. Its practical pitch is simple: V4-Flash text behavior, image input, and V4-Flash pricing.\n\nIt is not a universal replacement for V4-Pro, GPT, Claude, professional OCR, or image-generation models. Start with a fixed image test set, measure accuracy and total workflow cost, and keep a fallback while the model still carries the Exp label.\n\nIn my own stack, I keep established Claude, GPT, and Gemini usage and billing visible through OmniaKey, while testing this DeepSeek model separately as a visual specialist. That makes the comparison measurable instead of turning a launch announcement into an untested production migration.\n\n### Official Sources\n\n*   [DeepSeek-V4-Flash-Vision-Exp release](https://api-docs.deepseek.com/news/news260821)\n*   [DeepSeek Vision API guide](https://api-docs.deepseek.com/guides/vision)\n*   [DeepSeek models and pricing](https://api-docs.deepseek.com/quick_start/pricing)\n*   [DeepSeek Files API guide](https://api-docs.deepseek.com/guides/files_api)\n\n[View the model catalog](https://omniakey.com/register?next=%2Fdashboard%2Ftokens&entry=blog)[Read the API quick start](https://docs.omniakey.com/en/quick-start)\n\nDeepSeek V4 Flash VisionVision APIOCRimage input\n\n[PreviousClaude Code vs Cowork](https://omniakey.com/blog/claude-code-vs-cowork)[NextGrok 4.6 API Pricing](https://omniakey.com/blog/grok-4-6-api-pricing)\n\n## On this page\n\n*   [What Is DeepSeek V4 Flash Vision Exp?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#what-is-deepseek-v4-flash-vision-exp)\n*   [What Can DeepSeek V4 Flash Vision Do?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#what-can-deepseek-v4-flash-vision-do)\n*   [Screenshot debugging and UI review](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#screenshot-debugging-and-ui-review)\n*   [OCR and document extraction](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#ocr-and-document-extraction)\n*   [Charts and dashboards](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#charts-and-dashboards)\n*   [Visual agents](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#visual-agents)\n*   [Batch image classification](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#batch-image-classification)\n*   [Does DeepSeek V4 Flash Have Vision?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#does-deepseek-v4-flash-have-vision)\n*   [Is It an Image Generation Model?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#is-it-an-image-generation-model)\n*   [DeepSeek V4 Flash Vision Exp API Pricing](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#deepseek-v4-flash-vision-exp-api-pricing)\n*   [How much does one image cost?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#how-much-does-one-image-cost)\n*   [How to Use the DeepSeek V4 Flash Vision Exp API](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#how-to-use-the-deepseek-v4-flash-vision-exp-api)\n*   [Choosing image detail](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#choosing-image-detail)\n*   [DeepSeek V4 Flash Vision Image Input Limits](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#deepseek-v4-flash-vision-image-input-limits)\n*   [DeepSeek V4 Flash Vision vs V4 Flash vs V4 Pro](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#deepseek-v4-flash-vision-vs-v4-flash-vs-v4-pro)\n*   [Is DeepSeek V4 Flash Vision Free? Can You Run It Locally?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#is-deepseek-v4-flash-vision-free-can-you-run-it-locally)\n*   [Production Checklist](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#production-checklist)\n*   [FAQ](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#faq)\n*   [Can DeepSeek V4 Flash Vision generate images?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#can-deepseek-v4-flash-vision-generate-images)\n*   [Does DeepSeek V4 Flash Vision support OCR?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#does-deepseek-v4-flash-vision-support-ocr)\n*   [What is the DeepSeek V4 Flash Vision API price?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#what-is-the-deepseek-v4-flash-vision-api-price)\n*   [Does regular DeepSeek V4 Flash support images?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#does-regular-deepseek-v4-flash-support-images)\n*   [Can I use it with Claude Code or Codex?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#can-i-use-it-with-claude-code-or-codex)\n*   [Is DeepSeek V4 Flash Vision open source?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#is-deepseek-v4-flash-vision-open-source)\n*   [What if DeepSeek will not upload an image or misses the text?](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#what-if-deepseek-will-not-upload-an-image-or-misses-the-text)\n*   [Bottom Line](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#bottom-line)\n*   [Official Sources](https://omniakey.com/blog/deepseek-v4-flash-vision-exp#official-sources)\n\n## Recent posts\n\n*   [Kling 4.0 Review: Samples, Flash Limits and AccessOct 16, 2026](https://omniakey.com/blog/kling-4-0-review)\n*   [Gemini image API relay guideOct 14, 2026](https://omniakey.com/blog/gemini-image-api-relay)\n*   [Muse Wonder explainedOct 14, 2026](https://omniakey.com/blog/muse-wonder)\n*   [Kling 3.0 vs Seedance 2.5Oct 13, 2026](https://omniakey.com/blog/kling-3-0-vs-seedance-2-5)\n*   [Ideogram 4.5 ReviewOct 12, 2026](https://omniakey.com/blog/ideogram-4-5-review)\n\nLooking for setup docs?\n\n[Open docs](https://docs.omniakey.com/en/introduction)\n\n## Related articles\n\n[\n\n![](/_img/logos/vendor-deepseek.8fb2314a.svg)\n\nV4.1 FLASH REVIEW\n\nGuideSep 10, 2026·12 min read\n\n### DeepSeek V4.1 Flash Review\n\nDeepSeek's new Flash route is cheaper and stronger on several agent tests, but the official evidence does not show a win on every benchmark.\n\n\n\n](https://omniakey.com/blog/deepseek-v4-1-flash-review)[\n\n![](/_img/logos/vendor-deepseek.8fb2314a.svg)\n\nDEEPSEEK API COST\n\nCost controlSep 28, 2026·9 min read\n\n### DeepSeek API pricing\n\nCompare token rates, cache costs and peak-hour billing.\n\n\n\n](https://omniakey.com/blog/deepseek-api-pricing)[\n\n![](/_img/logos/vendor-deepseek.8fb2314a.svg)\n\nV4 PRO 0813 PRICING\n\nCost controlAug 18, 2026·12 min read\n\n### DeepSeek V4 Pro API Pricing\n\nDeepSeek V4 Pro costs $0.66 input and $1.98 output per million tokens off-peak, or $1.32 input and $3.96 output during two daily UTC peak windows.\n\n\n\n](https://omniakey.com/blog/deepseek-v4-pro-api-pricing)\n\n## Recent posts\n\n*   [Kling 4.0 Review: Samples, Flash Limits and AccessOct 16, 2026](https://omniakey.com/blog/kling-4-0-review)\n*   [Gemini image API relay guideOct 14, 2026](https://omniakey.com/blog/gemini-image-api-relay)\n*   [Muse Wonder explainedOct 14, 2026](https://omniakey.com/blog/muse-wonder)\n*   [Kling 3.0 vs Seedance 2.5Oct 13, 2026](https://omniakey.com/blog/kling-3-0-vs-seedance-2-5)\n*   [Ideogram 4.5 ReviewOct 12, 2026](https://omniakey.com/blog/ideogram-4-5-review)"
+},
+{
+  "crawl": {
+    "httpStatusCode": 200,
+    "httpStatusMessage": "OK",
+    "loadedAt": "2026-10-16T17:13:20.879Z",
+    "uniqueKey": "s3bpMBYgBP",
+    "requestStatus": "handled"
+  },
+  "searchResult": {
+    "title": "DeepSeek Vision API: What It Sees and Misses",
+    "description": "Aug 24, 2026 — DeepSeek's V4 Flash line started accepting images on August 21, 2026. The deepseek vision api runs through the same OpenAI-compatible /chat/ ...Read more",
+    "url": "http://www.google.com/goto?url=CAESZQHrOzAVUoXyMZLfVIJRodT2bzXoUfMpWUPb8fABg7btBQV04OOdQggkc9zKfAtor26lkw8pKiucprz9YYQx1TU3sCwfTHubC25hBpSnbg7LJn4i16GEi3nJs95jcSjyp6zvpSgz",
+    "resultType": "ORGANIC",
+    "rank": 6
+  },
+  "metadata": {
+    "title": "DeepSeek Vision API: What It Sees and Misses | Zentor Blog",
+    "description": "DeepSeek V4 Flash reads images now. What the deepseek vision api costs, the three ways to send a picture, and the 800x800 resize limit nobody mentions.",
+    "languageCode": "en-us",
+    "url": "https://zentor.ai/blog/deepseek-vision-api",
+    "redirectedUrl": "https://zentor.ai/blog/deepseek-vision-api",
+    "canonicalUrl": "https://zentor.ai/blog/deepseek-vision-api",
+    "openGraph": [
+      {
+        "property": "og:type",
+        "content": "article"
+      },
+      {
+        "property": "og:title",
+        "content": "DeepSeek Vision API: What It Sees and Misses"
+      },
+      {
+        "property": "og:description",
+        "content": "DeepSeek V4 Flash reads images now. What the deepseek vision api costs, the three ways to send a picture, and the 800x800 resize limit nobody mentions."
+      },
+      {
+        "property": "og:url",
+        "content": "https://zentor.ai/blog/deepseek-vision-api"
+      },
+      {
+        "property": "og:site_name",
+        "content": "Zentor"
+      },
+      {
+        "property": "article:section",
+        "content": "Guide"
+      },
+      {
+        "property": "article:published_time",
+        "content": "2026-08-24T04:40:38.867Z"
+      },
+      {
+        "property": "article:modified_time",
+        "content": "2026-10-12T08:09:19.053Z"
+      },
+      {
+        "property": "og:image",
+        "content": "https://assets.zentor.ai/cms/uploads/hero_deepseek_vision_api_zentor_cae23237ac.jpg"
+      }
+    ],
+    "jsonLd": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "DeepSeek Vision API: What It Sees and Misses",
+        "description": "DeepSeek V4 Flash reads images now. What the deepseek vision api costs, the three ways to send a picture, and the 800x800 resize limit nobody mentions.",
+        "url": "https://zentor.ai/blog/deepseek-vision-api",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://zentor.ai/blog/deepseek-vision-api"
+        },
+        "image": {
+          "@type": "ImageObject",
+          "url": "https://assets.zentor.ai/cms/uploads/hero_deepseek_vision_api_zentor_cae23237ac.jpg",
+          "width": 1200,
+          "height": 630
+        },
+        "wordCount": 2144,
+        "articleSection": "Guide",
+        "keywords": "deepseek vision api, deepseek v4 flash vision, deepseek image input, deepseek multimodal, how to send images to deepseek, this model does not support image",
+        "datePublished": "2026-08-24T04:40:38.867Z",
+        "dateModified": "2026-10-12T08:09:19.053Z",
+        "author": {
+          "@type": "Person",
+          "name": "Zentor Editorial",
+          "url": "https://zentor.ai/blog/authors/zentor-editorial",
+          "sameAs": "https://www.linkedin.com/company/moclaw"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Zentor",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://zentor.ai/_astro/zentor-logo-512.vl2fMCUY.png",
+            "width": 512,
+            "height": 512
+          }
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://zentor.ai/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blog",
+            "item": "https://zentor.ai/blog"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Guide",
+            "item": "https://zentor.ai/blog/guide/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "DeepSeek Vision API: What It Sees and Misses",
+            "item": "https://zentor.ai/blog/deepseek-vision-api"
+          }
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is DeepSeek V4 Flash Vision free?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. It bills at standard V4 Flash rates, with images converted to input tokens at up to 384 tokens each. As of 2026-08-22 that is $0.22 per million cache-miss input tokens off-peak and $0.44 at peak. The Files API used to upload and reference images is free; the inference is not."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What image formats does the deepseek vision api support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "JPEG, PNG, GIF and WebP. DeepSeek detects the format from the actual file content rather than the filename or declared MIME type, so a mislabeled .png that is really a JPEG still works."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does it work with the OpenAI SDK?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The endpoint is OpenAI-compatible Chat Completions, and the Responses API is supported as well. There is also an Anthropic-compatible endpoint at https://api.deepseek.com/anthropic that takes an image block with a source object instead of image_url."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why does my request return \"This model does not support image\"?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "You sent an image to a non-vision model. Only deepseek-v4-flash-vision-exp accepts images; every other DeepSeek model returns that 400. Check whether a fallback in your router or SDK config swapped the model id out from under you."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can it read a full page of scanned text?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Not reliably at full-page resolution. The resize to roughly 800×800 total pixels applies to every image and cannot be raised, so dense A4 or letter-size scans lose detail. Cropping the page into regions and sending them as separate images works around it, and the 600-image ceiling leaves plenty of headroom."
+            }
+          }
+        ]
+      }
+    ],
+    "headers": {
+      "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+      "content-encoding": "gzip",
+      "content-length": "34034",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "text/html",
+      "date": "Fri, 16 Oct 2026 17:13:20 GMT",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "vary": "Accept-Encoding",
+      "via": "1.1 401725c701b46e52c0591a613c644c8e.cloudfront.net (CloudFront)",
+      "x-amz-cf-id": "vqHyHzIsekGWIiSiqAKBaN1PB41V-pnW0AEReyUMBXU8ql03lgoe6A==",
+      "x-amz-cf-pop": "CMH68-P1",
+      "x-cache": "Miss from cloudfront",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY"
+    }
+  },
+  "query": "DeepSeek API deepseek-flash image input image_url V4.1",
+  "markdown": "DeepSeek Vision API: What It Sees and Misses | Zentor Blog\n\n# DeepSeek Vision API: What It Sees and Misses\n\n9 min read · August 24, 2026 · Updated October 12, 2026 · [Zentor Editorial](https://zentor.ai/blog/authors/zentor-editorial)\n\n![DeepSeek Vision API: What It Sees and Misses](https://assets.zentor.ai/cms/uploads/hero_deepseek_vision_api_zentor_cae23237ac.jpg)\n\nDeepSeek V4 Flash reads images now. What the deepseek vision api costs, the three ways to send a picture, and the 800x800 resize limit nobody mentions.\n\nContents\n\nDeepSeek's V4 Flash line started accepting images on August 21, 2026. The deepseek vision api runs through the same OpenAI-compatible `/chat/completions` endpoint you already call: change the model string to `deepseek-v4-flash-vision-exp`, pass an image block next to your text, and the request works. Two things the launch coverage mostly skipped are that image tokens bill at [ordinary V4 Flash rates](https://zentor.ai/integrations/deepseek-v4-flash), and that every image you send gets resized down to roughly 800×800 pixels before the model ever looks at it.\n\nThat second detail decided the tone of the [Hacker News thread](https://news.ycombinator.com/item?id=49386163), which ran past 140 comments the same day. The loudest reaction wasn't about accuracy. It was one commenter's flat \"800 by 800 kills a lot of use cases,\" and a longer complaint that a full A4 page of scanned text needs more resolution than that to survive OCR.\n\n**Key Takeaways:**\n\n*   The model id is `deepseek-v4-flash-vision-exp`, it is marked experimental, and it accepts JPEG, PNG, GIF and WebP detected by file content rather than filename\n*   Images can arrive three ways: a base64 `data:` URL, a public http(s) link, or a `file_id` from the Files API\n*   Every image is resized to roughly the pixel count of an 800×800 image, capping cost at 384 tokens per image and capping detail at the same time\n*   Pricing matches text-only V4 Flash: $0.22 per million cache-miss input tokens off-peak, $0.66 per million output, doubling during peak hours\n*   Sending an image to [any other DeepSeek model](https://zentor.ai/integrations/deepseek) returns a 400 with the message `This model does not support image`\n\n## What DeepSeek actually shipped on August 21\n\nThe [release note](https://api-docs.deepseek.com/news/news260821/) is short. DeepSeek-V4-Flash-Vision-Exp went live on the API platform, it matches text-only V4 Flash on text work, and DeepSeek Harness 0.1.1 shipped the same day with support for the new model already wired in.\n\nCalling this DeepSeek's first vision model would be wrong, and a few people in that HN thread said so. DeepSeek-OCR has existed as a separate open document model for a while, and the chat product has had its own vision mode. What changed is narrower and more useful: the V4 Flash API line, the one people already point their agents at, now takes pictures directly instead of needing a second model bolted on to describe them first.\n\n![DeepSeek's August 21, 2026 release note for V4-Flash-Vision-Exp, including the benchmark table comparing the vision model against text-only V4-Flash-0731 and Opus-4.8 across Terminal Bench 2.1, ApexBench, Chartography and ZeroBench.](https://assets.zentor.ai/cms/uploads/news_5b10a94805.png)\n\nDeepSeek's August 21, 2026 release note for V4-Flash-Vision-Exp, including the benchmark table comparing the vision model against text-only V4-Flash-0731 and Opus-4.8 across Terminal Bench 2.1, ApexBench, Chartography and ZeroBench.\n\nDeepSeek's own numbers in that table are worth reading with a little suspicion, since they are the vendor's. ApexBench pass@1 goes from 26.2 on text-only Flash to 36.5 on the vision model, against 39.4 for Opus-4.8. Chartography and ZeroBench have no score at all for the text-only model, which makes sense because a blind model can't attempt them. The interesting entry is Cybergym, where the vision model scores 75.3 against 76.7 for the text-only one. Adding eyes cost it something.\n\n## Vision is the perception layer an unattended agent was missing\n\nBefore this, if you wanted a DeepSeek agent to look at anything, you built a workaround. Someone published `pi-deepseek-vision` on August 4, an extension that intercepts pasted images and read-tool calls, ships them to a separate vision-capable endpoint, and hands the text description back so DeepSeek has something to reason over. The reason that extension exists is printed in its own README: the harness was replacing every image with the string `(image omitted: model does not support images)` before the request ever left the machine.\n\nSeveral HN commenters described the failure mode that produced. V4 Flash 0731 apparently assumed it could see, pulled a screenshot off a connected device, then reasoned its way into inventing pixel-analysis tooling when it discovered it couldn't. One person described it recreating vision by analyzing pixels across three separate projects.\n\nWatching your own screen is the obvious use, and it's also the one that exposes where the agent lives. A screenshot loop, a chart that refreshes overnight, a dashboard you want checked at 3am: none of that survives a closed laptop lid. That gap is what **Zentor** covers, a hosted cloud AI computer that stays running so a scheduled look-at-this task has somewhere to land, sitting alongside whatever you already run locally rather than replacing it.\n\n[\n\nGive your agent eyes and somewhere to keep them open\n\nZentor is a hosted cloud AI computer that runs scheduled agent work while your machine is off, alongside the tools you already pay for.\n\nTell Zentor what to get done…Try Zentor →\n\n](https://zentor.ai/)\n\n## Three ways to send an image to the deepseek vision api\n\nAll three use the standard OpenAI content-array shape [documented in DeepSeek's Vision guide](https://api-docs.deepseek.com/guides/vision/), where `content` becomes a list of blocks instead of a plain string. The base URL stays `https://api.deepseek.com`.\n\nThe first is a base64 `data:` URL in an `image_url` block, the least ceremony for a local file and the right default until the file gets big. The second is a plain public link, also in `image_url`, and DeepSeek fetches it for you. That link has to be under 8192 characters, the file at most 32 MiB, and the download has to finish inside 60 seconds, so a slow origin server becomes your problem rather than DeepSeek's.\n\nThe third is the Files API. Upload once, get back a `file_id` shaped like `file-api-...`, then reference it from a `file` block. This is the one to reach for when the same image appears in several requests, or when the file is large enough that inlining it would blow past the 48 MiB request body ceiling. Images referenced by `file_id` can go up to 64 MiB. DeepSeek says the Files API itself is free to use.\n\nThere's also an Anthropic-compatible path at `https://api.deepseek.com/anthropic`, where the block is called `image` and carries a `source` object whose `type` is `base64`, `url`, or `file`. Same three methods, different envelope.\n\n## The 800×800 resize rule is the part that will bite you\n\nRead this section before you plan any document workflow around the deepseek vision api, because it constrains what the model can physically resolve.\n\n![DeepSeek's Vision guide describing the automatic resize: images under roughly 384x384 are scaled up, larger images are scaled down to roughly the pixel count of an 800x800 image, producing an upper bound of 384 tokens per image.](https://assets.zentor.ai/cms/uploads/tokens_crop_885ae074f8.png)\n\nDeepSeek's Vision guide describing the automatic resize: images under roughly 384x384 are scaled up, larger images are scaled down to roughly the pixel count of an 800x800 image, producing an upper bound of 384 tokens per image.\n\nEvery image is resized before inference. Anything under roughly 384×384 total pixels gets scaled up; anything larger gets scaled down until the total pixel count is about that of an 800×800 image. Aspect ratio survives, pixels don't. The consequence DeepSeek states plainly is that a 2000×2000 image and a 5000×5000 image cost exactly the same 384 tokens, because after the resize they are the same picture.\n\nFor cost that's excellent, and for a small UI screenshot it barely matters. One commenter pointed out that 800×800 is 0.64 megapixels, less than a Super VGA display from 1995, and argued the useful threshold sits nearer 1080p. Feed it a full letter-size scan of dense body text and you are asking it to read something it was handed at postcard resolution.\n\nThere is a `detail` field on `image_url` inputs, but it only goes the other direction: `low` downsamples to 512×512 for speed and cost, while `high`, `original` and `auto` all currently mean the same thing, which is the original image subject to that same automatic resize. No setting buys you more pixels.\n\n## What images actually cost on the deepseek vision api\n\nVision is priced as V4 Flash, not as a premium tier. As of 2026-08-22 the [published rates](https://api-docs.deepseek.com/quick_start/pricing/) are $0.007 per million cache-hit input tokens off-peak and $0.014 at peak, $0.22 per million cache-miss input tokens off-peak and $0.44 at peak, and $0.66 per million output tokens against $1.32 at peak. Peak hours run 01:00 to 04:00 and 06:00 to 10:00 UTC, Monday through Friday, and off-peak is exactly half.\n\n![DeepSeek's Models and Pricing table showing deepseek-v4-flash-vision-exp charged at the same off-peak and peak rates as deepseek-v4-flash, with a 2500 concurrency limit and FIM completion unsupported.](https://assets.zentor.ai/cms/uploads/pricing_crop_bb38b4cbb3.png)\n\nDeepSeek's Models and Pricing table showing deepseek-v4-flash-vision-exp charged at the same off-peak and peak rates as deepseek-v4-flash, with a 2500 concurrency limit and FIM completion unsupported.\n\nBecause each image caps at 384 tokens, a thousand screenshots costs about 384,000 input tokens, which is roughly eight and a half cents off-peak before you count a single word of your prompt. That is the number that makes a scheduled visual check worth running at all.\n\nThe same column has one regression worth noting: FIM completion, which both V4 Flash and V4 Pro support in non-thinking mode, is listed as not supported on the vision model. Context length stays at 1M and max output at 384K, and the concurrency limit is 2500, matching Flash.\n\nIf you'd rather not manage a second key, [OpenRouter lists the model](https://openrouter.ai/deepseek/deepseek-v4-flash-vision-exp) at $0.22 per million prompt tokens and $0.66 per million completion tokens with the full 1,048,576-token context. Those figures match DeepSeek's off-peak direct rates rather than the peak ones, so a request routed during peak hours is not automatically the same price as calling DeepSeek yourself.\n\n## The errors you will hit first\n\nThree restrictions are documented, and all three return a 400.\n\n![DeepSeek's Vision guide limits table and restrictions list, showing 600 images per request, an 8192 px maximum dimension, and the 400 error text This model does not support image returned by non-vision models.](https://assets.zentor.ai/cms/uploads/limits_crop_b4757f8c85.png)\n\nDeepSeek's Vision guide limits table and restrictions list, showing 600 images per request, an 8192 px maximum dimension, and the 400 error text This model does not support image returned by non-vision models.\n\nImages are accepted in `user` messages only, so an image tucked into a system prompt fails rather than being ignored. Sending an image to any model other than `deepseek-v4-flash-vision-exp` returns a 400 whose message reads `This model does not support image`, which is the one you'll see if a router or a config file quietly falls back to plain V4 Flash. User text containing the reserved image placeholder token is rejected too.\n\nThe ceilings are generous enough that most people won't meet them: 600 images per request, 64 MiB of total image payload without `file_id` and up to 200 MiB with, and 8192 px per side. That last one drops to 4096 px per side as soon as a request carries 15 or more images, which is an easy thing to trip over in a batch job and a hard thing to debug after the fact.\n\n## Where this fits if you already run DeepSeek agents\n\nThe honest summary is that this closes a gap rather than opening a frontier. If you already route work through the model, you now get to delete a vision shim, and [everything the V4 line is good at](https://zentor.ai/blog/why-deepseek-v4-pro-is-a-game-changer-for-ai-agents) applies to a screenshot as well as to a file. If you run the [DeepSeek Harness](https://zentor.ai/blog/what-is-deepseek-harness), version 0.1.1 already knows about the model.\n\nWhat it changes about scheduling is larger than what it changes about capability. A text-only agent can only act on what someone typed to it, while one that reads pictures can act on what a system is displaying, and the interesting version of that is unattended. **Zentor** runs those checks on hosted infrastructure with the schedule attached to the account rather than to a machine, which is the difference between a monitor that runs and one that runs when you happen to be at your desk.\n\nTreat the `exp` suffix as a real warning. Model ids on experimental releases move, and DeepSeek renamed things quietly in August already, so pin the id and keep a fallback path in your config. Picking which model handles which task is a setting on **Zentor** rather than a rewrite, which is the cheap insurance when a preview model graduates or disappears. For the [always-on side of that setup](https://zentor.ai/blog/deepseek-harness-always-on-agent), the model choice matters less than whether anything is awake to make the call.\n\n## Frequently asked questions\n\n**Is DeepSeek V4 Flash Vision free?**\n\nNo. It bills at standard V4 Flash rates, with images converted to input tokens at up to 384 tokens each. As of 2026-08-22 that is $0.22 per million cache-miss input tokens off-peak and $0.44 at peak. The Files API used to upload and reference images is free; the inference is not.\n\n**What image formats does the deepseek vision api support?**\n\nJPEG, PNG, GIF and WebP. DeepSeek detects the format from the actual file content rather than the filename or declared MIME type, so a mislabeled `.png` that is really a JPEG still works.\n\n**Does it work with the OpenAI SDK?**\n\nYes. The endpoint is OpenAI-compatible Chat Completions, and the Responses API is supported as well. There is also an Anthropic-compatible endpoint at `https://api.deepseek.com/anthropic` that takes an `image` block with a `source` object instead of `image_url`.\n\n**Why does my request return \"This model does not support image\"?**\n\nYou sent an image to a non-vision model. Only `deepseek-v4-flash-vision-exp` accepts images; every other DeepSeek model returns that 400. Check whether a fallback in your router or SDK config swapped the model id out from under you.\n\n**Can it read a full page of scanned text?**\n\nNot reliably at full-page resolution. The resize to roughly 800×800 total pixels applies to every image and cannot be raised, so dense A4 or letter-size scans lose detail. Cropping the page into regions and sending them as separate images works around it, and the 600-image ceiling leaves plenty of headroom.\n\n## Pin the model id before you build on DeepSeek vision\n\nTry it on the workload you actually have rather than on a benchmark. Send three real screenshots from whatever you were going to automate, check whether 0.64 megapixels is enough for those specific images, and only then decide whether the resize is a footnote or a blocker. UI captures and charts are a straight upgrade at a price that barely registers; documents deserve a measurement first.\n\nThen write down the model id, the fallback, and the date you checked the pricing page, because `exp` models are the ones most likely to move under you.\n\n## Continue reading\n\n[More Guide](https://zentor.ai/blog/guide/)\n\n1.  [Guide DeepSeek API Pricing Doubles 35 Hours a Week 9 min read](https://zentor.ai/blog/deepseek-api-pricing-peak-hours)\n2.  [Guide GPT Image 2 Prompts: 541 Copyable Templates 9 min read](https://zentor.ai/blog/gpt-image-2-prompts)\n3.  [Guide What Is GLM-5.3-Flash? Specs and Price 11 min read](https://zentor.ai/blog/what-is-glm-5-3-flash)\n4.  [Guide What Is FLUX 3? Multimodal Model Explained 11 min read](https://zentor.ai/blog/what-is-flux-3)\n5.  [Guide Hunyuan 3D as an Agent Tool for 3D Asset Workflows 7 min read](https://zentor.ai/blog/hunyuan-3d-agent-tool)\n6.  [Guide Claude Code Voice Mode: What /voice Can't Do 10 min read](https://zentor.ai/blog/claude-code-voice-mode)\n\nSee more\n\n![Zentor Editorial](https://assets.zentor.ai/cms/uploads/zentor_author_avatar_editorial_8e24989c4b.png)\n\n[Zentor Editorial](https://zentor.ai/blog/authors/zentor-editorial) Zentor editorial team\n\nThe Zentor editorial team writes about workflow automation, AI agents, and the tools we build. Default byline for industry overviews, listicles, and collaborative pieces.\n\n[](https://www.linkedin.com/company/moclaw)\n\nShare\n\n[](https://twitter.com/intent/tweet?url=https%3A%2F%2Fzentor.ai%2Fblog%2Fdeepseek-vision-api&text=DeepSeek%20Vision%20API%3A%20What%20It%20Sees%20and%20Misses \"X / Twitter\")[](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fzentor.ai%2Fblog%2Fdeepseek-vision-api \"LinkedIn\")Copied!\n\n## Ready to put this into practice?\n\nZentor runs browser tasks, research, and schedules automatically. Try it free.\n\n[Get started](https://zentor.ai/auth) [Watch a Demo](https://zentor.ai/#use-cases)\n\nTopics deepseek v4 flash vision ·deepseek image input ·deepseek multimodal ·how to send images to deepseek ·this model does not support image\n\nReferences https://api-docs.deepseek.com/guides/vision/ · https://api-docs.deepseek.com/news/news260821/ · https://api-docs.deepseek.com/quick\\_start/pricing/ · https://news.ycombinator.com/item?id=49386163 · https://openrouter.ai/deepseek/deepseek-v4-flash-vision-exp\n\n×"
+}]

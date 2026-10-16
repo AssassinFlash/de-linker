@@ -28,6 +28,14 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
   - 不买任何新的付费插件；现有许可（LiveCanvas、SEOPress PRO）可继续用。
   - 全部在本地建成后一次性更新原站，同域名同 URL；期间业主不改线上。
 - 2026-10-11：**库存事实裁定**（票 #69；翻案记录 `docs/audit/2026-10-11-surface-inventory.md` GAP-9）：真实 ERP 存在、之后接入，本地模拟先行；**Woo 原生库存为唯一权威**（`_stock_quantity`/`_stock_status` 及其同步词项，无 TTL、无衰减语义）；**托管库存（开启"管理库存"）的商品数量为王**——状态由数量推导，分歧的状态词被拒（`state` 只对未托管库存的商品有效）。2026-10-02 的"库存只说有货"由此收窄为：对客户只说状态（有货/暂时无货）、从不说数量（`woocommerce_stock_format = no_amount`）。
+- 2026-10-17（业主实测注册链与 Genie 后；地图 #220）：
+  - **内部通知收件人**：新注册、VAT 复核、新询盘、联系表单留言、每日摘要等内部通知，暂时只发 sales@sunriverinverter.com，先确保整体走通；**不发 sales@de-linker.com**（老板的邮箱）；chester@de-linker.com 确认能收到才保留作抄送。客户可见的地址（Proforma 卖方邮箱、页脚、Genie 转人工句、发件人）仍是 sales@de-linker.com。chester@ 暂无腾讯企业邮 SMTP 授权码，发信仍走 Hostinger `mail()`。
+  - **审批依据**：业主按注册时提供的信息自己查证，属实即批。注册只收够他查证的最少信息，其余在询盘 / Proforma 时再收。
+  - **注册国家**：全部开放，欧洲为重点。
+  - **看图与读文件**：铭牌拍照识别与附件读取用 deepseek-flash 做（官方 API 收图；PDF 先转成文字或页面图片，证据 `docs/research/2026-10-17-deepseek-flash-vision/`）。模型通道不变。
+  - **首页 hero**：未交互时外观照旧（像素门不变）；打字、点胶囊、拍照、附件、语音之后的交互可以重新设计。
+  - **线上实走验收**：账号链与 Genie 的验收包括按业主路径在线上实走。每次注册产生的真实邮件只限通知、已收到、已批准三封，收件人只限 sales@sunriverinverter.com 与业主指定的测试邮箱；其余测试照旧守测试邮件纪律。
+  - **分工**：调研票与原型票由 Claude 完成，实现票交给其他 AI；实现完成后业主视情况请 Claude 评审。
 
 业主只回答事实（产品数据、价格、承诺、厂商怎么说）。产品范围、工具存废、架构、措辞由本线按竞品映射与证据决定；决定只因新证据改变，改变时写明证据。
 
