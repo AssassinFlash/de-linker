@@ -57,7 +57,7 @@
 | C8 | 本地快照特色图 | closed | `16/INDEX.md` §9：`_thumbnail_id` 546 行、212 个已发布商品全有、缺行 0；ADJUDICATION 族 25 销账（compare ids 表两图在、img 16=空态 14+2）；cutover ⑦-3 线上被清 273 组已写回（restored=273 skipped=0，Polylang 同步补孪生至 546）。 | 无 |
 | C9 | #18 旧仓库归档与文档收口 | closed | issue #18 CLOSED；文档部分随 PR #103 并；归档动作随 #17 执行记录内的「深度审计（旧仓回溯）」完成；旧 repo/worktree 未删除的卫生项见 C14。 | 无 |
 | C10 | 账户视觉同步（Q6） | closed | 被 2026-10-13 裁定 3 取代：账号区改仪表盘风（`Merge lane/account-dashboard: independent review passed`），视觉差异转有意变更（ADJUDICATION 族 6 四行 + 族 13 C10 行）；功能/菜单保持（Q6）。B 段 9 行登录后账号面已在 coverage 包 captured+功能核验。 | 无 |
-| C11 | #3 重建地图伞票 | delegated | issue #3 仍 OPEN（伞票本就不应因工件并入而自动关）；子项 #66–#98 已全 CLOSED、#17 CLOSED。伞票随残余子项收口。 | issue #3 自身 |
+| C11 | #3 重建地图伞票 | closed | issue #3 已于 **2026-10-15T03:25Z** CLOSED（伞票不因工件并入自动关，随残余子项收口后关闭）；子项 #66–#98 已全 CLOSED、#17 CLOSED。 | 无 |
 | C12 | 检索/索引评估留档口径 | closed | `16/INDEX.md` §6 已载「本 ask 未重跑」注释 + `16i/systemone-probe-20261011.json` 在；口径判断（只在结果改变交付判断时做针对性评估）成立——切换已过，线上 Genie 以真机真答案验证（cutover ⑧），不需要为交付判断重跑 11 轮一致率。 | 无 |
 | C13 | visual-round2 提案/实施交付尾项 | closed | #109/#110 已并（2026-10-12，含自测测量）；#112 CLOSED 作废；#113 已并且其 F1 缺陷在 C2 修复；E1 业主明言否决（保持两列 2+1）。#109/#110 的独立 Spec/Standards 评审无独立记录，但其承载面已在后续评审轮覆盖：recheck 泳道对 catalog 组成做过 review round（#154 各提交含 review 修正）、A4 四默认 390 面 0px、e2e 68 passed（`final-merged/README.md`）。 | 无 |
 | C14 | 分支/worktree 清理线索 | closed（记录） | 非客户债；`git worktree list` 现存原型/修复/实测 lane 为合法在途或已合残留，不删他人 worktree。 | 无 |
