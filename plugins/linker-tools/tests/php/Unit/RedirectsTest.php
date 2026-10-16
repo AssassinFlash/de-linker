@@ -257,7 +257,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 255, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 23, $maps['pages'] );
+		$this->assertCount( 24, $maps['pages'] );
 			$this->assertCount( 5, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
@@ -578,6 +578,30 @@ final class RedirectsTest extends TestCase {
 			self::HOME . '/for-installer/',
 			( new Redirects() )->target( '/for-oem-odm/' )
 		);
+	}
+
+	/**
+	 * The self-map of the configurator's English slug: the German twin carried
+	 * that slug until 2026-10-16, so a German request for it lands on the
+	 * twin's own address, while the English page answers its own address (the
+	 * same-address guard keeps the map from redirecting the page itself).
+	 */
+	public function test_the_configurator_self_map_sends_only_the_german_twin_address(): void {
+		$this->wordpress();
+		$this->post_ids[ self::HOME . '/solution-configurator/' ] = 41;
+		$this->post_twins[41]['de']                               = 42;
+		$this->permalinks[42]                                     = self::HOME . '/de/loesungskonfigurator/';
+		$this->current_language                                   = 'de';
+		$this->default_language                                   = 'en';
+		$this->languages = array( 'en', 'de' );
+
+		$this->assertSame(
+			self::HOME . '/de/loesungskonfigurator/',
+			( new Redirects() )->target( '/de/solution-configurator/' )
+		);
+
+		$this->current_language = 'en';
+		$this->assertNull( ( new Redirects() )->target( '/solution-configurator/' ) );
 	}
 
 	/**
