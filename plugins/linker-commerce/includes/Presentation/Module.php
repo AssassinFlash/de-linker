@@ -98,6 +98,8 @@ final class Module {
 		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;
 		}
-		wp_enqueue_script( 'linker-pdp-ui', $base . 'pdp-ui.js', array(), '3', true );
+		// The one registration point for the page's script; the version follows
+		// the asset file, as the sibling handles' do.
+		wp_enqueue_script( 'linker-pdp-ui', $base . 'pdp-ui.js', array(), (string) filemtime( dirname( __DIR__, 2 ) . '/assets/pdp-ui.js' ), true );
 	}
 }
