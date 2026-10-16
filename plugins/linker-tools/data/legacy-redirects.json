@@ -1,6 +1,6 @@
 {
 	"schema_version": 1,
-	"_source": "The previous site's legacy 301 map, extracted 2026-10-11: 255 retired product slugs, 31 retired category slugs, 18 retired page paths and the retired /shop/ archive, plus the retired /checkout/ slug rule (its commerce pages code). Targets are the routes the live site served them to; /shop/ and /product-category/<slug>/ are resolved at dispatch time (WooCommerce and the term) — /shop/ as a target is the shop page's own address, wherever the site keeps it (measured 2026-10-11: /shop/ answers /products/).",
+	"_source": "The previous site's legacy 301 map, extracted 2026-10-11: 255 retired product slugs, 31 retired category slugs, 18 retired page paths and the retired /shop/ archive, plus the retired /checkout/ slug rule (its commerce pages code). Targets are the routes the live site served them to; /shop/ and /product-category/<slug>/ are resolved at dispatch time (WooCommerce and the term) — /shop/ as a target is the shop page's own address, wherever the site keeps it (measured 2026-10-11: /shop/ answers /products/). The self-map /solution-configurator/ → /solution-configurator/ (2026-10-16) sends the German twin's pre-rename address /de/solution-configurator/ to the twin's own /de/loesungskonfigurator/ while the English page answers its own address (the dispatch's same-address guard).",
 	"products": {
 		"pylontech-force-h2-system-7-1": "/product-category/home-storage/",
 		"pylontech-force-h2-system-10-6": "/product-category/home-storage/",
@@ -314,7 +314,8 @@
 		"/linker-advisor/": "/genie/",
 		"/linker-berater/": "/genie/",
 		"/product-category/uncategorized/": "/products/",
-		"/shop/": "/shop/"
+		"/shop/": "/shop/",
+		"/solution-configurator/": "/solution-configurator/"
 	},
 	"checkout": {
 		"slugs": [ "checkout", "kasse" ],
