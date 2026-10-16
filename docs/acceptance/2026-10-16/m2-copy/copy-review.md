@@ -34,8 +34,8 @@ von Linker、Solution Configurator / Lösungskonfigurator；德语 Sie 体，de_
   评审：**修改**。旧句的正半句本身就是站内已用措辞（utility 页图层 alt 两处
   "quoted per project through Linker"），去掉否定半句即可，不必另造新短语；meta 少 20 字
   也更少被截断。DE 的 `projektbezogen angeboten` 是线上既用词（6917 自身旧 meta、6871、
-  6909、6913、6919 均在用），与 EN `quoted per project` 严格互镜。旧 DE 161 字符已超 160
-  上限，定稿 136。
+  6909、6913、6919 均在用），与 EN `quoted per project` 严格互镜。旧 DE 161 字符（163 字节）
+  已超 160 上限，定稿 136。
 - **定稿 EN**（107 字符）：
   `CRRC, Pylontech and GoodWe container BESS from 1.0 to 6.9 MWh, with datasheets on file, quoted per project.`
 - **定稿 DE**（136 字符）：
@@ -332,7 +332,7 @@ order/checkout/payment/shipping/Versand/Kasse/Bezahlen/Warenkorb（引语除外�
   `Advisor conversations belonging…` 必须先于任何裸 `Advisor conversations` 规则（本表无裸串，
   安全）；6827 的 `Berater-Konversationen, die…` 同理。
 - 长度核对（约束：项目符号 / CTA / meta 描述 ≤160 字符；h3 无硬限但同列表须同调）：
-  新 meta 1755 = 107、6917 = 136（旧 6917 为 161，已超限，本批顺带压回）；
+  新 meta 1755 = 107（旧 126）、6917 = 136（旧 161，已超 160 上限，本批顺带压回）；
   新符号 13 = 29、6913 = 27（同卡另三条 38/39/42 与 41/58/46，新串最短但并列成立）；
   新 CTA 746 = 37（同区按钮 21–33，本区最长但同为一行）、792 = 48（同页按钮 19–35，
   与德语镜像 `Projekt im Lösungskonfigurator modellieren →` 44 同构——两处都保留全名，
