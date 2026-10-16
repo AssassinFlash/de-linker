@@ -1,8 +1,28 @@
-:where(#lc-header,#lc-footer,body[data-page] #theme-main) :where(*):not(svg,svg *,img,video),:where(#lc-header,#lc-footer,body[data-page] #theme-main) ::before,:where(#lc-header,#lc-footer,body[data-page] #theme-main) ::after{all:revert}
-:where(#lc-header,#lc-footer,body[data-page] #theme-main) :where(img,video,svg){box-sizing:revert;margin:revert;padding:revert;border:revert;display:revert;vertical-align:revert;max-width:revert}
-#theme-main:where(body[data-page] *),:where(#lc-header,#lc-footer){all:revert}
+/* The chrome's reset: the theme's markup inside the ported header and footer
+   is normalized before the chrome's own rules style it. It stays unlayered on
+   purpose: the theme's CSS is unlayered too, so only an unlayered reset can
+   outrank it (a layered one loses every property the theme also sets — the
+   header's container proved it: margin/box-sizing came through from the theme). */
+:where(#lc-header,#lc-footer) :where(*):not(svg,svg *,img,video),:where(#lc-header,#lc-footer) ::before,:where(#lc-header,#lc-footer) ::after{all:revert}
+:where(#lc-header,#lc-footer) :where(img,video,svg){box-sizing:revert;margin:revert;padding:revert;border:revert;display:revert;vertical-align:revert;max-width:revert}
+:where(#lc-header,#lc-footer){all:revert}
 #lc-header :where(*):not(:where(.tv-b2b-acct,.tv-b2b-acct *,.lnk-lang-toggle,.lnk-lang-toggle *)){box-sizing:revert}
 #lc-header :where(.tv-container){width:auto}
+
+/* The page-main reset runs in the components layer, and both halves of that are
+   load-bearing. Unlayered (as it began) it outranked Tailwind's utilities by
+   specificity, so `#theme-main:where(body[data-page] *){all:revert}` reverted
+   the utility classes inside #theme-main — .mt-4 read 0 inside the box and 16px
+   outside it. In the base layer it lost to the layers' own field styles instead
+   (the forms plugin's textarea padding reached the hero prompt box, a pixel the
+   live parity captured without). components sorts after base and before
+   utilities: the reset still outranks the preflight and the form plugin's field
+   styling, and a utility class still beats the reset. */
+@layer components {
+:where(body[data-page] #theme-main) :where(*):not(svg,svg *,img,video),:where(body[data-page] #theme-main) ::before,:where(body[data-page] #theme-main) ::after{all:revert}
+:where(body[data-page] #theme-main) :where(img,video,svg){box-sizing:revert;margin:revert;padding:revert;border:revert;display:revert;vertical-align:revert;max-width:revert}
+#theme-main:where(body[data-page] *){all:revert}
+}
 #lc-header .tv-language-switch,#lc-header .tv-language-rail{display:none!important}
 html:where(:has(> body[data-page])){scroll-behavior:auto}
 html[lang^="de"] body[data-page] #theme-main,html[lang^="de"] :is(#lc-header,#lc-footer){-webkit-hyphens:auto;hyphens:auto}
