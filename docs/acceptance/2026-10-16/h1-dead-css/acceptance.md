@@ -73,6 +73,14 @@ no consumer after the storefront CSS was retired」。WP_Mock 严格模式会把
 `GET /my-account/`、`/my-account/register/`、`/de/mein-konto/`、`/de/mein-konto/register/`
 的 `<body class="…">` 实测为 `woocommerce-account woocommerce-page …`，**无 `sf-account-page`**。
 
+这个实例装的是**线上快照的数据库与主题**（链接的只有 `linker-*` 三个插件是检出），
+所以"渲染出来的页面不带这个类"这条不只对我们的树成立，对线上内容也成立。
+
+补充一条旁证：线上自己的 WindPress 卷副本（快照带来的 `uploads/windpress/data/storefront.css`，
+151 736 字节，未随本票改动）**同样带着这 347 处载体**（`sf-account-page` 334 / `-home` 7 /
+`-inner` 6），而快照的插件树里没有任何 `sf-account-page` 字符串——即这层样式在线上也是
+无人产出的遗留物；本票只处置我们仓库里的那份（部署时由 `WindPressVolume::install` 覆写）。
+
 ## 4. 像素回归（验收基准 = #184 原型）
 
 删除前后各拍一轮，同一浏览器、同机、同视口、禁动画、等字体图片：
