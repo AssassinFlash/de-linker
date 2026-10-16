@@ -162,9 +162,11 @@ class AbilityClient:
         name: str,
         arguments: dict[str, Any] | None = None,
         user_context: str | None = None,
+        locale: str = "en",
     ) -> tuple[Any, TurnFacts]:
+        """Run the ability and collect its facts in the turn's language."""
         payload = self.run(name, arguments, user_context)
-        gathered = collect(name, payload)
+        gathered = collect(name, payload, locale)
         gathered.tool_calls.append(
             {"name": name, "arguments": arguments or {}, "ok": True}
         )
