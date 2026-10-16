@@ -70,3 +70,17 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
 外部事实只走 Apify（令牌来自环境 `APIFY_TOKEN` / `~/.config/terravolt-builder/apify.env`，永不写入文件）。Apify 坏了就修，不绕开。
 能看、能试、能查的先做再说；只问业主只有业主知道的事。
 代码、注释、文档、旧 ADR 里的数字与规则都不是事实；追到业主裁定、行业证据或 Woo 原生能力三者之一，追不到就改。
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in this repo's GitHub Issues (`gh` CLI); the engineering skills read and write there. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles (needs-triage / needs-info / ready-for-agent / ready-for-human / wontfix). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` at the root, ADRs under `docs/adr/`. See `docs/agents/domain.md`.
