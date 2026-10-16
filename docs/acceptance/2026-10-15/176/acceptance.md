@@ -22,6 +22,8 @@ PHPUnit 1045/5109 绿、JS 38/38、tools/faq pytest 20、e2e faq-download 10/10�
 
 **变更台账条目**：FAQ+Download 页重设计 · 业主裁定 2026-10-15（dashboard 式组织 + 变体 5 框架）· 缩略图构建期入插件资源。
 
+**2026-10-16 N3 变更台账条目**：目录类型解析改 role 先行，EN 侧 12 行移动（8 document→compatibility、4 manual→document）+ DE 芯片德语化（160 行中 143 行换类）。spec §7 变更台账表已同录。
+
 ## 结论
 
 通过。合并 PR #186。

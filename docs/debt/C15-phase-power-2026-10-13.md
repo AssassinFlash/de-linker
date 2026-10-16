@@ -51,7 +51,7 @@ t110 的写入历史（备份在 `~/de-linker-local/t110/backups/`）：
 
 防线（本轮加在迁移工具里，见 PR）：
 
-- **`7-facts.php`**：删除器算完每个表的结果后，**先**检查有没有组会因删行而空掉；空的组必须在变化的 `drop_legacy.remove_groups` 里点名才删，否则**在任何 meta 被写之前**拒绝（理由打到 stderr，WP-CLI 以非零退出）。
-- **`7-facts.py`**：写后读回增加「legacy 组完整性」断言——触碰过的商品、两张表，凡写前有、写后没的组，未在计划的 `remove_groups` 里点名就判失败（`The write removed spec groups the plan does not name`）。
+- **`7-facts.php`**：删除器算完每个表的结果后，**先**检查有没有组会因删行而空掉；**原本有行**的组必须在变化的 `drop_legacy.remove_groups` 里点名才删，否则**在任何 meta 被写之前**拒绝（理由打到 stderr，WP-CLI 以非零退出）。**写闭包只动行**：进写入时空着的组不是这次写的事，除非 `remove_groups` 点名，否则原样保留（评审发现 5——旧闭包会把任何空组一并吞掉）。
+- **`7-facts.py`**：写后读回增加「legacy 组完整性」断言——触碰过的商品、两张表，凡写前有、写后没的组，未在计划的 `remove_groups` 里点名就判失败（`The write removed spec groups the plan does not name`）。同一读回另修一处自伤：计划删掉某商品最后一个图值时，写入端把 `_tv_b2b_figures` 存成 `[]`（空 PHP 数组的 `wp_json_encode`），旧读回按对象读会崩（`'list' object has no attribute 'get'`）——现在 `[]` 读作「无键」。
 
 即：**迁移（改行、改文案）不再能无声地删掉一个规格组**；要删，计划必须写出来。C15 的第三次写入在今天会被这两道中的第一道直接挡下。
