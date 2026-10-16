@@ -54,6 +54,35 @@ final class PresentCommand {
 	}
 
 	/**
+	 * The post-deploy assertion: whether every registered template, partial and
+	 * volume file on this site is what the exported files say it is. Reads
+	 * only — nothing here writes a post, an option or a file — so it is safe
+	 * on production after a deploy, which is its purpose (ledger H9, #182):
+	 * a deploy that reports success and a site that silently kept an older
+	 * template are told apart by one command.
+	 *
+	 * @when after_wp_load
+	 *
+	 * @param array<int, string>   $args       Positional arguments.
+	 * @param array<string, mixed> $assoc_args Options.
+	 */
+	public function check( array $args, array $assoc_args ): void {
+		unset( $args, $assoc_args );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			WP_CLI::error( 'Run as an administrator: wp linker-commerce check --user=<admin>.' );
+		}
+		$rows = array_merge( ( new Templates() )->drift(), ( new WindPressVolume() )->drift() );
+		if ( array() === $rows ) {
+			WP_CLI::success( 'presentation in sync' );
+			return;
+		}
+		foreach ( $rows as $row ) {
+			WP_CLI::log( sprintf( 'drift: %s — %s: %s', $row['surface'], $row['target'], $row['detail'] ) );
+		}
+		WP_CLI::error( sprintf( '%d presentation drift row(s): the site does not match the exported files. Run `wp linker-commerce present --user=<admin>` to install them.', count( $rows ) ) );
+	}
+
+	/**
 	 * Installs the presentation layer into the current site: LiveCanvas templates,
 	 * Additional CSS tokens, and (optionally) stripping tokens from header partials.
 	 * Refuses to report success when the WindPress cache cannot serve the

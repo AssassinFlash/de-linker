@@ -59,6 +59,10 @@ the full gate.
   question, plus `run/jev.jsonl`, `run/deepseek.jsonl` and
   `run/cascade.jsonl`. They stay there after the run, so a disagreement the
   suite printed can be read back; the path is printed when judging starts.
+- Screenshots a spec takes as evidence land in the repository's working area,
+  `.scratch/e2e-shots/<spec>/` (`.gitignore`d): they show what that run
+  rendered, so they are run artefacts, never a commit (ledger H10 — the
+  account spec used to overwrite committed PNGs under `docs/acceptance/`).
 - `specs/` — one file per surface; the Genie rows are `genie.spec.ts`
   (service level, R1–R14 with the cascade judging every question) and
   `genie-dock.spec.ts` (the browser half: disclosure, product entry, session,

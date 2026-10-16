@@ -10,7 +10,9 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Cli;
 
 use Linker\Commerce\Cli\PresentCommand;
+use Linker\Commerce\Presentation\Templates;
 use Linker\Commerce\Presentation\WindPressCache;
+use Linker\Commerce\Presentation\WindPressVolume;
 use Linker\Commerce\Tests\TestCase;
 use WP_CLI;
 use WP_CLI\ExitException;
@@ -64,6 +66,13 @@ final class PresentCommandTest extends TestCase {
 	 */
 	private array $written_partials = array();
 
+	/**
+	 * The site fixture of the check tests, when one is built.
+	 *
+	 * @var \stdClass|null
+	 */
+	private ?\stdClass $site = null;
+
 	/** Prepares the per-test cache and source files. */
 	public function setUp(): void {
 		parent::setUp();
@@ -81,17 +90,45 @@ final class PresentCommandTest extends TestCase {
 		file_put_contents( $this->source_paths[1], ':root{--proto-accent:#0c7f73}' );
 		$this->options               = array();
 		$this->written_partials      = array();
+		$this->site                  = null;
 		WP_CLI::$registered_commands = array();
 	}
 
-	/** Deletes the per-test files. */
+	/** Deletes the per-test files and the check fixture's volume directory. */
 	public function tearDown(): void {
 		foreach ( array( $this->cache_path, ...$this->source_paths ) as $path ) {
 			if ( file_exists( $path ) ) {
 				unlink( $path );
 			}
 		}
+		if ( null !== $this->site ) {
+			$this->remove_dir( $this->site->uploads );
+			$this->site = null;
+		}
 		parent::tearDown();
+	}
+
+	/**
+	 * Removes a directory the fixture built.
+	 *
+	 * @param string $dir Absolute path.
+	 */
+	private function remove_dir( string $dir ): void {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		foreach ( (array) scandir( $dir ) as $entry ) {
+			if ( '.' === $entry || '..' === $entry ) {
+				continue;
+			}
+			$path = $dir . '/' . $entry;
+			if ( is_dir( $path ) ) {
+				$this->remove_dir( $path );
+			} else {
+				unlink( $path );
+			}
+		}
+		rmdir( $dir );
 	}
 
 	/**
@@ -751,6 +788,282 @@ final class PresentCommandTest extends TestCase {
 		} catch ( ExitException $e ) {
 			$this->assertStringContainsString( 'rollback', $e->getMessage() );
 		}
+	}
+
+	/**
+	 * The deploy assertion: a site whose templates, partials and volume files
+	 * all hold what the exported files say reports "presentation in sync" and
+	 * touches nothing (the whole point is that `check` is read-only — a
+	 * post-deploy run must not rewrite what it measures).
+	 */
+	public function test_check_reports_a_synced_site_and_writes_nothing(): void {
+		$state = $this->mock_synced_site();
+
+		$this->check();
+
+		$this->assertSame( 1, substr_count( $this->output(), 'wp-cli success: presentation in sync' ) );
+		$this->assertSame( array(), $state->writes, 'check wrote nothing' );
+		$this->assertArrayNotHasKey( self::BACKUP, $this->options, 'check stages no rollback backup' );
+	}
+
+	/**
+	 * A template whose content drifted is one row naming it, and the command
+	 * exits non-zero: the deploy's own report cannot pass while the site
+	 * carries something else.
+	 */
+	public function test_check_names_drifted_templates_and_fails(): void {
+		$state                 = $this->mock_synced_site();
+		$shop                  = $state->lookup['is_shop_page'];
+		$state->posts[ $shop ] = self::post_with( $shop, '<section>an older export</section>' );
+
+		try {
+			$this->check();
+			$this->fail( 'A drifted site should fail the check' );
+		} catch ( ExitException $e ) {
+			$this->assertStringContainsString( '1 presentation drift row(s)', $e->getMessage() );
+		}
+		$this->assertStringContainsString( 'page type is_shop_page — post ' . $shop . ': content differs from shop_page.html', $this->output() );
+		$this->assertSame( array(), $state->writes, 'check wrote nothing' );
+	}
+
+	/**
+	 * The rows cover each surface the install owns: a page-type twin whose
+	 * translation group lost the German post, a tool page pointed at another
+	 * template, a header twin that cannot be resolved, and the volume's
+	 * missing files.
+	 */
+	public function test_check_reports_every_drift_surface(): void {
+		$state                  = $this->mock_synced_site();
+		$anchor                 = $state->lookup['is_single_product'];
+		$state->twin[ $anchor ] = 0; // is_single_product's German twin is gone.
+		$state->assignment[930] = 'linker-other';
+		$state->twin[17]        = 0; // The header partial's German twin is gone.
+		unlink( $state->uploads . '/windpress/data/storefront.css' );
+
+		try {
+			$this->check();
+			$this->fail( 'A drifted site should fail the check' );
+		} catch ( ExitException $e ) {
+			$this->assertStringContainsString( 'drift row(s)', $e->getMessage() );
+		}
+		$printed = $this->output();
+		$this->assertStringContainsString( 'German twin is_single_product — post ' . $anchor . ': the translation group carries no German twin', $printed );
+		$this->assertStringContainsString( 'page assignment linker-compare — compare-products (en): post 930 points at another template (or none)', $printed );
+		$this->assertStringContainsString( 'header partial — header: German header partial could not be resolved', $printed );
+		$this->assertStringContainsString( 'windpress volume — storefront.css: not installed', $printed );
+	}
+
+	/**
+	 * A tool-page template whose content matches but whose title drifted is
+	 * still drift: sync_page_template() restores the title, so a check that
+	 * ignored it would report in sync on a site present would rewrite.
+	 */
+	public function test_check_reports_a_drifted_page_template_title(): void {
+		$state                = $this->mock_synced_site();
+		$faq                  = $state->slug['linker-faq'];
+		$content              = (string) file_get_contents( Templates::paths()['linker-faq'] );
+		$state->posts[ $faq ] = self::post_with( $faq, $content, 'lc_dynamic_template', '', 'An older title' );
+
+		try {
+			$this->check();
+			$this->fail( 'A title-drifted site should fail the check' );
+		} catch ( ExitException $e ) {
+			$this->assertStringContainsString( '1 presentation drift row(s)', $e->getMessage() );
+		}
+		$this->assertStringContainsString( 'page linker-faq — post ' . $faq . ': title "An older title" differs from "FAQ & documents"', $this->output() );
+		$this->assertSame( array(), $state->writes, 'check wrote nothing' );
+	}
+
+	/**
+	 * A template the site does not carry at all is drift, not a silent skip:
+	 * the deployed tree is not the exported one until present has created it.
+	 */
+	public function test_check_reports_a_missing_template(): void {
+		$state = $this->mock_synced_site();
+		unset( $state->lookup['is_search'] );
+
+		try {
+			$this->check();
+			$this->fail( 'A site missing a template should fail the check' );
+		} catch ( ExitException $e ) {
+			$this->assertStringContainsString( 'drift row(s)', $e->getMessage() );
+		}
+		$this->assertStringContainsString( 'page type is_search — search.html: not installed', $this->output() );
+	}
+
+	/**
+	 * The check is an administrator's read: a non-administrator is refused
+	 * before anything is looked at.
+	 */
+	public function test_check_refuses_a_non_administrator(): void {
+		WP_Mock::userFunction(
+			'current_user_can',
+			array(
+				'args'   => array( 'manage_options' ),
+				'return' => false,
+			)
+		);
+
+		try {
+			$this->check();
+			$this->fail( 'WP_CLI::error should stop the check' );
+		} catch ( ExitException $e ) {
+			$this->assertStringContainsString( 'check', $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Runs the check the way WP-CLI dispatches it.
+	 */
+	private function check(): void {
+		( new PresentCommand( new WindPressCache( $this->cache_path, $this->source_paths ) ) )->check( array(), array() );
+	}
+
+	/**
+	 * The site `check` reads, exactly as a present run leaves it: every
+	 * exported template in its post, the German page-type twins paired, the
+	 * tool pages assigned, the header partial pair installed, and the volume
+	 * directory the run writes its stylesheets into. A test edits one field to
+	 * make the site drift; `writes` records any write a check must not make.
+	 */
+	private function mock_synced_site(): \stdClass {
+		$state             = new \stdClass();
+		$state->writes     = array();
+		$state->posts      = array();
+		$state->lookup     = array();
+		$state->slug       = array();
+		$state->pages      = array();
+		$state->assignment = array();
+		$state->twin       = array();
+		$state->language   = array();
+		$state->uploads    = sys_get_temp_dir() . '/linker-commerce-check-' . uniqid();
+
+		$next   = 500;
+		$titles = ( new \ReflectionClass( Templates::class ) )->getConstant( 'PAGES' );
+		foreach ( Templates::paths() as $key => $path ) {
+			if ( str_ends_with( $key, '__de' ) ) {
+				continue;
+			}
+			$id      = ++$next;
+			$content = (string) file_get_contents( $path );
+			if ( str_starts_with( $key, 'linker-' ) ) {
+				$state->slug[ $key ] = $id;
+				// Page templates carry the repo title sync_page_template()
+				// restores; the fixture must hold it, or every synced run
+				// would read as title drift.
+				$state->posts[ $id ] = self::post_with( $id, $content, 'lc_dynamic_template', '', $titles[ $key ][1] );
+				continue;
+			}
+			$state->lookup[ $key ] = $id;
+			$state->posts[ $id ]   = self::post_with( $id, $content );
+		}
+		foreach ( Templates::paths() as $key => $path ) {
+			if ( ! str_ends_with( $key, '__de' ) ) {
+				continue;
+			}
+			$anchor                 = $state->lookup[ substr( $key, 0, -4 ) ] ?? 0;
+			$id                     = ++$next;
+			$state->twin[ $anchor ] = $id;
+			$state->posts[ $id ]    = self::post_with( $id, (string) file_get_contents( $path ) );
+		}
+
+		// The four tool pages, both languages: the English and German pair of
+		// each page slug (the configurator's German page has a slug of its own).
+		$pages = array(
+			array( 930, 'compare-products', 'en', 'linker-compare' ),
+			array( 931, 'compare-products', 'de', 'linker-compare-de' ),
+			array( 932, 'faq-download', 'en', 'linker-faq' ),
+			array( 933, 'faq-download', 'de', 'linker-faq-de' ),
+			array( 934, 'genie', 'en', 'linker-advisor' ),
+			array( 935, 'genie', 'de', 'linker-advisor-de' ),
+			array( 936, 'solution-configurator', 'en', 'linker-configurator' ),
+			array( 937, 'loesungskonfigurator', 'de', 'linker-configurator-de' ),
+		);
+		foreach ( $pages as $page ) {
+			$state->pages[ $page[1] ][]    = self::post_with( $page[0], '', 'page', $page[1] );
+			$state->language[ $page[0] ]   = $page[2];
+			$state->assignment[ $page[0] ] = $page[3];
+		}
+
+		// The header partial pair (the live ids: header/en 17, kopfzeile/de 6919).
+		$headers            = Templates::header_partials();
+		$state->posts[17]   = self::post_with( 17, (string) file_get_contents( $headers[0] ), 'lc_partial', 'header' );
+		$state->twin[17]    = 6919;
+		$state->posts[6919] = self::post_with( 6919, (string) file_get_contents( $headers[1] ), 'lc_partial', 'kopfzeile' );
+
+		foreach ( array( 'current_user_can', 'wp_mkdir_p' ) as $function ) {
+			WP_Mock::userFunction( $function, array( 'return' => true ) );
+		}
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => static function ( array $args ) use ( $state ): array {
+					$type = (string) $args['post_type'];
+					if ( 'page' === $type ) {
+						$name = (string) ( $args['name'] ?? '' );
+						return $state->pages[ $name ] ?? array();
+					}
+					if ( 'lc_partial' === $type ) {
+						$name = (string) ( $args['name'] ?? '' );
+						if ( 'header' === $name ) {
+							return array( $state->posts[17] );
+						}
+						return array();
+					}
+					if ( isset( $args['meta_key'] ) ) {
+						$id = $state->lookup[ (string) $args['meta_key'] ] ?? 0;
+						return 0 === $id ? array() : array( $state->posts[ $id ] );
+					}
+					if ( isset( $args['name'] ) ) {
+						$id = $state->slug[ (string) $args['name'] ] ?? 0;
+						return 0 === $id ? array() : array( $state->posts[ $id ] );
+					}
+					return array();
+				},
+			)
+		);
+		WP_Mock::userFunction( 'get_post', array( 'return' => static fn ( int $id ): ?WP_Post => $state->posts[ $id ] ?? null ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => static fn ( int $id ): string => $state->assignment[ $id ] ?? '' ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn ( int $id ): int => $state->twin[ $id ] ?? 0 ) );
+		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => static fn ( int $id ) => $state->language[ $id ] ?? false ) );
+		WP_Mock::userFunction( 'wp_get_upload_dir', array( 'return' => static fn (): array => array( 'basedir' => $state->uploads ) ) );
+		$record = static function ( ...$args ) use ( $state ): int {
+			$state->writes[] = $args;
+			return 1;
+		};
+		foreach ( array( 'wp_update_post', 'wp_insert_post', 'update_post_meta', 'update_option', 'wp_update_custom_css_post', 'delete_option' ) as $function ) {
+			WP_Mock::userFunction( $function, array( 'return' => $record ) );
+		}
+
+		// The volume directory after an install: a real one, so drift's md5
+		// comparison runs against real bytes.
+		mkdir( $state->uploads . '/windpress/data', 0777, true );
+		( new WindPressVolume() )->install();
+
+		$this->site = $state;
+		return $state;
+	}
+
+	/**
+	 * A post of the fixture.
+	 *
+	 * @param int    $id    Post id.
+	 * @param string $body  Post content.
+	 * @param string $type  Post type.
+	 * @param string $name  Post name.
+	 * @param string $title Post title, the fixture's generic one unless a test needs the repo's.
+	 */
+	private static function post_with( int $id, string $body, string $type = 'lc_dynamic_template', string $name = '', string $title = 'Template' ): WP_Post {
+		return new WP_Post(
+			(object) array(
+				'ID'           => $id,
+				'post_type'    => $type,
+				'post_status'  => 'publish',
+				'post_name'    => $name,
+				'post_content' => $body,
+				'post_title'   => $title,
+			)
+		);
 	}
 
 	/**

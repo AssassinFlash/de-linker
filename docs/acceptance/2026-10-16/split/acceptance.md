@@ -93,4 +93,6 @@
   （该目录是套件的固定输出目标）。本票不把那些重写纳入提交：实测显示其中多数（账号细节、
   联系公司、空态等与本票无关的页）在正常重跑下也会变化（渲染环境差异），只有本票自带的
   视觉证据（`shots/` 下 8 张）与 `copy-review.md` 是本票的记录。
+  （后续：台账 H10 已把输出目标移到 `.scratch/e2e-shots/`，套件不再重写该目录，
+  见 `docs/acceptance/2026-10-16/h10-e2e-shots/`。）
 - 本票在实例上临时创建的测试账号（`e2e-split-login`、`split-register-test@example.test`）已删除。

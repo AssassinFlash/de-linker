@@ -114,6 +114,73 @@ final class WindPressVolume {
 	}
 
 	/**
+	 * The volume files' drift against the exported stylesheets: the read-only
+	 * twin of install(), for a deploy to assert that the volume really carries
+	 * the checkout's files. A volume file absent, or with a hash the export
+	 * does not carry, is one row; the entry's missing imports are one more.
+	 * Nothing here writes, and the volume directory is not created (a site
+	 * without WindPress has no volume to compare).
+	 *
+	 * @return list<array{surface: string, target: string, detail: string}> Drift rows, empty when in sync.
+	 */
+	public function drift(): array {
+		$uploads = wp_get_upload_dir();
+		if ( empty( $uploads['basedir'] ) ) {
+			return array(
+				array(
+					'surface' => 'windpress volume',
+					'target'  => 'uploads',
+					'detail'  => 'the uploads directory cannot be resolved',
+				),
+			);
+		}
+		$dir = $uploads['basedir'] . '/windpress/data';
+		if ( ! is_dir( $dir ) ) {
+			return array(
+				array(
+					'surface' => 'windpress volume',
+					'target'  => 'windpress/data',
+					'detail'  => 'the volume directory does not exist: present has not installed it',
+				),
+			);
+		}
+		$rows    = array();
+		$imports = array();
+		foreach ( self::files() as $source ) {
+			$name      = basename( $source );
+			$target    = $dir . '/' . $name;
+			$imports[] = './' . $name;
+			if ( ! is_readable( $target ) ) {
+				$rows[] = array(
+					'surface' => 'windpress volume',
+					'target'  => $name,
+					'detail'  => 'not installed',
+				);
+				continue;
+			}
+			if ( md5_file( $source ) !== md5_file( $target ) ) {
+				$rows[] = array(
+					'surface' => 'windpress volume',
+					'target'  => $name,
+					'detail'  => 'the volume copy does not hash the same as the export',
+				);
+			}
+		}
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local volume file on disk, not a remote URL.
+		$entry = is_readable( $dir . '/' . self::ENTRY ) ? (string) file_get_contents( $dir . '/' . self::ENTRY ) : '';
+		foreach ( $imports as $import ) {
+			if ( ! str_contains( $entry, $import ) ) {
+				$rows[] = array(
+					'surface' => 'windpress volume',
+					'target'  => self::ENTRY,
+					'detail'  => 'the entry does not import ' . $import,
+				);
+			}
+		}
+		return $rows;
+	}
+
+	/**
 	 * Absolute path of the exported stylesheets.
 	 */
 	public static function path(): string {
