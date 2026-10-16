@@ -1392,6 +1392,12 @@ final class Materials {
 	/**
 	 * A download row's kind (tv_woo_b2b_document_kind).
 	 *
+	 * The role is read first, the type second, so a German row
+	 * (`download_type` "Datenblatt") and its English twin answer the same
+	 * kind. A word the table does not know comes back lowercased as it is;
+	 * readers close that on their own vocabulary (DocumentLibrary::type)
+	 * where the list must stay finite.
+	 *
 	 * @param string $role The document role.
 	 * @param string $type The document type.
 	 */
@@ -1411,6 +1417,8 @@ final class Materials {
 			'compatibility_list'   => 'compatibility',
 			'kompatibilität'       => 'compatibility',
 			'kompatibilitätsliste' => 'compatibility',
+			'brochure'             => 'brochure',
+			'broschüre'            => 'brochure',
 			'document'             => 'document',
 			'dokument'             => 'document',
 		);
@@ -1630,6 +1638,7 @@ final class Materials {
 			'warranty'      => __( 'Warranty', 'linker-commerce' ),
 			'certificate'   => __( 'Certificate', 'linker-commerce' ),
 			'compatibility' => __( 'Compatibility list', 'linker-commerce' ),
+			'brochure'      => __( 'Brochure', 'linker-commerce' ),
 			'document'      => __( 'Document', 'linker-commerce' ),
 		);
 		return $labels[ $kind ] ?? ( '' !== $kind ? ucfirst( $kind ) : '' );

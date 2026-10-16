@@ -562,7 +562,7 @@ final class ProductView {
 	 * document fields take them over.
 	 *
 	 * @param int $product_id The product.
-	 * @return list<array{title: string, url: string|null, type: string, language: string}> The documents.
+	 * @return list<array{title: string, url: string|null, type: string, role: string, language: string}> The documents.
 	 */
 	public function downloads( int $product_id ): array {
 		$documents = array();
@@ -579,6 +579,7 @@ final class ProductView {
 				'title'    => (string) ( $download['download_title'] ?? '' ),
 				'url'      => $url,
 				'type'     => (string) ( $download['download_type'] ?? '' ),
+				'role'     => (string) ( $download['download_role'] ?? '' ),
 				'language' => (string) ( $download['download_language'] ?? '' ),
 			);
 		}
