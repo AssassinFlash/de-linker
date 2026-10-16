@@ -415,8 +415,8 @@
    its own, and the source order decided for it), while the focused field's
    *border-color* came from WooCommerce's
    `.woocommerce form .form-row .input-text:focus{border-color:currentcolor}` —
-   same weight, later in the document — so focus read a dark 1px border instead
-   of the prototype's teal. Naming :is(input[type], …), which is what the base
+   one weight heavier than the old variants, so it out-ruled them and focus
+   read a dark 1px border instead of the prototype's teal. Naming :is(input[type], …), which is what the base
    rule's own list weighs, wins the border back.
 
    Both rules stand aside for an invalid field (:not([aria-invalid="true"])):

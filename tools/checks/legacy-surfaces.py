@@ -277,8 +277,9 @@ def main() -> int:
         domains = len(LEGACY_DOMAIN_RE.findall(body))
         # The id sweep runs here too, over every swept page: the faces alone
         # (classify(), above) left the product face outside it — the PDP's
-        # script handle used to print as id="tv-b2b-pdp-ui-js" and both gates
-        # passed over it.
+        # script handle used to print as an old-namespace id (renamed to the
+        # linker- prefix in this repo; the literal is gone from the code) and
+        # both gates passed over it.
         ids = sorted(set(LEGACY_ID_RE.findall(body)) - allow_ids)
         ok = assets == 0 and words == 0 and domains == 0 and not ids
         note = (
