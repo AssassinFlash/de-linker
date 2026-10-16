@@ -36,7 +36,7 @@
 
 ## N2 原型里已有的两处数据（按原型恢复）
 
-先取证：验收基准是原型变体 A（`docs/design/2026-10-15-pdp-prototype/index.html`，业主 2026-10-15 裁定），
+先取证：验收基准是原型变体 A（`prototype/pdp-redesign:docs/design/2026-10-15-pdp-prototype/index.html`，业主 2026-10-15 裁定），
 两处元素都在原型里：
 
 | 原型 | 原型出处 | 原型用的数据 | 恢复后的数据源 |

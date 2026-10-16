@@ -199,7 +199,7 @@ final class PdpStylesTest extends TestCase {
 		$this->assertStringContainsString( '.pdp-faqs:has(.pdp-faq-side) .pdp-faq-wrap', $rules );
 		$this->assertStringContainsString( 'grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);', $rules );
 		$this->assertMatchesRegularExpression(
-			'/#tv-storefront-pdp \.pdp-faq-side \{\s*overflow: hidden;\s*min-height: 280px;\s*border-radius: var\(--proto-radius-panel\);\s*background: var\(--pdp-soft\);/',
+			'/#tv-storefront-pdp \.pdp-faq-side \{\s*overflow: hidden;\s*min-height: 280px;\s*border-radius: var\(--proto-radius-panel\);\s*background: var\(--proto-paper-mist\);/',
 			$rules
 		);
 		// The rows' spacing follows them into the wrap: the phone block's

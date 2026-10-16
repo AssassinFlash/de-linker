@@ -1065,7 +1065,7 @@ final class ProductShortcodes {
 
 	/**
 	 * The FAQ block's side panel: the product's gallery photo the accepted
-	 * prototype carries there (docs/design/2026-10-15-pdp-prototype/index.html,
+	 * prototype carries there (prototype/pdp-redesign: docs/design/2026-10-15-pdp-prototype/index.html,
 	 * variant A — `.faq-side` next to the accordion). The image is the last
 	 * one of the gallery the page renders — for the prototype's own reference
 	 * product GW60K-STS-G10 that is `…-product-20261007-02.png`, the last id

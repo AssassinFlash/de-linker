@@ -1214,7 +1214,7 @@
 	overflow: hidden;
 	min-height: 280px;
 	border-radius: var(--proto-radius-panel);
-	background: var(--pdp-soft);
+	background: var(--proto-paper-mist);
 }
 
 #tv-storefront-pdp .pdp-faq-side img {
