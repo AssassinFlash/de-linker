@@ -2,7 +2,12 @@
    is normalized before the chrome's own rules style it. It stays unlayered on
    purpose: the theme's CSS is unlayered too, so only an unlayered reset can
    outrank it (a layered one loses every property the theme also sets — the
-   header's container proved it: margin/box-sizing came through from the theme). */
+   header's container proved it: margin/box-sizing came through from the theme).
+   Consequence, measured: Tailwind utility classes on the chrome's markup are
+   inert here (this reset weighs more than a utility), so the chrome is styled
+   by its own rules, not by classes — the header's container carried
+   `box-border w-full` for nothing (computed: content-box, the container's own
+   1360px/0 24px box), and they are gone from the partials. */
 :where(#lc-header,#lc-footer) :where(*):not(svg,svg *,img,video),:where(#lc-header,#lc-footer) ::before,:where(#lc-header,#lc-footer) ::after{all:revert}
 :where(#lc-header,#lc-footer) :where(img,video,svg){box-sizing:revert;margin:revert;padding:revert;border:revert;display:revert;vertical-align:revert;max-width:revert}
 :where(#lc-header,#lc-footer){all:revert}
