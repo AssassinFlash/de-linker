@@ -17,12 +17,18 @@ Two assertions over plain HTTP, no authentication:
    category archive — in EN and DE each, must answer and must not be rendered
    by the legacy templates. Attribution is read off the page itself:
    LiveCanvas stamps `<!-- LC DT ID: <n> -->` into the markup, and the legacy
-   content templates carry `TerraVolt` comments plus sections scoped
-   `id="tv-blog-*-vN"`. Section ids the new tree ships itself (the ported
-   header/footer and storefront markup under plugins/linker-commerce/content)
-   are allow-listed, so the chrome never counts as legacy rendering. No stamp
-   and no legacy markup means the theme fallback renders the face — the
-   accepted pending-design state — and the face passes.
+   content templates are recognized by what they ship into the page — the
+   style block they carry inline (`data-name="tangible-template-inline-style"`,
+   the CSS the port moved into the WindPress volume) and the template family's
+   own banner ("… Dynamic Template v1") inside it. The stamp id alone is
+   attribution, not evidence: `present` reclaims the old template rows in place
+   (Templates::existing_id(), the LiveCanvas assignment meta key), so the same
+   ids — 574, 619, 607 in this family — now render the repository's export.
+   Section ids the new tree ships itself (the ported header/footer, storefront
+   and blog markup under plugins/linker-commerce/content) are allow-listed, so
+   the chrome never counts as legacy rendering. No stamp and no legacy markup
+   means the theme fallback renders the face — the accepted pending-design
+   state — and the face passes.
 
 Discovery uses the public REST API (`/wp-json/wp/v2`), so the script runs
 against any instance of this snapshot family without per-instance fixtures:
@@ -47,17 +53,27 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-# lc_dynamic_template rows of the old project, as loaded into this snapshot
-# family: the 404 pair (drafted earlier) and the four faces' EN/DE twins
-# (drafted 2026-10-13, docs/acceptance/2026-10-13/legacy-surfaces). A page
-# stamped with one of these ids is rendered by the old implementation.
-LEGACY_DT_IDS = {574, 6891, 613, 6887, 619, 6885, 607, 6889, 940, 6871}
+# lc_dynamic_template rows this snapshot family's old project used, read off
+# the blogs instance 2026-10-16 (EN and its German twin side by side): the 404
+# pair and the four faces' pairs — the blog posts index, the single post, the
+# search results and the category archive. Documentation only: the criteria
+# above read the page's own marks, and `present` reuses these rows, so the id
+# says what the row was, never who wrote the content. The archived captures'
+# stamps are not a source for this set: they carry 6885/6887/6889/6891 and
+# 6871, which are German posts and a page here, not template rows.
+LEGACY_DT_IDS = {940, 6861, 574, 6881, 613, 6877, 619, 6875, 607, 6879}
 
 LEGACY_ID_RE = re.compile(r'id="(tv-[a-z0-9-]+)"')
 LEGACY_WORD_RE = re.compile(r"terravolt", re.IGNORECASE)
 LEGACY_ASSET_RE = re.compile(r"terravolt-b2b-core", re.IGNORECASE)
 LEGACY_DOMAIN_RE = re.compile(r"tvolt-energie\.de", re.IGNORECASE)
 LC_DT_RE = re.compile(r"<!--\s*LC DT ID:\s*(\d+)\s*-->")
+# The legacy templates' own signatures in the rendered page: their CSS was an
+# inline block (the ported faces get it from the WindPress volume), and the
+# block's banner names the family. Both are marked by the marker they print,
+# not by the row they were stored in.
+LEGACY_STYLE_RE = re.compile(r'data-name="tangible-template-inline-style"')
+LEGACY_BANNER_RE = re.compile(r"Dynamic Template v\d")
 
 TIMEOUT = 20
 
@@ -136,17 +152,37 @@ def classify(status: int | None, body: str, allow_ids: set[str]) -> tuple[str, b
     if status != 200:
         return f"http {status}", False
     stamped = {int(match) for match in LC_DT_RE.findall(body)}
-    legacy_stamps = stamped & LEGACY_DT_IDS
-    if legacy_stamps:
-        return f"legacy-template {sorted(legacy_stamps)}", False
+    # What the legacy templates ship into the page: their CSS as an inline
+    # block, and the block's family banner. The stamp id is not a criterion —
+    # the takeover reuses those rows (module docstring).
+    if LEGACY_STYLE_RE.search(body):
+        return f"legacy-template (inline style block){stamp_note(stamped)}", False
+    if LEGACY_BANNER_RE.search(body):
+        return f"legacy-template (banner){stamp_note(stamped)}", False
     leaks = sorted(set(LEGACY_ID_RE.findall(body)) - allow_ids)
     if leaks:
         return f"legacy markup ({', '.join(leaks[:3])})", False
     if stamped:
-        return f"lc-template {sorted(stamped)}", True
+        return f"lc-template {sorted(stamped)}{reclaimed_note(stamped)}", True
     if LEGACY_WORD_RE.search(body):
         return "legacy markup (TerraVolt comment)", False
     return "theme fallback", True
+
+
+def stamp_note(stamped: set[int]) -> str:
+    """The stamp ids as a suffix, for the failure line's own attribution."""
+    return f" {sorted(stamped)}" if stamped else ""
+
+
+def reclaimed_note(stamped: set[int]) -> str:
+    """A reminder that a stamped id of the old family is not legacy rendering.
+
+    Every one of the reclaimed rows keeps its id, so a reader who remembers
+    the 2026-10-13 attribution table would read the old ids as a failure. The
+    content is what decides (module docstring); this says so on the line.
+    """
+    shared = sorted(stamped & LEGACY_DT_IDS)
+    return f" (reclaimed old row {shared})" if shared else ""
 
 
 def main() -> int:

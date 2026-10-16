@@ -1,0 +1,1156 @@
+<!--
+  de-linker Blog Posts Index Dynamic Template v1
+  Deploy: LiveCanvas Dynamic Templates → Blog Index → Edit HTML
+  Target URL: http://127.0.0.1:9027/blog/
+  Rendering: scoped inline CSS, no JS required
+  Pagination: 12 posts per page via [lc_the_pagination]
+-->
+<tangible class="live-refresh">
+<section id="tv-blog-index-v1">
+  <style>
+    /* ============================================================
+       Linker Blog Posts Index Dynamic Template v1 (DS v1)
+       All selectors scoped to #tv-blog-index-v1
+       No Bootstrap/Picostrap/DaisyUI component classes.
+       No external image URLs.
+    ============================================================ */
+    /* --- root / shared --- */
+    #tv-blog-index-v1 { font-family: var(--proto-font-sans); background: #ffffff; color: var(--proto-ink-deep); }
+    #tv-blog-index-v1 .tv-blog-container { max-width: 1320px; margin: 0 auto; padding: 0 clamp(1rem, 3vw, 2rem); }
+    #tv-blog-index-v1 .tv-blog-section-pad { padding-block: clamp(2.5rem, 5vw, 4.5rem); }
+    /* --- shared typography (DS v1 eyebrow pattern; JetBrains Mono retired) --- */
+    #tv-blog-index-v1 .tv-blog-mono-eyebrow {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-family: var(--proto-font-sans);
+      font-size: 0.75rem; font-weight: 800;
+      letter-spacing: 0.16em; line-height: 1.4;
+      text-transform: uppercase; color: var(--proto-teal-600);
+    }
+    #tv-blog-index-v1 .tv-blog-mono-eyebrow:before {
+      content: ""; width: 34px; height: 2px; background: var(--proto-teal-600); flex-shrink: 0;
+    }
+    #tv-blog-index-v1 .tv-blog-card-cat-mono {
+      font-family: var(--proto-font-sans);
+      font-size: 0.64rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--proto-navy-deep);
+    }
+    #tv-blog-index-v1 .tv-blog-card-cat-mono-muted {
+      font-family: var(--proto-font-sans);
+      font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--proto-ink-muted-deep);
+    }
+    /* ============================================================
+       MODULE 1 — BLOG MASTHEAD
+       Frosted technical hero shell with glass panel.
+     ============================================================ */
+     #tv-blog-index-v1 #tv-blog-masthead {
+       position: relative; overflow: hidden;
+       padding-block: clamp(3.5rem, 6vw, 5.5rem) clamp(1.5rem, 3vw, 2.5rem);
+       background: linear-gradient(120deg,var(--proto-paper-journal) 0%,var(--proto-paper-mist) 52%,var(--proto-paper-mist) 100%);
+       border-bottom: 1px solid var(--proto-line-journal);
+     }
+     /* frosted glow behind glass */
+     #tv-blog-index-v1 #tv-blog-masthead::before {
+       content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+       background:none;
+     }
+     /* subtle grid-line texture */
+     #tv-blog-index-v1 #tv-blog-masthead::after {
+       content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+       background-image:
+         linear-gradient(rgba(16,44,48,0.04) 1px, transparent 1px),
+         linear-gradient(90deg, rgba(16,44,48,0.04) 1px, transparent 1px);
+       background-size: 64px 64px;
+       -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 78%);
+       mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 78%);
+     }
+     /* glass panel wrapping content */
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-grid {
+       position: relative; z-index: 1;
+       display: grid; gap: 2.5rem;
+       background: rgba(255,255,255,0.72);
+       backdrop-filter: blur(18px);
+       -webkit-backdrop-filter: blur(18px);
+       border: 1px solid var(--proto-line-journal);
+       border-radius: 20px;
+       box-shadow: var(--proto-shadow-3);
+       padding: clamp(1.5rem, 3vw, 2.25rem);
+     }
+     @media (min-width: 1024px) {
+       #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-grid {
+         grid-template-columns: 8fr 4fr; align-items: end;
+         padding: clamp(2rem, 4vw, 2.75rem);
+       }
+     }
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-eyebrow {
+       display: inline-flex; align-items: center; gap: 9px;
+       margin: 0 0 0.5rem;
+       font-family: var(--proto-font-sans);
+       font-size: 0.75rem; font-weight: 800;
+       letter-spacing: 0.16em; text-transform: uppercase;
+       color: var(--proto-teal-600);
+     }
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-eyebrow:before {
+       content: ""; width: 34px; height: 2px; background: var(--proto-teal-600); flex-shrink: 0;
+     }
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-title {
+       margin: 0;
+       font-size: clamp(2rem, 5vw, 4rem); font-weight:560;
+       letter-spacing: -0.03em; line-height: 1.05;
+       max-width: 22ch; color: var(--proto-navy-deep);
+     }
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-lead {
+       margin: 1.25rem 0 0;
+       max-width: 38rem;
+       font-size: 1rem; line-height: 1.65;
+       color: var(--proto-ink-muted-deep);
+     }
+    @media (min-width: 768px) {
+      #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-lead { font-size: 1.125rem; }
+    }
+    /* masthead chips */
+    #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-chips {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+    #tv-blog-index-v1 #tv-blog-masthead .tv-blog-masthead-chips .tv-blog-chip {
+      display: inline-flex; align-items: center;
+      padding: 0.375rem 0.875rem;
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid rgba(12,127,115,0.25);
+      color: var(--proto-navy-deep);
+      font-family: var(--proto-font-sans);
+      font-size: 0.75rem; font-weight: 600;
+    }
+    /* masthead search */
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-search {
+       display: flex; align-items: flex-end; gap: 0.75rem;
+       border-bottom: 1.5px solid var(--proto-teal-600); padding-bottom: 0.625rem;
+     }
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-search input {
+       flex: 1; background: transparent; border: none; outline: none;
+       font-family: var(--proto-font-sans);
+       font-size: 0.9375rem; color: var(--proto-navy-deep);
+     }
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-search input::placeholder { color: var(--proto-ink-muted-deep); }
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-search button {
+       display: inline-flex; align-items: center; justify-content: center;
+       width: 2.5rem; height: 2.5rem; border-radius: 50%;
+       border: none; background: transparent; color: var(--proto-teal-600); cursor: pointer;
+       transition: background 0.2s, color 0.2s;
+     }
+     #tv-blog-index-v1 #tv-blog-masthead .tv-blog-search button:hover {
+       background: var(--proto-teal-700); color: #fff;
+     }
+    /* ============================================================
+       MODULE 2 — LATEST ARTICLES SPLIT
+    ============================================================ */
+    #tv-blog-index-v1 #tv-blog-latest {
+      background: var(--proto-paper-mist);
+      padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-latest-grid {
+      display: grid; gap: clamp(2rem, 4vw, 3.5rem);
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-index-v1 #tv-blog-latest .tv-blog-latest-grid {
+        grid-template-columns: 6fr 5fr;
+      }
+    }
+    /* section heading */
+    #tv-blog-index-v1 .tv-blog-section-heading {
+      margin: 0 0 1.5rem;
+      font-family: var(--proto-font-sans);
+      font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.15; color: var(--proto-navy-deep);
+    }
+    /* featured card (left) */
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-card {
+      border-radius:16px; overflow: hidden;
+      border: 1px solid var(--proto-line-journal); background: #ffffff;
+      box-shadow:none;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-card:hover {
+      transform:none;
+      box-shadow:none;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-img {
+      position: relative; aspect-ratio: 16 / 9; overflow: hidden;
+      background: var(--proto-neutral-100);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-img img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-card:hover .tv-blog-featured-img img {
+      transform: scale(1.02);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-img .tv-blog-img-fallback {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--proto-neutral-100) 0%, var(--proto-line-journal) 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-img .tv-blog-img-fallback svg {
+      width: 3rem; height: 3rem; color: var(--proto-neutral-400);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-body {
+      padding: 1.5rem 1.5rem 1.75rem;
+    }
+    @media (min-width: 768px) {
+      #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-body { padding: 1.75rem 2rem 2rem; }
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-meta {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; color: var(--proto-ink-muted-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-title {
+      margin: 0.75rem 0 0;
+      font-family: var(--proto-font-sans);
+      font-size: clamp(1.25rem, 2.5vw, 1.75rem); font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.15; color: var(--proto-navy-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-excerpt {
+      margin: 0.75rem 0 0;
+      font-size: 0.9375rem; line-height: 1.6; color: var(--proto-ink-muted-deep);
+      max-width: 38rem;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-link {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      margin-top: 1rem;
+      font-family: var(--proto-font-sans);
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--proto-teal-600); text-decoration: none;
+      transition: color 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-featured-link:hover { color: var(--proto-teal-700); }
+    /* compact list (right) */
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-compact-list {
+      display: flex; flex-direction: column;
+      border-top: 1px solid var(--proto-line-journal); border-bottom: 1px solid var(--proto-line-journal);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-compact-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding-block: 1.25rem; border-bottom: 1px solid var(--proto-line-journal);
+      text-decoration: none; cursor: pointer;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-compact-item:last-child { border-bottom: none; }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-compact-title {
+      font-family: var(--proto-font-sans);
+      font-size: clamp(1.0625rem, 2vw, 1.25rem); font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.25; color: var(--proto-navy-deep);
+      transition: color 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-compact-item:hover .tv-blog-compact-title {
+      color: var(--proto-teal-600);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-compact-arrow {
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      width: 2.25rem; height: 2.25rem; border-radius: 50%;
+      border: 1px solid var(--proto-line-journal); color: var(--proto-teal-600);
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-compact-item:hover .tv-blog-compact-arrow {
+      border-color: var(--proto-teal-700); background: var(--proto-teal-700); color: #fff;
+    }
+    /* --- project inquiry strip (between latest and practical) --- */
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-inquiry-strip {
+      margin-top: 2rem;
+      padding: 1.25rem 1.5rem;
+      border-radius:16px;
+      border: 1px solid var(--proto-line-journal); background: #ffffff;
+      box-shadow:none;
+    }
+    @media (min-width: 768px) {
+      #tv-blog-index-v1 #tv-blog-latest .tv-blog-inquiry-strip { padding: 1.25rem 1.75rem; }
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-inquiry-inner {
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-index-v1 #tv-blog-latest .tv-blog-inquiry-inner {
+        flex-direction: row; align-items: center; justify-content: space-between;
+      }
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-inquiry-label {
+      font-family: var(--proto-font-sans);
+      font-size: 1.0625rem; font-weight: 700; color: var(--proto-navy-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-inquiry-text {
+      font-size: 0.9375rem; color: var(--proto-ink-muted-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-btn-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.375rem;
+      padding: 0.75rem 1.5rem;
+      border-radius:8px; border: none;
+      background: var(--proto-teal-700); color: #fff;
+      box-shadow: 0 10px 24px rgba(12,127,115,.24);
+      font-family: var(--proto-font-sans);
+      font-size: 0.875rem; font-weight: 700; text-decoration: none;
+      cursor: pointer; white-space: nowrap;
+      transition: background 0.2s, transform 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-latest .tv-blog-btn-primary:hover {
+      background: var(--proto-teal-800); transform: translateY(-1px);
+    }
+    /* ============================================================
+       MODULE 3 — PRACTICAL READING
+    ============================================================ */
+    #tv-blog-index-v1 #tv-blog-practical {
+      background: var(--proto-paper-mist);
+      padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-grid {
+      display: grid; gap: clamp(2rem, 4vw, 3.5rem);
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-grid {
+        grid-template-columns: 6fr 5fr;
+      }
+    }
+    /* compact with thumbnails (left column) */
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-list {
+      display: flex; flex-direction: column;
+      border-top: 1px solid var(--proto-line-journal); border-bottom: 1px solid var(--proto-line-journal);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item {
+      display: grid; gap: 1rem; align-items: center;
+      padding-block: 1.25rem; border-bottom: 1px solid var(--proto-line-journal);
+      text-decoration: none; cursor: pointer;
+    }
+    @media (min-width: 640px) {
+      #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item {
+        grid-template-columns: 120px 1fr auto;
+      }
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item:last-child { border-bottom: none; }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-thumb {
+      position: relative; height: 5.5rem; overflow: hidden; border-radius:8px;
+      background: var(--proto-neutral-100);
+    }
+    @media (min-width: 640px) {
+      #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-thumb { height: 5rem; }
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item:hover .tv-blog-practical-thumb img {
+      transform: scale(1.03);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-thumb .tv-blog-img-fallback-sm {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--proto-neutral-100) 0%, var(--proto-line-journal) 100%);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-title {
+      font-family: var(--proto-font-sans);
+      font-size: clamp(1rem, 1.8vw, 1.125rem); font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.25; color: var(--proto-navy-deep);
+      transition: color 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item:hover .tv-blog-practical-title {
+      color: var(--proto-teal-600);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-arrow {
+      display: none;
+    }
+    @media (min-width: 640px) {
+      #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-arrow {
+        flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        width: 2.25rem; height: 2.25rem; border-radius: 50%;
+        background: var(--proto-teal-700); color: #fff;
+        transition: background 0.2s;
+      }
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item:hover .tv-blog-practical-arrow {
+      background: var(--proto-teal-600);
+    }
+    /* guide card (right column) */
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card {
+      border-radius:16px; overflow: hidden;
+      border: 1px solid var(--proto-line-journal); background: #ffffff;
+      box-shadow:none;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:hover {
+      transform:none;
+      box-shadow:none;
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img {
+      position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+      background: var(--proto-neutral-100);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:hover .tv-blog-guide-img img {
+      transform: scale(1.02);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img .tv-blog-img-fallback-lg {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--proto-neutral-100) 0%, var(--proto-line-journal) 100%);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img .tv-blog-guide-overlay {
+      position: absolute; inset: 0;
+      background: rgba(16,44,48,0.06);
+      transition: background 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:hover .tv-blog-guide-overlay {
+      background: rgba(16,44,48,0);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-body {
+      padding: 1.5rem 1.5rem 1.75rem;
+    }
+    @media (min-width: 768px) {
+      #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-body { padding: 1.75rem 2rem 2rem; }
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-title {
+      font-family: var(--proto-font-sans);
+      font-size: clamp(1.25rem, 2.5vw, 1.75rem); font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.15; color: var(--proto-navy-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-excerpt {
+      margin-top: 0.75rem;
+      font-size: 0.9375rem; line-height: 1.6; color: var(--proto-ink-muted-deep);
+    }
+    /* ============================================================
+       MODULE 4 — EDITORIAL METHOD SPOTLIGHT
+    ============================================================ */
+    #tv-blog-index-v1 #tv-blog-editorial {
+      background: var(--proto-paper-mist);
+      padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-grid {
+      display: grid; gap: clamp(1.5rem, 3vw, 3rem); align-items: center;
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-grid {
+        grid-template-columns: 5fr 7fr; gap: clamp(3rem, 5vw, 5rem);
+      }
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-visual {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-panel {
+      position: relative; border-radius:16px; overflow: hidden; aspect-ratio: 4 / 5;
+      background: var(--proto-neutral-100);
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-panel img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-panel:last-child {
+      margin-top: 3rem;
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-panel:last-child { margin-top: 3.5rem; }
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-panel-inner {
+      position: relative; width: 100%; height: 100%;
+      background: linear-gradient(180deg, rgba(16,44,48,0) 45%, rgba(16,44,48,0.66) 100%);
+      display: flex; align-items: flex-end; padding: 1.25rem;
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-panel-label {
+      font-family: var(--proto-font-sans);
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-content {
+      max-width: 36rem;
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-title {
+      margin: 0.75rem 0 0;
+      font-family: var(--proto-font-sans);
+      font-size: clamp(1.5rem, 3.5vw, 2.75rem); font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.12; color: var(--proto-navy-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-body {
+      margin-top: 1rem;
+      font-size: 0.9375rem; line-height: 1.6; color: var(--proto-ink-muted-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-mono-eyebrow { color: var(--proto-teal-700); }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-link {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      margin-top: 1.25rem;
+      font-family: var(--proto-font-sans);
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--proto-teal-700); text-decoration: none;
+      transition: color 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-link:hover { color: var(--proto-teal-700); }
+    /* ============================================================
+       MODULE 5 — BROWSE ALL GRID
+    ============================================================ */
+    #tv-blog-index-v1 #tv-blog-browse {
+      background: var(--proto-paper-mist);
+      padding-block: clamp(2.5rem, 5vw, 4.5rem);
+      scroll-margin-top: 96px;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-header {
+      display: flex; flex-direction: column; gap: 1rem;
+      margin-bottom: 1.75rem; padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--proto-line-journal);
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-header {
+        flex-direction: row; align-items: flex-end; justify-content: space-between;
+      }
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-title {
+      font-family: var(--proto-font-sans);
+      font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.15; color: var(--proto-navy-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-search-sm {
+      display: flex; align-items: center; gap: 0.625rem;
+      border-bottom: 1.5px solid var(--proto-teal-600); padding-bottom: 0.5rem;
+      width: 100%;
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-index-v1 #tv-blog-browse .tv-blog-search-sm { max-width: 20rem; }
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-search-sm input {
+      flex: 1; background: transparent; border: none; outline: none;
+      font-family: var(--proto-font-sans);
+      font-size: 0.8125rem; color: var(--proto-navy-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-search-sm input::placeholder { color: var(--proto-ink-muted-deep); }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-search-sm button {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: none; color: var(--proto-teal-600); cursor: pointer;
+      transition: color 0.2s;
+      padding: 7px;
+      margin: -7px;
+      cursor: pointer;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-search-sm button:hover { color: var(--proto-teal-700); }
+    /* browse all card grid */
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-grid {
+      display: grid; gap: 1.25rem 1.5rem;
+    }
+    @media (min-width: 768px) {
+      #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 1024px) {
+      #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-card {
+      border-radius:12px; overflow: hidden;
+      border: 1px solid var(--proto-line-journal); background: #ffffff;
+      box-shadow:none;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-card:hover {
+      transform:none;
+      box-shadow:none;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-img {
+      position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+      background: var(--proto-neutral-100);
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-img img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-card:hover .tv-blog-browse-img img {
+      transform: scale(1.03);
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-img .tv-blog-img-fallback-grid {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--proto-neutral-100) 0%, var(--proto-line-journal) 100%);
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-body {
+      padding: 1.125rem 1.25rem 1.375rem;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-card-title {
+      margin: 0.5rem 0 0;
+      font-family: var(--proto-font-sans);
+      font-size: 1rem; font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.2; color: var(--proto-navy-deep);
+      transition: color 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-card:hover .tv-blog-browse-card-title {
+      color: var(--proto-teal-600);
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-card-excerpt {
+      margin-top: 0.5rem;
+      font-size: 0.8125rem; line-height: 1.55; color: var(--proto-ink-muted-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-browse-card-link {
+      text-decoration: none; color: inherit;
+    }
+    /* pagination */
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination {
+      margin-top: 2.5rem;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 1rem;
+    }
+    /* reset WP pagination markup */
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination h2 { display: none; }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination .screen-reader-text { display: none; }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination .navigation { margin: 0; }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination .pagination { margin: 0; }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination .nav-links { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination ul { margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; list-style: none; }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination li { margin: 0; list-style: none; }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination a,
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination .page-numbers {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 2.25rem; min-height: 2.75rem; padding: 0 0.375rem;
+      font-family: var(--proto-font-sans);
+      font-size: 1.25rem; font-weight: 600; line-height: 1;
+      color: var(--proto-navy-deep); background: transparent; text-decoration: none;
+      transition: color 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination a:hover { color: var(--proto-teal-600); }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination .current {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 2.25rem; min-height: 2.75rem; padding: 0 0.375rem;
+      font-family: var(--proto-font-sans);
+      font-size: 1.25rem; font-weight: 600; line-height: 1;
+      color: var(--proto-teal-600); background: transparent;
+    }
+    #tv-blog-index-v1 #tv-blog-browse .tv-blog-pagination .dots { color: var(--proto-ink-muted-deep); background: transparent; }
+    /* ============================================================
+       MODULE 6 — SPECIFICATION RESOURCES STRIP
+    ============================================================ */
+    #tv-blog-index-v1 #tv-blog-resources {
+      background: var(--proto-paper-mist);
+      padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    }
+    #tv-blog-index-v1 #tv-blog-resources .tv-blog-resources-grid {
+      display: grid; gap: 1px; overflow: hidden;
+      border-radius:16px; border: 1px solid var(--proto-line-journal);
+      background: var(--proto-line-journal);
+    }
+    @media (min-width: 768px) {
+      #tv-blog-index-v1 #tv-blog-resources .tv-blog-resources-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    #tv-blog-index-v1 #tv-blog-resources .tv-blog-resource-card {
+      padding: 1.5rem 1.5rem 1.75rem;
+      background: #ffffff; text-decoration: none;
+      transition: background 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-resources .tv-blog-resource-card:hover { background: var(--proto-paper-mist); }
+    @media (min-width: 768px) {
+      #tv-blog-index-v1 #tv-blog-resources .tv-blog-resource-card { padding: 1.75rem 2rem 2rem; }
+    }
+    #tv-blog-index-v1 #tv-blog-resources .tv-blog-resource-card-title {
+      margin-top: 1.75rem;
+      font-family: var(--proto-font-sans);
+      font-size: 1.125rem; font-weight: 600; color: var(--proto-navy-deep);
+    }
+    #tv-blog-index-v1 #tv-blog-resources .tv-blog-resource-link-label {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      margin-top: 1rem;
+      font-family: var(--proto-font-sans);
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--proto-teal-600); transition: color 0.2s;
+    }
+    #tv-blog-index-v1 #tv-blog-resources .tv-blog-resource-card:hover .tv-blog-resource-link-label { color: var(--proto-teal-700); }
+    /* ============================================================
+       MODULE 7 — FINAL CTA
+       Linker DS v1 CTA band: navy -> deep-teal gradient, ring motif.
+     ============================================================ */
+     #tv-blog-index-v1 #tv-blog-final {
+       padding-block: clamp(2.5rem, 5vw, 4.5rem);
+     }
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-final-inner {
+       position: relative;
+       overflow: hidden;
+       display: grid;
+       gap: 1.75rem;
+       align-items: center;
+       padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 2.5rem);
+       border-radius: 24px;
+       background: linear-gradient(145deg,var(--proto-navy-deep),var(--proto-teal-800));
+       box-shadow: var(--proto-shadow-3);
+     }
+     @media (min-width: 1024px) {
+       #tv-blog-index-v1 #tv-blog-final .tv-blog-final-inner {
+         grid-template-columns: 6fr 5fr;
+         gap: 2rem;
+       }
+     }
+     /* ring motif echoing the two-ring logo mark, cut into the corner */
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-final-inner::before {
+       content: '';
+       position: absolute;
+       width: 220px; height: 180px;
+       right: 0; top: 0;
+       /* annulus arc (outer r150 / inner r90) drawn fully inside the box: no scrollable overflow */
+       background: radial-gradient(circle at 150px 30px, transparent 89px, rgba(255,255,255,.05) 90px, rgba(255,255,255,.05) 150px, transparent 151px);
+       pointer-events: none;
+     }
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-final-eyebrow {
+       position: relative; z-index: 1;
+       display: inline-flex; align-items: center; gap: 9px;
+       font-family: var(--proto-font-sans);
+       font-size: 0.75rem; font-weight: 800;
+       letter-spacing: 0.16em; text-transform: uppercase;
+       color: var(--proto-teal-300);
+     }
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-final-eyebrow:before {
+       content: ""; width: 34px; height: 2px; background: var(--proto-teal-300); flex-shrink: 0;
+     }
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-final-title {
+       position: relative; z-index: 1;
+       margin: 0.75rem 0 0;
+       font-family: var(--proto-font-sans);
+       font-size: clamp(1.75rem, 4vw, 3rem);
+       font-weight: 600;
+       letter-spacing: -0.02em;
+       line-height: 1.12;
+       color: #ffffff;
+     }
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-final-body {
+       position: relative; z-index: 1;
+       margin-top: 0.75rem;
+       font-size: 1rem;
+       line-height: 1.6;
+       color: rgba(255,255,255,0.82);
+     }
+     @media (min-width: 768px) {
+       #tv-blog-index-v1 #tv-blog-final .tv-blog-final-body { font-size: 1.125rem; }
+     }
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-final-cta-row {
+       position: relative; z-index: 1;
+       display: flex;
+       flex-direction: column;
+       gap: 0.75rem;
+     }
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-btn-primary-lg {
+       display: inline-flex;
+       align-items: center;
+       justify-content: center;
+       gap: 0.5rem;
+       padding: 0.875rem 2rem;
+       border-radius: 8px;
+       border: none;
+       background: #ffffff;
+       color: var(--proto-navy-deep);
+       font-family: var(--proto-font-sans);
+       font-size: 1rem;
+       font-weight: 700;
+       text-decoration: none;
+       cursor: pointer;
+       white-space: nowrap;
+       transition: background 0.2s, transform 0.2s, color 0.2s;
+       box-shadow: 0 10px 24px rgba(0,0,0,.18);
+     }
+     #tv-blog-index-v1 #tv-blog-final .tv-blog-btn-primary-lg:hover {
+       background: var(--proto-paper-mist);
+       color: var(--proto-teal-600);
+       transform: translateY(-1px);
+     }
+  #tv-blog-index-v1 a:focus-visible,#tv-blog-index-v1 button:focus-visible,#tv-blog-index-v1 input:focus-visible{outline:2px solid var(--proto-teal-600);outline-offset:2px}#tv-blog-index-v1 .tv-blog-featured-img img{object-position:center}@media(prefers-reduced-motion:reduce){#tv-blog-index-v1 *{transition:none!important;animation:none!important}}</style>
+
+  <!-- ============================================================
+       MODULE 1 — BLOG MASTHEAD
+  ============================================================ -->
+  <div id="tv-blog-masthead">
+    <div class="tv-blog-container">
+      <div class="tv-blog-masthead-grid">
+        <div class="lc-block">
+          <p class="tv-blog-masthead-eyebrow">Linker Journal</p>
+          <h1 class="tv-blog-masthead-title">
+            Read before you size, pair or quote.
+          </h1>
+          <p class="tv-blog-masthead-lead">
+            Articles on system sizing, inverter-battery pairing, commissioning and monitoring, written for installers and EPCs who carry the project after handover.
+          </p>
+          <div class="tv-blog-masthead-chips">
+            <span class="tv-blog-chip">Hybrid inverters</span>
+            <span class="tv-blog-chip">Battery sizing</span>
+            <span class="tv-blog-chip">Commissioning</span>
+            <span class="tv-blog-chip">Monitoring</span>
+          </div>
+        </div>
+        <div>
+          <form role="search" method="get" action="/" class="lc-block">
+            <input type="hidden" name="post_type" value="post">
+            <label for="tv-blog-search" class="sr-only">Search articles</label>
+            <div class="tv-blog-search">
+              <input id="tv-blog-search" type="search" name="s" placeholder="Find technical articles">
+              <button type="submit" aria-label="Search">
+                <svg aria-hidden="true" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 2 — LATEST ARTICLES SPLIT
+  ============================================================ -->
+  <div id="tv-blog-latest">
+    <div class="tv-blog-container">
+      <div class="tv-blog-latest-grid">
+        <div>
+          <div class="lc-block">
+            <p class="tv-blog-mono-eyebrow">/ Latest reading</p>
+            <h2 class="tv-blog-section-heading">Latest articles</h2>
+          </div>
+
+          <loop type="post" count="1" orderby="date" order="desc">
+            <article class="lc-block">
+              <a href="/{Field name}/" class="tv-blog-featured-card" style="display: block; text-decoration: none;">
+                <div class="tv-blog-featured-img">
+                  <if field="image">
+                    <img src="{Field image_url size='large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="eager" alt="{Field image_alt}">
+                    <else>
+                      <div class="tv-blog-img-fallback">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
+                      </div>
+                    </else>
+                  </if>
+                </div>
+                <div class="tv-blog-featured-body">
+                  <div class="tv-blog-featured-meta">
+                    <field name="publish_date" date_format="M j, Y"></field>
+                    <span aria-hidden="true">&middot;</span>
+                    <loop type="taxonomy_term" taxonomy="category" post="current" count="1">
+                      <span class="tv-blog-card-cat-mono"><field name="title"></field></span>
+                    </loop>
+                  </div>
+                  <h3 class="tv-blog-featured-title"><field name="title"></field></h3>
+                  <div class="tv-blog-featured-excerpt">
+                    <field name="excerpt" auto="true" words="28" more="..."></field>
+                  </div>
+                  <span class="tv-blog-featured-link">Read article
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.875rem; height: 0.875rem;">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                    </svg>
+                  </span>
+                </div>
+              </a>
+            </article>
+          </loop>
+        </div>
+
+        <aside>
+          <div class="lc-block">
+            <h2 class="tv-blog-section-heading">More from the journal</h2>
+          </div>
+          <loop type="post" count="4" offset="1" orderby="date" order="desc" class="tv-blog-compact-list">
+            <article class="lc-block">
+              <a href="/{Field name}/" class="tv-blog-compact-item">
+                <div>
+                  <div class="tv-blog-card-cat-mono-muted">
+                    <loop type="taxonomy_term" taxonomy="category" post="current" count="1">
+                      <field name="title"></field>
+                    </loop>
+                  </div>
+                  <h3 class="tv-blog-compact-title"><field name="title"></field></h3>
+                </div>
+                <span class="tv-blog-compact-arrow">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 1rem; height: 1rem;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                  </svg>
+                </span>
+              </a>
+            </article>
+          </loop>
+        </aside>
+      </div>
+
+      <div class="lc-block tv-blog-inquiry-strip">
+        <div class="tv-blog-inquiry-inner">
+          <div>
+            <span class="tv-blog-inquiry-label">When the reading turns into a project.</span><span class="tv-blog-inquiry-text" style="margin-left: 0.5rem;">Send the project data. A colleague replies with availability, price and the next step.</span>
+          </div>
+          <a href="/linker-planner/" class="tv-blog-btn-primary">Open the Solution Configurator<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.875rem; height: 0.875rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7m0 0H9m8 0v8" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 3 — PRACTICAL READING
+  ============================================================ -->
+  <div id="tv-blog-practical">
+    <div class="tv-blog-container">
+      <div class="tv-blog-practical-grid">
+        <div>
+          <div class="lc-block">
+            <p class="tv-blog-mono-eyebrow">/ Practical reading</p>
+            <h2 class="tv-blog-section-heading">More practical reading</h2>
+          </div>
+          <loop type="post" count="4" offset="5" orderby="date" order="desc" class="tv-blog-practical-list">
+            <article class="lc-block">
+              <a href="/{Field name}/" class="tv-blog-practical-item">
+                <div class="tv-blog-practical-thumb">
+                  <if field="image">
+                    <img src="{Field image_url size='medium'}" srcset="{Field image_srcset}" sizes="120px" loading="lazy" alt="{Field image_alt}">
+                    <else>
+                      <div class="tv-blog-img-fallback-sm"></div>
+                    </else>
+                  </if>
+                </div>
+                <div>
+                  <div class="tv-blog-card-cat-mono-muted">
+                    <loop type="taxonomy_term" taxonomy="category" post="current" count="1">
+                      <field name="title"></field>
+                    </loop>
+                  </div>
+                  <h3 class="tv-blog-practical-title"><field name="title"></field></h3>
+                </div>
+                <span class="tv-blog-practical-arrow">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.875rem; height: 0.875rem;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                  </svg>
+                </span>
+              </a>
+            </article>
+          </loop>
+        </div>
+
+        <aside>
+          <div class="lc-block">
+            <h2 class="tv-blog-section-heading">From the archive</h2>
+          </div>
+          <loop type="post" count="1" offset="9" orderby="date" order="desc">
+            <article class="lc-block">
+              <a href="/{Field name}/" class="tv-blog-guide-card" style="display: block; text-decoration: none;">
+                <div class="tv-blog-guide-img">
+                  <if field="image">
+                    <img src="{Field image_url size='large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="lazy" alt="{Field image_alt}">
+                    <else>
+                      <div class="tv-blog-img-fallback-lg"></div>
+                    </else>
+                  </if>
+                  <div class="tv-blog-guide-overlay"></div>
+                </div>
+                <div class="tv-blog-guide-body">
+                  <h3 class="tv-blog-guide-title"><field name="title"></field></h3>
+                  <div class="tv-blog-guide-excerpt">
+                    <field name="excerpt" auto="true" words="24" more="..."></field>
+                  </div>
+                </div>
+              </a>
+            </article>
+          </loop>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 4 — EDITORIAL METHOD SPOTLIGHT
+  ============================================================ -->
+  <div id="tv-blog-editorial">
+    <div class="tv-blog-container">
+      <div class="tv-blog-editorial-grid">
+        <div class="lc-block tv-blog-editorial-visual">
+          <div class="tv-blog-editorial-panel">
+            <img src="http://127.0.0.1:9027/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65-768x1024.jpg" loading="lazy" alt="Hybrid inverter and two battery towers installed in a garage">
+            <div class="tv-blog-editorial-panel-inner">
+              <span class="tv-blog-editorial-panel-label">System design</span>
+            </div>
+          </div>
+          <div class="tv-blog-editorial-panel">
+            <img src="http://127.0.0.1:9027/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-768x1024.jpg" loading="lazy" alt="Battery storage cabinet being wired during commissioning">
+            <div class="tv-blog-editorial-panel-inner">
+              <span class="tv-blog-editorial-panel-label">Commissioning</span>
+            </div>
+          </div>
+        </div>
+        <div class="lc-block tv-blog-editorial-content">
+          <p class="tv-blog-mono-eyebrow">/ Editorial method</p>
+          <h2 class="tv-blog-editorial-title">
+            Settle the decision before the site visit.
+          </h2>
+          <p class="tv-blog-editorial-body">
+            Each article works through a decision installers and EPCs meet on live projects: inverter selection and battery sizing before the order, commissioning and monitoring after it. What is settled at the desk does not need to be discovered on the roof.
+          </p>
+          <a href="#tv-blog-browse" class="tv-blog-editorial-link">
+            Browse articles
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.875rem; height: 0.875rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 5 — BROWSE ALL GRID
+  ============================================================ -->
+  <div id="tv-blog-browse">
+    <div class="tv-blog-container">
+      <div class="lc-block tv-blog-browse-header">
+        <h2 class="tv-blog-browse-title">Browse all articles</h2>
+        <form role="search" method="get" action="/" class="tv-blog-search-sm">
+          <input type="hidden" name="post_type" value="post">
+          <label for="tv-blog-search-bottom" class="sr-only">Search all articles</label>
+          <input id="tv-blog-search-bottom" type="search" name="s" placeholder="Search for an article">
+          <button type="submit" aria-label="Search all articles">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 1.125rem; height: 1.125rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <div class="tv-blog-browse-grid">
+        <loop class="contents">
+          <article class="lc-block tv-blog-browse-card">
+            <a href="/{Field name}/" class="tv-blog-browse-card-link">
+              <div class="tv-blog-browse-img">
+                <if field="image">
+                  <img src="{Field image_url size='medium_large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="lazy" alt="{Field image_alt}">
+                  <else>
+                    <div class="tv-blog-img-fallback-grid"></div>
+                  </else>
+                </if>
+              </div>
+              <div class="tv-blog-browse-body">
+                <div class="tv-blog-card-cat-mono">
+                  <loop type="taxonomy_term" taxonomy="category" post="current" count="1">
+                    <field name="title"></field>
+                  </loop>
+                </div>
+                <h3 class="tv-blog-browse-card-title"><field name="title"></field></h3>
+                <div class="tv-blog-browse-card-excerpt">
+                  <field name="excerpt" auto="true" words="18" more="..."></field>
+                </div>
+              </div>
+            </a>
+          </article>
+        </loop>
+      </div>
+
+      <div class="lc-block tv-blog-pagination">
+        [lc_the_pagination]
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 6 — SPECIFICATION RESOURCES STRIP
+  ============================================================ -->
+  <div id="tv-blog-resources">
+    <div class="tv-blog-container">
+      <div class="lc-block">
+        <h2 class="tv-blog-section-heading" style="margin-bottom: 1.75rem;">Specification resources</h2>
+      </div>
+      <div class="tv-blog-resources-grid">
+        <a href="/faq-download/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">FAQs &amp; Downloads</p>
+          <h3 class="tv-blog-resource-card-title">Datasheets, manuals and FAQ</h3>
+          <span class="tv-blog-resource-link-label">View resources
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.75rem; height: 0.75rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+        <a href="/products/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">Products</p>
+          <h3 class="tv-blog-resource-card-title">Browse our products</h3>
+          <span class="tv-blog-resource-link-label">View products
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.75rem; height: 0.75rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+        <a href="/solution/" class="tv-blog-resource-card">
+          <p class="tv-blog-card-cat-mono">Applications</p>
+          <h3 class="tv-blog-resource-card-title">Start from the application</h3>
+          <span class="tv-blog-resource-link-label">Explore applications
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 0.75rem; height: 0.75rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODULE 7 — FINAL CTA
+  ============================================================ -->
+  <div id="tv-blog-final">
+    <div class="tv-blog-container">
+      <div class="tv-blog-final-inner">
+        <div class="lc-block">
+          <p class="tv-blog-final-eyebrow">Start Your Project</p>
+          <h2 class="tv-blog-final-title">
+            Turn what you just read into a system plan.
+          </h2>
+          <p class="tv-blog-final-body">
+            Send the loads, phase supply and timeline. A colleague replies with availability, price and the next step, and no account is needed to start.
+          </p>
+        </div>
+        <div class="lc-block tv-blog-final-cta-row">
+          <a href="/linker-planner/" class="tv-blog-btn-primary-lg">Open the Solution Configurator<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width: 1rem; height: 1rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7m0 0H9m8 0v8" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["CollectionPage", "WebPage"],
+      "name": "Linker Journal",
+      "url": "http://127.0.0.1:9027/blog/",
+      "description": "Technical articles on system sizing, inverter-battery pairing, commissioning and monitoring for installers, EPCs and energy partners working with photovoltaic and energy-storage solutions.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Linker",
+        "url": "http://127.0.0.1:9027/"
+      }
+    }
+  </script>
+
+  <script>
+    (function () {
+      var root = document.getElementById('tv-blog-index-v1');
+      if (!root) return;
+      var browse = root.querySelector('#tv-blog-browse');
+      if (!browse) return;
+      function appendBrowseAnchor(anchor) {
+        if (!(anchor instanceof HTMLAnchorElement)) return;
+        var href = anchor.getAttribute('href');
+        if (!href) return;
+        if (href.indexOf('#') === -1) {
+          anchor.setAttribute('href', href + '#tv-blog-browse');
+        }
+      }
+      var pagination = root.querySelector('.tv-blog-pagination');
+      if (pagination) {
+        var links = pagination.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) {
+          appendBrowseAnchor(links[i]);
+        }
+      }
+      var hashTarget = window.location.hash;
+      if (hashTarget === '#tv-blog-browse') {
+        browse.scrollIntoView({ behavior: 'auto', block: 'start' });
+      } else if (window.location.search.indexOf('paged=') > -1 || window.location.pathname.indexOf('/page/') > -1) {
+        var isBlogPage = window.location.pathname.indexOf('/blog') > -1;
+        if (isBlogPage) {
+          browse.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
+      }
+    })();
+  </script>
+</section>
+</tangible>
+

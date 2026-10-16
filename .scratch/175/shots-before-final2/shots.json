@@ -1,0 +1,74 @@
+[
+  {
+    "shot": "blog-en-1440",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/blog-en-1440.png"
+  },
+  {
+    "shot": "blog-en-390",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/blog-en-390.png"
+  },
+  {
+    "shot": "blog-de-1440",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/blog-de-1440.png"
+  },
+  {
+    "shot": "blog-de-390",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/blog-de-390.png"
+  },
+  {
+    "shot": "search-en-1440",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/search-en-1440.png"
+  },
+  {
+    "shot": "search-en-390",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/search-en-390.png"
+  },
+  {
+    "shot": "search-de-1440",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/search-de-1440.png"
+  },
+  {
+    "shot": "search-de-390",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/search-de-390.png"
+  },
+  {
+    "shot": "category-en-1440",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/category-en-1440.png"
+  },
+  {
+    "shot": "category-en-390",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/category-en-390.png"
+  },
+  {
+    "shot": "category-de-1440",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/category-de-1440.png"
+  },
+  {
+    "shot": "category-de-390",
+    "status": 200,
+    "marker": true,
+    "file": ".scratch/175/shots-before-final2/category-de-390.png"
+  }
+]
