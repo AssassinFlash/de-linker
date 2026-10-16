@@ -237,10 +237,17 @@ test.describe('i18n', () => {
 			).toContain(response.status);
 			if (response.status === 301 || response.status === 302) {
 				const location = response.headers.get('location') ?? '';
+				// Resolved, not a substring: the German tree is the path the
+				// redirect's own origin serves, so '/de/' inside a foreign URL
+				// is not that.
+				const landed = new URL(location);
 				expect(
-					location,
+					landed.pathname,
 					`${path} redirects inside the German tree`
-				).toContain('/de/');
+				).toMatch(/^\/de\//);
+				expect(landed.origin, `${path} stays on this site`).toBe(
+					new URL(instance().url).origin
+				);
 			}
 		}
 	});
