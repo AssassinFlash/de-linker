@@ -65,7 +65,7 @@
 - 文件头（原"asked once more … a row that misses them twice is a failure"）；
 - `askRow` 注释（"the panel's own practice was to rerun a row until it shipped a compliant
   turn"）；
-- PR #96 描述（"模型行每题最多三次采样…两次都不过才算失败"）；
+- PR #96 描述（前段"最多两次采样、两次都不过才算失败"，后段"最多三次采样…全不过才算失败"——新判定 = 全部采样失分才算失败，两种陈述同时满足）；
 - 同文件 R7 自己的循环（达标时 `measured.length = 0`，只有全失才报告）。
 
 暴露点：2026-10-16 整文件跑，R6-en 首采样因占位符写成 `compat.verdict.3611` 落兜底、

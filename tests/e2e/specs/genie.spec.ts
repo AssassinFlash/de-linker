@@ -163,7 +163,7 @@ function problems(row: Row, locale: Locale, result: Turn): string[] {
  * (services/genie facts.py). R7-de needed this suite to know the login
  * sentence the copy review settled on (the R7 test below). The mechanism
  * stays for the main line's next debt (genie-dock.spec.ts still marks three
- * entries with it).
+ * entries as pending-main).
  */
 const PENDING_MAIN: Record<string, string> = {};
 
