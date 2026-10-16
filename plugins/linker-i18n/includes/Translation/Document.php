@@ -53,7 +53,7 @@ final class Document {
 					$out .= isset( $translations[ $part ] ) ? $segment->render( $translations[ $part ], $translations ) : $segment->raw;
 				}
 			} elseif ( $part instanceof TagPart ) {
-				$out .= $part->render( $translations );
+				$out .= $part->render( $translations, $verbatim );
 			} else {
 				$out .= $part;
 			}

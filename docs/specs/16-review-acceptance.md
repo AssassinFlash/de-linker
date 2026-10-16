@@ -21,7 +21,7 @@
 `tests/e2e/`（Playwright，独立 npm 包）：`just e2e <实例名> [playwright 参数]`，实例先按 §环境 建好（`just up` + `just pull load … --live-code` + `just serve`）。套件连的是 `~/de-linker-local/instances.toml` 里登记的实例端口，`just check` 里的 `e2e-check` 跑它的类型与格式（跑不动实例的部分不进门）。
 
 - `specs/genie.spec.ts`：R1–R14（EN/DE，真模型 deepseek-flash）＋ Jev→DeepSeek 级联逐问判分（`services/genie/eval/judges/score.py`，判据即 #13 试点）。
-- `specs/genie-dock.spec.ts`：披露句、商品页芯片（R13，带 product_id）、登录客户的询盘（R7）、刷新后的线程恢复。
+- `specs/genie-dock.spec.ts`：披露句、商品页入口（R13，点工具行的 `[data-pdp-ask]`，随轮次带 product_id）、登录客户的询盘（R7，从常驻 dock 问）、刷新后的线程恢复。
 - `specs/configurator.spec.ts`：8 户型、3 合规、工商业两路、屋顶步、设计报告 PDF。
 - `specs/commerce.spec.ts`：注册→看价→Lösungsentwurf→询盘→后台出 PI→账户下载（EN/DE），邮件捕获断言。
 - `specs/i18n.spec.ts`：150 德语 URL（经 `just pull check-urls` 请求快照自己的德语 sitemap）、同 slug、库存镜像、`?lang=de` Store API。

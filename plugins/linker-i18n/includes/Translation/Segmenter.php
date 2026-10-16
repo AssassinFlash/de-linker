@@ -38,7 +38,15 @@ final class Segmenter {
 	private const OPAQUE_INLINE = array( 'code', 'kbd', 'samp', 'var', 'svg', 'math' );
 
 	/**
-	 * Block elements whose content is kept as it is.
+	 * Block elements whose content is kept as it is. The element's own start
+	 * tag is still dispatched like any other: its text attributes (alt,
+	 * title, aria-label, placeholder) are text for people and become
+	 * segments, while everything from the content to the end tag stays the
+	 * source's bytes. Reading the whole element as one raw part swallowed
+	 * those attributes too — measured 2026-10-16 on the live content: the
+	 * services page's two stage videos carry `aria-label`, and a German page
+	 * rebuilt from its English source came back with the English labels
+	 * while every visible line stayed German.
 	 */
 	private const OPAQUE_BLOCK = array( 'pre', 'template', 'select', 'object', 'video', 'audio', 'canvas' );
 
@@ -120,9 +128,20 @@ final class Segmenter {
 				$element = $this->element( $tokens, $i );
 				if ( in_array( $token->name, self::OPAQUE_INLINE, true ) || ( self::untranslatable( $token ) && in_array( $token->name, array_merge( self::INLINE, self::VOID_INLINE ), true ) ) ) {
 					$run[] = new HtmlToken( HtmlToken::OTHER, $element );
-				} else {
+				} elseif ( self::untranslatable( $token ) ) {
+					// translate="no" on a block element: nothing of it is touched.
 					$this->flush( $run, $parts, $segments );
 					$parts[] = $element;
+				} else {
+					// An opaque block: the content stays the source's bytes, the
+					// element's own start tag is dispatched like any other so its
+					// text attributes (video's aria-label) are segments too.
+					$this->flush( $run, $parts, $segments );
+					$parts[] = $this->tag( $token, $segments );
+					$rest    = substr( $element, strlen( $token->raw ) );
+					if ( '' !== $rest ) {
+						$parts[] = $rest;
+					}
 				}
 				continue;
 			}

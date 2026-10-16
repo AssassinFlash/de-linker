@@ -139,7 +139,7 @@ Legend: **LP** = LiveCanvas template markup (composition lives here) ·
 | Shop URL in the crumb | NAT | `[lc_wc_get_page_url page="shop"]` (language-aware through Polylang) |
 | Brand name, model | FRAG | `[linker_pdp_brand]`, `[linker_pdp_model]` — `pa_brand` / `pa_model` term reads |
 | Product title in the description heading | NAT | `[lc_the_title]` |
-| price area | FRAG | `[linker_pdp_price]` — the price GATE is business logic (precedent `linker_price`); the fragment prints only the link or the price |
+| price area | FRAG | `[linker_pdp_price]` — the price GATE is business logic (precedent: the B2B price gate in `Gating\PriceDisplay`, which hides a price at its source; Woo does no gate); the fragment prints only the link or the price |
 | SKU text | NAT + LP | `[linker_pdp_sku]` (bare value), the label is template copy ("Item number:" / "Artikelnummer:") |
 | key figures (4 rows) | FRAG | `[linker_pdp_key_stats]` — registry figures in the type's order; no native tag reads the material registry |
 | availability + delivery sentence | FRAG | `[linker_pdp_availability]` — the freight outcome is a policy derivation |

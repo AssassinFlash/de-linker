@@ -51,7 +51,7 @@
 ## 原生优先的穷尽证明（AGENTS §5，逐项）
 - **审批状态机**：Woo 无账号审批概念（角色只有 customer，无 pending 账号、无审批 UI）；WP 原生存储（user meta）+ 原生登录拦截点（`wp_authenticate_user`）+ 原生会话终结（`WP_Session_Tokens`）即全部所需，自定义 `Approval` 只做规则与数据装配，零设计决策。
 - **后台入口**：用户列表与资料页是 WP 核心屏幕；扩展点全用核心的 `manage_users_columns` / `manage_users_custom_column` / `user_row_actions` / `edit_user_profile`；表单走核心 `admin-post.php` + `wp_nonce_field`；**零** `add_menu_page`、**零** `wp_ajax_*`。资料页 Woo 区块（`woocommerce_customer_meta_fields`）只能出输入框，三动作按钮用 `formaction` 指向 admin-post（WP 资料页自带 form，不可嵌套 form）。
-- **客户可见面**：价格位/目录/Store API 已有 `linker_price` 门（Woo 原生不做门——既有合格先例），审批只是给这一门加输入；未审批 gate 文案沿用既有 LoginGate 的类名与结构，零新站点 CSS、零新页面模板。
+- **客户可见面**：价格位/目录/Store API 已有 B2B 价格门（`Gating\PriceDisplay` 在源头隐藏价格：不可见的价在请求里根本不存在，模板/挂件/feed/API 都取不到；Woo 原生不做门——合格先例），审批只是给这一门加输入；未审批 gate 文案沿用既有 LoginGate 的类名与结构，零新站点 CSS、零新页面模板。
 
 ## 联系表单（票 #68，GAP-8）
 

@@ -113,6 +113,30 @@ final class SegmenterTest extends TestCase {
 	}
 
 	/**
+	 * An opaque block's own attributes are segments too, while its content stays
+	 * the source's bytes (measured 2026-10-16: the live services page's two
+	 * stage videos carry a localized aria-label, and reading the whole element
+	 * as one raw part put the English label back on the German page).
+	 */
+	public function test_an_opaque_blocks_attributes_are_segments(): void {
+		$html     = '<video aria-label="System sizing and compatibility lists" controls="" data-poster="/a.jpg"><source src="/a.mp4"></video>';
+		$document = $this->segmenter->html( $html );
+
+		$this->assertSame( array( 'System sizing and compatibility lists' ), array_map( static fn( Segment $segment ): string => $segment->text, $document->segments ) );
+		// No translation: byte for byte the same value.
+		$this->assertSame( $html, $document->render( array() ) );
+		$this->assertSame(
+			'<video aria-label="Systemauslegung und Kompatibilitätslisten" controls="" data-poster="/a.jpg"><source src="/a.mp4"></video>',
+			$document->render( array( 0 => 'Systemauslegung und Kompatibilitätslisten' ) )
+		);
+		// The verbatim channel is German bytes for the attribute as well.
+		$this->assertSame(
+			'<video aria-label="Systemauslegung &amp; Kompatibilität" controls="" data-poster="/a.jpg"><source src="/a.mp4"></video>',
+			$document->render( array(), array( 0 => 'Systemauslegung & Kompatibilität' ) )
+		);
+	}
+
+	/**
 	 * A translation keeps the markup: placeholders come back as the tags,
 	 * text is encoded, kept names are put back.
 	 */
