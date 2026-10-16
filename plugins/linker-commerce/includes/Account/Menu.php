@@ -37,6 +37,8 @@ final class Menu {
 
 	/**
 	 * The menu, in this order; items other plugins add stay before "Log out".
+	 * The register page (AuthTemplates::REGISTER_ENDPOINT) never becomes a row:
+	 * it is the guests' sign-up, and the sign-in card is its only entry.
 	 *
 	 * @param array<string, string> $items Endpoint → label.
 	 * @return array<string, string>
@@ -50,7 +52,7 @@ final class Menu {
 			'edit-address'    => __( 'Company', 'linker-commerce' ),
 			'edit-account'    => __( 'Account details', 'linker-commerce' ),
 		);
-		$known = array_merge( array_keys( $menu ), array( 'customer-logout', 'downloads', 'payment-methods' ) );
+		$known = array_merge( array_keys( $menu ), array( 'customer-logout', 'downloads', 'payment-methods', AuthTemplates::REGISTER_ENDPOINT ) );
 		foreach ( $items as $endpoint => $label ) {
 			if ( ! in_array( $endpoint, $known, true ) ) {
 				$menu[ $endpoint ] = $label;

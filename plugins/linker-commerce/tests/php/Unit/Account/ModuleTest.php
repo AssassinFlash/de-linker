@@ -62,8 +62,10 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $route, 'register' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_account_documents_endpoint', array( $documents, 'render' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $download, 'serve' ), 1 );
+		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $auth, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
+		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'register_redirect' ) );
 
 		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth ) )->register();
 

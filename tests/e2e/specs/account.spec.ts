@@ -25,6 +25,13 @@ const PASSWORD = 'e2e-Account-2026!';
 /** The password the reset chain writes and then signs in with. */
 const NEW_PASSWORD = 'e2e-Reset-2026!x';
 
+/**
+ * The account's own register page (owner ruling 2026-10-16: sign-in and
+ * sign-up are two pages). The endpoint is WooCommerce's, so the page sits
+ * under the account page's URL.
+ */
+const REGISTER = '/my-account/register/';
+
 function url(path: string): string {
 	return `${instance().url}${path}`;
 }
@@ -245,7 +252,9 @@ for (const { locale, account, lost } of LOCALES) {
 test('en: the register form carries its client constraints and refuses a bad email server-side', async ({
 	page,
 }) => {
-	await page.goto(url('/my-account/'));
+	// The sign-up card lives on the register page (owner ruling 2026-10-16),
+	// not below the sign-in card; a refused registration stays on it.
+	await page.goto(url(REGISTER));
 
 	// The form's own constraints: the fields a visitor must fill are marked,
 	// the email field is typed (the browser reports what it cannot answer).
@@ -268,11 +277,62 @@ test('en: the register form carries its client constraints and refuses a bad ema
 	await page.locator('button[name="register"]').focus();
 	await page.keyboard.press('Enter');
 	await page.waitForLoadState('load');
+	await expect(page).toHaveURL(new RegExp('/register/?$'));
 	await expect(
 		page.locator('.woocommerce-error').first(),
-		'the impossible address is refused'
+		'the impossible address is refused on the register page'
 	).toBeVisible();
+	await expect(
+		page.locator('#reg_email'),
+		'the refused sign-up stays on its own card'
+	).toBeVisible();
+	await expect(
+		page.locator('#username'),
+		'the sign-in card is not on the register page'
+	).toHaveCount(0);
 	await shot(page, 'en-register-invalid-email');
+});
+
+test('en: sign-in and sign-up are two pages and link to each other', async ({
+	page,
+}) => {
+	// The sign-in page carries the sign-in card and the link to the sign-up.
+	await page.goto(url('/my-account/'));
+	await expect(
+		page.locator('#username'),
+		'the account page opens the sign-in card'
+	).toBeVisible();
+	await expect(
+		page.locator('#reg_email'),
+		'the sign-up card is not on the account page'
+	).toHaveCount(0);
+	const toRegister = page.locator('.linker-auth-links a', {
+		hasText: 'Create your business account',
+	});
+	await expect(toRegister).toHaveAttribute(
+		'href',
+		new RegExp('/my-account/register/?$')
+	);
+	await toRegister.click();
+	await page.waitForLoadState('load');
+
+	// The register page is the sign-up card alone, and links back.
+	await expect(page.locator('.linker-auth-register')).toBeVisible();
+	await expect(page.locator('#reg_email')).toBeVisible();
+	await expect(
+		page.locator('#password'),
+		'the sign-in password field is not on the register page'
+	).toHaveCount(0);
+	const toSignIn = page.locator('.linker-auth-links a', {
+		hasText: 'Already have a partner account?',
+	});
+	await expect(toSignIn).toHaveAttribute(
+		'href',
+		new RegExp('/my-account/?$')
+	);
+	await toSignIn.click();
+	await page.waitForLoadState('load');
+	await expect(page.locator('#username')).toBeVisible();
 });
 
 test('en: an approved partner saves account details and company, and signs out', async ({
@@ -388,15 +448,16 @@ test('en: a fresh account reads the designed empty states', async ({
 
 /**
  * The register form's own fields, filled the way the form carries them. The
- * register button of this build submits on the keyboard (commerce.spec's
- * pattern), and the register hook checks the VAT ID without ever blocking.
+ * form lives on the account's register page (owner ruling 2026-10-16), and its
+ * button submits on the keyboard (commerce.spec's pattern); the register hook
+ * checks the VAT ID without ever blocking.
  */
 async function registerPartner(
 	page: Page,
 	email: string,
 	vat: string
 ): Promise<void> {
-	await page.goto(url('/my-account/'));
+	await page.goto(url(REGISTER));
 	await page.fill('#billing_company', 'E2E Partner GmbH');
 	await page
 		.locator('select[name="linker_customer_role"]')

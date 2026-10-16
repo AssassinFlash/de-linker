@@ -13,7 +13,7 @@
 
 | 面 | 现状载体 | 新载体 |
 | :--- | :--- | :--- |
-| 登录 + 注册卡 | `templates/myaccount/auth/form-login.php`（居中两卡列） | 同文件重写：桌面 = **每张卡自带一个深绿品牌面板**（登录单元 = 登录文案，注册单元 = 注册文案，各自面板高度随各自的卡），移动 = 两卡竖排且无面板；注册三步编号组保留，只重排呈现 |
+| 登录 + 注册卡 | `templates/myaccount/auth/form-login.php`（居中两卡列） | 同文件重写：桌面 = **每张卡自带一个深绿品牌面板**（登录单元 = 登录文案，注册单元 = 注册文案，各自面板高度随各自的卡），移动 = 两卡竖排且无面板；注册三步编号组保留，只重排呈现。**后续变更（业主 2026-10-16）**：两卡拆成两个页面——登录卡留在 `/my-account/`（同文件），注册卡移到账号页的 `register` 端点（`templates/myaccount/auth/form-register.php`），见 `docs/specs/split-login-register.md` |
 | 忘记密码请求 | `templates/myaccount/auth/form-lost-password.php` | 同文件重写：单卡（`.linker-auth--solo`），`Back to sign in` 留在卡内 |
 | 发送成功确认 | Woo 默认 `myaccount/lost-password-confirmation.php`（裸文本落在页底） | **新增覆写** `templates/myaccount/auth/lost-password-confirmation.php`：同一张卡，Woo 的 notice + 过滤后的说明句进卡头 |
 | 重置密码表单 | Woo 默认 `myaccount/form-reset-password.php`（裸模板，链路最差一环） | **新增覆写** `templates/myaccount/auth/form-reset-password.php`：卡 + 双密码字段 + Woo 自带眼睛 + Woo 自带强度计 |
@@ -36,13 +36,13 @@
 
 | 原型 | 实现 | 触发 |
 | :--- | :--- | :--- |
-| `login.html?state=default` | `/my-account/`（guest）登录卡 + 注册卡 | 访客 |
+| `login.html?state=default` | `/my-account/`（guest）登录卡（2026-10-16 起注册卡不再同页，见下） | 访客 |
 | `login.html?state=error` | 同页，Woo 的 `.woocommerce-error` 在登录卡内（`You have been signed out.` 之类同容器） | 凭据错误 |
 | `login.html?state=rejected` | 同页，拒因由 `Registration\Approval::login_errors()` 写进同一条错误条 | 被拒账号登录 |
 | `login.html?state=reset-success` | 同页，Woo 的 `.woocommerce-message`（`password-reset=true`） | 重置成功 |
 | `login.html?state=signed-out` | 同页，Woo 的 `.woocommerce-info`（`signed-out=true`） | 一键登出后 |
 | `login.html?state=loading` | 提交瞬时（`account-ui.js` 给按钮 `.is-loading`） | 提交 |
-| `register.html?state=default/errors/loading/password-shown` | 注册卡（三步、法务链接、Privacy 链接按 `get_privacy_policy_url()` 存在时出） | 访客 |
+| `register.html?state=default/errors/loading/password-shown` | 注册卡（三步、法务链接、Privacy 链接按 `get_privacy_policy_url()` 存在时出）；自 2026-10-16 起在 `/my-account/register/`（DE `/de/mein-konto/register/`） | 访客 |
 | `lost-password.html?state=default` | `/my-account/lost-password/` 单卡 | 访客 |
 | `lost-password.html?state=sent` | 同路径 `?reset-link-sent=true` → 确认卡 | 发送成功 |
 | `lost-password.html?state=invalid-key` | 同路径，Woo 的错误条在卡内 | 无效/已用 key |

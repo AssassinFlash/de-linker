@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Gating;
 
+use Linker\Commerce\Account\AuthTemplates;
 use WC_Order;
 use WC_Product;
 
@@ -33,6 +34,7 @@ final class DraftSummary {
 	/**
 	 * Replaces the totals box of the solution draft with the login box for guests.
 	 * Runs on woocommerce_cart_collaterals before WooCommerce prints the totals.
+	 * "Register" opens the account's own register page (AuthTemplates).
 	 */
 	public function guest_totals(): void {
 		if ( $this->state->visitor_sees_prices() ) {
@@ -44,7 +46,7 @@ final class DraftSummary {
 			esc_html__( 'Prices are shown after you log in. Then you can request a Proforma invoice for this solution draft.', 'linker-commerce' ),
 			esc_url( wc_get_checkout_url() ),
 			esc_html__( 'Log in and request a Proforma', 'linker-commerce' ),
-			esc_url( wc_get_page_permalink( 'myaccount' ) ),
+			esc_url( AuthTemplates::register_url() ),
 			esc_html__( 'No account yet? Register', 'linker-commerce' )
 		);
 	}
