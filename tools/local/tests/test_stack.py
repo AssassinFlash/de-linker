@@ -224,8 +224,7 @@ def test_pretty_permalinks_and_files_are_served(stack: Stack) -> None:
         assert request(a.port, target).status == 200, target
     # Our plugins are links into the checkout; their files are served through them.
     assert (
-        request(a.port, "/wp-content/plugins/linker-tools/build/shared.js").status
-        == 200
+        request(a.port, "/wp-content/plugins/linker-tools/build/genie.js").status == 200
     )
     # WordPress knows the server rewrites URLs, as production's does; otherwise
     # Settings > Permalinks would put /index.php/ in front of every structure.

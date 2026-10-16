@@ -13,6 +13,5 @@ module.exports = {
 	entry: {
 		genie: './src/genie/index.tsx',
 		configurator: './src/configurator/index.tsx',
-		shared: './src/shared/index.tsx',
 	},
 };

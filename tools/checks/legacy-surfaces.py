@@ -12,6 +12,10 @@ Two assertions over plain HTTP, no authentication:
    page's result, and includes the contact pages and a product page beside
    the front pages and the faces.
 
+   The same sweep reads the old namespace's ids (`id="tv-…"`, minus the ones
+   the new tree's own content ships) on every sampled page, the product page
+   included: the face attribution below covers the four legacy served faces,
+   and a PDP script handle once carried the old name past both.
 2. Face attribution: the four faces the old project served through its own
    LiveCanvas templates — blog posts index, single post, search results, blog
    category archive — in EN and DE each, must answer and must not be rendered
@@ -64,6 +68,13 @@ from pathlib import Path
 LEGACY_DT_IDS = {940, 6861, 574, 6881, 613, 6877, 619, 6875, 607, 6879}
 
 LEGACY_ID_RE = re.compile(r'id="(tv-[a-z0-9-]+)"')
+# Ids the migrated live content keeps. The audit's tv-* ruling (B11,
+# docs/debt/REGISTRY-CLOSEOUT-2026-10-15.md) keeps the old namespace's DOM ids
+# as identifiers; this one lives in the contact pages' own content — the live
+# tree's wrapper, styled by the page's own style block — and not in the
+# repository's content/, so shipped_tv_ids() cannot see it. An id leaking from
+# anywhere else still fails the sweep.
+KEPT_LIVE_IDS = {"tv-contact-v1"}
 LEGACY_WORD_RE = re.compile(r"terravolt", re.IGNORECASE)
 LEGACY_ASSET_RE = re.compile(r"terravolt-b2b-core", re.IGNORECASE)
 LEGACY_DOMAIN_RE = re.compile(r"tvolt-energie\.de", re.IGNORECASE)
@@ -199,7 +210,7 @@ def main() -> int:
     parser.add_argument("--contact-de", default="/de/kontakt/", help="contact page path, DE")
     args = parser.parse_args()
     base = args.base.rstrip("/")
-    allow_ids = shipped_tv_ids(Path(args.repo_root))
+    allow_ids = shipped_tv_ids(Path(args.repo_root)) | KEPT_LIVE_IDS
 
     status, _ = fetch(f"{base}/wp-json/")
     if status != 200:
@@ -245,7 +256,10 @@ def main() -> int:
         if status == 200:
             sweep_urls.append((name, url, True))
 
-    print("== asset sweep (old assets, brand word and domain must all be 0) ==")
+    print(
+        "== asset sweep (old assets, brand word, domain and old-namespace ids "
+        "must all be 0) =="
+    )
     for name, url, required in sweep_urls:
         if not url:
             print(f"SKIP {name}: not discovered on this instance")
@@ -261,11 +275,19 @@ def main() -> int:
         assets = len(LEGACY_ASSET_RE.findall(body))
         words = len(LEGACY_WORD_RE.findall(body))
         domains = len(LEGACY_DOMAIN_RE.findall(body))
-        ok = assets == 0 and words == 0 and domains == 0
+        # The id sweep runs here too, over every swept page: the faces alone
+        # (classify(), above) left the product face outside it — the PDP's
+        # script handle used to print as an old-namespace id (renamed to the
+        # linker- prefix in this repo; the literal is gone from the code) and
+        # both gates passed over it.
+        ids = sorted(set(LEGACY_ID_RE.findall(body)) - allow_ids)
+        ok = assets == 0 and words == 0 and domains == 0 and not ids
         note = (
             f"{assets} asset reference(s), {words} TerraVolt word(s), "
             f"{domains} old-domain reference(s)"
         )
+        if ids:
+            note += f", old-namespace id(s) {', '.join(ids[:3])}"
         print(f"{'ok  ' if ok else 'FAIL'} {name}: {note} — {url}")
         if not ok:
             problems += 1

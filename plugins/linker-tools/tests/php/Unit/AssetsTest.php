@@ -45,7 +45,7 @@ final class AssetsTest extends TestCase {
 			)
 		);
 
-		foreach ( array( 'configurator', 'genie', 'shared' ) as $entry ) {
+		foreach ( array( 'configurator', 'genie' ) as $entry ) {
 			$asset = require $plugin_dir . 'build/' . $entry . '.asset.php';
 
 			$this->assertContains( 'react-jsx-runtime', $asset['dependencies'] );

@@ -1160,57 +1160,6 @@ final class Materials {
 	}
 
 	/**
-	 * The availability text the live page prints
-	 * (tv_woo_b2b_availability_text over the stock mirror).
-	 *
-	 * @param WC_Product $product The product.
-	 * @param bool       $sellable Whether the product is sellable.
-	 */
-	public static function availability_text( WC_Product $product, bool $sellable ): string {
-		$de = self::is_de();
-		if ( ! $sellable ) {
-			return $de ? 'Derzeit nicht bestellbar' : 'Currently not orderable';
-		}
-		$id       = (int) $product->get_id();
-		$stamped  = '' !== (string) \get_post_meta( $id, '_tv_b2b_stock_mirrored_at', true );
-		$days_min = \get_post_meta( $id, '_tv_b2b_lead_time_days_min', true );
-		$days_max = \get_post_meta( $id, '_tv_b2b_lead_time_days_max', true );
-		if ( $stamped ) {
-			$status = $product->get_stock_status();
-			if ( 'instock' === $status ) {
-				$state = 'available';
-			} elseif ( 'outofstock' === $status ) {
-				$state = 'unavailable';
-			} elseif ( 'onbackorder' === $status && \is_numeric( $days_min ) && \is_numeric( $days_max ) ) {
-				$state = 'lead_time';
-			} else {
-				$state = 'on_request';
-			}
-			if ( ( 'available' === $state || 'lead_time' === $state ) ) {
-				$expires = (string) \get_post_meta( $id, '_tv_b2b_supply_expires_at', true );
-				$stamp   = '' !== $expires ? \strtotime( $expires ) : false;
-				if ( false !== $stamp && $stamp <= \time() ) {
-					$state = 'on_request';
-				}
-			}
-		} else {
-			$state = 'on_request';
-		}
-		if ( 'available' === $state ) {
-			return $de ? 'Auf Lager' : 'In stock';
-		}
-		if ( 'lead_time' === $state ) {
-			$min  = (int) $days_min;
-			$max  = (int) $days_max;
-			$days = $min === $max ? (string) $min : $min . '–' . $max;
-			return $de
-				? 'Bestellbar · Lieferzeit ' . $days . ' Kalendertage'
-				: 'Orderable · lead time ' . $days . ' calendar days';
-		}
-		return $de ? 'Derzeit nicht bestellbar' : 'Currently not orderable';
-	}
-
-	/**
 	 * The gallery image ids in the live order: the featured image, the
 	 * gallery rows, feature cards, scenarios (tv_product_v5_gallery_ids).
 	 *

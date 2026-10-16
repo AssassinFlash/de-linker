@@ -147,7 +147,7 @@ test.describe('the Genie dock', () => {
 		) as { id: number; number: string } | null;
 		test.skip(
 			inquiry === null,
-			'pending-main: the suite customer of products.spec.ts does not exist on this instance yet'
+			"pending-fixture: the suite customer of products.spec.ts is built by that spec's ensureCustomer() at run time, so this row needs one suite pass on this instance before it runs"
 		);
 
 		await page.goto(loginLink(undefined, CUSTOMER));

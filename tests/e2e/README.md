@@ -74,4 +74,8 @@ the full gate.
   in the report and run again as soon as the reason is gone. A row whose
   subject only exists after an instance migration is marked `pending-setup` the
   same way, naming the command that closes it (`chrome.spec.ts`'s redirect
-  landings before `12-site-chrome.py apply --write`).
+  landings before `12-site-chrome.py apply --write`). A row that waits for a
+  fixture another row builds at runtime — neither the main line's work nor an
+  instance migration — is marked `pending-fixture`, naming the row that builds
+  it (`genie-dock.spec.ts`'s suite customer, built by `products.spec.ts`'s
+  `ensureCustomer()` on every run: it exists from the second suite pass on).

@@ -36,9 +36,9 @@ add_action( 'send_headers', 'linker_site_guards_headers', 1 );
  * users: anonymous `/wp/v2/users` enumerates login names, which is the first
  * half of a password attack.
  *
- * @param mixed            $result  The pre-dispatch result, untouched unless this guard refuses.
- * @param WP_REST_Server   $server  The server handling the request.
- * @param WP_REST_Request  $request The request being dispatched.
+ * @param mixed          $result  The pre-dispatch result, untouched unless this guard refuses.
+ * @param WP_REST_Server $server  The server handling the request.
+ * @param mixed          $request The request being dispatched (checked below: the filter's shape is wp-includes' to keep, not this guard's to trust).
  * @return mixed
  */
 function linker_site_guards_rest_users( $result, $server, $request ) {

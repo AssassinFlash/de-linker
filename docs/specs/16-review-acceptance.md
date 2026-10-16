@@ -28,6 +28,6 @@
 - `specs/products.spec.ts`：分类页筛选、隐价、按钮文案（访客/登录）。
 - `specs/chrome.spec.ts`：页头页脚命名、301、sitemap、hreflang。
 
-**待主线终态的部分在套件里以 `pending-main` 标注**（运行时 skip 并写明原因），不静默删除。2026-10-16 清账：本段原先点名的两处都已落到实跑——商品页 Genie 入口（R13 行改为点页面实际带的 `[data-pdp-ask]` 入口，芯片组不在 LC 产品模板上）、hreflang 的旧站点残留（快照 SEOPress 数据已不带线上自己的 alternates，断言改为硬判）；chrome.spec 的 301 落点依赖 `12-site-chrome.py` 迁移，未跑该迁移的实例以具名 skip 报出（README 的前置清单已补该步）。`genie-dock.spec.ts` 剩一处 `pending-main`：套件客户夹具。
+**待主线终态的部分在套件里以 `pending-main` 标注**（运行时 skip 并写明原因），不静默删除。2026-10-16 清账：本段原先点名的两处都已落到实跑——商品页 Genie 入口（R13 行改为点页面实际带的 `[data-pdp-ask]` 入口，芯片组不在 LC 产品模板上）、hreflang 的旧站点残留（快照 SEOPress 数据已不带线上自己的 alternates，断言改为硬判）；chrome.spec 的 301 落点依赖 `12-site-chrome.py` 迁移，未跑该迁移的实例以具名 skip 报出（README 的前置清单已补该步）。`genie-dock.spec.ts` 那一处 skip 的口径是 `pending-fixture`（既非主线欠行，也非迁移前置）：套件客户由 `products.spec.ts` 的 `ensureCustomer()` 在运行时自建，因此该行实例上跑过一遍套件后即转实跑；三种标注（`pending-main`/`pending-setup`/`pending-fixture`）的定义见 `tests/e2e/README.md`。
 
 **判分记录落盘**（2026-10-11 修复轮）：级联的逐问记录写在实例目录下（`~/de-linker-local/<实例>/e2e-judge/<本地时间戳>/`，与 `mail/` 同级），`run/summary.json`、`run/jev.jsonl`、`run/deepseek.jsonl`、`run/cascade.jsonl` 在跑完后仍可查阅；判分开始的路径会打印在运行输出里。判分答案里的商品按角色分列（`This page's product:` 与 `Recommended products:` 两行，`linker_judges.turns.answer_with_offers` 是唯一实现）——R5 分歧的根因正是把「本页产品」与「推荐产品」压成一张清单。

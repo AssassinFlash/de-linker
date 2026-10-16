@@ -3,6 +3,8 @@
 	<description>The production must-use plugins: the shared plugin rules (tools/php/phpcs.xml) with this project's prefixes.</description>
 
 	<file>linker-error-recorder.php</file>
+	<file>linker-engine-pin.php</file>
+	<file>linker-site-guards.php</file>
 	<file>tests</file>
 
 	<rule ref="../tools/php/phpcs.xml"/>
@@ -20,6 +22,7 @@
 			<property name="prefixes" type="array">
 				<element value="Linker\Mu"/>
 				<element value="linker_error"/>
+				<element value="linker_site_guards"/>
 			</property>
 		</properties>
 	</rule>

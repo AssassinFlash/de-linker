@@ -1,13 +1,8 @@
 /**
  * External dependencies
  */
-import { act, screen } from '@testing-library/react';
+import { act } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-
-/**
- * WordPress dependencies
- */
-import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -20,7 +15,6 @@ const entries = Object.keys( webpackConfig.entry );
 const titles: Record< string, string > = {
 	genie: "Genie - Linker's AI assistant",
 	configurator: 'Solution Configurator',
-	shared: 'Linker Tools',
 };
 
 function mountPoint( name: string ) {
@@ -40,7 +34,6 @@ beforeEach( () => {
 } );
 
 afterEach( () => {
-	resetLocaleData( {}, 'linker-tools' );
 	document.body.innerHTML = '';
 } );
 
@@ -72,21 +65,3 @@ test.each( entries )(
 		expect( shown ).toEqual( entries.map( () => true ) );
 	}
 );
-
-test( 'an entry mounts on every element that names it', async () => {
-	await loadEntry(
-		'shared',
-		mountPoint( 'shared' ) + mountPoint( 'shared' )
-	);
-
-	expect( screen.getAllByText( 'Linker Tools' ) ).toHaveLength( 2 );
-} );
-
-test( 'strings come from the linker-tools text domain', async () => {
-	// PHP hands WordPress these strings through wp_set_script_translations().
-	setLocaleData( { 'Linker Tools': [ 'Linker-Werkzeuge' ] }, 'linker-tools' );
-
-	await loadEntry( 'shared', mountPoint( 'shared' ) );
-
-	expect( screen.getByText( 'Linker-Werkzeuge' ) ).toBeInTheDocument();
-} );

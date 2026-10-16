@@ -389,8 +389,18 @@
 .linker-auth .form-row textarea,
 .linker-account .form-row textarea { height: auto; min-height: 6.5rem; padding: 14px 18px; }
 
-.linker-auth .form-row select,
-.linker-account .form-row select {
+/* The chevron, at the base rule's own weight: the field list in :is() above
+   takes the specificity of its most specific argument (input[type] → 0,3,1),
+   and its background and padding shorthands ate the two declarations below at
+   the plain `select` weight (0,2,1) — the drawn chevron never rendered, and
+   padding-right stayed 18px. `select[name]` adds one class-level selector to
+   reach that weight (a name is what makes a select a form field, and every
+   field WooCommerce or the templates print carries one). It also keeps
+   WooCommerce's own select CSS out (`.woocommerce form .form-row select`,
+   0,2,2 — a white field with Woo's own chevron and 3em padding), which wins
+   when this rule is written at :where()/plain-select weight instead. */
+.linker-auth .form-row select[name],
+.linker-account .form-row select[name] {
 	background-image: linear-gradient(45deg, transparent 50%, var(--acct-muted) 50%), linear-gradient(135deg, var(--acct-muted) 50%, transparent 50%);
 	background-position: calc(100% - 21px) 50%, calc(100% - 16px) 50%;
 	background-size: 5px 5px, 5px 5px;
@@ -398,11 +408,28 @@
 	padding-right: 44px;
 }
 
-.linker-auth .form-row :is(input, select, textarea):hover,
-.linker-account .form-row :is(input, select, textarea):hover { background-color: var(--acct-fill-hover); }
+/* The field's own states, at the base rule's weight (see the chevron above for
+   why the weight matters). What each selector actually won, measured on the
+   register page: the hover tint and the focus ring with the --acct-card fill
+   were already the field's (a `:hover`/`:focus` selector ties the base rule on
+   its own, and the source order decided for it), while the focused field's
+   *border-color* came from WooCommerce's
+   `.woocommerce form .form-row .input-text:focus{border-color:currentcolor}` —
+   one weight heavier than the old variants, so it out-ruled them and focus
+   read a dark 1px border instead of the prototype's teal. Naming :is(input[type], …), which is what the base
+   rule's own list weighs, wins the border back.
 
-.linker-auth .form-row :is(input, select, textarea):focus,
-.linker-account .form-row :is(input, select, textarea):focus {
+   Both rules stand aside for an invalid field (:not([aria-invalid="true"])):
+   :hover/:focus weigh one class more than the red-field rule below, so without
+   it a focused mismatch field would read as a focused field, not as a red one
+   (measured through the real submit: account-ui.js sets aria-invalid on
+   #password_2 and the field kept the focus look). The prototype orders the two
+   the same way — red last. */
+.linker-auth .form-row :is(input[type], input, select, textarea):hover:not([aria-invalid="true"]),
+.linker-account .form-row :is(input[type], input, select, textarea):hover:not([aria-invalid="true"]) { background-color: var(--acct-fill-hover); }
+
+.linker-auth .form-row :is(input[type], input, select, textarea):focus:not([aria-invalid="true"]),
+.linker-account .form-row :is(input[type], input, select, textarea):focus:not([aria-invalid="true"]) {
 	background-color: var(--acct-card);
 	border-color: var(--proto-teal-600);
 	box-shadow: 0 0 0 4px var(--proto-teal-100);
@@ -412,11 +439,20 @@
 .linker-auth .form-row .required,
 .linker-account .form-row .required { color: var(--acct-danger); }
 
-/* WooCommerce's own invalid state reads as the prototype's red field. */
-.linker-auth .woocommerce-invalid :is(input, select, textarea),
-.linker-account .woocommerce-invalid :is(input, select, textarea),
-.linker-auth :is(input, select)[aria-invalid="true"],
-.linker-account :is(input, select)[aria-invalid="true"] {
+/* WooCommerce's own invalid state reads as the prototype's red field, and so
+   does account-ui.js's own mark: it sets aria-invalid="true" on the second
+   password field of the reset and account forms when the two do not match
+   (assets/account-ui.js, showMismatch). Both selectors therefore need the base
+   rule's weight *and* the weight of Woo's focused-field rule
+   (`.woocommerce form .form-row .input-text:focus{border-color:currentcolor}`,
+   0,4,1 — the field is focused right after the refused submit), so the field
+   goes on .form-row here: measured before, an aria-invalid field read the idle
+   fill and a transparent border; with the plain weight it kept the red fill
+   but the border stayed Woo's dark currentcolor. */
+.linker-auth .form-row.woocommerce-invalid :is(input[type], input, select, textarea),
+.linker-account .form-row.woocommerce-invalid :is(input[type], input, select, textarea),
+.linker-auth .form-row :is(input[type], input, select)[aria-invalid="true"],
+.linker-account .form-row :is(input[type], input, select)[aria-invalid="true"] {
 	border-color: var(--acct-danger);
 	background-color: var(--acct-danger-bg);
 }

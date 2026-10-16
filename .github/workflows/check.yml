@@ -77,3 +77,71 @@ jobs:
           just build
           git status --porcelain -- plugins/linker-tools/build
           test -z "$(git status --porcelain -- plugins/linker-tools/build)"
+
+  mu-smoke:
+    # The must-use plugins' smoke suite asserts properties of a real site (the
+    # response headers, the closed REST user list, the recorder's file, the
+    # pin's installation), so it needs WordPress: this job builds the smallest
+    # one — a bare instance, no snapshot, since none of those properties is
+    # content — and runs `just mu-smoke`. MySQL and Redis are the runner
+    # image's own; WP-CLI is pinned to the version the local stack requires.
+    runs-on: ubuntu-24.04
+    env:
+      # The runner image's MySQL root credentials; see the MySQL step below.
+      MYSQL_PWD: root
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.10.11"
+          python-version: "3.12"
+
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+
+      # tools/local's wpcli.require_version() wants WP-CLI 2.12 (production's).
+      - name: WP-CLI 2.12
+        run: |
+          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          sudo chmod +x /usr/local/bin/wp
+          wp --version
+
+      # The stack administers MySQL as root (`mysql --user=root …`;
+      # tools/local/src/linker_local/mysql.py) and the image's root is not
+      # passwordless (root/root, the runner image's own credentials), so the
+      # password rides in MYSQL_PWD: the stack's mysql calls inherit the job's
+      # environment, which is what the local stack on a Mac gets from
+      # Homebrew's passwordless root. Redis is already installed.
+      - name: MySQL and Redis for the instance
+        run: |
+          sudo systemctl start mysql
+          # The image documents Redis but carries no redis-server binary
+          # (measured: command not found), and the stack only needs something
+          # listening on 6379 (objectcache.require_redis()).
+          if ! command -v redis-server >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y redis-server
+          fi
+          redis-server --daemonize yes
+          mysql --user=root --skip-column-names --execute 'SELECT VERSION();'
+          redis-cli ping
+
+      - name: a bare instance (no snapshot)
+        run: just up smoke
+
+      - name: the must-use plugins' smoke suite
+        run: just mu-smoke smoke
+
+      # The cleanup runs even when an earlier step failed and the instance was
+      # never built, so it reports rather than failing the job twice.
+      - name: stop the instance
+        if: always()
+        run: just down smoke || echo "no instance to stop"

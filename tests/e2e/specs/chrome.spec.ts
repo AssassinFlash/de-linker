@@ -79,7 +79,17 @@ test.describe('site chrome', () => {
 				301
 			);
 			const location = response.headers.get('location') ?? '';
-			expect(location, `${from} points at ${to}`).toContain(to);
+			// The landing's own identity, resolved: pathname and query as one
+			// string, and the site's own origin. A substring test would pass a
+			// foreign host whose URL carries the path, or a stray parameter.
+			const landed = new URL(location);
+			expect(
+				landed.pathname + landed.search,
+				`${from} points at ${to}`
+			).toBe(to);
+			expect(landed.origin, `${from} stays on this site`).toBe(
+				new URL(instance().url).origin
+			);
 			landings.push(location);
 		}
 		// The landing pages are content, not code: the configurator's own
