@@ -288,6 +288,22 @@ def transform(html: str, german: bool) -> str:
     html = re.sub(r"\n?\s*<style[^>]*>.*?</style>", "", html, count=1, flags=re.S)
     # The article links become the post's own, language-resolved permalink.
     html = html.replace('href="/{Field name}/"', 'href="{Field url}"')
+    # The tool rename (owner's copy review 2026-10-10 #12, ledger B4/B2): the
+    # live template still carried the retired address, and on the German face
+    # the retired name too. English keeps its words ("Open the Solution
+    # Configurator" is already the new one) and only changes the target; the
+    # German label becomes the pair the product page's own button carries
+    # (linker-commerce-de_DE_formal.po: "Open the Solution Configurator" →
+    # "Lösungskonfigurator öffnen"), and its target the configurator's German
+    # address (owner ruling 2026-10-12).
+    html = html.replace(
+        'href="/linker-planner/"',
+        'href="/de/loesungskonfigurator/"' if german else 'href="/solution-configurator/"',
+    )
+    if german:
+        html = html.replace("Linker Planer öffnen", "Lösungskonfigurator öffnen")
+    assert "linker-planner" not in html, "the retired configurator address left behind"
+    assert "Linker Planer" not in html, "the retired German tool name left behind"
     # Inline declarations move to the volume; the attributes go.
     html = re.sub(r' style="[^"]*"', "", html)
     # The instance host cannot live in a repository file: uploads stay

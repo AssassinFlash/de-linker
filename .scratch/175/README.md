@@ -16,8 +16,9 @@ quotes. Nothing here is part of the plugin.
 | `why.py` | Why two shots differ: the first differing pixels with both colours, the row runs, the max/mean channel delta |
 | `diff-regions.py` | Clusters the differing pixels into boxes with colour samples — what named the Compose trap in §4 |
 | `style-dump.mjs` | Every element under a face's root with every computed property and its box, as JSON — the 290-element dump whose old/new comparison had **exactly one** difference (`backdrop-filter: blur(18px)` → `none`) |
-| `shots-before-final2/`, `shots-after-final2/` | The committed pair of the final state: **0 differing pixels on all 12 shots**, page heights equal grid by grid |
-| `pair-de/`, `pair-en/` | The live\|local pair of the same protocol (German and English faces) |
+| `shots-before-final2/`, `shots-after-final2/` | The committed pair of the absorption: **0 differing pixels on all 12 shots**, page heights equal grid by grid (shot before the tool-rename pair below) |
+| `pair-de/`, `pair-en/` | The live\|local pair of the same protocol (German and English faces), also before the rename |
+| `renamed-de/`, `renamed-en/` | The blog index after the configurator CTA moved to the tool's own address and, on the German face, to `Lösungskonfigurator öffnen`: diff them against `pair-*/blog-*` for the declared difference (spec §6) |
 
 ## The live|local numbers (2026-10-16)
 
@@ -48,3 +49,19 @@ node .scratch/175/shots.mjs .scratch/175/shots-after
 uv run --with numpy --with pillow python .scratch/175/pixel-diff.py \
   .scratch/175/shots-before .scratch/175/shots-after .scratch/175/diff
 ```
+
+The recipe's **second `present` refreshes the rollback backup**: `backup()`
+runs before every write and overwrites `linker_commerce_present_backup`, so
+after it the option holds the absorbed content, not the old templates. The
+backup is a restore point for the first `present` since the old state, not a
+permanent archive — the old templates' own copy is the `dt-*.html` files here.
+
+### The tool-rename pair
+
+`renamed-de/` and `renamed-en/` are the `/de/blog/` and `/blog/` shots
+(1440/390) taken after the blog index's configurator CTA moved to the tool's
+own address and, on the German face, to the German name
+(`Lösungskonfigurator öffnen`). Diff them against `pair-de/blog-de-*` and
+`pair-en/blog-en-*`: the German difference is the two CTA text bands, the
+English one is zero (href does not enter pixels). The numbers are in the
+spec, §6.

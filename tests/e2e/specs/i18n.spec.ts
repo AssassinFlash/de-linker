@@ -120,9 +120,16 @@ async function postSlugs(lang: 'en' | 'de'): Promise<string[]> {
  * addresses. A German face that links this way is the #175 defect: the address
  * is a 404 because the article lives under /de/.
  */
+/**
+ * Every way a page links one of the given posts' English-tree addresses: the
+ * absolute form the templates render (`href="<origin>/<slug>/"`) and the
+ * root-relative form the defect was written in (`href="/<slug>/"`). A German
+ * face carrying either is the #175 symptom; checking only the absolute form
+ * would miss a template that regresses to `/{Field name}/`.
+ */
 function bareArticleLinks(html: string, slugs: string[]): string[] {
 	const origin = instance().url;
-	const bare = slugs.map((slug) => `${origin}/${slug}/`);
+	const bare = slugs.flatMap((slug) => [`${origin}/${slug}/`, `/${slug}/`]);
 	return bare.filter((url) => html.includes(`href="${url}"`));
 }
 

@@ -53,11 +53,15 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-# lc_dynamic_template rows the old project used, as loaded into this snapshot
-# family: the 404 pair and the four faces' EN/DE twins (docs/acceptance/
-# 2026-10-13/legacy-surfaces). Read-out only — see the module docstring: the
-# takeover reuses these rows, so the id no longer says who wrote the content.
-LEGACY_DT_IDS = {574, 6891, 613, 6887, 619, 6885, 607, 6889, 940, 6871}
+# lc_dynamic_template rows this snapshot family's old project used, read off
+# the blogs instance 2026-10-16 (EN and its German twin side by side): the 404
+# pair and the four faces' pairs — the blog posts index, the single post, the
+# search results and the category archive. Documentation only: the criteria
+# above read the page's own marks, and `present` reuses these rows, so the id
+# says what the row was, never who wrote the content. The archived captures'
+# stamps are not a source for this set: they carry 6885/6887/6889/6891 and
+# 6871, which are German posts and a page here, not template rows.
+LEGACY_DT_IDS = {940, 6861, 574, 6881, 613, 6877, 619, 6875, 607, 6879}
 
 LEGACY_ID_RE = re.compile(r'id="(tv-[a-z0-9-]+)"')
 LEGACY_WORD_RE = re.compile(r"terravolt", re.IGNORECASE)

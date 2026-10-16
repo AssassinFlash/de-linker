@@ -255,6 +255,30 @@ final class TemplatesTest extends TestCase {
 			$this->assertStringContainsString( '"url": "[linker_site_url]"', $html );
 			$this->assertStringNotContainsString( '<site url', $html );
 		}
+
+		// The blog index's two configurator CTAs point at the tool's own
+		// addresses, and the German face names it the way the rest of the site
+		// does. The live template still carried the retired address on both
+		// faces and the retired German name; the owner's rename ruling
+		// (2026-10-10 #12, addresses 2026-10-12) is the change this assertion
+		// holds — the German label is the pair the product page's button
+		// carries (linker-commerce-de_DE_formal.po, "Open the Solution
+		// Configurator" → "Lösungskonfigurator öffnen").
+		$english = (string) file_get_contents( $paths['is_blog_posts_index'] );
+		$this->assertSame( 2, substr_count( $english, 'href="/solution-configurator/"' ) );
+		$this->assertStringContainsString( '>Open the Solution Configurator<', $english );
+		$this->assertStringNotContainsString( 'linker-planner', $english );
+		$german = (string) file_get_contents( $paths['is_blog_posts_index__de'] );
+		$this->assertSame( 2, substr_count( $german, 'href="/de/loesungskonfigurator/"' ) );
+		$this->assertSame( 2, substr_count( $german, '>Lösungskonfigurator öffnen<' ) );
+		$this->assertStringNotContainsString( 'linker-planner', $german );
+		$this->assertStringNotContainsString( 'Linker Planer', $german );
+		foreach ( array( 'is_search', 'is_search__de', 'is_archive_for_tax_category', 'is_archive_for_tax_category__de' ) as $untouched ) {
+			// The rename reaches the blog index only: the other two faces carry
+			// no configurator link at all, so nothing of theirs changed.
+			$this->assertStringNotContainsString( 'linker-planner', (string) file_get_contents( $paths[ $untouched ] ) );
+			$this->assertStringNotContainsString( 'solution-configurator', (string) file_get_contents( $paths[ $untouched ] ) );
+		}
 	}
 
 	/**
@@ -269,43 +293,208 @@ final class TemplatesTest extends TestCase {
 	 * again: measured on the blogs instance 2026-10-16, the blog index rendered
 	 * 188 804 pixels differently from the same rules delivered inline, and the
 	 * only computed-style difference over the face's 290 elements was
-	 * `backdrop-filter: blur(18px)` → `none`. The comment above each pair is
-	 * not the guard; this is.
+	 * `backdrop-filter: blur(18px)` → `none`.
+	 *
+	 * Every prefixed declaration is looked at, line by line: a property written
+	 * twice in one file (blog-category.css writes backdrop-filter twice) must
+	 * have every pair checked, and the guard below is the one that watches the
+	 * very file whose first pair is the same shape as the measured accident
+	 * (test_the_prefixed_pair_guard_catches_each_reversed_pair proves it by
+	 * reversing pairs in the file itself).
 	 */
 	public function test_volume_stylesheets_order_prefixed_pairs_the_way_the_compile_keeps_them(): void {
 		$files = WindPressVolume::files();
 		$this->assertNotSame( array(), $files );
+		$checked = 0;
 		foreach ( $files as $path ) {
-			$css    = (string) file_get_contents( $path );
-			$lines  = explode( "\n", $css );
-			$prefix = array();
-			foreach ( $lines as $index => $line ) {
-				$trimmed = trim( $line );
-				if ( 1 !== preg_match( '/^-webkit-([a-z-]+):/', $trimmed, $match ) ) {
-					continue;
-				}
-				$prefix[ $match[1] ] = $index;
+			$css      = (string) file_get_contents( $path );
+			$faults   = self::reversed_prefixed_pairs( $css );
+			$checked += self::prefixed_pairs_with_a_twin( $css );
+			$this->assertSame(
+				array(),
+				$faults,
+				sprintf( '%s: %s', basename( $path ), implode( '; ', $faults ) )
+			);
+		}
+		// The guard found the pairs it is supposed to judge: a scan that sees
+		// nothing is not the same statement as a file with no fault. 13 is
+		// today's volume-wide count (account 1, blog-category 4, blog-index 2,
+		// blog-search 2, blog 2, faq 1, pdp 1); a volume that loses one, or a
+		// scan that stops seeing them, drops below it.
+		$this->assertGreaterThanOrEqual( 13, $checked, 'the volume carries the pairs the guard reads' );
+	}
+
+	/**
+	 * The guard behind the test above catches every reversed pair, not only the
+	 * last one of a property.
+	 *
+	 * The review of #175 proved the first version of this guard blind: it keyed
+	 * prefixed declarations by property name, so a property written twice left
+	 * only its last pair checked — `blog-category.css` has four prefixed
+	 * declarations and two were checked, its first `backdrop-filter` pair (the
+	 * same blur(18px) frosted panel as the measured accident) among the blind
+	 * ones. This test walks the file, reverses one pair at a time, and requires
+	 * the guard to name each one.
+	 */
+	public function test_the_prefixed_pair_guard_catches_each_reversed_pair(): void {
+		$path = WindPressVolume::path() . '/blog-category.css';
+		$css  = (string) file_get_contents( $path );
+		$this->assertSame( array(), self::reversed_prefixed_pairs( $css ), 'the committed file is clean' );
+
+		$pairs = self::prefixed_pairs_with_a_twin( $css );
+		$this->assertGreaterThanOrEqual( 4, $pairs, 'blog-category.css carries the pairs under test' );
+		for ( $reversed = 0; $reversed < $pairs; $reversed++ ) {
+			$mutated = self::reverse_prefixed_pair( $css, $reversed );
+			$this->assertNotSame( $css, $mutated, sprintf( 'pair %d was reversed', $reversed ) );
+			$faults = self::reversed_prefixed_pairs( $mutated );
+			$this->assertNotSame(
+				array(),
+				$faults,
+				sprintf( 'the guard must catch pair %d when it is reversed', $reversed )
+			);
+			$this->assertCount( 1, $faults, sprintf( 'reversing pair %d is the file\'s only fault', $reversed ) );
+		}
+	}
+
+	/**
+	 * The prefixed declarations whose standard twin stands before them inside
+	 * the same rule block: the order Lightning CSS punishes.
+	 *
+	 * A prefixed declaration without any twin is not a fault — the compiler
+	 * adds the standard declaration itself. The search runs over the rule block
+	 * the declaration belongs to, so a twin in a neighbouring rule cannot stand
+	 * in for one.
+	 *
+	 * @param string $css The stylesheet.
+	 * @return list<string> One line per fault, in file order.
+	 */
+	private static function reversed_prefixed_pairs( string $css ): array {
+		$lines  = explode( "\n", $css );
+		$faults = array();
+		$count  = count( $lines );
+		foreach ( $lines as $index => $line ) {
+			$trimmed = trim( $line );
+			if ( ! str_starts_with( $trimmed, '-webkit-' ) ) {
+				continue;
 			}
-			foreach ( $prefix as $property => $index ) {
-				// The standard twin must sit after its prefixed one; a pair in
-				// the other order is the defect this test exists for.
-				$standard = -1;
-				foreach ( $lines as $candidate => $line ) {
-					if ( trim( $line ) === $property . ':' . substr( trim( $lines[ $index ] ), strlen( '-webkit-' . $property . ':' ) ) ) {
-						$standard = $candidate;
-						break;
+			$twin_declaration    = substr( $trimmed, strlen( '-webkit-' ) );
+			list( $start, $end ) = self::rule_block( $lines, $index, $count );
+			for ( $candidate = $start; $candidate <= $end; $candidate++ ) {
+				if ( $candidate !== $index && trim( $lines[ $candidate ] ) === $twin_declaration ) {
+					if ( $candidate < $index ) {
+						$faults[] = sprintf(
+							'line %d: -webkit-%s is preceded by its standard twin at line %d',
+							$index + 1,
+							$twin_declaration,
+							$candidate + 1
+						);
 					}
+					break;
 				}
-				if ( -1 === $standard ) {
-					continue; // A prefixed declaration without a standard twin: the compiler adds one.
-				}
-				$this->assertGreaterThan(
-					$index,
-					$standard,
-					sprintf( '%s: %s must follow its -webkit- twin', basename( $path ), $property )
-				);
 			}
 		}
+		return $faults;
+	}
+
+	/**
+	 * How many prefixed declarations in the stylesheet have a standard twin in
+	 * their own rule block — the pairs `reversed_prefixed_pairs()` judges.
+	 *
+	 * @param string $css The stylesheet.
+	 */
+	private static function prefixed_pairs_with_a_twin( string $css ): int {
+		$lines = explode( "\n", $css );
+		$count = count( $lines );
+		$pairs = 0;
+		foreach ( $lines as $index => $line ) {
+			$trimmed = trim( $line );
+			if ( ! str_starts_with( $trimmed, '-webkit-' ) ) {
+				continue;
+			}
+			$twin_declaration    = substr( $trimmed, strlen( '-webkit-' ) );
+			list( $start, $end ) = self::rule_block( $lines, $index, $count );
+			for ( $candidate = $start; $candidate <= $end; $candidate++ ) {
+				if ( $candidate !== $index && trim( $lines[ $candidate ] ) === $twin_declaration ) {
+					++$pairs;
+					break;
+				}
+			}
+		}
+		return $pairs;
+	}
+
+	/**
+	 * The given declaration's rule block: the lines between the braces around
+	 * it. Both ends are inclusive and bounded by the file.
+	 *
+	 * @param array<int, string> $lines The stylesheet's lines.
+	 * @param int                $index The declaration's line.
+	 * @param int                $count Line count.
+	 * @return array{int, int} First and last line of the block.
+	 */
+	private static function rule_block( array $lines, int $index, int $count ): array {
+		$start = 0;
+		for ( $candidate = $index - 1; $candidate >= 0; $candidate-- ) {
+			if ( str_contains( $lines[ $candidate ], '{' ) || str_contains( $lines[ $candidate ], '}' ) ) {
+				$start = $candidate + 1;
+				break;
+			}
+		}
+		$end = $count - 1;
+		for ( $candidate = $index + 1; $candidate < $count; $candidate++ ) {
+			if ( str_contains( $lines[ $candidate ], '}' ) ) {
+				$end = $candidate;
+				break;
+			}
+		}
+		return array( $start, $end );
+	}
+
+	/**
+	 * The stylesheet with its nth (0-based) prefixed pair written the way the
+	 * compiler punishes: the standard declaration first.
+	 *
+	 * @param string $css The stylesheet.
+	 * @param int    $index Which pair to reverse, in file order.
+	 * @throws \RuntimeException When the file carries fewer pairs than asked for.
+	 */
+	private static function reverse_prefixed_pair( string $css, int $index ): string {
+		$lines       = explode( "\n", $css );
+		$count       = count( $lines );
+		$seen        = 0;
+		$prefixed_at = -1;
+		$twin_at     = -1;
+		foreach ( $lines as $line_index => $line ) {
+			$trimmed = trim( $line );
+			if ( ! str_starts_with( $trimmed, '-webkit-' ) ) {
+				continue;
+			}
+			$twin_declaration    = substr( $trimmed, strlen( '-webkit-' ) );
+			list( $start, $end ) = self::rule_block( $lines, $line_index, $count );
+			for ( $candidate = $start; $candidate <= $end; $candidate++ ) {
+				if ( $candidate !== $line_index && trim( $lines[ $candidate ] ) === $twin_declaration ) {
+					if ( $seen === $index ) {
+						$prefixed_at = $line_index;
+						$twin_at     = $candidate;
+					}
+					++$seen;
+					break;
+				}
+			}
+			if ( -1 !== $prefixed_at ) {
+				break;
+			}
+		}
+		if ( -1 === $prefixed_at || -1 === $twin_at || $twin_at < $prefixed_at ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a test failure message, not page output.
+			throw new \RuntimeException( sprintf( 'pair %d is not a reversed-able pair of this stylesheet', $index ) );
+		}
+		// Swap the two lines' contents, keeping each line's own indentation.
+		$prefixed_line         = $lines[ $prefixed_at ];
+		$twin_line             = $lines[ $twin_at ];
+		$lines[ $prefixed_at ] = preg_replace( '/\S/', '', $prefixed_line ) . ltrim( $twin_line );
+		$lines[ $twin_at ]     = preg_replace( '/\S/', '', $twin_line ) . ltrim( $prefixed_line );
+		return implode( "\n", $lines );
 	}
 
 	/**
