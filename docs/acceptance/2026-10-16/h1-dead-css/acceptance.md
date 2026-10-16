@@ -105,6 +105,23 @@ no consumer after the storefront CSS was retired」。WP_Mock 严格模式会把
 
 比对是**逐字节 RGB 相等**（无容差阈值），不是"接近"。
 
+### 通知态：删掉的 `.sf-account-notice*` 一族本来要生效的那个状态
+
+死规则里有一族 `.sf-account-notice`（错误/暂停/成功三种色调），它唯一可能生效的状态是
+"口令错误后回显 notice"。这条状态是可到达的，所以单独做了对照：固定用户名
+（`customer-2`，避免 e2e 时间戳用户名带来的必然差异）提交错误口令，等 notice 可见后拍摄。
+
+| 面 | 视口 | 语言 | 尺寸 | 差异像素 |
+|---|---|---|---|---|
+| 错误口令 notice | 1440 | EN | 1440×1489 | 0 |
+| 错误口令 notice | 390 | EN | 780×2964 | 0 |
+| 错误口令 notice | 1440 | DE | 1440×1489 | 0 |
+| 错误口令 notice | 390 | DE | 780×3090 | 0 |
+
+两轮的通知文本逐字相同（EN "The username or the password is not correct." /
+DE "Benutzername oder Passwort ist nicht korrekt."），像素 0 差异——
+即这一族即使在它被写出来的那个状态里也从未生效过。
+
 ## 5. WindPress 编译验证
 
 - `just present h1clean` 把卷内 `storefront.css` 更新为分支版本（md5 与仓库一致：
@@ -126,6 +143,9 @@ no consumer after the storefront CSS was retired」。WP_Mock 严格模式会把
   按"本轮发现的问题本轮修"改正为 212，并在改动后的文件上复核。
 - 文件级测试 `PdpStylesTest::test_the_storefront_stylesheet_leaves_the_product_page_alone`
   读的就是这个文件，仍绿。
+- `just e2e h1clean specs/account.spec.ts`（真实例 + engine/Genie 起齐，走标准门禁而非
+  `LINKER_E2E_SKIP_SERVICES`）：**13 passed (58.7s)**。被删 CSS 所在层就是这条链，
+  这是规格要求的"改动所在层的真实夹具测试"。
 
 ### 为什么没有再加一条"这族不许回来"的守卫测试
 
@@ -139,4 +159,4 @@ body_class filter left"）。再加一条 CSS 侧断言只是复述 diff，属�
 
 产出端为零已由静态（零生产者）+ 运行时（670 次页面抓取 0 命中）双向证实；删除是纯删除
 （0 行新增，除一处注释改写与一处行号引用修正）；存活规则逐字节未动；
-12 个配对像素差异 0、底噪 0；编译产物无残留类。
+16 个配对像素差异 0、底噪 0、无掩膜；编译产物无残留类。
