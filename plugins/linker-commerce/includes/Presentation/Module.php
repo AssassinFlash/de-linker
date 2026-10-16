@@ -98,6 +98,6 @@ final class Module {
 		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;
 		}
-		wp_enqueue_script( 'tv-b2b-pdp-ui', $base . 'pdp-ui.js', array(), '3', true );
+		wp_enqueue_script( 'linker-pdp-ui', $base . 'pdp-ui.js', array(), '3', true );
 	}
 }

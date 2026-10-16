@@ -915,13 +915,13 @@ final class ProductShortcodes {
 	 */
 	public function pdp_gallery_pair( $atts = array() ): string {
 		unset( $atts );
-		// Snapshot plugins can reclaim the old shared handle after our enqueue.
-		// This rendered gallery owns its behaviour; re-register the existing
-		// handle so dependent scripts cannot bring a second gallery reader back.
-		wp_dequeue_script( 'tv-b2b-pdp-ui' );
-		wp_deregister_script( 'tv-b2b-pdp-ui' );
+		// This rendered gallery owns its reader: re-register the handle
+		// Module::enqueue_product_scripts enqueued, with this asset file's own
+		// stamp, so the loading script is the gallery's reader.
+		wp_dequeue_script( 'linker-pdp-ui' );
+		wp_deregister_script( 'linker-pdp-ui' );
 		$path = dirname( __DIR__, 2 ) . '/assets/pdp-ui.js';
-		wp_enqueue_script( 'tv-b2b-pdp-ui', plugins_url( 'assets/pdp-ui.js', dirname( __DIR__, 2 ) . '/linker-commerce.php' ), array(), (string) filemtime( $path ), true );
+		wp_enqueue_script( 'linker-pdp-ui', plugins_url( 'assets/pdp-ui.js', dirname( __DIR__, 2 ) . '/linker-commerce.php' ), array(), (string) filemtime( $path ), true );
 		$view = $this->current_view();
 		if ( null === $view ) {
 			return '';
