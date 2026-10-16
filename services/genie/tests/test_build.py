@@ -32,6 +32,18 @@ class CountingEmbedder:
         return pack([1.0, 0.0])
 
 
+class WireNamedEmbedder(CountingEmbedder):
+    """An encoder whose API name differs from its provider-neutral identity.
+
+    GeminiEmbedder is this shape: `model` is the provider's wire name
+    (google/gemini-embedding-2 on OpenRouter), the fingerprint's is the
+    identity the index is keyed by.
+    """
+
+    model = "vendor/counting"
+    fingerprint = {"model": "counting", "dimensions": "2"}
+
+
 def document(
     sha: str, url: str, models: list[str], doc_type: str, lang: str
 ) -> dict[str, object]:
@@ -151,6 +163,30 @@ def test_the_built_index_answers_from_the_right_page(tmp_path: Path) -> None:
         OCEAN2,
         2,
     )  # the page rebuilt from OCR
+
+
+def test_the_index_records_the_encoders_identity_not_its_wire_name(
+    tmp_path: Path,
+) -> None:
+    # A rebuilt index that recorded google/gemini-embedding-2 opened with no query
+    # encoder (retrieval.query_encoder resolves the neutral name) and every search
+    # silently dropped to keywords. The identity is what the index is keyed by.
+    inventory, pdfs, parsed = corpus(tmp_path)
+    directory = build(
+        inventory,
+        pdfs,
+        parsed,
+        tmp_path / "out",
+        WireNamedEmbedder(),
+        Words(),
+        lambda text: "en",
+    )
+
+    manifest = json.loads((directory / "manifest.json").read_text())
+    assert manifest["embedding_model"] == "counting"
+    assert DocumentIndex(directory / "index.sqlite", encoder=None).embedding_model == (
+        "counting"
+    )
 
 
 def test_a_complete_pdf_that_failed_to_parse_reports_the_parser_errors(

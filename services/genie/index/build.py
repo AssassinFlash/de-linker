@@ -176,6 +176,18 @@ def passage(chunk: Chunk, title: str) -> Passage:
     return Passage(title=title, text=f"{chunk.header}\n{chunk.text}")
 
 
+def model_identity(embedder: Embedder) -> str:
+    """The name the index records for `embedder`: its fingerprint's, not its wire name.
+
+    GeminiEmbedder's `model` is what the provider's API expects - google/gemini-embedding-2
+    on OpenRouter - while the fingerprint carries the provider-neutral name the index was
+    built under (linker_genie.embedding.GeminiEmbedder). `retrieval.query_encoder` resolves
+    a stored index by that identity, so recording the wire name would open the index with
+    no query encoder and silently degrade every search to keywords.
+    """
+    return str(embedder.fingerprint.get("model") or embedder.model)
+
+
 def _meta(document: inventory.Document) -> DocumentMeta:
     return DocumentMeta(
         sha256=document.sha256,
@@ -300,7 +312,7 @@ def embed_corpus(
     corpus_dir = build_dir / "corpus"
     new_meta = corpus.Meta(
         version,
-        embedder.model,
+        model_identity(embedder),
         embedder.dimensions,
         meta.parser,
         meta.max_tokens,
@@ -315,7 +327,7 @@ def embed_corpus(
     manifest = json.loads((source.parent / "manifest.json").read_text(encoding="utf-8"))
     manifest.update(
         version=version,
-        embedding_model=embedder.model,
+        embedding_model=model_identity(embedder),
         dimensions=embedder.dimensions,
         embedded_from=meta.version,
         file={
@@ -371,7 +383,7 @@ def build(
     build_dir.mkdir(parents=True)
     meta = corpus.Meta(
         version=version,
-        embedding_model=embedder.model if embedder else None,
+        embedding_model=model_identity(embedder) if embedder else None,
         dimensions=embedder.dimensions if embedder else None,
         parser=", ".join(sorted(chunked.parsers)),
         max_tokens=MAX_TOKENS,
