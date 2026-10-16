@@ -474,7 +474,7 @@ final class ProductShortcodesTest extends TestCase {
 	 * a category with no facet selected — the category is the one filter),
 	 * and the Reset link sits in the rail-head row, the one the stylesheet
 	 * shows (`#linker-products .rail-summary` is display:none,
-	 * storefront.css:192; the rail-head is the flex row the live filtered
+	 * storefront.css:212; the rail-head is the flex row the live filtered
 	 * rail shows its "Filters … Reset" on).
 	 */
 	public function test_filters_summary_shows_the_count_without_a_facet_and_reset_with_one(): void {
