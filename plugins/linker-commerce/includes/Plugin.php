@@ -88,6 +88,7 @@ final class Plugin {
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
 		( new Monitor( $this->file, new Settings\Options() ) )->register();
+		( new Consent\Blocking() )->register();
 	}
 
 	/**

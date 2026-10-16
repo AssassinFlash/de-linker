@@ -1,0 +1,238 @@
+{
+  "_": [
+    "#201 (docs/specs/201-consent-ga4.md): the consent surface as data. The",
+    "migration tools/migrate/201-consent.py writes every value here verbatim and",
+    "reads it back. Copy: EN is the source string, `banner_de_strings` and the",
+    "`de` halves are the independent German draft; the adversarial review of each",
+    "line is docs/acceptance/2026-10-16/201-consent/copy-review.md."
+  ],
+  "plugins": {
+    "complianz": "complianz-gdpr",
+    "consent_api": "wp-consent-api",
+    "site_kit": "google-site-kit"
+  },
+  "cmplz_options": {
+    "use_cdb_api": "no",
+    "regions": "eu",
+    "other_region_behaviour": "none",
+    "eu_consent_regions": "yes",
+    "uk_consent_regions": "no",
+    "ca_targets_quebec": "",
+    "us_states": [],
+    "us_california_optin": "no",
+    "wp_admin_access_users": "yes",
+    "cookie-statement": "none",
+    "privacy-statement": "custom",
+    "impressum": "custom",
+    "disclaimer": "none",
+    "organisation_name": "Linker Technology GmbH",
+    "address_company": "",
+    "country_company": "DE",
+    "email_company": "sales@de-linker.com",
+    "telephone_company": "",
+    "ca_name_accountable_person": "",
+    "ca_address_accountable_person": "",
+    "records_of_consent": "no",
+    "datarequest": "no",
+    "respect_dnt": "no",
+    "sensitive_information_processed": "",
+    "wsc_scan_post_types": [
+      "post",
+      "page"
+    ],
+    "cookie_scan": "",
+    "compile_statistics": "google-analytics",
+    "compile_statistics_more_info": [],
+    "compile_statistics_more_info_tag_manager": [],
+    "gtg_deployment_steps_notice": "",
+    "matomo_anonymized": "",
+    "compile_statistics_more_info_gtg": "",
+    "script_center_button": "yes",
+    "consent-mode": "no",
+    "cmplz-gtag-urlpassthrough": "no",
+    "cmplz-gtag-ads_data_redaction": "no",
+    "matomo_url": "",
+    "matomo_site_id": 0,
+    "matomo_tag_url": "",
+    "matomo_container_id": "",
+    "clicky_site_id": 0,
+    "yandex_id": 0,
+    "clarity_consent_mode": "yes",
+    "clarity_id": "",
+    "yandex_ecommerce": "no",
+    "consent_per_service": "no",
+    "uses_thirdparty_services": "no",
+    "thirdparty_services_on_site": [],
+    "block_recaptcha_service": "no",
+    "self_host_google_fonts": "no",
+    "block_hubspot_service": "no",
+    "hotjar_privacyfriendly": "",
+    "uses_social_media": "no",
+    "socialmedia_on_site": [],
+    "uses_firstparty_marketing_cookies": "yes",
+    "uses_ad_cookies": "no",
+    "uses_ad_cookies_personalized": "no",
+    "enable_amazon_consent_signal": "no",
+    "plugins_overviews": "",
+    "cookiedatabase_sync": "",
+    "create-documents": "",
+    "region_redirect": "no",
+    "add_pages_to_menu": "",
+    "add_pages_to_menu_region_redirected": "",
+    "cookie_banner_required": "",
+    "last-step-feedback": "",
+    "enable_cookie_banner": "yes",
+    "enable_cookie_blocker": "yes",
+    "safe_mode": 0
+  },
+  "banner": {
+    "title": "Banner A",
+    "position": "bottom-right",
+    "default": "1",
+    "use_logo": "",
+    "close_button": 0,
+    "revoke": "Cookie settings",
+    "manage_consent_options": "hide-everywhere",
+    "header": {
+      "text": "Your cookie choice",
+      "show": 1
+    },
+    "accept": "Accept all",
+    "dismiss": {
+      "text": "Reject all",
+      "show": 1
+    },
+    "view_preferences": "Choose purposes",
+    "save_preferences": "Save my choice",
+    "category_functional": "Necessary",
+    "category_stats": {
+      "text": "Statistics",
+      "show": 1
+    },
+    "category_all": {
+      "text": "Marketing",
+      "show": 1
+    },
+    "category_prefs": {
+      "text": "Preferences",
+      "show": 0
+    },
+    "message_optin": "We use cookies and similar technologies for two optional purposes. <strong>Statistics:</strong> Google Analytics counts visits and page views, so we can see how the shop is used. Google Ireland Limited processes this data for us, and it may be transferred to Google LLC in the USA. <strong>Marketing:</strong> we record which website, campaign or link brought you here and keep that note with an inquiry you send us. Both purposes stay off until you accept. If you reject, the shop works the same. You can change your choice at any time under “Cookie settings” at the foot of every page.",
+    "functional_text": {
+      "text": "Keeps the shop working: your session, your solution draft, your sign-in, your language and this cookie choice. These are always on.",
+      "show": 1
+    },
+    "statistics_text": {
+      "text": "Google Analytics (Google Ireland Limited; transfer to Google LLC in the USA possible). It sets the cookies _ga and _ga_… for 400 days and shows us how the shop is used.",
+      "show": 1
+    },
+    "marketing_text": {
+      "text": "Our own record of where your visit came from (the referring website, campaign or link). The sbjs_… cookies are stored for your visit: most end when you close the browser, sbjs_session 30 minutes after your last page view. The note goes with an inquiry you send us and is not passed to anyone else.",
+      "show": 1
+    },
+    "checkbox_style": "slider",
+    "use_categories": "view-preferences",
+    "dismiss_on_scroll": "0",
+    "dismiss_on_timeout": "0",
+    "disable_cookiebanner": "0",
+    "banner_width": 526,
+    "font_size": 13,
+    "legal_documents": 1,
+    "colorpalette_background": {
+      "color": "#ffffff",
+      "border": "#e2e5e5"
+    },
+    "colorpalette_text": {
+      "color": "#0c0f0f",
+      "hyperlink": "#0c7f73"
+    },
+    "colorpalette_toggles": {
+      "background": "#0c7f73",
+      "bullet": "#ffffff",
+      "inactive": "#9aa3a3"
+    },
+    "colorpalette_button_accept": {
+      "background": "#0c7f73",
+      "border": "#0c7f73",
+      "text": "#f3fbfa"
+    },
+    "colorpalette_button_deny": {
+      "background": "#0c7f73",
+      "border": "#0c7f73",
+      "text": "#f3fbfa"
+    },
+    "colorpalette_button_settings": {
+      "background": "#ffffff",
+      "border": "#c8cdcd",
+      "text": "#0c0f0f"
+    },
+    "colorpalette_border_radius": {
+      "top": 8,
+      "right": 8,
+      "bottom": 8,
+      "left": 8,
+      "type": "px"
+    },
+    "buttons_border_radius": {
+      "top": 6,
+      "right": 6,
+      "bottom": 6,
+      "left": 6,
+      "type": "px"
+    },
+    "border_width": {
+      "top": 1,
+      "right": 1,
+      "bottom": 1,
+      "left": 1
+    }
+  },
+  "banner_de_strings": {
+    "Your cookie choice": "Ihre Cookie-Auswahl",
+    "Accept all": "Alle akzeptieren",
+    "Reject all": "Alle ablehnen",
+    "Choose purposes": "Zwecke auswählen",
+    "Save my choice": "Auswahl speichern",
+    "Necessary": "Notwendig",
+    "Statistics": "Statistik",
+    "Marketing": "Marketing",
+    "Cookie settings": "Cookie-Einstellungen",
+    "We use cookies and similar technologies for two optional purposes. <strong>Statistics:</strong> Google Analytics counts visits and page views, so we can see how the shop is used. Google Ireland Limited processes this data for us, and it may be transferred to Google LLC in the USA. <strong>Marketing:</strong> we record which website, campaign or link brought you here and keep that note with an inquiry you send us. Both purposes stay off until you accept. If you reject, the shop works the same. You can change your choice at any time under “Cookie settings” at the foot of every page.": "Wir setzen Cookies und ähnliche Technologien für zwei freiwillige Zwecke ein. <strong>Statistik:</strong> Google Analytics zählt Besuche und Seitenaufrufe, damit wir sehen, wie der Shop genutzt wird. Die Daten verarbeitet Google Ireland Limited in unserem Auftrag; eine Übermittlung an Google LLC in den USA ist möglich. <strong>Marketing:</strong> Wir halten fest, über welche Website, Kampagne oder welchen Link Sie zu uns gekommen sind, und speichern diese Angabe mit einer Anfrage, die Sie uns senden. Beide Zwecke bleiben aus, bis Sie zustimmen. Wenn Sie ablehnen, funktioniert der Shop unverändert. Ihre Auswahl können Sie jederzeit über „Cookie-Einstellungen“ am Ende jeder Seite ändern.",
+    "Keeps the shop working: your session, your solution draft, your sign-in, your language and this cookie choice. These are always on.": "Hält den Shop am Laufen: Ihre Sitzung, Ihr Lösungsentwurf, Ihre Anmeldung, Ihre Sprache und diese Cookie-Auswahl. Sie sind immer aktiv.",
+    "Google Analytics (Google Ireland Limited; transfer to Google LLC in the USA possible). It sets the cookies _ga and _ga_… for 400 days and shows us how the shop is used.": "Google Analytics (Google Ireland Limited; eine Übermittlung an Google LLC in den USA ist möglich). Setzt die Cookies _ga und _ga_… für 400 Tage und zeigt uns, wie der Shop genutzt wird.",
+    "Our own record of where your visit came from (the referring website, campaign or link). The sbjs_… cookies are stored for your visit: most end when you close the browser, sbjs_session 30 minutes after your last page view. The note goes with an inquiry you send us and is not passed to anyone else.": "Unsere eigene Notiz, woher Ihr Besuch kam (verweisende Website, Kampagne oder Link). Die Cookies sbjs_… werden für Ihren Besuch gespeichert: Die meisten enden, wenn Sie den Browser schließen, sbjs_session 30 Minuten nach Ihrem letzten Seitenaufruf. Die Angabe geht mit einer Anfrage an uns und wird an niemanden weitergegeben."
+  },
+  "footer": {
+    "en": {
+      "post_id": 18,
+      "label": "Cookie settings",
+      "aria": "Cookie settings"
+    },
+    "de": {
+      "post_id": 6911,
+      "label": "Cookie-Einstellungen",
+      "aria": "Cookie-Einstellungen"
+    },
+    "css": "#tv-footer-v2 .tv-footer-bar-legal .cmplz-manage-consent{font:inherit;color:inherit;background:none;border:0;padding:5px 0;cursor:pointer}\n#tv-footer-v2 .tv-footer-bar-legal .cmplz-manage-consent:hover{color:#087f79}\n@media (max-width:640px){#tv-footer-v2 .tv-footer-bar-legal .cmplz-manage-consent{padding:7px 0}}"
+  },
+  "privacy": {
+    "en": {
+      "post_id": 1673,
+      "cookies_old": "<p>This shop uses only technically necessary cookies (session, solution draft, and login cookies). We currently use no analytics, advertising, or tracking cookies.</p>",
+      "cookies_new": "<p>This shop uses technically necessary cookies only (session, solution draft, and login cookies) unless you allow more. With your consent, Google Analytics sets the cookies <code>_ga</code> and <code>_ga_…</code> to measure how the shop is used, and our own order-source note stores how you found us (the cookies <code>sbjs_…</code>). Both purposes stay off until you accept. You can change or withdraw your choice at any time under “Cookie settings” at the foot of every page; the withdrawal does not affect the lawfulness of the processing before it.</p>",
+      "caption_old": "<caption>To answer a question put to Genie, and to run the planning tools, we use the following specialised processors:</caption>",
+      "caption_new": "<caption>To answer a question put to the Genie, to run the planning tools, and to measure how the shop is used with your consent, we use the following processors:</caption>",
+      "google_row": "              <tr>\n                <th scope=\"row\">Google Ireland Limited</th>\n                <td>Ireland; transfer to Google LLC in the USA possible</td>\n                <td>Visits and page views, only if you allow statistics; used to measure how the shop is used.</td>\n              </tr>",
+      "vies_row": "<tr>\\s*<th scope=\"row\">European Commission VIES</th>.*?</tr>"
+    },
+    "de": {
+      "post_id": 6827,
+      "cookies_old": "<p>Dieser Shop verwendet nur technisch notwendige Cookies (Session-, Lösungsentwurf- und Login-Cookies). Wir verwenden derzeit keine Analyse-, Werbe- oder Tracking-Cookies.</p>",
+      "cookies_new": "<p>Dieser Shop verwendet nur technisch notwendige Cookies (Session-, Warenkorb- und Login-Cookies), solange Sie nicht mehr erlauben. Mit Ihrer Zustimmung setzt Google Analytics die Cookies <code>_ga</code> und <code>_ga_…</code> ein, um zu messen, wie der Shop genutzt wird; unsere eigene Herkunftsnotiz speichert, wie Sie zu uns gekommen sind (die Cookies <code>sbjs_…</code>). Beide Zwecke bleiben aus, bis Sie zustimmen. Ihre Auswahl können Sie jederzeit über „Cookie-Einstellungen“ am Ende jeder Seite ändern oder widerrufen; der Widerruf berührt nicht die Rechtmäßigkeit der Verarbeitung bis dahin.</p>",
+      "caption_old": "<caption>Um eine an Genie gerichtete Frage zu beantworten und die Planungstools auszuführen, setzen wir die folgenden Auftragsverarbeiter ein:</caption>",
+      "caption_new": "<caption>Um eine an Genie gerichtete Frage zu beantworten, die Planungstools auszuführen und mit Ihrer Zustimmung die Nutzung des Shops zu messen, setzen wir die folgenden Auftragsverarbeiter ein:</caption>",
+      "google_row": "              <tr>\n                <th scope=\"row\">Google Ireland Limited</th>\n                <td>Irland; eine Übermittlung an Google LLC in den USA ist möglich</td>\n                <td>Besuche und Seitenaufrufe, nur wenn Sie Statistik erlauben; zur Messung, wie der Shop genutzt wird.</td>\n              </tr>",
+      "vies_row": "<tr>\\s*<th scope=\"row\">Europäische Kommission VIES</th>.*?</tr>"
+    }
+  }
+}

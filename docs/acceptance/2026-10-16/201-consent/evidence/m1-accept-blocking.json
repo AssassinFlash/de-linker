@@ -1,0 +1,173 @@
+{
+ "url": "http://127.0.0.1:9051/",
+ "snap": {
+  "before": {
+   "cookies": [],
+   "gtagType": "text/plain",
+   "dataLayer": "[{\"0\":\"consent\",\"1\":\"default\",\"2\":{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}},{\"0\":\"set\",\"1\":\"linker\",\"2\":{\"domains\":[\"127.0.0.1\"]}},{\"0\":\"js\",\"1\":\"2026-10-16T10:57:08.418Z\"},{\"0\":\"set\",\"1\":\"developer_id.dZTNiMT\",\"2\":true},{\"0\":\"config\",\"1\":\"G-T201LOCAL0\"}]",
+   "consentDefaults": "{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}",
+   "bannerVisible": true,
+   "manageConsentVisible": true
+  },
+  "afterChoice": {
+   "cookies": [
+    "_ga",
+    "_ga_T201LOCAL0",
+    "cmplz_banner-status",
+    "cmplz_consented_services",
+    "cmplz_functional",
+    "cmplz_marketing",
+    "cmplz_policy_id",
+    "cmplz_preferences",
+    "cmplz_statistics",
+    "sbjs_current",
+    "sbjs_current_add",
+    "sbjs_first",
+    "sbjs_first_add",
+    "sbjs_migrations",
+    "sbjs_session",
+    "sbjs_udata",
+    "wp_consent_functional",
+    "wp_consent_marketing",
+    "wp_consent_preferences",
+    "wp_consent_statistics",
+    "wp_consent_statistics-anonymous"
+   ],
+   "gtagType": null,
+   "dataLayer": "[{\"0\":\"consent\",\"1\":\"default\",\"2\":{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}},{\"0\":\"set\",\"1\":\"linker\",\"2\":{\"domains\":[\"127.0.0.1\"]}},{\"0\":\"js\",\"1\":\"2026-10-16T10:57:08.418Z\",\"gtm.uniqueEventId\":5},{\"0\":\"set\",\"1\":\"developer_id.dZTNiMT\",\"2\":true},{\"0\":\"config\",\"1\":\"G-T201LOCAL0\"},{\"0\":\"consent\",\"1\":\"update\",\"2\":{\"analytics_storage\":\"granted\"}},{\"0\":\"consent\",\"1\":\"update\",\"2\":{\"personalization_storage\":\"granted\"}},{\"0\":\"consent\",\"1\":\"update\",\"2\":{\"functionality_storage\":\"granted\",\"security_storage\":\"granted\"}},{\"event\":\"gtm.dom\",\"gtm.uniqueEventId\":11},{\"event\":\"gtm.load\",\"gtm.uniqueEventId\":12}]",
+   "consentDefaults": "{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}",
+   "bannerVisible": false,
+   "manageConsentVisible": true
+  },
+  "afterReload": {
+   "cookies": [
+    "_ga",
+    "_ga_T201LOCAL0",
+    "cmplz_banner-status",
+    "cmplz_consented_services",
+    "cmplz_functional",
+    "cmplz_marketing",
+    "cmplz_policy_id",
+    "cmplz_preferences",
+    "cmplz_statistics",
+    "sbjs_current",
+    "sbjs_current_add",
+    "sbjs_first",
+    "sbjs_first_add",
+    "sbjs_migrations",
+    "sbjs_session",
+    "sbjs_udata",
+    "wp_consent_functional",
+    "wp_consent_marketing",
+    "wp_consent_preferences",
+    "wp_consent_statistics",
+    "wp_consent_statistics-anonymous"
+   ],
+   "gtagType": null,
+   "dataLayer": "[{\"0\":\"consent\",\"1\":\"default\",\"2\":{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}},{\"0\":\"set\",\"1\":\"linker\",\"2\":{\"domains\":[\"127.0.0.1\"]}},{\"0\":\"js\",\"1\":\"2026-10-16T10:57:16.320Z\",\"gtm.uniqueEventId\":5},{\"0\":\"set\",\"1\":\"developer_id.dZTNiMT\",\"2\":true},{\"0\":\"config\",\"1\":\"G-T201LOCAL0\"},{\"0\":\"consent\",\"1\":\"update\",\"2\":{\"analytics_storage\":\"granted\",\"functionality_storage\":\"granted\",\"security_storage\":\"granted\",\"personalization_storage\":\"granted\"}},{\"event\":\"gtm.dom\",\"gtm.uniqueEventId\":9},{\"event\":\"gtm.load\",\"gtm.uniqueEventId\":10}]",
+   "consentDefaults": "{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}",
+   "bannerVisible": false,
+   "manageConsentVisible": true
+  },
+  "revokeOpened": {
+   "bannerVisible": true
+  },
+  "afterRevoke": {
+   "cookies": [
+    "cmplz_banner-status",
+    "cmplz_consented_services",
+    "cmplz_functional",
+    "cmplz_marketing",
+    "cmplz_policy_id",
+    "cmplz_preferences",
+    "cmplz_statistics",
+    "wp_consent_functional",
+    "wp_consent_marketing",
+    "wp_consent_preferences",
+    "wp_consent_statistics",
+    "wp_consent_statistics-anonymous"
+   ],
+   "gtagType": "text/plain",
+   "dataLayer": "[{\"0\":\"consent\",\"1\":\"default\",\"2\":{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}},{\"0\":\"set\",\"1\":\"linker\",\"2\":{\"domains\":[\"127.0.0.1\"]}},{\"0\":\"js\",\"1\":\"2026-10-16T10:57:22.754Z\"},{\"0\":\"set\",\"1\":\"developer_id.dZTNiMT\",\"2\":true},{\"0\":\"config\",\"1\":\"G-T201LOCAL0\"},{\"0\":\"consent\",\"1\":\"update\",\"2\":{\"functionality_storage\":\"granted\",\"security_storage\":\"granted\"}}]",
+   "consentDefaults": "{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}",
+   "bannerVisible": false,
+   "manageConsentVisible": true
+  },
+  "afterRevokeReload": {
+   "cookies": [
+    "cmplz_banner-status",
+    "cmplz_consented_services",
+    "cmplz_functional",
+    "cmplz_marketing",
+    "cmplz_policy_id",
+    "cmplz_preferences",
+    "cmplz_statistics",
+    "wp_consent_functional",
+    "wp_consent_marketing",
+    "wp_consent_preferences",
+    "wp_consent_statistics",
+    "wp_consent_statistics-anonymous"
+   ],
+   "gtagType": "text/plain",
+   "dataLayer": "[{\"0\":\"consent\",\"1\":\"default\",\"2\":{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}},{\"0\":\"set\",\"1\":\"linker\",\"2\":{\"domains\":[\"127.0.0.1\"]}},{\"0\":\"js\",\"1\":\"2026-10-16T10:57:25.338Z\"},{\"0\":\"set\",\"1\":\"developer_id.dZTNiMT\",\"2\":true},{\"0\":\"config\",\"1\":\"G-T201LOCAL0\"},{\"0\":\"consent\",\"1\":\"update\",\"2\":{\"functionality_storage\":\"granted\",\"security_storage\":\"granted\"}}]",
+   "consentDefaults": "{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}",
+   "bannerVisible": false,
+   "manageConsentVisible": true
+  },
+  "final": {
+   "cookies": [
+    "cmplz_banner-status",
+    "cmplz_consented_services",
+    "cmplz_functional",
+    "cmplz_marketing",
+    "cmplz_policy_id",
+    "cmplz_preferences",
+    "cmplz_statistics",
+    "wp_consent_functional",
+    "wp_consent_marketing",
+    "wp_consent_preferences",
+    "wp_consent_statistics",
+    "wp_consent_statistics-anonymous"
+   ],
+   "gtagType": "text/plain",
+   "dataLayer": "[{\"0\":\"consent\",\"1\":\"default\",\"2\":{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}},{\"0\":\"set\",\"1\":\"linker\",\"2\":{\"domains\":[\"127.0.0.1\"]}},{\"0\":\"js\",\"1\":\"2026-10-16T10:57:29.177Z\"},{\"0\":\"set\",\"1\":\"developer_id.dZTNiMT\",\"2\":true},{\"0\":\"config\",\"1\":\"G-T201LOCAL0\"},{\"0\":\"consent\",\"1\":\"update\",\"2\":{\"functionality_storage\":\"granted\",\"security_storage\":\"granted\"}}]",
+   "consentDefaults": "{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}",
+   "bannerVisible": false,
+   "manageConsentVisible": true
+  }
+ },
+ "google": [
+  {
+   "phase": "after-accept",
+   "url": "https://www.googletagmanager.com/gtag/js?id=G-T201LOCAL0",
+   "t": 1792148232110,
+   "action": "gtag.js fetched"
+  },
+  {
+   "phase": "after-accept",
+   "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-T201LOCAL0&gtm=45je6ae1z8d_G-T201LOCAL0za208xf1&_p=1792148228418&gcs=G101&gcd=13p3r3p3p5l1&npa=1&dma_cps=-&dma=0&gdid=dZTNiMT&cid=2058566571.1792148236&frm=0&pscdl=denied&rcb=12&sr=1440x900&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B8.0.0.0%7CChromium%3B156.0.8078.4%7CHeadlessChrome%3B156.0.8078.4&uam=&uamb=0&uap=macOS&uapv=26.6.2&uaw=0&ul=en-us&_s=1&tag_exp=115616986~115938466~115938468~118897920~118897930~120385423~120469145~120469153~121246026~121246034&sid=1792148235&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2F&dt=PV%20%26%20Storage%20Solutions%20for%20Installers%20and%20EPCs%20%7C%20Linker&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&tfd=7423",
+   "t": 1792148235609,
+   "action": "collect",
+   "gcs": "G101",
+   "gcd": "13p3r3p3p5l1",
+   "en": "page_view",
+   "tid": "G-T201LOCAL0"
+  },
+  {
+   "phase": "after-reload",
+   "url": "https://www.googletagmanager.com/gtag/js?id=G-T201LOCAL0",
+   "t": 1792148236403,
+   "action": "gtag.js fetched"
+  },
+  {
+   "phase": "after-revoke-open",
+   "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-T201LOCAL0&gtm=45je6ae1z8d_G-T201LOCAL0za208xf1&_p=1792148236320&gcs=G101&gcd=13p3r3p3p5l1&npa=1&dma_cps=-&dma=0&gdid=dZTNiMT&_eu=AAAAAAQ&cid=2058566571.1792148236&frm=0&pscdl=denied&rcb=0&sr=1440x900&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B8.0.0.0%7CChromium%3B156.0.8078.4%7CHeadlessChrome%3B156.0.8078.4&uam=&uamb=0&uap=macOS&uapv=26.6.2&uaw=0&ul=en-us&_s=1&tag_exp=115938465~115938468~118897920~118897930~120385423~120469145~120469153~121246026~121246034&sid=1792148235&sct=1&seg=1&dl=http%3A%2F%2F127.0.0.1%2F&dt=PV%20%26%20Storage%20Solutions%20for%20Installers%20and%20EPCs%20%7C%20Linker&en=page_view&_ee=1&tfd=5872",
+   "t": 1792148242006,
+   "action": "collect",
+   "gcs": "G101",
+   "gcd": "13p3r3p3p5l1",
+   "en": "page_view",
+   "tid": "G-T201LOCAL0"
+  }
+ ]
+}

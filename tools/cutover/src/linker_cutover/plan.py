@@ -170,6 +170,13 @@ MIGRATIONS = (
     ),
     Migration("8-engineering.py", needs_backup_dir=True, production_guard=True),
     Migration("9-i18n.py", subcommand=("apply",), needs_admin=True),
+    # #201's consent surface: Complianz's settings and banner row, the German
+    # banner strings, and the privacy statement's two sections. Data, so a
+    # deploy that lands the plugins without it leaves a banner nobody
+    # configured; here it is re-applied after every deploy (the ticket's
+    # regression clause). The footer entry travels with the LC partials
+    # (`present`, the window step of docs/specs/17-cutover.md).
+    Migration("201-consent.py", needs_admin=True),
 )
 
 # Host hygiene that needs WP-CLI (spec 17 §6). Each is (label, args…). The
@@ -245,6 +252,33 @@ SEARCH_CONSOLE_PROPERTY = "https://de-linker.com/"
 # and the user option, behind the table prefix, holding the file token.
 SITE_KIT_SEARCH_CONSOLE_OPTION = "googlesitekit_search-console_settings"
 SITE_KIT_VERIFICATION_FILE_META = "googlesitekit_site_verification_file"
+
+# The consent path (#201, docs/specs/201-consent-ga4.md): the banner, the
+# blocker and the two purposes are data (`cmplz_options` + the banner row);
+# Site Kit prints the Google tag and the consent defaults, and its Analytics
+# module is the one the owner connects. `steps.consent` checks the surface
+# after every `verify`, production only.
+CONSENT_STEP = "consent"
+COMPLIANZ = "complianz-gdpr"
+CONSENT_API = "wp-consent-api"
+COMPLIANZ_OPTIONS = "cmplz_options"
+COMPLIANZ_BANNER_TABLE = "cmplz_cookiebanners"
+# Site Kit's own names: the Analytics module's settings, its Consent Mode
+# switch, and the Google Tag Gateway (off: the tag it prints is the one the
+# blocker holds; a gateway rewrites it to a first-party address).
+SITE_KIT_ANALYTICS_OPTION = "googlesitekit_analytics-4_settings"
+SITE_KIT_CONSENT_MODE_OPTION = "googlesitekit_consent_mode"
+SITE_KIT_TAG_GATEWAY_OPTION = "googlesitekit_google_tag_gateway"
+# The tag the blocker holds on the rendered page: its script id, the parked
+# address attribute the blocker moves the tag into, and the one address no
+# page may load before the visitor answered.
+SITE_KIT_TAG_ID = "google_gtagjs-js"
+BLOCKED_TAG_ATTRIBUTE = "data-cmplz-src"
+GOOGLE_TAG_URL = "googletagmanager.com/gtag/js"
+CONSENT_DEFAULT_MARKER = "google_gtagjs-js-consent-mode-data-layer"
+# The site's own withdrawal entry (the LC footer partial, #201).
+CONSENT_FOOTER_ENTRY = 'class="cmplz-manage-consent"'
+CONSENT_VERIFY_PATHS = ("/", "/de/")
 
 # The service releases of spec 17 §5. Both use one release script — the genie's
 # `ops/release.sh`, whose root is its parameter — so the release rule has one

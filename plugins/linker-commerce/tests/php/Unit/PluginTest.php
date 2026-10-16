@@ -97,6 +97,13 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( \Linker\Commerce\Storefront\ArchiveSchema::class ), 'print_block' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'init', array( new AnyInstance( Monitor::class ), 'schedule' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( Monitor::HOOK, array( new AnyInstance( Monitor::class ), 'run' ) ); // @phpstan-ignore argument.type
+
+		// The consent path's Google half (#201, docs/specs/201-consent-ga4.md):
+		// three filters on the two plugins' own hooks and the cookie cleanup.
+		WP_Mock::expectFilterAdded( 'cmplz_whitelisted_script_tags', array( new AnyInstance( \Linker\Commerce\Consent\Blocking::class ), 'block_site_kit_tag' ), 20 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'googlesitekit_consent_defaults', array( new AnyInstance( \Linker\Commerce\Consent\Blocking::class ), 'deny_everywhere' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'googlesitekit_consent_category_map', array( new AnyInstance( \Linker\Commerce\Consent\Blocking::class ), 'statistics_only' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( new AnyInstance( \Linker\Commerce\Consent\Blocking::class ), 'add_cookie_cleanup' ), PHP_INT_MAX ); // @phpstan-ignore argument.type
 		WP_Mock::userFunction( 'register_deactivation_hook' );
 
 		$plugin->register();

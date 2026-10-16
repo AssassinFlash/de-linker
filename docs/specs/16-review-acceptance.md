@@ -27,6 +27,7 @@
 - `specs/i18n.spec.ts`：150 德语 URL（经 `just pull check-urls` 请求快照自己的德语 sitemap）、同 slug、库存镜像、`?lang=de` Store API。
 - `specs/products.spec.ts`：分类页筛选、隐价、按钮文案（访客/登录）。
 - `specs/chrome.spec.ts`：页头页脚命名、301、sitemap、hreflang。
+- `specs/consent.spec.ts`：同意横幅（#201，`docs/specs/201-consent-ga4.md`）——首层两按钮同等可见、同意前 Google 标签被扣住且无目的 cookie、consent defaults 全 denied 且不带地区、接受后标签放行与订单来源 `sbjs_*` 记录、页脚入口撤回后清空且刷新不再问。
 
 **待主线终态的部分在套件里以 `pending-main` 标注**（运行时 skip 并写明原因），不静默删除。2026-10-16 清账：本段原先点名的两处都已落到实跑——商品页 Genie 入口（R13 行改为点页面实际带的 `[data-pdp-ask]` 入口，芯片组不在 LC 产品模板上）、hreflang 的旧站点残留（快照 SEOPress 数据已不带线上自己的 alternates，断言改为硬判）；chrome.spec 的 301 落点依赖 `12-site-chrome.py` 迁移，未跑该迁移的实例以具名 skip 报出（README 的前置清单已补该步）。`genie-dock.spec.ts` 剩一处 `pending-main`：套件客户夹具。
 

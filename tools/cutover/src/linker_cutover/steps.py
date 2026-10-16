@@ -21,6 +21,7 @@ import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from linker_cutover import backup as backup_module
 from linker_cutover import plan
@@ -504,6 +505,22 @@ def retire_stale_schema(target: Target, *, writes: bool) -> Result:
     return Result("schema", actions, [])
 
 
+def _option(target: Target, name: str) -> dict[str, Any]:
+    """One stored option, or an empty dict when it is absent.
+
+    WP-CLI fails a missing option (`Could not get … Does it exist?`), and an
+    absent option is a finding here rather than an error: a Site Kit module
+    nobody connected has no settings row, and the caller reports what that
+    means.
+    """
+    raw = target.wp("option", "get", name, "--format=json", check=False)
+    try:
+        value = json.loads(raw) if raw else {}
+    except json.JSONDecodeError:
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
 def _schema_rows(target: Target) -> list[dict[str, object]]:
     """The plugin's schema templates: id, title, status, and whether each is a Product node."""
     php = (
@@ -792,6 +809,146 @@ def search_console(target: Target) -> Result:
     if status != 200 or f"google{token}.html" not in body:
         return failed(f"{path} does not serve the verification token")
     return Result(plan.SEARCH_CONSOLE_STEP, actions, [])
+
+
+def consent(target: Target) -> Result:
+    """The consent surface holds (#201, docs/specs/201-consent-ga4.md).
+
+    Three ways it goes wrong while every page still answers 200: a deploy that
+    drops a plugin or rewrites the Complianz configuration (the banner, the
+    blocker and the two purposes are data, and data is what an update
+    overwrites); the owner's Analytics connection falling back to
+    disconnected, which takes the tag away and with it the measurement the
+    ticket exists for; and the blocker losing the tag, which loads and sends
+    before the visitor answered — the state Consent Mode Basic forbids, and
+    the one Complianz's own Site Kit integration produces by default.
+
+    Production only: a local instance's isolation layer blocks Google on
+    purpose (tools/local/mu/000-linker-local-isolation.php), and the drill
+    runs the same code without it.
+    """
+    actions: list[str] = []
+
+    def failed(note: str) -> Result:
+        return Result(plan.CONSENT_STEP, actions, [note])
+
+    plugins = {
+        str(entry.get("name")): entry.get("status")
+        for entry in target.wp_json("plugin", "list", "--fields=name,status")
+        if isinstance(entry, dict)
+    }
+    for slug in (plan.COMPLIANZ, plan.CONSENT_API, plan.SITE_KIT):
+        actions.append(f"{slug}: {plugins.get(slug)}")
+        if plugins.get(slug) != "active":
+            return failed(f"{slug} is not active — the consent path loses its carrier")
+
+    raw = target.wp(
+        "option", "get", plan.COMPLIANZ_OPTIONS, "--format=json", check=False
+    )
+    try:
+        options = json.loads(raw) if raw else {}
+    except json.JSONDecodeError:
+        return failed(f"{plan.COMPLIANZ_OPTIONS} did not parse: {raw[:200]!r}")
+    if not isinstance(options, dict):
+        options = {}
+    wanted = {
+        "enable_cookie_banner": "yes",
+        "enable_cookie_blocker": "yes",
+        # Site Kit prints the consent defaults; two sets of them would fight.
+        "consent-mode": "no",
+    }
+    for key, expected in wanted.items():
+        actions.append(f"cmplz_options[{key}] = {options.get(key)!r}")
+        if options.get(key) != expected:
+            return failed(
+                f"cmplz_options[{key}] is {options.get(key)!r}, expected {expected!r}"
+            )
+
+    banner_raw = target.wp(
+        "eval",
+        "$t = $GLOBALS['wpdb']->prefix . '"
+        + plan.COMPLIANZ_BANNER_TABLE
+        + "'; echo json_encode( $GLOBALS['wpdb']->get_row( 'SELECT * FROM ' . $t . "
+        + "' WHERE `default` = 1 ORDER BY ID LIMIT 1', ARRAY_A ) );",
+        check=False,
+    )
+    try:
+        banner = json.loads(banner_raw) if banner_raw.strip() else None
+    except json.JSONDecodeError:
+        banner = None
+    if not isinstance(banner, dict):
+        return failed("no default Complianz banner row")
+    for key in ("message_optin", "statistics_text", "marketing_text"):
+        value = str(banner.get(key) or "")
+        actions.append(f"banner[{key}]: {len(value)} characters")
+        if not value.strip():
+            return failed(f"the banner row carries no {key}")
+
+    analytics = _option(target, plan.SITE_KIT_ANALYTICS_OPTION)
+    actions.append(
+        f"{plan.SITE_KIT_ANALYTICS_OPTION}[measurementID] = {analytics.get('measurementID')!r}"
+    )
+    if not analytics.get("measurementID"):
+        return failed(
+            "Site Kit's Analytics module is not connected (measurementID empty) — "
+            "the owner side of #201 has not run"
+        )
+    consent_mode = _option(target, plan.SITE_KIT_CONSENT_MODE_OPTION)
+    actions.append(
+        f"{plan.SITE_KIT_CONSENT_MODE_OPTION}[enabled] = {consent_mode.get('enabled')!r}"
+    )
+    if consent_mode.get("enabled") is not True:
+        return failed(
+            f"{plan.SITE_KIT_CONSENT_MODE_OPTION} is not enabled — Site Kit prints "
+            "no consent defaults, and the tag has nothing holding it at denied"
+        )
+    gateway = _option(target, plan.SITE_KIT_TAG_GATEWAY_OPTION)
+    actions.append(
+        f"{plan.SITE_KIT_TAG_GATEWAY_OPTION}[isEnabled] = {gateway.get('isEnabled')!r}"
+    )
+    if gateway.get("isEnabled"):
+        return failed(
+            "Site Kit's Google Tag Gateway is on: it rewrites the tag to a "
+            "first-party address and the blocker's coverage is unmeasured"
+        )
+
+    for path in plan.CONSENT_VERIFY_PATHS:
+        status, body = target.http(path)
+        actions.append(f"GET {path} -> {status}")
+        if status != 200:
+            return failed(f"{path} answered {status}")
+        if plan.CONSENT_FOOTER_ENTRY not in body:
+            return failed(
+                f"{path} carries no {plan.CONSENT_FOOTER_ENTRY} — the footer's "
+                "withdrawal entry is missing (wp linker-commerce present installs it)"
+            )
+        if plan.CONSENT_DEFAULT_MARKER not in body:
+            return failed(
+                f"{path} carries no consent defaults ({plan.CONSENT_DEFAULT_MARKER})"
+            )
+        executable = re.search(
+            r"<script[^>]*\ssrc=[\"']https?://[^\"']*" + re.escape(plan.GOOGLE_TAG_URL),
+            body,
+            re.IGNORECASE,
+        )
+        held = (
+            f'id="{plan.SITE_KIT_TAG_ID}"' in body
+            and plan.BLOCKED_TAG_ATTRIBUTE in body
+        )
+        actions.append(
+            f"{path}: tag held={held} executable gtag script={'yes' if executable else 'no'}"
+        )
+        if executable:
+            return failed(
+                f"{path} loads the Google tag before the visitor answered "
+                f"({plan.GOOGLE_TAG_URL} has an executable src)"
+            )
+        if not held:
+            return failed(
+                f"{path} does not carry the held Google tag ({plan.SITE_KIT_TAG_ID})"
+            )
+
+    return Result(plan.CONSENT_STEP, actions, [])
 
 
 # The blocks a page declares as JSON-LD. WordPress writes the `type` attribute

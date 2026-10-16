@@ -23,6 +23,16 @@ add_filter( 'wp_mail_from', 'linker_local_mail_from' );
 add_filter( 'pre_http_request', 'linker_local_filter_http', PHP_INT_MAX, 3 );
 add_action( 'requests-requests.before_redirect', 'linker_local_filter_redirect' );
 
+// Site Kit prints its Google tags only where wp_get_environment_type() is
+// 'production' (its Tag_Environment_Type_Guard); this instance is 'local'. The
+// consent banner's blocking is judged on the tags production prints
+// (docs/specs/201-consent-ga4.md), so the instance prints them too. They stay
+// on this machine: the page CSP below has no Google origin.
+add_filter(
+	'googlesitekit_allowed_tag_environment_types',
+	static fn ( $types ): array => array_merge( (array) $types, array( 'local' ) )
+);
+
 if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// The browser may fetch from this machine only (any port: the instance, its engine and Genie).
 	// Two kinds of outside material reach a page, both by the site's own design:

@@ -202,10 +202,12 @@ def main(argv: list[str] | None = None) -> int:
             _print(result)
             notes = list(result.notes)
             if args.target is None:
-                # Production only (#145): no local instance is connected to Google.
-                ownership = steps.search_console(target)
-                _print(ownership)
-                notes += ownership.notes
+                # Production only (#145, #201): no local instance is connected
+                # to Google, and an instance's isolation layer blocks it.
+                for step in (steps.search_console, steps.consent):
+                    ownership = step(target)
+                    _print(ownership)
+                    notes += ownership.notes
             # A note is a check that failed: the window must not read a 200-only
             # page list as a pass when the redirect or a German page is wrong.
             return 1 if notes else 0

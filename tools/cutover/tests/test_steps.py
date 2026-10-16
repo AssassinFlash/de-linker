@@ -611,7 +611,7 @@ def test_the_production_target_gets_the_write_allowance_and_a_failure_stops(
         )
 
     seen: list[list[str]] = []
-    codes = iter([0, 0, 0, 0])
+    codes = iter([0] * len(plan.MIGRATIONS))
 
     def record(command: list[str], **kwargs: object) -> object:
         del kwargs
@@ -625,6 +625,7 @@ def test_the_production_target_gets_the_write_allowance_and_a_failure_stops(
     )
     assert all("--production" in command for command in seen[:3])
     assert "--production" not in seen[3], "9-i18n has no such guard"
+    assert "--production" not in seen[4], "201-consent has no such guard"
 
     codes = iter([0, 1, 0, 0])
     seen.clear()
@@ -883,4 +884,153 @@ def test_each_way_of_losing_the_verification_is_a_note(
         tmp_path, active=active, settings=settings, token=token, served=served
     )
     result = steps.search_console(site)
+    assert len(result.notes) == 1 and note in result.notes[0]
+
+
+# --- the consent surface (#201) -------------------------------------------
+
+_TAG_HELD = (
+    '<script type="text/plain" data-service="google-analytics" '
+    'data-category="statistics" id="google_gtagjs-js" '
+    'data-cmplz-src="https://www.googletagmanager.com/gtag/js?id=G-TEST" async></script>'
+)
+_DEFAULTS = (
+    '<script id="google_gtagjs-js-consent-mode-data-layer">dataLayer.push(1)</script>'
+)
+_ENTRY = '<button type="button" class="cmplz-manage-consent">Cookie settings</button>'
+
+
+class _ConsentSite(_Pages):
+    """A site whose consent surface is a few canned WP-CLI answers."""
+
+    def __init__(  # noqa: D107 - a fixture, not a public type
+        self,
+        root: Path,
+        *,
+        plugins: dict[str, str] | None = None,
+        options: dict[str, object] | None = None,
+        banner: dict[str, str] | None = None,
+        page: str | None = None,
+    ) -> None:
+        super().__init__(root, {})
+        self.plugin_status = {
+            plan.COMPLIANZ: "active",
+            plan.CONSENT_API: "active",
+            plan.SITE_KIT: "active",
+            **(plugins or {}),
+        }
+        self.option_values: dict[str, object] = {
+            "cmplz_options": {
+                "enable_cookie_banner": "yes",
+                "enable_cookie_blocker": "yes",
+                "consent-mode": "no",
+            },
+            plan.SITE_KIT_ANALYTICS_OPTION: {"measurementID": "G-TEST"},
+            plan.SITE_KIT_CONSENT_MODE_OPTION: {"enabled": True},
+            plan.SITE_KIT_TAG_GATEWAY_OPTION: {"isEnabled": False},
+            **(options or {}),
+        }
+        self.banner = banner or {
+            "message_optin": "two purposes",
+            "statistics_text": "Google Analytics",
+            "marketing_text": "our own order-source note",
+        }
+        self.page = page if page is not None else _TAG_HELD + _DEFAULTS + _ENTRY
+
+    def wp(self, *args: str, check: bool = True) -> str:  # noqa: D102 - canned answers
+        del check
+        if args[:2] == ("plugin", "list"):
+            return json.dumps(
+                [
+                    {"name": name, "status": status}
+                    for name, status in self.plugin_status.items()
+                ]
+            )
+        if args[0] == "eval":
+            return json.dumps(self.banner)
+        if args[:2] == ("option", "get"):
+            value = self.option_values.get(args[2])
+            return "" if value is None else json.dumps(value)
+        raise AssertionError(args)
+
+    def http(  # noqa: D102 - canned answers
+        self, path: str, *, cache_buster: str | None = None
+    ) -> tuple[int, str]:
+        del cache_buster
+        assert path in plan.CONSENT_VERIFY_PATHS, path
+        return 200, self.page
+
+
+def test_a_consent_surface_in_place_passes(tmp_path: Path) -> None:
+    """The state the ticket leaves: everything on, the tag held on both pages."""
+    result = steps.consent(_ConsentSite(tmp_path))
+    assert result.notes == []
+    assert "GET / -> 200" in result.actions
+    assert "GET /de/ -> 200" in result.actions
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "note"),
+    [
+        ({"plugins": {plan.COMPLIANZ: "inactive"}}, "complianz-gdpr is not active"),
+        ({"plugins": {plan.CONSENT_API: "inactive"}}, "wp-consent-api is not active"),
+        (
+            {
+                "options": {
+                    "cmplz_options": {
+                        "enable_cookie_banner": "yes",
+                        "enable_cookie_blocker": "no",
+                    },
+                }
+            },
+            "enable_cookie_blocker",
+        ),
+        (
+            {
+                "options": {
+                    "cmplz_options": {
+                        "enable_cookie_banner": "yes",
+                        "enable_cookie_blocker": "yes",
+                        "consent-mode": "yes",
+                    },
+                }
+            },
+            "consent-mode",
+        ),
+        (
+            {
+                "banner": {
+                    "message_optin": "",
+                    "statistics_text": "x",
+                    "marketing_text": "x",
+                }
+            },
+            "message_optin",
+        ),
+        (
+            {"options": {plan.SITE_KIT_ANALYTICS_OPTION: {"measurementID": ""}}},
+            "is not connected",
+        ),
+        (
+            {"options": {plan.SITE_KIT_CONSENT_MODE_OPTION: {"enabled": False}}},
+            "is not enabled",
+        ),
+        (
+            {"options": {plan.SITE_KIT_TAG_GATEWAY_OPTION: {"isEnabled": True}}},
+            "Tag Gateway is on",
+        ),
+        (
+            {"page": _TAG_HELD.replace("data-cmplz-src", "src") + _DEFAULTS + _ENTRY},
+            "loads the Google tag before the visitor answered",
+        ),
+        ({"page": _DEFAULTS + _ENTRY}, "does not carry the held Google tag"),
+        ({"page": _TAG_HELD + _DEFAULTS}, "withdrawal entry is missing"),
+        ({"page": _TAG_HELD + _ENTRY}, "carries no consent defaults"),
+    ],
+)
+def test_each_way_of_losing_the_consent_surface_is_a_note(
+    tmp_path: Path, kwargs: dict[str, object], note: str
+) -> None:
+    """Every one of these still answers 200 on both languages."""
+    result = steps.consent(_ConsentSite(tmp_path, **kwargs))  # type: ignore[arg-type]
     assert len(result.notes) == 1 and note in result.notes[0]

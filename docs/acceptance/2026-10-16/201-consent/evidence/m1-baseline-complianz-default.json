@@ -1,0 +1,31 @@
+{
+ "url": "http://127.0.0.1:9051/",
+ "snap": {
+  "before": {
+   "cookies": [],
+   "gtagType": null,
+   "dataLayer": "[{\"0\":\"consent\",\"1\":\"default\",\"2\":{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}},{\"0\":\"set\",\"1\":\"linker\",\"2\":{\"domains\":[\"127.0.0.1\"]}},{\"0\":\"js\",\"1\":\"2026-10-16T10:57:46.190Z\",\"gtm.uniqueEventId\":5},{\"0\":\"set\",\"1\":\"developer_id.dZTNiMT\",\"2\":true},{\"0\":\"config\",\"1\":\"G-T201LOCAL0\"},{\"event\":\"gtm.dom\",\"gtm.uniqueEventId\":8},{\"event\":\"gtm.load\",\"gtm.uniqueEventId\":9}]",
+   "consentDefaults": "{\"ad_personalization\":\"denied\",\"ad_storage\":\"denied\",\"ad_user_data\":\"denied\",\"analytics_storage\":\"denied\",\"functionality_storage\":\"denied\",\"security_storage\":\"denied\",\"personalization_storage\":\"denied\",\"wait_for_update\":500}",
+   "bannerVisible": true,
+   "manageConsentVisible": true
+  }
+ },
+ "google": [
+  {
+   "phase": "before-consent",
+   "url": "https://www.googletagmanager.com/gtag/js?id=G-T201LOCAL0",
+   "t": 1792148266198,
+   "action": "gtag.js fetched"
+  },
+  {
+   "phase": "before-consent",
+   "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-T201LOCAL0&gtm=45je6ae1z8d_G-T201LOCAL0za208xf1&_p=1792148266190&gcs=G100&gcd=13p3p3p3p5l1&npa=1&dma_cps=-&dma=0&gdid=dZTNiMT&cid=238415664.1792148270&frm=0&pscdl=denied&rcb=9&sr=1440x900&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B8.0.0.0%7CChromium%3B156.0.8078.4%7CHeadlessChrome%3B156.0.8078.4&uam=&uamb=0&uap=macOS&uapv=26.6.2&uaw=0&ul=en-us&_s=1&tag_exp=115616986~115938466~115938469~118897920~118897930~120385422~120469145~120469153~121246026~121246034&sid=1792148269&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2F&dt=PV%20%26%20Storage%20Solutions%20for%20Installers%20and%20EPCs%20%7C%20Linker&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&tfd=3821",
+   "t": 1792148269835,
+   "action": "collect",
+   "gcs": "G100",
+   "gcd": "13p3p3p3p5l1",
+   "en": "page_view",
+   "tid": "G-T201LOCAL0"
+  }
+ ]
+}

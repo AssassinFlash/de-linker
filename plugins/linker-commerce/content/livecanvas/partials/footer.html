@@ -54,8 +54,9 @@
 #tv-footer-v2 .footer-phone svg{width:15px;height:15px;color:#137e76}
 #tv-footer-v2 .tv-footer-bar{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding:17px 6px 0;font-size:10px;line-height:1.6;color:#4c5861}
 #tv-footer-v2 .tv-footer-bar-legal{display:flex;gap:18px;flex-wrap:wrap}
-#tv-footer-v2 .tv-footer-bar-legal a{padding:5px 0}
-#tv-footer-v2 .tv-footer-bar-legal a:hover{color:#087f79}
+#tv-footer-v2 .tv-footer-bar-legal a,#tv-footer-v2 .tv-footer-bar-legal .cmplz-manage-consent{padding:5px 0}
+#tv-footer-v2 .tv-footer-bar-legal a:hover,#tv-footer-v2 .tv-footer-bar-legal .cmplz-manage-consent:hover{color:#087f79}
+#tv-footer-v2 .tv-footer-bar-legal .cmplz-manage-consent{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #tv-footer-v2 .tv-footer-bar-trust{width:100%;font-size:10px}
 #tv-footer-v2 .tv-footer-bar-trust em{font-style:normal;margin:0 8px;opacity:.5}
 #tv-footer-v2 .footer-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -93,7 +94,7 @@
  #tv-footer-v2 .tv-footer-bar{padding:15px 4px 0;gap:8px;justify-content:center;text-align:center;font-size:9px}
  #tv-footer-v2 .tv-footer-bar-copyright{width:100%}
  #tv-footer-v2 .tv-footer-bar-legal{gap:5px 13px;justify-content:center}
- #tv-footer-v2 .tv-footer-bar-legal a{padding:7px 0}
+ #tv-footer-v2 .tv-footer-bar-legal a, #tv-footer-v2 .tv-footer-bar-legal .cmplz-manage-consent{padding:7px 0}
  #tv-footer-v2 .tv-footer-bar-trust{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){#tv-footer-v2 *{transition:none!important}}
@@ -144,6 +145,7 @@
 <a href="/privacy-policy/">Privacy Policy</a>
 <a href="/terms-of-sale/">Terms of Sale</a>
 <a href="/refund-returns/">Refund &amp; Returns</a>
+<button type="button" class="cmplz-manage-consent">Cookie settings</button>
 </nav>
 <div class="tv-footer-bar-trust">
         Product fit<em>·</em>Inverter compatibility<em>·</em>Project support

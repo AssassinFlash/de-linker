@@ -101,6 +101,7 @@ def test_the_migrations_are_the_ones_spec_17_names_and_in_order() -> None:
         "7-facts.py",
         "8-engineering.py",
         "9-i18n.py",
+        "201-consent.py",
     ]
     assert plan.MIGRATIONS[0].needs_backup_dir is True
     assert plan.MIGRATIONS[1].needs_backup_dir is True
@@ -110,6 +111,11 @@ def test_the_migrations_are_the_ones_spec_17_names_and_in_order() -> None:
     # argparse: an option after a subcommand belongs to the subcommand, so the
     # login has to precede `apply` and `--write` has to follow it.
     assert plan.MIGRATIONS[3].options == ()
+    # The consent surface (#201) is data a deploy re-applies; it takes the
+    # administrator for the writes and has no subcommand.
+    assert plan.MIGRATIONS[4].needs_admin is True
+    assert plan.MIGRATIONS[4].subcommand == ()
+    assert plan.MIGRATIONS[4].options == ()
 
 
 def test_the_verify_subset_is_absolute_paths_in_both_languages() -> None:
