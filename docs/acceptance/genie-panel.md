@@ -25,15 +25,17 @@
 
 ## B. 四入口（各 ≥2 问）
 
+入口形态按 2026-10-16 的实例取证（docs/specs/13-genie.md §C Entries）：产品页的条目是工具行的 "Ask Genie"（`[data-pdp-ask]`）与 dock 的开场提示；账户页的条目是常驻 dock（账户面不渲染自己的芯片组）；购物车是 `draft_chips` 的两枚芯片。
+
 | # | 入口 | EN | DE | 期望 |
 |---|---|---|---|---|
-| B1 | 商品页 H2-10K-T3（4107）点 "What pairs with this model?" | Which batteries have documented pairing with this model? | Welche Batterien haben ein dokumentiertes Pairing mit diesem Modell? | 只列 check-compatibility 对 4107 放行（released / released_with_accessory）的电池；附文件 |
-| B2 | 商品页 4107 点 "Compare with…" | Compare this with the GW10K-ETA and the HS3-10K. | Vergleichen Sie dies mit GW10K-ETA und HS3-10K. | compare 块 3 ids ⊆ {4107, 3556, 2199}；正文无数字 |
-| B3 | 商品页 4107 点 "Documents" | Where are the datasheets for this model? | Wo finde ich das Datenblatt zu diesem Modell? | 列 get-product(4107) documents，全部托管 URL |
+| B1 | 商品页 H2-10K-T3（4107）工具行点 "Ask Genie"（问句经 `linker-genie-ask` 交给 dock） | Which batteries have documented pairing with this model? | Welche Batterien haben ein dokumentiertes Pairing mit diesem Modell? | 只列 check-compatibility 对 4107 放行（released / released_with_accessory）的电池；附文件 |
+| B2 | 商品页 4107，dock 开场提示 "Compare with…"（或同面直接问） | Compare this with the GW10K-ETA and the HS3-10K. | Vergleichen Sie dies mit GW10K-ETA und HS3-10K. | compare 块 3 ids ⊆ {4107, 3556, 2199}；正文无数字 |
+| B3 | 商品页 4107，dock 开场提示 "Documents"（或同面直接问） | Where are the datasheets for this model? | Wo finde ich das Datenblatt zu diesem Modell? | 列 get-product(4107) documents，全部托管 URL |
 | B4 | 购物车（Lösungsentwurf）点 "Check my draft" | Can the items in my solution draft work together? | Passen die Positionen in meinem Lösungsentwurf zusammen? | 读购物车 lines，逐对 compatibility；未放行对明确说 |
 | B5 | 购物车点 "What happens next?" | What happens after I submit my inquiry? | Was passiert nach dem Absenden meiner Anfrage? | 流程句（询盘 → Proforma → 线下）；不带价格/日期承诺；无数字违规 |
-| B6 | 账户点 "Where is my Proforma?"（登录） | Where does my Proforma stand? | Wo steht meine Proforma? | inquiry-status 阶段条；未登录 → 要求登录句 |
-| B7 | 账户点（未登录） | Where does my Proforma stand? | Wo steht meine Proforma? | 登录请求；不泄露任何询盘数据 |
+| B6 | 账户页（登录）在常驻 dock 里问 "Where is my Proforma?"（dock 的开场提示即此句） | Where does my Proforma stand? | Wo steht meine Proforma? | inquiry-status 阶段条；未登录 → 要求登录句 |
+| B7 | 账户页（未登录）同一 dock 入口 | Where does my Proforma stand? | Wo steht meine Proforma? | 登录请求；不泄露任何询盘数据 |
 
 ## C. 选品条件
 
@@ -56,7 +58,7 @@
 |---|---|---|---|
 | D1 | Compare GW10K-ETA, HD-P3-10K0 and H2-10K-T3. | Vergleichen Sie GW10K-ETA, HD-P3-10K0 und H2-10K-T3. | compare ⊆ {3556, 3555, 4107}；电池能量与逆变器输出不混行 |
 | D2 | Which battery pairs with the GW10K-ETA? | Welche Batterie passt zum GW10K-ETA? | check-compatibility(3556, battery)；附文件 |
-| D3 | Do you have the ESA datasheet? | Haben Sie das ESA-Datenblatt? | 搜索知识库；只给托管 URL（ADR-0023） |
+| D3 | Do you have the ESA datasheet? | Haben Sie das ESA-Datenblatt? | 搜索知识库；只给我们自己托管的 URL |
 | D4 | Is the HS3-10K in stock? | Ist der HS3-10K auf Lager? | 有货（stock 一律 in stock for orderable）；不写数量/日期（R9） |
 | D5 | What does the GW10K-ETA cost? | Was kostet der GW10K-ETA? | 登录+有价 → 卡内价格；未登录 → 登录句；无 Incoterms（R9） |
 | D6 | GW208.9 battery — can I order it? | GW208.9-Batterie — bestellbar? | rfq_only（1957）→ 询价句，无价格 |
@@ -77,7 +79,7 @@
 | F1 | "Three-phase for home" → 追问 kWp → "10" | 第二轮 qualified ⊆ HOME-3φ∧PV≥10；总追问 = 1 |
 | F2 | C1 答案卡 → "Add to solution draft" | pending → added；Store API 读回数量 ≥1；状态在卡内，按钮高度不变 |
 | F3 | C1 答案卡 → "Save solution" | saving → saved；/my-account/solutions 出现；失败 → failed 句 |
-| F4 | "Size a system for 5000 kWh, 10 kWp, three-phase, 80538" | open_configurator → 预填 URL /linker-planner/?…；打开配置器 |
+| F4 | "Size a system for 5000 kWh, 10 kWp, three-phase, 80538" | open_configurator → 预填 URL /solution-configurator/?…；打开配置器 |
 | F5 | 每问首开 | 披露句恰一次；之后各轮不再出现 |
 
 ## 跑法

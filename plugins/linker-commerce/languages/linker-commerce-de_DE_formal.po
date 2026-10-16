@@ -602,7 +602,7 @@ msgstr "Neue Nachricht über das Kontaktformular"
 
 #: includes/Contact/Form.php:137
 #: includes/Presentation/ProductShortcodes.php:1579
-#: includes/Presentation/Shortcodes.php:286
+#: includes/Presentation/Shortcodes.php:287
 msgid "CONTACT LINKER"
 msgstr "KONTAKT ZU LINKER"
 
@@ -1422,7 +1422,7 @@ msgstr[0] "gilt für %d Produkt"
 msgstr[1] "gilt für %d Produkte"
 
 #: includes/Presentation/LoginGate.php:142
-#: includes/Presentation/Shortcodes.php:394
+#: includes/Presentation/Shortcodes.php:381
 msgid "Empty solution draft"
 msgstr "Leerer Lösungsentwurf"
 
@@ -1444,7 +1444,7 @@ msgstr ""
 #: includes/Presentation/LoginGate.php:147
 #: includes/Presentation/LoginGate.php:162
 #: includes/Presentation/LoginGate.php:177
-#: includes/Presentation/Shortcodes.php:399
+#: includes/Presentation/Shortcodes.php:386
 #: includes/Vocabulary/Terms.php:38
 #: templates/emails/linker-approval-approved.php:26
 #: templates/emails/linker-registration-received.php:38
@@ -1475,7 +1475,7 @@ msgstr ""
 
 #: includes/Presentation/LoginGate.php:161
 #: includes/Presentation/LoginGate.php:176
-#: includes/Presentation/Shortcodes.php:401
+#: includes/Presentation/Shortcodes.php:388
 msgid "Sign in or register"
 msgstr "Anmelden oder registrieren"
 
@@ -1916,7 +1916,7 @@ msgid "Not sure which model to look for?"
 msgstr "Noch nicht sicher, welches Modell passt?"
 
 #: includes/Presentation/ProductShortcodes.php:1581
-#: includes/Presentation/Shortcodes.php:288
+#: includes/Presentation/Shortcodes.php:289
 msgid ""
 "Your question includes this page as context. You can remove it before "
 "sending."
@@ -1956,19 +1956,19 @@ msgstr "Anmelden"
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 
-#: includes/Presentation/Shortcodes.php:125
+#: includes/Presentation/Shortcodes.php:126
 msgid "Contact Linker"
 msgstr "Linker kontaktieren"
 
-#: includes/Presentation/Shortcodes.php:247
+#: includes/Presentation/Shortcodes.php:248
 msgid "LÖSUNGEN FÜR GROSSSPEICHER"
 msgstr "LÖSUNGEN FÜR GROSSSPEICHER"
 
-#: includes/Presentation/Shortcodes.php:248
+#: includes/Presentation/Shortcodes.php:249
 msgid "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
 msgstr "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
 
-#: includes/Presentation/Shortcodes.php:249
+#: includes/Presentation/Shortcodes.php:250
 msgid ""
 "Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher "
 "an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die "
@@ -1978,19 +1978,19 @@ msgstr ""
 "an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die "
 "Systemauswahl mit einer umsetzbaren Planung für die Lieferung."
 
-#: includes/Presentation/Shortcodes.php:250
+#: includes/Presentation/Shortcodes.php:251
 msgid "Ihr Projekt gemeinsam entwickeln"
 msgstr "Ihr Projekt gemeinsam entwickeln"
 
-#: includes/Presentation/Shortcodes.php:253
+#: includes/Presentation/Shortcodes.php:254
 msgid "KONTAKT ZU LINKER"
 msgstr "KONTAKT ZU LINKER"
 
-#: includes/Presentation/Shortcodes.php:254
+#: includes/Presentation/Shortcodes.php:255
 msgid "Das Projekt vor dem vollständigen Briefing besprechen."
 msgstr "Das Projekt vor dem vollständigen Briefing besprechen."
 
-#: includes/Presentation/Shortcodes.php:255
+#: includes/Presentation/Shortcodes.php:256
 msgid ""
 "Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden "
 "entfernen."
@@ -1998,19 +1998,19 @@ msgstr ""
 "Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden "
 "entfernen."
 
-#: includes/Presentation/Shortcodes.php:256
+#: includes/Presentation/Shortcodes.php:257
 msgid "EPC-Anforderung besprechen"
 msgstr "EPC-Anforderung besprechen"
 
-#: includes/Presentation/Shortcodes.php:259
+#: includes/Presentation/Shortcodes.php:260
 msgid "TECHNISCHE ZUSAMMENARBEIT"
 msgstr "TECHNISCHE ZUSAMMENARBEIT"
 
-#: includes/Presentation/Shortcodes.php:260
+#: includes/Presentation/Shortcodes.php:261
 msgid "Ein technischer Partner in jeder Projektphase."
 msgstr "Ein technischer Partner in jeder Projektphase."
 
-#: includes/Presentation/Shortcodes.php:261
+#: includes/Presentation/Shortcodes.php:262
 msgid ""
 "Unser Team arbeitet mit Ihrem Team an Systementscheidungen, "
 "Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben "
@@ -2020,19 +2020,19 @@ msgstr ""
 "Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben "
 "wir bei technischen Fragen an Ihrer Seite."
 
-#: includes/Presentation/Shortcodes.php:262
+#: includes/Presentation/Shortcodes.php:263
 msgid "Mit unserem Technikteam sprechen"
 msgstr "Mit unserem Technikteam sprechen"
 
-#: includes/Presentation/Shortcodes.php:265
+#: includes/Presentation/Shortcodes.php:266
 msgid "IHR PROJEKT IN DER PRAXIS"
 msgstr "IHR PROJEKT IN DER PRAXIS"
 
-#: includes/Presentation/Shortcodes.php:266
+#: includes/Presentation/Shortcodes.php:267
 msgid "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
 msgstr "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
 
-#: includes/Presentation/Shortcodes.php:267
+#: includes/Presentation/Shortcodes.php:268
 msgid ""
 "Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu "
 "Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
@@ -2040,15 +2040,15 @@ msgstr ""
 "Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu "
 "Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
 
-#: includes/Presentation/Shortcodes.php:268
+#: includes/Presentation/Shortcodes.php:269
 msgid "Ihre Speicheroptionen besprechen"
 msgstr "Ihre Speicheroptionen besprechen"
 
-#: includes/Presentation/Shortcodes.php:272
+#: includes/Presentation/Shortcodes.php:273
 msgid "Eine frühe Frage reicht aus."
 msgstr "Eine frühe Frage reicht aus."
 
-#: includes/Presentation/Shortcodes.php:273
+#: includes/Presentation/Shortcodes.php:274
 msgid ""
 "Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im "
 "Kurzformular optional."
@@ -2056,19 +2056,19 @@ msgstr ""
 "Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im "
 "Kurzformular optional."
 
-#: includes/Presentation/Shortcodes.php:274
+#: includes/Presentation/Shortcodes.php:275
 msgid "Projekt besprechen"
 msgstr "Projekt besprechen"
 
-#: includes/Presentation/Shortcodes.php:280
+#: includes/Presentation/Shortcodes.php:281
 msgid "UTILITY-SCALE SOLUTIONS"
 msgstr "LÖSUNGEN FÜR GROSSSPEICHER"
 
-#: includes/Presentation/Shortcodes.php:281
+#: includes/Presentation/Shortcodes.php:282
 msgid "A storage solution built around the whole project."
 msgstr "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
 
-#: includes/Presentation/Shortcodes.php:282
+#: includes/Presentation/Shortcodes.php:283
 msgid ""
 "We work alongside developers and EPC teams to shape battery storage around "
 "the project’s energy goals, site conditions and integration needs. Together, "
@@ -2078,27 +2078,27 @@ msgstr ""
 "an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die "
 "Systemauswahl mit einer umsetzbaren Planung für die Lieferung."
 
-#: includes/Presentation/Shortcodes.php:283
+#: includes/Presentation/Shortcodes.php:284
 msgid "Explore your project with us"
 msgstr "Ihr Projekt gemeinsam entwickeln"
 
-#: includes/Presentation/Shortcodes.php:287
+#: includes/Presentation/Shortcodes.php:288
 msgid "Discuss the project before preparing the full brief."
 msgstr "Das Projekt vor dem vollständigen Briefing besprechen."
 
-#: includes/Presentation/Shortcodes.php:289
+#: includes/Presentation/Shortcodes.php:290
 msgid "Discuss an EPC requirement"
 msgstr "EPC-Anforderung besprechen"
 
-#: includes/Presentation/Shortcodes.php:292
+#: includes/Presentation/Shortcodes.php:293
 msgid "TECHNICAL PARTNERSHIP"
 msgstr "TECHNISCHE ZUSAMMENARBEIT"
 
-#: includes/Presentation/Shortcodes.php:293
+#: includes/Presentation/Shortcodes.php:294
 msgid "A technical partner, wherever your project stands."
 msgstr "Ein technischer Partner in jeder Projektphase."
 
-#: includes/Presentation/Shortcodes.php:294
+#: includes/Presentation/Shortcodes.php:295
 msgid ""
 "Our team works with yours on system choices, installation questions and "
 "commissioning, and stays involved when support is needed after delivery."
@@ -2107,19 +2107,19 @@ msgstr ""
 "Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben "
 "wir bei technischen Fragen an Ihrer Seite."
 
-#: includes/Presentation/Shortcodes.php:295
+#: includes/Presentation/Shortcodes.php:296
 msgid "Talk to our technical team"
 msgstr "Mit unserem Technikteam sprechen"
 
-#: includes/Presentation/Shortcodes.php:298
+#: includes/Presentation/Shortcodes.php:299
 msgid "YOUR PROJECT, IN PRACTICE"
 msgstr "IHR PROJEKT IN DER PRAXIS"
 
-#: includes/Presentation/Shortcodes.php:299
+#: includes/Presentation/Shortcodes.php:300
 msgid "What could the right storage solution do for your site?"
 msgstr "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
 
-#: includes/Presentation/Shortcodes.php:300
+#: includes/Presentation/Shortcodes.php:301
 msgid ""
 "We’ll explore how hybrid or AC-coupled storage could work with your "
 "installation, your energy use and the outcome you want to achieve."
@@ -2127,15 +2127,15 @@ msgstr ""
 "Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu "
 "Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
 
-#: includes/Presentation/Shortcodes.php:301
+#: includes/Presentation/Shortcodes.php:302
 msgid "Talk through your storage options"
 msgstr "Ihre Speicheroptionen besprechen"
 
-#: includes/Presentation/Shortcodes.php:305
+#: includes/Presentation/Shortcodes.php:306
 msgid "An early question is enough."
 msgstr "Eine frühe Frage reicht aus."
 
-#: includes/Presentation/Shortcodes.php:306
+#: includes/Presentation/Shortcodes.php:307
 msgid ""
 "Share what you already know. Project location and timing are optional in the "
 "short form."
@@ -2143,16 +2143,16 @@ msgstr ""
 "Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im "
 "Kurzformular optional."
 
-#: includes/Presentation/Shortcodes.php:307
+#: includes/Presentation/Shortcodes.php:308
 msgid "Discuss your project"
 msgstr "Projekt besprechen"
 
-#: includes/Presentation/Shortcodes.php:396
+#: includes/Presentation/Shortcodes.php:383
 #: includes/Vocabulary/Terms.php:37
 msgid "Your solution draft is empty."
 msgstr "Ihr Lösungsentwurf ist leer."
 
-#: includes/Presentation/Shortcodes.php:397
+#: includes/Presentation/Shortcodes.php:384
 msgid ""
 "Browse the products now. Adding to the solution draft is possible only after "
 "your account has been reviewed."

@@ -17,10 +17,17 @@ just e2e t16e --grep "commercial chain"
 The instance must be a real one: `just up` + a snapshot (`just pull load <name>
 <snapshot> --live-code`), the plugins from this checkout, `wp linker-i18n setup
 --assign`, `wp linker-commerce present`, `tools/migrate/9-i18n.py apply --write`
-(the English products' German twins) and `tools/migrate/8-engineering.py
+(the English products' German twins), `tools/migrate/8-engineering.py
 --write` (the engineering data the configurator sizes against — `just serve`
 reads the site's own `linker/v1/engineering-feed` into the engine, and the
-engine refuses a design without it).
+engine refuses a design without it) and `tools/migrate/12-site-chrome.py apply
+--write` (the tool names, the configurator's own addresses and the retired
+pages — the chrome spec's redirect cases land on the pages it renames; pass
+`--wp` a WP-CLI prefix and `--user <admin>`).
+
+A snapshot instance that has not run one of the migrations is a setup gap, not
+a defect: the row that needs it says which migration is missing and how to run
+it, instead of failing as a 404.
 
 The suite resolves the instance from `~/de-linker-local/instances.toml`
 (`LINKER_LOCAL_HOME` overrides the location, `LINKER_E2E_INSTANCE` the name).
@@ -54,9 +61,13 @@ the full gate.
   suite printed can be read back; the path is printed when judging starts.
 - `specs/` — one file per surface; the Genie rows are `genie.spec.ts`
   (service level, R1–R14 with the cascade judging every question) and
-  `genie-dock.spec.ts` (the browser half: disclosure, chip, session, reload).
+  `genie-dock.spec.ts` (the browser half: disclosure, product entry, session,
+  reload).
 - `lib/` — the instance and its mail spool, the Genie and engine clients, and
   the bridge to the cascade judge.
 - Rows that depend on work the main line still owes are marked `pending-main`
   at runtime (`test.skip(condition, 'pending-main: …')`), so they stay visible
-  in the report and run again as soon as the reason is gone.
+  in the report and run again as soon as the reason is gone. A row whose
+  subject only exists after an instance migration is marked `pending-setup` the
+  same way, naming the command that closes it (`chrome.spec.ts`'s redirect
+  landings before `12-site-chrome.py apply --write`).

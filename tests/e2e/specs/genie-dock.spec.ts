@@ -1,11 +1,11 @@
 /**
  * The Genie shell in the page (docs/specs/13-genie.md §C): the disclosure
- * when the dock opens, the product page's chip carrying its model, the
+ * when the dock opens, the product page's own entry carrying its model, the
  * signed-in customer's own inquiry, and what a reload does with the thread.
  *
  * These are the R1–R14 rows that only exist in a browser: R13's entry is the
- * chip, and R7's second half needs a session. The rest of the panel is asked
- * of the service in genie.spec.ts.
+ * product page's ask button, and R7's second half needs a session. The rest of
+ * the panel is asked of the service in genie.spec.ts.
  */
 
 /**
@@ -17,7 +17,6 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, loginLink, wp } from '../lib/instance';
-import { TEAM_MAIL } from '../lib/expectations';
 
 const PRODUCT = '/product/saj-h2-10k-t3/';
 const ACCOUNT = '/my-account/';
@@ -83,19 +82,21 @@ test.describe('the Genie dock', () => {
 		).toBe(1);
 	});
 
-	test('the product page chip asks about its own model (R13)', async ({
+	test('the product page entry asks about its own model (R13)', async ({
 		page,
 	}) => {
 		await page.goto(`${instance().url}${PRODUCT}`);
-		const chip = page
-			.locator('[data-linker-genie-chip], .linker-genie-chip, button', {
-				hasText: /pairs with this model|Was passt zu diesem Modell/i,
-			})
-			.first();
-		test.skip(
-			(await chip.count()) === 0,
-			"pending-main: the product template does not carry the Genie chips yet (#13 §C Entries, the template side is the main line's)"
-		);
+		// The product page's AI entry is the tool row's ask button
+		// (`[data-pdp-ask]`, pdp-ui.js): the page's chip group is not on the
+		// LiveCanvas product template, and the entry hands its question to the
+		// dock loader over the same `linker-genie-ask` protocol the chips use.
+		// The row asks the same thing R13 does — the entry's question reaches
+		// the service with this page's product context on it.
+		const entry = page.locator('[data-pdp-ask]').first();
+		await expect(
+			entry,
+			'the product page carries the Genie entry'
+		).toHaveCount(1);
 		const posted: Array<Record<string, unknown>> = [];
 		page.on('request', (request) => {
 			if (
@@ -108,11 +109,11 @@ test.describe('the Genie dock', () => {
 				posted.push(body.page ?? {});
 			}
 		});
-		await chip.click();
+		await entry.click();
 		await expect
 			.poll(async () => posted.length, { timeout: 60_000 })
 			.toBeGreaterThan(0);
-		expect(posted[0]!.type, 'the chip asks from the product page').toBe(
+		expect(posted[0]!.type, 'the entry asks from the product page').toBe(
 			'product'
 		);
 		expect(posted[0]!.product_id, 'with the model it belongs to').toBe(
@@ -151,23 +152,14 @@ test.describe('the Genie dock', () => {
 
 		await page.goto(loginLink(undefined, CUSTOMER));
 		await page.goto(`${instance().url}${ACCOUNT}`);
-		// The account page's own chip is the entry the protocol names for R7;
-		// the dock's standing button is the fallback.
-		const chip = page.locator('.linker-genie-chip', {
-			hasText: /Proforma/i,
-		});
-		test.skip(
-			(await chip.count()) === 0,
-			'pending-main: the account page carries no Genie chip for the Proforma (docs/specs/13-genie.md §C Entries)'
-		);
-		// The account chip now carries its own question (data-ask-message:
-		// "Where is my Proforma?" / "Wo steht meine Proforma?"). A click opens
-		// the dock and sends that question; this row still types its own so the
-		// asserted status comes from a question this test controls. The R7 path
-		// — the session, the service, the ability — is the same either way.
-		// The 2026-10-11 note that the chip carried no payload is stale.
-		await chip.first().click();
-		await ensureOpen(page);
+		// The account page's entry is the standing dock button: the account
+		// surfaces render their own overview (AccountTemplates) and never fire
+		// `woocommerce_account_dashboard`, so the account chip group is not on
+		// the page — the dock is what opens Genie there. The R7 path (the
+		// session, the service, the ability) is the same either way, and the
+		// row types its own question so the asserted status comes from a
+		// question this test controls.
+		await openDock(page);
 		const answer = await ask(page, 'Where does my Proforma stand?');
 		// The status label can only come from the customer's own inquiry list:
 		// a guest's turn gets `login_required` and asks for a login instead.

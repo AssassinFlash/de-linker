@@ -11,12 +11,16 @@
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<!-- The plugin's own strings, and WooCommerce's own wrapper string the
+			<!-- The plugin's own strings; WooCommerce's own wrapper string the
 			add-to-cart notice is rebuilt with (Woo/Storefront.php), so its quotes
-			follow the locale. -->
+			follow the locale; and core's own 404 sentence, which the 404 title
+			filter takes from the core language pack (Seo::not_found_title)
+			because SEOPress stores that title as an option, out of gettext's
+			reach. -->
 			<property name="text_domain" type="array">
 				<element value="linker-i18n"/>
 				<element value="woocommerce"/>
+				<element value="default"/>
 			</property>
 		</properties>
 	</rule>

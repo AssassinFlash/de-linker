@@ -150,6 +150,15 @@ final class RedirectsTest extends SiteTestCase {
 	}
 
 	/**
+	 * A retired page address keeps the query it was requested with: the
+	 * German configurator's former slug with the roof step on it (found in
+	 * the 2026-10-16 deployment window, where the 301 dropped `?step=roof`).
+	 */
+	public function test_a_retired_page_address_keeps_its_query(): void {
+		$this->assertRedirects( '/de/solution-configurator/?step=roof', '/de/loesungskonfigurator/?step=roof' );
+	}
+
+	/**
 	 * The advisor's old addresses go to the Genie page.
 	 */
 	public function test_the_advisors_former_addresses_go_to_the_page(): void {

@@ -92,7 +92,7 @@ qty 经 `wc_update_product_stock()` 落库 → 商品 `save()` → WooCommerce �
    - 鉴权是 WP 用户级 consumer key/secret：一个对产品**全字段**（名称、价格、描述）有写权限的凭据，而本通道的密钥只能改库存——推送面收敛在 `wc_update_product_stock()` / `wc_update_product_stock_status()` 两个函数上，密钥泄露不扩大成价格/内容泄露；
    - 密钥生命周期（WP-CLI 设置、清除即休眠）按票据设计，wc/v3 做不到"未设密钥即拒绝一切"。
 3. **WindPress**：样式管线，无数据面。不适用。
-4. 与合格先例同构（`linker_price` = B2B 价格门：Woo 原生不做门；这里 = ERP 推送通道：Woo 原生不做带密钥的 SKU 批量库存推送）。通道内每个动作仍是 Woo 原生函数。
+4. 与合格先例同构（B2B 价格门 = `Gating\PriceDisplay` 在源头隐藏价格：Woo 原生不做门；这里 = ERP 推送通道：Woo 原生不做带密钥的 SKU 批量库存推送）。通道内每个动作仍是 Woo 原生函数。
 
 ## 怎么算做完
 

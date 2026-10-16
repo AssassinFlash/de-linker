@@ -26,13 +26,22 @@ final class TagPart {
 	/**
 	 * The tag with the translated attribute values.
 	 *
+	 * The verbatim channel is the known German bytes (text holding
+	 * placeholders the English does not, or German a person edited that is
+	 * kept while its English changed). For an attribute value those bytes are
+	 * German text just like a translation; dropping the channel here printed
+	 * the English attribute over a German page's own label (measured
+	 * 2026-10-16: two video aria-labels on the German services page).
+	 *
 	 * @param array<int, string> $translations Segment index => translation.
+	 * @param array<int, string> $verbatim     Segment index => bytes to print as they are.
 	 */
-	public function render( array $translations ): string {
+	public function render( array $translations, array $verbatim = array() ): string {
 		$token = $this->tag;
 		foreach ( $this->attributes as $attribute => $index ) {
-			if ( isset( $translations[ $index ] ) ) {
-				$token = new HtmlToken( HtmlToken::TAG, $token->with_attribute( $attribute, $translations[ $index ] ), $token->name, $token->closing );
+			$value = $verbatim[ $index ] ?? $translations[ $index ] ?? null;
+			if ( null !== $value ) {
+				$token = new HtmlToken( HtmlToken::TAG, $token->with_attribute( $attribute, $value ), $token->name, $token->closing );
 			}
 		}
 		return $token->raw;

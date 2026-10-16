@@ -35,16 +35,14 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The shortcodes this plugin adds — the two the exported templates consume.
-	 * The cart template's conditions are the global functions in
-	 * template-functions.php; no filter under a condition name exists, because
-	 * LiveCanvas resolves lc_if with function_exists().
+	 * The shortcodes this plugin adds. The cart template's conditions are the
+	 * global functions in template-functions.php; no filter under a condition
+	 * name exists, because LiveCanvas resolves lc_if with function_exists().
 	 */
 	public function test_register_adds_the_shortcodes(): void {
 		$codes = $this->shortcodes();
 		foreach (
 		array(
-			'linker_price'              => 'price',
 			'linker_checkout'           => 'checkout',
 			'linker_draft_empty'        => 'draft_empty',
 			'linker_faqs'               => 'faqs',
@@ -89,30 +87,6 @@ final class ShortcodesTest extends TestCase {
 		);
 
 		$this->assertSame( 'https://example.test/', $codes->site_url() );
-	}
-
-	/**
-	 * A guest sees the gated price HTML of the current product.
-	 */
-	public function test_price_wraps_the_gated_html(): void {
-		$product = Mockery::mock( WC_Product::class );
-		$product->allows( 'get_price_html' )->andReturn( '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>' );
-		$GLOBALS['product'] = $product; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce's global.
-
-		$html = $this->shortcodes()->price();
-
-		$this->assertStringContainsString( 'linker-price', $html );
-		$this->assertStringContainsString( 'Log in for prices', $html );
-		unset( $GLOBALS['product'] );
-	}
-
-	/**
-	 * Without a product the price shortcode is empty.
-	 */
-	public function test_price_without_a_product_is_empty(): void {
-		unset( $GLOBALS['product'] );
-
-		$this->assertSame( '', $this->shortcodes()->price() );
 	}
 
 	/**

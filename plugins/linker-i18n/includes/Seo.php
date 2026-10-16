@@ -12,8 +12,8 @@ namespace Linker\I18n;
 /**
  * The search-engine side of the two languages. Polylang writes the hreflang
  * links of every translated page; this adds the x-default, leaves them off
- * search results, and keeps WordPress from guessing a 404 into another
- * language.
+ * search results, keeps WordPress from guessing a 404 into another language,
+ * and gives the 404 title the request's own language.
  */
 final class Seo {
 
@@ -45,5 +45,33 @@ final class Seo {
 	 */
 	public function guess_404(): bool {
 		return false;
+	}
+
+	/**
+	 * The 404 title in the request's language (filter `seopress_titles_title`).
+	 *
+	 * SEOPress keeps one 404 title for the whole site: the option
+	 * (`seopress_titles_archives_404_title`) holds "Page not found %%sep%%
+	 * %%sitetitle%%", and SEOPress replaces both placeholders before this
+	 * filter runs, so what arrives here is "Page not found | Linker". The
+	 * sentence is a stored option, not a gettext string, so the German
+	 * language pack cannot reach it — measured 2026-10-16: a German 404
+	 * carried the English tab title on the live site and on the local
+	 * instance, while the German core pack already holds the words
+	 * ("Seite nicht gefunden"). The sentence is WordPress's own — core's
+	 * `<title>` fallback for a 404 — and the core language pack translates it
+	 * with the request's locale, which Polylang has already switched; the
+	 * "default" text domain is the one linker-i18n's phpcs ruleset allows for
+	 * exactly this. The title's suffix (the site name SEOPress appended)
+	 * stays as it is.
+	 *
+	 * @param string $title SEOPress's document title.
+	 */
+	public function not_found_title( string $title ): string {
+		if ( ! is_404() || ! str_starts_with( $title, 'Page not found' ) ) {
+			return $title;
+		}
+
+		return __( 'Page not found', 'default' ) . substr( $title, strlen( 'Page not found' ) );
 	}
 }
