@@ -67,6 +67,45 @@ final class SeoTest extends TestCase {
 	}
 
 	/**
+	 * The 404 title is the request's: SEOPress's stored template is rewritten
+	 * with WordPress's own 404 sentence, which the core language pack holds in
+	 * the request's locale (the German request reads "Seite nicht gefunden").
+	 * A title that does not carry that sentence passes through untouched.
+	 */
+	public function test_the_404_title_speaks_the_requests_language(): void {
+		WP_Mock::userFunction( 'is_404', array( 'return' => true ) );
+		WP_Mock::userFunction( '__' )->with( 'Page not found', 'default' )->andReturn( 'Seite nicht gefunden' );
+
+		$this->assertSame(
+			'Seite nicht gefunden | Linker',
+			( new Seo() )->not_found_title( 'Page not found | Linker' )
+		);
+
+		// Another page's title is not the 404 title, whatever matches.
+		$this->assertSame( 'Genie - Linker\'s AI assistant | Linker', ( new Seo() )->not_found_title( 'Genie - Linker\'s AI assistant | Linker' ) );
+	}
+
+	/**
+	 * The English request: the core pack answers with the English words, so the
+	 * title comes back as SEOPress wrote it.
+	 */
+	public function test_the_english_404_title_is_unchanged(): void {
+		WP_Mock::userFunction( 'is_404', array( 'return' => true ) );
+		WP_Mock::userFunction( '__' )->with( 'Page not found', 'default' )->andReturn( 'Page not found' );
+
+		$this->assertSame( 'Page not found | Linker', ( new Seo() )->not_found_title( 'Page not found | Linker' ) );
+	}
+
+	/**
+	 * Not a 404: the filter leaves the title alone.
+	 */
+	public function test_a_page_title_is_left_alone(): void {
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+
+		$this->assertSame( 'Page not found | Linker', ( new Seo() )->not_found_title( 'Page not found | Linker' ) );
+	}
+
+	/**
 	 * Pages, posts, products and LiveCanvas partials and templates are translated;
 	 * so are product categories and the attributes whose values are words.
 	 */

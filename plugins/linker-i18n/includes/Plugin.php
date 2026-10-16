@@ -103,6 +103,7 @@ final class Plugin {
 		$seo = new Seo();
 		add_filter( 'pll_rel_hreflang_attributes', array( $seo, 'hreflangs' ) );
 		add_filter( 'do_redirect_guess_404_permalink', array( $seo, 'guess_404' ) );
+		add_filter( 'seopress_titles_title', array( $seo, 'not_found_title' ) );
 
 			// A German WooCommerce page with no German dynamic template of its own
 			// renders through the English one, which LiveCanvas's language-scoped

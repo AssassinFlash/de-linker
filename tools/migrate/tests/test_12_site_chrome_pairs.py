@@ -16,6 +16,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+import pytest
+
 HERE = Path(__file__).resolve().parent
 
 
@@ -360,6 +362,81 @@ def test_every_php_snippet_declaring_wpdb_declares_it_global() -> None:
     for name, code in snippets.items():
         if "$wpdb" in code:
             assert "global $wpdb;" in code, name
+
+
+class SlugSite:
+    """WP-CLI's two answers for the slug phase: a page's slug, and its update."""
+
+    def __init__(self, slugs: dict[int, str]) -> None:
+        self.slugs = slugs
+        self.renamed: list[tuple[int, str]] = []
+
+    def run(self, *args: str, **kwargs: object) -> str:
+        if args[:2] == ("post", "get") and args[3] == "--field=post_name":
+            return self.slugs[int(args[2])]
+        if args[:2] == ("post", "update"):
+            self.renamed.append((int(args[2]), args[3].removeprefix("--post_name=")))
+            return ""
+        raise AssertionError(args)
+
+
+def test_rename_slugs_accepts_the_german_pages_english_slug() -> None:
+    """The German configurator carried the English /solution-configurator/
+    from the same-slug rename until the 2026-10-16 move to its own German
+    slug; a snapshot taken in that window (the 2026-10-15 one the review
+    suite loads) holds the English slug on the German page. The phase
+    renames it like the German slug it replaced, and still refuses anything
+    else rather than renaming a page it does not recognize."""
+    ids = {
+        "linker-planner": {"en": 3302, "de": 6693},
+        "linker-advisor": {"en": 3303, "de": 6635},
+    }
+    site = SlugSite(
+        {
+            3302: "solution-configurator",
+            6693: "solution-configurator",
+            3303: "genie",
+            6635: "genie",
+        }
+    )
+    chrome.rename_slugs(site, ids, write=True)
+    assert site.renamed == [(6693, "loesungskonfigurator")]
+
+    # The German slug it replaced, and the target itself: both handled.
+    site = SlugSite(
+        {
+            3302: "solution-configurator",
+            6693: "linker-planer",
+            3303: "genie",
+            6635: "genie",
+        }
+    )
+    chrome.rename_slugs(site, ids, write=True)
+    assert site.renamed == [(6693, "loesungskonfigurator")]
+
+    site = SlugSite(
+        {
+            3302: "solution-configurator",
+            6693: "loesungskonfigurator",
+            3303: "genie",
+            6635: "genie",
+        }
+    )
+    chrome.rename_slugs(site, ids, write=True)
+    assert site.renamed == []
+
+    # Anything else is refused. pytest.raises catches SystemExit.
+    site = SlugSite(
+        {
+            3302: "solution-configurator",
+            6693: "some-other-slug",
+            3303: "genie",
+            6635: "genie",
+        }
+    )
+    with pytest.raises(SystemExit):
+        chrome.rename_slugs(site, ids, write=True)
+    assert site.renamed == []
 
 
 def test_the_steps_carry_the_new_surfaces_and_retired_pages() -> None:

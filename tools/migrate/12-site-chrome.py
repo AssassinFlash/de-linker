@@ -1458,30 +1458,38 @@ def rename_slugs(wp: WP, ids: dict[str, dict[str, int]], write: bool) -> None:
     /de/linker-planer/ to /de/loesungskonfigurator/ (owner ruling
     2026-10-12, the slug is not kept); the former addresses 301 through the
     plugin's map. Idempotent: a page already at its new slug is reported
-    and left, and anything else is refused rather than renamed."""
+    and left, and anything else is refused rather than renamed.
+
+    The German configurator carries a second historical slug: the same-slug
+    rule left it on the English /solution-configurator/ from the rename
+    until 2026-10-16, when the deployment window moved it to its own
+    /de/loesungskonfigurator/. A snapshot taken in that window — e.g. the
+    2026-10-15 one the review suite loads — holds the English slug on the
+    German page, so both slugs are accepted going in; anything else is
+    still refused."""
     for key, post_id, before, after in (
         (
             "linker-planner-en",
             ids["linker-planner"]["en"],
-            "linker-planner",
+            ("linker-planner",),
             "solution-configurator",
         ),
         (
             "linker-planer-de",
             ids["linker-planner"]["de"],
-            "linker-planer",
+            ("linker-planer", "solution-configurator"),
             "loesungskonfigurator",
         ),
         (
             "linker-advisor-en",
             ids["linker-advisor"]["en"],
-            "linker-advisor",
+            ("linker-advisor",),
             "genie",
         ),
         (
             "linker-berater-de",
             ids["linker-advisor"]["de"],
-            "linker-berater",
+            ("linker-berater",),
             "genie",
         ),
     ):
@@ -1489,9 +1497,9 @@ def rename_slugs(wp: WP, ids: dict[str, dict[str, int]], write: bool) -> None:
         if current == after:
             print(f"{key} #{post_id}: slug already {after}", flush=True)
             continue
-        if current != before:
+        if current not in before:
             raise SystemExit(f"{key} #{post_id}: unexpected slug {current!r}")
-        print(f"{key} #{post_id}: slug {before} -> {after}", flush=True)
+        print(f"{key} #{post_id}: slug {current} -> {after}", flush=True)
         if write:
             wp.run("post", "update", str(post_id), f"--post_name={after}", as_user=True)
 

@@ -581,6 +581,78 @@ final class RedirectsTest extends TestCase {
 	}
 
 	/**
+	 * A retired page keeps the query it was requested with: the German
+	 * configurator address with a step on it (measured in the 2026-10-16
+	 * deployment window: the 301 dropped `?step=roof` and landed the visitor
+	 * on the configurator's first step).
+	 */
+	public function test_a_retired_page_carries_the_requests_query(): void {
+		$this->wordpress();
+		$this->post_ids[ self::HOME . '/solution-configurator/' ] = 41;
+		$this->post_twins[41]['de']                               = 42;
+		$this->permalinks[42]                                     = self::HOME . '/de/loesungskonfigurator/';
+		$this->current_language                                   = 'de';
+		$this->default_language                                   = 'en';
+		$this->languages = array( 'en', 'de' );
+
+		try {
+			$_SERVER['QUERY_STRING'] = 'step=roof';
+			$this->assertSame(
+				self::HOME . '/de/loesungskonfigurator/?step=roof',
+				( new Redirects() )->target( '/de/solution-configurator/' )
+			);
+
+			$_SERVER['QUERY_STRING'] = 'utm_source=newsletter';
+			$this->assertSame(
+				self::HOME . '/solution/residential-storage/?utm_source=newsletter',
+				( new Redirects() )->target( '/application/residential-storage/' )
+			);
+		} finally {
+			unset( $_SERVER['QUERY_STRING'] );
+		}
+	}
+
+	/**
+	 * The query a retired tool address finally carries: the map's own where it
+	 * has one (the design canvas's roof step survives a request's query), the
+	 * request's where it does not (a plain tool address moves the request's
+	 * query onto the configurator).
+	 */
+	public function test_a_retired_tool_address_carries_the_right_query(): void {
+		$this->wordpress();
+
+		$this->assertSame(
+			self::HOME . '/solution-configurator/?step=roof',
+			( new Redirects() )->target( '/design-canvas/' )
+		);
+		$this->assertSame(
+			self::HOME . '/de/loesungskonfigurator/?step=roof',
+			( new Redirects() )->target( '/de/entwurfsflache/' )
+		);
+		$this->assertSame(
+			self::HOME . '/solution-configurator/',
+			( new Redirects() )->target( '/quote-configurator/' )
+		);
+
+		try {
+			$_SERVER['QUERY_STRING'] = 'utm_source=newsletter';
+			// The map's own query settles the target; the request's does not
+			// replace it.
+			$this->assertSame(
+				self::HOME . '/de/loesungskonfigurator/?step=roof',
+				( new Redirects() )->target( '/de/design-canvas/' )
+			);
+			// A target without a query of its own carries the request's.
+			$this->assertSame(
+				self::HOME . '/de/loesungskonfigurator/?utm_source=newsletter',
+				( new Redirects() )->target( '/de/angebots-konfigurator/' )
+			);
+		} finally {
+			unset( $_SERVER['QUERY_STRING'] );
+		}
+	}
+
+	/**
 	 * The self-map of the configurator's English slug: the German twin carried
 	 * that slug until 2026-10-16, so a German request for it lands on the
 	 * twin's own address, while the English page answers its own address (the
@@ -602,6 +674,16 @@ final class RedirectsTest extends TestCase {
 
 		$this->current_language = 'en';
 		$this->assertNull( ( new Redirects() )->target( '/solution-configurator/' ) );
+
+		// The same-address guard reads the path, not the query: the page's own
+		// address with a step on it is still the page itself, never a redirect
+		// onto itself.
+		try {
+			$_SERVER['QUERY_STRING'] = 'step=roof';
+			$this->assertNull( ( new Redirects() )->target( '/solution-configurator/' ) );
+		} finally {
+			unset( $_SERVER['QUERY_STRING'] );
+		}
 	}
 
 	/**

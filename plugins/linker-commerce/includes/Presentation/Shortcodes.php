@@ -15,8 +15,10 @@ use Linker\Commerce\Settings\Options;
 use WC_Product;
 
 /**
- * Price gating and the empty Proforma-request gate: the two shortcodes the
- * exported templates consume.
+ * The empty Proforma-request gate, the contact band and its link, the product
+ * FAQ rows and the site's own origin: the shortcodes the exported LiveCanvas
+ * templates consume. The B2B price gate is not a shortcode — prices are hidden
+ * at their source (Gating\PriceDisplay).
  */
 final class Shortcodes {
 
@@ -32,7 +34,6 @@ final class Shortcodes {
 	 * Registers the shortcodes.
 	 */
 	public function register(): void {
-		add_shortcode( 'linker_price', array( $this, 'price' ) );
 		add_shortcode( 'linker_checkout', array( $this, 'checkout' ) );
 		add_shortcode( 'linker_draft_empty', array( $this, 'draft_empty' ) );
 		add_shortcode( 'linker_faqs', array( $this, 'faqs' ) );
@@ -307,20 +308,6 @@ final class Shortcodes {
 				'button'  => __( 'Discuss your project', 'linker-commerce' ),
 			),
 		);
-	}
-
-	/**
-	 * The current product's gated price HTML.
-	 *
-	 * @param array<string, string>|string $atts Shortcode attributes.
-	 */
-	public function price( $atts = array() ): string {
-		unset( $atts );
-		$product = $GLOBALS['product'] ?? null;
-		if ( ! $product instanceof WC_Product ) {
-			return '';
-		}
-		return '<div class="linker-price font-semibold text-[#0c7f73]">' . $product->get_price_html() . '</div>';
 	}
 
 	/**

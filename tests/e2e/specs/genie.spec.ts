@@ -162,8 +162,8 @@ function problems(row: Row, locale: Locale, result: Turn): string[] {
  * protocol set. R6-de needed the condition facts to read the turn's language
  * (services/genie facts.py). R7-de needed this suite to know the login
  * sentence the copy review settled on (the R7 test below). The mechanism
- * stays for the main line's next debt (genie-dock.spec.ts still marks three
- * entries as pending-main).
+ * stays for the main line's next debt (genie-dock.spec.ts still marks one
+ * entry: its suite-customer fixture).
  */
 const PENDING_MAIN: Record<string, string> = {};
 

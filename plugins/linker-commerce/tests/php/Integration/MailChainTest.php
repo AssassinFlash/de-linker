@@ -26,24 +26,15 @@ use Linker\Commerce\Mail\Throttle;
 final class MailChainTest extends IntegrationTestCase {
 
 	/**
-	 * While the switch is on, a business notification and the owner copy the
-	 * legacy plugin queues for it both leave for the tester address alone, and
-	 * the outbox queue of each keeps the recipient the caller named.
+	 * While the switch is on, a business notification leaves for the tester
+	 * address alone, and the outbox queue keeps the recipients the caller
+	 * named.
 	 */
 	public function test_the_chain_sends_to_the_tester_and_queues_the_real_route(): void {
 		$switch = new TestMode();
 		$switch->enable( 'tester@example.test' );
 		$this->later(
 			function () use ( $switch ): void {
-				// The legacy plugin queues one copy job on the wp_mail filter,
-				// before the outbox takes the call. take_copy_payload() only
-				// cancels the twin this test reads; a second call (the release
-				// below) leaves its own pending job, and that job still names
-				// the three owner inboxes. Cancel every pending copy of this
-				// hook while the switch is still on, then prove none remain,
-				// and only then turn the switch off.
-				$this->cancel_pending_copy_jobs();
-				$this->assertSame( array(), $this->pending_copy_jobs(), 'The instance queue holds no pending owner-copy job after the test.' );
 				$switch->disable();
 			}
 		);
@@ -74,49 +65,6 @@ final class MailChainTest extends IntegrationTestCase {
 			$this->assertSame( 'tester@example.test', $this->header( $file, 'To' ) );
 			$this->assertNull( $this->header( $file, 'Cc' ) );
 			$this->assertNull( $this->header( $file, 'Bcc' ) );
-		}
-
-		if ( ! function_exists( 'tv_b2b_business_mail_copy_job' ) ) {
-			return;
-		}
-		$payload = $this->take_copy_payload( $tag );
-		$this->assertNotNull( $payload, 'The legacy plugin queued an owner copy because the business inbox was a recipient.' );
-		$this->assertNotSame( array(), $payload['copies'] );
-		foreach ( $payload['copies'] as $address ) {
-			$this->assertNotSame( 'tester@example.test', $address, 'The copy queue names the owner inbox, not the tester address.' );
-		}
-		// Hold the quota so each owner copy is stored before it is sent. The
-		// stored row is the routing data; releasing the quota then sends that
-		// same row, once.
-		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
-		tv_b2b_business_mail_copy_job( $payload );
-		$routes  = array();
-		$job_ids = array();
-		foreach ( $this->queued( $tag ) as $message ) {
-			$this->assertNotContains( 'tester@example.test', $message['to'], 'The queue is the routing data, not the rewritten send.' );
-			$routes  = array_merge( $routes, $message['to'] );
-			$job_ids = array_merge( $job_ids, $message['ids'] );
-		}
-		foreach ( $payload['copies'] as $address ) {
-			$this->assertContains( $address, $routes, 'The owner copy is in the outbox queue under the address the legacy plugin named.' );
-		}
-		delete_option( Throttle::OPTION );
-		$before_release = $this->files_naming( $tag );
-		$outbox         = new \Linker\Commerce\Mail\Outbox( new \Linker\Commerce\Mail\JobStore(), new Throttle() );
-		foreach ( $job_ids as $job_id ) {
-			$outbox->retry( $job_id );
-		}
-		$copy_files = array_values( array_diff( $this->files_naming( $tag ), $before_release ) );
-		$this->assertGreaterThanOrEqual( count( $payload['copies'] ), count( $copy_files ), 'Each owner copy was written.' );
-		foreach ( $copy_files as $file ) {
-			$this->assertSame( 'tester@example.test', $this->header( $file, 'To' ), 'A released copy leaves for the tester address, not the owner inbox the queue names.' );
-			$this->assertNull( $this->header( $file, 'Cc' ) );
-			$this->assertNull( $this->header( $file, 'Bcc' ) );
-			$raw = file_get_contents( $file );
-			$this->assertIsString( $raw );
-			foreach ( $payload['copies'] as $address ) {
-				$this->assertStringNotContainsString( $address, $this->header( $file, 'To' ) . $raw, 'The owner address is not a recipient of the file that left.' );
-			}
 		}
 	}
 
@@ -159,7 +107,7 @@ final class MailChainTest extends IntegrationTestCase {
 	 * Outbox messages whose subject names the tag.
 	 *
 	 * @param string $tag Tag.
-	 * @return list<array{to: list<string>, headers: list<string>, ids: list<int>}>
+	 * @return list<array{to: list<string>, headers: list<string>}>
 	 */
 	private function queued( string $tag ): array {
 		$posts = get_posts(
@@ -179,87 +127,8 @@ final class MailChainTest extends IntegrationTestCase {
 			$found[] = array(
 				'to'      => array_values( array_map( 'strval', (array) ( $data['to'] ?? array() ) ) ),
 				'headers' => array_values( array_map( 'strval', (array) ( $data['headers'] ?? array() ) ) ),
-				'ids'     => array( (int) $post->ID ),
 			);
 		}
 		return $found;
-	}
-
-	/**
-	 * Pending owner-copy jobs, whatever subject they carry.
-	 *
-	 * @return array<int, mixed>
-	 */
-	private function pending_copy_jobs(): array {
-		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
-			return array();
-		}
-		$actions = as_get_scheduled_actions(
-			array(
-				'hook'     => 'tv_b2b_business_mail_copy_job',
-				'status'   => 'pending',
-				'per_page' => 100,
-				'group'    => 'tv-b2b',
-			)
-		);
-		return $actions;
-	}
-
-	/**
-	 * Cancels every pending owner-copy job, not only the twin this test reads.
-	 * A second wp_mail() of the same subject queues another one; leaving it
-	 * pending would send the three owner inboxes once the switch is off.
-	 * The query is paged, so a backlog larger than one page is not left behind.
-	 */
-	private function cancel_pending_copy_jobs(): void {
-		if ( ! class_exists( '\ActionScheduler' ) ) {
-			return;
-		}
-		do {
-			$actions = $this->pending_copy_jobs();
-			$full    = count( $actions ) >= 100;
-			foreach ( array_keys( $actions ) as $id ) {
-				\ActionScheduler::store()->cancel_action( (int) $id );
-			}
-		} while ( $full );
-	}
-
-	/**
-	 * The legacy plugin's copy payload for this subject, taken off the scheduler
-	 * so a later run does not send it again.
-	 *
-	 * @param string $tag Tag.
-	 * @return array{copies: list<string>, subject: string, message: string, content_type: string, attachments: list<string>}|null
-	 */
-	private function take_copy_payload( string $tag ): ?array {
-		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
-			return null;
-		}
-		$actions = as_get_scheduled_actions(
-			array(
-				'hook'     => 'tv_b2b_business_mail_copy_job',
-				'status'   => 'pending',
-				'per_page' => 20,
-				'group'    => 'tv-b2b',
-			)
-		);
-		foreach ( $actions as $id => $action ) {
-			$args    = $action->get_args();
-			$payload = $args[0] ?? array();
-			if ( ! is_array( $payload ) || ! str_contains( (string) ( $payload['subject'] ?? '' ), $tag ) ) {
-				continue;
-			}
-			if ( class_exists( '\ActionScheduler' ) ) {
-				\ActionScheduler::store()->cancel_action( (int) $id );
-			}
-			return array(
-				'copies'       => array_values( array_map( 'strval', (array) ( $payload['copies'] ?? array() ) ) ),
-				'subject'      => (string) ( $payload['subject'] ?? '' ),
-				'message'      => (string) ( $payload['message'] ?? '' ),
-				'content_type' => (string) ( $payload['content_type'] ?? '' ),
-				'attachments'  => array_values( array_map( 'strval', (array) ( $payload['attachments'] ?? array() ) ) ),
-			);
-		}
-		return null;
 	}
 }

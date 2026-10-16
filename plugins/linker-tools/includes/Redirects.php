@@ -28,7 +28,9 @@ use WP_Term;
  * from the path under the product bases (WooCommerce's own, and the
  * `/produkt/` alias the site before this one served). Page paths are
  * matched with the language prefix folded away, and a redirect into the
- * German site asks Polylang for the German twin's own address.
+ * German site asks Polylang for the German twin's own address. A page or tool
+ * address keeps the query it was requested with, so a visitor who asked for
+ * one step of the configurator lands on that step.
  *
  * What the maps do not decide, WordPress and WooCommerce do:
  *
@@ -97,6 +99,36 @@ final class Redirects {
 	}
 
 	/**
+	 * A page or tool target with the request's query string carried onto it.
+	 *
+	 * The site before this one answered `/de/solution-configurator/?step=roof`
+	 * by the address alone; a redirect that drops the query lands the visitor
+	 * on the configurator's first step instead of the roof step they asked
+	 * for (measured in the 2026-10-16 deployment window). The maps' own
+	 * targets settle where they settle: an entry that names a query of its own
+	 * (the retired tool addresses carry `?step=roof`) keeps it, and the
+	 * request's query does not replace the map's decision.
+	 *
+	 * @param string $target Root-relative page or tool target.
+	 */
+	private function carrying_query( string $target ): string {
+		if ( str_contains( $target, '?' ) ) {
+			return $target;
+		}
+		$query = $this->request_query();
+
+		return '' === $query ? $target : $target . '?' . $query;
+	}
+
+	/**
+	 * The query string of the request, as the request addressed it.
+	 */
+	private function request_query(): string {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- the query string is carried through to the target verbatim, as the request addressed it.
+		return isset( $_SERVER['QUERY_STRING'] ) ? wp_unslash( $_SERVER['QUERY_STRING'] ) : '';
+	}
+
+	/**
 	 * Where a request path goes: the absolute URL of the target, or null when
 	 * the path is not retired (and the request stays with WordPress).
 	 *
@@ -110,7 +142,7 @@ final class Redirects {
 
 		$requested = trailingslashit( $path );
 		if ( isset( $maps[ self::RETIRED_TOOLS ][ $requested ] ) ) {
-			return home_url( $maps[ self::RETIRED_TOOLS ][ $requested ] );
+			return home_url( $this->carrying_query( $maps[ self::RETIRED_TOOLS ][ $requested ] ) );
 		}
 
 		$language = $this->request_language();
@@ -122,7 +154,7 @@ final class Redirects {
 		}
 
 		if ( isset( $maps['pages'][ $path ] ) ) {
-			return $this->redirect_to( $this->resolve( $maps['pages'][ $path ] ), $language, $requested );
+			return $this->redirect_to( $this->carrying_query( $this->resolve( $maps['pages'][ $path ] ) ), $language, $requested );
 		}
 
 		$category = $this->category_target( $maps['categories'], $language );
@@ -187,9 +219,8 @@ final class Redirects {
 		if ( $this->checkout_answers( $path ) ) {
 			return null;
 		}
-		$rest = array() === array_slice( $segments, 1 ) ? '' : implode( '/', array_slice( $segments, 1 ) ) . '/';
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- the query string is carried through to the target verbatim, as the request addressed it.
-		$query = isset( $_SERVER['QUERY_STRING'] ) ? wp_unslash( $_SERVER['QUERY_STRING'] ) : '';
+		$rest  = array() === array_slice( $segments, 1 ) ? '' : implode( '/', array_slice( $segments, 1 ) ) . '/';
+		$query = $this->request_query();
 
 		return $checkout['target'] . $rest . ( '' === $query ? '' : '?' . $query );
 	}
