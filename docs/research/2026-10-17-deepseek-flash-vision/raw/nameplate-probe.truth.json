@@ -1,0 +1,44 @@
+{
+  "brand": "SAJ",
+  "product_type": "HYBRID INVERTER",
+  "model": "H2-10K-T3",
+  "ratings": [
+    [
+      "Max. PV input voltage",
+      "1000 V"
+    ],
+    [
+      "MPPT voltage range",
+      "160-950 V"
+    ],
+    [
+      "Battery voltage",
+      "180-750 V"
+    ],
+    [
+      "Rated power",
+      "10000 W"
+    ],
+    [
+      "Rated AC voltage",
+      "3/N/PE 230/400 V"
+    ],
+    [
+      "Rated frequency",
+      "50 Hz"
+    ],
+    [
+      "Max. AC output current",
+      "3 x 16 A"
+    ],
+    [
+      "Protective class",
+      "I"
+    ],
+    [
+      "Ingress protection",
+      "IP65"
+    ]
+  ],
+  "serial": "S/N: H2T3K10A2609000123"
+}

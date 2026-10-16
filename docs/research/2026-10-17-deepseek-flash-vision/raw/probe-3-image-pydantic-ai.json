@@ -1,0 +1,58 @@
+{
+  "library": {
+    "pydantic_ai_slim": "2.55.0",
+    "openai": "3.28.0",
+    "model_class": "OpenAIChatModel",
+    "provider_class": "DeepSeekProvider",
+    "model_name": "deepseek-flash"
+  },
+  "requested_at_utc": "2026-10-16T17:21:26+00:00",
+  "wall_seconds": 2.16,
+  "outcome": "ok",
+  "output": "{\"brand\": \"SAJ\", \"model\": \"H2-10K-T3\", \"product_type\": \"HYBRID INVERTER\", \"ratings\": [{\"label\": \"Max. PV input voltage\", \"value\": \"1000 V\"}, {\"label\": \"MPPT voltage range\", \"value\": \"160-950 V\"}, {\"label\": \"Battery voltage\", \"value\": \"180-750 V\"}, {\"label\": \"Rated power\", \"value\": \"10000 W\"}, {\"label\": \"Rated AC voltage\", \"value\": \"3/N/PE 230/400 V\"}, {\"label\": \"Rated frequency\", \"value\": \"50 Hz\"}, {\"label\": \"Max. AC output current\", \"value\": \"3 x 16 A\"}, {\"label\": \"Protective class\", \"value\": \"I\"}, {\"label\": \"Ingress protection\", \"value\": \"IP65\"}], \"serial\": \"H2T3K10A2609000123\", \"marks\": [\"CE\", \"IEC 62109\"]}",
+  "usage": {
+    "input_tokens": 624,
+    "output_tokens": 420,
+    "requests": 1,
+    "details": {
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 240,
+      "reasoning_tokens": 196
+    }
+  },
+  "wire": [
+    {
+      "method": "POST",
+      "url": "https://api.deepseek.com/v1/chat/completions",
+      "body": {
+        "model": "deepseek-flash",
+        "stream": false,
+        "messages": [
+          {
+            "role": "system",
+            "content": "You read photos and files that a customer attached to a question."
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "text": "This photo shows the nameplate (rating label) of a device. Transcribe it exactly as printed: the brand, the model, the product type, every rating with its label and value, the serial number and any marks. Do not correct, complete or guess anything; write null for anything you cannot read. Answer in JSON: {\"brand\": str|null, \"model\": str|null, \"product_type\": str|null, \"ratings\": [{\"label\": str, \"value\": str}], \"serial\": str|null, \"marks\": [str]}",
+                "type": "text"
+              },
+              {
+                "image_url": {
+                  "url": "data:image/png;base64,<base64 of raw/nameplate-probe.png: 152927 bytes, sha256 b67ceb771aa346726854bd40d2684fbcf9bc829eb7518641229c8927108278d0>"
+                },
+                "type": "image_url"
+              }
+            ]
+          }
+        ],
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "https://api.deepseek.com/chat/completions",
+    "headers": {
+      "Authorization": "Bearer <DEEPSEEK_API_KEY>",
+      "Content-Type": "application/json"
+    },
+    "body_bytes": 1175,
+    "body": {
+      "model": "deepseek-flash",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "What does the attached PDF say? Quote its text."
+            },
+            {
+              "type": "file",
+              "file_data": "data:application/pdf;base64,<base64 of raw/datasheet-probe.pdf: 694 bytes, sha256 0624d8f422ce77ae6bf35c6364fede9015cc7742ce882ba847e9a87f21574df0>",
+              "filename": "datasheet-probe.pdf"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "requested_at_utc": "2026-10-16T17:20:18+00:00",
+  "wall_seconds": 0.18,
+  "status": 400,
+  "response_headers": {
+    "Server": "openresty",
+    "Content-Type": "application/json",
+    "vary": "accept-encoding",
+    "access-control-allow-credentials": "true",
+    "x-ds-trace-id": "2c28c477322066b1da7e72acbaad29e3",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+    "X-Content-Type-Options": "nosniff",
+    "Content-Length": "302",
+    "Connection": "close",
+    "Date": "Fri, 16 Oct 2026 17:20:18 GMT",
+    "EO-LOG-UUID": "13317752402893777715",
+    "EO-Cache-Status": "MISS"
+  },
+  "response": {
+    "error": {
+      "message": ".messages[0]: You have uploaded an unsupported file. Please make sure your file is valid and has one of the following formats: webp, png, jpeg, and gif. (request_id: 60e00258-ed04-44d3-b2ae-b92223970f40)",
+      "type": "invalid_request_error",
+      "param": null,
+      "code": "invalid_request_error"
+    }
+  }
+}
