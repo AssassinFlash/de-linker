@@ -20,10 +20,14 @@ The instance must be a real one: `just up` + a snapshot (`just pull load <name>
 (the English products' German twins), `tools/migrate/8-engineering.py
 --write` (the engineering data the configurator sizes against — `just serve`
 reads the site's own `linker/v1/engineering-feed` into the engine, and the
-engine refuses a design without it) and `tools/migrate/12-site-chrome.py apply
+engine refuses a design without it), `tools/migrate/12-site-chrome.py apply
 --write` (the tool names, the configurator's own addresses and the retired
-pages — the chrome spec's redirect cases land on the pages it renames; pass
-`--wp` a WP-CLI prefix and `--user <admin>`).
+pages — the chrome spec's redirect cases land on the pages it renames) and
+`tools/migrate/68-contact-form.py apply --write` (the contact pages' mount
+becomes the server-rendered shortcode and the previous runtime's name leaves
+their own script comments — the German page's content carries the name until
+this runs, so the zero-legacy sweep fails without it; all take `--wp` a WP-CLI
+prefix and `--user <admin>`).
 
 A snapshot instance that has not run one of the migrations is a setup gap, not
 a defect: the row that needs it says which migration is missing and how to run
