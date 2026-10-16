@@ -163,6 +163,64 @@ final class PdpStylesTest extends TestCase {
 	}
 
 	/**
+	 * The availability dot carries both states: the base rule is the accepted
+	 * prototype's accent (the in-stock dot), and `is-wait` — the class the
+	 * availability shortcode now prints from `WC_Product::is_in_stock()` — is
+	 * the live page's measured wait colour (rgb(249,115,22),
+	 * docs/design/2026-10-11-replication-spec.md §2). Before the 2026-10-16
+	 * fix the shortcode printed `is-wait` on every product and this rule had
+	 * been dropped by the redesign, so an out-of-stock product showed the
+	 * in-stock dot.
+	 */
+	public function test_the_availability_dot_carries_both_states(): void {
+		$rules = $this->rules( self::PDP_CSS );
+
+		$this->assertMatchesRegularExpression(
+			'/#tv-storefront-pdp \.pdp-dot \{\s*flex: none;\s*width: 8px;\s*height: 8px;\s*border-radius: 50%;\s*background: var\(--pdp-teal\);/',
+			$rules
+		);
+		$this->assertMatchesRegularExpression(
+			'/#tv-storefront-pdp \.pdp-dot\.is-wait \{\s*background: var\(--pdp-wait\);/',
+			$rules
+		);
+		$this->assertStringContainsString( '--pdp-wait: #f97316;', $rules );
+	}
+
+	/**
+	 * The FAQ block is the prototype's outline: the side panel is the
+	 * gallery's mist rectangle and only a product whose gallery carries a
+	 * picture beyond the featured one gets it, so the accordion spans the
+	 * full width for the rest (`:has(.pdp-faq-side)`, the selector the markup
+	 * really answers).
+	 */
+	public function test_the_faq_block_keeps_the_prototypes_side_panel_outline(): void {
+		$rules = $this->rules( self::PDP_CSS );
+
+		$this->assertStringContainsString( '.pdp-faqs:has(.pdp-faq-side) .pdp-faq-wrap', $rules );
+		$this->assertStringContainsString( 'grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);', $rules );
+		$this->assertMatchesRegularExpression(
+			'/#tv-storefront-pdp \.pdp-faq-side \{\s*overflow: hidden;\s*min-height: 280px;\s*border-radius: var\(--proto-radius-panel\);\s*background: var\(--pdp-soft\);/',
+			$rules
+		);
+		// The rows' spacing follows them into the wrap: the phone block's
+		// own rule keeps the 200px picture height the prototype states.
+		$this->assertStringContainsString( '.pdp-faq-main > .pdp-disclose:first-of-type', $rules );
+		$this->assertStringContainsString( 'min-height: 200px;', $rules );
+	}
+
+	/**
+	 * The feature band's series kicker takes the navy panel's own colour,
+	 * not the page's muted ink (the prototype's `.band .band-copy .kicker`
+	 * is rgba(255,255,255,.75)).
+	 */
+	public function test_the_feature_band_kicker_sits_on_the_navy_panel(): void {
+		$rules = $this->rules( self::PDP_CSS );
+
+		$this->assertStringContainsString( '.pdp-feature-copy .pdp-kicker', $rules );
+		$this->assertStringContainsString( 'color: rgba(255, 255, 255, 0.75);', $rules );
+	}
+
+	/**
 	 * The phone action bar is the floating glass pill: fixed, inset from the
 	 * edges, blurred, with the safe-area inset under it — and the base rule
 	 * that hides the bar sits before the phone block, so the pill is what
