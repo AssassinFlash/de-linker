@@ -1,0 +1,3026 @@
+[
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "saj",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.59,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.11
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.06
+    }
+   },
+   "usage": {
+    "input_tokens": 763,
+    "output_tokens": 143,
+    "cost": 3.2046e-05
+   },
+   "id": "gen-dec-1792225071-ZrFmzmOUEDVkqhQ0V7Rg",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "SAJ",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.78,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.12
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.05
+    }
+   },
+   "usage": {
+    "input_tokens": 763,
+    "output_tokens": 143,
+    "cost": 3.2046e-05
+   },
+   "id": "gen-dec-1792225071-7BIeCxGtAxrnn4eOHN8C",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "saj",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.664,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 0.99,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0.01,
+      "other": 0
+     },
+     "confidence": 0.99
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.1
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.08
+    }
+   },
+   "usage": {
+    "input_tokens": 763,
+    "output_tokens": 143,
+    "cost": 3.2046e-05
+   },
+   "id": "gen-dec-1792225071-GTYMSg9n2SdclgnSdddl",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "goodwe",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.441,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.11
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.04
+    }
+   },
+   "usage": {
+    "input_tokens": 763,
+    "output_tokens": 143,
+    "cost": 3.2046e-05
+   },
+   "id": "gen-dec-1792225071-TIPePQWlX2OsEV41XtpX",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "H2-10K-T3",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.587,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.18
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 769,
+    "output_tokens": 143,
+    "cost": 3.2298e-05
+   },
+   "id": "gen-dec-1792225071-Qhyl6RlnCRtIuK1hKi3K",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "GW10K-ET",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.434,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.24
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 767,
+    "output_tokens": 143,
+    "cost": 3.2214e-05
+   },
+   "id": "gen-dec-1792225071-quqocypf9fu2gXnjZ2RK",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "pylontech us5000",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.579,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.1
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 770,
+    "output_tokens": 143,
+    "cost": 3.234e-05
+   },
+   "id": "gen-dec-1792225073-WYcRPPHKohDLus02HnEP",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "I need a hybrid inverter for a single-family home",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.762,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.08
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 773,
+    "output_tokens": 143,
+    "cost": 3.2466e-05
+   },
+   "id": "gen-dec-1792225074-vRoYfdwYd6nHa60dtnrD",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Ich suche einen Hybrid-Wechselrichter für ein Einfamilienhaus",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.81,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.06
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 778,
+    "output_tokens": 143,
+    "cost": 3.2676e-05
+   },
+   "id": "gen-dec-1792225074-ZdemG4UD3V61dGdp7VlK",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "category",
+    "category": "Inverters"
+   },
+   "Habt ihr dreiphasige Wechselrichter mit 15 kW?",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.766,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.56
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.04
+    }
+   },
+   "usage": {
+    "input_tokens": 790,
+    "output_tokens": 143,
+    "cost": 3.318e-05
+   },
+   "id": "gen-dec-1792225074-h6XON9bAhv5FxdjPVOvL",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "category",
+    "category": "Inverters"
+   },
+   "show me 3-phase ones",
+   "find_products",
+   1,
+   0
+  ],
+  "seconds": 2.856,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.6
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 777,
+    "output_tokens": 143,
+    "cost": 3.2634e-05
+   },
+   "id": "gen-dec-1792225074-liG1k9FgLTbFwDm7EFxm",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Batteriespeicher Hochvolt",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.604,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.13
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.04
+    }
+   },
+   "usage": {
+    "input_tokens": 769,
+    "output_tokens": 143,
+    "cost": 3.2298e-05
+   },
+   "id": "gen-dec-1792225074-4tqT915bPEU6T3qWfHXv",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "which battery works with this inverter?",
+   "pairing_compatibility",
+   1,
+   0
+  ],
+  "seconds": 2.591,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "pairing_compatibility",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 1,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.95
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 799,
+    "output_tokens": 147,
+    "cost": 3.3558e-05
+   },
+   "id": "gen-dec-1792225076-SwwcJrC1YMH1FmTanBmj",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "Welcher Speicher passt dazu?",
+   "pairing_compatibility",
+   1,
+   0
+  ],
+  "seconds": 2.586,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "pairing_compatibility",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 1,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.9
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 796,
+    "output_tokens": 147,
+    "cost": 3.3432e-05
+   },
+   "id": "gen-dec-1792225076-Rz3EuWW7e2Yo90I6Xbv8",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "Is the Pylontech Force H2 compatible with GoodWe ET?",
+   "pairing_compatibility",
+   0,
+   0
+  ],
+  "seconds": 2.574,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "pairing_compatibility",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 1,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.05
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 777,
+    "output_tokens": 147,
+    "cost": 3.2634e-05
+   },
+   "id": "gen-dec-1792225076-AW9wlZeP32070IZognAG",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Kann ich eine BYD HVS an den SAJ H2 anschließen?",
+   "pairing_compatibility",
+   0,
+   0
+  ],
+  "seconds": 2.618,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "pairing_compatibility",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 1,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.06
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 780,
+    "output_tokens": 147,
+    "cost": 3.276e-05
+   },
+   "id": "gen-dec-1792225076-50W29GOSgV7kZYq402of",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "solution_draft",
+    "items": [
+     "SAJ H2-10K-T3 x1",
+     "SAJ B2-10.0 battery x1"
+    ]
+   },
+   "do these two work together?",
+   "pairing_compatibility",
+   1,
+   0
+  ],
+  "seconds": 2.591,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "pairing_compatibility",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 1,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.94
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 805,
+    "output_tokens": 147,
+    "cost": 3.381e-05
+   },
+   "id": "gen-dec-1792225076-hYqv9oWMntvfX9CjyTq3",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "solution_draft",
+    "items": [
+     "SAJ H2-10K-T3 x1",
+     "SAJ B2-10.0 battery x1"
+    ]
+   },
+   "Passt das alles zusammen?",
+   "pairing_compatibility",
+   1,
+   0
+  ],
+  "seconds": 2.613,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "pairing_compatibility",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 1,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.91
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 805,
+    "output_tokens": 147,
+    "cost": 3.381e-05
+   },
+   "id": "gen-dec-1792225076-BwRPXAYBZ7ijiocQRQXr",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "datasheet please",
+   "documents_specs",
+   1,
+   0
+  ],
+  "seconds": 2.753,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "documents_specs",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 1,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.91
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 793,
+    "output_tokens": 143,
+    "cost": 3.3306e-05
+   },
+   "id": "gen-dec-1792225079-KBy1V5Lylqf981Xbx6I5",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "Wo finde ich das Datenblatt?",
+   "documents_specs",
+   1,
+   0
+  ],
+  "seconds": 2.576,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "documents_specs",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 1,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.81
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 798,
+    "output_tokens": 143,
+    "cost": 3.3516e-05
+   },
+   "id": "gen-dec-1792225079-8wm1tyu8WpzJA4pZeg8R",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "what is the max PV input?",
+   "documents_specs",
+   1,
+   0
+  ],
+  "seconds": 2.82,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "documents_specs",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 1,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.94
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 797,
+    "output_tokens": 143,
+    "cost": 3.3474e-05
+   },
+   "id": "gen-dec-1792225079-rO51d3z4QlbxQxDhzMEh",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "Wie viele MPPT hat das Gerät?",
+   "documents_specs",
+   1,
+   0
+  ],
+  "seconds": 2.858,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "documents_specs",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 1,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.96
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 798,
+    "output_tokens": 143,
+    "cost": 3.3516e-05
+   },
+   "id": "gen-dec-1792225079-S2clayFwmROJPKXXeZX0",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "installation manual for the GoodWe ESA",
+   "documents_specs",
+   0,
+   0
+  ],
+  "seconds": 2.599,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "documents_specs",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 1,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.07
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 769,
+    "output_tokens": 143,
+    "cost": 3.2298e-05
+   },
+   "id": "gen-dec-1792225079-xxmH2okB7V5SHRoSkyGH",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "VDE-AR-N 4105 Zertifikat für den H2-10K-T3",
+   "documents_specs",
+   0,
+   0
+  ],
+  "seconds": 2.594,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "documents_specs",
+     "probabilities": {
+      "find_products": 0.02,
+      "pairing_compatibility": 0,
+      "documents_specs": 0.98,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 0.98
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.12
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.06
+    }
+   },
+   "usage": {
+    "input_tokens": 785,
+    "output_tokens": 143,
+    "cost": 3.297e-05
+   },
+   "id": "gen-dec-1792225079-6CxAP0fo7BdGKDM2udSF",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "SAJ vs GoodWe for commercial storage",
+   "compare",
+   0,
+   0
+  ],
+  "seconds": 2.606,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "compare",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 1,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.06
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 770,
+    "output_tokens": 142,
+    "cost": 3.234e-05
+   },
+   "id": "gen-dec-1792225081-wLRruEXt8e5fjIsVUWS5",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Unterschied zwischen GoodWe ET und SAJ H2?",
+   "compare",
+   0,
+   0
+  ],
+  "seconds": 2.53,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "compare",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 1,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.06
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 776,
+    "output_tokens": 142,
+    "cost": 3.2592e-05
+   },
+   "id": "gen-dec-1792225081-2PrZJfWawJO4via5wMjx",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "how does this compare to the 12K version?",
+   "compare",
+   1,
+   0
+  ],
+  "seconds": 2.527,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "compare",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 1,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.94
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 802,
+    "output_tokens": 142,
+    "cost": 3.3684e-05
+   },
+   "id": "gen-dec-1792225081-C6wHLLMmuENFy0KFKWlL",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "category",
+    "category": "Inverters"
+   },
+   "Vergleiche die ersten drei",
+   "compare",
+   1,
+   0
+  ],
+  "seconds": 2.614,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "compare",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 1,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.58
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 777,
+    "output_tokens": 142,
+    "cost": 3.2634e-05
+   },
+   "id": "gen-dec-1792225082-KjTSv7Jg6PDRZEawyHLH",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "what size battery for 8 kWp PV and 6000 kWh a year?",
+   "sizing",
+   0,
+   0
+  ],
+  "seconds": 2.645,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "sizing",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 1,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.06
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 781,
+    "output_tokens": 143,
+    "cost": 3.2802e-05
+   },
+   "id": "gen-dec-1792225082-Hpg3IOLReO2oKuMJFWOB",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Wie groß sollte der Speicher bei 10 kWp sein?",
+   "sizing",
+   0,
+   0
+  ],
+  "seconds": 2.602,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "sizing",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 1,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.09
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 774,
+    "output_tokens": 143,
+    "cost": 3.2508e-05
+   },
+   "id": "gen-dec-1792225082-CPU9WXBpry2NIMDimj8P",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "help me design a system for a farm with 40 kWp",
+   "sizing",
+   0,
+   0
+  ],
+  "seconds": 2.61,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "sizing",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 1,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.04
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.1
+    }
+   },
+   "usage": {
+    "input_tokens": 775,
+    "output_tokens": 143,
+    "cost": 3.255e-05
+   },
+   "id": "gen-dec-1792225084-Gs4P8LKkBM3IMyh8DEVt",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Ich plane eine Anlage für einen Gewerbebetrieb mit Notstrom",
+   "sizing",
+   0,
+   0
+  ],
+  "seconds": 2.648,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "sizing",
+     "probabilities": {
+      "find_products": 0.03,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0.97,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 0.97
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.06
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.08
+    }
+   },
+   "usage": {
+    "input_tokens": 775,
+    "output_tokens": 143,
+    "cost": 3.255e-05
+   },
+   "id": "gen-dec-1792225084-60vdiQww9RZeP5dgIA0N",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "account"
+   },
+   "where is my proforma?",
+   "inquiry_status",
+   0,
+   0
+  ],
+  "seconds": 2.61,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "inquiry_status",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 1,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.09
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.07
+    }
+   },
+   "usage": {
+    "input_tokens": 767,
+    "output_tokens": 144,
+    "cost": 3.2214e-05
+   },
+   "id": "gen-dec-1792225084-PozjrIq89J3HkP2m0EgZ",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "account"
+   },
+   "Wann bekomme ich meine Proforma-Rechnung?",
+   "inquiry_status",
+   0,
+   0
+  ],
+  "seconds": 2.61,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "inquiry_status",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0.98,
+      "talk_to_person": 0,
+      "company_logistics_service": 0.02,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 0.98
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.13
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.04
+    }
+   },
+   "usage": {
+    "input_tokens": 774,
+    "output_tokens": 144,
+    "cost": 3.2508e-05
+   },
+   "id": "gen-dec-1792225084-puSFN9JNOv6yH5KnYAxl",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "account"
+   },
+   "status of inquiry 1616",
+   "inquiry_status",
+   0,
+   0
+  ],
+  "seconds": 2.697,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "inquiry_status",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 1,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.08
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.04
+    }
+   },
+   "usage": {
+    "input_tokens": 769,
+    "output_tokens": 144,
+    "cost": 3.2298e-05
+   },
+   "id": "gen-dec-1792225084-DM4VBKc3reIPmxip9cpC",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Haben Sie meine Anfrage von gestern erhalten?",
+   "inquiry_status",
+   0,
+   0
+  ],
+  "seconds": 2.656,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "inquiry_status",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 1,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.04
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.27
+    }
+   },
+   "usage": {
+    "input_tokens": 770,
+    "output_tokens": 144,
+    "cost": 3.234e-05
+   },
+   "id": "gen-dec-1792225084-4VtkyqjAXFpRnWQsQayx",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "can I talk to someone?",
+   "talk_to_person",
+   0,
+   1
+  ],
+  "seconds": 2.74,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "talk_to_person",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 1,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.06
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.95
+    }
+   },
+   "usage": {
+    "input_tokens": 767,
+    "output_tokens": 144,
+    "cost": 3.2214e-05
+   },
+   "id": "gen-dec-1792225087-pwTRlDFqIeLWIvv1PGo6",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Ich möchte mit einem Mitarbeiter sprechen",
+   "talk_to_person",
+   0,
+   1
+  ],
+  "seconds": 2.61,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "talk_to_person",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 1,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.04
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.96
+    }
+   },
+   "usage": {
+    "input_tokens": 767,
+    "output_tokens": 144,
+    "cost": 3.2214e-05
+   },
+   "id": "gen-dec-1792225087-N0L3oQviWMv6BlKInH8b",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "please call me back, +49 151 0000000",
+   "talk_to_person",
+   0,
+   1
+  ],
+  "seconds": 2.586,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "talk_to_person",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 1,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.03
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.98
+    }
+   },
+   "usage": {
+    "input_tokens": 781,
+    "output_tokens": 144,
+    "cost": 3.2802e-05
+   },
+   "id": "gen-dec-1792225087-KGhtA9wO7KPWTITFCvQp",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Das hilft mir nicht, bitte rufen Sie mich an",
+   "talk_to_person",
+   0,
+   1
+  ],
+  "seconds": 2.806,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "talk_to_person",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 1,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.26
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.98
+    }
+   },
+   "usage": {
+    "input_tokens": 772,
+    "output_tokens": 144,
+    "cost": 3.2424e-05
+   },
+   "id": "gen-dec-1792225087-WewbAiW51ijO7VZCykJN",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "this bot is useless, I asked three times",
+   "talk_to_person",
+   0,
+   1
+  ],
+  "seconds": 2.381,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "talk_to_person",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0.01,
+      "talk_to_person": 0.51,
+      "company_logistics_service": 0,
+      "small_talk": 0.01,
+      "other": 0.47
+     },
+     "confidence": 0.46
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.36
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.97
+    }
+   },
+   "usage": {
+    "input_tokens": 770,
+    "output_tokens": 144,
+    "cost": 3.234e-05
+   },
+   "id": "gen-dec-1792225087-xQvhi6LDt5gyDvIinGku",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "do you deliver to Austria?",
+   "company_logistics_service",
+   0,
+   0
+  ],
+  "seconds": 2.661,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "company_logistics_service",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 1,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.21
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 767,
+    "output_tokens": 146,
+    "cost": 3.2214e-05
+   },
+   "id": "gen-dec-1792225087-NwUbA1spzqpoM3P9dyD4",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Wie lange dauert die Lieferung nach Bayern?",
+   "company_logistics_service",
+   0,
+   0
+  ],
+  "seconds": 2.614,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "company_logistics_service",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 1,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.14
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 769,
+    "output_tokens": 146,
+    "cost": 3.2298e-05
+   },
+   "id": "gen-dec-1792225089-Hnd1o6suQgV11A7QKrlX",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "what are your payment terms?",
+   "company_logistics_service",
+   0,
+   0
+  ],
+  "seconds": 2.797,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "company_logistics_service",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 1,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.22
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 767,
+    "output_tokens": 146,
+    "cost": 3.2214e-05
+   },
+   "id": "gen-dec-1792225089-8X8WvhiWKo5oDJKXEhfC",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Bieten Sie auch die Installation an?",
+   "company_logistics_service",
+   0,
+   0
+  ],
+  "seconds": 2.779,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "company_logistics_service",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 1,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.43
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.04
+    }
+   },
+   "usage": {
+    "input_tokens": 769,
+    "output_tokens": 146,
+    "cost": 3.2298e-05
+   },
+   "id": "gen-dec-1792225089-HkAzc2yxxU3yMZhSbR68",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "where is your warehouse?",
+   "company_logistics_service",
+   0,
+   0
+  ],
+  "seconds": 2.611,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "company_logistics_service",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 1,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.07
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.06
+    }
+   },
+   "usage": {
+    "input_tokens": 766,
+    "output_tokens": 146,
+    "cost": 3.2172e-05
+   },
+   "id": "gen-dec-1792225089-s143qy5eCxFCs9V0lmcK",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Sucht ihr Mitarbeiter im Vertrieb?",
+   "company_logistics_service",
+   0,
+   0
+  ],
+  "seconds": 2.725,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "company_logistics_service",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0.06,
+      "company_logistics_service": 0.9400000000000001,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 0.93
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.05
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.53
+    }
+   },
+   "usage": {
+    "input_tokens": 768,
+    "output_tokens": 146,
+    "cost": 3.2256e-05
+   },
+   "id": "gen-dec-1792225090-f3t1zTdn63SiazWd57Ds",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "hi",
+   "small_talk",
+   0,
+   0
+  ],
+  "seconds": 2.593,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "small_talk",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 1,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.05
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 762,
+    "output_tokens": 144,
+    "cost": 3.2004e-05
+   },
+   "id": "gen-dec-1792225090-G4JJZ56clvTB0yYa5why",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Hallo!",
+   "small_talk",
+   0,
+   0
+  ],
+  "seconds": 2.75,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "small_talk",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 1,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.04
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 763,
+    "output_tokens": 144,
+    "cost": 3.2046e-05
+   },
+   "id": "gen-dec-1792225092-6wsoQP8wQWgzdJz9PI4U",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "thanks, that helps",
+   "small_talk",
+   0,
+   0
+  ],
+  "seconds": 2.564,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "small_talk",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 1,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.16
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 765,
+    "output_tokens": 144,
+    "cost": 3.213e-05
+   },
+   "id": "gen-dec-1792225092-szJS9Cs9j4QkldYitGkj",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Danke schön",
+   "small_talk",
+   0,
+   0
+  ],
+  "seconds": 2.387,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "small_talk",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 1,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.05
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 764,
+    "output_tokens": 144,
+    "cost": 3.2088e-05
+   },
+   "id": "gen-dec-1792225092-848M4OLMteSCtTSydM4L",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "what's the weather in Berlin?",
+   "other",
+   0,
+   0
+  ],
+  "seconds": 2.664,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "other",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0.33,
+      "other": 0.67
+     },
+     "confidence": 0.63
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.02
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 768,
+    "output_tokens": 142,
+    "cost": 3.2256e-05
+   },
+   "id": "gen-dec-1792225092-yLzvDmbumMIWNISsoTao",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Erzähl mir einen Witz",
+   "other",
+   0,
+   0
+  ],
+  "seconds": 2.581,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "small_talk",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0.99,
+      "other": 0.01
+     },
+     "confidence": 0.99
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.02
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 769,
+    "output_tokens": 144,
+    "cost": 3.2298e-05
+   },
+   "id": "gen-dec-1792225092-oYL02VUKMevUOrgkKea3",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "ecoflow ocean",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.585,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.12
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.02
+    }
+   },
+   "usage": {
+    "input_tokens": 765,
+    "output_tokens": 143,
+    "cost": 3.213e-05
+   },
+   "id": "gen-dec-1792225092-RW3ldLn8DIAB3koIHmi5",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "zendure",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.568,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.12
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 763,
+    "output_tokens": 143,
+    "cost": 3.2046e-05
+   },
+   "id": "gen-dec-1792225094-QHzVEqqCUGj14wT3Ikus",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "home"
+   },
+   "CB2-100.3-HV5",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.663,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.28
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 772,
+    "output_tokens": 143,
+    "cost": 3.2424e-05
+   },
+   "id": "gen-dec-1792225095-Wc0x8n2TTaPFgJqexGMC",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "Gibt es das auch in 12 kW?",
+   "find_products",
+   1,
+   0
+  ],
+  "seconds": 2.916,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 0.89,
+      "pairing_compatibility": 0,
+      "documents_specs": 0.07,
+      "compare": 0,
+      "sizing": 0.03,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0.01
+     },
+     "confidence": 0.88
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.91
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 802,
+    "output_tokens": 143,
+    "cost": 3.3684e-05
+   },
+   "id": "gen-dec-1792225095-w7LuYkGDWHfBuczU7WRC",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "product",
+    "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+   },
+   "warranty?",
+   "documents_specs",
+   1,
+   0
+  ],
+  "seconds": 2.638,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "documents_specs",
+     "probabilities": {
+      "find_products": 0,
+      "pairing_compatibility": 0,
+      "documents_specs": 0.95,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0.04,
+      "small_talk": 0,
+      "other": 0.01
+     },
+     "confidence": 0.94
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.9
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 795,
+    "output_tokens": 143,
+    "cost": 3.339e-05
+   },
+   "id": "gen-dec-1792225095-P4nyNOM1Qf4Rq03cIkzO",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "de",
+   {
+    "type": "home"
+   },
+   "Notstromfähiger Speicher für 3 Phasen",
+   "find_products",
+   0,
+   0
+  ],
+  "seconds": 2.833,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "find_products",
+     "probabilities": {
+      "find_products": 1,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0,
+      "talk_to_person": 0,
+      "company_logistics_service": 0,
+      "small_talk": 0,
+      "other": 0
+     },
+     "confidence": 1
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.11
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.03
+    }
+   },
+   "usage": {
+    "input_tokens": 772,
+    "output_tokens": 143,
+    "cost": 3.2424e-05
+   },
+   "id": "gen-dec-1792225095-1qzlW04GS7rlrpHVlY7A",
+   "provider": "TypeSafe"
+  }
+ },
+ {
+  "case": [
+   "en",
+   {
+    "type": "solution_draft",
+    "items": [
+     "SAJ H2-10K-T3 x1",
+     "SAJ B2-10.0 battery x1"
+    ]
+   },
+   "what happens after I send the inquiry?",
+   "company_logistics_service",
+   0,
+   0
+  ],
+  "seconds": 2.548,
+  "response": {
+   "model": "typesafe/jev-1.13-20260917",
+   "answers": {
+    "intent": {
+     "type": "choice",
+     "choice": "inquiry_status",
+     "probabilities": {
+      "find_products": 0.01,
+      "pairing_compatibility": 0,
+      "documents_specs": 0,
+      "compare": 0,
+      "sizing": 0,
+      "inquiry_status": 0.62,
+      "talk_to_person": 0.02,
+      "company_logistics_service": 0.24,
+      "small_talk": 0.01,
+      "other": 0.1
+     },
+     "confidence": 0.58
+    },
+    "about_this_page": {
+     "type": "noul",
+     "noul": 0.28
+    },
+    "wants_person": {
+     "type": "noul",
+     "noul": 0.2
+    }
+   },
+   "usage": {
+    "input_tokens": 807,
+    "output_tokens": 144,
+    "cost": 3.3894e-05
+   },
+   "id": "gen-dec-1792225095-0AasHixWjF7eYxervjVL",
+   "provider": "TypeSafe"
+  }
+ }
+]
