@@ -19,7 +19,7 @@
 上面的"部署目标"按对比结论落地为 Jev API（`docs/research/2026-10-09/judge-bakeoff.md` §采用结论：没有达标的开源候选），形态不变：
 
 - **不进回答路径**：回答照常立刻发出；评审是 VPS 上独立的 systemd 单元 `linker-genie-judge`（`services/genie/ops/linker-genie-judge.service`，与 `linker-genie` 同一发布目录 `/opt/linker-genie/current`、同一环境文件）。
-- **队列**：服务自己的对话日志 `turns.sqlite`（`GENIE_LOG`）。日志每轮另记客户问句、页面上下文、各工具当时的返回和账号是否已批准（`approved`，取自请求的 `user.partner`；站点在 #242 之前不传，缺省即未批准）（`services/genie/src/linker_genie/log.py`、`abilities.py`）；评审只读日志，不重放（库存、价格、客户询盘会变）。工作进程自己的 `judgments.sqlite` 记队列位置、每轮结论与是否已交给站点。首次启动从当时最新一轮之后开始，只评新对话。
+- **队列**：服务自己的对话日志 `turns.sqlite`（`GENIE_LOG`）。日志每轮另记客户问句、页面上下文、各工具当时的返回和账号是否已批准（`approved`，取自请求的 `user.partner`：壳按站点的价格规则 `linker_commerce_visitor_sees_prices` 填写，#242；缺省即未批准）（`services/genie/src/linker_genie/log.py`、`abilities.py`）；评审只读日志，不重放（库存、价格、客户询盘会变）。工作进程自己的 `judgments.sqlite` 记队列位置、每轮结论与是否已交给站点。首次启动从当时最新一轮之后开始，只评新对话。
 - **级联**（`services/genie/src/linker_genie/quality/worker.py`，复用 `eval/judges` 的 `run_cascade`）：Jev 答 grounded / appropriate / better_pick（有可换的产品时才问第三问；换品取本轮工具返回过、回答没给的产品）；任一问置信度低于 `TURN_THRESHOLDS`（grounded 0.6、appropriate 0.5、better_pick 0.6）→ 整条交 deepseek-flash（仅官方 API）判，日志 INFO 记 "turn N escalated to deepseek-flash: grounded 0.42 < 0.6"。**Jev 调用失败不是"不确定"**：不升级、不换模型，该轮记 `failed`、日志 ERROR，10 分钟后重试，共 3 次。
 - **职责说明（remit）**：在 `eval/judges/src/linker_judges/rubric.py` 的 `REMIT`，#258 于 2026-10-18 按线上评判改定。appropriate 与 better_pick 的题面原样嵌入同一段 `REMIT`，有测试钉住。各条的依据是 AGENTS.md §2：
   - **职责内**：产品、型号、系列、规格、兼容，以及从我们托管的文档作答，包括保修条款、安装要求、间距等技术参数（#257 的验收要的正是这些）。
@@ -31,11 +31,10 @@
     - 评审状态里的 `account.approved` 为真。这是第二道门。
     - 账号为假或缺失（访客、待审、限制账号）时不说价格；说"已批准伙伴账号可见价格"，或引向询盘 / Proforma，仍在职责内。
     - 两道门在引用核验里也有确定性的检查，见下一条。
-  - **今天价格不会出现**（2026-10-18 查证）：
-    - Genie 的产品能力都是匿名调用（`abilities.py`：不带令牌，也不带 Authorization；只有 inquiry-status 带客户的短时令牌）。所以 `CommerceState::shows_price` 对每一轮都按访客算，`ProductCommerce::of` 返回 `price_visible: false`，不带价格。
-    - 代理也不传 `partner`（`Proxy.php`），每一轮都记成未批准。
-    - 两道门今天都关着，回答里出现的任何价格都会被标记。
-    - #242 上线时，能力要以客户身份调用。代理传 `partner` 时必须用 `Approval::sees_prices` / `CommerceState::visitor_sees_prices()`，不能用 `logged_in`。
+  - **价格怎样出现**（#242 起，见 13-genie.md「价格跟账号走」）：
+    - 产品能力带客户的短时令牌调用（`abilities.USER_CONTEXT_ABILITIES`），`CommerceState` 按客户本人判断；已批准账号的 `commerce` 带 `price_visible: true`、`price` 与产品页的价格行 `price_text`，其他账号带 `price_reason`。
+    - 代理按站点规则（`Approval::sees_prices` / `CommerceState::visitor_sees_prices()`，经过滤器 `linker_commerce_visitor_sees_prices`）传 `partner`，不用 `logged_in`；日志记成 `approved`。
+    - 模型正文不写价格（`ground.py` 拒绝价格占位符）；价格只出现在产品卡的价格行（`cards.prices`），由服务从本轮工具结果填入。所以两道门既对正文的数字查，也对卡上的价格行查（下一条）。
   - **改定前**：旧说法把保修与安装一律转团队，线上第 33 轮（GoodWe 保修条款）、第 36 轮（CB2 安装与间距）因此被误判"超出职责"。
   - **复核**：脚本与只含 ID 的结果在 `docs/research/2026-10-18-judge-remit/`，可以重跑。
     - 校准集 118 条问答：Jev 的 appropriate 与人工 118/118 一致，置信度最低 0.70；旧 remit 的正式轮同为 118/118，最低 0.82。超出职责题都是服务请求，人工标签不变。**appropriate 阈值 0.5 维持。**
@@ -49,7 +48,7 @@
     - 剩下的纯数字（48、5.0、8,7）才是回答说出的数字。
     - 型号旁边写出的数字照常核验，例如 "BU2-5.0-HV1 holds 5.0 kWh" 里的 5.0。
   - 线上第 27 轮（"saj"）因 BU2-5.0-HV1 里的 5.0 被误标，#258 修正。
-  - **价格**：数字等于本轮可见价格、而账号未批准时，记 "states the price of product N, and the account is not approved"；工具没返回的价格照常按"无工具依据的数字"记。
+  - **价格**：数字等于本轮可见价格、而账号未批准时，记 "states the price of product N, and the account is not approved"；工具没返回的价格照常按"无工具依据的数字"记。卡上的价格行（#242）过同样两道门：本轮工具没有把这个价格行作为该商品的 `price_text` 返回，记 "shows a price of product N on its card that no tool returned"；返回了而账号未批准，记 "shows the price of product N on its card, and the account is not approved"；只写原因（`reason`）的价格行不算价格（`quality/citations.py::_card_prices`，测试 `services/genie/tests/test_prices.py`）。
 - **标记**：grounded 0（矛盾）或 1（无法核实）、appropriate no、better_pick B、引用核验不过、判不出 → 标记，后台列表可筛。
 - **交给站点**：`POST /wp-json/linker-ai/v1/genie/quality`，共享令牌放在请求头 `X-Linker-Judge-Token`（不用 `Authorization: Bearer`：LiveCanvas 自带的模板系统把每个 REST 请求的 Bearer 当 JWT 解码，非 JWT 令牌直接 500；VPS `GENIE_JUDGE_TOKEN` = 站点 wp-config.php 常量 `LINKER_GENIE_JUDGE_TOKEN`；没有常量时路由关闭）。站点把每轮结论存为对话帖的 post meta（`linker_genie_quality`），无自定义表；没被站点收下的结论下一轮再交。工作进程每 10 分钟报一次状态，站点 30 分钟没收到即视为停止。
 - **后台**：Genie quality（`linker-tools` `QualityPage`）列出有结论的对话，可筛"标记"与"未能评判"；点进对话看逐轮问句、回答、结论、升级原因、评审理由与对话全文。页首显示工作进程停止或最近一次评审错误。
