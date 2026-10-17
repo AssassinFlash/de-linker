@@ -16,7 +16,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
+/**
+ * This action is documented in woocommerce/templates/emails/customer-on-hold-order.php
+*/
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 <p>
@@ -31,17 +33,36 @@ printf(
 ?>
 </p>
 <p><a href="<?php echo esc_url( $order->get_edit_order_url() ); ?>"><?php esc_html_e( 'Open the inquiry', 'linker-commerce' ); ?></a></p>
+<?php if ( 'contact' === $order->get_meta( '_linker_inquiry_source' ) ) : ?>
+<p><?php esc_html_e( 'Contact form', 'linker-commerce' ); ?><br />
+	<?php
+	printf(
+	/* translators: %s: topic selected in the contact form. */
+		esc_html__( 'This is about: %s', 'linker-commerce' ),
+		esc_html( \Linker\Commerce\Contact\Form::intent_label( (string) $order->get_meta( '_linker_inquiry_topic' ) ) )
+	);
+	?>
+</p>
+<?php endif; ?>
 <?php
-/** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
+/**
+ * This action is documented in woocommerce/templates/emails/customer-on-hold-order.php
+ */
 do_action( 'woocommerce_email_order_details', $order, $sent_to_admin, $plain_text, $email );
-/** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
+/**
+ * This action is documented in woocommerce/templates/emails/customer-on-hold-order.php
+*/
 do_action( 'woocommerce_email_order_meta', $order, $sent_to_admin, $plain_text, $email );
-/** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
+/**
+ * This action is documented in woocommerce/templates/emails/customer-on-hold-order.php
+*/
 do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email );
 
 if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
 }
 
-/** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
+/**
+ * This action is documented in woocommerce/templates/emails/customer-on-hold-order.php
+*/
 do_action( 'woocommerce_email_footer', $email );

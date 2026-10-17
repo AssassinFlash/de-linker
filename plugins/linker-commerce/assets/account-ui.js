@@ -7,7 +7,7 @@
 	'use strict';
 
 	// The account chain's forms: the guest cards, the workspace and the gates.
-	const FORMS = '.linker-auth form, .linker-account form, .linker-gate form';
+	const FORMS = '.linker-auth form, .linker-account form, .linker-gate form, .linker-inquiry-form';
 
 	// The second field of a two-field password check, and the line under it.
 	function passwordPair( form ) {

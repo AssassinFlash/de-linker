@@ -308,37 +308,22 @@ final class ProductView {
 	}
 
 	/**
-	 * The primary button's label: a partner adds to the draft, a guest signs
-	 * in, and an account waiting for approval hears its status (the guest's
-	 * live-sourced string stays for guests only).
+	 * Anyone can add a product for an inquiry; approval controls only prices (#246).
 	 *
 	 * @return string The label.
 	 */
 	private function cta_label(): string {
-		if ( $this->state->visitor_sees_prices() ) {
-			return __( 'Add to solution draft', 'linker-commerce' );
-		}
-		if ( CommerceState::APPROVAL === $this->state->visitor_reason() ) {
-			return Approval::PENDING === $this->state->current_approval_status()
-				? __( 'Prices after approval', 'linker-commerce' )
-				: __( 'Not available for your account', 'linker-commerce' );
-		}
-		return __( 'Sign in for partner pricing', 'linker-commerce' );
+		return __( 'Add to solution draft', 'linker-commerce' );
 	}
 
 	/**
-	 * Where the primary button leads: a partner adds the product to the
-	 * solution draft (Woo's cart until #11 renames and reshapes it), a
-	 * visitor signs in first.
+	 * Woo adds the product to the session draft and opens the public request.
 	 *
 	 * @param \WC_Product $product The product.
 	 * @return string The URL.
 	 */
 	private function cta_url( \WC_Product $product ): string {
-		if ( $this->state->visitor_sees_prices() ) {
-			return esc_url_raw( add_query_arg( 'add-to-cart', (string) $product->get_id(), wc_get_checkout_url() ) );
-		}
-		return $this->login_url( (string) $product->get_permalink() );
+		return esc_url_raw( add_query_arg( 'add-to-cart', (string) $product->get_id(), wc_get_checkout_url() ) );
 	}
 
 	/**

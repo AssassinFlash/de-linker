@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Products\Faqs;
-use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Settings\Options;
 use WC_Product;
 
@@ -22,13 +21,6 @@ use WC_Product;
  */
 final class Shortcodes {
 
-	/**
-	 * Sets up the shortcodes.
-	 *
-	 * @param LoginGate $gate     The empty Proforma-request page.
-	 * @param Approval  $approval The account approval rule.
-	 */
-	public function __construct( private readonly LoginGate $gate, private readonly Approval $approval = new Approval() ) {}
 
 	/**
 	 * Registers the shortcodes.
@@ -321,11 +313,7 @@ final class Shortcodes {
 	 */
 	public function checkout( $atts = array() ): string {
 		unset( $atts );
-		$user_id = get_current_user_id();
-		if ( $user_id <= 0 || $this->is_empty_request() || ! $this->approval->sees_prices( $user_id ) ) {
-			return $this->gate->html();
-		}
-		return do_shortcode( '[woocommerce_checkout]' );
+		return is_wc_endpoint_url( 'order-received' ) ? do_shortcode( '[woocommerce_checkout]' ) : do_shortcode( '[linker_inquiry_form]' );
 	}
 
 		/**
@@ -381,7 +369,7 @@ final class Shortcodes {
 			esc_attr__( 'Empty solution draft', 'linker-commerce' ),
 			$icon,
 			esc_html__( 'Your solution draft is empty.', 'linker-commerce' ),
-			esc_html__( 'Browse the products now. Adding to the solution draft is possible only after your account has been reviewed.', 'linker-commerce' ),
+			esc_html__( 'Browse products and add them to your solution draft. You can send an inquiry without an account.', 'linker-commerce' ),
 			esc_url( $products ),
 			esc_html__( 'Browse products', 'linker-commerce' ),
 			esc_url( $account ),
@@ -389,14 +377,6 @@ final class Shortcodes {
 		);
 	}
 
-	/**
-	 * Whether this is an empty Proforma request (not a confirmation or pay page).
-	 * The cart template's own condition function, so the gate and the branch
-	 * the visitor sees can never disagree.
-	 */
-	private function is_empty_request(): bool {
-		return linker_commerce_draft_empty();
-	}
 
 	/**
 	 * The current product's FAQ rows from `_linker_faqs` (docs/specs/15-faq.md),

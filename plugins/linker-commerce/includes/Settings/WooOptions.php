@@ -12,10 +12,11 @@ namespace Linker\Commerce\Settings;
 /**
  * Pins the WooCommerce options that make the store an inquiry site, so they do
  * not depend on what someone clicks in WooCommerce → Settings: no shipping, no
- * coupons, an inquiry only with an account, registration on the account page
+ * coupons, inquiries open to everyone, registration on the account page
  * with a password the customer chooses, and endpoint URLs without "order".
  */
 final class WooOptions {
+
 
 	/**
 	 * Option name of the endpoint set the rewrite rules were last built for.
@@ -33,8 +34,8 @@ final class WooOptions {
 			'woocommerce_ship_to_countries'              => 'disabled',
 			// No discounts on an inquiry site (AGENTS.md §1: products → inquiry → offline).
 			'woocommerce_enable_coupons'                 => 'no',
-			// Sending an inquiry needs an account (docs/specs/11-commerce.md, Gating).
-			'woocommerce_enable_guest_checkout'          => 'no',
+			// Owner ruling 2026-10-17 (#246): everyone can send an inquiry.
+			'woocommerce_enable_guest_checkout'          => 'yes',
 			'woocommerce_enable_checkout_login_reminder' => 'yes',
 			// Registration happens on the account page, with the company fields (journey step 2).
 			'woocommerce_enable_signup_and_login_from_checkout' => 'no',
@@ -42,7 +43,7 @@ final class WooOptions {
 			'woocommerce_registration_generate_username' => 'yes',
 			'woocommerce_registration_generate_password' => 'no',
 			// The inquiry is a company's (AGENTS.md §1: installers, EPCs, distributors); WooCommerce 11 hides the field by default.
-			'woocommerce_checkout_company_field'         => 'required',
+			'woocommerce_checkout_company_field'         => 'optional',
 			// No product reviews or star ratings: the site's chain is products → inquiry (AGENTS.md §1).
 			'woocommerce_enable_reviews'                 => 'no',
 			// Stock is only ever a state, never a quantity (owner ruling 2026-10-02, AGENTS.md §2).

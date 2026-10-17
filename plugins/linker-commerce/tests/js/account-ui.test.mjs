@@ -121,3 +121,13 @@ test('agreeing passwords post the form',()=>{
  assert.equal(event.defaultPrevented,false);
  assert.equal(form.querySelector('button[type="submit"]').classList.contains('is-loading'),true);
 });
+
+// Public inquiries use the same in-flight submission protection as account forms.
+test('a public inquiry cannot submit twice while navigation is in flight',()=>{
+ const dom=new JSDOM(`<div class="linker-inquiry"><form class="linker-inquiry-form"><input name="name" value="Maria" required><button type="submit">Send inquiry</button></form></div>`,{runScripts:'outside-only'});
+ dom.window.eval(script);
+ const form=dom.window.document.querySelector('form');
+ assert.equal(submit(form).defaultPrevented,false);
+ assert.equal(submit(form).defaultPrevented,true);
+ assert.equal(form.querySelector('button').getAttribute('aria-busy'),'true');
+});

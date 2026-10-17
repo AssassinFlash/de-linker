@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Inquiry;
 
-use Linker\Commerce\Registration\Approval;
 use WC_Order;
 
 /**
@@ -22,11 +21,34 @@ use WC_Order;
 final class Checkout {
 
 	/**
-	 * Sets up the page.
+	 * The receipt's product links stay in the inquiry's own language.
 	 *
-	 * @param Approval $approval The account approval rule.
+	 * @param string                 $url Native product link.
+	 * @param \WC_Order_Item_Product $item Order line.
+	 * @param WC_Order               $order Inquiry.
 	 */
-	public function __construct( private readonly Approval $approval = new Approval() ) {}
+	public function item_permalink( string $url, \WC_Order_Item_Product $item, WC_Order $order ): string {
+		if ( ! function_exists( 'pll_get_post' ) ) {
+			return $url;
+		}
+		$twin = (int) pll_get_post( $item->get_product_id(), str_starts_with( OrderLocale::of( $order ), 'de' ) ? 'de' : 'en' );
+		return $twin > 0 ? (string) get_permalink( $twin ) : $url;
+	}
+
+	/**
+	 * Return an invalid submission to its own language's request page.
+	 *
+	 * @param string $locale Form locale.
+	 */
+	public static function request_url( string $locale ): string {
+		$id = (int) get_option( 'woocommerce_checkout_page_id' );
+		if ( function_exists( 'pll_get_post' ) ) {
+			$twin = (int) pll_get_post( $id, str_starts_with( $locale, 'de' ) ? 'de' : 'en' );
+			$id   = $twin > 0 ? $twin : $id;
+		}
+		return (string) get_permalink( $id );
+	}
+
 
 	/**
 	 * Keep Woo's checkout error notice beside the invalid field on mobile,
@@ -86,10 +108,6 @@ JS
 	 * @return array<string, mixed>
 	 */
 	public function gateways( array $gateways ): array {
-		$user_id = get_current_user_id();
-		if ( $user_id > 0 && ! $this->approval->sees_prices( $user_id ) ) {
-			return array();
-		}
 		return isset( $gateways[ ProformaGateway::ID ] ) ? array( ProformaGateway::ID => $gateways[ ProformaGateway::ID ] ) : array();
 	}
 
@@ -128,20 +146,23 @@ JS
 
 	/**
 	 * What happens next, on the confirmation page; runs on woocommerce_thankyou_linker_proforma.
+	 *
+	 * @param int $order_id Received inquiry.
 	 */
-	public function next_steps(): void {
-		printf(
-			'<section class="linker-form-success linker-proforma-success woocommerce-message" role="status"><span class="linker-form-state-icon" aria-hidden="true">✓</span><h2>%1$s</h2><p>%2$s</p><a class="linker-form-primary" href="%3$s">%4$s</a></section>',
-			esc_html__( 'Inquiry received', 'linker-commerce' ),
-			esc_html__( 'We reply within one business day.', 'linker-commerce' ),
-			esc_url( wc_get_account_endpoint_url( 'orders' ) ),
-			esc_html__( 'View inquiries', 'linker-commerce' )
+	public function next_steps( int $order_id = 0 ): void {
+		$order = $order_id > 0 ? wc_get_order( $order_id ) : false;
+		$guest = $order instanceof WC_Order && 0 === $order->get_customer_id();
+		$html  = strtr(
+			\Linker\Commerce\Presentation\Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/received.html' ),
+			array(
+				'{{title}}'   => esc_html__( 'Inquiry received', 'linker-commerce' ),
+				'{{promise}}' => esc_html__( 'We reply within one business day.', 'linker-commerce' ),
+				'{{url}}'     => esc_url( $guest ? AccountLink::url( $order ) : wc_get_account_endpoint_url( 'orders' ) ),
+				'{{action}}'  => $guest ? esc_html__( 'Create an account with this email', 'linker-commerce' ) : esc_html__( 'View inquiries', 'linker-commerce' ),
+				'{{reply}}'   => esc_html__( 'The Linker team will reply to the email address you provided.', 'linker-commerce' ),
+			)
 		);
-		printf(
-			'<p class="linker-next-steps">%1$s</p><p class="linker-next-steps">%2$s</p>',
-			esc_html__( 'We reply within one business day.', 'linker-commerce' ),
-			esc_html__( 'Your Proforma invoice will be in your account under Inquiries, and we will send you a link by email.', 'linker-commerce' )
-		);
+		echo wp_kses_post( $html );
 	}
 
 	/**
@@ -164,5 +185,19 @@ JS
 			return $url;
 		}
 		return substr_replace( $url, (string) get_permalink( $german ), 0, strlen( $english ) );
+	}
+	/**
+	 * Protect Woo's alternate AJAX transport with the same public checks.
+	 *
+	 * @param array<string, mixed> $data   Native validated checkout fields.
+	 * @param \WP_Error            $errors Native checkout errors.
+	 */
+	public function validate_public( array $data, \WP_Error $errors ): void {
+		unset( $data );
+     // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Woo verified its checkout nonce before this hook.
+		$post = wp_unslash( $_POST );
+		if ( ! ( new PublicGuard() )->allows( $post ) ) {
+			$errors->add( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
+		}
 	}
 }
