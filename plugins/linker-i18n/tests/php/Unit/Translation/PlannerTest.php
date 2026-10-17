@@ -163,6 +163,7 @@ final class PlannerTest extends TestCase {
 			'whole list insertion'            => array( '<p>Alpha.</p>', '<p>Alpha DE.</p>', '<ul><li>New.</li></ul><p>Alpha.</p>', '<ul><li>Neu.</li></ul><p>Alpha DE.</p>', array( 0 => 'Neu.' ), false ),
 			'list item insertion'             => array( '<ul><li>Alpha.</li><li>Last.</li></ul>', '<ul><li>Alpha DE.</li><li>Letzter.</li></ul>', '<ul><li>Alpha.</li><li>New.</li><li>Last.</li></ul>', '<ul><li>Alpha DE.</li><li>Neu.</li><li>Letzter.</li></ul>', array( 1 => 'Neu.' ), false ),
 			'incompatible list context'       => array( '<ul><li>Alpha.</li><li>Last.</li></ul>', '<p>Alpha DE.</p><p>Letzter.</p>', '<ul><li>Alpha.</li><li>New.</li><li>Last.</li></ul>', '<p>Alpha DE.</p><p>Letzter.</p>', array(), true ),
+			'insert sentence with line break' => array( '<p>Alpha.</p>', '<p>Alpha DE.</p>', '<p>New<br>sentence.</p><p>Alpha.</p>', '<p>Neuer<br>Satz.</p><p>Alpha DE.</p>', array( 0 => 'Neuer<t1/>Satz.' ), false ),
 			'reorder'                         => array( self::ENGLISH, self::GERMAN, '<p>Second paragraph.</p><p>First paragraph.</p>', self::GERMAN, array(), true ),
 			'no anchor'                       => array( self::ENGLISH, self::GERMAN, '<p>New.</p>', self::GERMAN, array(), true ),
 			'ambiguous repeated anchor'       => array( '<p>Same. Same.</p>', '<p>Eins. Zwei.</p>', '<p>Same. New. Same.</p>', '<p>Eins. Zwei.</p>', array(), true ),

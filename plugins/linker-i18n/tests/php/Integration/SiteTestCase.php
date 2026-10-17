@@ -173,8 +173,11 @@ abstract class SiteTestCase extends TestCase {
 	 * @return mixed
 	 */
 	protected static function php( string $body, array $input = array(), bool $translator = false ) {
-		$args = array( 'eval', 'echo "\nLINKER_I18N_RESULT ", wp_json_encode( ( static function ( array $input ) { ' . $body . ' } )( json_decode( (string) getenv( "LINKER_I18N_INPUT" ), true ) ) ), "\n";' );
-		$env  = array( 'LINKER_I18N_INPUT' => (string) json_encode( (object) $input ) );
+		// Native fixture deletes trigger SEOPress redirect suggestions. Restore
+		// its option too, so repeated tests leave the refreshed admin clean.
+		$script = '$notices = get_option( "seopress_can_post_redirect", null ); try { echo "\nLINKER_I18N_RESULT ", wp_json_encode( ( static function ( array $input ) { ' . $body . ' } )( json_decode( (string) getenv( "LINKER_I18N_INPUT" ), true ) ) ), "\n"; } finally { if ( null === $notices ) { delete_option( "seopress_can_post_redirect" ); } else { update_option( "seopress_can_post_redirect", $notices ); } }';
+		$args   = array( 'eval', $script );
+		$env    = array( 'LINKER_I18N_INPUT' => (string) json_encode( (object) $input ) );
 		if ( $translator ) {
 			self::stub();
 			array_unshift( $args, '--exec=define( "LINKER_I18N_DEEPSEEK_ENDPOINT", getenv( "LINKER_I18N_STUB" ) );' );

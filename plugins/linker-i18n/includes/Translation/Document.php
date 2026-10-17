@@ -155,7 +155,7 @@ final class Document {
 		}
 		$stack = array();
 		foreach ( ( new HtmlTokenizer() )->tokens( $this->slice( $first, $last )->render( array() ) ) as $token ) {
-			if ( HtmlToken::TEXT === $token->type ) {
+			if ( HtmlToken::TEXT === $token->type || ( HtmlToken::TAG === $token->type && in_array( $token->name, array( 'br', 'wbr' ), true ) ) ) {
 				continue;
 			}
 			// Never remove an intervening image, script, comment or layout container.
