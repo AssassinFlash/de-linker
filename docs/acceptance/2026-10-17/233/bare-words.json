@@ -5,9 +5,9 @@
   "expect": {
    "brand": "saj"
   },
-  "seconds": 7.2,
+  "seconds": 9.3,
   "meta": {
-   "turn_id": 1673,
+   "turn_id": 22,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -20,25 +20,25 @@
   "blocks": [
    {
     "type": "text",
-    "text": "These SAJ products are available: inverters, home storage, an energy management module, a data collector and a transfer switch accessory. Tell me which category or application you have in mind and I will narrow the selection down.",
+    "text": "SAJ appears in our range with these products: a data collector for monitoring, an energy management module, a transfer switch accessory, home-storage units and a hybrid inverter. The cards carry the technical values, and the documents for each product are on its product page.",
     "refs": [
-     "4109",
+     "3573",
+     "3618",
+     "1178",
      "2092",
      "2090",
-     "3618",
-     "3573",
-     "1178"
+     "4109"
     ]
    },
    {
     "type": "cards",
     "product_ids": [
-     4109,
+     3573,
+     3618,
+     1178,
      2092,
      2090,
-     3618,
-     3573,
-     1178
+     4109
     ]
    }
   ],
@@ -53,9 +53,9 @@
   "expect": {
    "brand": "saj"
   },
-  "seconds": 10.1,
+  "seconds": 6.4,
   "meta": {
-   "turn_id": 1675,
+   "turn_id": 21,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -68,7 +68,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Marke SAJ finden sich in unserem Lösungsentwurf Produkte aus mehreren Kategorien: Datenlogger und Energiemanagement, ein Umschaltgerät, Heimspeicher sowie ein dreiphasiger Hybrid-Wechselrichter. Sagen Sie mir gern, welche Produktkategorie oder welches Modell Sie genauer ansehen möchten.",
+    "text": "Hier sind die Produkte der Marke SAJ aus unserem Lösungsentwurf: ein Datenlogger, ein Energiemanagement-Modul, eine Umschaltbox, zwei Heimspeicher und ein dreiphasiger Hybrid-Wechselrichter. Sagen Sie mir gern, was Sie damit vorhaben, dann grenze ich die Auswahl für Sie ein.",
     "refs": [
      "3573",
      "3618",
@@ -93,7 +93,7 @@
     "type": "ask",
     "field": "application",
     "options": [
-     "Einfamilienhaus",
+     "Haushalt",
      "Gewerbe"
     ]
    }
@@ -109,9 +109,9 @@
   "expect": {
    "brand": "saj"
   },
-  "seconds": 13.9,
+  "seconds": 16.8,
   "meta": {
-   "turn_id": 1679,
+   "turn_id": 28,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -124,7 +124,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here is the current SAJ selection: a monitoring data collector, an energy management module, a transfer switch accessory, two home storage units and a hybrid inverter. Tell me which of these you would like to look at more closely, and I can pull up its documents and pairings.",
+    "text": "Here are the SAJ products available in this range: energy management and monitoring devices, an accessory transfer switch, home storage units and a hybrid inverter. Tell me which of these you would like to look at more closely, and I can show its documents and documented pairings.",
     "refs": [
      "3573",
      "3618",
@@ -143,6 +143,14 @@
      2092,
      2090,
      4109
+    ]
+   },
+   {
+    "type": "ask",
+    "field": "application",
+    "options": [
+     "home",
+     "commercial"
     ]
    }
   ],
@@ -157,9 +165,9 @@
   "expect": {
    "brand": "saj"
   },
-  "seconds": 5.7,
+  "seconds": 13.3,
   "meta": {
-   "turn_id": 1672,
+   "turn_id": 24,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -172,7 +180,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Marke SAJ haben wir Produkte aus mehreren Kategorien gefunden: Datenlogger und Energiemanagement, ein Zubehörprodukt für die Netzanbindung, Heimspeicher sowie einen dreiphasigen Hybrid-Wechselrichter. Sagen Sie mir gern, ob Sie sich für Speicher, Wechselrichter oder die Überwachung interessieren, dann grenze ich die Auswahl für Sie ein.",
+    "text": "Zur Marke SAJ habe ich Ihnen passende Produkte zusammengestellt: Datenlogger und Energiemanagement-Modul für die Überwachung, einen Umschalter als Zubehör, zwei Heimspeicher sowie einen dreiphasigen Hybrid-Wechselrichter. Die technischen Angaben stehen jeweils direkt in den Produkten.",
     "refs": [
      "3573",
      "3618",
@@ -191,6 +199,14 @@
      2092,
      2090,
      4109
+    ]
+   },
+   {
+    "type": "ask",
+    "field": "application",
+    "options": [
+     "Heim",
+     "Gewerbe"
     ]
    }
   ],
@@ -205,9 +221,9 @@
   "expect": {
    "brand": "saj"
   },
-  "seconds": 3.5,
+  "seconds": 5.1,
   "meta": {
-   "turn_id": 1674,
+   "turn_id": 23,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -220,25 +236,25 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here are the SAJ products available in our range: energy management and monitoring units, an automatic transfer switch, home storage units, and a three-phase hybrid inverter for residential use. Each product record sits in the cards below, so you can open the one that fits your project.",
+    "text": "Here are the SAJ products currently available in the range: the HS2-5K-T2-X hybrid inverter, the BU2 high-voltage battery and the BC2 high-voltage battery controller, along with the ATS1 changeover switch, the eSolar AIO3 data collector and the eManager energy management module. Let me know which model you would like to look at in detail, or tell me the brand or model you already own and I will check its documented pairings.",
     "refs": [
-     "3573",
-     "3618",
-     "1178",
-     "2092",
+     "4109",
      "2090",
-     "4109"
+     "2092",
+     "1178",
+     "3573",
+     "3618"
     ]
    },
    {
     "type": "cards",
     "product_ids": [
-     3573,
-     3618,
-     1178,
-     2092,
+     4109,
      2090,
-     4109
+     2092,
+     1178,
+     3573,
+     3618
     ]
    }
   ],
@@ -253,9 +269,9 @@
   "expect": {
    "brand": "saj"
   },
-  "seconds": 3.6,
+  "seconds": 5.3,
   "meta": {
-   "turn_id": 1676,
+   "turn_id": 26,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -268,7 +284,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Marke SAJ haben wir Produkte aus mehreren Kategorien gefunden: Datenlogger und Energiemanagement, ein Zubehörprodukt zur Netztrennung, zwei Heimspeicher sowie einen dreiphasigen Hybrid-Wechselrichter. Die jeweiligen Leistungs- und Kapazitätsangaben stehen direkt in den Karten.",
+    "text": "Zur Marke SAJ finden Sie bei uns Produkte aus mehreren Kategorien: Datenlogger und Energiemanagement für die Überwachung, Zubehör für die Netzanbindung, Heimspeicher sowie einen dreiphasigen Hybrid-Wechselrichter. Sagen Sie mir gern, für welchen Einsatz Sie sich interessieren, dann grenze ich die Auswahl weiter ein.",
     "refs": [
      "3573",
      "3618",
@@ -301,9 +317,9 @@
   "expect": {
    "brand": "goodwe"
   },
-  "seconds": 3.9,
+  "seconds": 2.7,
   "meta": {
-   "turn_id": 1677,
+   "turn_id": 25,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -316,7 +332,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "GoodWe products appear in our range across several product categories, as the cards below show. Let me know which application you are planning for and I will narrow the selection down.",
+    "text": "GoodWe appears in several product categories here: monitoring and gateway units, EV chargers and accessories. These are the results from our product search for the brand.",
     "refs": [
      "2397",
      "2394",
@@ -354,65 +370,17 @@
  {
   "lang": "de",
   "message": "goodwe",
-  "expect": {
-   "brand": "goodwe"
-  },
-  "seconds": 3.8,
-  "meta": {
-   "turn_id": 1680,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Hier sind die Produkte der Marke GoodWe aus verschiedenen Produktkategorien: ein Monitoring-Gateway, Ladeeinrichtungen für Elektrofahrzeuge sowie Komponenten für gewerbliche Anlagen. Die jeweiligen technischen Angaben stehen direkt in den Produktkarten.",
-    "refs": [
-     "2397",
-     "2394",
-     "2415",
-     "6529",
-     "3586",
-     "3557"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2397,
-     2394,
-     2415,
-     6529,
-     3586,
-     3557
-    ]
-   }
-  ],
-  "cards": 6,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "GoodWe",
   "expect": {
    "brand": "goodwe"
   },
   "seconds": 3.0,
   "meta": {
-   "turn_id": 1678,
+   "turn_id": 27,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
    "failures": [],
-   "language": "en",
+   "language": "de",
    "route": "products",
    "intent": "find_products",
    "jev_error": null
@@ -420,7 +388,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "GoodWe products are listed below; the cards carry the technical figures for each model, ranging from monitoring and gateway components to EV chargers for home use.",
+    "text": "Zur Marke GoodWe haben wir diese Produkte gefunden – darunter Wechselrichter-Zubehör, ein Energiemanagement-Gateway und Ladeeinrichtungen für Elektrofahrzeuge. Sagen Sie mir gern, für welchen Einsatz Sie sich interessieren, dann grenze ich die Auswahl weiter ein.",
     "refs": [
      "2397",
      "2394",
@@ -440,13 +408,53 @@
      3586,
      3557
     ]
+   }
+  ],
+  "cards": 6,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "GoodWe",
+  "expect": {
+   "brand": "goodwe"
+  },
+  "seconds": 3.6,
+  "meta": {
+   "turn_id": 29,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "GoodWe products appear in several categories in our range: system accessories and monitoring hardware as well as EV chargers. The matching products are shown below — open any of them for its technical data, or tell me which category you are looking for and I will narrow the selection down.",
+    "refs": [
+     "2397",
+     "2394",
+     "2415",
+     "6529",
+     "3586",
+     "3557"
+    ]
    },
    {
-    "type": "ask",
-    "field": "application",
-    "options": [
-     "home",
-     "commercial"
+    "type": "cards",
+    "product_ids": [
+     2397,
+     2394,
+     2415,
+     6529,
+     3586,
+     3557
     ]
    }
   ],
@@ -461,9 +469,9 @@
   "expect": {
    "brand": "goodwe"
   },
-  "seconds": 4.3,
+  "seconds": 4.9,
   "meta": {
-   "turn_id": 1681,
+   "turn_id": 31,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -476,63 +484,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Marke GoodWe finden sich in unserem Sortiment Produkte aus unterschiedlichen Kategorien — Zubehör, Energiemanagement und Ladeeinrichtungen für Elektrofahrzeuge. Die gefundenen Produkte sehen Sie hier; sagen Sie mir gern, welche Anwendung Sie planen, dann grenze ich die Auswahl passend ein.",
-    "refs": [
-     "2397",
-     "2394",
-     "2415",
-     "6529",
-     "3586",
-     "3557"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2397,
-     2394,
-     2415,
-     6529,
-     3586,
-     3557
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "application",
-    "options": [
-     "Haus",
-     "Gewerbe"
-    ]
-   }
-  ],
-  "cards": 6,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "GOODWE",
-  "expect": {
-   "brand": "goodwe"
-  },
-  "seconds": 4.1,
-  "meta": {
-   "turn_id": 1682,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Here are the GoodWe products that match your search, spanning several product categories from monitoring and accessories to EV chargers. The cards carry the technical details for each product.",
+    "text": "Zu GoodWe haben wir passende Produkte in mehreren Kategorien gefunden: ein HEMS-Gateway für das Energiemanagement, Wallboxen für das Laden zu Hause sowie Geräte aus dem Zubehörbereich für den gewerblichen und privaten Einsatz. Sagen Sie mir gern, welche Produktkategorie Sie interessiert, dann grenze ich die Auswahl für Sie ein.",
     "refs": [
      "2397",
      "2394",
@@ -568,19 +520,19 @@
   "ok": true
  },
  {
-  "lang": "de",
+  "lang": "en",
   "message": "GOODWE",
   "expect": {
    "brand": "goodwe"
   },
-  "seconds": 4.3,
+  "seconds": 3.1,
   "meta": {
-   "turn_id": 1683,
+   "turn_id": 30,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
    "failures": [],
-   "language": "de",
+   "language": "en",
    "route": "products",
    "intent": "find_products",
    "jev_error": null
@@ -588,7 +540,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Marke GoodWe sind bei uns diese Produkte hinterlegt: das HEMS-Gateway EzManager3000, Zubehör aus der GM-Serie, ein Gerät der GW-STS-Reihe sowie zwei Wallboxen der HCA-G2-Serie. Die Produkte sehen Sie in den folgenden Karten; die technischen Angaben stehen dort.",
+    "text": "GoodWe is part of our range. These are the matching products from our current selection, spanning monitoring and gateway devices, EV chargers and grid-side accessories; the cards carry the technical values and availability. Tell me which model you would like to look at in detail, and I can show its documents and documented pairings.",
     "refs": [
      "2397",
      "2394",
@@ -608,14 +560,6 @@
      3586,
      3557
     ]
-   },
-   {
-    "type": "ask",
-    "field": "application",
-    "options": [
-     "Privat / Home",
-     "Gewerbe"
-    ]
    }
   ],
   "cards": 6,
@@ -624,60 +568,14 @@
   "ok": true
  },
  {
-  "lang": "en",
-  "message": "pylontech",
-  "expect": {
-   "brand": "pylontech"
-  },
-  "seconds": 5.3,
-  "meta": {
-   "turn_id": 1684,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Here is the Pylontech product that matches your request. The card carries the technical figures and the availability status for you to review.",
-    "refs": [
-     "2003"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2003
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "application",
-    "options": [
-     "home",
-     "commercial"
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
   "lang": "de",
-  "message": "pylontech",
+  "message": "GOODWE",
   "expect": {
-   "brand": "pylontech"
+   "brand": "goodwe"
   },
-  "seconds": 2.0,
+  "seconds": 3.9,
   "meta": {
-   "turn_id": 1685,
+   "turn_id": 32,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -690,111 +588,25 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Marke Pylontech haben wir dieses Produkt in unserem Sortiment gefunden. Die technischen Angaben entnehmen Sie bitte der Produktkarte.",
+    "text": "Zur Marke GoodWe finden Sie in unserem Sortiment Produkte aus mehreren Kategorien: Wechselrichter-Zubehör, ein Energiemanagement-Gateway sowie Ladeeinrichtungen für Elektrofahrzeuge. Die gefundenen Produkte sehen Sie in den Karten; dort stehen auch die technischen Angaben wie Leistung und Phasenausführung. Sagen Sie mir gern, ob Sie die Produkte für den privaten oder den gewerblichen Einsatz suchen, dann grenze ich die Auswahl passend ein.",
     "refs": [
-     "2003"
+     "2397",
+     "2394",
+     "2415",
+     "6529",
+     "3586",
+     "3557"
     ]
    },
    {
     "type": "cards",
     "product_ids": [
-     2003
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "ecoflow",
-  "expect": {
-   "brand": "ecoflow"
-  },
-  "seconds": 6.7,
-  "meta": {
-   "turn_id": 1688,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 2,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Here are the EcoFlow products our product category holds for home use: hybrid inverters plus the matching accessories for the battery stack. The cards carry the technical details, and a document request or a compatibility check for any of them is a single message away. Which model would you like me to look at more closely?",
-    "refs": [
-     "3609",
-     "3608",
-     "6483",
-     "6484",
-     "6485",
-     "6486"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     3609,
-     3608,
-     6483,
-     6484,
-     6485,
-     6486
-    ]
-   }
-  ],
-  "cards": 6,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "ecoflow",
-  "expect": {
-   "brand": "ecoflow"
-  },
-  "seconds": 4.1,
-  "meta": {
-   "turn_id": 1686,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Zur Marke EcoFlow finden sich bei uns Zubehör für Speicher und Anbindung sowie einphasige Hybrid-Wechselrichter der OCEAN-Reihe. Die Produkte sehen Sie in den Karten; Angaben zu Leistung und PV-Eingang stehen dort.",
-    "refs": [
-     "3609",
-     "3608",
-     "6483",
-     "6484",
-     "6485",
-     "6486"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     3609,
-     3608,
-     6483,
-     6484,
-     6485,
-     6486
+     2397,
+     2394,
+     2415,
+     6529,
+     3586,
+     3557
     ]
    },
    {
@@ -813,16 +625,16 @@
  },
  {
   "lang": "en",
-  "message": "EcoFlow",
+  "message": "pylontech",
   "expect": {
-   "brand": "ecoflow"
+   "brand": "pylontech"
   },
-  "seconds": 6.4,
+  "seconds": 3.8,
   "meta": {
-   "turn_id": 1690,
+   "turn_id": 33,
    "grounded": true,
    "fallback": false,
-   "attempts": 2,
+   "attempts": 1,
    "failures": [],
    "language": "en",
    "route": "products",
@@ -832,7 +644,91 @@
   "blocks": [
    {
     "type": "text",
-    "text": "These are the EcoFlow products in our range: home hybrid inverters together with the matching battery-stack accessories. The cards carry the technical values for each product.",
+    "text": "Here is the Pylontech product that matches your search; the card carries its technical figures and availability.",
+    "refs": [
+     "2003"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2003
+    ]
+   },
+   {
+    "type": "ask",
+    "field": "application",
+    "options": [
+     "home",
+     "commercial"
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "pylontech",
+  "expect": {
+   "brand": "pylontech"
+  },
+  "seconds": 4.3,
+  "meta": {
+   "turn_id": 34,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Pylontech ist eine Marke für Speicherlösungen. Aus der Suche ergibt sich dieses Produkt im Bereich der All-in-One-Systeme für gewerbliche Anwendungen; die technischen Angaben stehen in den Produktkarten.",
+    "refs": [
+     "2003"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2003
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "ecoflow",
+  "expect": {
+   "brand": "ecoflow"
+  },
+  "seconds": 4.4,
+  "meta": {
+   "turn_id": 35,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "These are the EcoFlow products we currently list: hybrid inverters from the OCEAN series in several power classes, together with the matching battery base and the stack bridge accessory. Tell me which direction you want to take and I can narrow the selection down.",
     "refs": [
      "3609",
      "3608",
@@ -857,8 +753,8 @@
     "type": "ask",
     "field": "phase",
     "options": [
-     "single-phase",
-     "three-phase"
+     "Single-phase",
+     "Three-phase"
     ]
    }
   ],
@@ -869,13 +765,13 @@
  },
  {
   "lang": "de",
-  "message": "EcoFlow",
+  "message": "ecoflow",
   "expect": {
    "brand": "ecoflow"
   },
-  "seconds": 4.2,
+  "seconds": 4.4,
   "meta": {
-   "turn_id": 1687,
+   "turn_id": 36,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -888,7 +784,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Marke EcoFlow haben wir passende Produkte gefunden: einphasige Hybrid-Wechselrichter für den Aufbau eines Heimspeichers sowie Zubehör für den Batteriestapel und den Batteriesockel. Die technischen Angaben entnehmen Sie den Produkten.",
+    "text": "Zu EcoFlow haben wir passende Produkte gefunden: einphasige Hybrid-Wechselrichter der OCEAN-Reihe sowie Zubehör für den Aufbau der Batterie. Die technischen Angaben und die verfügbaren Varianten sehen Sie in den Produktkarten.",
     "refs": [
      "3609",
      "3608",
@@ -917,16 +813,16 @@
  },
  {
   "lang": "en",
-  "message": "chint",
+  "message": "EcoFlow",
   "expect": {
-   "brand": "chint"
+   "brand": "ecoflow"
   },
-  "seconds": 2.5,
+  "seconds": 5.6,
   "meta": {
-   "turn_id": 1689,
+   "turn_id": 38,
    "grounded": true,
    "fallback": false,
-   "attempts": 1,
+   "attempts": 2,
    "failures": [],
    "language": "en",
    "route": "products",
@@ -936,32 +832,136 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here is the Chint product that matches your search. It is an accessory for commercial use, and its detailed technical values are shown on the product card.",
+    "text": "EcoFlow is in our range: single-phase hybrid inverters for home use, plus the matching accessories. The cards carry the technical values; open a product for its full details.",
     "refs": [
-     "2281"
+     "3609",
+     "3608",
+     "6483",
+     "6484",
+     "6485",
+     "6486"
     ]
    },
    {
     "type": "cards",
     "product_ids": [
-     2281
+     3609,
+     3608,
+     6483,
+     6484,
+     6485,
+     6486
     ]
    }
   ],
-  "cards": 1,
+  "cards": 6,
   "outside": [],
   "greeted": [],
   "ok": true
  },
  {
   "lang": "de",
+  "message": "EcoFlow",
+  "expect": {
+   "brand": "ecoflow"
+  },
+  "seconds": 5.0,
+  "meta": {
+   "turn_id": 40,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Zur Marke EcoFlow haben wir passende Produkte gefunden: den LFP-Batteriesockel und die Stack-Bridge aus dem Zubehörbereich sowie die einphasigen Hybrid-Wechselrichter der OCEAN-2-Reihe in unterschiedlichen Leistungsstufen. Sagen Sie mir gern, wofür Sie die Produkte einsetzen möchten, dann grenze ich die Auswahl für Sie ein.",
+    "refs": [
+     "3609",
+     "3608",
+     "6483",
+     "6484",
+     "6485",
+     "6486"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     3609,
+     3608,
+     6483,
+     6484,
+     6485,
+     6486
+    ]
+   },
+   {
+    "type": "ask",
+    "field": "application",
+    "options": [
+     "Zuhause",
+     "Gewerbe"
+    ]
+   }
+  ],
+  "cards": 6,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
   "message": "chint",
   "expect": {
    "brand": "chint"
   },
   "seconds": 2.7,
   "meta": {
-   "turn_id": 1691,
+   "turn_id": 37,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Here is the Chint product we hold for that brand: the DTSU666, an accessory for three-phase metering use in commercial settings. Its documents and details are on the product page.",
+    "refs": [
+     "2281"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2281
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "chint",
+  "expect": {
+   "brand": "chint"
+  },
+  "seconds": 2.9,
+  "meta": {
+   "turn_id": 39,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -974,7 +974,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Marke Chint ist in dieser Kategorie ein Produkt hinterlegt: der Chint DTSU666 aus der Kategorie Zubehör. Die technischen Angaben entnehmen Sie bitte der Produktkarte.",
+    "text": "Zur Marke Chint liegt in dieser Kategorie ein Produkt für Sie bereit: der Chint DTSU666, ein Zubehör für die Messung im dreiphasigen Umfeld. Weitere Produkte der Marke sind in dieser Suche nicht qualifiziert. Sagen Sie mir gern, für welchen Wechselrichter Sie das Zubehör einsetzen möchten, dann prüfe ich die Passung.",
     "refs": [
      "2281"
     ]
@@ -997,9 +997,9 @@
   "expect": {
    "model": "H2-10K-T3"
   },
-  "seconds": 3.6,
+  "seconds": 3.7,
   "meta": {
-   "turn_id": 1692,
+   "turn_id": 41,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1012,7 +1012,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "The H2-10K-T3 is SAJ's three-phase hybrid inverter for home applications, and it is available in the product category. Let me know whether you would like its datasheet, its documented battery pairings, or a comparison with another model.",
+    "text": "Here is the H2-10K-T3 from our product range: a three-phase hybrid inverter for home use. Its AC output and PV input figures are shown on the card. I can also show you the batteries documented for pairing with it, or its datasheet and manual on request.",
     "refs": [
      "4107"
     ]
@@ -1022,13 +1022,6 @@
     "product_ids": [
      4107
     ]
-   },
-   {
-    "type": "action",
-    "name": "add_to_draft",
-    "args": {
-     "product_id": 4107
-    }
    }
   ],
   "cards": 1,
@@ -1042,9 +1035,9 @@
   "expect": {
    "model": "H2-10K-T3"
   },
-  "seconds": 3.9,
+  "seconds": 3.2,
   "meta": {
-   "turn_id": 1693,
+   "turn_id": 42,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1057,7 +1050,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Der H2-10K-T3 ist ein dreiphasiger Hybrid-Wechselrichter für den Heimbetrieb. Hier ist das Produkt aus der Suche. Sagen Sie mir gern, ob ich passende Batterien und die zugehörigen Pairing-Unterlagen für dieses Modell heraussuchen soll.",
+    "text": "Der SAJ H2-10K-T3 ist ein dreiphasiger Hybrid-Wechselrichter für den Heimanwendungsbereich. Die Angaben aus dem Lösungsentwurf: AC-Leistung 10 kW, PV-Eingang 20 kW. Wenn Sie wissen möchten, welche Batterien für dieses Modell dokumentiert sind, oder Unterlagen dazu brauchen, sagen Sie es mir gern.",
     "refs": [
      "4107"
     ]
@@ -1080,9 +1073,9 @@
   "expect": {
    "model": "H2-10K-T3"
   },
-  "seconds": 3.3,
+  "seconds": 2.9,
   "meta": {
-   "turn_id": 1694,
+   "turn_id": 43,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1095,7 +1088,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "The H2-10K-T3 is a three-phase hybrid inverter from SAJ, built for home use; its output class and PV input rating are shown on the product card. If you tell me what you plan to combine it with, I can check the documented pairings and documents for this model.",
+    "text": "The SAJ H2-10K-T3 is the product matching your search: a three-phase hybrid inverter for home use. The card carries its key values, and I can show its documented battery pairings or documents if you wish.",
     "refs": [
      "4107"
     ]
@@ -1118,9 +1111,9 @@
   "expect": {
    "model": "H2-10K-T3"
   },
-  "seconds": 4.0,
+  "seconds": 3.7,
   "meta": {
-   "turn_id": 1695,
+   "turn_id": 44,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1133,7 +1126,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Der H2-10K-T3 ist ein dreiphasiger Hybrid-Wechselrichter für den privaten Einsatz. Wenn Sie möchten, prüfe ich die dokumentierten Pairings mit passenden Batterien oder sehe mir die Unterlagen zum Produkt an.",
+    "text": "Der H2-10K-T3 ist ein dreiphasiger Hybrid-Wechselrichter für den Heimbetrieb; die PV-Eingangsleistung liegt bei 20 kW. Alle weiteren technischen Werte entnehmen Sie der Produktkarte. Wenn Sie wissen möchten, welche Batterien für dieses Modell dokumentiert sind, fragen Sie gern nach den Pairings.",
     "refs": [
      "4107"
     ]
@@ -1156,9 +1149,9 @@
   "expect": {
    "model": "H2-10K-T3"
   },
-  "seconds": 3.6,
+  "seconds": 3.4,
   "meta": {
-   "turn_id": 1696,
+   "turn_id": 45,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1171,7 +1164,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "The model you named is the SAJ H2-10K-T3, a three-phase hybrid inverter for home applications. Its full technical data and available documents sit on the product page linked in the card below. If you tell me which battery you plan to combine it with, I can check the documented pairing for you.",
+    "text": "Here is the product that matches the model code H2-10K-T3: a three-phase hybrid inverter for home use, with its key technical figures shown on the card. If you would like to see its documented battery pairings or its datasheet, tell me and I will pull them up.",
     "refs": [
      "4107"
     ]
@@ -1194,9 +1187,9 @@
   "expect": {
    "model": "H2-10K-T3"
   },
-  "seconds": 8.0,
+  "seconds": 3.4,
   "meta": {
-   "turn_id": 1700,
+   "turn_id": 46,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1209,7 +1202,83 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Der H2-10K-T3 von SAJ ist ein dreiphasiger Hybrid-Wechselrichter für den privaten Einsatz: nominal gibt er 10 kW ab, die PV-Eingangsleistung liegt bei bis zu 20 kW, und er lässt sich mit einer Hochvolt-Batterie kombinieren. Die technischen Angaben stehen im Datenblatt, die Installation und Inbetriebnahme im Handbuch. Wenn Sie möchten, prüfe ich als Nächstes, welche Batterien für dieses Modell dokumentiert freigegeben sind.",
+    "text": "Zum Suchbegriff „H210KT3“ passt der Hybrid-Wechselrichter H2-10K-T3. Das Modell ist ein dreiphasiger Hybrid-Wechselrichter für den Heimanwendungsbereich; die technischen Angaben stehen direkt auf der Produktkarte. Wenn Sie möchten, prüfe ich als Nächstes, welche Batterien für dieses Modell dokumentiert freigegeben sind, oder wir klären im Lösungskonfigurator die passende Auslegung.",
+    "refs": [
+     "4107"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     4107
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "h2 10k t3",
+  "expect": {
+   "model": "H2-10K-T3"
+  },
+  "seconds": 6.6,
+  "meta": {
+   "turn_id": 47,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The H2-10K-T3 is a three-phase hybrid inverter for home use, rated at 10 kW AC output with a PV input of up to 20 kW. I have shown the product below; I can also check its documented battery pairings or its datasheet on request.",
+    "refs": [
+     "4107"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     4107
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "h2 10k t3",
+  "expect": {
+   "model": "H2-10K-T3"
+  },
+  "seconds": 12.4,
+  "meta": {
+   "turn_id": 53,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 2,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Der H2-10K-T3 ist ein dreiphasiger Hybrid-Wechselrichter für den Heimbedarf: die AC-Leistung liegt bei 10 kW, die maximale PV-Eingangsleistung bei 20 kW. Im Datenblatt und im Handbuch finden Sie alle technischen Angaben und die Anschlussbedingungen. Wenn Sie dazu eine passende Batterie suchen, sagen Sie mir bitte, ob Sie das Gerät bereits besitzen oder ob das Pairing für einen neuen Lösungsentwurf geprüft werden soll.",
     "refs": [
      "4107"
     ]
@@ -1240,89 +1309,13 @@
  },
  {
   "lang": "en",
-  "message": "h2 10k t3",
-  "expect": {
-   "model": "H2-10K-T3"
-  },
-  "seconds": 5.0,
-  "meta": {
-   "turn_id": 1697,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "The product you named is the SAJ H2-10K-T3, a three-phase hybrid inverter for home applications. The card below carries its technical figures; the full datasheet and manual are available on its product page.",
-    "refs": [
-     "4107"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     4107
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "h2 10k t3",
-  "expect": {
-   "model": "H2-10K-T3"
-  },
-  "seconds": 4.3,
-  "meta": {
-   "turn_id": 1698,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Hier ist das Produkt zu Ihrer Suche: der SAJ H2-10K-T3, ein dreiphasiger Hybrid-Wechselrichter für den Heimbedarf. Die technischen Angaben und die Verfügbarkeit stehen in der Produktkarte. Wenn Sie wissen möchten, welche Batterien dafür dokumentiert sind, sagen Sie es mir gern.",
-    "refs": [
-     "4107"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     4107
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
   "message": "DLK-SAJ-H210KT3",
   "expect": {
    "model": "H2-10K-T3"
   },
-  "seconds": 2.8,
+  "seconds": 4.5,
   "meta": {
-   "turn_id": 1699,
+   "turn_id": 48,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1335,7 +1328,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "The code you entered points to the SAJ H2-10K-T3 hybrid inverter. The product card below carries its technical data; tell me if you would like its datasheet, its documented battery pairings or a comparison with another model.",
+    "text": "The SKU you gave matches the SAJ H2-10K-T3, a three-phase hybrid inverter for home use: it delivers 10 kW of AC power and accepts up to 20 kW of PV input. The product card carries the full details, and I can pull its datasheet or check which batteries are documented for it if you wish.",
     "refs": [
      "4107"
     ]
@@ -1358,9 +1351,9 @@
   "expect": {
    "model": "H2-10K-T3"
   },
-  "seconds": 5.0,
+  "seconds": 4.8,
   "meta": {
-   "turn_id": 1702,
+   "turn_id": 49,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1373,7 +1366,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zu dem von Ihnen genannten Modell habe ich dieses Produkt gefunden: ein dreiphasiger Hybrid-Wechselrichter für den Heimanwendungsbereich. Die technischen Eckdaten und die Verfügbarkeit sehen Sie in der Produktkarte. Wenn Sie möchten, prüfe ich für dieses Modell die dokumentierten Pairings mit Speichern oder die passenden Unterlagen.",
+    "text": "Zu der von Ihnen genannten Bezeichnung haben wir dieses Produkt gefunden: den SAJ H2-10K-T3, einen dreiphasigen Hybrid-Wechselrichter für den Heimanwendungsbereich. Seine technischen Angaben entnehmen Sie der Produktkarte. Wenn Sie dazu eine passende Batterie suchen, sage ich Ihnen gern, welche Pairings dokumentiert sind.",
     "refs": [
      "4107"
     ]
@@ -1396,9 +1389,9 @@
   "expect": {
    "model": "GW10K-ETA-G20"
   },
-  "seconds": 2.7,
+  "seconds": 4.1,
   "meta": {
-   "turn_id": 1701,
+   "turn_id": 50,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -1411,7 +1404,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "This is the product that matches GW10K-ETA-G20: an all-in-one system from the GoodWe ESA series for home use, with a three-phase power module. The card carries its technical values, and I can pull up its datasheet or documented battery pairings on request.",
+    "text": "The GoodWe ESA GW10K-ETA-G20 matches your request: it is a three-phase all-in-one system for home use with 10 kW AC power and 20 kW of PV input. The product page carries the full technical data, and I can also look up its documented battery pairings or its datasheet if you wish.",
     "refs": [
      "3556"
     ]
@@ -1433,752 +1426,48 @@
   "message": "GW10K-ETA-G20",
   "expect": {
    "model": "GW10K-ETA-G20"
-  },
-  "seconds": 4.4,
-  "meta": {
-   "turn_id": 1703,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Zu Ihrer Suche nach GW10K-ETA-G20 zeigt der Dienst dieses Produkt: ein dreiphasiges Leistungsmodul aus der ESA-Serie von GoodWe für den Heimbedarf, das Wechselrichter und Speicher in einem Gerät zusammenführt. Die Wechselrichterleistung liegt bei 10 kW, der PV-Eingang bei 20 kW, und der abgedeckte Speicherbereich reicht über 5–108 kWh. Wenn Sie möchten, prüfe ich die dokumentierten Pairings oder die Unterlagen zu diesem Produkt.",
-    "refs": [
-     "3556"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     3556
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "CB2-100.3-HV5",
-  "expect": {
-   "model": "CB2-100.3-HV5"
-  },
-  "seconds": 4.9,
-  "meta": {
-   "turn_id": 1704,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "This is the SAJ CB2-100.3-HV5, a commercial battery cabinet from the SAJ C&I line: 100.3 kWh nominal and 90.2 kWh usable capacity, ground-mounted, with active air-conditioning and CAN communication for commercial storage projects. Its datasheet is linked below.",
-    "refs": [
-     "4106"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     4106
-    ]
-   },
-   {
-    "type": "document",
-    "ref": "p4106.document.0",
-    "label": "SAJ CHS2 All-in-One Hybrid Energy Storage System Datasheet (EN, BEU)",
-    "url": "http://127.0.0.1:9057/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf"
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "CB2-100.3-HV5",
-  "expect": {
-   "model": "CB2-100.3-HV5"
-  },
-  "seconds": 5.6,
-  "meta": {
-   "turn_id": 1707,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Der CB2-100.3-HV5 von SAJ ist ein Batteriespeicherschrank der CI-Linie für den gewerblichen Einsatz: nutzbare Energie 90.2 kWh, Nennkapazität 100.3 kWh. Das System ist als Komplettschrank aufgebaut, mit Klimatisierung und Schutzart IP55 für die Bodenmontage. Das Datenblatt mit den technischen Angaben und den Umgebungsbedingungen finden Sie direkt unter dieser Antwort.",
-    "refs": [
-     "4106"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     4106
-    ]
-   },
-   {
-    "type": "document",
-    "ref": "p4106.document.0",
-    "label": "SAJ CHS2 All-in-One Hybrid Energy Storage System Datasheet (EN, BEU)",
-    "url": "http://127.0.0.1:9057/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf"
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "L260-OMNI",
-  "expect": {
-   "model": "L260-OMNI"
-  },
-  "seconds": 3.4,
-  "meta": {
-   "turn_id": 1706,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "The search for L260-OMNI returned this all-in-one system, positioned for commercial applications. The card carries the technical figures; tell me if you would like the datasheet or the pairing options for it.",
-    "refs": [
-     "2003"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2003
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "L260-OMNI",
-  "expect": {
-   "model": "L260-OMNI"
-  },
-  "seconds": 2.7,
-  "meta": {
-   "turn_id": 1705,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Hier ist das gefundene Produkt aus der Kategorie der All-in-one-Systeme: das Pylontech OPTIM US L260-OMNI mit einer nominalen Kapazität von 260 kWh und einer AC-Leistung von 125 kW, ausgelegt für gewerbliche Anwendungen. Wenn Sie möchten, prüfe ich die Pairings, zeige die Unterlagen oder vergleiche es mit weiteren Systemen.",
-    "refs": [
-     "2003"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2003
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "L260 Omni",
-  "expect": {
-   "model": "L260-OMNI"
-  },
-  "seconds": 2.6,
-  "meta": {
-   "turn_id": 1708,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "The Pylontech OPTIM US L260-OMNI is the product matching your search. It is an all-in-one system for commercial applications. The card below carries its technical values; let me know if you would like the datasheet or a compatibility check with your planned battery setup.",
-    "refs": [
-     "2003"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2003
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "L260 Omni",
-  "expect": {
-   "model": "L260-OMNI"
-  },
-  "seconds": 2.7,
-  "meta": {
-   "turn_id": 1709,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Zu Ihrer Suche nach dem L260-OMNI passt dieses Produkt aus der Kategorie der All-in-One-Systeme. Die technischen Angaben entnehmen Sie der Produktkarte.",
-    "refs": [
-     "2003"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2003
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "EF HD-P1-12K0-S2",
-  "expect": {
-   "model": "EF HD-P1-12K0-S2"
-  },
-  "seconds": 3.0,
-  "meta": {
-   "turn_id": 1710,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "The EF HD-P1-12K0-S2 is in our range: a single-phase hybrid inverter for home use, with its ratings shown on the product card below.",
-    "refs": [
-     "3580"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     3580
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "EF HD-P1-12K0-S2",
-  "expect": {
-   "model": "EF HD-P1-12K0-S2"
-  },
-  "seconds": 3.8,
-  "meta": {
-   "turn_id": 1711,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Zum gesuchten Modell HD-P1-12K0-S2 ist ein Produkt hinterlegt: ein einphasiger Hybrid-Wechselrichter für den Heimbedarf mit einer AC-Leistung von 12 kW und einer PV-Eingangsleistung von 24 kW. Wenn Sie möchten, prüfe ich passende Speicher für dieses Gerät oder begleite Sie bei der Auslegung.",
-    "refs": [
-     "3580"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     3580
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "HS3-5K-T2-W/G-PX",
-  "expect": {
-   "model": "HS3-5K-T2-W/G-PX"
-  },
-  "seconds": 3.0,
-  "meta": {
-   "turn_id": 1712,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "The product you named is the SAJ HS3-5K-T2-W/G-PX, a three-phase inverter for home applications. The card below carries its technical values; tell me if you would like its documents or a pairing check for a battery.",
-    "refs": [
-     "2198"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2198
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "HS3-5K-T2-W/G-PX",
-  "expect": {
-   "model": "HS3-5K-T2-W/G-PX"
-  },
-  "seconds": 2.7,
-  "meta": {
-   "turn_id": 1713,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Zur genannten Bezeichnung haben wir dieses Produkt gefunden: der Wechselrichter SAJ HS3-5K-T2-W/G-PX. Die technischen Angaben stehen direkt auf der Produktkarte.",
-    "refs": [
-     "2198"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2198
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "DTSU666",
-  "expect": {
-   "model": "DTSU666"
-  },
-  "seconds": 2.7,
-  "meta": {
-   "turn_id": 1714,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "The product matching DTSU666 is the Chint DTSU666, a three-phase energy meter from the accessories category, intended for commercial use. It is listed as in stock; pricing is shown on request.",
-    "refs": [
-     "2281"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2281
-    ]
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "DTSU666",
-  "expect": {
-   "model": "DTSU666"
-  },
-  "seconds": 6.4,
-  "meta": {
-   "turn_id": 1717,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Der Chint DTSU666 ist ein dreiphasiger Energiezähler für die Direktmessung im gewerblichen Einsatz, mit Modbus-RTU über eine RS-Schnittstelle und MID-Zertifizierung. Er wird typischerweise zur Messung und Regelung an Wechselrichtern und Speichern eingesetzt. Die technischen Werte und die Inbetriebnahme finden Sie in den beiden Unterlagen.",
-    "refs": [
-     "2281"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     2281
-    ]
-   },
-   {
-    "type": "document",
-    "ref": "p2281.document.0",
-    "label": "chint dtsu666 catalog en",
-    "url": "http://127.0.0.1:9057/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf"
-   },
-   {
-    "type": "document",
-    "ref": "p2281.document.1",
-    "label": "chint dtsu666 dssu666 user manual en",
-    "url": "http://127.0.0.1:9057/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf"
-   }
-  ],
-  "cards": 1,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "SAJ H2",
-  "expect": {
-   "series": "saj-h2"
-  },
-  "seconds": 7.7,
-  "meta": {
-   "turn_id": 1718,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "The SAJ H2 is a hybrid inverter family, and the models found for it are three-phase units that differ in AC output and PV input class: the SAJ H2-10K-T3 supplies 10 kW, the SAJ H2-12K-T3 12 kW, the SAJ H2-15K-T3 15 kW, the SAJ H2-20K-T3 20 kW, the SAJ H2-25K-T3 25 kW and the SAJ H2-30K-T3-DE 29.999 kW. Which output class or phase would you like to look at?",
-    "refs": [
-     "4107",
-     "4108",
-     "2063",
-     "2064",
-     "1179",
-     "1181"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     4107,
-     4108,
-     2063,
-     2064,
-     1179,
-     1181
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "phase",
-    "options": [
-     "single-phase",
-     "three-phase"
-    ]
-   }
-  ],
-  "cards": 6,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "SAJ H2",
-  "expect": {
-   "series": "saj-h2"
-  },
-  "seconds": 5.4,
-  "meta": {
-   "turn_id": 1716,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Zur Serie SAJ H2 zeigt die Suche diese Modelle, durchweg in dreiphasiger Ausführung. Sie unterscheiden sich in der Wechselrichterleistung und in der maximalen PV-Eingangsleistung: Der H2-10K-T3 liefert 10 kW bei 20 kW PV-Eingang, der H2-12K-T3 kommt auf 12 kW, der H2-15K-T3 auf 15 kW, der H2-20K-T3 auf 20 kW, der H2-25K-T3 auf 25 kW und der H2-30K-T3-DE auf 29.999 kW. Wenn Sie zusätzlich wissen möchten, welche Batterien für ein Modell dokumentiert sind, sagen Sie mir das Modell, dann sehe ich die Pairings nach.",
-    "refs": [
-     "4107",
-     "4108",
-     "2063",
-     "2064",
-     "1179",
-     "1181"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     4107,
-     4108,
-     2063,
-     2064,
-     1179,
-     1181
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "phase",
-    "options": [
-     "einphasig",
-     "dreiphasig"
-    ]
-   }
-  ],
-  "cards": 6,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "saj h2",
-  "expect": {
-   "series": "saj-h2"
-  },
-  "seconds": 4.0,
-  "meta": {
-   "turn_id": 1715,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "en",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "The H2 series covers both single-phase and three-phase models, and the search below returned the three-phase T3 range: the H2-10K-T3 with 10 kW AC output, the H2-12K-T3 with 12 kW, the H2-15K-T3 with 15 kW, the H2-20K-T3 with 20 kW, the H2-25K-T3 with 25 kW and the H2-30K-T3-DE with 29.999 kW. Every one of them is a three-phase hybrid inverter for home use, and they differ in AC output and PV input. Which model or phase would you like me to look at in detail?",
-    "refs": [
-     "4107",
-     "4108",
-     "2063",
-     "2064",
-     "1179",
-     "1181"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     4107,
-     4108,
-     2063,
-     2064,
-     1179,
-     1181
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "phase",
-    "options": [
-     "single-phase",
-     "three-phase"
-    ]
-   }
-  ],
-  "cards": 6,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "de",
-  "message": "saj h2",
-  "expect": {
-   "series": "saj-h2"
-  },
-  "seconds": 5.2,
-  "meta": {
-   "turn_id": 1720,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Die Serie SAJ H2 ist eine Reihe von Hybrid-Wechselrichtern für den Heimspeicher; die hier gefundenen Modelle sind durchweg dreiphasig und unterscheiden sich vor allem in der Ausgangsleistung sowie der möglichen PV-Eingangsleistung: H2-10K-T3 mit 10 kW, H2-12K-T3 mit 12 kW, H2-15K-T3 mit 15 kW, H2-20K-T3 mit 20 kW, H2-25K-T3 mit 25 kW und H2-30K-T3-DE mit 29.999 kW. Die PV-Eingangsleistung fällt je Modell unterschiedlich aus, die genauen Werte stehen in den Produktdaten. Innerhalb der Familie gibt es zudem einphasige Ausführungen, die in dieser Auswahl nicht enthalten sind.",
-    "refs": [
-     "4107",
-     "4108",
-     "2063",
-     "2064",
-     "1179",
-     "1181"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     4107,
-     4108,
-     2063,
-     2064,
-     1179,
-     1181
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "phase",
-    "options": [
-     "einphasig",
-     "dreiphasig"
-    ]
-   }
-  ],
-  "cards": 6,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
-  "lang": "en",
-  "message": "HS2",
-  "expect": {
-   "series": "saj-hs2"
   },
   "seconds": 3.9,
   "meta": {
-   "turn_id": 1719,
+   "turn_id": 52,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Der GW10K-ETA-G20 ist ein dreiphasiges Leistungsmodul für den privaten Einsatz, das GoodWe als All-in-One-Gerät führt: Es bringt 10 kW AC-Leistung mit und nimmt bis zu 20 kW PV-Eingang auf. Wenn Sie möchten, prüfe ich die dokumentierten Pairings mit Batterien oder sehe mir die Unterlagen zu diesem Produkt an — sagen Sie mir dazu einfach, was Sie vorhaben.",
+    "refs": [
+     "3556"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     3556
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "CB2-100.3-HV5",
+  "expect": {
+   "model": "CB2-100.3-HV5"
+  },
+  "seconds": 3.0,
+  "meta": {
+   "turn_id": 51,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -2191,7 +1480,710 @@
   "blocks": [
    {
     "type": "text",
-    "text": "The SAJ HS2 family differs mainly in AC output class, and the models found for this search are all three-phase units: HS2-5K-T2-X at 5 kW, HS2-6K-T2-X at 6 kW, HS2-8K-T2-X at 8 kW and HS2-10K-T2-X at 10 kW. Each model also has its own PV input capability, shown on the product cards.",
+    "text": "This is the product the search returned for CB2-100.3-HV5: a commercial battery cabinet from SAJ, with in-stock availability. The card carries the capacity and class figures; tell me if you would like the pairing details for it or its documents.",
+    "refs": [
+     "4106"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     4106
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "CB2-100.3-HV5",
+  "expect": {
+   "model": "CB2-100.3-HV5"
+  },
+  "seconds": 3.9,
+  "meta": {
+   "turn_id": 55,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Der CB2-100.3-HV5 ist ein Batteriespeicherschrank für gewerbliche Anwendungen. Die Karte nennt die nutzbare Kapazität von 90.2 kWh und die nominale Kapazität von 100.3 kWh.",
+    "refs": [
+     "4106"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     4106
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "L260-OMNI",
+  "expect": {
+   "model": "L260-OMNI"
+  },
+  "seconds": 3.0,
+  "meta": {
+   "turn_id": 54,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The search for L260-OMNI returned one matching product: the Pylontech OPTIM US L260-OMNI, an all-in-one system built for commercial applications. The card carries its key technical values, and I can pull up its datasheet or go deeper into its pairings on request.",
+    "refs": [
+     "2003"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2003
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "L260-OMNI",
+  "expect": {
+   "model": "L260-OMNI"
+  },
+  "seconds": 9.6,
+  "meta": {
+   "turn_id": 60,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Das L260-OMNI ist ein All-in-One-System von Pylontech für gewerbliche Anwendungen: Speicher und Wechselrichter in einem Schrank, mit einer Nennkapazität von 260 kWh und einer AC-Leistung von 125 kW. Das System arbeitet mit Flüssigkeitskühlung, ist für den Aufbau mehrerer Schränke erweiterbar und kommuniziert über Ethernet mit Modbus TCP. Die technischen Daten und die verfügbaren Unterlagen finden Sie direkt beim Produkt; wenn Sie daraus eine Lösung für ein konkretes Projekt bauen möchten, ermittelt der Lösungskonfigurator die passende Auslegung.",
+    "refs": [
+     "2003"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2003
+    ]
+   },
+   {
+    "type": "document",
+    "ref": "p2003.document.0",
+    "label": "Pylontech OPTIM US L260-OMNI Datasheet",
+    "url": "http://127.0.0.1:9057/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf"
+   },
+   {
+    "type": "document",
+    "ref": "p2003.document.1",
+    "label": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+    "url": "http://127.0.0.1:9057/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf"
+   },
+   {
+    "type": "document",
+    "ref": "p2003.document.2",
+    "label": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)",
+    "url": "http://127.0.0.1:9057/wp-content/uploads/2026/10/pylontech-utility-ci-ess-product-portfolio-py2412en-sd.pdf"
+   },
+   {
+    "type": "action",
+    "name": "open_configurator",
+    "args": {}
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "L260 Omni",
+  "expect": {
+   "model": "L260-OMNI"
+  },
+  "seconds": 4.0,
+  "meta": {
+   "turn_id": 58,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The model L260-OMNI resolves to the Pylontech OPTIM US L260-OMNI, an all-in-one system for commercial applications with an AC power of 125 kW and a nominal capacity of 260 kWh.",
+    "refs": [
+     "2003"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2003
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "L260 Omni",
+  "expect": {
+   "model": "L260-OMNI"
+  },
+  "seconds": 3.5,
+  "meta": {
+   "turn_id": 56,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Der Pylontech OPTIM US L260-OMNI ist ein All-in-One-System für gewerbliche Anwendungen. Hier ist das gefundene Produkt für Sie.",
+    "refs": [
+     "2003"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2003
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "EF HD-P1-12K0-S2",
+  "expect": {
+   "model": "EF HD-P1-12K0-S2"
+  },
+  "seconds": 3.0,
+  "meta": {
+   "turn_id": 57,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The model code you gave matches this EcoFlow hybrid inverter from the OCEAN series. Its card carries the technical figures for the unit itself, and the detail page holds the full data.",
+    "refs": [
+     "3580"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     3580
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "EF HD-P1-12K0-S2",
+  "expect": {
+   "model": "EF HD-P1-12K0-S2"
+  },
+  "seconds": 7.0,
+  "meta": {
+   "turn_id": 64,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 2,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Die Suche nach dem von Ihnen genannten Modell führt zu diesem Hybrid-Wechselrichter für den Heimanwendungsbereich. Die technischen Angaben wie Ausgangsleistung und maximaler PV-Eingang stehen direkt auf der Produktkarte. Wenn Sie möchten, prüfen wir im nächsten Schritt die Eignung für Ihr Vorhaben.",
+    "refs": [
+     "3580"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     3580
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "HS3-5K-T2-W/G-PX",
+  "expect": {
+   "model": "HS3-5K-T2-W/G-PX"
+  },
+  "seconds": 3.0,
+  "meta": {
+   "turn_id": 59,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The model you named is in our range: the SAJ HS3-5K-T2-W/G-PX is a three-phase inverter for home use, with an AC output of 5 kW and a PV input of 10 kW. If you would like to add storage to it, tell me and I will look up the batteries with a documented pairing for this model.",
+    "refs": [
+     "2198"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2198
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "HS3-5K-T2-W/G-PX",
+  "expect": {
+   "model": "HS3-5K-T2-W/G-PX"
+  },
+  "seconds": 3.4,
+  "meta": {
+   "turn_id": 61,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Der SAJ HS3-5K-T2-W/G-PX ist ein Hybrid-Wechselrichter für den privaten Einsatz im dreiphasigen Netz. Er arbeitet mit einer AC-Leistung von 5 kW und einer PV-Eingangsleistung von 10 kW. Wenn Sie möchten, prüfe ich die dokumentierten Pairings für eine Batterie oder sehe mir die Unterlagen zum Produkt an.",
+    "refs": [
+     "2198"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2198
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "DTSU666",
+  "expect": {
+   "model": "DTSU666"
+  },
+  "seconds": 2.8,
+  "meta": {
+   "turn_id": 62,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The DTSU666 search returns the Chint DTSU666, a metering accessory from our accessories product category; the product page carries its technical values and documents.",
+    "refs": [
+     "2281"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2281
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "DTSU666",
+  "expect": {
+   "model": "DTSU666"
+  },
+  "seconds": 3.0,
+  "meta": {
+   "turn_id": 63,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Zu Ihrer Suche gibt es einen passenden Treffer: den Chint DTSU666 aus der Produktkategorie Zubehör. Das Gerät ist als Messzubehör für gewerbliche Anlagen hinterlegt; die technischen Angaben stehen in der Produktkarte.",
+    "refs": [
+     "2281"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     2281
+    ]
+   }
+  ],
+  "cards": 1,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "SAJ H2",
+  "expect": {
+   "series": "saj-h2"
+  },
+  "seconds": 6.8,
+  "meta": {
+   "turn_id": 67,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The SAJ H2 family in these results consists of three-phase hybrid inverters, and the models differ in AC output and PV input capacity. The SAJ H2-10K-T3 provides 10 kW AC with 20 kW of PV input, the SAJ H2-12K-T3 12 kW AC with 24 kW, the SAJ H2-15K-T3 15 kW AC with 30 kW, the SAJ H2-20K-T3 20 kW AC with 40 kW, the SAJ H2-25K-T3 25 kW AC with 45 kW, and the SAJ H2-30K-T3-DE 29.999 kW AC with 45 kW. All of them are listed for home applications as three-phase units.",
+    "refs": [
+     "4107",
+     "4108",
+     "2063",
+     "2064",
+     "1179",
+     "1181"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     4107,
+     4108,
+     2063,
+     2064,
+     1179,
+     1181
+    ]
+   },
+   {
+    "type": "ask",
+    "field": "phase",
+    "options": [
+     "Single-phase",
+     "Three-phase"
+    ]
+   }
+  ],
+  "cards": 6,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "SAJ H2",
+  "expect": {
+   "series": "saj-h2"
+  },
+  "seconds": 4.3,
+  "meta": {
+   "turn_id": 66,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Die SAJ-H2-Reihe unterscheidet sich vor allem in der Wechselrichterleistung und der maximalen PV-Eingangsleistung. Die zu Ihrer Suche gefundenen Modelle sind durchgehend dreiphasig: Der SAJ H2-10K-T3 arbeitet mit 10 kW Wechselrichterleistung und nimmt bis 20 kW PV-Leistung auf, der SAJ H2-12K-T3 mit 12 kW und 24 kW, der SAJ H2-15K-T3 mit 15 kW und 30 kW, der SAJ H2-20K-T3 mit 20 kW und 40 kW, der SAJ H2-25K-T3 mit 25 kW und 45 kW sowie der SAJ H2-30K-T3-DE mit 29.999 kW und 45 kW.",
+    "refs": [
+     "4107",
+     "4108",
+     "2063",
+     "2064",
+     "1179",
+     "1181"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     4107,
+     4108,
+     2063,
+     2064,
+     1179,
+     1181
+    ]
+   },
+   {
+    "type": "ask",
+    "field": "phase",
+    "options": [
+     "einphasig",
+     "dreiphasig"
+    ]
+   }
+  ],
+  "cards": 6,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "saj h2",
+  "expect": {
+   "series": "saj-h2"
+  },
+  "seconds": 3.3,
+  "meta": {
+   "turn_id": 65,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The SAJ H2 family is offered in single-phase and three-phase versions, and the search returned the three-phase models. Of those, the H2-10K-T3 delivers 10 kW, the H2-12K-T3 12 kW, the H2-15K-T3 15 kW, the H2-20K-T3 20 kW, the H2-25K-T3 25 kW and the H2-30K-T3-DE 29.999 kW of AC power.",
+    "refs": [
+     "4107",
+     "4108",
+     "2063",
+     "2064",
+     "1179",
+     "1181"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     4107,
+     4108,
+     2063,
+     2064,
+     1179,
+     1181
+    ]
+   },
+   {
+    "type": "ask",
+    "field": "phase",
+    "options": [
+     "single-phase",
+     "three-phase"
+    ]
+   }
+  ],
+  "cards": 6,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "saj h2",
+  "expect": {
+   "series": "saj-h2"
+  },
+  "seconds": 5.1,
+  "meta": {
+   "turn_id": 68,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Die SAJ H2 ist eine Familie dreiphasiger Hybrid-Wechselrichter für den Heimbetrieb. Die hier gezeigten Modelle unterscheiden sich vor allem in ihrer Wechselstromleistung und der maximalen PV-Eingangsleistung: H2-10K-T3 mit 10 kW Wechselstromleistung und 20 kW PV-Eingang, H2-12K-T3 mit 12 kW und 24 kW, H2-15K-T3 mit 15 kW und 30 kW, H2-20K-T3 mit 20 kW und 40 kW, H2-25K-T3 mit 25 kW und 45 kW sowie H2-30K-T3-DE mit 29.999 kW und 45 kW. Alle Modelle der Auswahl sind für den Heimbetrieb ausgelegt und lassen sich mit einer Batterie kombinieren; die passenden Pairings prüfe ich gern für das gewählte Modell.",
+    "refs": [
+     "4107",
+     "4108",
+     "2063",
+     "2064",
+     "1179",
+     "1181"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     4107,
+     4108,
+     2063,
+     2064,
+     1179,
+     1181
+    ]
+   },
+   {
+    "type": "ask",
+    "field": "phase",
+    "options": [
+     "einphasig",
+     "dreiphasig"
+    ]
+   }
+  ],
+  "cards": 6,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "en",
+  "message": "HS2",
+  "expect": {
+   "series": "saj-hs2"
+  },
+  "seconds": 4.6,
+  "meta": {
+   "turn_id": 69,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The SAJ HS2 is a hybrid inverter family that differs across its members mainly in AC output class and PV input size; the models found here are three-phase units for home use. HS2-5K-T2-X provides 5 kW of AC power with 7.5 kW of PV input, HS2-6K-T2-X provides 6 kW with 9 kW of PV input, HS2-8K-T2-X provides 8 kW with 12 kW of PV input, and HS2-10K-T2-X provides 10 kW with 15 kW of PV input. All of them are listed as in stock.",
     "refs": [
      "4109",
      "1183",
@@ -2228,9 +2220,9 @@
   "expect": {
    "series": "saj-hs2"
   },
-  "seconds": 6.3,
+  "seconds": 8.1,
   "meta": {
-   "turn_id": 1722,
+   "turn_id": 72,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -2243,7 +2235,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Die HS2-Reihe von SAJ sind Hybrid-Wechselrichter für den Heimspeicher; die hier gezeigten Modelle sind durchweg dreiphasig und unterscheiden sich vor allem in ihrer Ausgangsleistung: SAJ HS2-5K-T2-X mit 5 kW, SAJ HS2-6K-T2-X mit 6 kW, SAJ HS2-8K-T2-X mit 8 kW und SAJ HS2-10K-T2-X mit 10 kW. Die einphasige Variante der Reihe ist in dieser Auswahl nicht enthalten.",
+    "text": "Die HS2-Reihe ist hier mit dreiphasigen Hybrid-Wechselrichtern für den Wohnbereich vertreten; die Modelle unterscheiden sich in der Wechselrichterleistung und im maximalen PV-Eingang: HS2-5K-T2-X mit 5 kW, HS2-6K-T2-X mit 6 kW, HS2-8K-T2-X mit 8 kW und HS2-10K-T2-X mit 10 kW. Eine einphasige Ausführung der Reihe führt die Suche derzeit nicht. Die Auslegung, welches Modell zu Ihrer Anlage passt, ermittelt der Lösungskonfigurator.",
     "refs": [
      "4109",
      "1183",
@@ -2262,10 +2254,11 @@
    },
    {
     "type": "ask",
-    "field": "phase",
+    "field": "pv_kwp",
     "options": [
-     "einphasig",
-     "dreiphasig"
+     "kleine Dachanlage",
+     "mittlere Dachanlage",
+     "große Dachanlage"
     ]
    }
   ],
@@ -2280,9 +2273,9 @@
   "expect": {
    "title": "ESA"
   },
-  "seconds": 4.0,
+  "seconds": 6.6,
   "meta": {
-   "turn_id": 1721,
+   "turn_id": 71,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -2295,7 +2288,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "The GoodWe ESA products the search returned are all single-phase power modules for home use, and what differs across the family is the AC output and the matching PV input: the GW3K-EHA-G20 is rated 3 kW with 6 kW of PV input, the GW3.6K-EHA-G20 3.6 kW with 7.2 kW, the GW5K-EHA-G20 5 kW with 10 kW, the GW6K-EHA-G20 6 kW with 12 kW, the GW8K-EHA-G20 8 kW with 16 kW, and the GW10K-EHA-G20 10 kW with 20 kW. Which model or phase would you like to look at?",
+    "text": "The GoodWe ESA models in this result are all single-phase home power modules; they differ in AC output and PV input, and each card carries the exact figures. Taking them in the order shown: 3 kW AC with 6 kW PV input, 3.6 kW AC with 7.2 kW PV input, 5 kW AC with 10 kW PV input, 6 kW AC with 12 kW PV input, 8 kW AC with 16 kW PV input, and 10 kW AC with 20 kW PV input. This result covers only the single-phase part of the family, so the larger output classes are not shown here.",
     "refs": [
      "6523",
      "6524",
@@ -2336,9 +2329,9 @@
   "expect": {
    "title": "ESA"
   },
-  "seconds": 7.6,
+  "seconds": 5.0,
   "meta": {
-   "turn_id": 1723,
+   "turn_id": 70,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -2351,7 +2344,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Die GoodWe-ESA-Familie besteht aus Leistungsmodulen, die sich in AC-Leistung und PV-Eingang unterscheiden. In der Trefferliste stehen ausschließlich einphasige Modelle, dreiphasige Ausführungen der Familie sind hier nicht enthalten. Die gezeigten Modelle sind: ESA GW3K-EHA-G20 mit 3 kW AC-Leistung und 6 kW PV-Eingang, ESA GW3.6K-EHA-G20 mit 3.6 kW und 7.2 kW PV-Eingang, ESA GW5K-EHA-G20 mit 5 kW und 10 kW PV-Eingang, ESA GW6K-EHA-G20 mit 6 kW und 12 kW PV-Eingang, ESA GW8K-EHA-G20 mit 8 kW und 16 kW PV-Eingang sowie ESA GW10K-EHA-G20 mit 10 kW und 20 kW PV-Eingang.",
+    "text": "Die GoodWe ESA ist eine Familie von Leistungsmodulen für den Heimspeicher-Aufbau; die von der Suche gezeigten Modelle sind alle einphasig und unterscheiden sich vor allem in ihrer Wechselrichterleistung: GW3K-EHA-G20 mit 3 kW, GW3.6K-EHA-G20 mit 3.6 kW, GW5K-EHA-G20 mit 5 kW, GW6K-EHA-G20 mit 6 kW, GW8K-EHA-G20 mit 8 kW und GW10K-EHA-G20 mit 10 kW. Die passende PV-Belegung je Modul steht in den Produktdaten.",
     "refs": [
      "6523",
      "6524",
@@ -2392,9 +2385,9 @@
   "expect": {
    "title": "OCEAN 2"
   },
-  "seconds": 9.1,
+  "seconds": 10.7,
   "meta": {
-   "turn_id": 1724,
+   "turn_id": 73,
    "grounded": true,
    "fallback": false,
    "attempts": 2,
@@ -2407,7 +2400,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "The OCEAN range from this search splits into single-phase and three-phase hybrid inverters, and the models differ in AC output power and PV input. The single-phase models are rated at 3 kW, 3.68 kW and 4.6 kW of AC power, the three-phase models at 5 kW, 6 kW and 8 kW; the corresponding PV input figures and further data stand on the product cards.",
+    "text": "The family you named comes in both single-phase and three-phase versions, so the difference within the range is the phase design and the power class of each model. Of the single-phase versions shown, the AC output is 3 kW, 3.68 kW and 4.6 kW respectively, with PV input of 9 kW, 9.68 kW and 10.6 kW. Of the three-phase versions shown, the AC output is 5 kW, 6 kW and 8 kW, with PV input of 10 kW, 12 kW and 16 kW.",
     "refs": [
      "6483",
      "6484",
@@ -2448,9 +2441,9 @@
   "expect": {
    "title": "OCEAN 2"
   },
-  "seconds": 9.1,
+  "seconds": 11.7,
   "meta": {
-   "turn_id": 1725,
+   "turn_id": 74,
    "grounded": true,
    "fallback": false,
    "attempts": 2,
@@ -2463,7 +2456,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Die von Ihnen genannte Familie gibt es in einphasigen und in dreiphasigen Hybrid-Modellen; die Modelle unterscheiden sich in Wechselrichterleistung und PV-Eingang. Einphasig zeigt die Suche Modelle mit 3 kW, 3.68 kW und 4.6 kW Wechselrichterleistung, dreiphasig Modelle mit 5 kW, 6 kW und 8 kW. Welche Leistung zu Ihrer Anlage passt, ermittelt der Lösungsentwurf.",
+    "text": "Die EcoFlow-OCEAN-Familie umfasst einphasige und dreiphasige Hybrid-Wechselrichter. Einphasig sind die Modelle mit 3 kW, 3.68 kW und 4.6 kW AC-Leistung, dreiphasig die Modelle mit 5 kW, 6 kW und 8 kW – die genauen Modellbezeichnungen und die PV-Eingangsleistung sehen Sie auf den Produkten.",
     "refs": [
      "6483",
      "6484",
@@ -2504,9 +2497,9 @@
   "expect": {
    "title": "OCEAN 2"
   },
-  "seconds": 11.0,
+  "seconds": 11.7,
   "meta": {
-   "turn_id": 1727,
+   "turn_id": 75,
    "grounded": true,
    "fallback": false,
    "attempts": 2,
@@ -2519,7 +2512,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "The EcoFlow OCEAN inverters shown here are home hybrid models in two groups: single-phase units and three-phase units. The AC output differs across the family — 3 kW, 3.68 kW and 4.6 kW for the single-phase models, and 5 kW, 6 kW and 8 kW for the three-phase ones.",
+    "text": "The EcoFlow OCEAN family comes in single-phase and three-phase hybrid versions, and within each group the models differ in AC output and solar input. The single-phase versions shown here are rated 3 kW, 3.68 kW and 4.6 kW of AC power; the three-phase versions are rated 5 kW, 6 kW and 8 kW. Which phase does your installation use?",
     "refs": [
      "6483",
      "6484",
@@ -2560,9 +2553,9 @@
   "expect": {
    "title": "OCEAN 2"
   },
-  "seconds": 12.7,
+  "seconds": 12.0,
   "meta": {
-   "turn_id": 1731,
+   "turn_id": 77,
    "grounded": true,
    "fallback": false,
    "attempts": 2,
@@ -2575,7 +2568,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "EcoFlow bietet die OCEAN-Serie als einphasige und als dreiphasige Hybrid-Modelle an; der Unterschied liegt in der Phasenzahl und in der Wechselrichterleistung, die sich je Modell unterscheidet. In der Suche erscheinen einphasige Modelle mit 3 kW, 3.68 kW und 4.6 kW sowie dreiphasige Modelle mit 5 kW, 6 kW und 8 kW Wechselrichterleistung. Die übrigen Angaben zu jedem Modell stehen auf den Produktkarten.",
+    "text": "Die von Ihnen genannte OCEAN-Reihe von EcoFlow umfasst einphasige und dreiphasige Hybridmodelle für den Heimbetrieb. Einphasig stehen Modelle mit 3 kW, 3.68 kW und 4.6 kW AC-Leistung bereit, dreiphasig Modelle mit 5 kW, 6 kW und 8 kW; auch die PV-Eingangsleistung unterscheidet sich entsprechend. Alle Modelle sind lieferbar, die Einzelheiten stehen in den Produktkarten. Welche Phase soll es sein?",
     "refs": [
      "6483",
      "6484",
@@ -2616,12 +2609,12 @@
   "expect": {
    "category": "inverters"
   },
-  "seconds": 2.9,
+  "seconds": 5.1,
   "meta": {
-   "turn_id": 1726,
+   "turn_id": 76,
    "grounded": true,
    "fallback": false,
-   "attempts": 1,
+   "attempts": 2,
    "failures": [],
    "language": "en",
    "route": "products",
@@ -2631,7 +2624,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here are inverters from the product category. The cards carry the technical figures for each model, so you can compare power class, phase and PV input directly.",
+    "text": "Here are the inverter products that match your request; each card carries the technical figures, phase and application details.",
     "refs": [
      "6523",
      "6524",
@@ -2650,14 +2643,6 @@
      6484,
      6485,
      6486
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "phase",
-    "options": [
-     "single-phase",
-     "three-phase"
     ]
    }
   ],
@@ -2672,9 +2657,9 @@
   "expect": {
    "category": "inverters"
   },
-  "seconds": 3.7,
+  "seconds": 3.2,
   "meta": {
-   "turn_id": 1728,
+   "turn_id": 78,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -2687,7 +2672,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here are the inverters currently in the product range, shown with the power classes the data holds for each model. Tell me which of these you would like to look at more closely, and I can pull up its documents and documented battery pairings.",
+    "text": "Here are the inverter products that match your request. The cards carry the models, their application and their key electrical ratings. Tell me if you want the list narrowed to a brand or to a specific application, and I will refine it.",
     "refs": [
      "6523",
      "6524",
@@ -2710,10 +2695,10 @@
    },
    {
     "type": "ask",
-    "field": "phase",
+    "field": "brand",
     "options": [
-     "single-phase",
-     "three-phase"
+     "GoodWe",
+     "EcoFlow"
     ]
    }
   ],
@@ -2729,12 +2714,12 @@
    "category": "inverters"
   },
   "bare": false,
-  "seconds": 4.3,
+  "seconds": 10.3,
   "meta": {
-   "turn_id": 1729,
+   "turn_id": 84,
    "grounded": true,
    "fallback": false,
-   "attempts": 1,
+   "attempts": 2,
    "failures": [],
    "language": "en",
    "route": "products",
@@ -2744,7 +2729,55 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here are the hybrid inverters currently available for home applications, from GoodWe and EcoFlow. Which phase do you need? That narrows the selection to the models that fit your installation.",
+    "text": "Here are the hybrid inverters for home use that came up in the search, all in single-phase configuration. The cards carry the technical data for each model, so you can compare them at a glance. Tell me which model or brand you want to focus on and I will pull up its documented battery pairings and documents.",
+    "refs": [
+     "6523",
+     "6524",
+     "6483",
+     "6484",
+     "6485",
+     "6486"
+    ]
+   },
+   {
+    "type": "cards",
+    "product_ids": [
+     6523,
+     6524,
+     6483,
+     6484,
+     6485,
+     6486
+    ]
+   }
+  ],
+  "cards": 6,
+  "outside": [],
+  "greeted": [],
+  "ok": true
+ },
+ {
+  "lang": "de",
+  "message": "Wechselrichter",
+  "expect": {
+   "category": "inverters"
+  },
+  "seconds": 3.1,
+  "meta": {
+   "turn_id": 79,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "products",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Hier sind Wechselrichter für den privaten Einsatz, die zu Ihrer Suche passen. Die technischen Angaben und Leistungsdaten stehen jeweils in der Produktkarte.",
     "refs": [
      "6523",
      "6524",
@@ -2769,8 +2802,8 @@
     "type": "ask",
     "field": "phase",
     "options": [
-     "Single-phase",
-     "Three-phase"
+     "Einphasig",
+     "Dreiphasig"
     ]
    }
   ],
@@ -2781,13 +2814,14 @@
  },
  {
   "lang": "de",
-  "message": "Wechselrichter",
+  "message": "Hybrid-Wechselrichter",
   "expect": {
    "category": "inverters"
   },
-  "seconds": 4.0,
+  "bare": false,
+  "seconds": 5.7,
   "meta": {
-   "turn_id": 1730,
+   "turn_id": 81,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -2800,7 +2834,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Hier sind Wechselrichter für den privaten Einsatz, die zu Ihrer Suche passen — eine Auswahl aus einphasigen Leistungsmodulen und Hybrid-Wechselrichtern. Die technischen Werte entnehmen Sie den Produktkarten; für die Auslegung auf Ihre Anlagengröße nutzen Sie den Lösungskonfigurator. Passt eine einphasige oder eine dreiphasige Ausführung besser zu Ihrem Anschluss?",
+    "text": "Zu Ihrer Suche nach Hybrid-Wechselrichtern haben wir passende Produkte in unserer Produktkategorie gefunden – von GoodWe und EcoFlow, jeweils als Hybrid ausgelegt. Die technischen Angaben entnehmen Sie den Produktkarten.",
     "refs": [
      "6523",
      "6524",
@@ -2836,63 +2870,14 @@
   "ok": true
  },
  {
-  "lang": "de",
-  "message": "Hybrid-Wechselrichter",
-  "expect": {
-   "category": "inverters"
-  },
-  "bare": false,
-  "seconds": 7.3,
-  "meta": {
-   "turn_id": 1734,
-   "grounded": true,
-   "fallback": false,
-   "attempts": 1,
-   "failures": [],
-   "language": "de",
-   "route": "products",
-   "intent": "find_products",
-   "jev_error": null
-  },
-  "blocks": [
-   {
-    "type": "text",
-    "text": "Zu dieser Produktkategorie finden Sie hier passende Hybrid-Wechselrichter für den Heimbedarf. Die technischen Werte und die Verfügbarkeit stehen jeweils in der Produktkarte; nennen Sie mir gern Anwendung und gewünschte Leistungsklasse, dann grenze ich die Auswahl weiter ein.",
-    "refs": [
-     "6523",
-     "6524",
-     "6483",
-     "6484",
-     "6485",
-     "6486"
-    ]
-   },
-   {
-    "type": "cards",
-    "product_ids": [
-     6523,
-     6524,
-     6483,
-     6484,
-     6485,
-     6486
-    ]
-   }
-  ],
-  "cards": 6,
-  "outside": [],
-  "greeted": [],
-  "ok": true
- },
- {
   "lang": "en",
   "message": "home storage",
   "expect": {
    "category": "home-storage"
   },
-  "seconds": 3.3,
+  "seconds": 3.2,
   "meta": {
-   "turn_id": 1732,
+   "turn_id": 80,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -2905,7 +2890,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here is an overview of the home storage products currently available in this category, from SAJ and GoodWe. Each card shows the capacity and technical data for the model. If you tell me which brand you prefer, I can narrow the selection for you.",
+    "text": "Here is the home storage selection currently available in this product category. It includes the SAJ BC2-HV1 and BU2-5.0-HV1 alongside the GoodWe ESA battery modules. The cards carry the technical values, and I can narrow the list further once I know your preference.",
     "refs": [
      "2092",
      "2090",
@@ -2925,6 +2910,14 @@
      2093,
      6520
     ]
+   },
+   {
+    "type": "ask",
+    "field": "brand",
+    "options": [
+     "SAJ",
+     "GoodWe"
+    ]
    }
   ],
   "cards": 6,
@@ -2938,9 +2931,9 @@
   "expect": {
    "category": "home-storage"
   },
-  "seconds": 3.2,
+  "seconds": 3.5,
   "meta": {
-   "turn_id": 1733,
+   "turn_id": 82,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -2953,7 +2946,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Hier sind die Produkte der Kategorie Heimspeicher, die zu Ihrer Anfrage passen. Jede Karte zeigt die hinterlegten Angaben zu Anwendung, nutzbarer Kapazität und Verfügbarkeit.",
+    "text": "Hier sind Heimspeicher aus unserem Sortiment – von SAJ und GoodWe, für den Einsatz im Eigenheim. Die passenden technischen Angaben und Verfügbarkeiten sehen Sie direkt in den Produktkarten.",
     "refs": [
      "2092",
      "2090",
@@ -2991,9 +2984,9 @@
   "expect": {
    "category": "battery-systems"
   },
-  "seconds": 3.1,
+  "seconds": 3.6,
   "meta": {
-   "turn_id": 1735,
+   "turn_id": 83,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3006,7 +2999,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here are the battery systems currently offered in this product category. The list covers cabinet-scale commercial storage from GoodWe and SAJ, with the usable and nominal capacities shown on each product card.",
+    "text": "Here are the battery systems in this category: commercial high-voltage battery cabinets from GoodWe and SAJ. The usable and nominal capacity of each model is shown on its product card, so you can compare them directly from the cards.",
     "refs": [
      "1954",
      "4103",
@@ -3031,8 +3024,8 @@
     "type": "ask",
     "field": "application",
     "options": [
-     "home",
-     "commercial"
+     "Home",
+     "Commercial"
     ]
    }
   ],
@@ -3047,9 +3040,9 @@
   "expect": {
    "category": "battery-systems"
   },
-  "seconds": 3.3,
+  "seconds": 4.8,
   "meta": {
-   "turn_id": 1736,
+   "turn_id": 86,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3062,7 +3055,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Diese Batteriesysteme für gewerbliche Anwendungen habe ich für Sie zusammengestellt — von kompakten Schränken bis zu größeren C&I-Speichern. Die verfügbare Kapazität und die technischen Angaben entnehmen Sie den Produktkarten.",
+    "text": "Für gewerbliche Anwendungen sind hier Batteriesysteme von GoodWe und SAJ – sowohl einzelne Speicherschränke als auch größere Schrank-Systeme. Die nutzbare und die nominale Kapazität jeder Lösung sehen Sie direkt in den Karten.",
     "refs": [
      "1954",
      "4103",
@@ -3082,6 +3075,14 @@
      4105,
      4106
     ]
+   },
+   {
+    "type": "ask",
+    "field": "application",
+    "options": [
+     "Heim",
+     "Gewerbe"
+    ]
    }
   ],
   "cards": 6,
@@ -3095,12 +3096,12 @@
   "expect": {
    "category": "ev-chargers"
   },
-  "seconds": 6.5,
+  "seconds": 3.0,
   "meta": {
-   "turn_id": 1740,
+   "turn_id": 85,
    "grounded": true,
    "fallback": false,
-   "attempts": 2,
+   "attempts": 1,
    "failures": [],
    "language": "en",
    "route": "products",
@@ -3110,7 +3111,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "These are the GoodWe HCA G2 EV chargers in our range, for home use and available as single-phase and three-phase variants. The cards carry the power class, cable length and availability of each unit.",
+    "text": "These EV chargers are the models available in this product category, covering a single-phase and three-phase variant for home use. The cards carry the power ratings and model codes, and each unit is supplied with a fixed charging cable.",
     "refs": [
      "3586",
      "3557",
@@ -3123,14 +3124,6 @@
      3586,
      3557,
      3587
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "phase",
-    "options": [
-     "Single-phase",
-     "Three-phase"
     ]
    }
   ],
@@ -3145,9 +3138,9 @@
   "expect": {
    "category": "ev-chargers"
   },
-  "seconds": 3.8,
+  "seconds": 3.3,
   "meta": {
-   "turn_id": 1737,
+   "turn_id": 87,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3160,7 +3153,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "You are looking at EV chargers. Here are the GoodWe HCA G2 models we carry for home use: a single-phase unit and two three-phase units, each with an attached charging cable. The power ratings and phase details sit on the product cards, and I can pull up a datasheet or the pairings with your inverter once you tell me which one interests you.",
+    "text": "Here are the GoodWe HCA G2 EV chargers from this product category: a single-phase model with a charging cable, and three-phase models for larger charging capacities. The cards carry the technical figures for each unit, and I can narrow the selection once I know your supply phase.",
     "refs": [
      "3586",
      "3557",
@@ -3195,9 +3188,9 @@
   "expect": {
    "category": "ev-chargers"
   },
-  "seconds": 3.1,
+  "seconds": 4.2,
   "meta": {
-   "turn_id": 1738,
+   "turn_id": 90,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3210,7 +3203,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Für das Laden zu Hause führen wir diese Ladeeinrichtungen in einphasiger und dreiphasiger Ausführung, jeweils mit fest angeschlossenem Kabel. Die Leistungsdaten stehen in den Produktkarten.",
+    "text": "Die Ladestationen der Baureihe HCA G2 von GoodWe sind als einphasige und dreiphasige Ladeeinrichtungen für das Laden zu Hause ausgeführt, jeweils mit fest angeschlossenem Ladekabel. Die Modelle unterscheiden sich in ihrer Ladeleistung und der Phasenausführung; die jeweiligen Angaben stehen in den Produktkarten.",
     "refs": [
      "3586",
      "3557",
@@ -3223,14 +3216,6 @@
      3586,
      3557,
      3587
-    ]
-   },
-   {
-    "type": "ask",
-    "field": "phase",
-    "options": [
-     "Einphasig",
-     "Dreiphasig"
     ]
    }
   ],
@@ -3245,9 +3230,9 @@
   "expect": {
    "category": "ev-chargers"
   },
-  "seconds": 3.5,
+  "seconds": 3.2,
   "meta": {
-   "turn_id": 1739,
+   "turn_id": 88,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3260,7 +3245,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Zur Produktkategorie der Ladestationen für Elektrofahrzeuge haben wir diese Produkte der GoodWe HCA G2 Serie gefunden – es gibt einphasige und dreiphasige Varianten mit fest angeschlossenem Ladekabel. Die technischen Angaben entnehmen Sie den Produktkarten.",
+    "text": "Zu Ihrer Ladestation zeige ich Ihnen diese Ladeeinrichtungen der Kategorie EV-Ladeeinrichtungen: eine einphasige Wallbox für den Hausgebrauch sowie zwei dreiphasige Modelle mit größerer Ladeleistung. Alle genannten Produkte sind verfügbar; die technischen Angaben stehen direkt an den Produkten.",
     "refs": [
      "3586",
      "3557",
@@ -3295,12 +3280,12 @@
   "expect": {
    "category": "accessories"
   },
-  "seconds": 6.4,
+  "seconds": 2.3,
   "meta": {
-   "turn_id": 1744,
+   "turn_id": 89,
    "grounded": true,
    "fallback": false,
-   "attempts": 2,
+   "attempts": 1,
    "failures": [],
    "language": "en",
    "route": "products",
@@ -3310,7 +3295,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "These are the products in the accessories category. The cards carry the model names, the application and the technical data; let me know which one you would like to look at in detail or pair with your existing system.",
+    "text": "Here is the product category accessories, with the matching products listed below. The cards carry their technical values, and I can pull up the documents for any item you want to look at more closely.",
     "refs": [
      "2281",
      "3609",
@@ -3343,9 +3328,9 @@
   "expect": {
    "category": "accessories"
   },
-  "seconds": 3.1,
+  "seconds": 3.8,
   "meta": {
-   "turn_id": 1741,
+   "turn_id": 92,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3358,7 +3343,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Hier sind die Produkte der Produktkategorie Zubehör, die zu Ihrer Anfrage passen — darunter Messwandler und Komponenten für Speicher-Erweiterungen. Sagen Sie mir gern, zu welchem Wechselrichter oder Speicher das Zubehör gehört, dann grenze ich die Auswahl weiter ein.",
+    "text": "Hier sind Produkte aus der Kategorie Zubehör – Komponenten für Messung, Anbindung und Aufbau Ihrer Anlage. Sagen Sie mir gern, ob Sie ein System für ein Wohnhaus oder für ein Gewerbe planen, dann grenze ich die Auswahl passend ein.",
     "refs": [
      "2281",
      "3609",
@@ -3378,6 +3363,14 @@
      3608,
      6529
     ]
+   },
+   {
+    "type": "ask",
+    "field": "application",
+    "options": [
+     "Wohnhaus",
+     "Gewerbe"
+    ]
    }
   ],
   "cards": 6,
@@ -3391,9 +3384,9 @@
   "expect": {
    "category": "all-in-one-systems"
   },
-  "seconds": 3.9,
+  "seconds": 3.5,
   "meta": {
-   "turn_id": 1743,
+   "turn_id": 93,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3406,7 +3399,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Here are the all-in-one systems currently in this product category. Each card carries the technical figures for the respective system, so you can compare power class and storage capacity directly. If you would like a system sized to your project, the Solution Configurator is the right place to start.",
+    "text": "These are the all-in-one systems currently available in this product category: commercial units from SAJ, GoodWe and Pylontech. The cards carry the technical figures for each model. If you tell me the application and the capacity you have in mind, I can narrow the selection down further.",
     "refs": [
      "1959",
      "1960",
@@ -3437,9 +3430,9 @@
   "expect": {
    "category": "all-in-one-systems"
   },
-  "seconds": 3.1,
+  "seconds": 2.6,
   "meta": {
-   "turn_id": 1742,
+   "turn_id": 91,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3452,7 +3445,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "All-in-One-Systeme vereinen Wechselrichter und Speicher in einem Gehäuse und eignen sich damit für gewerbliche Anwendungen ebenso wie für größere Objekte. Diese Systeme aus der Produktkategorie finden Sie in der Übersicht; Kennzahlen wie Leistung und Kapazität stehen jeweils auf der Produktkarte.",
+    "text": "Hier sind die All-in-One-Systeme aus Ihrer Suche. Leistung, Kapazität und Phasenlage entnehmen Sie den Produktkarten.",
     "refs": [
      "1959",
      "1960",
@@ -3483,9 +3476,9 @@
   "expect": {
    "category": "ems-monitoring"
   },
-  "seconds": 3.8,
+  "seconds": 4.9,
   "meta": {
-   "turn_id": 1745,
+   "turn_id": 94,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3498,7 +3491,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "EMS products cover energy management and monitoring: data collectors and gateways for logging and control, and energy managers for site-level optimisation. The cards carry the technical details, and a couple of these are aimed at commercial applications. Which setting is this for?",
+    "text": "These products from the energy-management and monitoring category are the matches for your EMS request: the SAJ eSolar AIO3 data collector, the GoodWe EzManager3000 HEMS Gateway, the SAJ eManager energy management module, the GoodWe SEC3000C Smart Energy Controller and the SAJ eManager-C1 Pro. The cards carry their technical values and availability.",
     "refs": [
      "3573",
      "2415",
@@ -3537,9 +3530,9 @@
   "expect": {
    "category": "ems-monitoring"
   },
-  "seconds": 4.2,
+  "seconds": 3.2,
   "meta": {
-   "turn_id": 1746,
+   "turn_id": 95,
    "grounded": true,
    "fallback": false,
    "attempts": 1,
@@ -3552,7 +3545,7 @@
   "blocks": [
    {
     "type": "text",
-    "text": "Für die Überwachung und das Energiemanagement Ihres Systems finden Sie hier passende Produkte: Datenlogger, ein HEMS-Gateway sowie Energiemanagement-Module. Die Produkte unterscheiden sich in der Ausrichtung auf private oder gewerbliche Anwendungen – die Details stehen jeweils in der Produktansicht.",
+    "text": "Zur Produktkategorie Energiemanagement und Monitoring (EMS) finden sich diese Produkte: Datenlogger und Gateway von SAJ sowie von GoodWe, dazu Energiemanagement-Module für den Wohn- und den Gewerbebereich. Sagen Sie mir gern, ob Sie die Steuerung für ein Wohngebäude oder für ein Gewerbeobjekt planen, dann grenze ich die Auswahl weiter ein.",
     "refs": [
      "3573",
      "2415",
@@ -3575,8 +3568,8 @@
     "type": "ask",
     "field": "application",
     "options": [
-     "privat",
-     "gewerblich"
+     "Wohngebäude",
+     "Gewerbe"
     ]
    }
   ],
