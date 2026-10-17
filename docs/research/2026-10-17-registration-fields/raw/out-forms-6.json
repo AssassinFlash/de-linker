@@ -1,0 +1,744 @@
+{
+ "meta": {
+  "run_id": "799LbM4bqJeEaSRtq",
+  "actor_id": "MpRbnNmVAoj5RC1Ma",
+  "status": "SUCCEEDED",
+  "started_at": "2026-10-16T21:13:12.622Z",
+  "finished_at": "2026-10-16T21:13:42.191Z",
+  "dataset_id": "z942szNULyaZFEJTL",
+  "item_count": 1,
+  "saved_at_utc": "2026-10-16T21:13:56Z"
+ },
+ "items": [
+  {
+   "url": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en",
+   "label": "ejustice-bris",
+   "loadedUrl": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en",
+   "title": "Business registers – search for a company in the EU | European e-Justice Portal",
+   "fetchedAtUtc": "2026-10-16T21:13:41.058Z",
+   "h1": [
+    "Business registers – search for a company in the EU"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "/search_en",
+     "id": "ejp-search-simple",
+     "cls": "ecl-search-form ecl-site-header__search",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [
+      "Filter"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "search",
+       "name": "keys",
+       "id": "edit-keys",
+       "required": false,
+       "label": "Filter",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "FilterFilter"
+    }
+   ],
+   "loose": [],
+   "iframes": [
+    "https://webgate.ec.europa.eu/bris?lang=en"
+   ],
+   "captchaHints": {
+    "recaptcha": false,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "Skip to main content",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#main-content"
+    },
+    {
+     "t": "Accept all cookies",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#accept"
+    },
+    {
+     "t": "Accept only essential cookies",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#refuse"
+    },
+    {
+     "t": "Register",
+     "h": "https://webgate.ec.europa.eu/cas/eim/external/register.cgi"
+    },
+    {
+     "t": "Sign in",
+     "h": "https://e-justice.europa.eu/eulogin_en?destination=/topics/registers-business-insolvency-land/business-registers-search-company-eu_en"
+    },
+    {
+     "t": "English",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en"
+    },
+    {
+     "t": "bgбългарски",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_bg"
+    },
+    {
+     "t": "esespañol",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_es"
+    },
+    {
+     "t": "csčeština",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_cs"
+    },
+    {
+     "t": "dadansk",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_da"
+    },
+    {
+     "t": "deDeutsch",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_de"
+    },
+    {
+     "t": "eteesti",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_et"
+    },
+    {
+     "t": "elελληνικά",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_el"
+    },
+    {
+     "t": "enEnglish",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en"
+    },
+    {
+     "t": "frfrançais",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_fr"
+    },
+    {
+     "t": "hrhrvatski",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_hr"
+    },
+    {
+     "t": "ititaliano",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_it"
+    },
+    {
+     "t": "lvlatviešu",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_lv"
+    },
+    {
+     "t": "ltlietuvių",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_lt"
+    },
+    {
+     "t": "humagyar",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_hu"
+    },
+    {
+     "t": "mtMalti",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_mt"
+    },
+    {
+     "t": "nlNederlands",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_nl"
+    },
+    {
+     "t": "plpolski",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_pl"
+    },
+    {
+     "t": "ptportuguês",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_pt"
+    },
+    {
+     "t": "roromână",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_ro"
+    },
+    {
+     "t": "skslovenčina",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_sk"
+    },
+    {
+     "t": "slslovenščina",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_sl"
+    },
+    {
+     "t": "fisuomi",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_fi"
+    },
+    {
+     "t": "svsvenska",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_sv"
+    },
+    {
+     "t": "Filter",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en"
+    },
+    {
+     "t": "Topics",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en"
+    },
+    {
+     "t": "Registers - business, insolvency & land",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land_en"
+    },
+    {
+     "t": "See all",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en"
+    },
+    {
+     "t": "Registers - Business, Insolvency & Land",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land_en"
+    },
+    {
+     "t": "General information on find a company",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu/general-information-find-company_en"
+    },
+    {
+     "t": "X",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#x"
+    },
+    {
+     "t": "Facebook",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#facebook"
+    },
+    {
+     "t": "LinkedIn",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#linkedin"
+    },
+    {
+     "t": "E-mail",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#email"
+    },
+    {
+     "t": "More share options",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#share"
+    },
+    {
+     "t": "X",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#x"
+    },
+    {
+     "t": "Whatsapp",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#whatsapp"
+    },
+    {
+     "t": "Gmail",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#gmail"
+    },
+    {
+     "t": "Print",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#print"
+    },
+    {
+     "t": "Typepad",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#typepad"
+    },
+    {
+     "t": "Pinterest",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#pinterest"
+    },
+    {
+     "t": "Blogger",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#blogger"
+    },
+    {
+     "t": "Pocket",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#pocket"
+    },
+    {
+     "t": "YahooMail",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#yahoomail"
+    },
+    {
+     "t": "Threads",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#threads"
+    },
+    {
+     "t": "Weibo",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#weibo"
+    },
+    {
+     "t": "Viadeo",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#viadeo"
+    },
+    {
+     "t": "Reddit",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#reddit"
+    },
+    {
+     "t": "Qzone",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#qzone"
+    },
+    {
+     "t": "Netvibes",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#netvibes"
+    },
+    {
+     "t": "Yammer",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#yammer"
+    },
+    {
+     "t": "Tumblr",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#tumblr"
+    },
+    {
+     "t": "Digg",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#digg"
+    },
+    {
+     "t": "Mastodon",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#mastodon"
+    },
+    {
+     "t": "BlueSky",
+     "h": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en#bluesky"
+    }
+   ],
+   "bodyText": "Skip to main content An official website of the European Union How do you know? RSS Recent updates Register or Sign in English Filter Menu Registers - Business, Insolvency & Land Business registers – search for a company in the EU The EU single market has resulted in the number of companies expanding beyond their national borders. As of June 2017 the business registers of all EU countries have been interconnected and become searchable. General information on find a company Report a technical/content problem or give feedback on this page Share this page X Facebook LinkedIn E-mail More share options European e-Justice Portal Using our site Legal notice Privacy policy Accessibility statement BREXIT notice Sitemap Discover more on europa.eu Contact the EU Call us 00 800 6 7 8 9 10 11 Use other telephone options Write to us via our contact form Meet us at one of the EU centres Social media Search for EU social media channels Legal Cookies Legal notice Legal notice Privacy policy EU institutions and bodies Search all EU institutions and bodies",
+   "frames": [
+    {
+     "frameUrl": "https://webgate.ec.europa.eu/bris/?lang=en",
+     "forms": [
+      {
+       "index": 0,
+       "action": "",
+       "id": "",
+       "cls": "ecl-form-group ng-untouched ng-pristine ng-invalid",
+       "controlCount": 34,
+       "headings": [
+        "Use the play button to type on the field the 4 numbers that you hear."
+       ],
+       "buttons": [
+        "Select all",
+        "Clear all",
+        "Antispam",
+        "Audio version",
+        "Play Pause",
+        "Refresh",
+        "Reset",
+        "Search"
+       ],
+       "controls": [
+        {
+         "tag": "input",
+         "type": "text",
+         "name": "",
+         "id": "companyName",
+         "required": false,
+         "label": "",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": ""
+        },
+        {
+         "tag": "input",
+         "type": "text",
+         "name": "",
+         "id": "companyRegistrationNumber",
+         "required": false,
+         "label": "",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": ""
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-0",
+         "id": "country-0",
+         "required": false,
+         "label": "Austria",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-1",
+         "id": "country-1",
+         "required": false,
+         "label": "Belgium",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-2",
+         "id": "country-2",
+         "required": false,
+         "label": "Bulgaria",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-3",
+         "id": "country-3",
+         "required": false,
+         "label": "Croatia",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-4",
+         "id": "country-4",
+         "required": false,
+         "label": "Cyprus",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-5",
+         "id": "country-5",
+         "required": false,
+         "label": "Czech Republic",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-6",
+         "id": "country-6",
+         "required": false,
+         "label": "Denmark",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-7",
+         "id": "country-7",
+         "required": false,
+         "label": "Estonia",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-8",
+         "id": "country-8",
+         "required": false,
+         "label": "Finland",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-9",
+         "id": "country-9",
+         "required": false,
+         "label": "France",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-10",
+         "id": "country-10",
+         "required": false,
+         "label": "Germany",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-11",
+         "id": "country-11",
+         "required": false,
+         "label": "Greece",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-12",
+         "id": "country-12",
+         "required": false,
+         "label": "Hungary",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-13",
+         "id": "country-13",
+         "required": false,
+         "label": "Ireland",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-14",
+         "id": "country-14",
+         "required": false,
+         "label": "Italy",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-15",
+         "id": "country-15",
+         "required": false,
+         "label": "Latvia",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-16",
+         "id": "country-16",
+         "required": false,
+         "label": "Liechtenstein",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-17",
+         "id": "country-17",
+         "required": false,
+         "label": "Lithuania",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-18",
+         "id": "country-18",
+         "required": false,
+         "label": "Luxembourg",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-19",
+         "id": "country-19",
+         "required": false,
+         "label": "Malta",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-20",
+         "id": "country-20",
+         "required": false,
+         "label": "Netherlands",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-21",
+         "id": "country-21",
+         "required": false,
+         "label": "Norway",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-22",
+         "id": "country-22",
+         "required": false,
+         "label": "Poland",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-23",
+         "id": "country-23",
+         "required": false,
+         "label": "Portugal",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-24",
+         "id": "country-24",
+         "required": false,
+         "label": "Romania",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-25",
+         "id": "country-25",
+         "required": false,
+         "label": "Slovakia",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-26",
+         "id": "country-26",
+         "required": false,
+         "label": "Slovenia",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-27",
+         "id": "country-27",
+         "required": false,
+         "label": "Spain",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "country-28",
+         "id": "country-28",
+         "required": false,
+         "label": "Sweden",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "on"
+        },
+        {
+         "tag": "input",
+         "type": "range",
+         "name": "wt_captcha_slider_text",
+         "id": "wt-captcha--challenge-610dv939eku",
+         "required": true,
+         "label": "Select the number or by moving the slider.",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": ""
+        },
+        {
+         "tag": "input",
+         "type": "text",
+         "name": "wt_captcha_slider_audio",
+         "id": "",
+         "required": false,
+         "label": "••••",
+         "placeholder": "••••",
+         "visible": false,
+         "autocomplete": ""
+        },
+        {
+         "tag": "input",
+         "type": "checkbox",
+         "name": "",
+         "id": "agreeWithConditions",
+         "required": false,
+         "label": "I read, understood and agree to the terms of service, the disclaimer for this system, and the rules and conditions applicable to accessing data coming from national registers.",
+         "placeholder": "",
+         "visible": true,
+         "autocomplete": "",
+         "value": "true"
+        }
+       ],
+       "formText": "Company name Company registration number Search in all participating countries Select all | Clear all Austria Belgium Bulgaria Croatia Cyprus Czech Republic Denmark Estonia Finland France Germany Greece Hungary Ireland Italy Latvia Liechtenstein Lithuania Luxembourg Malta Netherlands Norway Poland Portugal Romania Slovakia Slovenia Spain Sweden Antispam If you cannot read text in images, please use the audio version of the antispam challenge. Audio version Select the number or by moving the slider. You’ve selected: 0 Refresh I read, understood and agree to the terms of service, the disclaimer for this system, and the rules and conditions applicable to accessing data coming from national registers. Reset Search"
+      }
+     ],
+     "loose": [],
+     "bodyText": "Finland: The business register is unavailable from 2026-10-16 17:00 to 2026-10-19 09:00. Poland: The business register is unavailable from 2026-10-16 16:00 to 2026-10-19 06:00. Find a company Welcome to the Business Registers Interconnection System (BRIS). It allows you to search for and access company information from the national business registers. Company name Company registration number Search in all participating countries Select all | Clear all Austria Belgium Bulgaria Croatia Cyprus Czech Republic Denmark Estonia Finland France Germany Greece Hungary Ireland Italy Latvia Liechtenstein Lithuania Luxembourg Malta Netherlands Norway Poland Portugal Romania Slovakia Slovenia Spain Sweden Antispam If you cannot read text in images, please use the audio version of the antispam challenge. Audio version Select the number or by moving the slider. You’ve selected: 0 Refresh I read, understood and agree to the terms of service, the disclaimer for this system, and the rules and conditions applicable to accessing data coming from national registers. Reset Search We are aware of a scam letter from a sender impersonating the European Commission and the European e-Justice Portal, asking for payment to confirm company details on the Business Registers Interconnection System (BRIS). Such a letter is a scam: do not send any money to the bank account shown. The company information provided on the European e-Justice Portal through BRIS is gathered in real time from the business registers of the Member States, without any fees for companies. If you receive a suspicious letter coming from BRIS, the European e-Justice Portal or the Commission, please contact us immediately on just-bris-helpdesk@ec.europa.eu. Never pay any money to the sender. 4.3.2 - 2026-09-30 13:38:43 -"
+    }
+   ],
+   "clickLog": [],
+   "finalUrl": "https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en"
+  }
+ ]
+}

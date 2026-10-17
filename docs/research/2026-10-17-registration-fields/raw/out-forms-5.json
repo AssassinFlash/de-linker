@@ -1,0 +1,53 @@
+{
+ "meta": {
+  "run_id": "HDAYXbespdEVNb5ox",
+  "actor_id": "MpRbnNmVAoj5RC1Ma",
+  "status": "SUCCEEDED",
+  "started_at": "2026-10-16T21:02:44.347Z",
+  "finished_at": "2026-10-16T21:03:28.413Z",
+  "dataset_id": "MXfpySu716e0fks2K",
+  "item_count": 1,
+  "saved_at_utc": "2026-10-16T21:03:35Z"
+ },
+ "items": [
+  {
+   "url": "https://www.rexel.de/register",
+   "label": "rexel-register-slow",
+   "loadedUrl": "https://www.rexel.de/register",
+   "title": "REXEL Germany",
+   "fetchedAtUtc": "2026-10-16T21:03:27.365Z",
+   "h1": [],
+   "forms": [],
+   "loose": [],
+   "iframes": [
+    "https://web.eu.dif.rexel.com/gyw/register?activeLanguage=de"
+   ],
+   "captchaHints": {
+    "recaptcha": false,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "I already have an account",
+     "h": "https://www.rexel.de/login"
+    },
+    {
+     "t": "Registrieren",
+     "h": "https://www.rexel.de/register"
+    },
+    {
+     "t": "Cookie Verwaltung",
+     "h": "https://www.rexel.de/register#managecookie"
+    }
+   ],
+   "bodyText": "Rexel Germany Ethik und Compliance Zertifikate Nachhaltigkeit Informationspflichten nach dem ElektroG und dem BattG Lieferkettensorgfaltspflichtengesetz Fremdfirmenordnung Lösungen Über Newlec Über BizLine Karriere Arbeiten bei Rexel Stellenangebote Support Kontakt FAQ Standortsuche Registrieren Retourenrichtlinien ©2026 Rexel Rexel International open_in_new | Impressum | AGB & Zusatz | Datenschutz | Sicherheitsrichtlinien | Cookie Verwaltung Ein Unternehmen der Rexel Gruppe www.rexel.com",
+   "frames": [],
+   "clickLog": [],
+   "finalUrl": "https://www.rexel.de/register"
+  }
+ ]
+}
