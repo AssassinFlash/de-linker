@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Settings;
 
+use Linker\Commerce\Mail\Identity;
+
 /**
  * Reads the values staff enter on WooCommerce → Settings → Inquiries
  * (SettingsTab). Every reader of these settings goes through this class, so a
@@ -22,7 +24,6 @@ final class Options {
 	public const TEAM_TO         = 'linker_commerce_team_to';
 	public const NOTIFY_TO       = 'linker_commerce_notify_to';
 	public const NOTIFY_FROM     = 'linker_commerce_notify_from';
-	public const ENVELOPE_SENDER = 'linker_commerce_envelope_sender';
 	public const NOTIFY_BCC      = 'linker_commerce_team_bcc';
 	public const CONTACT_NAME    = 'linker_commerce_contact_name';
 	public const CONTACT_EMAIL   = 'linker_commerce_contact_email';
@@ -59,14 +60,6 @@ final class Options {
 	public const DEFAULT_NOTIFY_FROM = 'sales@sunriverinverter.com';
 
 	/**
-	 * Ticket #288, SPF evidence 2026-10-18: sunriverinverter.com publishes
-	 * v=spf1 include:_spf.mlsend.com include:_spf.mail.hostinger.com ~all.
-	 * de-linker.com authorizes only Tencent; the envelope therefore defaults
-	 * to the Hostinger-authorized address, independently of the visible From.
-	 */
-	public const DEFAULT_ENVELOPE_SENDER = self::DEFAULT_NOTIFY_FROM;
-
-	/**
 	 * Proforma numbers read DLK-PF-YYYY-NNNN when the settings leave the prefix
 	 * empty. Live de-linker.com prints DLK-PF-YYYY-<order id>
 	 * (tv_b2b_document_reference); this site counts within the year instead of
@@ -100,31 +93,11 @@ final class Options {
 	}
 
 	/**
-	 * The sender address of internal notifications, independent of their recipient.
-	 */
-	public function notify_from(): string {
-		$from = sanitize_email( $this->text( self::NOTIFY_FROM ) );
-		return is_email( $from ) ? $from : self::DEFAULT_NOTIFY_FROM;
-	}
-
-	/**
 	 * One identity for Woo internal notifications and plain wp_mail alerts.
-	 *
-	 * @return array{name: string, email: string}
 	 */
-	public function notify_sender(): array {
-		return array(
-			'name'  => 'Linker',
-			'email' => $this->notify_from(),
-		);
-	}
-
-	/**
-	 * PHPMailer's Sender for every delivery, including Outbox retries.
-	 */
-	public function envelope_sender(): string {
-		$sender = sanitize_email( $this->text( self::ENVELOPE_SENDER ) );
-		return is_email( $sender ) ? $sender : self::DEFAULT_ENVELOPE_SENDER;
+	public function notify_sender(): Identity {
+		$from = sanitize_email( $this->text( self::NOTIFY_FROM ) );
+		return new Identity( 'Linker', is_email( $from ) ? $from : self::DEFAULT_NOTIFY_FROM );
 	}
 
 	/**

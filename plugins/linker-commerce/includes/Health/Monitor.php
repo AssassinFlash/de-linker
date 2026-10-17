@@ -17,7 +17,7 @@ use WP_Error;
  * docs/specs/14-solution-configurator.md). A service that does not answer
  * with HTTP 200 triggers one message to the internal notification address
  * (Options::notify_to(), with its blind copies), from the internal sender
- * (Options::notify_from()), through wp_mail() — the
+ * (Options::notify_sender()), through wp_mail() — the
  * Outbox takes it from there (queued, retried). Nothing is sent when every
  * service answers. WordPress has no built-in monitor for external services,
  * so the check itself is this plugin's; everything around it is WordPress's
@@ -180,7 +180,7 @@ final class Monitor {
 		// Plain wp_mail() needs an explicit sender; WC_Email installs its own
 		// sender filters for the other internal notifications (#286).
 		$sender  = $this->options->notify_sender();
-		$headers = array( sprintf( 'From: %s <%s>', $sender['name'], $sender['email'] ) );
+		$headers = array( sprintf( 'From: %s <%s>', $sender->name, $sender->email ) );
 		$bcc     = $this->options->notify_bcc();
 		if ( array() !== $bcc ) {
 			$headers[] = 'Bcc: ' . implode( ', ', $bcc );

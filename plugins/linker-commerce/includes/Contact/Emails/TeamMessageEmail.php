@@ -68,7 +68,7 @@ final class TeamMessageEmail extends ContactEmail {
 	 * @param string $from_name Sender name passed by WordPress.
 	 */
 	public function get_from_name( $from_name = '' ) {
-		return $this->options->notify_sender()['name'];
+		return $this->options->notify_sender()->name;
 	}
 
 	/**
@@ -77,7 +77,7 @@ final class TeamMessageEmail extends ContactEmail {
 	 * @param string $from_email Sender address passed by WordPress.
 	 */
 	public function get_from_address( $from_email = '' ) {
-		return $this->options->notify_sender()['email'];
+		return $this->options->notify_sender()->email;
 	}
 
 	/**

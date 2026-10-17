@@ -1,0 +1,15 @@
+{
+  "before_revision": "2a06c6dc0344db83c33cb818d5afad9f604b4a3c",
+  "before_pairs_including_obsolete": 864,
+  "after_pairs_including_obsolete": 861,
+  "unchanged_shared_pairs": 861,
+  "changed_msgstr": [],
+  "removed_msgids": [
+    "Envelope sender",
+    "Mail delivery",
+    "Used for delivery and bounces for all site emails. Choose an address whose domain authorizes Hostinger in its SPF record. The visible From and Reply-To stay unchanged."
+  ],
+  "origin_main_pairs_preserved": 861,
+  "pot_active_entries": 825,
+  "note": "Includes obsolete entries so translations no longer referenced by source remain preserved. Only the three removed envelope-setting entries were deleted."
+}

@@ -61,7 +61,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// The email classes extend WC_Email, which WooCommerce loads with its mailer.
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::ENVELOPE_SENDER, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
+		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest' ) as $id ) {
@@ -97,57 +97,96 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Woo's native settings save stores the sender and preserves the existing prefix.
+	 * Woo's native settings save stores the internal sender.
 	 */
-	public function test_native_settings_save_keeps_the_sender_and_proforma_prefix(): void {
-		$fields = array_values(
-			array_filter(
-				( new SettingsTab( new JobStore() ) )->fields(),
-				static fn ( array $field ): bool => in_array( $field['id'], array( Options::NOTIFY_FROM, Options::ENVELOPE_SENDER, Options::PROFORMA_PREFIX ), true )
-			)
-		);
-		WC_Admin_Settings::save_fields(
-			$fields,
-			array(
-				Options::NOTIFY_FROM     => 'alerts@example.test',
-				Options::ENVELOPE_SENDER => 'bounce@example.test',
-				Options::PROFORMA_PREFIX => '--DLK-PF--',
-			)
-		);
+	public function test_native_settings_save_keeps_the_sender(): void {
+		$this->save_setting( Options::NOTIFY_FROM, 'alerts@example.test' );
 		$this->assertSame( 'alerts@example.test', get_option( Options::NOTIFY_FROM ) );
-		$this->assertSame( 'alerts@example.test', ( new Options() )->notify_from() );
-		$this->assertSame( 'bounce@example.test', ( new Options() )->envelope_sender() );
+		$this->assertSame( 'alerts@example.test', ( new Options() )->notify_sender()->email );
+	}
+
+	/**
+	 * Woo's native settings save trims only the prefix's edge hyphens.
+	 */
+	public function test_native_settings_save_trims_the_proforma_prefix(): void {
+		$this->save_setting( Options::PROFORMA_PREFIX, '--DLK-PF--' );
 		$this->assertSame( 'DLK-PF', get_option( Options::PROFORMA_PREFIX ) );
 	}
 
 	/**
-	 * New customer, VAT check, new inquiry, contact form message, daily
-	 * digest and health alert: each is one queued message To the internal
-	 * address with the blind copy, sent from the internal sender, and none of
-	 * them names sales@de-linker.com as a recipient.
+	 * New-customer notifications go to the team; replies go to the customer.
 	 *
 	 * @testWith ["", "sales@sunriverinverter.com"]
 	 *           ["alerts@example.test", "alerts@example.test"]
 	 *
-	 * @param string $saved_from Saved internal sender (empty uses the default).
-	 * @param string $from       Expected sender, independently of To.
+	 * @param string $saved_from Saved internal sender.
+	 * @param string $from       Effective sender.
 	 */
-	public function test_every_internal_notification_goes_to_the_internal_address_only( string $saved_from, string $from ): void {
+	public function test_new_customer_notification_routing( string $saved_from, string $from ): void {
 		update_option( Options::NOTIFY_FROM, $saved_from );
-		$bcc    = 'Bcc: ' . get_option( Options::NOTIFY_BCC );
-		$marker = self::newest_mail_job();
-		$plugin = WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php';
-		$emails = WC()->mailer()->get_emails();
-
-		$new_customer = $emails[ NewCustomerEmail::class ] ?? null;
-		$vat_review   = $emails[ VatReviewEmail::class ] ?? null;
-		$this->assertInstanceOf( NewCustomerEmail::class, $new_customer, 'The new-customer email is registered with WooCommerce.' );
-		$this->assertInstanceOf( VatReviewEmail::class, $vat_review, 'The VAT check email is registered with WooCommerce.' );
-
 		$customer = $this->customer();
-		$new_customer->trigger( $customer->get_id() );
-		$vat_review->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
-		$order = $this->send_inquiry( $customer, array( array( $this->product( '100' ), 1 ) ) );
+		$email    = WC()->mailer()->get_emails()[ NewCustomerEmail::class ];
+		$this->assertInstanceOf( NewCustomerEmail::class, $email );
+		$marker = self::newest_mail_job();
+		$email->trigger( $customer->get_id() );
+		$row = $this->internal_message( $marker, 'New customer: Linker Integration Test GmbH', $from );
+		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $row['headers'], NewCustomerEmail::ID );
+	}
+
+	/**
+	 * VAT-review notifications preserve the customer's Reply-To.
+	 *
+	 * @testWith ["", "sales@sunriverinverter.com"]
+	 *           ["alerts@example.test", "alerts@example.test"]
+	 *
+	 * @param string $saved_from Saved internal sender.
+	 * @param string $from       Effective sender.
+	 */
+	public function test_vat_review_notification_routing( string $saved_from, string $from ): void {
+		update_option( Options::NOTIFY_FROM, $saved_from );
+		$customer = $this->customer();
+		$email    = WC()->mailer()->get_emails()[ VatReviewEmail::class ];
+		$this->assertInstanceOf( VatReviewEmail::class, $email );
+		$marker = self::newest_mail_job();
+		$email->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
+		$row = $this->internal_message( $marker, 'VAT check changed: Linker Integration Test GmbH', $from );
+		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $row['headers'], VatReviewEmail::ID );
+	}
+
+	/**
+	 * Inquiry notifications use the internal sender and customer Reply-To;
+	 * the customer's receipt keeps the public sender.
+	 *
+	 * @testWith ["", "sales@sunriverinverter.com"]
+	 *           ["alerts@example.test", "alerts@example.test"]
+	 *
+	 * @param string $saved_from Saved internal sender.
+	 * @param string $from       Effective sender.
+	 */
+	public function test_new_inquiry_notification_routing( string $saved_from, string $from ): void {
+		update_option( Options::NOTIFY_FROM, $saved_from );
+		$customer = $this->customer();
+		$marker   = self::newest_mail_job();
+		$order    = $this->send_inquiry( $customer, array( array( $this->product( '100' ), 1 ) ) );
+		$row      = $this->internal_message( $marker, 'New inquiry #' . $order->get_order_number() . ' from ', $from );
+		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $row['headers'], NewInquiryEmail::ID );
+		$receipt = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $customer->get_billing_email() ) === $row['to'] ) );
+		$this->assertCount( 1, $receipt );
+		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
+		$this->assertStringNotContainsString( self::INTERNAL, implode( "\n", $receipt[0]['headers'] ) );
+	}
+
+	/**
+	 * Contact notifications reply to the visitor; their receipt replies to Linker.
+	 *
+	 * @testWith ["", "sales@sunriverinverter.com"]
+	 *           ["alerts@example.test", "alerts@example.test"]
+	 *
+	 * @param string $saved_from Saved internal sender.
+	 * @param string $from       Effective sender.
+	 */
+	public function test_contact_notification_routing( string $saved_from, string $from ): void {
+		update_option( Options::NOTIFY_FROM, $saved_from );
 		$this->as_user( 0 );
 		$submission = Submission::from_post(
 			array(
@@ -158,58 +197,60 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 			)
 		);
 		$this->assertInstanceOf( Submission::class, $submission );
+		$marker = self::newest_mail_job();
+		$plugin = WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php';
 		( new TeamMessageEmail( $plugin, new Options() ) )->notify( $submission );
 		( new ReceiptEmail( $plugin ) )->notify( $submission );
-		( new DigestModule( $plugin, new JobStore() ) )->run();
+		$row = $this->internal_message( $marker, 'New message from Maria Beispiel', $from );
+		$this->assertContains( 'Reply-to: Maria Beispiel <' . $submission->email . '>', $row['headers'], TeamMessageEmail::ID );
+		$receipt = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $submission->email ) === $row['to'] ) );
+		$this->assertCount( 1, $receipt );
+		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
+		$this->assertContains( 'Reply-to: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
+	}
+
+	/**
+	 * The daily digest uses the internal sender and adds no Reply-To.
+	 *
+	 * @testWith ["", "sales@sunriverinverter.com"]
+	 *           ["alerts@example.test", "alerts@example.test"]
+	 *
+	 * @param string $saved_from Saved internal sender.
+	 * @param string $from       Effective sender.
+	 */
+	public function test_digest_notification_routing( string $saved_from, string $from ): void {
+		update_option( Options::NOTIFY_FROM, $saved_from );
+		$marker = self::newest_mail_job();
 		$this->later(
 			static function (): void {
 				wp_clear_scheduled_hook( Scheduler::HOOK );
-				( new \Linker\Commerce\Digest\Scheduler() )->ensure();
+				( new Scheduler() )->ensure();
 			}
 		);
-		// A port with no listener refuses at once: both services fail.
+		( new DigestModule( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new JobStore() ) )->run();
+		$row = $this->internal_message( $marker, 'Daily digest, ', $from );
+		$this->assert_no_reply_to( $row['headers'] );
+	}
+
+	/**
+	 * Each failing service queues its own internal alert without a Reply-To.
+	 *
+	 * @testWith ["", "sales@sunriverinverter.com"]
+	 *           ["alerts@example.test", "alerts@example.test"]
+	 *
+	 * @param string $saved_from Saved internal sender.
+	 * @param string $from       Effective sender.
+	 */
+	public function test_health_notification_routing( string $saved_from, string $from ): void {
+		update_option( Options::NOTIFY_FROM, $saved_from );
 		update_option( Monitor::GENIE_URL_OPTION, 'http://127.0.0.1:9' );
 		update_option( Monitor::ENGINE_URL_OPTION, 'http://127.0.0.1:9' );
-		/** The monitor's own daily event (Monitor::HOOK), as WP-Cron delivers it.
-		 *
-		 * @since 0.2.0
-		 */
-		do_action( Monitor::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the monitor's own hook constant.
-
-		$rows     = $this->jobs_after( $marker );
-		$internal = array(
-			NewCustomerEmail::ID => 'New customer: Linker Integration Test GmbH',
-			VatReviewEmail::ID   => 'VAT check changed: Linker Integration Test GmbH',
-			NewInquiryEmail::ID  => 'New inquiry #' . $order->get_order_number() . ' from ',
-			TeamMessageEmail::ID => 'New message from Maria Beispiel',
-			'linker_digest'      => 'Daily digest, ',
-			'health_genie'       => 'The Genie service failed its health check',
-			'health_engine'      => 'The engine service failed its health check',
-		);
-		foreach ( $internal as $email_id => $subject ) {
-			$matching = array_values( array_filter( $rows, static fn ( array $row ): bool => str_starts_with( $row['subject'], $subject ) ) );
-			$this->assertCount( 1, $matching, "One queued message: {$subject}" );
-			$this->assertSame( array( self::INTERNAL ), $matching[0]['to'], "{$subject} goes to the internal address alone." );
-			$this->assertContains( $bcc, $matching[0]['headers'], "{$subject} carries the blind copy of the settings." );
-			$this->assertStringNotContainsString( self::PUBLIC, implode( "\n", array_filter( $matching[0]['headers'], static fn ( string $line ): bool => 0 !== stripos( $line, 'From:' ) ) ), "{$subject} names sales@de-linker.com in no recipient header." );
-			$this->assertContains( 'From: Linker <' . $from . '>', $matching[0]['headers'], "{$subject} is sent from the internal sender." );
-			if ( in_array( $email_id, array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID ), true ) ) {
-				$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $matching[0]['headers'], 'Replies still go to the customer.' );
-			} elseif ( TeamMessageEmail::ID === $email_id ) {
-				$this->assertContains( 'Reply-to: Maria Beispiel <' . $submission->email . '>', $matching[0]['headers'], 'Replies still go to the visitor.' );
-			} else {
-				$this->assertSame( array(), array_values( array_filter( $matching[0]['headers'], static fn ( string $line ): bool => str_starts_with( strtolower( $line ), 'reply-to:' ) ) ), $email_id . ' adds no Reply-To.' );
-			}
+		$marker = self::newest_mail_job();
+		( new Monitor( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() ) )->run();
+		foreach ( array( 'The Genie service failed its health check', 'The engine service failed its health check' ) as $subject ) {
+			$row = $this->internal_message( $marker, $subject, $from );
+			$this->assert_no_reply_to( $row['headers'] );
 		}
-
-		$receipt = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $customer->get_billing_email() ) === $row['to'] ) );
-		$this->assertNotSame( array(), $receipt, 'The customer got their own receipt of the inquiry.' );
-		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'], 'Customer mail is sent from the team mailbox.' );
-		$this->assertStringNotContainsString( self::INTERNAL, implode( "\n", $receipt[0]['headers'] ), 'Customer mail never names the internal address.' );
-		$contact_receipt = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $submission->email ) === $row['to'] ) );
-		$this->assertCount( 1, $contact_receipt );
-		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $contact_receipt[0]['headers'], 'Contact receipts keep WooCommerce\'s sender after the internal notification.' );
-		$this->assertContains( 'Reply-to: Linker <' . self::PUBLIC . '>', $contact_receipt[0]['headers'], 'Customer replies still go to WooCommerce\'s sender.' );
 	}
 
 	/**
@@ -237,6 +278,45 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 			$this->assertStringContainsString( 'mailto:' . self::PUBLIC, $html, "{$shortcode} links the team mailbox." );
 			$this->assertStringNotContainsString( self::INTERNAL, $html, "{$shortcode} never shows the internal address." );
 		}
+	}
+
+	/**
+	 * Saves one field through Woo's native settings API.
+	 *
+	 * @param string $id    Setting id.
+	 * @param string $value Submitted value.
+	 */
+	private function save_setting( string $id, string $value ): void {
+		$fields = array_values( array_filter( ( new SettingsTab( new JobStore() ) )->fields(), static fn ( array $field ): bool => $id === $field['id'] ) );
+		WC_Admin_Settings::save_fields( $fields, array( $id => $value ) );
+	}
+
+	/**
+	 * The queued internal message with its common recipient and sender contract.
+	 *
+	 * @param int    $marker  Queue marker before the trigger.
+	 * @param string $subject Expected subject prefix.
+	 * @param string $from    Expected sender.
+	 * @return array{subject: string, to: list<string>, headers: list<string>}
+	 */
+	private function internal_message( int $marker, string $subject, string $from ): array {
+		$matching = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => str_starts_with( $row['subject'], $subject ) ) );
+		$this->assertCount( 1, $matching, "One queued message: {$subject}" );
+		$row = $matching[0];
+		$this->assertSame( array( self::INTERNAL ), $row['to'] );
+		$this->assertContains( 'Bcc: ' . get_option( Options::NOTIFY_BCC ), $row['headers'] );
+		$this->assertContains( 'From: Linker <' . $from . '>', $row['headers'] );
+		$this->assertStringNotContainsString( self::PUBLIC, implode( "\n", array_filter( $row['headers'], static fn ( string $line ): bool => 0 !== stripos( $line, 'From:' ) ) ) );
+		return $row;
+	}
+
+	/**
+	 * Digest and health alerts do not add a Reply-To header.
+	 *
+	 * @param string[] $headers Queued headers.
+	 */
+	private function assert_no_reply_to( array $headers ): void {
+		$this->assertSame( array(), array_values( array_filter( $headers, static fn ( string $line ): bool => str_starts_with( strtolower( $line ), 'reply-to:' ) ) ) );
 	}
 
 	/**

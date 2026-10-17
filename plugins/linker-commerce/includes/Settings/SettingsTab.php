@@ -75,24 +75,6 @@ final class SettingsTab {
 	public function fields(): array {
 		return array(
 			array(
-				'title' => __( 'Mail delivery', 'linker-commerce' ),
-				'type'  => 'title',
-				'id'    => 'linker_commerce_mail_delivery',
-			),
-			array(
-				'title'       => __( 'Envelope sender', 'linker-commerce' ),
-				'desc'        => __( 'Used for delivery and bounces for all site emails. Choose an address whose domain authorizes Hostinger in its SPF record. The visible From and Reply-To stay unchanged.', 'linker-commerce' ),
-				'id'          => Options::ENVELOPE_SENDER,
-				'type'        => 'email',
-				'default'     => Options::DEFAULT_ENVELOPE_SENDER,
-				'placeholder' => Options::DEFAULT_ENVELOPE_SENDER,
-				'autoload'    => false,
-			),
-			array(
-				'type' => 'sectionend',
-				'id'   => 'linker_commerce_mail_delivery',
-			),
-			array(
 				'title' => __( 'Team mailbox', 'linker-commerce' ),
 				'type'  => 'title',
 				'desc'  => __( 'The address customers see: on the Proforma, on the website and in Genie\'s answers. Internal notifications do not go here.', 'linker-commerce' ),
