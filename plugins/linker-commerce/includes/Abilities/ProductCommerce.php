@@ -10,7 +10,9 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Abilities;
 
 use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Storefront\ProductView;
 use WC_Product;
 
 /**
@@ -22,13 +24,11 @@ use WC_Product;
  *
  * Prices follow the account (#242, docs/specs/13-genie.md 目标 8): Genie calls
  * these abilities with the customer's short-lived token (linker-tools'
- * UserContext), so "the current visitor" is the customer, and an approved
- * account reads the price exactly as its product page prints it
- * (`price_text`, WooCommerce's own price HTML as text, in the turn's
- * language). Every other visitor reads why there is none (`price_reason`):
- * the guest must sign in, the pending account waits for approval, the
- * restricted account has no prices, a product quoted per project shows none
- * to anyone, and a product without a stored price is on request.
+ * UserContext), so "the current visitor" is the customer. `price_line` is
+ * what the customer's own product page prints where the price stands
+ * (ProductView::price_html, in the turn's language): the price for an approved
+ * account, otherwise the page's sentence; `price_reason` names why there is no
+ * price, in the page's order (CommerceState::reason on its PAGE surface).
  */
 final class ProductCommerce {
 
@@ -38,11 +38,6 @@ final class ProductCommerce {
 	 * rejected account cannot sign in, Approval::gate_login).
 	 */
 	public const REASONS = array( 'login', 'pending', 'restricted', 'project', 'unpriced' );
-
-	/**
-	 * The WordPress locale of the German turn (linker-i18n's Setup: the Sie form).
-	 */
-	private const GERMAN_LOCALE = 'de_DE_formal';
 
 	/**
 	 * JSON Schema of the commerce object.
@@ -61,9 +56,9 @@ final class ProductCommerce {
 					'type'        => 'string',
 					'description' => __( 'Stored price when it is visible.', 'linker-commerce' ),
 				),
-				'price_text'    => array(
+				'price_line'    => array(
 					'type'        => 'string',
-					'description' => __( 'The price as the product page prints it, when it is visible.', 'linker-commerce' ),
+					'description' => __( 'What the product page prints where the price stands, for this visitor.', 'linker-commerce' ),
 				),
 				'price_reason'  => array(
 					'type'        => 'string',
@@ -89,8 +84,8 @@ final class ProductCommerce {
 	 *
 	 * @param int             $product_id Product ID.
 	 * @param WC_Product|null $product    The product, when already loaded.
-	 * @param string          $lang       The turn's language, 'en' or 'de'.
-	 * @return array{price_visible: bool, price?: string, price_text?: string, price_reason?: string, in_stock: bool, rfq_only: bool}
+	 * @param 'en'|'de'       $lang       The turn's language (ProductText::lang).
+	 * @return array{price_visible: bool, price?: string, price_line?: string, price_reason?: string, in_stock: bool, rfq_only: bool}
 	 */
 	public static function of( int $product_id, ?WC_Product $product = null, string $lang = 'en' ): array {
 		if ( ! $product instanceof WC_Product ) {
@@ -106,14 +101,13 @@ final class ProductCommerce {
 			'price_visible' => $visible,
 			'in_stock'      => $product->is_in_stock(),
 			'rfq_only'      => $state->is_rfq_only( $product ),
+			'price_line'    => self::price_line( $product, $state, $lang ),
 		);
 		if ( $visible ) {
 			$commerce['price'] = (string) $product->get_price( 'edit' );
 		}
-		$reason = $state->page_reason( $product );
-		if ( null === $reason ) {
-			$commerce['price_text'] = self::price_text( $product, $lang );
-		} else {
+		$reason = $state->reason( $product, CommerceState::PAGE );
+		if ( null !== $reason ) {
 			$commerce['price_reason'] = self::reason( $reason, $state );
 		}
 
@@ -134,34 +128,45 @@ final class ProductCommerce {
 	}
 
 	/**
-	 * The product page's price line as text: WooCommerce's price HTML, whose
-	 * money format follows the language (Vocabulary\LocaleFormat reads the
-	 * locale: "€1,680.00", "1.680,00 €"), so a German turn makes it inside
-	 * the German locale.
+	 * The product page's price line as text, in the turn's language: the
+	 * money format (Vocabulary\LocaleFormat: "€1,680.00", "1.680,00 €") and
+	 * the page's sentences ("Nettopreis nach Partner-Anmeldung") follow the
+	 * locale, so the line is made inside it (Mail\LocaleSwitch, which reloads
+	 * this plugin's catalog for the switch).
 	 *
-	 * @param WC_Product $product The product.
-	 * @param string     $lang    'en' or 'de'.
+	 * @param WC_Product    $product The product.
+	 * @param CommerceState $state   The price rule.
+	 * @param 'en'|'de'     $lang    Language.
 	 */
-	private static function price_text( WC_Product $product, string $lang ): string {
-		$switched = 'de' === $lang && switch_to_locale( self::GERMAN_LOCALE );
-		$html     = (string) $product->get_price_html();
-		if ( $switched ) {
-			restore_previous_locale();
+	private static function price_line( WC_Product $product, CommerceState $state, string $lang ): string {
+		$view   = new ProductView( $state );
+		$locale = ProductText::locale( $lang );
+		if ( determine_locale() === $locale ) {
+			$html = $view->price_html( $product );
+		} else {
+			$switch = new LocaleSwitch();
+			$switch->to( $locale );
+			try {
+				$html = $view->price_html( $product );
+			} finally {
+				$switch->back();
+			}
 		}
 		return trim( html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
 	}
 
 	/**
-	 * The card's reason: the product page's (CommerceState::page_reason), with
-	 * the approval named.
+	 * The card's reason code, with the approval named.
 	 *
 	 * @param string        $reason One of the CommerceState reasons.
 	 * @param CommerceState $state  The price rule.
 	 */
 	private static function reason( string $reason, CommerceState $state ): string {
-		if ( CommerceState::APPROVAL !== $reason ) {
-			return CommerceState::LOGIN === $reason ? 'login' : ( CommerceState::PROJECT === $reason ? 'project' : 'unpriced' );
-		}
-		return Approval::PENDING === $state->current_approval_status() ? 'pending' : 'restricted';
+		return match ( $reason ) {
+			CommerceState::LOGIN    => 'login',
+			CommerceState::PROJECT  => 'project',
+			CommerceState::APPROVAL => Approval::PENDING === $state->current_approval_status() ? 'pending' : 'restricted',
+			default                 => 'unpriced',
+		};
 	}
 }

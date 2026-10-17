@@ -24,18 +24,16 @@ use WP_Mock;
 final class CommerceStateTest extends TestCase {
 
 	/**
-	 * Whether linker-i18n's language layer listens in the current test.
-	 *
-	 * @var bool
-	 */
-	private bool $language_layer = false;
-
-	/**
-	 * Without the language layer a product's mode is its own.
+	 * The products of these tests are English: each answers for itself.
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		WP_Mock::userFunction( 'has_filter', array( 'return' => fn (): bool => $this->language_layer ) );
+		$this->english_products(
+			array(
+				1957 => 1957,
+				4107 => 4107,
+			)
+		);
 	}
 
 	/**
@@ -74,8 +72,11 @@ final class CommerceStateTest extends TestCase {
 	}
 
 	/**
-	 * Guests see no prices; approved customers see them except for products
-	 * quoted per project.
+	 * The card surface (WooCommerce's own price HTML, the solution draft's and
+	 * the inquiry's lines, the Store API) names the product before the account:
+	 * live 2026-10-18, a guest's Store API answer for 1957 has the price_html
+	 * "Quoted per project". Guests see no prices; approved customers see them
+	 * except for products quoted per project.
 	 *
 	 * @testWith [false, true, "orderable", "100", "login"]
 	 *           [true, true, "orderable", "", "unpriced"]
@@ -98,7 +99,7 @@ final class CommerceStateTest extends TestCase {
 		$state   = new CommerceState( new Approval() );
 		$product = $this->product( 4107, 0, $price );
 
-		$this->assertSame( $reason, $state->reason( $product ) );
+		$this->assertSame( $reason, $state->reason( $product, CommerceState::CARD ) );
 	}
 
 	/**
@@ -112,16 +113,19 @@ final class CommerceStateTest extends TestCase {
 		$this->approval_meta( array() );
 		$state = new CommerceState( new Approval() );
 
-		$this->assertSame( CommerceState::APPROVAL, $state->reason( $this->product( 4107 ) ) );
+		$this->assertSame( CommerceState::APPROVAL, $state->reason( $this->product( 4107 ), CommerceState::CARD ) );
+		$this->assertSame( CommerceState::APPROVAL, $state->reason( $this->product( 4107 ), CommerceState::PAGE ) );
 		$this->assertSame( CommerceState::APPROVAL, $state->visitor_reason() );
 		$this->assertFalse( $state->visitor_sees_prices() );
 		$this->assertSame( Approval::PENDING, $state->current_approval_status() );
 	}
 
 	/**
-	 * The product page decides in its own order: an account without prices
-	 * reads its account's reason before the product's, and an approved one
-	 * reads "quoted per project" or "on request" where there is no price.
+	 * The page surface (the product page, the comparison page, Genie's card)
+	 * names the account before the product: live 2026-10-18, the guest's
+	 * product page of 1957 reads "Net price after partner sign-in", not
+	 * "Quoted per project". An approved account reads "quoted per project" or
+	 * "on request" where there is no price.
 	 *
 	 * @testWith [false, null, "orderable", "1680", "login"]
 	 *           [false, null, "rfq_only", "33250", "login"]
@@ -137,14 +141,14 @@ final class CommerceStateTest extends TestCase {
 	 * @param string      $price     Stored price.
 	 * @param string|null $reason    Expected reason.
 	 */
-	public function test_page_reason( bool $logged_in, ?string $status, string $mode, string $price, ?string $reason ): void {
+	public function test_the_page_names_the_account_first( bool $logged_in, ?string $status, string $mode, string $price, ?string $reason ): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => $mode ) );
 		$this->approval_meta( null === $status ? array() : array( Approval::STATUS_META => $status ) );
 		$this->signed_in( $logged_in ? 5 : 0 );
 		$state = new CommerceState( new Approval() );
 
-		$this->assertSame( $reason, $state->page_reason( $this->product( 4107, 0, $price ) ) );
+		$this->assertSame( $reason, $state->reason( $this->product( 4107, 0, $price ), CommerceState::PAGE ) );
 	}
 
 	/**
@@ -160,12 +164,18 @@ final class CommerceStateTest extends TestCase {
 			)
 		);
 		// linker-i18n swaps a German product for its English one.
-		$this->language_layer = true;
-		$this->filter_returns( 'linker_commerce_facts_product_id', 1957, array( 6800 ) );
-		$this->filter_returns( 'linker_commerce_facts_product_id', 4107, array( 4107 ) );
+		$this->english_products( array( 6800 => 1957 ) );
 		$state = new CommerceState( new Approval() );
 
 		$this->assertTrue( $state->is_rfq_only( $this->product( 6800 ) ) );
 		$this->assertFalse( $state->is_rfq_only( $this->product( 4107 ) ) );
+	}
+
+	/**
+	 * A surface the rule does not know is refused, not guessed.
+	 */
+	public function test_an_unknown_surface_is_refused(): void {
+		$this->expectException( \InvalidArgumentException::class );
+		( new CommerceState( new Approval() ) )->reason( $this->product( 4107 ), 'shelf' );
 	}
 }

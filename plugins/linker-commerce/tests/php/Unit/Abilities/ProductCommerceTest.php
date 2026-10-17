@@ -50,10 +50,18 @@ final class ProductCommerceTest extends TestCase {
 	 * @param string|null $status Approval state; null for a guest.
 	 * @param string      $mode   The product's mode (CommerceState::MODE_META).
 	 */
-	private function visitor( ?string $status, string $mode = 'orderable' ): void {
+	private function visitor( ?string $status, string $mode = 'orderable', string $locale = 'en_US' ): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => null !== $status ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => $mode ) );
-		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
+		$this->english_products( array( 4107 => 4107 ) );
+		$this->plain_text();
+		// The request runs in English; a German turn's line is made inside
+		// the German locale (Mail\LocaleSwitch).
+		$this->reload_plugin_textdomain();
+		if ( 'en_US' !== $locale ) {
+			$this->allow_locale_switch( $locale );
+			WP_Mock::userFunction( 'unload_textdomain', array( 'times' => '0+' ) );
+		}
 		$this->approval_meta( null === $status ? array() : array( Approval::STATUS_META => $status ) );
 		$this->signed_in( null === $status ? 0 : 5 );
 		// WordPress's own: strip_tags() after removing script and style bodies.
@@ -61,13 +69,14 @@ final class ProductCommerceTest extends TestCase {
 	}
 
 	/**
-	 * The four account states: only an approved account reads the price, as the
-	 * product page prints it; the others read why there is none.
+	 * The four account states: each reads the product page's own line — the
+	 * approved account the price, the others the page's sentence — and the
+	 * reason there is no price.
 	 *
 	 * @testWith ["approved", true, "€1,680.00", null]
-	 *           ["pending", false, null, "pending"]
-	 *           ["restricted", false, null, "restricted"]
-	 *           [null, false, null, "login"]
+	 *           ["pending", false, "Prices after approval", "pending"]
+	 *           ["restricted", false, "Not available for your account", "restricted"]
+	 *           [null, false, "Net price after partner sign-in", "login"]
 	 *
 	 * @param string|null $status  Approval state; null for a guest.
 	 * @param bool        $visible Whether the price is visible.
@@ -81,7 +90,7 @@ final class ProductCommerceTest extends TestCase {
 
 		$this->assertSame( $visible, $commerce['price_visible'] );
 		$this->assertSame( $visible ? '1680' : null, $commerce['price'] ?? null );
-		$this->assertSame( $text, $commerce['price_text'] ?? null );
+		$this->assertSame( $text, $commerce['price_line'] ?? null );
 		$this->assertSame( $reason, $commerce['price_reason'] ?? null );
 		$this->assertFalse( $commerce['rfq_only'] );
 	}
@@ -90,31 +99,32 @@ final class ProductCommerceTest extends TestCase {
 	 * A product quoted per project shows no price even to an approved account
 	 * (live product 1957), and the card says what its product page says: the
 	 * approved account reads "quoted per project", the others their own reason
-	 * first, as on the page (CommerceState::page_reason).
+	 * first, as on the page (CommerceState::reason on its PAGE surface).
 	 *
-	 * @testWith ["approved", "project"]
-	 *           ["pending", "pending"]
-	 *           ["restricted", "restricted"]
-	 *           [null, "login"]
+	 * @testWith ["approved", "project", "Quoted per project"]
+	 *           ["pending", "pending", "Prices after approval"]
+	 *           ["restricted", "restricted", "Not available for your account"]
+	 *           [null, "login", "Net price after partner sign-in"]
 	 *
 	 * @param string|null $status Approval state; null for a guest.
 	 * @param string      $reason Why there is no price.
+	 * @param string      $line   The page's sentence.
 	 */
-	public function test_a_product_quoted_per_project_shows_no_price( ?string $status, string $reason ): void {
+	public function test_a_product_quoted_per_project_shows_no_price( ?string $status, string $reason, string $line ): void {
 		$this->visitor( $status, CommerceState::RFQ_ONLY );
 
 		$commerce = ProductCommerce::of( 4107, $this->product() );
 
 		$this->assertFalse( $commerce['price_visible'] );
 		$this->assertArrayNotHasKey( 'price', $commerce );
-		$this->assertArrayNotHasKey( 'price_text', $commerce );
+		$this->assertSame( $line, $commerce['price_line'] ?? null );
 		$this->assertSame( $reason, $commerce['price_reason'] ?? null );
 		$this->assertTrue( $commerce['rfq_only'] );
 	}
 
 	/**
-	 * An approved account on a product without a stored price reads "price on
-	 * request", never an empty price.
+	 * An approved account on a product without a stored price reads the
+	 * reason "unpriced"; the line is WooCommerce's empty-price text.
 	 */
 	public function test_an_unpriced_product_says_so(): void {
 		$this->visitor( Approval::APPROVED );
@@ -122,30 +132,22 @@ final class ProductCommerceTest extends TestCase {
 		$commerce = ProductCommerce::of( 4107, $this->product( '' ) );
 
 		$this->assertTrue( $commerce['price_visible'] );
-		$this->assertArrayNotHasKey( 'price_text', $commerce );
 		$this->assertSame( 'unpriced', $commerce['price_reason'] ?? null );
 	}
 
 	/**
-	 * A German turn reads the price the German product page prints: the
-	 * formatting follows the language (LocaleFormat), so the line is made
-	 * inside the German locale and the locale is restored afterwards.
+	 * A German turn reads the line the German product page prints: the
+	 * formatting and the sentences follow the language, so the line is made
+	 * inside the German locale (the switch expects de_DE_formal; the money
+	 * format itself is LocaleFormat's, pinned on the instance by
+	 * GeniePricesTest).
 	 */
 	public function test_a_german_turn_reads_the_german_price_line(): void {
-		$this->visitor( Approval::APPROVED );
-		WP_Mock::userFunction(
-			'switch_to_locale',
-			array(
-				'args'   => array( 'de_DE_formal' ),
-				'times'  => 1,
-				'return' => true,
-			)
-		);
-		WP_Mock::userFunction( 'restore_previous_locale', array( 'times' => 1 ) );
+		$this->visitor( Approval::APPROVED, 'orderable', 'de_DE_formal' );
 
 		$commerce = ProductCommerce::of( 4107, $this->product(), 'de' );
 
-		$this->assertSame( '€1,680.00', $commerce['price_text'] ?? null );
+		$this->assertSame( '€1,680.00', $commerce['price_line'] ?? null );
 	}
 
 	/**
@@ -155,7 +157,7 @@ final class ProductCommerceTest extends TestCase {
 		WP_Mock::passthruFunction( '__' );
 		$schema = ProductCommerce::schema();
 
-		$this->assertSame( array( 'price_visible', 'price', 'price_text', 'price_reason', 'in_stock', 'rfq_only' ), array_keys( $schema['properties'] ) );
+		$this->assertSame( array( 'price_visible', 'price', 'price_line', 'price_reason', 'in_stock', 'rfq_only' ), array_keys( $schema['properties'] ) );
 		$this->assertSame( array( 'login', 'pending', 'restricted', 'project', 'unpriced' ), $schema['properties']['price_reason']['enum'] );
 		$this->assertFalse( $schema['additionalProperties'] );
 	}

@@ -94,7 +94,7 @@ final class DraftSummary {
 	private function draft_has_unpriced_lines(): bool {
 		foreach ( WC()->cart->get_cart() as $line ) {
 			$product = $line['data'] ?? null;
-			if ( $product instanceof WC_Product && null !== $this->state->reason( $product ) ) {
+			if ( $product instanceof WC_Product && null !== $this->state->reason( $product, CommerceState::CARD ) ) {
 				return true;
 			}
 		}

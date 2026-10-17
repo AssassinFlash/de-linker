@@ -50,10 +50,11 @@ trait MocksLiveProducts {
 	 */
 	protected function mock_live_products( array $ids, bool $migrated = false ): void {
 		$products = LiveProducts::products( $migrated );
-		// No language layer listens: SelectionFacts and CommerceState ask
-		// has_filter() before the twin swap, and a test class earlier in the
-		// run may already have made WP_Mock define the function for the rest
-		// of the process (ComparisonLiveProductsTest has the same guard).
+		// No language layer swaps a product: SelectionFacts asks has_filter()
+		// first, and a test class earlier in the run may already have made
+		// WP_Mock define the function for the rest of the process
+		// (ComparisonLiveProductsTest has the same guard); CommerceState asks
+		// the filter itself, and each fixture product answers for itself.
 		WP_Mock::userFunction(
 			'has_filter',
 			array(
@@ -61,6 +62,12 @@ trait MocksLiveProducts {
 				'times'  => '0+',
 			)
 		);
+		foreach ( $ids as $id ) {
+			WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( $id )->reply( $id );
+		}
+		// An English request: the price line needs no locale switch.
+		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'en_US' ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn ( string $html ): string => strip_tags( $html ) ) );
 		WP_Mock::userFunction(
 			'get_the_terms',
 			array(

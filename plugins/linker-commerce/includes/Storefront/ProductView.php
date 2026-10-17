@@ -274,7 +274,7 @@ final class ProductView {
 	private function price( \WC_Product $product ): array {
 		return array(
 			'html' => $this->price_html( $product ),
-			'url'  => CommerceState::LOGIN === $this->state->page_reason( $product )
+			'url'  => CommerceState::LOGIN === $this->state->reason( $product, CommerceState::PAGE )
 				? $this->login_url( (string) $product->get_permalink() )
 				: '',
 		);
@@ -283,12 +283,12 @@ final class ProductView {
 	/**
 	 * The product page's price line: the price, or the sentence in its place.
 	 * The comparison page prints the same line, and Genie's card reads the
-	 * same CommerceState::page_reason() (#242).
+	 * same CommerceState::reason() on its PAGE surface (#242).
 	 *
 	 * @param \WC_Product $product The product.
 	 */
 	public function price_html( \WC_Product $product ): string {
-		$reason = $this->state->page_reason( $product );
+		$reason = $this->state->reason( $product, CommerceState::PAGE );
 		if ( null === $reason || CommerceState::UNPRICED === $reason ) {
 			// WooCommerce's own price, or its empty-price text ("Price on
 			// request", Gating\PriceDisplay).

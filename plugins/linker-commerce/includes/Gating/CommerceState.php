@@ -42,6 +42,13 @@ final class CommerceState {
 	public const APPROVAL = 'approval';
 
 	/**
+	 * The surfaces that print a price, each with its own order of reasons
+	 * (see reason()).
+	 */
+	public const CARD = 'card';
+	public const PAGE = 'page';
+
+	/**
 	 * Sets up the state.
 	 *
 	 * @param Approval $approval The account approval rule.
@@ -60,14 +67,9 @@ final class CommerceState {
 	 */
 	public function is_rfq_only( WC_Product $product ): bool {
 		$id = $product->get_parent_id() > 0 ? $product->get_parent_id() : $product->get_id();
-		// The same guard as SelectionFacts::for_product(): without the
-		// language layer listening, the product answers itself.
-		if ( \function_exists( 'has_filter' ) && has_filter( 'linker_commerce_facts_product_id' ) ) {
-			/** This filter is documented in includes/Products/SelectionFacts.php */
-			$source = (int) apply_filters( 'linker_commerce_facts_product_id', $id );
-			$id     = $source > 0 ? $source : $id;
-		}
-		return self::RFQ_ONLY === get_post_meta( $id, self::MODE_META, true );
+		/** This filter is documented in includes/Products/SelectionFacts.php */
+		$source = (int) apply_filters( 'linker_commerce_facts_product_id', $id );
+		return self::RFQ_ONLY === get_post_meta( $source > 0 ? $source : $id, self::MODE_META, true );
 	}
 
 	/**
@@ -107,39 +109,36 @@ final class CommerceState {
 	}
 
 	/**
-	 * Why the product page shows a text instead of the price, or null when it
-	 * shows the price. The page decides in its own order: an account without
-	 * prices reads its account's reason first (a guest signs in, an account
-	 * waiting for approval hears its state), and an approved account reads
-	 * "quoted per project" or "on request" where there is no price. Genie's
-	 * product cards read the same answer (#242), so a card and its product
-	 * page never disagree.
+	 * Why a product shows a text instead of its price on a surface, or null
+	 * when it shows the price. The two surfaces ask in different orders, each
+	 * as the live site shows it:
+	 *
+	 * - CARD — WooCommerce's own price HTML (`woocommerce_empty_price_html`:
+	 *   Woo's loops and the Store API's `price_html`), the solution draft's and
+	 *   the inquiry's lines, the draft summary: the product before the account.
+	 *   Live 2026-10-18: a guest's `/wc/store/v1/products/1957` answers
+	 *   `price_html` "Quoted per project".
+	 * - PAGE — the product page, the comparison page and Genie's product card
+	 *   (#242): the account before the product. Live 2026-10-18: the guest's
+	 *   product page of 1957 reads "Net price after partner sign-in".
+	 *
+	 * Either way an approved account on a priced product sees the price, and
+	 * on a product without a stored price reads "on request".
 	 *
 	 * @param WC_Product $product Product.
+	 * @param string     $surface self::CARD or self::PAGE.
 	 * @return self::LOGIN|self::APPROVAL|self::PROJECT|self::UNPRICED|null
+	 * @throws \InvalidArgumentException For a surface the rule does not know.
 	 */
-	public function page_reason( WC_Product $product ): ?string {
-		if ( ! $this->visitor_sees_prices() ) {
-			return $this->visitor_reason();
+	public function reason( WC_Product $product, string $surface ): ?string {
+		if ( self::CARD !== $surface && self::PAGE !== $surface ) {
+			throw new \InvalidArgumentException( 'Unknown price surface.' );
 		}
-		if ( $this->is_rfq_only( $product ) ) {
-			return self::PROJECT;
-		}
-		return '' === (string) $product->get_price( 'edit' ) ? self::UNPRICED : null;
-	}
-
-	/**
-	 * Why the product shows a text instead of a price, or null when it shows a price.
-	 *
-	 * @param WC_Product $product Product.
-	 * @return self::LOGIN|self::PROJECT|self::UNPRICED|self::APPROVAL|null
-	 */
-	public function reason( WC_Product $product ): ?string {
-		if ( $this->is_rfq_only( $product ) ) {
-			return self::PROJECT;
-		}
-		if ( ! $this->visitor_sees_prices() ) {
-			return $this->visitor_reason();
+		$account = $this->visitor_sees_prices() ? null : $this->visitor_reason();
+		$project = $this->is_rfq_only( $product ) ? self::PROJECT : null;
+		$first   = self::CARD === $surface ? ( $project ?? $account ) : ( $account ?? $project );
+		if ( null !== $first ) {
+			return $first;
 		}
 		return '' === (string) $product->get_price( 'edit' ) ? self::UNPRICED : null;
 	}
