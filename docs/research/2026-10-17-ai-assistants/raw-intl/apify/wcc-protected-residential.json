@@ -1,0 +1,584 @@
+[
+ {
+  "url": "https://www.amazon.com/b?ie=UTF8&node=216450446011",
+  "crawl": {
+   "loadedUrl": "https://www.amazon.com/b?ie=UTF8&node=216450446011",
+   "loadedTime": "2026-10-17T05:34:59.395Z",
+   "referrerUrl": "https://www.amazon.com/b?ie=UTF8&node=216450446011",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.amazon.com/b?ie=UTF8&node=216450446011",
+   "title": "Amazon.com: : All Departments",
+   "description": "Online shopping for  from a great selection at All Departments Store.",
+   "author": null,
+   "keywords": "All Departments, Amazon.com",
+   "languageCode": "en-us",
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Sat, 17 Oct 2026 05:34:53 GMT",
+    "server": "Server",
+    "set-cookie": "session-id=140-5045517-1500602; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/; Secure\nsession-id-time=2082787201l; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/; Secure\nsst-main=Sst1|PQIZdOm554VNw0t7mDYtgkkBB_6aQ2zqc7uQ9qUxq-niojYqgzy31hhdLYgC-j65_g9SsHjEL7JVk5Xo9VdP24jFKdSLXfdP3yXLXl4s_-p9SV2HoWVJZjhFddcYqMaKFMcUSTwDTB5zctCH5ePTPogrAx2tmuJvtpJFTj3IX1voUnSwKVqUrZkQfLsUy2LDlB_GmdVdAmwPE7D0tFkWVwRSTY9Sfu2zJNm8Av5slCo0Ko6SWDbsxydgTx58uwBe72O3; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/; Secure; HttpOnly; SameSite=Lax\ni18n-prefs=ARS; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/\nlc-main=en_US; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/\nsp-cdn=\"L5Z9:AR\"; Version=1; Domain=.amazon.com; Max-Age=31536000; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/; Secure; HttpOnly",
+    "accept-ch": "ect, rtt, downlink, device-memory, sec-ch-device-memory, viewport-width, sec-ch-viewport-width, dpr, sec-ch-dpr, sec-ch-ua-full-version-list, viewport-height, sec-ch-viewport-height",
+    "accept-ch-lifetime": "86400",
+    "cache-control": "no-cache",
+    "content-encoding": "gzip",
+    "content-language": "en-US",
+    "content-security-policy": "upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/",
+    "expires": "-1",
+    "permissions-policy": "ch-dpr=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-viewport-width=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-downlink=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-ect=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\")",
+    "pragma": "no-cache",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1;",
+    "content-security-policy-report-only": "default-src 'self' blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline';report-uri https://metrics.media-amazon.com/",
+    "x-amz-rid": "6X96VFN9VG9WR6D7TW67",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "x-frame-options": "SAMEORIGIN",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 65378d92b89fb16d343db99f5871ef2a.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "IAD61-P8",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "-nCmPHT74VIv3S7BhB0UQ8OLXdhWOXMbrL7dGxnMBPj7EFI2lbXniw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-amazon-com-b-ie-UTF8-node-216450446011.md>"
+ },
+ {
+  "url": "https://www.amazon.com/gp/help/customer/display.html?nodeId=Tvh55TTsQ5XQSFc7Pr",
+  "crawl": {
+   "loadedUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=Tvh55TTsQ5XQSFc7Pr",
+   "loadedTime": "2026-10-17T05:35:00.100Z",
+   "referrerUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=Tvh55TTsQ5XQSFc7Pr",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=Tvh55TTsQ5XQSFc7Pr",
+   "title": "About Alexa for Shopping - Amazon Customer Service",
+   "description": "Alexa for Shopping is an AI-powered shopping experience that lets you ask all kinds of shopping questions in the Amazon Shopping app and on Amazon.com.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-us",
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Sat, 17 Oct 2026 05:34:53 GMT",
+    "server": "Server",
+    "set-cookie": "session-id=140-9059913-2040950; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/; Secure\nsession-id-time=2082787201l; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/; Secure\nsst-main=Sst1|PQIw0cpExRU266Dr-uYq6xqfB4U3LTSnyMA_-IblVhEh8S7Eb3S-UvdEylNhA-4OuPkHJlRG9HqE0hH2avRL2oPuLat_cVnYI69Iy3aqYu3AZOPc2O_kOh7KPrF7xMJCiprJvN5FGO4GYpUtwRfHznW3VcgQPiPEKCKPeKMDZ9REOYgXjIYxLuDRhMLBoFD-Eg9pa78wAmI_0EdhVq5OCr4QJUYmpUXKiWcP9y_6HOERM9XL_7RJVHGBNzhYlBKuTnM6; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/; Secure; HttpOnly; SameSite=Lax\ni18n-prefs=ARS; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/\nlc-main=en_US; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/\nsp-cdn=\"L5Z9:AR\"; Version=1; Domain=.amazon.com; Max-Age=31536000; Expires=Sun, 17-Oct-2027 05:34:53 GMT; Path=/; Secure; HttpOnly",
+    "accept-ch": "ect, rtt, downlink, device-memory, sec-ch-device-memory, viewport-width, sec-ch-viewport-width, dpr, sec-ch-dpr, sec-ch-ua-full-version-list, viewport-height, sec-ch-viewport-height",
+    "accept-ch-lifetime": "86400",
+    "cache-control": "no-cache",
+    "content-encoding": "gzip",
+    "content-language": "en-US",
+    "content-security-policy": "upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/",
+    "expires": "-1",
+    "permissions-policy": "ch-dpr=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-viewport-width=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-downlink=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-ect=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\")",
+    "pragma": "no-cache",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1;",
+    "content-security-policy-report-only": "default-src 'self' blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline';report-uri https://metrics.media-amazon.com/",
+    "x-amz-rid": "JDG6QKQ01R30FXR3QW1E",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "x-frame-options": "SAMEORIGIN",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 44916c67f9cf2e3bb0750e13e0db0150.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "IAD61-P8",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "gePjEZHlybnzgd05FA8Bjye5AX57r_jwKGlkR3K8E1cZ31GwlfOijQ==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-amazon-com-gp-help-customer-display-html-nodeId-Tvh55TTsQ5XQSFc7Pr.md>"
+ },
+ {
+  "url": "https://www.amazon.com/gp/help/customer/display.html?nodeId=GQ2FT94RCVV5BA3Z",
+  "crawl": {
+   "loadedUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=GQ2FT94RCVV5BA3Z",
+   "loadedTime": "2026-10-17T05:35:15.210Z",
+   "referrerUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=GQ2FT94RCVV5BA3Z",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=GQ2FT94RCVV5BA3Z",
+   "title": "What Do I Need to Place Orders with Alexa? - Amazon Customer Service",
+   "description": "Before placing orders with Alexa, make sure that you meet these requirements.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-us",
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Sat, 17 Oct 2026 05:35:13 GMT",
+    "server": "Server",
+    "set-cookie": "session-token=C8cVfiMnUUmEU8pBZlucJZNnkhuH5cBoSMOROlZxwNAfsLYCKlXyU7wjTTdonLwZehvSvvrHkfnWfQJNbrbQeoKHpowLYc7dC9NXIV0fouyBX5CUtssUCJiUQAq3Gh1+dOSz8xVuSlXEpxFBgN2TsejS1oZFMrO9aVTnBls8YQKtlaNnH6kfYFPse+hLdZJXr6oM0Ve8PMbZhcsVXZR/F5rfADX7n1RQ; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:35:13 GMT; Path=/; Secure",
+    "accept-ch": "ect, rtt, downlink, device-memory, sec-ch-device-memory, viewport-width, sec-ch-viewport-width, dpr, sec-ch-dpr, sec-ch-ua-full-version-list, viewport-height, sec-ch-viewport-height",
+    "accept-ch-lifetime": "86400",
+    "cache-control": "no-cache",
+    "content-encoding": "gzip",
+    "content-language": "en-US",
+    "content-security-policy": "upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/",
+    "expires": "-1",
+    "permissions-policy": "ch-dpr=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-viewport-width=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-downlink=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-ect=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\")",
+    "pragma": "no-cache",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1;",
+    "content-security-policy-report-only": "default-src 'self' blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline';report-uri https://metrics.media-amazon.com/",
+    "x-amz-rid": "TFEXKFD9NCY66M3F0C3W",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "x-frame-options": "SAMEORIGIN",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 44916c67f9cf2e3bb0750e13e0db0150.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "IAD61-P8",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "1YxyfCeQ8ZwoK9LLhzLam4GtuiQI7PlwIJSxb05MuZcaFutMs8UqMw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-amazon-com-gp-help-customer-display-html-nodeId-GQ2FT94RCVV5BA3Z.md>"
+ },
+ {
+  "url": "https://www.amazon.de/gp/help/customer/display.html?nodeId=Tvh55TTsQ5XQSFc7Pr",
+  "crawl": {
+   "loadedUrl": "https://www.amazon.de/gp/help/customer/display.html?nodeId=Tvh55TTsQ5XQSFc7Pr",
+   "loadedTime": "2026-10-17T05:35:17.129Z",
+   "referrerUrl": "https://www.amazon.de/gp/help/customer/display.html?nodeId=Tvh55TTsQ5XQSFc7Pr",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.amazon.de/gp/help/customer/display.html?nodeId=Tvh55TTsQ5XQSFc7Pr",
+   "title": "Amazon.de",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-us",
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html",
+    "date": "Sat, 17 Oct 2026 05:35:16 GMT",
+    "server": "Server",
+    "x-amz-rid": "6YHSR7G22C6BPFHY79DD",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 2741f1723d261cac06de387e29ba4cbc.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "IAD12-P4",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "WtjArN37vENZmIojL2pjthcOh_8zCbCrlW2BGNQuwsI0wmYWawePvw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-amazon-de-gp-help-customer-display-html-nodeId-Tvh55TTsQ5XQSFc7Pr.md>"
+ },
+ {
+  "url": "https://www.amazon.de/Rufus/b?ie=UTF8&node=100898398031",
+  "crawl": {
+   "loadedUrl": "https://www.amazon.de/Rufus/b?ie=UTF8&node=100898398031",
+   "loadedTime": "2026-10-17T05:35:18.003Z",
+   "referrerUrl": "https://www.amazon.de/Rufus/b?ie=UTF8&node=100898398031",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.amazon.de/Rufus/b?ie=UTF8&node=100898398031",
+   "title": "",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-gb",
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Sat, 17 Oct 2026 05:35:15 GMT",
+    "server": "Server",
+    "set-cookie": "session-id=701-6675710-8951958; Domain=.amazon.de; Expires=Sun, 17-Oct-2027 05:35:15 GMT; Path=/; Secure\nubid-acbde=604-1912832-9036324; Domain=.amazon.de; Expires=Sun, 17-Oct-2027 05:35:15 GMT; Path=/; Secure\nsession-token=S/n4teGcz6iwtJ7cwANX/0btfrx2kMlqyn840spVPK3S+gzAlw7RV6s2TTqUzmnKqKfs2rUJIyECm67SK94uGMmDgLTvSRWZeBsfGALFGvXHoNQ1nejeH2BvsW9hPrOSLIUbKOXpRjfuikTzzn67XyGFf5YM6AisTZaBAqgTcuKQqw/9UxY3bkGrwWptpT6Rm81O/3Ck1bL7lDMkrJGcmhgRydMjt18L; Domain=.amazon.de; Expires=Sun, 17-Oct-2027 05:35:15 GMT; Path=/; Secure\nsession-id-time=2082787201l; Domain=.amazon.de; Expires=Sun, 17-Oct-2027 05:35:15 GMT; Path=/; Secure\nsst-acbde=Sst1|PQLrkrglFWni9BM8JMx6IqNVBz9bl5xAG8bl-tl30gad5_DXG-CcmI7LvP6FpsejHttevOE3AKYXitiElblFXSB6Rd6kz2aLqDBMAMKW_jxemiGZs1UQuUC0PHZTcU92-QlD12iGzEOZclpdk1c_OBd48iu2CcaP4R0zE8OhjsERR2BYvWIEo36dWgLfuFB5VYEZwNYATbGv7f4sOOsojQ2iKUYJbe8s9pheAv3-aX55YE8GL1cPSvGAMy-_RYTyf4Zp; Domain=.amazon.de; Expires=Sun, 17-Oct-2027 05:35:15 GMT; Path=/; Secure; HttpOnly; SameSite=Lax\ni18n-prefs=EUR; Domain=.amazon.de; Expires=Sun, 17-Oct-2027 05:35:15 GMT; Path=/\nlc-acbde=en_GB; Domain=.amazon.de; Expires=Sun, 17-Oct-2027 05:35:15 GMT; Path=/",
+    "accept-ch": "ect, rtt, downlink, device-memory, sec-ch-device-memory, viewport-width, sec-ch-viewport-width, dpr, sec-ch-dpr, sec-ch-ua-full-version-list, sec-ch-ua-platform, sec-ch-ua-platform-version",
+    "accept-ch-lifetime": "86400",
+    "cache-control": "no-cache",
+    "content-encoding": "gzip",
+    "content-language": "en-GB",
+    "content-security-policy": "upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/",
+    "expires": "-1",
+    "permissions-policy": "ch-dpr=(self \"https://m.media-amazon.com\" \"https://images-eu.ssl-images-amazon.com\"), ch-viewport-width=(self \"https://m.media-amazon.com\" \"https://images-eu.ssl-images-amazon.com\"), ch-downlink=(self \"https://m.media-amazon.com\" \"https://images-eu.ssl-images-amazon.com\"), ch-ect=(self \"https://m.media-amazon.com\" \"https://images-eu.ssl-images-amazon.com\")",
+    "pragma": "no-cache",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1;",
+    "content-security-policy-report-only": "default-src 'self' blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline';report-uri https://metrics.media-amazon.com/",
+    "x-amz-rid": "8E7KB7WRJ7C1JSH74PJC",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "x-frame-options": "SAMEORIGIN",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 665d1c5fbd9802ee4a4f61e7446fc81e.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "IAD12-P4",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "2IpWjqwZDh1IiIkDvuig3-oN1oTZil0oCyeqDaulOyPCe6KgLtkang==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-amazon-de-Rufus-b-ie-UTF8-node-100898398031.md>"
+ },
+ {
+  "url": "https://sellercentral.amazon.com/help/hub/reference/external/GYYH9SLHSTHKT3CZ",
+  "crawl": {
+   "loadedUrl": "https://sellercentral.amazon.com/help/hub/reference/external/GYYH9SLHSTHKT3CZ",
+   "loadedTime": "2026-10-17T05:35:28.888Z",
+   "referrerUrl": "https://sellercentral.amazon.com/help/hub/reference/external/GYYH9SLHSTHKT3CZ",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://sellercentral.amazon.com/help/hub/reference/external/GYYH9SLHSTHKT3CZ",
+   "title": "Alexa for shopping",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:35:15 GMT",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "server": "Server",
+    "x-amz-rid": "QKE79MEJQS4NH74G4GTF",
+    "set-cookie": "session-token=pi2DauUPxpz/EvEeNi1S6fBAbErEKr5yw+beLIDxkLJFEVYSQ7WHDAtLLbPSD1f/Jc6jmQ7NsJXq0H48evsJYLIoGg4uQix5/C6/74B5P3XCH/USlnbmJJFhOfEeroEHLJyD7yQxCj/OJh9nysIdoovyjXRC0Rqtt4+Di9h1yOQr2QgT6kG2v76TK1m1cJAvK8mT2/cfhx0sg7pnLiJg+gGeHzWfxsO7; Max-Age=31536000; Expires=Sun, 17 Oct 2027 05:35:15 GMT; Path=/; Domain=.amazon.com; Secure",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "expires": "0",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=47474747;",
+    "x-frame-options": "SAMEORIGIN",
+    "x-content-type-options": "nosniff",
+    "content-encoding": "zstd",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 681ab9e4f5f9289fb3da74c25dab5b5c.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "IAD61-P9",
+    "x-amz-cf-id": "eV-zusIveAgsxLJB1cgiStS_8-Pj9WIoq988mD-tPEhw8xSQR1-bZQ==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/sellercentral-amazon-com-help-hub-reference-external-GYYH9SLHSTHKT3CZ.md>"
+ },
+ {
+  "url": "https://www.walmart.com/cp/sparky/5291783",
+  "crawl": {
+   "loadedUrl": "https://www.walmart.com/blocked?url=L2NwL3NwYXJreS81MjkxNzgz&uuid=8e4cacbc-c9ec-11f1-9e59-5512d08fba43&vid=&g=b",
+   "loadedTime": "2026-10-17T05:35:33.961Z",
+   "referrerUrl": "https://www.walmart.com/cp/sparky/5291783",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 3369,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.walmart.com/blocked?url=L2NwL3NwYXJreS81MjkxNzgz&uuid=8e4cacbc-c9ec-11f1-9e59-5512d08fba43&vid=&g=b",
+   "title": "Robot or human?",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "jsonLd": null,
+   "headers": {
+    "accept-ranges": "bytes",
+    "content-type": "text/html; charset=utf-8",
+    "x-akamai-transformed": "0 - 0 -",
+    "content-encoding": "gzip",
+    "expires": "Sat, 17 Oct 2026 05:35:28 GMT",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "pragma": "no-cache",
+    "date": "Sat, 17 Oct 2026 05:35:28 GMT",
+    "content-length": "3369",
+    "vary": "Accept-Encoding",
+    "cache-status": "Hit",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1792215328299_400321288_198920868_162_19274_350_0_41\";dur=1",
+    "origin-ex": "",
+    "origin-cc": "",
+    "x-ak-protocol": "h2",
+    "permissions-policy": "ch-dpr=(self \"https://i5.walmartimages.com\"), ch-device-memory=(self \"https://i5.walmartimages.com\")",
+    "accept-ch": "Sec-CH-DPR, DPR, Sec-CH-Device-Memory, Device-Memory, Downlink",
+    "strict-transport-security": "max-age=31536000",
+    "set-cookie": "isoLoc=AR_B_t3; path=/; domain=.www.walmart.com\nbm_mi=C796303BEB2A6F04E58253BDD439B804~YAAQCGvcF3+BQEChAQAARKZbSAG3BDjyulZD5w4neAmhAL2WEbKR4YMrXxwtTHzOoQVC7IR3jjUa6yMkCrBTGTMWDgOT7umsF2ZlOKlleVpQ8n6X0x4bNNE9HQJoxCwrMYct5qsF2g+unsHuLoiwGiswQZwFCc21yyGUYQEhs/BwMNEVgEjIMClhIBs2xOgivdQDls3WSq6bCbiWAK4IOHUHkzumhkC5+in5v0DQs1ms+FDCKJI6VkrliDp4k5H55W59/6/5POlItAsxGa1JRTyW1HsbyOR78pZm6Mt/JYpL8jiwaaPSMoqe2dvD3tAzxss/kXBk~1; Domain=.walmart.com; Path=/; Expires=Sat, 17 Oct 2026 07:35:26 GMT; Max-Age=7198; Secure\nbm_sv=8ABA4AACCE48ABB783C08329E7671E41~YAAQCGvcF4CBQEChAQAARKZbSAFvo4ytlw1cBUFUKDchcNmBrhMvSAQj90lvPVsPETNss1E0qeYNNusAI91EpFAXbkntDbAzAsAhKo4yf9lafLlhlx0/P+staHnUEtUH2G1XhZvRSj6nE/ZM7eDIvs3koFecTM+f5dzKCyMf+bxSC6AC4VvYa9bHXMVrs2I9OQyqRPSNbv7AJE/dpLJzOLbgUxToHqd/vVOLuw8d5qxJ0KosIq2ekZslxGQsjILflg==~1; Domain=.walmart.com; Path=/; Expires=Sat, 17 Oct 2026 07:35:28 GMT; Max-Age=7200; Secure",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-walmart-com-cp-sparky-5291783.md>"
+ },
+ {
+  "url": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+  "crawl": {
+   "loadedUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "loadedTime": "2026-10-17T05:35:53.292Z",
+   "referrerUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "title": "Zalando: Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter | Zalando Corporate",
+   "description": "All informations about „Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter“ at Zalando Corporate ✓ Current information about Zalando SE",
+   "author": null,
+   "keywords": ", Technology,",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Zalando Corporate Website"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend"
+    },
+    {
+     "property": "og:title",
+     "content": "Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter"
+    },
+    {
+     "property": "og:description",
+     "content": "All informations about „Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter“ at Zalando Corporate, Current information about Zalando SE"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.zalando.com/public/media/Zalando-SE_2023_Zalando_customer_mobile-phone_01_assistant_ES.jpg?VersionId=77BodflBwkPK9W7et5mwJEB_xK1efj4."
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=3600, public",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 15 Oct 2026 10:54:04 GMT",
+    "etag": "W/\"1792061644\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Thu, 15 Oct 2026 10:54:04 GMT",
+    "vary": "Accept-Encoding, Cookie",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 11 (https://www.drupal.org)",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-zalando-com-en-technology-zalando-brings-its-ai-powered-assistant-all-markets-and-adds-fou.md>"
+ },
+ {
+  "url": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+  "crawl": {
+   "loadedUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "loadedTime": "2026-10-17T05:35:53.798Z",
+   "referrerUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "title": "Zalando: More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers | Zalando Corporate",
+   "description": "All informations about „More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers“ at Zalando Corporate ✓ Current information about Zalando SE",
+   "author": null,
+   "keywords": ", Technology,",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Zalando Corporate Website"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers"
+    },
+    {
+     "property": "og:title",
+     "content": "More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers"
+    },
+    {
+     "property": "og:description",
+     "content": "All informations about „More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers“ at Zalando Corporate, Current information about Zalando SE"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.zalando.com/public/media/Zalando-SE_250320_Graphic_AI-Assistent_landscape_4x3.png?VersionId=i.O5HDWpaenV3wYr2W1YS4E.mV1PqprC"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=3600, public",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 15 Oct 2026 10:51:47 GMT",
+    "etag": "W/\"1792061507\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Thu, 15 Oct 2026 10:51:47 GMT",
+    "vary": "Accept-Encoding, Cookie",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 11 (https://www.drupal.org)",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-zalando-com-en-technology-more-personal-and-smarter-zalando-assistant-enhanced-capabilitie.md>"
+ },
+ {
+  "url": "https://www.zalando.de/campaigns/zfa/",
+  "crawl": {
+   "loadedUrl": "https://en.zalando.de/campaigns/zfa/?_rfl=de",
+   "loadedTime": "2026-10-17T05:35:59.008Z",
+   "referrerUrl": "https://www.zalando.de/campaigns/zfa/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://en.zalando.de/campaigns/zfa/?_rfl=de",
+   "title": "Zalando Assistant - Our assistant is here to help",
+   "description": "Welcome to the future of fashion - Looking for some style inspiration? Our AI-powered assistant will help you find something perfect",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-GB",
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "content-security-policy": "frame-ancestors 'self' https://content.solutions.zalando.com https://zdirect.zalando.com https://zdirect-portal-staging.merchant-center.zalan.do https://zdirect-portal-dev.merchant-center-test.zalan.do",
+    "content-type": "text/html; charset=utf-8",
+    "link": "<https://mosaic01.ztat.net/zds/assets/fonts/e943cb2.woff2>; rel=\"preload\"; as=\"font\"; crossorigin; type=\"font/woff2\"; nopush, <https://mosaic01.ztat.net/base-assets/9-1-0/require-2.1.22.min.js>; rel=\"preload\"; as=\"script\"; crossorigin; nopush, <https://mosaic01.ztat.net/base-assets/9-1-0/assets/bundle.js>; rel=\"preload\"; as=\"script\"; crossorigin; nopush",
+    "server": "rendering-engine/main-stackset/main-5828",
+    "strict-transport-security": "max-age=157680000",
+    "vary": "Accept-Encoding",
+    "x-flow-id": "kRj3o32SgM9guZiG",
+    "x-frame-options": "sameorigin",
+    "x-zalando-child-request-id": "kRj3o32SgM9guZiG",
+    "x-akamai-transformed": "0 - 0 -",
+    "content-encoding": "gzip",
+    "date": "Sat, 17 Oct 2026 05:35:47 GMT",
+    "set-cookie": "zcid=AAAAAKwXzW39YqymWnROV5f9LtRESq40HVqjbHrXoLS6Wu1uEGEQHTd808y4_iLaraeBuE5tX5qpSWo-aVWfmaMiPl6jAuWLMUPzifTsyESi; Path=/; Domain=zalando.de; Expires=Fri, 06 Oct 2028 05:35:47 GMT; Max-Age=62208000; HttpOnly; Secure\nZalando-Client-Id=03c8d9a4-9a4f-4a3a-8b57-9cc07e8710b6; Path=/; Domain=zalando.de; Expires=Fri, 06 Oct 2028 05:35:47 GMT; Max-Age=62208000; HttpOnly; Secure\nztci=AAAAACIxutiH5J5EOV4dbfo4xSvn5ExrH4AenaIFXxa0Y2NybFWaya-MsMW8qRnpn-Mk; Path=/; Domain=zalando.de; Expires=Sat, 17 Oct 2026 06:35:47 GMT; Max-Age=3600; HttpOnly; Secure\nmpulseinject=false; <signed-url-removed> 17-Oct-2026 06:35:47 GMT; path=/; domain=.en.zalando.de; secure\nbm_mi=B9C307D31C6DD8226217E285EE5851D6~YAAQyIMQAuR4VjmhAQAAIfBbSAHKnAxyjBzCJInC5O8sxnthMuYzvPCKsQvaqXc4yQpnvl2DK3ElaAJ2TIdAux83jwR6bpx/fnMrIttaZW4/pxRXHVqyHlqRmFgXfE7rh4Xq5gxN0HGxoenrLJaXaDWrr2uAKMsBc4Pcn8xflgvRQJs9Bud2SjdMD8fBWGnVxwR2eDtf2dA82IvgJN6w6RNXQA6al/Fx8mLfGg2TsnNBqpvztTf6IncmwYSst6BiloQmdJozJjHSTRIpGgl/WfJdx5Vc8qmJMEY4CLnytxLendUj0rwyhbEHwhcSSj2WH+uxSxan+liBeUji~1; Domain=.zalando.de; Path=/; Expires=Sat, 17 Oct 2026 05:35:47 GMT; Max-Age=0; Secure\nbm_s=YAAQyIMQAuV4VjmhAQAAIfBbSAYrvJwekzHjc2RiR/2zWrPEdf5B3gC6YtwssyKIJ9/iKyEow22BUnqVMByyBOacUW/Kry498e9uO9ucmEYjnksJcRqzcpRq6pRQhjeAp1YaZzkNBsX6JXMTVygUFLb+sHTA6hpNJG8tn8TCplCJgzhlcwfsmDnsYV4V1kZiQyumGpAE4u82cEdgzttk82i8soIlfSe1NDs5wVmbWGJTEzrxIUF68cjzL+D5NUFfxadCbRbko1UoFuqYhGLMY4IKA0sr7JTeeuO9yYxjl2oXJp3b8iY+BybWzRMCLXXLCOeSiAY2lxWFyBr8aXoI+Y763x7wxkuxOy4i8FC9qE+rRIaq05CNuwvGtOcdi/F5B4eK04ovyeggdIVtAbX7qnE34Lr9nsyBnpKcFkZ8kmZitNkTxHVkKFnrv8IrvsM0kaE6T+wzjecLRrY5lejISPXKR0djyG9q9z3TeFoZaGVZ5/Bj0vPJRgUjVF2hQIVV898zwxCQXJTYCeWpct0s88oomQ3PyyPPVZqdiPBKlm0tSEGRJweNoXZUeyWaR1H+tqvezm9+E2yaxBmCcZXbwQCnKtmuUT5ZowQn1Py3Xu7ORjQ7YeTuV86GsJGuIThWsgkOv9JxnnaE+xTo2KAd7lE7rdFiwbg/Hg/w856rAYmBx19zD2cndsL9emEJF0ditCmN4Qy0wMCxIX+fD6VNE0JfRI+wwFtmttPOcNnxrwRM8qDc3tTAwe0RRxKdGrMY48Q4gFs40QPlTlhSEbXVPYudT2WNTkAdqZasKszqmLlbH7kGB81wxiCqZPD1iS6xbO8ToCpFHRC/QUT3RnQV7uTD2kS/u0f/et0ZtE7iHUueeyZ26cEXxx1e/kKMiyXsyK2b3Zk4y1TgMhm3lGQERo0LWJJCLEk31b94QPbH2WQOlCt4; Domain=.zalando.de; Path=/; Expires=Tue, 17 Nov 2026 05:35:47 GMT; Max-Age=2678400; Secure; HttpOnly\nbm_sz=836C154CC2D127CB5AA9E493EDB76921~YAAQyIMQAuZ4VjmhAQAAIfBbSAEPFm7+T1eDKVUdVCVOYKKXhbEGVl09Ta5Lo+2VPd3ZFcWOsXaeCc+/5YIHD5MWa8llF34wknXuavvYGr2uTvVa2dquFfz2SUvfvWqbJfj1fZunqUWQTmj5l7HWkxJJCxxJCKkp588qY/wI6owt8qzzHeC3UKGSv5fhWsgk/mOSgDnkENjcWW4TIbkmjweDVfR/GdHciHW31fVdowwE1AqvB64hSuZYYB4mBPLQ5oDtReyVsccpJfuISryFuKdcdHi6kOQQjVXrmbPbx5mwDXHP9Y/ZylVj9OJYk49ZMd5eyqQ14zL6Vpj+sDAOgYd+K0J/6eS94xCCo9iHUwcac7szdRbJ4O+1f7pEzp3n5mkdLq/ZcQCPBFHDF0CY6G+ZGGdKFKw7p+cLbolaPnE=~3228215~3421764; Domain=.zalando.de; Path=/; Expires=Sat, 17 Oct 2026 09:35:45 GMT; Max-Age=14398",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-zalando-de-campaigns-zfa.md>"
+ },
+ {
+  "url": "https://www.zalando.de/faq/how-does-the-fashion-assistant-work.html",
+  "crawl": {
+   "loadedUrl": "https://en.zalando.de/faq/how-does-the-fashion-assistant-work.html?_rfl=de",
+   "loadedTime": "2026-10-17T05:36:01.059Z",
+   "referrerUrl": "https://www.zalando.de/faq/how-does-the-fashion-assistant-work.html",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://en.zalando.de/faq/how-does-the-fashion-assistant-work.html?_rfl=de",
+   "title": "Faq | My Account | How does the Zalando Assistant work?",
+   "description": "You can ask the assistant anything related to fashion or beauty.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-GB",
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "content-security-policy": "frame-ancestors 'self' https://content.solutions.zalando.com https://zdirect.zalando.com https://zdirect-portal-staging.merchant-center.zalan.do https://zdirect-portal-dev.merchant-center-test.zalan.do",
+    "content-type": "text/html; charset=utf-8",
+    "link": "<https://mosaic01.ztat.net/zds/assets/fonts/e943cb2.woff2>; rel=\"preload\"; as=\"font\"; crossorigin; type=\"font/woff2\"; nopush, <https://mosaic01.ztat.net/base-assets/9-1-0/require-2.1.22.min.js>; rel=\"preload\"; as=\"script\"; crossorigin; nopush, <https://mosaic01.ztat.net/base-assets/9-1-0/assets/bundle.js>; rel=\"preload\"; as=\"script\"; crossorigin; nopush",
+    "server": "rendering-engine/main-stackset/main-5828",
+    "strict-transport-security": "max-age=157680000",
+    "vary": "Accept-Encoding",
+    "x-flow-id": "+Fy68hIpAkE47GiU",
+    "x-frame-options": "sameorigin",
+    "x-zalando-child-request-id": "+Fy68hIpAkE47GiU",
+    "x-akamai-transformed": "0 - 0 -",
+    "content-encoding": "gzip",
+    "date": "Sat, 17 Oct 2026 05:35:47 GMT",
+    "set-cookie": "zcid=AAAAAKwXzW39YqymWnROV5f9LtRESq40HVqjbHrXoLS6Wu1uEGEQHTd808y4_iLaraeBuE5tX5qpSWo-aVWfmaMiPl6jAuWLMUPzifTsyESi; Path=/; Domain=zalando.de; Expires=Fri, 06 Oct 2028 05:35:47 GMT; Max-Age=62208000; HttpOnly; Secure\nZalando-Client-Id=03c8d9a4-9a4f-4a3a-8b57-9cc07e8710b6; Path=/; Domain=zalando.de; Expires=Fri, 06 Oct 2028 05:35:47 GMT; Max-Age=62208000; HttpOnly; Secure\nztci=AAAAAIsF6U6cYCB9NxQ5oxbkcJHiIDIRzNBAGaYWZLKPGMZt1yEykm48YKReSx0Tt6bO; Path=/; Domain=zalando.de; Expires=Sat, 17 Oct 2026 06:35:47 GMT; Max-Age=3600; HttpOnly; Secure\nmpulseinject=false; <signed-url-removed> 17-Oct-2026 06:35:47 GMT; path=/; domain=.en.zalando.de; secure\nbm_mi=18BDA7E29259F1432D0B55DC3662377A~YAAQyIMQAnx4VjmhAQAAWO9bSAEG/Qle8Jwn+STsplckzEb6SLCm/1IOWemMFPFACxcObcrKPoZGf2ynXVD8ycN1C0tA4JYMST3K2cu8Z0yx1BjJVhxwgrvpDoedHmvewn/S/6We+Ul51+cCgXpTYDpqwWiqfHAaQSVDQaQ5utVQTm2EC3wJPQhEcybIzh/VKcwh4fz2dOd/dhNw3KM6H9l2bKDj4fYrmDapP9WOERr5dMOf8DAxQC+mUKRyvG2tWv41qAlMp14P9lrHU0TvxeitE2X2MF6miSed5E79lSZTx09LYTj+Os4Fz/v0eP19aPf5oghhgyRk7/aPr5GNaxDlbMcMQMoyYyKeGLFcSCOzDq4bdPmCPo9P~1; Domain=.zalando.de; Path=/; Expires=Sat, 17 Oct 2026 05:35:47 GMT; Max-Age=0; Secure\nbm_s=YAAQyIMQAn14VjmhAQAAWO9bSAaq9qtLCfXTi0k+cp9COWxssgQcEmfD0DzUSwRM0KUhzSTFr/KbKljaCmEowFCPYNgO4FDz7XeUC0H+xb8Cc1IUnpYVs6lOX49JEmYzosNPYK4j/gCadEleyw6h0M+rCfIQ9CxuR2clFakbjnKeNWxlGymt3y8dG0XN7P1UtN5/BuzTBn7MPuXDX9KUHT2LhJE7/PoWRZQFmFaBSH8+n/dpKJ1n0axSQvy1iYoc6xwOTWw6ODsms4w/wj7H7GZMEa1AhXKbGEi88ayNqeIa401b1IrqQdbc1G06yZqG5sZt+XZDZrwnLk7IaIOtqSmQoxcNRdZCwcmLE7ZYaSoG+jOFWyA3Wc1kDrfoF2sHg1e0mwrX/OqfZawEf9FH94PhS4gI9CJg9fV4yV4TFdqeNfctyaLizs+S+DYyjlZgcLIR863qFTtC2ULeYRhmtaYXeXXK2lqNrPWTxTku233lZOYczx2dGDx1VcgUp/gr6r+2v3wJHTuYEEhTFA1t0hUnl8kQ/HtAgrawHiFDSzJKJrs9YpKNAFSu/GIN/2DzLSSenqLz75s2DeIExuOpVvXOAeNB88AqoCQEHO3qts2oaOpbf6Z07wKPSXQt0w/z2ElHxATz0zl7GIHb2HguVqGZiyTTrlvTHa+HQvRXTsq8n1e5sj2u9w50e1AR3qk7fxac4mvWzz/Y7QlRGJkyu9GhPd/p1dyjAmiZh/bBy85SErTuCu5ORzoPDp5Cklfnn8FcZafdazFgvQewRfZZs+R3eE5/sOIT0aooBHoANNBJ8mK8c9G/LwqaX2LGRHk9i4iScCSArYuatLazliUku3Hrb4R9+Dd5cDE0v3kt05kJ2pIBng3wQhoQgPQJ86hAyyw8eHOosNSCJtU9D/btUFk4aZ877Agi56g1ll+gJdY3bJma; Domain=.zalando.de; Path=/; Expires=Tue, 17 Nov 2026 05:35:47 GMT; Max-Age=2678400; Secure; HttpOnly\nbm_sz=1979492A88D2A6832424A3A1124E90F6~YAAQyIMQAn54VjmhAQAAWO9bSAFn2WAgJSQ3QVTwZa9/u64Nhps6uvQruv1L0Rj88A8cQ168SmznSU6UatP9ZGx4xeMMg1WfXfVq3W9+3j+nNAER8CIJUvz4S7Flpne7Xv5sb+T4Bb/s4dGT0nL+zrltUmzymT9NT3YOkg5nC3FEIKVWryX7XkztYfbf+ourJwWDei8d1Q6wqd9bAnGCKjAxUyxE6PTA9uJXtayq/NgPQohmo2V1WQomR42vKzbitJe9i2ogA8p9WNdaHuP9RZ+mThQ6T+kJ7q/9VdqXGhKJKe07Dm80bM4pCKi8Zc1kMzfdmdk+Y498MQ8jbP3+9lTfTB9n/A64lZT8HPwmaBTJqHBv7jr1NJ4L6/ZllOnCzePDUh0gIQupZFKl0w9l9DKgQSe64sqMk6QHx4rVL80=~3228215~3421764; Domain=.zalando.de; Path=/; Expires=Sat, 17 Oct 2026 09:35:45 GMT; Max-Age=14398",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-zalando-de-faq-how-does-the-fashion-assistant-work-html.md>"
+ },
+ {
+  "url": "https://www.lowes.com/l/about/ai-at-lowes",
+  "crawl": {
+   "loadedUrl": "https://www.lowes.com/l/about/ai-at-lowes",
+   "loadedTime": "2026-10-17T05:36:20.136Z",
+   "referrerUrl": "https://www.lowes.com/l/about/ai-at-lowes",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.lowes.com/l/about/ai-at-lowes",
+   "title": "Access Denied",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": null,
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "set-cookie": "dbidv2=1c038312-bff8-44bb-8dfb-03096c4365fc; <signed-url-removed> 14-Oct-2036 16:42:43 GMT; path=/; domain=.lowes.com; secure\nakaalb_prod_dual=1792301763~op=PROD_GCP_EAST_CTRL_DFLT:PROD_DEFAULT_EAST|~rv=21~m=PROD_DEFAULT_EAST:0|~os=352fb8a62db4e37e16b221fb4cefd635~id=d975b1bc67ef977d0a4ca4debc8086e4; path=/; Expires=Sun, 18 Oct 2026 05:36:03 GMT; HttpOnly; Secure; SameSite=None\nakavpau_default=1792215663~id=9d9692a7eb10b5e497d7a366de3e0a8f; Path=/; HttpOnly; Secure; SameSite=None\nal_sess=FuA4EWsuT07UWryyq/3foMmElQurxr0GaSMV5VZSVbt10NNGblDqsICnNTUv0RIU; path=/; domain=.www.lowes.com; Secure\nseo-partner=gDTMXB9g7l46qsQ3gCM3qCMsoDgSmXpC; path=/; domain=.www.lowes.com; max-age=3600; secure\nregion=east; <signed-url-removed> 18-Oct-2026 05:36:03 GMT; path=/\nAKA_A2=A; <signed-url-removed> 17-Oct-2026 06:36:03 GMT; path=/; domain=lowes.com; secure; HttpOnly\nBTProtect=false; <signed-url-removed> 17-Oct-2026 09:36:03 GMT; path=/; domain=.www.lowes.com; secure\nL_SID=fda81da1-8e2a-4d4b-b40e-85ecf766c49c; <signed-url-removed> 01-Jan-2020 10:13:00 GMT; path=/; domain=.www.lowes.com\nnearbyid=0595; <signed-url-removed> 01-Jan-2020 10:13:00 GMT; path=/; domain=.www.lowes.com\nzipstate=NC; <signed-url-removed> 01-Jan-2020 10:13:00 GMT; path=/; domain=.www.lowes.com\nzipcode=12345; <signed-url-removed> 01-Jan-2020 10:13:00 GMT; path=/; domain=.www.lowes.com\nsn=0595; <signed-url-removed> 01-Jan-2020 10:13:00 GMT; path=/; domain=.www.lowes.com\nEPID=1c038312-bff8-44bb-8dfb-03096c4365fc; <signed-url-removed> 14-Oct-2036 16:42:43 GMT; path=/; domain=.lowes.com; secure; SameSite=None\n_abck=DA25188FC24E7BFB0FC7AC6644FD1297~-1~YAAQNlk6F1wmszOhAQAANzFcSBD2IyO9f3P2UYpHNggWNZELTTD6A0cuGtd4x1V7+QcH9so1KIBsDxFkPq/8QD41QfBI6G8AK5Stn4z7KF5OHdG05xXu33yw9Qs+Xev6xxnCs9J86mE+yLbTMlRcmmaRds1QVxSU4mflBvTtfFDVW1dmbSVZaawidW/Crd4Gvu6HTqc0mWQN3GQ6OLLO5hr9xZkT2qVoqsaHLNlRIkcgK2InkHsluacY0XUx0qHHBWlDnbYFoc6dE5cqznJv0OiYaGoqaRAKmD07optHTx/vnHt+jvMhR9ioMU0NxIqGTx5uAl/POETkmLy818E3CiAx3+8lqWksR3lv/7EUM5vWyVP7Nj0E3Ts1J5X8B/hDRKwjs7hMRIRCDkO1ttV8t482EdE0gcSjfpWuecTEyd8kI+IhHMI2pXaUbxa/FHOqq9seRMgOIxyWUR2PGyeP9xbx1t8=~-1~-1~-1~-1~-1; Domain=.lowes.com; Path=/; Expires=Sun, 17 Oct 2027 05:36:03 GMT; Max-Age=31536000; Secure\nbm_mi=3D64E6BFC43E5646A771275E64C163DD~YAAQNlk6F10mszOhAQAANzFcSAGPpzlMmoGR2OD/tpOYvMxOtikoVVpjfpm48egfhYDTBwnJRftcbhwo5TMkQY/4bwVCeoY1W51T1NFWMkXBZS69y6zZaBow6b1+G4b8mQ7dYVfOX99ZJ24YFqq++FMR9JRgrtJOBwUCPauRos4qAt71xrBzkk9TyvX1oKbVaUxoc42TZynlZPTFpgqCIhUPzxy61IWNuE4QWpcGBYvFZAq1t3s/2/LqaY7VSY9lxXvUqGZTeS94oa2GRlTjC52DQiJBbqMeQsyrvH71eZOY0HKjGEx5iNc2ugiU9hBo3bMOa9I0QAPVMSqTvpryTg==~1; Domain=.lowes.com; Path=/; Expires=Sat, 17 Oct 2026 05:36:03 GMT; Max-Age=0; Secure\nbm_s=YAAQNlk6F14mszOhAQAANzFcSAb/Ar103Mdq+QaP2Ia4TvtH87EjrUY/jZSmbhF+jTutOCHEYkHH2FYyhqfQeaMweRUOj1bxcPgyJ0wRg1DqQexfnSad09F/xMbWS2/jM/GVLlCm3dvO2HkvC6aJBeSaakoZ/gONTbLRLlCZiFqYsLTaSevp9ZGyCkzfxsidWBLnWoiIEOmCxpj2Tzh+xwDvE67WQUkc9BNobNb1gxl0g6WSN4BJ6xQTkHlGEx+BELJds8Z2hk95kwNijecy0fl+ZVroQM8B1hbOT3iYt2dHDwSgjpuCUnc1KxXXnih2GKMP5oJQ8HZ5sF6atoZD+MMQ2oLfyz1duv80x4BrUJUxR5GpoHyPv/Sm1BJrF4uKZbFP2IGepM7HT4yQ6Y8p+BicIGCV+Bs+qanIpi94xjCCwFGmkifFjfe/AEhUzyb5dma2BgyBuoWC/DpBY43trsEcABC4649dX34m2dJrr5VdIT0sV3nX0sAWKJ6oe4oYMUb+d8E+eLssQ6p3kVXCBnS5Nh7+e48NPNmp3CzHZMW70Gsfxlkig5ubT6eR8+Tc401/cUS/ZpvK3Y85KwAdjhUkQWcK9CRRaBs7UoZLYMWCSLZW4rBUqMv10/Nh8hr+XDYE2iWcKH6ZnwAxCVVZR2HGNyJuQT+c/bCBqM7VdmR8zcaoyED0K735GSRQHN0D5HnYHZnqGG58C2LuU+BENUkfsTI+BUvWS1s2twLH68RwAEou/4EmWiVBLU7kbQu3HeZfE/ozu5XTokbNWevTdqrUJdZhWkWj1NJLOt5MyHpp6oZ5X9Eaq49Gs7rkyC36FuWHgOvzr5+84mBc2fEtVngDdNcpldjRMzlr+aYQMyTvi3pwDiATSFxwNG2ui/rb8SuY7dTXFYQcMGn3/XiIa6zQ5iTx7oX9bq6oog==; Domain=.lowes.com; Path=/; Expires=Tue, 17 Nov 2026 05:36:03 GMT; Max-Age=2678400; Secure; HttpOnly\nbm_so=81EB5F06906ED327AA5BD05C068B11F8BE7828F47C76EA1766E2A213D647A454~YAAQNlk6F18mszOhAQAANzFcSAlPS3nSzGKRGASdj3FVevtbdKIDVKU+/Tz5UwEyo0yME/CnhDrlNBqzo0Aw13sljYHhoD4coNjAFiIYiKfKdfXT/N/wRtZMbh1LFkAmRaLwehcDSjMgyEO3aqon7V15np923OYC9yJLgRJLZSlnTwZ0S0yp1BOBX50sxSgoJAeEXsZzQOdgTDErNOb0Un1532aT/rc//btuYf1JU43d8edAG/2d9lVAZeJv67p48JQ1crtVm+Oz8rjWmFrP8JB3bK/oWOa1gZ1DH2Ich7Sde1vSPdRTmsYz0Ln/0OjhC9LCiCd/Y7LaTtjMBtrhhtibWzHEWPArm6xRGuF9/VYcLSo99DUXk6j6oItjmWEutH/4JHPmMNFzc3s+tCiNBIg0d8kInRLCdUX9NKugSFjcslI9BxVxDXxgpTPXniP2CXDOlbA1xCZUJd7cS9FpW50KMGKftR/OZQ==~6; Domain=.lowes.com; Path=/; Expires=Sun, 18 Oct 2026 05:36:03 GMT; Max-Age=86400; Secure\nbm_sz=9AB97B78666847AA3CC40A8CE97230AA~YAAQNlk6F2AmszOhAQAANzFcSAGp6kl3v8bDJFL+5hFiNpU5HB73ItBDPA30Kx3FDIrofJxQsO4ErhPoiv5eh2CoOCbv6hnBeHXXDDGN6n/5SXg6oROW8+8QM4sDrinI6cqSugtO+1ZVGozK/9MXHQBIiUc6cH7WZunCivHnY4A52lWZ0xQNpRcZH8Wj2UlxkHDLw7p3WVf9l1Um/5xe+rbjLT1tGTzqJx4BipUHp4lbsvvcVZ8Yc/5XQk0T4MhLx4k8csUehhxL/tpxFFLMoqH4pJiMHGYKUfbP+VHhtpHE3sscnlNl6sxZuVxjAXiwHUOtbr/oyAfPVZsdHlidRtzYER9oRTTSUcP7B7bmuwKX5URtVJRxYQeCtoHVcYIt4AMvv1FWNDTJLg==~3747905~4473908; Domain=.lowes.com; Path=/; Expires=Sat, 17 Oct 2026 09:36:03 GMT; Max-Age=14400",
+    "x-request-id": "900133fd-a738-4b9b-a4c1-24bb6b735080",
+    "strict-transport-security": "max-age=31536000",
+    "content-security-policy": "frame-ancestors 'self'; upgrade-insecure-requests",
+    "akamai-grn": "0.36593a17.1792215363.df13bde",
+    "link": "<https://www.lowescdn.com>;rel=\"preconnect\", <https://www.lowescdn.com/sffonts/Fellix-SemiBold.woff>;rel=\"preload\";as=\"font\";type=\"font/woff\";crossorigin, <https://www.lowescdn.com/sffonts/Fellix-Regular.woff>;rel=\"preload\";as=\"font\";type=\"font/woff\";crossorigin",
+    "server-timing": "origin; dur=0, edge; dur=87, cdn-cache; desc=HIT, ak_p; desc=\"1792215361314_389699894_233913310_8763_35167_11_2416_41\";dur=1",
+    "vary": "Accept-Encoding",
+    "x-envoy-upstream-service-time": "74",
+    "x-b3-sampled": "0",
+    "x-b3-parentspanid": "6dde5df56cbd1830",
+    "x-b3-spanid": "347e2b40fc406851",
+    "x-b3-traceid": "1b02b8211ed9d3106dde5df56cbd1830",
+    "x-akamai-transformed": "9l 275392 0 pmb=mRUM, 2",
+    "content-encoding": "gzip",
+    "expires": "Sat, 17 Oct 2026 05:36:03 GMT",
+    "cache-control": "max-age=0, no-cache",
+    "pragma": "no-cache",
+    "date": "Sat, 17 Oct 2026 05:36:03 GMT",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-lowes-com-l-about-ai-at-lowes.md>"
+ }
+]

@@ -1,0 +1,1103 @@
+[
+ {
+  "actor": "apify/google-search-scraper",
+  "run_id": "sDOZJxanr4yyC5x4F",
+  "status": "SUCCEEDED",
+  "status_message": "Finished! Total 14 requests: 14 succeeded, 0 failed.",
+  "started_at": "2026-10-17T05:29:34.715Z",
+  "finished_at": "2026-10-17T05:31:30.742Z",
+  "dataset_id": "5hHuv315TSvXaUaFn",
+  "input": {
+   "queries": "千问AI购物助手 淘宝 上线 消息\n千问 淘宝 一句话下单 确认 授权\n淘宝 AI万能搜 你还可以问 答案页\n淘宝问问 商品详情页 入口 用我挑\n千问AI购物助手 转人工 客服 售后\n淘宝 千问 购物助手 2026 新功能\n千问 淘宝 记忆 偏好 个性化 购物\n淘宝 商品详情页 AI 助手 主动 弹出 气泡\n小团2.0 美团 帮我办了 授权 确认\n问小团 美团 升级 首页 底部导航\n美团 小团 AI 外呼 订位 确认\n美团 小团 记忆 偏好 历史 对话\n美团 问小团 商家页 入口 店铺 问答\n小团 美团 2026 发布 能力 五层",
+   "maxPagesPerQuery": 1,
+   "resultsPerPage": 10,
+   "languageCode": "zh-CN",
+   "searchLanguage": "zh-CN",
+   "mobileResults": false,
+   "includeUnfilteredResults": false,
+   "saveHtml": false,
+   "saveHtmlToKeyValueStore": false,
+   "aiOverview": {
+    "scrapeFullAiOverview": false
+   },
+   "aiModeSearch": {
+    "enableAiMode": false
+   },
+   "geminiSearch": {
+    "enableGemini": false
+   },
+   "perplexitySearch": {
+    "enablePerplexity": false,
+    "returnImages": false,
+    "returnRelatedQuestions": false
+   },
+   "chatGptSearch": {
+    "enableChatGpt": false
+   },
+   "copilotSearch": {
+    "enableCopilot": false
+   },
+   "maximumLeadsEnrichmentRecords": 0,
+   "verifyLeadsEnrichmentEmails": false,
+   "websiteContentScraper": {
+    "enable": false
+   },
+   "focusOnPaidAds": false,
+   "forceExactMatch": false,
+   "wordsInTitle": [],
+   "wordsInText": [],
+   "wordsInUrl": [],
+   "includeIcons": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "serp-a",
+  "items": 14
+ },
+ {
+  "actor": "apify/google-search-scraper",
+  "run_id": "poUiUYNUhQwcpZWCf",
+  "status": "SUCCEEDED",
+  "status_message": "Processed 14 queries on 14 pages. Extracted: 127 organicResults, 30 relatedQueries, 13 aiOverviews, 14 itemsPushed",
+  "started_at": "2026-10-17T05:29:34.556Z",
+  "finished_at": "2026-10-17T05:31:00.867Z",
+  "dataset_id": "gajJZzbtLsW7WcpXr",
+  "input": {
+   "queries": "京东 京言 AI 购物助手 功能 入口\n京东AI购 App 内测 对话 爱购\n京言 商品详情页 问 京东 AI 导购\n京东 京言 2026 升级 下单 比价\n京东 言犀 智能客服 转人工 摘要\n京东 企业购 AI 采购助手\n京东工业 AI 采购 助手 墨卡托 joyindustrial\n1688 AI 采购助手 2026\n1688 遨虾 AI 采购 智能体\n1688 AI 找货 询盘 自动 发给 商家\n1688 AI 版 发布 找工厂 询价\n1688 AI 询价 供应商 回复 采购单\n1688 遨虾 下单 确认 授权\n阿里巴巴 1688 AI 采购 智能体 发布会",
+   "maxPagesPerQuery": 1,
+   "resultsPerPage": 10,
+   "languageCode": "zh-CN",
+   "searchLanguage": "zh-CN",
+   "mobileResults": false,
+   "includeUnfilteredResults": false,
+   "saveHtml": false,
+   "saveHtmlToKeyValueStore": false,
+   "aiOverview": {
+    "scrapeFullAiOverview": false
+   },
+   "aiModeSearch": {
+    "enableAiMode": false
+   },
+   "geminiSearch": {
+    "enableGemini": false
+   },
+   "perplexitySearch": {
+    "enablePerplexity": false,
+    "returnImages": false,
+    "returnRelatedQuestions": false
+   },
+   "chatGptSearch": {
+    "enableChatGpt": false
+   },
+   "copilotSearch": {
+    "enableCopilot": false
+   },
+   "maximumLeadsEnrichmentRecords": 0,
+   "verifyLeadsEnrichmentEmails": false,
+   "websiteContentScraper": {
+    "enable": false
+   },
+   "focusOnPaidAds": false,
+   "forceExactMatch": false,
+   "wordsInTitle": [],
+   "wordsInText": [],
+   "wordsInUrl": [],
+   "includeIcons": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "serp-b",
+  "items": 14
+ },
+ {
+  "actor": "apify/google-search-scraper",
+  "run_id": "QHSAcYAJLcDfKWOF9",
+  "status": "SUCCEEDED",
+  "status_message": "Processed 12 queries on 12 pages. Extracted: 110 organicResults, 30 relatedQueries, 10 aiOverviews, 12 itemsPushed",
+  "started_at": "2026-10-17T05:29:34.641Z",
+  "finished_at": "2026-10-17T05:30:11.362Z",
+  "dataset_id": "yoDk1om9NdGd9LzYI",
+  "input": {
+   "queries": "拼多多 AI 购物助手 上线\n拼多多 AI 导购 客服 2026\n抖音商城 AI 购物助手\n抖音 电商 AI 导购 搜索 豆包 购物\n小红书 点点 购物 AI 导购\n小红书 AI 搜索 商品 推荐 购物助手 2026\n携程 问道 AI 助手 功能\n携程 TripGenie 页面 主动 推荐 行程助手\n携程 AI 助手 订单页 主动 提醒 出行\n飞猪 问一问 AI 旅行助手 下单\n支付宝 AI 生活管家 帮我办 下单 确认\n豆包 购物 抖音商城 下单 2026",
+   "maxPagesPerQuery": 1,
+   "resultsPerPage": 10,
+   "languageCode": "zh-CN",
+   "searchLanguage": "zh-CN",
+   "mobileResults": false,
+   "includeUnfilteredResults": false,
+   "saveHtml": false,
+   "saveHtmlToKeyValueStore": false,
+   "aiOverview": {
+    "scrapeFullAiOverview": false
+   },
+   "aiModeSearch": {
+    "enableAiMode": false
+   },
+   "geminiSearch": {
+    "enableGemini": false
+   },
+   "perplexitySearch": {
+    "enablePerplexity": false,
+    "returnImages": false,
+    "returnRelatedQuestions": false
+   },
+   "chatGptSearch": {
+    "enableChatGpt": false
+   },
+   "copilotSearch": {
+    "enableCopilot": false
+   },
+   "maximumLeadsEnrichmentRecords": 0,
+   "verifyLeadsEnrichmentEmails": false,
+   "websiteContentScraper": {
+    "enable": false
+   },
+   "focusOnPaidAds": false,
+   "forceExactMatch": false,
+   "wordsInTitle": [],
+   "wordsInText": [],
+   "wordsInUrl": [],
+   "includeIcons": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "serp-c",
+  "items": 12
+ },
+ {
+  "actor": "apify/google-search-scraper",
+  "run_id": "EghSTJcBVk3L6Jses",
+  "status": "SUCCEEDED",
+  "status_message": "Processed 12 queries on 12 pages. Extracted: 112 organicResults, 20 relatedQueries, 8 aiOverviews, 12 itemsPushed",
+  "started_at": "2026-10-17T05:29:34.983Z",
+  "finished_at": "2026-10-17T05:30:50.817Z",
+  "dataset_id": "x3UCGmQRwz7gi1Qmb",
+  "input": {
+   "queries": "AI 导购 主动 弹出 浮窗 停留 触发 产品经理\n电商 AI 助手 主动服务 触发时机 详情页 停留\nAI 购物助手 一句话下单 二次确认 设计\nAI 导购 转人工 客服 留资 线索 B2B\nAI 客服 转人工 对话摘要 交接 坐席\nB2B 询盘 AI 助手 自动 生成 询价单\n智能客服 人机协同 转人工 摘要 小结 京东 淘宝\nAI 导购 你还可以问 推荐问题 设计\n千问 淘宝 AI 购物 体验 测评 人人都是产品经理\n京东 京言 体验 测评 钛媒体\n美团 小团 体验 测评 36氪\n1688 AI 采购 体验 测评",
+   "maxPagesPerQuery": 1,
+   "resultsPerPage": 10,
+   "languageCode": "zh-CN",
+   "searchLanguage": "zh-CN",
+   "mobileResults": false,
+   "includeUnfilteredResults": false,
+   "saveHtml": false,
+   "saveHtmlToKeyValueStore": false,
+   "aiOverview": {
+    "scrapeFullAiOverview": false
+   },
+   "aiModeSearch": {
+    "enableAiMode": false
+   },
+   "geminiSearch": {
+    "enableGemini": false
+   },
+   "perplexitySearch": {
+    "enablePerplexity": false,
+    "returnImages": false,
+    "returnRelatedQuestions": false
+   },
+   "chatGptSearch": {
+    "enableChatGpt": false
+   },
+   "copilotSearch": {
+    "enableCopilot": false
+   },
+   "maximumLeadsEnrichmentRecords": 0,
+   "verifyLeadsEnrichmentEmails": false,
+   "websiteContentScraper": {
+    "enable": false
+   },
+   "focusOnPaidAds": false,
+   "forceExactMatch": false,
+   "wordsInTitle": [],
+   "wordsInText": [],
+   "wordsInUrl": [],
+   "includeIcons": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "serp-d",
+  "items": 12
+ },
+ {
+  "actor": "apify/google-search-scraper",
+  "run_id": "eSDcvIpjA35DtbSH7",
+  "status": "SUCCEEDED",
+  "status_message": "Processed 14 queries on 14 pages. Extracted: 119 organicResults, 48 relatedQueries, 13 aiOverviews, 14 itemsPushed",
+  "started_at": "2026-10-17T05:35:13.078Z",
+  "finished_at": "2026-10-17T05:36:35.426Z",
+  "dataset_id": "c3cZbWyUKKSNzFBEj",
+  "input": {
+   "queries": "千问AI购物助手 商品详情页 入口 问千问\n淘宝 商品详情页 问千问 当前商品 AI\n京东 商品详情页 京言 入口 这个商品\n京东App 16.0 AI 购物 双11 2026\nAI万能搜 搜索结果页 AI 卡片 自动 出现 问句\n千问 购物 主动 提醒 降价 通知 帮抢\n京东AI购 首页 主动 推送 卡片 知你所需\nAI 购物助手 弹窗 关闭 吐槽 2026\n支付宝 阿宝 当前页面 屏幕 理解 唤起\n豆包 识屏 购物 比价 当前页面 商品\n1688 商品页 商家页 采购车 AI 助手 入口\n快手 AI 购物助手 搜索 唤起 对话 加购\n拼多多 AI搜索 上线 自然语言 2026\n小红书 AI导购 商品卡片 对话 2026",
+   "maxPagesPerQuery": 1,
+   "resultsPerPage": 10,
+   "languageCode": "zh-CN",
+   "searchLanguage": "zh-CN",
+   "mobileResults": false,
+   "includeUnfilteredResults": false,
+   "saveHtml": false,
+   "saveHtmlToKeyValueStore": false,
+   "aiOverview": {
+    "scrapeFullAiOverview": false
+   },
+   "aiModeSearch": {
+    "enableAiMode": false
+   },
+   "geminiSearch": {
+    "enableGemini": false
+   },
+   "perplexitySearch": {
+    "enablePerplexity": false,
+    "returnImages": false,
+    "returnRelatedQuestions": false
+   },
+   "chatGptSearch": {
+    "enableChatGpt": false
+   },
+   "copilotSearch": {
+    "enableCopilot": false
+   },
+   "maximumLeadsEnrichmentRecords": 0,
+   "verifyLeadsEnrichmentEmails": false,
+   "websiteContentScraper": {
+    "enable": false
+   },
+   "focusOnPaidAds": false,
+   "forceExactMatch": false,
+   "wordsInTitle": [],
+   "wordsInText": [],
+   "wordsInUrl": [],
+   "includeIcons": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "serp-e",
+  "items": 14
+ },
+ {
+  "actor": "apify/google-search-scraper",
+  "run_id": "sSVX7r7fAYIF2PVTa",
+  "status": "SUCCEEDED",
+  "status_message": "Processed 14 queries on 14 pages. Extracted: 120 organicResults, 10 relatedQueries, 10 aiOverviews, 14 itemsPushed",
+  "started_at": "2026-10-17T05:35:13.007Z",
+  "finished_at": "2026-10-17T05:37:09.552Z",
+  "dataset_id": "wqtdwQfrgzpg9KvgD",
+  "input": {
+   "queries": "千问 购物 联系客服 商家客服 AI帮办 退换货\n京言 转人工 京东 客服 AI\n美团 小团 人工客服 转接\nAI店小蜜 转人工 交接 千牛 摘要\n1688 AI询盘 结构化 报告 商家 回复\n1688 遨虾 询盘 商家 未回复 报告\n千问 记忆 设置 关闭 个性化 购物偏好\n千问 历史对话 购物 记录 淘宝 同步\n京东 企业购 AI 专属价 登录 企业 价格\n千问 淘宝 AI算优惠 到手价 88VIP 会员价\n千问 淘宝 未登录 授权 淘宝账号 绑定\n京东 A2P2 协议 AI 支付 授权\n支付宝 ACT 协议 智能体 授权 确认 支付\nAI导购 广告 标注 监管 推荐 2026 市场监管",
+   "maxPagesPerQuery": 1,
+   "resultsPerPage": 10,
+   "languageCode": "zh-CN",
+   "searchLanguage": "zh-CN",
+   "mobileResults": false,
+   "includeUnfilteredResults": false,
+   "saveHtml": false,
+   "saveHtmlToKeyValueStore": false,
+   "aiOverview": {
+    "scrapeFullAiOverview": false
+   },
+   "aiModeSearch": {
+    "enableAiMode": false
+   },
+   "geminiSearch": {
+    "enableGemini": false
+   },
+   "perplexitySearch": {
+    "enablePerplexity": false,
+    "returnImages": false,
+    "returnRelatedQuestions": false
+   },
+   "chatGptSearch": {
+    "enableChatGpt": false
+   },
+   "copilotSearch": {
+    "enableCopilot": false
+   },
+   "maximumLeadsEnrichmentRecords": 0,
+   "verifyLeadsEnrichmentEmails": false,
+   "websiteContentScraper": {
+    "enable": false
+   },
+   "focusOnPaidAds": false,
+   "forceExactMatch": false,
+   "wordsInTitle": [],
+   "wordsInText": [],
+   "wordsInUrl": [],
+   "includeIcons": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "serp-f",
+  "items": 14
+ },
+ {
+  "actor": "apify/google-search-scraper",
+  "run_id": "YyRhD8NXdRhe2yDrb",
+  "status": "SUCCEEDED",
+  "status_message": "Processed 12 queries on 12 pages. Extracted: 108 organicResults, 48 relatedQueries, 9 aiOverviews, 12 itemsPushed",
+  "started_at": "2026-10-17T05:36:09.260Z",
+  "finished_at": "2026-10-17T05:37:56.547Z",
+  "dataset_id": "n7jxde9zgi9SwZUcN",
+  "input": {
+   "queries": "互联网弹窗信息推送服务管理规定 全文 一键关闭\n工信部 弹窗 关闭后 不得 再次 弹出 规定\n关于进一步提升移动互联网应用服务能力的通知 弹窗 关闭按钮\n人工智能生成合成内容标识办法 显式标识 对话 智能客服\n生成式人工智能服务管理暂行办法 用户输入信息 保存 记录\n智能客服 转人工 规定 消费者 人工服务 一键转人工 2025\n关于推动智能客服 一键转人工 工信部 市场监管\n1688 询盘 回复 时效 规则 买家 留言\n淘宝 AI 购物 助手 用户 授权 协议 千问 购物 服务条款\n京东 AI 采购管家 AI询议价 企业 审批 下单\n京东工品汇 AI 选型 工业品 参数 匹配 BOM\n淘宝小源 AI采购助手 工业品 物料 清单",
+   "maxPagesPerQuery": 1,
+   "resultsPerPage": 10,
+   "languageCode": "zh-CN",
+   "searchLanguage": "zh-CN",
+   "mobileResults": false,
+   "includeUnfilteredResults": false,
+   "saveHtml": false,
+   "saveHtmlToKeyValueStore": false,
+   "aiOverview": {
+    "scrapeFullAiOverview": false
+   },
+   "aiModeSearch": {
+    "enableAiMode": false
+   },
+   "geminiSearch": {
+    "enableGemini": false
+   },
+   "perplexitySearch": {
+    "enablePerplexity": false,
+    "returnImages": false,
+    "returnRelatedQuestions": false
+   },
+   "chatGptSearch": {
+    "enableChatGpt": false
+   },
+   "copilotSearch": {
+    "enableCopilot": false
+   },
+   "maximumLeadsEnrichmentRecords": 0,
+   "verifyLeadsEnrichmentEmails": false,
+   "websiteContentScraper": {
+    "enable": false
+   },
+   "focusOnPaidAds": false,
+   "forceExactMatch": false,
+   "wordsInTitle": [],
+   "wordsInText": [],
+   "wordsInUrl": [],
+   "includeIcons": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "serp-g",
+  "items": 12
+ },
+ {
+  "actor": "apify/google-search-scraper",
+  "run_id": "A7Rf345ZPXfqMcTYu",
+  "status": "SUCCEEDED",
+  "status_message": "Processed 12 queries on 12 pages. Extracted: 97 organicResults, 40 relatedQueries, 11 aiOverviews, 12 itemsPushed",
+  "started_at": "2026-10-17T05:39:40.540Z",
+  "finished_at": "2026-10-17T05:41:09.133Z",
+  "dataset_id": "guApdUmytgCrcV7At",
+  "input": {
+   "queries": "人工智能拟人化互动服务管理暂行办法 全文 网信办\n人工智能拟人化互动服务管理暂行办法 转人工 告知 人工智能 身份\n顾客联络服务 人工与智能客户服务协同要求 GB/T 国家标准\n互联网广告管理办法 第十条 关闭后继续弹出 一键关闭\n规范互联网信息服务市场秩序若干规定 弹出 窗口 关闭 不得再次弹出\n京东 东东 AI购物助手 京东App 16.0 发布 功能\n京东 东东 AI 购物助手 商品详情页 购物车 唤起\n京东 2026 双11 东东 购物决策 Agent 官方\n源宝 1688 AI 助手 产品 演变 DataFun\n淘宝 AI 购物助手 在线评测 落地实践\n千问AI购物助手 历史记录 删除 记忆 淘宝\n美团 小团 历史对话 记录 偏好 记住",
+   "maxPagesPerQuery": 1,
+   "resultsPerPage": 10,
+   "languageCode": "zh-CN",
+   "searchLanguage": "zh-CN",
+   "mobileResults": false,
+   "includeUnfilteredResults": false,
+   "saveHtml": false,
+   "saveHtmlToKeyValueStore": false,
+   "aiOverview": {
+    "scrapeFullAiOverview": false
+   },
+   "aiModeSearch": {
+    "enableAiMode": false
+   },
+   "geminiSearch": {
+    "enableGemini": false
+   },
+   "perplexitySearch": {
+    "enablePerplexity": false,
+    "returnImages": false,
+    "returnRelatedQuestions": false
+   },
+   "chatGptSearch": {
+    "enableChatGpt": false
+   },
+   "copilotSearch": {
+    "enableCopilot": false
+   },
+   "maximumLeadsEnrichmentRecords": 0,
+   "verifyLeadsEnrichmentEmails": false,
+   "websiteContentScraper": {
+    "enable": false
+   },
+   "focusOnPaidAds": false,
+   "forceExactMatch": false,
+   "wordsInTitle": [],
+   "wordsInText": [],
+   "wordsInUrl": [],
+   "includeIcons": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "serp-h",
+  "items": 12
+ },
+ {
+  "actor": "apify/website-content-crawler",
+  "run_id": "hQM0Z7hA6RplniQ0e",
+  "status": "SUCCEEDED",
+  "status_message": "Finished! Total 27 requests: 25 succeeded, 2 failed.",
+  "started_at": "2026-10-17T05:34:33.007Z",
+  "finished_at": "2026-10-17T05:46:33.932Z",
+  "dataset_id": "1kebpDHb3p2t8h9AC",
+  "input": {
+   "startUrls": [
+    {
+     "url": "http://www.xinhuanet.com/tech/20260511/b94c26581d9c41ea8c3fd3b383ab2939/c.html"
+    },
+    {
+     "url": "https://daxue.taobao.com/information/detail.jhtml?id=1441"
+    },
+    {
+     "url": "https://daxue.taobao.com/information/detail.jhtml?id=1440"
+    },
+    {
+     "url": "http://finance.people.com.cn/n1/2026/0511/c1004-40717594.html"
+    },
+    {
+     "url": "https://www.stdaily.com/web/gdxw/2026-01/15/content_461939.html"
+    },
+    {
+     "url": "https://www.stcn.com/article/detail/3594486.html"
+    },
+    {
+     "url": "https://www.tmtpost.com/7984130.html"
+    },
+    {
+     "url": "https://www.tmtpost.com/7983400.html"
+    },
+    {
+     "url": "https://www.cls.cn/detail/2368276"
+    },
+    {
+     "url": "https://www.pingwest.com/a/313647"
+    },
+    {
+     "url": "https://www.woshipm.com/ai/6399764.html"
+    },
+    {
+     "url": "https://m.36kr.com/p/3807853477928708"
+    },
+    {
+     "url": "https://zhidx.com/p/556997.html"
+    },
+    {
+     "url": "https://www.woshipm.com/ai/6371687.html"
+    },
+    {
+     "url": "https://m.36kr.com/p/3470734054692484"
+    },
+    {
+     "url": "https://cloud.tencent.com/developer/article/2760402"
+    },
+    {
+     "url": "https://www.ebrun.com/20260512/666453.shtml"
+    },
+    {
+     "url": "https://ori.hangzhou.com.cn/ornews/content/2026-05/11/content_9220493.htm"
+    },
+    {
+     "url": "https://www.meituan.com/news/NN260727198008607"
+    },
+    {
+     "url": "https://www.meituan.com/news/NN260828216013035"
+    },
+    {
+     "url": "https://www.stdaily.com/web/gdxw/2026-02/12/content_473734.html"
+    },
+    {
+     "url": "https://wap.eastmoney.com/a/202602123649347150.html"
+    },
+    {
+     "url": "https://m.bjnews.com.cn/detail/1785481550129373.html"
+    },
+    {
+     "url": "https://m.36kr.com/p/3868284948108296"
+    },
+    {
+     "url": "https://view.inews.qq.com/a/20260805A0E4HD00"
+    },
+    {
+     "url": "https://www.ebrun.com/20260728/690624.shtml"
+    },
+    {
+     "url": "https://apps.apple.com/cn/app/id423084029"
+    }
+   ],
+   "crawlerType": "playwright:adaptive",
+   "maxCrawlDepth": 0,
+   "maxCrawlPages": 29,
+   "maxConcurrency": 10,
+   "saveMarkdown": true,
+   "saveHtml": false,
+   "removeCookieWarnings": true,
+   "proxyConfiguration": {
+    "useApifyProxy": true
+   },
+   "requestTimeoutSecs": 90,
+   "dynamicContentWaitSecs": 8,
+   "maxRequestRetries": 3,
+   "readableTextCharThreshold": 100,
+   "includeUrlGlobs": [],
+   "excludeUrlGlobs": [],
+   "useSitemaps": false,
+   "onlyCrawlPagesModifiedSince": "",
+   "useLlmsTxt": false,
+   "respectRobotsTxtFile": false,
+   "keepUrlFragments": false,
+   "ignoreCanonicalUrl": false,
+   "customHttpHeaders": {},
+   "signHttpRequests": false,
+   "initialConcurrency": 0,
+   "minFileDownloadSpeedKBps": 128,
+   "maxSessionRotations": 10,
+   "ignoreHttpsErrors": false,
+   "waitForSelector": "",
+   "softWaitForSelector": "",
+   "maxScrollHeightPixels": 5000,
+   "blockMedia": false,
+   "expandIframes": true,
+   "clickElementsCssSelector": "[aria-expanded=\"false\"]",
+   "pageFunction": "",
+   "keepElementsCssSelector": "",
+   "removeElementsCssSelector": "nav, footer, script, style, noscript, svg, img[src^='data:'],\n[role=\"alert\"],\n[role=\"banner\"],\n[role=\"dialog\"],\n[role=\"alertdialog\"],\n[role=\"region\"][aria-label*=\"skip\" i],\n[aria-modal=\"true\"]",
+   "htmlTransformer": "readableText",
+   "aggressivePrune": false,
+   "debugMode": false,
+   "debugLog": false,
+   "storeSkippedUrls": false,
+   "saveHtmlAsFile": false,
+   "summarize": false,
+   "saveFiles": false,
+   "saveScreenshots": false,
+   "maxResults": 9999999,
+   "clientSideMinChangePercentage": 15,
+   "renderingTypeDetectionPercentage": 10,
+   "reuseStoredDetectionResults": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "wcc-1",
+  "items": 25
+ },
+ {
+  "actor": "apify/website-content-crawler",
+  "run_id": "vyGMyRhFB25B3DnEQ",
+  "status": "SUCCEEDED",
+  "status_message": "Finished! Total 29 requests: 28 succeeded, 1 failed.",
+  "started_at": "2026-10-17T05:34:33.489Z",
+  "finished_at": "2026-10-17T05:44:39.517Z",
+  "dataset_id": "psSxVCtVJ2h9oeaVz",
+  "input": {
+   "startUrls": [
+    {
+     "url": "https://apps.apple.com/cn/app/id6748010090"
+    },
+    {
+     "url": "https://m.36kr.com/p/3530093530225539"
+    },
+    {
+     "url": "https://m.36kr.com/p/3810475457110278"
+    },
+    {
+     "url": "https://post.smzdm.com/p/ad7pnopz/"
+    },
+    {
+     "url": "https://post.smzdm.com/p/awweqwn2/"
+    },
+    {
+     "url": "https://view.inews.qq.com/a/20261015A0DK9N00"
+    },
+    {
+     "url": "https://www.21jingji.com/article/20261014/herald/df240fb164757b665b868408a5614d1b.html"
+    },
+    {
+     "url": "https://www.tmtpost.com/8090884.html"
+    },
+    {
+     "url": "https://biz.ifeng.com/c/8vaEIbCTe7L"
+    },
+    {
+     "url": "https://mro-bom.jd.com/"
+    },
+    {
+     "url": "https://www.tmtpost.com/8128421.html"
+    },
+    {
+     "url": "https://www.leikeji.com/article/73745"
+    },
+    {
+     "url": "https://m.36kr.com/p/3572658883689600"
+    },
+    {
+     "url": "https://www.ebrun.com/ebrungo/zb/692309.shtml"
+    },
+    {
+     "url": "https://finance.sina.cn/stock/jdts/2026-10-13/detail-inivasef8109994.d.html"
+    },
+    {
+     "url": "https://finance.sina.cn/stock/jdts/2025-09-29/detail-infsarpc3916854.d.html"
+    },
+    {
+     "url": "https://www.alphashop.cn/"
+    },
+    {
+     "url": "https://finance.sina.com.cn/stock/t/2026-03-30/doc-inhsttra9768510.shtml"
+    },
+    {
+     "url": "https://www.tmtpost.com/7985764.html"
+    },
+    {
+     "url": "https://www.huxiu.com/article/4881495.html"
+    },
+    {
+     "url": "https://www.woshipm.com/share/6358189.html"
+    },
+    {
+     "url": "http://www.cb.com.cn/index/show/zj/cv/cv135384511261"
+    },
+    {
+     "url": "https://finance.sina.cn/stock/jdts/2026-08-14/detail-ininhhrn4149960.d.html"
+    },
+    {
+     "url": "https://tidenews.com.cn/news.html?id=3473532"
+    },
+    {
+     "url": "https://www.tmtpost.com/8029992.html"
+    },
+    {
+     "url": "https://www.thepaper.cn/newsDetail_forward_34177441"
+    },
+    {
+     "url": "https://www.tmtpost.com/8143622.html"
+    },
+    {
+     "url": "https://www.163.com/dy/article/L2CMBB840511BE1V.html"
+    },
+    {
+     "url": "https://view.inews.qq.com/a/20251204A037FE00"
+    }
+   ],
+   "crawlerType": "playwright:adaptive",
+   "maxCrawlDepth": 0,
+   "maxCrawlPages": 31,
+   "maxConcurrency": 10,
+   "saveMarkdown": true,
+   "saveHtml": false,
+   "removeCookieWarnings": true,
+   "proxyConfiguration": {
+    "useApifyProxy": true
+   },
+   "requestTimeoutSecs": 90,
+   "dynamicContentWaitSecs": 8,
+   "maxRequestRetries": 3,
+   "readableTextCharThreshold": 100,
+   "includeUrlGlobs": [],
+   "excludeUrlGlobs": [],
+   "useSitemaps": false,
+   "onlyCrawlPagesModifiedSince": "",
+   "useLlmsTxt": false,
+   "respectRobotsTxtFile": false,
+   "keepUrlFragments": false,
+   "ignoreCanonicalUrl": false,
+   "customHttpHeaders": {},
+   "signHttpRequests": false,
+   "initialConcurrency": 0,
+   "minFileDownloadSpeedKBps": 128,
+   "maxSessionRotations": 10,
+   "ignoreHttpsErrors": false,
+   "waitForSelector": "",
+   "softWaitForSelector": "",
+   "maxScrollHeightPixels": 5000,
+   "blockMedia": false,
+   "expandIframes": true,
+   "clickElementsCssSelector": "[aria-expanded=\"false\"]",
+   "pageFunction": "",
+   "keepElementsCssSelector": "",
+   "removeElementsCssSelector": "nav, footer, script, style, noscript, svg, img[src^='data:'],\n[role=\"alert\"],\n[role=\"banner\"],\n[role=\"dialog\"],\n[role=\"alertdialog\"],\n[role=\"region\"][aria-label*=\"skip\" i],\n[aria-modal=\"true\"]",
+   "htmlTransformer": "readableText",
+   "aggressivePrune": false,
+   "debugMode": false,
+   "debugLog": false,
+   "storeSkippedUrls": false,
+   "saveHtmlAsFile": false,
+   "summarize": false,
+   "saveFiles": false,
+   "saveScreenshots": false,
+   "maxResults": 9999999,
+   "clientSideMinChangePercentage": 15,
+   "renderingTypeDetectionPercentage": 10,
+   "reuseStoredDetectionResults": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "wcc-2",
+  "items": 28
+ },
+ {
+  "actor": "apify/website-content-crawler",
+  "run_id": "1tstXYXu7146JLyMe",
+  "status": "ABORTED",
+  "status_message": "Crawled 31/32 pages, 0 failed requests, desired concurrency 6.",
+  "started_at": "2026-10-17T05:40:00.286Z",
+  "finished_at": "2026-10-17T05:43:12.027Z",
+  "dataset_id": "qauNQ58TNPdjo58Ab",
+  "input": {
+   "startUrls": [
+    {
+     "url": "http://www.cac.gov.cn/2022-09/08/c_1664260384702890.htm"
+    },
+    {
+     "url": "https://www.ncsti.gov.cn/zcfg/zcwj/202303/t20230302_109809.html"
+    },
+    {
+     "url": "https://www.cac.gov.cn/2025-03/14/c_1743654684782215.htm"
+    },
+    {
+     "url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm"
+    },
+    {
+     "url": "https://www.163.com/dy/article/L5RBA4RL051481US.html"
+    },
+    {
+     "url": "https://www.163.com/dy/article/L5L80QD20514R9L4.html"
+    },
+    {
+     "url": "https://www.163.com/dy/article/L4SK6O1D0511U82T.html"
+    },
+    {
+     "url": "https://www.163.com/dy/article/L6DA483U05568186.html"
+    },
+    {
+     "url": "https://developer.jdcloud.com/article/4523"
+    },
+    {
+     "url": "https://m.tech.china.com/redian/2026/0817/082026_1942854.html"
+    },
+    {
+     "url": "https://caifuhao.eastmoney.com/news/20260415104318039980170"
+    },
+    {
+     "url": "https://m.ebrun.com/714546.html"
+    },
+    {
+     "url": "https://www.ebrun.com/20261013/714291.shtml"
+    },
+    {
+     "url": "https://www.citnews.com.cn/news/222743"
+    },
+    {
+     "url": "https://www.cnblogs.com/alisystemsoftware/p/19063087"
+    },
+    {
+     "url": "https://agentpay.jd.com/protocol.html"
+    },
+    {
+     "url": "https://finance.sina.com.cn/jjxw/2026-06-11/doc-iniazyem3922890.shtml"
+    },
+    {
+     "url": "https://eu.36kr.com/zh/p/3852261679708801"
+    },
+    {
+     "url": "https://news.pconline.com.cn/2069/20693772.html"
+    },
+    {
+     "url": "https://www.tmtpost.com/7984555.html"
+    },
+    {
+     "url": "https://daxue.taobao.com/information/detail.jhtml?id=2110"
+    },
+    {
+     "url": "https://www.cls.cn/detail/2259772"
+    },
+    {
+     "url": "https://cj.sina.cn/articles/view/7879776328/1d5abd8480680184ki"
+    },
+    {
+     "url": "https://53ai.com/news/AIdianshang/2026101231459.html"
+    },
+    {
+     "url": "https://developer.jdcloud.com/article/4187"
+    },
+    {
+     "url": "https://finance.china.com/TMT/13004688/20251014/48903871.html"
+    },
+    {
+     "url": "https://finance.sina.com.cn/tech/roll/2026-05-27/doc-inhzikrs0836746.shtml"
+    },
+    {
+     "url": "https://post.smzdm.com/p/avgq4g27/"
+    },
+    {
+     "url": "https://www.nbd.com.cn/articles/2026-06-18/4430941.html"
+    },
+    {
+     "url": "https://www.dailyqd.com/guanhai/415320_1.html"
+    },
+    {
+     "url": "https://www.moomoo.com/hans/news/post/1001299312"
+    },
+    {
+     "url": "https://k.sina.cn/article_7879996057_1d5af329906801zcuc.html"
+    }
+   ],
+   "crawlerType": "cheerio",
+   "maxCrawlDepth": 0,
+   "maxCrawlPages": 34,
+   "maxConcurrency": 10,
+   "saveMarkdown": true,
+   "saveHtml": false,
+   "removeCookieWarnings": true,
+   "proxyConfiguration": {
+    "useApifyProxy": true
+   },
+   "requestTimeoutSecs": 90,
+   "dynamicContentWaitSecs": 8,
+   "maxRequestRetries": 3,
+   "readableTextCharThreshold": 100,
+   "includeUrlGlobs": [],
+   "excludeUrlGlobs": [],
+   "useSitemaps": false,
+   "onlyCrawlPagesModifiedSince": "",
+   "useLlmsTxt": false,
+   "respectRobotsTxtFile": false,
+   "keepUrlFragments": false,
+   "ignoreCanonicalUrl": false,
+   "customHttpHeaders": {},
+   "signHttpRequests": false,
+   "initialConcurrency": 0,
+   "minFileDownloadSpeedKBps": 128,
+   "maxSessionRotations": 10,
+   "ignoreHttpsErrors": false,
+   "waitForSelector": "",
+   "softWaitForSelector": "",
+   "maxScrollHeightPixels": 5000,
+   "blockMedia": false,
+   "expandIframes": true,
+   "clickElementsCssSelector": "[aria-expanded=\"false\"]",
+   "pageFunction": "",
+   "keepElementsCssSelector": "",
+   "removeElementsCssSelector": "nav, footer, script, style, noscript, svg, img[src^='data:'],\n[role=\"alert\"],\n[role=\"banner\"],\n[role=\"dialog\"],\n[role=\"alertdialog\"],\n[role=\"region\"][aria-label*=\"skip\" i],\n[aria-modal=\"true\"]",
+   "htmlTransformer": "readableText",
+   "aggressivePrune": false,
+   "debugMode": false,
+   "debugLog": false,
+   "storeSkippedUrls": false,
+   "saveHtmlAsFile": false,
+   "summarize": false,
+   "saveFiles": false,
+   "saveScreenshots": false,
+   "maxResults": 9999999,
+   "clientSideMinChangePercentage": 15,
+   "renderingTypeDetectionPercentage": 10,
+   "reuseStoredDetectionResults": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "wcc-3",
+  "items": 30
+ },
+ {
+  "actor": "apify/website-content-crawler",
+  "run_id": "ndbmKsEBusAzHHcLb",
+  "status": "SUCCEEDED",
+  "status_message": "Finished! Total 18 requests: 17 succeeded, 1 failed.",
+  "started_at": "2026-10-17T05:42:40.836Z",
+  "finished_at": "2026-10-17T05:43:19.666Z",
+  "dataset_id": "Vx00jK4JgRlVkcwBa",
+  "input": {
+   "startUrls": [
+    {
+     "url": "https://www.cac.gov.cn/2026-04/10/c_1777558395078289.htm"
+    },
+    {
+     "url": "https://www.cac.gov.cn/2026-04/10/c_1777558395284407.htm"
+    },
+    {
+     "url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=0E87FFCB90EF54C0F997F7DF9AE52FC0"
+    },
+    {
+     "url": "http://paper.people.com.cn/rmrb/pc/content/202609/02/content_30178631.html"
+    },
+    {
+     "url": "https://www.moj.gov.cn/pub/sfbgw/flfggz/flfggzbmgz/202306/t20230620_481045.html"
+    },
+    {
+     "url": "https://www.moj.gov.cn/pub/sfbgw/flfggz/flfggzbmgz/201203/t20120328_145127.html"
+    },
+    {
+     "url": "https://apps.apple.com/cn/app/id414245413"
+    },
+    {
+     "url": "https://finance.sina.com.cn/tech/2026-09-09/doc-inirfcpw5663507.shtml"
+    },
+    {
+     "url": "https://mdaily.hangzhou.com.cn/mrsb/2026/09/10/article_detail_3_20260910A078.html"
+    },
+    {
+     "url": "https://wap.eastmoney.com/a/202609093869287557.html"
+    },
+    {
+     "url": "https://tech.ifeng.com/c/8xH0em5xfNj"
+    },
+    {
+     "url": "https://www.tmtpost.com/7990009.html"
+    },
+    {
+     "url": "https://wap.eastmoney.com/a/202606213777047586.html"
+    },
+    {
+     "url": "https://blog.csdn.net/Taobaojishu/article/details/161125176"
+    },
+    {
+     "url": "https://www.woshipm.com/ai/6444030.html"
+    },
+    {
+     "url": "https://finance.sina.com.cn/stock/t/2026-09-04/doc-iniqskus5999973.shtml"
+    },
+    {
+     "url": "https://www.eet-china.com/mp/a494729.html"
+    },
+    {
+     "url": "https://apps.apple.com/cn/app/id6466733523"
+    }
+   ],
+   "crawlerType": "cheerio",
+   "maxCrawlDepth": 0,
+   "maxCrawlPages": 20,
+   "maxConcurrency": 10,
+   "saveMarkdown": true,
+   "saveHtml": false,
+   "removeCookieWarnings": true,
+   "proxyConfiguration": {
+    "useApifyProxy": true
+   },
+   "requestTimeoutSecs": 90,
+   "dynamicContentWaitSecs": 8,
+   "maxRequestRetries": 3,
+   "readableTextCharThreshold": 100,
+   "includeUrlGlobs": [],
+   "excludeUrlGlobs": [],
+   "useSitemaps": false,
+   "onlyCrawlPagesModifiedSince": "",
+   "useLlmsTxt": false,
+   "respectRobotsTxtFile": false,
+   "keepUrlFragments": false,
+   "ignoreCanonicalUrl": false,
+   "customHttpHeaders": {},
+   "signHttpRequests": false,
+   "initialConcurrency": 0,
+   "minFileDownloadSpeedKBps": 128,
+   "maxSessionRotations": 10,
+   "ignoreHttpsErrors": false,
+   "waitForSelector": "",
+   "softWaitForSelector": "",
+   "maxScrollHeightPixels": 5000,
+   "blockMedia": false,
+   "expandIframes": true,
+   "clickElementsCssSelector": "[aria-expanded=\"false\"]",
+   "pageFunction": "",
+   "keepElementsCssSelector": "",
+   "removeElementsCssSelector": "nav, footer, script, style, noscript, svg, img[src^='data:'],\n[role=\"alert\"],\n[role=\"banner\"],\n[role=\"dialog\"],\n[role=\"alertdialog\"],\n[role=\"region\"][aria-label*=\"skip\" i],\n[aria-modal=\"true\"]",
+   "htmlTransformer": "readableText",
+   "aggressivePrune": false,
+   "debugMode": false,
+   "debugLog": false,
+   "storeSkippedUrls": false,
+   "saveHtmlAsFile": false,
+   "summarize": false,
+   "saveFiles": false,
+   "saveScreenshots": false,
+   "maxResults": 9999999,
+   "clientSideMinChangePercentage": 15,
+   "renderingTypeDetectionPercentage": 10,
+   "reuseStoredDetectionResults": false
+  },
+  "token_env": "APIFY_TOKEN",
+  "name": "wcc-4",
+  "items": 17
+ },
+ {
+  "actor": "apify/website-content-crawler",
+  "run_id": "OM0IYJ7LGrxMgLcnP",
+  "status": "SUCCEEDED",
+  "status_message": "Finished! Total 7 requests: 6 succeeded, 1 failed.",
+  "started_at": "2026-10-17T05:42:57.058Z",
+  "finished_at": "2026-10-17T05:48:18.085Z",
+  "dataset_id": "aPQZzlI3uexyDsGRk",
+  "input": {
+   "startUrls": [
+    {
+     "url": "https://news.qq.com/rain/a/20260914A0D95J00"
+    },
+    {
+     "url": "https://timeline.sohu.com/news/XZHstHEn0T"
+    },
+    {
+     "url": "https://www.cls.cn/detail/2259772"
+    },
+    {
+     "url": "https://www.nbd.com.cn/articles/2026-06-18/4430941.html"
+    },
+    {
+     "url": "https://news.qq.com/rain/a/20261015A0E23W00"
+    },
+    {
+     "url": "https://news.qq.com/rain/a/20260909A0CBTH00"
+    },
+    {
+     "url": "https://m.sohu.com/a/1088752252_115978"
+    }
+   ],
+   "crawlerType": "playwright:firefox",
+   "maxCrawlDepth": 0,
+   "maxCrawlPages": 9,
+   "maxConcurrency": 10,
+   "saveMarkdown": true,
+   "saveHtml": false,
+   "removeCookieWarnings": true,
+   "proxyConfiguration": {
+    "useApifyProxy": true
+   },
+   "requestTimeoutSecs": 90,
+   "dynamicContentWaitSecs": 8,
+   "maxRequestRetries": 3,
+   "readableTextCharThreshold": 100,
+   "includeUrlGlobs": [],
+   "excludeUrlGlobs": [],
+   "useSitemaps": false,
+   "onlyCrawlPagesModifiedSince": "",
+   "useLlmsTxt": false,
+   "respectRobotsTxtFile": false,
+   "keepUrlFragments": false,
+   "ignoreCanonicalUrl": false,
+   "customHttpHeaders": {},
+   "signHttpRequests": false,
+   "initialConcurrency": 0,
+   "minFileDownloadSpeedKBps": 128,
+   "maxSessionRotations": 10,
+   "ignoreHttpsErrors": false,
+   "waitForSelector": "",
+   "softWaitForSelector": "",
+   "maxScrollHeightPixels": 5000,
+   "blockMedia": false,
+   "expandIframes": true,
+   "clickElementsCssSelector": "[aria-expanded=\"false\"]",
+   "pageFunction": "",
+   "keepElementsCssSelector": "",
+   "removeElementsCssSelector": "nav, footer, script, style, noscript, svg, img[src^='data:'],\n[role=\"alert\"],\n[role=\"banner\"],\n[role=\"dialog\"],\n[role=\"alertdialog\"],\n[role=\"region\"][aria-label*=\"skip\" i],\n[aria-modal=\"true\"]",
+   "htmlTransformer": "readableText",
+   "aggressivePrune": false,
+   "debugMode": false,
+   "debugLog": false,
+   "storeSkippedUrls": false,
+   "saveHtmlAsFile": false,
+   "summarize": false,
+   "saveFiles": false,
+   "saveScreenshots": false,
+   "maxResults": 9999999,
+   "clientSideMinChangePercentage": 15,
+   "renderingTypeDetectionPercentage": 10,
+   "reuseStoredDetectionResults": false
+  },
+  "token_env": "APIFY_TOKEN_ALT",
+  "name": "wcc-5",
+  "items": 6
+ }
+]

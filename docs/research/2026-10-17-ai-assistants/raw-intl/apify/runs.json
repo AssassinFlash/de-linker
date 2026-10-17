@@ -1,0 +1,155 @@
+[
+ {
+  "name": "serp-en-retail",
+  "runId": "wMiryS2Msj89wxsxS",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:29:02.888Z",
+  "finishedAt": "2026-10-17T05:30:18.922Z",
+  "items": 20
+ },
+ {
+  "name": "serp-en-b2b-ux",
+  "runId": "nHX4krqE6orRQgckQ",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:29:05.735Z",
+  "finishedAt": "2026-10-17T05:30:35.635Z",
+  "items": 20
+ },
+ {
+  "name": "serp-de",
+  "runId": "knr4azgOa2H5Yj4Ac",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:29:08.877Z",
+  "finishedAt": "2026-10-17T05:29:59.393Z",
+  "items": 10
+ },
+ {
+  "name": "wcc-known-1",
+  "runId": "TrRwuJPIOXuAAY33r",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:30:00.934Z",
+  "finishedAt": "2026-10-17T05:32:01.332Z",
+  "items": 17
+ },
+ {
+  "name": "wcc-protected-residential",
+  "runId": "6ep3kFtfDlq2qhpn0",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:34:45.551Z",
+  "finishedAt": "2026-10-17T05:36:31.423Z",
+  "items": 12
+ },
+ {
+  "name": "wcc-b1",
+  "runId": "RprqhMkO9aiKCS8l1",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:34:28.577Z",
+  "finishedAt": "2026-10-17T05:41:25.338Z",
+  "items": 58
+ },
+ {
+  "name": "wcc-b3",
+  "runId": "nhYEE2N8zACk3aduc",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:40:46.070Z",
+  "finishedAt": "2026-10-17T05:46:53.290Z",
+  "items": 20
+ },
+ {
+  "name": "wcc-b4-lists",
+  "runId": "441FEIMGdGRPUOGLw",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:43:28.512Z",
+  "finishedAt": "2026-10-17T05:44:46.971Z",
+  "items": 14
+ },
+ {
+  "name": "serp-round2",
+  "runId": "E1sNAhO4fHbn0XWme",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:35:14.724Z",
+  "finishedAt": "2026-10-17T05:37:45.182Z",
+  "items": 24
+ },
+ {
+  "name": "wcc-amazon-de-uk",
+  "runId": "YpnX9oE6RPNjc2bk2",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:37:35.034Z",
+  "finishedAt": "2026-10-17T05:38:00.175Z",
+  "items": 3
+ },
+ {
+  "name": "widgets-1",
+  "runId": "FKuKcGSqqiocOoheg",
+  "actor": "apify/playwright-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:38:49.718Z",
+  "finishedAt": "2026-10-17T05:43:48.674Z",
+  "items": 9
+ },
+ {
+  "name": "serp-round3",
+  "runId": "6cWvgsX21KLnfovkN",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:40:26.168Z",
+  "finishedAt": "2026-10-17T05:42:20.642Z",
+  "items": 20
+ },
+ {
+  "name": "wcc-b5",
+  "runId": "OMFaxlpG6yfbQwyQN",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T05:44:32.940Z",
+  "finishedAt": "2026-10-17T05:46:26.946Z",
+  "items": 18
+ },
+ {
+  "name": "wcc-b6",
+  "runId": "d19YtZUInid3VHh3l",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T06:15:29.541Z",
+  "finishedAt": "2026-10-17T06:20:43.859Z",
+  "items": 8
+ },
+ {
+  "name": "observe-eu-desktop",
+  "runId": "ATaPSVjATuEW9qBlM",
+  "actor": "apify/playwright-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T06:15:00.970Z",
+  "finishedAt": "2026-10-17T06:23:03.473Z",
+  "items": 7
+ },
+ {
+  "name": "observe-voelkner-mobile",
+  "runId": "SkeeRx9DrKVHOo2pF",
+  "actor": "apify/playwright-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T06:15:08.488Z",
+  "finishedAt": "2026-10-17T06:18:13.481Z",
+  "items": 0
+ },
+ {
+  "name": "observe-voelkner-desktop",
+  "runId": "dzXoHxcufaFQGN6NR",
+  "actor": "apify/playwright-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T06:26:19.137Z",
+  "finishedAt": "2026-10-17T06:29:56.065Z",
+  "items": 2
+ }
+]
