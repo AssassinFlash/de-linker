@@ -21,6 +21,8 @@ just cutover test
 
 `tests/test_atomic.py` 证明旧目录 inode 在 `.prev` 中保留、整树替换清除旧文件、单文件保持旧打开句柄可读、回滚新增/既有路径、回滚预检、传输失败后重试、第二次 rename 失败与 TERM 后恢复。`test_deploy_and_rollback_use_real_filesystem_on_local_stand_in` 从 `steps.deploy` 走真实 shell/rsync，覆盖全部仓库插件、mu PHP/证书和主题文件，再调用回滚；只有 WP-CLI 边界使用夹具。`tests/test_cli.py` 覆盖 dry run 与写入开关。TDD 中分别观察到缺失发布接口、文件上传路径错误、缺失回滚接口、TERM 留空路径、缺失 CLI 命令/耗时回执的失败，再实现至通过。
 
+Spec / Standards 对全量 `c12a9a22...854068be` 分别评审：Spec 无阻塞发现；Standards 发现目录回滚的 TERM 间隙，已先加失败夹具，再补恢复 trap，定向复核确认解决、无新发现。`test_interrupted_rollback_keeps_live_available_and_can_be_retried` 验证中断后仍可读 live，并可重新完成回滚。部署工具专项结果：Ruff、mypy 通过，pytest **94 passed**。本票不改客户界面。
+
 ## 一条命令回滚文件发布
 
 在**执行该次部署的同一检出版本**运行：

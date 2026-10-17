@@ -170,9 +170,9 @@ def test_interrupted_upload_keeps_live_and_previous_and_can_be_retried(
         'if [[ "$destination" == */ ]]; then\n'
         '    mkdir -p "$destination"\n'
         '    printf partial > "$destination/plugin.php"\n'
-        'else\n'
+        "else\n"
         '    printf partial > "$destination"\n'
-        'fi\nexit 23\n'  # rsync partial-transfer exit status.
+        "fi\nexit 23\n"  # rsync partial-transfer exit status.
     )
     shim.chmod(0o755)  # Executable POSIX program mode.
     original_path = os.environ["PATH"]
@@ -187,3 +187,37 @@ def test_interrupted_upload_keeps_live_and_previous_and_can_be_retried(
     atomic.publish(target, source, relative)
     assert old_file.read_text() == "version three"
     assert saved_file.read_text() == "version two"
+
+
+def test_interrupted_rollback_keeps_live_available_and_can_be_retried(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Rollback needs the same TERM recovery as the forward directory switch."""
+    target = local_target(tmp_path / "site")
+    relative = "wp-content/plugins/example"
+    live = Path(target.path_of(relative))
+    live.mkdir(parents=True)
+    (live / "plugin.php").write_text("old")
+    source = tmp_path / "release"
+    source.mkdir()
+    (source / "plugin.php").write_text("new")
+    atomic.publish(target, source, relative)
+    commands = tmp_path / "bin"
+    commands.mkdir()
+    real_mv = shutil.which("mv")
+    assert real_mv
+    shim = commands / "mv"
+    shim.write_text(
+        '#!/bin/bash\nif [[ "$1" == */.example.prev ]]; then\n'
+        'kill -TERM "$PPID"; exit 1\nfi\n'
+        f'exec "{real_mv}" "$@"\n'
+    )
+    shim.chmod(0o755)  # Executable POSIX program mode.
+    original_path = os.environ["PATH"]
+    monkeypatch.setenv("PATH", f"{commands}{os.pathsep}{original_path}")
+    with pytest.raises(RuntimeError):
+        atomic.rollback(target, [relative])
+    assert (live / "plugin.php").read_text() == "new"
+    monkeypatch.setenv("PATH", original_path)
+    atomic.rollback(target, [relative])
+    assert (live / "plugin.php").read_text() == "old"

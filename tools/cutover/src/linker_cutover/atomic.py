@@ -102,11 +102,16 @@ def rollback(target: Target, relatives: list[str]) -> None:
     rm -f {absent}
 elif [ -d {previous} ] || [ -L {previous} ]; then
     rm -rf {next_path}
+    restore_rollback() {{
+        if [ ! -e {live} ] && [ ! -L {live} ]; then
+            if [ -e {next_path} ] || [ -L {next_path} ]; then mv {next_path} {live}; fi
+        fi
+    }}
+    trap restore_rollback EXIT
+    trap 'exit 1' HUP INT TERM
     if [ -e {live} ] || [ -L {live} ]; then mv {live} {next_path}; fi
-    if ! mv {previous} {live}; then
-        if [ -e {next_path} ] || [ -L {next_path} ]; then mv {next_path} {live}; fi
-        exit 1
-    fi
+    mv {previous} {live}
+    trap - EXIT HUP INT TERM
     rm -rf {next_path}
 else
     mv -f {previous} {live}
