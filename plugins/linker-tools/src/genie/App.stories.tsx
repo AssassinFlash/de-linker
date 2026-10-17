@@ -33,6 +33,10 @@ const BASE: GenieConfig = {
 		'Ask Genie',
 		'I need a three-phase hybrid inverter for a home with 10 kWp PV.',
 	],
+	signedIn: false,
+	retentionDays: 90,
+	mailStarted: '1800000000',
+	mailStartedNonce: 'stamp-nonce',
 };
 
 const meta = {

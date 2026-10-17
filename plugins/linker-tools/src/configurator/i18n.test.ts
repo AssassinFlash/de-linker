@@ -16,7 +16,7 @@ import { expect, test } from 'vitest';
  * Internal dependencies
  */
 import german from '../../languages/linker-tools-de_DE_formal-linker-tools-configurator.json';
-import germanGenie from '../../languages/linker-tools-de_DE_formal-linker-tools-genie.json';
+import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
 
 // A string literal in single or double quotes; prettier picks double quotes
 // only for a text that contains an apostrophe.

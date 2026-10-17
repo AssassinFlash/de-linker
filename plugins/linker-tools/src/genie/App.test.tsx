@@ -29,6 +29,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		// The real message rule, so a restored thread is spelled the same way
 		// a live one is; the calls around it are doubles.
 		assistantMessage: actual.assistantMessage,
+		emailOutcome: actual.emailOutcome,
 		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
 		listConversations: vi.fn( async () => ( {
 			currentId: 0,
@@ -36,6 +37,8 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 			ok: true,
 		} ) ),
 		selectConversation: vi.fn(),
+		deleteConversation: vi.fn(),
+		emailConversation: vi.fn(),
 		sendTurn: vi.fn(),
 		sendVote: vi.fn( async () => true ),
 	};
@@ -44,6 +47,8 @@ vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
 import {
+	deleteConversation,
+	emailConversation,
 	listConversations,
 	readThread,
 	selectConversation,
@@ -78,6 +83,10 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 			"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.",
 		accountUrl: '/my-account/',
 		workspaceUrl: '/genie/',
+		signedIn: false,
+		retentionDays: 90,
+		mailStarted: '1800000000',
+		mailStartedNonce: 'stamp-nonce',
 		prompts: [
 			'Ask Genie',
 			'I need a three-phase hybrid inverter for a home.',
@@ -797,5 +806,357 @@ test( 'the dock mask folds the sheet', () => {
 		expect( states.at( -1 ) ).toBe( false );
 	} finally {
 		window.removeEventListener( 'linker-genie-state', onState );
+	}
+} );
+
+const THREE = [
+	{ id: 9, title: 'Third question', updated: '2026-10-18 10:02:00' },
+	{ id: 8, title: 'Second question', updated: '2026-10-18 10:01:00' },
+	{ id: 7, title: 'First question', updated: '2026-10-18 10:00:00' },
+];
+
+// Ticket #235: a new conversation, or a switch, leaves the docked rail where
+// it is; the rail only folds where it is an overlay over the conversation.
+test( 'a new conversation and a switch keep the wide workspace rail open', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: THREE,
+	} );
+	vi.mocked( selectConversation ).mockResolvedValue( {
+		currentId: 10,
+		ok: true,
+		conversations: [
+			{ id: 10, title: 'Genie', updated: '2026-10-18 10:03:00' },
+			...THREE,
+		],
+	} );
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	const rail = screen.getByRole( 'complementary', {
+		name: 'Conversations',
+	} );
+	expect( rail ).toHaveClass( 'is-open' );
+
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'New conversation' } )
+		);
+	} );
+	expect( selectConversation ).toHaveBeenLastCalledWith(
+		'/wp-json/linker-ai/v1/genie/conversations',
+		'n',
+		undefined
+	);
+	expect( rail ).toHaveClass( 'is-open' );
+	for ( const item of THREE ) {
+		expect(
+			screen.getByRole( 'button', { name: item.title } )
+		).toBeVisible();
+	}
+
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'First question' } )
+		);
+	} );
+	expect( rail ).toHaveClass( 'is-open' );
+} );
+
+test( 'on a phone the rail overlay folds once a conversation is picked', async () => {
+	resetTurnLane();
+	const width = window.innerWidth;
+	window.innerWidth = 390;
+	try {
+		vi.mocked( listConversations ).mockResolvedValue( {
+			currentId: 9,
+			ok: true,
+			conversations: THREE,
+		} );
+		vi.mocked( selectConversation ).mockResolvedValue( {
+			currentId: 7,
+			ok: true,
+			conversations: THREE,
+		} );
+		vi.mocked( readThread ).mockResolvedValue( {
+			messages: [],
+			turn: null,
+		} );
+		render( <App config={ { ...config(), surface: 'workspace' } } /> );
+		const rail = screen.getByRole( 'complementary', {
+			name: 'Conversations',
+		} );
+		expect( rail ).not.toHaveClass( 'is-open' );
+		fireEvent.click(
+			screen.getAllByRole( 'button', { name: 'Conversations' } )[ 0 ]
+		);
+		expect( rail ).toHaveClass( 'is-open' );
+		const first = await screen.findByRole( 'button', {
+			name: 'First question',
+		} );
+		await act( async () => {
+			fireEvent.click( first );
+		} );
+		expect( rail ).not.toHaveClass( 'is-open' );
+	} finally {
+		window.innerWidth = width;
+	}
+} );
+
+test( 'a conversation is deleted from the list once the visitor confirms', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: THREE,
+	} );
+	vi.mocked( deleteConversation ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: [ THREE[ 0 ], THREE[ 2 ] ],
+	} );
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
+
+	fireEvent.click(
+		await screen.findByRole( 'button', {
+			name: 'Delete conversation: Second question',
+		} )
+	);
+	// Nothing is deleted before the visitor confirms.
+	expect( deleteConversation ).not.toHaveBeenCalled();
+	expect(
+		screen.getByText( 'Delete this conversation permanently?' )
+	).toBeVisible();
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Delete' } ) );
+	} );
+	expect( deleteConversation ).toHaveBeenCalledWith(
+		'/wp-json/linker-ai/v1/genie/conversations',
+		'n',
+		8
+	);
+	expect(
+		screen.queryByRole( 'button', { name: 'Second question' } )
+	).toBeNull();
+	expect(
+		screen.getByRole( 'button', { name: 'Third question' } )
+	).toBeVisible();
+} );
+
+test( 'deleting the conversation on screen empties the panel', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: THREE,
+	} );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{ role: 'user', content: 'Third question' },
+			{ role: 'assistant', content: 'An answer.' },
+		],
+		turn: null,
+	} );
+	vi.mocked( deleteConversation ).mockResolvedValue( {
+		currentId: 0,
+		ok: true,
+		conversations: [ THREE[ 1 ], THREE[ 2 ] ],
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect( await screen.findByText( 'An answer.' ) ).toBeVisible();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
+	fireEvent.click(
+		await screen.findByRole( 'button', {
+			name: 'Delete conversation: Third question',
+		} )
+	);
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Delete' } ) );
+	} );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Back' } ) );
+	expect( screen.queryByText( 'An answer.' ) ).toBeNull();
+	expect(
+		screen.getByText( 'Get help with your solar project' )
+	).toBeVisible();
+} );
+
+test( 'a guest gets a confirmation link at the address they type', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: THREE,
+	} );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{ role: 'user', content: 'Third question' },
+			{ role: 'assistant', content: 'An answer.' },
+		],
+		turn: null,
+	} );
+	vi.mocked( emailConversation ).mockResolvedValue( {
+		outcome: 'confirm',
+		to: 'tester@example.test',
+		limit: 0,
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.click(
+		await screen.findByRole( 'button', {
+			name: 'Email me this conversation',
+		} )
+	);
+	fireEvent.change( screen.getByLabelText( 'Your email address' ), {
+		target: { value: 'tester@example.test' },
+	} );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send email' } ) );
+	} );
+	// The page's signed start time and the empty honeypot ride along
+	// (ConversationMail::passes()).
+	expect( emailConversation ).toHaveBeenCalledWith(
+		'/wp-json/linker-ai/v1/genie/conversations',
+		'n',
+		9,
+		'en',
+		'tester@example.test',
+		{
+			started: '1800000000',
+			started_nonce: 'stamp-nonce',
+			website: '',
+		}
+	);
+	expect(
+		await screen.findByText(
+			'A confirmation link is on its way to tester@example.test. The conversation follows once the link is opened.'
+		)
+	).toBeVisible();
+} );
+
+test( 'a signed-in customer gets the email at the account address, no form', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: THREE,
+	} );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{ role: 'user', content: 'Third question' },
+			{ role: 'assistant', content: 'An answer.' },
+		],
+		turn: null,
+	} );
+	vi.mocked( emailConversation ).mockResolvedValue( {
+		outcome: 'sent',
+		to: 'buyer@example.test',
+		limit: 0,
+	} );
+	render( <App config={ { ...config(), signedIn: true } } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const start = await screen.findByRole( 'button', {
+		name: 'Email me this conversation',
+	} );
+	await act( async () => {
+		fireEvent.click( start );
+	} );
+	expect( screen.queryByLabelText( 'Your email address' ) ).toBeNull();
+	expect( emailConversation ).toHaveBeenLastCalledWith(
+		'/wp-json/linker-ai/v1/genie/conversations',
+		'n',
+		9,
+		'en',
+		undefined,
+		undefined
+	);
+	expect(
+		await screen.findByText(
+			'Your email to buyer@example.test is on its way.'
+		)
+	).toBeVisible();
+} );
+
+test( 'the limit is named with the number the server counts to', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: THREE,
+	} );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{ role: 'user', content: 'Third question' },
+			{ role: 'assistant', content: 'An answer.' },
+		],
+		turn: null,
+	} );
+	vi.mocked( emailConversation ).mockResolvedValue( {
+		outcome: 'throttled',
+		to: '',
+		limit: 3,
+	} );
+	render( <App config={ { ...config(), signedIn: true } } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const start = await screen.findByRole( 'button', {
+		name: 'Email me this conversation',
+	} );
+	await act( async () => {
+		fireEvent.click( start );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'This connection has reached the limit of 3 emails per hour. Please try again later.'
+	);
+} );
+
+test( 'at the daily cap the panel says when emailing works again', async () => {
+	resetTurnLane();
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: THREE,
+	} );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{ role: 'user', content: 'Third question' },
+			{ role: 'assistant', content: 'An answer.' },
+		],
+		turn: null,
+	} );
+	vi.mocked( emailConversation ).mockResolvedValue( {
+		outcome: 'capped',
+		to: '',
+		limit: 3,
+	} );
+	render( <App config={ { ...config(), signedIn: true } } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const start = await screen.findByRole( 'button', {
+		name: 'Email me this conversation',
+	} );
+	await act( async () => {
+		fireEvent.click( start );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		"Today's email limit has been reached. Please try again tomorrow."
+	);
+} );
+
+test( 'the page a confirmation link opens says how it went, once', async () => {
+	resetTurnLane();
+	window.history.replaceState( null, '', '/genie/?genie_email=sent' );
+	try {
+		render( <App config={ { ...config(), surface: 'workspace' } } /> );
+		expect(
+			screen.getByText(
+				'Email address confirmed. The conversation is on its way.'
+			)
+		).toBeVisible();
+		expect( window.location.search ).toBe( '' );
+	} finally {
+		window.history.replaceState( null, '', '/' );
 	}
 } );

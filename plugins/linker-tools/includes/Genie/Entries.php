@@ -475,8 +475,11 @@ JS,
 	private function mount_markup( string $surface ): string {
 		$locale = $this->locale();
 		$page   = $this->page_context();
+		// The bot guard of a guest's "email me this conversation": when this
+		// page was made, signed (ConversationMail::stamp()).
+		$stamp = ConversationMail::stamp();
 		return sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\'></div>',
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-mail-started="%18$s" data-mail-started-nonce="%19$s"></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -492,7 +495,11 @@ JS,
 			esc_attr( esc_url_raw( $this->workspace_url() ) ),
 			esc_attr( (string) wp_json_encode( $this->prompts( $page ) ) ),
 			// The whole page context, sent back with every turn (#234).
-			esc_attr( (string) wp_json_encode( $page ) )
+			esc_attr( (string) wp_json_encode( $page ) ),
+			is_user_logged_in() ? '1' : '0',
+			esc_attr( (string) Retention::RETENTION_DAYS ),
+			esc_attr( $stamp['started'] ),
+			esc_attr( $stamp['nonce'] )
 		);
 	}
 
@@ -746,8 +753,19 @@ JS,
 	 * no language layer stays on /genie/.
 	 */
 	private function workspace_url(): string {
+		$lang = function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ? 'de' : 'en';
+		return self::workspace_url_for( $lang );
+	}
+
+	/**
+	 * Genie's full page in one language: the English page at /genie/, its
+	 * Polylang twin for German (/de/genie/ when the twin is missing).
+	 *
+	 * @param string $lang `en` or `de`.
+	 */
+	public static function workspace_url_for( string $lang ): string {
 		$fallback = home_url( '/genie/' );
-		if ( ! function_exists( 'pll_current_language' ) || 'de' !== pll_current_language() ) {
+		if ( 'de' !== $lang ) {
 			return $fallback;
 		}
 		$page = get_page_by_path( 'genie' );

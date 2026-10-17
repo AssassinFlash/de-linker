@@ -4025,3 +4025,71 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr ""
+
+#: includes/Genie/ConversationEmail.php
+msgid "Genie conversation"
+msgstr ""
+
+#: includes/Genie/ConversationEmail.php
+msgid "Sent when someone asks for a copy of a Genie conversation by email."
+msgstr ""
+
+#: includes/Genie/ConversationEmail.php
+msgid "Your conversation with Genie"
+msgstr ""
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-conversation.php
+#, php-format
+msgid "As requested on %s, here is your conversation with Genie, Linker's AI assistant."
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php
+msgid "You"
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php
+msgid "Genie is an AI system, and its answers can contain mistakes. Where an answer differs from the product's datasheet, the datasheet applies."
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php
+msgid "Replies to this email go to the Linker team."
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Genie conversation: address confirmation"
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Sent to the address a visitor without an account enters to get a Genie conversation by email. It holds only a link that confirms the address; the conversation follows after the click."
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Conversation with Genie requested for this email address"
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Confirm your email address"
+msgstr ""
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-confirm-address.php
+#, php-format
+msgid "On %s, a conversation with Genie, Linker's AI assistant, was requested for this email address."
+msgstr ""
+
+#: templates/emails/linker-genie-confirm-address.php
+msgid "Send me the conversation"
+msgstr ""
+
+#. translators: %d: how many hours the link works.
+#: templates/emails/linker-genie-confirm-address.php
+#, php-format
+msgid "The link works once and expires after %d hour."
+msgid_plural "The link works once and expires after %d hours."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/emails/linker-genie-confirm-address.php
+msgid "The conversation is sent only once the link is opened. If you did not ask for it, you can ignore this email."
+msgstr ""

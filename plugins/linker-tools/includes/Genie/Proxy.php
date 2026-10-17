@@ -39,7 +39,8 @@ class Proxy {
 	 *
 	 * GET returns the history rail. POST `{id}` makes that conversation
 	 * the current one, so the dock and the workspace read the same thread.
-	 * POST without an id opens a new conversation.
+	 * POST without an id opens a new conversation. `/<id>` with DELETE
+	 * clears one; `/<id>/email` with POST sends it to the visitor.
 	 */
 	public const CONVERSATIONS_ROUTE = '/genie/conversations';
 
@@ -56,17 +57,20 @@ class Proxy {
 	 * @param Thread|null                                                          $thread        Conversation store; a default one is built when omitted.
 	 * @param UserContext|null                                                     $user_context  Identity handed to the service; a default one is built when omitted.
 	 * @param PageContext|null                                                     $pages         The page a turn comes from; a default one is built when omitted.
+	 * @param ConversationMail|null                                                $mail          Sends a conversation to the visitor; a default one is built when omitted.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
 		private $fetch = null,
 		?Thread $thread = null,
 		?UserContext $user_context = null,
-		?PageContext $pages = null
+		?PageContext $pages = null,
+		?ConversationMail $mail = null
 	) {
 		$this->thread       = $thread ?? new Thread();
 		$this->user_context = $user_context ?? new UserContext();
 		$this->pages        = $pages ?? new PageContext();
+		$this->mail         = $mail ?? new ConversationMail( $conversations, $this->thread );
 	}
 
 	/**
@@ -75,6 +79,13 @@ class Proxy {
 	 * @var PageContext
 	 */
 	private readonly PageContext $pages;
+
+	/**
+	 * Sends a conversation to the visitor's own address.
+	 *
+	 * @var ConversationMail
+	 */
+	private readonly ConversationMail $mail;
 
 	/**
 	 * The conversation store.
@@ -169,7 +180,121 @@ class Proxy {
 				),
 			)
 		);
+		register_rest_route(
+			self::NAMESPACE,
+			self::CONVERSATIONS_ROUTE . '/(?P<id>[\d]+)',
+			array(
+				'methods'             => 'DELETE',
+				'callback'            => array( $this, 'delete_conversation' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'id' => array(
+						'type'              => 'integer',
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
+		register_rest_route(
+			self::NAMESPACE,
+			self::CONVERSATIONS_ROUTE . '/(?P<id>[\d]+)/email',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'email_conversation' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'id'            => array(
+						'type'              => 'integer',
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+					),
+					// Checked by ConversationMail, so a bad address is the
+					// route's own 400 with its own code.
+					'email'         => array(
+						'type'     => 'string',
+						'required' => false,
+					),
+					'locale'        => array(
+						'type' => 'string',
+						'enum' => array( 'en', 'de' ),
+					),
+					// A guest's bot guard (ConversationMail::passes()).
+					'website'       => array(
+						'type'     => 'string',
+						'required' => false,
+					),
+					'started'       => array(
+						'type'     => 'string',
+						'required' => false,
+					),
+					'started_nonce' => array(
+						'type'     => 'string',
+						'required' => false,
+					),
+				),
+			)
+		);
 	}
+
+	/**
+	 * Clears one of the visitor's conversations and answers the list
+	 * without it. An id the visitor may not use is a 404.
+	 *
+	 * @param WP_REST_Request $request Request with `id`.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function delete_conversation( WP_REST_Request $request ) {
+		if ( ! $this->conversations->delete( (int) $request->get_param( 'id' ) ) ) {
+			return new WP_Error( 'linker_genie_conversation', 'Unknown conversation.', array( 'status' => 404 ) );
+		}
+		return $this->conversations();
+	}
+
+	/**
+	 * Sends one conversation to the visitor's own address.
+	 *
+	 * @param WP_REST_Request $request Request with `id`, `email` (a guest's) and `locale`.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function email_conversation( WP_REST_Request $request ) {
+		$outcome = $this->mail->send(
+			(int) $request->get_param( 'id' ),
+			(string) $request->get_param( 'email' ),
+			$this->locale( $request->get_param( 'locale' ) ),
+			array(
+				'website'       => (string) $request->get_param( 'website' ),
+				'started'       => (string) $request->get_param( 'started' ),
+				'started_nonce' => (string) $request->get_param( 'started_nonce' ),
+			)
+		);
+		$http    = ConversationMail::HTTP[ $outcome['status'] ] ?? 503;
+		if ( $http >= 400 ) {
+			// The limits ride with a refusal, so the panel names the same
+			// numbers ConversationMail counts to.
+			return new WP_Error(
+				'linker_genie_email_' . $outcome['status'],
+				'The conversation was not sent.',
+				array(
+					'status' => $http,
+					'limit'  => ConversationMail::LIMIT,
+				)
+			);
+		}
+		// The address goes back to the visitor who sent it: a signed-in
+		// customer sees which of their addresses the account used, a guest
+		// where the confirmation link went.
+		$reply = new WP_REST_Response(
+			array(
+				'status' => $outcome['status'],
+				'to'     => $outcome['to'],
+			),
+			$http
+		);
+		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
+		return $reply;
+	}
+
 
 	/**
 	 * The stored thread of this request's conversation, empty when there is none.

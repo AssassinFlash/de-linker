@@ -59,6 +59,10 @@ final class EntriesTest extends TestCase {
 		$this->assertStringContainsString( 'data-linker-app="genie"', $html );
 		$this->assertStringContainsString( 'data-page-type="product"', $html );
 		$this->assertStringContainsString( "I'm Genie, Linker's AI assistant", $html );
+		// A guest's mount: an address field for the email, and the days a
+		// guest's conversations are kept, from the retention rule (#235).
+		$this->assertStringContainsString( 'data-signed-in="0"', $html );
+		$this->assertStringContainsString( 'data-retention-days="90"', $html );
 		$inline = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
 		$this->assertArrayHasKey( 'data-linker-genie-loader', $inline );
 		$this->assertStringContainsString( 'genie.js', (string) $inline['data-linker-genie-boot-payload'] );
@@ -591,6 +595,8 @@ JS
 				'return' => static fn( string $action ): string => 'nonce-' . $action,
 			)
 		);
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'wp_print_inline_script_tag',
 			array(

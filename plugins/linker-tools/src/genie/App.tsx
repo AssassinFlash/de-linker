@@ -8,7 +8,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -19,6 +19,8 @@ import type { CardState } from '../shared/ProductCard';
 import type { GenieConfig } from './config';
 import {
 	assistantMessage,
+	deleteConversation,
+	emailConversation,
 	listConversations,
 	readThread,
 	selectConversation,
@@ -27,6 +29,7 @@ import {
 	type CardsBlock,
 	type CompareBlock,
 	type ConversationSummary,
+	type EmailOutcome,
 	type Turn,
 	type TurnMessage,
 } from './api/turn';
@@ -44,7 +47,13 @@ import {
 	PanelIcon,
 	PlusIcon,
 	SendIcon,
+	TrashIcon,
 } from './components/Icons';
+import {
+	EmailConversation,
+	LinkResult,
+	readLinkResult,
+} from './components/EmailConversation';
 import { VoteButtons } from './components/VoteButtons';
 import './genie.css';
 
@@ -77,6 +86,15 @@ export type { Dictation };
 
 type Phase = 'ask' | 'waiting' | 'error';
 type HistoryPhase = 'loading' | 'ready' | 'failed';
+/** Where "email this conversation" stands: closed, the guest's address form, on its way, or how it ended. */
+type MailPhase = 'idle' | 'form' | 'sending' | EmailOutcome;
+
+/**
+ * Under this width the workspace rail is an overlay over the conversation
+ * (the prototype's mobile rule, genie.css `@media (max-width: 767px)`), so
+ * picking a conversation folds it; wider, it is docked and stays.
+ */
+const OVERLAY_WIDTH = 768;
 
 declare global {
 	interface Window {
@@ -142,7 +160,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// rule. Read from window.innerWidth rather than a media query, so a jsdom
 	// render (1024) keeps the desktop start.
 	const [ railOpen, setRailOpen ] = useState(
-		config.surface === 'workspace' && window.innerWidth >= 768
+		config.surface === 'workspace' && window.innerWidth >= OVERLAY_WIDTH
 	);
 	// The dock's own history view (the live Advisor's `.lia-history`, opened
 	// from the header's clock): it replaces the thread, and the header's
@@ -158,6 +176,18 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ dictating, setDictating ] = useState( false );
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
+	// The conversation on screen, for the lane jobs: a delete that clears
+	// it must empty the panel, and the state value is a render behind.
+	const shownId = useRef( 0 );
+	const [ mail, setMail ] = useState< MailPhase >( 'idle' );
+	const [ mailTo, setMailTo ] = useState( '' );
+	const [ mailLimit, setMailLimit ] = useState( 0 );
+	// How a confirmation link this page was opened from ended, if it was.
+	const [ linkResult ] = useState( readLinkResult );
+	const show = useCallback( ( id: number ) => {
+		shownId.current = id;
+		setCurrentId( id );
+	}, [] );
 
 	const store = storeClient( config.restUrl );
 	const workspace = config.surface === 'workspace';
@@ -181,10 +211,10 @@ export function App( { config }: { config: GenieConfig } ) {
 			setHistoryPhase( 'ready' );
 			setHistory( listed.conversations );
 			if ( listed.currentId ) {
-				setCurrentId( listed.currentId );
+				show( listed.currentId );
 			}
 		} );
-	}, [ config.conversationsUrl, config.restNonce ] );
+	}, [ config.conversationsUrl, config.restNonce, show ] );
 
 	const showStored = useCallback( async () => {
 		const stored = await readThread( config.threadUrl, config.restNonce );
@@ -193,6 +223,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		setTurn( stored.turn );
 		setPhase( 'ask' );
 		setInput( '' );
+		setMail( 'idle' );
 	}, [ config.threadUrl, config.restNonce ] );
 
 	const ask = useCallback(
@@ -308,8 +339,12 @@ export function App( { config }: { config: GenieConfig } ) {
 					);
 					setHistoryPhase( 'ready' );
 					setHistory( selected.conversations );
-					setCurrentId( selected.currentId );
-					setRailOpen( false );
+					show( selected.currentId );
+					// Docked, the rail stays where the visitor put it; as an
+					// overlay it would hide the conversation just picked.
+					if ( window.innerWidth < OVERLAY_WIDTH ) {
+						setRailOpen( false );
+					}
 					setOpen( true );
 					await showStored();
 				} catch {
@@ -318,7 +353,76 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 			} );
 		},
-		[ config.conversationsUrl, config.restNonce, showStored ]
+		[ config.conversationsUrl, config.restNonce, showStored, show ]
+	);
+
+	// Clearing a conversation (ticket #235): the server deletes it with its
+	// thread and answers the list without it. When it was the one on screen,
+	// the panel shows what is current now — another conversation, or none.
+	const removeConversation = useCallback(
+		( id: number ): Promise< boolean > => {
+			historyEpoch += 1;
+			let removed = false;
+			return enqueue( async () => {
+				const remaining = await deleteConversation(
+					config.conversationsUrl,
+					config.restNonce,
+					id
+				);
+				removed = true;
+				setHistoryPhase( 'ready' );
+				setHistory( remaining.conversations );
+				if ( id !== shownId.current ) {
+					return;
+				}
+				show( remaining.currentId );
+				if ( remaining.currentId > 0 ) {
+					await showStored();
+					return;
+				}
+				currentThread.current = [];
+				setThread( [] );
+				setTurn( null );
+				setPhase( 'ask' );
+				setMail( 'idle' );
+			} ).then(
+				() => removed,
+				() => removed
+			);
+		},
+		[ config.conversationsUrl, config.restNonce, showStored, show ]
+	);
+
+	// "Email this conversation": a signed-in customer's goes straight to the
+	// account's address; a guest names one first.
+	const sendByEmail = useCallback(
+		async ( address?: string, website = '' ) => {
+			setMail( 'sending' );
+			const result = await emailConversation(
+				config.conversationsUrl,
+				config.restNonce,
+				shownId.current,
+				config.locale,
+				address,
+				address
+					? {
+							started: config.mailStarted,
+							started_nonce: config.mailStartedNonce,
+							website,
+						}
+					: undefined
+			);
+			setMailTo( result.to || address || '' );
+			setMailLimit( result.limit );
+			setMail( result.outcome );
+		},
+		[
+			config.conversationsUrl,
+			config.restNonce,
+			config.locale,
+			config.mailStarted,
+			config.mailStartedNonce,
+		]
 	);
 
 	// The browser's own dictation (the live Advisor's `.lia-voice` and the
@@ -456,6 +560,27 @@ export function App( { config }: { config: GenieConfig } ) {
 	}
 
 	const historyView = ! workspace && dockHistory;
+	// A conversation with an answer can be emailed; one still waiting for
+	// its first answer has nothing to send yet.
+	const canEmail =
+		currentId > 0 &&
+		'waiting' !== phase &&
+		thread.some( ( message ) => 'assistant' === message.role );
+	// Where a guest's conversations are kept, under the list; a signed-in
+	// customer's are in the account and need no note.
+	const historyNote =
+		config.signedIn || config.retentionDays < 1
+			? ''
+			: sprintf(
+					// translators: %d is the number of days a guest's conversation is kept from its start (Retention::RETENTION_DAYS).
+					_n(
+						'Each conversation stays in this browser for %d day from its start. Signing in moves all of them to your account.',
+						'Each conversation stays in this browser for %d days from its start. Signing in moves all of them to your account.',
+						config.retentionDays,
+						'linker-tools'
+					),
+					config.retentionDays
+				);
 	const german = config.locale === 'de';
 	// A browser without speech recognition gets no dead button.
 	const canDictate = Boolean(
@@ -503,6 +628,8 @@ export function App( { config }: { config: GenieConfig } ) {
 					onSelect={ ( id ) => void continueConversation( id ) }
 					onNew={ () => void continueConversation() }
 					onRetry={ () => void refreshHistory() }
+					onDelete={ removeConversation }
+					note={ historyNote }
 				/>
 			) : null }
 			{ /*
@@ -640,6 +767,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				</header>
 				{ visible ? (
 					<div className="linker-genie-app__panel">
+						{ linkResult ? (
+							<LinkResult outcome={ linkResult } />
+						) : null }
 						{ /*
 						 * `.gp-welcome h1`: the empty column opens with its own
 						 * line, the prototype's first child of the welcome. It
@@ -670,6 +800,8 @@ export function App( { config }: { config: GenieConfig } ) {
 										void continueConversation( id );
 									} }
 									onRetry={ () => void refreshHistory() }
+									onDelete={ removeConversation }
+									note={ historyNote }
 								/>
 							</div>
 						) : null }
@@ -830,6 +962,28 @@ export function App( { config }: { config: GenieConfig } ) {
 										products={ compareIds }
 										store={ store }
 										locale={ config.locale }
+									/>
+								) : null }
+								{ canEmail ? (
+									<EmailConversation
+										phase={ mail }
+										to={ mailTo }
+										limit={ mailLimit }
+										onStart={ () => {
+											if ( config.signedIn ) {
+												void sendByEmail();
+												return;
+											}
+											setMail( 'form' );
+										} }
+										onCancel={ () => setMail( 'idle' ) }
+										onSend={ ( address, website ) => {
+											setMailTo( address );
+											void sendByEmail(
+												address,
+												website
+											);
+										} }
 									/>
 								) : null }
 							</div>
@@ -1067,22 +1221,26 @@ function HistoryRail( {
 	items,
 	currentId,
 	phase,
+	note,
 	onOpen,
 	onClose,
 	onSelect,
 	onNew,
 	onRetry,
+	onDelete,
 }: {
 	open: boolean;
 	docked: boolean;
 	items: ConversationSummary[];
 	currentId: number;
 	phase: HistoryPhase;
+	note: string;
 	onOpen: () => void;
 	onClose: () => void;
 	onSelect: ( id: number ) => void;
 	onNew: () => void;
 	onRetry: () => void;
+	onDelete: ( id: number ) => Promise< boolean >;
 } ) {
 	return (
 		<aside
@@ -1125,8 +1283,10 @@ function HistoryRail( {
 					items={ items }
 					currentId={ currentId }
 					phase={ phase }
+					note={ note }
 					onSelect={ onSelect }
 					onRetry={ onRetry }
+					onDelete={ onDelete }
 				/>
 			</div>
 		</aside>
@@ -1136,27 +1296,37 @@ function HistoryRail( {
 /**
  * The conversation list's four states — the rail's, and the dock history
  * view's. Both name the same classes: the list is the one component, the
- * container around it is what differs.
+ * container around it is what differs. Each row can be deleted after a
+ * confirm in place (ticket #235); a guest's list says where it is kept.
  * @param root0
  * @param root0.items
  * @param root0.currentId
  * @param root0.phase
+ * @param root0.note
  * @param root0.onSelect
  * @param root0.onRetry
+ * @param root0.onDelete
  */
 function HistoryList( {
 	items,
 	currentId,
 	phase,
+	note,
 	onSelect,
 	onRetry,
+	onDelete,
 }: {
 	items: ConversationSummary[];
 	currentId: number;
 	phase: HistoryPhase;
+	note: string;
 	onSelect: ( id: number ) => void;
 	onRetry: () => void;
+	onDelete: ( id: number ) => Promise< boolean >;
 } ) {
+	// The row asking "Delete this conversation permanently?", and one whose delete failed.
+	const [ confirming, setConfirming ] = useState( 0 );
+	const [ failed, setFailed ] = useState( 0 );
 	return (
 		<>
 			<p className="linker-genie-rail__label">
@@ -1189,21 +1359,100 @@ function HistoryList( {
 			) : null }
 			{ 'ready' === phase && items.length > 0 ? (
 				<ul className="linker-genie-rail__list">
-					{ items.map( ( item ) => (
-						<li key={ item.id }>
-							<button
-								type="button"
-								className="linker-genie-rail__item"
-								aria-current={
-									item.id === currentId ? 'true' : undefined
-								}
-								onClick={ () => onSelect( item.id ) }
+					{ items.map( ( item ) =>
+						confirming === item.id ? (
+							<li
+								key={ item.id }
+								className="linker-genie-rail__confirm"
 							>
-								{ item.title }
-							</button>
-						</li>
-					) ) }
+								<p
+									className="linker-genie-rail__confirm-text"
+									role={
+										failed === item.id ? 'alert' : undefined
+									}
+								>
+									{ failed === item.id
+										? __(
+												'Not deleted. Try again.',
+												'linker-tools'
+											)
+										: __(
+												'Delete this conversation permanently?',
+												'linker-tools'
+											) }
+								</p>
+								<div className="linker-genie-rail__confirm-actions">
+									<button
+										type="button"
+										className="linker-genie-rail__confirm-delete"
+										onClick={ () => {
+											void onDelete( item.id ).then(
+												( removed ) => {
+													if ( removed ) {
+														setConfirming( 0 );
+														setFailed( 0 );
+														return;
+													}
+													setFailed( item.id );
+												}
+											);
+										} }
+									>
+										{ __( 'Delete', 'linker-tools' ) }
+									</button>
+									<button
+										type="button"
+										className="linker-genie-rail__confirm-cancel"
+										onClick={ () => {
+											setConfirming( 0 );
+											setFailed( 0 );
+										} }
+									>
+										{ __( 'Cancel', 'linker-tools' ) }
+									</button>
+								</div>
+							</li>
+						) : (
+							<li
+								key={ item.id }
+								className="linker-genie-rail__row"
+							>
+								<button
+									type="button"
+									className="linker-genie-rail__item"
+									aria-current={
+										item.id === currentId
+											? 'true'
+											: undefined
+									}
+									onClick={ () => onSelect( item.id ) }
+								>
+									{ item.title }
+								</button>
+								<button
+									type="button"
+									className="linker-genie-rail__delete"
+									aria-label={
+										// translators: %s is the conversation's title (its first message).
+										__(
+											'Delete conversation: %s',
+											'linker-tools'
+										).replace( '%s', item.title )
+									}
+									onClick={ () => {
+										setFailed( 0 );
+										setConfirming( item.id );
+									} }
+								>
+									<TrashIcon size={ 16 } />
+								</button>
+							</li>
+						)
+					) }
 				</ul>
+			) : null }
+			{ note && 'failed' !== phase ? (
+				<p className="linker-genie-rail__note">{ note }</p>
 			) : null }
 		</>
 	);

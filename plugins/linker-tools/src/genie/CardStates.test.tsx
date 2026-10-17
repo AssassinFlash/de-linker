@@ -80,6 +80,10 @@ function config(): GenieConfig {
 		accountUrl: '/my-account/',
 		workspaceUrl: '/genie/',
 		prompts: [],
+		signedIn: false,
+		retentionDays: 90,
+		mailStarted: '1800000000',
+		mailStartedNonce: 'stamp-nonce',
 	};
 }
 

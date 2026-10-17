@@ -11,8 +11,10 @@ namespace Linker\Tools\Genie;
 
 /**
  * Stores threads as `linker_conversation` posts. No custom table
- * (docs/specs/13-genie.md). Guests are bound by a cookie; logging in
- * assigns the post to the user.
+ * (docs/specs/13-genie.md). A guest's conversations belong to the browser
+ * that opened them: a random browser key in a cookie, whose hash every guest
+ * conversation of that browser carries. Signing in assigns all of them to
+ * the user, so they follow the account to any device (ticket #235).
  */
 class Conversations {
 
@@ -30,6 +32,28 @@ class Conversations {
 	public const COOKIE = 'linker_conversation';
 
 	/**
+	 * Cookie that holds this browser's key: 32 hex characters, random.
+	 *
+	 * The key itself is the secret: only its hash is stored on the
+	 * conversations (BROWSER_META), so reading the database does not hand
+	 * out a cookie that opens them.
+	 */
+	public const BROWSER_COOKIE = 'linker_genie_browser';
+
+	/**
+	 * The actions the two cookie writes fire (dispatch()); register() hangs
+	 * the header writers on them.
+	 */
+	public const COOKIE_ACTION  = 'linker_tools_set_conversation_cookie';
+	public const BROWSER_ACTION = 'linker_tools_set_genie_browser_cookie';
+
+	/**
+	 * Post meta: the sha256 of the key of the browser that opened a guest
+	 * conversation. Removed when the conversation is claimed by an account.
+	 */
+	public const BROWSER_META = 'linker_genie_browser';
+
+	/**
 	 * Title of a conversation that has not been named by its first message.
 	 */
 	public const UNTITLED = 'Genie';
@@ -40,6 +64,13 @@ class Conversations {
 	 * conversation is always included even when it is older than the cut.
 	 */
 	public const LIST_LIMIT = 40;
+
+	/**
+	 * Whether this request is a User Switching switch (switching()).
+	 *
+	 * @var bool
+	 */
+	private bool $switching = false;
 
 	/**
 	 * Registers the post type; runs on init.
@@ -63,8 +94,45 @@ class Conversations {
 		// The writer of the guest cookie: set_cookie() fires the action, this
 		// listener sends the header. Without it every turn would open a new
 		// conversation post, because the next request would find no cookie.
-		add_action( 'linker_tools_set_conversation_cookie', array( $this, 'send_cookie' ), 10, 5 );
+		add_action( self::COOKIE_ACTION, array( $this, 'send_cookie' ), 10, 5 );
+		add_action( self::BROWSER_ACTION, array( $this, 'send_browser_cookie' ), 10, 5 );
 		add_action( 'wp_login', array( $this, 'claim' ), 10, 2 );
+		// WooCommerce signs a new account in through wp_set_auth_cookie(),
+		// which does not fire wp_login; the cookie it sets is the one moment
+		// both paths share.
+		add_action( 'set_logged_in_cookie', array( $this, 'claim_on_sign_in' ), 10, 4 );
+		// User Switching (installed on live for staff) sets or clears its
+		// old-user cookie right before it sets the auth cookie of the user
+		// it switches to (user-switching.php, switch_to_user()). That auth
+		// cookie is no sign-in of this browser's guest.
+		add_action( 'set_olduser_cookie', array( $this, 'switching' ) );
+		add_action( 'clear_olduser_cookie', array( $this, 'switching' ) );
+		add_action( 'wp_logout', array( $this, 'signed_out' ) );
+	}
+
+	/**
+	 * Sends the browser-key header (the `linker_tools_set_genie_browser_cookie`
+	 * listener).
+	 *
+	 * @param string $value  Browser key.
+	 * @param int    $expire Expiry timestamp.
+	 * @param string $path   Cookie path.
+	 * @param string $domain Cookie domain.
+	 * @param bool   $secure HTTPS only.
+	 */
+	public function send_browser_cookie( string $value, int $expire, string $path, string $domain, bool $secure ): void {
+		$this->send_header(
+			self::BROWSER_COOKIE,
+			$value,
+			array(
+				'expires'  => $expire,
+				'path'     => $path,
+				'domain'   => $domain,
+				'secure'   => $secure,
+				'httponly' => true,
+				'samesite' => 'Lax',
+			)
+		);
 	}
 
 	/**
@@ -164,11 +232,11 @@ class Conversations {
 	/**
 	 * The conversations this visitor may continue, newest first.
 	 *
-	 * A guest has one conversation: the cookie's. A signed-in customer has
-	 * every conversation post they own, which is what the history rail
-	 * lists. The current one is always present, so switching away and back
-	 * never drops the thread the cookie names. Reading the list never
-	 * opens a conversation.
+	 * A guest has every conversation this browser opened (its browser key)
+	 * and the one its conversation cookie names. A signed-in customer has
+	 * every conversation post they own, on any device. The current one is
+	 * always present, so switching away and back never drops the thread the
+	 * cookie names. Reading the list never opens a conversation.
 	 *
 	 * @return list<array{id: int, title: string, updated: string}>
 	 */
@@ -177,20 +245,57 @@ class Conversations {
 		if ( $current > 0 && ! $this->may_use( $current ) ) {
 			$current = 0;
 		}
-		$ids = array();
+		// Most recent activity first (Thread::ACTIVITY: opened, or the last
+		// answered turn). Naming a conversation and claiming it at sign-in
+		// rewrite the post's modified date, never this. A conversation from
+		// before the meta existed has none and sorts after, by start.
+		$activity = array(
+			'relation' => 'OR',
+			'activity' => array(
+				'key'     => Thread::ACTIVITY,
+				'type'    => 'NUMERIC',
+				'compare' => 'EXISTS',
+			),
+			array(
+				'key'     => Thread::ACTIVITY,
+				'compare' => 'NOT EXISTS',
+			),
+		);
+		$query    = array(
+			'post_type'      => self::POST_TYPE,
+			'post_status'    => 'private',
+			'posts_per_page' => self::LIST_LIMIT,
+			'orderby'        => array(
+				'activity' => 'DESC',
+				'date'     => 'DESC',
+				'ID'       => 'DESC',
+			),
+			'fields'         => 'ids',
+			'meta_query'     => array( $activity ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- the list's order; LIST_LIMIT bounds it.
+		);
+		$ids      = array();
 		if ( is_user_logged_in() ) {
-			$owned = get_posts(
-				array(
-					'post_type'      => self::POST_TYPE,
-					'post_status'    => 'private',
-					'author'         => get_current_user_id(),
-					'posts_per_page' => self::LIST_LIMIT,
-					'orderby'        => 'modified',
-					'order'          => 'DESC',
-					'fields'         => 'ids',
-				)
-			);
-			foreach ( $owned as $id ) {
+			$query['author'] = get_current_user_id();
+		} else {
+			$browser = $this->browser_key();
+			// A browser without a key has no conversation of its own; the
+			// meta query must not run with an empty value, which would
+			// match every guest conversation without one.
+			if ( '' === $browser ) {
+				$query = array();
+			} else {
+				$query['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- the browser's own conversations; LIST_LIMIT bounds it.
+					'relation' => 'AND',
+					$activity,
+					array(
+						'key'   => self::BROWSER_META,
+						'value' => self::hash( $browser ),
+					),
+				);
+			}
+		}
+		if ( array() !== $query ) {
+			foreach ( get_posts( $query ) as $id ) {
 				$ids[] = (int) $id;
 			}
 		}
@@ -262,45 +367,160 @@ class Conversations {
 
 	/**
 	 * A new conversation post, cookie set.
+	 *
+	 * A guest's conversation is marked with this browser's key, minted on
+	 * the first one, so the next new conversation does not push it out of
+	 * the list. A conversation the cookie named before the browser had a
+	 * key is marked the same way first, for the same reason.
 	 */
 	public function open(): int {
-		$author = is_user_logged_in() ? get_current_user_id() : 0;
-		$id     = wp_insert_post(
+		$logged_in = is_user_logged_in();
+		$browser   = $logged_in ? '' : $this->ensure_browser_key();
+		if ( '' !== $browser ) {
+			$this->adopt_cookie_conversation( $browser );
+		}
+		$id = wp_insert_post(
 			array(
 				'post_type'   => self::POST_TYPE,
 				'post_status' => 'private',
 				'post_title'  => self::UNTITLED,
-				'post_author' => $author,
+				'post_author' => $logged_in ? get_current_user_id() : 0,
 			),
 			true
 		);
 		if ( is_wp_error( $id ) ) {
 			return 0;
 		}
+		if ( '' !== $browser ) {
+			update_post_meta( (int) $id, self::BROWSER_META, self::hash( $browser ) );
+		}
+		// Opening is activity: the new conversation heads the list until
+		// another one has a newer turn.
+		update_post_meta( (int) $id, Thread::ACTIVITY, time() );
 		$this->set_cookie( (int) $id );
 		return (int) $id;
 	}
 
 	/**
-	 * On login, the guest conversation becomes the user's.
+	 * Clears one of this visitor's conversations: the post goes, with its
+	 * thread, so nothing of it is context for a later turn.
+	 *
+	 * Clearing the current conversation leaves the visitor with none; the
+	 * next turn opens a new one.
+	 *
+	 * @param int $id Conversation post ID.
+	 */
+	public function delete( int $id ): bool {
+		if ( $id < 1 || ! $this->may_use( $id ) ) {
+			return false;
+		}
+		$current = $this->from_cookie();
+		if ( ! wp_delete_post( $id, true ) ) {
+			return false;
+		}
+		if ( $current === $id ) {
+			$this->clear_cookie();
+		}
+		return true;
+	}
+
+	/**
+	 * On login, the browser's guest conversations become the user's.
 	 *
 	 * @param string   $login User login.
 	 * @param \WP_User $user  User.
 	 */
 	public function claim( string $login, $user ): void {
 		unset( $login );
-		$id = $this->from_cookie();
-		if ( $id < 1 || ! $this->exists( $id ) ) {
+		$this->claim_for( (int) $user->ID );
+	}
+
+	/**
+	 * The same claim when the auth cookie is set without wp_login (a new
+	 * WooCommerce account); runs on set_logged_in_cookie.
+	 *
+	 * @param string $cookie     Logged-in cookie value.
+	 * @param int    $expire     Cookie expiry.
+	 * @param int    $expiration Session expiry.
+	 * @param int    $user_id    The user signed in.
+	 */
+	public function claim_on_sign_in( string $cookie, int $expire, int $expiration, int $user_id ): void {
+		unset( $cookie, $expire, $expiration );
+		if ( $this->switching ) {
 			return;
 		}
-		$author = (int) get_post_field( 'post_author', $id );
-		if ( 0 === $author && 0 < (int) $user->ID ) {
+		$this->claim_for( $user_id );
+	}
+
+	/**
+	 * Marks this request as a User Switching switch; runs on its
+	 * set_olduser_cookie and clear_olduser_cookie actions.
+	 */
+	public function switching(): void {
+		$this->switching = true;
+	}
+
+	/**
+	 * After a sign-out the browser starts again as a new guest: a new key,
+	 * and no current conversation. Runs on wp_logout.
+	 */
+	public function signed_out(): void {
+		$this->clear_cookie();
+		$this->write_browser_key( $this->new_browser_key() );
+	}
+
+	/**
+	 * Gives the user every still-unowned conversation of this browser: the
+	 * ones its browser key marks and the one its conversation cookie names.
+	 * The browser mark goes with the claim; the account is what holds them
+	 * from now on, on every device.
+	 *
+	 * @param int $user_id The user signed in.
+	 */
+	private function claim_for( int $user_id ): void {
+		if ( $user_id < 1 ) {
+			return;
+		}
+		$ids     = array();
+		$browser = $this->browser_key();
+		if ( '' !== $browser ) {
+			foreach (
+				get_posts(
+					array(
+						'post_type'      => self::POST_TYPE,
+						'post_status'    => 'private',
+						// Every one of them: a claim that stopped at a page
+						// would leave the rest behind the browser.
+						'posts_per_page' => -1,
+						'fields'         => 'ids',
+						'meta_key'       => self::BROWSER_META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- the browser's own conversations, once per sign-in.
+						'meta_value'     => self::hash( $browser ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see meta_key.
+					)
+				) as $id
+			) {
+				$ids[] = (int) $id;
+			}
+		}
+		$cookie = $this->from_cookie();
+		if ( $cookie > 0 && $this->exists( $cookie ) ) {
+			$ids[] = $cookie;
+		}
+		foreach ( array_unique( $ids ) as $id ) {
+			if ( 0 !== (int) get_post_field( 'post_author', $id ) ) {
+				continue;
+			}
 			wp_update_post(
 				array(
 					'ID'          => $id,
-					'post_author' => (int) $user->ID,
+					'post_author' => $user_id,
 				)
 			);
+			delete_post_meta( $id, self::BROWSER_META );
+		}
+		// The old key opened what the account now holds; the browser goes
+		// on with a new one.
+		if ( '' !== $browser ) {
+			$this->write_browser_key( $this->new_browser_key() );
 		}
 	}
 
@@ -308,9 +528,10 @@ class Conversations {
 	 * Whether this request may use the conversation.
 	 *
 	 * A signed-in visitor may use a conversation they own. A still-unowned
-	 * conversation is usable only when this request's cookie names it with
-	 * a signature this site made. A numeric cookie is not that signature.
-	 * A guest may use only the unowned conversation their signed cookie names.
+	 * conversation is usable when this request's browser key opened it, or
+	 * when the conversation cookie names it with a signature this site made.
+	 * A numeric cookie is not that signature, and a key that opened nothing
+	 * matches nothing.
 	 *
 	 * @param int $id Conversation post ID.
 	 */
@@ -322,7 +543,14 @@ class Conversations {
 		if ( is_user_logged_in() && get_current_user_id() === $author ) {
 			return true;
 		}
-		return 0 === $author && $id === $this->from_cookie();
+		if ( 0 !== $author ) {
+			return false;
+		}
+		if ( $id === $this->from_cookie() ) {
+			return true;
+		}
+		$browser = $this->browser_key();
+		return '' !== $browser && hash_equals( (string) get_post_meta( $id, self::BROWSER_META, true ), self::hash( $browser ) );
 	}
 
 	/**
@@ -377,23 +605,33 @@ class Conversations {
 		}
 		$value                   = $this->cookie_value( $id );
 		$_COOKIE[ self::COOKIE ] = $value;
+		$this->dispatch( self::COOKIE_ACTION, $value, $this->cookie_expire() );
+	}
+
+	/**
+	 * Fires one cookie write; the listener registered on that action sends
+	 * the header (send_cookie(), send_browser_cookie()).
+	 *
+	 * The two actions are `linker_tools_set_conversation_cookie` (the
+	 * value is `id.signature`, the signature is what the next request
+	 * checks) and `linker_tools_set_genie_browser_cookie` (the browser key).
+	 * Both pass: value, expiry timestamp, cookie path, cookie domain, HTTPS
+	 * only.
+	 *
+	 * @param non-empty-string $action COOKIE_ACTION or BROWSER_ACTION.
+	 * @param string           $value  Cookie value; '' with a past expiry deletes it.
+	 * @param int              $expire Expiry timestamp.
+	 */
+	private function dispatch( string $action, string $value, int $expire ): void {
 		/**
-		 * Fires the guest-cookie write; the listener sends the header.
+		 * One of the two cookie writes documented above.
 		 *
-		 * The value is `id.signature`, not the id. The signature is what
-		 * the next request checks.
-		 *
-		 * @param string $value  Signed conversation cookie.
-		 * @param int    $expire Expiry timestamp.
-		 * @param string $path   Cookie path.
-		 * @param string $domain Cookie domain.
-		 * @param bool   $secure HTTPS only.
-		 * @since 0.1.0
+		 * @since 0.2.0
 		 */
 		do_action(
-			'linker_tools_set_conversation_cookie',
+			$action, // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- one of the two linker_tools_set_* constants.
 			$value,
-			$this->cookie_expire(),
+			$expire,
 			defined( 'COOKIEPATH' ) ? COOKIEPATH : '/',
 			defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
 			is_ssl()
@@ -410,10 +648,87 @@ class Conversations {
 	}
 
 	/**
-	 * When the guest cookie expires.
+	 * When the guest cookies expire: as long as the site keeps a guest's
+	 * conversation (Retention::RETENTION_DAYS), so the browser does not lose
+	 * the way to a conversation the site still holds. Each write starts the
+	 * count again.
 	 */
 	protected function cookie_expire(): int {
-		return time() + MONTH_IN_SECONDS;
+		return time() + Retention::RETENTION_DAYS * DAY_IN_SECONDS;
+	}
+
+	/**
+	 * Forgets the current conversation: the cookie is expired, and this
+	 * request reads no current conversation either.
+	 */
+	private function clear_cookie(): void {
+		unset( $_COOKIE[ self::COOKIE ] );
+		$this->dispatch( self::COOKIE_ACTION, '', time() - YEAR_IN_SECONDS );
+	}
+
+	/**
+	 * This browser's key, '' when it has none.
+	 */
+	private function browser_key(): string {
+		if ( ! isset( $_COOKIE[ self::BROWSER_COOKIE ] ) ) {
+			return '';
+		}
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- the format check is the sanitizer; anything else is no key.
+		$raw = wp_unslash( $_COOKIE[ self::BROWSER_COOKIE ] );
+		return is_string( $raw ) && 1 === preg_match( '/^[0-9a-f]{32}$/', $raw ) ? $raw : '';
+	}
+
+	/**
+	 * This browser's key, minted and sent when it has none. Each call sends
+	 * the cookie again, so its expiry runs from the newest conversation.
+	 */
+	private function ensure_browser_key(): string {
+		$key = $this->browser_key();
+		return $this->write_browser_key( '' === $key ? $this->new_browser_key() : $key );
+	}
+
+	/**
+	 * Sets this browser's key, for the header and for the rest of this request.
+	 *
+	 * @param string $key Browser key.
+	 */
+	private function write_browser_key( string $key ): string {
+		$_COOKIE[ self::BROWSER_COOKIE ] = $key;
+		$this->dispatch( self::BROWSER_ACTION, $key, $this->cookie_expire() );
+		return $key;
+	}
+
+	/**
+	 * A fresh browser key: 128 random bits, as hex.
+	 */
+	protected function new_browser_key(): string {
+		return bin2hex( random_bytes( 16 ) );
+	}
+
+	/**
+	 * Marks the conversation the cookie names with this browser's key, when
+	 * it is a guest conversation without a mark (opened before browsers had
+	 * keys).
+	 *
+	 * @param string $browser This browser's key.
+	 */
+	private function adopt_cookie_conversation( string $browser ): void {
+		$id = $this->from_cookie();
+		if ( $id < 1 || ! $this->exists( $id ) || 0 !== (int) get_post_field( 'post_author', $id ) ) {
+			return;
+		}
+		if ( '' === (string) get_post_meta( $id, self::BROWSER_META, true ) ) {
+			update_post_meta( $id, self::BROWSER_META, self::hash( $browser ) );
+		}
+	}
+
+	/**
+	 * What a conversation stores of a browser key.
+	 *
+	 * @param string $browser Browser key.
+	 */
+	private static function hash( string $browser ): string {
+		return hash( 'sha256', $browser );
 	}
 
 	/**

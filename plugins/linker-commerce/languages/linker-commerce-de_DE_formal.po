@@ -4414,3 +4414,71 @@ msgstr "Verwendungszweck"
 #~ "Sie können die Produkte durchsuchen und eine Artikelnummernliste "
 #~ "abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der "
 #~ "Kontoprüfung möglich."
+
+#: includes/Genie/ConversationEmail.php
+msgid "Genie conversation"
+msgstr "Genie-Unterhaltung"
+
+#: includes/Genie/ConversationEmail.php
+msgid "Sent when someone asks for a copy of a Genie conversation by email."
+msgstr "Geht an die Person, die eine Genie-Unterhaltung per E-Mail anfordert."
+
+#: includes/Genie/ConversationEmail.php
+msgid "Your conversation with Genie"
+msgstr "Ihr Gespräch mit Genie"
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-conversation.php
+#, php-format
+msgid "As requested on %s, here is your conversation with Genie, Linker's AI assistant."
+msgstr "Wie auf %s angefordert, erhalten Sie hier Ihr Gespräch mit Genie, dem KI-Assistenten von Linker."
+
+#: templates/emails/linker-genie-conversation.php
+msgid "You"
+msgstr "Sie"
+
+#: templates/emails/linker-genie-conversation.php
+msgid "Genie is an AI system, and its answers can contain mistakes. Where an answer differs from the product's datasheet, the datasheet applies."
+msgstr "Genie ist ein KI-System und seine Antworten können Fehler enthalten. Maßgeblich sind die Datenblätter auf den Produktseiten."
+
+#: templates/emails/linker-genie-conversation.php
+msgid "Replies to this email go to the Linker team."
+msgstr "Eine Antwort auf diese E-Mail erreicht das Linker-Team."
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Genie conversation: address confirmation"
+msgstr "Genie-Unterhaltung: Adressbestätigung"
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Sent to the address a visitor without an account enters to get a Genie conversation by email. It holds only a link that confirms the address; the conversation follows after the click."
+msgstr "Geht an die Adresse, die ein Besucher ohne Konto für eine Genie-Unterhaltung per E-Mail angibt. Die E-Mail enthält nur einen Link zur Bestätigung; die Unterhaltung folgt nach dem Klick."
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Conversation with Genie requested for this email address"
+msgstr "Gespräch mit Genie für diese E-Mail-Adresse angefordert"
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Confirm your email address"
+msgstr "Bestätigen Sie Ihre E-Mail-Adresse"
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-confirm-address.php
+#, php-format
+msgid "On %s, a conversation with Genie, Linker's AI assistant, was requested for this email address."
+msgstr "Auf %s wurde angefordert, ein Gespräch mit Genie, dem KI-Assistenten von Linker, an diese E-Mail-Adresse zu senden."
+
+#: templates/emails/linker-genie-confirm-address.php
+msgid "Send me the conversation"
+msgstr "Gespräch zusenden"
+
+#. translators: %d: how many hours the link works.
+#: templates/emails/linker-genie-confirm-address.php
+#, php-format
+msgid "The link works once and expires after %d hour."
+msgid_plural "The link works once and expires after %d hours."
+msgstr[0] "Der Link lässt sich einmal verwenden und läuft nach %d Stunde ab."
+msgstr[1] "Der Link lässt sich einmal verwenden und läuft nach %d Stunden ab."
+
+#: templates/emails/linker-genie-confirm-address.php
+msgid "The conversation is sent only once the link is opened. If you did not ask for it, you can ignore this email."
+msgstr "Das Gespräch wird erst gesendet, wenn der Link geöffnet wird. Falls Sie es nicht angefordert haben, können Sie diese E-Mail ignorieren."
