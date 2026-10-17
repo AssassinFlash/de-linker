@@ -13,6 +13,7 @@ use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
 use Linker\Tools\Genie\QualityRoute;
@@ -43,6 +44,7 @@ final class Plugin {
 	 * @param QualityStore  $quality       The quality check's verdicts and the digest's summary.
 	 * @param QualityRoute  $quality_route The route the quality worker reports to.
 	 * @param QualityPage   $quality_page  The quality check's admin page.
+	 * @param Preview       $preview       Genie's preview card (ticket #249).
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -58,7 +60,8 @@ final class Plugin {
 		private readonly EngineProxy $engine_proxy,
 		private readonly QualityStore $quality,
 		private readonly QualityRoute $quality_route,
-		private readonly QualityPage $quality_page
+		private readonly QualityPage $quality_page,
+		private readonly Preview $preview
 	) {}
 
 	/**
@@ -82,5 +85,6 @@ final class Plugin {
 		$this->mount->register();
 		$this->quality->register();
 		$this->quality_page->register();
+		$this->preview->register();
 	}
 }

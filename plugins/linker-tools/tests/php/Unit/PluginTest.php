@@ -14,6 +14,7 @@ use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
 use Linker\Tools\Genie\QualityRoute;
@@ -72,6 +73,7 @@ final class PluginTest extends TestCase {
 		$quality       = new QualityStore();
 		$quality_route = new QualityRoute( $quality, 'token' );
 		$quality_page  = new QualityPage( $quality, new Thread() );
+		$preview       = new Preview();
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -97,9 +99,13 @@ final class PluginTest extends TestCase {
 				'args'  => array( 'linker_configurator', array( $mount, 'shortcode' ) ),
 			)
 		);
+		// Genie's preview card: its script on the pages that carry it, the
+		// card in the footer (ticket #249).
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $preview, 'assets' ) );
+		WP_Mock::expectActionAdded( 'wp_footer', array( $preview, 'card' ) );
 		WP_Mock::userFunction( 'register_deactivation_hook' );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );
