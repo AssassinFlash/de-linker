@@ -185,21 +185,35 @@ async function openDock(page: Page): Promise<void> {
 	});
 }
 
-/** Asks one question and waits for the answer's vote buttons. */
+/** Asks one question and waits until its answer has replaced the placeholder. */
 async function ask(page: Page, question: string): Promise<string> {
-	const votes = page.locator('.linker-genie-app__votes');
-	const before = await votes.count();
+	const messages = page.locator('.linker-genie-app__message');
+	const before = await messages.count();
 	await page.fill('#linker-genie-input', question);
 	await page.locator('.linker-genie-app__send').click();
+	const answered = async (): Promise<string> => {
+		if ((await messages.count()) < before + 2) {
+			return '';
+		}
+		const last = (await messages.last().innerText()).trim();
+		return /Genie is thinking|Genie denkt nach/.test(last) ? '' : last;
+	};
 	await expect
-		.poll(async () => votes.count(), {
-			message: 'the answer arrives',
-			timeout: 180_000,
-		})
-		.toBeGreaterThan(before);
-	return (
-		await page.locator('.linker-genie-app__message').last().innerText()
-	).trim();
+		.poll(answered, { message: 'the answer arrives', timeout: 180_000 })
+		.not.toBe('');
+	return answered();
+}
+
+/**
+ * A signed-in customer's dock restores their last conversation; the test
+ * starts a new one so the welcome and its suggestions show.
+ */
+async function newConversation(page: Page): Promise<void> {
+	await page
+		.locator('.linker-genie-app__bar-actions .linker-genie-app__icon')
+		.first()
+		.click();
+	await expect(page.locator('.linker-genie-app__message')).toHaveCount(0);
 }
 
 /** A new conversation, so the dock opens on its welcome. */
@@ -233,6 +247,9 @@ for (const lang of ['en', 'de'] as const) {
 					expect(context.type).toBe(TYPES[kind]);
 					expect(context.url).toContain(visit.path);
 					await openDock(page);
+					if (SIGNED_IN.includes(kind)) {
+						await newConversation(page);
+					}
 					const prompts = page.locator('.linker-genie-app__prompt');
 					const count = await prompts.count();
 					expect(count).toBeGreaterThanOrEqual(2);
@@ -253,6 +270,9 @@ for (const lang of ['en', 'de'] as const) {
 				await page.setViewportSize(VIEWPORTS[1440]);
 				await page.goto(`${instance().url}${visit.path}`);
 				await openDock(page);
+				if (SIGNED_IN.includes(kind)) {
+					await newConversation(page);
+				}
 				const answer = await ask(page, visit.question);
 				expect(answer).toMatch(visit.answer);
 				await shot(page, `${lang}-1440-${kind}-answered`);

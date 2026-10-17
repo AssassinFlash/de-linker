@@ -8,7 +8,7 @@ The source is the page itself, read the way an anonymous visitor reads it: a GET
 the page's own path on the site, its `<main>` element turned into text. WordPress's
 REST content (`/wp/v2/pages/<id>`) is not what the visitor sees on the pages that
 LiveCanvas renders through a dynamic template: on 2026-10-18 the FAQ page's REST
-content was an older page body with unrendered `[tv_doc_faq_hub]` shortcodes, while
+content was an older page body with unrendered shortcodes, while
 the page shows 244 questions and 159 documents; the shop, the product categories, the
 solution draft, the account and the blog index have no post content at all
 (docs/specs/13-genie.md, 页面感知). A generated content pack would have to be rebuilt

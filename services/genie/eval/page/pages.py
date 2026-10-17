@@ -16,7 +16,8 @@ fresh customer token from `--mint` (the shell's UserContext, valid 120 seconds).
 
 A row passes when the turn is grounded, not a fallback and not a handoff; the route
 made the call `expect.reads` names (Jev took the message as being about the page); the
-answer cites the page when `expect.cites_page`; and its text matches every
+answer cites the page when `expect.cites_page`; the products `expect.shows` names
+are cited or shown as cards; and its text matches every
 `expect.all` pattern and no `expect.none` pattern. The answers are read as well and
 the reading is recorded beside the results.
 """
@@ -39,6 +40,7 @@ from linker_genie.cycle import TurnResult, run
 from linker_genie.page import PageReader
 from linker_genie.retrieval import DocumentIndex
 from linker_genie.schema import (
+    CardsBlock,
     HandoffBlock,
     TextBlock,
     TurnRequest,
@@ -68,6 +70,17 @@ def check(row: dict[str, Any], prepared: Prepared, result: TurnResult) -> list[s
     }
     if expect.get("cites_page") and "page" not in refs:
         failures.append("the answer does not cite the page")
+    # A draft's products count as named when the text cites them or a card shows
+    # them: the model writes no model code with digits in it (no numbers in text).
+    shown = refs | {
+        str(pid)
+        for block in result.output.blocks
+        if isinstance(block, CardsBlock)
+        for pid in block.product_ids
+    }
+    for product_id in expect.get("shows", []):
+        if str(product_id) not in shown:
+            failures.append(f"product {product_id} is neither cited nor shown")
     text = answer_text(result)
     for pattern in expect.get("all", []):
         if not re.search(pattern, text):

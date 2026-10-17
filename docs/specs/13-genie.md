@@ -136,7 +136,7 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 
 dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回；代理（`PageContext::sanitize`）只保留上表的键与类型，`type` 不在表内即 `other`。
 
-**页面内容来源**（`services/genie/src/linker_genie/page.py`，工具名 `linker/read-page`）：服务以匿名访客的身份 GET 该页自己的路径（只取浏览器所给地址的**路径**，拼到本服务服务的站点 `GENIE_WP_URL` 上；重定向只跟同站；`/wp-admin`、`/wp-json`、`/wp-login.php`、feed 不读），取 `<main>` 的文字，隐藏元素与脚本、样式、SVG、下拉框不算；缓存 10 分钟。理由（2026-10-18 实测）：WP 原生 REST 的 `content.rendered` 不是访客看到的页面——FAQ 页的 REST 内容是带未渲染 `[tv_doc_faq_hub]` 短代码的旧正文，而页面由 LiveCanvas 动态模板呈现 244 条 FAQ 与 159 份文档；商城、商品分类、Lösungsentwurf、账户、博客首页都没有正文。生成的内容包要在每次编辑与每次德语自动翻译后重建发布。读页面本身不需要 WordPress 端代码（AGENTS.md §5 原生优先）。德语页即德语内容（Polylang 的 `/de/` 路径）。
+**页面内容来源**（`services/genie/src/linker_genie/page.py`，工具名 `linker/read-page`）：服务以匿名访客的身份 GET 该页自己的路径（只取浏览器所给地址的**路径**，拼到本服务服务的站点 `GENIE_WP_URL` 上；重定向只跟同站；`/wp-admin`、`/wp-json`、`/wp-login.php`、feed 不读），取 `<main>` 的文字，隐藏元素与脚本、样式、SVG、下拉框不算；缓存 10 分钟。理由（2026-10-18 实测）：WP 原生 REST 的 `content.rendered` 不是访客看到的页面——FAQ 页的 REST 内容是带未渲染短代码的旧正文，而页面由 LiveCanvas 动态模板呈现 244 条 FAQ 与 159 份文档；商城、商品分类、Lösungsentwurf、账户、博客首页都没有正文。生成的内容包要在每次编辑与每次德语自动翻译后重建发布。读页面本身不需要 WordPress 端代码（AGENTS.md §5 原生优先）。德语页即德语内容（Polylang 的 `/de/` 路径）。
 - **只给模型与问题相关的部分**：页面切成段落（遇标题或 700 字符断开），总长 ≤12 000 字符时整页给出（首页 7 300、分类 8 400、住宅储能 10 400）；更长（FAQ 页 118 000）时给开头 1 500 字符 + 与问题词重合最多的段落，另附页面标题大纲（≤40 条）。数字按文档块的办法标成 `[nK=值]`，模型写 `{fact:page.nK}`、`refs` 写 `page`，水合填值（核验同文档块，`facts._from_page`）。
 - **个人页面不匿名读**：Lösungsentwurf 的内容是它的商品（`draft_ids` → Store API `include`，商品可作卡片）；已登录客户的账户是他的询盘（路由调 inquiry-status）。访客的账户页即登录页，照常读。
 - **读不到**：`PageUnavailable` 记入轮次日志 `page_error` 与 `call_failures`，回答照常进行；提示词要求模型说明这次读不到页面，不得猜。
