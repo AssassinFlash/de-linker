@@ -5,6 +5,23 @@
 ## 产品定义
 客户从产品分类页、产品页、Lösungsentwurf 页、账户页或常驻入口打开 Genie；用自然语言给出条件（行业顺序：项目类型含加装 → 相数 → kWp/kW → HV/48 V 与 kWh → 备用 → 接口），Genie 返回合格产品卡（与正文同一集合、每张带"为什么合格"与配对状态）、对比表、一个决定性追问（可跳过），并能执行动作：加入 Lösungsentwurf、加入保存的方案、打开配置器（预填）、查看询盘状态（登录）、转人工（一句团队邮箱 + 摘要）。公司、服务、物流类问题只返回团队邮箱句。首条消息："Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system." / "Hallo, ich bin Genie, der KI-Assistent von Linker. Sie chatten mit einem KI-System."
 
+## 目标（业主 2026-10-17，#240；依据 `docs/research/2026-10-17-ai-assistants/`）
+
+本节优先于上文的产品定义；实现票以本节为准。
+
+1. **本职**：产品选型助手——找对产品 → 配对 → 文档 → Lösungsentwurf → 询盘。公司、物流、售后问题照旧一句话转团队，同时可一键"让 Linker 联系我"。全站只有 Genie 一个对话入口。
+2. **理解**：每条消息先对产品数据做确定性匹配（品牌 / 型号 / 系列 / SKU / 分类，EN/DE），命中即出卡片；产品词永不当称呼。能读铭牌照片与附件（数据表、图纸；PDF 先转文字或页面图片，见 `docs/research/2026-10-17-deepseek-flash-vision/`）。**零件清单 → 产品**：粘贴、上传表格或拍照的清单逐行匹配，有疑问逐条问，一次填进 Lösungsentwurf。
+3. **页面感知**：每轮带 URL、页面类型与对象 ID，服务端解析成页面的真实内容；打开即点名当前产品或分类；"这款"不用重打型号；每类页面（首页、产品、分类、解决方案、博客、FAQ、Lösungsentwurf、账户）至少两条本页建议。
+4. **主动预览卡**（小卡片，不是完整对话）：首页、产品、分类、解决方案页。滚过主内容并停留约 8 秒出现；首页在滚过 hero 之后出现，话题展示 Genie 能做的事（报型号找产品、拍铭牌、上传清单、比较品牌）。每次访问最多一次；对话进行中不出现；关掉后该访客 30 天不再出现；表单、询盘、登录页不出现；手机端只在 Genie 圆钮上出标记；不抢焦点。阈值是起始值，由原型调定。
+5. **替客户做事**：加入 Lösungsentwurf、存方案、打开配置器、查询盘。**对话内询盘**：Genie 起草，确认卡逐行显示将发送的内容（产品与数量、留言、是否附对话摘要、一个工作日内回复的承诺），只有客户点"发送"才发送，模型文字永远不能触发；访客在卡上填邮箱与姓名，与访客询盘表单一致。
+6. **转人工**：客户要求找人，立即提供"让 Linker 联系我"；同一问题重复三轮时提议一次，不连续提议两次；承诺一个工作日内回复；已登录客户不再问联系方式；团队收到对话全文链接、摘要、所在页面与 Lösungsentwurf。
+7. **记忆**：每个会话都保留，可切换、可清除、可发到自己的邮箱；访客的全部会话保存在本浏览器；登录后并入账户并跨设备可见。
+8. **价格**：跟账号走，与产品页一致——已批准看净价，访客、待审、限制账号看不到。
+9. **回答形态**：产品卡带图，参数在卡内展开，长回答不自动滚到底；每条回答后两到三个可点的下一步；首次接触（含预览卡）即可见 AI 标识与"可能出错"一句（EU AI Act 第 50 条）。
+10. **首页 hero**：变体 B（就地展开），见 `docs/prototypes/2026-10-17-hero/DECISION.md`。
+
+验收：业主同意的六条（任何品牌 / 型号词出产品；本页建议并能答本页问题；会话不丢；拍铭牌一步到产品；每个回答给下一步；不编造）+ `docs/research/2026-10-17-ai-assistants/INTL.md` §8 的 A1–A14 + `CN.md` 的补充验收。
+
 ## 三层
 ### A. Abilities（`plugins/linker-commerce`，`wp-abilities/v1`，命名空间 `Linker\Commerce\Abilities\`，一类一文件一 schema 一测试）
 | ability | 输入 | 输出 |
@@ -119,3 +136,4 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - 2026-10-11（#67，GAP-18）：新增 `Linker\Tools\Genie\Retention`。WordPress 核心对自定义文章类型没有过期机制（只有回收站按 `EMPTYTRASH_DAYS` 的另一套清理），扫描是本插件的；调度、队列、删除全部原生：WP cron daily + Action Scheduler 一次性 job + `wp_delete_post`。验收：单元 `RetentionTest`（10 项，含批界与认领竞争分支）+ 实例集成 `ConversationRetentionTest`（真实 `linker_conversation` 夹具：cron 钩子触发扫描，过期匿名被排 job 并经 `ActionScheduler_QueueRunner` 执行删除；新线与已认领线保留）。
 - 2026-10-11（#68，GAP-1）：搜索框收口——`[linker_genie_ask]` 芯片（#16 在 archive 模板挂载）、`assets/search-ask.js`（问句识别+直连/回落）、`linker/v1/catalog-search`（SelectionFacts 层、匿名可缓存、lang 感知）、`CatalogFilters` 增 `q`（与端点共用同一条匹配规则）、`SearchScope` 定 `?s=` 范围为 product+post（写进本规格 §C 之后）。顺带修 `Entries::script_deps()` 自引用（app 双载双挂）与 Genie app 的 pending-ask 通路。文案评审 docs/acceptance/2026-10-11/68/copy-review.md，验收 docs/acceptance/2026-10-11/68/README.md。
 - 2026-10-12（#103）：ability 调用瞬态失败重试与兜底降级声明（`abilities.py`、`template.py::DEGRADED`）。评审站实例 e2e 期间的 PHP 错误日志记录了成片 `Predis\Connection\ConnectionException`，时刻与失败轮次一一对应——对象缓存抖动把 ability 打成 500，轮次跌进兜底模板且不声明降级。三层修复：实例 drop-in 以 `WP_REDIS_GRACEFUL` 运行（规格 5）；服务对 5xx/连接异常退避重试 3 次后才进兜底；兜底无可引用事实时明确声明本轮无法作答并给出重试与团队出路（EN/DE，文案对抗评审 `docs/acceptance/2026-10-12/103/copy-review.md`）。单测覆盖连接异常分支（`tests/test_abilities.py` 重试与放弃、`tests/test_cycle.py` 两次 ability 失败→降级声明）。
+- 2026-10-17：新增"目标"一节（业主在 #240 的两轮答复 + 竞品调研 #241）；上文的产品定义与入口按本节修订，实现票以本节为准。
