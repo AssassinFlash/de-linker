@@ -102,7 +102,8 @@ final class JobsTest extends TestCase {
 				}
 			},
 			new Validator( Rules::load( $data ) ),
-			new Twins( $languages, new LinkLocalizer( $languages, $tokenizer ), new Projection( $languages ) )
+			new Twins( $languages, new LinkLocalizer( $languages, $tokenizer ), new Projection( $languages ) ),
+			new LinkLocalizer( $languages, $tokenizer )
 		);
 		return new Jobs( $languages, $translator, new Twins( $languages, new LinkLocalizer( $languages, $tokenizer ), new Projection( $languages ) ), new State() );
 	}
@@ -117,6 +118,7 @@ final class JobsTest extends TestCase {
 			->withAnyArgs()
 			->reply( Fields::SEO_META );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'get_metadata', array( 'return' => '' ) );
 		WP_Mock::userFunction( 'update_metadata', array( 'return' => true ) );
 		WP_Mock::userFunction( 'delete_metadata', array( 'return' => true ) );
 		WP_Mock::passthruFunction( 'wp_slash' );
@@ -148,6 +150,66 @@ final class JobsTest extends TestCase {
 					'post_content' => '<p>A three-phase power meter with a display.</p>',
 				),
 			)
+		);
+	}
+
+	/**
+	 * Every entry point refuses present-owned templates, including stale jobs.
+	 *
+	 * @dataProvider present_types
+	 * @param string $type LiveCanvas post type.
+	 */
+	public function test_present_templates_are_never_machine_translated( string $type ): void {
+		PolylangDouble::mock(
+			array(
+				17 => 'en',
+				18 => 'de',
+			),
+			array( 17 => 18 ),
+			array(),
+			array(),
+			'en',
+			array( $type => true ),
+			array(
+				17 => array(
+					'post_type' => $type,
+					'post_name' => 'footer',
+				),
+				18 => array( 'post_type' => $type ),
+			)
+		);
+		WP_Mock::userFunction( 'wp_is_post_revision', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_is_post_autosave', array( 'return' => false ) );
+		WP_Mock::userFunction( 'as_enqueue_async_action', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'as_schedule_single_action', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'update_metadata', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'wp_update_post', array( 'times' => 0 ) );
+		$jobs = $this->jobs( true, false );
+		$jobs->post_saved(
+			17,
+			PolylangDouble::post(
+				17,
+				array(
+					'post_type'   => $type,
+					'post_status' => 'publish',
+				)
+			)
+		);
+		$this->assertFalse( $jobs->queue( 'post', 17, true ) );
+		$jobs->run( 'post', 17, true );
+		$jobs->run( 'post', 17, false, 3 );
+		$this->assertSame( array(), PolylangDouble::$saved_post_translations );
+	}
+
+	/**
+	 * The two repository-owned types, regardless of their slugs.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public function present_types(): array {
+		return array(
+			'partial' => array( 'lc_partial' ),
+			'dynamic' => array( 'lc_dynamic_template' ),
 		);
 	}
 

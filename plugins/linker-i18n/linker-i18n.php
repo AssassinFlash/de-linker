@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Linker i18n
  * Description:       Polylang companion for de-linker.com: one slug for English and German, German URL segments, German versions made on save, REST in one language, and the German shop on the English products.
- * Version:           0.2.0
+ * Version:           0.3.0
  * Requires at least: 7.1
  * Requires PHP:      8.3
  * Requires Plugins:  polylang, woocommerce

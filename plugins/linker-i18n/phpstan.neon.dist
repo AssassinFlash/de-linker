@@ -11,6 +11,8 @@ parameters:
 		- includes
 		- tests/php
 	scanFiles:
+		# Optional commerce digest boundary; no runtime dependency before its filter runs.
+		- ../linker-commerce/includes/Digest/Block.php
 		# Polylang's API (pll_*() and PLL()); the plugin requires Polylang.
 		- vendor/wpsyntex/polylang-stubs/polylang-stubs.php
 		# Action Scheduler (as_*()), which WooCommerce bundles; the plugin requires WooCommerce.

@@ -14,8 +14,8 @@ use Linker\I18n\Languages;
 use Linker\I18n\Translation\State;
 
 /**
- * Shows, for each English page, post and product, whether its German version
- * is synced, waits for a review, is pending or missing, and lets an editor
+ * Shows, for each page, post and product in either language, whether its German version
+ * is synced, pending, failed or missing, and lets an editor
  * translate it again. The plugin has no other admin screen.
  */
 final class StatusColumn {
@@ -68,13 +68,18 @@ final class StatusColumn {
 	 */
 	public function cell( string $column, $post_id ): void {
 		$post_id = (int) $post_id;
-		if ( self::COLUMN !== $column || Languages::SOURCE !== $this->languages->of_post( $post_id ) ) {
+		if ( self::COLUMN !== $column ) {
 			return;
 		}
-		$twin  = $this->languages->post_translation( $post_id, Languages::TARGET );
-		$label = $this->label( null !== $twin, $this->state->status( State::POST, $post_id ) );
-		$note  = $this->state->note( State::POST, $post_id );
-		$link  = null === $twin ? '' : get_edit_post_link( $twin );
+		$source = $this->languages->source_post( $post_id );
+		if ( null === $source ) {
+			return;
+		}
+		$post_id = $source;
+		$twin    = $this->languages->post_translation( $post_id, Languages::TARGET );
+		$label   = $this->label( null !== $twin, $this->state->status( State::POST, $post_id ) );
+		$note    = $this->state->note( State::POST, $post_id );
+		$link    = null === $twin ? '' : get_edit_post_link( $twin );
 		if ( is_string( $link ) && '' !== $link ) {
 			printf( '<a href="%1$s" title="%2$s">%3$s</a>', esc_url( $link ), esc_attr( $note ), esc_html( $label ) );
 			return;
@@ -89,13 +94,16 @@ final class StatusColumn {
 	 * @param string $status The English object's status.
 	 */
 	public function label( bool $exists, string $status ): string {
+		if ( State::STRUCTURE_MISMATCH === $status ) {
+			return State::structure_reason();
+		}
+		if ( State::FAILED === $status ) {
+			return __( 'Translation failed', 'linker-i18n' );
+		}
 		if ( ! $exists ) {
 			return State::PENDING === $status ? __( 'Missing, translation pending', 'linker-i18n' ) : __( 'Missing', 'linker-i18n' );
 		}
-		if ( State::NEEDS_REVIEW === $status ) {
-			return __( 'Needs review', 'linker-i18n' );
-		}
-		return State::PENDING === $status ? __( 'Translation pending', 'linker-i18n' ) : __( 'Synced', 'linker-i18n' );
+		return in_array( $status, array( State::PENDING, State::NEEDS_REVIEW ), true ) ? __( 'Translation pending', 'linker-i18n' ) : __( 'Synced', 'linker-i18n' );
 	}
 
 	/**
@@ -107,25 +115,29 @@ final class StatusColumn {
 	 * @return array<string, string>
 	 */
 	public function row_actions( array $actions, \WP_Post $post ): array {
-		if ( ! in_array( $post->post_type, self::POST_TYPES, true ) || Languages::SOURCE !== $this->languages->of_post( $post->ID ) || ! current_user_can( 'edit_post', $post->ID ) ) {
+		$source = $this->languages->source_post( $post->ID );
+		if ( ! in_array( $post->post_type, self::POST_TYPES, true ) || null === $source || ! current_user_can( 'edit_post', $post->ID ) || ! current_user_can( 'edit_post', $source ) ) {
 			return $actions;
 		}
 		$url                     = wp_nonce_url( admin_url( 'admin-post.php?action=' . self::ACTION . '&post=' . $post->ID ), self::ACTION . '_' . $post->ID );
-		$actions[ self::ACTION ] = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $url ), esc_html__( 'Retranslate', 'linker-i18n' ) );
+		$actions[ self::ACTION ] = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $url ), esc_html__( 'Sync German', 'linker-i18n' ) );
 		return $actions;
 	}
 
 	/**
-	 * Queues a full new translation and goes back to the list (action
+	 * Queues a preserving sync and goes back to the list (action
 	 * `admin_post_linker_i18n_retranslate`).
 	 */
 	public function retranslate(): void {
 		$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- checked on the next line.
 		check_admin_referer( self::ACTION . '_' . $post_id );
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		$source = $this->languages->source_post( $post_id );
+		if ( null === $source || ! current_user_can( 'edit_post', $post_id ) || ! current_user_can( 'edit_post', $source ) ) {
 			wp_die( esc_html__( 'You may not translate this.', 'linker-i18n' ), '', array( 'response' => 403 ) );
 		}
-		$this->jobs->queue( State::POST, $post_id, true );
+		if ( ! $this->jobs->queue( State::POST, $source ) ) {
+			wp_die( esc_html__( 'This content is managed by the repository.', 'linker-i18n' ), '', array( 'response' => 400 ) );
+		}
 		$back = wp_get_referer();
 		wp_safe_redirect( add_query_arg( 'linker_i18n_queued', '1', false === $back ? admin_url( 'edit.php' ) : $back ) );
 		exit;
@@ -138,6 +150,6 @@ final class StatusColumn {
 		if ( ! isset( $_GET['linker_i18n_queued'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a display flag set by retranslate().
 			return;
 		}
-		printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html__( 'The German version will be translated again.', 'linker-i18n' ) );
+		printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html__( 'German sync has been queued.', 'linker-i18n' ) );
 	}
 }

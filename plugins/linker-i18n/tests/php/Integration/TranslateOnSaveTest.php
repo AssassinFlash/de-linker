@@ -115,6 +115,9 @@ final class TranslateOnSaveTest extends SiteTestCase {
 			ob_start();
 			do_action( "manage_product_posts_custom_column", "linker_i18n", $id );
 			$cell = ob_get_clean();
+			ob_start();
+			if ( $german ) { do_action( "manage_product_posts_custom_column", "linker_i18n", $german ); }
+			$german_cell = ob_get_clean();
 			return array(
 				"status"       => (string) get_post_meta( $id, "_linker_i18n_status", true ),
 				"note"         => (string) get_post_meta( $id, "_linker_i18n_note", true ),
@@ -129,6 +132,7 @@ final class TranslateOnSaveTest extends SiteTestCase {
 				"stock_status" => $twin ? $twin->get_stock_status() : "",
 				"reviewed"     => $german ? json_decode( (string) get_post_meta( $german, "_linker_i18n_reviewed", true ), true ) : null,
 				"cell"         => wp_strip_all_tags( $cell ),
+				"german_cell"  => wp_strip_all_tags( $german_cell ),
 			);
 			',
 			array( 'id' => self::$english )
@@ -193,7 +197,7 @@ final class TranslateOnSaveTest extends SiteTestCase {
 		$this->assertSame( 1, self::run_jobs( 'post', self::$english, false ) );
 
 		$state = self::state();
-		$this->assertSame( 'pending', $state['status'] );
+		$this->assertSame( 'failed', $state['status'] );
 		$this->assertSame( 'DEEPSEEK_API_KEY is not set', $state['note'] );
 		$this->assertSame( 0, $state['german'] );
 	}
@@ -214,6 +218,7 @@ final class TranslateOnSaveTest extends SiteTestCase {
 		$this->assertSame( 'de', $state['language'] );
 		$this->assertSame( self::SLUG, $state['slug'] );
 		$this->assertSame( 'Synced', $state['cell'] );
+		$this->assertSame( $state['cell'], $state['german_cell'] );
 		$paragraphs = self::paragraphs( $state['content'] );
 		$this->assertCount( 3, $paragraphs );
 		$this->assertSame( '<p>[de] The <strong>GW10K-EHA-G20</strong> delivers 10.0 kW of AC power.</p>', $paragraphs[0] );
@@ -264,63 +269,49 @@ final class TranslateOnSaveTest extends SiteTestCase {
 	}
 
 	/**
-	 * A paragraph a person rewrote in German is kept when its English
-	 * changes; the product waits for a review until the German is saved
-	 * again, and the rest follows the English.
+	 * Legacy manual locks do not block a new English update.
 	 *
 	 * @depends test_changed_paragraph_alone_is_translated_again
 	 */
-	public function test_edited_german_is_kept_and_reviewed(): void {
+	public function test_edited_german_is_updated_automatically(): void {
 		$state     = self::state();
 		$german    = self::paragraphs( $state['content'] );
 		$german[1] = '<p>Laden Sie das Datenblatt mit dem Schaltplan herunter.</p>';
 		self::save_post( $state['german'], array( 'post_content' => implode( "\n", $german ) ) );
-		$this->assertSame( array( 'post_content' => array( 1 ) ), self::state()['reviewed'] );
-
+		self::php( 'update_post_meta( $input["id"], "_linker_i18n_reviewed", wp_json_encode( array( "post_content" => "*" ) ) ); return true;', array( 'id' => $state['german'] ) );
 		$english    = self::PARAGRAPHS;
 		$english[1] = '<p>Download the datasheet and the manual for the wiring diagram.</p>';
 		$english[2] = '<p>The battery warranty covers twelve years in Germany.</p>';
 		self::write_english( $english );
 		$this->assertSame( 1, self::run_jobs( 'post', self::$english, true ) );
-
 		$state = self::state();
 		$after = self::paragraphs( $state['content'] );
-		$this->assertSame( 'needs_review', $state['status'] );
-		$this->assertSame( 'English changed where the German was edited: post_content', $state['note'] );
-		$this->assertSame( 'Needs review', $state['cell'] );
-		$this->assertSame( '<p>Laden Sie das Datenblatt mit dem Schaltplan herunter.</p>', $after[1] );
-		$this->assertSame( '<p>[de] The battery warranty covers twelve years in Germany.</p>', $after[2] );
-
-		// Running again changes nothing: the review is still open.
-		self::wp( array( 'linker-i18n', 'translate', (string) self::$english, '--now' ) );
-		$this->assertSame( 'needs_review', self::state()['status'] );
-
-		// The editor saves the German as it is: accepted, and queued to catch up.
-		self::save_post( $state['german'] );
-		$this->assertSame( 1, self::run_jobs( 'post', self::$english, true ) );
-		$state = self::state();
 		$this->assertSame( 'synced', $state['status'] );
-		$this->assertSame( $after, self::paragraphs( $state['content'] ) );
+		$this->assertSame( '', $state['note'] );
+		$this->assertSame( 'Synced', $state['cell'] );
+		$this->assertSame( '<p>[de] Download the Datenblatt and the manual for the wiring diagram.</p>', $after[1] );
+		$this->assertSame( '<p>[de] The battery warranty covers twelve years in Germany.</p>', $after[2] );
+		$this->assertSame( array( 'post_content' => '*' ), $state['reviewed'] );
 	}
 
 	/**
-	 * A translation that loses its markup is rejected twice and nothing is
-	 * stored: the German stays as it was and the product is pending.
+	 * A translation that loses its protected model placeholder is rejected twice and nothing is
+	 * stored: the German stays as it was and the product is failed.
 	 *
-	 * @depends test_edited_german_is_kept_and_reviewed
+	 * @depends test_edited_german_is_updated_automatically
 	 */
 	public function test_rejected_translation_stores_nothing(): void {
 		$before     = self::state()['content'];
 		$english    = self::PARAGRAPHS;
 		$english[1] = '<p>Download the datasheet and the manual for the wiring diagram.</p>';
-		$english[2] = '<p>BREAK-PLACEHOLDERS: the warranty covers <em>twelve</em> years.</p>';
+		$english[2] = '<p>BREAK-PLACEHOLDERS: the IP65 warranty covers twelve years.</p>';
 		self::write_english( $english );
 		$this->assertSame( 1, self::run_jobs( 'post', self::$english, true ) );
 
 		$state = self::state();
-		$this->assertSame( 'pending', $state['status'] );
+		$this->assertSame( 'failed', $state['status'] );
 		$this->assertStringStartsWith( 'translation rejected (placeholders changed): BREAK-PLACEHOLDERS', $state['note'] );
 		$this->assertSame( $before, $state['content'] );
-		$this->assertSame( 'Translation pending', $state['cell'] );
+		$this->assertSame( 'Translation failed', $state['cell'] );
 	}
 }

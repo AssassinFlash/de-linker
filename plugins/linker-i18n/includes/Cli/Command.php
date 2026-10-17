@@ -91,10 +91,16 @@ final class Command {
 	 * : The IDs are term IDs.
 	 *
 	 * [--pending]
-	 * : Every English object whose status is pending.
+	 * : Every pending English object, using preservation rules for existing German.
+	 *
+	 * [--missing]
+	 * : Missing German and pending objects only; never a site-wide retranslation.
+	 *
+	 * [--all]
+	 * : Compatibility alias for --missing.
 	 *
 	 * [--force]
-	 * : Translate every segment again, discarding edits.
+	 * : Legacy option; existing German is always protected.
 	 *
 	 * [--now]
 	 * : Translate here and now instead of queueing.
@@ -108,25 +114,81 @@ final class Command {
 		foreach ( $args as $id ) {
 			$targets[] = array( $kind, (int) $id );
 		}
-		if ( isset( $assoc_args['pending'] ) ) {
+		if ( isset( $assoc_args['all'] ) || isset( $assoc_args['missing'] ) ) {
+			$targets = array_merge( $targets, $this->pending( true ) );
+		} elseif ( isset( $assoc_args['pending'] ) ) {
 			$targets = array_merge( $targets, $this->pending() );
 		}
-		$force = isset( $assoc_args['force'] );
+		$targets = array_values( array_unique( $targets, SORT_REGULAR ) );
+		$failed  = 0;
+		$force   = false;
 		foreach ( $targets as list( $target_kind, $id ) ) {
 			if ( ! isset( $assoc_args['now'] ) ) {
-				$this->jobs->queue( $target_kind, $id, $force );
-				WP_CLI::log( sprintf( '%s %d: queued', $target_kind, $id ) );
+				$queued = $this->jobs->queue( $target_kind, $id, $force );
+				WP_CLI::log( sprintf( '%s %d: %s', $target_kind, $id, $queued ? 'queued' : 'excluded from automatic translation' ) );
 				continue;
 			}
 			try {
-				$status = State::POST === $target_kind ? $this->translator->post( $id, $force ) : $this->translator->term( $id, $force );
+				$status  = State::POST === $target_kind ? $this->translator->post( $id, $force ) : $this->translator->term( $id, $force );
+				$failed += State::STRUCTURE_MISMATCH === $status ? 1 : 0;
 			} catch ( TranslationFailed $failure ) {
-				$this->state->set_status( $target_kind, $id, State::PENDING, $failure->getMessage() );
-				$status = State::PENDING . ': ' . $failure->getMessage();
+				$this->state->set_status( $target_kind, $id, State::FAILED, $failure->getMessage() );
+				$status = State::FAILED . ': ' . $failure->getMessage();
+				++$failed;
 			}
 			WP_CLI::log( sprintf( '%s %d: %s', $target_kind, $id, '' === $status ? 'not an English translated object' : $status ) );
 		}
-		WP_CLI::success( sprintf( '%d objects.', count( $targets ) ) );
+		if ( $failed > 0 ) {
+			WP_CLI::error( sprintf( '%d of %d objects failed; previous German retained.', $failed, count( $targets ) ) );
+		}
+		WP_CLI::success( sprintf( '%d objects considered.', count( $targets ) ) );
+	}
+
+	/**
+	 * Retires translation jobs and status on present-owned templates only.
+	 *
+	 * Run after deploying the safety guard and before provisioning a live key.
+	 * Content, revisions, language groups and presentation meta are retained.
+	 *
+	 * @subcommand retire-template-jobs
+	 * @param array<int, string>    $args Positional arguments.
+	 * @param array<string, string> $assoc_args Options.
+	 */
+	public function retire_template_jobs( array $args, array $assoc_args ): void {
+		unset( $args, $assoc_args );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			WP_CLI::error( 'Run as an administrator.' );
+		}
+		$cancelled = 0;
+		foreach ( as_get_scheduled_actions(
+			array(
+				'hook'     => Jobs::HOOK,
+				'group'    => Jobs::GROUP,
+				'status'   => \ActionScheduler_Store::STATUS_PENDING,
+				'per_page' => -1,
+			),
+			'ids'
+		) as $action_id ) {
+			$arguments = \ActionScheduler::store()->fetch_action( $action_id )->get_args();
+			$post      = State::POST === ( $arguments[0] ?? '' ) ? get_post( (int) ( $arguments[1] ?? 0 ) ) : null;
+			if ( $post instanceof \WP_Post && in_array( $post->post_type, \Linker\I18n\TranslatedTypes::PRESENT_TYPES, true ) ) {
+				\ActionScheduler::store()->cancel_action( $action_id );
+				++$cancelled;
+			}
+		}
+		$cleared = 0;
+		foreach ( get_posts(
+			array(
+				'post_type'   => \Linker\I18n\TranslatedTypes::PRESENT_TYPES,
+				'post_status' => 'any',
+				'lang'        => '',
+				'numberposts' => -1,
+			)
+		) as $post ) {
+			$cleared += delete_post_meta( $post->ID, State::STATUS ) ? 1 : 0;
+			delete_post_meta( $post->ID, State::NOTE );
+		}
+		WP_CLI::success( sprintf( '%d template jobs cancelled; %d template statuses cleared.', $cancelled, $cleared ) );
 	}
 
 	/**
@@ -378,17 +440,18 @@ final class Command {
 	/**
 	 * The English objects whose status is pending.
 	 *
+	 * @param bool $include_missing Also include objects without a German twin.
 	 * @return list<array{string, int}>
 	 */
-	private function pending(): array {
+	private function pending( bool $include_missing = false ): array {
 		$pending = array();
 		foreach ( $this->english_posts() as $post ) {
-			if ( State::PENDING === $this->state->status( State::POST, $post->ID ) ) {
+			if ( State::PENDING === $this->state->status( State::POST, $post->ID ) || ( $include_missing && null === $this->languages->post_translation( $post->ID, Languages::TARGET ) ) ) {
 				$pending[] = array( State::POST, $post->ID );
 			}
 		}
 		foreach ( $this->english_terms() as $term ) {
-			if ( State::PENDING === $this->state->status( State::TERM, $term->term_id ) ) {
+			if ( State::PENDING === $this->state->status( State::TERM, $term->term_id ) || ( $include_missing && null === $this->languages->term_translation( $term->term_id, Languages::TARGET ) ) ) {
 				$pending[] = array( State::TERM, $term->term_id );
 			}
 		}
@@ -403,7 +466,7 @@ final class Command {
 	private function english_posts(): array {
 		$posts = get_posts(
 			array(
-				'post_type'   => array_values( array_filter( get_post_types(), array( $this->languages, 'translates_post_type' ) ) ),
+				'post_type'   => array_values( array_filter( get_post_types(), array( $this->languages, 'automatically_translates_post_type' ) ) ),
 				'post_status' => array( 'publish', 'future', 'private', 'draft', 'pending' ),
 				'lang'        => Languages::SOURCE,
 				'numberposts' => -1,

@@ -11,10 +11,8 @@ namespace Linker\I18n\Translation;
 
 /**
  * Plans one field of a German object from its English and its German: the
- * segments whose English did not change keep their German, a segment a
- * person edited is never overwritten (when its English changed, it stays and
- * waits for a review; the whole field does when the segments no longer line
- * up), and the rest goes to the translator.
+ * segments whose English did not change keep their German; changed English
+ * is translated automatically. Unalignable fields keep their German.
  */
 final class Planner {
 
@@ -43,106 +41,127 @@ final class Planner {
 	 * @param bool                                                             $html     Whether the field is HTML.
 	 * @param array{string, bool}|null                                         $current  German value, null when there is none.
 	 * @param array{src: list<string>, out: list<string>, conflict: bool}|null $unit     The field's state, null when never written.
-	 * @param array<int, int>|string                                           $reviewed Segments a person edited.
-	 * @param bool                                                             $force    Translate every segment again.
+	 * @param bool                                                             $force    Legacy argument; cannot discard existing German.
 	 */
-	public function plan( string $value, bool $html, ?array $current, ?array $unit, array|string $reviewed, bool $force ): FieldPlan {
+	public function plan( string $value, bool $html, ?array $current, ?array $unit, bool $force ): FieldPlan {
 		$english = $this->split( $value, $html );
-		if ( $force || null === $current || ( '' === trim( $current[0] ) && array() !== $english->segments ) ) {
+		unset( $force );
+		if ( null !== $unit && $unit['src'] === $english->hashes() ) {
+			return FieldPlan::keep( $english, $current[0] ?? '' );
+		}
+		if ( null === $current || ( '' === trim( $current[0] ) && array() !== $english->segments ) ) {
 			return FieldPlan::build( $english );
 		}
-		$german = $this->split( $current[0], $html );
+		// Owner's PR #277 ruling: adopt existing German without translating it.
 		if ( null === $unit ) {
-			// German nobody recorded: a person wrote it (Polylang's "add translation"). It is kept, as reviewed.
-			$unit = array(
-				'src'      => $english->hashes(),
-				'out'      => $german->hashes(),
-				'conflict' => false,
-			);
-			return FieldPlan::keep( $english, $current[0], false, '*', $unit );
+			return FieldPlan::keep( $english, $current[0] );
 		}
-		$reviewed    = $this->absorb( $unit['out'], $german, $reviewed );
-		$runs        = $this->aligner->runs( $unit['src'], $english->hashes() );
-		$changes     = array_filter( $runs, static fn( array $run ): bool => 'equal' !== $run[0] );
-		$unit['out'] = $german->hashes();
-		if ( array() === $changes ) {
-			return FieldPlan::keep( $english, $current[0], false, $reviewed, $unit );
+		$german = $this->split( $current[0], $html );
+		if ( count( $unit['src'] ) !== count( $german->segments ) ) {
+			return FieldPlan::blocked( $english, $current[0] );
 		}
-		if ( is_string( $reviewed ) ) {
-			// A person reworked the field: all of it is theirs.
-			$unit['conflict'] = true;
-			return FieldPlan::keep( $english, $current[0], true, $reviewed, $unit );
-		}
-		// The German lines up with the English it was made from segment by
-		// segment only when both have as many segments (absorb() found the
-		// German's segments to be the ones last written).
-		$aligned = count( $unit['src'] ) === count( $german->segments );
-
-		// German a person edited whose English changed stays as it is and
-		// remembers the English it was made from. That needs the changed run to
-		// pair old and new segments one to one; otherwise the whole field stays.
-		$held = array();
-		foreach ( $changes as $run ) {
-			if ( $run[1] === $run[2] || array() === array_intersect( range( $run[1], $run[2] - 1 ), $reviewed ) ) {
-				continue; // An insertion, or no German a person edited.
+		$runs    = $this->aligner->runs( $unit['src'], $english->hashes() );
+		$removed = array();
+		$added   = array();
+		foreach ( $runs as $run ) {
+			if ( 'equal' !== $run[0] ) {
+				array_push( $removed, ...array_slice( $unit['src'], $run[1], $run[2] - $run[1] ) );
+				array_push( $added, ...array_slice( $english->hashes(), $run[3], $run[4] - $run[3] ) );
 			}
-			if ( ! $aligned || $run[2] - $run[1] !== $run[4] - $run[3] ) {
-				$unit['conflict'] = true;
-				return FieldPlan::keep( $english, $current[0], true, $reviewed, $unit );
+		}
+		// A sentence removed here and added elsewhere is a move, not a new sentence.
+		if ( array() !== array_intersect( $removed, $added ) ) {
+			return FieldPlan::blocked( $english, $current[0] );
+		}
+		$verbatim     = array();
+		$mapping      = array();
+		$splices      = array();
+		$roles        = $english->segment_roles();
+		$german_roles = $german->segment_roles();
+		foreach ( $runs as $position => $run ) {
+			if ( in_array( $run[0], array( 'insert', 'delete' ), true ) ) {
+				$anchored = false;
+				foreach ( array( $position - 1, $position + 1 ) as $neighbor ) {
+					$anchor = $runs[ $neighbor ] ?? null;
+					if ( null !== $anchor && 'equal' === $anchor[0] && $this->unique_anchor( $unit['src'], $english->hashes(), $anchor ) ) {
+						$anchored = true;
+						break;
+					}
+				}
+				if ( ! $anchored ) {
+					return FieldPlan::blocked( $english, $current[0] );
+				}
+				if ( 'delete' === $run[0] ) {
+					$deletions = $german->deletions( $run[1], $run[2] );
+					if ( null === $deletions ) {
+						return FieldPlan::blocked( $english, $current[0] );
+					}
+					array_push( $splices, ...$deletions );
+				} else {
+					$span = $english->span( $run[3], $run[4] );
+					if ( null === $span ) {
+						return FieldPlan::blocked( $english, $current[0] );
+					}
+					// Prefer the next unchanged sentence; the previous one anchors an append.
+					$after = ! isset( $runs[ $position + 1 ] ) || 'equal' !== $runs[ $position + 1 ][0];
+					$index = $after ? $run[1] - 1 : $run[2];
+					$at    = $german->boundary( $index, $after, $span['block'] );
+					if ( null === $at || $english->context( $span['start'] ) !== $german->context( $at ) ) {
+						return FieldPlan::blocked( $english, $current[0] );
+					}
+					$splices[] = array(
+						'start'  => $at,
+						'end'    => $at,
+						'source' => $english->slice( $span['start'], $span['end'] ),
+					);
+				}
+				continue;
+			}
+			if ( $run[2] - $run[1] !== $run[4] - $run[3] ) {
+				return FieldPlan::blocked( $english, $current[0] );
 			}
 			for ( $k = 0; $k < $run[2] - $run[1]; $k++ ) {
-				if ( in_array( $run[1] + $k, $reviewed, true ) ) {
-					$held[ $run[3] + $k ] = $unit['src'][ $run[1] + $k ];
-				}
-			}
-		}
-
-		$texts    = array();
-		$verbatim = array();
-		$edited   = array();
-		foreach ( $runs as $run ) {
-			for ( $k = 0; $aligned && $k < $run[2] - $run[1]; $k++ ) {
 				$index = $run[3] + $k;
-				if ( 'equal' !== $run[0] && ! isset( $held[ $index ] ) ) {
+				$old   = $run[1] + $k;
+				if ( $roles[ $index ] !== $german_roles[ $old ] ) {
+					return FieldPlan::blocked( $english, $current[0] );
+				}
+				$mapping[ $index ] = $old;
+				if ( 'equal' === $run[0] ) {
+					$verbatim[ $index ] = $german->segments[ $old ]->raw;
 					continue;
 				}
-				$segment = $german->segments[ $run[1] + $k ];
-				if ( Segment::placeholders( $segment->text ) === Segment::placeholders( $english->segments[ $index ]->text ) ) {
-					$texts[ $index ] = $segment->text;
-				} else {
-					$verbatim[ $index ] = $segment->raw;
-				}
-				if ( in_array( $run[1] + $k, $reviewed, true ) ) {
-					$edited[] = $index;
+				// An inline element spanning sentence boundaries cannot be replaced safely.
+				$visible = (string) preg_replace( Segment::PLACEHOLDER, '', $english->segments[ $index ]->text );
+				if ( 1 === preg_match( '/[.!?]\s+(?=\p{Lu})/u', $visible ) || $english->segments[ $index ]->markup_signature() !== $german->segments[ $old ]->markup_signature() ) {
+					return FieldPlan::blocked( $english, $current[0] );
 				}
 			}
 		}
-		return FieldPlan::build( $english, $texts, $verbatim, $edited, $held );
+		return FieldPlan::build( $english, $verbatim, $german, $mapping, $splices );
 	}
 
 	/**
-	 * Adds the segments whose German differs from what was last written to
-	 * the reviewed ones; '*' when the German no longer has the same segments.
+	 * Adjacent equal runs locate an edit only if their sequence occurs once.
 	 *
-	 * @param array<int, string>     $out      Fingerprints of the German last written.
-	 * @param Document               $german   The German as it is now.
-	 * @param array<int, int>|string $reviewed Segments already reviewed.
-	 * @return array<int, int>|string
+	 * @param array<int, string>                $old Previous English hashes.
+	 * @param array<int, string>                $current Current English hashes.
+	 * @param array{string, int, int, int, int} $run Equal run.
 	 */
-	public function absorb( array $out, Document $german, array|string $reviewed ): array|string {
-		if ( is_string( $reviewed ) ) {
-			return '*';
-		}
-		$hashes = $german->hashes();
-		if ( count( $hashes ) !== count( $out ) ) {
-			return '*';
-		}
-		foreach ( $hashes as $index => $hash ) {
-			if ( $hash !== $out[ $index ] && ! in_array( $index, $reviewed, true ) ) {
-				$reviewed[] = $index;
+	private function unique_anchor( array $old, array $current, array $run ): bool {
+		$needle = array_slice( $old, $run[1], $run[2] - $run[1] );
+		foreach ( array( $old, $current ) as $hashes ) {
+			$matches = 0;
+			$last    = count( $hashes ) - count( $needle );
+			for ( $i = 0; $i <= $last; $i++ ) {
+				if ( array_slice( $hashes, $i, count( $needle ) ) === $needle ) {
+					++$matches;
+				}
+			}
+			if ( 1 !== $matches ) {
+				return false;
 			}
 		}
-		sort( $reviewed );
-		return $reviewed;
+		return true;
 	}
 }

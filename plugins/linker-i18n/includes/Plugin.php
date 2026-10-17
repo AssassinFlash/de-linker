@@ -17,6 +17,7 @@ use Linker\I18n\SameSlug\PostSlugs;
 use Linker\I18n\SameSlug\TermSlugs;
 use Linker\I18n\Translation\Aligner;
 use Linker\I18n\Translation\DeepSeekClient;
+use Linker\I18n\Translation\DigestBlock;
 use Linker\I18n\Translation\Fields;
 use Linker\I18n\Translation\HtmlTokenizer;
 use Linker\I18n\Translation\Planner;
@@ -71,7 +72,7 @@ final class Plugin {
 		$projection = new Projection( $languages );
 		$twins      = new Twins( $languages, $links, $projection );
 		$rules      = Rules::load( dirname( $this->file ) . '/data' );
-		$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), $state, DeepSeekClient::from_environment( $rules ), new Validator( $rules ), $twins );
+		$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), $state, DeepSeekClient::from_environment( $rules ), new Validator( $rules ), $twins, $links );
 		$jobs       = new Jobs( $languages, $translator, $twins, $state );
 
 		// What Polylang translates.
@@ -118,6 +119,8 @@ final class Plugin {
 		add_filter( 'get_terms_args', array( $rest, 'terms' ), 10, 2 );
 
 		// Translation on save.
+		add_action( 'pre_post_update', array( $jobs, 'before_post_saved' ) );
+		add_action( 'edit_terms', array( $jobs, 'before_term_saved' ) );
 		add_action( 'wp_after_insert_post', array( $jobs, 'post_saved' ), 10, 2 );
 		add_action( 'created_term', array( $jobs, 'term_saved' ), 10, 3 );
 		add_action( 'edited_term', array( $jobs, 'term_saved' ), 10, 3 );
@@ -147,6 +150,8 @@ final class Plugin {
 		add_filter( 'woocommerce_email_restore_locale', array( $orders, 'restore_customer_email' ) );
 		add_filter( 'woocommerce_attribute_label', array( new AttributeLabels(), 'label' ) );
 
+		add_filter( 'linker_commerce_digest_blocks', array( $this, 'digest_blocks' ) );
+
 		// The German column of the admin lists.
 		$column = new StatusColumn( $languages, $state, $jobs );
 		foreach ( StatusColumn::POST_TYPES as $post_type ) {
@@ -161,5 +166,17 @@ final class Plugin {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'linker-i18n', new Command( $languages, new Setup(), $translator, $jobs, $state, $links, $twins ) );
 		}
+	}
+	/**
+	 * Adds the translation block when the optional commerce consumer is present.
+	 *
+	 * @param array<object> $blocks Existing digest blocks.
+	 * @return array<object>
+	 */
+	public function digest_blocks( array $blocks ): array {
+		if ( interface_exists( \Linker\Commerce\Digest\Block::class ) ) {
+			$blocks[] = new DigestBlock();
+		}
+		return $blocks;
 	}
 }

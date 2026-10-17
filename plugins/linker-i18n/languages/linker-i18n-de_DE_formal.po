@@ -3,16 +3,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Linker i18n 0.2.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-i18n\n"
+"POT-Creation-Date: 2026-10-17T13:16:10+00:00\n"
+"PO-Revision-Date: 2026-10-09 23:00+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE_formal\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-09T14:58:24+00:00\n"
-"PO-Revision-Date: 2026-10-09 23:00+0200\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-i18n\n"
 
@@ -23,8 +23,15 @@ msgstr "Linker i18n"
 
 #. Description of the plugin
 #: linker-i18n.php
-msgid "Polylang companion for de-linker.com: one slug for English and German, German URL segments, German versions made on save, REST in one language, and the German shop on the English products."
-msgstr "Ergänzung zu Polylang für de-linker.com: dieselbe Titelform für Englisch und Deutsch, deutsche URL-Segmente, deutsche Fassungen beim Speichern, REST-Antworten in einer Sprache und der deutsche Shop auf Basis der englischen Produkte."
+msgid ""
+"Polylang companion for de-linker.com: one slug for English and German, "
+"German URL segments, German versions made on save, REST in one language, and "
+"the German shop on the English products."
+msgstr ""
+"Ergänzung zu Polylang für de-linker.com: dieselbe Titelform für Englisch und "
+"Deutsch, deutsche URL-Segmente, deutsche Fassungen beim Speichern, REST-"
+"Antworten in einer Sprache und der deutsche Shop auf Basis der englischen "
+"Produkte."
 
 #. Author of the plugin
 #: linker-i18n.php
@@ -35,41 +42,49 @@ msgstr "Linker Technology GmbH"
 msgid "German"
 msgstr "Deutsch"
 
-#: includes/Admin/StatusColumn.php:93
+#: includes/Admin/StatusColumn.php:101
+msgid "Translation failed"
+msgstr "Übersetzung fehlgeschlagen"
+
+#: includes/Admin/StatusColumn.php:104
 msgid "Missing, translation pending"
 msgstr "Fehlt, Übersetzung ausstehend"
 
-#: includes/Admin/StatusColumn.php:93
+#: includes/Admin/StatusColumn.php:104
 msgid "Missing"
 msgstr "Fehlt"
 
-#: includes/Admin/StatusColumn.php:96
-msgid "Needs review"
-msgstr "Prüfung erforderlich"
-
-#: includes/Admin/StatusColumn.php:98
+#: includes/Admin/StatusColumn.php:106
 msgid "Translation pending"
 msgstr "Übersetzung ausstehend"
 
-#: includes/Admin/StatusColumn.php:98
+#: includes/Admin/StatusColumn.php:106
 msgid "Synced"
 msgstr "Synchronisiert"
 
-#: includes/Admin/StatusColumn.php:114
-msgid "Retranslate"
-msgstr "Neu übersetzen"
+#: includes/Admin/StatusColumn.php:123
+msgid "Sync German"
+msgstr "Deutsch synchronisieren"
 
-#: includes/Admin/StatusColumn.php:126
+#: includes/Admin/StatusColumn.php:136
 msgid "You may not translate this."
 msgstr "Sie dürfen diesen Inhalt nicht übersetzen."
 
-#: includes/Admin/StatusColumn.php:141
-msgid "The German version will be translated again."
-msgstr "Die deutsche Fassung wird erneut übersetzt."
+#: includes/Admin/StatusColumn.php:139
+msgid "This content is managed by the repository."
+msgstr "Diese Inhalte werden über das Repository verwaltet."
+
+#: includes/Admin/StatusColumn.php:153
+msgid "German sync has been queued."
+msgstr "Die Synchronisierung der deutschen Fassung wurde eingeplant."
 
 #: includes/SameSlug/Lookup.php:116
 msgid "Invalid product slug."
 msgstr "Ungültige Produkt-Titelform."
+
+#: includes/Translation/State.php:58
+msgid "German out of date: structure differs"
+msgstr "Deutsch nicht aktuell: abweichende Struktur"
 
 #: includes/Woo/AttributeLabels.php:39
 msgid "Application"
@@ -110,3 +125,24 @@ msgstr "Produktfamilie"
 #: includes/Woo/AttributeLabels.php:48
 msgid "Series"
 msgstr "Serie"
+
+#~ msgid "Retranslate"
+#~ msgstr "Neu übersetzen"
+
+#~ msgid "The German version will be translated again."
+#~ msgstr "Die deutsche Fassung wird erneut übersetzt."
+
+#~ msgid "Needs review"
+#~ msgstr "Prüfung erforderlich"
+
+#: includes/Translation/DigestBlock.php
+msgid "German translation exceptions (%d)"
+msgstr "Probleme bei deutschen Übersetzungen (%d)"
+
+#: includes/Translation/DigestBlock.php
+msgid "Open English source"
+msgstr "Englischen Inhalt öffnen"
+
+#: includes/Translation/DigestBlock.php
+msgid "No German translation exceptions."
+msgstr "Keine Probleme bei deutschen Übersetzungen gemeldet."

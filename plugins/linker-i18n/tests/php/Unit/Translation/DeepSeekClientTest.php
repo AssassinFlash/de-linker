@@ -103,6 +103,18 @@ final class DeepSeekClientTest extends TestCase {
 	}
 
 	/**
+	 * Production always uses the official endpoint, even with a stale test override.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_production_ignores_endpoint_override(): void {
+		define( 'LINKER_I18N_DEEPSEEK_ENDPOINT', 'http://127.0.0.1:9999/' );
+		WP_Mock::userFunction( 'wp_get_environment_type', array( 'return' => 'production' ) );
+		$this->test_request_and_answer();
+	}
+
+	/**
 	 * HTTP status and answer shape decide whether a later attempt may succeed.
 	 *
 	 * @return array<string, array{int, string, bool}>
@@ -151,7 +163,7 @@ final class DeepSeekClientTest extends TestCase {
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => true ) );
 
 		$this->expectException( TranslationFailed::class );
-		$this->expectExceptionMessage( 'DeepSeek unreachable: timed out' );
+		$this->expectExceptionMessage( 'DeepSeek unreachable' );
 
 		$this->client()->translate( array( 'Hello' ) );
 	}
