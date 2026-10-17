@@ -49,6 +49,7 @@ final class ProductCommerceTest extends TestCase {
 	 *
 	 * @param string|null $status Approval state; null for a guest.
 	 * @param string      $mode   The product's mode (CommerceState::MODE_META).
+	 * @param string      $locale The turn's locale; anything but en_US switches.
 	 */
 	private function visitor( ?string $status, string $mode = 'orderable', string $locale = 'en_US' ): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => null !== $status ) );

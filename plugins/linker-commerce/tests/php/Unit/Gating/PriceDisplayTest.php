@@ -95,16 +95,15 @@ final class PriceDisplayTest extends TestCase {
 	/**
 	 * Other plugins ask the same rule through a filter (Genie's shell tells its
 	 * service whether the account is approved, #242): a guest, a pending and a
-	 * restricted account do not see prices, an approved one does, whatever the
-	 * filter was handed.
+	 * restricted account do not see prices, an approved one does.
 	 */
 	public function test_other_plugins_read_the_rule_through_the_filter(): void {
-		$this->assertFalse( $this->visitor( false )->sees_prices( true ) );
-		$this->assertTrue( $this->visitor( true )->sees_prices( false ) );
-		$this->assertFalse( $this->visitor( true, 'orderable', false )->sees_prices( true ) );
+		$this->assertFalse( $this->visitor( false )->sees_prices() );
+		$this->assertTrue( $this->visitor( true )->sees_prices() );
+		$this->assertFalse( $this->visitor( true, 'orderable', false )->sees_prices() );
 		$this->logged_in = true;
 		$this->approval_meta( array( Approval::STATUS_META => Approval::RESTRICTED ) );
-		$this->assertFalse( ( new PriceDisplay( new CommerceState( new Approval() ) ) )->sees_prices( true ) );
+		$this->assertFalse( ( new PriceDisplay( new CommerceState( new Approval() ) ) )->sees_prices() );
 	}
 
 	/**

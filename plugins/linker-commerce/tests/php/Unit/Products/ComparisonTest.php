@@ -84,7 +84,12 @@ final class ComparisonTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		// English products: each answers for itself (CommerceState::is_rfq_only asks the language layer).
-		$this->english_products( array( 4107 => 4107, 1832 => 1832 ) );
+		$this->english_products(
+			array(
+				4107 => 4107,
+				1832 => 1832,
+			)
+		);
 		$this->plain_text();
 		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
 		WP_Mock::userFunction(
