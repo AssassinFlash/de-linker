@@ -116,3 +116,15 @@ msgstr ""
 #: includes/Woo/AttributeLabels.php:48
 msgid "Series"
 msgstr ""
+
+#: includes/Translation/DigestBlock.php
+msgid "German translation exceptions (%d)"
+msgstr ""
+
+#: includes/Translation/DigestBlock.php
+msgid "Open English source"
+msgstr ""
+
+#: includes/Translation/DigestBlock.php
+msgid "No German translation exceptions."
+msgstr ""

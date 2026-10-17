@@ -134,3 +134,15 @@ msgstr "Serie"
 
 #~ msgid "Needs review"
 #~ msgstr "Prüfung erforderlich"
+
+#: includes/Translation/DigestBlock.php
+msgid "German translation exceptions (%d)"
+msgstr "Probleme bei deutschen Übersetzungen (%d)"
+
+#: includes/Translation/DigestBlock.php
+msgid "Open English source"
+msgstr "Englischen Inhalt öffnen"
+
+#: includes/Translation/DigestBlock.php
+msgid "No German translation exceptions."
+msgstr "Keine Probleme bei deutschen Übersetzungen."

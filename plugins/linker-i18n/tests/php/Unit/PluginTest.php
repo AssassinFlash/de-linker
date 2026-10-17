@@ -103,6 +103,7 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'post_row_actions', StatusColumn::class, 'row_actions', 10, 2 ),
 		array( 'action', 'admin_post_linker_i18n_retranslate', StatusColumn::class, 'retranslate', 10, 1 ),
 		array( 'action', 'admin_notices', StatusColumn::class, 'notice', 10, 1 ),
+		array( 'filter', 'linker_commerce_digest_blocks', Plugin::class, 'digest_blocks', 10, 1 ),
 	);
 
 	/**
