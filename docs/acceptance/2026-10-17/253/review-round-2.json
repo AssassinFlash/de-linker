@@ -1,0 +1,96 @@
+{
+  "instance": "i253",
+  "snapshot": {
+    "name": "20261017-2214",
+    "taken": "2026-10-17T14:26:53+00:00",
+    "loaded": "2026-10-17T14:28:07+00:00"
+  },
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 1000
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "document_client_width": 375,
+      "note": "Native full-page captures omit the 15px scrollbar; window.innerWidth was 390."
+    }
+  },
+  "retry": {
+    "english_product": {
+      "fixture_id": 7295,
+      "status": "pending",
+      "pending_actions": 1
+    },
+    "german_post": {
+      "english_source_id": 7303,
+      "status": "pending",
+      "pending_actions": 1
+    }
+  },
+  "cleanup": {
+    "fixture_posts_remaining": 0,
+    "employee_preferences_restored": true,
+    "redirect_notices_restored": true,
+    "temporary_runner_hold_removed": true
+  },
+  "screenshots": {
+    "admin-page-de-1440.jpg": {
+      "width": 1440,
+      "height": 1000
+    },
+    "admin-page-de-390.jpg": {
+      "width": 375,
+      "height": 1591
+    },
+    "admin-page-en-1440.jpg": {
+      "width": 1440,
+      "height": 1000
+    },
+    "admin-page-en-390.jpg": {
+      "width": 375,
+      "height": 1432
+    },
+    "admin-post-de-1440.jpg": {
+      "width": 1440,
+      "height": 1000
+    },
+    "admin-post-de-390.jpg": {
+      "width": 375,
+      "height": 1591
+    },
+    "admin-post-en-1440.jpg": {
+      "width": 1440,
+      "height": 1000
+    },
+    "admin-post-en-390.jpg": {
+      "width": 375,
+      "height": 1432
+    },
+    "admin-product-de-1440.jpg": {
+      "width": 1425,
+      "height": 1079
+    },
+    "admin-product-de-390.jpg": {
+      "width": 375,
+      "height": 1896
+    },
+    "admin-product-en-1440.jpg": {
+      "width": 1425,
+      "height": 1061
+    },
+    "admin-product-en-390.jpg": {
+      "width": 375,
+      "height": 1686
+    },
+    "admin-retry-de-390.jpg": {
+      "width": 375,
+      "height": 1674
+    },
+    "admin-retry-en-390.jpg": {
+      "width": 375,
+      "height": 1765
+    }
+  }
+}
