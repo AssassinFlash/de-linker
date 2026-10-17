@@ -1,0 +1,27 @@
+{
+  "snapshot": "20261018-0306",
+  "before": {
+    "local_mail": true,
+    "sender": {
+      "name": "Linker",
+      "email": "sales@sunriverinverter.com"
+    },
+    "queued_mail": 0,
+    "pending_retries": 0,
+    "envelope_field": false,
+    "old_envelope_class": false,
+    "locale": "zh_CN"
+  },
+  "after": {
+    "local_mail": true,
+    "sender": {
+      "name": "Linker",
+      "email": "sales@sunriverinverter.com"
+    },
+    "queued_mail": 0,
+    "pending_retries": 0,
+    "envelope_field": false,
+    "old_envelope_class": false,
+    "locale": "zh_CN"
+  }
+}

@@ -22,7 +22,7 @@ just check
 just test
 ```
 
-实例仅用 c288（`http://127.0.0.1:9093/`），邮件在本地隔离下写 `.eml`。本轮没有真实发信、部署、合并或生产写入。最终结果见 [verification.txt](verification.txt)。
+实例仅用 c288（`http://127.0.0.1:9093/`）。`just sync c288` 成功导入新快照 `20261018-0306`（记录时间 `2026-10-17T19:14:34+00:00`），本地许可已施加。新快照上的邮件夹具通过 **18 tests / 155 assertions**；前后读回 queued_mail=0、pending_retries=0，见 [runtime-readback.json](runtime-readback.json)。邮件在本地隔离下写 `.eml`。本轮没有真实发信、部署、合并或生产写入。最终结果见 [verification.txt](verification.txt)。
 
 ## 翻译生成与比较
 
@@ -48,5 +48,14 @@ msgfmt --check plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po
 ## 评审与验收
 
 Spec/Standards 评审见 [review.md](review.md)。设置页的最终 EN/DE、1440/390 Computer Use 截图用于确认信封区已消失，内部发件人及原字段仍可见。该设置删除没有客户页面或邮件正文/主题变更。
+
+| 语言 / 视口 | 最终截图 | 结果 |
+|---|---|---|
+| EN 1440×1000 | [desktop](settings-final-en-1440.jpg) | 信封区已移除，内部 Sender email 与既有字段保留。 |
+| EN 390×844 | [mobile](settings-final-en-390.jpg) | 内容宽度 390、页面宽度 390，无横向溢出。 |
+| DE 1440×1000 | [desktop](settings-final-de-1440.jpg) | 正式德语原字段及 Absenderadresse 可见，无信封文案。 |
+| DE 390×844 | [mobile](settings-final-de-390.jpg) | 内容宽度 390、页面宽度 390，无横向溢出。 |
+
+截图使用新快照，通过 Computer Use 浏览器完成；临时视口已 reset，本地用户 locale 已恢复 zh_CN。
 
 回滚：恢复合并前插件版本即可；本轮无数据迁移。应用层已无信封选项的读取或写入，不需要操作生产选项。
