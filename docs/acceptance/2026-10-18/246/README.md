@@ -34,7 +34,7 @@ LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/c246/wordpress \
   /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit -c phpunit.integration.xml.dist
 ```
 
-最终命令与结果见 [checks.txt](checks.txt)。集成套件真实写入临时用户、Woo 产品/订单及 Outbox，然后恢复选项、会话与邮件队列；9 个需另行指定产品 HTTP 夹具站点的既有测试跳过，#246 新增测试无跳过。`just test` 的单元配置本身跳过真实 WordPress 集成测试，故单独执行上述集成命令。
+最终命令与结果见 [checks.txt](checks.txt)。最后一次 fetch 带入 `fa4f323a`（#227 后台账号审核）；手工合并保留上游 Accounts 入口和本票共享询盘入口，重新生成语言文件并保留全部 793 个上游词条及本票 25 个词条。合并后另存 `post-rebase-approved-{en,de}-{1440,390}.jpg`、`post-rebase-received-de-*` 与 [再次实发到本地文件的读回](post-rebase-readback.json)。像素对照属于合入该后台变更前的快照，最终全页门仍为未完成。集成套件真实写入临时用户、Woo 产品/订单及 Outbox，然后恢复选项、会话与邮件队列；9 个需另行指定产品 HTTP 夹具站点的既有测试跳过，#246 新增测试无跳过。`just test` 的单元配置本身跳过真实 WordPress 集成测试，故单独执行上述集成命令。
 
 浏览器夹具（仅本地，随机密码不输出）可重建：
 

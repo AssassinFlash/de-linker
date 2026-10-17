@@ -16,3 +16,11 @@
 全拆检查：本票新增 diff 检索 `tv_b2b_|Linker_AI_|dlk-|Law` 等旧实现标识，未新增旧代码；没有恢复旧 handler、模型路由或第二套订单/联系表。视觉使用原站既有 class/data 标识作为内容证据，未带入旧代码实现。代码只在仓库插件，LC 模板与 WindPress 卷确实在 c246 渲染生效。
 
 本记录是实现会话的独立双评审证据；Claude 的合并评审尚未发生，未以此代替管理会话的批准。
+
+## 最新 main 合入后的复核
+
+`fa4f323a` 带入 #227 后台账号审核。Standards 独立复核 Plugin.php 构造与注册、规格合并及语言文件，结论 PASS：上游 Accounts/Fields/Admin/Controller 保留，#246 的参数为空 Checkout 与 Shortcodes 保留；全部 793 个上游翻译未改，新增本票 25 个词条。
+
+重跑真实集成时发现上游后台测试设置 dashboard 后未恢复，后续 SearchScopeTest 的 `is_admin()` 因而为 true。仅在 AccountsAdminTest 中注册 `later()` 恢复 current_screen/taxnow/typenow/wp_meta_boxes 原始存在性与值；独立复核通过，目标 PHPCS 通过，应用代码未改。另一次账号数量偏差来自执行器同时创建浏览器夹具，已通过清理后串行执行修正，无产品代码修改。
+
+摘要测试还暴露秒级 filemtime 并列导致误读询盘回执：仅将 DigestTest 改为本次运行前后文件名差集，断言恰有一封新邮件，再核对 To/Bcc。独立复核无问题。修复后集成套件在最新 main 上连续两次通过：81 tests / 874 assertions / 9 既有跳过；目标 PHPCS、最终 just check、just test 均通过。
