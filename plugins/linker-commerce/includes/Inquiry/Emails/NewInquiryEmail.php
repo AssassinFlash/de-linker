@@ -56,7 +56,7 @@ final class NewInquiryEmail extends TeamEmail {
 			return;
 		}
 		$this->placeholders['{order_number}'] = $order->get_order_number();
-		$this->placeholders['{company}']      = $order->get_billing_company();
+		$this->placeholders['{company}']      = '' !== $order->get_billing_company() ? $order->get_billing_company() : trim( $order->get_formatted_billing_full_name() );
 		$this->notify( $order );
 	}
 

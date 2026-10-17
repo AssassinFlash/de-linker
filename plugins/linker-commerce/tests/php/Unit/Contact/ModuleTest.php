@@ -216,7 +216,7 @@ final class ModuleTest extends TestCase {
 	 * The module under test. Its other hooks are not what these tests call.
 	 */
 	private function module(): Module {
-		return new Module( '/plugin/linker-commerce.php', new Options() );
+		return new Module();
 	}
 
 	/**

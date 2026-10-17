@@ -13,12 +13,11 @@ use Linker\Commerce\Presentation\LoginGate;
 use Linker\Commerce\Registration\Approval;
 
 /**
- * A pending account may sign in, and then sees only the review page. The
- * inquiries, prices and the rest of the account stay closed until the team
- * approves. The markup is LoginGate's pending gate, the one place that copy
+ * A pending account may sign in, and then sees only the review page. Inquiries remain open; approval opens net prices and the rest of the
+ * account. The markup is LoginGate's pending gate, the one place that copy
  * is written. A rejected account never reaches this page: Approval keeps it
  * out at sign-in. A restricted account keeps the workplace and reads its own
- * gate on the Proforma request.
+ * reason notice above the usable Proforma request form.
  *
  * The page is replaced as a whole (ticket #184): the account template is
  * swapped for the review card, so the workplace shell — sidebar, heading and

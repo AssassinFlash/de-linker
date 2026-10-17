@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Storefront;
 
 use Linker\Commerce\Gating\CommerceState;
-use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Gating\PriceDisplay;
 
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\SelectionFactSet;
@@ -279,64 +279,35 @@ final class ProductView {
 			);
 		}
 		if ( CommerceState::APPROVAL === $this->state->visitor_reason() ) {
-			$status = $this->state->current_approval_status();
-			$text   = Approval::PENDING === $status
-				? __( 'Prices after approval', 'linker-commerce' )
-				: __( 'Not available for your account', 'linker-commerce' );
+
 			return array(
-				'html' => $text,
+				'html' => ( new PriceDisplay( $this->state ) )->reason_text( CommerceState::APPROVAL ),
 				'url'  => '',
 			);
 		}
 		return array(
 			'html' => __( 'Net price after partner sign-in', 'linker-commerce' ),
-			'url'  => $this->login_url( (string) $product->get_permalink() ),
+			'url'  => esc_url_raw( add_query_arg( 'redirect_to', rawurlencode( (string) $product->get_permalink() ), wc_get_page_permalink( 'myaccount' ) ) ),
 		);
 	}
 
 	/**
-	 * The primary button's label: a partner adds to the draft, a guest signs
-	 * in, and an account waiting for approval hears its status (the guest's
-	 * live-sourced string stays for guests only).
+	 * Anyone can add a product for an inquiry; approval controls only prices (#246).
 	 *
 	 * @return string The label.
 	 */
 	private function cta_label(): string {
-		if ( $this->state->visitor_sees_prices() ) {
-			return __( 'Add to solution draft', 'linker-commerce' );
-		}
-		if ( CommerceState::APPROVAL === $this->state->visitor_reason() ) {
-			return Approval::PENDING === $this->state->current_approval_status()
-				? __( 'Prices after approval', 'linker-commerce' )
-				: __( 'Not available for your account', 'linker-commerce' );
-		}
-		return __( 'Sign in for partner pricing', 'linker-commerce' );
+		return __( 'Add to solution draft', 'linker-commerce' );
 	}
 
 	/**
-	 * Where the primary button leads: a partner adds the product to the
-	 * solution draft (Woo's cart until #11 renames and reshapes it), a
-	 * visitor signs in first.
+	 * Woo adds the product to the session draft and opens the public request.
 	 *
 	 * @param \WC_Product $product The product.
 	 * @return string The URL.
 	 */
 	private function cta_url( \WC_Product $product ): string {
-		if ( $this->state->visitor_sees_prices() ) {
-			return esc_url_raw( add_query_arg( 'add-to-cart', (string) $product->get_id(), wc_get_checkout_url() ) );
-		}
-		return $this->login_url( (string) $product->get_permalink() );
-	}
-
-	/**
-	 * The sign-in URL that returns to a page.
-	 *
-	 * @param string $back Where to return.
-	 */
-	private function login_url( string $back ): string {
-		return esc_url_raw(
-			add_query_arg( 'redirect_to', rawurlencode( $back ), wc_get_page_permalink( 'myaccount' ) )
-		);
+		return esc_url_raw( add_query_arg( 'add-to-cart', (string) $product->get_id(), wc_get_checkout_url() ) );
 	}
 
 	/**

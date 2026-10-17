@@ -42,6 +42,9 @@ final class Module {
 	 * Adds the module's hooks.
 	 */
 	public function register(): void {
+		( new Form() )->register();
+		( new AccountLink() )->register();
+		( new Handler() )->register();
 		add_action( 'before_woocommerce_init', array( $this, 'declare_compatibility' ) );
 		add_action( 'init', array( $this->statuses, 'register' ) );
 		add_filter( 'wc_order_statuses', array( $this->statuses, 'names' ) );
@@ -54,15 +57,18 @@ final class Module {
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'add_gateway' ) );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this->checkout, 'gateways' ) );
 		add_action( 'woocommerce_checkout_create_order', array( $this->checkout, 'without_payment_method_title' ) );
+		add_action( 'woocommerce_after_checkout_validation', array( $this->checkout, 'validate_public' ), 10, 2 );
+		add_filter( 'rest_pre_dispatch', array( $this->checkout, 'block_store_checkout' ), 10, 3 );
 		add_action( 'woocommerce_checkout_create_order', array( $this->locale, 'remember' ) );
-		add_action( 'woocommerce_after_order_notes', array( $this->checkout, 'language_field' ) );
-		add_action( 'wp_enqueue_scripts', array( $this->checkout, 'feedback' ) );
-		add_action( 'woocommerce_checkout_update_order_review', array( $this->checkout, 'review_language' ) );
-		add_action( 'woocommerce_review_order_before_submit', array( $this->checkout, 'reply_promise' ) );
 		add_action( 'woocommerce_thankyou_' . ProformaGateway::ID, array( $this->checkout, 'next_steps' ) );
 		add_filter( 'woocommerce_get_checkout_order_received_url', array( $this->checkout, 'received_url' ), 10, 2 );
+		add_filter( 'woocommerce_order_item_permalink', array( $this->checkout, 'item_permalink' ), 10, 3 );
 
 		add_filter( 'woocommerce_register_post_type_shop_order', array( $this->admin, 'labels' ) );
+		add_filter( 'manage_edit-shop_order_columns', array( $this->admin, 'columns' ) );
+		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this->admin, 'columns' ) );
+		add_action( 'manage_shop_order_posts_custom_column', array( $this->admin, 'source' ), 10, 2 );
+		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this->admin, 'source' ), 10, 2 );
 
 		add_filter( 'woocommerce_email_actions', array( $this, 'email_actions' ) );
 		add_filter( 'woocommerce_email_classes', array( $this, 'add_emails' ) );

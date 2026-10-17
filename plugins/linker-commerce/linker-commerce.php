@@ -31,7 +31,7 @@ require_once __DIR__ . '/includes/Presentation/template-functions.php';
 	new Products\EngineeringFeedController(),
 	new Products\ProductSearchController(),
 	new Products\SearchScope(),
-	new Contact\Module( __FILE__, new Settings\Options() ),
+	new Contact\Module(),
 	new Admin\FiguresMetaBox(),
 	new Admin\FaqsMetaBox(),
 	new Admin\DocumentsMetaBox()

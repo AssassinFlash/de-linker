@@ -22,6 +22,16 @@ namespace Linker\Commerce\Presentation;
 final class PageUrls {
 
 	/**
+	 * Resolve a language twin for a stored inquiry locale, or zero when absent.
+	 *
+	 * @param int    $id Canonical post id.
+	 * @param string $locale Validated EN/DE locale.
+	 */
+	public static function twin( int $id, string $locale ): int {
+		return function_exists( 'pll_get_post' ) ? (int) pll_get_post( $id, str_starts_with( $locale, 'de' ) ? 'de' : 'en' ) : 0;
+	}
+
+	/**
 	 * The current language's address of one of the site's own pages.
 	 *
 	 * @param string $slug The page's path (its English slug, as the site keeps it).

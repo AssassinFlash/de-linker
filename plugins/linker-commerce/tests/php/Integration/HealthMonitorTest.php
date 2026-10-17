@@ -115,10 +115,10 @@ final class HealthMonitorTest extends IntegrationTestCase {
 		 */
 		do_action( Monitor::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the monitor's own hook constant.
 
-		$alert = self::new_mail_to( $captured, $contact );
+		$alert = self::new_mail_to( $captured, self::TESTER );
 		$this->assertNotNull( $alert, 'The failed check sends one message to the internal notification address.' );
 		$this->assertStringContainsString( 'Subject: The Genie service failed its health check', $alert );
-		$this->assertStringContainsString( "Bcc: {$bcc}", $alert, 'The blind copies of the settings ride along.' );
+		$this->assertStringNotContainsString( "\nBcc:", $alert, 'The tester wire copy has no Bcc; NotificationRoutingTest asserts the queued route.' );
 		$this->assertStringContainsString( 'Address: http://127.0.0.1:9', $alert );
 		$this->assertStringContainsString( 'Genie uses this service.', $alert );
 		$this->assertStringNotContainsString( 'The engine service failed its health check', $alert, 'The healthy engine sends nothing.' );
@@ -135,7 +135,7 @@ final class HealthMonitorTest extends IntegrationTestCase {
 		 */
 		do_action( Monitor::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the monitor's own hook constant.
 
-		$this->assertNull( self::new_mail_to( $captured, $contact ), 'A healthy pair of services sends nothing.' );
+		$this->assertNull( self::new_mail_to( $captured, self::TESTER ), 'A healthy pair of services sends nothing.' );
 		$this->assertNotFalse( wp_next_scheduled( Monitor::HOOK ), 'The daily event is on the schedule.' );
 	}
 }

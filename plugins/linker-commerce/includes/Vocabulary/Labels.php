@@ -93,6 +93,11 @@ final class Labels {
 		 * @param string $title SEOPress title.
 		 */
 	public function seo_title( string $title ): string {
+		if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+			$heading = is_wc_endpoint_url( 'order-received' ) ? __( 'Inquiry received', 'linker-commerce' ) : __( 'Send an inquiry', 'linker-commerce' );
+			$suffix  = strstr( $title, '|' );
+			return $heading . ( false === $suffix ? '' : ' ' . $suffix );
+		}
 		$draft    = __( 'Solution draft', 'linker-commerce' );
 		$replaced = preg_replace( '/^(Your Cart|Ihr Warenkorb|Warenkorb|Cart)(?=\s*\|)/', $draft, $title, 1 );
 		return is_string( $replaced ) ? $replaced : $title;

@@ -1,0 +1,50 @@
+#246 verification, local instance c246 (http://127.0.0.1:9087)
+Application source under test: fd8d381d; final test-only isolation fixes follow.
+Base after git fetch origin && git rebase origin/main: fa4f323a (#227 Accounts admin).
+Remote main rechecked after verification: fa4f323a, unchanged.
+
+just check: PASS, exit 0.
+- PHPCS / PHPStan all PHP projects: no errors.
+- JS lint / TypeScript / e2e lint: pass.
+- Python ruff / mypy and tool checks: pass.
+- banned-words clean; i18n coverage gap 0; five catalogs valid; build matches source.
+
+just test: PASS, exit 0.
+- Commerce PHP: 1099 cases, 5351 assertions, 86 skips in unit configuration
+  (1013 unit cases execute; real WordPress cases run separately below).
+- i18n PHP: 190 tests / 432 assertions; tools PHP: 125 / 1802; mu PHP: 6 / 23.
+- JS tools: 18 files, 98 tests pass; commerce: 2 files, 6 tests pass.
+  Engine browser e2e: 9 pass.
+- Python: Genie 658 pass; engine 112 pass; local 98 pass; migrate 94 pass / 9 skip;
+  FAQ 20 pass; pull 113 pass; cutover 82 pass.
+Existing skip counts are reported rather than called full live acceptance.
+
+Real WordPress integration, run twice against c246:
+LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/c246/wordpress \
+  /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit -c phpunit.integration.xml.dist
+Run 1 after rebase: exit 0, Tests 81, Assertions 874, Skipped 9, 24.468 seconds.
+Run 2 after rebase: exit 0, Tests 81, Assertions 874, Skipped 9, 24.270 seconds.
+Pre-rebase runs also passed twice: Tests 66, Assertions 641, Skipped 9.
+The nine existing ProductSearchRest / SelectionFactsRest tests require a separate
+LINKER_COMMERCE_TEST_SITE fixture URL. All #246 OpenInquiryTest cases execute.
+
+Observed red -> green regressions: template attributes and customer shortcodes,
+German order line with canonical product ID, alternate checkout transport rejection,
+WindPress inquiry fragment provider, retained error language switch, message-only
+inquiry monetary totals. Browser also verified Woo quantity update + return.
+
+WindPress admin compilation on c246: compiled true; last_generated 1792258289;
+cache size 681132 bytes. No customer-page plugin CSS enqueue / separate Tailwind pipeline.
+
+Mail: local file spool only. Recipient correctness asserted from Outbox queue
+records under forced throttle, not by sending multiple real emails.
+Browser synthetic users and their inquiries: cleaned by browser-fixtures.php cleanup.
+Production: no writes, deployment, merge or live email tests.
+
+Rebase regression evidence:
+- AccountsAdminTest left current_screen=dashboard; SearchScopeTest then treated
+  a storefront query as admin. Restore original screen/taxonomy/type/metabox globals.
+- DigestTest selected the first max(filemtime) mail, which could be an inquiry in
+  the same second. Select the one newly created filename instead; To/Bcc assertions remain.
+Both test-only fixes passed independent Standards review and targeted PHPCS.
+No browser fixture writes occur during the final sequential integration runs.

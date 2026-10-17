@@ -1,0 +1,206 @@
+{
+  "transport": "local file spool",
+  "orders": [
+    {
+      "id": 7243,
+      "email": "guest246@example.test",
+      "status": "inquiry-received",
+      "account_id": 0,
+      "locale": "en_US",
+      "source": "proforma",
+      "country": "",
+      "lines": [
+        {
+          "product_id": 6510,
+          "name": "GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)",
+          "quantity": 2,
+          "price_reason": "login"
+        }
+      ],
+      "totals_visible": [],
+      "mail": [
+        {
+          "subject": "Your inquiry #7243 has been received",
+          "to": "guest246@example.test",
+          "bcc": "",
+          "reply_to": "Linker <sales@de-linker.com>",
+          "transport": "file"
+        },
+        {
+          "subject": "New inquiry #7243 from 246 Guest",
+          "to": "sales@sunriverinverter.com",
+          "bcc": "chester@de-linker.com",
+          "reply_to": "246 Guest <guest246@example.test>",
+          "transport": "file"
+        }
+      ]
+    },
+    {
+      "id": 7238,
+      "email": "guest246de@example.test",
+      "status": "inquiry-received",
+      "account_id": 0,
+      "locale": "de_DE_formal",
+      "source": "proforma",
+      "country": "",
+      "lines": [
+        {
+          "product_id": 6510,
+          "name": "GoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter)",
+          "quantity": 3,
+          "price_reason": "login"
+        }
+      ],
+      "totals_visible": [],
+      "mail": [
+        {
+          "subject": "Ihre Anfrage #7238 ist eingegangen",
+          "to": "guest246de@example.test",
+          "bcc": "",
+          "reply_to": "Linker <sales@de-linker.com>",
+          "transport": "file"
+        },
+        {
+          "subject": "New inquiry #7238 from 246 Gast",
+          "to": "sales@sunriverinverter.com",
+          "bcc": "chester@de-linker.com",
+          "reply_to": "246 Gast <guest246de@example.test>",
+          "transport": "file"
+        }
+      ]
+    },
+    {
+      "id": 7244,
+      "email": "tester246-approved@example.test",
+      "status": "inquiry-received",
+      "account_id": 70,
+      "locale": "de_DE_formal",
+      "source": "proforma",
+      "country": "",
+      "lines": [
+        {
+          "product_id": 6510,
+          "name": "GoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter)",
+          "quantity": 2,
+          "price_reason": ""
+        }
+      ],
+      "totals_visible": [
+        "cart_subtotal",
+        "de-mwst-19-1",
+        "order_total"
+      ],
+      "mail": [
+        {
+          "subject": "New inquiry #7244 from 246 Fixture GmbH",
+          "to": "sales@sunriverinverter.com",
+          "bcc": "chester@de-linker.com",
+          "reply_to": "Maria Test <tester246-approved@example.test>",
+          "transport": "file"
+        },
+        {
+          "subject": "Ihre Anfrage #7244 ist eingegangen",
+          "to": "tester246-approved@example.test",
+          "bcc": "",
+          "reply_to": "Linker <sales@de-linker.com>",
+          "transport": "file"
+        }
+      ]
+    },
+    {
+      "id": 7245,
+      "email": "tester246-pending@example.test",
+      "status": "inquiry-received",
+      "account_id": 71,
+      "locale": "de_DE_formal",
+      "source": "proforma",
+      "country": "",
+      "lines": [
+        {
+          "product_id": 6510,
+          "name": "GoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter)",
+          "quantity": 2,
+          "price_reason": "approval"
+        }
+      ],
+      "totals_visible": [],
+      "mail": [
+        {
+          "subject": "New inquiry #7245 from 246 Fixture GmbH",
+          "to": "sales@sunriverinverter.com",
+          "bcc": "chester@de-linker.com",
+          "reply_to": "Maria Test <tester246-pending@example.test>",
+          "transport": "file"
+        },
+        {
+          "subject": "Ihre Anfrage #7245 ist eingegangen",
+          "to": "tester246-pending@example.test",
+          "bcc": "",
+          "reply_to": "Linker <sales@de-linker.com>",
+          "transport": "file"
+        }
+      ]
+    },
+    {
+      "id": 7332,
+      "email": "tester246-restricted@example.test",
+      "status": "inquiry-received",
+      "account_id": 72,
+      "locale": "de_DE_formal",
+      "source": "proforma",
+      "country": "",
+      "lines": [],
+      "totals_visible": [],
+      "mail": [
+        {
+          "subject": "Ihre Anfrage #7332 ist eingegangen",
+          "to": "tester246-restricted@example.test",
+          "bcc": "",
+          "reply_to": "Linker <sales@de-linker.com>",
+          "transport": "file"
+        },
+        {
+          "subject": "New inquiry #7332 from 246 Fixture GmbH",
+          "to": "sales@sunriverinverter.com",
+          "bcc": "chester@de-linker.com",
+          "reply_to": "Maria Test <tester246-restricted@example.test>",
+          "transport": "file"
+        }
+      ]
+    },
+    {
+      "id": 7246,
+      "email": "tester246-restricted@example.test",
+      "status": "inquiry-received",
+      "account_id": 72,
+      "locale": "de_DE_formal",
+      "source": "proforma",
+      "country": "",
+      "lines": [
+        {
+          "product_id": 6510,
+          "name": "GoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter)",
+          "quantity": 3,
+          "price_reason": "approval"
+        }
+      ],
+      "totals_visible": [],
+      "mail": [
+        {
+          "subject": "Ihre Anfrage #7246 ist eingegangen",
+          "to": "tester246-restricted@example.test",
+          "bcc": "",
+          "reply_to": "Linker <sales@de-linker.com>",
+          "transport": "file"
+        },
+        {
+          "subject": "New inquiry #7246 from 246 Fixture GmbH",
+          "to": "sales@sunriverinverter.com",
+          "bcc": "chester@de-linker.com",
+          "reply_to": "Maria Test <tester246-restricted@example.test>",
+          "transport": "file"
+        }
+      ]
+    }
+  ]
+}

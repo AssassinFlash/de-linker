@@ -1,0 +1,45 @@
+{
+    "instance": "c246",
+    "snapshot": "20261018-0238",
+    "feature_head": "5fee9624da570291cbdf899cb13255138c1f1a36",
+    "customer_id": 0,
+    "order_id": 7331,
+    "status": "inquiry-received",
+    "locale": "de_DE_formal",
+    "source": "proforma",
+    "guest_billing_country": "",
+    "items": [
+        {
+            "product_id": 1959,
+            "quantity": 2,
+            "name": "SAJ CHS2-29.9K-T4-X"
+        }
+    ],
+    "outbox": [
+        {
+            "id": 7332,
+            "to": [
+                "guest246de@example.test"
+            ],
+            "subject": "Ihre Anfrage #7331 ist eingegangen",
+            "headers": [
+                "Reply-to: Linker <sales@de-linker.com>",
+                "From: Linker <sales@de-linker.com>",
+                "Content-Type: text\/html; charset=UTF-8"
+            ]
+        },
+        {
+            "id": 7333,
+            "to": [
+                "sales@sunriverinverter.com"
+            ],
+            "subject": "New inquiry #7331 from 246 Tester ",
+            "headers": [
+                "Reply-to: 246 Tester <guest246de@example.test>",
+                "From: Linker <sales@sunriverinverter.com>",
+                "Content-Type: text\/html; charset=UTF-8"
+            ]
+        }
+    ],
+    "mail_transport": "local files; quota filled before browser submit, so both messages queued"
+}

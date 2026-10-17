@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 <p><?php esc_html_e( 'Your partner account has been limited for now.', 'linker-commerce' ); ?></p>
-<p><?php esc_html_e( 'You can keep browsing the products, and you can reach us any time at sales@de-linker.com. Net prices and the Proforma request are paused while the account is limited.', 'linker-commerce' ); ?></p>
+<p><?php esc_html_e( 'You can browse products and send inquiries. Net prices remain unavailable while your account is limited. You can also reach us at sales@de-linker.com.', 'linker-commerce' ); ?></p>
 <?php if ( '' !== $reason ) : ?>
 	<p><strong><?php esc_html_e( 'Our reason:', 'linker-commerce' ); ?></strong><br /><?php echo esc_html( $reason ); ?></p>
 <?php endif; ?>

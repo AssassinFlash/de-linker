@@ -301,6 +301,26 @@ final class AccountsAdminTest extends IntegrationTestCase {
 
 	/** Native entry points register, and the history searches company/contact/email. */
 	public function test_native_widget_toolbar_and_history(): void {
+		// Native screen setup must not turn later storefront tests into admin requests.
+		$globals = array();
+		foreach ( array( 'current_screen', 'taxnow', 'typenow', 'wp_meta_boxes' ) as $key ) {
+			$globals[ $key ] = array(
+				'exists' => array_key_exists( $key, $GLOBALS ),
+				'value'  => $GLOBALS[ $key ] ?? null,
+			);
+		}
+		$this->later(
+			static function () use ( $globals ): void {
+				foreach ( $globals as $key => $before ) {
+					if ( $before['exists'] ) {
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Restore WordPress's existing screen globals.
+						$GLOBALS[ $key ] = $before['value'];
+					} else {
+						unset( $GLOBALS[ $key ] );
+					}
+				}
+			}
+		);
 		require_once ABSPATH . 'wp-admin/includes/admin.php';
 		require_once ABSPATH . 'wp-admin/includes/dashboard.php';
 		require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';

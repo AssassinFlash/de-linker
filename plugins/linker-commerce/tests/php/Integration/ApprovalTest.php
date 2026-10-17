@@ -96,10 +96,10 @@ final class ApprovalTest extends IntegrationTestCase {
 			$this->assertSame( '', $this->price( $product->get_id() ), "{$status} sees no price" );
 			$this->assertNull( $this->store_api_prices( $product->get_id() ), "{$status} gets null Store API prices" );
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
-			$this->assertSame(
-				array(),
+			$this->assertArrayHasKey(
+				ProformaGateway::ID,
 				apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
-				"{$status} may not send an inquiry"
+				"{$status} may send an inquiry without seeing prices"
 			);
 		}
 
@@ -132,7 +132,7 @@ final class ApprovalTest extends IntegrationTestCase {
 	 * An account without approval cannot get an inquiry in: the draft accepts
 	 * the line, as a guest's does, but no gateway is offered for the send.
 	 */
-	public function test_a_pending_account_cannot_send_an_inquiry(): void {
+	public function test_a_pending_account_can_send_an_inquiry(): void {
 		$product  = $this->product( '1680' );
 		$customer = $this->customer();
 		$this->set_state( $customer, Approval::PENDING );
@@ -143,10 +143,10 @@ final class ApprovalTest extends IntegrationTestCase {
 		WC()->cart->empty_cart();
 		$this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ), 'The draft accepts the line, as a guest\'s does' );
 
-		$this->assertArrayNotHasKey(
+		$this->assertArrayHasKey(
 			ProformaGateway::ID,
 			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
-			'WooCommerce offers the account no gateway, so the send is refused'
+			'WooCommerce offers the inquiry gateway to pending accounts'
 		);
 	}
 
@@ -220,7 +220,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$restricted = $this->approval_mail_body( 'de_DE_formal', Approval::RESTRICTED, 'Net prices are for businesses.' );
 		$this->assertStringContainsString( 'Ihr Partner-Konto ist vorerst eingeschränkt.', $restricted );
 		$this->assertStringContainsString(
-			'Sie können die Produkte weiterhin ansehen und uns jederzeit unter sales@de-linker.com erreichen. Nettopreise und Proforma-Anfrage sind pausiert, solange das Konto eingeschränkt ist.',
+			'Sie können Produkte ansehen und Anfragen senden. Solange Ihr Konto eingeschränkt ist, werden keine Nettopreise angezeigt. Sie erreichen uns auch unter sales@de-linker.com.',
 			$restricted
 		);
 		$this->assertStringContainsString( 'Unser Grund:', $restricted );
@@ -241,7 +241,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$restricted_en = $this->approval_mail_body( 'en_US', Approval::RESTRICTED, 'Net prices are for businesses.' );
 		$this->assertStringContainsString( 'Your partner account has been limited for now.', $restricted_en );
 		$this->assertStringContainsString(
-			'You can keep browsing the products, and you can reach us any time at sales@de-linker.com. Net prices and the Proforma request are paused while the account is limited.',
+			'You can browse products and send inquiries. Net prices remain unavailable while your account is limited. You can also reach us at sales@de-linker.com.',
 			$restricted_en
 		);
 		$this->assertStringContainsString( 'Our reason:', $restricted_en );
@@ -337,10 +337,10 @@ final class ApprovalTest extends IntegrationTestCase {
 		$gate = new PendingGate( new Approval(), new LoginGate( new Approval() ) );
 		$this->assertTrue( $gate->holds(), 'A pending sign-in is held.' );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Pending sees no prices.' );
-		$this->assertArrayNotHasKey(
+		$this->assertArrayHasKey(
 			ProformaGateway::ID,
 			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
-			'Pending may not send an inquiry.'
+			'Pending may send an inquiry.'
 		);
 		ob_start();
 		$gate->render();
@@ -361,7 +361,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->as_user( $customer->get_id() );
 		$this->assertFalse( $gate->holds(), 'Restricted keeps the workplace.' );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Restricted sees no prices.' );
-		$this->assertStringContainsString( 'Net prices are for businesses.', ( new LoginGate( new Approval() ) )->html() );
+		$this->assertStringContainsString( 'Net prices are for businesses.', ( new LoginGate( new Approval() ) )->restricted_notice() );
 
 		$this->set_state( $customer, Approval::REJECTED, 'We could not verify the business.' );
 		wp_set_password( self::PASSWORD, $customer->get_id() );
