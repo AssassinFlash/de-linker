@@ -23,6 +23,8 @@ just cutover test
 
 Spec / Standards 对全量 `c12a9a22...854068be` 分别评审：Spec 无阻塞发现；Standards 发现目录回滚的 TERM 间隙，已先加失败夹具，再补恢复 trap，定向复核确认解决、无新发现。`test_interrupted_rollback_keeps_live_available_and_can_be_retried` 验证中断后仍可读 live，并可重新完成回滚。部署工具专项结果：Ruff、mypy 通过，pytest **94 passed**。本票不改客户界面。
 
+最终全仓验证：`just check`、`just test` 均 exit 0；后者包括浏览器 **9 passed**、本地栈 **98 passed**、快照工具 **113 passed**、部署工具 **94 passed**。迁移工具原有的外部 WordPress 集成项 **9 skipped**，其余迁移测试 **94 passed**；新增部署测试无跳过。验证日志在本机会话的 `/tmp/c298-check.log` 与 `/tmp/c298-test.log`，PR CI 提供远端可查看的同一管线记录。
+
 ## 一条命令回滚文件发布
 
 在**执行该次部署的同一检出版本**运行：
