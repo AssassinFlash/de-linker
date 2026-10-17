@@ -119,7 +119,17 @@ class PageContext(Strict):
 
 class UserContext(Strict):
     logged_in: bool = False
-    partner: bool = False
+    partner: bool = Field(
+        default=False,
+        description=(
+            "Whether the customer is an approved partner account, the one kind "
+            "of account the site shows net prices (CommerceState). Guests, "
+            "pending and restricted accounts are not. The shell does not send "
+            "it yet (#242 makes prices follow the account); absent reads as not "
+            "approved. The turn log keeps it so the quality judges can tell a "
+            "price shown to an approved account from one shown to anybody else."
+        ),
+    )
     context: str | None = Field(
         default=None,
         description=(

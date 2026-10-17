@@ -19,8 +19,11 @@ BUSY_TIMEOUT = 5.0
 
 COLUMNS = (
     "id, conversation_id, created_at, locale, fallback, tool_calls, output, "
-    "question, page"
+    "question, page, approved"
 )
+# The columns the service added after its first release (log.ADDED_COLUMNS) that
+# the worker reads: a log the service has not upgraded yet reads them as NULL.
+LATER_COLUMNS = ("question", "page", "approved")
 
 
 @dataclass(frozen=True)
@@ -38,6 +41,10 @@ class LoggedTurn:
     question: str | None
     """None for a turn logged before the log carried questions."""
     page: dict[str, Any]
+    approved: bool = False
+    """Whether the customer's account was an approved one (`UserContext.partner`):
+    the only account the remit lets see prices. False for a guest, a pending or
+    a restricted account, and for a turn logged before the log carried it."""
 
 
 class TurnSource:
@@ -103,10 +110,13 @@ class TurnSource:
         )
         database.row_factory = sqlite3.Row
         try:
-            if "question" not in _columns(database):
-                # A log the service has not upgraded yet (log.ADDED_COLUMNS):
-                # its turns read with no question, and are skipped as such.
-                sql = sql.replace("question, page", "NULL AS question, NULL AS page")
+            present = _columns(database)
+            for column in LATER_COLUMNS:
+                if column not in present:
+                    # A log the service has not upgraded yet (log.ADDED_COLUMNS):
+                    # a turn with no question is skipped as such; one with no
+                    # account flag reads as not approved.
+                    sql = sql.replace(f", {column}", f", NULL AS {column}", 1)
             return list(database.execute(sql, args).fetchall())
         except sqlite3.OperationalError as error:
             if "no such table" in str(error):
@@ -134,4 +144,5 @@ def _turn(row: sqlite3.Row) -> LoggedTurn:
         output=output if isinstance(output, dict) else {},
         question=row["question"],
         page=page if isinstance(page, dict) else {},
+        approved=bool(row["approved"]),
     )

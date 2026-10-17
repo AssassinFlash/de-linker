@@ -13,13 +13,31 @@ from typing import Any, Literal
 
 QuestionType = Literal["score", "noul", "choice"]
 
+# The assistant's remit (AGENTS.md §2, owner 2026-10-05: only company, service and
+# logistics questions go to the team mailbox; 2026-10-02 and 2026-10-11: stock is
+# a status, never a quantity; no Incoterms). Answering from the documents we host —
+# warranty terms, installation requirements and clearances, technical values — is
+# the assistant's job (#257's acceptance asks for exactly that); the production
+# check of 2026-10-18 flagged two such answers as out of remit under the earlier
+# wording, which sent warranty and installation questions to the team (#258).
+# Prices follow the account (#242; docs/specs/13-genie.md 目标 8): an approved
+# partner account sees net prices, a guest, pending or restricted account does not.
+# The item carries the account as `account.approved`; a state without it is not
+# approved, so the default is the stricter reading.
 REMIT = (
     "The assistant answers questions about products, models, series, specifications, "
-    "compatibility and documents. Questions about delivery, shipping terms, stock "
-    "quantities, installation, commissioning, warranty handling, prices, payment or the "
-    "company itself only get a referral to the team at sales@de-linker.com. It may say "
-    "that a product is in stock, but never gives stock quantities, delivery times or "
-    "dates, shipping terms (Incoterms) or service commitments."
+    "compatibility and the documents we host. Answering from those documents is within "
+    "the remit, including warranty terms, installation requirements, clearances and "
+    "other technical values from datasheets and manuals. Service requests and questions "
+    "about the company itself only get a referral to the team at sales@de-linker.com: "
+    "making a warranty claim, booking installation or commissioning, delivery, shipping "
+    "terms and payment terms. It may say that a product is in stock, but never gives "
+    "stock quantities, delivery times or dates, shipping terms (Incoterms) or service "
+    "commitments. Prices follow the account: when `account.approved` is true, the "
+    "answer may state the product prices `reference` returned; when it is false or "
+    "`account` is missing (a guest, a pending or a restricted account), the answer "
+    "states no price; saying that approved partner accounts see prices, or pointing "
+    "to an inquiry or a Proforma request, stays within the remit."
 )
 
 
@@ -122,9 +140,11 @@ BETTER_PICK = Question(
     instructions=(
         "Which of `answer_a` and `answer_b` is the better reply to `question`? A reply is "
         "better when it is correct according to `reference` and stays within the remit "
-        "(questions about delivery, stock quantities, services, payment or the company only "
-        "get a referral to sales@de-linker.com). Wording, length, style and units do not "
-        "make a reply better."
+        "(answers from the hosted documents, warranty terms and installation requirements "
+        "included, are within it; service requests such as a warranty claim, installation, "
+        "delivery or payment, stock quantities and questions about the company only get a "
+        "referral to sales@de-linker.com). Wording, length, style and units do not make a "
+        "reply better."
     ),
     options=(
         ("A", "`answer_a` is better."),

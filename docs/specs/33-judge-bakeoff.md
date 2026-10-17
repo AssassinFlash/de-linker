@@ -19,9 +19,14 @@
 上面的"部署目标"按对比结论落地为 Jev API（`docs/research/2026-10-09/judge-bakeoff.md` §采用结论：没有达标的开源候选），形态不变：
 
 - **不进回答路径**：回答照常立刻发出；评审是 VPS 上独立的 systemd 单元 `linker-genie-judge`（`services/genie/ops/linker-genie-judge.service`，与 `linker-genie` 同一发布目录 `/opt/linker-genie/current`、同一环境文件）。
-- **队列**：服务自己的对话日志 `turns.sqlite`（`GENIE_LOG`）。日志每轮另记客户问句、页面上下文和各工具当时的返回（`services/genie/src/linker_genie/log.py`、`abilities.py`）；评审只读日志，不重放（库存、价格、客户询盘会变）。工作进程自己的 `judgments.sqlite` 记队列位置、每轮结论与是否已交给站点。首次启动从当时最新一轮之后开始，只评新对话。
+- **队列**：服务自己的对话日志 `turns.sqlite`（`GENIE_LOG`）。日志每轮另记客户问句、页面上下文、各工具当时的返回和账号是否已批准（`approved`，取自请求的 `user.partner`；站点在 #242 之前不传，缺省即未批准）（`services/genie/src/linker_genie/log.py`、`abilities.py`）；评审只读日志，不重放（库存、价格、客户询盘会变）。工作进程自己的 `judgments.sqlite` 记队列位置、每轮结论与是否已交给站点。首次启动从当时最新一轮之后开始，只评新对话。
 - **级联**（`services/genie/src/linker_genie/quality/worker.py`，复用 `eval/judges` 的 `run_cascade`）：Jev 答 grounded / appropriate / better_pick（有可换的产品时才问第三问；换品取本轮工具返回过、回答没给的产品）；任一问置信度低于 `TURN_THRESHOLDS`（grounded 0.6、appropriate 0.5、better_pick 0.6）→ 整条交 deepseek-flash（仅官方 API）判，日志 INFO 记 "turn N escalated to deepseek-flash: grounded 0.42 < 0.6"。**Jev 调用失败不是"不确定"**：不升级、不换模型，该轮记 `failed`、日志 ERROR，10 分钟后重试，共 3 次。
-- **引用核验**（`quality/citations.py`）：发出的回答里每个引用 ID、每张卡片都必须是本轮工具返回过的，每个数字都必须出现在本轮工具返回的值里（与 `ground.py` 第 5 条同一判定）。
+- **职责说明（remit，`eval/judges/src/linker_judges/rubric.py` 的 `REMIT`；#258 于 2026-10-18 按线上评判改定）**：appropriate 与 better_pick 共用。依据 AGENTS.md §2 2026-10-05（只有公司、服务、物流类问题转团队）：
+  - 职责内：产品、型号、系列、规格、兼容，以及从我们托管的文档作答——保修条款、安装要求、间距等技术参数（#257 的验收要求正是这些）。
+  - 转 sales@de-linker.com：服务请求（办理保修索赔、预约安装或调试、发货、发货条款、付款条件）和公司本身的问题。库存只说有货，不说数量、交期、Incoterms 或服务承诺（2026-10-02、2026-10-11）。
+  - 价格跟账号走（#242；13-genie.md 目标 8）：评审状态带 `account.approved`；为真时回答可以说出 `reference` 返回的价格；为假或缺失（访客、待审、限制账号）时不说价格，说"已批准伙伴账号可见价格"或引向询盘 / Proforma 仍在职责内。
+  - 改定前的说法把保修与安装一律转团队，线上第 33 轮（GoodWe 保修条款）、第 36 轮（CB2 安装与间距）因此被误判"超出职责"。用本分支的 remit 对线上同一批 20 轮重新判（Jev 经 OpenRouter /systemone，升级 deepseek-flash 官方 API）：两轮都判 appropriate = yes，其余 18 轮 appropriate 仍全为 yes；价格夹具：已批准账号显示价格判 yes，同一回答记为访客判 no，访客回答不报价并引向询盘判 yes。appropriate 阈值 0.5 不变（改 rubric 后按校准集复核）：校准集的超出职责题（发货、付款条件、Incoterms、上门安装、保修索赔由谁处理）都是服务请求，人工标签在新说法下不变；Jev 用新 remit 跑校准集 118 条问答，appropriate 118/118 与人工一致、置信度全部 ≥ 0.80（正式轮旧 remit 同为 118/118、最低 0.82）；线上 20 轮两次重判中 Jev 的 appropriate 置信度最低 0.74，没有一轮因 appropriate 升级。
+- **引用核验**（`quality/citations.py`）：发出的回答里每个引用 ID、每张卡片都必须是本轮工具返回过的，每个数字都必须出现在本轮工具返回的值里。什么算数字直接复用 `ground.py` 的 `bare_numbers`（同一条规则，不另写）：整段写出的型号（大写字母与数字以连字符或斜杠相连，如 CB2-100.3-HV5、BU2-5.0-HV1、GW125/261-ESA-LCN-G10）是名称，其中的数字不算；型号旁边写出的数字照常核验。线上第 27 轮（"saj"）因 BU2-5.0-HV1 里的 5.0 被误标，#258 修正。
 - **标记**：grounded 0（矛盾）或 1（无法核实）、appropriate no、better_pick B、引用核验不过、判不出 → 标记，后台列表可筛。
 - **交给站点**：`POST /wp-json/linker-ai/v1/genie/quality`，共享令牌放在请求头 `X-Linker-Judge-Token`（不用 `Authorization: Bearer`：LiveCanvas 自带的模板系统把每个 REST 请求的 Bearer 当 JWT 解码，非 JWT 令牌直接 500；VPS `GENIE_JUDGE_TOKEN` = 站点 wp-config.php 常量 `LINKER_GENIE_JUDGE_TOKEN`；没有常量时路由关闭）。站点把每轮结论存为对话帖的 post meta（`linker_genie_quality`），无自定义表；没被站点收下的结论下一轮再交。工作进程每 10 分钟报一次状态，站点 30 分钟没收到即视为停止。
 - **后台**：Genie quality（`linker-tools` `QualityPage`）列出有结论的对话，可筛"标记"与"未能评判"；点进对话看逐轮问句、回答、结论、升级原因、评审理由与对话全文。页首显示工作进程停止或最近一次评审错误。

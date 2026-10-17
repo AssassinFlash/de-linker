@@ -98,12 +98,14 @@ _MODEL_CODE = re.compile(
 )
 
 
-def _bare_numbers(text: str) -> list[str]:
+def bare_numbers(text: str) -> list[str]:
     """Digit tokens that stand outside alphanumeric model codes.
 
     A model code keeps its numeric segments: "CB2-100.3-HV5" is a name, written
     plainly (`_MODEL_CODE`, #233; and a whole word that `figures.is_code` reads as
-    a name, #257, which also covers codes written in lower case).
+    a name, #257, which also covers codes written in lower case). The quality
+    worker's citation check reads the shipped answer with this same rule
+    (`quality/citations.py`, #258), so the two never disagree on what a number is.
     """
     text = _MODEL_CODE.sub(" ", text)
     return [
@@ -359,7 +361,7 @@ def _no_bare_numbers(output: TurnOutput, facts: TurnFacts) -> list[str]:
             continue
         for text in texts:
             stripped = PLACEHOLDER.sub("", text)
-            numbers = _bare_numbers(stripped)
+            numbers = bare_numbers(stripped)
             if numbers:
                 failures.append(f"model text contains numbers {numbers!r}")
                 continue
@@ -372,7 +374,7 @@ def _no_bare_numbers(output: TurnOutput, facts: TurnFacts) -> list[str]:
                         continue
                     if fact.id.endswith(".text") or fact.id in facts.chunk_ids:
                         continue
-                    digits = _bare_numbers(fact.value)
+                    digits = bare_numbers(fact.value)
                     if digits and not any(
                         digit in cited_chunk_text for digit in digits
                     ):

@@ -219,4 +219,5 @@ def test_an_old_log_gains_the_understanding_column(tmp_path: Path) -> None:
     upgraded.record("c", "en", True, (), False, "deepseek", "deepseek-flash", [], {})
     columns = [r[1] for r in upgraded._db.execute("PRAGMA table_info(turns)")]
     upgraded.close()
-    assert columns[-1] == "understanding"
+    # #258 adds the account flag after it.
+    assert columns[-2:] == ["understanding", "approved"]

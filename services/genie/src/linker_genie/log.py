@@ -5,7 +5,9 @@ The log is also the quality check's queue (docs/specs/33-judge-bakeoff.md,
 worker judges what the customer asked (`question`), on which page (`page`),
 against what the turn's abilities returned (`tool_calls[*].result`), so those
 are logged with the turn. The understanding layer's record (product words,
-Jev's reading, the route, its failures) is logged with it too (#233).
+Jev's reading, the route, its failures) is logged with it too (#233), and
+whether the customer's account is an approved one (`approved`, #258): the
+judges' remit lets an approved account see prices and nobody else.
 """
 
 from __future__ import annotations
@@ -31,13 +33,19 @@ CREATE TABLE IF NOT EXISTS turns (
     vote INTEGER,
     question TEXT,
     page TEXT,
-    understanding TEXT
+    understanding TEXT,
+    approved INTEGER
 );
 """
 
 # Columns added after the first release: a log the service already wrote keeps
 # its rows and gains the columns (NULL for the turns logged before them).
-ADDED_COLUMNS = (("question", "TEXT"), ("page", "TEXT"), ("understanding", "TEXT"))
+ADDED_COLUMNS = (
+    ("question", "TEXT"),
+    ("page", "TEXT"),
+    ("understanding", "TEXT"),
+    ("approved", "INTEGER"),
+)
 
 
 class TurnLog:
@@ -73,14 +81,15 @@ class TurnLog:
         question: str = "",
         page: dict[str, Any] | None = None,
         understanding: dict[str, Any] | None = None,
+        approved: bool = False,
     ) -> int:
         cursor = self._db.execute(
             """
             INSERT INTO turns (
                 conversation_id, locale, grounded, failures, fallback,
                 provider, model, tool_calls, output, question, page,
-                understanding
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                understanding, approved
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 conversation_id,
@@ -95,6 +104,7 @@ class TurnLog:
                 question,
                 json.dumps(page or {}),
                 json.dumps(understanding or {}, ensure_ascii=False),
+                int(approved),
             ),
         )
         self._db.commit()
