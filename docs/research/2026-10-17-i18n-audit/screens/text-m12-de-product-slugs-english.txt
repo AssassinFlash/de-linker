@@ -1,0 +1,65 @@
+captured 2026-10-17 from the live site by curl (read-only)
+
+56 of 104 German product URLs in product-sitemap1.xml carry English words:
+https://de-linker.com/de/produkt/saj-emanager-c1-pro/
+https://de-linker.com/de/produkt/goodwe-sec3000c-smart-energy-controller/
+https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/
+https://de-linker.com/de/produkt/goodwe-ezmanager3000-hems-gateway/
+https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/
+https://de-linker.com/de/produkt/goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/
+https://de-linker.com/de/produkt/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/
+https://de-linker.com/de/produkt/goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger/
+https://de-linker.com/de/produkt/goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one/
+https://de-linker.com/de/produkt/goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one/
+https://de-linker.com/de/produkt/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/
+https://de-linker.com/de/produkt/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/
+https://de-linker.com/de/produkt/goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh/
+https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/
+https://de-linker.com/de/produkt/saj-emanager-emanager-5-0-residential-energy-manager/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/
+https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/
+https://de-linker.com/de/produkt/goodwe-esa-gw6k-eta-g20-6-kw-three-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/
+https://de-linker.com/de/produkt/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/
+https://de-linker.com/de/produkt/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/
+https://de-linker.com/de/produkt/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/
+https://de-linker.com/de/produkt/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/
+https://de-linker.com/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/
+https://de-linker.com/de/produkt/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/
+https://de-linker.com/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/
+https://de-linker.com/de/produkt/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/
+https://de-linker.com/de/produkt/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/
+
+Other German URLs with English segments (page/post/category sitemaps + endpoints):
+/de/compare-products/
+/de/category/<slug>/ (blog category base)
+/de/category/system-design/ ... applications-blog (blog category slugs kept English by design)
+/de/mein-konto/register/, /de/mein-konto/lost-password/ (Woo endpoints)

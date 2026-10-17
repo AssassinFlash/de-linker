@@ -1,0 +1,7 @@
+captured 2026-10-17 from the live site by curl (read-only)
+
+https://de-linker.com/de/kontakt/?intent=product&source=https://de-linker.com/de/produkt/saj-b2-10-0-hv1/
+  -> 301 Location: https://de-linker.com/de/kontakt/?intent=product&source=https://de-linker.com/produkt/saj-b2-10-0-hv1/  x-redirect-by: Polylang
+
+https://de-linker.com/contact/?source=https://de-linker.com/de/produkt/x/
+  -> 301 Location: https://de-linker.com/contact/?source=https://de-linker.com/produkt/x/  x-redirect-by: Polylang
