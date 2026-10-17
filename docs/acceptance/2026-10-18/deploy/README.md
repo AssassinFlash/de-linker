@@ -51,6 +51,8 @@ just cutover test
 
 专项验证：`just cutover check` 通过，`just cutover test` **107 passed**，新增部署与探针测试无跳过。
 
+最终全仓验证：rebase 到 `origin/main` 的 `781f5a223b9997d3d7abf8bcacc40e439c2c4317` 后，`just check`、`just test` 均退出 0。该次全仓运行中的 cutover 套件仍为 **107 passed**；迁移套件保留既有的 **9 skipped**（依赖外部实例）。本机完整输出保存在 `/tmp/c298-round1-check.log` 与 `/tmp/c298-round1-test.log`，生产实走结果仍见下方“未完成（Claude）”。
+
 ## 一条命令回滚
 
 在**执行该次部署的同一检出版本**运行：
