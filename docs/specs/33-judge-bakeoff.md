@@ -26,20 +26,15 @@
   - **转 sales@de-linker.com**（2026-10-05：公司、服务、物流类问题转团队）：服务请求和公司本身的问题。服务请求指办理保修索赔、预约安装或调试、发货、发货条款、付款条件。
   - **库存**（2026-10-02、2026-10-11）：只说状态，"有货"或"暂时无货"，从不说数量。
   - **承诺**：不给交期或日期、服务或预约日期，不提 Incoterms，也不做文档里没有的承诺。只有一条可以说：团队一个工作日内回复询盘（2026-10-09 的承诺；13-genie.md 目标 5、6）。
-  - **价格**（#242；13-genie.md 目标 8）要过两道门，缺一不可：
-    - 本轮工具把这个价格作为可见返回（`price_visible`）。工具输出是事实依据。
-    - 评审状态里的 `account.approved` 为真。这是第二道门。
-    - 账号为假或缺失（访客、待审、限制账号）时不说价格；说"已批准伙伴账号可见价格"，或引向询盘 / Proforma，仍在职责内。
-    - 两道门在引用核验里也有确定性的检查，见下一条。
-  - **价格怎样出现**（#242 起，见 13-genie.md「价格跟账号走」）：
-    - 产品能力带客户的短时令牌调用（`abilities.USER_CONTEXT_ABILITIES`），`CommerceState` 按客户本人判断；已批准账号的 `commerce` 带 `price_visible: true`、`price` 与产品页的价格行 `price_text`，其他账号带 `price_reason`。
-    - 代理按站点规则（`Approval::sees_prices` / `CommerceState::visitor_sees_prices()`，经过滤器 `linker_commerce_visitor_sees_prices`）传 `partner`，不用 `logged_in`；日志记成 `approved`。
-    - 模型正文不写价格（`ground.py` 拒绝价格占位符）；价格只出现在产品卡的价格行（`cards.prices`），由服务从本轮工具结果填入。所以两道门既对正文的数字查，也对卡上的价格行查（下一条）。
+  - **价格**（#242；13-genie.md 目标 8 与「价格跟账号走」）：回答的正文从不写价格，对任何账号都一样（`account.approved` 为真也不写）；价格只出现在产品卡上，由服务按客户的账号填入。说"卡上显示价格"、"已批准伙伴账号可见净价"，或引向询盘 / Proforma，仍在职责内。卡上的价格在引用核验里过两道门，缺一不可（见下一条）：
+    - 本轮工具把这一行作为该商品的可见价格返回（`price_visible`、`price_line`，且没有 `price_reason`）。工具输出是事实依据。
+    - 评审状态里的 `account.approved` 为真。
+  - **价格怎样出现**：产品能力带客户的短时令牌调用（`abilities.USER_CONTEXT_ABILITIES`，WordPress 只在这三个 ability 的路由上采信），`CommerceState` 按客户本人判断；`commerce` 带产品页的价格行 `price_line` 与原因 `price_reason`。代理按站点规则（`Approval::sees_prices` / `CommerceState::visitor_sees_prices()`，经过滤器 `linker_commerce_visitor_sees_prices`）传 `partner`，不用 `logged_in`；日志记成 `approved`。
   - **改定前**：旧说法把保修与安装一律转团队，线上第 33 轮（GoodWe 保修条款）、第 36 轮（CB2 安装与间距）因此被误判"超出职责"。
   - **复核**：脚本与只含 ID 的结果在 `docs/research/2026-10-18-judge-remit/`，可以重跑。
     - 校准集 118 条问答：Jev 的 appropriate 与人工 118/118 一致，置信度最低 0.70；旧 remit 的正式轮同为 118/118，最低 0.82。超出职责题都是服务请求，人工标签不变。**appropriate 阈值 0.5 维持。**
     - 线上 20 轮：27、33、36 的误标消失；appropriate 全为 yes，Jev 置信度最低 0.80，没有一轮因 appropriate 升级。
-    - 价格四种组合：可见且已批准判 yes；可见但未批准判 no，确定性检查也标记；工具没返回而回答报价判 no，确定性检查也标记；访客回答不报价、引向询盘判 yes。
+    - 价格四种组合：可见且已批准判 yes；可见但未批准判 no，确定性检查也标记；工具没返回而回答报价判 no，确定性检查也标记；访客回答不报价、引向询盘判 yes。（#258 当时的记录。#242 起正文报价对任何账号都不在职责内，价格只在卡上，见上文「价格」。）
 - **引用核验**（`quality/citations.py`）：
   - 发出的回答里，每个引用 ID、每张卡片都必须是本轮工具返回过的；每个数字都必须出现在本轮工具返回的值里。
   - 什么算数字，直接复用 `ground.py` 的 `bare_numbers`，同一条规则，不另写。按代码的实际顺序：
@@ -48,7 +43,7 @@
     - 剩下的纯数字（48、5.0、8,7）才是回答说出的数字。
     - 型号旁边写出的数字照常核验，例如 "BU2-5.0-HV1 holds 5.0 kWh" 里的 5.0。
   - 线上第 27 轮（"saj"）因 BU2-5.0-HV1 里的 5.0 被误标，#258 修正。
-  - **价格**：数字等于本轮可见价格、而账号未批准时，记 "states the price of product N, and the account is not approved"；工具没返回的价格照常按"无工具依据的数字"记。卡上的价格行（#242）过同样两道门：本轮工具没有把这个价格行作为该商品的 `price_text` 返回，记 "shows a price of product N on its card that no tool returned"；返回了而账号未批准，记 "shows the price of product N on its card, and the account is not approved"；只写原因（`reason`）的价格行不算价格（`quality/citations.py::_card_prices`，测试 `services/genie/tests/test_prices.py`）。
+  - **价格**：正文里的数字等于本轮工具返回的某个可见价格时，不论账号，记 "states the price of product N in the text; prices appear only on the product card"；工具没返回的数字照常按"无工具依据的数字"记。卡上的价格（`cards.prices` 里没有 `reason` 的一行）：本轮工具没有把这一行作为该商品的可见价格返回，记 "shows a price of product N on its card that no tool returned"；返回了而账号未批准，记 "shows the price of product N on its card, and the account is not approved"；带 `reason` 的一行是产品页的原句，不算价格（`quality/citations.py::_card_prices`，测试 `services/genie/tests/test_prices.py`、`test_quality.py`）。
 - **标记**：grounded 0（矛盾）或 1（无法核实）、appropriate no、better_pick B、引用核验不过、判不出 → 标记，后台列表可筛。
 - **交给站点**：`POST /wp-json/linker-ai/v1/genie/quality`，共享令牌放在请求头 `X-Linker-Judge-Token`（不用 `Authorization: Bearer`：LiveCanvas 自带的模板系统把每个 REST 请求的 Bearer 当 JWT 解码，非 JWT 令牌直接 500；VPS `GENIE_JUDGE_TOKEN` = 站点 wp-config.php 常量 `LINKER_GENIE_JUDGE_TOKEN`；没有常量时路由关闭）。站点把每轮结论存为对话帖的 post meta（`linker_genie_quality`），无自定义表；没被站点收下的结论下一轮再交。工作进程每 10 分钟报一次状态，站点 30 分钟没收到即视为停止。
 - **后台**：Genie quality（`linker-tools` `QualityPage`）列出有结论的对话，可筛"标记"与"未能评判"；点进对话看逐轮问句、回答、结论、升级原因、评审理由与对话全文。页首显示工作进程停止或最近一次评审错误。

@@ -20,7 +20,7 @@
 - `Registration\Approval`（**审批权威，票据 73**：状态机、读写与审计、登录拦截；唯一的 meta 读写方）。
 - `Registration\ApprovalAdmin`（用户列表状态列及列表/资料页审核深链；只读）。
 - `Registration\AccountsAdmin` / `AccountsTable` / `AccountsController`（原生后台入口、历史与受权限/nonce 保护的 POST 决定），`Accounts` / `RegistrationInformation` / `AccountSignals`（同一审批权威、动态注册资料与检查线索）。
-- `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可购买性 = 已登录且已批准；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。`rfq_only` 读英文商品的标记（德语孪生经 `linker_commerce_facts_product_id` 换成英文，与选型事实同一入口；2026-10-17 快照里 1957 的德语孪生 6800 没有自己的标记，德语产品页曾向已批准账号显示 €33,250）。产品页的价格行按 `CommerceState::page_reason()` 的顺序决定：看不到价格的账号先读账号的原因（访客 "Net price after partner sign-in"、待审 "Prices after approval"、限制 "Not available for your account"），已批准账号在按项目报价的商品上读 "Quoted per project"（此前误读 "Not available for your account"）、无价商品读 "Price on request"；对比页的价格行与产品页共用 `ProductView::price_html`；Genie 的产品卡读同一答案（#242，见 13-genie.md「价格跟账号走」）。其他插件经过滤器 `linker_commerce_visitor_sees_prices` 问同一条规则（`PriceDisplay::sees_prices`）。
+- `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可购买性 = 已登录且已批准；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。`rfq_only` 读英文商品的标记：德语孪生经 `linker_commerce_facts_product_id`（linker-i18n 回答，与选型事实同一入口）换成英文商品再读。孪生上残留或缺失的 `tv_b2b_product_mode` 照旧留作数据（Polylang 免费版不同步 Woo meta），任何读取都必须走这条事实 ID 路径，永不直接对孪生 `get_post_meta`（2026-10-17 快照里 1957 的德语孪生 6800 没有自己的标记，德语产品页曾向已批准账号显示 33.250,00 €）。价格位置印什么由 `CommerceState::reason( $product, CARD|PAGE )` 决定，一个函数两个表面：`CARD`（Woo 自己的价格 HTML、Store API 的 `price_html`、Lösungsentwurf 与询盘的行、草稿汇总）先说商品——线上 2026-10-18 访客的 `/wc/store/v1/products/1957` 的 `price_html` 是 "Quoted per project"；`PAGE`（产品页、对比页、Genie 的产品卡）先说账号——同日线上访客的 1957 产品页是 "Net price after partner sign-in"。产品页与对比页共用 `ProductView::price_html`：访客 "Net price after partner sign-in"、待审 "Prices after approval"、限制 "Not available for your account"，已批准账号在按项目报价的商品上 "Quoted per project"、无价商品 "Price on request"；Genie 的产品卡读同一行（#242，见 13-genie.md「价格跟账号走」）。其他插件经过滤器 `linker_commerce_visitor_sees_prices` 问同一条规则（唯一回答者 `PriceDisplay::sees_prices`）。
 - `Inquiry`（状态注册与颜色、网关类 `ProformaGateway extends WC_Payment_Gateway`、减库存关闭、订单标题与列表列；`Checkout::gateways` 对未批准账号返回空=服务端拦截点）。
 - `Proforma`（PDF：dompdf 或 mpdf（MIT/LGPL），模板 EN/DE，编号 `DLK-PF-YYYY-NNNN`（按年计数，选项 `linker_commerce_proforma_prefix`，空则 `DLK-PF`），银行条款（设置页填写），有效期 30 天，税额行按 Woo 税设置显示；生成后存 `wp-content/uploads/proforma/<order>/` 私有目录，账户内经鉴权下载）。线上 `de-linker.com` 的号是 `DLK-PF-年份-订单ID`（下单即写入账本，不是后台按钮才编）；本站保留同一前缀，序号按年递增，不沿用订单 ID。
 - `Mail`（`wp_mail` 统一：内部通知一封主信 To 内部通知收件人 + Bcc（设置页，见下文“内部通知收件人”）；每封投递在 WooCommerce 日志 `linker-mail` 留一行 info（主题、收件人与 Bcc，客户回执的行里因此有客户邮箱；保留期 = WooCommerce → Settings → Advanced → Logs 的 Retention period，线上未改即 Woo 缺省 30 天，到期由 Woo 自己删；文件在 `wp-content/uploads/wc-logs/`，目录有 Woo 写的 `.htaccess` deny from all，只能经后台 WooCommerce → Status → Logs 看，需要 `manage_woocommerce` 权限，即管理员与 Shop manager）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11；`Mail\TestMode`，与 #73/#94 同一实现）：选项 `linker_commerce_test_mail_to` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp linker-commerce test-mail on|off|status` 设与撤（默认收件人 chester@de-linker.com，`--to=` 可换），不是设置页字段（#17 切换冒烟时开，验证后撤）。
@@ -81,6 +81,16 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
 - ① 注册 → 团队（`NewCustomerEmail`，含审批状态行与后台直达链接）。
 - ② 通过 → 客户（`ApprovedEmail`）③ 限制 → 客户（`RestrictedEmail`，原因段）④ 拒绝 → 客户（`RejectedEmail`，原因段）。三封经 `linker_commerce_approval_changed` 动作（Woo `_notification` 事务邮件机制 → Action Scheduler → Outbox 重试队列），客户语言=用户 `locale`。状态和规范化原因都不变时不重发；限制/拒绝的原因实质改变时重新通知，原因必填才可写入。
 - ⑤ 注册确认 → 客户（`RegistrationReceivedEmail`，发到注册时留下的地址）。Woo 原生欢迎信（`customer_new_account`）已关：那封信说账号已可用，pending 账号不是。文案定稿：`docs/acceptance/2026-10-13/138/copy-review.md`。
+
+## 变更台账条目（2026-10-18，#242）
+
+| 项 | 内容 |
+|---|---|
+| 变更 | ① 已批准账号在按项目报价的商品（1957）产品页："Not available for your account" → "Quoted per project"；② 1957 的德语孪生（6800）产品页向已批准账号显示 33.250,00 € → "Angebot pro Projekt"（`is_rfq_only` 读英文商品的标记）；③ 对比页 `/compare-products/` 的 "Net price" 行：已批准账号在 1957 上 "Net price after partner sign-in" → "Quoted per project"，待审账号 "Net price after partner sign-in" → "Prices after approval"（与产品页共用 `ProductView::price_html`） |
+| 裁定 | 业主 2026-10-17：价格跟账号走，账号通过了哪里都显示价格（#242）；按项目报价的商品对谁都不显示价格（`rfq_only`，线上目录数据）；产品页与 Genie 卡"与产品页一致"。PR #301 评审第 1 轮要求入台账 |
+| 允许差异 | 只在已登录的已批准、待审、限制账号的视图里（上表三处）；访客看到的产品页、对比页与 Store API 不变（像素门不受影响）；待审账号的 1957 产品页不变（截图对照） |
+| 证据 | g242（2026-10-17 20:44 UTC 线上快照），1440：`docs/acceptance/2026-10-18/242/ledger/before-*.png`（main 的代码）与 `after-*.png`（本分支），1957 英 / 德产品页与对比页 × 已批准 / 待审 |
+| 台账呈现 | 本规格 + PR #301 描述呈业主过目 |
 
 ## 审批状态契约（meta 键与取值，#74 每日摘要照此读）
 | 项 | 值 |

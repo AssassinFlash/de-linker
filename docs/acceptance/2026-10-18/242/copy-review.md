@@ -2,7 +2,7 @@
 
 基准：linker-copywriting Hard Stops、AGENTS.md §3 用词、线上既有措辞与 `.po` 术语（先例 `docs/acceptance/2026-10-10/12/copy-review.md`）。EN 先定，DE 独立写（Sie 体）。
 
-## 1. 卡上的价格行（客户可见，`GenieCard::priceLine`）
+## 1. 卡上的价格行（客户可见；句子由 `ProductCommerce::price_line` 从产品页取，`GenieCard` 只渲染）
 
 | 原因 | 初稿 EN | 评审意见 | 定稿 EN | 定稿 DE |
 |---|---|---|---|---|
@@ -13,7 +13,7 @@
 | project | Quoted per project | 产品页原句；同时修正产品页：已批准账号在按项目报价的商品上原来读到 "Not available for your account"，与事实不符（账号并无问题） | Quoted per project | Angebot pro Projekt |
 | unpriced | Price on request | 产品页（经 `woocommerce_empty_price_html`）原句，保留 | Price on request | Preis auf Anfrage |
 
-德语逐字取自 `plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po` 的现行译文（已在线上），写入 `plugins/linker-tools/languages/linker-tools-de_DE_formal-linker-tools-genie.json`。没有新造的句子。
+句子就是产品页自己的那一行（`ProductView::price_html`，在轮次语言里生成），德语来自 `plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po` 的现行译文（已在线上）。壳不持有任何价格句子（PR #301 评审第 1 轮），linker-tools 的目录因此没有新条目。没有新造的句子；编译后的 `.mo` 与 main 相比 0 条丢失、0 条改变（`mo-proof.txt`）。
 
 ## 2. 问价时模型的说法（提示词，`prompts/{en,de}/system.md` 与每轮提醒）
 
