@@ -9,6 +9,7 @@
 import type { Block } from '../api/turn';
 import { ActionView } from './ActionView';
 import { Ask } from './Ask';
+import { DocumentLink } from './DocumentLink';
 import { Handoff } from './Handoff';
 
 export function BlockView( {
@@ -31,6 +32,9 @@ export function BlockView( {
 	}
 	if ( block.type === 'handoff' ) {
 		return <Handoff block={ block } />;
+	}
+	if ( block.type === 'document' ) {
+		return <DocumentLink block={ block } />;
 	}
 	return null;
 }

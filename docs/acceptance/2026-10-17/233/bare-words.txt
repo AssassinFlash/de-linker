@@ -1,0 +1,4 @@
+en: 38/38 show their products
+de: 37/37 show their products
+greeted: 0
+routes: ['products']

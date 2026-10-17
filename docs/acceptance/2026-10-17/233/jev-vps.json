@@ -1,0 +1,1554 @@
+[
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "saj",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.11,
+   "wants_person": 0.08,
+   "needs_followup": 0.59,
+   "seconds": 0.228,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "SAJ",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.13,
+   "wants_person": 0.06,
+   "needs_followup": 0.41,
+   "seconds": 0.196,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "saj",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.1,
+   "wants_person": 0.08,
+   "needs_followup": 0.59,
+   "seconds": 0.26,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "goodwe",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.11,
+   "wants_person": 0.03,
+   "needs_followup": 0.4,
+   "seconds": 0.173,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "H2-10K-T3",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.2,
+   "wants_person": 0.03,
+   "needs_followup": 0.42,
+   "seconds": 0.198,
+   "cost": 3.4692e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "GW10K-ET",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.21,
+   "wants_person": 0.02,
+   "needs_followup": 0.38,
+   "seconds": 0.234,
+   "cost": 3.4608e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "pylontech us5000",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.12,
+   "wants_person": 0.02,
+   "needs_followup": 0.38,
+   "seconds": 0.102,
+   "cost": 3.4734e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "I need a hybrid inverter for a single-family home",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.08,
+   "wants_person": 0.03,
+   "needs_followup": 0.79,
+   "seconds": 0.205,
+   "cost": 3.486e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Ich suche einen Hybrid-Wechselrichter für ein Einfamilienhaus",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.06,
+   "wants_person": 0.03,
+   "needs_followup": 0.84,
+   "seconds": 0.119,
+   "cost": 3.507e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "category",
+   "category": "Inverters"
+  },
+  "message": "Habt ihr dreiphasige Wechselrichter mit 15 kW?",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.56,
+   "wants_person": 0.03,
+   "needs_followup": 0.45,
+   "seconds": 0.168,
+   "cost": 3.5574e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "category",
+   "category": "Inverters"
+  },
+  "message": "show me 3-phase ones",
+  "intent": "find_products",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.6,
+   "wants_person": 0.02,
+   "needs_followup": 0.44,
+   "seconds": 0.105,
+   "cost": 3.5028e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Batteriespeicher Hochvolt",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.12,
+   "wants_person": 0.04,
+   "needs_followup": 0.71,
+   "seconds": 0.159,
+   "cost": 3.4692e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "which battery works with this inverter?",
+  "intent": "pairing_compatibility",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.96,
+   "wants_person": 0.03,
+   "needs_followup": 0.47,
+   "seconds": 0.091,
+   "cost": 3.5952e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "Welcher Speicher passt dazu?",
+  "intent": "pairing_compatibility",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.91,
+   "wants_person": 0.03,
+   "needs_followup": 0.58,
+   "seconds": 0.2,
+   "cost": 3.5826e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "Is the Pylontech Force H2 compatible with GoodWe ET?",
+  "intent": "pairing_compatibility",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.05,
+   "wants_person": 0.03,
+   "needs_followup": 0.59,
+   "seconds": 0.082,
+   "cost": 3.5028e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Kann ich eine BYD HVS an den SAJ H2 anschließen?",
+  "intent": "pairing_compatibility",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.06,
+   "wants_person": 0.03,
+   "needs_followup": 0.66,
+   "seconds": 0.114,
+   "cost": 3.5154e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "solution_draft",
+   "items": [
+    "SAJ H2-10K-T3 x1",
+    "SAJ B2-10.0 battery x1"
+   ]
+  },
+  "message": "do these two work together?",
+  "intent": "pairing_compatibility",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.94,
+   "wants_person": 0.04,
+   "needs_followup": 0.47,
+   "seconds": 0.2,
+   "cost": 3.6204e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "solution_draft",
+   "items": [
+    "SAJ H2-10K-T3 x1",
+    "SAJ B2-10.0 battery x1"
+   ]
+  },
+  "message": "Passt das alles zusammen?",
+  "intent": "pairing_compatibility",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.91,
+   "wants_person": 0.04,
+   "needs_followup": 0.63,
+   "seconds": 0.126,
+   "cost": 3.6204e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "datasheet please",
+  "intent": "documents_specs",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "documents_specs",
+   "confidence": 1.0,
+   "about_this_page": 0.9,
+   "wants_person": 0.02,
+   "needs_followup": 0.16,
+   "seconds": 0.117,
+   "cost": 3.57e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "Wo finde ich das Datenblatt?",
+  "intent": "documents_specs",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "documents_specs",
+   "confidence": 1.0,
+   "about_this_page": 0.78,
+   "wants_person": 0.03,
+   "needs_followup": 0.17,
+   "seconds": 0.117,
+   "cost": 3.591e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "what is the max PV input?",
+  "intent": "documents_specs",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "documents_specs",
+   "confidence": 1.0,
+   "about_this_page": 0.95,
+   "wants_person": 0.02,
+   "needs_followup": 0.19,
+   "seconds": 0.131,
+   "cost": 3.5868e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "Wie viele MPPT hat das Gerät?",
+  "intent": "documents_specs",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "documents_specs",
+   "confidence": 1.0,
+   "about_this_page": 0.95,
+   "wants_person": 0.02,
+   "needs_followup": 0.12,
+   "seconds": 0.139,
+   "cost": 3.591e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "installation manual for the GoodWe ESA",
+  "intent": "documents_specs",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "documents_specs",
+   "confidence": 1.0,
+   "about_this_page": 0.08,
+   "wants_person": 0.02,
+   "needs_followup": 0.43,
+   "seconds": 0.164,
+   "cost": 3.4692e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "VDE-AR-N 4105 Zertifikat für den H2-10K-T3",
+  "intent": "documents_specs",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "documents_specs",
+   "confidence": 0.98,
+   "about_this_page": 0.13,
+   "wants_person": 0.06,
+   "needs_followup": 0.58,
+   "seconds": 0.169,
+   "cost": 3.5364e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "SAJ vs GoodWe for commercial storage",
+  "intent": "compare",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "compare",
+   "confidence": 1.0,
+   "about_this_page": 0.05,
+   "wants_person": 0.03,
+   "needs_followup": 0.62,
+   "seconds": 0.206,
+   "cost": 3.4734e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Unterschied zwischen GoodWe ET und SAJ H2?",
+  "intent": "compare",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "compare",
+   "confidence": 1.0,
+   "about_this_page": 0.06,
+   "wants_person": 0.03,
+   "needs_followup": 0.27,
+   "seconds": 0.103,
+   "cost": 3.4986e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "how does this compare to the 12K version?",
+  "intent": "compare",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "compare",
+   "confidence": 1.0,
+   "about_this_page": 0.94,
+   "wants_person": 0.03,
+   "needs_followup": 0.6,
+   "seconds": 0.101,
+   "cost": 3.6078e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "category",
+   "category": "Inverters"
+  },
+  "message": "Vergleiche die ersten drei",
+  "intent": "compare",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "compare",
+   "confidence": 1.0,
+   "about_this_page": 0.56,
+   "wants_person": 0.03,
+   "needs_followup": 0.85,
+   "seconds": 0.104,
+   "cost": 3.5028e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "what size battery for 8 kWp PV and 6000 kWh a year?",
+  "intent": "sizing",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "sizing",
+   "confidence": 1.0,
+   "about_this_page": 0.07,
+   "wants_person": 0.03,
+   "needs_followup": 0.84,
+   "seconds": 0.166,
+   "cost": 3.5196e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Wie groß sollte der Speicher bei 10 kWp sein?",
+  "intent": "sizing",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "sizing",
+   "confidence": 1.0,
+   "about_this_page": 0.1,
+   "wants_person": 0.03,
+   "needs_followup": 0.74,
+   "seconds": 0.201,
+   "cost": 3.4902e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "help me design a system for a farm with 40 kWp",
+  "intent": "sizing",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "sizing",
+   "confidence": 1.0,
+   "about_this_page": 0.05,
+   "wants_person": 0.11,
+   "needs_followup": 0.84,
+   "seconds": 0.281,
+   "cost": 3.4944e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Ich plane eine Anlage für einen Gewerbebetrieb mit Notstrom",
+  "intent": "sizing",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "sizing",
+   "confidence": 0.96,
+   "about_this_page": 0.06,
+   "wants_person": 0.09,
+   "needs_followup": 0.88,
+   "seconds": 0.144,
+   "cost": 3.4944e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "account"
+  },
+  "message": "where is my proforma?",
+  "intent": "inquiry_status",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "inquiry_status",
+   "confidence": 1.0,
+   "about_this_page": 0.1,
+   "wants_person": 0.07,
+   "needs_followup": 0.87,
+   "seconds": 0.151,
+   "cost": 3.4608e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "account"
+  },
+  "message": "Wann bekomme ich meine Proforma-Rechnung?",
+  "intent": "inquiry_status",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "inquiry_status",
+   "confidence": 0.98,
+   "about_this_page": 0.12,
+   "wants_person": 0.04,
+   "needs_followup": 0.8,
+   "seconds": 0.153,
+   "cost": 3.4902e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "account"
+  },
+  "message": "status of inquiry 1616",
+  "intent": "inquiry_status",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "inquiry_status",
+   "confidence": 1.0,
+   "about_this_page": 0.08,
+   "wants_person": 0.05,
+   "needs_followup": 0.65,
+   "seconds": 0.11,
+   "cost": 3.4692e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Haben Sie meine Anfrage von gestern erhalten?",
+  "intent": "inquiry_status",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "inquiry_status",
+   "confidence": 1.0,
+   "about_this_page": 0.05,
+   "wants_person": 0.3,
+   "needs_followup": 0.87,
+   "seconds": 0.083,
+   "cost": 3.4734e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "can I talk to someone?",
+  "intent": "talk_to_person",
+  "about_this_page": false,
+  "wants_person": true,
+  "source": "#260",
+  "reading": {
+   "intent": "talk_to_person",
+   "confidence": 1.0,
+   "about_this_page": 0.06,
+   "wants_person": 0.96,
+   "needs_followup": 0.42,
+   "seconds": 0.117,
+   "cost": 3.4608e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Ich möchte mit einem Mitarbeiter sprechen",
+  "intent": "talk_to_person",
+  "about_this_page": false,
+  "wants_person": true,
+  "source": "#260",
+  "reading": {
+   "intent": "talk_to_person",
+   "confidence": 1.0,
+   "about_this_page": 0.04,
+   "wants_person": 0.96,
+   "needs_followup": 0.58,
+   "seconds": 0.142,
+   "cost": 3.4608e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "please call me back, +49 151 0000000",
+  "intent": "talk_to_person",
+  "about_this_page": false,
+  "wants_person": true,
+  "source": "#260",
+  "reading": {
+   "intent": "talk_to_person",
+   "confidence": 1.0,
+   "about_this_page": 0.03,
+   "wants_person": 0.97,
+   "needs_followup": 0.47,
+   "seconds": 0.108,
+   "cost": 3.5196e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Das hilft mir nicht, bitte rufen Sie mich an",
+  "intent": "talk_to_person",
+  "about_this_page": false,
+  "wants_person": true,
+  "source": "#260",
+  "reading": {
+   "intent": "talk_to_person",
+   "confidence": 1.0,
+   "about_this_page": 0.26,
+   "wants_person": 0.98,
+   "needs_followup": 0.73,
+   "seconds": 0.196,
+   "cost": 3.4818e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "this bot is useless, I asked three times",
+  "intent": "talk_to_person",
+  "about_this_page": false,
+  "wants_person": true,
+  "source": "#260",
+  "reading": {
+   "intent": "talk_to_person",
+   "confidence": 0.5,
+   "about_this_page": 0.39,
+   "wants_person": 0.97,
+   "needs_followup": 0.76,
+   "seconds": 0.209,
+   "cost": 3.4734e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "do you deliver to Austria?",
+  "intent": "company_logistics_service",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "company_logistics_service",
+   "confidence": 1.0,
+   "about_this_page": 0.22,
+   "wants_person": 0.02,
+   "needs_followup": 0.36,
+   "seconds": 0.121,
+   "cost": 3.4608e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Wie lange dauert die Lieferung nach Bayern?",
+  "intent": "company_logistics_service",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "company_logistics_service",
+   "confidence": 1.0,
+   "about_this_page": 0.13,
+   "wants_person": 0.03,
+   "needs_followup": 0.68,
+   "seconds": 0.107,
+   "cost": 3.4692e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "what are your payment terms?",
+  "intent": "company_logistics_service",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "company_logistics_service",
+   "confidence": 1.0,
+   "about_this_page": 0.21,
+   "wants_person": 0.03,
+   "needs_followup": 0.6,
+   "seconds": 0.098,
+   "cost": 3.4608e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Bieten Sie auch die Installation an?",
+  "intent": "company_logistics_service",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "company_logistics_service",
+   "confidence": 1.0,
+   "about_this_page": 0.43,
+   "wants_person": 0.05,
+   "needs_followup": 0.67,
+   "seconds": 0.191,
+   "cost": 3.4692e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "where is your warehouse?",
+  "intent": "company_logistics_service",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "company_logistics_service",
+   "confidence": 1.0,
+   "about_this_page": 0.08,
+   "wants_person": 0.05,
+   "needs_followup": 0.59,
+   "seconds": 0.218,
+   "cost": 3.4566e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Sucht ihr Mitarbeiter im Vertrieb?",
+  "intent": "company_logistics_service",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "company_logistics_service",
+   "confidence": 0.93,
+   "about_this_page": 0.06,
+   "wants_person": 0.54,
+   "needs_followup": 0.54,
+   "seconds": 0.127,
+   "cost": 3.465e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "hi",
+  "intent": "small_talk",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "small_talk",
+   "confidence": 1.0,
+   "about_this_page": 0.05,
+   "wants_person": 0.03,
+   "needs_followup": 0.6,
+   "seconds": 0.195,
+   "cost": 3.4398e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Hallo!",
+  "intent": "small_talk",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "small_talk",
+   "confidence": 1.0,
+   "about_this_page": 0.04,
+   "wants_person": 0.02,
+   "needs_followup": 0.54,
+   "seconds": 0.144,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "thanks, that helps",
+  "intent": "small_talk",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "small_talk",
+   "confidence": 1.0,
+   "about_this_page": 0.17,
+   "wants_person": 0.02,
+   "needs_followup": 0.24,
+   "seconds": 0.144,
+   "cost": 3.4524e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Danke schön",
+  "intent": "small_talk",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "small_talk",
+   "confidence": 1.0,
+   "about_this_page": 0.05,
+   "wants_person": 0.02,
+   "needs_followup": 0.35,
+   "seconds": 0.18,
+   "cost": 3.4482e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "what's the weather in Berlin?",
+  "intent": "other",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "other",
+   "confidence": 0.63,
+   "about_this_page": 0.02,
+   "wants_person": 0.02,
+   "needs_followup": 0.54,
+   "seconds": 0.119,
+   "cost": 3.465e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Erzähl mir einen Witz",
+  "intent": "other",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "small_talk",
+   "confidence": 0.99,
+   "about_this_page": 0.02,
+   "wants_person": 0.02,
+   "needs_followup": 0.08,
+   "seconds": 0.143,
+   "cost": 3.4692e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "ecoflow ocean",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.12,
+   "wants_person": 0.02,
+   "needs_followup": 0.35,
+   "seconds": 0.181,
+   "cost": 3.4524e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "zendure",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.11,
+   "wants_person": 0.03,
+   "needs_followup": 0.34,
+   "seconds": 0.134,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "home"
+  },
+  "message": "CB2-100.3-HV5",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.25,
+   "wants_person": 0.02,
+   "needs_followup": 0.42,
+   "seconds": 0.184,
+   "cost": 3.4818e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "Gibt es das auch in 12 kW?",
+  "intent": "find_products",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 0.88,
+   "about_this_page": 0.92,
+   "wants_person": 0.03,
+   "needs_followup": 0.23,
+   "seconds": 0.123,
+   "cost": 3.6078e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "product",
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+  },
+  "message": "warranty?",
+  "intent": "documents_specs",
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "documents_specs",
+   "confidence": 0.96,
+   "about_this_page": 0.9,
+   "wants_person": 0.03,
+   "needs_followup": 0.41,
+   "seconds": 0.123,
+   "cost": 3.5784e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "home"
+  },
+  "message": "Notstromfähiger Speicher für 3 Phasen",
+  "intent": "find_products",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.11,
+   "wants_person": 0.03,
+   "needs_followup": 0.77,
+   "seconds": 0.12,
+   "cost": 3.4818e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "solution_draft",
+   "items": [
+    "SAJ H2-10K-T3 x1",
+    "SAJ B2-10.0 battery x1"
+   ]
+  },
+  "message": "what happens after I send the inquiry?",
+  "intent": "company_logistics_service",
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "#260",
+  "reading": {
+   "intent": "inquiry_status",
+   "confidence": 0.53,
+   "about_this_page": 0.29,
+   "wants_person": 0.17,
+   "needs_followup": 0.44,
+   "seconds": 0.143,
+   "cost": 3.6288e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "product",
+   "product": "SAJ B2-10.0-HV1"
+  },
+  "message": "Zum Produkt SAJ B2-10.0-HV1 (DLK-SAJ-B2100HV1): Nenne mir die wichtigsten technischen Daten und die dazu passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt geeignet ist.",
+  "intent": "documents_specs",
+  "also": [
+   "pairing_compatibility"
+  ],
+  "about_this_page": true,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 0.67,
+   "about_this_page": 0.97,
+   "wants_person": 0.03,
+   "needs_followup": 0.81,
+   "seconds": 0.129,
+   "cost": 3.7674e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "other"
+  },
+  "message": "Welcher Wechselrichter passt zur Batterie SAJ B2-10.0-HV1?",
+  "intent": "pairing_compatibility",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.05,
+   "wants_person": 0.03,
+   "needs_followup": 0.47,
+   "seconds": 0.175,
+   "cost": 3.5322e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "other"
+  },
+  "message": "Was kostet der GoodWe GW80K-ET-G10 und ist er lieferbar?",
+  "intent": "find_products",
+  "also": [
+   "company_logistics_service"
+  ],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 0.77,
+   "about_this_page": 0.15,
+   "wants_person": 0.03,
+   "needs_followup": 0.49,
+   "seconds": 0.21,
+   "cost": 3.528e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "saj",
+  "intent": "find_products",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 0.99,
+   "about_this_page": 0.13,
+   "wants_person": 0.07,
+   "needs_followup": 0.7,
+   "seconds": 0.193,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "ecoflow",
+  "intent": "find_products",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.15,
+   "wants_person": 0.03,
+   "needs_followup": 0.54,
+   "seconds": 0.106,
+   "cost": 3.4482e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "goodwe",
+  "intent": "find_products",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.13,
+   "wants_person": 0.04,
+   "needs_followup": 0.48,
+   "seconds": 0.139,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "Home",
+  "intent": "find_products",
+  "also": [
+   "other"
+  ],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "other",
+   "confidence": 0.47,
+   "about_this_page": 0.17,
+   "wants_person": 0.03,
+   "needs_followup": 0.62,
+   "seconds": 0.098,
+   "cost": 3.4398e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "I need a hybrid inverter for a home.",
+  "intent": "find_products",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 1.0,
+   "about_this_page": 0.07,
+   "wants_person": 0.03,
+   "needs_followup": 0.81,
+   "seconds": 0.136,
+   "cost": 3.4818e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "single-phase",
+  "intent": "find_products",
+  "also": [
+   "other"
+  ],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 0.8,
+   "about_this_page": 0.24,
+   "wants_person": 0.03,
+   "needs_followup": 0.76,
+   "seconds": 0.121,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "other"
+  },
+  "message": "Prüfe bitte die Kompatibilität: Wechselrichter EF HD-P1-5K-S2 mit Batterie EF BD-5-S2.",
+  "intent": "pairing_compatibility",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.07,
+   "wants_person": 0.06,
+   "needs_followup": 0.4,
+   "seconds": 0.137,
+   "cost": 3.5784e-05
+  }
+ },
+ {
+  "lang": "de",
+  "page": {
+   "type": "other"
+  },
+  "message": "Ist der EF HD-P1-5K-S2 mit der Batterie EF BD-5-S2 kompatibel?",
+  "intent": "pairing_compatibility",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.09,
+   "wants_person": 0.02,
+   "needs_followup": 0.22,
+   "seconds": 0.183,
+   "cost": 3.5364e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "three-phase",
+  "intent": "find_products",
+  "also": [
+   "other"
+  ],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 0.86,
+   "about_this_page": 0.18,
+   "wants_person": 0.02,
+   "needs_followup": 0.76,
+   "seconds": 0.126,
+   "cost": 3.444e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "What is the usable energy of the GoodWe GW5.1 battery?",
+  "intent": "documents_specs",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "documents_specs",
+   "confidence": 1.0,
+   "about_this_page": 0.11,
+   "wants_person": 0.02,
+   "needs_followup": 0.56,
+   "seconds": 0.117,
+   "cost": 3.5028e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "Which GoodWe hybrid inverter fits a 10 kWp home system?",
+  "intent": "find_products",
+  "also": [
+   "sizing"
+  ],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "find_products",
+   "confidence": 0.98,
+   "about_this_page": 0.06,
+   "wants_person": 0.02,
+   "needs_followup": 0.68,
+   "seconds": 0.111,
+   "cost": 3.5112e-05
+  }
+ },
+ {
+  "lang": "en",
+  "page": {
+   "type": "other"
+  },
+  "message": "Is the GoodWe GW5.1-BAT-D-G21 compatible with the GW5000 series inverter?",
+  "intent": "pairing_compatibility",
+  "also": [],
+  "about_this_page": false,
+  "wants_person": false,
+  "source": "live",
+  "reading": {
+   "intent": "pairing_compatibility",
+   "confidence": 1.0,
+   "about_this_page": 0.11,
+   "wants_person": 0.03,
+   "needs_followup": 0.51,
+   "seconds": 0.098,
+   "cost": 3.5532e-05
+  }
+ }
+]

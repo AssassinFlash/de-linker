@@ -180,3 +180,23 @@ def test_illegal_structure_is_refused_by_the_schema() -> None:
                 "blocks": [{"type": "action", "name": "delete_everything", "args": {}}],
             }
         )
+
+
+def test_a_power_or_energy_value_carries_its_unit() -> None:
+
+    gathered = TurnFacts()
+    gathered.add(Fact(id="p6483.ac_power_kw", value="3", source="selection-facts"))
+    gathered.add(Fact(id="p6483.pv_input_kw", value="9", source="selection-facts"))
+    gathered.add(Fact(id="p3582.usable_kwh", value="8.03", source="selection-facts"))
+    gathered.add(Fact(id="p2090.kwh_range", value="5–25", source="selection-facts"))
+    gathered.add(Fact(id="p6483.phase", value="1", source="selection-facts"))
+    text = (
+        "From {fact:p6483.ac_power_kw} with {fact:p6483.pv_input_kw} of PV, "
+        "{fact:p3582.usable_kwh} usable, {fact:p2090.kwh_range} per stack, "
+        "phase {fact:p6483.phase}."
+    )
+    assert fill(text, gathered) == (
+        "From 3 kW with 9 kW of PV, 8.03 kWh usable, 5–25 kWh per stack, phase 1."
+    )
+    assert fill("{fact:p6483.ac_power_kw} kW", gathered) == "3 kW"
+    assert fill("{fact:p3582.usable_kwh}kWh", gathered) == "8.03kWh"

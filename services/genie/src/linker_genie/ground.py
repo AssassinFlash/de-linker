@@ -25,6 +25,16 @@ a cited chunk. When the turn cites chunks, filled numbers are checked
 against those chunk texts. When it does not cite chunks, check 5 still
 forbids bare digits in the model text.
 
+Beside the five, the checks of the understanding layer (#233):
+
+6. A document is a document block whose `ref` names a document of this turn's
+   tools; no URL stands in the text, neither written nor through a placeholder.
+7. The domain words of AGENTS.md §3 are kept: no article, catalogue, cart or
+   basket (Artikel, Katalog, Warenkorb) in the model's text.
+8. The route's requirements (route.py): a product word's search shows its cards; a
+   sizing turn carries the configurator action and no cards; a product, document,
+   pairing, comparison or sizing turn is never the team handoff.
+
 Registered reading of guarantee 2: "推荐 ⊆ search-products 的 qualified"
 means qualified by this turn's tool results. That is search-products'
 `qualified` list, plus the batteries its own `pairings` released (verdict
@@ -43,10 +53,13 @@ from dataclasses import dataclass
 
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.hydrate import leftover_placeholders
+from linker_genie.route import Route
 from linker_genie.schema import (
     ActionBlock,
+    AskBlock,
     CardsBlock,
     CompareBlock,
+    DocumentBlock,
     HandoffBlock,
     TextBlock,
     TurnOutput,
@@ -58,10 +71,32 @@ PLACEHOLDER = re.compile(r"\{fact:[^}]+\}")
 # number; a pure numeric token (48, 5.0, 700) is one.
 _TOKEN = re.compile(r"[A-Za-z0-9]+(?:[.,][0-9]+)?")
 _NUMERIC_TOKEN = re.compile(r"\d+(?:[.,]\d+)?")
+_URL = re.compile(r"https?://|www\.", re.IGNORECASE)
+# AGENTS.md §3: products and product categories — never article, catalogue, cart or
+# basket; the German counterparts are Artikel, Katalog and Warenkorb. The prompts
+# carry the same list (prompts/*/system.md).
+BANNED_WORDS = re.compile(
+    r"\b(?:articles?|catalogues?|catalogs?|carts?|baskets?|"
+    r"artikel[ns]?|katalog(?:e|en|s)?|warenk(?:o|ö)rb(?:e|en|s)?)\b",
+    re.IGNORECASE,
+)
+
+
+# A model code written whole: upper-case letters and digits joined by hyphens or
+# slashes, with at least one letter ("CB2-100.3-HV5", "HS3-5K-T2-W/G-PX"). Its
+# numeric segments are part of the name, not numbers: "CB2-100.3-HV5" was refused
+# as the number "100.3" again and again (trial question 10, 2026-10-17), although
+# the prompt asks for model names as plain codes. "3-phase" (lower case) and
+# "10-20" (no letter) are not codes and stay caught.
+_MODEL_CODE = re.compile(
+    r"(?<![\w.])(?=[A-Z0-9.,/-]*[A-Z])[A-Z0-9]+(?:[.,][0-9]+)?"
+    r"(?:[-/][A-Z0-9]+(?:[.,][0-9]+)?)+(?![\w])"
+)
 
 
 def _bare_numbers(text: str) -> list[str]:
     """Digit tokens that stand outside alphanumeric model codes."""
+    text = _MODEL_CODE.sub(" ", text)
     return [token for token in _TOKEN.findall(text) if _NUMERIC_TOKEN.fullmatch(token)]
 
 
@@ -75,7 +110,9 @@ class CheckResult:
         return "; ".join(self.failures)
 
 
-def check(output: TurnOutput, facts: TurnFacts) -> CheckResult:
+def check(
+    output: TurnOutput, facts: TurnFacts, route: Route | None = None
+) -> CheckResult:
     """Run the anchoring checks. Empty failures means the turn is grounded."""
     failures: list[str] = []
     failures.extend(_refs_and_placeholders(output, facts))
@@ -84,7 +121,83 @@ def check(output: TurnOutput, facts: TurnFacts) -> CheckResult:
     failures.extend(_handoff_only_when_out_of_scope(output))
     failures.extend(_no_bare_numbers(output, facts))
     failures.extend(_login_required_is_a_login_request(output, facts))
+    failures.extend(_documents(output, facts))
+    failures.extend(_domain_words(output))
+    if route is not None:
+        failures.extend(_route(output, facts, route))
     return CheckResult(ok=not failures, failures=tuple(failures))
+
+
+def _model_texts(output: TurnOutput) -> list[str]:
+    texts: list[str] = []
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            texts.append(block.text)
+        elif isinstance(block, HandoffBlock):
+            texts.append(block.summary)
+        elif isinstance(block, AskBlock):
+            texts.extend(block.options)
+    return texts
+
+
+def _documents(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    failures: list[str] = []
+    for block in output.blocks:
+        if isinstance(block, DocumentBlock):
+            if block.ref not in facts.documents:
+                failures.append(f"document {block.ref!r} is not in this turn's tools")
+            if block.label is not None or block.url is not None:
+                failures.append("a document block carries only its ref")
+    for text in _model_texts(output):
+        if _URL.search(PLACEHOLDER.sub("", text)):
+            failures.append("a URL stands in the text; use a document block")
+        for fact_id in leftover_placeholders(text):
+            fact = _fact_known(facts, fact_id)
+            if fact_id in facts.documents or (fact and _URL.search(fact.value)):
+                failures.append(
+                    f"placeholder {fact_id!r} would print a URL; use a document block"
+                )
+    return failures
+
+
+def _domain_words(output: TurnOutput) -> list[str]:
+    failures: list[str] = []
+    for text in _model_texts(output):
+        found = BANNED_WORDS.findall(PLACEHOLDER.sub("", text))
+        if found:
+            failures.append(
+                f"banned words {sorted({w.lower() for w in found})!r}: say product, "
+                "product category or solution draft"
+            )
+    return failures
+
+
+def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
+    failures: list[str] = []
+    cards = [b for b in output.blocks if isinstance(b, CardsBlock)]
+    if route.show_products and facts.qualified_ids:
+        shown = {pid for block in cards for pid in block.product_ids}
+        if not shown & facts.qualified_ids:
+            failures.append(
+                "the customer named products: show the search result as cards"
+            )
+    if route.no_cards and cards:
+        failures.append(f"a {route.name} turn shows no product cards")
+    if route.action and "size.configurator_url" in facts.facts:
+        if not any(
+            isinstance(b, ActionBlock) and b.name == route.action for b in output.blocks
+        ):
+            failures.append(f"a {route.name} turn carries the {route.action} action")
+    if route.no_handoff and any(isinstance(b, HandoffBlock) for b in output.blocks):
+        failures.append(f"a {route.name} turn is not a question for the team")
+    if route.name in ("person", "service") and any(
+        isinstance(b, HandoffBlock) for b in output.blocks
+    ):
+        if any(not isinstance(b, HandoffBlock) for b in output.blocks):
+            # The mailbox sentence once, as the handoff block (trial question 18
+            # printed it twice: a text block and the handoff block).
+            failures.append("a handoff turn is the handoff block alone")
+    return failures
 
 
 def _refs_and_placeholders(output: TurnOutput, facts: TurnFacts) -> list[str]:
@@ -159,6 +272,10 @@ def _actions(output: TurnOutput, facts: TurnFacts) -> list[str]:
         # view_inquiry URL, which no tool returns — is refused here; the
         # shell links such actions to the account page itself.
         url = args.get("url")
+        if block.name == "open_configurator" and "size.configurator_url" in facts.facts:
+            # The service writes this URL from size-hint (hydrate.py); what the
+            # model put there is replaced, not checked.
+            continue
         if isinstance(url, str) and url and url not in fact_values:
             failures.append(f"action {block.name} url is not from this turn's tools")
     return failures

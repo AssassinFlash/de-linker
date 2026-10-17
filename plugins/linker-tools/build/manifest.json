@@ -36,11 +36,12 @@
 		"src/configurator/validation.ts": "a540c752f80baaddc867dd67068bd37b0cd4589c8129a1a9d3d55fdff6391263",
 		"src/genie/App.tsx": "2d6db3bf89a33c8f884687d11be39536b7acb045d442a05c413128da7ba1130d",
 		"src/genie/api/product.ts": "4982f959b2ae382f84c00b0f4086022b635a1a8627d3d1639058973b2b82d69d",
-		"src/genie/api/turn.ts": "76d93c3077f0719d204276d2f2c53d7a6128a660f1ab621693992a067a2b1d9e",
+		"src/genie/api/turn.ts": "5ff7c9fd285b11ff31443f34484c7b4a0b005581b0afcfad160a22a3c13abb3c",
 		"src/genie/components/ActionView.tsx": "0982207086eb6014f78be06fe35881b7583026c7a4a699cc330a2f512d06824a",
 		"src/genie/components/Ask.tsx": "c2e4b308c0ac1eaf4a7c5eb292398a0aa018abe1844269d7ff33b02bf9e00a6a",
-		"src/genie/components/BlockView.tsx": "f6b2f7f1a88c0f4abef8538704379865215bc119f3bd417c6c8a8a254b32d30f",
+		"src/genie/components/BlockView.tsx": "df09520af4474fc581ac5fd84c6c031623657929c68b736145574a60d4a90b9f",
 		"src/genie/components/Compare.tsx": "dbf3cab79cefe498fa91bc1da229b01cf3711f868df85f124ee292f7afd59966",
+		"src/genie/components/DocumentLink.tsx": "f259e4bdada5d1b96447d8c0dad01624a2eacf46fe5875dd5f75459e3a76e523",
 		"src/genie/components/GenieCard.tsx": "0e38c96d1220831f6001af65497d924f61244bdbb830a929fae893cb6c9d4084",
 		"src/genie/components/Handoff.tsx": "6a6c87dd5c7402fd4a7a8a9c8f617726ddee3a5da07302888e18e345aece7eb7",
 		"src/genie/components/Icons.tsx": "3116c384a53d6ba266765b447a2f2334def0e1980faba245b281928b00b36bde",
@@ -62,8 +63,8 @@
 		"build/configurator.css": "849fb02c0eae48dcb17ac7ba67f3f617eed64aafb1ce12885e0236039a0e20ba",
 		"build/configurator.js": "7bfa31dfc9afdf728dfe3ceeb20cf3c84a87a4f9bd8c51904795895e7b23fceb",
 		"build/genie-rtl.css": "602f4481e33d95fe092db3fd077ef9e0334209739dbfc53a4d2680407bb6c610",
-		"build/genie.asset.php": "e4a98c717100aec565f85104e5c0ce23abdfbbc087aabb549810d150d44698a9",
+		"build/genie.asset.php": "e5ad6ee355149f9f1a4c4c66b35f62a53e242262a31c97e9a9964ddcdc7d4a69",
 		"build/genie.css": "027c8e106597228eebfb9ca2b281a6f3a040488a4b3e9086c8d5d867305f4698",
-		"build/genie.js": "1219e2ca7092f6144f8ff48e193eb9217b1bfa5773c2c4c093d7f381beeef9d3"
+		"build/genie.js": "6270ba150fa458756fafcb00fc02c01545d23a14479de6dc9ba54f210df7a9f7"
 	}
 }

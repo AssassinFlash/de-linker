@@ -1,6 +1,7 @@
 """HTTP entry point: `uvicorn linker_genie.app:app`.
 
-POST /assistant/turn and POST /turn (alias) stream one grounded turn as SSE.
+POST /assistant/turn and POST /turn (alias) stream one grounded turn as SSE: the
+understanding layer prepares the turn (understand.py), the agent writes it.
 POST /turn/{id}/vote and POST /assistant/turn/{id}/vote store a customer's
 thumbs-up or thumbs-down for a logged turn. GET /health reports that the
 process is up.
@@ -16,16 +17,20 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
+from linker_genie import jev
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import make_generate, model_name, provider_name
 from linker_genie.cycle import TurnResult, run
 from linker_genie.log import TurnLog
 from linker_genie.schema import TurnRequest, VoteRequest
+from linker_genie.storeapi import StoreVocabulary
+from linker_genie.understand import Prepared, Understander
 
 app = FastAPI(title="Genie - Linker's AI assistant")
 
 _log: TurnLog | None = None
 _client: AbilityClient | None = None
+_understander: Understander | None = None
 
 
 def _log_path() -> Path:
@@ -49,8 +54,20 @@ def ability_client() -> AbilityClient:
         # No token is sent, ever: see linker_genie.abilities. A token that
         # carries WordPress rights must not be configured until #16's
         # user-context passthrough exists (leftovers of ticket 13).
-        _client = AbilityClient(os.environ.get("GENIE_WP_URL", "http://127.0.0.1"))
+        _client = AbilityClient(_wp_url())
     return _client
+
+
+def _wp_url() -> str:
+    return os.environ.get("GENIE_WP_URL", "http://127.0.0.1")
+
+
+def understander() -> Understander:
+    """Product words from the site's Store API, and Jev on OpenRouter (understand.py)."""
+    global _understander
+    if _understander is None:
+        _understander = Understander(StoreVocabulary(_wp_url()).get, jev.from_env())
+    return _understander
 
 
 @app.get("/health")
@@ -63,11 +80,17 @@ def health() -> dict[str, str]:
 @app.post("/turn")
 def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     """One conversation turn, grounded and hydrated, as SSE."""
+    prepare = getattr(request.app.state, "prepare", None)
+    prepared: Prepared = (
+        prepare(body)
+        if prepare is not None
+        else understander().prepare(body, ability_client())
+    )
     generate = getattr(request.app.state, "generate", None) or make_generate(
-        ability_client()
+        ability_client(), prepared=prepared
     )
     try:
-        result = run(body, generate)
+        result = run(body, generate, prepared.route, prepared.facts)
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         turn_log().record(
             conversation_id=body.conversation_id,
@@ -81,8 +104,11 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
             output={},
             question=_question(body),
             page=body.page_context.model_dump(),
+            understanding=prepared.log,
         )
         raise
+    if result.retried and result.attempts > 1:
+        prepared.log["retried"] = list(result.retried)
     turn_id = turn_log().record(
         conversation_id=body.conversation_id,
         locale=body.locale,
@@ -95,9 +121,10 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         output=result.output.model_dump(),
         question=_question(body),
         page=body.page_context.model_dump(),
+        understanding=prepared.log,
     )
     return StreamingResponse(
-        _sse(result, turn_id),
+        _sse(result, turn_id, prepared),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache"},
     )
@@ -120,7 +147,7 @@ def _question(body: TurnRequest) -> str:
     return ""
 
 
-def _sse(result: TurnResult, turn_id: int) -> Iterator[str]:
+def _sse(result: TurnResult, turn_id: int, prepared: Prepared) -> Iterator[str]:
     meta = {
         "turn_id": turn_id,
         "grounded": result.grounded,
@@ -128,6 +155,11 @@ def _sse(result: TurnResult, turn_id: int) -> Iterator[str]:
         "attempts": result.attempts,
         "failures": list(result.failures),
         "language": result.output.language,
+        # The understanding layer's decision, so a degraded turn is visible to
+        # whatever reads the stream (Jev unavailable → route "model").
+        "route": prepared.route.name,
+        "intent": (prepared.log.get("jev") or {}).get("intent"),
+        "jev_error": prepared.log.get("jev_error"),
     }
     yield _event("meta", meta)
     for block in result.output.blocks:

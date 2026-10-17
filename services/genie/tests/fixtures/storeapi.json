@@ -1,0 +1,8632 @@
+{
+ "en": {
+  "products": [
+   {
+    "id": 6530,
+    "name": "GoodWe GW60K-STS-G10",
+    "sku": "DLK-GOODWE-GW60KSTSG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-sts-30-60k",
+        "slug": "goodwe-sts-30-60k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Backup Power",
+      "slug": "backup-power"
+     }
+    ]
+   },
+   {
+    "id": 6529,
+    "name": "GoodWe GW30K-STS-G10",
+    "sku": "DLK-GOODWE-GW30KSTSG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-sts-30-60k",
+        "slug": "goodwe-sts-30-60k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Backup Power",
+      "slug": "backup-power"
+     }
+    ]
+   },
+   {
+    "id": 6528,
+    "name": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+    "sku": "DLK-GOODWE-GW10KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6527,
+    "name": "GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)",
+    "sku": "DLK-GOODWE-GW8KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6526,
+    "name": "GoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module)",
+    "sku": "DLK-GOODWE-GW6KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6525,
+    "name": "GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)",
+    "sku": "DLK-GOODWE-GW5KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6524,
+    "name": "GoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module)",
+    "sku": "DLK-GOODWE-GW36KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6523,
+    "name": "GoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module)",
+    "sku": "DLK-GOODWE-GW3KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6522,
+    "name": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+    "sku": "DLK-GOODWE-GW83BATDG21",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 6521,
+    "name": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)",
+    "sku": "DLK-GOODWE-GW51BATDG21",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 6520,
+    "name": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+    "sku": "DLK-GOODWE-GW83BATDG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 6519,
+    "name": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+    "sku": "DLK-GOODWE-GW51BATDG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 6518,
+    "name": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW30KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6517,
+    "name": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW29999KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6516,
+    "name": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW25KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6515,
+    "name": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW20KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6514,
+    "name": "GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW9999KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6513,
+    "name": "GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW6KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6512,
+    "name": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW5KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6511,
+    "name": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+    "sku": "DLK-GOODWE-GW12499KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6510,
+    "name": "GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)",
+    "sku": "DLK-GOODWE-GW110KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6509,
+    "name": "GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)",
+    "sku": "DLK-GOODWE-GW100KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6508,
+    "name": "GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)",
+    "sku": "DLK-GOODWE-GW9999KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6507,
+    "name": "GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)",
+    "sku": "DLK-GOODWE-GW80KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6506,
+    "name": "GoodWe GW75K-ET-G10",
+    "sku": "DLK-GOODWE-GW75KETG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-et-80-100k",
+        "slug": "goodwe-et-80-100k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6488,
+    "name": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP16KS2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-6K-S2",
+        "slug": "ef-hd-p1-6k-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6487,
+    "name": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5.75 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP15K75S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-5K75-S2",
+        "slug": "ef-hd-p1-5k75-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6486,
+    "name": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP15KS2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-5K-S2",
+        "slug": "ef-hd-p1-5k-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6485,
+    "name": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4.6 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP14K6S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-4K6-S2",
+        "slug": "ef-hd-p1-4k6-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6484,
+    "name": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3.68 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP13K68S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-3K68-S2",
+        "slug": "ef-hd-p1-3k68-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6483,
+    "name": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP13KS2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-3K-S2",
+        "slug": "ef-hd-p1-3k-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6482,
+    "name": "EcoFlow OCEAN 2 HD-P3-15K-G2F (15 kW three-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP315KG2F",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-15K-G2F",
+        "slug": "ef-hd-p3-15k-g2f"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6481,
+    "name": "EcoFlow OCEAN 2 HD-P3-15K-G2 (15 kW three-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP315KG2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-15K-G2",
+        "slug": "ef-hd-p3-15k-g2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6480,
+    "name": "EcoFlow OCEAN 2 HD-P3-5K0-S2 (5 kW three-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP35K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-5K0-S2",
+        "slug": "ef-hd-p3-5k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 6321,
+    "name": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+    "sku": "DLK-GOODWE-GW125261ESALCNG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW125/261-ESA-LCN-G10",
+        "slug": "gw125-261-esa-lcn-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-lcn",
+        "slug": "goodwe-esa-lcn"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One Systems",
+      "slug": "all-in-one-systems"
+     }
+    ]
+   },
+   {
+    "id": 4109,
+    "name": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+    "sku": "DLK-SAJ-HS25KT2X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS2-5K-T2-X",
+        "slug": "hs2-5k-t2-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs2",
+        "slug": "saj-hs2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 4108,
+    "name": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+    "sku": "DLK-SAJ-H212KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-12K-T3",
+        "slug": "h2-12k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 4107,
+    "name": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+    "sku": "DLK-SAJ-H210KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-10K-T3",
+        "slug": "h2-10k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 4106,
+    "name": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+    "sku": "DLK-SAJ-CB21003HV5",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CB2-100.3-HV5",
+        "slug": "cb2-100-3-hv5"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 4105,
+    "name": "SAJ CB2-85.9-HV5 (85.9 kWh C&amp;I battery cabinet)",
+    "sku": "DLK-SAJ-CB2859HV5",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CB2-85.9-HV5",
+        "slug": "cb2-85-9-hv5"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 4104,
+    "name": "SAJ CB2-71.6-HV5 (71.6 kWh C&amp;I battery cabinet)",
+    "sku": "DLK-SAJ-CB2716HV5",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CB2-71.6-HV5",
+        "slug": "cb2-71-6-hv5"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 4103,
+    "name": "SAJ CB2-57.3-HV5 (57.3 kWh C&amp;I battery cabinet)",
+    "sku": "DLK-SAJ-CB2573HV5",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CB2-57.3-HV5",
+        "slug": "cb2-57-3-hv5"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 3618,
+    "name": "SAJ eManager (energy management system module)",
+    "sku": "DLK-SAJ-EMANAGER",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "eManager",
+        "slug": "emanager-emanager-5-0-residential-energy-manager"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-emanager",
+        "slug": "saj-emanager"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 3612,
+    "name": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+    "sku": "DLK-GOODWE-GW90BATDG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW9.0-BAT-D-G20",
+        "slug": "gw9-0-bat-d-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 3611,
+    "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+    "sku": "DLK-GOODWE-GW60BATDG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW6.0-BAT-D-G20",
+        "slug": "gw6-0-bat-d-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 3609,
+    "name": "EcoFlow Battery Stack Bridge",
+    "sku": "DLK-ECOFLOW-STACK-BRIDGE",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EcoFlow Battery Stack Bridge",
+        "slug": "ecoflow-battery-stack-bridge"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-battery-installation-accessories",
+        "slug": "ecoflow-battery-installation-accessories"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Accessories",
+      "slug": "accessories"
+     }
+    ]
+   },
+   {
+    "id": 3608,
+    "name": "EcoFlow OCEAN 2 LFP Battery Base",
+    "sku": "DLK-ECOFLOW-OCEAN2-BASE",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "OCEAN 2 LFP Battery Base",
+        "slug": "ocean-2-lfp-battery-base"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean-2-battery",
+        "slug": "ecoflow-ocean-2-battery"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Accessories",
+      "slug": "accessories"
+     }
+    ]
+   },
+   {
+    "id": 3595,
+    "name": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+    "sku": "DLK-GOODWE-ETR125",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW125K-ETR-G10",
+        "slug": "gw125k-etr-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3587,
+    "name": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+    "sku": "DLK-GOODWE-GW22KHCA20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW22K-HCA-20",
+        "slug": "gw22k-hca-20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-hca",
+        "slug": "goodwe-hca"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EV Chargers",
+      "slug": "ev-chargers"
+     }
+    ]
+   },
+   {
+    "id": 3586,
+    "name": "GoodWe HCA G2 GW7K-HCA-20 (7 kW single-phase EV charger, 7.5 m cable)",
+    "sku": "DLK-GOODWE-GW7KHCA20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW7K-HCA-20",
+        "slug": "gw7k-hca-20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-hca",
+        "slug": "goodwe-hca"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EV Chargers",
+      "slug": "ev-chargers"
+     }
+    ]
+   },
+   {
+    "id": 3585,
+    "name": "GoodWe ESA GW15K-ETA-G20 (15 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW15KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW15K-ETA-G20",
+        "slug": "gw15k-eta-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3584,
+    "name": "GoodWe ESA GW12K-ETA-G20 (12 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW12KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW12K-ETA-G20",
+        "slug": "gw12k-eta-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3583,
+    "name": "GoodWe ESA GW8K-ETA-G20 (8 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW8KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW8K-ETA-G20",
+        "slug": "gw8k-eta-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3582,
+    "name": "EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2)",
+    "sku": "DLK-ECOFLOW-EFBD8S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF BD-8-S2",
+        "slug": "ef-bd-8-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-lfp-battery-s2",
+        "slug": "ecoflow-ocean2-lfp-battery-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 3581,
+    "name": "EcoFlow OCEAN 2 Battery 5.02 kWh (EF BD-5-S2)",
+    "sku": "DLK-ECOFLOW-EFBD5S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF BD-5-S2",
+        "slug": "ef-bd-5-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-lfp-battery-s2",
+        "slug": "ecoflow-ocean2-lfp-battery-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 3580,
+    "name": "EcoFlow OCEAN 2 Plus HD-P1-12K0-S2 (12 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP112K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-12K0-S2",
+        "slug": "ef-hd-p1-12k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3579,
+    "name": "EcoFlow OCEAN 2 Plus HD-P1-10K0-S2 (10 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP110K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-10K0-S2",
+        "slug": "ef-hd-p1-10k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3578,
+    "name": "EcoFlow OCEAN 2 Plus HD-P1-8K0-S2 (8 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP18K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-8K0-S2",
+        "slug": "ef-hd-p1-8k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3577,
+    "name": "EcoFlow OCEAN 2 Plus HD-P1-6K0-S2 (6 kW single-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP16K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-6K0-S2",
+        "slug": "ef-hd-p1-6k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Single-phase",
+        "slug": "single-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3576,
+    "name": "EcoFlow OCEAN 2 HD-P3-12K0-S2 (12 kW three-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP312K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-12K0-S2",
+        "slug": "ef-hd-p3-12k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3575,
+    "name": "EcoFlow OCEAN 2 HD-P3-8K0-S2 (8 kW three-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP38K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-8K0-S2",
+        "slug": "ef-hd-p3-8k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3574,
+    "name": "EcoFlow OCEAN 2 HD-P3-6K0-S2 (6 kW three-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP36K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-6K0-S2",
+        "slug": "ef-hd-p3-6k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3573,
+    "name": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+    "sku": "DLK-SAJ-ESOLAR-AIO3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "eSolar AIO3",
+        "slug": "esolar-aio3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-data-collectors",
+        "slug": "saj-data-collectors"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 3557,
+    "name": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+    "sku": "DLK-GOODWE-GW11KHCA20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW11K-HCA-20",
+        "slug": "gw11k-hca-20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-hca",
+        "slug": "goodwe-hca"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EV Chargers",
+      "slug": "ev-chargers"
+     }
+    ]
+   },
+   {
+    "id": 3556,
+    "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+    "sku": "DLK-GOODWE-GW10KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW10K-ETA-G20",
+        "slug": "gw10k-eta-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 3555,
+    "name": "EcoFlow OCEAN 2 HD-P3-10K0-S2 (10 kW three-phase hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP310K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-10K0-S2",
+        "slug": "ef-hd-p3-10k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 2415,
+    "name": "GoodWe EzManager3000 HEMS Gateway",
+    "sku": "DLK-GOODWE-EZMANAGER3000",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EzManager3000",
+        "slug": "ezmanager3000"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-ems",
+        "slug": "goodwe-ems"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 2409,
+    "name": "GoodWe SEC3000C Smart Energy Controller",
+    "sku": "DLK-GOODWE-SEC3000C",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "SEC3000C",
+        "slug": "sec3000c"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-ems",
+        "slug": "goodwe-ems"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 2403,
+    "name": "GoodWe GW125K-STS-G10",
+    "sku": "DLK-GOODWE-GW125KSTSG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW125K-STS-G10",
+        "slug": "gw125k-sts-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-sts-125k",
+        "slug": "goodwe-sts-125k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Backup Power",
+      "slug": "backup-power"
+     }
+    ]
+   },
+   {
+    "id": 2397,
+    "name": "GoodWe GMK330",
+    "sku": "DLK-GOODWE-GMK330",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GMK330",
+        "slug": "gmk330"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-meters",
+        "slug": "goodwe-meters"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Meters &amp; Current Transformers",
+      "slug": "meters-current-transformers"
+     }
+    ]
+   },
+   {
+    "id": 2394,
+    "name": "GoodWe GM330",
+    "sku": "DLK-GOODWE-GM330",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GM330",
+        "slug": "gm330"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-meters",
+        "slug": "goodwe-meters"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Meters &amp; Current Transformers",
+      "slug": "meters-current-transformers"
+     }
+    ]
+   },
+   {
+    "id": 2281,
+    "name": "Chint DTSU666",
+    "sku": "DLK-CHINT-DTSU666",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "Chint",
+        "slug": "chint"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "DTSU666",
+        "slug": "dtsu666"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "chint",
+        "slug": "chint"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Meters &amp; Current Transformers",
+      "slug": "meters-current-transformers"
+     }
+    ]
+   },
+   {
+    "id": 2199,
+    "name": "SAJ HS3-10K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS310KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-10K-T2-W/G-PX",
+        "slug": "hs3-10k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 2198,
+    "name": "SAJ HS3-5K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS35KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-5K-T2-W/G-PX",
+        "slug": "hs3-5k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 2093,
+    "name": "SAJ BU3-5.0-TV2-PRO",
+    "sku": "DLK-SAJ-BU350TV2PRO",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "BU3-5.0-TV2-PRO",
+        "slug": "bu3-5-0-tv2-pro"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 2092,
+    "name": "SAJ BC2-HV1",
+    "sku": "DLK-SAJ-BC2HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "BC2-HV1",
+        "slug": "bc2-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-hv-5-25kwh",
+        "slug": "saj-b2-hv-5-25kwh"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 2090,
+    "name": "SAJ BU2-5.0-HV1",
+    "sku": "DLK-SAJ-BU250HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "BU2-5.0-HV1",
+        "slug": "bu2-5-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-hv-5-25kwh",
+        "slug": "saj-b2-hv-5-25kwh"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 2070,
+    "name": "SAJ B2-25.0-HV1",
+    "sku": "DLK-SAJ-B2250HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-25.0-HV1",
+        "slug": "b2-25-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 2069,
+    "name": "SAJ B2-20.0-HV1",
+    "sku": "DLK-SAJ-B2200HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-20.0-HV1",
+        "slug": "b2-20-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 2068,
+    "name": "SAJ B2-15.0-HV1",
+    "sku": "DLK-SAJ-B2150HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-15.0-HV1",
+        "slug": "b2-15-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 2067,
+    "name": "SAJ B2-10.0-HV1",
+    "sku": "DLK-SAJ-B2100HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-10.0-HV1",
+        "slug": "b2-10-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 2064,
+    "name": "SAJ H2-20K-T3",
+    "sku": "DLK-SAJ-H220KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-20K-T3",
+        "slug": "h2-20k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 2063,
+    "name": "SAJ H2-15K-T3",
+    "sku": "DLK-SAJ-H215KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-15K-T3",
+        "slug": "h2-15k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 2003,
+    "name": "Pylontech OPTIM US L260-OMNI",
+    "sku": "DLK-PYLONTECH-OPTIMUSL260OMNI",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "Pylontech",
+        "slug": "pylontech"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "L260-OMNI",
+        "slug": "l260-omni"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "pylontech-optim-utility",
+        "slug": "pylontech-optim-utility"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One Systems",
+      "slug": "all-in-one-systems"
+     }
+    ]
+   },
+   {
+    "id": 1973,
+    "name": "SAJ eManager-C1 Pro",
+    "sku": "DLK-SAJ-EMANAGERC1PRO",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "eManager-C1 Pro",
+        "slug": "emanager-c1-pro"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-emanager-c1-pro",
+        "slug": "saj-emanager-c1-pro"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 1961,
+    "name": "SAJ CHS2-50K-T6-X",
+    "sku": "DLK-SAJ-CHS250KT6X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CHS2-50K-T6-X",
+        "slug": "chs2-50k-t6-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One Systems",
+      "slug": "all-in-one-systems"
+     }
+    ]
+   },
+   {
+    "id": 1960,
+    "name": "SAJ CHS2-30K-T4-X",
+    "sku": "DLK-SAJ-CHS230KT4X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CHS2-30K-T4-X",
+        "slug": "chs2-30k-t4-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One Systems",
+      "slug": "all-in-one-systems"
+     }
+    ]
+   },
+   {
+    "id": 1959,
+    "name": "SAJ CHS2-29.9K-T4-X",
+    "sku": "DLK-SAJ-CHS2299KT4X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CHS2-29.9K-T4-X",
+        "slug": "chs2-29-9k-t4-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One Systems",
+      "slug": "all-in-one-systems"
+     }
+    ]
+   },
+   {
+    "id": 1958,
+    "name": "GoodWe GW261.2-BAT-LCD-G10",
+    "sku": "DLK-GOODWE-GW2612BATLCDG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW261.2-BAT-LCD-G10",
+        "slug": "gw261-2-bat-lcd-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 1957,
+    "name": "GoodWe GW208.9-BAT-LCD-G10",
+    "sku": "DLK-GOODWE-GW2089BATLCDG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW208.9-BAT-LCD-G10",
+        "slug": "gw208-9-bat-lcd-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 1956,
+    "name": "GoodWe GW208.9-BAT-LC-G10",
+    "sku": "DLK-GOODWE-GW2089BATLCG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW208.9-BAT-LC-G10",
+        "slug": "gw208-9-bat-lc-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 1955,
+    "name": "GoodWe GW112.6-BAT-AC-G10",
+    "sku": "DLK-GOODWE-GW1126BATACG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW112.6-BAT-AC-G10",
+        "slug": "gw112-6-bat-ac-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 1954,
+    "name": "GoodWe GW61.4-BAT-AC-G10",
+    "sku": "DLK-GOODWE-GW614BATACG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW61.4-BAT-AC-G10",
+        "slug": "gw61-4-bat-ac-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Battery Systems",
+      "slug": "battery-systems"
+     }
+    ]
+   },
+   {
+    "id": 1948,
+    "name": "GoodWe GW100K-ET-G10",
+    "sku": "DLK-GOODWE-GW100KETG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW100K-ET-G10",
+        "slug": "gw100k-et-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-et-80-100k",
+        "slug": "goodwe-et-80-100k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1947,
+    "name": "GoodWe GW99.99K-ET-G10",
+    "sku": "DLK-GOODWE-GW9999KETG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW99.99K-ET-G10",
+        "slug": "gw99-99k-et-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-et-80-100k",
+        "slug": "goodwe-et-80-100k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1946,
+    "name": "GoodWe GW80K-ET-G10",
+    "sku": "DLK-GOODWE-GW80KETG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW80K-ET-G10",
+        "slug": "gw80k-et-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-et-80-100k",
+        "slug": "goodwe-et-80-100k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1832,
+    "name": "SAJ B2-5.0-HV1",
+    "sku": "DLK-SAJ-B250HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-5.0-HV1",
+        "slug": "b2-5-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Home Storage",
+      "slug": "home-storage"
+     }
+    ]
+   },
+   {
+    "id": 1187,
+    "name": "SAJ HS3-8K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS38KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-8K-T2-W/G-PX",
+        "slug": "hs3-8k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1186,
+    "name": "SAJ HS3-6K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS36KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-6K-T2-W/G-PX",
+        "slug": "hs3-6k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1185,
+    "name": "SAJ HS3-12K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS312KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-12K-T2-W/G-PX",
+        "slug": "hs3-12k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1184,
+    "name": "SAJ HS2-8K-T2-X",
+    "sku": "DLK-SAJ-HS28KT2X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS2-8K-T2-X",
+        "slug": "hs2-8k-t2-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs2",
+        "slug": "saj-hs2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1183,
+    "name": "SAJ HS2-6K-T2-X",
+    "sku": "DLK-SAJ-HS26KT2X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS2-6K-T2-X",
+        "slug": "hs2-6k-t2-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs2",
+        "slug": "saj-hs2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1182,
+    "name": "SAJ HS2-10K-T2-X",
+    "sku": "DLK-SAJ-HS210KT2X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS2-10K-T2-X",
+        "slug": "hs2-10k-t2-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs2",
+        "slug": "saj-hs2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1181,
+    "name": "SAJ H2-30K-T3-DE",
+    "sku": "DLK-SAJ-H230KT3DE",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-30K-T3-DE",
+        "slug": "h2-30k-t3-de"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1179,
+    "name": "SAJ H2-25K-T3",
+    "sku": "DLK-SAJ-H225KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-25K-T3",
+        "slug": "h2-25k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Inverters",
+      "slug": "inverters"
+     }
+    ]
+   },
+   {
+    "id": 1178,
+    "name": "SAJ ATS1-T63-A",
+    "sku": "DLK-SAJ-ATS1T63A",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "ATS1-T63-A",
+        "slug": "ats1-t63-a"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Three-phase",
+        "slug": "three-phase"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-accessories",
+        "slug": "saj-accessories"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Backup Power",
+      "slug": "backup-power"
+     }
+    ]
+   }
+  ],
+  "categories": [
+   {
+    "id": 456,
+    "name": "Accessories",
+    "slug": "accessories",
+    "parent": 0
+   },
+   {
+    "id": 452,
+    "name": "All-in-One Systems",
+    "slug": "all-in-one-systems",
+    "parent": 451
+   },
+   {
+    "id": 458,
+    "name": "Backup Power",
+    "slug": "backup-power",
+    "parent": 456
+   },
+   {
+    "id": 453,
+    "name": "Battery Systems",
+    "slug": "battery-systems",
+    "parent": 451
+   },
+   {
+    "id": 451,
+    "name": "Commercial Storage",
+    "slug": "commercial-storage",
+    "parent": 0
+   },
+   {
+    "id": 454,
+    "name": "EMS &amp; Monitoring",
+    "slug": "ems-monitoring",
+    "parent": 0
+   },
+   {
+    "id": 455,
+    "name": "EV Chargers",
+    "slug": "ev-chargers",
+    "parent": 0
+   },
+   {
+    "id": 450,
+    "name": "Home Storage",
+    "slug": "home-storage",
+    "parent": 0
+   },
+   {
+    "id": 449,
+    "name": "Inverters",
+    "slug": "inverters",
+    "parent": 0
+   },
+   {
+    "id": 457,
+    "name": "Meters &amp; Current Transformers",
+    "slug": "meters-current-transformers",
+    "parent": 456
+   }
+  ]
+ },
+ "de": {
+  "products": [
+   {
+    "id": 6565,
+    "name": "GoodWe GW60K-STS-G10",
+    "sku": "DLK-GOODWE-GW60KSTSG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-sts-30-60k",
+        "slug": "goodwe-sts-30-60k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Notstrom",
+      "slug": "notstrom"
+     }
+    ]
+   },
+   {
+    "id": 6566,
+    "name": "GoodWe GW30K-STS-G10",
+    "sku": "DLK-GOODWE-GW30KSTSG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-sts-30-60k",
+        "slug": "goodwe-sts-30-60k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Notstrom",
+      "slug": "notstrom"
+     }
+    ]
+   },
+   {
+    "id": 6567,
+    "name": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW10KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6568,
+    "name": "GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW8KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6569,
+    "name": "GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW6KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6570,
+    "name": "GoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW5KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6571,
+    "name": "GoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW36KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6572,
+    "name": "GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW3KEHAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-3-10kw-eha-g20",
+        "slug": "goodwe-esa-3-10kw-eha-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6573,
+    "name": "GoodWe GW8.3-BAT-D-G21 (ESA-Batteriemodul, 8,32 kWh)",
+    "sku": "DLK-GOODWE-GW83BATDG21",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6574,
+    "name": "GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh)",
+    "sku": "DLK-GOODWE-GW51BATDG21",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6575,
+    "name": "GoodWe GW8.3-BAT-D-G20 (ESA-Batteriemodul, 8,32 kWh)",
+    "sku": "DLK-GOODWE-GW83BATDG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6576,
+    "name": "GoodWe GW5.1-BAT-D-G20 (ESA-Batteriemodul, 5,12 kWh)",
+    "sku": "DLK-GOODWE-GW51BATDG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6577,
+    "name": "GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW30KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6578,
+    "name": "GoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW29999KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6579,
+    "name": "GoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW25KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6580,
+    "name": "GoodWe ESA GW20K-ETA-G20 (20 kW dreiphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW20KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6581,
+    "name": "GoodWe ESA GW9.999K-ETA-G20 (9,999 kW dreiphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW9999KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6582,
+    "name": "GoodWe ESA GW6K-ETA-G20 (6 kW dreiphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW6KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6583,
+    "name": "GoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW5KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6584,
+    "name": "GoodWe GW124.99K-ETR-G10 (124,99 kW dreiphasiger Hybrid-Wechselrichter)",
+    "sku": "DLK-GOODWE-GW12499KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6585,
+    "name": "GoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter)",
+    "sku": "DLK-GOODWE-GW110KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6586,
+    "name": "GoodWe GW100K-ETR-G10 (100 kW dreiphasiger Hybrid-Wechselrichter)",
+    "sku": "DLK-GOODWE-GW100KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6587,
+    "name": "GoodWe GW99.99K-ETR-G10 (99,99 kW dreiphasiger Hybrid-Wechselrichter)",
+    "sku": "DLK-GOODWE-GW9999KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6588,
+    "name": "GoodWe GW80K-ETR-G10 (80 kW dreiphasiger Hybrid-Wechselrichter)",
+    "sku": "DLK-GOODWE-GW80KETRG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6589,
+    "name": "GoodWe GW75K-ET-G10",
+    "sku": "DLK-GOODWE-GW75KETG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-et-80-100k",
+        "slug": "goodwe-et-80-100k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6590,
+    "name": "EcoFlow OCEAN 2 HD-P1-6K-S2 (6 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP16KS2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-6K-S2",
+        "slug": "ef-hd-p1-6k-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6591,
+    "name": "EcoFlow OCEAN 2 HD-P1-5K75-S2 (5,75 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP15K75S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-5K75-S2",
+        "slug": "ef-hd-p1-5k75-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6592,
+    "name": "EcoFlow OCEAN 2 HD-P1-5K-S2 (5 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP15KS2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-5K-S2",
+        "slug": "ef-hd-p1-5k-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6593,
+    "name": "EcoFlow OCEAN 2 HD-P1-4K6-S2 (4,6 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP14K6S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-4K6-S2",
+        "slug": "ef-hd-p1-4k6-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6594,
+    "name": "EcoFlow OCEAN 2 HD-P1-3K68-S2 (3,68 kW einphasiger Hybrid-Wechselrichter)",
+    "sku": "DLK-ECOFLOW-EFHDP13K68S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-3K68-S2",
+        "slug": "ef-hd-p1-3k68-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6595,
+    "name": "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP13KS2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-3K-S2",
+        "slug": "ef-hd-p1-3k-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6596,
+    "name": "EcoFlow OCEAN 2 HD-P3-15K-G2F (15 kW dreiphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP315KG2F",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-15K-G2F",
+        "slug": "ef-hd-p3-15k-g2f"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6597,
+    "name": "EcoFlow OCEAN 2 HD-P3-15K-G2 (15 kW dreiphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP315KG2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-15K-G2",
+        "slug": "ef-hd-p3-15k-g2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6598,
+    "name": "EcoFlow OCEAN 2 HD-P3-5K0-S2 (5 kW dreiphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP35K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-5K0-S2",
+        "slug": "ef-hd-p3-5k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6599,
+    "name": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh All-in-One-Speicherschrank)",
+    "sku": "DLK-GOODWE-GW125261ESALCNG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW125/261-ESA-LCN-G10",
+        "slug": "gw125-261-esa-lcn-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-lcn",
+        "slug": "goodwe-esa-lcn"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One-Systeme",
+      "slug": "all-in-one-systeme"
+     }
+    ]
+   },
+   {
+    "id": 6626,
+    "name": "SAJ HS2-5K-T2-X (5-kW-Dreiphasen-Hybrid-Wechselrichter)",
+    "sku": "DLK-SAJ-HS25KT2X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS2-5K-T2-X",
+        "slug": "hs2-5k-t2-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs2",
+        "slug": "saj-hs2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6627,
+    "name": "SAJ H2-12K-T3 (12-kW-Dreiphasen-Hybrid-Wechselrichter)",
+    "sku": "DLK-SAJ-H212KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-12K-T3",
+        "slug": "h2-12k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6628,
+    "name": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter)",
+    "sku": "DLK-SAJ-H210KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-10K-T3",
+        "slug": "h2-10k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6629,
+    "name": "SAJ CB2-100.3-HV5 (100,3 kWh C&#038;I-Batteriespeicherschrank)",
+    "sku": "DLK-SAJ-CB21003HV5",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CB2-100.3-HV5",
+        "slug": "cb2-100-3-hv5"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6630,
+    "name": "SAJ CB2-85.9-HV5 (85,9 kWh C&#038;I-Batteriespeicherschrank)",
+    "sku": "DLK-SAJ-CB2859HV5",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CB2-85.9-HV5",
+        "slug": "cb2-85-9-hv5"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6631,
+    "name": "SAJ CB2-71.6-HV5 (71,6 kWh C&#038;I-Batteriespeicherschrank)",
+    "sku": "DLK-SAJ-CB2716HV5",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CB2-71.6-HV5",
+        "slug": "cb2-71-6-hv5"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6632,
+    "name": "SAJ CB2-57.3-HV5 (57,3 kWh C&#038;I-Batterieschrank)",
+    "sku": "DLK-SAJ-CB2573HV5",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CB2-57.3-HV5",
+        "slug": "cb2-57-3-hv5"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6643,
+    "name": "SAJ eManager (Energiemanagement-Systemmodul)",
+    "sku": "DLK-SAJ-EMANAGER",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "eManager",
+        "slug": "emanager-emanager-5-0-residential-energy-manager"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-emanager",
+        "slug": "saj-emanager"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 6649,
+    "name": "GoodWe GW9.0-BAT-D-G20 (ESA-Batteriemodul, 9,0 kWh)",
+    "sku": "DLK-GOODWE-GW90BATDG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW9.0-BAT-D-G20",
+        "slug": "gw9-0-bat-d-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6650,
+    "name": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+    "sku": "DLK-GOODWE-GW60BATDG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW6.0-BAT-D-G20",
+        "slug": "gw6-0-bat-d-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-bat-d-g20",
+        "slug": "goodwe-esa-bat-d-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6652,
+    "name": "EcoFlow Battery Stack Bridge",
+    "sku": "DLK-ECOFLOW-STACK-BRIDGE",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EcoFlow Battery Stack Bridge",
+        "slug": "ecoflow-battery-stack-bridge"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-battery-installation-accessories",
+        "slug": "ecoflow-battery-installation-accessories"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Zubehör",
+      "slug": "zubehoer"
+     }
+    ]
+   },
+   {
+    "id": 6653,
+    "name": "EcoFlow OCEAN 2 LFP-Batteriesockel",
+    "sku": "DLK-ECOFLOW-OCEAN2-BASE",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "OCEAN 2 LFP Battery Base",
+        "slug": "ocean-2-lfp-battery-base"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean-2-battery",
+        "slug": "ecoflow-ocean-2-battery"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Zubehör",
+      "slug": "zubehoer"
+     }
+    ]
+   },
+   {
+    "id": 6654,
+    "name": "GoodWe GW125K-ETR-G10 (125 kW dreiphasiger Hybrid-Wechselrichter)",
+    "sku": "DLK-GOODWE-ETR125",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW125K-ETR-G10",
+        "slug": "gw125k-etr-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-etr",
+        "slug": "goodwe-etr"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6662,
+    "name": "GoodWe HCA G2 GW22K-HCA-20 (22 kW dreiphasige Wallbox, 7,5 m Kabel)",
+    "sku": "DLK-GOODWE-GW22KHCA20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW22K-HCA-20",
+        "slug": "gw22k-hca-20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-hca",
+        "slug": "goodwe-hca"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Ladestationen",
+      "slug": "ladestationen"
+     }
+    ]
+   },
+   {
+    "id": 6663,
+    "name": "GoodWe HCA G2 GW7K-HCA-20 (7 kW einphasige EV-Ladeeinrichtung, 7,5 m Kabel)",
+    "sku": "DLK-GOODWE-GW7KHCA20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW7K-HCA-20",
+        "slug": "gw7k-hca-20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-hca",
+        "slug": "goodwe-hca"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Ladestationen",
+      "slug": "ladestationen"
+     }
+    ]
+   },
+   {
+    "id": 6664,
+    "name": "GoodWe ESA GW15K-ETA-G20 (dreiphasiges 15-kW-Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW15KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW15K-ETA-G20",
+        "slug": "gw15k-eta-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6665,
+    "name": "GoodWe ESA GW12K-ETA-G20 (dreiphasiges 12-kW-Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW12KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW12K-ETA-G20",
+        "slug": "gw12k-eta-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6666,
+    "name": "GoodWe ESA GW8K-ETA-G20 (dreiphasiges 8-kW-Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW8KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW8K-ETA-G20",
+        "slug": "gw8k-eta-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6667,
+    "name": "EcoFlow OCEAN 2 Batterie 8,03 kWh (EF BD-8-S2)",
+    "sku": "DLK-ECOFLOW-EFBD8S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF BD-8-S2",
+        "slug": "ef-bd-8-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-lfp-battery-s2",
+        "slug": "ecoflow-ocean2-lfp-battery-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6668,
+    "name": "EcoFlow OCEAN 2 Batterie 5,02 kWh (EF BD-5-S2)",
+    "sku": "DLK-ECOFLOW-EFBD5S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF BD-5-S2",
+        "slug": "ef-bd-5-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-lfp-battery-s2",
+        "slug": "ecoflow-ocean2-lfp-battery-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6669,
+    "name": "EcoFlow OCEAN 2 Plus HD-P1-12K0-S2 (12 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP112K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-12K0-S2",
+        "slug": "ef-hd-p1-12k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6670,
+    "name": "EcoFlow OCEAN 2 Plus HD-P1-10K0-S2 (10 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP110K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-10K0-S2",
+        "slug": "ef-hd-p1-10k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6671,
+    "name": "EcoFlow OCEAN 2 Plus HD-P1-8K0-S2 (8 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP18K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-8K0-S2",
+        "slug": "ef-hd-p1-8k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6672,
+    "name": "EcoFlow OCEAN 2 Plus HD-P1-6K0-S2 (6 kW einphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP16K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P1-6K0-S2",
+        "slug": "ef-hd-p1-6k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Einphasig",
+        "slug": "einphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-plus-hd-p1-s2",
+        "slug": "ecoflow-ocean2-plus-hd-p1-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6673,
+    "name": "EcoFlow OCEAN 2 HD-P3-12K0-S2 (12 kW dreiphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP312K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-12K0-S2",
+        "slug": "ef-hd-p3-12k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6674,
+    "name": "EcoFlow OCEAN 2 HD-P3-8K0-S2 (8 kW dreiphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP38K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-8K0-S2",
+        "slug": "ef-hd-p3-8k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6675,
+    "name": "EcoFlow OCEAN 2 HD-P3-6K0-S2 (6 kW dreiphasiger Hybrid)",
+    "sku": "DLK-ECOFLOW-EFHDP36K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-6K0-S2",
+        "slug": "ef-hd-p3-6k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6676,
+    "name": "SAJ eSolar AIO3 Datenlogger (WLAN/Ethernet/Bluetooth)",
+    "sku": "DLK-SAJ-ESOLAR-AIO3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "eSolar AIO3",
+        "slug": "esolar-aio3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-data-collectors",
+        "slug": "saj-data-collectors"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 6689,
+    "name": "GoodWe HCA G2 GW11K-HCA-20 (11 kW dreiphasige Wallbox, 7,5 m Kabel)",
+    "sku": "DLK-GOODWE-GW11KHCA20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW11K-HCA-20",
+        "slug": "gw11k-hca-20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-hca",
+        "slug": "goodwe-hca"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Ladestationen",
+      "slug": "ladestationen"
+     }
+    ]
+   },
+   {
+    "id": 6690,
+    "name": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+    "sku": "DLK-GOODWE-GW10KETAG20",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW10K-ETA-G20",
+        "slug": "gw10k-eta-g20"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-esa-5-30kw-eta-g20",
+        "slug": "goodwe-esa-5-30kw-eta-g20"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6691,
+    "name": "EcoFlow OCEAN 2 HD-P3-10K0-S2 (10 kW dreiphasiger Hybrid-Wechselrichter)",
+    "sku": "DLK-ECOFLOW-EFHDP310K0S2",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "EcoFlow",
+        "slug": "ecoflow"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EF HD-P3-10K0-S2",
+        "slug": "ef-hd-p3-10k0-s2"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "ecoflow-ocean2-hd-p3-s2",
+        "slug": "ecoflow-ocean2-hd-p3-s2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6710,
+    "name": "GoodWe EzManager3000 HEMS-Gateway",
+    "sku": "DLK-GOODWE-EZMANAGER3000",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "EzManager3000",
+        "slug": "ezmanager3000"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-ems",
+        "slug": "goodwe-ems"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 6712,
+    "name": "GoodWe SEC3000C (intelligenter Energieregler)",
+    "sku": "DLK-GOODWE-SEC3000C",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "SEC3000C",
+        "slug": "sec3000c"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-ems",
+        "slug": "goodwe-ems"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 6714,
+    "name": "GoodWe GW125K-STS-G10",
+    "sku": "DLK-GOODWE-GW125KSTSG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW125K-STS-G10",
+        "slug": "gw125k-sts-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-sts-125k",
+        "slug": "goodwe-sts-125k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Notstrom",
+      "slug": "notstrom"
+     }
+    ]
+   },
+   {
+    "id": 6716,
+    "name": "GoodWe GMK330",
+    "sku": "DLK-GOODWE-GMK330",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GMK330",
+        "slug": "gmk330"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-meters",
+        "slug": "goodwe-meters"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Energiezähler &amp; Stromwandler",
+      "slug": "energiezaehler-stromwandler"
+     }
+    ]
+   },
+   {
+    "id": 6717,
+    "name": "GoodWe GM330",
+    "sku": "DLK-GOODWE-GM330",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GM330",
+        "slug": "gm330"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-meters",
+        "slug": "goodwe-meters"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Energiezähler &amp; Stromwandler",
+      "slug": "energiezaehler-stromwandler"
+     }
+    ]
+   },
+   {
+    "id": 6720,
+    "name": "Chint DTSU666",
+    "sku": "DLK-CHINT-DTSU666",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "Chint",
+        "slug": "chint"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "DTSU666",
+        "slug": "dtsu666"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "chint",
+        "slug": "chint"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Energiezähler &amp; Stromwandler",
+      "slug": "energiezaehler-stromwandler"
+     }
+    ]
+   },
+   {
+    "id": 6729,
+    "name": "SAJ HS3-10K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS310KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-10K-T2-W/G-PX",
+        "slug": "hs3-10k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6730,
+    "name": "SAJ HS3-5K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS35KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-5K-T2-W/G-PX",
+        "slug": "hs3-5k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6735,
+    "name": "SAJ BU3-5.0-TV2-PRO",
+    "sku": "DLK-SAJ-BU350TV2PRO",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "BU3-5.0-TV2-PRO",
+        "slug": "bu3-5-0-tv2-pro"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6736,
+    "name": "SAJ BC2-HV1",
+    "sku": "DLK-SAJ-BC2HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "BC2-HV1",
+        "slug": "bc2-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-hv-5-25kwh",
+        "slug": "saj-b2-hv-5-25kwh"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6738,
+    "name": "SAJ BU2-5.0-HV1",
+    "sku": "DLK-SAJ-BU250HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "BU2-5.0-HV1",
+        "slug": "bu2-5-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-hv-5-25kwh",
+        "slug": "saj-b2-hv-5-25kwh"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6747,
+    "name": "SAJ B2-25.0-HV1",
+    "sku": "DLK-SAJ-B2250HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-25.0-HV1",
+        "slug": "b2-25-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6748,
+    "name": "SAJ B2-20.0-HV1",
+    "sku": "DLK-SAJ-B2200HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-20.0-HV1",
+        "slug": "b2-20-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6749,
+    "name": "SAJ B2-15.0-HV1",
+    "sku": "DLK-SAJ-B2150HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-15.0-HV1",
+        "slug": "b2-15-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6750,
+    "name": "SAJ B2-10.0-HV1",
+    "sku": "DLK-SAJ-B2100HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-10.0-HV1",
+        "slug": "b2-10-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6751,
+    "name": "SAJ H2-20K-T3",
+    "sku": "DLK-SAJ-H220KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-20K-T3",
+        "slug": "h2-20k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6752,
+    "name": "SAJ H2-15K-T3",
+    "sku": "DLK-SAJ-H215KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-15K-T3",
+        "slug": "h2-15k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6769,
+    "name": "Pylontech OPTIM US L260-OMNI",
+    "sku": "DLK-PYLONTECH-OPTIMUSL260OMNI",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "Pylontech",
+        "slug": "pylontech"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "L260-OMNI",
+        "slug": "l260-omni"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "pylontech-optim-utility",
+        "slug": "pylontech-optim-utility"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One-Systeme",
+      "slug": "all-in-one-systeme"
+     }
+    ]
+   },
+   {
+    "id": 6784,
+    "name": "SAJ eManager-C1 Pro",
+    "sku": "DLK-SAJ-EMANAGERC1PRO",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "eManager-C1 Pro",
+        "slug": "emanager-c1-pro"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-emanager-c1-pro",
+        "slug": "saj-emanager-c1-pro"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "EMS &amp; Monitoring",
+      "slug": "ems-monitoring"
+     }
+    ]
+   },
+   {
+    "id": 6796,
+    "name": "SAJ CHS2-50K-T6-X",
+    "sku": "DLK-SAJ-CHS250KT6X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CHS2-50K-T6-X",
+        "slug": "chs2-50k-t6-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One-Systeme",
+      "slug": "all-in-one-systeme"
+     }
+    ]
+   },
+   {
+    "id": 6797,
+    "name": "SAJ CHS2-30K-T4-X",
+    "sku": "DLK-SAJ-CHS230KT4X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CHS2-30K-T4-X",
+        "slug": "chs2-30k-t4-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One-Systeme",
+      "slug": "all-in-one-systeme"
+     }
+    ]
+   },
+   {
+    "id": 6798,
+    "name": "SAJ CHS2-29.9K-T4-X",
+    "sku": "DLK-SAJ-CHS2299KT4X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "CHS2-29.9K-T4-X",
+        "slug": "chs2-29-9k-t4-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-ci-line",
+        "slug": "saj-ci-line"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "All-in-One-Systeme",
+      "slug": "all-in-one-systeme"
+     }
+    ]
+   },
+   {
+    "id": 6799,
+    "name": "GoodWe GW261.2-BAT-LCD-G10",
+    "sku": "DLK-GOODWE-GW2612BATLCDG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW261.2-BAT-LCD-G10",
+        "slug": "gw261-2-bat-lcd-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6800,
+    "name": "GoodWe GW208.9-BAT-LCD-G10",
+    "sku": "DLK-GOODWE-GW2089BATLCDG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW208.9-BAT-LCD-G10",
+        "slug": "gw208-9-bat-lcd-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6801,
+    "name": "GoodWe GW208.9-BAT-LC-G10",
+    "sku": "DLK-GOODWE-GW2089BATLCG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW208.9-BAT-LC-G10",
+        "slug": "gw208-9-bat-lc-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6802,
+    "name": "GoodWe GW112.6-BAT-AC-G10",
+    "sku": "DLK-GOODWE-GW1126BATACG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW112.6-BAT-AC-G10",
+        "slug": "gw112-6-bat-ac-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6803,
+    "name": "GoodWe GW61.4-BAT-AC-G10",
+    "sku": "DLK-GOODWE-GW614BATACG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW61.4-BAT-AC-G10",
+        "slug": "gw61-4-bat-ac-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-bat-c",
+        "slug": "goodwe-bat-c"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Batteriesysteme",
+      "slug": "batteriesysteme"
+     }
+    ]
+   },
+   {
+    "id": 6809,
+    "name": "GoodWe GW100K-ET-G10",
+    "sku": "DLK-GOODWE-GW100KETG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW100K-ET-G10",
+        "slug": "gw100k-et-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-et-80-100k",
+        "slug": "goodwe-et-80-100k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6810,
+    "name": "GoodWe GW99.99K-ET-G10",
+    "sku": "DLK-GOODWE-GW9999KETG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW99.99K-ET-G10",
+        "slug": "gw99-99k-et-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-et-80-100k",
+        "slug": "goodwe-et-80-100k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6811,
+    "name": "GoodWe GW80K-ET-G10",
+    "sku": "DLK-GOODWE-GW80KETG10",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "GoodWe",
+        "slug": "goodwe"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "GW80K-ET-G10",
+        "slug": "gw80k-et-g10"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "goodwe-et-80-100k",
+        "slug": "goodwe-et-80-100k"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6818,
+    "name": "SAJ B2-5.0-HV1",
+    "sku": "DLK-SAJ-B250HV1",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "B2-5.0-HV1",
+        "slug": "b2-5-0-hv1"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-b2-bu3",
+        "slug": "saj-b2-bu3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Heimspeicher",
+      "slug": "heimspeicher"
+     }
+    ]
+   },
+   {
+    "id": 6831,
+    "name": "SAJ HS3-8K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS38KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-8K-T2-W/G-PX",
+        "slug": "hs3-8k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6832,
+    "name": "SAJ HS3-6K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS36KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-6K-T2-W/G-PX",
+        "slug": "hs3-6k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6833,
+    "name": "SAJ HS3-12K-T2-W/G-PX",
+    "sku": "DLK-SAJ-HS312KT2WP",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS3-12K-T2-W/G-PX",
+        "slug": "hs3-12k-t2-w-g-px"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs3",
+        "slug": "saj-hs3"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6834,
+    "name": "SAJ HS2-8K-T2-X",
+    "sku": "DLK-SAJ-HS28KT2X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS2-8K-T2-X",
+        "slug": "hs2-8k-t2-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs2",
+        "slug": "saj-hs2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6835,
+    "name": "SAJ HS2-6K-T2-X",
+    "sku": "DLK-SAJ-HS26KT2X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS2-6K-T2-X",
+        "slug": "hs2-6k-t2-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs2",
+        "slug": "saj-hs2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6836,
+    "name": "SAJ HS2-10K-T2-X",
+    "sku": "DLK-SAJ-HS210KT2X",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "HS2-10K-T2-X",
+        "slug": "hs2-10k-t2-x"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-hs2",
+        "slug": "saj-hs2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6837,
+    "name": "SAJ H2-30K-T3-DE",
+    "sku": "DLK-SAJ-H230KT3DE",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-30K-T3-DE",
+        "slug": "h2-30k-t3-de"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6838,
+    "name": "SAJ H2-25K-T3",
+    "sku": "DLK-SAJ-H225KT3",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "H2-25K-T3",
+        "slug": "h2-25k-t3"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-h2",
+        "slug": "saj-h2"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Wechselrichter",
+      "slug": "wechselrichter"
+     }
+    ]
+   },
+   {
+    "id": 6839,
+    "name": "SAJ ATS1-T63-A",
+    "sku": "DLK-SAJ-ATS1T63A",
+    "attributes": [
+     {
+      "taxonomy": "pa_brand",
+      "terms": [
+       {
+        "name": "SAJ",
+        "slug": "saj"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_model",
+      "terms": [
+       {
+        "name": "ATS1-T63-A",
+        "slug": "ats1-t63-a"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_phase",
+      "terms": [
+       {
+        "name": "Dreiphasig",
+        "slug": "dreiphasig"
+       }
+      ]
+     },
+     {
+      "taxonomy": "pa_series",
+      "terms": [
+       {
+        "name": "saj-accessories",
+        "slug": "saj-accessories"
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "name": "Notstrom",
+      "slug": "notstrom"
+     }
+    ]
+   }
+  ],
+  "categories": [
+   {
+    "id": 628,
+    "name": "All-in-One-Systeme",
+    "slug": "all-in-one-systeme",
+    "parent": 616
+   },
+   {
+    "id": 630,
+    "name": "Batteriesysteme",
+    "slug": "batteriesysteme",
+    "parent": 616
+   },
+   {
+    "id": 619,
+    "name": "EMS &amp; Monitoring",
+    "slug": "ems-monitoring",
+    "parent": 0
+   },
+   {
+    "id": 632,
+    "name": "Energiezähler &amp; Stromwandler",
+    "slug": "energiezaehler-stromwandler",
+    "parent": 625
+   },
+   {
+    "id": 616,
+    "name": "Gewerbespeicher",
+    "slug": "gewerbespeicher",
+    "parent": 0
+   },
+   {
+    "id": 613,
+    "name": "Heimspeicher",
+    "slug": "heimspeicher",
+    "parent": 0
+   },
+   {
+    "id": 622,
+    "name": "Ladestationen",
+    "slug": "ladestationen",
+    "parent": 0
+   },
+   {
+    "id": 634,
+    "name": "Notstrom",
+    "slug": "notstrom",
+    "parent": 625
+   },
+   {
+    "id": 610,
+    "name": "Wechselrichter",
+    "slug": "wechselrichter",
+    "parent": 0
+   },
+   {
+    "id": 625,
+    "name": "Zubehör",
+    "slug": "zubehoer",
+    "parent": 0
+   }
+  ]
+ }
+}

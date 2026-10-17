@@ -71,8 +71,28 @@ class HandoffBlock(Strict):
     summary: str
 
 
+class DocumentBlock(Strict):
+    """A hosted document as a link, never as a URL in the text (#233).
+
+    The model writes only `ref`: a search-knowledge chunk ID or a pairing document
+    fact ID (`compat.document.N`, `compat.document.BATTERYID.N`) of this turn. The
+    service fills `label` and `url` from the tool result when it hydrates the turn.
+    """
+
+    type: Literal["document"] = "document"
+    ref: str
+    label: str | None = None
+    url: str | None = None
+
+
 Block = Annotated[
-    TextBlock | AskBlock | CardsBlock | CompareBlock | ActionBlock | HandoffBlock,
+    TextBlock
+    | AskBlock
+    | CardsBlock
+    | CompareBlock
+    | ActionBlock
+    | HandoffBlock
+    | DocumentBlock,
     Field(discriminator="type"),
 ]
 
