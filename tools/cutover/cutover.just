@@ -43,6 +43,11 @@ deploy *options:
 rollback-deploy *options:
     PHP={{ php }} {{ linker_cutover }} rollback-deploy "$@" --write
 
+# Deployment plus concurrent read-only page/REST probes; evidence stays local.
+[positional-arguments]
+probe *options:
+    PHP={{ php }} {{ linker_cutover }} probe "$@" --write
+
 # Step 3: export the snippet rows, then deactivate and delete the legacy plugins.
 [positional-arguments]
 plugins *options:

@@ -166,11 +166,10 @@ class Drill:
             )
         )
         self._record(cutover.maintenance(self.target, on=True))
-        self._record(
-            cutover.deploy(
-                self.target, repository=self.repository, staging=self.staging
-            )
+        deployed = cutover.deploy(
+            self.target, repository=self.repository, staging=self.staging
         )
+        self._record(deployed)
         self._record(
             cutover.export_snippets(self.target, self.snippets / f"pass{number}")
         )
@@ -195,7 +194,13 @@ class Drill:
         self._record(cutover.retire_stale_schema(self.target, writes=True))
         self._record(cutover.hygiene(self.target, backup=taken.directory, writes=False))
         self._record(cutover.maintenance(self.target, on=False))
-        self._record(cutover.verify(self.target, cache_buster=f"drill{number}"))
+        assert deployed.publication is not None
+        checked = cutover.finish_deploy(
+            self.target, deployed.publication, cache_buster=f"drill{number}"
+        )
+        self._record(checked)
+        if checked.notes:
+            raise CutoverError("drill verify failed: " + "; ".join(checked.notes))
         return taken.directory
 
     def _record(self, result: cutover.Result) -> None:

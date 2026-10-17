@@ -4,6 +4,7 @@
     linker-cutover maintenance  on|off (steps 2 and 7)
     linker-cutover deploy       files: the three plugins, the theme file and Polylang (step 3)
     linker-cutover rollback-deploy restore the previous deployed files by rename
+    linker-cutover probe        run the deployment with concurrent page/REST probes
     linker-cutover plugins      export the snippets, remove the legacy plugins (step 3)
     linker-cutover data         the migrations (step 4)
     linker-cutover schema       retire the retained SEO plugin's Product template
@@ -24,13 +25,14 @@ Nothing writes unless `--write` is given; `drill` writes by design and says so.
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 
 from linker_cutover import drill as drill_module
-from linker_cutover import plan, steps
+from linker_cutover import plan, probe, steps
 from linker_cutover.target import CutoverError, Target, local_target, remote_target
 
 # The data root the local stack and tools/pull share (docs/local-stack.md).
@@ -95,6 +97,10 @@ def _parser() -> argparse.ArgumentParser:
     sub.add_parser(
         "rollback-deploy", parents=[common], help="restore the previous deployed files"
     )
+    proof = sub.add_parser(
+        "probe", parents=[common], help="deploy with concurrent page/REST probes"
+    )
+    proof.add_argument("--evidence", type=Path, help="local evidence directory")
     sub.add_parser(
         "plugins",
         parents=[common],
@@ -161,17 +167,59 @@ def main(argv: list[str] | None = None) -> int:
                 print(
                     f"deploy: would stage {plan.THEMES_REPO}/ files, then rename (keep .prev)"
                 )
+                print(
+                    "deploy: would switch every artifact in one shell, verify, then archive outside the web root (retain latest deploy only)"
+                )
                 return 0
-            _print(steps.deploy(target, repository=repository, staging=staging))
-            return 0
+            deployed = steps.deploy(target, repository=repository, staging=staging)
+            _print(deployed)
+            assert deployed.publication is not None
+            checked = steps.finish_deploy(
+                target, deployed.publication, cache_buster=_cache_buster()
+            )
+            _print(checked)
+            return 1 if checked.notes else 0
         if args.command == "rollback-deploy":
             if not args.write:
                 print(
                     "rollback-deploy: would restore the previous deployed files by rename"
                 )
                 return 0
-            _print(steps.rollback_deploy(target, repository=repository))
-            return 0
+            restored = steps.rollback_deploy(target, repository=repository)
+            _print(restored)
+            return 1 if restored.notes else 0
+        if args.command == "probe":
+            if not args.write:
+                for endpoint in plan.DEPLOY_PROBE_ENDPOINTS:
+                    print(f"probe: {endpoint.name} GET {endpoint.path}")
+                print("probe: dry run; add --write to run deployment")
+                return 0
+            evidence = args.evidence or DATA_HOME / ("deploy-proof-" + _cache_buster())
+
+            def deployment_command() -> int:
+                command = [
+                    sys.executable,
+                    "-m",
+                    "linker_cutover.cli",
+                    "deploy",
+                    "--write",
+                ]
+                if args.target:
+                    command += ["--target", args.target]
+                with (evidence / "deploy.log").open("w") as output:
+                    return subprocess.run(
+                        command,
+                        cwd=repository,
+                        stdout=output,
+                        stderr=output,
+                        check=False,
+                    ).returncode
+
+            proof_result = probe.observe(target, deployment_command, evidence=evidence)
+            print(
+                f"probe: {len(proof_result.samples)} samples, success={proof_result.successful}; {evidence / 'proof.json'}"
+            )
+            return 0 if proof_result.successful else 1
         if args.command == "plugins":
             snippets = _backup(target, args) / "snippets"
             _print(steps.export_snippets(target, snippets))
@@ -215,17 +263,11 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
         if args.command == "verify":
-            result = steps.verify(target, cache_buster=_cache_buster())
+            result = steps.verify_site(target, cache_buster=_cache_buster())
             _print(result)
-            notes = list(result.notes)
-            if args.target is None:
-                # Production only (#145): no local instance is connected to Google.
-                ownership = steps.search_console(target)
-                _print(ownership)
-                notes += ownership.notes
             # A note is a check that failed: the window must not read a 200-only
             # page list as a pass when the redirect or a German page is wrong.
-            return 1 if notes else 0
+            return 1 if result.notes else 0
         if args.command == "rollback":
             result = steps.rollback(target, backup=_backup(target, args))
             _print(result)

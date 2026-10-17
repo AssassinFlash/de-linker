@@ -8,24 +8,36 @@ directory as "the newest backup", which is a directory with no backup in it.
 from __future__ import annotations
 
 import gzip
+import json
 from argparse import Namespace
 from pathlib import Path
 
 import pytest
 
-from linker_cutover import atomic, backup, cli, plan
+from linker_cutover import atomic, backup, cli, plan, steps
 from linker_cutover.target import CutoverError, Target
 
 
+class CliTarget(Target):
+    """Real filesystem transport, with WP/HTTP boundaries isolated."""
+
+    def wp(self, *args: str, check: bool = True) -> str:
+        del check
+        return json.dumps(
+            [{"name": slug, "status": "active"} for slug in plan.NEW_PLUGINS]
+        )
+
+    def http(self, path: str, *, cache_buster: str | None = None) -> tuple[int, str]:
+        del cache_buster
+        return (
+            dict(plan.VERIFY_REDIRECTS).get(path, 200),
+            '<html lang="de"><script type="application/ld+json">{"@type":"Product"}</script></html>',
+        )
+
+
 def _target(tmp_path: Path) -> Target:
-    """A target the failing paths never reach; `_backup` needs one to be called."""
-    return Target(
-        label="local:test",
-        root=str(tmp_path),
-        base_url="http://127.0.0.1:9999",
-        prefix=("wp",),
-        shell_prefix=None,
-        rsync_remote=None,
+    return CliTarget(
+        "local:test", str(tmp_path), "http://127.0.0.1:9999", (), None, None
     )
 
 
@@ -111,6 +123,25 @@ def test_deploy_dry_run_describes_staging_rename_and_all_owned_paths(
     assert not list(tmp_path.iterdir())
 
 
+def test_probe_dry_run_names_all_endpoints_without_starting_deploy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(cli, "_target", lambda _: _target(tmp_path))
+    assert cli.main(["probe"]) == 0
+    output = capsys.readouterr().out
+    for name in (
+        "home",
+        "contact",
+        "proforma",
+        "product",
+        "commerce-rest",
+        "i18n-rest",
+        "tools-rest",
+    ):
+        assert name in output
+    assert not list(tmp_path.iterdir())
+
+
 def test_rollback_deploy_command_is_dry_unless_write_is_given(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -118,17 +149,29 @@ def test_rollback_deploy_command_is_dry_unless_write_is_given(
     target = _target(tmp_path / "site")
     repository = tmp_path / "repo"
     repository.mkdir()
-    source = tmp_path / "release"
-    source.mkdir()
-    (source / "plugin.php").write_text("new")
+    mu = repository / plan.MU_PLUGINS_REPO
+    mu.mkdir()
+    (mu / "recorder.php").write_text("new")
+    theme = repository / plan.THEMES_REPO / "child"
+    theme.mkdir(parents=True)
+    (theme / "functions.php").write_text("new")
     for slug in plan.NEW_PLUGINS:
-        live = Path(target.path_of(f"{plan.PLUGINS_DIR}/{slug}"))
-        live.mkdir(parents=True)
-        (live / "plugin.php").write_text("old")
-        atomic.publish(target, source, f"{plan.PLUGINS_DIR}/{slug}")
+        plugin = repository / plan.REPO / slug
+        plugin.mkdir(parents=True)
+        (plugin / f"{slug}.php").write_text("new")
+    artifacts = steps.deployment_artifacts(repository)
+    for artifact in artifacts:
+        live = Path(target.path_of(artifact.relative))
+        live.parent.mkdir(parents=True, exist_ok=True)
+        if artifact.source.is_dir():
+            live.mkdir()
+            (live / f"{artifact.source.name}.php").write_text("old")
+        else:
+            live.write_text("old")
+    atomic.publish(target, artifacts, deploy_id="20261018T000000Z-cli")
     monkeypatch.setattr(cli, "_target", lambda _: target)
     monkeypatch.setattr(cli, "repository_root", lambda: repository)
     assert cli.main(["rollback-deploy", "--target", "local:c298"]) == 0
-    assert (live / "plugin.php").read_text() == "new"
+    assert (live / f"{plan.NEW_PLUGINS[-1]}.php").read_text() == "new"
     assert cli.main(["rollback-deploy", "--target", "local:c298", "--write"]) == 0
-    assert (live / "plugin.php").read_text() == "old"
+    assert (live / f"{plan.NEW_PLUGINS[-1]}.php").read_text() == "old"

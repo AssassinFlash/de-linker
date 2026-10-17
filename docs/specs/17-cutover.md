@@ -5,7 +5,21 @@
 
 ## 脚本 `tools/cutover/`（经 `ssh hostinger-de-linker`，每步可单独重跑）
 
-**文件发布（#298）**：三个仓库插件先完整上传到 live 同目录的隐藏 `.next` 目录，再执行两次 rename（live → `.prev`、`.next` → live）；mu-plugin PHP/PEM 与仓库管理的子主题文件旁置上传后以单次 rename 替换，保留 `.prev`。上传失败不碰 live；目录切换失败/可捕获中断自动恢复。`just cutover rollback-deploy` 在同一部署检出版本恢复上一版文件，不导入数据库。下文“就地替换”指 URL/插件 slug 不变，不再逐文件覆盖 live。逐路径计时、本地实证、回滚边界与 Claude 的生产零 fatal 验收步骤见 [2026-10-18 部署记录](../acceptance/2026-10-18/deploy/README.md)。
+### 文件发布与回滚（#298；PR #299 第 1 轮裁定）
+
+共享库存函数 `deployment_artifacts()` 同时供发布与回滚使用，覆盖三个仓库插件、mu-plugin PHP/PEM、仓库管理的子主题文件。先验证所有输入并完成全部本地 Composer 构建，再把所有产物上传到各自 live 同目录的隐藏 `.next`。任何构建或上传失败都不切换 live。所有目录与文件的 rename 在**同一条远端 shell** 内完成；一套 EXIT/HUP/INT/TERM trap 在任意 rename 失败或可捕获中断时恢复整批。回执 `Receipt` 含 deploy ID、全部路径、站外备份目录和**总切换耗时**；计时只覆盖整批 live rename 命令段，不包含构建、上传、网络等待或备份准备。
+
+**选 rename 的依据**（[已裁定的评审意见](https://github.com/AssassinFlash/de-linker/pull/299#issuecomment-6241352856)）：符号链接发布会使 `__DIR__`、`plugin_basename()` 与 WordPress 的 realpath registry 涉及 release 目录，opcache 键也随 release 路径变化；相同路径的 rename 保持 WordPress 已登记的插件路径稳定。评审已在 Hostinger 只读取证确认 plugins / mu-plugins 同文件系统，因此采用 rename，不做生产 symlink 试验。每次发布还会检查全部目标父目录与站外 `~/deploy-prev` 的 device 相同，且备份目录解析后确在 web root 外；不满足时在切换前失败。
+
+**残余风险**：两次目录 rename 间仍有短暂缺路径窗口；跨过切换点的既有 PHP 请求，以及 opcache 的时间戳重验，仍可能观察不同阶段的代码。单 shell 将跨插件窗口收敛到整批 rename 段，实际总耗时写入回执，不以“微秒级”代替测量或生产零 fatal 验收。没有后台自动换 symlink 或修改 opcache 设置。
+
+每批 deploy ID 为 UTC 时间加 git SHA。`~/deploy-prev/<deploy-id>/manifest.json` 为这一批每个备份记录相同 deploy ID、完整库存、先前存在与否、备份 device/inode 及新 live device/inode；`latest` 只指向这一个 manifest。成功切换后为 `pending`：备份暂在隐藏 `.prev` / `.prev-absent` 同目录。普通 `just cutover deploy` 在激活与语言包步骤之后运行既有 verify（含生产 Search Console 读回），只有通过才把全部备份**按 rename** 移到站外 `<deploy-id>/files/`，读回备份 inode 并确认 web root 内对应 `.next/.prev/.prev-absent` 均已消失，再删除较早部署的备份。**只保留最近一批备份**。verify 失败会返回非零，保留这一批供回滚，不能把失败的 verify 当成成功归档。
+
+`just cutover rollback-deploy` 从同一发布检出版本读取同一个库存函数。预检逐项比较 manifest 的 deploy ID、库存与实际备份 inode，明确列出混批、缺失、被替换的备份，任一不符则零写入；还拒绝 live 在发布后发生未登记变更。回滚从 pending 同目录或 archived 站外目录把整批文件 rename 回来，可捕获失败时恢复整批当前版本。完成后逐路径读回恢复的 device/inode（原先不存在则确认不存在），用 `wp plugin list --fields=name,status` 确认三个插件 active，再运行与部署相同的 verify；输出实际读回结果，任何检查不通过均非零。回滚会消耗上一版，不提供 redo，不导入数据库，也不改插件激活状态。原完整备份回滚入口不变。
+
+普通更新需让 verify 看到真实站点；本票生产探针不启用维护页。完整首次切换的 `Drill` 使用同一 `deploy()` 阶段，在数据步骤完成且维护关闭之后调用同一 `finish_deploy()`，因此不会拿维护响应作为归档依据。下文“就地替换”只指 URL / 插件 slug 不变。
+
+生产实走用 `just cutover probe`，端点来自 `plan.DEPLOY_PROBE_ENDPOINTS`，root / URL 来自 `Target`，插件来自 `plan.NEW_PLUGINS`。并发覆盖首页、联系页、Proforma 请求页、产品页，以及 commerce 的产品搜索、i18n 的德语 REST 过滤、tools 的只读会话路由；同时记录 fatal 日志元数据与目录 rename 的 inode 证据。具体命令、回滚边界及 Claude 的未完成生产验收见 [2026-10-18 部署记录](../acceptance/2026-10-18/deploy/README.md)。
 
 1. **备份**：mysqldump 导出数据库（`wp db export` 在生产主机不可用：WP-CLI 的 export 先调 `exec()`，而主机的 `disable_functions` 含 `exec`——理由与出处见变更记录 2026-10-11（#81））、`wp-content/uploads`、`wp-content/plugins`、`.htaccess`、选项导出 → 本地 `~/de-linker-data/cutover-<date>/`，sha256 清单。
 2. **维护模式开**（`wp maintenance-mode activate`）。

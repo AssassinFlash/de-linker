@@ -242,6 +242,37 @@ VERIFY_PRODUCT_TYPE = "Product"
 # `/design-canvas/` is a redirect the new tree keeps (spec 17 acceptance);
 # it is checked as a 301, by `steps.verify`.
 VERIFY_REDIRECTS = (("/design-canvas/", 301),)
+
+
+@dataclass(frozen=True)
+class ProbeEndpoint:
+    """One read-only deployment probe and the response contract it exercises."""
+
+    name: str
+    path: str
+    response: str
+
+
+# PR #299 review decision 7: four page types and each plugin's REST execution
+# path. linker-i18n owns RestLang filters on native wp/v2 routes, not a separate
+# namespace. One published German page exercises that filter without a bulk read.
+DEPLOY_PROBE_ENDPOINTS = (
+    ProbeEndpoint("home", "/", "html"),
+    ProbeEndpoint("contact", "/contact/", "html"),
+    ProbeEndpoint("proforma", "/proforma-request/", "html"),
+    ProbeEndpoint("product", VERIFY_PRODUCT_PATHS[0], "html"),
+    ProbeEndpoint(
+        "commerce-rest",
+        "/wp-json/linker/v1/catalog-search?q=SAJ&limit=2&lang=en",
+        "items",
+    ),
+    ProbeEndpoint(
+        "i18n-rest",
+        "/wp-json/wp/v2/pages?lang=de&per_page=1&_fields=id,link",
+        "german-pages",
+    ),
+    ProbeEndpoint("tools-rest", "/wp-json/linker-ai/v1/genie/conversation", "thread"),
+)
 # The Search Console property (#145, docs/specs/145-search-console.md): Site
 # Kit by Google holds the verification, and the marketing feedback loop reads
 # the property. `steps.search_console` checks it after every `verify`.

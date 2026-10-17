@@ -199,6 +199,80 @@ _PRODUCT = {"@context": "https://schema.org", "@type": "Product", "name": "x"}
 _WEBSITE = {"@context": "https://schema.org", "@type": "WebSite"}
 
 
+class FilesystemTarget(Target):
+    """Real file transport; WP-CLI and HTTP are isolated system-boundary fixtures."""
+
+    def __init__(self, root: Path) -> None:
+        super().__init__("fixture", str(root), "http://127.0.0.1", (), None, None)
+        self.calls: list[tuple[str, ...]] = []
+        self.pages: list[str] = []
+        self.failed_page = ""
+        self.inactive = ""
+        self.rsyncs: list[tuple[str, str]] = []
+
+    def rsync(
+        self, source: str, destination: str, *, extra: list[str] | None = None
+    ) -> str:
+        self.rsyncs.append((source, destination))
+        return super().rsync(source, destination, extra=extra)
+
+    def wp(self, *args: str, check: bool = True) -> str:
+        del check
+        self.calls.append(args)
+        if args[:2] == ("plugin", "list"):
+            return json.dumps(
+                [
+                    {
+                        "name": slug,
+                        "status": "inactive" if slug == self.inactive else "active",
+                    }
+                    for slug in (*plan.NEW_PLUGINS, *plan.INSTALLED_PLUGINS)
+                ]
+            )
+        return ""
+
+    def http(self, path: str, *, cache_buster: str | None = None) -> tuple[int, str]:
+        del cache_buster
+        self.pages.append(path)
+        if path == self.failed_page:
+            return 500, "failed"
+        return dict(plan.VERIFY_REDIRECTS).get(path, 200), _product_page(_PRODUCT)
+
+
+def test_verify_gates_archive_and_rollback_checks_plugins_and_pages(
+    tmp_path: Path,
+) -> None:
+    """An unsuccessful verify keeps recoverable backups; success archives privately."""
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    deployment = steps.deploy(
+        target,
+        repository=repository,
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-abc123",
+    )
+    assert deployment.publication is not None
+    target.failed_page = "/"
+    failed = steps.finish_deploy(target, deployment.publication, cache_buster="fixture")
+    assert failed.notes
+    assert list(Path(target.root).rglob("*.prev-absent"))
+    target.failed_page = ""
+    complete = steps.finish_deploy(
+        target, deployment.publication, cache_buster="fixture"
+    )
+    assert not complete.notes
+    assert not list(Path(target.root).rglob("*.prev-absent"))
+    target.inactive = plan.NEW_PLUGINS[0]
+    target.pages.clear()
+
+    restored = steps.rollback_deploy(target, repository=repository)
+
+    assert any("inactive" in note for note in restored.notes)
+    assert ("plugin", "list", "--fields=name,status", "--format=json") in target.calls
+    assert set(plan.VERIFY_PATHS) <= set(target.pages)
+    assert any("absent" in line for line in restored.actions)
+
+
 def test_removal_deactivates_everything_before_deleting_anything(
     tmp_path: Path,
 ) -> None:
@@ -304,12 +378,19 @@ def test_the_deploy_installs_the_recorder_over_the_live_file(tmp_path: Path) -> 
     recording while the rest of the switch runs, and the live site's own copy
     is the old version of it, not a different plugin.
     """
-    target = _fake(tmp_path)
+    target = FilesystemTarget(tmp_path / "site")
     recorder = "linker-error-recorder.php"
-    target.existing.add(f"{plan.MU_PLUGINS_DIR}/{recorder}")
+    live = Path(target.path_of(f"{plan.MU_PLUGINS_DIR}/{recorder}"))
+    live.parent.mkdir(parents=True)
+    live.write_text("old recorder")
     repository = _repository(tmp_path)
 
-    result = steps.deploy(target, repository=repository, staging=tmp_path / "staging")
+    result = steps.deploy(
+        target,
+        repository=repository,
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-fixture",
+    )
 
     source, destination = target.rsyncs[0]
     assert Path(source).name == recorder
@@ -323,10 +404,7 @@ def test_the_deploy_installs_the_recorder_over_the_live_file(tmp_path: Path) -> 
         if destination.endswith(".pem.next")
     ]
     assert pem == [f"{target.root}/{plan.MU_PLUGINS_DIR}/.linker-engine-ca.pem.next"]
-    assert result.actions[0] == (
-        f"deployed {plan.MU_PLUGINS_REPO}/{recorder} to "
-        f"{plan.MU_PLUGINS_DIR}/{recorder} (replaced the live file)"
-    )
+    assert result.actions[0] == (f"deployed {plan.MU_PLUGINS_DIR}/{recorder} by rename")
 
 
 def test_deploy_and_rollback_use_real_filesystem_on_local_stand_in(
@@ -334,16 +412,7 @@ def test_deploy_and_rollback_use_real_filesystem_on_local_stand_in(
 ) -> None:
     """Only WP-CLI is stubbed: staging, rsync, shell and rename all really run."""
 
-    class DiskTarget(Target):
-        def wp(self, *args: str, check: bool = True) -> str:
-            del check
-            if args[:2] == ("plugin", "list"):
-                return '[{"name":"polylang"}]'
-            return ""
-
-    target = DiskTarget(
-        "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None
-    )
+    target = FilesystemTarget(tmp_path / "site")
     repository = _repository(tmp_path)
     old_inodes: dict[str, int] = {}
     for slug in plan.NEW_PLUGINS:
@@ -364,7 +433,12 @@ def test_deploy_and_rollback_use_real_filesystem_on_local_stand_in(
     style = theme.with_name("style.css")
     style.write_text("theme assets")
 
-    steps.deploy(target, repository=repository, staging=tmp_path / "staging")
+    deployed = steps.deploy(
+        target,
+        repository=repository,
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-fixture",
+    )
 
     for slug in plan.NEW_PLUGINS:
         live = Path(target.path_of(f"{plan.PLUGINS_DIR}/{slug}"))
@@ -375,7 +449,13 @@ def test_deploy_and_rollback_use_real_filesystem_on_local_stand_in(
     assert host.read_text() == "host plugin"
     assert style.read_text() == "theme assets"
 
-    steps.rollback_deploy(target, repository=repository)
+    assert deployed.publication is not None
+    assert not steps.finish_deploy(
+        target, deployed.publication, cache_buster="fixture"
+    ).notes
+    restored = steps.rollback_deploy(target, repository=repository)
+    assert not restored.notes
+    assert any("plugin linker-commerce: active" in line for line in restored.actions)
 
     for slug in plan.NEW_PLUGINS:
         live = Path(target.path_of(f"{plan.PLUGINS_DIR}/{slug}"))
@@ -394,12 +474,19 @@ def test_the_deploy_installs_the_theme_file_over_the_live_one(tmp_path: Path) ->
     The live copy of the same path belongs to the site being replaced: the
     switch writes this one over it and says which of the two it did.
     """
-    target = _fake(tmp_path)
+    target = FilesystemTarget(tmp_path / "site")
     relative = "picostrap5-child-base/functions.php"
-    target.existing.add(f"{plan.THEMES_DIR}/{relative}")
+    live = Path(target.path_of(f"{plan.THEMES_DIR}/{relative}"))
+    live.parent.mkdir(parents=True)
+    live.write_text("old theme")
     repository = _repository(tmp_path)
 
-    result = steps.deploy(target, repository=repository, staging=tmp_path / "staging")
+    result = steps.deploy(
+        target,
+        repository=repository,
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-fixture",
+    )
 
     installed = [
         (source, destination)
@@ -413,10 +500,7 @@ def test_the_deploy_installs_the_theme_file_over_the_live_one(tmp_path: Path) ->
         destination
         == f"{target.root}/{plan.THEMES_DIR}/picostrap5-child-base/.functions.php.next"
     )
-    assert (
-        f"deployed {plan.THEMES_REPO}/{relative} to "
-        f"{plan.THEMES_DIR}/{relative} (replaced the live file)" in result.actions
-    )
+    assert f"deployed {plan.THEMES_DIR}/{relative} by rename" in result.actions
 
 
 def test_the_deploy_installs_the_german_language_packs(tmp_path: Path) -> None:
@@ -429,12 +513,17 @@ def test_the_deploy_installs_the_german_language_packs(tmp_path: Path) -> None:
     switch the site's own default locale, which stays English while Polylang
     switches the front end per page.
     """
-    target = _fake(tmp_path)
+    target = FilesystemTarget(tmp_path / "site")
     repository = _repository(tmp_path)
 
-    result = steps.deploy(target, repository=repository, staging=tmp_path / "staging")
+    result = steps.deploy(
+        target,
+        repository=repository,
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-fixture",
+    )
 
-    calls = [args for _, args in target.calls]
+    calls = target.calls
     assert ("core", "language", "install", plan.LANGUAGE_PACK_LOCALE) in calls
     for plugin in plan.LANGUAGE_PACK_PLUGINS:
         assert (
@@ -459,17 +548,16 @@ def test_the_deploy_stops_when_the_checkout_has_no_theme_directory(
     site's functions.php would leave the old behaviours running (hreflang to
     the wrong domain among them) and report success.
     """
-    target = _fake(tmp_path)
+    target = FilesystemTarget(tmp_path / "site")
     with pytest.raises(CutoverError, match="carries no theme file"):
         steps.deploy(
             target,
             repository=_repository(tmp_path, themes=False),
             staging=tmp_path / "staging",
         )
-    assert [Path(source).name for source, _ in target.rsyncs] == [
-        "linker-error-recorder.php",
-        "linker-engine-ca.pem",
-    ], "the must-use files go first; the theme failure stops everything after them"
+    assert target.rsyncs == [], (
+        "all inputs are validated before the first remote upload"
+    )
 
 
 def test_the_deploy_stops_when_the_checkout_has_no_must_use_directory(
@@ -480,7 +568,7 @@ def test_the_deploy_stops_when_the_checkout_has_no_must_use_directory(
     The directory is an input of step 3 (#80 ships it); a checkout without it
     is not a checkout that can run the window's file half.
     """
-    target = _fake(tmp_path)
+    target = FilesystemTarget(tmp_path / "site")
     with pytest.raises(CutoverError, match="carries no must-use plugin"):
         steps.deploy(
             target,
