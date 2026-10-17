@@ -1,0 +1,36 @@
+/* PROTOTYPE · inquiry open to everyone — throwaway. Mirrors the live contact card (white card, teal action). */
+.iqp { padding: 56px 20px 80px; font-family: "Plus Jakarta Sans", Inter, Arial, sans-serif; color: #15352f; }
+.iqp-card { background: #fff; border: 1px solid #dfe7ec; border-radius: 20px; padding: 28px 30px; box-shadow: 0 6px 24px rgba(21, 53, 47, .06); }
+.iqp-card--narrow { max-width: 620px; margin: 0 auto; }
+.iqp-grid { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 24px; align-items: start; }
+.iqp-card--side { background: #f6f9f8; position: sticky; top: 110px; }
+.iqp-eyebrow { margin: 0 0 6px; font-size: 11px; letter-spacing: .12em; font-weight: 700; color: #0c7f73; }
+.iqp-h1 { margin: 0 0 6px; font-size: 28px; line-height: 1.2; font-weight: 600; color: #15352f; }
+.iqp-lead { margin: 0 0 18px; font-size: 14px; color: #596e67; }
+.iqp-lead a, .iqp-signin a { color: #0c7f73; font-weight: 600; }
+.iqp-h2 { margin: 18px 0 10px; font-size: 16px; font-weight: 600; color: #15352f; }
+.iqp-items { list-style: none; margin: 0; padding: 0; border: 1px solid #e6ece9; border-radius: 12px; overflow: hidden; }
+.iqp-items li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #eef2f0; font-size: 14px; }
+.iqp-items li:last-child { border-bottom: 0; }
+.iqp-items img, .iqp-noimg { width: 44px; height: 44px; object-fit: contain; background: #f4f6f5; border-radius: 8px; flex: none; }
+.iqp-name { flex: 1; }
+.iqp-qty { color: #596e67; white-space: nowrap; }
+.iqp-price, .iqp-empty { margin: 8px 0 0; font-size: 12.5px; color: #596e67; }
+.iqp-edit { display: inline-block; margin-top: 10px; font-size: 13px; color: #0c7f73; font-weight: 600; }
+.iqp-label { display: block; margin: 12px 0 0; font-size: 13.5px; font-weight: 500; color: #15352f; }
+.iqp-label span { font-weight: 400; color: #8a9a95; font-size: 12px; margin-left: 4px; }
+.iqp-label input, .iqp-label textarea { display: block; width: 100%; margin-top: 6px; border: 1px solid #d6ded7; border-radius: 10px; padding: 11px 13px; font: inherit; font-size: 14px; color: #15352f; background: #fff; box-sizing: border-box; }
+.iqp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.iqp-check { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; font-size: 12px; color: #596e67; }
+.iqp-send { display: block; width: 100%; margin-top: 16px; border: 0; border-radius: 10px; background: #0c7f73; color: #fff; font: inherit; font-size: 15px; font-weight: 600; padding: 13px 16px; cursor: pointer; text-align: left; }
+.iqp-send--ghost { background: #fff; color: #0c7f73; border: 1px solid #0c7f73; text-align: center; }
+.iqp-note { margin: 8px 0 0; font-size: 12px; color: #596e67; }
+.iqp-signin { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid #eef2f0; font-size: 13px; color: #596e67; }
+.iqp-known { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-top: 16px; padding: 14px 16px; background: #f6f9f8; border: 1px solid #e6ece9; border-radius: 12px; font-size: 13.5px; line-height: 1.55; }
+.iqp-link { border: 0; background: none; color: #0c7f73; font: inherit; font-weight: 600; cursor: pointer; }
+.iqp-more { margin-top: 8px; padding: 10px 14px; border: 1px dashed #d6ded7; border-radius: 10px; font-size: 12.5px; color: #596e67; }
+.iqp-offer { margin-top: 18px; padding: 16px; border-radius: 14px; background: #f3f7f2; border: 1px solid #d6ded7; }
+.iqp-offer p { margin: 4px 0 0; font-size: 13px; color: #596e67; }
+.iqp-switcher { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 100100; background: #1d2327; color: #fff; border-radius: 999px; padding: 6px 8px; display: flex; gap: 12px; align-items: center; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); font: 13px/1.2 -apple-system, BlinkMacSystemFont, sans-serif; }
+.iqp-switcher button { background: #3c434a; color: #fff; border: 0; border-radius: 999px; width: 30px; height: 30px; cursor: pointer; }
+@media (max-width: 760px) { .iqp-grid { grid-template-columns: 1fr; } .iqp-two { grid-template-columns: 1fr; } .iqp-card { padding: 22px 18px; } }
