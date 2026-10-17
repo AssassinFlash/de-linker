@@ -72,6 +72,10 @@ if ( ! class_exists( 'WC_Email' ) ) {
 		public function get_heading() { return 'Heading'; }
 		public function get_additional_content() { return ''; }
 		public function get_recipient() { return $this->recipient; }
+		// Woo's external sender contract; native filtering and the send lifecycle
+		// are exercised by NotificationRoutingTest on the real local instance.
+		public function get_from_name( $from_name = '' ) { return get_option( 'woocommerce_email_from_name', '' ); }
+		public function get_from_address( $from_email = '' ) { return get_option( 'woocommerce_email_from_address', '' ); }
 		// The tests observe sending through this action (WP_Mock::expectAction).
 		protected function send_notification(): bool {
 			do_action( 'linker_test_email_sent', $this->id, $this->get_recipient() );
