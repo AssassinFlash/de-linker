@@ -354,6 +354,9 @@ def archive(target: Target, receipt: Receipt) -> None:
         recover.insert(
             0, f"if [ -e {saved} ] || [ -L {saved} ]; then mv {saved} {source}; fi"
         )
+    # The manifest and the locations are one recoverable state. A signal after
+    # its archived-state rename must restore the pending record as well.
+    recover.append(_write_manifest(manifest, directory))
     target.shell("set -eu\n" + "\n".join(prepare))
     script = (
         "set -eu\nrestore_archive() {\ntrap - EXIT HUP INT TERM\nset +e\n"
@@ -423,9 +426,12 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
             switch.append(f"mv {live} {current}")
         if entry.existed:
             switch.append(f"mv {'-f ' if not entry.directory else ''}{previous} {live}")
+            untouched = (
+                f"mv {current} {live}" if entry.directory else f"rm -f {current}"
+            )
             recover.insert(
                 0,
-                f"if [ -e {current} ] || [ -L {current} ]; then\n    if [ ! -e {previous} ] && [ ! -L {previous} ]; then mv {live} {previous}; fi\n    mv {'-f ' if not entry.directory else ''}{current} {live}\nfi",
+                f"if [ -e {current} ] || [ -L {current} ]; then\n    if [ ! -e {previous} ] && [ ! -L {previous} ]; then\n        mv {live} {previous}\n        mv {'-f ' if not entry.directory else ''}{current} {live}\n    else\n        {untouched}\n    fi\nfi",
             )
         else:
             recover.insert(

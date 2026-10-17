@@ -236,8 +236,9 @@ def test_failure_in_later_rename_restores_every_earlier_artifact(
         ) == ("old" if item.source.is_dir() else "old file")
 
 
+@pytest.mark.parametrize("interrupted_plugin", ["first", "second"])
 def test_interrupted_whole_rollback_restores_current_batch_then_can_retry(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, interrupted_plugin: str
 ) -> None:
     target, artifacts = batch_fixture(tmp_path)
     receipt = atomic.publish(target, artifacts, deploy_id="20261018T000000Z-rollback")
@@ -248,7 +249,7 @@ def test_interrupted_whole_rollback_restores_current_batch_then_can_retry(
         tmp_path,
         monkeypatch,
         "mv",
-        'if [[ "$1" == */files/wp-content/plugins/second ]]; then kill -TERM "$PPID"; exit 1; fi\n'
+        f'if [[ "$1" == */files/wp-content/plugins/{interrupted_plugin} ]]; then kill -TERM "$PPID"; exit 1; fi\n'
         + f'exec "{real_mv}" "$@"\n',
     )
     with pytest.raises(RuntimeError):
@@ -258,6 +259,40 @@ def test_interrupted_whole_rollback_restores_current_batch_then_can_retry(
     ).read_text() == "new"
     assert Path(target.path_of(artifacts[1].relative)).read_text() == "new file"
     monkeypatch.setenv("PATH", original_path)
+    atomic.rollback(target, [item.relative for item in artifacts])
+    assert (
+        Path(target.path_of(artifacts[0].relative)) / "plugin.php"
+    ).read_text() == "old"
+
+
+def test_archive_interrupted_after_manifest_commit_restores_pending_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target, artifacts = batch_fixture(tmp_path)
+    receipt = atomic.publish(
+        target, artifacts, deploy_id="20261018T000000Z-archive-commit"
+    )
+    real_mv = shutil.which("mv")
+    original_path = os.environ["PATH"]
+    command_shim(
+        tmp_path,
+        monkeypatch,
+        "mv",
+        'source="${@: -2:1}"\ndestination="${@: -1}"\n'
+        'if [[ "$destination" == */manifest.json ]]; then\n'
+        '    contents=$(<"$source")\n'
+        '    if [[ "$contents" == *\'"state": "archived"\'* ]]; then\n'
+        f'        "{real_mv}" "$@"\n'
+        '        kill -TERM "$PPID"; exit 1\n'
+        "    fi\nfi\n"
+        f'exec "{real_mv}" "$@"\n',
+    )
+    with pytest.raises(RuntimeError):
+        atomic.archive(target, receipt)
+    monkeypatch.setenv("PATH", original_path)
+    _, manifest = atomic.latest_manifest(target)
+    assert manifest.state == "pending"
+    atomic.archive(target, receipt)
     atomic.rollback(target, [item.relative for item in artifacts])
     assert (
         Path(target.path_of(artifacts[0].relative)) / "plugin.php"
