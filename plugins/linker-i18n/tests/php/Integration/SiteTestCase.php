@@ -142,7 +142,10 @@ abstract class SiteTestCase extends TestCase {
 		$environment = getenv();
 		unset( $environment['DEEPSEEK_API_KEY'] );
 		$process = proc_open(
-			array_merge( array( self::$wp ), $args, array( '--user=1' ) ),
+			// Shadow getenv only inside the translator's namespace: integration
+			// fixtures cannot discover the real HOME credential file. The fake key
+			// supplied by php(..., true) still reaches the stand-in normally.
+			array_merge( array( self::$wp, '--exec=namespace Linker\I18n\Translation; function getenv( string $name ): string|false { return "HOME" === $name ? false : \getenv( $name ); }' ), $args, array( '--user=1' ) ),
 			array(
 				1 => array( 'pipe', 'w' ),
 				2 => array( 'pipe', 'w' ),

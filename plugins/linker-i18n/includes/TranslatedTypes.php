@@ -16,12 +16,15 @@ namespace Linker\I18n;
 final class TranslatedTypes {
 
 	/**
-	 * Post types with a German version: pages, posts, WooCommerce products and
-	 * LiveCanvas's header/footer partials and dynamic templates (both
-	 * `public => false`, so Polylang lists them only when told to;
-	 * docs/research/2026-10-09/i18n-opensource-replication.md §7.1).
+	 * Content translated automatically (owner ruling, 2026-10-17).
 	 */
-	public const POST_TYPES = array( 'page', 'post', 'product', 'lc_partial', 'lc_dynamic_template' );
+	public const POST_TYPES = array( 'page', 'post', 'product' );
+
+	/**
+	 * Language pairs owned by present. Polylang must still select the correct
+	 * language's template, but a machine translator must never write them.
+	 */
+	public const PRESENT_TYPES = array( 'lc_partial', 'lc_dynamic_template' );
 
 	/**
 	 * Taxonomies with German terms: post categories, product categories, and
@@ -54,7 +57,7 @@ final class TranslatedTypes {
 	 */
 	public function post_types( array $post_types, bool $is_settings ): array {
 		unset( $is_settings );
-		foreach ( self::POST_TYPES as $post_type ) {
+		foreach ( array_merge( self::POST_TYPES, self::PRESENT_TYPES ) as $post_type ) {
 			$post_types[ $post_type ] = $post_type;
 		}
 		return $post_types;

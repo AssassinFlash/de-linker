@@ -13,12 +13,11 @@ namespace Linker\I18n\Translation;
  * The translation state of an English object and its German version, in
  * post meta or term meta.
  *
- * On the English object: its status (pending, synced, needs_review) and a
+ * On the English object: its status (pending, synced, failed) and a
  * note. On the German object: the fingerprint of the English it was made
  * from (`_linker_i18n_source_hash`), per field the fingerprints of the
- * English and German segments last written (`_linker_i18n_units`), and the
- * segments a person changed (`_linker_i18n_reviewed`), which a machine
- * never overwrites.
+ * English and German segments last written (`_linker_i18n_units`), and historical conflict flags read during recovery. New writes clear
+ * the old `_linker_i18n_reviewed` locks (owner ruling, 2026-10-17).
  */
 final class State {
 
@@ -33,7 +32,7 @@ final class State {
 	public const REVIEWED = '_linker_i18n_reviewed';
 
 	/**
-	 * Waiting for the translator: queued, no key, or the last attempt failed (see the note).
+	 * Waiting for the translator: queued or a transient retry is scheduled.
 	 */
 	public const PENDING = 'pending';
 
@@ -43,7 +42,12 @@ final class State {
 	public const SYNCED = 'synced';
 
 	/**
-	 * The English changed where a person had edited the German; the German was left as it is.
+	 * A lasting failure, or transient retries exhausted. The previous German stays.
+	 */
+	public const FAILED = 'failed';
+
+	/**
+	 * Historical status, read only to recover objects into automatic translation.
 	 */
 	public const NEEDS_REVIEW = 'needs_review';
 
@@ -103,7 +107,7 @@ final class State {
 
 	/**
 	 * Per field, the fingerprints of the English segments and of the German
-	 * segments last written, and whether the field waits for a review.
+	 * segments last written, including historical conflict flags to recover.
 	 *
 	 * @param string $kind State::POST or State::TERM.
 	 * @param int    $twin German object ID.
@@ -124,42 +128,18 @@ final class State {
 	}
 
 	/**
-	 * Per field, the segments a person edited: their indexes, or '*' when the
-	 * person changed the field's structure.
-	 *
-	 * @param string $kind State::POST or State::TERM.
-	 * @param int    $twin German object ID.
-	 * @return array<string, array<int, int>|string>
-	 */
-	public function reviewed( string $kind, int $twin ): array {
-		$reviewed = array();
-		foreach ( $this->read( $kind, $twin, self::REVIEWED ) as $field => $value ) {
-			if ( ! is_string( $field ) ) {
-				continue;
-			}
-			$reviewed[ $field ] = '*' === $value ? '*' : array_values( array_map( 'intval', (array) $value ) );
-		}
-		return $reviewed;
-	}
-
-	/**
 	 * Stores the state of a German object.
 	 *
 	 * @param string                                                                     $kind        State::POST or State::TERM.
 	 * @param int                                                                        $twin        German object ID.
 	 * @param string                                                                     $source_hash Fingerprint of the English.
 	 * @param array<string, array{src: list<string>, out: list<string>, conflict: bool}> $units    Segment fingerprints per field.
-	 * @param array<string, array<int, int>|string>                                      $reviewed    Edited segments per field.
 	 */
-	public function save( string $kind, int $twin, string $source_hash, array $units, array $reviewed ): void {
+	public function save( string $kind, int $twin, string $source_hash, array $units ): void {
 		update_metadata( $kind, $twin, self::SOURCE_HASH, $source_hash );
 		update_metadata( $kind, $twin, self::UNITS, wp_slash( (string) wp_json_encode( $units ) ) );
-		$reviewed = array_filter( $reviewed, static fn( $value ): bool => '*' === $value || array() !== $value );
-		if ( array() === $reviewed ) {
-			delete_metadata( $kind, $twin, self::REVIEWED );
-		} else {
-			update_metadata( $kind, $twin, self::REVIEWED, wp_slash( (string) wp_json_encode( $reviewed ) ) );
-		}
+		// Retire historical manual-approval locks after a successful automatic write.
+		delete_metadata( $kind, $twin, self::REVIEWED );
 	}
 
 	/**

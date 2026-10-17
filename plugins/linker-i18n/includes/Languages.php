@@ -194,6 +194,15 @@ final class Languages {
 	}
 
 	/**
+	 * Whether a post type belongs to the automatic content translator.
+	 *
+	 * @param string $post_type Post type.
+	 */
+	public function automatically_translates_post_type( string $post_type ): bool {
+		return in_array( $post_type, TranslatedTypes::POST_TYPES, true ) && $this->translates_post_type( $post_type );
+	}
+
+	/**
 	 * Whether Polylang translates the taxonomy.
 	 *
 	 * @param string $taxonomy Taxonomy.

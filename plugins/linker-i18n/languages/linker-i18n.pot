@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Linker i18n plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Linker i18n 0.2.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: Linker i18n 0.3.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-i18n\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: \n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-09T14:58:24+00:00\n"
+"POT-Creation-Date: 2026-10-17T12:05:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-i18n\n"
@@ -33,35 +33,39 @@ msgstr ""
 msgid "German"
 msgstr ""
 
-#: includes/Admin/StatusColumn.php:93
+#: includes/Admin/StatusColumn.php:98
+msgid "Translation failed"
+msgstr ""
+
+#: includes/Admin/StatusColumn.php:101
 msgid "Missing, translation pending"
 msgstr ""
 
-#: includes/Admin/StatusColumn.php:93
+#: includes/Admin/StatusColumn.php:101
 msgid "Missing"
 msgstr ""
 
-#: includes/Admin/StatusColumn.php:96
-msgid "Needs review"
-msgstr ""
-
-#: includes/Admin/StatusColumn.php:98
+#: includes/Admin/StatusColumn.php:103
 msgid "Translation pending"
 msgstr ""
 
-#: includes/Admin/StatusColumn.php:98
+#: includes/Admin/StatusColumn.php:103
 msgid "Synced"
 msgstr ""
 
-#: includes/Admin/StatusColumn.php:114
+#: includes/Admin/StatusColumn.php:120
 msgid "Retranslate"
 msgstr ""
 
-#: includes/Admin/StatusColumn.php:126
+#: includes/Admin/StatusColumn.php:133
 msgid "You may not translate this."
 msgstr ""
 
-#: includes/Admin/StatusColumn.php:141
+#: includes/Admin/StatusColumn.php:136
+msgid "This content is managed by the repository."
+msgstr ""
+
+#: includes/Admin/StatusColumn.php:150
 msgid "The German version will be translated again."
 msgstr ""
 

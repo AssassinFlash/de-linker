@@ -22,10 +22,10 @@ namespace Linker\I18n\Translation;
  * acts without it (guides/thinking_mode); lower temperatures such as 0.2
  * are "more focused and deterministic" (api/create-chat-completion).
  *
- * The key comes from the environment variable DEEPSEEK_API_KEY
- * ({@see self::from_environment()}) and never from the database or a file.
- * The constant LINKER_I18N_DEEPSEEK_ENDPOINT points the client elsewhere (a
- * local stand-in in tests).
+ * The key comes from the process environment or the private deepseek.env
+ * outside the website ({@see Credentials::deepseek_key()}).
+ * LINKER_I18N_DEEPSEEK_ENDPOINT accepts a loopback stand-in only in local
+ * or development environments; production always uses the official endpoint.
  */
 final class DeepSeekClient implements Client {
 
@@ -65,8 +65,7 @@ final class DeepSeekClient implements Client {
 	 * @param Rules $rules Glossary and banned words, for the prompt.
 	 */
 	public static function from_environment( Rules $rules ): self {
-		$key = getenv( 'DEEPSEEK_API_KEY' );
-		return new self( $rules, is_string( $key ) ? trim( $key ) : '' );
+		return new self( $rules, Credentials::deepseek_key() );
 	}
 
 	/**
@@ -92,8 +91,15 @@ final class DeepSeekClient implements Client {
 		if ( '' !== $feedback ) {
 			$user .= "\n\nYour previous answer was rejected: " . $feedback . '. Translate again and fix this.';
 		}
+		$endpoint = self::ENDPOINT;
+		if ( defined( 'LINKER_I18N_DEEPSEEK_ENDPOINT' ) && in_array( wp_get_environment_type(), array( 'local', 'development' ), true ) ) {
+			$stub = (string) constant( 'LINKER_I18N_DEEPSEEK_ENDPOINT' );
+			if ( in_array( wp_parse_url( $stub, PHP_URL_HOST ), array( '127.0.0.1', 'localhost', '::1' ), true ) ) {
+				$endpoint = $stub;
+			}
+		}
 		$response = wp_remote_post(
-			defined( 'LINKER_I18N_DEEPSEEK_ENDPOINT' ) ? (string) constant( 'LINKER_I18N_DEEPSEEK_ENDPOINT' ) : self::ENDPOINT,
+			$endpoint,
 			array(
 				'timeout' => self::TIMEOUT,
 				'headers' => array(
@@ -122,7 +128,7 @@ final class DeepSeekClient implements Client {
 			)
 		);
 		if ( is_wp_error( $response ) ) {
-			throw new TranslationFailed( esc_html( 'DeepSeek unreachable: ' . $response->get_error_message() ), true );
+			throw new TranslationFailed( 'DeepSeek unreachable', true );
 		}
 		$status = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $status ) {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for the field planner.
+ * Incremental translation follows English without manual approval locks.
  *
  * @package Linker\I18n
  */
@@ -16,205 +16,113 @@ use Linker\I18n\Translation\Segmenter;
 use WP_Mock\Tools\TestCase;
 
 /**
- * Tests for Planner and FieldPlan: what of the German stays, what is translated.
+ * Checks incremental updates and recovery of historical locks.
  *
  * @covers \Linker\I18n\Translation\Planner
  * @covers \Linker\I18n\Translation\FieldPlan
  */
 final class PlannerTest extends TestCase {
 
-	private const ENGLISH = "<h3>GoodWe GW10K-EHA-G20</h3>\n<ul>\n<li><strong>Rated AC power:</strong> 10 kW</li>\n<li>Backup power: 10.0 kVA</li>\n<li>Ingress protection: IP66</li>\n</ul>";
-
-	private const GERMAN = "<h3>GoodWe GW10K-EHA-G20</h3>\n<ul>\n<li><strong>Nenn-AC-Leistung:</strong> 10 kW</li>\n<li>Notstromleistung: 10,0 kVA</li>\n<li>Schutzart: IP66</li>\n</ul>";
-
-	/**
-	 * The planner.
-	 *
-	 * @var Planner
-	 */
-	private Planner $planner;
+	private const ENGLISH = '<p>First paragraph.</p><p>Second paragraph.</p>';
+	private const GERMAN  = '<p>Erster Absatz.</p><p>Zweiter Absatz.</p>';
 
 	/**
-	 * Sets up the planner.
+	 * Builds a planner over the real segmenter and aligner.
 	 */
-	public function setUp(): void {
-		parent::setUp();
-		$this->planner = new Planner( new Segmenter( new HtmlTokenizer() ), new Aligner() );
+	private function planner(): Planner {
+		return new Planner( new Segmenter( new HtmlTokenizer() ), new Aligner() );
 	}
 
 	/**
-	 * The state after the German was written from the English.
+	 * Last successful translation of the two paragraphs.
 	 *
-	 * @param string $english English HTML.
-	 * @param string $german  German HTML.
 	 * @return array{src: list<string>, out: list<string>, conflict: bool}
 	 */
-	private function unit( string $english, string $german ): array {
+	private function unit(): array {
 		return array(
-			'src'      => $this->planner->split( $english, true )->hashes(),
-			'out'      => $this->planner->split( $german, true )->hashes(),
+			'src'      => $this->planner()->split( self::ENGLISH, true )->hashes(),
+			'out'      => $this->planner()->split( self::GERMAN, true )->hashes(),
 			'conflict' => false,
 		);
 	}
 
 	/**
-	 * Without German every segment is translated.
+	 * Missing German and missing baseline both require a complete translation.
 	 */
-	public function test_no_german_translates_everything(): void {
-		$plan = $this->planner->plan( self::ENGLISH, true, null, null, array(), false );
-
-		$this->assertSame( array( 0, 1, 2, 3 ), $plan->missing() );
+	public function test_missing_baseline_translates_every_segment(): void {
+		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, null, null, false )->missing() );
+		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), null, false )->missing() );
 	}
 
 	/**
-	 * German nobody recorded (a person wrote it) is kept, all of it reviewed.
-	 */
-	public function test_unrecorded_german_is_kept_as_reviewed(): void {
-		$plan = $this->planner->plan( self::ENGLISH, true, array( self::GERMAN, true ), null, array(), false );
-
-		$this->assertSame( self::GERMAN, $plan->render( array() ) );
-		$this->assertSame( '*', $plan->reviewed );
-		$this->assertFalse( $plan->conflict );
-	}
-
-	/**
-	 * Unchanged English keeps the German as it is.
+	 * An unchanged English field keeps the German byte for byte.
 	 */
 	public function test_unchanged_english_keeps_german(): void {
-		$plan = $this->planner->plan( self::ENGLISH, true, array( self::GERMAN, true ), $this->unit( self::ENGLISH, self::GERMAN ), array(), false );
-
+		$plan = $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), $this->unit(), false );
 		$this->assertSame( array(), $plan->missing() );
 		$this->assertSame( self::GERMAN, $plan->render( array() ) );
 	}
 
 	/**
-	 * One changed English segment: only it is translated, the others keep
-	 * their German, printed with the English markup.
+	 * Only changed English goes to the model, even after a German manual edit.
 	 */
-	public function test_changed_segment_is_the_only_one_translated(): void {
-		$english = str_replace( 'Backup power: 10.0 kVA', 'Backup power: 12.0 kVA', self::ENGLISH );
-
-		$plan = $this->planner->plan( $english, true, array( self::GERMAN, true ), $this->unit( self::ENGLISH, self::GERMAN ), array(), false );
-
-		$this->assertSame( array( 2 ), $plan->missing() );
-		$this->assertSame(
-			"<h3>GoodWe GW10K-EHA-G20</h3>\n<ul>\n<li><strong>Nenn-AC-Leistung:</strong> 10 kW</li>\n<li>Notstromleistung: 12,0 kVA</li>\n<li>Schutzart: IP66</li>\n</ul>",
-			$plan->render( array( 2 => 'Notstromleistung: 12,0 kVA' ) )
-		);
-	}
-
-	/**
-	 * A segment a person edited is detected and kept when the English beside it changes.
-	 */
-	public function test_person_edit_is_kept_when_other_segments_change(): void {
-		$edited  = str_replace( 'Notstromleistung', 'Notstrom-Nennleistung', self::GERMAN );
-		$english = str_replace( 'Ingress protection', 'Protection class', self::ENGLISH );
-
-		$plan = $this->planner->plan( $english, true, array( $edited, true ), $this->unit( self::ENGLISH, self::GERMAN ), array(), false );
-
-		$this->assertFalse( $plan->conflict );
-		$this->assertSame( array( 3 ), $plan->missing() );
-		$this->assertSame( array( 2 ), $plan->reviewed );
-		$this->assertStringContainsString( 'Notstrom-Nennleistung: 10,0 kVA', $plan->render( array( 3 => 'Schutzklasse: <k1/>' ) ) );
-	}
-
-	/**
-	 * When the English of an edited segment changes, the segment stays and
-	 * waits for a review, remembering the English it was made from.
-	 */
-	public function test_english_change_under_a_person_edit_holds_the_segment(): void {
-		$edited  = str_replace( 'Notstromleistung', 'Notstrom-Nennleistung', self::GERMAN );
-		$english = str_replace( 'Backup power: 10.0 kVA', 'Backup power: 12.0 kVA', self::ENGLISH );
-		$unit    = $this->unit( self::ENGLISH, self::GERMAN );
-
-		$plan = $this->planner->plan( $english, true, array( $edited, true ), $unit, array(), false );
-
-		$this->assertTrue( $plan->conflict );
-		$this->assertSame( array(), $plan->missing() );
-		$this->assertSame( $edited, $plan->render( array() ) );
-		$this->assertSame( array( 2 => $unit['src'][2] ), $plan->held );
-		$this->assertSame( array( 2 ), $plan->reviewed );
-	}
-
-	/**
-	 * While an edited segment is held, the changed segment beside it follows
-	 * the English.
-	 */
-	public function test_neighbour_follows_the_english_while_a_segment_is_held(): void {
-		$edited  = str_replace( 'Notstromleistung', 'Notstrom-Nennleistung', self::GERMAN );
-		$english = str_replace( array( 'Backup power: 10.0 kVA', 'Ingress protection' ), array( 'Backup power: 12.0 kVA', 'Protection class' ), self::ENGLISH );
-
-		$plan = $this->planner->plan( $english, true, array( $edited, true ), $this->unit( self::ENGLISH, self::GERMAN ), array(), false );
-
-		$this->assertTrue( $plan->conflict );
-		$this->assertSame( array( 3 ), $plan->missing() );
-		$this->assertSame(
-			"<h3>GoodWe GW10K-EHA-G20</h3>\n<ul>\n<li><strong>Nenn-AC-Leistung:</strong> 10 kW</li>\n<li>Notstrom-Nennleistung: 10,0 kVA</li>\n<li>Schutzklasse: IP66</li>\n</ul>",
-			$plan->render( array( 3 => 'Schutzklasse: <k1/>' ) )
-		);
-	}
-
-	/**
-	 * When the English of an edited segment is removed, old and new segments
-	 * no longer pair up: the whole field stays for a review.
-	 */
-	public function test_removed_english_under_a_person_edit_keeps_the_field(): void {
-		$edited  = str_replace( 'Notstromleistung', 'Notstrom-Nennleistung', self::GERMAN );
-		$english = str_replace( "<li>Backup power: 10.0 kVA</li>\n", '', self::ENGLISH );
-
-		$plan = $this->planner->plan( $english, true, array( $edited, true ), $this->unit( self::ENGLISH, self::GERMAN ), array(), false );
-
-		$this->assertTrue( $plan->conflict );
-		$this->assertSame( $edited, $plan->render( array() ) );
-		$this->assertTrue( $plan->unit['conflict'] ?? false );
-	}
-
-	/**
-	 * A segment added at the top moves the reviewed index with it.
-	 */
-	public function test_reviewed_index_follows_inserted_segments(): void {
-		$edited  = str_replace( 'Schutzart', 'Schutzart (IEC 60529)', self::GERMAN );
-		$english = str_replace( '<ul>', "<ul>\n<li>Phase: single-phase</li>", self::ENGLISH );
-
-		$plan = $this->planner->plan( $english, true, array( $edited, true ), $this->unit( self::ENGLISH, self::GERMAN ), array(), false );
-
+	public function test_changed_english_replaces_a_manually_edited_german_segment(): void {
+		$english = str_replace( 'Second', 'Updated second', self::ENGLISH );
+		$german  = str_replace( 'Zweiter Absatz.', 'Von Hand bearbeitet.', self::GERMAN );
+		$plan    = $this->planner()->plan( $english, true, array( $german, true ), $this->unit(), false );
 		$this->assertSame( array( 1 ), $plan->missing() );
-		$this->assertSame( array( 4 ), $plan->reviewed );
+		$this->assertSame( '<p>Erster Absatz.</p><p>Aktualisierter Absatz.</p>', $plan->render( array( 1 => 'Aktualisierter Absatz.' ) ) );
 	}
 
 	/**
-	 * A person who changed the German's structure reviewed the whole field.
+	 * A manual edit in an unchanged segment does not cause extra model work.
 	 */
-	public function test_structure_change_reviews_the_field(): void {
-		$restructured = str_replace( "<li>Schutzart: IP66</li>\n", '', self::GERMAN );
-		$english      = str_replace( '10 kW', '12 kW', self::ENGLISH );
-
-		$plan = $this->planner->plan( $english, true, array( $restructured, true ), $this->unit( self::ENGLISH, self::GERMAN ), array(), false );
-
-		$this->assertTrue( $plan->conflict );
-		$this->assertSame( '*', $plan->reviewed );
+	public function test_unchanged_manual_german_survives_another_segments_change(): void {
+		$english = str_replace( 'Second', 'Updated second', self::ENGLISH );
+		$german  = str_replace( 'Erster Absatz.', 'Manueller erster Absatz.', self::GERMAN );
+		$plan    = $this->planner()->plan( $english, true, array( $german, true ), $this->unit(), false );
+		$this->assertSame( array( 1 ), $plan->missing() );
+		$this->assertStringContainsString( 'Manueller erster Absatz.', $plan->render( array( 1 => 'Aktualisiert.' ) ) );
 	}
 
 	/**
-	 * Forcing translates everything, edits or not.
+	 * Deleting English removes its German; inserting English translates only it.
+	 */
+	public function test_insertions_and_deletions_reuse_aligned_segments(): void {
+		$removed = $this->planner()->plan( '<p>First paragraph.</p>', true, array( self::GERMAN, true ), $this->unit(), false );
+		$this->assertSame( array(), $removed->missing() );
+		$this->assertSame( '<p>Erster Absatz.</p>', $removed->render( array() ) );
+		$inserted = $this->planner()->plan( '<p>New paragraph.</p>' . self::ENGLISH, true, array( self::GERMAN, true ), $this->unit(), false );
+		$this->assertSame( array( 0 ), $inserted->missing() );
+		$this->assertSame( '<p>Neu.</p>' . self::GERMAN, $inserted->render( array( 0 => 'Neu.' ) ) );
+	}
+
+	/**
+	 * Historical conflicts and changed German structures are rebuilt from English.
+	 */
+	public function test_historical_conflicts_and_unalignable_fields_are_retranslated(): void {
+		$unit             = $this->unit();
+		$unit['conflict'] = true;
+		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), $unit, false )->missing() );
+		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, array( '<p>Neu strukturiert.</p>', true ), $this->unit(), false )->missing() );
+	}
+
+	/**
+	 * Explicit retranslation rebuilds all segments.
 	 */
 	public function test_force_translates_everything(): void {
-		$plan = $this->planner->plan( self::ENGLISH, true, array( self::GERMAN, true ), $this->unit( self::ENGLISH, self::GERMAN ), array( 1 ), true );
-
-		$this->assertSame( array( 0, 1, 2, 3 ), $plan->missing() );
+		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), $this->unit(), true )->missing() );
 	}
 
 	/**
-	 * German whose inline markup differs from the English (the old plugin's)
-	 * is kept byte for byte rather than printed with the wrong markup.
+	 * Existing German inline markup remains valid when another segment changes.
 	 */
-	public function test_german_with_other_markup_is_kept_verbatim(): void {
-		$german  = str_replace( '<strong>Nenn-AC-Leistung:</strong>', 'Nenn-AC-Leistung:', self::GERMAN );
-		$english = str_replace( 'IP66', 'IP67', self::ENGLISH );
-
-		$plan = $this->planner->plan( $english, true, array( $german, true ), $this->unit( self::ENGLISH, $german ), array(), false );
-
-		$this->assertSame( array( 3 ), $plan->missing() );
-		$this->assertStringContainsString( '<li>Nenn-AC-Leistung: 10 kW</li>', $plan->render( array( 3 => 'Schutzart: <k1/>' ) ) );
+	public function test_german_with_different_inline_markup_is_kept_verbatim(): void {
+		$english     = '<p><strong>First paragraph.</strong></p><p>Updated second paragraph.</p>';
+		$unit        = $this->unit();
+		$unit['src'] = $this->planner()->split( '<p><strong>First paragraph.</strong></p><p>Second paragraph.</p>', true )->hashes();
+		$plan        = $this->planner()->plan( $english, true, array( self::GERMAN, true ), $unit, false );
+		$this->assertSame( array( 1 ), $plan->missing() );
+		$this->assertSame( '<p><strong>Erster Absatz.</strong></p><p>Neu.</p>', $plan->render( array( 1 => 'Neu.' ) ) );
 	}
 }

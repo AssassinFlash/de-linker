@@ -111,6 +111,7 @@ final class SeoTest extends TestCase {
 	 */
 	public function test_translated_types(): void {
 		$types = new TranslatedTypes();
+		$this->assertSame( array( 'page', 'post', 'product' ), TranslatedTypes::POST_TYPES );
 
 		$post_types = $types->post_types( array( 'page' => 'page' ), false );
 		$taxonomies = $types->taxonomies( array(), true );

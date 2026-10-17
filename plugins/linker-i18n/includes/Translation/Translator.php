@@ -17,10 +17,8 @@ use Linker\I18n\Twins;
  *
  * Segment by segment: what did not change in the English keeps its German,
  * what changed goes to the translator, and every translation is checked
- * before anything is stored. A segment a person edited in the German is
- * never overwritten: when the English under it changes, the segment stays as
- * it is (the whole field, when its segments no longer line up) and the object
- * is marked needs_review until a person saves the German again. Nothing is
+ * before anything is stored. English is the source of truth, including where
+ * somebody previously edited German (owner ruling, 2026-10-17). Nothing is
  * stored when a translation is missing or fails a check; the German stays as
  * it was.
  */
@@ -68,7 +66,7 @@ final class Translator {
 	 */
 	public function post( int $source_id, bool $force = false ): string {
 		$source = get_post( $source_id );
-		if ( ! $source instanceof \WP_Post || ! $this->languages->translates_post_type( $source->post_type ) || Languages::SOURCE !== $this->languages->of_post( $source_id ) ) {
+		if ( ! $source instanceof \WP_Post || ! $this->accepts( State::POST, $source_id ) ) {
 			return '';
 		}
 		$twin = $this->german_post( $source_id );
@@ -80,6 +78,24 @@ final class Translator {
 			fn( array $values ): int => $this->twins->post( $source_id, $values ),
 			$force
 		);
+	}
+
+	/**
+	 * The shared guard for saves, explicit commands and previously queued jobs.
+	 *
+	 * @param string $kind State::POST or State::TERM.
+	 * @param int    $id English object ID.
+	 */
+	public function accepts( string $kind, int $id ): bool {
+		if ( State::POST === $kind ) {
+			$post = get_post( $id );
+			return $post instanceof \WP_Post && $this->languages->automatically_translates_post_type( $post->post_type ) && Languages::SOURCE === $this->languages->of_post( $id );
+		}
+		if ( State::TERM === $kind ) {
+			$term = get_term( $id );
+			return $term instanceof \WP_Term && $this->languages->translates_taxonomy( $term->taxonomy ) && Languages::SOURCE === $this->languages->of_term( $id );
+		}
+		return false;
 	}
 
 	/**
@@ -142,52 +158,10 @@ final class Translator {
 			}
 		}
 		$twin = State::POST === $kind ? $this->twins->post( $source_id, $values, $slug ) : $this->twins->term( $source_id, $values, $slug );
-		$this->record( $kind, $twin, $fields, array(), array(), $missing );
+		$this->record( $kind, $twin, $fields, $missing );
 		$status = array() === $missing ? State::SYNCED : State::PENDING;
 		$this->state->set_status( $kind, $source_id, $status, array() === $missing ? '' : 'no German for ' . implode( ', ', $missing ) );
 		return $status;
-	}
-
-	/**
-	 * Takes in what a person changed in a German object: the changed segments
-	 * become reviewed and are never overwritten. When the object waited for a
-	 * review, the person's German is accepted for the English as it is now
-	 * and the object is queued again.
-	 *
-	 * @param string $kind State::POST or State::TERM.
-	 * @param int    $twin German object ID.
-	 * @return bool Whether the object waited for a review and was accepted.
-	 */
-	public function record_edit( string $kind, int $twin ): bool {
-		$source_id = State::POST === $kind ? $this->languages->post_translation( $twin, Languages::SOURCE ) : $this->languages->term_translation( $twin, Languages::SOURCE );
-		if ( null === $source_id ) {
-			return false;
-		}
-		$source = State::POST === $kind ? get_post( $source_id ) : get_term( $source_id );
-		$german = State::POST === $kind ? get_post( $twin ) : get_term( $twin );
-		if ( $source instanceof \WP_Post && $german instanceof \WP_Post ) {
-			$english_fields = $this->fields->of_post( $source );
-			$german_fields  = $this->fields->of_post( $german );
-		} elseif ( $source instanceof \WP_Term && $german instanceof \WP_Term ) {
-			$english_fields = $this->fields->of_term( $source );
-			$german_fields  = $this->fields->of_term( $german );
-		} else {
-			return false;
-		}
-		$units    = $this->state->units( $kind, $twin );
-		$reviewed = $this->state->reviewed( $kind, $twin );
-		$accepted = State::NEEDS_REVIEW === $this->state->status( $kind, $source_id );
-		foreach ( $units as $field => $unit ) {
-			$current                = $this->planner->split( $german_fields[ $field ][0] ?? '', $german_fields[ $field ][1] ?? true );
-			$reviewed[ $field ]     = $this->planner->absorb( $unit['out'], $current, $reviewed[ $field ] ?? array() );
-			$units[ $field ]['out'] = $current->hashes();
-			if ( $accepted && $unit['conflict'] && isset( $english_fields[ $field ] ) ) {
-				$units[ $field ]['src']      = $this->planner->split( $english_fields[ $field ][0], $english_fields[ $field ][1] )->hashes();
-				$units[ $field ]['conflict'] = false;
-			}
-		}
-		$this->state->save( $kind, $twin, $this->state->source_hash( $kind, $twin ), $units, $reviewed );
-		return $accepted;
 	}
 
 	/**
@@ -221,11 +195,12 @@ final class Translator {
 	 * @phpstan-param callable(array<string, string>): int $write
 	 */
 	private function run( string $kind, int $source_id, array $source, ?int $twin, callable $write, bool $force = false ): string {
+		$force       = $force || State::NEEDS_REVIEW === $this->state->status( $kind, $source_id );
 		$fingerprint = self::fingerprint( $source );
 		$units       = null === $twin || $force ? array() : $this->state->units( $kind, $twin );
-		$reviewed    = null === $twin || $force ? array() : $this->state->reviewed( $kind, $twin );
-		if ( ! $force && null !== $twin && $this->state->source_hash( $kind, $twin ) === $fingerprint ) {
-			$status = array() === array_filter( $units, static fn( array $unit ): bool => $unit['conflict'] ) ? State::SYNCED : State::NEEDS_REVIEW;
+		$conflicted  = array() !== array_filter( $units, static fn( array $unit ): bool => $unit['conflict'] );
+		if ( ! $force && ! $conflicted && State::NEEDS_REVIEW !== $this->state->status( $kind, $source_id ) && null !== $twin && $this->state->source_hash( $kind, $twin ) === $fingerprint ) {
+			$status = State::SYNCED;
 			$this->state->set_status( $kind, $source_id, $status );
 			return $status;
 		}
@@ -233,7 +208,7 @@ final class Translator {
 		$current = $this->german_fields( $kind, $twin );
 		$plans   = array();
 		foreach ( $source as $field => list( $value, $html ) ) {
-			$plans[ $field ] = $this->planner->plan( $value, $html, $current[ $field ] ?? null, $units[ $field ] ?? null, $reviewed[ $field ] ?? array(), $force );
+			$plans[ $field ] = $this->planner->plan( $value, $html, $current[ $field ] ?? null, $units[ $field ] ?? null, $force );
 		}
 		$translations = $this->translate( $plans );
 
@@ -248,10 +223,9 @@ final class Translator {
 		}
 		$twin = $write( $values );
 
-		$this->record( $kind, $twin, $source, array_map( static fn( FieldPlan $plan ): array|string => $plan->reviewed, $plans ), $plans );
-		$conflicts = array_keys( array_filter( $plans, static fn( FieldPlan $plan ): bool => $plan->conflict ) );
-		$status    = array() === $conflicts ? State::SYNCED : State::NEEDS_REVIEW;
-		$this->state->set_status( $kind, $source_id, $status, array() === $conflicts ? '' : 'English changed where the German was edited: ' . implode( ', ', $conflicts ) );
+		$this->record( $kind, $twin, $source );
+		$status = State::SYNCED;
+		$this->state->set_status( $kind, $source_id, $status );
 		return $status;
 	}
 
@@ -331,34 +305,27 @@ final class Translator {
 	}
 
 	/**
-	 * Stores the state of a German object after a write: per field the
-	 * fingerprints of the English segments its German was made from and of
-	 * the German as stored, and whether German a person edited waits for a
-	 * review; and the fingerprint of the English when no field is missing.
+	 * Records the English and German segment fingerprints after a successful write.
 	 *
-	 * @param string                                $kind     State::POST or State::TERM.
-	 * @param int                                   $twin     German object ID.
-	 * @param array<string, array{string, bool}>    $source   English fields.
-	 * @param array<string, array<int, int>|string> $reviewed Edited segments by field.
-	 * @param array<string, FieldPlan>              $plans    This run's plans by field; none for German made elsewhere.
-	 * @param array<int, string>                    $missing  Fields left without German.
+	 * @param string                             $kind State::POST or State::TERM.
+	 * @param int                                $twin German object ID.
+	 * @param array<string, array{string, bool}> $source English fields.
+	 * @param array<int, string>                 $missing Fields left without German during import.
 	 */
-	private function record( string $kind, int $twin, array $source, array $reviewed, array $plans, array $missing = array() ): void {
+	private function record( string $kind, int $twin, array $source, array $missing = array() ): void {
 		$stored = $this->german_fields( $kind, $twin );
 		$units  = array();
 		foreach ( $source as $field => list( $value, $html ) ) {
 			if ( in_array( $field, $missing, true ) ) {
 				continue;
 			}
-			$plan            = $plans[ $field ] ?? null;
-			$units[ $field ] = $plan->unit ?? array(
-				// Held segments keep the English their German was made from.
-				'src'      => array_values( array_replace( $this->planner->split( $value, $html )->hashes(), $plan->held ?? array() ) ),
+			$units[ $field ] = array(
+				'src'      => $this->planner->split( $value, $html )->hashes(),
 				'out'      => $this->planner->split( $stored[ $field ][0] ?? '', $html )->hashes(),
-				'conflict' => null !== $plan && $plan->conflict,
+				'conflict' => false,
 			);
 		}
-		$this->state->save( $kind, $twin, array() === $missing ? self::fingerprint( $source ) : '', $units, $reviewed );
+		$this->state->save( $kind, $twin, array() === $missing ? self::fingerprint( $source ) : '', $units );
 	}
 
 	/**
