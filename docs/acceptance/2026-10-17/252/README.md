@@ -58,4 +58,9 @@ just sync <实例>     # just up → just pull → just pull load <实例> lates
 | Polylang 设置向导 / Polylang for WooCommerce 推荐 | 选项 `pll_dismissed_notices`（线上原本没有） | 经业主同意，线上设为 `["wizard","pllwc"]`，读回一致 |
 | Redis 的 Object Cache Pro 广告 | 员工账号的用户元数据 `roc_dismissed_*` | 经业主同意，线上 ID 1 两项设为 1，读回一致 |
 
-本地后台截图见 `admin/`。线上后台截图需要业主在自己的 Chrome 里登录后再拍。
+| Site Kit "Congratulations, the Site Kit plugin is now activated"（插件页） | 选项 `googlesitekit_show_activation_notice`，线上值为 1，并随每次快照带到本地 | 经业主同意，线上已删除，读回确认已不存在 |
+| SEOPress 重定向里的测试残留 | 文章类型 `seopress_404` 的 ID 3983–3989、3994、3996（测试探针）和 2019–2023（未启用，对应地址已由 linker-tools 的旧地址表 301） | 经业主同意，移到回收站（`post_status=trash`，可恢复；行备份在 `seopress_404_posts.tsv` / `_postmeta.tsv`）。前后对这 10 个来源地址各请求一次，只有测试探针 `/linker-move-probe/` 从 301 变为 404，其余响应不变 |
+
+本地（`g252`，2026-10-17 13:05 UTC 快照，线上清理之后）：后台首页、商品列表、页面列表、插件页顶部都没有任何提示（`admin/local-*.png`）。插件页那条 Site Kit 提示是在线上删除该选项之前带进快照的，第一次显示后就自己清掉了；下一份快照里不会再有。
+
+线上后台截图：未完成。业主的 Chrome 里没有 de-linker.com 的登录会话，需要业主登录后补拍，补在票上。
