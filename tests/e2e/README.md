@@ -14,6 +14,18 @@ just e2e t16e specs/genie.spec.ts
 just e2e t16e --grep "commercial chain"
 ```
 
+The header fixture also runs in WebKit and Firefox (#229); those projects
+match only `header-parity.spec.ts`. Install all three engines before that run:
+
+```sh
+tests/e2e/node_modules/.bin/playwright install chromium webkit firefox
+LINKER_E2E_SKIP_SERVICES=1 just e2e c229 header-parity.spec.ts
+```
+
+The sweep keeps reporting any unresolved fold mismatch. Its three-engine
+tables and the reviewer's boundary decision are in
+`docs/acceptance/2026-10-18/229/`.
+
 The instance must be a real one: `just up` + a snapshot (`just pull load <name>
 <snapshot> --live-code`), the plugins from this checkout, `wp linker-i18n setup
 --assign`, `wp linker-commerce present`, `tools/migrate/9-i18n.py apply --write`

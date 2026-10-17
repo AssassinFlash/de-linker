@@ -1,0 +1,482 @@
+
+Running 24 tests using 1 worker
+
+(node:74165) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › specs/header-parity.spec.ts:44:1 › German desktop retains cross-engine safety headroom (2.5s)
+| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding | DE headroom |
+|---:|---|---|---|---|---:|---:|
+| 390 | false | false | false | false | 14px | null |
+| 1276 | false | false | false | false | 14px | null |
+| 1277 | false | false | false | false | 14px | null |
+| 1278 | false | false | false | false | 14px | null |
+| 1279 | false | false | false | false | 14px | null |
+| 1280 | true | true | false | false | 4.54688px | null |
+| 1281 | true | true | false | false | 4.54688px | null |
+| 1282 | false | false | true | true | 4.57812px | 0.03999999999996362 |
+| 1283 | false | false | true | true | 4.65625px | 0.0724999999999909 |
+| 1284 | false | false | true | true | 4.73438px | 0.10500000000001819 |
+| 1285 | false | false | true | true | 4.8125px | 0.13750000000004547 |
+| 1286 | false | false | true | true | 4.89062px | 0.17000000000007276 |
+| 1287 | false | false | true | true | 4.98438px | 0.015000000000100044 |
+| 1288 | false | false | true | true | 3.9375px | 13.5474999999999 |
+| 1289 | false | false | true | true | 4.01562px | 13.579999999999927 |
+| 1290 | false | false | true | true | 4.09375px | 13.612499999999955 |
+| 1291 | false | false | true | true | 4.1875px | 13.457499999999982 |
+| 1292 | false | false | true | true | 4.26562px | 13.490000000000009 |
+| 1293 | false | false | true | true | 4.34375px | 13.522500000000036 |
+| 1294 | false | false | true | true | 4.42188px | 13.555000000000064 |
+| 1295 | false | false | true | true | 4.5px | 13.587500000000091 |
+| 1296 | false | false | true | true | 4.57812px | 13.61999999999989 |
+| 1297 | false | false | true | true | 4.67188px | 13.464999999999918 |
+| 1298 | false | false | true | true | 4.75px | 13.497499999999945 |
+| 1299 | false | false | true | true | 4.82812px | 13.529999999999973 |
+| 1300 | false | false | true | true | 4.90625px | 13.5625 |
+| 1310 | false | false | true | true | 5.71875px | 13.512500000000045 |
+| 1320 | false | false | true | true | 6.53125px | 13.462500000000091 |
+| 1330 | false | false | true | true | 7.32812px | 13.599999999999909 |
+| 1340 | false | false | true | true | 8.14062px | 13.549999999999955 |
+| 1350 | false | false | true | true | 8.95312px | 13.5 |
+| 1360 | false | false | true | true | 9.76562px | 13.450000000000045 |
+| 1370 | false | false | true | true | 10.5625px | 13.587500000000091 |
+| 1380 | false | false | true | true | 11.375px | 13.537499999999909 |
+| 1390 | false | false | true | true | 12.1875px | 13.487499999999955 |
+| 1400 | false | false | true | true | 12.3281px | 13.5 |
+| 1410 | false | false | true | true | 12.2969px | 13.575000000000045 |
+| 1420 | false | false | true | true | 12.2812px | 13.462500000000091 |
+| 1430 | false | false | true | true | 12.25px | 13.537499999999909 |
+| 1440 | false | false | true | true | 12.2188px | 13.612499999999955 |
+| 1450 | false | false | true | true | 12.2031px | 13.5 |
+| 1460 | false | false | true | true | 12.1719px | 13.575000000000045 |
+| 1470 | false | false | true | true | 12.1562px | 13.462500000000091 |
+| 1480 | false | false | true | true | 12.125px | 13.537499999999909 |
+| 1490 | false | false | true | true | 12.0938px | 13.612499999999955 |
+| 1500 | false | false | true | true | 12.0781px | 13.5 |
+| 1510 | false | false | true | true | 12.0469px | 13.575000000000045 |
+| 1520 | false | false | true | true | 12.0312px | 13.462500000000091 |
+| 1530 | false | false | true | true | 12px | 13.537499999999909 |
+| 1540 | false | false | true | true | 11.9688px | 13.612499999999955 |
+| 1550 | false | false | true | true | 11.9531px | 13.5 |
+| 1560 | false | false | true | true | 11.9219px | 13.575000000000045 |
+| 1570 | false | false | true | true | 11.9062px | 13.462500000000091 |
+| 1580 | false | false | true | true | 11.875px | 13.537499999999909 |
+| 1590 | false | false | true | true | 11.8438px | 13.612499999999955 |
+| 1600 | false | false | true | true | 11.8281px | 13.5 |
+| 1610 | false | false | true | true | 11.8281px | 13.5 |
+| 1620 | false | false | true | true | 11.8281px | 13.5 |
+| 1630 | false | false | true | true | 11.8281px | 13.5 |
+| 1640 | false | false | true | true | 11.8281px | 13.5 |
+| 1650 | false | false | true | true | 11.8281px | 13.5 |
+| 1660 | false | false | true | true | 11.8281px | 13.5 |
+| 1670 | false | false | true | true | 11.8281px | 13.5 |
+| 1680 | false | false | true | true | 11.8281px | 13.5 |
+| 1690 | false | false | true | true | 11.8281px | 13.5 |
+| 1700 | false | false | true | true | 11.8281px | 13.5 |
+| 1710 | false | false | true | true | 11.8281px | 13.5 |
+| 1720 | false | false | true | true | 11.8281px | 13.5 |
+| 1730 | false | false | true | true | 11.8281px | 13.5 |
+| 1740 | false | false | true | true | 11.8281px | 13.5 |
+| 1750 | false | false | true | true | 11.8281px | 13.5 |
+| 1760 | false | false | true | true | 11.8281px | 13.5 |
+| 1770 | false | false | true | true | 11.8281px | 13.5 |
+| 1780 | false | false | true | true | 11.8281px | 13.5 |
+| 1790 | false | false | true | true | 11.8281px | 13.5 |
+| 1800 | false | false | true | true | 11.8281px | 13.5 |
+| 1810 | false | false | true | true | 11.8281px | 13.5 |
+| 1820 | false | false | true | true | 11.8281px | 13.5 |
+| 1830 | false | false | true | true | 11.8281px | 13.5 |
+| 1840 | false | false | true | true | 11.8281px | 13.5 |
+| 1850 | false | false | true | true | 11.8281px | 13.5 |
+| 1860 | false | false | true | true | 11.8281px | 13.5 |
+| 1870 | false | false | true | true | 11.8281px | 13.5 |
+| 1880 | false | false | true | true | 11.8281px | 13.5 |
+| 1890 | false | false | true | true | 11.8281px | 13.5 |
+| 1900 | false | false | true | true | 11.8281px | 13.5 |
+| 1910 | false | false | true | true | 11.8281px | 13.5 |
+| 1920 | false | false | true | true | 11.8281px | 13.5 |
+| 1930 | false | false | true | true | 11.8281px | 13.5 |
+| 1940 | false | false | true | true | 11.8281px | 13.5 |
+  ✓   2 [chromium] › specs/header-parity.spec.ts:108:1 › EN/DE share every header fold boundary (3.6s)
+  ✓   3 [chromium] › specs/header-parity.spec.ts:271:3 › en-1440: navigation disclosures remain usable (1.8s)
+  ✓   4 [chromium] › specs/header-parity.spec.ts:271:3 › en-390: navigation disclosures remain usable (1.1s)
+  ✓   5 [chromium] › specs/header-parity.spec.ts:322:2 › en: resizing restores the correct navigation (743ms)
+  ✓   6 [chromium] › specs/header-parity.spec.ts:271:3 › de-1440: navigation disclosures remain usable (1.8s)
+  ✓   7 [chromium] › specs/header-parity.spec.ts:271:3 › de-390: navigation disclosures remain usable (970ms)
+  ✓   8 [chromium] › specs/header-parity.spec.ts:322:2 › de: resizing restores the correct navigation (673ms)
+(node:74740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [webkit] › specs/header-parity.spec.ts:44:1 › German desktop retains cross-engine safety headroom (5.1s)
+| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding | DE headroom |
+|---:|---|---|---|---|---:|---:|
+| 390 | false | false | false | false | 14px | null |
+| 1276 | false | false | false | false | 14px | null |
+| 1277 | false | false | false | false | 14px | null |
+| 1278 | false | false | false | false | 14px | null |
+| 1279 | false | false | false | false | 14px | null |
+| 1280 | true | true | false | false | 4.54688px | null |
+| 1281 | true | true | false | false | 4.54688px | null |
+| 1282 | false | false | true | true | 4.578125px | 0.03999999999996362 |
+| 1283 | false | false | true | true | 4.65625px | 0.0724999999999909 |
+| 1284 | false | false | true | true | 4.734375px | 0.10500000000001819 |
+| 1285 | false | false | true | true | 4.8125px | 0.13750000000004547 |
+| 1286 | false | false | true | true | 4.890625px | 0.17000000000007276 |
+| 1287 | false | false | true | true | 4.984375px | 0.015000000000100044 |
+| 1288 | false | false | true | true | 3.9375px | 13.5474999999999 |
+| 1289 | false | false | true | true | 4.015625px | 13.579999999999927 |
+| 1290 | false | false | true | true | 4.09375px | 13.612499999999955 |
+| 1291 | false | false | true | true | 4.1875px | 13.457499999999982 |
+| 1292 | false | false | true | true | 4.265625px | 13.490000000000009 |
+| 1293 | false | false | true | true | 4.34375px | 13.522500000000036 |
+| 1294 | false | false | true | true | 4.421875px | 13.555000000000064 |
+| 1295 | false | false | true | true | 4.5px | 13.587500000000091 |
+| 1296 | false | false | true | true | 4.578125px | 13.61999999999989 |
+| 1297 | false | false | true | true | 4.671875px | 13.464999999999918 |
+| 1298 | false | false | true | true | 4.75px | 13.497499999999945 |
+| 1299 | false | false | true | true | 4.828125px | 13.529999999999973 |
+| 1300 | false | false | true | true | 4.90625px | 13.5625 |
+| 1310 | false | false | true | true | 5.71875px | 13.512500000000045 |
+| 1320 | false | false | true | true | 6.53125px | 13.462500000000091 |
+| 1330 | false | false | true | true | 7.328125px | 13.599999999999909 |
+| 1340 | false | false | true | true | 8.140625px | 13.549999999999955 |
+| 1350 | false | false | true | true | 8.953125px | 13.5 |
+| 1360 | false | false | true | true | 9.765625px | 13.450000000000045 |
+| 1370 | false | false | true | true | 10.5625px | 13.587500000000091 |
+| 1380 | false | false | true | true | 11.375px | 13.537499999999909 |
+| 1390 | false | false | true | true | 12.1875px | 13.487499999999955 |
+| 1400 | false | false | true | true | 12.328125px | 13.5 |
+| 1410 | false | false | true | true | 12.296875px | 13.575000000000045 |
+| 1420 | false | false | true | true | 12.28125px | 13.462500000000091 |
+| 1430 | false | false | true | true | 12.25px | 13.537499999999909 |
+| 1440 | false | false | true | true | 12.21875px | 13.612499999999955 |
+| 1450 | false | false | true | true | 12.203125px | 13.5 |
+| 1460 | false | false | true | true | 12.171875px | 13.575000000000045 |
+| 1470 | false | false | true | true | 12.15625px | 13.462500000000091 |
+| 1480 | false | false | true | true | 12.125px | 13.537499999999909 |
+| 1490 | false | false | true | true | 12.09375px | 13.612499999999955 |
+| 1500 | false | false | true | true | 12.078125px | 13.5 |
+| 1510 | false | false | true | true | 12.046875px | 13.575000000000045 |
+| 1520 | false | false | true | true | 12.03125px | 13.462500000000091 |
+| 1530 | false | false | true | true | 12px | 13.537499999999909 |
+| 1540 | false | false | true | true | 11.96875px | 13.612499999999955 |
+| 1550 | false | false | true | true | 11.953125px | 13.5 |
+| 1560 | false | false | true | true | 11.921875px | 13.575000000000045 |
+| 1570 | false | false | true | true | 11.90625px | 13.462500000000091 |
+| 1580 | false | false | true | true | 11.875px | 13.537499999999909 |
+| 1590 | false | false | true | true | 11.84375px | 13.612499999999955 |
+| 1600 | false | false | true | true | 11.828125px | 13.5 |
+| 1610 | false | false | true | true | 11.828125px | 13.5 |
+| 1620 | false | false | true | true | 11.828125px | 13.5 |
+| 1630 | false | false | true | true | 11.828125px | 13.5 |
+| 1640 | false | false | true | true | 11.828125px | 13.5 |
+| 1650 | false | false | true | true | 11.828125px | 13.5 |
+| 1660 | false | false | true | true | 11.828125px | 13.5 |
+| 1670 | false | false | true | true | 11.828125px | 13.5 |
+| 1680 | false | false | true | true | 11.828125px | 13.5 |
+| 1690 | false | false | true | true | 11.828125px | 13.5 |
+| 1700 | false | false | true | true | 11.828125px | 13.5 |
+| 1710 | false | false | true | true | 11.828125px | 13.5 |
+| 1720 | false | false | true | true | 11.828125px | 13.5 |
+| 1730 | false | false | true | true | 11.828125px | 13.5 |
+| 1740 | false | false | true | true | 11.828125px | 13.5 |
+| 1750 | false | false | true | true | 11.828125px | 13.5 |
+| 1760 | false | false | true | true | 11.828125px | 13.5 |
+| 1770 | false | false | true | true | 11.828125px | 13.5 |
+| 1780 | false | false | true | true | 11.828125px | 13.5 |
+| 1790 | false | false | true | true | 11.828125px | 13.5 |
+| 1800 | false | false | true | true | 11.828125px | 13.5 |
+| 1810 | false | false | true | true | 11.828125px | 13.5 |
+| 1820 | false | false | true | true | 11.828125px | 13.5 |
+| 1830 | false | false | true | true | 11.828125px | 13.5 |
+| 1840 | false | false | true | true | 11.828125px | 13.5 |
+| 1850 | false | false | true | true | 11.828125px | 13.5 |
+| 1860 | false | false | true | true | 11.828125px | 13.5 |
+| 1870 | false | false | true | true | 11.828125px | 13.5 |
+| 1880 | false | false | true | true | 11.828125px | 13.5 |
+| 1890 | false | false | true | true | 11.828125px | 13.5 |
+| 1900 | false | false | true | true | 11.828125px | 13.5 |
+| 1910 | false | false | true | true | 11.828125px | 13.5 |
+| 1920 | false | false | true | true | 11.828125px | 13.5 |
+| 1930 | false | false | true | true | 11.828125px | 13.5 |
+| 1940 | false | false | true | true | 11.828125px | 13.5 |
+  ✓  10 [webkit] › specs/header-parity.spec.ts:108:1 › EN/DE share every header fold boundary (7.2s)
+  ✓  11 [webkit] › specs/header-parity.spec.ts:271:3 › en-1440: navigation disclosures remain usable (3.0s)
+  ✓  12 [webkit] › specs/header-parity.spec.ts:271:3 › en-390: navigation disclosures remain usable (1.8s)
+  ✓  13 [webkit] › specs/header-parity.spec.ts:322:2 › en: resizing restores the correct navigation (1.2s)
+  ✓  14 [webkit] › specs/header-parity.spec.ts:271:3 › de-1440: navigation disclosures remain usable (3.8s)
+  ✓  15 [webkit] › specs/header-parity.spec.ts:271:3 › de-390: navigation disclosures remain usable (2.5s)
+  ✓  16 [webkit] › specs/header-parity.spec.ts:322:2 › de: resizing restores the correct navigation (1.4s)
+(node:75901) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  17 [firefox] › specs/header-parity.spec.ts:44:1 › German desktop retains cross-engine safety headroom (2.0s)
+| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding | DE headroom |
+|---:|---|---|---|---|---:|---:|
+| 390 | false | false | false | false | 14px | null |
+| 1276 | false | false | false | false | 14px | null |
+| 1277 | false | false | false | false | 14px | null |
+| 1278 | false | false | false | false | 14px | null |
+| 1279 | false | false | false | false | 14px | null |
+| 1280 | true | true | false | false | 4.54688px | null |
+| 1281 | true | true | false | false | 4.54688px | null |
+| 1282 | true | true | false | false | 4.57813px | null |
+| 1283 | false | true | true | false | 4.65625px | null |
+| 1284 | false | true | true | false | 4.73438px | null |
+| 1285 | false | true | true | false | 4.8125px | null |
+| 1286 | false | true | true | false | 4.90625px | null |
+| 1287 | false | true | true | false | 4.98438px | null |
+| 1288 | false | false | true | true | 3.93333px | 13.283216040038951 |
+| 1289 | false | false | true | true | 4.01667px | 13.233416040039174 |
+| 1290 | false | false | true | true | 4.1px | 13.183316040039017 |
+| 1291 | false | false | true | true | 4.18333px | 13.183316040039017 |
+| 1292 | false | false | true | true | 4.26667px | 13.133216040039088 |
+| 1293 | false | false | true | true | 4.35px | 13.133216040039088 |
+| 1294 | false | false | true | true | 4.41667px | 13.283428247070333 |
+| 1295 | false | false | true | true | 4.5px | 13.233328247070403 |
+| 1296 | false | false | true | true | 4.6px | 13.033316040039153 |
+| 1297 | false | false | true | true | 4.66667px | 13.183228247070247 |
+| 1298 | false | false | true | true | 4.75px | 13.183228247070247 |
+| 1299 | false | false | true | true | 4.83333px | 13.133428247070242 |
+| 1300 | false | false | true | true | 4.9px | 13.283340454101562 |
+| 1310 | false | false | true | true | 5.71667px | 13.183352661132858 |
+| 1320 | false | false | true | true | 6.53333px | 13.083303833007903 |
+| 1330 | false | false | true | true | 7.33333px | 13.183328247070222 |
+| 1340 | false | false | true | true | 8.13333px | 13.283352661132767 |
+| 1350 | false | false | true | true | 8.95px | 13.183303833007812 |
+| 1360 | false | false | true | true | 9.76667px | 13.083316040039108 |
+| 1370 | false | false | true | true | 10.5667px | 13.183340454101653 |
+| 1380 | false | false | true | true | 11.3833px | 13.083352661132722 |
+| 1390 | false | false | true | true | 12.1833px | 13.183316040039017 |
+| 1400 | false | false | true | true | 12.3333px | 13.083328247070312 |
+| 1410 | false | false | true | true | 12.3px | 13.183352661132858 |
+| 1420 | false | false | true | true | 12.2833px | 13.083303833007903 |
+| 1430 | false | false | true | true | 12.25px | 13.183328247070222 |
+| 1440 | false | false | true | true | 12.2167px | 13.283352661132767 |
+| 1450 | false | false | true | true | 12.2px | 13.183303833007812 |
+| 1460 | false | false | true | true | 12.1667px | 13.283328247070358 |
+| 1470 | false | false | true | true | 12.15px | 13.183340454101653 |
+| 1480 | false | false | true | true | 12.1333px | 13.083352661132722 |
+| 1490 | false | false | true | true | 12.1px | 13.183316040039017 |
+| 1500 | false | false | true | true | 12.0833px | 13.083328247070312 |
+| 1510 | false | false | true | true | 12.05px | 13.183352661132858 |
+| 1520 | false | false | true | true | 12.0333px | 13.083303833007903 |
+| 1530 | false | false | true | true | 12px | 13.183328247070222 |
+| 1540 | false | false | true | true | 11.9667px | 13.283352661132767 |
+| 1550 | false | false | true | true | 11.95px | 13.183303833007812 |
+| 1560 | false | false | true | true | 11.9167px | 13.283328247070358 |
+| 1570 | false | false | true | true | 11.9px | 13.183340454101653 |
+| 1580 | false | false | true | true | 11.8833px | 13.083352661132722 |
+| 1590 | false | false | true | true | 11.85px | 13.183316040039017 |
+| 1600 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1610 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1620 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1630 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1640 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1650 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1660 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1670 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1680 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1690 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1700 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1710 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1720 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1730 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1740 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1750 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1760 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1770 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1780 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1790 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1800 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1810 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1820 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1830 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1840 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1850 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1860 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1870 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1880 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1890 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1900 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1910 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1920 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1930 | false | false | true | true | 11.8333px | 13.083328247070312 |
+| 1940 | false | false | true | true | 11.8333px | 13.083328247070312 |
+  ✘  18 [firefox] › specs/header-parity.spec.ts:108:1 › EN/DE share every header fold boundary (6.2s)
+(node:76287) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [firefox] › specs/header-parity.spec.ts:271:3 › en-1440: navigation disclosures remain usable (2.0s)
+  ✓  20 [firefox] › specs/header-parity.spec.ts:271:3 › en-390: navigation disclosures remain usable (1.4s)
+  ✓  21 [firefox] › specs/header-parity.spec.ts:322:2 › en: resizing restores the correct navigation (906ms)
+  ✓  22 [firefox] › specs/header-parity.spec.ts:271:3 › de-1440: navigation disclosures remain usable (1.5s)
+  ✓  23 [firefox] › specs/header-parity.spec.ts:271:3 › de-390: navigation disclosures remain usable (1.3s)
+  ✓  24 [firefox] › specs/header-parity.spec.ts:322:2 › de: resizing restores the correct navigation (776ms)
+
+
+  1) [firefox] › specs/header-parity.spec.ts:108:1 › EN/DE share every header fold boundary ────────
+
+    Error: 1283px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      215 | 			expect
+      216 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 217 | 				.toBe(english!.folded);
+          | 				 ^
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      220 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:217:6
+
+    Error: 1283px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 220 | 				.toBe(english!.desktop);
+          | 				 ^
+      221 | 			if (width >= 1288) {
+      222 | 				// Independent measured spread + six links' 12px pressure reserve;
+      223 | 				// round2/safety-margin.json records the precise source calculation.
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:220:6
+
+    Error: 1284px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      215 | 			expect
+      216 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 217 | 				.toBe(english!.folded);
+          | 				 ^
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      220 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:217:6
+
+    Error: 1284px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 220 | 				.toBe(english!.desktop);
+          | 				 ^
+      221 | 			if (width >= 1288) {
+      222 | 				// Independent measured spread + six links' 12px pressure reserve;
+      223 | 				// round2/safety-margin.json records the precise source calculation.
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:220:6
+
+    Error: 1285px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      215 | 			expect
+      216 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 217 | 				.toBe(english!.folded);
+          | 				 ^
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      220 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:217:6
+
+    Error: 1285px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 220 | 				.toBe(english!.desktop);
+          | 				 ^
+      221 | 			if (width >= 1288) {
+      222 | 				// Independent measured spread + six links' 12px pressure reserve;
+      223 | 				// round2/safety-margin.json records the precise source calculation.
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:220:6
+
+    Error: 1286px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      215 | 			expect
+      216 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 217 | 				.toBe(english!.folded);
+          | 				 ^
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      220 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:217:6
+
+    Error: 1286px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 220 | 				.toBe(english!.desktop);
+          | 				 ^
+      221 | 			if (width >= 1288) {
+      222 | 				// Independent measured spread + six links' 12px pressure reserve;
+      223 | 				// round2/safety-margin.json records the precise source calculation.
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:220:6
+
+    Error: 1287px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      215 | 			expect
+      216 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 217 | 				.toBe(english!.folded);
+          | 				 ^
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      220 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:217:6
+
+    Error: 1287px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      218 | 			expect
+      219 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 220 | 				.toBe(english!.desktop);
+          | 				 ^
+      221 | 			if (width >= 1288) {
+      222 | 				// Independent measured spread + six links' 12px pressure reserve;
+      223 | 				// round2/safety-margin.json records the precise source calculation.
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:220:6
+
+    Error Context: artifacts/test-results/header-parity-EN-DE-share-every-header-fold-boundary-firefox/error-context.md
+
+  1 failed
+    [firefox] › specs/header-parity.spec.ts:108:1 › EN/DE share every header fold boundary ─────────
+  23 passed (59.3s)
+error: recipe `e2e` failed with exit code 1
+exit_code: 1

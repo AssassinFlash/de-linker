@@ -47,15 +47,21 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 .tv-desktop-nav{display:none}
 @media (min-width:1280px){#tv-header-v2 .tv-desktop-nav{display:flex;align-items:center;gap:4px;flex:0 0 auto}}
 /* #229: DE must fit beside the contact button AND share EN's fold state.
- * Current font metrics + compact actions require 1156.5625px before the six
- * links' 12 padding sides and the frame's three fluid gaps. The frame has
- * 32px viewport gutters and a 1360px cap. Divide its remaining space by 12,
- * round DOWN to Chromium's 1/64px layout unit for fit()'s ceil/floor test,
- * and cap at EN's 14px. The 4.546875px floor keeps EN's 1281/1282 boundary.
- * This is coupled to fit() and the loaded font: the boundary + maximum-space
- * tests in tests/e2e/specs/header-parity.spec.ts guard both constraints.
- * Measurements: docs/acceptance/2026-10-18/229/round1/. */
+ * Keep the reviewed 1280-1287 boundary rule: Chromium/WebKit match EN;
+ * Firefox's 1283-1287 mismatch is recorded for the reviewer's decision,
+ * without further boundary tuning (PR #294 round 2).
+ * Above that zone, reserve space for all three engines. Zero-padding parts:
+ * Chromium/WebKit 1156.5625px, Firefox 1156.9167px; spread 0.3542px.
+ * Budget = ceil(worst + spread + 6 links * 2 sides * 1px) = 1170px.
+ * Subtract that budget and three unchanged gaps from the frame (32px
+ * gutters, 1360px cap), divide by 12 padding sides, round down 1/64px,
+ * and cap at EN's 14px. The budget retains >12px of measured headroom.
+ * Font metrics and fit()'s ceil/floor remain coupled: the three-engine
+ * sweep and +1px-per-side pressure test guard the rendered behavior.
+ * Source, safety calculation, and unresolved boundary table:
+ * docs/acceptance/2026-10-18/229/round2/. */
 @media (min-width:1280px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(4.546875px,round(down,calc((min(100vw - 32px,1360px) - 1156.5625px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
+@media (min-width:1288px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(0px,round(down,calc((min(100vw - 32px,1360px) - 1170px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
 #tv-header-v2 .tv-nav-item{position:relative}
 #tv-header-v2 .tv-nav-link{display:inline-flex;align-items:center;gap:4px;height:44px;min-height:44px;padding:0 14px;font-family:inherit;color:var(--proto-ink);text-decoration:none;background:none;border:0;border-radius:8px;cursor:pointer;transition:color 200ms cubic-bezier(.2,0,0,1),background 200ms cubic-bezier(.2,0,0,1);white-space:nowrap;touch-action:manipulation}
 #tv-header-v2 .tv-nav-link:hover{color:var(--proto-teal-600);background:var(--proto-teal-50)}

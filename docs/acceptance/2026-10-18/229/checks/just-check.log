@@ -108,3 +108,4 @@ cd /Users/chesterjohn/Documents/de-linker-worktrees/c229/plugins/linker-tools &&
 build/ matches its sources.
 cd /Users/chesterjohn/Documents/de-linker-worktrees/c229/plugins/linker-commerce && npm run --silent build:check
 build/ matches its sources.
+exit_code: 0

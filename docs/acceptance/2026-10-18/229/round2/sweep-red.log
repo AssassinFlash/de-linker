@@ -1,0 +1,3354 @@
+
+Running 3 tests using 1 worker
+
+(node:45642) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding |
+|---:|---|---|---|---|---:|
+| 390 | false | false | false | false | 14px |
+| 1276 | false | false | false | false | 14px |
+| 1277 | false | false | false | false | 14px |
+| 1278 | false | false | false | false | 14px |
+| 1279 | false | false | false | false | 14px |
+| 1280 | true | true | false | false | 4.54688px |
+| 1281 | true | true | false | false | 4.54688px |
+| 1282 | false | false | true | true | 4.57812px |
+| 1283 | false | false | true | true | 4.65625px |
+| 1284 | false | false | true | true | 4.73438px |
+| 1285 | false | false | true | true | 4.8125px |
+| 1286 | false | false | true | true | 4.89062px |
+| 1287 | false | false | true | true | 4.98438px |
+| 1288 | false | false | true | true | 5.0625px |
+| 1289 | false | false | true | true | 5.14062px |
+| 1290 | false | false | true | true | 5.21875px |
+| 1291 | false | false | true | true | 5.29688px |
+| 1292 | false | false | true | true | 5.375px |
+| 1293 | false | false | true | true | 5.46875px |
+| 1294 | false | false | true | true | 5.54688px |
+| 1295 | false | false | true | true | 5.625px |
+| 1296 | false | false | true | true | 5.70312px |
+| 1297 | false | false | true | true | 5.78125px |
+| 1298 | false | false | true | true | 5.85938px |
+| 1299 | false | false | true | true | 5.95312px |
+| 1300 | false | false | true | true | 6.03125px |
+| 1310 | false | false | true | true | 6.84375px |
+| 1320 | false | false | true | true | 7.64062px |
+| 1330 | false | false | true | true | 8.45312px |
+| 1340 | false | false | true | true | 9.26562px |
+| 1350 | false | false | true | true | 10.0781px |
+| 1360 | false | false | true | true | 10.875px |
+| 1370 | false | false | true | true | 11.6875px |
+| 1380 | false | false | true | true | 12.5px |
+| 1390 | false | false | true | true | 13.2969px |
+| 1400 | false | false | true | true | 13.4531px |
+| 1410 | false | false | true | true | 13.4219px |
+| 1420 | false | false | true | true | 13.3906px |
+| 1430 | false | false | true | true | 13.375px |
+| 1440 | false | false | true | true | 13.3438px |
+| 1450 | false | false | true | true | 13.3281px |
+| 1460 | false | false | true | true | 13.2969px |
+| 1470 | false | false | true | true | 13.2656px |
+| 1480 | false | false | true | true | 13.25px |
+| 1490 | false | false | true | true | 13.2188px |
+| 1500 | false | false | true | true | 13.2031px |
+| 1510 | false | false | true | true | 13.1719px |
+| 1520 | false | false | true | true | 13.1406px |
+| 1530 | false | false | true | true | 13.125px |
+| 1540 | false | false | true | true | 13.0938px |
+| 1550 | false | false | true | true | 13.0781px |
+| 1560 | false | false | true | true | 13.0469px |
+| 1570 | false | false | true | true | 13.0156px |
+| 1580 | false | false | true | true | 13px |
+| 1590 | false | false | true | true | 12.9688px |
+| 1600 | false | false | true | true | 12.9531px |
+| 1610 | false | false | true | true | 12.9531px |
+| 1620 | false | false | true | true | 12.9531px |
+| 1630 | false | false | true | true | 12.9531px |
+| 1640 | false | false | true | true | 12.9531px |
+| 1650 | false | false | true | true | 12.9531px |
+| 1660 | false | false | true | true | 12.9531px |
+| 1670 | false | false | true | true | 12.9531px |
+| 1680 | false | false | true | true | 12.9531px |
+| 1690 | false | false | true | true | 12.9531px |
+| 1700 | false | false | true | true | 12.9531px |
+| 1710 | false | false | true | true | 12.9531px |
+| 1720 | false | false | true | true | 12.9531px |
+| 1730 | false | false | true | true | 12.9531px |
+| 1740 | false | false | true | true | 12.9531px |
+| 1750 | false | false | true | true | 12.9531px |
+| 1760 | false | false | true | true | 12.9531px |
+| 1770 | false | false | true | true | 12.9531px |
+| 1780 | false | false | true | true | 12.9531px |
+| 1790 | false | false | true | true | 12.9531px |
+| 1800 | false | false | true | true | 12.9531px |
+| 1810 | false | false | true | true | 12.9531px |
+| 1820 | false | false | true | true | 12.9531px |
+| 1830 | false | false | true | true | 12.9531px |
+| 1840 | false | false | true | true | 12.9531px |
+| 1850 | false | false | true | true | 12.9531px |
+| 1860 | false | false | true | true | 12.9531px |
+| 1870 | false | false | true | true | 12.9531px |
+| 1880 | false | false | true | true | 12.9531px |
+| 1890 | false | false | true | true | 12.9531px |
+| 1900 | false | false | true | true | 12.9531px |
+| 1910 | false | false | true | true | 12.9531px |
+| 1920 | false | false | true | true | 12.9531px |
+| 1930 | false | false | true | true | 12.9531px |
+| 1940 | false | false | true | true | 12.9531px |
+  ✓  1 [chromium] › specs/header-parity.spec.ts:87:1 › EN/DE share every header fold boundary (3.9s)
+(node:45733) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding |
+|---:|---|---|---|---|---:|
+| 390 | false | false | false | false | 14px |
+| 1276 | false | false | false | false | 14px |
+| 1277 | false | false | false | false | 14px |
+| 1278 | false | false | false | false | 14px |
+| 1279 | false | false | false | false | 14px |
+| 1280 | true | true | false | false | 4.54688px |
+| 1281 | true | true | false | false | 4.54688px |
+| 1282 | false | false | true | true | 4.578125px |
+| 1283 | false | false | true | true | 4.65625px |
+| 1284 | false | false | true | true | 4.734375px |
+| 1285 | false | false | true | true | 4.8125px |
+| 1286 | false | false | true | true | 4.890625px |
+| 1287 | false | false | true | true | 4.984375px |
+| 1288 | false | false | true | true | 5.0625px |
+| 1289 | false | false | true | true | 5.140625px |
+| 1290 | false | false | true | true | 5.21875px |
+| 1291 | false | false | true | true | 5.296875px |
+| 1292 | false | false | true | true | 5.375px |
+| 1293 | false | false | true | true | 5.46875px |
+| 1294 | false | false | true | true | 5.546875px |
+| 1295 | false | false | true | true | 5.625px |
+| 1296 | false | false | true | true | 5.703125px |
+| 1297 | false | false | true | true | 5.78125px |
+| 1298 | false | false | true | true | 5.859375px |
+| 1299 | false | false | true | true | 5.953125px |
+| 1300 | false | false | true | true | 6.03125px |
+| 1310 | false | false | true | true | 6.84375px |
+| 1320 | false | false | true | true | 7.640625px |
+| 1330 | false | false | true | true | 8.453125px |
+| 1340 | false | false | true | true | 9.265625px |
+| 1350 | false | false | true | true | 10.078125px |
+| 1360 | false | false | true | true | 10.875px |
+| 1370 | false | false | true | true | 11.6875px |
+| 1380 | false | false | true | true | 12.5px |
+| 1390 | false | false | true | true | 13.296875px |
+| 1400 | false | false | true | true | 13.453125px |
+| 1410 | false | false | true | true | 13.421875px |
+| 1420 | false | false | true | true | 13.390625px |
+| 1430 | false | false | true | true | 13.375px |
+| 1440 | false | false | true | true | 13.34375px |
+| 1450 | false | false | true | true | 13.328125px |
+| 1460 | false | false | true | true | 13.296875px |
+| 1470 | false | false | true | true | 13.265625px |
+| 1480 | false | false | true | true | 13.25px |
+| 1490 | false | false | true | true | 13.21875px |
+| 1500 | false | false | true | true | 13.203125px |
+| 1510 | false | false | true | true | 13.171875px |
+| 1520 | false | false | true | true | 13.140625px |
+| 1530 | false | false | true | true | 13.125px |
+| 1540 | false | false | true | true | 13.09375px |
+| 1550 | false | false | true | true | 13.078125px |
+| 1560 | false | false | true | true | 13.046875px |
+| 1570 | false | false | true | true | 13.015625px |
+| 1580 | false | false | true | true | 13px |
+| 1590 | false | false | true | true | 12.96875px |
+| 1600 | false | false | true | true | 12.953125px |
+| 1610 | false | false | true | true | 12.953125px |
+| 1620 | false | false | true | true | 12.953125px |
+| 1630 | false | false | true | true | 12.953125px |
+| 1640 | false | false | true | true | 12.953125px |
+| 1650 | false | false | true | true | 12.953125px |
+| 1660 | false | false | true | true | 12.953125px |
+| 1670 | false | false | true | true | 12.953125px |
+| 1680 | false | false | true | true | 12.953125px |
+| 1690 | false | false | true | true | 12.953125px |
+| 1700 | false | false | true | true | 12.953125px |
+| 1710 | false | false | true | true | 12.953125px |
+| 1720 | false | false | true | true | 12.953125px |
+| 1730 | false | false | true | true | 12.953125px |
+| 1740 | false | false | true | true | 12.953125px |
+| 1750 | false | false | true | true | 12.953125px |
+| 1760 | false | false | true | true | 12.953125px |
+| 1770 | false | false | true | true | 12.953125px |
+| 1780 | false | false | true | true | 12.953125px |
+| 1790 | false | false | true | true | 12.953125px |
+| 1800 | false | false | true | true | 12.953125px |
+| 1810 | false | false | true | true | 12.953125px |
+| 1820 | false | false | true | true | 12.953125px |
+| 1830 | false | false | true | true | 12.953125px |
+| 1840 | false | false | true | true | 12.953125px |
+| 1850 | false | false | true | true | 12.953125px |
+| 1860 | false | false | true | true | 12.953125px |
+| 1870 | false | false | true | true | 12.953125px |
+| 1880 | false | false | true | true | 12.953125px |
+| 1890 | false | false | true | true | 12.953125px |
+| 1900 | false | false | true | true | 12.953125px |
+| 1910 | false | false | true | true | 12.953125px |
+| 1920 | false | false | true | true | 12.953125px |
+| 1930 | false | false | true | true | 12.953125px |
+| 1940 | false | false | true | true | 12.953125px |
+  ✓  2 [webkit] › specs/header-parity.spec.ts:87:1 › EN/DE share every header fold boundary (8.2s)
+(node:45991) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding |
+|---:|---|---|---|---|---:|
+| 390 | false | false | false | false | 14px |
+| 1276 | false | false | false | false | 14px |
+| 1277 | false | false | false | false | 14px |
+| 1278 | false | false | false | false | 14px |
+| 1279 | false | false | false | false | 14px |
+| 1280 | true | true | false | false | 4.54688px |
+| 1281 | true | true | false | false | 4.54688px |
+| 1282 | true | true | false | false | 4.57813px |
+| 1283 | false | true | true | false | 4.65625px |
+| 1284 | false | true | true | false | 4.73438px |
+| 1285 | false | true | true | false | 4.8125px |
+| 1286 | false | true | true | false | 4.90625px |
+| 1287 | false | true | true | false | 4.98438px |
+| 1288 | false | true | true | false | 5.0625px |
+| 1289 | false | true | true | false | 5.14063px |
+| 1290 | false | true | true | false | 5.21875px |
+| 1291 | false | true | true | false | 5.29688px |
+| 1292 | false | true | true | false | 5.39063px |
+| 1293 | false | true | true | false | 5.46875px |
+| 1294 | false | true | true | false | 5.54688px |
+| 1295 | false | true | true | false | 5.625px |
+| 1296 | false | true | true | false | 5.70313px |
+| 1297 | false | true | true | false | 5.78125px |
+| 1298 | false | true | true | false | 5.875px |
+| 1299 | false | true | true | false | 5.95313px |
+| 1300 | false | true | true | false | 6.03125px |
+| 1310 | false | true | true | false | 6.84375px |
+| 1320 | false | true | true | false | 7.64063px |
+| 1330 | false | true | true | false | 8.45313px |
+| 1340 | false | true | true | false | 9.26563px |
+| 1350 | false | true | true | false | 10.0781px |
+| 1360 | false | true | true | false | 10.875px |
+| 1370 | false | true | true | false | 11.6875px |
+| 1380 | false | true | true | false | 12.5px |
+| 1390 | false | true | true | false | 13.2969px |
+| 1400 | false | true | true | false | 13.4531px |
+| 1410 | false | true | true | false | 13.4219px |
+| 1420 | false | true | true | false | 13.3906px |
+| 1430 | false | true | true | false | 13.375px |
+| 1440 | false | true | true | false | 13.3438px |
+| 1450 | false | true | true | false | 13.3281px |
+| 1460 | false | true | true | false | 13.2969px |
+| 1470 | false | true | true | false | 13.2656px |
+| 1480 | false | true | true | false | 13.25px |
+| 1490 | false | true | true | false | 13.2188px |
+| 1500 | false | true | true | false | 13.2031px |
+| 1510 | false | true | true | false | 13.1719px |
+| 1520 | false | true | true | false | 13.1406px |
+| 1530 | false | true | true | false | 13.125px |
+| 1540 | false | true | true | false | 13.0938px |
+| 1550 | false | true | true | false | 13.0781px |
+| 1560 | false | true | true | false | 13.0469px |
+| 1570 | false | true | true | false | 13.0156px |
+| 1580 | false | true | true | false | 13px |
+| 1590 | false | true | true | false | 12.9688px |
+| 1600 | false | true | true | false | 12.9531px |
+| 1610 | false | true | true | false | 12.9531px |
+| 1620 | false | true | true | false | 12.9531px |
+| 1630 | false | true | true | false | 12.9531px |
+| 1640 | false | true | true | false | 12.9531px |
+| 1650 | false | true | true | false | 12.9531px |
+| 1660 | false | true | true | false | 12.9531px |
+| 1670 | false | true | true | false | 12.9531px |
+| 1680 | false | true | true | false | 12.9531px |
+| 1690 | false | true | true | false | 12.9531px |
+| 1700 | false | true | true | false | 12.9531px |
+| 1710 | false | true | true | false | 12.9531px |
+| 1720 | false | true | true | false | 12.9531px |
+| 1730 | false | true | true | false | 12.9531px |
+| 1740 | false | true | true | false | 12.9531px |
+| 1750 | false | true | true | false | 12.9531px |
+| 1760 | false | true | true | false | 12.9531px |
+| 1770 | false | true | true | false | 12.9531px |
+| 1780 | false | true | true | false | 12.9531px |
+| 1790 | false | true | true | false | 12.9531px |
+| 1800 | false | true | true | false | 12.9531px |
+| 1810 | false | true | true | false | 12.9531px |
+| 1820 | false | true | true | false | 12.9531px |
+| 1830 | false | true | true | false | 12.9531px |
+| 1840 | false | true | true | false | 12.9531px |
+| 1850 | false | true | true | false | 12.9531px |
+| 1860 | false | true | true | false | 12.9531px |
+| 1870 | false | true | true | false | 12.9531px |
+| 1880 | false | true | true | false | 12.9531px |
+| 1890 | false | true | true | false | 12.9531px |
+| 1900 | false | true | true | false | 12.9531px |
+| 1910 | false | true | true | false | 12.9531px |
+| 1920 | false | true | true | false | 12.9531px |
+| 1930 | false | true | true | false | 12.9531px |
+| 1940 | false | true | true | false | 12.9531px |
+  ✘  3 [firefox] › specs/header-parity.spec.ts:87:1 › EN/DE share every header fold boundary (8.2s)
+
+
+  1) [firefox] › specs/header-parity.spec.ts:87:1 › EN/DE share every header fold boundary ─────────
+
+    Error: 1283px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1283px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1283px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1284px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1284px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1284px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1285px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1285px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1285px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1286px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1286px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1286px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1287px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1287px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1287px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1288px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1288px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1288px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1289px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1289px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1289px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1290px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1290px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1290px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1291px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1291px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1291px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1292px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1292px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1292px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1293px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1293px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1293px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1294px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1294px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1294px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1295px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1295px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1295px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1296px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1296px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1296px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1297px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1297px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1297px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1298px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1298px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1298px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1299px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1299px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1299px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1300px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1300px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1300px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1310px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1310px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1310px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1320px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1320px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1320px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1330px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1330px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1330px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1340px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1340px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1340px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1350px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1350px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1350px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1360px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1360px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1360px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1370px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1370px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1370px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1380px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1380px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1380px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1390px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1390px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1390px: no painted boxes overlap
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      185 | 				expect
+      186 | 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
+    > 187 | 					.toBe(false);
+          | 					 ^
+      188 | 			}
+      189 | 		}
+      190 | 		console.log(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:187:7
+
+    Error: 1400px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1400px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1410px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1410px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1420px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1420px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1430px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1430px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1440px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1440px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1450px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1450px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1460px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1460px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1470px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1470px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1480px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1480px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1490px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1490px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1500px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1500px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1510px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1510px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1520px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1520px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1530px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1530px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1540px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1540px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1550px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1550px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1560px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1560px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1570px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1570px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1580px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1580px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1590px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1590px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1600px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1600px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1610px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1610px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1620px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1620px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1630px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1630px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1640px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1640px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1650px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1650px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1660px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1660px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1670px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1670px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1680px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1680px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1690px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1690px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1700px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1700px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1710px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1710px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1720px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1720px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1730px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1730px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1740px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1740px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1750px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1750px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1760px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1760px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1770px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1770px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1780px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1780px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1790px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1790px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1800px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1800px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1810px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1810px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1820px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1820px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1830px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1830px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1840px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1840px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1850px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1850px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1860px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1860px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1870px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1870px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1880px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1880px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1890px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1890px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1900px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1900px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1910px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1910px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1920px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1920px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1930px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1930px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error: 1940px: DE fold matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      163 | 			expect
+      164 | 				.soft(german!.folded, `${width}px: DE fold matches EN`)
+    > 165 | 				.toBe(english!.folded);
+          | 				 ^
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+      168 | 				.toBe(english!.desktop);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:165:6
+
+    Error: 1940px: DE visibility matches EN
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      166 | 			expect
+      167 | 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
+    > 168 | 				.toBe(english!.desktop);
+          | 				 ^
+      169 | 			for (const state of states) {
+      170 | 				expect
+      171 | 					.soft(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:168:6
+
+    Error Context: artifacts/test-results/header-parity-EN-DE-share-every-header-fold-boundary-firefox/error-context.md
+
+  1 failed
+    [firefox] › specs/header-parity.spec.ts:87:1 › EN/DE share every header fold boundary ──────────
+  2 passed (23.6s)
+error: recipe `e2e` failed with exit code 1

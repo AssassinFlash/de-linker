@@ -1,0 +1,29 @@
+{
+  "versions": {
+    "chromium": "156.0.8078.4",
+    "webkit": "27.2",
+    "firefox": "157.0"
+  },
+  "zeroPaddingParts": {
+    "chromium": 1156.5625,
+    "webkit": 1156.5625,
+    "firefox": 1156.9166717529297
+  },
+  "spread": 0.3541717529296875,
+  "pressureReserve": {
+    "links": 6,
+    "sidesPerLink": 2,
+    "pixelsPerSide": 1,
+    "totalPixels": 12
+  },
+  "minimumTargetReserve": 12.354171752929688,
+  "budget": 1170,
+  "protectedBoundary": [
+    1280,
+    1287
+  ],
+  "safeZone": [
+    1288,
+    1940
+  ]
+}

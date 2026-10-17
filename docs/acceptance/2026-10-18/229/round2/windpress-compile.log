@@ -1,0 +1,11 @@
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local wp "$@"
+backup: 26 templates, additional css, 5 partials staged for rollback
+templates: created 0, updated 0, unchanged 18
+tokens: no Additional CSS copy to remove
+windpress volume: storefront styles
+Warning: WindPress cache is stale (cache compiled 2026-10-16 13:58:17 UTC, newer source files: shop_page.html, cart_page.html, checkout_page.html, account_page.html, single_product.html, archive_product.html, blog_single.html, blog_index.html, search.html, category_archive.html, compare_page.html, compare_page.html, faq_page.html, faq_page.html, advisor_page.html, advisor_page.html, configurator_page.html, configurator_page.html, single_product.html, archive_product.html, blog_single.html, blog_index.html, search.html, category_archive.html, header.html, header.html, footer.html, footer.html, tokens.css, account.css, auth.css, blog-category.css, blog-index.css, blog-search.css, blog.css, chrome.css, contact-card.css, contact-invitation.css, faq.css, pdp.css, products-mounts.css, products.css, site-base.css, storefront.css, tokens.css). Compile from the WindPress admin (admin.php?page=windpress), or rerun with --allow-stale.
+Success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option.
+windpress: compiling through the admin (user: 857558227@qq.com, cache mtime before: 1792159097)
+{"compiled":true,"last_generated":1792268374,"file_size":676880,"toast":false,"ms":28817}
+windpress: cache recompiled (1792159097 -> 1792268374), anchor classes present
+exit_code: 0
