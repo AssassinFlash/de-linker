@@ -1,0 +1,71 @@
+{
+ "page_url": "https://knocket.trtc.io/products/web-widget/",
+ "transcript": [
+  {
+   "sent_utc": "2026-10-17T08:32:34Z",
+   "message": "Guten Tag. Welche Seite sehe ich mir gerade an, und welches Produkt wird hier beschrieben?",
+   "widget_text_after": [
+    "AI Assistant",
+    "Hi! I'm your knocket AI assistant. I can help answer questions about our products, features, and services. How can I assist you today?",
+    "Guten Tag. Welche Seite sehe ich mir gerade an, und welches Produkt wird hier beschrieben?",
+    "Guten Tag! Das hier beschriebene Produkt ist Knocket, eine Plattform mit Pages, dem Web Widget und einer Inbox. Die Produktübersicht finden Sie unter knocket.trtc.io; die Anmeldung erfolgt über die Konsole unter console.trtc.io. Ob Sie gerade genau diese Übersichtsseite sehen, kann ich ohne weitere Angaben nicht bestätigen. Können Sie mir kurz den Seitentitel oder die Adresse nennen?",
+    "How can we help you today?"
+   ]
+  },
+  {
+   "sent_utc": "2026-10-17T08:33:15Z",
+   "message": "Can your AI agent call my own REST API to look up a product's price for a logged-in customer and add it to their cart?",
+   "widget_text_after": [
+    "AI Assistant",
+    "Hi! I'm your knocket AI assistant. I can help answer questions about our products, features, and services. How can I assist you today?",
+    "Guten Tag. Welche Seite sehe ich mir gerade an, und welches Produkt wird hier beschrieben?",
+    "Guten Tag! Das hier beschriebene Produkt ist Knocket, eine Plattform mit Pages, dem Web Widget und einer Inbox. Die Produktübersicht finden Sie unter knocket.trtc.io; die Anmeldung erfolgt über die Konsole unter console.trtc.io. Ob Sie gerade genau diese Übersichtsseite sehen, kann ich ohne weitere Angaben nicht bestätigen. Können Sie mir kurz den Seitentitel oder die Adresse nennen?",
+    "Can your AI agent call my own REST API to look up a product's price for a logged-in customer and add it to their cart?",
+    "Nein. Die KI verarbeitet keine Bestellungen oder Zahlungen, und sie kann auch keine Aktionen wie das Hinzufügen zum Warenkorb über Ihre REST-API ausführen. Sie kann Produkte, Preise und Richtlinien beschreiben und führt Kaufaktionen an Ihr Team weiter. Käufer, die etwas kaufen möchten, werden mit dem vollständigen Gesprächsverlauf an Ihr Team übergeben.",
+    "How can we help you today?"
+   ]
+  }
+ ],
+ "portal_requests": [
+  {
+   "t": 1792225934.96,
+   "req": "POST https://api.trtc.io/common/portal-api-lc",
+   "post": "{\"Action\":\"ModifyTenantWidgetStatus\",\"Data\":{\"identifier\":\"6322e0c8aa1daebe1c\",\"type\":\"widget\",\"host\":\"https://knocket.trtc.io/products/web-widget/\"}}"
+  },
+  {
+   "t": 1792225934.97,
+   "req": "POST https://api.trtc.io/common/portal-api-lc",
+   "post": "{\"Action\":\"DescribeWidgetUiVersion\",\"Data\":{\"identifier\":\"6322e0c8aa1daebe1c\"}}"
+  },
+  {
+   "t": 1792225934.97,
+   "req": "POST https://api.trtc.io/common/portal-api-lc",
+   "post": "{\"Action\":\"DescribeContactFormState\",\"Data\":{\"identifier\":\"6322e0c8aa1daebe1c\",\"visitorId\":\"web_040c0ed2ae\"}}"
+  },
+  {
+   "t": 1792225934.97,
+   "req": "POST https://api.trtc.io/common/portal-api-lc",
+   "post": "{\"Action\":\"DescribeWidgetConfig\",\"Data\":{\"identifier\":\"6322e0c8aa1daebe1c\"}}"
+  },
+  {
+   "t": 1792225934.97,
+   "req": "POST https://api.trtc.io/common/portal-api-lc",
+   "post": "{\"Action\":\"CreateVisitor\",\"Data\":{\"identifier\":\"6322e0c8aa1daebe1c\",\"visitorId\":\"web_040c0ed2ae\",\"type\":\"tenant\"}}"
+  },
+  {
+   "t": 1792225934.97,
+   "req": "GET https://api.trtc.io/common/portal-live-chat-events",
+   "post": ""
+  },
+  {
+   "t": 1792225938.98,
+   "req": "POST https://api.trtc.io/common/portal-api-lc",
+   "post": "{\"Action\":\"DescribeUserSig\",\"Data\":{\"identifier\":\"6322e0c8aa1daebe1c\",\"visitorId\":\"web_040c0ed2ae\",\"type\":\"tenant\"}}"
+  },
+  {
+   "t": 1792225956.07,
+   "req": "POST https://api.trtc.io/common/portal-api-lc",
+   "post": "{\"Action\":\"MarkFriendAdded\",\"Data\":{\"identifier\":\"6322e0c8aa1daebe1c\",\"visitorId\":\"web_040c0ed2ae\"}}"
+  }
+ ]
+}
