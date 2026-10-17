@@ -63,7 +63,7 @@ bash docs/acceptance/2026-10-18/229/capture.sh \
 1280 的全页图片为 1296px 宽，是线上与本地共同存在的横向文档尺寸；两边浏览器视口均为 1280px，未裁切隐藏多出的像素。
 
 - 最终浏览器矩阵 **14/14**，连续复跑 **14/14**。
-- 重新 fetch / rebase `origin/main` 后，全量 `just check` 退出 0（`checks/just-check.log`）；全量 `just test` 结果单列于 `checks/just-test.log`。
+- 重新 fetch / rebase `origin/main` 后，全量 `just check` 退出 0（`checks/just-check.log`）；全量 `just test` 退出 0（`checks/just-test.log`）。
 - 页头脚本单元 **6/6**，包含两条先红后绿的延迟焦点回归。
 - Computer Use：EN/DE × 1440/390；产品菜单、移动菜单、德语工具展开，手机语言切换 EN 落到英文首页；截图见 `computer-use/`。临时视口已恢复。
 
