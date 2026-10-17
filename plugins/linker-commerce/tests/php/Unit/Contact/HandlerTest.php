@@ -81,13 +81,14 @@ final class HandlerTest extends TestCase {
 	}
 
 	/**
-	 * A filled honeypot reads as a delivery and sends nothing.
+	 * A filled honeypot is rejected by the shared guard and sends nothing.
 	 */
-	public function test_honeypot_is_answered_but_sends_nothing(): void {
+	public function test_honeypot_is_refused_and_sends_nothing(): void {
 		$handler = $this->handler();
 		WP_Mock::userFunction( 'wp_verify_nonce', array( 'return' => 1 ) );
 
-		$this->assertSame( 'sent', $handler->process( $this->post( array( Form::TRAP_FIELD => 'http://spam.example' ) ) ) );
+		WP_Mock::userFunction( 'get_transient', array( 'return' => false ) );
+		$this->assertSame( 'invalid', $handler->process( $this->post( array( 'website' => 'http://spam.example' ) ) ) );
 	}
 
 	/**

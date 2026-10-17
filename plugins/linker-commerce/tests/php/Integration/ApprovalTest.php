@@ -361,7 +361,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->as_user( $customer->get_id() );
 		$this->assertFalse( $gate->holds(), 'Restricted keeps the workplace.' );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Restricted sees no prices.' );
-		$this->assertStringContainsString( 'Net prices are for businesses.', ( new LoginGate( new Approval() ) )->html() );
+		$this->assertStringContainsString( 'Net prices are for businesses.', ( new LoginGate( new Approval() ) )->restricted_notice() );
 
 		$this->set_state( $customer, Approval::REJECTED, 'We could not verify the business.' );
 		wp_set_password( self::PASSWORD, $customer->get_id() );

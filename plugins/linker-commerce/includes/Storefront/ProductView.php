@@ -275,7 +275,7 @@ final class ProductView {
 		return array(
 			'html' => $this->price_html( $product ),
 			'url'  => CommerceState::LOGIN === $this->state->reason( $product, CommerceState::PAGE )
-				? $this->login_url( (string) $product->get_permalink() )
+				? esc_url_raw( add_query_arg( 'redirect_to', rawurlencode( (string) $product->get_permalink() ), wc_get_page_permalink( 'myaccount' ) ) )
 				: '',
 		);
 	}
@@ -324,17 +324,6 @@ final class ProductView {
 	 */
 	private function cta_url( \WC_Product $product ): string {
 		return esc_url_raw( add_query_arg( 'add-to-cart', (string) $product->get_id(), wc_get_checkout_url() ) );
-	}
-
-	/**
-	 * The sign-in URL that returns to a page.
-	 *
-	 * @param string $back Where to return.
-	 */
-	private function login_url( string $back ): string {
-		return esc_url_raw(
-			add_query_arg( 'redirect_to', rawurlencode( $back ), wc_get_page_permalink( 'myaccount' ) )
-		);
 	}
 
 	/**

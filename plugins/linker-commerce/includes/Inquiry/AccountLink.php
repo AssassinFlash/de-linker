@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Inquiry;
 
+use Linker\Commerce\Presentation\PageUrls;
+
 use WC_Order;
 
 /**
@@ -32,7 +34,7 @@ final class AccountLink {
 	public static function url( WC_Order $order ): string {
 		$id = (int) get_option( 'woocommerce_myaccount_page_id' );
 		if ( function_exists( 'pll_get_post' ) ) {
-			$twin = (int) pll_get_post( $id, str_starts_with( OrderLocale::of( $order ), 'de' ) ? 'de' : 'en' );
+			$twin = PageUrls::twin( $id, OrderLocale::of( $order ) );
 			$id   = $twin > 0 ? $twin : $id;
 		}
 		$url = wc_get_endpoint_url( 'register', '', (string) get_permalink( $id ) );

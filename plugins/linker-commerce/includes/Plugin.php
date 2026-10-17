@@ -29,7 +29,6 @@ use Linker\Commerce\Storefront\ProductView;
  */
 final class Plugin {
 
-
 	/**
 	 * Sets up the plugin.
 	 *
@@ -55,8 +54,7 @@ final class Plugin {
 		private readonly FiguresMetaBox $figures,
 		private readonly FaqsMetaBox $faqs,
 		private readonly DocumentsMetaBox $documents
-	) {
-	}
+	) {}
 
 	/**
 	 * Adds the plugin's hooks.

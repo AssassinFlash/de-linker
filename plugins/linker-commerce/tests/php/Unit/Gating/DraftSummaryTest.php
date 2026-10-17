@@ -25,7 +25,6 @@ use WP_Mock;
  */
 final class DraftSummaryTest extends TestCase {
 
-
 	/**
 	 * Translation and escaping return their input.
 	 */

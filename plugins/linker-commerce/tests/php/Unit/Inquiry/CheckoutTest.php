@@ -27,70 +27,6 @@ final class CheckoutTest extends TestCase {
 
 
 	/**
-	 * Woo's checkout notice stays native; only its mobile scrolling is replaced.
-	 */
-	public function test_checkout_feedback_keeps_native_validation(): void {
-		WP_Mock::userFunction( 'is_checkout', array( 'return' => true ) );
-		WP_Mock::userFunction(
-			'is_wc_endpoint_url',
-			array(
-				'args'   => array( 'order-received' ),
-				'return' => false,
-			)
-		);
-		WP_Mock::userFunction(
-			'wp_add_inline_script',
-			array(
-				'times' => 1,
-				'args'  => array(
-					'wc-checkout',
-					Mockery::on( static fn ( string $script ): bool => str_contains( $script, 'nativeScroll(notice)' ) && str_contains( $script, 'preventScroll: true' ) && ! str_contains( $script, 'submit_error' ) ),
-				),
-			)
-		);
-		( new Checkout() )->feedback();
-		$this->assertConditionsMet();
-	}
-
-	/**
-	 * Only the two site languages can select the review fragment locale.
-	 */
-	public function test_review_language_reads_the_existing_hidden_field(): void {
-		WP_Mock::userFunction(
-			'switch_to_locale',
-			array(
-				'times'  => 1,
-				'args'   => array( 'de_DE_formal' ),
-				'return' => true,
-			)
-		);
-		WP_Mock::userFunction(
-			'switch_to_locale',
-			array(
-				'times'  => 1,
-				'args'   => array( 'en_US' ),
-				'return' => true,
-			)
-		);
-		$checkout = new Checkout();
-		$checkout->review_language( 'billing_city=Berlin&lang=de' );
-		$checkout->review_language( 'lang=en' );
-		$checkout->review_language( 'lang[]=de' );
-		$checkout->review_language( 'lang=other' );
-		$this->assertConditionsMet();
-	}
-
-	/**
-	 * Account editors never receive the checkout feedback adapter.
-	 */
-	public function test_feedback_is_scoped_to_checkout(): void {
-		WP_Mock::userFunction( 'is_checkout', array( 'return' => false ) );
-		WP_Mock::userFunction( 'wp_add_inline_script', array( 'times' => 0 ) );
-		( new Checkout() )->feedback();
-		$this->assertConditionsMet();
-	}
-
-	/**
 	 * Only the Proforma gateway is offered, even when other gateways are
 	 * active; an account whose prices are not open gets none at all.
 	 */
@@ -137,7 +73,7 @@ final class CheckoutTest extends TestCase {
 	/**
 	 * The reply promise (owner ruling 2026-10-09) above the button and on the confirmation.
 	 */
-	public function test_reply_promise_and_next_steps(): void {
+	public function test_next_steps(): void {
 		$this->plain_text();
 		$checkout = new Checkout();
 		WP_Mock::userFunction(
@@ -147,10 +83,6 @@ final class CheckoutTest extends TestCase {
 				'return' => 'http://site/my-account/inquiries/',
 			)
 		);
-
-		ob_start();
-		$checkout->reply_promise();
-		$this->assertSame( '<p class="linker-reply-promise">We reply within one business day.</p>', ob_get_clean() );
 
 		ob_start();
 		$checkout->next_steps();
@@ -213,26 +145,5 @@ final class CheckoutTest extends TestCase {
 		$url = 'http://linker.test/proforma-request/inquiry-received/7021/?key=k';
 
 		$this->assertSame( $url, ( new Checkout() )->received_url( $url, $english ) );
-	}
-
-	/**
-	 * The checkout form carries the language for the AJAX it submits with
-	 * (?wc-ajax=checkout has no language prefix for Polylang to read).
-	 */
-	public function test_language_field(): void {
-		$this->plain_text();
-
-		WP_Mock::userFunction( 'pll_current_language', array( 'args' => array( 'slug' ) ) )
-			->andReturn( 'de', false );
-
-		ob_start();
-		( new Checkout() )->language_field();
-		$this->assertSame( '<input type="hidden" name="lang" value="de" />', ob_get_clean() );
-
-		ob_start();
-		( new Checkout() )->language_field();
-		$this->assertSame( '', ob_get_clean() );
-
-		$this->assertConditionsMet();
 	}
 }

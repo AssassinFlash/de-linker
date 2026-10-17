@@ -26,7 +26,6 @@ use WP_Mock;
  */
 final class ModuleTest extends TestCase {
 
-
 	/**
 	 * The module's hooks, and no other: the shortcodes of the three page
 	 * families (the product and checkout shortcodes, the comparison page's

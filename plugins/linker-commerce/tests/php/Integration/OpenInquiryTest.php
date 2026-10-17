@@ -109,6 +109,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$literal = '[linker_inquiry_text key=title]';
 		WC()->session->set( 'linker_inquiry_fields', array( 'message' => $literal ) );
 		$this->assertStringContainsString( '>' . esc_attr( $literal ) . '</textarea>', do_shortcode( '[linker_inquiry_form]' ) );
+		$this->assertNull( WC()->session->get( 'linker_inquiry_fields' ), 'The next render consumes the guest PII.' );
+		$this->assertStringNotContainsString( esc_attr( $literal ), do_shortcode( '[linker_inquiry_form]' ), 'PII is never refilled a second time.' );
 	}
 
 	/** Retained validation feedback follows the language when the customer switches pages. */
@@ -127,7 +129,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$language = new \Linker\Commerce\Mail\LocaleSwitch();
 		$language->to( 'de_DE_formal' );
 		try {
-			$this->assertSame( 'Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut.', ( new \Linker\Commerce\Inquiry\Form() )->value( array( 'key' => 'error' ) ) );
+			$this->assertStringContainsString( 'Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut.', ( new \Linker\Commerce\Inquiry\Form() )->render() );
+			$this->assertNull( WC()->session->get( 'linker_inquiry_error' ) );
 		} finally {
 			$language->back();
 		}
@@ -202,7 +205,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			false
 		);
 		$this->assertInstanceOf( Submission::class, $details );
-		$order = ( new Sender() )->submit( $details );
+		$order = ( new Sender() )->request( $details );
 		$this->assertInstanceOf( WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
@@ -317,7 +320,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			false
 		);
 		$this->assertInstanceOf( Submission::class, $details );
-		$order = ( new Sender() )->submit( $details );
+		$order = ( new Sender() )->request( $details );
 		$this->assertInstanceOf( WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
@@ -338,12 +341,15 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 * Bots must be stopped before a record or email can be created.
 	 */
 	public function test_public_guard_requires_a_signed_time_and_an_empty_honeypot(): void {
-		$stamp = (string) ( time() - 5 );
-		$post  = array(
+		$stamp  = (string) ( time() - 5 );
+		$post   = array(
 			'linker_started'       => $stamp,
 			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 			'website'              => '',
 		);
+		$fields = ( new PublicGuard() )->fields();
+		$this->assertStringContainsString( 'name="website"', $fields, 'Both doors receive the trap from the shared guard.' );
+		$this->assertStringContainsString( 'aria-label="Website"', $fields );
 		$this->assertTrue( ( new PublicGuard() )->allows( $post ) );
 		$this->assertFalse( ( new PublicGuard() )->allows( array_replace( $post, array( 'website' => 'spam' ) ) ) );
 		$this->assertFalse( ( new PublicGuard() )->allows( array_replace( $post, array( 'linker_started' => (string) time() ) ) ) );
@@ -456,6 +462,81 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		}
 	}
 
+	/** Account details expand native optional billing fields, and edits reach the inquiry. */
+	public function test_account_billing_fields_prefill_and_send_the_edited_address(): void {
+		$customer = $this->customer();
+		$customer->update_meta_data( 'billing_vat_id', 'DE123456789' );
+		$customer->save();
+		update_user_meta( $customer->get_id(), 'linker_vat_checked_number', 'DE123456789' );
+		update_user_meta( $customer->get_id(), 'linker_vat_status', 'valid' );
+		$this->as_user( $customer->get_id() );
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$fields = \Linker\Commerce\Inquiry\BillingFields::render();
+		$this->assertStringContainsString( 'name="billing_address_1"', $fields );
+		$this->assertStringContainsString( 'value="Teststraße 1"', $fields );
+		$this->assertStringContainsString( 'name="billing_vat_id"', $fields );
+		$this->assertStringContainsString( 'value="DE123456789"', $fields );
+		$stamp  = (string) ( time() - 5 );
+		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process(
+			array(
+				'name'                 => 'Maria Beispiel',
+				'email'                => $customer->get_billing_email(),
+				'message'              => 'Please send a Proforma for this address.',
+				'consent'              => '1',
+				'billing_address_1'    => 'Teststraße 246',
+				'billing_vat_id'       => 'DE123456789',
+				'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
+				'linker_started'       => $stamp,
+				'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+			)
+		);
+		$this->assertInstanceOf( WC_Order::class, $result );
+		$this->later(
+			static function () use ( $result ): void {
+				$result->delete( true );
+			}
+		);
+		$this->assertSame( 'Teststraße 246', $result->get_billing_address_1() );
+		$this->assertSame( 'DE123456789', $result->get_meta( '_billing_vat_id' ) );
+		$this->as_user( 0 );
+		$this->assertSame( '', \Linker\Commerce\Inquiry\BillingFields::render(), 'Guests are never asked for billing fields.' );
+		$this->assertSame( array(), \Linker\Commerce\Inquiry\BillingFields::values( array( 'billing_country' => 'DE' ) ), 'Guest billing input is ignored.' );
+	}
+
+	/** Restricted accounts read the reason above a usable form in both languages. */
+	public function test_restricted_reason_does_not_close_the_request_form(): void {
+		$customer = $this->customer();
+		update_user_meta( $customer->get_id(), \Linker\Commerce\Registration\Approval::STATUS_META, 'restricted' );
+		update_user_meta( $customer->get_id(), \Linker\Commerce\Registration\Approval::REASON_META, 'Please add your company VAT ID.' );
+		$this->as_user( $customer->get_id() );
+		wc_load_cart();
+		$tags = $GLOBALS['shortcode_tags'];
+		$this->later(
+			static function () use ( $tags ): void {
+				$GLOBALS['shortcode_tags'] = $tags;
+			}
+		);
+		( new \Linker\Commerce\Inquiry\Form() )->register();
+		$language = new \Linker\Commerce\Mail\LocaleSwitch();
+		foreach ( array(
+			'en_US'        => 'You can send inquiries.',
+			'de_DE_formal' => 'Sie können Anfragen senden.',
+		) as $locale => $notice ) {
+			$language->to( $locale );
+			try {
+				$html = do_shortcode( '[linker_inquiry_form]' );
+				$this->assertStringContainsString( $notice, $html );
+				$this->assertStringContainsString( 'Please add your company VAT ID.', $html );
+				$this->assertLessThan( strpos( $html, '<form ' ), strpos( $html, 'Please add your company VAT ID.' ) );
+				$this->assertStringContainsString( 'type="submit"', $html );
+				$this->assertStringNotContainsString( 'paused', $html );
+			} finally {
+				$language->back();
+			}
+		}
+	}
+
 	/**
 	 * Account states from the owner ruling.
 	 *
@@ -503,7 +584,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			)
 		);
 		$this->assertInstanceOf( Submission::class, $details );
-		$order = ( new Sender() )->submit( $details, false );
+		$order = ( new Sender() )->message( $details );
 		$this->assertInstanceOf( WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {

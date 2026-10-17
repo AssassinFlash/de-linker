@@ -11,10 +11,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Abilities\HandoffTeam;
-use Linker\Commerce\Contact\Emails\TeamMessageEmail;
-use Linker\Commerce\Contact\Emails\ReceiptEmail;
 use Linker\Commerce\Contact\Form;
-use Linker\Commerce\Contact\Submission;
+use Linker\Commerce\Contact\Handler;
 use Linker\Commerce\Digest\Module as DigestModule;
 use Linker\Commerce\Digest\Scheduler;
 use Linker\Commerce\Health\Monitor;
@@ -64,7 +62,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
-		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest' ) as $id ) {
+		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, 'linker_digest' ) as $id ) {
 			$saved[ 'woocommerce_' . $id . '_settings' ] = get_option( 'woocommerce_' . $id . '_settings' );
 		}
 		$this->later(
@@ -188,22 +186,29 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	public function test_contact_notification_routing( string $saved_from, string $from ): void {
 		update_option( Options::NOTIFY_FROM, $saved_from );
 		$this->as_user( 0 );
-		$submission = Submission::from_post(
-			array(
-				'name'    => 'Maria Beispiel',
-				'email'   => 'linker-it-' . self::tag() . '@example.test',
-				'message' => 'A question about a storage system.',
-				'consent' => '1',
-			)
-		);
-		$this->assertInstanceOf( Submission::class, $submission );
+		$stamp = (string) ( time() - 5 );
+		$contact_email = 'linker-it-' . self::tag() . '@example.test';
 		$marker = self::newest_mail_job();
-		$plugin = WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php';
-		( new TeamMessageEmail( $plugin, new Options() ) )->notify( $submission );
-		( new ReceiptEmail( $plugin ) )->notify( $submission );
-		$row = $this->internal_message( $marker, 'New message from Maria Beispiel', $from );
-		$this->assertContains( 'Reply-to: Maria Beispiel <' . $submission->email . '>', $row['headers'], TeamMessageEmail::ID );
-		$receipt = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $submission->email ) === $row['to'] ) );
+		$this->assertSame( 'sent', ( new Handler() )->process( array(
+			'name' => 'Maria Beispiel',
+			'email' => $contact_email,
+			'message' => 'A question about a storage system.',
+			'consent' => '1',
+			Form::NONCE_FIELD => wp_create_nonce( Form::NONCE_ACTION ),
+			'linker_started' => $stamp,
+			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+		) ) );
+		$contacts = wc_get_orders( array( 'billing_email' => $contact_email, 'limit' => -1 ) );
+		foreach ( $contacts as $contact ) {
+			$this->later( static function () use ( $contact ): void { $contact->delete( true ); } );
+		}
+		$this->assertCount( 1, $contacts );
+		$emails = WC()->mailer()->get_emails();
+		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\ReceiptEmail', $emails );
+		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\TeamMessageEmail', $emails );
+		$row = $this->internal_message( $marker, 'New inquiry #' . $contacts[0]->get_order_number() . ' from ', $from );
+		$this->assertContains( 'Reply-to: Maria Beispiel <' . $contact_email . '>', $row['headers'], NewInquiryEmail::ID );
+		$receipt = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $contact_email ) === $row['to'] ) );
 		$this->assertCount( 1, $receipt );
 		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
 		$this->assertContains( 'Reply-to: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );

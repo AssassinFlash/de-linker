@@ -19,7 +19,6 @@ use WP_Error;
 final class Submission {
 
 
-
 	/**
 	 * Longest name, company and email the form accepts (the plugin's other
 	 * fields carry 190 too).

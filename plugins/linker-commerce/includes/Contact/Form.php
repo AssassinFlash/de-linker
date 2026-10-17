@@ -37,7 +37,6 @@ use Linker\Commerce\Settings\Options;
 final class Form {
 
 
-
 	/**
 	 * The shortcode that mounts the form (the contact page's content).
 	 */
@@ -68,10 +67,6 @@ final class Form {
 	 */
 	public const ANCHOR = 'contact-form';
 
-	/**
-	 * The field the honeypot rides in: a person never sees or fills it.
-	 */
-	public const TRAP_FIELD = 'website';
 
 	/**
 	 * The field that carries where the visitor came from, so the answer goes
@@ -172,7 +167,6 @@ final class Form {
 			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '">' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</span></label>';
-		$html .= '<div hidden aria-hidden="true"><label>' . esc_html__( 'Website', 'linker-commerce' ) . '<input type="text" name="' . esc_attr( self::TRAP_FIELD ) . '" tabindex="-1" autocomplete="off" /></label></div>';
 		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
 			. '<p class="linker-form-note">' . esc_html__( 'Your message goes to the Linker team. We reply to the address you give here.', 'linker-commerce' ) . '</p></div>';
 		$html .= '</div>';
@@ -263,7 +257,7 @@ final class Form {
 		if ( ! $page instanceof \WP_Post || ! function_exists( 'pll_get_post' ) ) {
 			return home_url( '/de/genie/' );
 		}
-		$twin = (int) pll_get_post( (int) $page->ID, 'de' );
+		$twin = \Linker\Commerce\Presentation\PageUrls::twin( (int) $page->ID, 'de_DE_formal' );
 		$link = $twin > 0 ? get_permalink( $twin ) : false;
 		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/genie/' );
 	}

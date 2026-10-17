@@ -1,5 +1,6 @@
 <div class="linker-inquiry">
 	[lc_wc_notices]
+	[linker_inquiry_restriction]
 	<header class="linker-inquiry-head"><h1>[linker_inquiry_text key="title"]</h1><p>[linker_inquiry_text key="intro"]</p></header>
 	<div class="linker-inquiry-columns grid items-start gap-10">
 		<form class="linker-inquiry-form" method="post" action="{{action}}">
@@ -12,10 +13,10 @@
 					<label class="linker-form-label" for="inquiry-name">[linker_inquiry_text key="name"]<input class="linker-form-input" id="inquiry-name" name="name" autocomplete="name" maxlength="190" value="{{name}}" required /></label>
 					<label class="linker-form-label" for="inquiry-email">[linker_inquiry_text key="email"]<input class="linker-form-input" id="inquiry-email" name="email" type="email" autocomplete="email" maxlength="190" value="{{email}}" required /></label>
 					<label class="linker-form-label" for="inquiry-company">[linker_inquiry_text key="company"]<input class="linker-form-input" id="inquiry-company" name="company" autocomplete="organization" maxlength="190" value="{{company}}" /></label>
+					[linker_inquiry_billing]
 				</div>
 			</details>
 			<label class="linker-form-consent" {{guest-hide}}><input type="checkbox" name="consent" value="1" {{consent-attributes}} /><span>[linker_inquiry_text key="consent"] <a href="{{privacy}}">[linker_inquiry_text key="privacy"]</a></span></label>
-			<div hidden aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off" aria-label="Website" /></div>
 			<button class="linker-form-primary" type="submit">[linker_inquiry_text key="send"] <span aria-hidden="true">↗</span></button>
 			<p class="linker-inquiry-promise">[linker_inquiry_text key="promise"]</p>
 			<div class="linker-inquiry-guest" {{guest-hide}}><p>[linker_inquiry_text key="no-account"]</p><a href="{{login-url}}">[linker_inquiry_text key="partner"]</a></div>

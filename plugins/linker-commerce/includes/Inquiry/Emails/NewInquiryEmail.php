@@ -20,7 +20,6 @@ use WC_Order;
  */
 final class NewInquiryEmail extends TeamEmail {
 
-
 	/**
 	 * Email id.
 	 */

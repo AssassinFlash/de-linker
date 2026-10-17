@@ -15,7 +15,6 @@ namespace Linker\Commerce\Inquiry;
  */
 final class OrderAdmin {
 
-
 	/**
 	 * Relabels the order type; runs on woocommerce_register_post_type_shop_order.
 	 *
@@ -71,9 +70,9 @@ final class OrderAdmin {
 		if ( ! $order instanceof \WC_Order ) {
 			return;
 		}
-		$source = 'contact' === $order->get_meta( '_linker_inquiry_source' );
-		echo esc_html( $source ? __( 'Contact form', 'linker-commerce' ) : __( 'Proforma request', 'linker-commerce' ) );
-		if ( $source ) {
+		$is_contact = 'contact' === $order->get_meta( '_linker_inquiry_source' );
+		echo esc_html( $is_contact ? __( 'Contact form', 'linker-commerce' ) : __( 'Proforma request', 'linker-commerce' ) );
+		if ( $is_contact ) {
 			echo ' · ' . esc_html( \Linker\Commerce\Contact\Form::intent_label( (string) $order->get_meta( '_linker_inquiry_topic' ) ) );
 		}
 	}
