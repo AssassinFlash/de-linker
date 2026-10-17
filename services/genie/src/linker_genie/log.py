@@ -17,6 +17,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from linker_genie import contact
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS turns (
     id INTEGER PRIMARY KEY,
@@ -109,6 +111,22 @@ class TurnLog:
         )
         self._db.commit()
         return int(cursor.lastrowid or 0)
+
+    def offers(self, conversation_id: str, limit: int) -> list[bool]:
+        """Whether each of the conversation's last `limit` turns carried the contact
+        offer, newest first (contact.decide: never twice in a row, once a question)."""
+        rows = self._db.execute(
+            "SELECT output FROM turns WHERE conversation_id = ? ORDER BY id DESC LIMIT ?",
+            (conversation_id, max(0, limit)),
+        ).fetchall()
+        found: list[bool] = []
+        for (output,) in rows:
+            try:
+                shipped = json.loads(output)
+            except (TypeError, ValueError):
+                shipped = {}
+            found.append(contact.offered(shipped))
+        return found
 
     def vote(self, turn_id: int, value: int) -> bool:
         """Record a vote; False when the turn id is unknown."""

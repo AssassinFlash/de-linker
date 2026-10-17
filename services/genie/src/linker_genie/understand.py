@@ -22,13 +22,13 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from linker_genie import knowledge, page
+from linker_genie import contact, knowledge, page
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.lexicon import Match, Vocabulary
-from linker_genie.route import Call, Route, Subject, plan, with_page
+from linker_genie.route import Call, Route, Subject, person, plan, with_page
 from linker_genie.schema import PageContext, TurnRequest
 from linker_genie.storeapi import VocabularyError
 
@@ -56,6 +56,9 @@ class Prepared:
     # The document search of the route failed (the encoder or the index): the
     # generation raises it (agent.make_generate), no answer is written without it.
     knowledge_error: str | None = None
+    # Jev's answers, None when Jev did not run or failed: the contact offer reads
+    # its "asks for a person or is frustrated" (contact.decide, #243).
+    reading: Reading | None = None
 
     @property
     def calls_made(self) -> int:
@@ -88,6 +91,14 @@ class Understander:
     def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
         message = _last_customer_message(request)
         log: dict[str, Any] = {}
+        phrase = contact.asks_for_person(message)
+        if phrase is not None:
+            # A request for a person is answered in code, before Jev and the model
+            # (#243): the turn is contact.answer() and the contact card.
+            log["person_phrase"] = phrase
+            route = person([f"person phrase: {phrase}"])
+            log.update(route.as_log())
+            return Prepared(route=route, log=log)
         vocabulary = self._load_vocabulary(log)
         matches = vocabulary.match(message) if vocabulary else []
         log["matches"] = [
@@ -112,7 +123,7 @@ class Understander:
             message,
         )
         log.update(route.as_log())
-        prepared = Prepared(route=route, log=log)
+        prepared = Prepared(route=route, log=log, reading=reading)
         _run_calls(prepared, request, client, self._search, self._pages)
         return prepared
 

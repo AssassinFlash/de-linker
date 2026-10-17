@@ -130,6 +130,7 @@ function config(): GenieConfig {
 		disclosure: 'AI.',
 		accountUrl: '/my-account/',
 		workspaceUrl: '/genie/',
+		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 		prompts: [ 'Ask Genie' ],
 		signedIn: false,
 		retentionDays: 90,

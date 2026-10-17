@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-17T19:46:49+00:00\n"
+"POT-Creation-Date: 2026-10-17T22:02:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -561,6 +561,7 @@ msgstr ""
 #: includes/Admin/DocumentsMetaBox.php:74
 #: includes/Admin/DocumentsMetaBox.php:123
 #: includes/Presentation/ProductShortcodes.php:1945
+#: templates/emails/linker-genie-contact.php:52
 msgid "Language"
 msgstr ""
 
@@ -597,6 +598,7 @@ msgid "Answer (German)"
 msgstr ""
 
 #: includes/Admin/FaqsMetaBox.php:74 includes/Admin/FiguresMetaBox.php:79
+#: templates/emails/linker-genie-contact.php:56
 msgid "Page"
 msgstr ""
 
@@ -650,8 +652,8 @@ msgid ""
 "the page it is printed on."
 msgstr ""
 
-#: includes/Contact/Emails/ContactEmail.php:72
-#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:122
+#: includes/Contact/Emails/ContactEmail.php:72 includes/Genie/GenieEmail.php:97
+#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:125
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
 msgstr ""
@@ -970,6 +972,73 @@ msgstr ""
 msgid "Price on request"
 msgstr ""
 
+#: includes/Genie/ConfirmAddressEmail.php:46
+msgid "Genie conversation: address confirmation"
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php:47
+msgid ""
+"Sent to the address a visitor without an account enters to get a Genie "
+"conversation by email. It holds only a link that confirms the address; the "
+"conversation follows after the click."
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php:84
+msgid "Conversation with Genie requested for this email address"
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php:91
+msgid "Confirm your email address"
+msgstr ""
+
+#: includes/Genie/ContactEmail.php:48
+msgid "Genie contact request"
+msgstr ""
+
+#: includes/Genie/ContactEmail.php:49
+msgid ""
+"Sent to the internal notification address, with blind copies, when a "
+"customer sends a contact request from Genie."
+msgstr ""
+
+#. translators: {customer}: the customer's name, or their email address when no name is known.
+#: includes/Genie/ContactEmail.php:78
+msgid "Contact request from {customer} via Genie"
+msgstr ""
+
+#: includes/Genie/ContactEmail.php:85
+msgid "New contact request via Genie"
+msgstr ""
+
+#: includes/Genie/ContactEmail.php:117
+msgid "Asked about the company, delivery or service"
+msgstr ""
+
+#: includes/Genie/ContactEmail.php:118
+msgid "Seemed frustrated or wanted a person"
+msgstr ""
+
+#: includes/Genie/ContactEmail.php:119
+msgid "Asked the same question three times in a row"
+msgstr ""
+
+#: includes/Genie/ContactEmail.php:120
+msgid "Asked to talk to a person"
+msgstr ""
+
+#: includes/Genie/ConversationEmail.php:34
+msgid "Genie conversation"
+msgstr ""
+
+#: includes/Genie/ConversationEmail.php:35
+msgid "Sent when someone asks for a copy of a Genie conversation by email."
+msgstr ""
+
+#: includes/Genie/ConversationEmail.php:64
+#: includes/Genie/ConversationEmail.php:71
+msgid "Your conversation with Genie"
+msgstr ""
+
 #. translators: %s: option name.
 #: includes/Health/Monitor.php:118
 #, php-format
@@ -983,6 +1052,7 @@ msgid "the service answered HTTP %d instead of 200"
 msgstr ""
 
 #: includes/Health/Monitor.php:144 includes/Presentation/LoginGate.php:279
+#: templates/emails/linker-genie-conversation.php:37
 msgid "Genie"
 msgstr ""
 
@@ -1321,6 +1391,7 @@ msgstr ""
 
 #: includes/Presentation/ComparePage.php:225
 #: includes/Presentation/ProductShortcodes.php:1382
+#: templates/emails/linker-genie-contact.php:87
 msgid "Item number"
 msgstr ""
 
@@ -1775,6 +1846,7 @@ msgid "Item no."
 msgstr ""
 
 #: includes/Presentation/ProductShortcodes.php:606
+#: templates/emails/linker-genie-conversation.php:46
 msgid "Model"
 msgstr ""
 
@@ -1994,6 +2066,7 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php:1912
 #: includes/Vocabulary/Labels.php:96 includes/Vocabulary/Labels.php:171
 #: includes/Vocabulary/Labels.php:195 includes/Vocabulary/Terms.php:31
+#: templates/emails/linker-genie-contact.php:79
 msgid "Solution draft"
 msgstr ""
 
@@ -2769,6 +2842,7 @@ msgid "Approval"
 msgstr ""
 
 #: includes/Registration/AccountsTable.php:46
+#: templates/emails/linker-genie-contact.php:37
 msgid "Reason"
 msgstr ""
 
@@ -3015,6 +3089,7 @@ msgid "No account is waiting for approval."
 msgstr ""
 
 #: includes/Registration/PendingApprovals.php:150
+#: templates/emails/linker-genie-contact.php:45
 #: templates/emails/linker-new-customer.php:45
 #: templates/emails/linker-vat-review.php:45
 msgid "Open the customer"
@@ -3369,6 +3444,7 @@ msgid "View solution draft"
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:41
+#: templates/emails/linker-genie-contact.php:81
 msgid "No products in the solution draft."
 msgstr ""
 
@@ -3457,6 +3533,7 @@ msgid ""
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:65
+#: templates/emails/linker-genie-contact.php:88
 msgid "Quantity"
 msgstr ""
 
@@ -3773,6 +3850,85 @@ msgstr ""
 msgid "Answer this email to reply to the visitor directly."
 msgstr ""
 
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-confirm-address.php:29
+#, php-format
+msgid ""
+"On %s, a conversation with Genie, Linker's AI assistant, was requested for "
+"this email address."
+msgstr ""
+
+#: templates/emails/linker-genie-confirm-address.php:32
+msgid "Send me the conversation"
+msgstr ""
+
+#. translators: %d: how many hours the link works.
+#: templates/emails/linker-genie-confirm-address.php:36
+#, php-format
+msgid "The link works once and expires after %d hour."
+msgid_plural "The link works once and expires after %d hours."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/emails/linker-genie-confirm-address.php:39
+msgid ""
+"The conversation is sent only once the link is opened. If you did not ask "
+"for it, you can ignore this email."
+msgstr ""
+
+#: templates/emails/linker-genie-contact.php:34
+msgid ""
+"A contact request came in through Genie. Genie promised a reply within one "
+"business day."
+msgstr ""
+
+#: templates/emails/linker-genie-contact.php:41
+msgid "Customer"
+msgstr ""
+
+#: templates/emails/linker-genie-contact.php:47
+msgid "Guest, no account"
+msgstr ""
+
+#: templates/emails/linker-genie-contact.php:67
+msgid "The customer's last messages, newest first"
+msgstr ""
+
+#: templates/emails/linker-genie-contact.php:77
+msgid "Open the conversation"
+msgstr ""
+
+#: templates/emails/linker-genie-contact.php:86
+#: templates/proforma/proforma.php:111
+msgid "Product"
+msgstr ""
+
+#: templates/emails/linker-genie-contact.php:102
+msgid "A reply to this email goes straight to the customer."
+msgstr ""
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-conversation.php:33
+#, php-format
+msgid ""
+"As requested on %s, here is your conversation with Genie, Linker's AI "
+"assistant."
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php:37
+msgid "You"
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php:54
+msgid ""
+"Genie is an AI system, and its answers can contain mistakes. Where an answer "
+"differs from the product's datasheet, the datasheet applies."
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php:55
+msgid "Replies to this email go to the Linker team."
+msgstr ""
+
 #. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
 #: templates/emails/linker-inquiry-received.php:31
 #, php-format
@@ -3971,10 +4127,6 @@ msgstr ""
 msgid "Pos."
 msgstr ""
 
-#: templates/proforma/proforma.php:111
-msgid "Product"
-msgstr ""
-
 #: templates/proforma/proforma.php:112
 msgid "Qty"
 msgstr ""
@@ -4024,72 +4176,4 @@ msgstr ""
 
 #: templates/proforma/proforma.php:177
 msgid "Reference"
-msgstr ""
-
-#: includes/Genie/ConversationEmail.php
-msgid "Genie conversation"
-msgstr ""
-
-#: includes/Genie/ConversationEmail.php
-msgid "Sent when someone asks for a copy of a Genie conversation by email."
-msgstr ""
-
-#: includes/Genie/ConversationEmail.php
-msgid "Your conversation with Genie"
-msgstr ""
-
-#. translators: %s: the site's domain, e.g. de-linker.com.
-#: templates/emails/linker-genie-conversation.php
-#, php-format
-msgid "As requested on %s, here is your conversation with Genie, Linker's AI assistant."
-msgstr ""
-
-#: templates/emails/linker-genie-conversation.php
-msgid "You"
-msgstr ""
-
-#: templates/emails/linker-genie-conversation.php
-msgid "Genie is an AI system, and its answers can contain mistakes. Where an answer differs from the product's datasheet, the datasheet applies."
-msgstr ""
-
-#: templates/emails/linker-genie-conversation.php
-msgid "Replies to this email go to the Linker team."
-msgstr ""
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Genie conversation: address confirmation"
-msgstr ""
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Sent to the address a visitor without an account enters to get a Genie conversation by email. It holds only a link that confirms the address; the conversation follows after the click."
-msgstr ""
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Conversation with Genie requested for this email address"
-msgstr ""
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Confirm your email address"
-msgstr ""
-
-#. translators: %s: the site's domain, e.g. de-linker.com.
-#: templates/emails/linker-genie-confirm-address.php
-#, php-format
-msgid "On %s, a conversation with Genie, Linker's AI assistant, was requested for this email address."
-msgstr ""
-
-#: templates/emails/linker-genie-confirm-address.php
-msgid "Send me the conversation"
-msgstr ""
-
-#. translators: %d: how many hours the link works.
-#: templates/emails/linker-genie-confirm-address.php
-#, php-format
-msgid "The link works once and expires after %d hour."
-msgid_plural "The link works once and expires after %d hours."
-msgstr[0] ""
-msgstr[1] ""
-
-#: templates/emails/linker-genie-confirm-address.php
-msgid "The conversation is sent only once the link is opened. If you did not ask for it, you can ignore this email."
 msgstr ""

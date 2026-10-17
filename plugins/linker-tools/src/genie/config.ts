@@ -27,6 +27,8 @@
  *   (Retention::RETENTION_DAYS), named under a guest's list;
  * - `data-mail-started`, `data-mail-started-nonce`: the signed time the page
  *   was made, a guest's bot guard for "email me" (ConversationMail::stamp()).
+ * - `data-contact-url`: the contact card's route
+ *   (linker-ai/v1/genie/contact, #243).
  *
  * Opening and pending questions use the dock loader's ready/open handshake,
  * not configuration read from the mount.
@@ -59,6 +61,8 @@ export interface GenieConfig {
 	retentionDays: number;
 	mailStarted: string;
 	mailStartedNonce: string;
+	/** The contact card's route ("Let Linker contact me", #243). */
+	contactUrl: string;
 }
 
 function readPage(
@@ -111,5 +115,6 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		retentionDays: Number( data.retentionDays ) || 0,
 		mailStarted: data.mailStarted ?? '',
 		mailStartedNonce: data.mailStartedNonce ?? '',
+		contactUrl: data.contactUrl ?? '/wp-json/linker-ai/v1/genie/contact',
 	};
 }

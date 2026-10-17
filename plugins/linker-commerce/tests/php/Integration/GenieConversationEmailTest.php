@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Genie\Module;
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Mail\Throttle;
 
 /**
@@ -65,7 +66,7 @@ final class GenieConversationEmailTest extends IntegrationTestCase {
 		$marker = self::newest_mail_job();
 		$to     = 'visitor-' . self::tag() . '@example.test';
 
-		$sent = ( new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->send(
+		$sent = ( new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() ) )->send(
 			false,
 			array(
 				'to'       => $to,
@@ -117,7 +118,7 @@ final class GenieConversationEmailTest extends IntegrationTestCase {
 			admin_url( 'admin-post.php' )
 		);
 
-		$sent = ( new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->confirm(
+		$sent = ( new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() ) )->confirm(
 			false,
 			array(
 				'to'     => $to,
@@ -142,7 +143,7 @@ final class GenieConversationEmailTest extends IntegrationTestCase {
 	public function test_the_german_confirmation_says_24_stunden(): void {
 		$marker = self::newest_mail_job();
 		$this->assertTrue(
-			( new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->confirm(
+			( new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() ) )->confirm(
 				false,
 				array(
 					'to'     => 'visitor-' . self::tag() . '@example.test',
@@ -163,7 +164,7 @@ final class GenieConversationEmailTest extends IntegrationTestCase {
 	 */
 	public function test_an_incomplete_request_sends_nothing(): void {
 		$marker  = self::newest_mail_job();
-		$module  = new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
+		$module  = new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() );
 		$refused = array(
 			array(
 				'to'       => 'not an address',

@@ -1,0 +1,334 @@
+[
+ {
+  "id": "ask-en",
+  "locale": "en",
+  "message": "Can I talk to a person?",
+  "offer": "asked",
+  "by": "phrase",
+  "got": {
+   "offer": "asked",
+   "route": "person",
+   "intent": null,
+   "jev_error": null,
+   "text": "Someone from the Linker team can get in touch with you by email.",
+   "handoff": "",
+   "seconds": 0.0
+  },
+  "ok": true
+ },
+ {
+  "id": "ask-de",
+  "locale": "de",
+  "message": "Ich möchte mit einem Mitarbeiter sprechen",
+  "offer": "asked",
+  "by": "phrase",
+  "got": {
+   "offer": "asked",
+   "route": "person",
+   "intent": null,
+   "jev_error": null,
+   "text": "Jemand aus dem Linker-Team kann sich per E-Mail bei Ihnen melden.",
+   "handoff": "",
+   "seconds": 0.0
+  },
+  "ok": true
+ },
+ {
+  "id": "ask-en-2",
+  "locale": "en",
+  "message": "Could somebody from your sales team give me a ring tomorrow?",
+  "offer": "asked",
+  "by": "jev",
+  "got": {
+   "offer": "asked",
+   "route": "person",
+   "intent": "talk_to_person",
+   "jev_error": null,
+   "text": "Someone from the Linker team can get in touch with you by email.",
+   "handoff": "",
+   "seconds": 2.9
+  },
+  "ok": true
+ },
+ {
+  "id": "ask-de-2",
+  "locale": "de",
+  "message": "Gibt es bei Ihnen einen Ansprechpartner, der sich mit Gewerbespeichern auskennt?",
+  "offer": "asked",
+  "by": "jev",
+  "got": {
+   "offer": "asked",
+   "route": "person",
+   "intent": "talk_to_person",
+   "jev_error": null,
+   "text": "Jemand aus dem Linker-Team kann sich per E-Mail bei Ihnen melden.",
+   "handoff": "",
+   "seconds": 0.7
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-en",
+  "locale": "en",
+  "message": "This is useless, you keep giving me the wrong products.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "I understand the frustration, and I am sorry the results did not match what you need. Tell me which brand you are working with and I will search for the right products instead of guessing.",
+   "handoff": "",
+   "seconds": 3.7
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-de",
+  "locale": "de",
+  "message": "Das hilft mir überhaupt nicht weiter, Ihre Antworten sind falsch.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Das tut mir leid. Damit ich es richtigstelle: Sagen Sie mir bitte kurz, zu welchem Produkt, welcher Batterie oder welcher Frage Sie eine Antwort brauchen – dann prüfe ich es neu für Sie. Wenn es um die Auslegung Ihrer Anlage geht, kann ich den Lösungskonfigurator für Sie öffnen.",
+   "handoff": "",
+   "seconds": 3.3
+  },
+  "ok": true
+ },
+ {
+  "id": "service-en",
+  "locale": "en",
+  "message": "Do you deliver to Austria?",
+  "offer": "service",
+  "by": "jev",
+  "got": {
+   "offer": "service",
+   "route": "service",
+   "intent": "company_logistics_service",
+   "jev_error": null,
+   "text": "",
+   "handoff": "Our team will answer that at sales@de-linker.com.",
+   "seconds": 1.8
+  },
+  "ok": true
+ },
+ {
+  "id": "service-de",
+  "locale": "de",
+  "message": "Wie hoch sind die Versandkosten nach Österreich?",
+  "offer": "service",
+  "by": "jev",
+  "got": {
+   "offer": "service",
+   "route": "service",
+   "intent": "company_logistics_service",
+   "jev_error": null,
+   "text": "",
+   "handoff": "Unser Team beantwortet das unter sales@de-linker.com.",
+   "seconds": 1.8
+  },
+  "ok": true
+ },
+ {
+  "id": "plain-en",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2-10K-T3?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These batteries have a documented pairing with the SAJ H2-10K-T3, and each pair is released with the matching accessory. The B2 storage sets are used together with the BC2-HV1 control module, and the H2 series system is given as inverter plus control module plus battery modules. Both the conditions and the voltage ranges of each pair stand in the pairing documents, which are linked below. Please note the condition recorded for the one-module B2-5.0: that configuration is not covered by the listing, because its operating voltage lies below the battery voltage range of this inverter.",
+   "handoff": "",
+   "seconds": 5.2
+  },
+  "ok": true
+ },
+ {
+  "id": "plain-de",
+  "locale": "de",
+  "message": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Diese Batterien haben ein dokumentiertes Pairing mit dem SAJ H2-10K-T3. Jedes Paar ist mit passendem Zubehör freigegeben: Die B2-Serie wird als Set aus BU2-5.0-Modulen und einem eigenen Steuermodul BC2-HV1 eingesetzt, und SAJ gibt das System der H2-Serie als Wechselrichter plus Steuermodul plus Speichermodule an. Beachten Sie die Bedingungen: Die B2-5.0 mit nur einem Modul liegt mit ihrer Betriebsspannung unter dem Batteriespannungsbereich des H2 T3 und ist in dieser Listung nicht enthalten; mit zwei Modulen liegt die Spannung am unteren Rand des Bereichs. Die vollständigen Bedingungen und Werte stehen in den Pairing-Unterlagen.",
+   "handoff": "",
+   "seconds": 4.7
+  },
+  "ok": true
+ },
+ {
+  "id": "talk-en",
+  "locale": "en",
+  "message": "Can the SAJ inverter talk to a Pylontech battery?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "products",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Pylontech is a battery brand, and whether a documented pairing with an SAJ inverter exists depends on the exact SAJ model: the pairing documentation differs across the HS2, HS3 and H2-T3 series shown below. Please name the model you have, and I will check the battery pairings our documentation releases for it.",
+   "handoff": "",
+   "seconds": 8.5
+  },
+  "ok": true
+ },
+ {
+  "id": "talk-de",
+  "locale": "de",
+  "message": "Kann der Wechselrichter mit dem Speicher sprechen?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "model",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Ob Wechselrichter und Speicher miteinander kommunizieren, prüfen wir gegen die hinterlegten Kompatibilitätslisten – die Seite nennt dafür BMS-Protokolle, Firmware-Versionen und die passenden Meter-Komponenten. Damit ich das konkrete Paar prüfen und Ihnen die zugehörige Unterlage zeigen kann: Von welcher Marke ist Ihr Wechselrichter, und welches Speichermodell ist im Einsatz?",
+   "handoff": "",
+   "seconds": 7.2
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-en#1",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2-10K-T3?",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These batteries have a documented pairing with the SAJ H2-10K-T3. Each pair is released with the matching accessory, and the conditions are set out in the pairing documents: the B2 storage works as a set of BU2-5.0 modules with a BC2-HV1 control module, and the module count has to stay within the battery voltage range of the H2 T3, so the smallest single-module set is not covered by the listing. Please check the voltage conditions in the documents before fixing a configuration.",
+   "handoff": "",
+   "seconds": 3.4
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-en#2",
+  "locale": "en",
+  "message": "which battery fits SAJ H2-10K-T3",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These batteries have a documented pairing with the SAJ H2-10K-T3. Every pair is released with the matching accessory: the B2 storage is used as a set of BU2-5.0 modules together with a BC2-HV1 control module, which is a product of its own. The conditions are set out in the pairing documents — the number of modules has to keep the set's operating voltage inside the battery voltage range of the H2 T3, and the smallest B2 set is not covered by the listing because its operating voltage lies below that range. Please check the voltage conditions in the documents before fixing a configuration.",
+   "handoff": "",
+   "seconds": 5.0
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-en#3",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2 10K T3??",
+  "offer": "repeat",
+  "got": {
+   "offer": "repeat",
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These batteries have a documented pairing with the SAJ H2-10K-T3. Every pair is released with the matching accessory: the B2 storage is used as a set of BU2-5.0 modules together with a BC2-HV1 control module, which is a product of its own. The conditions are set out in the pairing documents — the number of modules has to keep the set's operating voltage inside the battery voltage range of the H2-10K-T3, and the smallest B2 set is not covered by the listing because its operating voltage lies below that range. Please check the voltage conditions in the documents before fixing a configuration.",
+   "handoff": "",
+   "seconds": 3.2
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-en#4",
+  "locale": "en",
+  "message": "WHICH BATTERY FITS THE SAJ H2-10K-T3",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These batteries have a documented pairing with the SAJ H2-10K-T3. Every pair is released with the matching accessory: the B2 storage is used as a set of BU2-5.0 modules together with a BC2-HV1 control module, which is a product of its own. The conditions are set out in the pairing documents — the number of modules has to keep the set's operating voltage inside the battery voltage range of the H2-10K-T3, and the smallest B2 set is not covered by the listing because its operating voltage lies below that range. Please check the voltage conditions in the documents before fixing a configuration.",
+   "handoff": "",
+   "seconds": 3.5
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-de#1",
+  "locale": "de",
+  "message": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum H2-10K-T3 sind in unseren Unterlagen die B2-Hochvoltspeicher als Pairing dokumentiert. Alle Paare sind mit Zubehör freigegeben: Die B2 wird ausschließlich als Set aus Speichermodulen und dem eigenen Steuermodul BC2-HV1 eingesetzt, und die Konfigurationsanleitung der H2-Serie beschreibt das System als Wechselrichter plus Steuermodul plus Speichermodule. Bitte beachten Sie die Bedingung zur Spannungslage: Die kleinste Ausbaustufe der B2 mit nur einem Modul liegt unterhalb des Batteriespannungsbereichs des H2-10K-T3 und ist in dieser Listung nicht abgedeckt; die größeren Ausbaustufen mit mehreren Modulen liegen im Bereich. Die genauen Werte und Bedingungen finden Sie in den angehängten Pairing-Unterlagen.",
+   "handoff": "",
+   "seconds": 5.1
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-de#2",
+  "locale": "de",
+  "message": "welcher speicher passt zu SAJ H2-10K-T3",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum H2-10K-T3 sind in unseren Unterlagen die B2-Hochvoltspeicher als Pairing dokumentiert — alle Paare sind mit Zubehör freigegeben. Bedingung ist in jedem Fall der Aufbau als Set: Die Speichermodule werden zusammen mit dem eigenen Steuermodul BC2-HV1 betrieben, und die Konfigurationsanleitung der H2-Serie beschreibt das System als Wechselrichter plus Steuermodul plus Speichermodule. Beachten Sie außerdem die Spannungslage: Die kleinste Ausbaustufe der B2 mit nur einem Modul liegt unterhalb des Batteriespannungsbereichs des H2-10K-T3 und ist in dieser Listung nicht abgedeckt; die größeren Ausbaustufen mit mehreren Modulen liegen im Bereich. Die genauen Werte und Bedingungen stehen in den angehängten Pairing-Unterlagen.",
+   "handoff": "",
+   "seconds": 5.0
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-de#3",
+  "locale": "de",
+  "message": "Welcher Speicher passt zum SAJ H2 10K T3 bitte?",
+  "offer": "repeat",
+  "got": {
+   "offer": "repeat",
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum H2-10K-T3 sind in unseren Unterlagen die B2-Hochvoltspeicher als Pairing dokumentiert; jedes dieser Paare ist mit Zubehör freigegeben. Die Bedingung ist in jedem Fall der Aufbau als Set: Die Speichermodule werden zusammen mit dem eigenen Steuermodul BC2-HV1 betrieben, und die Konfigurationsanleitung der H2-Serie beschreibt das System als Wechselrichter plus Steuermodul plus Speichermodule. Beachten Sie zusätzlich die Spannungslage: Die kleinste Ausbaustufe der B2 mit nur einem Modul liegt unterhalb des Batteriespannungsbereichs des H2-10K-T3 und ist in dieser Listung nicht abgedeckt; die größeren Ausbaustufen mit mehreren Modulen liegen im Bereich. Die genauen Werte und Bedingungen finden Sie in den angehängten Pairing-Unterlagen.",
+   "handoff": "",
+   "seconds": 5.0
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-de#4",
+  "locale": "de",
+  "message": "WELCHER SPEICHER PASST ZUM SAJ H2-10K-T3",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum H2-10K-T3 sind in unseren Unterlagen die B2-Hochvoltspeicher als Pairing dokumentiert; jedes dieser Paare ist mit Zubehör freigegeben. Bedingung ist in jedem Fall der Aufbau als Set: Die Speichermodule werden zusammen mit dem eigenen Steuermodul BC2-HV1 betrieben, und die Konfigurationsanleitung der H2-Serie beschreibt das System als Wechselrichter plus Steuermodul plus Speichermodule. Beachten Sie zusätzlich die Spannungslage: Die kleinste Ausbaustufe der B2 mit nur einem Modul liegt unterhalb des Batteriespannungsbereichs des H2-10K-T3 und ist in dieser Listung nicht abgedeckt; die größeren Ausbaustufen mit mehreren Modulen liegen im Bereich. Die genauen Werte und Bedingungen finden Sie in den angehängten Pairing-Unterlagen.",
+   "handoff": "",
+   "seconds": 3.5
+  },
+  "ok": true
+ }
+]

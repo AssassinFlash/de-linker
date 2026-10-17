@@ -207,7 +207,7 @@ def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
             failures.append(f"a {route.name} turn carries the {route.action} action")
     if route.no_handoff and any(isinstance(b, HandoffBlock) for b in output.blocks):
         failures.append(f"a {route.name} turn is not a question for the team")
-    if route.name in ("person", "service") and any(
+    if route.name == "service" and any(
         isinstance(b, HandoffBlock) for b in output.blocks
     ):
         if any(not isinstance(b, HandoffBlock) for b in output.blocks):

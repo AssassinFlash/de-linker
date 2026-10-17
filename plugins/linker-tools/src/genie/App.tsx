@@ -28,6 +28,7 @@ import {
 	type Block,
 	type CardsBlock,
 	type CompareBlock,
+	type ContactBlock,
 	type ConversationSummary,
 	type EmailOutcome,
 	type Turn,
@@ -35,6 +36,7 @@ import {
 } from './api/turn';
 import { BlockView } from './components/BlockView';
 import { Compare } from './components/Compare';
+import { ContactCard } from './components/ContactCard';
 import { GenieCard } from './components/GenieCard';
 import {
 	AttachIcon,
@@ -918,7 +920,9 @@ export function App( { config }: { config: GenieConfig } ) {
 								 * carry: chips, cards, compare, handoff. */ }
 								{ turn?.blocks
 									.filter(
-										( block ) => 'text' !== block.type
+										( block ) =>
+											'text' !== block.type &&
+											'contact' !== block.type
 									)
 									.map( ( block, index ) => (
 										<BlockView
@@ -986,6 +990,24 @@ export function App( { config }: { config: GenieConfig } ) {
 										} }
 									/>
 								) : null }
+								{ /* "Let Linker contact me" follows the
+								 * answer and its cards (#243). */ }
+								{ turn?.blocks
+									.filter(
+										( block ): block is ContactBlock =>
+											'contact' === block.type
+									)
+									.slice( 0, 1 )
+									.map( ( block ) => (
+										<ContactCard
+											key={ `${ turn.meta?.turn_id ?? 0 }-${ block.reason }` }
+											block={ block }
+											contactUrl={ config.contactUrl }
+											nonce={ config.restNonce }
+											locale={ config.locale }
+											page={ config.page }
+										/>
+									) ) }
 							</div>
 						) : null }
 						{ /* The picked files' names, over the composer; each

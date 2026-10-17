@@ -93,6 +93,9 @@ def rendered(output: dict[str, Any]) -> str:
             )
         elif kind == "action":
             parts.append(f"[Offers the action {block.get('name')}]")
+        elif kind == "contact":
+            # The service's offer (contact.py, #243), not the model's words.
+            parts.append("[Offers: Let Linker contact me]")
     return "\n\n".join(part for part in parts if part)
 
 

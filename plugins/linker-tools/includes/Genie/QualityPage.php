@@ -287,17 +287,53 @@ class QualityPage {
 		}
 		echo '</tbody></table>';
 
+		$this->render_contact_requests( $conversation );
+
 		printf( '<h2>%s</h2>', esc_html__( 'Conversation', 'linker-tools' ) );
-		$thread = $this->thread->read( $conversation );
+		// The whole conversation with its last answer, which lives in the
+		// stream (Thread::transcript()): the team mail of a contact request
+		// links here (#243).
 		echo '<table class="widefat fixed striped"><tbody>';
-		foreach ( $thread['messages'] as $message ) {
+		foreach ( $this->thread->transcript( $conversation ) as $message ) {
 			printf(
 				'<tr><th scope="row">%s</th><td>%s</td></tr>',
 				esc_html( 'assistant' === $message['role'] ? 'Genie' : __( 'Customer', 'linker-tools' ) ),
-				nl2br( esc_html( (string) $message['content'] ) )
+				nl2br( esc_html( $message['content'] ) )
 			);
 		}
 		echo '</tbody></table>';
+	}
+
+	/**
+	 * The conversation's contact requests (#243): when, why, and where the team replies.
+	 *
+	 * @param int $conversation Conversation post ID.
+	 */
+	private function render_contact_requests( int $conversation ): void {
+		$notes = get_post_meta( $conversation, ContactRequest::NOTE, false );
+		if ( ! is_array( $notes ) || array() === $notes ) {
+			return;
+		}
+		printf( '<h2>%s</h2>', esc_html__( 'Contact requests', 'linker-tools' ) );
+		echo '<ul>';
+		foreach ( $notes as $note ) {
+			if ( ! is_array( $note ) ) {
+				continue;
+			}
+			printf(
+				'<li>%s</li>',
+				esc_html(
+					sprintf(
+						/* translators: 1: date and time, 2: the address the team replies to, 3: why Genie offered the contact. */
+						__( '%1$s · Reply address: %2$s · Reason: %3$s', 'linker-tools' ),
+						$this->time( (int) ( $note['at'] ?? 0 ) ),
+						(string) ( $note['email'] ?? '' ),
+						ContactRequest::reason_label( (string) ( $note['reason'] ?? '' ) )
+					)
+				)
+			);
+		}
+		echo '</ul>';
 	}
 
 	/**

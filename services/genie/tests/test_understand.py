@@ -168,3 +168,34 @@ def test_the_log_is_json(vocabulary: Vocabulary) -> None:
     prepared = understander.prepare(_request("H2-10K-T3"), _abilities([]))
     json.dumps(prepared.log)
     assert prepared.log["route"] == "products"
+
+
+@pytest.mark.parametrize(
+    ("message", "locale"),
+    [
+        ("Can I talk to a person?", "en"),
+        ("Ich möchte mit einem Mitarbeiter sprechen", "de"),
+    ],
+)
+def test_a_person_phrase_routes_to_a_person_without_jev(
+    vocabulary: Vocabulary, message: str, locale: str
+) -> None:
+    jev = FakeJev(_reading("find_products"))
+    seen: list[httpx.Request] = []
+    prepared = Understander(lambda: vocabulary, jev).prepare(
+        _request(message, locale), _abilities(seen)
+    )
+    assert prepared.route.name == "person"
+    assert prepared.route.calls == ()
+    # Not one model call: neither Jev nor an ability (#243, Knocket's outer layer).
+    assert (jev.seen, seen) == ([], [])
+    assert prepared.log["person_phrase"]
+    assert prepared.reading is None
+
+
+def test_the_reading_is_kept_for_the_contact_offer(vocabulary: Vocabulary) -> None:
+    reading = Reading("other", 0.9, 0.1, 0.92, 0.2, 2.6, 0.0)
+    prepared = Understander(lambda: vocabulary, FakeJev(reading)).prepare(
+        _request("This is useless."), _abilities([])
+    )
+    assert prepared.reading == reading

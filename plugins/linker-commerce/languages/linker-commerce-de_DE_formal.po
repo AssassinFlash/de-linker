@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-17T19:46:49+00:00\n"
+"POT-Creation-Date: 2026-10-17T22:02:49+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -585,6 +585,7 @@ msgstr "Typ"
 #: includes/Admin/DocumentsMetaBox.php:74
 #: includes/Admin/DocumentsMetaBox.php:123
 #: includes/Presentation/ProductShortcodes.php:1945
+#: templates/emails/linker-genie-contact.php:52
 msgid "Language"
 msgstr "Sprache"
 
@@ -623,6 +624,7 @@ msgid "Answer (German)"
 msgstr "Antwort (Deutsch)"
 
 #: includes/Admin/FaqsMetaBox.php:74 includes/Admin/FiguresMetaBox.php:79
+#: templates/emails/linker-genie-contact.php:56
 msgid "Page"
 msgstr "Seite"
 
@@ -682,8 +684,8 @@ msgstr ""
 "Die Kenndaten %s behalten ihren bisherigen Wert: Ein geänderter Wert "
 "benötigt das Dokument und die Seite, auf der er steht."
 
-#: includes/Contact/Emails/ContactEmail.php:72
-#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:122
+#: includes/Contact/Emails/ContactEmail.php:72 includes/Genie/GenieEmail.php:97
+#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:125
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
 msgstr "HTML"
@@ -1022,6 +1024,78 @@ msgstr "Angebot pro Projekt"
 msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
+#: includes/Genie/ConfirmAddressEmail.php:46
+msgid "Genie conversation: address confirmation"
+msgstr "Genie-Unterhaltung: Adressbestätigung"
+
+#: includes/Genie/ConfirmAddressEmail.php:47
+msgid ""
+"Sent to the address a visitor without an account enters to get a Genie "
+"conversation by email. It holds only a link that confirms the address; the "
+"conversation follows after the click."
+msgstr ""
+"Geht an die Adresse, die ein Besucher ohne Konto für eine Genie-Unterhaltung "
+"per E-Mail angibt. Die E-Mail enthält nur einen Link zur Bestätigung; die "
+"Unterhaltung folgt nach dem Klick."
+
+#: includes/Genie/ConfirmAddressEmail.php:84
+msgid "Conversation with Genie requested for this email address"
+msgstr "Gespräch mit Genie für diese E-Mail-Adresse angefordert"
+
+#: includes/Genie/ConfirmAddressEmail.php:91
+msgid "Confirm your email address"
+msgstr "Bestätigen Sie Ihre E-Mail-Adresse"
+
+#: includes/Genie/ContactEmail.php:48
+msgid "Genie contact request"
+msgstr "Genie-Kontaktanfrage"
+
+#: includes/Genie/ContactEmail.php:49
+msgid ""
+"Sent to the internal notification address, with blind copies, when a "
+"customer sends a contact request from Genie."
+msgstr ""
+"Geht an die Adresse für interne Benachrichtigungen (mit Blindkopien), wenn "
+"über Genie eine Kontaktanfrage eingeht."
+
+#. translators: {customer}: the customer's name, or their email address when no name is known.
+#: includes/Genie/ContactEmail.php:78
+msgid "Contact request from {customer} via Genie"
+msgstr "Kontaktanfrage von {customer} über Genie"
+
+#: includes/Genie/ContactEmail.php:85
+msgid "New contact request via Genie"
+msgstr "Neue Kontaktanfrage über Genie"
+
+#: includes/Genie/ContactEmail.php:117
+msgid "Asked about the company, delivery or service"
+msgstr "Fragte nach Unternehmen, Lieferung oder Service"
+
+#: includes/Genie/ContactEmail.php:118
+msgid "Seemed frustrated or wanted a person"
+msgstr "Wirkte unzufrieden oder wollte einen Menschen"
+
+#: includes/Genie/ContactEmail.php:119
+msgid "Asked the same question three times in a row"
+msgstr "Stellte dieselbe Frage dreimal hintereinander"
+
+#: includes/Genie/ContactEmail.php:120
+msgid "Asked to talk to a person"
+msgstr "Wollte mit einem Menschen sprechen"
+
+#: includes/Genie/ConversationEmail.php:34
+msgid "Genie conversation"
+msgstr "Genie-Unterhaltung"
+
+#: includes/Genie/ConversationEmail.php:35
+msgid "Sent when someone asks for a copy of a Genie conversation by email."
+msgstr "Geht an die Person, die eine Genie-Unterhaltung per E-Mail anfordert."
+
+#: includes/Genie/ConversationEmail.php:64
+#: includes/Genie/ConversationEmail.php:71
+msgid "Your conversation with Genie"
+msgstr "Ihr Gespräch mit Genie"
+
 #. translators: %s: option name.
 #: includes/Health/Monitor.php:118
 #, php-format
@@ -1035,6 +1109,7 @@ msgid "the service answered HTTP %d instead of 200"
 msgstr "der Dienst antwortete mit HTTP %d statt 200"
 
 #: includes/Health/Monitor.php:144 includes/Presentation/LoginGate.php:279
+#: templates/emails/linker-genie-conversation.php:37
 msgid "Genie"
 msgstr "Genie"
 
@@ -1392,6 +1467,7 @@ msgstr "Produkte"
 
 #: includes/Presentation/ComparePage.php:225
 #: includes/Presentation/ProductShortcodes.php:1382
+#: templates/emails/linker-genie-contact.php:87
 msgid "Item number"
 msgstr "Artikelnummer"
 
@@ -1864,6 +1940,7 @@ msgid "Item no."
 msgstr "Artikelnr."
 
 #: includes/Presentation/ProductShortcodes.php:606
+#: templates/emails/linker-genie-conversation.php:46
 msgid "Model"
 msgstr "Modell"
 
@@ -2099,6 +2176,7 @@ msgstr "Anmelden"
 #: includes/Presentation/ProductShortcodes.php:1912
 #: includes/Vocabulary/Labels.php:96 includes/Vocabulary/Labels.php:171
 #: includes/Vocabulary/Labels.php:195 includes/Vocabulary/Terms.php:31
+#: templates/emails/linker-genie-contact.php:79
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 
@@ -2935,6 +3013,7 @@ msgid "Approval"
 msgstr "Freigabe"
 
 #: includes/Registration/AccountsTable.php:46
+#: templates/emails/linker-genie-contact.php:37
 msgid "Reason"
 msgstr "Grund"
 
@@ -3194,6 +3273,7 @@ msgid "No account is waiting for approval."
 msgstr "Kein Konto wartet auf die Freigabe."
 
 #: includes/Registration/PendingApprovals.php:150
+#: templates/emails/linker-genie-contact.php:45
 #: templates/emails/linker-new-customer.php:45
 #: templates/emails/linker-vat-review.php:45
 msgid "Open the customer"
@@ -3585,6 +3665,7 @@ msgid "View solution draft"
 msgstr "Lösungsentwurf ansehen"
 
 #: includes/Vocabulary/Terms.php:41
+#: templates/emails/linker-genie-contact.php:81
 msgid "No products in the solution draft."
 msgstr "Keine Produkte im Lösungsentwurf."
 
@@ -3686,6 +3767,7 @@ msgstr ""
 "Sie zum Lösungsentwurf zurück, bevor Sie eine Proformarechnung anfordern."
 
 #: includes/Vocabulary/Terms.php:65
+#: templates/emails/linker-genie-contact.php:88
 msgid "Quantity"
 msgstr "Menge"
 
@@ -4037,6 +4119,95 @@ msgstr "Nachricht:"
 msgid "Answer this email to reply to the visitor directly."
 msgstr "Antworten Sie auf diese E-Mail, um dem Besucher direkt zu antworten."
 
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-confirm-address.php:29
+#, php-format
+msgid ""
+"On %s, a conversation with Genie, Linker's AI assistant, was requested for "
+"this email address."
+msgstr ""
+"Auf %s wurde angefordert, ein Gespräch mit Genie, dem KI-Assistenten von "
+"Linker, an diese E-Mail-Adresse zu senden."
+
+#: templates/emails/linker-genie-confirm-address.php:32
+msgid "Send me the conversation"
+msgstr "Gespräch zusenden"
+
+#. translators: %d: how many hours the link works.
+#: templates/emails/linker-genie-confirm-address.php:36
+#, php-format
+msgid "The link works once and expires after %d hour."
+msgid_plural "The link works once and expires after %d hours."
+msgstr[0] "Der Link lässt sich einmal verwenden und läuft nach %d Stunde ab."
+msgstr[1] "Der Link lässt sich einmal verwenden und läuft nach %d Stunden ab."
+
+#: templates/emails/linker-genie-confirm-address.php:39
+msgid ""
+"The conversation is sent only once the link is opened. If you did not ask "
+"for it, you can ignore this email."
+msgstr ""
+"Das Gespräch wird erst gesendet, wenn der Link geöffnet wird. Falls Sie es "
+"nicht angefordert haben, können Sie diese E-Mail ignorieren."
+
+#: templates/emails/linker-genie-contact.php:34
+msgid ""
+"A contact request came in through Genie. Genie promised a reply within one "
+"business day."
+msgstr ""
+"Über Genie ist eine Kontaktanfrage eingegangen. Genie hat eine Antwort "
+"innerhalb eines Arbeitstags zugesagt."
+
+#: templates/emails/linker-genie-contact.php:41
+msgid "Customer"
+msgstr "Kunde"
+
+#: templates/emails/linker-genie-contact.php:47
+msgid "Guest, no account"
+msgstr "Gast, kein Konto"
+
+#: templates/emails/linker-genie-contact.php:67
+msgid "The customer's last messages, newest first"
+msgstr "Letzte Nachrichten des Kunden, neueste zuerst"
+
+#: templates/emails/linker-genie-contact.php:77
+msgid "Open the conversation"
+msgstr "Unterhaltung öffnen"
+
+#: templates/emails/linker-genie-contact.php:86
+#: templates/proforma/proforma.php:111
+msgid "Product"
+msgstr "Produkt"
+
+#: templates/emails/linker-genie-contact.php:102
+msgid "A reply to this email goes straight to the customer."
+msgstr "Eine Antwort auf diese E-Mail geht direkt an den Kunden."
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-conversation.php:33
+#, php-format
+msgid ""
+"As requested on %s, here is your conversation with Genie, Linker's AI "
+"assistant."
+msgstr ""
+"Wie auf %s angefordert, erhalten Sie hier Ihr Gespräch mit Genie, dem KI-"
+"Assistenten von Linker."
+
+#: templates/emails/linker-genie-conversation.php:37
+msgid "You"
+msgstr "Sie"
+
+#: templates/emails/linker-genie-conversation.php:54
+msgid ""
+"Genie is an AI system, and its answers can contain mistakes. Where an answer "
+"differs from the product's datasheet, the datasheet applies."
+msgstr ""
+"Genie ist ein KI-System und seine Antworten können Fehler enthalten. "
+"Maßgeblich sind die Datenblätter auf den Produktseiten."
+
+#: templates/emails/linker-genie-conversation.php:55
+msgid "Replies to this email go to the Linker team."
+msgstr "Eine Antwort auf diese E-Mail erreicht das Linker-Team."
+
 #. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
 #: templates/emails/linker-inquiry-received.php:31
 #, php-format
@@ -4244,10 +4415,6 @@ msgstr "Gültig bis"
 msgid "Pos."
 msgstr "Pos."
 
-#: templates/proforma/proforma.php:111
-msgid "Product"
-msgstr "Produkt"
-
 #: templates/proforma/proforma.php:112
 msgid "Qty"
 msgstr "Menge"
@@ -4414,71 +4581,3 @@ msgstr "Verwendungszweck"
 #~ "Sie können die Produkte durchsuchen und eine Artikelnummernliste "
 #~ "abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der "
 #~ "Kontoprüfung möglich."
-
-#: includes/Genie/ConversationEmail.php
-msgid "Genie conversation"
-msgstr "Genie-Unterhaltung"
-
-#: includes/Genie/ConversationEmail.php
-msgid "Sent when someone asks for a copy of a Genie conversation by email."
-msgstr "Geht an die Person, die eine Genie-Unterhaltung per E-Mail anfordert."
-
-#: includes/Genie/ConversationEmail.php
-msgid "Your conversation with Genie"
-msgstr "Ihr Gespräch mit Genie"
-
-#. translators: %s: the site's domain, e.g. de-linker.com.
-#: templates/emails/linker-genie-conversation.php
-#, php-format
-msgid "As requested on %s, here is your conversation with Genie, Linker's AI assistant."
-msgstr "Wie auf %s angefordert, erhalten Sie hier Ihr Gespräch mit Genie, dem KI-Assistenten von Linker."
-
-#: templates/emails/linker-genie-conversation.php
-msgid "You"
-msgstr "Sie"
-
-#: templates/emails/linker-genie-conversation.php
-msgid "Genie is an AI system, and its answers can contain mistakes. Where an answer differs from the product's datasheet, the datasheet applies."
-msgstr "Genie ist ein KI-System und seine Antworten können Fehler enthalten. Maßgeblich sind die Datenblätter auf den Produktseiten."
-
-#: templates/emails/linker-genie-conversation.php
-msgid "Replies to this email go to the Linker team."
-msgstr "Eine Antwort auf diese E-Mail erreicht das Linker-Team."
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Genie conversation: address confirmation"
-msgstr "Genie-Unterhaltung: Adressbestätigung"
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Sent to the address a visitor without an account enters to get a Genie conversation by email. It holds only a link that confirms the address; the conversation follows after the click."
-msgstr "Geht an die Adresse, die ein Besucher ohne Konto für eine Genie-Unterhaltung per E-Mail angibt. Die E-Mail enthält nur einen Link zur Bestätigung; die Unterhaltung folgt nach dem Klick."
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Conversation with Genie requested for this email address"
-msgstr "Gespräch mit Genie für diese E-Mail-Adresse angefordert"
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Confirm your email address"
-msgstr "Bestätigen Sie Ihre E-Mail-Adresse"
-
-#. translators: %s: the site's domain, e.g. de-linker.com.
-#: templates/emails/linker-genie-confirm-address.php
-#, php-format
-msgid "On %s, a conversation with Genie, Linker's AI assistant, was requested for this email address."
-msgstr "Auf %s wurde angefordert, ein Gespräch mit Genie, dem KI-Assistenten von Linker, an diese E-Mail-Adresse zu senden."
-
-#: templates/emails/linker-genie-confirm-address.php
-msgid "Send me the conversation"
-msgstr "Gespräch zusenden"
-
-#. translators: %d: how many hours the link works.
-#: templates/emails/linker-genie-confirm-address.php
-#, php-format
-msgid "The link works once and expires after %d hour."
-msgid_plural "The link works once and expires after %d hours."
-msgstr[0] "Der Link lässt sich einmal verwenden und läuft nach %d Stunde ab."
-msgstr[1] "Der Link lässt sich einmal verwenden und läuft nach %d Stunden ab."
-
-#: templates/emails/linker-genie-confirm-address.php
-msgid "The conversation is sent only once the link is opened. If you did not ask for it, you can ignore this email."
-msgstr "Das Gespräch wird erst gesendet, wenn der Link geöffnet wird. Falls Sie es nicht angefordert haben, können Sie diese E-Mail ignorieren."

@@ -70,7 +70,20 @@ export interface DocumentBlock {
 	url: string | null;
 }
 
+/** Why Genie offers the team's contact (the service's contact.py, #243). */
+export type ContactReason = 'asked' | 'service' | 'dissatisfied' | 'repeat';
+
+/**
+ * "Let Linker contact me": the service adds it after the answer; the shell
+ * renders the contact card (components/ContactCard.tsx).
+ */
+export interface ContactBlock {
+	type: 'contact';
+	reason: ContactReason;
+}
+
 export type Block =
+	| ContactBlock
 	| TextBlock
 	| AskBlock
 	| CompareBlock

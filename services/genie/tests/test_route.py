@@ -137,16 +137,21 @@ def test_inquiry_status_is_fetched_by_code() -> None:
     assert [c.ability for c in route.calls] == ["linker/inquiry-status"]
 
 
-@pytest.mark.parametrize("message", ["can I talk to someone?", "this bot is useless"])
-def test_a_person_goes_through_the_person_seam(message: str) -> None:
+@pytest.mark.parametrize(
+    "message", ["can I talk to someone?", "kann mich jemand anrufen"]
+)
+def test_a_person_is_the_person_route_with_no_call(message: str) -> None:
+    # The turn is the service's sentence and the contact card (#243): no ability,
+    # no model.
     route = plan(message, [], _reading("talk_to_person"), NONE, "en")
     assert route.name == "person"
-    assert route.calls[0].ability == "linker/handoff-team"
+    assert route.calls == ()
 
 
-def test_frustration_reaches_a_person_even_when_the_intent_is_unsure() -> None:
+def test_frustration_on_an_unsure_intent_is_answered_as_routed() -> None:
+    # The contact offer goes beside the answer (contact.decide), the answer stays.
     route = plan("das hilft nicht", [], _reading("other", 0.5, person=0.9), NONE, "de")
-    assert route.name == "person"
+    assert route.name == "model"
 
 
 def test_company_questions_hand_off_to_the_team() -> None:

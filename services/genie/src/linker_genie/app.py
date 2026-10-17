@@ -17,12 +17,13 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from linker_genie import jev, page
+from linker_genie import contact, jev, page
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import make_generate, model_name, provider_name
 from linker_genie.cycle import TurnResult, run
+from linker_genie.facts import TurnFacts
 from linker_genie.log import TurnLog
-from linker_genie.schema import TurnRequest, VoteRequest
+from linker_genie.schema import TurnOutput, TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
 
@@ -98,11 +99,13 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         if prepare is not None
         else understander().prepare(body, ability_client())
     )
-    generate = getattr(request.app.state, "generate", None) or make_generate(
-        ability_client(), prepared=prepared, pages=page_reader().read
+    # Which earlier turns of this conversation offered the team's contact, newest
+    # first: one per customer message is all the repeat rule can look back on.
+    offers = turn_log().offers(
+        body.conversation_id, sum(1 for m in body.messages if m.role == "user")
     )
     try:
-        result = run(body, generate, prepared.route, prepared.facts)
+        result = _answer(body, prepared, request)
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         turn_log().record(
             conversation_id=body.conversation_id,
@@ -122,23 +125,31 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         raise
     if result.retried and result.attempts > 1:
         prepared.log["retried"] = list(result.retried)
+    shipped = result.output.model_dump()
+    offer = contact.decide(prepared.route, prepared.reading, body.messages, offers)
+    if offer is not None:
+        # The offer follows the answer; the model never writes it (contact.py).
+        shipped["blocks"].append(offer.block().model_dump())
+        prepared.log["contact"] = offer.reason
+    code_made = prepared.route.name == "person"
     turn_id = turn_log().record(
         conversation_id=body.conversation_id,
         locale=body.locale,
         grounded=result.grounded,
         failures=result.failures,
         fallback=result.fallback,
-        provider=provider_name(),
-        model=model_name(),
+        # A request for a person is answered by the service alone: no model ran.
+        provider="service" if code_made else provider_name(),
+        model="contact" if code_made else model_name(),
         tool_calls=result.facts.tool_calls,
-        output=result.output.model_dump(),
+        output=shipped,
         question=_question(body),
         page=body.page_context.model_dump(),
         understanding=prepared.log,
         approved=body.user.partner,
     )
     return StreamingResponse(
-        _sse(result, turn_id, prepared),
+        _sse(result, shipped, turn_id, prepared),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache"},
     )
@@ -153,6 +164,26 @@ def turn_vote(turn_id: int, body: VoteRequest) -> dict[str, bool]:
     return {"ok": True}
 
 
+def _answer(body: TurnRequest, prepared: Prepared, request: Request) -> TurnResult:
+    """The turn's answer: the model's, or the service's own for a request for a person
+    (contact.answer; #243 — no model runs, and none can claim it sent anything)."""
+    if prepared.route.name == "person":
+        return TurnResult(
+            output=TurnOutput(
+                language=body.locale, blocks=[contact.answer(body.locale)]
+            ),
+            facts=TurnFacts(),
+            grounded=True,
+            failures=(),
+            fallback=False,
+            attempts=0,
+        )
+    generate = getattr(request.app.state, "generate", None) or make_generate(
+        ability_client(), prepared=prepared, pages=page_reader().read
+    )
+    return run(body, generate, prepared.route, prepared.facts)
+
+
 def _question(body: TurnRequest) -> str:
     """The customer message this turn answers: the thread's last user message."""
     for message in reversed(body.messages):
@@ -161,7 +192,9 @@ def _question(body: TurnRequest) -> str:
     return ""
 
 
-def _sse(result: TurnResult, turn_id: int, prepared: Prepared) -> Iterator[str]:
+def _sse(
+    result: TurnResult, shipped: dict[str, object], turn_id: int, prepared: Prepared
+) -> Iterator[str]:
     meta = {
         "turn_id": turn_id,
         "grounded": result.grounded,
@@ -176,8 +209,9 @@ def _sse(result: TurnResult, turn_id: int, prepared: Prepared) -> Iterator[str]:
         "jev_error": prepared.log.get("jev_error"),
     }
     yield _event("meta", meta)
-    for block in result.output.blocks:
-        yield _event("block", block.model_dump())
+    blocks = shipped.get("blocks")
+    for block in blocks if isinstance(blocks, list) else []:
+        yield _event("block", block)
     yield _event("done", {"ok": True})
 
 
