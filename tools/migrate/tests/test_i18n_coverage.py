@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 from types import ModuleType
 
@@ -36,6 +37,9 @@ def plugin(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     languages.mkdir(parents=True)
     (languages / "linker-tools-de_DE_formal.po").write_text(
         'msgid ""\nmsgstr ""\n'
+        # A fixed fixture date prevents make-json's current-time fallback from
+        # changing bytes between generation and the coverage gate (CI #299).
+        '"PO-Revision-Date: 2026-10-18 00:00+0000\\n"\n'
         '"Language: de_DE_formal\\n"\n'
         '"Content-Type: text/plain; charset=UTF-8\\n"\n'
         '"Plural-Forms: nplurals=2; plural=(n != 1);\\n"\n\n'
@@ -131,6 +135,16 @@ def test_gate_accepts_native_json_without_purging_po(
     assert gate.main() == 0
     assert catalog.read_bytes() == before
     assert generated_json.exists()
+
+
+def test_gate_accepts_native_json_across_generation_clock_ticks(
+    generated_json: Path,
+) -> None:
+    """Native regeneration must not depend on both calls sharing a clock second."""
+    # WP-CLI's revision-date fallback has one-second precision. Cross a tick
+    # deliberately, instead of letting CI timing decide whether this passes.
+    time.sleep(1.1)
+    assert gate.main() == 0
 
 
 @pytest.mark.parametrize("mutation", ["translation", "plural", "missing"])

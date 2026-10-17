@@ -107,6 +107,8 @@ just cutover rollback-deploy
 
 最终验证：rebase 到 `origin/main` 的 `71d950db`（包含 #297 / #302）后，`just check`、`just test` 均退出 0；最终全仓运行中的 cutover 套件 **120 passed**、无跳过，迁移套件保留既有外部实例跳过。日志在本机 `/tmp/c298-round3-check-final.log` 和 `/tmp/c298-round3-test.log`。截断响应修复经 Standards 定向复核，无剩余发现；本记录不把本地测试或 CI 作为生产零 fatal 的证明。
 
+首次 CI 在新主干的 `test_gate_accepts_native_json_without_purging_po` 失败，尚未执行 cutover。根因是临时 PO 夹具没有 `PO-Revision-Date`，原生 make-json 会按当前时间补它，跨秒再生成时 JSON 字节不同；本机用相隔一个时钟刻度的两次真实生成确认差异仅在 `translation-revision-date`。新增 `test_gate_accepts_native_json_across_generation_clock_ticks` 先稳定复现失败，再为夹具补固定日期，相关 **13 passed**。严格门、业务 PO / JSON 与生产行为均未改动；该小修复经 Spec / Standards 定向复核，无发现。
+
 端点配置在 `plan.DEPLOY_PROBE_ENDPOINTS`：首页、联系页、Proforma 请求页、`VERIFY_PRODUCT_PATHS` 中的英文产品页、commerce 产品搜索、i18n 的 `wp/v2/pages?lang=de`、tools 的只读 `genie/conversation`。i18n 自己没有 REST 命名空间，实际由 `RestLang` 进入语言并过滤原生路由；探针要求返回非空、全部为德语地址。tools GET 只读已有线程，不创建对话、不调用模型、不发信。root / base URL 从 `Target` 来，插件名单从 `plan.NEW_PLUGINS` 来，README 不另写一套主机路径或 slug。
 
 只查看端点计划，不部署：
