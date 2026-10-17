@@ -164,7 +164,7 @@ final class MonitorTest extends TestCase {
 		$this->assertStringContainsString( 'Address: http://127.0.0.1:8901', $body );
 		$this->assertStringContainsString( 'Reason: cURL error 7: Failed to connect.', $body );
 		$this->assertStringContainsString( 'Genie uses this service.', $body );
-		$this->assertSame( array( 'From: Linker <' . $expected . '>', 'Bcc: watch@example.test, mirror@example.test' ), $headers, 'Sent from the internal sender, with the blind copies.' );
+		$this->assertSame( array( 'From: Linker <' . $expected . '>', 'X-Linker-Internal: yes', 'Bcc: watch@example.test, mirror@example.test' ), $headers, 'Sent from the internal sender, with the blind copies.' );
 	}
 
 	/**

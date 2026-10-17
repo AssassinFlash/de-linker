@@ -91,7 +91,7 @@ final class NewCustomerEmailTest extends TestCase {
 		$email->trigger( 5 );
 
 		$this->assertSame( 'Solarbau GmbH', $email->placeholders['{company}'] );
-		$header = "Content-Type: text/html\r\nReply-to: Maria Beispiel <maria@example.test>\r\nBcc: one@example.test, two@example.test\r\n";
+		$header = "Content-Type: text/html\r\nX-Linker-Internal: yes\r\nReply-to: Maria Beispiel <maria@example.test>\r\nBcc: one@example.test, two@example.test\r\n";
 		$this->filter_returns( 'woocommerce_email_headers', $header, array( $header, 'linker_new_customer', $email->object, $email ) );
 		$this->assertSame( $header, $email->get_headers() );
 		$this->assertConditionsMet();

@@ -191,11 +191,11 @@ final class DigestTest extends IntegrationTestCase {
 		remove_action( 'phpmailer_init', $fail, PHP_INT_MAX );
 		$blocks = ( new Blocks( new JobStore() ) )->all();
 		// The approval ticket's pending-accounts block leads the digest (issue
-		// #73, the plug point of Blocks::all()); the digest's own three keep
-		// their order behind it, the failed emails closing the list — the
-		// fourth block here.
+		// #73, the plug point of Blocks::all()); inquiries, proformas and
+		// failed emails keep their order. Internal authentication health
+		// follows them (#297).
 		$this->assertSame(
-			array( PendingApprovals::ID, InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID ),
+			array( PendingApprovals::ID, InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID, 'internal_mail' ),
 			array_map( static fn ( Block $block ): string => $block->id(), $blocks )
 		);
 		$fourth = $blocks[3];

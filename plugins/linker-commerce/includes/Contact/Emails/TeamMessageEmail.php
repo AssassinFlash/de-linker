@@ -11,6 +11,7 @@ namespace Linker\Commerce\Contact\Emails;
 
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Mail\LocaleSwitch;
+use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Settings\Options;
 
 /**
@@ -84,7 +85,7 @@ final class TeamMessageEmail extends ContactEmail {
 	 * The reply address (the visitor) and the blind copies of the settings.
 	 */
 	public function get_headers() {
-		$header = 'Content-Type: ' . $this->get_content_type() . "\r\n";
+		$header = Message::mark_internal( 'Content-Type: ' . $this->get_content_type() . "\r\n" );
 		if ( $this->submission instanceof Submission ) {
 			$header .= 'Reply-to: ' . $this->submission->name . ' <' . $this->submission->email . ">\r\n";
 		}

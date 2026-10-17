@@ -338,6 +338,11 @@ py-check:
         uv run --locked ruff format --check .
         uv run --locked mypy .
     done
+    # #297: the SMTP sink is a PHP integration fixture, so include it explicitly.
+    cd "{{ justfile_directory() }}/tools/local"
+    uv run --locked ruff check ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
+    uv run --locked ruff format --check ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
+    uv run --locked mypy --strict ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
 
 [private]
 py-test:
