@@ -148,7 +148,9 @@ for (const lang of ['en', 'de'] as const) {
 				// The signed start time is three seconds old at the least.
 				await page.waitForTimeout(3_000);
 				await card.locator('.linker-genie-contact__send').click();
-				await expect(card.locator('.linker-genie-contact__title')).toHaveText(
+				await expect(
+					card.locator('.linker-genie-contact__title')
+				).toHaveText(
 					/Your request is with the Linker team|Ihre Kontaktanfrage liegt beim Linker-Team/
 				);
 				await expect(card).toContainText(
@@ -156,10 +158,17 @@ for (const lang of ['en', 'de'] as const) {
 				);
 				await shot(page, `${lang}-${width}-${who}-sent`);
 				await expect
-					.poll(() => since(sentAt, /^(Contact request from|Kontaktanfrage von) /).length, {
-						message: 'the team mail is in the spool',
-						timeout: 30_000,
-					})
+					.poll(
+						() =>
+							since(
+								sentAt,
+								/^(Contact request from|Kontaktanfrage von) /
+							).length,
+						{
+							message: 'the team mail is in the spool',
+							timeout: 30_000,
+						}
+					)
 					.toBe(1);
 
 				if (1440 === width) {
