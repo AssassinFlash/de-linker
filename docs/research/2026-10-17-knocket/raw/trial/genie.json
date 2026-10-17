@@ -1,0 +1,162 @@
+[
+ {
+  "n": 1,
+  "q": "saj",
+  "s": 2.7,
+  "grounded": true,
+  "fallback": false,
+  "a": "Hello, and welcome. I can help you with products, pairings, documents, solution drafts and the Solution Configurator. Could you tell me what you would like to plan or check? ⏎ [ask {\"field\": \"application\", \"options\": [\"home\", \"commercial\"]}]"
+ },
+ {
+  "n": 2,
+  "q": "What is the max PV input power of the SAJ H2-10K-T3?",
+  "s": 4.2,
+  "grounded": true,
+  "fallback": false,
+  "a": "The SAJ H2-10K-T3 is a three-phase hybrid inverter for home use, and its maximum PV input power is 20 kWp. The datasheet is attached to the product entry below, should you want the remaining DC and AC figures. ⏎ [cards [4107]]"
+ },
+ {
+  "n": 3,
+  "q": "Wie viele MPPT hat der SAJ H2-10K-T3?",
+  "s": 22.1,
+  "grounded": true,
+  "fallback": false,
+  "a": "Der H2-10K-T3 ist ein Hybrid-Wechselrichter für den Heimbetrieb mit einer PV-Eingangsleistung von 20 kW. Er arbeitet mit mehreren unabhängig geregelten MPPT-Eingängen; die genaue Anzahl der Tracker und die mögliche Belegung je Tracker sind im Datenblatt zum Gerät dokumentiert. Wenn Sie mir sagen, für welches Dach Sie planen, gehe ich die Auslegung der MPPT-Eingänge mit Ihnen im Detail durch. ⏎ [cards [4107]]"
+ },
+ {
+  "n": 4,
+  "q": "Which battery works with the SAJ H2-10K-T3?",
+  "s": 16.0,
+  "grounded": true,
+  "fallback": false,
+  "a": "The batteries below all carry a documented pairing with the H2-10K-T3. Every pair is released with the matching accessory: each battery is operated together with its own control module from the same series. Keep the smallest set in mind — a single module stays below the battery voltage window of this inverter, so the larger sets are the documented choice. The precise conditions and voltage figures stand in the pairing documents (https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf, https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf, SAJ's B2 datasheet gives 179.2 to 230.4 V for the two-module B2-10.0; the H2 T3 manual's battery voltage range begins at 180 V.). ⏎ [cards [4107, 1832, 2067, 2068, 2069, 2070, 2090, 2092]]"
+ },
+ {
+  "n": 5,
+  "q": "Welcher Speicher passt zum GoodWe ESA 10 kW?",
+  "s": 13.4,
+  "grounded": true,
+  "fallback": false,
+  "a": "Zum GoodWe ESA in der von Ihnen genannten Leistungsklasse gibt es zwei Leistungsmodule: GW10K-EHA-G20 (einphasig) und GW10K-ETA-G20 (dreiphasig). Für beide weist der Hersteller dieselben Batteriemodule als freigegebenes Pairing aus: GW6.0-BAT-D-G20 mit 5.8 und GW9.0-BAT-D-G20 mit 8.7 nutzbarer Kapazität. Beide Module lassen sich stapeln, und für mehr Kapazität nennt das Benutzerhandbuch ein Batterie-Erweiterungsset; die Bedingungen und die gemeinsame Dokumentation finden Sie hier: https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf sowie https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf. ⏎ [cards [3556, 6528, 3611, 3612]] ⏎ [ask {\"field\": \"phase\", \"options\": [\"Einphasig\", \"Dreiphasig\"]}]"
+ },
+ {
+  "n": 6,
+  "q": "What is the usable capacity of the Pylontech L260 Omni?",
+  "s": 7.3,
+  "grounded": true,
+  "fallback": false,
+  "a": "The datasheet for the Pylontech OPTIM US L260-OMNI does not publish a separate usable capacity in kWh: the nominal energy content of the cabinet is 260, and the usable share is documented only through the depth of discharge as a percentage of the string capacity. The unit is a liquid-cooled commercial all-in-one system with its PCS integrated, so nominal and usable energy refer to the whole cabinet rather than a separate battery block. The datasheet and the portfolio excerpt are linked on the product card — if you need the usable figure fixed in kWh for a project calculation, tell me the application and I will point you to the right document. ⏎ [cards [2003]]"
+ },
+ {
+  "n": 7,
+  "q": "Welche Garantie gibt GoodWe auf Wechselrichter in Europa?",
+  "s": 2.4,
+  "grounded": true,
+  "fallback": false,
+  "a": "[handoff {\"summary\": \"Unser Team beantwortet das unter sales@de-linker.com.\"}]"
+ },
+ {
+  "n": 8,
+  "q": "Is the EcoFlow OCEAN 2 single-phase or three-phase, and what is its rated power?",
+  "s": 17.3,
+  "grounded": false,
+  "fallback": true,
+  "a": "Here are matching products from our range. ⏎ [cards [3577, 3578, 3579, 3580, 3581, 3608, 6483, 6484, 6485, 6486, 6487, 6488]] ⏎ [ask {\"field\": \"backup\", \"options\": [\"none\", \"needed\", \"needed_accessory_ok\"]}]"
+ },
+ {
+  "n": 9,
+  "q": "How do I set the export limit on an SAJ H2 inverter?",
+  "s": 15.4,
+  "grounded": true,
+  "fallback": false,
+  "a": "The export limit on the SAJ H2 series is a grid-code and installer-level setting, and the documented values sit in the SAJ H2 user manual (DE/EN) that is linked with each model, for example on the H2-10K-T3 page together with the datasheet. I have no step-by-step export-limit procedure in the documents available to me, so please follow that manual or have your installer apply and confirm the setting for your grid code. The H2 models are listed below; tell me which one you have and I will pull its documents for you. ⏎ [cards [4107, 4108, 2063, 2064, 1179, 1181]]"
+ },
+ {
+  "n": 10,
+  "q": "Wie wird der SAJ CB2-100.3-HV5 installiert? Welcher Mindestabstand?",
+  "s": 2.6,
+  "grounded": true,
+  "fallback": false,
+  "a": "[handoff {\"summary\": \"Unser Team beantwortet das unter sales@de-linker.com.\"}]"
+ },
+ {
+  "n": 11,
+  "q": "Do you have three-phase hybrid inverters around 15 kW?",
+  "s": 15.6,
+  "grounded": true,
+  "fallback": false,
+  "a": "Yes. For a three-phase hybrid system near the capacity you named, the closest match is the GoodWe ESA GW15K-ETA-G20: a three-phase hybrid power module with 15 kW AC output and 30 kW of PV input, documented for a battery system range of 5–108. If a slightly smaller unit suits your array better, the GW12K-ETA-G20 from the same series offers 12 kW AC output and 24 kW of PV input. Both are home applications units with datasheets available; the GW15K-ETA-G20 also comes with a user manual. ⏎ [cards [3585, 3584]] ⏎ [ask {\"field\": \"backup\", \"options\": [\"Backup power needed\", \"Backup power not needed\"]}]"
+ },
+ {
+  "n": 12,
+  "q": "Habt ihr Hochvolt-Batteriespeicher für Gewerbe?",
+  "s": 13.1,
+  "grounded": true,
+  "fallback": false,
+  "a": "Ja, für Gewerbeanwendungen führen wir Hochvolt-Batterieschränke in mehreren Kapazitätsstufen. Die SAJ-Schränke der CB2-HV5-Reihe sind als Hochvolt-Speicher für Gewerbe ausgelegt; die nutzbare Kapazität je Schrank und die Nennkapazität stehen in den Karten. Ergänzend haben wir AC-gekoppelte Batterieschränke von GoodWe im Programm, die sich als eigenständiger Speicher einsetzen lassen. Die technischen Kennwerte und Datenblätter finden Sie jeweils direkt am Produkt. ⏎ [cards [4103, 4104, 4105, 4106, 1954, 1955, 1958]] ⏎ Wenn Sie Wechselrichter und Speicher in einem Gerät bevorzugen, kommen zusätzlich die All-in-One-Speicherschränke in Frage – von SAJ, GoodWe und Pylontech. Dort ist die Batteriekapazität als Bereich hinterlegt, den das Gerät abdecken kann. ⏎ [cards [1959, 1960, 1961, 6321, 2003]] ⏎ [ask {\"field\": \"kwh\", \"options\": []}]"
+ },
+ {
+  "n": 13,
+  "q": "Compare the SAJ H2-10K-T3 and the GoodWe ESA 10 kW.",
+  "s": 9.3,
+  "grounded": true,
+  "fallback": false,
+  "a": "Both units are three-phase home inverters with the same rated AC power (10) and the same maximum PV input (20), so the difference lies in the system concept. The SAJ H2-10K-T3 is a hybrid inverter that you pair with a compatible high-voltage battery, while the GoodWe ESA GW10K-ETA-G20 is the power module of the ESA all-in-one system, where storage is added as modules and the usable capacity spans 5–108 depending on how many you stack. If you plan a larger or later-expandable storage bank, the ESA module concept is the more flexible path; if you already have a battery you want to keep, the SAJ hybrid is the classic route and I can check its documented pairings for you. The comparison below lists the documented specifications side by side. ⏎ [compare {\"product_ids\": [4107, 3556]}]"
+ },
+ {
+  "n": 14,
+  "q": "What size battery for 8 kWp PV and 6000 kWh per year?",
+  "s": 20.0,
+  "grounded": false,
+  "fallback": true,
+  "a": "Here are matching products from our range. ⏎ [cards [1832, 2090, 2092, 2093, 3581, 3582, 3611, 3612, 6519, 6520, 6521, 6522]] ⏎ [ask {\"field\": \"pv_kwp\", \"options\": []}]"
+ },
+ {
+  "n": 15,
+  "q": "What does the SAJ H2-10K-T3 cost?",
+  "s": 5.5,
+  "grounded": true,
+  "fallback": false,
+  "a": "For the SAJ H2-10K-T3 no price is published in our catalogue — this unit is quoted on request. The datasheet with the technical data is linked on the product card, and I can put the model into a solution draft so our team can send you a quotation. ⏎ [cards [4107]] ⏎ [action {\"name\": \"add_to_draft\", \"args\": {\"product_id\": 4107}}]"
+ },
+ {
+  "n": 16,
+  "q": "Liefern Sie nach Österreich?",
+  "s": 2.9,
+  "grounded": true,
+  "fallback": false,
+  "a": "[handoff {\"summary\": \"Unser Team beantwortet das unter sales@de-linker.com.\"}]"
+ },
+ {
+  "n": 17,
+  "q": "Can I talk to a person?",
+  "s": 2.9,
+  "grounded": true,
+  "fallback": false,
+  "a": "[handoff {\"summary\": \"Our team will answer that at sales@de-linker.com.\"}]"
+ },
+ {
+  "n": 18,
+  "q": "Ich möchte mit einem Mitarbeiter sprechen",
+  "s": 1.9,
+  "grounded": true,
+  "fallback": false,
+  "a": "[handoff {\"summary\": \"Unser Team beantwortet das unter sales@de-linker.com.\"}]"
+ },
+ {
+  "n": 19,
+  "q": "Does the SAJ H2 support EnWG 14a dimming?",
+  "s": 27.5,
+  "grounded": true,
+  "fallback": false,
+  "a": "Thank you for the question. I checked the documentation we hold for the SAJ H2 series: the series datasheet lists the grid codes and grid-support functions the inverters are certified for, and the user manual covers the grid-parameter and control settings. Neither document states an EnWG dimming capability for the H2 series explicitly, so on the basis of our document library I cannot confirm it. If you tell me the exact model you are planning, I will pull its documents and check whether a corresponding setting is described there. ⏎ [cards [4107, 4108, 2063, 2064, 1179, 1181]]"
+ },
+ {
+  "n": 20,
+  "q": "Wo finde ich das Datenblatt für den Pylontech L260?",
+  "s": 16.5,
+  "grounded": true,
+  "fallback": false,
+  "a": "Zum Pylontech OPTIM US L260-OMNI liegen die Unterlagen direkt in der Produktansicht bereit: das Datenblatt, der Datenblatt-Auszug und das Produktportfolio-Dokument der Utility- und C&I-Reihe. Alle Dokumente sind in englischer Sprache hinterlegt. Sagen Sie gern Bescheid, wenn Sie Unterstützung beim Zuordnen der Unterlagen brauchen. ⏎ [cards [2003]]"
+ }
+]
