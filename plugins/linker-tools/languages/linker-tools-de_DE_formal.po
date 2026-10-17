@@ -110,3 +110,216 @@ msgstr "Linker kontaktieren"
 
 msgid "Privacy Policy"
 msgstr "Datenschutzerklärung"
+
+# The Genie quality check's admin page and digest line (#258): staff strings,
+# Sie form (AGENTS.md §3).
+
+#: includes/Genie/QualityStore.php
+#, php-format
+msgid "Genie quality check, last 24 hours: %1$d answers judged, %2$d flagged, %3$d decided by the second judge, %4$d could not be judged."
+msgstr "Genie-Qualitätsprüfung, letzte 24 Stunden: %1$d Antworten bewertet, %2$d markiert, %3$d vom zweiten Prüfer entschieden, %4$d konnten nicht bewertet werden."
+
+#: includes/Genie/QualityStore.php
+msgid "The quality check has stopped reporting."
+msgstr "Die Qualitätsprüfung meldet sich nicht mehr."
+
+#: includes/Genie/QualityPage.php
+msgid "Genie quality check"
+msgstr "Genie-Qualitätsprüfung"
+
+#: includes/Genie/QualityPage.php
+msgid "Genie quality"
+msgstr "Genie-Qualität"
+
+#: includes/Genie/QualityPage.php
+msgid "never"
+msgstr "nie"
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "The quality check has stopped reporting. Last report: %s."
+msgstr "Die Qualitätsprüfung meldet sich nicht mehr. Letzte Meldung: %s."
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "Last judge error (%1$s): %2$s"
+msgstr "Letzter Fehler der Prüfung (%1$s): %2$s"
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "Judge: %1$s; when unsure: %2$s. Last report: %3$s. Waiting for a retry: %4$d. Given up: %5$d."
+msgstr "Prüfer: %1$s; bei Unsicherheit: %2$s. Letzte Meldung: %3$s. Warten auf einen neuen Versuch: %4$d. Aufgegeben: %5$d."
+
+#: includes/Genie/QualityPage.php
+msgid "Every answer Genie gives is judged after it is sent: is it supported by what Genie looked up, does it stay within Genie's remit, and would a wrong product have been judged better. Answers flagged here need a look."
+msgstr "Jede Antwort von Genie wird nach dem Versand geprüft: ob das, was Genie nachgeschlagen hat, sie deckt, ob sie im Aufgabenbereich von Genie bleibt und ob ein falsches Produkt besser abgeschnitten hätte. Markierte Antworten sollten Sie sich ansehen."
+
+#: includes/Genie/QualityPage.php
+msgid "All"
+msgstr "Alle"
+
+#: includes/Genie/QualityPage.php
+msgid "Flagged"
+msgstr "Markiert"
+
+#: includes/Genie/QualityPage.php
+msgid "Not judged"
+msgstr "Nicht bewertet"
+
+#: includes/Genie/QualityPage.php
+msgid "Conversation"
+msgstr "Unterhaltung"
+
+#: includes/Genie/QualityPage.php
+msgid "Last verdict"
+msgstr "Letzte Bewertung"
+
+#: includes/Genie/QualityPage.php
+msgid "Answers judged"
+msgstr "Bewertete Antworten"
+
+#: includes/Genie/QualityPage.php
+msgid "No verdicts yet."
+msgstr "Noch keine Bewertungen."
+
+#: includes/Genie/QualityPage.php
+msgid "All conversations"
+msgstr "Alle Unterhaltungen"
+
+#: includes/Genie/QualityPage.php
+msgid "This conversation no longer exists."
+msgstr "Diese Unterhaltung gibt es nicht mehr."
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "Customer: %1$s · Started: %2$s · Conversation %3$d"
+msgstr "Kunde: %1$s · Begonnen: %2$s · Unterhaltung %3$d"
+
+#: includes/Genie/QualityPage.php
+msgid "Guest"
+msgstr "Gast"
+
+#: includes/Genie/QualityPage.php
+msgid "Verdicts"
+msgstr "Bewertungen"
+
+#: includes/Genie/QualityPage.php
+msgid "Asked"
+msgstr "Gefragt"
+
+#: includes/Genie/QualityPage.php
+msgid "Question and answer"
+msgstr "Frage und Antwort"
+
+#: includes/Genie/QualityPage.php
+msgid "Verdict"
+msgstr "Bewertung"
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "Turn %d"
+msgstr "Runde %d"
+
+#: includes/Genie/QualityPage.php
+msgid "Customer"
+msgstr "Kunde"
+
+#: includes/Genie/QualityPage.php
+msgid "Skipped"
+msgstr "Übersprungen"
+
+#: includes/Genie/QualityPage.php
+msgid "Fine"
+msgstr "In Ordnung"
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "%1$s: %2$s (%3$s)"
+msgstr "%1$s: %2$s (%3$s)"
+
+#: includes/Genie/QualityPage.php
+msgid "second judge"
+msgstr "zweiter Prüfer"
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "Sent to the second judge: %s"
+msgstr "An den zweiten Prüfer gegeben: %s"
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "Citation: %s"
+msgstr "Quellenprüfung: %s"
+
+#: includes/Genie/QualityPage.php
+msgid "Second judge"
+msgstr "Zweiter Prüfer"
+
+#: includes/Genie/QualityPage.php
+msgid "Supported by its sources"
+msgstr "Durch die Quellen gedeckt"
+
+#: includes/Genie/QualityPage.php
+msgid "Within Genie's remit"
+msgstr "Im Aufgabenbereich von Genie"
+
+#: includes/Genie/QualityPage.php
+msgid "Answer against a wrong pick"
+msgstr "Antwort gegen eine falsche Auswahl"
+
+#: includes/Genie/QualityPage.php
+msgid "yes"
+msgstr "ja"
+
+#: includes/Genie/QualityPage.php
+msgid "not verifiable"
+msgstr "nicht überprüfbar"
+
+#: includes/Genie/QualityPage.php
+msgid "contradicted"
+msgstr "widersprochen"
+
+#: includes/Genie/QualityPage.php
+msgid "no"
+msgstr "nein"
+
+#: includes/Genie/QualityPage.php
+msgid "the answer is better"
+msgstr "die Antwort ist besser"
+
+#: includes/Genie/QualityPage.php
+msgid "the wrong pick is better"
+msgstr "die falsche Auswahl ist besser"
+
+#: includes/Genie/QualityPage.php
+msgid "no difference"
+msgstr "kein Unterschied"
+
+#: includes/Genie/QualityPage.php
+msgid "Contradicts what Genie looked up."
+msgstr "Widerspricht dem, was Genie nachgeschlagen hat."
+
+#: includes/Genie/QualityPage.php
+msgid "States facts Genie did not look up."
+msgstr "Nennt Fakten, die Genie nicht nachgeschlagen hat."
+
+#: includes/Genie/QualityPage.php
+msgid "Goes beyond Genie's remit."
+msgstr "Geht über den Aufgabenbereich von Genie hinaus."
+
+#: includes/Genie/QualityPage.php
+msgid "A wrong product was judged the better answer."
+msgstr "Ein falsches Produkt wurde als bessere Antwort bewertet."
+
+#: includes/Genie/QualityPage.php
+msgid "States or cites something no lookup returned."
+msgstr "Nennt oder zitiert etwas, das keine Abfrage geliefert hat."
+
+#: includes/Genie/QualityPage.php
+msgid "The judges could not decide."
+msgstr "Die Prüfer konnten nicht entscheiden."
+
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "Conversation %d"
+msgstr "Unterhaltung %d"

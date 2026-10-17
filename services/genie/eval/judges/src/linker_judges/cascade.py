@@ -5,7 +5,15 @@ owns the two calls around it, so every caller runs the cascade the same way:
 the first judge answers every question, and only when one of its confidences
 falls short does the escalation judge get the item. The #13 pilot (`pilot.py`)
 drives it for the archived panel rows; #16's regression suite (`score.py`)
-drives it for the turns the suite just took, one item per question.
+drives it for the turns the suite just took, one item per question; the VPS
+quality worker (`linker_genie.quality`) drives it for every live turn.
+
+A first judge that *failed* (its call raised after the retries, so `error` is
+set) is not a first judge that was unsure: the item is not escalated, and the
+cascade comes back with `error` set and every label unresolved. Escalating an
+outage would put the DeepSeek judge in Jev's place without anyone seeing it —
+the silent model swap the model routing law forbids (AGENTS.md §5: an
+OpenRouter failure is retried and then reported, never quietly degraded).
 """
 
 from __future__ import annotations
@@ -26,10 +34,23 @@ class Cascade:
     fallback: Verdict | None
     labels: dict[str, str | None]
     sources: dict[str, str]
+    short: tuple[str, ...] = ()
+    """The questions whose first-judge confidence fell short (the escalation's
+    reason); empty when nothing escalated."""
 
     @property
     def escalated(self) -> bool:
         return self.fallback is not None
+
+    @property
+    def error(self) -> str | None:
+        """Why the item has no verdict: the first judge's failure, else the
+        escalation judge's; None when every call answered."""
+        if self.first.error:
+            return f"first judge: {self.first.error}"
+        if self.fallback is not None and self.fallback.error:
+            return f"escalation judge: {self.fallback.error}"
+        return None
 
 
 def run_cascade(
@@ -48,6 +69,13 @@ def run_cascade(
     limits = thresholds or TURN_THRESHOLDS
     state = turns_state(item)
     first_verdict = call(first, state, questions)
+    if first_verdict.error:
+        return Cascade(
+            first_verdict,
+            None,
+            {question.name: None for question in questions},
+            {question.name: "unresolved" for question in questions},
+        )
     first_answer = {
         question.name: first_verdict.answers[question.name] for question in questions
     }
@@ -89,4 +117,4 @@ def run_cascade(
         questions,
         limits,
     )
-    return Cascade(first_verdict, fallback_verdict, labels, sources)
+    return Cascade(first_verdict, fallback_verdict, labels, sources, tuple(short))

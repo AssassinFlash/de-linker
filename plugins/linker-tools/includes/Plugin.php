@@ -14,6 +14,9 @@ use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
+use Linker\Tools\Genie\QualityPage;
+use Linker\Tools\Genie\QualityRoute;
+use Linker\Tools\Genie\QualityStore;
 use Linker\Tools\Genie\Retention;
 use Linker\Tools\Genie\UserContext;
 use Linker\Tools\Genie\WindPress;
@@ -37,6 +40,9 @@ final class Plugin {
 	 * @param WindPress     $windpress     Scan provider for the entries' Tailwind classes.
 	 * @param Mount         $mount         The Solution Configurator's mount point.
 	 * @param EngineProxy   $engine_proxy  The same-origin route to the sizing engine.
+	 * @param QualityStore  $quality       The quality check's verdicts and the digest's summary.
+	 * @param QualityRoute  $quality_route The route the quality worker reports to.
+	 * @param QualityPage   $quality_page  The quality check's admin page.
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -49,7 +55,10 @@ final class Plugin {
 		private readonly UserContext $user_context,
 		private readonly WindPress $windpress,
 		private readonly Mount $mount,
-		private readonly EngineProxy $engine_proxy
+		private readonly EngineProxy $engine_proxy,
+		private readonly QualityStore $quality,
+		private readonly QualityRoute $quality_route,
+		private readonly QualityPage $quality_page
 	) {}
 
 	/**
@@ -61,6 +70,7 @@ final class Plugin {
 		add_action( 'init', array( $this->conversations, 'register' ) );
 		add_action( 'rest_api_init', array( $this->proxy, 'register' ) );
 		add_action( 'rest_api_init', array( $this->engine_proxy, 'register' ) );
+		add_action( 'rest_api_init', array( $this->quality_route, 'register' ) );
 		$this->redirects->register();
 		$this->site_chrome->register();
 		$this->entries->register();
@@ -70,5 +80,7 @@ final class Plugin {
 		$this->user_context->register();
 		$this->windpress->register();
 		$this->mount->register();
+		$this->quality->register();
+		$this->quality_page->register();
 	}
 }

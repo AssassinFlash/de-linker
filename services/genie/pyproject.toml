@@ -7,6 +7,10 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.143.0",
     "httpx>=0.28.0",
+    # The Jev -> deepseek-flash cascade the VPS quality worker runs
+    # (linker_genie.quality; docs/specs/33-judge-bakeoff.md "部署目标"):
+    # standard library only, so it adds no third-party code to the service.
+    "linker-judges",
     "pydantic-ai-slim[openai]>=1.0.0",
     # sqlite-vec is pre-v1 and its README says to expect breaking changes: pinned exactly.
     "sqlite-vec==0.1.9",
@@ -71,3 +75,7 @@ testpaths = ["tests"]
 pythonpath = [".", "ops"]
 # A deprecation is fixed when it appears, not when the API is removed.
 filterwarnings = ["error"]
+
+[tool.uv.sources]
+# Its own uv project (eval/judges keeps its lock for the bake-off scripts).
+linker-judges = { path = "eval/judges", editable = true }

@@ -1,0 +1,24 @@
+# The Genie quality check (#258; docs/specs/33-judge-bakeoff.md "部署（#258）"):
+# judges every logged turn after the fact, beside linker-genie.service and in
+# the same release (/opt/linker-genie/current). Install on the VPS:
+#   cp services/genie/ops/linker-genie-judge.service /etc/systemd/system/
+#   systemctl daemon-reload && systemctl enable --now linker-genie-judge
+# /etc/linker-genie.env must carry GENIE_WP_URL (already there for the service)
+# and GENIE_JUDGE_TOKEN (the site's LINKER_GENIE_JUDGE_TOKEN). The judges' keys
+# come from /root/.config/terravolt-builder/{openrouter,deepseek}.env, the same
+# fallback the service reads its model key from (docs/specs/17-cutover.md §5).
+# A missing setting stops the worker with an ERROR line; Restart= brings it
+# back every 30 s, so the journal keeps saying so until it is fixed.
+[Unit]
+Description=Linker Genie quality check (Jev judge worker)
+After=network.target linker-genie.service
+
+[Service]
+WorkingDirectory=/opt/linker-genie/current
+EnvironmentFile=/etc/linker-genie.env
+ExecStart=/opt/linker-genie/current/.venv/bin/python -m linker_genie.quality.worker
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

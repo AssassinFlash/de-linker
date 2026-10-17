@@ -1094,6 +1094,7 @@ source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
     { name = "httpx" },
+    { name = "linker-judges" },
     { name = "pydantic-ai-slim", extra = ["openai"] },
     { name = "sqlite-vec" },
     { name = "uvicorn" },
@@ -1120,6 +1121,7 @@ index = [
 requires-dist = [
     { name = "fastapi", specifier = ">=0.143.0" },
     { name = "httpx", specifier = ">=0.28.0" },
+    { name = "linker-judges", editable = "eval/judges" },
     { name = "pydantic-ai-slim", extras = ["openai"], specifier = ">=1.0.0" },
     { name = "sqlite-vec", specifier = "==0.1.9" },
     { name = "uvicorn", specifier = ">=0.54.0" },
@@ -1140,6 +1142,20 @@ index = [
     { name = "onnxruntime", specifier = ">=1.24.1" },
     { name = "py3langid", specifier = ">=0.4.0" },
     { name = "sentence-transformers", specifier = ">=6.1.0" },
+]
+
+[[package]]
+name = "linker-judges"
+version = "0.1.0"
+source = { editable = "eval/judges" }
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=2.4.0" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "ruff", specifier = ">=0.16.10" },
 ]
 
 [[package]]
