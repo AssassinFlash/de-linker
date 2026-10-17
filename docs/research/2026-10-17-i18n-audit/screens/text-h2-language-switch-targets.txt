@@ -1,0 +1,230 @@
+captured 2026-10-17 from the live site by Playwright (read-only)
+
+/
+  header Deutsch -> https://de-linker.com/de/
+  footer Deutsch -> https://de-linker.com/de/
+/about/
+  header Deutsch -> https://de-linker.com/de/ueber-uns/
+  footer Deutsch -> https://de-linker.com/de/
+/about/capability/
+  header Deutsch -> https://de-linker.com/de/ueber-uns/leistungsfaehigkeit/
+  footer Deutsch -> https://de-linker.com/de/
+/blog/
+  header Deutsch -> https://de-linker.com/de/blog/
+  footer Deutsch -> https://de-linker.com/de/
+/cart/
+  header Deutsch -> https://de-linker.com/de/warenkorb/
+  footer Deutsch -> https://de-linker.com/de/
+/ci-storage-peak-shaving-backup-scalability/
+  header Deutsch -> https://de-linker.com/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/
+  footer Deutsch -> https://de-linker.com/de/
+/compare-products/
+  header Deutsch -> https://de-linker.com/de/compare-products/
+  footer Deutsch -> https://de-linker.com/de/
+/contact/
+  header Deutsch -> https://de-linker.com/de/kontakt/
+  footer Deutsch -> https://de-linker.com/de/
+/faq-download/
+  header Deutsch -> https://de-linker.com/de/faq-download/
+  footer Deutsch -> https://de-linker.com/de/
+/for-epc/
+  header Deutsch -> https://de-linker.com/de/fuer-epc/
+  footer Deutsch -> https://de-linker.com/de/
+/for-installer/
+  header Deutsch -> https://de-linker.com/de/fuer-installateur/
+  footer Deutsch -> https://de-linker.com/de/
+/gateway-meter-cloud-monitoring-data-layer/
+  header Deutsch -> https://de-linker.com/de/gateway-zaehler-cloud-ueberwachung-datenebene/
+  footer Deutsch -> https://de-linker.com/de/
+/genie/
+  header Deutsch -> https://de-linker.com/de/genie/
+  footer Deutsch -> https://de-linker.com/de/
+/hybrid-inverter-vs-ac-coupled-storage/
+  header Deutsch -> https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/
+  footer Deutsch -> https://de-linker.com/de/
+/imprint/
+  header Deutsch -> https://de-linker.com/de/impressum/
+  footer Deutsch -> https://de-linker.com/de/
+/indoor-vs-outdoor-battery-storage-planning/
+  header Deutsch -> https://de-linker.com/de/innen-vs-aussen-akku-planung/
+  footer Deutsch -> https://de-linker.com/de/
+/installer-checklist-inverter-battery-pairing/
+  header Deutsch -> https://de-linker.com/de/installateur-checkliste-wechselrichter-akku/
+  footer Deutsch -> https://de-linker.com/de/
+/installer-handover-documentation-checklist/
+  header Deutsch -> https://de-linker.com/de/installateur-uebergabe-dokumentation-checkliste/
+  footer Deutsch -> https://de-linker.com/de/
+/my-account/
+  header Deutsch -> https://de-linker.com/de/mein-konto/
+  footer Deutsch -> https://de-linker.com/de/
+/privacy-policy/
+  header Deutsch -> https://de-linker.com/de/datenschutz/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/accessories/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/zubehoer/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/accessories/backup-power/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/zubehoer/notstrom/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/accessories/meters-current-transformers/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/commercial-storage/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/gewerbespeicher/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/commercial-storage/all-in-one-systems/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/commercial-storage/battery-systems/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/ems-monitoring/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/ems-monitoring/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/ev-chargers/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/ladestationen/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/home-storage/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/heimspeicher/
+  footer Deutsch -> https://de-linker.com/de/
+/product-category/inverters/
+  header Deutsch -> https://de-linker.com/de/produkt-kategorie/wechselrichter/
+  footer Deutsch -> https://de-linker.com/de/
+/products/
+  header Deutsch -> https://de-linker.com/de/produkte/
+  footer Deutsch -> https://de-linker.com/de/
+/proforma-request/
+  header Deutsch -> https://de-linker.com/de/proforma-anfrage/
+  footer Deutsch -> https://de-linker.com/de/
+/refund-returns/
+  header Deutsch -> https://de-linker.com/de/rueckgabe-erstattung/
+  footer Deutsch -> https://de-linker.com/de/
+/remote-monitoring-after-installation/
+  header Deutsch -> https://de-linker.com/de/fernueberwachung-nach-installation/
+  footer Deutsch -> https://de-linker.com/de/
+/residential-storage-backup-self-consumption/
+  header Deutsch -> https://de-linker.com/de/heimspeicher-notstrom-eigenverbrauch/
+  footer Deutsch -> https://de-linker.com/de/
+/services-support/
+  header Deutsch -> https://de-linker.com/de/service-support/
+  footer Deutsch -> https://de-linker.com/de/
+/size-battery-storage-residential-backup/
+  header Deutsch -> https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/
+  footer Deutsch -> https://de-linker.com/de/
+/solar-plus-storage-commissioning-checklist/
+  header Deutsch -> https://de-linker.com/de/solar-speicher-inbetriebnahme-checkliste/
+  footer Deutsch -> https://de-linker.com/de/
+/solution-configurator/
+  header Deutsch -> https://de-linker.com/de/loesungskonfigurator/
+  footer Deutsch -> https://de-linker.com/de/
+/solution/
+  header Deutsch -> https://de-linker.com/de/loesung/
+  footer Deutsch -> https://de-linker.com/de/
+/solution/commercial-storage/
+  header Deutsch -> https://de-linker.com/de/loesung/gewerbespeicher/
+  footer Deutsch -> https://de-linker.com/de/
+/solution/residential-storage/
+  header Deutsch -> https://de-linker.com/de/loesung/heimspeicher/
+  footer Deutsch -> https://de-linker.com/de/
+/solution/utility-storage/
+  header Deutsch -> https://de-linker.com/de/loesung/grossspeicher/
+  footer Deutsch -> https://de-linker.com/de/
+/terms-of-sale/
+  header Deutsch -> https://de-linker.com/de/verkaufsbedingungen/
+  footer Deutsch -> https://de-linker.com/de/
+/product/goodwe-gw60k-sts-g10/
+  header Deutsch -> https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/
+  footer Deutsch -> https://de-linker.com/de/
+/product/goodwe-gw75k-et-g10/
+  header Deutsch -> https://de-linker.com/de/produkt/goodwe-gw75k-et-g10/
+  footer Deutsch -> https://de-linker.com/de/
+/product/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/
+  header Deutsch -> https://de-linker.com/de/produkt/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/
+  footer Deutsch -> https://de-linker.com/de/
+/product/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/
+  header Deutsch -> https://de-linker.com/de/produkt/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/
+  footer Deutsch -> https://de-linker.com/de/
+/product/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/
+  header Deutsch -> https://de-linker.com/de/produkt/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/
+  footer Deutsch -> https://de-linker.com/de/
+/product/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/
+  header Deutsch -> https://de-linker.com/de/produkt/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/
+  footer Deutsch -> https://de-linker.com/de/
+/my-account/register/
+  header Deutsch -> https://de-linker.com/de/mein-konto/register/
+  footer Deutsch -> https://de-linker.com/de/
+/my-account/lost-password/
+  header Deutsch -> https://de-linker.com/de/mein-konto/lost-password/
+  footer Deutsch -> https://de-linker.com/de/
+/category/system-design/
+  header Deutsch -> https://de-linker.com/de/category/system-design/
+  footer Deutsch -> https://de-linker.com/de/
+/thank-you/
+  header Deutsch -> https://de-linker.com/de/danke/
+  footer Deutsch -> https://de-linker.com/de/
+/?s=inverter
+  header Deutsch -> https://de-linker.com/de/?s=inverter
+  footer Deutsch -> https://de-linker.com/de/
+{"clickFooterEnFrom": "/de/kontakt/", "landed": "https://de-linker.com/de/"}
+{"clickHeaderEnFrom": "/de/kontakt/", "landed": "https://de-linker.com/contact/"}
+
+German pages (1440 crawl): footer "Englisch" link target
+/de/  en-links: ['/', '/de/']
+/de/batteriegroesse-heimspeicher-notstrom/  en-links: ['/de/', '/size-battery-storage-residential-backup/']
+/de/blog/  en-links: ['/blog/', '/de/']
+/de/compare-products/  en-links: ['/compare-products/', '/de/']
+/de/danke/  en-links: ['/de/', '/thank-you/']
+/de/datenschutz/  en-links: ['/de/', '/privacy-policy/']
+/de/faq-download/  en-links: ['/de/', '/faq-download/']
+/de/fernueberwachung-nach-installation/  en-links: ['/de/', '/remote-monitoring-after-installation/']
+/de/fuer-epc/  en-links: ['/de/', '/for-epc/']
+/de/fuer-installateur/  en-links: ['/de/', '/for-installer/']
+/de/gateway-zaehler-cloud-ueberwachung-datenebene/  en-links: ['/de/', '/gateway-meter-cloud-monitoring-data-layer/']
+/de/genie/  en-links: ['/de/', '/genie/']
+/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/  en-links: ['/ci-storage-peak-shaving-backup-scalability/', '/de/']
+/de/heimspeicher-notstrom-eigenverbrauch/  en-links: ['/de/', '/residential-storage-backup-self-consumption/']
+/de/hybridwechselrichter-vs-ac-speicher/  en-links: ['/de/', '/hybrid-inverter-vs-ac-coupled-storage/']
+/de/impressum/  en-links: ['/de/', '/imprint/']
+/de/innen-vs-aussen-akku-planung/  en-links: ['/de/', '/indoor-vs-outdoor-battery-storage-planning/']
+/de/installateur-checkliste-wechselrichter-akku/  en-links: ['/de/', '/installer-checklist-inverter-battery-pairing/']
+/de/installateur-uebergabe-dokumentation-checkliste/  en-links: ['/de/', '/installer-handover-documentation-checklist/']
+/de/kontakt/  en-links: ['/contact/', '/de/']
+/de/loesung/  en-links: ['/de/', '/solution/']
+/de/loesung/gewerbespeicher/  en-links: ['/de/', '/solution/commercial-storage/']
+/de/loesung/grossspeicher/  en-links: ['/de/', '/solution/utility-storage/']
+/de/loesung/heimspeicher/  en-links: ['/de/', '/solution/residential-storage/']
+/de/loesungskonfigurator/  en-links: ['/de/', '/solution-configurator/']
+/de/mein-konto/  en-links: ['/de/', '/my-account/']
+/de/produkt-kategorie/ems-monitoring/  en-links: ['/de/', '/product-category/ems-monitoring/']
+/de/produkt-kategorie/gewerbespeicher/  en-links: ['/de/', '/product-category/commercial-storage/']
+/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/  en-links: ['/de/', '/product-category/commercial-storage/all-in-one-systems/']
+/de/produkt-kategorie/gewerbespeicher/batteriesysteme/  en-links: ['/de/', '/product-category/commercial-storage/battery-systems/']
+/de/produkt-kategorie/heimspeicher/  en-links: ['/de/', '/product-category/home-storage/']
+/de/produkt-kategorie/ladestationen/  en-links: ['/de/', '/product-category/ev-chargers/']
+/de/produkt-kategorie/wechselrichter/  en-links: ['/de/', '/product-category/inverters/']
+/de/produkt-kategorie/zubehoer/  en-links: ['/de/', '/product-category/accessories/']
+/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/  en-links: ['/de/', '/product-category/accessories/meters-current-transformers/']
+/de/produkt-kategorie/zubehoer/notstrom/  en-links: ['/de/', '/product-category/accessories/backup-power/']
+/de/produkte/  en-links: ['/de/', '/products/']
+/de/proforma-anfrage/  en-links: ['/de/', '/proforma-request/']
+/de/rueckgabe-erstattung/  en-links: ['/de/', '/refund-returns/']
+/de/service-support/  en-links: ['/de/', '/services-support/']
+/de/solar-speicher-inbetriebnahme-checkliste/  en-links: ['/de/', '/solar-plus-storage-commissioning-checklist/']
+/de/ueber-uns/  en-links: ['/about/', '/de/']
+/de/ueber-uns/leistungsfaehigkeit/  en-links: ['/about/capability/', '/de/']
+/de/verkaufsbedingungen/  en-links: ['/de/', '/terms-of-sale/']
+/de/warenkorb/  en-links: ['/cart/', '/de/']
+/de/produkt/chint-dtsu666/  en-links: ['/de/', '/product/chint-dtsu666/']
+/de/produkt/pylontech-optim-us-l260-omni/  en-links: ['/de/', '/product/pylontech-optim-us-l260-omni/']
+/de/produkt/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/  en-links: ['/de/', '/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/']
+/de/produkt/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/  en-links: ['/de/', '/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/']
+/de/produkt/goodwe-gw80k-et-g10/  en-links: ['/de/', '/product/goodwe-gw80k-et-g10/']
+/de/produkt/goodwe-gw112-6-bat-ac-g10/  en-links: ['/de/', '/product/goodwe-gw112-6-bat-ac-g10/']
+/de/produkt/saj-hs2-8k-t2-x/  en-links: ['/de/', '/product/saj-hs2-8k-t2-x/']
+/de/produkt/saj-hs2-6k-t2-x/  en-links: ['/de/', '/product/saj-hs2-6k-t2-x/']
+/de/?s=Wechselrichter  en-links: ['/?s=Wechselrichter', '/de/']
+/de/?s=akku&post_type=product  en-links: ['/de/', '/products/?s=akku']
+/de/diese-seite-gibt-es-nicht/  en-links: ['/', '/de/']
+/de/mein-konto/register/  en-links: ['/de/', '/my-account/register/']
+/de/mein-konto/lost-password/  en-links: ['/de/', '/my-account/lost-password/']
+/de/category/system-design/  en-links: ['/category/system-design/', '/de/']

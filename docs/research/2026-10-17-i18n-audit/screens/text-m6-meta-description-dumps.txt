@@ -1,0 +1,22 @@
+captured 2026-10-17 from the live site by curl (read-only)
+
+https://de-linker.com/de/fuer-installateur/
+  <title>   Speicherpartner für Installateure | Linker
+  description LINKER DEUTSCHLAND · SOLAR- & SPEICHERLÖSUNGEN FÜR INSTALLATEURE DEUTSCHER BETRIEB Partnerportal sales@de-linker.com SOLAR & SPEICHER FÜR INSTALLATEURE Der Speicherlösungspartner hinter Ihren Projekten. Ein- und dreiphasige Heimspeicher sowie gewerbliche Systeme mit mehreren hundert Kilowattstunden. Linker liefert komplette Speicherpakete, ausgelegt im Lösungskonfigurator, mit den für Ihre Bestellung angeforderten Netzanschlussdokumenten, damit Sie größere…
+  canonical https://de-linker.com/de/fuer-installateur/
+
+https://de-linker.com/for-installer/
+  <title>   Storage Solution Partner for Installers | Linker
+  description Complete storage packages sized in the Solution Configurator, with grid documents requested per order, German warehouse stock and confirmed dispatch dates.
+  canonical https://de-linker.com/for-installer/
+
+https://de-linker.com/de/loesung/gewerbespeicher/
+  <title>   C&I-Speicher für Installateure und EPCs | Linker
+  description GEWERBLICHER SPEICHER Schlanker gewerblicher Speicher, geliefert von Linker. GoodWe-, SAJ- und Pylontech-Systeme für Lastspitzenkappung, Eigenverbrauch, EV-Ladepuffer und Notstromversorgung. Jedes System wird im Lösungskonfigurator anhand des Lastprofils der Anlage dimensioniert. Die Netzanschlussdokumente werden für die Bestellung angefordert. Finden Sie ein Speichersystem für eine 100-kW-Spitzenlast Vergleichen Sie gewerbliche Speicheroptionen von GoodWe, SAJ…
+  canonical https://de-linker.com/de/loesung/gewerbespeicher/
+
+https://de-linker.com/solution/commercial-storage/
+  <title>   C&I Storage for Installers and EPCs | Linker
+  description GoodWe, SAJ and Pylontech C&I systems for peak shaving, self-consumption and backup, sized in the Solution Configurator from your load profile. Grid documents requested.
+  canonical https://de-linker.com/solution/commercial-storage/
+

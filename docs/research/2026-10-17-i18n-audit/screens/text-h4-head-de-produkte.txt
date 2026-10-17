@@ -1,0 +1,11 @@
+captured 2026-10-17 from the live site by curl (read-only)
+
+https://de-linker.com/de/produkte/
+  <title>   Browse Inverters, Batteries and Systems | Linker
+  description Filter inverters, LFP batteries, all-in-one systems, meters and controllers by brand, or find an item by number or nameplate photo. Net prices for partners.
+  canonical https://de-linker.com/de/produkte/
+
+https://de-linker.com/products/
+  <title>   Browse Inverters, Batteries and Systems | Linker
+  description Filter inverters, LFP batteries, all-in-one systems, meters and controllers by brand, or find an item by number or nameplate photo. Net prices for partners.
+  canonical https://de-linker.com/products/
