@@ -1,0 +1,84 @@
+[
+  {
+    "language": "en",
+    "viewport": 1440,
+    "size": [
+      1440,
+      3512
+    ],
+    "raw_different_pixels": 133967,
+    "below_toolbar_different_pixels": 129712,
+    "body_bbox": [
+      0,
+      89,
+      1440,
+      2907
+    ],
+    "contact_form_different_pixels": 57,
+    "contact_form_comparison_box": [
+      682,
+      265,
+      1392,
+      1173
+    ]
+  },
+  {
+    "language": "en",
+    "viewport": 390,
+    "size": [
+      390,
+      3292
+    ],
+    "raw_different_pixels": 431,
+    "below_toolbar_different_pixels": 38,
+    "body_bbox": [
+      32,
+      2674,
+      50,
+      2677
+    ],
+    "contact_form_different_pixels": 0,
+    "contact_form_comparison_box": [
+      14,
+      265,
+      376,
+      1342
+    ]
+  },
+  {
+    "language": "de",
+    "viewport": 1440,
+    "size": [
+      1440,
+      3560
+    ],
+    "raw_different_pixels": 4496,
+    "below_toolbar_different_pixels": 0,
+    "body_bbox": null,
+    "contact_form_different_pixels": 0,
+    "contact_form_comparison_box": [
+      682,
+      265,
+      1392,
+      1197
+    ]
+  },
+  {
+    "language": "de",
+    "viewport": 390,
+    "size": [
+      390,
+      3406
+    ],
+    "raw_different_pixels": 393,
+    "below_toolbar_different_pixels": 0,
+    "body_bbox": null,
+    "contact_form_different_pixels": 0,
+    "contact_form_comparison_box": [
+      14,
+      275,
+      376,
+      1393
+    ]
+  }
+]

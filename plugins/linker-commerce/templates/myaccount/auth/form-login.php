@@ -57,7 +57,7 @@ $brand_panel = static function ( string $title, string $subtitle, array $points 
 				__( 'Your partner account', 'linker-commerce' ),
 				__( 'The workspace for installers, EPCs and distributors.', 'linker-commerce' ),
 				array(
-					__( 'Net prices and Proforma requests once approved', 'linker-commerce' ),
+					__( 'Net prices after account approval', 'linker-commerce' ),
 					__( 'Every inquiry and document in one place', 'linker-commerce' ),
 					__( 'We answer inquiries within one working day', 'linker-commerce' ),
 				)

@@ -111,7 +111,7 @@ final class Sender {
 			}
 			$twin = (int) pll_get_post( $item->get_product_id(), str_starts_with( $locale, 'de' ) ? 'de' : 'en' );
 			$name = $twin > 0 ? get_post_field( 'post_title', $twin ) : '';
-			if ( is_string( $name ) && '' !== $name ) {
+			if ( '' !== $name ) {
 				$item->set_name( $name );
 				$item->save();
 			}

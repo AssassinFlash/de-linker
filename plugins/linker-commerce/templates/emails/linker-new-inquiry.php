@@ -27,7 +27,7 @@ printf(
 	/* translators: 1: inquiry number, 2: company, 3: customer's full name. */
 	esc_html__( 'New inquiry %1$s from %2$s (%3$s).', 'linker-commerce' ),
 	esc_html( '#' . $order->get_order_number() ),
-	esc_html( $order->get_billing_company() ),
+	esc_html( '' !== $order->get_billing_company() ? $order->get_billing_company() : $order->get_formatted_billing_full_name() ),
 	esc_html( $order->get_formatted_billing_full_name() )
 );
 ?>

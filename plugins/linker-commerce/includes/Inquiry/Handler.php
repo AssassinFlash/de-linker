@@ -64,6 +64,7 @@ final class Handler {
 		if ( $result instanceof WC_Order ) {
 			WC()->session->set( 'linker_inquiry_fields', null );
 			WC()->session->set( 'linker_inquiry_error', null );
+			WC()->session->set( 'linker_inquiry_error_locale', null );
 			wp_safe_redirect( $result->get_checkout_order_received_url() );
 		} else {
 			if ( WC()->session instanceof \WC_Session_Handler ) {
@@ -74,8 +75,9 @@ final class Handler {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
 			WC()->session->set( 'linker_inquiry_fields', $fields );
-			WC()->session->set( 'linker_inquiry_error', $result->get_error_message() );
 			$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
+			WC()->session->set( 'linker_inquiry_error', $result->get_error_message() );
+			WC()->session->set( 'linker_inquiry_error_locale', OrderLocale::current( $language ) );
 			wp_safe_redirect( Checkout::request_url( OrderLocale::current( $language ) ) );
 		}
 		exit;

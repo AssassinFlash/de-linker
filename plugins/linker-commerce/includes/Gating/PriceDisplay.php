@@ -190,7 +190,7 @@ final class PriceDisplay {
 	 * @return array<string, array{label: string, value: string}>
 	 */
 	public function order_totals( array $totals, WC_Order $order ): array {
-		return $this->has_unpriced_lines( $order ) || 'contact' === $order->get_meta( '_linker_inquiry_source' ) ? array() : $totals;
+		return 0 === $order->get_item_count() || $this->has_unpriced_lines( $order ) || 'contact' === $order->get_meta( '_linker_inquiry_source' ) ? array() : $totals;
 	}
 
 	/**

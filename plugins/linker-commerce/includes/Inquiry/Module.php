@@ -60,6 +60,7 @@ final class Module {
 		add_filter( 'woocommerce_available_payment_gateways', array( $this->checkout, 'gateways' ) );
 		add_action( 'woocommerce_checkout_create_order', array( $this->checkout, 'without_payment_method_title' ) );
 		add_action( 'woocommerce_after_checkout_validation', array( $this->checkout, 'validate_public' ), 10, 2 );
+		add_filter( 'rest_pre_dispatch', array( $this->checkout, 'block_store_checkout' ), 10, 3 );
 		add_action( 'woocommerce_checkout_create_order', array( $this->locale, 'remember' ) );
 		add_action( 'woocommerce_after_order_notes', array( $this->checkout, 'language_field' ) );
 		add_action( 'wp_enqueue_scripts', array( $this->checkout, 'feedback' ) );

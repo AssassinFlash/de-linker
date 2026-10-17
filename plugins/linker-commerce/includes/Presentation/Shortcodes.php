@@ -303,11 +303,7 @@ final class Shortcodes {
 	}
 
 	/**
-	 * The Proforma request: the gate when the draft is empty or the account
-	 * may not send, otherwise WooCommerce's checkout. A guest never reaches
-	 * the checkout — the request belongs to a partner account, so guests read
-	 * the gate: with products in the draft it names the draft, without them
-	 * the Proforma request itself (ticket #184).
+	 * The public inquiry form; Woo renders the keyed receipt endpoint.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
