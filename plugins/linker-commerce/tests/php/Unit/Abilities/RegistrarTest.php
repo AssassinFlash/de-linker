@@ -16,7 +16,6 @@ use Linker\Commerce\Abilities\GetProduct;
 use Linker\Commerce\Abilities\HandoffTeam;
 use Linker\Commerce\Abilities\InquiryStatus;
 use Linker\Commerce\Abilities\Registrar;
-use Linker\Commerce\Abilities\SearchKnowledge;
 use Linker\Commerce\Abilities\SearchProducts;
 use Linker\Commerce\Abilities\SizeHint;
 use Mockery;
@@ -33,7 +32,7 @@ final class RegistrarTest extends TestCase {
 	private const FILE = '/srv/www/wp-content/plugins/linker-commerce/linker-commerce.php';
 
 	/**
-	 * The eight Genie abilities plus the version probe, in registration order.
+	 * The seven Genie abilities plus the version probe, in registration order.
 	 *
 	 * @return list<string>
 	 */
@@ -46,7 +45,6 @@ final class RegistrarTest extends TestCase {
 		SizeHint::NAME,
 		InquiryStatus::NAME,
 		HandoffTeam::NAME,
-		SearchKnowledge::NAME,
 	);
 
 	/**

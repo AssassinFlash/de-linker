@@ -6,6 +6,13 @@ prompt routes out-of-scope turns through handoff-team and puts the team
 mailbox sentence into the summary as `{fact:handoff.sentence_*}` — the
 customer must see the real sentence, not a model paraphrase (review
 2026-10-10, must-fix 1).
+
+An answer that rests on documents links them, and the service adds those links
+(#257, docs/specs/10-knowledge-index.md 引用与核验): every chunk a text block names
+in `refs` or takes a figure from (`{fact:CHUNK_ID.nK}`) gets a document block when
+the answer has none for it, so it becomes a link with its page like any other.
+A document figure is written in the turn's language (`figures.localize`), and a
+unit the model repeats after it is dropped.
 """
 
 from __future__ import annotations
@@ -13,6 +20,7 @@ from __future__ import annotations
 import re
 
 from linker_genie.facts import Document, Fact, TurnFacts
+from linker_genie.figures import chunk_of, localize
 from linker_genie.schema import (
     ActionBlock,
     Block,
@@ -28,6 +36,12 @@ PAGE_WORD = {"en": "p.", "de": "S."}
 PAGES_WORD = {"en": "pp.", "de": "S."}
 
 PLACEHOLDER = re.compile(r"\{fact:([^}]+)\}")
+# A placeholder and the word the model wrote right after it, to compare that word
+# with the unit a document figure already ends with. Only unit-shaped characters:
+# the word must not swallow the next placeholder of "{fact:…n1}–{fact:…n2}"
+# (issue #257 trial run, a range lost its upper figure).
+_PLACEHOLDER_AND_WORD = re.compile(r"\{fact:([^}]+)\}((?:\s?[A-Za-zÄÖÜäöü%°²µΩ℃]+)?)")
+_UNIT_TAIL = re.compile(r"\d\s?([^\s\d]+)$")
 
 
 def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
@@ -40,9 +54,10 @@ def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
     blocks: list[Block] = []
     # File URL → (index of its link in `blocks`, the document, its cited pages).
     links: dict[str, tuple[int, Document, list[int]]] = {}
-    for block in output.blocks:
+    for block in [*output.blocks, *cited_documents(output, facts)]:
         if isinstance(block, TextBlock):
-            blocks.append(block.model_copy(update={"text": fill(block.text, facts)}))
+            text = fill(block.text, facts, output.language)
+            blocks.append(block.model_copy(update={"text": text}))
         elif isinstance(block, HandoffBlock):
             blocks.append(
                 block.model_copy(update={"summary": fill(block.summary, facts)})
@@ -79,6 +94,25 @@ def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
         else:
             blocks.append(block)
     return output.model_copy(update={"blocks": blocks})
+
+
+def cited_documents(output: TurnOutput, facts: TurnFacts) -> list[DocumentBlock]:
+    """Document blocks for the chunks the answer rests on and does not link yet."""
+    linked = {block.ref for block in output.blocks if isinstance(block, DocumentBlock)}
+    cited: list[str] = []
+    for block in output.blocks:
+        if not isinstance(block, TextBlock):
+            continue
+        cited.extend(ref for ref in block.refs if ref in facts.chunk_ids)
+        for fact_id in PLACEHOLDER.findall(block.text):
+            chunk = chunk_of(fact_id)
+            if chunk is not None and chunk in facts.chunk_ids:
+                cited.append(chunk)
+    return [
+        DocumentBlock(ref=chunk)
+        for chunk in dict.fromkeys(cited)
+        if chunk not in linked and chunk in facts.documents
+    ]
 
 
 def document_label(
@@ -131,21 +165,34 @@ def document_url(document: Document, pages: list[int] | None = None) -> str:
 UNITS = (("_kwh", "kWh"), ("kwh_range", "kWh"), ("_kw", "kW"))
 
 
-def fill(text: str, facts: TurnFacts) -> str:
+def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
     """Replace each `{fact:ID}` with the stored value; unknown IDs stay as-is
-    so a later check can still see them."""
+    so a later check can still see them.
+
+    A product fact gets its unit (UNITS) unless the text writes it. A document
+    figure carries its own unit ("1000 W") and is written in the turn's language;
+    when the model wrote the unit after the placeholder as well, the repeat is
+    dropped ("1000 W W", issue #257 trial run).
+    """
 
     def replace(match: re.Match[str]) -> str:
         fact = _lookup(facts, match.group(1))
         if fact is None:
             return match.group(0)
-        unit = _unit(match.group(1)) if fact.source == "selection-facts" else None
-        following = text[match.end() :].lstrip().lower()
-        if unit and not following.startswith(unit.lower()):
-            return f"{fact.value} {unit}"
-        return fact.value
+        after = match.group(2)
+        if fact.source == "search-knowledge" and chunk_of(fact.id) is not None:
+            value = localize(fact.value, locale)
+            unit = _UNIT_TAIL.search(value)
+            if unit and after and after.strip() == unit.group(1):
+                return value
+            return value + after
+        unit_word = _unit(match.group(1)) if fact.source == "selection-facts" else None
+        following = text[match.start(2) :].lstrip().lower()
+        if unit_word and not following.startswith(unit_word.lower()):
+            return f"{fact.value} {unit_word}{after}"
+        return fact.value + after
 
-    return PLACEHOLDER.sub(replace, text)
+    return _PLACEHOLDER_AND_WORD.sub(replace, text)
 
 
 def _unit(fact_id: str) -> str | None:

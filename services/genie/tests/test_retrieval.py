@@ -8,8 +8,8 @@ import pytest
 from index import corpus, store
 from index.chunking import Chunk
 from index.corpus import DocumentRow
-from linker_genie.embedding import Passage, pack
-from linker_genie.retrieval import DocumentIndex, fts_query, rrf
+from linker_genie.embedding import EmbeddingError, Passage, pack
+from linker_genie.retrieval import DocumentIndex, fts_query, is_passage, rrf
 
 ET = "e7" * 32
 LYNX = "1f" * 32
@@ -295,3 +295,131 @@ def test_an_encoder_other_than_the_one_that_built_the_index_is_refused(
 
     with pytest.raises(RuntimeError, match="differs"):
         DocumentIndex(index_path, encoder=Other())
+
+
+class BrokenEncoder(AxisEncoder):
+    """An encoder whose endpoint is down: every query raises."""
+
+    def embed_query(self, text: str) -> bytes:
+        raise EmbeddingError("toy: URLError after 3 attempts")
+
+
+def test_a_failed_encoding_raises_instead_of_ranking_by_keywords(
+    index_path: Path,
+) -> None:
+    index = DocumentIndex(index_path, encoder=BrokenEncoder())
+
+    with pytest.raises(EmbeddingError, match="after 3 attempts"):
+        index.search("maximum input power GW10K-ET", "en")
+
+
+def test_without_an_encoder_bm25_ranks_and_the_log_says_so(
+    index_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    index = DocumentIndex(index_path, encoder=None)
+
+    with caplog.at_level("WARNING"):
+        hits = index.search("Zertifikat", "de")
+
+    assert index.ranking == "keywords"
+    assert [hit.chunk_id for hit in hits] == ["cert-1"]
+    assert "document search by BM25: no query encoder for toy" in caplog.text
+
+
+def test_with_an_encoder_the_ranking_is_vector(index_path: Path) -> None:
+    assert DocumentIndex(index_path, encoder=AxisEncoder()).ranking == "vector"
+
+
+@pytest.mark.parametrize(
+    ("text", "kept"),
+    [
+        ("SAND", False),
+        ("3.", False),
+        ("D A N G E R :", False),
+        ("10 mm²", False),
+        ("|  | HVM 16.6 | ● | ● |", True),
+        ("Max. Input Power (kW) 15", True),
+    ],
+)
+def test_parsing_scraps_are_not_passages(text: str, kept: bool) -> None:
+    assert is_passage(text) is kept
+
+
+def test_a_model_code_in_the_question_narrows_to_its_documents(
+    index_path: Path,
+) -> None:
+    index = DocumentIndex(index_path, encoder=AxisEncoder())
+
+    assert index.documents_naming("battery for the GW10K-ET?") == [ET]
+    assert index.documents_naming("the F12.8-H stack") == [LYNX]
+    assert index.documents_naming("which battery?") == []
+    # The vector says "battery" (the Lynx manual); the named model keeps the search
+    # in the ET's documents.
+    hits = index.search("battery GW10K-ET", "en")
+    assert {hit.doc_sha256 for hit in hits} == {ET}
+
+
+def _build(tmp_path: Path, documents: list[DocumentRow], chunks: list[Chunk]) -> Path:
+    meta = corpus.Meta(
+        "v", "toy", 3, "docling test", 512, embedding=AxisEncoder.fingerprint
+    )
+    vectors = [pack(AXES["battery"]) for _ in chunks]
+    corpus.write(tmp_path / "c", meta, documents, [], chunks, vectors)
+    store.export(tmp_path / "c", tmp_path / "n.sqlite")
+    return tmp_path / "n.sqlite"
+
+
+def _document(sha: str, doc_type: str, pages: int) -> DocumentRow:
+    return DocumentRow(
+        sha, (f"https://de-linker.com/{sha[:4]}.pdf",), sha[:4], "", (), (),
+        doc_type, "en", pages, "indexed",
+    )  # fmt: skip
+
+
+def test_a_hit_brings_the_other_passages_of_its_page(tmp_path: Path) -> None:
+    path = _build(
+        tmp_path,
+        [_document(LYNX, "manual", 40)],
+        [
+            chunk("row-1", LYNX, 3, "| Warranty | 5 years | before 2026 |"),
+            chunk("scrap", LYNX, 3, "SAND"),
+            chunk("row-2", LYNX, 3, "| Warranty | 10 years | from 2026 |"),
+            chunk("other", LYNX, 4, "Another page entirely, battery wiring."),
+        ],
+    )
+    index = DocumentIndex(path, encoder=AxisEncoder())
+    first = index.hits([(1, 0.0)], "en")
+
+    hits = index.with_page_neighbours(first, "en")
+
+    assert [hit.chunk_id for hit in hits] == ["row-1", "row-2"]
+
+
+def test_a_short_datasheet_comes_whole(tmp_path: Path) -> None:
+    path = _build(
+        tmp_path,
+        [_document(ET, "datasheet", 2)],
+        [
+            chunk("overview", ET, 1, "Overview of the battery system and its range."),
+            chunk("table", ET, 2, "| Nominal Capacity (kWh) | 260 |"),
+        ],
+    )
+    index = DocumentIndex(path, encoder=AxisEncoder())
+    first = index.hits([(1, 0.0)], "en")
+
+    hits = index.with_page_neighbours(first, "en")
+
+    assert [hit.chunk_id for hit in hits] == ["overview", "table"]
+
+
+def test_neighbours_stop_at_the_limit(tmp_path: Path) -> None:
+    path = _build(
+        tmp_path,
+        [_document(LYNX, "manual", 40)],
+        [chunk(f"row-{n}", LYNX, 3, f"| Row {n} | battery data |") for n in range(6)],
+    )
+    index = DocumentIndex(path, encoder=AxisEncoder())
+
+    hits = index.with_page_neighbours(index.hits([(1, 0.0)], "en"), "en", limit=3)
+
+    assert [hit.chunk_id for hit in hits] == ["row-0", "row-1", "row-2"]

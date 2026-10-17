@@ -49,7 +49,6 @@ ABILITY_NAMES = (
     "linker/size-hint",
     "linker/inquiry-status",
     "linker/handoff-team",
-    "linker/search-knowledge",
 )
 
 # Attempts per ability call, and the first backoff wait (doubled per retry).

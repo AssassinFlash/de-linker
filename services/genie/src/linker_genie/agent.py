@@ -21,6 +21,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from linker_genie import knowledge
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
@@ -28,9 +29,12 @@ from linker_genie.understand import Prepared
 
 MAX_TOOL_CALLS = 4
 # The route's results go into the prompt as JSON; a search answers with up to six
-# cards with their facts (route.SEARCH_LIMIT), well under this ceiling, which only
-# keeps a runaway result from crowding the conversation out of the context.
-MAX_RESULT_CHARS = 24_000
+# cards with their facts (route.SEARCH_LIMIT), and a document search with up to 16
+# chunks: 9,500 to 23,400 characters as the model reads them on the 18 questions of
+# eval/knowledge (median 14,700; measured 2026-10-17, #257). The ceiling holds a
+# document search and a product search together, and only keeps a runaway result
+# from crowding the conversation out of the context.
+MAX_RESULT_CHARS = 48_000
 # The input objects the abilities accept (docs/specs/13-genie.md §A). The REST
 # introspection of an ability is permission-protected, so the shapes live here,
 # next to the only consumer. The source of truth is the `input_schema` each
@@ -62,8 +66,11 @@ INPUT_DOCS: dict[str, str] = {
     ),
     "linker/inquiry-status": "{}",
     "linker/handoff-team": "{summary: string}",
-    "linker/search-knowledge": "{query: string, lang: 'en'|'de', product_ids?: [int]}",
+    knowledge.NAME: knowledge.INPUT_DOC,
 }
+# Every tool the model may call: the WordPress abilities, and the document search
+# this process runs itself (linker_genie.knowledge).
+TOOL_NAMES = (*ABILITY_NAMES, knowledge.NAME)
 PROMPTS = Path(__file__).resolve().parents[2] / "prompts"
 # Owner ruling 2026-10-11: the one chat model, on the official DeepSeek API.
 CHAT_PROVIDER = "deepseek"
@@ -168,24 +175,36 @@ def make_generate(
     client: AbilityClient,
     model: Any | None = None,
     prepared: Prepared | None = None,
+    search: knowledge.Search | None = None,
 ) -> Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]:
     """A `cycle.Generate` that runs the Pydantic AI agent with the ability client.
 
     With `prepared`, the route's results are already fetched: the model reads them
     from the prompt and may call the tools left in the budget. The facts it returns
     are only its own calls'; the cycle merges them with the route's (cycle.run).
+    `search` is the document search (default: the published index, knowledge.SEARCH).
+    A route whose document search failed ends the turn here: the error is raised
+    and the cycle answers with its fallback, never with an answer that lacks the
+    documents it needed (#257, docs/specs/10-knowledge-index.md 失败显式).
     """
+    document_search = search or knowledge.SEARCH
 
     def generate(
         request: TurnRequest, retry_reason: str | None
     ) -> tuple[TurnOutput, TurnFacts]:
         from pydantic_ai import Agent, Tool
 
+        if prepared is not None and prepared.knowledge_error:
+            raise knowledge.KnowledgeUnavailable(prepared.knowledge_error)
         budget = ToolBudget(used=prepared.calls_made if prepared else 0)
         tools = []
-        for name in ABILITY_NAMES:
-            runner = _ability_runner(
-                client, budget, name, request.user.context, request.locale
+        for name in TOOL_NAMES:
+            runner = (
+                _knowledge_runner(document_search, budget, request.locale)
+                if name == knowledge.NAME
+                else _ability_runner(
+                    client, budget, name, request.user.context, request.locale
+                )
             )
             doc = INPUT_DOCS.get(name)
             runner.__doc__ = f"Call the WordPress ability {name}." + (
@@ -243,6 +262,23 @@ def _ability_runner(
     return run
 
 
+def _knowledge_runner(
+    search: knowledge.Search,
+    budget: ToolBudget,
+    locale: str = "en",
+) -> Callable[[dict[str, Any] | None], Any]:
+    def run(arguments: dict[str, Any] | None = None) -> Any:
+        """Search the hosted documents and return the matching chunks."""
+        if not budget.allow():
+            return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
+        payload, gathered = knowledge.record(search, arguments, locale)
+        budget.parts.append(gathered)
+        return knowledge.model_view(payload)
+
+    run.__name__ = _tool_name(knowledge.NAME)
+    return run
+
+
 def _user_prompt(
     request: TurnRequest, retry_reason: str | None, prepared: Prepared | None = None
 ) -> str:
@@ -260,7 +296,18 @@ def _user_prompt(
     if prepared is not None and prepared.route.hint:
         lines.append("Service routing: " + prepared.route.hint)
     if prepared is not None and prepared.results:
-        results = json.dumps(prepared.results, ensure_ascii=False)
+        # A document search reads as the model's own call would: tagged text, no
+        # URL, no figure table (knowledge.model_view).
+        results = json.dumps(
+            [
+                {**item, "result": knowledge.model_view(item["result"])}
+                if item.get("name") == knowledge.NAME
+                and isinstance(item.get("result"), dict)
+                else item
+                for item in prepared.results
+            ],
+            ensure_ascii=False,
+        )
         lines.append(
             "Tool results the service already fetched for this turn (use them; "
             "do not call the same tool again with the same input): "
@@ -294,7 +341,10 @@ def _user_prompt(
         "kwh_range, pID.price, compat.verdict, compat.verdict.BATTERYID, "
         "compat.condition.N, handoff.sentence_en, "
         "handoff.sentence_de); never a subfield like kwh_range.min. A range "
-        "placeholder renders the whole range. Or leave the number unsaid. "
+        "placeholder renders the whole range. A figure from a document chunk "
+        "goes in {fact:CHUNK_ID.nK}, the [nK=…] tag shown in that chunk's text; "
+        "put the chunk IDs you rely on in refs, the service links their "
+        "documents. Or leave the number unsaid. "
         "A document (a search-knowledge chunk ID, compat.document.N, "
         "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
         "get-product listed this turn — such a ref exists only after get-product "

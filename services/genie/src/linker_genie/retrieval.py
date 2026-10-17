@@ -8,7 +8,11 @@ the index's model) stands alone: the embedding bake-off measured that fusing it 
 BM25 loses 11.6 points of recall@5 (docs/research/2026-10-09/embedding-bakeoff.md).
 Without a query encoder for the index's model on this host (no API key for a
 gemini-embedding-2 index; no ONNX model files, as on the VPS) BM25 over FTS5 is the
-ranking.
+ranking, and every such search says so in the log (AGENTS.md §4). With an encoder a
+failed encoding raises `EmbeddingError`: it never falls back to BM25 (the model
+routing law: OpenRouter failures are loud).
+
+This index is Genie's one document source (docs/specs/10-knowledge-index.md, "唯一检索源").
 
 A hit is a chunk: its ID is what an answer cites, and `link` is the document URL with
 the page fragment the citation opens.
@@ -17,6 +21,7 @@ the page fragment the citation opens.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sqlite3
@@ -45,6 +50,31 @@ RRF_K = 60
 # Spec signature: search_documents(..., k=8).
 DEFAULT_K = 8
 LANGS = ("en", "de")
+# A prose chunk with fewer than three words is a parsing scrap, not a passage: icon
+# labels read as text ("SAND", "SAFI", "GOODWE"), lone step numbers ("3."), drawing
+# callouts. 2,266 of the 33,172 chunks of index 20261016T072222Z are such scraps and
+# they took up to four of the eight hits of the trial questions (issue #257); a table
+# chunk stays whatever its word count, a compatibility matrix of "●" marks is data.
+MIN_WORDS = 3
+_WORD = re.compile(r"[^\W\d_]{2,}")
+# A page's other passages come with its hits, up to this many hits in all. A table
+# is chunked by rows with the header repeated, so one page can hold the answer in a
+# chunk ranked below the cut: the GoodWe warranty table's 2026 row ranked 12th for
+# the German trial question while two rows of the same page ranked in the top 8
+# (issue #257). Twice the spec's k keeps a turn's document text near 8k tokens
+# (chunks are at most 512 tokens, docs/specs/10-knowledge-index.md).
+MAX_HITS = 2 * DEFAULT_K
+# A short datasheet comes whole: its first page is the overview and the parameter
+# table follows (the L260-OMNI datasheet's p. 1 ranked 2nd for the trial question,
+# its p. 2 "Nominal Capacity (kWh) | 260 / Depth of Discharge | 98%" below the top 30
+# once the 44-page Pylontech portfolio shared the scope, issue #257). 79 of the 88
+# datasheets of index 20261016T072222Z have at most four pages.
+SHORT_DATASHEET_PAGES = 4
+# A model code in a question: letters and digits in one token (L260, H2-10K-T3,
+# CB2-100.3-HV5), the way document_models writes the models a document covers.
+_CODE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9.\-/]*[A-Za-z0-9])?")
+
+log = logging.getLogger(__name__)
 
 # A query term: letters or digits, with the dots, hyphens and slashes inside model
 # codes and numbers (GW10K-ET, 29.9K, 5.0-10, L1/L2) kept in the same term.
@@ -80,6 +110,11 @@ def fts_query(query: str) -> str:
     """
     terms = dict.fromkeys(term.lower() for term in _TERM.findall(query))
     return " OR ".join(f'"{term}"' for term in terms)
+
+
+def is_passage(text: str) -> bool:
+    """Whether a chunk is worth a hit: a table, or prose of at least MIN_WORDS words."""
+    return "|" in text or len(_WORD.findall(text)) >= MIN_WORDS
 
 
 def rrf(rankings: Sequence[Sequence[int]], k: int = RRF_K) -> list[tuple[int, float]]:
@@ -140,12 +175,47 @@ class DocumentIndex:
     def close(self) -> None:
         self._db.close()
 
+    def documents_naming(self, query: str) -> list[str]:
+        """The documents tagged with a model the query names by its code.
+
+        A code token of the query (letters and digits together, two characters or
+        more) names a model when, written without punctuation and in lower case, it
+        is that model or its beginning, or the beginning of a word of it: "L260"
+        names L260-OMNI, "H2" the H2 series, "CB2-100.3-HV5" itself, "F12.8-H" the
+        LX F12.8-H. Words without digits name nothing.
+        """
+        codes = {
+            re.sub(r"[^a-z0-9]", "", token.lower())
+            for token in _CODE.findall(query)
+            if re.search(r"[A-Za-z]", token) and re.search(r"\d", token)
+        }
+        codes.discard("")
+        if not codes:
+            return []
+        shas: list[str] = []
+        for sha, model in self._db.execute(
+            "SELECT doc_sha256, model FROM document_models ORDER BY doc_sha256"
+        ):
+            forms = [str(model), *str(model).split()]
+            written = [re.sub(r"[^a-z0-9]", "", form.lower()) for form in forms]
+            if sha not in shas and any(
+                form.startswith(code) for form in written for code in codes
+            ):
+                shas.append(sha)
+        return shas
+
     def scope(
-        self, product_ids: Sequence[int] | None, doc_types: Sequence[str] | None
+        self,
+        product_ids: Sequence[int] | None,
+        doc_types: Sequence[str] | None,
+        doc_shas: Sequence[str] | None = None,
     ) -> list[int] | None:
         """Chunk rowids allowed by the filters, or None for the whole index."""
         conditions: list[str] = []
         params: list[str] = []
+        if doc_shas:
+            conditions.append("c.doc_sha256 IN (SELECT value FROM json_each(?))")
+            params.append(json.dumps(list(doc_shas)))
         if product_ids:
             shas = [
                 row[0]
@@ -248,6 +318,11 @@ class DocumentIndex:
             )
         return hits
 
+    @property
+    def ranking(self) -> str:
+        """`vector` when this host encodes queries for the index's model, else `keywords`."""
+        return "vector" if self.encoder is not None else "keywords"
+
     def search(
         self,
         query: str,
@@ -256,6 +331,7 @@ class DocumentIndex:
         doc_types: Sequence[str] | None = None,
         k: int = DEFAULT_K,
         query_vector: bytes | None = None,
+        neighbours: bool = True,
     ) -> list[DocumentHit]:
         """The k best chunks for `query`; `lang` (en|de) picks the title language.
 
@@ -264,32 +340,101 @@ class DocumentIndex:
         of recall@5 and 3.2 points of citation page accuracy (docs/research/
         2026-10-09/embedding-bakeoff.md), because pages of other models' parameter
         tables match the query's words just as well. BM25 is what remains when this
-        host has no encoder for the index's model, exactly the fallback the spec names;
-        that fallback is silent by design here - a caller that must know which ranking
-        it got can check `encoder is None` (#13 decides whether search should ever
-        fail loudly instead). `query_vector` is `query` already encoded by the index's
-        model (`index.eval` encodes the golden set in batched requests instead of one
-        request per question).
+        host has no encoder for the index's model, exactly the fallback the spec names,
+        and the log states it on every search. An encoder that fails raises
+        `EmbeddingError` out of this method; nothing here retries it by keywords.
+        `query_vector` is `query` already encoded by the index's model (`index.eval`
+        encodes the golden set in batched requests instead of one request per
+        question). Parsing scraps (`is_passage`) are left out of the hits. With
+        `neighbours` the k hits come with their neighbours (`with_page_neighbours`);
+        without, the result is the ranking alone, which the golden set scores.
         """
         if lang not in LANGS:
             raise ValueError(f"lang must be one of {LANGS}, not {lang!r}")
-        # First the products' documents, then - only when they hold nothing for the
-        # query - the whole library (spec, Retrieval).
-        scopes = (product_ids, None) if product_ids else (None,)
-        for scoped_ids in scopes:
-            scope = self.scope(scoped_ids, doc_types)
-            ranked = self.vector_ranking(query, scope, query_vector)
-            if not ranked:
-                ranked = self.keyword_ranking(query, scope)
-            if ranked:
-                return self.hits(
+        dense = query_vector is not None or self.encoder is not None
+        if not dense:
+            log.warning(
+                "document search by BM25: no query encoder for %s on this host "
+                "(index %s)",
+                self.embedding_model or "a keywords-only index",
+                self.version,
+            )
+        # First the products' documents - or, without products, the documents of the
+        # models the question names - then, only when they hold nothing for the
+        # query, the whole library (spec, Retrieval).
+        named = [] if product_ids else self.documents_naming(query)
+        scopes: list[tuple[Sequence[int] | None, Sequence[str] | None]] = [(None, None)]
+        if product_ids:
+            scopes.insert(0, (product_ids, None))
+        elif named:
+            scopes.insert(0, (None, named))
+        for scoped_ids, scoped_shas in scopes:
+            scope = self.scope(scoped_ids, doc_types, scoped_shas)
+            ranked = (
+                self.vector_ranking(query, scope, query_vector)
+                if dense
+                else self.keyword_ranking(query, scope)
+            )
+            hits = [
+                hit
+                for hit in self.hits(
                     [
                         (rowid, float(-position))
                         for position, rowid in enumerate(ranked)
-                    ][:k],
+                    ],
                     lang,
                 )
+                if is_passage(hit.text)
+            ]
+            if hits:
+                if not neighbours:
+                    return hits[:k]
+                return self.with_page_neighbours(hits[:k], lang)
         return []
+
+    def with_page_neighbours(
+        self, hits: Sequence[DocumentHit], lang: str, limit: int = MAX_HITS
+    ) -> list[DocumentHit]:
+        """The hits with their neighbours, `limit` in all.
+
+        A hit's neighbours are the other passages of its page and, for a short
+        datasheet (SHORT_DATASHEET_PAGES), of the whole document, same page first,
+        each in reading order. They follow the last hit already placed from that
+        page; hits are visited in rank order. A neighbour carries its hit's score.
+        """
+        out = list(hits)
+        seen = {hit.chunk_id for hit in hits}
+        for hit in hits:
+            if len(out) >= limit:
+                break
+            whole = self._db.execute(
+                "SELECT 1 FROM documents WHERE sha256 = ? AND doc_type = 'datasheet'"
+                " AND pages <= ?",
+                (hit.doc_sha256, SHORT_DATASHEET_PAGES),
+            ).fetchone()
+            rows = self._db.execute(
+                "SELECT c.rowid FROM chunks c WHERE c.doc_sha256 = ?"
+                + ("" if whole else " AND c.page = ?")
+                + " ORDER BY c.page != ?, c.page, c.rowid",
+                (hit.doc_sha256, hit.page)
+                if whole
+                else (hit.doc_sha256, hit.page, hit.page),
+            ).fetchall()
+            neighbours = [
+                neighbour
+                for neighbour in self.hits([(row[0], hit.score) for row in rows], lang)
+                if neighbour.chunk_id not in seen and is_passage(neighbour.text)
+            ][: limit - len(out)]
+            if not neighbours:
+                continue
+            seen.update(neighbour.chunk_id for neighbour in neighbours)
+            position = max(
+                index
+                for index, placed in enumerate(out)
+                if (placed.doc_sha256, placed.page) == (hit.doc_sha256, hit.page)
+            )
+            out[position + 1 : position + 1] = neighbours
+        return out
 
     def chunks(self, chunk_ids: Sequence[str], lang: str) -> list[DocumentHit]:
         """The chunks with these IDs, in the order given; unknown IDs are left out."""

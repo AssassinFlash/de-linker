@@ -2,7 +2,8 @@
 
 A fact ID is a stable string the model may put in `{fact:ID}` and in `refs`.
 Product IDs come from search-products / get-product / compare-products.
-Chunk IDs come from search-knowledge.
+Chunk IDs come from search-knowledge, and so do the figures of each chunk
+(`CHUNK_ID.nK`, `figures.tag`).
 """
 
 from __future__ import annotations
@@ -252,6 +253,13 @@ def _from_size_hint(gathered: TurnFacts, payload: dict[str, Any]) -> None:
 
 
 def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+    """Chunk IDs, the documents they stand in, and their figures.
+
+    A chunk is linked as a document (`documents`, a document block, #233);
+    `{fact:CHUNK_ID.nK}` renders a figure as the chunk prints it (`figures.tag`,
+    #257); `CHUNK_ID.text` keeps the chunk's text for the check that a hydrated
+    document number stands in a chunk of this turn.
+    """
     for hit in payload.get("hits") or []:
         if not isinstance(hit, dict):
             continue
@@ -281,6 +289,10 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
                 title=str(title) or _file_name(url),
                 page=page if isinstance(page, int) else None,
             )
+        figures = hit.get("figures")
+        for figure, value in (figures if isinstance(figures, dict) else {}).items():
+            if isinstance(figure, str) and isinstance(value, str) and value:
+                gathered.add(Fact(id=figure, value=value, source="search-knowledge"))
 
 
 def _from_inquiry(gathered: TurnFacts, payload: dict[str, Any]) -> None:

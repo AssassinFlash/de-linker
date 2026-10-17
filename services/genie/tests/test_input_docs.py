@@ -3,7 +3,8 @@
 The REST introspection of an ability is permission-protected, so agent.py
 carries the shapes as text (INPUT_DOCS). This file locks that text against
 the PHP sources of truth in plugins/linker-commerce, so the two descriptions
-cannot drift (review 2026-10-10, must-fix 9).
+cannot drift (review 2026-10-10, must-fix 9). The document search is this
+service's own tool; its description is the one `knowledge.validate` reads.
 """
 
 import re
@@ -11,8 +12,9 @@ from pathlib import Path
 
 import pytest
 
+from linker_genie import knowledge
 from linker_genie.abilities import ABILITY_NAMES
-from linker_genie.agent import INPUT_DOCS
+from linker_genie.agent import INPUT_DOCS, TOOL_NAMES
 
 COMMERCE = Path(__file__).resolve().parents[3] / "plugins" / "linker-commerce"
 
@@ -41,8 +43,20 @@ def _device_classes_in_php() -> tuple[str, ...]:
     return tuple(re.findall(r"'([^']+)'", block.group(1)))
 
 
-def test_input_docs_covers_every_ability() -> None:
-    assert set(INPUT_DOCS) == set(ABILITY_NAMES)
+def test_input_docs_covers_every_tool() -> None:
+    assert set(INPUT_DOCS) == set(TOOL_NAMES)
+    assert set(TOOL_NAMES) - set(ABILITY_NAMES) == {knowledge.NAME}
+
+
+def test_the_document_search_input_doc_names_the_fields_it_validates() -> None:
+    doc = INPUT_DOCS[knowledge.NAME]
+    for field in ("query", "lang", "product_ids"):
+        assert field in doc
+    assert knowledge.validate({"query": "q", "lang": "de", "product_ids": [3]}) == (
+        "q",
+        "de",
+        [3],
+    )
 
 
 def test_search_products_lists_the_full_device_class_enum() -> None:
@@ -74,7 +88,6 @@ def test_check_compatibility_describes_both_input_forms() -> None:
         ("linker/size-hint", "SizeHint.php"),
         ("linker/inquiry-status", "InquiryStatus.php"),
         ("linker/handoff-team", "HandoffTeam.php"),
-        ("linker/search-knowledge", "SearchKnowledge.php"),
     ],
 )
 def test_every_ability_file_declares_an_input_schema(

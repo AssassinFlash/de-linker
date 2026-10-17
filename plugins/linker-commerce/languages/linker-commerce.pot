@@ -175,30 +175,6 @@ msgstr ""
 msgid "Products and inquiries of de-linker.com."
 msgstr ""
 
-#: includes/Abilities/SearchKnowledge.php:42
-msgid "Chunk ID the answer may cite."
-msgstr ""
-
-#: includes/Abilities/SearchKnowledge.php:46
-msgid "Hosted document URL."
-msgstr ""
-
-#: includes/Abilities/SearchKnowledge.php:50
-msgid "Document title in the requested language."
-msgstr ""
-
-#: includes/Abilities/SearchKnowledge.php:54
-msgid "1-based page of the chunk."
-msgstr ""
-
-#: includes/Abilities/SearchKnowledge.php:65
-msgid "Search hosted documents"
-msgstr ""
-
-#: includes/Abilities/SearchKnowledge.php:66
-msgid "Returns chunks from the hosted PDF index. Cite only the returned chunk IDs."
-msgstr ""
-
 #: includes/Abilities/SearchProducts.php:118
 #: includes/Presentation/ProductShortcodes.php:156
 #: includes/Presentation/ProductShortcodes.php:1910

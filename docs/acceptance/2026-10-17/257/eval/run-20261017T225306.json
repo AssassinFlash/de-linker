@@ -1,0 +1,2573 @@
+{
+ "index": "/Users/chesterjohn/de-linker-data/index/builds/20261016T072222Z/index.sqlite",
+ "index_version": "20261016T072222Z",
+ "ranking": "vector",
+ "encoder": "google/gemini-embedding-2",
+ "chat_model": "deepseek-flash",
+ "passed": 17,
+ "total": 18,
+ "rows": [
+  {
+   "trial": 2,
+   "lang": "en",
+   "question": "What is the max PV input power of the SAJ H2-10K-T3?",
+   "expect": {
+    "all": [
+     "20000|20 000|20,000|20\\.000"
+    ]
+   },
+   "seconds": 8.3,
+   "pass": true,
+   "failures": [],
+   "answer": "The maximum PV array power at STC for the SAJ H2-10K-T3 is 20000 Wp, as stated in the datasheet section of the user manual; the English datasheet lists the same figure for this model.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The maximum PV array power at STC for the SAJ H2-10K-T3 is 20000 Wp, as stated in the datasheet section of the user manual; the English datasheet lists the same figure for this model.",
+     "refs": [
+      "770ccafa080c-p37-63a0f610",
+      "0f0e75ad3f31-p2-a7d455b1"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "p4107.document.0",
+     "label": "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+    },
+    {
+     "type": "document",
+     "ref": "p4107.document.1",
+     "label": "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+    },
+    {
+     "type": "document",
+     "ref": "770ccafa080c-p37-63a0f610",
+     "label": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p. 37",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=37"
+    },
+    {
+     "type": "document",
+     "ref": "0f0e75ad3f31-p2-a7d455b1",
+     "label": "SAJ H2 10-30K datasheet, English (covers the H2-10K-T3) · p. 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-datasheet.pdf#page=2"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "model",
+      "value": "H2-10K-T3",
+      "words": "H2 10K T3"
+     },
+     {
+      "kind": "brand",
+      "value": "saj",
+      "words": "SAJ"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "What is the max PV input power of the SAJ H2-10K-T3?",
+       "lang": "en",
+       "product_ids": [
+        4107
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 4107,
+       "lang": "en"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: H2 10K T3, SAJ"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "What is the max PV input power of the SAJ H2-10K-T3?",
+      "lang": "en",
+      "product_ids": [
+       4107
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 4107,
+      "lang": "en"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 2,
+   "lang": "de",
+   "question": "Wie hoch ist die maximale PV-Eingangsleistung des SAJ H2-10K-T3?",
+   "expect": {
+    "all": [
+     "20000|20 000|20,000|20\\.000"
+    ]
+   },
+   "seconds": 6.7,
+   "pass": true,
+   "failures": [],
+   "answer": "Laut Datenblatt im Handbuch beträgt die maximale PV-Anlagenleistung bei STC für den H2-10K-T3 20000 Wp. Zum Vergleich nennt dieselbe Tabelle für die größeren Modelle der Baureihe höhere Werte; der Wert gilt jeweils in der Spalte des Modells.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Laut Datenblatt im Handbuch beträgt die maximale PV-Anlagenleistung bei STC für den H2-10K-T3 20000 Wp. Zum Vergleich nennt dieselbe Tabelle für die größeren Modelle der Baureihe höhere Werte; der Wert gilt jeweils in der Spalte des Modells.",
+     "refs": [
+      "770ccafa080c-p8-fe39c50f",
+      "770ccafa080c-p37-63a0f610",
+      "0f0e75ad3f31-p2-a7d455b1"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "p4107.document.0",
+     "label": "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+    },
+    {
+     "type": "document",
+     "ref": "p4107.document.1",
+     "label": "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+    },
+    {
+     "type": "document",
+     "ref": "770ccafa080c-p8-fe39c50f",
+     "label": "SAJ H2 10-30K Handbuch, Deutsch und Englisch (gilt für den H2-10K-T3) · S. 8, 37",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=8"
+    },
+    {
+     "type": "document",
+     "ref": "0f0e75ad3f31-p2-a7d455b1",
+     "label": "SAJ H2 10-30K Datenblatt, Englisch (gilt für den H2-10K-T3) · S. 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-datasheet.pdf#page=2"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "model",
+      "value": "H2-10K-T3",
+      "words": "H2 10K T3"
+     },
+     {
+      "kind": "brand",
+      "value": "saj",
+      "words": "SAJ"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Wie hoch ist die maximale PV-Eingangsleistung des SAJ H2-10K-T3?",
+       "lang": "de",
+       "product_ids": [
+        4107
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 4107,
+       "lang": "de"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: H2 10K T3, SAJ"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Wie hoch ist die maximale PV-Eingangsleistung des SAJ H2-10K-T3?",
+      "lang": "de",
+      "product_ids": [
+       4107
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 4107,
+      "lang": "de"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 3,
+   "lang": "de",
+   "question": "Wie viele MPPT hat der SAJ H2-10K-T3?",
+   "expect": {
+    "all": [
+     "(?<![\\d.])3(?![\\d.])",
+     "MPP"
+    ]
+   },
+   "seconds": 7.0,
+   "pass": true,
+   "failures": [],
+   "answer": "Der H2-10K-T3 hat laut dem Datenblatt im Handbuch 3 MPPT-Eingänge; auf jeden MPP-Tracker entfallen dabei 2 Strings. Dieselbe Angabe findet sich in der englischen Fassung des Datenblatts.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Der H2-10K-T3 hat laut dem Datenblatt im Handbuch 3 MPPT-Eingänge; auf jeden MPP-Tracker entfallen dabei 2 Strings. Dieselbe Angabe findet sich in der englischen Fassung des Datenblatts.",
+     "refs": [
+      "770ccafa080c-p8-fe39c50f",
+      "770ccafa080c-p37-63a0f610"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "770ccafa080c-p8-fe39c50f",
+     "label": "SAJ H2 10-30K Handbuch, Deutsch und Englisch (gilt für den H2-10K-T3) · S. 8, 37",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=8"
+    },
+    {
+     "type": "document",
+     "ref": "p4107.document.0",
+     "label": "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "model",
+      "value": "H2-10K-T3",
+      "words": "H2 10K T3"
+     },
+     {
+      "kind": "brand",
+      "value": "saj",
+      "words": "SAJ"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Wie viele MPPT hat der SAJ H2-10K-T3?",
+       "lang": "de",
+       "product_ids": [
+        4107
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 4107,
+       "lang": "de"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: H2 10K T3, SAJ"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Wie viele MPPT hat der SAJ H2-10K-T3?",
+      "lang": "de",
+      "product_ids": [
+       4107
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 4107,
+      "lang": "de"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 3,
+   "lang": "en",
+   "question": "How many MPPTs does the SAJ H2-10K-T3 have?",
+   "expect": {
+    "all": [
+     "(?<![\\d.])3(?![\\d.])",
+     "MPP"
+    ]
+   },
+   "seconds": 6.9,
+   "pass": true,
+   "failures": [],
+   "answer": "The SAJ H2-10K-T3 is specified with 3 MPPTs. The datasheet confirms the same figure for this model: 3 MPP trackers.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The SAJ H2-10K-T3 is specified with 3 MPPTs. The datasheet confirms the same figure for this model: 3 MPP trackers.",
+     "refs": [
+      "770ccafa080c-p37-63a0f610",
+      "0f0e75ad3f31-p2-a7d455b1"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "p4107.document.0",
+     "label": "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+    },
+    {
+     "type": "document",
+     "ref": "770ccafa080c-p37-63a0f610",
+     "label": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p. 37",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=37"
+    },
+    {
+     "type": "document",
+     "ref": "0f0e75ad3f31-p2-a7d455b1",
+     "label": "SAJ H2 10-30K datasheet, English (covers the H2-10K-T3) · p. 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-datasheet.pdf#page=2"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "model",
+      "value": "H2-10K-T3",
+      "words": "H2 10K T3"
+     },
+     {
+      "kind": "brand",
+      "value": "saj",
+      "words": "SAJ"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "How many MPPTs does the SAJ H2-10K-T3 have?",
+       "lang": "en",
+       "product_ids": [
+        4107
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 4107,
+       "lang": "en"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: H2 10K T3, SAJ"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "How many MPPTs does the SAJ H2-10K-T3 have?",
+      "lang": "en",
+      "product_ids": [
+       4107
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 4107,
+      "lang": "en"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 5,
+   "lang": "de",
+   "question": "Welcher Speicher passt zum GoodWe ESA 10 kW?",
+   "expect": {
+    "all": [
+     "BAT-D-G20"
+    ]
+   },
+   "seconds": 13.8,
+   "pass": false,
+   "failures": [
+    "missing /BAT-D-G20/"
+   ],
+   "answer": "Bei der GoodWe ESA-Serie ist der Speicher Teil des All-in-One-Systems: Wechselrichter, Batterie und Energiemanagement bilden eine Einheit. Die Batteriemodule gibt es in mehreren Kapazitäten, und bis zu 12 Module lassen sich zu einer Gesamtkapazität von 108 kWh zusammenschließen.\n\nDie Serie unterscheidet sich nach Phase: Es gibt einphasige Leistungsmodule (EHA-G20) und dreiphasige Modelle (ETA-G20). Von den einphasigen Leistungsmodulen zeigen unsere Produktdaten diese Modelle:\n\n• GoodWe ESA GW3K-EHA-G20 mit 3 kW\n• GoodWe ESA GW3.6K-EHA-G20 mit 3.6 kW\n• GoodWe ESA GW5K-EHA-G20 mit 5 kW\n• GoodWe ESA GW6K-EHA-G20 mit 6 kW\n• GoodWe ESA GW8K-EHA-G20 mit 8 kW\n• GoodWe ESA GW10K-EHA-G20 mit 10 kW\n\nBeim dreiphasigen Zweig reicht die Spanne der Nennleistung von 5 bis 30kW.\n\nWelche Phase soll es sein – einphasig oder dreiphasig?",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Bei der GoodWe ESA-Serie ist der Speicher Teil des All-in-One-Systems: Wechselrichter, Batterie und Energiemanagement bilden eine Einheit. Die Batteriemodule gibt es in mehreren Kapazitäten, und bis zu 12 Module lassen sich zu einer Gesamtkapazität von 108 kWh zusammenschließen.\n\nDie Serie unterscheidet sich nach Phase: Es gibt einphasige Leistungsmodule (EHA-G20) und dreiphasige Modelle (ETA-G20). Von den einphasigen Leistungsmodulen zeigen unsere Produktdaten diese Modelle:\n\n• GoodWe ESA GW3K-EHA-G20 mit 3 kW\n• GoodWe ESA GW3.6K-EHA-G20 mit 3.6 kW\n• GoodWe ESA GW5K-EHA-G20 mit 5 kW\n• GoodWe ESA GW6K-EHA-G20 mit 6 kW\n• GoodWe ESA GW8K-EHA-G20 mit 8 kW\n• GoodWe ESA GW10K-EHA-G20 mit 10 kW\n\nBeim dreiphasigen Zweig reicht die Spanne der Nennleistung von 5 bis 30kW.\n\nWelche Phase soll es sein – einphasig oder dreiphasig?",
+     "refs": [
+      "6523",
+      "6524",
+      "6525",
+      "6526",
+      "6527",
+      "6528",
+      "ce3e2552a6a2-p1-dff73cb8"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6523,
+      6524,
+      6525,
+      6526,
+      6527,
+      6528
+     ]
+    },
+    {
+     "type": "ask",
+     "field": "phase",
+     "options": [
+      "einphasig",
+      "dreiphasig"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "ce3e2552a6a2-p1-dff73cb8",
+     "label": "GoodWe ESA Serie 5–30 kW Datenblatt (DE) · S. 1",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Datasheet_EMEA-DE_V1.1.pdf#page=1"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "brand",
+      "value": "goodwe",
+      "words": "GoodWe"
+     },
+     {
+      "kind": "series",
+      "value": "goodwe-esa-lcn",
+      "words": "ESA"
+     },
+     {
+      "kind": "series",
+      "value": "goodwe-esa-5-30kw-eta-g20",
+      "words": "ESA"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Welcher Speicher passt zum GoodWe ESA 10 kW?",
+       "lang": "de",
+       "product_ids": [
+        6321,
+        3556,
+        3583,
+        3584
+       ]
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "text": "ESA",
+       "brand": "goodwe",
+       "lang": "de",
+       "limit": 6
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: GoodWe, ESA, ESA"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Welcher Speicher passt zum GoodWe ESA 10 kW?",
+      "lang": "de",
+      "product_ids": [
+       6321,
+       3556,
+       3583,
+       3584
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "text": "ESA",
+      "brand": "goodwe",
+      "lang": "de",
+      "limit": 6
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 5,
+   "lang": "en",
+   "question": "Which battery fits the GoodWe ESA 10 kW?",
+   "expect": {
+    "all": [
+     "BAT-D-G20"
+    ]
+   },
+   "seconds": 14.0,
+   "pass": true,
+   "failures": [],
+   "answer": "The ESA series is an all-in-one system, so the battery comes as part of the same system as the power module: each ESA power module takes the ESA battery modules. The user manual and datasheet list the modules GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20, with differing rated energies, and state that modules of different models may be mixed; the system supports 5–108kWh in total, and a single column can stack up to 6 batteries. The family differs by phase and power class, and the battery operating voltage range differs between single-phase and three-phase systems. The search returned the single-phase EHA-G20 power modules: GW3K-EHA-G20 at 3 kW, GW3.6K-EHA-G20 at 3.6 kW, GW5K-EHA-G20 at 5 kW, GW6K-EHA-G20 at 6 kW, GW8K-EHA-G20 at 8 kW and GW10K-EHA-G20 at 10 kW; the datasheet additionally covers the three-phase ETA-G20 models, which were not part of the search result. Which power module or phase should the system be built around?",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The ESA series is an all-in-one system, so the battery comes as part of the same system as the power module: each ESA power module takes the ESA battery modules. The user manual and datasheet list the modules GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20, with differing rated energies, and state that modules of different models may be mixed; the system supports 5–108kWh in total, and a single column can stack up to 6 batteries. The family differs by phase and power class, and the battery operating voltage range differs between single-phase and three-phase systems. The search returned the single-phase EHA-G20 power modules: GW3K-EHA-G20 at 3 kW, GW3.6K-EHA-G20 at 3.6 kW, GW5K-EHA-G20 at 5 kW, GW6K-EHA-G20 at 6 kW, GW8K-EHA-G20 at 8 kW and GW10K-EHA-G20 at 10 kW; the datasheet additionally covers the three-phase ETA-G20 models, which were not part of the search result. Which power module or phase should the system be built around?",
+     "refs": [
+      "67a7f715ca9d-p45-437d4250",
+      "67a7f715ca9d-p80-97221189",
+      "b681fbb51b16-p3-5442e04e",
+      "b681fbb51b16-p3-7f952690",
+      "6523",
+      "6524",
+      "6525",
+      "6526",
+      "6527",
+      "6528"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6523,
+      6524,
+      6525,
+      6526,
+      6527,
+      6528
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "67a7f715ca9d-p45-437d4250",
+     "label": "GoodWe ESA Series 5–30 kW user manual (EN, V1.5) · pp. 45, 80",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf#page=45"
+    },
+    {
+     "type": "document",
+     "ref": "b681fbb51b16-p3-5442e04e",
+     "label": "GoodWe ESA Series 5–30 kW datasheet (EN) · p. 3",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf#page=3"
+    },
+    {
+     "type": "ask",
+     "field": "phase",
+     "options": [
+      "single-phase",
+      "three-phase"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "brand",
+      "value": "goodwe",
+      "words": "GoodWe"
+     },
+     {
+      "kind": "series",
+      "value": "goodwe-esa-lcn",
+      "words": "ESA"
+     },
+     {
+      "kind": "series",
+      "value": "goodwe-esa-5-30kw-eta-g20",
+      "words": "ESA"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Which battery fits the GoodWe ESA 10 kW?",
+       "lang": "en",
+       "product_ids": [
+        6321,
+        3556,
+        3583,
+        3584
+       ]
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "text": "ESA",
+       "brand": "goodwe",
+       "lang": "en",
+       "limit": 6
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: GoodWe, ESA, ESA"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Which battery fits the GoodWe ESA 10 kW?",
+      "lang": "en",
+      "product_ids": [
+       6321,
+       3556,
+       3583,
+       3584
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "text": "ESA",
+      "brand": "goodwe",
+      "lang": "en",
+      "limit": 6
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 6,
+   "lang": "en",
+   "question": "What is the usable capacity of the Pylontech L260 Omni?",
+   "expect": {
+    "all": [
+     "260 ?kWh|260kWh"
+    ]
+   },
+   "seconds": 8.2,
+   "pass": true,
+   "failures": [],
+   "answer": "For the L260-OMNI the manufacturer datasheet states a nominal capacity of 260 kWh with a depth of discharge of 98%. A separate usable-capacity figure is not stated in our documents, and the product data we hold leaves that value open, so the documented nominal capacity and depth of discharge are the values to work from. The datasheet is linked below.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "For the L260-OMNI the manufacturer datasheet states a nominal capacity of 260 kWh with a depth of discharge of 98%. A separate usable-capacity figure is not stated in our documents, and the product data we hold leaves that value open, so the documented nominal capacity and depth of discharge are the values to work from. The datasheet is linked below.",
+     "refs": [
+      "bb6712735d77-p2-3bbeffa6",
+      "2003"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      2003
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "p2003.document.1",
+     "label": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf"
+    },
+    {
+     "type": "document",
+     "ref": "bb6712735d77-p2-3bbeffa6",
+     "label": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet (dimensions without inverter) (EN) · p. 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/optim_us_l260_omni.pdf#page=2"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "model",
+      "value": "L260-OMNI",
+      "words": "L260 Omni"
+     },
+     {
+      "kind": "brand",
+      "value": "pylontech",
+      "words": "Pylontech"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "What is the usable capacity of the Pylontech L260 Omni?",
+       "lang": "en",
+       "product_ids": [
+        2003
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 2003,
+       "lang": "en"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: L260 Omni, Pylontech"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "What is the usable capacity of the Pylontech L260 Omni?",
+      "lang": "en",
+      "product_ids": [
+       2003
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 2003,
+      "lang": "en"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 6,
+   "lang": "de",
+   "question": "Wie groß ist die nutzbare Kapazität des Pylontech L260 Omni?",
+   "expect": {
+    "all": [
+     "260 ?kWh|260kWh"
+    ]
+   },
+   "seconds": 8.0,
+   "pass": true,
+   "failures": [],
+   "answer": "Der Pylontech L260-OMNI ist in unseren Datenblättern mit einer Nennkapazität von 260 kWh und einer Entladetiefe von 98% (Einzelstrang) angegeben. Eine gesonderte Angabe zur nutzbaren Kapazität nennen unsere Dokumente für dieses Modell nicht – die nutzbare Energie ergibt sich aus der Nennkapazität und der zulässigen Entladetiefe; einen eigenen Kennwert dafür führen die Unterlagen nicht. Die Zellen sind Li-ion (LFP), die Zyklenlebensdauer liegt über 8500 Zyklen.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Der Pylontech L260-OMNI ist in unseren Datenblättern mit einer Nennkapazität von 260 kWh und einer Entladetiefe von 98% (Einzelstrang) angegeben. Eine gesonderte Angabe zur nutzbaren Kapazität nennen unsere Dokumente für dieses Modell nicht – die nutzbare Energie ergibt sich aus der Nennkapazität und der zulässigen Entladetiefe; einen eigenen Kennwert dafür führen die Unterlagen nicht. Die Zellen sind Li-ion (LFP), die Zyklenlebensdauer liegt über 8500 Zyklen.",
+     "refs": [
+      "bb6712735d77-p2-3bbeffa6",
+      "2003"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      2003
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "p2003.document.0",
+     "label": "Pylontech OPTIM US L260-OMNI Datasheet",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf"
+    },
+    {
+     "type": "document",
+     "ref": "bb6712735d77-p2-3bbeffa6",
+     "label": "Pylontech L260-OMNI 125 kW / 260 kWh – Datenblatt (Abmessungen ohne Wechselrichter) (EN) · S. 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/optim_us_l260_omni.pdf#page=2"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "model",
+      "value": "L260-OMNI",
+      "words": "L260 Omni"
+     },
+     {
+      "kind": "brand",
+      "value": "pylontech",
+      "words": "Pylontech"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Wie groß ist die nutzbare Kapazität des Pylontech L260 Omni?",
+       "lang": "de",
+       "product_ids": [
+        2003
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 2003,
+       "lang": "de"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: L260 Omni, Pylontech"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Wie groß ist die nutzbare Kapazität des Pylontech L260 Omni?",
+      "lang": "de",
+      "product_ids": [
+       2003
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 2003,
+      "lang": "de"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 7,
+   "lang": "de",
+   "question": "Welche Garantie gibt GoodWe auf Wechselrichter in Europa?",
+   "expect": {
+    "all": [
+     "10 ?(Jahre|years)",
+     "2026"
+    ]
+   },
+   "seconds": 20.0,
+   "pass": true,
+   "failures": [],
+   "answer": "GoodWe gewährt auf Wechselrichter in Europa standardmäßig eine beschränkte Garantie von 5 Jahren. Für Geräte, die vor 1. Januar 2026 hergestellt wurden, gilt diese Frist für die dort genannten netzgekoppelten und Hybrid-Serien; für private netzgekoppelte und private Hybrid-Wechselrichter, die ab 1. Januar 2026 hergestellt wurden, nennt das Garantiedokument eine beschränkte Garantie von 10 Jahre. Der Garantiezeitraum beginnt mit dem früheren der beiden Daten: dem Datum der Erstinstallation – kann der Kunde die Installation nicht belegen, dem Datum des Versands – oder 12 Monate nach dem Produktionsdatum. Die Garantie gilt nur für Geräte, die über von GoodWe autorisierte Kanäle erworben und in der Europäischen Union, im Vereinigten Königreich, in Norwegen oder in der Schweiz installiert wurden; wird ein Gerät für ein Land verkauft und in einem anderen installiert, erlischt sie ohne vorherige schriftliche Zustimmung von GoodWe.\nZusätzlich beschreibt das Dokument Verlängerungsoptionen: eine zusätzliche Frist von 5 Jahre ab Ablauf der Standardgarantie von 5 Jahren, wenn der Wechselrichter nach 1. Januar 2021 hergestellt wurde, von einem als GOODWE PLUS+ qualifizierten Installateur in einem EU-Land, in Großbritannien, der Schweiz oder Norwegen installiert ist und die Seriennummern registriert wurden; mit separat erworbener erweiterter Garantie ist sie nicht kombinierbar. Eine Verlängerung lässt sich zudem bei autorisierten Händlern oder über den Online-Kanal erwerben: für Hybrid-Wechselrichter und netzgekoppelte Wechselrichter ab 25 kW innerhalb von 12 Monaten ab Produktionsdatum (oder 12 Monate ab Erstinstallation), für netzgekoppelte Wechselrichter unter 25 kW innerhalb von 30 Monaten ab Produktionsdatum (oder 12 Monate ab Erstinstallation); einige Verlängerungen sind für Hybridmodelle möglicherweise nicht verfügbar. Erfüllen Wechselrichterprodukte der Serien XS, XS Plus+, XS G3, DNS, DNS G3, SDT, SDT G2, SDT G2 Plus+, SDT G3, MS und MS G3 alle genannten Bedingungen gleichzeitig, verlängert sich die beschränkte Garantie automatisch auf 10 Jahre, sofern die Nennleistung 20 kW nicht überschreitet. Die verlängerte Garantie deckt nur die Kosten für Hardwarematerial zur Wiederherstellung des Betriebszustands; Transport- und Arbeitskosten sowie Folgekosten sind nicht enthalten.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "GoodWe gewährt auf Wechselrichter in Europa standardmäßig eine beschränkte Garantie von 5 Jahren. Für Geräte, die vor 1. Januar 2026 hergestellt wurden, gilt diese Frist für die dort genannten netzgekoppelten und Hybrid-Serien; für private netzgekoppelte und private Hybrid-Wechselrichter, die ab 1. Januar 2026 hergestellt wurden, nennt das Garantiedokument eine beschränkte Garantie von 10 Jahre. Der Garantiezeitraum beginnt mit dem früheren der beiden Daten: dem Datum der Erstinstallation – kann der Kunde die Installation nicht belegen, dem Datum des Versands – oder 12 Monate nach dem Produktionsdatum. Die Garantie gilt nur für Geräte, die über von GoodWe autorisierte Kanäle erworben und in der Europäischen Union, im Vereinigten Königreich, in Norwegen oder in der Schweiz installiert wurden; wird ein Gerät für ein Land verkauft und in einem anderen installiert, erlischt sie ohne vorherige schriftliche Zustimmung von GoodWe.",
+     "refs": [
+      "525182a7f969-p5-4ae6134a",
+      "a786dcf5aeef-p1-4dd52b15",
+      "a786dcf5aeef-p1-b113c4fc",
+      "a786dcf5aeef-p1-33492f95",
+      "525182a7f969-p5-4de40528"
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Zusätzlich beschreibt das Dokument Verlängerungsoptionen: eine zusätzliche Frist von 5 Jahre ab Ablauf der Standardgarantie von 5 Jahren, wenn der Wechselrichter nach 1. Januar 2021 hergestellt wurde, von einem als GOODWE PLUS+ qualifizierten Installateur in einem EU-Land, in Großbritannien, der Schweiz oder Norwegen installiert ist und die Seriennummern registriert wurden; mit separat erworbener erweiterter Garantie ist sie nicht kombinierbar. Eine Verlängerung lässt sich zudem bei autorisierten Händlern oder über den Online-Kanal erwerben: für Hybrid-Wechselrichter und netzgekoppelte Wechselrichter ab 25 kW innerhalb von 12 Monaten ab Produktionsdatum (oder 12 Monate ab Erstinstallation), für netzgekoppelte Wechselrichter unter 25 kW innerhalb von 30 Monaten ab Produktionsdatum (oder 12 Monate ab Erstinstallation); einige Verlängerungen sind für Hybridmodelle möglicherweise nicht verfügbar. Erfüllen Wechselrichterprodukte der Serien XS, XS Plus+, XS G3, DNS, DNS G3, SDT, SDT G2, SDT G2 Plus+, SDT G3, MS und MS G3 alle genannten Bedingungen gleichzeitig, verlängert sich die beschränkte Garantie automatisch auf 10 Jahre, sofern die Nennleistung 20 kW nicht überschreitet. Die verlängerte Garantie deckt nur die Kosten für Hardwarematerial zur Wiederherstellung des Betriebszustands; Transport- und Arbeitskosten sowie Folgekosten sind nicht enthalten.",
+     "refs": [
+      "525182a7f969-p5-452c1235",
+      "525182a7f969-p5-de1a093c",
+      "525182a7f969-p5-5cf7e6b0"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "525182a7f969-p5-4ae6134a",
+     "label": "GoodWe-Wechselrichter-Garantie für Europa (DE) · S. 5",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe_DE.pdf#page=5"
+    },
+    {
+     "type": "document",
+     "ref": "a786dcf5aeef-p1-4dd52b15",
+     "label": "GoodWe-Wechselrichter-Garantie für Europa (EN) · S. 1",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf#page=1"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "brand",
+      "value": "goodwe",
+      "words": "GoodWe"
+     },
+     {
+      "kind": "category",
+      "value": "inverters",
+      "words": "Wechselrichter"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Welche Garantie gibt GoodWe auf Wechselrichter in Europa?",
+       "lang": "de"
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "brand": "goodwe",
+       "device_class": "inverters",
+       "lang": "de",
+       "limit": 6
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: GoodWe"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Welche Garantie gibt GoodWe auf Wechselrichter in Europa?",
+      "lang": "de"
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "brand": "goodwe",
+      "device_class": "inverters",
+      "lang": "de",
+      "limit": 6
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 7,
+   "lang": "en",
+   "question": "What warranty does GoodWe give on inverters in Europe?",
+   "expect": {
+    "all": [
+     "10 ?(Jahre|years)",
+     "2026"
+    ]
+   },
+   "seconds": 19.8,
+   "pass": true,
+   "failures": [],
+   "answer": "GoodWe's European limited warranty applies to the original purchaser and is not transferable. The period depends on the product and on when it was manufactured:\n\n- Inverters produced before 1 January 2026: 5 years limited warranty, covering the on-grid series named in the document (NS, SS, XS, XS G3, DNS, DS, DSS, DT, SDT, MS, SMT, LVSMT, MT, LVMT, HT, GT, UT and related) and the hybrid series (ES, ESA, EM, ET, EH, EHR, BH, BP, BT and related).\n- Inverters produced on or after that date: the residential on-grid and residential hybrid series carry 10 years limited warranty, while C&I and utility inverters carry 5 years.\n- Accessories: the RSD receiver 25 years, the RSD Transmitter-PLC 10 years, the STS series 5 years, and communication accessories such as WiFi and LAN modules, Smart Meter, EzMeter, EzConverter, EzLogger and EzLink 2 years.\n\nThe warranty period runs from the earlier of the two following dates: the first installation date (or the shipment date if no proof of installation can be provided) and 12 months after the production date.\n\nOn top of the default period of 5 years, extensions can be bought through GOODWE authorised distributors or the online purchase channel: for hybrid inverters and the higher-power on-grid inverters within 12 months of the production date, or 12 months from the first installation date; for lower-power on-grid inverters within 30 months of the production date, or 12 months from the first installation date. The limited warranty is extended automatically to 10 years for inverters of the listed series that stay within a rated power of 20 kW, upload their generation data to the SEMS portal, and are installed by a GOODWE PLUS+ qualified installer in an EU country, the UK, Switzerland or Norway. A further extension path applies to inverters operated with a Lynx Home U, Lynx Home F, Lynx Home F PLUS+, Lynx D or Lynx C battery that is first commissioned between 15 May 2023 and 31 December 2026 and that report their data to the SEMS+ app.\n\nGeographically, the terms cover only devices purchased from GOODWE-authorised channels and installed in the EU, the UK, Norway or Switzerland; a unit sold for one country and installed in another loses the warranty unless GOODWE confirmed it in writing before installation. Defects reported later than 1 month after they first appeared, or after the warranty period has expired, are handled as out-of-warranty cases with on-site service, parts and logistics charges.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "GoodWe's European limited warranty applies to the original purchaser and is not transferable. The period depends on the product and on when it was manufactured:\n\n- Inverters produced before 1 January 2026: 5 years limited warranty, covering the on-grid series named in the document (NS, SS, XS, XS G3, DNS, DS, DSS, DT, SDT, MS, SMT, LVSMT, MT, LVMT, HT, GT, UT and related) and the hybrid series (ES, ESA, EM, ET, EH, EHR, BH, BP, BT and related).\n- Inverters produced on or after that date: the residential on-grid and residential hybrid series carry 10 years limited warranty, while C&I and utility inverters carry 5 years.\n- Accessories: the RSD receiver 25 years, the RSD Transmitter-PLC 10 years, the STS series 5 years, and communication accessories such as WiFi and LAN modules, Smart Meter, EzMeter, EzConverter, EzLogger and EzLink 2 years.\n\nThe warranty period runs from the earlier of the two following dates: the first installation date (or the shipment date if no proof of installation can be provided) and 12 months after the production date.\n\nOn top of the default period of 5 years, extensions can be bought through GOODWE authorised distributors or the online purchase channel: for hybrid inverters and the higher-power on-grid inverters within 12 months of the production date, or 12 months from the first installation date; for lower-power on-grid inverters within 30 months of the production date, or 12 months from the first installation date. The limited warranty is extended automatically to 10 years for inverters of the listed series that stay within a rated power of 20 kW, upload their generation data to the SEMS portal, and are installed by a GOODWE PLUS+ qualified installer in an EU country, the UK, Switzerland or Norway. A further extension path applies to inverters operated with a Lynx Home U, Lynx Home F, Lynx Home F PLUS+, Lynx D or Lynx C battery that is first commissioned between 15 May 2023 and 31 December 2026 and that report their data to the SEMS+ app.\n\nGeographically, the terms cover only devices purchased from GOODWE-authorised channels and installed in the EU, the UK, Norway or Switzerland; a unit sold for one country and installed in another loses the warranty unless GOODWE confirmed it in writing before installation. Defects reported later than 1 month after they first appeared, or after the warranty period has expired, are handled as out-of-warranty cases with on-site service, parts and logistics charges.",
+     "refs": [
+      "a786dcf5aeef-p1-4dd52b15",
+      "a786dcf5aeef-p1-b113c4fc",
+      "a786dcf5aeef-p1-742af588",
+      "a786dcf5aeef-p1-d4764014",
+      "a786dcf5aeef-p1-33492f95",
+      "a786dcf5aeef-p4-e6f68857",
+      "a786dcf5aeef-p4-e0a0de1e",
+      "a786dcf5aeef-p4-41d6c15d",
+      "a786dcf5aeef-p5-cb342cb5",
+      "a786dcf5aeef-p4-83e6e98b"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "a786dcf5aeef-p1-d4764014",
+     "label": "GoodWe inverter limited warranty for Europe (EN) · pp. 1, 4, 5",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf#page=1"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "brand",
+      "value": "goodwe",
+      "words": "GoodWe"
+     },
+     {
+      "kind": "category",
+      "value": "inverters",
+      "words": "inverters"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "What warranty does GoodWe give on inverters in Europe?",
+       "lang": "en"
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "brand": "goodwe",
+       "device_class": "inverters",
+       "lang": "en",
+       "limit": 6
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: GoodWe"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "What warranty does GoodWe give on inverters in Europe?",
+      "lang": "en"
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "brand": "goodwe",
+      "device_class": "inverters",
+      "lang": "en",
+      "limit": 6
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 8,
+   "lang": "en",
+   "question": "Is the EcoFlow OCEAN 2 single-phase or three-phase, and what is its rated power?",
+   "expect": {
+    "all": [
+     "(?i)single[- ]phase|1-phase|einphasig",
+     "\\d ?k?W\\b"
+    ]
+   },
+   "seconds": 17.2,
+   "pass": true,
+   "failures": [],
+   "answer": "The EcoFlow OCEAN family is offered in both variants: the HD-P1 models are single-phase, the HD-P3 models are three-phase, so the answer depends on which model you look at. The rated AC power also differs within each variant: the single-phase HD-P1-3K-S2 is rated at 3 kW, the HD-P1-3K68-S2 at 3.68 kW and the HD-P1-4K6-S2 at 4.6 kW; on the three-phase side the HD-P3-5K0-S2 is rated at 5 kW, the HD-P3-6K0-S2 at 6 kW and the HD-P3-8K0-S2 at 8 kW. The single-phase datasheet is linked below for the technical details.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The EcoFlow OCEAN family is offered in both variants: the HD-P1 models are single-phase, the HD-P3 models are three-phase, so the answer depends on which model you look at. The rated AC power also differs within each variant: the single-phase HD-P1-3K-S2 is rated at 3 kW, the HD-P1-3K68-S2 at 3.68 kW and the HD-P1-4K6-S2 at 4.6 kW; on the three-phase side the HD-P3-5K0-S2 is rated at 5 kW, the HD-P3-6K0-S2 at 6 kW and the HD-P3-8K0-S2 at 8 kW. The single-phase datasheet is linked below for the technical details.",
+     "refs": [
+      "6483",
+      "6484",
+      "6485",
+      "6480",
+      "3574",
+      "3575"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6483,
+      6484,
+      6485,
+      6480,
+      3574,
+      3575
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "f49ddd7c553c-p3-3d55b9a5",
+     "label": "OCEAN 2 Plus Single-Phase Datasheet (EN) · p. 3",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf#page=3"
+    },
+    {
+     "type": "ask",
+     "field": "phase",
+     "options": [
+      "single-phase",
+      "three-phase"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 2,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "series",
+      "value": "ecoflow-ocean2-plus-hd-p1-s2",
+      "words": "OCEAN 2"
+     },
+     {
+      "kind": "series",
+      "value": "ecoflow-ocean2-hd-p3-s2",
+      "words": "OCEAN 2"
+     },
+     {
+      "kind": "series",
+      "value": "ecoflow-ocean-2-battery",
+      "words": "OCEAN 2"
+     },
+     {
+      "kind": "series",
+      "value": "ecoflow-ocean2-lfp-battery-s2",
+      "words": "OCEAN 2"
+     },
+     {
+      "kind": "brand",
+      "value": "ecoflow",
+      "words": "EcoFlow"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Is the EcoFlow OCEAN 2 single-phase or three-phase, and what is its rated power?",
+       "lang": "en",
+       "product_ids": [
+        3577,
+        3578,
+        3579,
+        3580
+       ]
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "text": "OCEAN 2",
+       "brand": "ecoflow",
+       "lang": "en",
+       "limit": 3,
+       "phase": 1
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "text": "OCEAN 2",
+       "brand": "ecoflow",
+       "lang": "en",
+       "limit": 3,
+       "phase": 3
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: OCEAN 2, OCEAN 2, OCEAN 2, OCEAN 2, EcoFlow"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Is the EcoFlow OCEAN 2 single-phase or three-phase, and what is its rated power?",
+      "lang": "en",
+      "product_ids": [
+       3577,
+       3578,
+       3579,
+       3580
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "text": "OCEAN 2",
+      "brand": "ecoflow",
+      "lang": "en",
+      "limit": 3,
+      "phase": 1
+     },
+     "ok": true
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "text": "OCEAN 2",
+      "brand": "ecoflow",
+      "lang": "en",
+      "limit": 3,
+      "phase": 3
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 8,
+   "lang": "de",
+   "question": "Ist der EcoFlow OCEAN 2 einphasig oder dreiphasig, und wie hoch ist seine Nennleistung?",
+   "expect": {
+    "all": [
+     "(?i)single[- ]phase|1-phase|einphasig",
+     "\\d ?k?W\\b"
+    ]
+   },
+   "seconds": 19.0,
+   "pass": true,
+   "failures": [],
+   "answer": "Die von Ihnen genannte OCEAN-Baureihe umfasst sowohl einphasige als auch dreiphasige Hybrid-Wechselrichter, deshalb unterscheidet sich die Nennleistung je Modell. Einphasig sind die gezeigten Modelle mit 3 kW, 3.68 kW und 4.6 kW Nennleistung, dreiphasig die gezeigten Modelle mit 5 kW, 6 kW und 8 kW. Jede Karte nennt das jeweilige Modell mit seinen Werten; einen gemeinsamen Wert für die ganze Baureihe gibt es nicht. Die Angaben stammen aus den Produktdaten und dem einphasigen Datenblatt der Baureihe.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Die von Ihnen genannte OCEAN-Baureihe umfasst sowohl einphasige als auch dreiphasige Hybrid-Wechselrichter, deshalb unterscheidet sich die Nennleistung je Modell. Einphasig sind die gezeigten Modelle mit 3 kW, 3.68 kW und 4.6 kW Nennleistung, dreiphasig die gezeigten Modelle mit 5 kW, 6 kW und 8 kW. Jede Karte nennt das jeweilige Modell mit seinen Werten; einen gemeinsamen Wert für die ganze Baureihe gibt es nicht. Die Angaben stammen aus den Produktdaten und dem einphasigen Datenblatt der Baureihe.",
+     "refs": [
+      "6483",
+      "6484",
+      "6485",
+      "6480",
+      "3574",
+      "3575",
+      "f49ddd7c553c-p3-c6519d5c"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6483,
+      6484,
+      6485,
+      6480,
+      3574,
+      3575
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "f49ddd7c553c-p3-c6519d5c",
+     "label": "OCEAN 2 Plus einphasiges Datenblatt (EN) · S. 3",
+     "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf#page=3"
+    },
+    {
+     "type": "ask",
+     "field": "phase",
+     "options": [
+      "einphasig",
+      "dreiphasig"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 2,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "series",
+      "value": "ecoflow-ocean2-plus-hd-p1-s2",
+      "words": "OCEAN 2"
+     },
+     {
+      "kind": "series",
+      "value": "ecoflow-ocean2-hd-p3-s2",
+      "words": "OCEAN 2"
+     },
+     {
+      "kind": "series",
+      "value": "ecoflow-ocean-2-battery",
+      "words": "OCEAN 2"
+     },
+     {
+      "kind": "series",
+      "value": "ecoflow-ocean2-lfp-battery-s2",
+      "words": "OCEAN 2"
+     },
+     {
+      "kind": "brand",
+      "value": "ecoflow",
+      "words": "EcoFlow"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Ist der EcoFlow OCEAN 2 einphasig oder dreiphasig, und wie hoch ist seine Nennleistung?",
+       "lang": "de",
+       "product_ids": [
+        3577,
+        3578,
+        3579,
+        3580
+       ]
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "text": "OCEAN 2",
+       "brand": "ecoflow",
+       "lang": "de",
+       "limit": 3,
+       "phase": 1
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "text": "OCEAN 2",
+       "brand": "ecoflow",
+       "lang": "de",
+       "limit": 3,
+       "phase": 3
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: OCEAN 2, OCEAN 2, OCEAN 2, OCEAN 2, EcoFlow"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Ist der EcoFlow OCEAN 2 einphasig oder dreiphasig, und wie hoch ist seine Nennleistung?",
+      "lang": "de",
+      "product_ids": [
+       3577,
+       3578,
+       3579,
+       3580
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "text": "OCEAN 2",
+      "brand": "ecoflow",
+      "lang": "de",
+      "limit": 3,
+      "phase": 1
+     },
+     "ok": true
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "text": "OCEAN 2",
+      "brand": "ecoflow",
+      "lang": "de",
+      "limit": 3,
+      "phase": 3
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 9,
+   "lang": "en",
+   "question": "How do I set the export limit on an SAJ H2 inverter?",
+   "expect": {
+    "all": [
+     "(?i)export limit|6\\.6"
+    ]
+   },
+   "seconds": 15.2,
+   "pass": true,
+   "failures": [],
+   "answer": "On an SAJ H2 the export limit is set through the local connection in the app, and the instructions mark this function as installer-only. Connect to the inverter locally (Bluetooth or local connection), open Export/Generation Limitation Settings, enable the function, choose the limitation type — total power for the whole system, phase current, or phase power per phase — enter the value and save; a time-of-use export limitation can be added as well, and once export limitation is enabled you also set the selling power limit. The manual describes two ways of limiting: the export limitation controls the electricity exported to the grid, the generation limit controls what the inverter generates. The screens in the configuration instructions show the total-power field with an adjustable range from 10 to 10000, and the app screens in the H2 user manual show a total-power field from 0 to 5000; the value itself follows your grid connection and the limit you are permitted to export. The H2 models shown here are all three-phase units and differ in their rated AC output: H2-10K-T3 with 10 kW, H2-12K-T3 with 12 kW, H2-15K-T3 with 15 kW, H2-20K-T3 with 20 kW, H2-25K-T3 with 25 kW and H2-30K-T3-DE with 29.999 kW.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "On an SAJ H2 the export limit is set through the local connection in the app, and the instructions mark this function as installer-only. Connect to the inverter locally (Bluetooth or local connection), open Export/Generation Limitation Settings, enable the function, choose the limitation type — total power for the whole system, phase current, or phase power per phase — enter the value and save; a time-of-use export limitation can be added as well, and once export limitation is enabled you also set the selling power limit. The manual describes two ways of limiting: the export limitation controls the electricity exported to the grid, the generation limit controls what the inverter generates. The screens in the configuration instructions show the total-power field with an adjustable range from 10 to 10000, and the app screens in the H2 user manual show a total-power field from 0 to 5000; the value itself follows your grid connection and the limit you are permitted to export. The H2 models shown here are all three-phase units and differ in their rated AC output: H2-10K-T3 with 10 kW, H2-12K-T3 with 12 kW, H2-15K-T3 with 15 kW, H2-20K-T3 with 20 kW, H2-25K-T3 with 25 kW and H2-30K-T3-DE with 29.999 kW.",
+     "refs": [
+      "a470d6e1be68-p67-23b262f6",
+      "a470d6e1be68-p41-53d8bc71",
+      "a470d6e1be68-p61-f3a4926c",
+      "770ccafa080c-p55-9908ba56",
+      "4107",
+      "4108",
+      "2063",
+      "2064",
+      "1179",
+      "1181"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      4107,
+      4108,
+      2063,
+      2064,
+      1179,
+      1181
+     ]
+    },
+    {
+     "type": "ask",
+     "field": "phase",
+     "options": [
+      "H2-10K-T3",
+      "H2-12K-T3",
+      "H2-15K-T3",
+      "H2-20K-T3",
+      "H2-25K-T3",
+      "H2-30K-T3-DE"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "a470d6e1be68-p67-23b262f6",
+     "label": "SAJ configuration instructions for H2, HS2 and HS3 systems, English, V1.0 · pp. 41, 61, 67",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf#page=41"
+    },
+    {
+     "type": "document",
+     "ref": "770ccafa080c-p55-9908ba56",
+     "label": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p. 55",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=55"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "series",
+      "value": "saj-h2",
+      "words": "SAJ H2"
+     },
+     {
+      "kind": "category",
+      "value": "inverters",
+      "words": "inverter"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "How do I set the export limit on an SAJ H2 inverter?",
+       "lang": "en",
+       "product_ids": [
+        1179,
+        1181,
+        2063,
+        2064
+       ]
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "series": "saj-h2",
+       "device_class": "inverters",
+       "lang": "en",
+       "limit": 6
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: SAJ H2"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "How do I set the export limit on an SAJ H2 inverter?",
+      "lang": "en",
+      "product_ids": [
+       1179,
+       1181,
+       2063,
+       2064
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "series": "saj-h2",
+      "device_class": "inverters",
+      "lang": "en",
+      "limit": 6
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 9,
+   "lang": "de",
+   "question": "Wie stelle ich die Einspeisebegrenzung an einem SAJ H2 Wechselrichter ein?",
+   "expect": {
+    "all": [
+     "(?i)export limit|6\\.6|Einspeisebegrenzung|Exportlimit"
+    ]
+   },
+   "seconds": 16.0,
+   "pass": true,
+   "failures": [],
+   "answer": "Die Einspeisebegrenzung stellen Sie beim H2 über die App ein: Verbinden Sie sich in der App per Fernkonfiguration und Bluetooth mit dem Wechselrichter (diese Einstellung ist laut Konfigurationsanleitung dem Installateur vorbehalten), öffnen Sie den Punkt Export/Generation Limitation Settings und schalten Sie Export Limitation auf Enable. Wählen Sie dann den Typ – Total Power begrenzt die gesamte in das Netz exportierte Leistung, Phase current den Strom je Phase, Phase power die Leistung je Phase –, tragen Sie den gewünschten Wert ein und speichern Sie mit Save. Das Handbuch nennt zusätzlich eine zweite Methode: Die Erzeugungsbegrenzung (Generation limit) begrenzt nicht den Export, sondern die vom Wechselrichter erzeugte Elektrizität. Für zeitabhängige Vorgaben gibt es in der Konfigurationsanleitung den Punkt Time-of-use export limitation settings, dort wird auch das Selling Power Limit gesetzt.\n\nInnerhalb der Baureihe unterscheiden sich die Modelle vor allem in der Leistungsklasse; die hier gezeigten Modelle sind alle dreiphasig: H2-10K-T3 mit 10 kW, H2-12K-T3 mit 12 kW, H2-15K-T3 mit 15 kW, H2-20K-T3 mit 20 kW, H2-25K-T3 mit 25 kW und H2-30K-T3-DE mit 29.999 kW. Das Handbuch, aus dem die Menüpunkte stammen, gilt für den H2-10K-T3; die Konfigurationsanleitung deckt die H2-, HS2- und HS3-Systeme ab.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Die Einspeisebegrenzung stellen Sie beim H2 über die App ein: Verbinden Sie sich in der App per Fernkonfiguration und Bluetooth mit dem Wechselrichter (diese Einstellung ist laut Konfigurationsanleitung dem Installateur vorbehalten), öffnen Sie den Punkt Export/Generation Limitation Settings und schalten Sie Export Limitation auf Enable. Wählen Sie dann den Typ – Total Power begrenzt die gesamte in das Netz exportierte Leistung, Phase current den Strom je Phase, Phase power die Leistung je Phase –, tragen Sie den gewünschten Wert ein und speichern Sie mit Save. Das Handbuch nennt zusätzlich eine zweite Methode: Die Erzeugungsbegrenzung (Generation limit) begrenzt nicht den Export, sondern die vom Wechselrichter erzeugte Elektrizität. Für zeitabhängige Vorgaben gibt es in der Konfigurationsanleitung den Punkt Time-of-use export limitation settings, dort wird auch das Selling Power Limit gesetzt.\n\nInnerhalb der Baureihe unterscheiden sich die Modelle vor allem in der Leistungsklasse; die hier gezeigten Modelle sind alle dreiphasig: H2-10K-T3 mit 10 kW, H2-12K-T3 mit 12 kW, H2-15K-T3 mit 15 kW, H2-20K-T3 mit 20 kW, H2-25K-T3 mit 25 kW und H2-30K-T3-DE mit 29.999 kW. Das Handbuch, aus dem die Menüpunkte stammen, gilt für den H2-10K-T3; die Konfigurationsanleitung deckt die H2-, HS2- und HS3-Systeme ab.",
+     "refs": [
+      "770ccafa080c-p26-ea46e782",
+      "a470d6e1be68-p67-23b262f6",
+      "a470d6e1be68-p41-53d8bc71",
+      "a470d6e1be68-p61-f3a4926c",
+      "a470d6e1be68-p41-27e28260",
+      "4107",
+      "4108",
+      "2063",
+      "2064",
+      "1179",
+      "1181"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      4107,
+      4108,
+      2063,
+      2064,
+      1179,
+      1181
+     ]
+    },
+    {
+     "type": "ask",
+     "field": "phase",
+     "options": [
+      "einphasig",
+      "dreiphasig"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "770ccafa080c-p26-ea46e782",
+     "label": "SAJ H2 10-30K Handbuch, Deutsch und Englisch (gilt für den H2-10K-T3) · S. 26",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=26"
+    },
+    {
+     "type": "document",
+     "ref": "a470d6e1be68-p67-23b262f6",
+     "label": "SAJ Konfigurationsanleitung für H2-, HS2- und HS3-Systeme, Englisch, V1.0 · S. 41, 61, 67",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf#page=41"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "series",
+      "value": "saj-h2",
+      "words": "SAJ H2"
+     },
+     {
+      "kind": "category",
+      "value": "inverters",
+      "words": "Wechselrichter"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Wie stelle ich die Einspeisebegrenzung an einem SAJ H2 Wechselrichter ein?",
+       "lang": "de",
+       "product_ids": [
+        1179,
+        1181,
+        2063,
+        2064
+       ]
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "series": "saj-h2",
+       "device_class": "inverters",
+       "lang": "de",
+       "limit": 6
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: SAJ H2"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Wie stelle ich die Einspeisebegrenzung an einem SAJ H2 Wechselrichter ein?",
+      "lang": "de",
+      "product_ids": [
+       1179,
+       1181,
+       2063,
+       2064
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "series": "saj-h2",
+      "device_class": "inverters",
+      "lang": "de",
+      "limit": 6
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 10,
+   "lang": "de",
+   "question": "Wie wird der SAJ CB2-100.3-HV5 installiert? Welcher Mindestabstand?",
+   "expect": {
+    "all": [
+     "1500 ?mm",
+     "1000 ?mm",
+     "500 ?mm",
+     "400 ?mm"
+    ]
+   },
+   "seconds": 18.2,
+   "pass": true,
+   "failures": [],
+   "answer": "Der SAJ CB2-100.3-HV5 ist ein Batterieschrank, der laut Handbuch entweder im Innenbereich oder im Freien aufgestellt werden kann. Er arbeitet mit Klimaanlagen-Konvektionskühlung; für den Innenbereich oder einen überdachten Platz spricht, dass direkte Sonneneinstrahlung, Regen und Schnee die Leistung der inneren Elektronik und die Lebensdauer beeinträchtigen. Der Schrank wird senkrecht montiert, nie nach vorn, zur Seite oder kopfüber geneigt; der Untergrund muss eben sein und eine Tragfähigkeit von 1.5 Tonnen erreichen. Für die Umgebung gilt: keine brennbaren oder explosiven Stoffe, Abstand zu Wärmequellen, keine stark schwankenden Temperaturen, keine Schlaf-, Wohn- und Sanitärräume, in der Garage Abstand zur Einfahrt und generell Abstand zu Wasserquellen wie Hähnen, Abwasserrohren und Sprinklern; bei Außenaufstellung ist die Aufstellhöhe über dem Boden so zu wählen, dass kein Wasser eindringen kann.\nZum Mindestabstand nennen unsere Unterlagen umlaufend um das gesamte Batteriesystem mehrere Werte, die in der jeweiligen Abbildung den Seiten zugeordnet sind. Das Handbuch führt mindestens 1500 mm, 400 mm, 500 mm, 500 mm und 500 mm an; die Kurzanleitung zur Installation nennt für den Aufstellraum mindestens 1500 mm, 400 mm, 500 mm, 1000 mm und 500 mm. Welcher Wert zu welcher Seite des Schranks gehört, zeigt die Abbildung zur Aufstellfläche im jeweiligen Dokument — bitte richten Sie sich für die konkrete Seite nach dieser Darstellung.\nBefestigt wird der Schrank nach Wahl entweder mit Schraubankern im Boden oder mit Montagewinkeln. Bei der Variante mit Schraubankern legen Sie den Positionierkarton an die vorgesehene Stelle, markieren die Bohrlöcher auf dem Boden und bohren sie mit der Bohrmaschine in einer Tiefe von 80–90 mm; in jedes Loch kommt ein Dübel. Danach setzen Sie den Schrank mit Gabelstapler oder Kran an die Stelle, richten die Bodenlöcher aus und ziehen die Schrauben am Schrankboden mit einem Drehmoment von 47 N·m an. Bei der Variante mit Montagewinkeln platzieren Sie die Winkel an den Ecken des Schranks und markieren die Bohrlöcher; das Anheben und Verfahren erfolgt ebenfalls mit Gabelstapler oder Kran. Das benötigte Werkzeug ist im Handbuch aufgeführt, unter anderem Bohrmaschine mit passendem Bohrer, Steckschlüssel, Drehmomentschlüssel und Schutzausrüstung.\nVor dem Verkabeln bereiten Sie die Leitungen nach den im Dokument genannten Querschnitten und Kabellängen vor: Erdung und Batterieleistung als Außenkabel in Kupfer, die AC-Anbindung als verdrillte Außenleitung und die Kommunikation als geschirmtes Außenkabel der angegebenen Kategorie mit RJ45-Stecker. Die genauen Querschnitte, Außendurchmesser und Anschlussklemmen stehen in der Tabelle der Kurzanleitung; für mehrere Cluster beschreibt sie das Vorgehen am Beispiel eines Systems aus mehreren Clustern.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Der SAJ CB2-100.3-HV5 ist ein Batterieschrank, der laut Handbuch entweder im Innenbereich oder im Freien aufgestellt werden kann. Er arbeitet mit Klimaanlagen-Konvektionskühlung; für den Innenbereich oder einen überdachten Platz spricht, dass direkte Sonneneinstrahlung, Regen und Schnee die Leistung der inneren Elektronik und die Lebensdauer beeinträchtigen. Der Schrank wird senkrecht montiert, nie nach vorn, zur Seite oder kopfüber geneigt; der Untergrund muss eben sein und eine Tragfähigkeit von 1.5 Tonnen erreichen. Für die Umgebung gilt: keine brennbaren oder explosiven Stoffe, Abstand zu Wärmequellen, keine stark schwankenden Temperaturen, keine Schlaf-, Wohn- und Sanitärräume, in der Garage Abstand zur Einfahrt und generell Abstand zu Wasserquellen wie Hähnen, Abwasserrohren und Sprinklern; bei Außenaufstellung ist die Aufstellhöhe über dem Boden so zu wählen, dass kein Wasser eindringen kann.",
+     "refs": [
+      "ee6b3a41b825-p15-6db7486a",
+      "ee6b3a41b825-p15-b595a6ef",
+      "ee6b3a41b825-p14-138e6222",
+      "ee6b3a41b825-p14-f0cdd643"
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Zum Mindestabstand nennen unsere Unterlagen umlaufend um das gesamte Batteriesystem mehrere Werte, die in der jeweiligen Abbildung den Seiten zugeordnet sind. Das Handbuch führt mindestens 1500 mm, 400 mm, 500 mm, 500 mm und 500 mm an; die Kurzanleitung zur Installation nennt für den Aufstellraum mindestens 1500 mm, 400 mm, 500 mm, 1000 mm und 500 mm. Welcher Wert zu welcher Seite des Schranks gehört, zeigt die Abbildung zur Aufstellfläche im jeweiligen Dokument — bitte richten Sie sich für die konkrete Seite nach dieser Darstellung.",
+     "refs": [
+      "ee6b3a41b825-p14-138e6222",
+      "a70cb4c39824-p1-5a1f6421"
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Befestigt wird der Schrank nach Wahl entweder mit Schraubankern im Boden oder mit Montagewinkeln. Bei der Variante mit Schraubankern legen Sie den Positionierkarton an die vorgesehene Stelle, markieren die Bohrlöcher auf dem Boden und bohren sie mit der Bohrmaschine in einer Tiefe von 80–90 mm; in jedes Loch kommt ein Dübel. Danach setzen Sie den Schrank mit Gabelstapler oder Kran an die Stelle, richten die Bodenlöcher aus und ziehen die Schrauben am Schrankboden mit einem Drehmoment von 47 N·m an. Bei der Variante mit Montagewinkeln platzieren Sie die Winkel an den Ecken des Schranks und markieren die Bohrlöcher; das Anheben und Verfahren erfolgt ebenfalls mit Gabelstapler oder Kran. Das benötigte Werkzeug ist im Handbuch aufgeführt, unter anderem Bohrmaschine mit passendem Bohrer, Steckschlüssel, Drehmomentschlüssel und Schutzausrüstung.",
+     "refs": [
+      "ee6b3a41b825-p17-18c57097",
+      "ee6b3a41b825-p17-768c8b14",
+      "a70cb4c39824-p3-3ede2b1a",
+      "a70cb4c39824-p3-988afffc",
+      "ee6b3a41b825-p15-22301b53",
+      "a70cb4c39824-p2-67226e87",
+      "a70cb4c39824-p2-fee4516b"
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Vor dem Verkabeln bereiten Sie die Leitungen nach den im Dokument genannten Querschnitten und Kabellängen vor: Erdung und Batterieleistung als Außenkabel in Kupfer, die AC-Anbindung als verdrillte Außenleitung und die Kommunikation als geschirmtes Außenkabel der angegebenen Kategorie mit RJ45-Stecker. Die genauen Querschnitte, Außendurchmesser und Anschlussklemmen stehen in der Tabelle der Kurzanleitung; für mehrere Cluster beschreibt sie das Vorgehen am Beispiel eines Systems aus mehreren Clustern.",
+     "refs": [
+      "a70cb4c39824-p6-eba30d03",
+      "a70cb4c39824-p6-be01724d",
+      "a70cb4c39824-p6-ea5e08ce"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "p4106.document.0",
+     "label": "SAJ CHS2 All-in-One Hybrid Energy Storage System Datasheet (EN, BEU)",
+     "url": "http://127.0.0.1:9060/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf"
+    },
+    {
+     "type": "document",
+     "ref": "ee6b3a41b825-p15-6db7486a",
+     "label": "SAJ CB2 57.3-100.3-HV5 Handbuch, Englisch, V0.0 (gilt für den CB2-100.3-HV5) · S. 14, 15, 17",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf#page=14"
+    },
+    {
+     "type": "document",
+     "ref": "a70cb4c39824-p1-5a1f6421",
+     "label": "SAJ CB2 57.3-100.3-HV5 Kurzanleitung zur Installation, Englisch (gilt für den CB2-100.3-HV5) · S. 1, 2, 3, 6",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_Quick-Installation-Guide_EN.pdf#page=1"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "model",
+      "value": "CB2-100.3-HV5",
+      "words": "CB2 100.3 HV5"
+     },
+     {
+      "kind": "brand",
+      "value": "saj",
+      "words": "SAJ"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Wie wird der SAJ CB2-100.3-HV5 installiert? Welcher Mindestabstand?",
+       "lang": "de",
+       "product_ids": [
+        4106
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 4106,
+       "lang": "de"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: CB2 100.3 HV5, SAJ"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Wie wird der SAJ CB2-100.3-HV5 installiert? Welcher Mindestabstand?",
+      "lang": "de",
+      "product_ids": [
+       4106
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 4106,
+      "lang": "de"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 10,
+   "lang": "en",
+   "question": "How is the SAJ CB2-100.3-HV5 installed? What minimum clearance?",
+   "expect": {
+    "all": [
+     "1500 ?mm",
+     "1000 ?mm",
+     "500 ?mm",
+     "400 ?mm"
+    ]
+   },
+   "seconds": 16.8,
+   "pass": true,
+   "failures": [],
+   "answer": "The CB2-100.3-HV5 is a ground-mounted battery cabinet that may be installed indoors or outdoors; the manual recommends a sheltered place, so that the cabinet is not exposed to direct sunlight, rain or snow. It must stand vertically — never tilted forwards, sideways, horizontally or upside down — on flat ground without inclination, and the ground must carry the weight, for which the manual requires a load-bearing capacity of 1.5 tons.\n\nPlacement rules from the manual: keep the cabinet free of inflammable or explosive materials and away from heat sources, out of rooms used for living or sleeping (it names bedrooms, lounges, living rooms, studies, toilets, bathrooms, theatres and attics), away from children, away from water sources such as taps, sewer pipes and sprinklers, and in a garage away from the driveway. Avoid locations with extreme temperature changes. For outdoor installation the manual asks you to keep the cabinet at a height above the ground so it cannot stand in water; the exact height is left to the site conditions.\n\nMinimum clearance: the user manual asks for free space around the whole system of 1500 mm, 400 mm, 500 mm, 500 mm and 500 mm to guarantee air circulation, while the quick installation guide states 1500 mm, 400 mm, 500 mm, 1000 mm and 500 mm. The documents differ in these values, so take the side that applies from the installation-space drawing of the document you are working from.\n\nSecuring: the cabinet is fixed either with screw bolts into the floor or with the mounting brackets at the corners. For the bolt variant, place the positioning cardboard on the floor, mark the 6 drilling holes, drill them to a depth of 80 to 90mm, insert an expansion tube in each hole, move the cabinet into place with a forklift or crane and tighten the screws with a wrench to 47. For the bracket variant, position the cabinet first, then place the brackets at the corners, mark the holes and fix them. Recommended tools include a hammer drill with a 10 drill bit, a torque wrench, a crimping tool, a multimeter and personal protective equipment.\n\nThe product card below shows the cabinet; the linked documents give the drawings for the clearance and the mounting steps.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The CB2-100.3-HV5 is a ground-mounted battery cabinet that may be installed indoors or outdoors; the manual recommends a sheltered place, so that the cabinet is not exposed to direct sunlight, rain or snow. It must stand vertically — never tilted forwards, sideways, horizontally or upside down — on flat ground without inclination, and the ground must carry the weight, for which the manual requires a load-bearing capacity of 1.5 tons.\n\nPlacement rules from the manual: keep the cabinet free of inflammable or explosive materials and away from heat sources, out of rooms used for living or sleeping (it names bedrooms, lounges, living rooms, studies, toilets, bathrooms, theatres and attics), away from children, away from water sources such as taps, sewer pipes and sprinklers, and in a garage away from the driveway. Avoid locations with extreme temperature changes. For outdoor installation the manual asks you to keep the cabinet at a height above the ground so it cannot stand in water; the exact height is left to the site conditions.\n\nMinimum clearance: the user manual asks for free space around the whole system of 1500 mm, 400 mm, 500 mm, 500 mm and 500 mm to guarantee air circulation, while the quick installation guide states 1500 mm, 400 mm, 500 mm, 1000 mm and 500 mm. The documents differ in these values, so take the side that applies from the installation-space drawing of the document you are working from.\n\nSecuring: the cabinet is fixed either with screw bolts into the floor or with the mounting brackets at the corners. For the bolt variant, place the positioning cardboard on the floor, mark the 6 drilling holes, drill them to a depth of 80 to 90mm, insert an expansion tube in each hole, move the cabinet into place with a forklift or crane and tighten the screws with a wrench to 47. For the bracket variant, position the cabinet first, then place the brackets at the corners, mark the holes and fix them. Recommended tools include a hammer drill with a 10 drill bit, a torque wrench, a crimping tool, a multimeter and personal protective equipment.\n\nThe product card below shows the cabinet; the linked documents give the drawings for the clearance and the mounting steps.",
+     "refs": [
+      "4106",
+      "ee6b3a41b825-p14-138e6222",
+      "ee6b3a41b825-p15-6db7486a",
+      "ee6b3a41b825-p15-b595a6ef",
+      "ee6b3a41b825-p15-22301b53",
+      "a70cb4c39824-p1-5a1f6421",
+      "a70cb4c39824-p2-67226e87",
+      "a70cb4c39824-p2-fee4516b",
+      "a70cb4c39824-p3-3ede2b1a",
+      "a70cb4c39824-p3-988afffc",
+      "ee6b3a41b825-p17-18c57097",
+      "ee6b3a41b825-p17-768c8b14"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      4106
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "a70cb4c39824-p1-5a1f6421",
+     "label": "SAJ CB2 57.3-100.3-HV5 quick installation guide, English (covers the CB2-100.3-HV5) · pp. 1, 2, 3",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_Quick-Installation-Guide_EN.pdf#page=1"
+    },
+    {
+     "type": "document",
+     "ref": "ee6b3a41b825-p14-138e6222",
+     "label": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-100.3-HV5) · pp. 14, 15, 17",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf#page=14"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "model",
+      "value": "CB2-100.3-HV5",
+      "words": "CB2 100.3 HV5"
+     },
+     {
+      "kind": "brand",
+      "value": "saj",
+      "words": "SAJ"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "How is the SAJ CB2-100.3-HV5 installed? What minimum clearance?",
+       "lang": "en",
+       "product_ids": [
+        4106
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 4106,
+       "lang": "en"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: CB2 100.3 HV5, SAJ"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "How is the SAJ CB2-100.3-HV5 installed? What minimum clearance?",
+      "lang": "en",
+      "product_ids": [
+       4106
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 4106,
+      "lang": "en"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 19,
+   "lang": "en",
+   "question": "Does the SAJ H2 support EnWG 14a dimming?",
+   "expect": {
+    "all": [
+     "(?i)(do|does)( not|n't)( \\w+)? (state|mention|say|describe|cover|list|specify|confirm)|no (statement|mention|information)|not (stated|mentioned|documented)"
+    ],
+    "none": [
+     "(?i)\\byes\\b,? (the|it)"
+    ]
+   },
+   "seconds": 22.9,
+   "pass": true,
+   "failures": [],
+   "answer": "Our documents do not state whether the SAJ H2 inverters support the EnWG dimming you asked about. What the documents do show: the H2 family in our datasheets comprises several variants, and the models we currently show are all three-phase hybrid inverters — H2-10K-T3 with 10 kW, H2-12K-T3 with 12 kW, H2-15K-T3 with 15 kW, H2-20K-T3 with 20 kW, H2-25K-T3 with 25 kW and H2-30K-T3-DE with 29.999 kW rated AC power, while the datasheet tables list further variants. Related, but not the asked point: the configuration instructions describe smart working modes and a peak shaving function that limits the power imported from the grid, and the manual lists the grid connection standards each model is certified to. Neither passage mentions EnWG dimming control, so we cannot confirm it from our documents. Which model or phase would you like us to look at?",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Our documents do not state whether the SAJ H2 inverters support the EnWG dimming you asked about. What the documents do show: the H2 family in our datasheets comprises several variants, and the models we currently show are all three-phase hybrid inverters — H2-10K-T3 with 10 kW, H2-12K-T3 with 12 kW, H2-15K-T3 with 15 kW, H2-20K-T3 with 20 kW, H2-25K-T3 with 25 kW and H2-30K-T3-DE with 29.999 kW rated AC power, while the datasheet tables list further variants. Related, but not the asked point: the configuration instructions describe smart working modes and a peak shaving function that limits the power imported from the grid, and the manual lists the grid connection standards each model is certified to. Neither passage mentions EnWG dimming control, so we cannot confirm it from our documents. Which model or phase would you like us to look at?",
+     "refs": [
+      "4107",
+      "4108",
+      "2063",
+      "2064",
+      "1179",
+      "1181",
+      "a470d6e1be68-p42-ad2df7e5",
+      "770ccafa080c-p8-6cc09b59",
+      "0f0e75ad3f31-p1-486dc009"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      4107,
+      4108,
+      2063,
+      2064,
+      1179,
+      1181
+     ]
+    },
+    {
+     "type": "ask",
+     "field": "phase",
+     "options": [
+      "Single-phase",
+      "Three-phase"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "a470d6e1be68-p42-ad2df7e5",
+     "label": "SAJ configuration instructions for H2, HS2 and HS3 systems, English, V1.0 · p. 42",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf#page=42"
+    },
+    {
+     "type": "document",
+     "ref": "770ccafa080c-p8-6cc09b59",
+     "label": "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p. 8",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=8"
+    },
+    {
+     "type": "document",
+     "ref": "0f0e75ad3f31-p1-486dc009",
+     "label": "SAJ H2 10-30K datasheet, English (covers the H2-10K-T3) · p. 1",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-datasheet.pdf#page=1"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 2,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "series",
+      "value": "saj-h2",
+      "words": "SAJ H2"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Does the SAJ H2 support EnWG 14a dimming?",
+       "lang": "en",
+       "product_ids": [
+        1179,
+        1181,
+        2063,
+        2064
+       ]
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "series": "saj-h2",
+       "lang": "en",
+       "limit": 6
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: SAJ H2"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Does the SAJ H2 support EnWG 14a dimming?",
+      "lang": "en",
+      "product_ids": [
+       1179,
+       1181,
+       2063,
+       2064
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "series": "saj-h2",
+      "lang": "en",
+      "limit": 6
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "trial": 19,
+   "lang": "de",
+   "question": "Unterstützt der SAJ H2 das Dimmen nach EnWG §14a?",
+   "expect": {
+    "all": [
+     "(?i)nicht (genannt|erwähnt|beschrieben|angegeben|dokumentiert|aufgeführt|bestätigt)|nennen .*nicht|keine Angabe|nicht .*(nennen|erwähnen|beschreiben|angeben|aufführen|bestätigen)|sagen .*nicht|geht .*nicht hervor"
+    ],
+    "none": [
+     "(?i)\\bja\\b,? (der|er|das)"
+    ]
+   },
+   "seconds": 13.1,
+   "pass": true,
+   "failures": [],
+   "answer": "Zum Dimmen nach EnWG §14a nennen unsere Dokumente zum SAJ H2 keine Angabe: In den Datenblättern, im Handbuch und im Konfigurationsleitfaden finde ich weder eine solche Funktion noch einen Menüpunkt dafür. Eine verwandte, aber andere Funktion ist das im Konfigurationsleitfaden beschriebene Peak Shaving, das die maximale Leistungsaufnahme aus dem Netz in Spitzenzeiten begrenzt; eine Dimmung nach §14a ist damit nicht beschrieben.\n\nDie H2-Familie ist gemischt: Sie enthält einphasige Modelle (etwa H2-15K-T2 und H2-20K-T2) und dreiphasige Modelle. Aus der Suche liegen mir diese dreiphasigen Modelle mit ihrer AC-Nennleistung vor: H2-10K-T3 mit 10 kW, H2-12K-T3 mit 12 kW, H2-15K-T3 mit 15 kW, H2-20K-T3 mit 20 kW, H2-25K-T3 mit 25 kW und H2-30K-T3-DE mit 29.999 kW.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Zum Dimmen nach EnWG §14a nennen unsere Dokumente zum SAJ H2 keine Angabe: In den Datenblättern, im Handbuch und im Konfigurationsleitfaden finde ich weder eine solche Funktion noch einen Menüpunkt dafür. Eine verwandte, aber andere Funktion ist das im Konfigurationsleitfaden beschriebene Peak Shaving, das die maximale Leistungsaufnahme aus dem Netz in Spitzenzeiten begrenzt; eine Dimmung nach §14a ist damit nicht beschrieben.\n\nDie H2-Familie ist gemischt: Sie enthält einphasige Modelle (etwa H2-15K-T2 und H2-20K-T2) und dreiphasige Modelle. Aus der Suche liegen mir diese dreiphasigen Modelle mit ihrer AC-Nennleistung vor: H2-10K-T3 mit 10 kW, H2-12K-T3 mit 12 kW, H2-15K-T3 mit 15 kW, H2-20K-T3 mit 20 kW, H2-25K-T3 mit 25 kW und H2-30K-T3-DE mit 29.999 kW.",
+     "refs": [
+      "be488dc6630c-p1-140e779c",
+      "0f0e75ad3f31-p1-486dc009",
+      "0f0e75ad3f31-p2-a2106418",
+      "be488dc6630c-p2-0c801736",
+      "a470d6e1be68-p42-ad2df7e5",
+      "a470d6e1be68-p7-b690879d",
+      "770ccafa080c-p9-7de2a837",
+      "4107",
+      "4108",
+      "2063",
+      "2064",
+      "1179",
+      "1181"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      4107,
+      4108,
+      2063,
+      2064,
+      1179,
+      1181
+     ]
+    },
+    {
+     "type": "ask",
+     "field": "phase",
+     "options": [
+      "Einphasig (H2-15K-T2, H2-20K-T2)",
+      "Dreiphasig (H2-10K-T3 bis H2-30K-T3-DE)"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "be488dc6630c-p1-140e779c",
+     "label": "SAJ H2 15-30K Datenblatt, Deutsch (gilt für den H2-15K-T3) · S. 1, 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_15-30K-T3_Datasheet_DE.pdf#page=1"
+    },
+    {
+     "type": "document",
+     "ref": "0f0e75ad3f31-p1-486dc009",
+     "label": "SAJ H2 10-30K Datenblatt, Englisch (gilt für den H2-10K-T3) · S. 1, 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-datasheet.pdf#page=1"
+    },
+    {
+     "type": "document",
+     "ref": "a470d6e1be68-p42-ad2df7e5",
+     "label": "SAJ Konfigurationsanleitung für H2-, HS2- und HS3-Systeme, Englisch, V1.0 · S. 7, 42",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf#page=7"
+    },
+    {
+     "type": "document",
+     "ref": "770ccafa080c-p9-7de2a837",
+     "label": "SAJ H2 10-30K Handbuch, Deutsch und Englisch (gilt für den H2-10K-T3) · S. 9",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=9"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "route": {
+    "matches": [
+     {
+      "kind": "series",
+      "value": "saj-h2",
+      "words": "SAJ H2"
+     }
+    ],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.0,
+     "wants_person": 0.0,
+     "needs_followup": 0.0,
+     "seconds": 0.0,
+     "cost": 0.0
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Unterstützt der SAJ H2 das Dimmen nach EnWG §14a?",
+       "lang": "de",
+       "product_ids": [
+        1179,
+        1181,
+        2063,
+        2064
+       ]
+      }
+     },
+     {
+      "name": "linker/search-products",
+      "arguments": {
+       "series": "saj-h2",
+       "lang": "de",
+       "limit": 6
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "product words: SAJ H2"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Unterstützt der SAJ H2 das Dimmen nach EnWG §14a?",
+      "lang": "de",
+      "product_ids": [
+       1179,
+       1181,
+       2063,
+       2064
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-products",
+     "arguments": {
+      "series": "saj-h2",
+      "lang": "de",
+      "limit": 6
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  }
+ ]
+}

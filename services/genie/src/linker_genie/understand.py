@@ -9,7 +9,9 @@ from those results (agent.py), and grounding holds it to what the route requires
 Every failure here is logged on the turn and by the `linker_genie` logger, and the turn
 goes on with what is left: without product words when the Store API cannot be read,
 and with deepseek-flash deciding alone when Jev cannot answer — the one degradation
-ticket #233 allows. None of them is silent.
+ticket #233 allows. None of them is silent. A document search that fails does not go
+on: it is kept as `knowledge_error` and ends the turn in the cycle's fallback, because
+an answer without the documents it needed must not ship (#257).
 """
 
 from __future__ import annotations
@@ -19,7 +21,9 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
+from linker_genie import knowledge
 from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.lexicon import Match, Vocabulary
@@ -48,6 +52,9 @@ class Prepared:
     # [{name, arguments, result}] of the calls that answered, for the model's prompt.
     results: list[dict[str, Any]] = field(default_factory=list)
     log: dict[str, Any] = field(default_factory=dict)
+    # The document search of the route failed (the encoder or the index): the
+    # generation raises it (agent.make_generate), no answer is written without it.
+    knowledge_error: str | None = None
 
     @property
     def calls_made(self) -> int:
@@ -68,10 +75,12 @@ class Understander:
         vocabulary: Callable[[], Vocabulary] | None,
         jev: Reader | None,
         jev_missing: str = "OPENROUTER_API_KEY is not configured",
+        search: knowledge.Search | None = None,
     ) -> None:
         self._vocabulary = vocabulary
         self._jev = jev
         self._jev_missing = jev_missing
+        self._search = search or knowledge.SEARCH
 
     def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
         message = _last_customer_message(request)
@@ -92,7 +101,7 @@ class Understander:
         route = plan(message, matches, reading, subject, request.locale, bare)
         log.update(route.as_log())
         prepared = Prepared(route=route, log=log)
-        _run_calls(prepared, request, client)
+        _run_calls(prepared, request, client, self._search)
         return prepared
 
     def _load_vocabulary(self, log: dict[str, Any]) -> Vocabulary | None:
@@ -178,17 +187,33 @@ def _with_page_product(
     )
 
 
-def _run_calls(prepared: Prepared, request: TurnRequest, client: AbilityClient) -> None:
+def _run_calls(
+    prepared: Prepared,
+    request: TurnRequest,
+    client: AbilityClient,
+    search: knowledge.Search = knowledge.SEARCH,
+) -> None:
     parts: list[TurnFacts] = []
     failures: list[str] = []
     for call in prepared.route.calls:
         try:
-            payload, gathered = client.record(
-                call.ability,
-                call.arguments,
-                request.user.context,
-                request.locale,
-            )
+            if call.ability == knowledge.NAME:
+                # The document search runs in this process (knowledge.py, #257).
+                payload, gathered = knowledge.record(
+                    search, call.arguments, request.locale
+                )
+            else:
+                payload, gathered = client.record(
+                    call.ability,
+                    call.arguments,
+                    request.user.context,
+                    request.locale,
+                )
+        except (EmbeddingError, knowledge.KnowledgeUnavailable) as error:
+            failures.append(f"{call.ability}: {error}")
+            prepared.knowledge_error = f"{call.ability}: {error}"
+            logger.error("genie document search failed: %s", error)
+            continue
         except AbilityError as error:
             failures.append(f"{call.ability}: {error}")
             logger.warning("genie route call failed: %s: %s", call.ability, error)

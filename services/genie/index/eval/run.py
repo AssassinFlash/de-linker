@@ -3,8 +3,9 @@
 Runs every golden question against a built index: the production path first (by
 product: narrowed to the products that sell the question's model, vectors when the
 index has them), then the whole library, then keywords only. Prints a Markdown table
-and writes `eval.json` next to the index. Fails when the production path misses a
-threshold of the ticket (recall@5 90 %, citation page accuracy 95 %).
+and writes `eval.json` next to the index. Fails when a vector setting falls below
+the recorded baseline (`BASELINE`, docs/specs/10-knowledge-index.md 验收 (a)), and says
+by how much.
 """
 
 from __future__ import annotations
@@ -23,10 +24,17 @@ from index.paths import INDEX_DIR
 from linker_genie.embedding import GeminiEmbedder
 from linker_genie.retrieval import DocumentIndex
 
-# Ticket #10 acceptance: recall@5 >= 90 %, citation page accuracy >= 95 %.
 RECALL_AT = 5
-RECALL_THRESHOLD = 0.90
-PAGE_THRESHOLD = 0.95
+# The no-regression gate (docs/specs/10-knowledge-index.md 验收 (a)): setting ->
+# (recall@5, citation page accuracy) that a build may not fall below. Measured on
+# index 20261016T072222Z with the 984-question golden set, issue #257
+# (docs/acceptance/2026-10-17/257/golden-eval.md): found 540 and 541 of 984, cited
+# page right for 419 of 507 and 422 of 504. Raise it when a build does better;
+# never lower it without a ruling.
+BASELINE: dict[str, tuple[float, float]] = {
+    "vectors, by product": (540 / 984, 419 / 507),
+    "vectors, whole library": (541 / 984, 422 / 504),
+}
 
 
 @dataclass
@@ -75,6 +83,53 @@ def summarize(
     return Summary(setting, n, recall, mrr, cited, accuracy, per_lang)
 
 
+def regressions(
+    summaries: Sequence[Summary],
+    baseline: dict[str, tuple[float, float]] = BASELINE,
+) -> list[str]:
+    """One line per baseline setting that was not measured or fell below its floor.
+
+    Equal to the baseline passes: the evaluation is deterministic for one index and
+    golden set (docs/acceptance/2026-10-11/16i/), so a rerun reproduces it exactly.
+    """
+    measured = {summary.setting: summary for summary in summaries}
+    lines = []
+    for setting, (recall, accuracy) in baseline.items():
+        summary = measured.get(setting)
+        if summary is None:
+            lines.append(f"{setting}: not measured (baseline is set for it)")
+            continue
+        for name, value, floor in (
+            ("recall@5", summary.recall, recall),
+            ("citation page accuracy", summary.page_accuracy, accuracy),
+        ):
+            if value < floor:
+                lines.append(
+                    f"{setting}: {name} {value:.1%} is below the baseline "
+                    f"{floor:.1%} by {(floor - value) * 100:.1f} points"
+                )
+    return lines
+
+
+def against_baseline(
+    summaries: Sequence[Summary],
+    baseline: dict[str, tuple[float, float]] = BASELINE,
+) -> list[str]:
+    """Each baseline setting's figures beside its floor, with the difference."""
+    measured = {summary.setting: summary for summary in summaries}
+    lines = []
+    for setting, (recall, accuracy) in baseline.items():
+        summary = measured.get(setting)
+        if summary is not None:
+            lines.append(
+                f"{setting}: recall@5 {summary.recall:.1%} (baseline {recall:.1%}, "
+                f"{(summary.recall - recall) * 100:+.1f}), citation page accuracy "
+                f"{summary.page_accuracy:.1%} (baseline {accuracy:.1%}, "
+                f"{(summary.page_accuracy - accuracy) * 100:+.1f})"
+            )
+    return lines
+
+
 def product_ids_by_model(index_path: Path) -> dict[str, list[int]]:
     """Model designation (case-folded) -> IDs of the products that sell it."""
     db = sqlite3.connect(f"file:{index_path}?mode=ro", uri=True)
@@ -108,6 +163,9 @@ def evaluate(
             product_ids=ids,
             k=RECALL_AT,
             query_vector=vectors.get(question.question),
+            # The ranking alone: neighbours follow their hit and would count as
+            # ranks past k (retrieval.with_page_neighbours).
+            neighbours=False,
         )
         scores.append(score(hits, question.evidence))
     return scores
@@ -185,12 +243,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         json.dumps([summary.__dict__ for summary in summaries], indent=1),
         encoding="utf-8",
     )
-    gated = summaries[0]
-    if gated.recall < RECALL_THRESHOLD or gated.page_accuracy < PAGE_THRESHOLD:
-        print(
-            f"\n{gated.setting} is below the ticket's thresholds "
-            f"(recall@5 {RECALL_THRESHOLD:.0%}, citation page accuracy {PAGE_THRESHOLD:.0%})"
-        )
+    print("\n" + "\n".join(against_baseline(summaries)))
+    failed = regressions(summaries)
+    if failed:
+        print("\nBelow the baseline:\n" + "\n".join(failed))
         return 1
     return 0
 

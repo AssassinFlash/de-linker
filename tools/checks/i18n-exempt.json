@@ -147,31 +147,6 @@
         "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:47"
       },
       {
-        "msgid": "Chunk ID the answer may cite.",
-        "reason": "JSON Schema property description on the search-knowledge ability output. Not a page string.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:42"
-      },
-      {
-        "msgid": "Hosted document URL.",
-        "reason": "JSON Schema property description on the search-knowledge ability output. Not a page string.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:46"
-      },
-      {
-        "msgid": "Document title in the requested language.",
-        "reason": "JSON Schema property description on the search-knowledge ability output. Not a page string.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:50"
-      },
-      {
-        "msgid": "1-based page of the chunk.",
-        "reason": "JSON Schema property description on the search-knowledge ability output. Not a page string.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:54"
-      },
-      {
-        "msgid": "Returns chunks from the hosted PDF index. Cite only the returned chunk IDs.",
-        "reason": "Ability description of linker/search-knowledge. Machine-facing contract text. The customer-facing label of the same ability is already translated.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/SearchKnowledge.php:66"
-      },
-      {
         "msgid": "Qualifies published products against selection facts, sorts them, and explains each match.",
         "reason": "Ability description of linker/search-products. The shared msgid \"Search products\" is already translated for the page; this sentence is only the schema.",
         "evidence": "plugins/linker-commerce/includes/Abilities/SearchProducts.php:119"
