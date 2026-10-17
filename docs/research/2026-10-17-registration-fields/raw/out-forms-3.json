@@ -1,0 +1,2276 @@
+{
+ "meta": {
+  "run_id": "smtxGnDNKyj4Jtn9n",
+  "actor_id": "MpRbnNmVAoj5RC1Ma",
+  "status": "SUCCEEDED",
+  "started_at": "2026-10-16T20:53:49.431Z",
+  "finished_at": "2026-10-16T20:57:27.898Z",
+  "dataset_id": "jpEhxkDxaYdRFKSKC",
+  "item_count": 11,
+  "saved_at_utc": "2026-10-16T20:57:34Z"
+ },
+ "items": [
+  {
+   "url": "https://www.segen.co.uk/portal/",
+   "label": "segen-uk-open",
+   "loadedUrl": "https://www.segen.co.uk/portal/",
+   "title": "Segen Portal Login | Open Your Segen UK Account",
+   "fetchedAtUtc": "2026-10-16T20:54:16.489Z",
+   "h1": [
+    "Portal.",
+    "New to Segen?"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "https://www.segen.co.uk/",
+     "id": "",
+     "cls": "bg-white flex p-2 corner-br corner-8",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [
+      "Search"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "s",
+       "id": "",
+       "required": false,
+       "label": "Search query",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "Search"
+    },
+    {
+     "index": 1,
+     "action": "",
+     "id": "",
+     "cls": "form mt-6 w-full md:w-96 md:max-w-full",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [
+      "Subscribe"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "email_address",
+       "id": "",
+       "required": false,
+       "label": "My email...",
+       "placeholder": "My email...",
+       "visible": true,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "Subscribe"
+    }
+   ],
+   "loose": [
+    {
+     "tag": "textarea",
+     "type": "textarea",
+     "name": "g-recaptcha-response",
+     "id": "g-recaptcha-response-100000",
+     "required": false,
+     "label": "",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": ""
+    }
+   ],
+   "iframes": [
+    "https://www.google.com/recaptcha/api2/anchor?ar=1&k=6Lc7XboqAAAAAFt89j0RuwhEWjNNd6Pjc3O5C-iL&co=aHR0cHM6Ly93d3cuc2VnZW4uY28udWs6NDQz&hl=en&v=4EDjxXf4knsx6UBM1L2V6cv8&size=invisible&anchor-ms=20000&execute-ms=30000&cb=qx33hxrvq8gt"
+   ],
+   "captchaHints": {
+    "recaptcha": true,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "Not a Segen customer yet?",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Open An Account",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "For Residential Installers Give your customers access to flexible finance for solar & storage.",
+     "h": "https://www.segen.co.uk/finance-for-residential-installers/"
+    },
+    {
+     "t": "Events & Training We like to get out and about, so find out where you can come along and join us or take advantage of our free training & webinars.",
+     "h": "https://www.segen.co.uk/events-and-training/"
+    },
+    {
+     "t": "Careers Do you want to make a positive impact on the world? Then why not join our passionate team.",
+     "h": "https://www.segen.co.uk/careers/"
+    },
+    {
+     "t": "Events & Training Find out where you can join us or take advantage of our free training & webinars.",
+     "h": "https://www.segen.co.uk/events-and-training/"
+    },
+    {
+     "t": "Contact",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Contact us today",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Open an Account Want access to our Segen benefits? Open a trade account today.",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "For Residential Installers Give your customers access to flexible finance for solar & storage.",
+     "h": "https://www.segen.co.uk/finance-for-residential-installers/"
+    },
+    {
+     "t": "Events & Training We like to get out and about, so find out where you can come along and join us or take advantage of our free training & webinars.",
+     "h": "https://www.segen.co.uk/events-and-training/"
+    },
+    {
+     "t": "Careers Do you want to make a positive impact on the world? Then why not join our passionate team.",
+     "h": "https://www.segen.co.uk/careers/"
+    },
+    {
+     "t": "Events & Training Find out where you can join us or take advantage of our free training & webinars.",
+     "h": "https://www.segen.co.uk/events-and-training/"
+    },
+    {
+     "t": "Contact",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Open an Account Want access to our Segen benefits? Open a trade account today.",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "https://portal.segen.co.uk/reseller/docs/Customer_Collections_PDF.pdf",
+     "h": "https://portal.segen.co.uk/reseller/docs/Customer_Collections_PDF.pdf"
+    },
+    {
+     "t": "Contact",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Open An Account",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Open an account",
+     "h": "https://segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Open An Account",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Register",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Register",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Register",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Register",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Register",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Open a trade account",
+     "h": "https://segen.co.uk/contact-us/open-an-account/"
+    },
+    {
+     "t": "Contact",
+     "h": "https://www.segen.co.uk/contact-us/open-an-account/"
+    }
+   ],
+   "bodyText": "Skip to content Not a Segen customer yet? Are you a homeowner? Portal Login Open An Account Search Modules View the best range of modules / solar panels / solar cells from trustworthy brands. Products by Supplier View our extensive range of modules from trustworthy brands. Offers View the latest offers across our full product portfolio. Accessories Complementary products to support your installation. Storage From single-phase storage to three-phase commercial storage, we have every type of battery storage available. Products by Supplier We have a strong portfolio of storage brands, find out more. Offers View the latest offers across our full product portfolio. Accessories Complementary products to support your installation. Inverters We stock a huge range of inverters, used on all kinds of installations from new build to commercial and utility situations. Products by Supplier View our variety of inverters from world-leading brands. Offers View the latest offers across our full product portfolio. Accessories Complementary products to support your installation. Mounting From traditional on-roof domestic arrays to large-scale ground mount requirements we cover the full range. Products by Supplier View our trusted brands for all installs, locations & surfaces. Offers View the latest offers across our full product portfolio. Accessories Complementary products to support your installation. Heat Pumps The latest addition to our portfolio, covering Heat Pumps, Cylinders and Accessories. Products by Supplier Industry leading brands available now. Offers View the latest offers across our full product portfolio. Accessories Complementary products to support your installation. EV Chargers Bringing you the best in standalone chargers, integrated PV solar charging systems and EV charger add-ons for existing PV systems. Products by Supplier Chosen specifically for the UK market, view our full range here. Offers View the latest offers across our full product portfolio. Accessories Complementary products to support your installation. Finance Flexible and affordable finance solutions for solar panels, energy storage systems, mounting and EV chargers. Why choose us We aim to provide highly competitive interest rates with flexible terms. For Commercial Installers Customised finance lending that fits every commercial project. For Residential Installers Give your customers access to flexible finance for solar & storage. Training Join us at industry trade shows throughout the year, our customer events and roadshows, register for regular training webinars and sign up for the Academy. Academy Inspirational training and courses for solar PV, energy storage systems, mounting and EV chargers. Events & Training We like to get out and about, so find out where you can come along and join us or take advantage of our free training & webinars. About Celebrating 20 years, we are the UKs largest wholesale distributor of Solar PV, energy storage systems, ev charger and Heat Pumps. Don’t just take our word for it – Find out more below! About Us We are focused on delivering an unrivalled product portfolio at fair prices. Careers Do you want to make a positive impact on the world? Then why not join our passionate team. Events & Training Find out where you can join us or take advantage of our free training & webinars. Segen Design Tool Our new Segen Design Tool will be available on our portal soon. News Keep up to date with industry-leading news from Segen. Hear it here first! Our Portal Our portal provides 24/7 live pricing, product availability and documentation! Meet The Team Like to put a face to a name? Let us introduce you to our team of experts. Homeowners Looking for key product and industry information, we have got you covered. Offers View the latest offers across our full product portfolio. Contact Whether you are new to Segen and want to open a trade account or you have a general enquiry, you can contact our team here. Open an Account Want access to our Segen benefits? Open a trade account today. Contact Us Have a general enquiry, or need to reset your password to our Segen Portal - Contact us here. HOW CAN WE HELP? Contact +44 (0)3309 000 141 FAQs Are your products available in stock? There’s live pricing 24/7 on the Segen customer portal. On every product page you’ll see the current availability, the stock location, and future availability so you can order your solar PV, storage, or heating system and receive delivery the next working day. Clever forecasting, over 20 years of experience in renewable energy has given our team the ability to ensure we have all the stock you need, when you want it, so you can complete your projects on time. Do you offer 24/7 support? Yes, you can find everything online 24/7 – there’s a wealth of information on the Segen customer portal from brochures, datasheets, product specifications, installation manuals, warranty documents, guides, design tools and configurators. Live stock levels, quotes and account information, invoices and design tools, the portal has it all! Also, Segen customers are assigned dedicated team members to assist with everything they need. There’s a Sales Manager who has a huge amount of product and industry knowledge, and the Fulfilment Manager who handles the logistics of the deliveries and makes sure they go smoothly. There’s a Technical Support Engineer on hand to help with any before, during, and post installation enquiries, and for any finance enquiries, there’s an expert on hand to keep accounts on track. What warranties are included? There are warranties available on all Segen products, and you can find out more and download warranty documents on the customer portal product pages. Often free extended warranties are available if products are registered online with manufacturers but also, extended warranties are available to purchase from Segen or the manufacturer directly, offering peace of mind to installer and system owner. Are there any current offers? There are always great package deals available from Segen with discounts on inverters, batteries and accessories. There’s a Clearance section where you can find end-of-line bargains, and you’ll find special offers from our top manufacturers on this page. Can I collect from your warehouse? Yes, you can collect orders from our warehouse in Medway, Kent in the southeast of England. Whatever size it might be from a set of stickers to a container of modules. Find out more about the collection process here https://portal.segen.co.uk/reseller/docs/Customer_Collections_PDF.pdf Do you offer finance? Yes, we provide highly competitive interest rates with flexible terms by working with leading banks in the industry. Let us do the work to help you. You can apply to become an IAR, Introducer Appointed Representative and start offering finance to your commercial clients. Useful links Academy News Events Offers About Us Contact Finance PORTAL Portal. Free up more time and get everything you need in one place with the Segen portal. Open An Account The industry standard. The Segen portal gives you free access to everything you’ll need for a smooth install. You have 24/7 access to our portal to browse, design, order products and brush up on industry news. Sign up easily today to get started. Open an account Portal login Segen’s Heat Pump Designer – our latest innovation. Segen’s Heat Pump Designer is our latest innovation. This new design tool helps you to create accurate systems with compatible components and accessories. You can now generate full systems and quotes quickly and easily. Ordering a heat pump system has never been so simple. Create personalised quotes Technical documentation within the tool Order within the tool Fully compatible accessories Heat Pump Designer Everything at your fingertips. Access to over 3000 products. Access to over 3000 products. Get the latest industry news from Segen. With industry-leading content, latest product launches and key events you can be sure to be in the know! Open An Account Regular special offers & exclusives. Regular special offers & exclusives. We are dedicated to offering fair and honest pricing across all our products with special offers that can save you time and money. Register Comprehensive system designer. Comprehensive system designer. Create custom quotes from your browser with a 30-day price lock and stock availability, data sheets, warranties and brochures. Register Training & Event opportunities. Training & Event opportunities. With exclusive training webinars, roadshows and live events you can assured to be kept up to date on the latest technological innovations. Register Clever configuration tools. Clever configuration tools. Get the lowest price using Quick Quote, perfect your storage sizing with Battery Calculator, and find compatible inverters with Quick Configurator. Register Extensive Product information and availability. Extensive Product information and availability. With live stocks levels and availability updates, you have full control over your future requirements and full transparency in what we can supply to you. Register You may also be interested in Modules We offer a range of technologies, sizes and efficiencies of modules / solar panel or solar cells, ready for any installation. Storage Storage goes hand in hand with solar PV allowing owners to run their homes and businesses on low-cost, sustainable energy, and is also cost-effective in standalone systems. Inverters We stock a huge range of Inverters available from a variety of world-leading brands that can be used across new builds to commercial and utility situations. Mounting Options to mount your panels on every roof type, including flat-roofs and in-roof solutions for a sleek finish. We also offer an extensive range of ground-mounted solutions. Heat Pumps The latest addition to our extensive portfolio, Heat Pumps are complimentary to solar PV and storage solutions, find out how you could offer full decarbonization solutions from our expert team. EV Chargers Choose from our chargers that are suitable for residential installations right up to commercial-scale solutions. New to Segen? Not a Segen Customer? Open a trade account Are you a homeowner? View homeowner information About Us Products Our Portal Events & Training Contact Academy Careers Modern Slavery Act Privacy Policy Segen Finance Complaints Procedure Terms Of Supply Terms Of Purchase Be the first to know. Subscribe to sign up to our newsletter: Subscribe Segen is the UK’s leading renewables distributor offering the largest portfolio of solar panels, energy storage systems, mounting, EV chargers and heat pumps – delivered the very next day! Protected by reCAPTCHA, Google’s Privacy Policy and Terms of Service apply. Registered Office +44 (0)3309 000 141 200 Fowler Avenue, Farnborough, GU14 7JP United Kingdom Copyright © 2026 – Segen UK. All Rights Reserved.",
+   "clickLog": [
+    "fail:Open a trade account:TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Open a trade account').f"
+   ],
+   "finalUrl": "https://www.segen.co.uk/portal/"
+  },
+  {
+   "url": "https://portal.segensolar.de/",
+   "label": "segen-de-reg",
+   "loadedUrl": "https://portal.segensolar.de/Home/Login?ReturnUrl=%2FReseller%2FReseller%2FResellerHome",
+   "title": "SegenSolar GmbH",
+   "fetchedAtUtc": "2026-10-16T20:54:27.528Z",
+   "h1": [],
+   "forms": [
+    {
+     "index": 0,
+     "action": "",
+     "id": "",
+     "cls": "",
+     "controlCount": 5,
+     "headings": [],
+     "buttons": [
+      "Back",
+      "ANMELDEN"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "username",
+       "id": "username",
+       "required": true,
+       "label": "Benutzername",
+       "placeholder": "Benutzername",
+       "visible": false,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "password",
+       "name": "password",
+       "id": "password",
+       "required": true,
+       "label": "Passwort",
+       "placeholder": "Passwort",
+       "visible": false,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "TOSAccepted",
+       "id": "TOSAccepted",
+       "required": false,
+       "label": "Ich akzeptiere SegenSolar GmbH's Cookies und Datenschutzbestimmungen.",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": "",
+       "value": "true"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "RememberMe",
+       "id": "RememberMe",
+       "required": false,
+       "label": "An diesem Computer angemeldet bleiben",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": "",
+       "value": "true"
+      },
+      {
+       "tag": "textarea",
+       "type": "textarea",
+       "name": "g-recaptcha-response",
+       "id": "g-recaptcha-response",
+       "required": false,
+       "label": "",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "Passwort vergessen? Ich akzeptiere SegenSolar GmbH's Cookies und Datenschutzbestimmungen. An diesem Computer angemeldet bleiben Back ANMELDEN"
+    }
+   ],
+   "loose": [
+    {
+     "tag": "input",
+     "type": "text",
+     "name": "username",
+     "id": "entraUsername",
+     "required": false,
+     "label": "Benutzername",
+     "placeholder": "Benutzername",
+     "visible": true,
+     "autocomplete": ""
+    }
+   ],
+   "iframes": [
+    "https://www.google.com/recaptcha/api2/anchor?ar=1&k=6LfjcVsUAAAAAI48mRZ_JU5lCcr1ACnq2nxpUEaq&co=aHR0cHM6Ly9wb3J0YWwuc2VnZW5zb2xhci5kZTo0NDM.&hl=en&v=4EDjxXf4knsx6UBM1L2V6cv8&size=normal&anchor-ms=20000&execute-ms=30000&cb=u8ovmtp736nz",
+    "https://www.google.com/recaptcha/api2/bframe?hl=en&v=4EDjxXf4knsx6UBM1L2V6cv8&k=6LfjcVsUAAAAAI48mRZ_JU5lCcr1ACnq2nxpUEaq&bft=0dAFcWeA6y-T8RHCJw9NpcrStZN-8A2ZiIfEQAJJOQEe9EWODK5E0YKgJnb2EdIua_UTf7pjIxJ-Py4cYdY6TmNjVFssV9Rih1Nw"
+   ],
+   "captchaHints": {
+    "recaptcha": true,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [],
+   "bodyText": "Sie sind bereits Kunde? Verwenden Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen: NÄCHSTE Privacy Policy | Cookie Policy Sie sind neu bei SegenSolar? Registrieren Sie sich kostenlos und profitieren Sie von den vielen Vorteilen als SegenSolar Kunde! Persönliche Ansprechpartner Lieferung innerhalb 24 bis 48 Stunden Lagerort in Schleiden Selbstabholung innerhalb 180 Minuten Produktportfolio mit starken Marken Verfügbarkeit in Echtzeit PV-Anlagenplaner Branchen-News, Produkt-Updates und -Neuheiten Jetzt Registrieren INSTALLATEUR ENDKUNDE",
+   "clickLog": [
+    "clicked:Jetzt Registrieren",
+    "clicked:INSTALLATEUR"
+   ],
+   "finalUrl": "https://portal.segensolar.de/Home/Login?ReturnUrl=%2FReseller%2FReseller%2FResellerHome"
+  },
+  {
+   "url": "https://www.rexel.de/",
+   "label": "rexel-home",
+   "loadedUrl": "https://www.rexel.de/",
+   "title": "Rexel Germany Elektrogroßhandel | Rexel Germany",
+   "fetchedAtUtc": "2026-10-16T20:54:35.892Z",
+   "h1": [
+    "Rexel Germany Elektrogroßhandel für Industrie und Elektrohandwerk"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "/search",
+     "id": "",
+     "cls": "h-100 w-100 ng-untouched ng-pristine ng-valid",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "",
+       "id": "searchMF",
+       "required": false,
+       "label": "HEADER_SEARCH_INPUT_PLACEHOLDER",
+       "placeholder": "Suchen Sie ein Produkt, eine Referenz, eine EAN-Nummer ...",
+       "visible": true,
+       "autocomplete": "off"
+      }
+     ],
+     "formText": ""
+    }
+   ],
+   "loose": [],
+   "iframes": [],
+   "captchaHints": {
+    "recaptcha": false,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "Messinstrumente (Aufnahme/Registrierung)",
+     "h": "https://www.rexel.de/Kategorien/Sanit%C3%A4r%2C-Heizung%2C-Klima/Messinstrumente-%28Aufnahme-Registrierung%29/c/HGEUK015830"
+    },
+    {
+     "t": "Registrierende und verarbeitende Feldgeräte",
+     "h": "https://www.rexel.de/Kategorien/Sanit%C3%A4r%2C-Heizung%2C-Klima/Registrierende-und-verarbeitende-Feldger%C3%A4te/c/HGEUK015840"
+    },
+    {
+     "t": "Jetzt registrieren",
+     "h": "https://www.rexel.de/register"
+    },
+    {
+     "t": "info Digital Partner",
+     "h": "https://www.rexel.de/rexeleasy/digital-partner"
+    },
+    {
+     "t": "info Anmeldung Retouren/Reklamation",
+     "h": "https://www.rexel.de/retouren-und-reklamationen"
+    }
+   ],
+   "bodyText": "place Unsere Standorte handyman Zeit sparen person Mein Konto shopping_cart 0 Warenkorb Rexel Germany Elektrogroßhandel für Industrie und Elektrohandwerk pause arrow_back Vorherige Folie anzeigen arrow_forward Nächste Folie anzeigen Werde Kunde bei uns! Es gibt viele gute Gründe, warum Du Kunde bei uns werden solltest! Als unser Kunde profitierst Du von einer Vielzahl digitaler Lösungen & Services, die Dein Einkaufserlebnis so angenehm und reibungslos wie möglich gestalten. Warum Du Kunde werden solltest: Bequem: Du hast sofortigen Zugriff auf unser Webshop-Sortiment. Flexibel: Wähle die Bestellformen, die am besten zu Dir und Deinen Projekten passen. Smart: Nutze unseren Support und unsere Beratung – online, per Telefon oder direkt in der Niederlassung. Ganz einfach: Wir bieten Dir maßgeschneiderte Lösungen und erstklassigen Service! Jetzt registrieren Werde Teil unseres Teams! Karriere Erlebe eine motivierende Arbeitsumgebung, in der Teamarbeit und Kreativität im Mittelpunkt stehen. Gemeinsam können wir erfolgreich sein und neue Höhen erreichen! people Zum Karrierebereich view_list Zur Übersicht Hier entdecken Hier entdecken Das Rexel Elektrohaus – Deine Anlaufstelle für Elektrotechnik Im Rexel Elektrohaus findest Du die Produkte, die von unseren Kunden am häufigsten genutzt werden. Entdecke eine umfangreiche Auswahl an Artikeln in beliebten Kategorien wie Installation, Lichttechnik, E-Mobility, Haustechnik, Photovoltaik, Hausgeräte und mehr. Unser Elektrohaus bietet Dir hochwertige Lösungen, die von unseren Kunden geschätzt werden. Hier findest Du alles, was Du für Deine Projekte benötigst, und erlebe erstklassige Elektrotechnik, die perfekt auf Deine Bedürfnisse abgestimmt ist. Besuche uns und entdecke die Vielfalt im Rexel Elektrohaus! house Zum Elektrohaus emoji_objects Digitale Lösungen info Datanorm-Portal info Digital Partner info Digital Services info eRechnung info Etiketten Lagerwirtschaft info e-Vorschriften App info Rexel-App Mehr expand_more emoji_objects Industriedienstleistungen info Alle Industriedienstleistungen info Austausch energieeffiziente Klimageräte info Instandhaltungsdienstleistungen info Instandhaltungssoftware info IT-Netzwerkschränke info Kanban-Lösungen info Licht-Lösungen Mehr expand_more emoji_objects Lösungen / Services info Anmeldung Retouren/Reklamation info Container Lösungen info Dein Haus der Zukunft info Energieeffizienz-Gesetz info GAEB Ausschreibungen info Großspeicher info Mittelspannungskonzept Mehr expand_more Unsere Top Kategorien Alle Kategorien anzeigen → Installation Lichttechnik Industriekomponenten Kabel & Leitungen Schalter, Steckdosen & Stecker Werkzeuge Rexel Germany Elektrogroßhandel für Industrie und Elektrohandwerk Willkommen im Rexel Germany Webshop, Ihrem vertrauenswürdigen Partner für hochwertige Elektrotechnik-Produkte und innovative Lösungen. Wir bieten Industrieunternehmen ein umfangreiches Sortiment an elektrotechnischen Komponenten und kompetente Services rund um Energiemonitoring, Supply Chain und Digitalisierung an. Auch das Elektrohandwerk, Facility Management und öffentliche Betriebe können mit einer Rexel Germany Kundennummer auf riesiges Produktportfolio der Elektrotechnik zugreifen. Als registrierter Kunde (bitte Gewerbeanmeldung bereit halten) können Sie in Echtzeit auf umfangreiche Produktinformationen, Verfügbarkeiten und Ihre persönlichen Preise zugreifen. Nutzen Sie unsere praktische eVorschriften App oder lassen Sie sich von unseren Experten die KNX Eigenheimlösungen einbaufertig vorbereiten. Unser Maintenance Team kümmert sich gerne um die Modernisierung Ihrer Fertigungsprozesse. Rexel Germany Ethik & Compliance Informationen nach dem ElektroG und dem BattG Nachhaltigkeit Presse Lösungen Über Newlec Über BizLine Downloads Zertifikate Lieferkettengesetz Fremdfirmenordnung Rexel-Metallpreise Karriere Arbeiten bei Rexel Stellenangebote Support Kontakt FAQ Standortsuche Retourenrichtlinien ©2026 Rexel Rexel Internationalopen_in_new Impressum AGB & Zusatz Datenschutz Sicherheitsrichtlinien Cookie-Einstellungen Ein Unternehmen der Rexel Gruppe www.rexel.com",
+   "clickLog": [],
+   "finalUrl": "https://www.rexel.de/"
+  },
+  {
+   "url": "https://www.libra.energy/en/company-information",
+   "label": "libra-become",
+   "loadedUrl": "https://www.libra.energy/en/company-information",
+   "title": "Contact details | Libra Energy",
+   "fetchedAtUtc": "2026-10-16T20:54:51.082Z",
+   "h1": [],
+   "forms": [],
+   "loose": [
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "",
+     "required": false,
+     "label": "Marketing",
+     "placeholder": "",
+     "visible": true,
+     "autocomplete": "",
+     "value": "on"
+    },
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "",
+     "required": false,
+     "label": "Functional",
+     "placeholder": "",
+     "visible": true,
+     "autocomplete": "",
+     "value": "on"
+    },
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "",
+     "required": false,
+     "label": "Essential",
+     "placeholder": "",
+     "visible": true,
+     "autocomplete": "",
+     "value": "on"
+    }
+   ],
+   "iframes": [
+    "https://app.usercentrics.eu/browser-sdk/4.61.0/cross-domain-bridge.html"
+   ],
+   "captchaHints": {
+    "recaptcha": false,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "Log in",
+     "h": "https://www.libra.energy/en/account/login"
+    },
+    {
+     "t": "{\"@context\":\"https://schema.org\",\"@type\":\"ImageObject\",\"@id\":\"//images.eu.ctfassets.net/yjeeq749tn4k/6oyXpnXH0N4gJvQ9jQDJjk/280cb718bcb28104d170af459f342c39/contact-icon1.png#img\",\"contentUrl\":\"//images.eu.ctfassets.net/yjeeq749tn4k/6oyXpnXH0N4gJvQ9jQDJjk/280cb718bcb28104d170af459f342c39/contact-icon1.png\",\"url\":\"//images.eu.ctfassets.net/yjeeq749tn4k/6oyXpnXH0N4gJvQ9jQDJjk/280cb718bcb28104d170af459f342c39/contact-icon1.png\",\"caption\":\"Customer Support\",\"width\":\"32\",\"height\":\"32\"}Customer Support",
+     "h": "https://www.libra.energy/en/contact"
+    },
+    {
+     "t": "{\"@context\":\"https://schema.org\",\"@type\":\"ImageObject\",\"@id\":\"//images.eu.ctfassets.net/yjeeq749tn4k/3UUTP2Cal6Sjs6dcG2HDfu/3759d3cd7b520faff6d3ee8498cc1bd6/klantworden-icon1.png#img\",\"contentUrl\":\"//images.eu.ctfassets.net/yjeeq749tn4k/3UUTP2Cal6Sjs6dcG2HDfu/3759d3cd7b520faff6d3ee8498cc1bd6/klantworden-icon1.png\",\"url\":\"//images.eu.ctfassets.net/yjeeq749tn4k/3UUTP2Cal6Sjs6dcG2HDfu/3759d3cd7b520faff6d3ee8498cc1bd6/klantworden-icon1.png\",\"caption\":\"Become a customer\",\"width\":\"32\",\"height\":\"32\"}Become a customer",
+     "h": "https://www.libra.energy/en/account/register"
+    },
+    {
+     "t": "{\"@context\":\"https://schema.org\",\"@type\":\"ImageObject\",\"@id\":\"//images.eu.ctfassets.net/yjeeq749tn4k/4xmwo0A60wZFTsgrIXXiNa/cb82b0d777bf9e8c03d5f5183da4b310/retour-icon.png#img\",\"contentUrl\":\"//images.eu.ctfassets.net/yjeeq749tn4k/4xmwo0A60wZFTsgrIXXiNa/cb82b0d777bf9e8c03d5f5183da4b310/retour-icon.png\",\"url\":\"//images.eu.ctfassets.net/yjeeq749tn4k/4xmwo0A60wZFTsgrIXXiNa/cb82b0d777bf9e8c03d5f5183da4b310/retour-icon.png\",\"caption\":\"Retour icon\",\"width\":\"32\",\"height\":\"32\"}Return request",
+     "h": "https://www.libra.energy/en/academy/how-do-i-register-my-return-online"
+    },
+    {
+     "t": "customersupport@libra.energy",
+     "h": "mailto:customersupport@libra.energy"
+    }
+   ],
+   "bodyText": "Full-service wholesaler Direct advice from our specialists Unique quality checks on our products What are you looking for? Log in Home Company information Contact information: Libra Energy B.V. Eendrachtsstraat 199 1951 AX Velsen-Noord Netherlands Tel: +31 (0)88 88 80 300 E-Mail: customersupport@libra.energy Commercial register entry Registered with the chamber of commerce Register court: Libra Energy International B.V. Registration number: 37140128 (chamber of commerce number) VAT identification number NL819150757B01 (VAT number) Responsible for the content Bram van Zalk Customer Support About Libra Energy Products Follow us Opens in a new tab Opens in a new tab Opens in a new tab Opens in a new tab Opens in a new tab General terms and conditions Privacy statement Cookies © 2007 - 2026 Libra Energy B.V. Part of the Rensa Family Privacy Settings This site uses third-party website tracking technologies to provide and continually improve our services, and to display advertisements according to users' interests. I agree and may revoke or change my consent at any time with effect for the future. Marketing Functional Essential More information Save Settings Accept All",
+   "clickLog": [
+    "fail:Become a customer:TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Become a customer').firs"
+   ],
+   "finalUrl": "https://www.libra.energy/en/company-information"
+  },
+  {
+   "url": "https://westernsolar.ie/register-trade-account/",
+   "label": "westernsolar-ie",
+   "loadedUrl": "https://westernsolar.ie/register-trade-account/",
+   "title": "Register Trade Account - Western Solar",
+   "fetchedAtUtc": "2026-10-16T20:55:04.186Z",
+   "h1": [
+    "Register Trade Account"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "",
+     "id": "",
+     "cls": "woocommerce-form woocommerce-form-register register",
+     "controlCount": 21,
+     "headings": [],
+     "buttons": [
+      "Register"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "username",
+       "id": "reg_username",
+       "required": false,
+       "label": "Username *",
+       "placeholder": "Username *",
+       "visible": true,
+       "autocomplete": "username"
+      },
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "email",
+       "id": "reg_email",
+       "required": false,
+       "label": "Email address *",
+       "placeholder": "Email address *",
+       "visible": true,
+       "autocomplete": "email"
+      },
+      {
+       "tag": "input",
+       "type": "password",
+       "name": "password",
+       "id": "reg_password",
+       "required": false,
+       "label": "Password *",
+       "placeholder": "Password *",
+       "visible": true,
+       "autocomplete": "new-password"
+      },
+      {
+       "tag": "select",
+       "type": "select-one",
+       "name": "b2bking_registration_roles_dropdown",
+       "id": "b2bking_registration_roles_dropdown",
+       "required": true,
+       "label": "User Type *",
+       "placeholder": "User Type *",
+       "visible": false,
+       "autocomplete": "",
+       "optionCount": 2,
+       "options": [
+        "Trade Customer",
+        "Individual Customer"
+       ],
+       "optgroups": []
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "b2bking_custom_field_3369",
+       "id": "b2bking_field_3369",
+       "required": true,
+       "label": "Company Representative Name *",
+       "placeholder": "Enter your Company Representative Name",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "b2bking_custom_field_4448",
+       "id": "b2bking_field_4448",
+       "required": true,
+       "label": "Company Registration Number *",
+       "placeholder": "Company Registration Number *",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "b2bking_custom_field_3013",
+       "id": "b2bking_field_3013",
+       "required": true,
+       "label": "Company Name *",
+       "placeholder": "Enter your company name here...",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "b2bking_custom_field_7725",
+       "id": "b2bking_field_7725",
+       "required": true,
+       "label": "Preferred Email for Invoices / Statements *",
+       "placeholder": "Preferred Email for Invoices / Statements",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "tel",
+       "name": "b2bking_custom_field_3018",
+       "id": "b2bking_field_3018",
+       "required": true,
+       "label": "Company Phone Number *",
+       "placeholder": "Enter your Company phone here...",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "b2bking_custom_field_3014",
+       "id": "b2bking_field_3014",
+       "required": true,
+       "label": "Company Address *",
+       "placeholder": "Enter your Company address here...",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "b2bking_custom_field_3016",
+       "id": "b2bking_field_3016",
+       "required": true,
+       "label": "Town / City *",
+       "placeholder": "Enter your town / city here...",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "b2bking_custom_field_3017",
+       "id": "b2bking_field_3017",
+       "required": true,
+       "label": "Eircode *",
+       "placeholder": "Enter your postcode / Eircode here...",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "b2bking_custom_field_3020",
+       "id": "b2bking_vat_number_registration_field",
+       "required": true,
+       "label": "VAT Number *",
+       "placeholder": "Enter your VAT number here...",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "b2bking_custom_field_3373",
+       "id": "b2bking_field_3373",
+       "required": false,
+       "label": "Company Website",
+       "placeholder": "Company Website",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "b2bking_custom_field_3371_option_1",
+       "id": "",
+       "required": false,
+       "label": "Domestic Solar",
+       "placeholder": "Domestic Solar",
+       "visible": true,
+       "autocomplete": "",
+       "value": "1"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "b2bking_custom_field_3371_option_2",
+       "id": "",
+       "required": false,
+       "label": "Commercial Solar",
+       "placeholder": "Commercial Solar",
+       "visible": true,
+       "autocomplete": "",
+       "value": "1"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "b2bking_custom_field_3371_option_3",
+       "id": "",
+       "required": false,
+       "label": "New Build Solar",
+       "placeholder": "New Build Solar",
+       "visible": true,
+       "autocomplete": "",
+       "value": "1"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "b2bking_custom_field_3371_option_4",
+       "id": "",
+       "required": false,
+       "label": "Off Grid Solar",
+       "placeholder": "Off Grid Solar",
+       "visible": true,
+       "autocomplete": "",
+       "value": "1"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "b2bking_custom_field_3371_option_5",
+       "id": "",
+       "required": false,
+       "label": "EV Charging",
+       "placeholder": "EV Charging",
+       "visible": true,
+       "autocomplete": "",
+       "value": "1"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "b2bking_custom_field_3371_option_6",
+       "id": "",
+       "required": false,
+       "label": "Trade Customer",
+       "placeholder": "Trade Customer",
+       "visible": true,
+       "autocomplete": "",
+       "value": "1"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "b2bking_custom_field_3371_option_7",
+       "id": "",
+       "required": false,
+       "label": "Homeowner",
+       "placeholder": "Homeowner",
+       "visible": true,
+       "autocomplete": "",
+       "value": "1"
+      }
+     ],
+     "formText": "Username * Email address * Password * Company Representative Name * Company Registration Number * Company Name * Preferred Email for Invoices / Statements * Company Phone Number * Company Address * Town / City * Eircode * VAT Number * Company Website Nature of Business/Trade * Domestic Solar Commercial Solar New Build Solar Off Grid Solar EV Charging Trade Customer Homeowner Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our privacy policy. Register"
+    },
+    {
+     "index": 1,
+     "action": "https://westernsolar.ie/wp-login.php",
+     "id": "loginform",
+     "cls": "",
+     "controlCount": 3,
+     "headings": [],
+     "buttons": [
+      "Log In"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "log",
+       "id": "user_login",
+       "required": false,
+       "label": "Username or Email Address",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": "username"
+      },
+      {
+       "tag": "input",
+       "type": "password",
+       "name": "pwd",
+       "id": "user_pass",
+       "required": false,
+       "label": "Password",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": "current-password"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "rememberme",
+       "id": "rememberme",
+       "required": false,
+       "label": "Remember Me",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": "",
+       "value": "forever"
+      }
+     ],
+     "formText": "Username or Email Address Password Remember Me"
+    }
+   ],
+   "loose": [
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "cmplz-functional-optin",
+     "required": false,
+     "label": "Functional",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "",
+     "value": "1"
+    },
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "cmplz-preferences-optin",
+     "required": false,
+     "label": "Preferences",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "",
+     "value": "1"
+    },
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "cmplz-statistics-optin",
+     "required": false,
+     "label": "Statistics",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "",
+     "value": "1"
+    },
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "cmplz-marketing-optin",
+     "required": false,
+     "label": "Marketing",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "",
+     "value": "1"
+    }
+   ],
+   "iframes": [],
+   "captchaHints": {
+    "recaptcha": true,
+    "hcaptcha": false,
+    "turnstile": true,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "{title}",
+     "h": "https://westernsolar.ie/register-trade-account/#"
+    },
+    {
+     "t": "Skip to content",
+     "h": "https://westernsolar.ie/register-trade-account/#content"
+    },
+    {
+     "t": "Trade Account",
+     "h": "https://westernsolar.ie/register-trade-account/"
+    },
+    {
+     "t": "",
+     "h": "https://westernsolar.ie/my-account/"
+    },
+    {
+     "t": "Trade Account",
+     "h": "https://westernsolar.ie/register-trade-account/"
+    },
+    {
+     "t": "",
+     "h": "https://westernsolar.ie/my-account/"
+    },
+    {
+     "t": "Account",
+     "h": "https://westernsolar.ie/my-account/"
+    },
+    {
+     "t": "Trade Account",
+     "h": "https://westernsolar.ie/register-trade-account/"
+    },
+    {
+     "t": "",
+     "h": "https://westernsolar.ie/my-account/"
+    },
+    {
+     "t": "Lost your password?",
+     "h": "https://westernsolar.ie/my-account/lost-password/"
+    },
+    {
+     "t": "",
+     "h": "https://westernsolar.ie/register-trade-account/#"
+    }
+   ],
+   "bodyText": "Western Solar Wholesale - Cookie Preferences We use necessary cookies to run our store and, with your permission, analytics and marketing cookies to improve Western Solar Wholesale. You can accept, deny or manage your preferences at any time. Accept Deny View preferences Cookie Policy Privacy Policy Skip to content ROI: +353 65 705 0100 info@westernsolar.ie NI: +44 28 3002 2050 info@westernsolar.uk Home About Shop Solar Brand Solar Advice Trade Account Contact Home - Register Trade Account Register Trade Account Register Username * Email address * Password * Company Representative Name * Company Registration Number * Company Name * Preferred Email for Invoices / Statements * Company Phone Number * Company Address * Town / City * Eircode * VAT Number * Company Website Nature of Business/Trade * Domestic Solar Commercial Solar New Build Solar Off Grid Solar EV Charging Trade Customer Homeowner Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our privacy policy. Register Welcome to Western Solar, your trusted wholesale provider of solar photovoltaic (PV) solutions. We specialize in supplying high-quality solar panels and related components to professionals in the solar industry, including installers, contractors, and distributors. Quick Links Account About Contact Us Solar Savings & Grants Privacy Policy Refunds & Returns Policy Popular Solar Panels Inverters Batteries Accessories Find Us Ireland - Head Office: Derrymore Lahinch Co Clare, V95 VR6P +353 65 7050100 info@westernsolar.ie Find Us Northern Ireland - Newry Office: Unit1 Craigmore Rd, Newry Co. Down, BT35 6PL +44 2830 022050 info@westernsolar.uk Derrymore Energy Ltd t/a Western Solar (R.O.I) Company Reg No: 734452 Western Solar (R.O.I.) Business Reg No: 726222 ROI Vat No: 4159265OH ROI EORI No: 4159265OH Derrymore Energy Limited (N.I) Company Reg No: NI724763 N.I. Vat No: GB487020001 N.I. EORI No: XI487020001000 G.B EORI No: GB487020001000 © 2026 Western Solar Made With ❤ By Scroll to Top",
+   "clickLog": [],
+   "finalUrl": "https://westernsolar.ie/register-trade-account/"
+  },
+  {
+   "url": "https://isolarpro.de/pages/b2b",
+   "label": "isolarpro-at",
+   "loadedUrl": "https://isolarpro.de/pages/b2b",
+   "title": "Händler Registrierung",
+   "fetchedAtUtc": "2026-10-16T20:55:45.000Z",
+   "h1": [
+    "Händler Registrierung"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "/search",
+     "id": "",
+     "cls": "search-bar",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [
+      "Löschen",
+      "Schließen"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "q",
+       "id": "",
+       "required": false,
+       "label": "Suche...",
+       "placeholder": "Suche...",
+       "visible": true,
+       "autocomplete": "off"
+      }
+     ],
+     "formText": "Löschen Schließen"
+    },
+    {
+     "index": 1,
+     "action": "/account/login",
+     "id": "header_customer_login",
+     "cls": "form",
+     "controlCount": 2,
+     "headings": [
+      "Einloggen in meinen Account"
+     ],
+     "buttons": [],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "customer[email]",
+       "id": "login-customer[email]",
+       "required": true,
+       "label": "Email",
+       "placeholder": "Email",
+       "visible": false,
+       "autocomplete": "email"
+      },
+      {
+       "tag": "input",
+       "type": "password",
+       "name": "customer[password]",
+       "id": "login-customer[password]",
+       "required": true,
+       "label": "Passwort",
+       "placeholder": "Passwort",
+       "visible": false,
+       "autocomplete": "current-password"
+      }
+     ],
+     "formText": "Einloggen in meinen Account Gib Deine Email und Passwort ein: Login"
+    },
+    {
+     "index": 2,
+     "action": "/account/recover",
+     "id": "",
+     "cls": "form",
+     "controlCount": 1,
+     "headings": [
+      "Passwort wiederherstellen"
+     ],
+     "buttons": [],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "email",
+       "id": "recover-customer[recover_email]",
+       "required": true,
+       "label": "Email",
+       "placeholder": "Email",
+       "visible": false,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "Passwort wiederherstellen Gib Deine Email ein: wiederherstellen"
+    },
+    {
+     "index": 4,
+     "action": "https://app.powerfulform.com/api/front/form/120039/send",
+     "id": "",
+     "cls": "g-container",
+     "controlCount": 10,
+     "headings": [],
+     "buttons": [
+      "Browse file",
+      "Davor",
+      "Einreichen"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "text-1",
+       "id": "120039-text-1",
+       "required": false,
+       "label": "Ansprechpartner *",
+       "placeholder": "Ansprechpartner",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "text",
+       "id": "120039-text",
+       "required": false,
+       "label": "Firma *",
+       "placeholder": "Firma",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "email",
+       "id": "120039-email",
+       "required": false,
+       "label": "Email *",
+       "placeholder": "Email",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "phone-1",
+       "id": "120039-phone-1",
+       "required": false,
+       "label": "Telefon *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "number",
+       "name": "number-2",
+       "id": "120039-number-2",
+       "required": false,
+       "label": "Postleitzahl *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "text-2",
+       "id": "120039-text-2",
+       "required": false,
+       "label": "Ort *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "text-3",
+       "id": "120039-text-3",
+       "required": false,
+       "label": "Straße *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "number",
+       "name": "number-1",
+       "id": "120039-number-1",
+       "required": false,
+       "label": "Hausnummer *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "file",
+       "name": "",
+       "id": "temp-for-120039-file2-1",
+       "required": false,
+       "label": "Gewerbeschein *",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": "",
+       "accept": ""
+      },
+      {
+       "tag": "input",
+       "type": "file",
+       "name": "file2-1",
+       "id": "temp-for-120039-file2-1_",
+       "required": false,
+       "label": "temp-for-120039-file2-1_",
+       "placeholder": "Choose file or drag here",
+       "visible": false,
+       "autocomplete": "",
+       "accept": ""
+      }
+     ],
+     "formText": "Ansprechpartner * Firma * Email * Telefon * Postleitzahl * Ort * Straße * Hausnummer * Gewerbeschein * Choose file or drag here Supported format: JPG, JPEG,DOCX,XLSX, PNG, GIF, SVG. Browse file Im Rahmen der Registrierung als IsolarPro-Kunde müssen geeignete Nachweise vorgelegt werden, wie z.B. Gewerbeschein, Firmenbuchauszug oder Berufsberechtigung. (jpeg.jpg.png.pdf.docx.xlsx) Einreichen"
+    },
+    {
+     "index": 5,
+     "action": "/contact#footer-newsletter",
+     "id": "footer-newsletter",
+     "cls": "footer__newsletter-form",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [
+      "Abschicken"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "contact[email]",
+       "id": "footer[footer][contact][email]",
+       "required": true,
+       "label": "Deine Email",
+       "placeholder": "Deine Email",
+       "visible": true,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "Abschicken"
+    }
+   ],
+   "loose": [],
+   "iframes": [
+    "https://isolarpro.de/web-pixels@9f5e2762wb720532ap19708c42m93b2bec3/custom/web-pixel-198246784@1/sandbox/modern/pages/b2b",
+    "https://isolarpro.de/web-pixels@9f5e2762wb720532ap19708c42m93b2bec3/custom/web-pixel-268861824@1/sandbox/modern/pages/b2b",
+    "https://isolarpro.de/web-pixels@9f5e2762wb720532ap19708c42m93b2bec3/custom/web-pixel-315064704@1/sandbox/modern/pages/b2b",
+    "https://isolarpro.de/web-pixels@9f5e2762wb720532ap19708c42m93b2bec3/custom/web-pixel-shopify-custom-pixel@0530/sandbox/modern/pages/b2b"
+   ],
+   "captchaHints": {
+    "recaptcha": true,
+    "hcaptcha": true,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "B2B Registrierung",
+     "h": "https://isolarpro.de/pages/b2b"
+    },
+    {
+     "t": "",
+     "h": "https://isolarpro.de/account/login"
+    },
+    {
+     "t": "Konto",
+     "h": "https://isolarpro.de/account/login"
+    },
+    {
+     "t": "Erstelle ein Konto",
+     "h": "https://isolarpro.de/account/register"
+    },
+    {
+     "t": "Passwort zurücksetzen",
+     "h": "https://isolarpro.de/account#recover-password"
+    },
+    {
+     "t": "B2B Registrierung",
+     "h": "https://isolarpro.de/pages/b2b"
+    }
+   ],
+   "bodyText": "Direkt zum Inhalt ✨Bequem online bestellen 🚚 Lieferung in 10 Werktagen 💰 2% Rabatt bei Vorkasse 📍Abholung kostenlos an 4 Lagerstandorten iSolarPro Einloggen / Registrieren Konto 0 Warenkorb % Aktionen Home Produkt-Kategorien Marken B2B Registrierung Reklamation Jobs Angebotsanfrage Hux Home PRODUKTE Sponsorings Händler Registrierung Ansprechpartner * Firma * Email * Telefon * Postleitzahl * Ort * Straße * Hausnummer * Gewerbeschein * Choose file or drag here Supported format: JPG, JPEG,DOCX,XLSX, PNG, GIF, SVG. Browse file Im Rahmen der Registrierung als IsolarPro-Kunde müssen geeignete Nachweise vorgelegt werden, wie z.B. Gewerbeschein, Firmenbuchauszug oder Berufsberechtigung. (jpeg.jpg.png.pdf.docx.xlsx) Einreichen PV & Solaranlage im Shop online kaufen und auf Wunsch die Lieferung und Abholung an einem unserer 4 Standorte wählen Online bestellen und bequem liefern lassen. Oder Sie sparen Versandkosten durch Selbstabholung. Wir akzeptieren an keinem Standort Bargeldzahlungen! Lager Moers / Zentrallager + +49 179 66 22 958 Adresse Bullermannshof 11 47441 Moers Tor 20 Beratungs- & Abholzeiten Standort Moers: Montag bis Freitag: 09:30–18:00 Uhr Samstag: 09:30–13:00 Uhr Telefon +49 179 66 22 958 Infos Bitte am Schiebetor bei iSolarPro GmbH klingeln Lager Berlin-Werneuchen + +49 176 977 23 423 Adresse Freienwalder Str. 12c 16356 Werneuchen Öffnungszeiten Jeden Freitag 10:00-18:00 Uhr Telefon +49 176 977 23 423 Infos Wir akzeptieren keine Bargeldzahlungen Lager Ellweiler + +49 176 977 23 422 Adresse Neubrücker Mühle 1 55765 Ellweiler bei Gase-Center-Fuchs Öffnungszeiten Montag–Samstag: 10:00–18:00 Uhr Telefon +49 176 977 23 422 Infos Wir akzeptieren keine Bargeldzahlungen Lager Hanau + +49 176 977 23 416 Adresse Breslauer Straße 27 63452 Hanau Öffnungszeiten Dienstag–Freitag: 09:30–18:00 Uhr Samstag: 09:00–13:00 Uhr Telefon +49 176 977 23 416 +49 155 63749622 Infos Wir akzeptieren keine Bargeldzahlungen KATEGORIEN Wechselrichter Balkonkraftwerke Wallbox & PV-Ladetechnik PV-Speicher PV Anlagen PV-Komplettset Solarmodule Luftwärmepumpen SERVICE LINKS Widerruf Kontakt Kategorien Sponsorings Impressum Datenschutz Widerrufsbelehrung AGB Versandkosten & Versandbedingungen NEWSLETTER Abschicken Wir akzeptieren ☀️ Sonne tanken.​ Angebote sichern. Wähle dein Solar-Thema und erhalte passende Angebote und Tipps per E-Mail. – direkt in dein Postfach. Balkonkraftwerke Solaranlagen & Solarmodule Stromspeicher Komplettsets mit Speicher Generelle Rabatte",
+   "clickLog": [],
+   "finalUrl": "https://isolarpro.de/pages/b2b"
+  },
+  {
+   "url": "https://www.shop-rebor.com/pages/installateur-registratie",
+   "label": "rebor-nl",
+   "loadedUrl": "https://www.shop-rebor.com/en/pages/installer-registration",
+   "title": "Installer Registration for B2B Account | Rebor BV",
+   "fetchedAtUtc": "2026-10-16T20:55:50.425Z",
+   "h1": [
+    "Installer registration",
+    "Registration for installers"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "/en/localization",
+     "id": "HeaderCountryMobileForm-{{ uid }}",
+     "cls": "localization-form",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [
+      "Netherlands | EUR €"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "search",
+       "name": "country_filter",
+       "id": "country-filter-input-sections--30515577028935__header",
+       "required": false,
+       "label": "Search",
+       "placeholder": "Search",
+       "visible": false,
+       "autocomplete": "off"
+      }
+     ],
+     "formText": "Country/region Netherlands | EUR € Search Austria EUR € Belgium EUR € Bulgaria EUR € Croatia EUR € Czechia EUR € Denmark EUR € Estonia EUR € Finland EUR € France EUR € Germany EUR € Greece EUR € Hungary EUR € Ireland EUR € Italy EUR € Latvia EUR € Lithuania EUR € Luxembourg EUR € Netherlands EUR € Poland EUR € Portugal EUR € Romania EUR € Slovakia EUR € Slovenia EUR € Spain EUR € Sweden EUR € Switzerland EUR €"
+    },
+    {
+     "index": 2,
+     "action": "/en/search",
+     "id": "",
+     "cls": "search search-modal__form",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "search",
+       "name": "q",
+       "id": "Search-In-Modal",
+       "required": false,
+       "label": "Search",
+       "placeholder": "Search",
+       "visible": true,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "Search"
+    },
+    {
+     "index": 3,
+     "action": "",
+     "id": "",
+     "cls": "sb2b__registration-form w-100",
+     "controlCount": 12,
+     "headings": [],
+     "buttons": [
+      "Submit registration"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "1143588997132000",
+       "id": "1143588997132000",
+       "required": false,
+       "label": "Company name",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "7890025711410000",
+       "id": "7890025711410000",
+       "required": false,
+       "label": "VAT number",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "1596925079305000",
+       "id": "1596925079305000",
+       "required": false,
+       "label": "Street and house number",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "1581009995252000",
+       "id": "1581009995252000",
+       "required": false,
+       "label": "Postal code",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "8052986224020000",
+       "id": "8052986224020000",
+       "required": false,
+       "label": "City",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "5429056103150000",
+       "id": "5429056103150000",
+       "required": false,
+       "label": "First name",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "2563621789080000",
+       "id": "2563621789080000",
+       "required": false,
+       "label": "Last name",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "1130777117398000",
+       "id": "1130777117398000",
+       "required": false,
+       "label": "Phone number",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "1194435971501000",
+       "id": "1194435971501000",
+       "required": false,
+       "label": "Email address",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "password",
+       "name": "1837795343270000",
+       "id": "1837795343270000",
+       "required": false,
+       "label": "Password",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "textarea",
+       "type": "textarea",
+       "name": "1066470809114000",
+       "id": "1066470809114000",
+       "required": false,
+       "label": "How many PV and/or battery storage systems do you install per month?",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "1310747559209000",
+       "id": "1310747559209000",
+       "required": false,
+       "label": "I agree to the General Terms and Conditions",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": "",
+       "value": "on"
+      }
+     ],
+     "formText": "Company name * VAT number * Street and house number * Postal code * City * First name * Last name * Phone number * Email address * Password * How many PV and/or battery storage systems do you install per month? I agree to the General Terms and Conditions Submit registration"
+    },
+    {
+     "index": 5,
+     "action": "/en/contact#ContactFooter",
+     "id": "ContactFooter",
+     "cls": "footer__newsletter newsletter-form",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "contact[email]",
+       "id": "NewsletterForm--sections--30515576963399__footer",
+       "required": true,
+       "label": "Email",
+       "placeholder": "Email",
+       "visible": true,
+       "autocomplete": "email"
+      }
+     ],
+     "formText": "Email"
+    }
+   ],
+   "loose": [],
+   "iframes": [
+    "https://www.google.com/shopping/merchantverse/?screenWidth=1920&screenHeight=1080&origin=https%3A%2F%2Fwww.shop-rebor.com&position=RIGHT_BOTTOM&merchant_id=5617476694",
+    "https://www.shop-rebor.com/web-pixels@9f5e2762wb720532ap19708c42m93b2bec3/custom/web-pixel-297238855@2/sandbox/modern/en/pages/installer-registration",
+    "https://www.shop-rebor.com/web-pixels@9f5e2762wb720532ap19708c42m93b2bec3/custom/web-pixel-310346055@1/sandbox/modern/en/pages/installer-registration",
+    "https://www.shop-rebor.com/web-pixels@9f5e2762wb720532ap19708c42m93b2bec3/custom/web-pixel-338166087@1/sandbox/modern/en/pages/installer-registration",
+    "https://www.shop-rebor.com/web-pixels@9f5e2762wb720532ap19708c42m93b2bec3/custom/web-pixel-shopify-custom-pixel@0530/sandbox/modern/en/pages/installer-registration"
+   ],
+   "captchaHints": {
+    "recaptcha": true,
+    "hcaptcha": true,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "Skip to content",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#MainContent"
+    },
+    {
+     "t": "Log in",
+     "h": "https://account.shop-rebor.com/profile?locale=en&region_country=NL&buyer_flags=<redacted-jwt>&consent_id=aa3f40b9-f3cc-4331-8330-d26423669b4b&consent=a1m1p1"
+    },
+    {
+     "t": "Installer registration",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration"
+    },
+    {
+     "t": "Log in",
+     "h": "https://account.shop-rebor.com/?locale=en&region_country=NL&buyer_flags=<redacted-jwt>&consent_id=aa3f40b9-f3cc-4331-8330-d26423669b4b&consent=a1m1p1"
+    },
+    {
+     "t": "Austria EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Belgium EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Bulgaria EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Croatia EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Czechia EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Denmark EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Estonia EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Finland EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "France EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Germany EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Greece EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Hungary EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Ireland EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Italy EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Latvia EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Lithuania EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Luxembourg EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Netherlands EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Poland EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Portugal EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Romania EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Slovakia EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Slovenia EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Spain EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Sweden EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Switzerland EUR €",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Nederlands",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Deutsch",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "English",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Log in",
+     "h": "https://account.shop-rebor.com/profile?locale=en&region_country=NL&buyer_flags=<redacted-jwt>&consent_id=aa3f40b9-f3cc-4331-8330-d26423669b4b&consent=a1m1p1"
+    },
+    {
+     "t": "Installer registration",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration"
+    },
+    {
+     "t": "Log in",
+     "h": "https://account.shop-rebor.com/?locale=en&region_country=NL&buyer_flags=<redacted-jwt>&consent_id=aa3f40b9-f3cc-4331-8330-d26423669b4b&consent=a1m1p1"
+    },
+    {
+     "t": "Nederlands",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "Deutsch",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    },
+    {
+     "t": "English",
+     "h": "https://www.shop-rebor.com/en/pages/installer-registration#"
+    }
+   ],
+   "bodyText": "Skip to content PV and energy solutions for professionals and private customers across Europe. Rebor B.V. Home Log in Installer registration Batterie storage Battery advice & tools Commercial ESS Inverters Solar modules EV Chargers Contact News About us Log in Cart Installer registration Registration for installers Please fill out this form completely Company name * VAT number * Street and house number * Postal code * City * First name * Last name * Phone number * Email address * Password * How many PV and/or battery storage systems do you install per month? I agree to the General Terms and Conditions Submit registration Rebor bv, Beethovenstraat 339, 1083 HK, Amsterdam, Netherlands Telephone: +31 (0)20-786 4437 Mail: info@rebor.nl Chamber of Commerce number: 14091885, VAT: NL817213715B02 Language English Subscribe to newsletter Email Payment methods © 2026 Rebor b.v. Privacy policy Contact information Refund policy Shipping policy Terms of service Legal notice",
+   "clickLog": [],
+   "finalUrl": "https://www.shop-rebor.com/en/pages/installer-registration"
+  },
+  {
+   "url": "https://www.actec-solar.de/register/b2b",
+   "label": "actec-de",
+   "loadedUrl": "https://actec.eu/de/customer/account/create/",
+   "title": "Neues Kundenkonto erstellen",
+   "fetchedAtUtc": "2026-10-16T20:56:00.040Z",
+   "h1": [
+    "Konto erstellen"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "https://actec.eu/de/catalogsearch/result/",
+     "id": "search_mini_form",
+     "cls": "form minisearch w-full relative",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [
+      "K2 Systems",
+      "Klimaanlage",
+      "Quick Connect",
+      "Growatt",
+      "Hantech",
+      "Trina",
+      "Solarkabel",
+      "Balkonkraftwerk"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "search",
+       "name": "q",
+       "id": "search",
+       "required": false,
+       "label": "Suche",
+       "placeholder": "Produkte suchen & finden",
+       "visible": true,
+       "autocomplete": "off"
+      }
+     ],
+     "formText": "Suche Schnell finden K2 Systems Klimaanlage Quick Connect Growatt Hantech Trina Solarkabel Balkonkraftwerk"
+    },
+    {
+     "index": 1,
+     "action": "",
+     "id": "login-form",
+     "cls": "form form-login",
+     "controlCount": 2,
+     "headings": [],
+     "buttons": [
+      "Anmelden"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "username",
+       "id": "form-login-username",
+       "required": true,
+       "label": "E-Mail-Adresse",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": "username"
+      },
+      {
+       "tag": "input",
+       "type": "password",
+       "name": "password",
+       "id": "form-login-password",
+       "required": true,
+       "label": "Passwort",
+       "placeholder": "",
+       "visible": false,
+       "autocomplete": "current-password"
+      }
+     ],
+     "formText": "E-Mail-Adresse Passwort Anmelden Passwort vergessen?"
+    },
+    {
+     "index": 2,
+     "action": "https://actec.eu/de/customer/account/createpost/",
+     "id": "accountcreate",
+     "cls": "form create account form-create-account",
+     "controlCount": 5,
+     "headings": [
+      "Konto erstellen",
+      "Persönliche Daten",
+      "Anmeldeinformationen"
+     ],
+     "buttons": [
+      "Konto erstellen"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "firstname",
+       "id": "firstname",
+       "required": true,
+       "label": "Vorname",
+       "placeholder": "Max",
+       "visible": true,
+       "autocomplete": "given-name"
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "lastname",
+       "id": "lastname",
+       "required": true,
+       "label": "Nachname",
+       "placeholder": "Mustermann",
+       "visible": true,
+       "autocomplete": "family-name"
+      },
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "email",
+       "id": "email_address",
+       "required": true,
+       "label": "E-Mail-Adresse",
+       "placeholder": "max@beispiel.de",
+       "visible": true,
+       "autocomplete": "email"
+      },
+      {
+       "tag": "input",
+       "type": "password",
+       "name": "password",
+       "id": "password",
+       "required": true,
+       "label": "Passwort",
+       "placeholder": "Mindestens 8 Zeichen",
+       "visible": true,
+       "autocomplete": "new-password"
+      },
+      {
+       "tag": "input",
+       "type": "checkbox",
+       "name": "privacy_consent",
+       "id": "privacy_consent",
+       "required": true,
+       "label": "Ich habe die Datenschutzerklärung gelesen und stimme ihr zu.",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": "",
+       "value": "1"
+      }
+     ],
+     "formText": "Konto erstellen Schnell registrieren und direkt loslegen. Persönliche Daten Vorname Nachname Anmeldeinformationen E-Mail-Adresse Passwort Passwort verborgen Ich habe die Datenschutzerklärung gelesen und stimme ihr zu. This form is protected by reCAPTCHA - the Google Privacy Policy and Terms of Service apply. Konto erstellen"
+    },
+    {
+     "index": 6,
+     "action": "https://actec.eu/de/newsletter/subscriber/new/",
+     "id": "newsletter-validate-detail",
+     "cls": "form subscribe md:py-12 py-6 flex md:flex-row flex-col gap-4",
+     "controlCount": 1,
+     "headings": [
+      "Der ACTEC-Newsletter:",
+      "Exklusive Deals & Expertenwissen"
+     ],
+     "buttons": [
+      "Abonnieren"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "email",
+       "id": "newsletter-subscribe",
+       "required": true,
+       "label": "E-Mail-Adresse",
+       "placeholder": "Ihre E-Mail-Adresse",
+       "visible": true,
+       "autocomplete": "email"
+      }
+     ],
+     "formText": "Der ACTEC-Newsletter: Exklusive Deals & Expertenwissen Sichern Sie sich wöchentlich unseren „Deal der Woche“, Neuigkeiten zu Photovoltaik und Klimatechnik sowie Einblicke hinter die Kulissen – für alle, die zu Hause Strom erzeugen oder ihre Räume kühlen möchten. E-Mail-Adresse Abonnieren"
+    }
+   ],
+   "loose": [
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "amcookie-popup-group-1",
+     "id": "amcookie-popup-group-1",
+     "required": false,
+     "label": "Essentiell",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "",
+     "value": "1"
+    },
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "amcookie-popup-group-2",
+     "id": "amcookie-popup-group-2",
+     "required": false,
+     "label": "Marketing",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "",
+     "value": "2"
+    },
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "amcookie-popup-group-3",
+     "id": "amcookie-popup-group-3",
+     "required": false,
+     "label": "Statistik",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "",
+     "value": "3"
+    }
+   ],
+   "iframes": [],
+   "captchaHints": {
+    "recaptcha": true,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "Zum Inhalt springen",
+     "h": "https://actec.eu/de/customer/account/create/#contentarea"
+    },
+    {
+     "t": "Anmelden",
+     "h": "https://actec.eu/de/customer/account/index/"
+    },
+    {
+     "t": "Starten Sie hier",
+     "h": "https://actec.eu/de/customer/account/create/"
+    },
+    {
+     "t": "Mein Konto",
+     "h": "https://actec.eu/de/customer/account/"
+    },
+    {
+     "t": "Passwort vergessen?",
+     "h": "https://actec.eu/de/customer/account/forgotpassword/"
+    },
+    {
+     "t": "Ein Konto erstellen",
+     "h": "https://actec.eu/de/customer/account/create/"
+    },
+    {
+     "t": "Anmelden",
+     "h": "https://actec.eu/de/customer/account/login/"
+    },
+    {
+     "t": "KUNDENKONTO ANLEGEN",
+     "h": "https://actec.eu/de/customer/account/create/"
+    },
+    {
+     "t": "Geschäftskunden",
+     "h": "https://actec.eu/de/geschaeftskunden"
+    }
+   ],
+   "bodyText": "Beratung: +49 721 988 995 98 · 8.000 m² Lager Hilfe & Kontakt Zum Inhalt springen Warenkorb öffnen oder schließen, Warenkorb ist leer KLIMAANLAGEN & WÄRMEPUMPEN Untermenü der Kategorie Klimaanlagen & Wärmepumpen anzeigen BALKONKRAFTWERKE Untermenü der Kategorie Balkonkraftwerke anzeigen PV-ANLAGEN Untermenü der Kategorie PV-Anlagen anzeigen SOLARMODULE WECHSELRICHTER Untermenü der Kategorie Wechselrichter anzeigen BATTERIESPEICHER Untermenü der Kategorie Batteriespeicher anzeigen MONTAGE & INSTALLATION Untermenü der Kategorie Montage & Installation anzeigen WALLBOX SALE Untermenü der Kategorie Sale anzeigen Konto erstellen Schnell registrieren und direkt loslegen. Persönliche Daten Vorname Nachname Anmeldeinformationen E-Mail-Adresse Passwort Passwort verborgen Ich habe die Datenschutzerklärung gelesen und stimme ihr zu. This form is protected by reCAPTCHA - the Google Privacy Policy and Terms of Service apply. Konto erstellen oder schneller anmelden mit Google Apple Facebook Sie haben bereits ein Konto? Anmelden NACHHALTIG. EFFIZIENT. ZUHAUSE. Für ein besseres Zuhause. Photovoltaik, Wärmepumpen und Klimatechnik – alles aus einer Hand. KUNDENKONTO ANLEGEN KONTAKT AUFNEHMEN FAQ / HILFE Der ACTEC-Newsletter: Exklusive Deals & Expertenwissen Sichern Sie sich wöchentlich unseren „Deal der Woche“, Neuigkeiten zu Photovoltaik und Klimatechnik sowie Einblicke hinter die Kulissen – für alle, die zu Hause Strom erzeugen oder ihre Räume kühlen möchten. E-Mail-Adresse Abonnieren This form is protected by reCAPTCHA - the Google Privacy Policy and Terms of Service apply. Hotline +49 721 988 995 98 Mo–Fr 09:00–12:00 und 13:00–17:00 Preis pro Anruf entsprechend den Tarifen des Betreibers ACTEC Wikingerstraße 10 76189 Karlsruhe info@actec.eu Abholung in Karlsruhe möglich Service & Hilfe Sitemap Bestellung & Lieferung Versandkosten und Lieferung Abholung in Karlsruhe Zahlungsarten Geschäftskunden Nach dem Kauf Reklamation melden Widerrufsbelehrung Vertrag widerrufen Gesetzliche Gewährleistung Altgeräte-Rücknahme Batteriehinweise Rat & Wissen Häufige Fragen Ratgeber 0 % MwSt. auf Photovoltaik Fachinstallation Klimaanlage Unternehmen Über ACTEC Bewertungen bei Trusted Shops Impressum Datenschutz AGB Barrierefreiheit Cookie-Einstellungen Kategorien Klimaanlagen & Wärmepumpen Balkonkraftwerke PV-Anlagen Solarmodule Wechselrichter Batteriespeicher Montage & Installation Wallbox Sale Marken Versand nach Deutschland, Österreich und Luxemburg per Paket (GLS) oder Spedition · Abholung in Karlsruhe kostenlos · Versandkosten und Lieferung * Alle Preise inkl. gesetzl. MwSt., zzgl. Versandkosten Cookies & Datenschutz Technisch notwendige Cookies sind immer aktiv. Mit Ihrer Zustimmung nutzen wir zusätzlich Cookies für Statistik und Marketing: So sehen wir, welche Produkte und Ratgeber Ihnen weiterhelfen, und können Ihnen passende Angebote zeigen. Ihre Auswahl können Sie jederzeit unten auf jeder Seite unter „Cookie-Einstellungen“ ändern. Mehr dazu in unserer Datenschutzerklärung. Nur notwendige Alle akzeptieren Einstellungen",
+   "clickLog": [],
+   "finalUrl": "https://actec.eu/de/customer/account/create/"
+  },
+  {
+   "url": "https://search4solar.com/de/pages/register-as-buyer",
+   "label": "search4solar-retry",
+   "loadedUrl": "https://search4solar.com/de/pages/register-as-buyer",
+   "title": "Search4Solar | Register as buyer",
+   "fetchedAtUtc": "2026-10-16T20:56:02.965Z",
+   "h1": [
+    "One account for the European solar market."
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "",
+     "id": "",
+     "cls": "hidden gap-4 lg:grid",
+     "controlCount": 2,
+     "headings": [],
+     "buttons": [
+      "Create a free buyer account"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "",
+       "id": "registration-tax-id",
+       "required": true,
+       "label": "USt-IdNr. oder Steuernummer",
+       "placeholder": "NL123456789B01",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "",
+       "id": "registration-email",
+       "required": true,
+       "label": "Geschäftliche E-Mail",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": "email"
+      }
+     ],
+     "formText": "USt-IdNr. oder Steuernummer EU-Nummern werden automatisch geprüft. Geschäftliche E-Mail Create a free buyer account Unlock live trade prices, supplier offers and business ordering."
+    }
+   ],
+   "loose": [],
+   "iframes": [
+    "https://app-eu1.hubspot.com/conversations-visitor/25311951/threads/utk/f84c8a1423484064a8ccb093a5e98728?uuid=5feaa43822b642bb82871bc9a1791e9a&mobile=false&mobileSafari=false&hideWelcomeMessage=false&hstc=&domain=search4solar.com&inApp53=false&messagesUtk=f84c8a1423484064a8ccb093a5e98728&url=https%3A%2F%2Fsearch4solar.com%2Fde%2Fpages%2Fregister-as-buyer&inline=false&isFullscreen=false&globalCookieOptOut=&isFirstVisitorSession=true&isAttachmentDisabled=false&isInitialInputFocusDisabled=false&enableWidgetCookieBanner=false&isInCMS=false&hideScrollToButton=true&isIOSMobile=false"
+   ],
+   "captchaHints": {
+    "recaptcha": false,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "Read buyer FAQs",
+     "h": "https://search4solar.com/de/pages/customer-help"
+    },
+    {
+     "t": "Registrieren",
+     "h": "https://search4solar.com/de/pages/registreren"
+    },
+    {
+     "t": "Als Käufer registrieren",
+     "h": "https://search4solar.com/de/pages/register-as-buyer"
+    },
+    {
+     "t": "Hilfe für Kunden",
+     "h": "https://search4solar.com/de/pages/customer-help"
+    },
+    {
+     "t": "Lieferant werden",
+     "h": "https://search4solar.com/de/pages/vendor-signup"
+    },
+    {
+     "t": "Konto",
+     "h": "https://search4solar.com/de/account"
+    },
+    {
+     "t": "Bestellungen",
+     "h": "https://search4solar.com/de/account/orders"
+    },
+    {
+     "t": "COOKIE-EINSTELLUNGEN",
+     "h": "https://search4solar.com/de/pages/register-as-buyer#shopifyReshowConsentBanner"
+    }
+   ],
+   "bodyText": "GCL containers from €0.090/W View offer Produkte suchen… DE Solarmodule Wechselrichter Batterien und Speicher Montagesysteme EV-Laden Kabel und Steckverbinder Zubehör Market favourites One account for the European solar market. Create a free business account to compare offers, see trade pricing and order from selected suppliers across Europe. Free account No credit card USt-IdNr. oder Steuernummer EU-Nummern werden automatisch geprüft. Geschäftliche E-Mail Create a free buyer account Unlock live trade prices, supplier offers and business ordering. Read buyer FAQs What the platform offers you One view of the market: Compare offers from European distributors instead of requesting prices one by one. Logistics handled: We coordinate transport from the vendor to your warehouse or project site. Reliable suppliers: Work with a network of suppliers selected for the European solar trade. Business terms: Create a free company account to access trade pricing and business ordering. From account to order 01 Create your account Enter your company details and VAT number. The account is free and there is no credit card required. 02 Compare offers See current products, prices and stock from the suppliers relevant to your project. 03 Order or ask us to source Order online for routine purchases, or send a larger brief to our team for a tailored deal. Built for professional buyers Search4Solar is a B2B platform. Your account connects company details, VAT treatment, delivery addresses and order history so that buying is repeatable, not a new conversation every time. Need a product that is not listed? Send a brand, specification or part number and our team will check availability across the network. Send a sourcing request Facebook Instagram LinkedIn BEI SEARCH4SOLAR KAUFEN Registrieren Produkt suchen Produktkäufe ÜBER SEARCH4SOLAR Über Search4Solar Unsere Dienstleistungen Gebrauchtwarenverkauf Als Käufer registrieren Hilfe für Kunden Kontakt Lieferant werden Hilfe für Anbieter Allgemeine Geschäftsbedingungen Allgemeine Geschäftsbedingungen (Anbieter) Datenschutz Rückerstattungs- und Rückgaberichtlinie IHR KONTO Konto Bestellungen Warenkorb PERSÖNLICHE UNTERSTÜTZUNG Hauptsitz Search4Solar BV Ebweg 56 2991 LT Barendrecht Büro Spanien Search4Solar Iberico SLu C/ de les Barques 2, 2nd Floor 46002 València Payment methods accepted © 2026 Search4Solar. Alle Rechte vorbehalten. COOKIE-EINSTELLUNGEN HELL NACH OBEN",
+   "clickLog": [],
+   "finalUrl": "https://search4solar.com/de/pages/register-as-buyer"
+  },
+  {
+   "url": "https://ecoabm.com/pl/wspolpraca/",
+   "label": "ecoabm-pl-text",
+   "loadedUrl": "https://ecoabm.com/pl/wspolpraca/",
+   "title": "Współpraca | Hurtownia fotowoltaiczna - ecoABM",
+   "fetchedAtUtc": "2026-10-16T20:56:20.891Z",
+   "h1": [
+    "Dlaczego ecoABM to dobry wybór dostawcy"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "",
+     "id": "",
+     "cls": "",
+     "controlCount": 6,
+     "headings": [],
+     "buttons": [
+      "Wyślij"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "name",
+       "id": "b24-form-field-1",
+       "required": true,
+       "label": "Imię *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": "given-name"
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "lastname",
+       "id": "b24-form-field-2",
+       "required": true,
+       "label": "Nazwisko *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": "family-name"
+      },
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "",
+       "id": "b24-form-field-3",
+       "required": true,
+       "label": "Nazwa firmy *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      },
+      {
+       "tag": "input",
+       "type": "tel",
+       "name": "phone",
+       "id": "b24-form-field-4",
+       "required": true,
+       "label": "Telefon *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": "tel"
+      },
+      {
+       "tag": "input",
+       "type": "email",
+       "name": "email",
+       "id": "b24-form-field-5",
+       "required": true,
+       "label": "E-mail *",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": "email"
+      },
+      {
+       "tag": "textarea",
+       "type": "textarea",
+       "name": "",
+       "id": "b24-form-field-6",
+       "required": false,
+       "label": "Komentarz",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "Imię * Nazwisko * Nazwa firmy * Telefon * E-mail * Komentarz Wyślij"
+    }
+   ],
+   "loose": [
+    {
+     "tag": "select",
+     "type": "select-one",
+     "name": "",
+     "id": "",
+     "required": false,
+     "label": "Zgłoś nadużycie",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "",
+     "optionCount": 21,
+     "options": [
+      "ar",
+      "br",
+      "de",
+      "en",
+      "fr",
+      "hi",
+      "id",
+      "in",
+      "it",
+      "ja",
+      "kz",
+      "la",
+      "ms",
+      "pl",
+      "ru",
+      "sc",
+      "tc",
+      "th",
+      "tr",
+      "ua",
+      "vn"
+     ],
+     "optgroups": []
+    }
+   ],
+   "iframes": [
+    "about:blank"
+   ],
+   "captchaHints": {
+    "recaptcha": false,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": true
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "ZAŁÓŻ KONTO",
+     "h": "https://ecoabm.pl/customer/account/create/"
+    },
+    {
+     "t": "Szkolenia – Panel Logowania",
+     "h": "https://ecoabm.com/pl/moje-konto/"
+    }
+   ],
+   "bodyText": "PLATFORMA SPRZEDAŻOWA Zarejestruj się O NAS DLA MONTERA PRODUKTY REALIZACJA ZAMÓWIEŃ KARIERA KONTAKT Dlaczego ecoABM to dobry wybór dostawcy ecoABM to doskonały wybór jako dostawca dzięki wieloletniemu doświadczeniu w branży i zaangażowaniu w dostarczanie najwyższej jakości usług oraz produktów. Firma oferuje innowacyjne rozwiązania, które są przyjazne dla środowiska, wspierając zrównoważony rozwój i redukcję śladu węglowego. Zespół specjalistów ecoABM zapewnia kompleksową obsługę, dostosowując ofertę do indywidualnych potrzeb każdego klienta. Dzięki niezawodności, terminowości i konkurencyjnym cenom, firma buduje długotrwałe relacje z partnerami biznesowymi. Wybierając ecoABM, inwestujesz w jakość, odpowiedzialność i nowoczesne podejście do biznesu. Dlaczego warto z nami współpracować? UZNANIE Nasza firma sukcesywnie wkracza ze swoimi usługami na kolejne obszary Polski ciesząc się świetnymi opiniami. Wasze zaufanie jest motorem dla naszego rozwoju. PROFESJONALIZM Zatrudniamy szereg znakomicie wyszkolonych ludzi o dużym doświadczeniu: inżynierów, elektryków, logistyków, magazynierów i konsultantów. ORGANIZACJA Uporządkowane struktury firmy pozwalają nam skupić się na tym, co najważniejsze – wkładać całe serce w obsługę Klientów. FINANSOWANIE Wspieramy naszych klientów na każdym etapie realizacji projektu, dlatego potrzeba zdobycia dodatkowych środków nie stanowi problemu. Dobrze znamy aktualne źródła dofinansowań na fotowoltaikę i pomagamy je uzyskać. WYGODA Nasi specjaliści potrafią zadawać właściwe pytania, dlatego z nami złożenie zamówienia to bułka z masłem. Oszczędzaj czas, nerwy i pieniądze z ecoABM. Rozpocznij współpracę w 3 krokach Rejestracja Wypełnij formularz rejestracyjny oraz wyślij wniosek. Weryfikacja Po zakończeniu rejestracji zweryfikujemy Twój NIP oraz branżę. Jeśli proces weryfikacji zakończy się pomyślnie, otrzymasz od nas wiadomość e-mail z dalszymi instrukcjami dotyczącymi dostępu do platformy zakupowej. Zamówienia Przeanalizuj dostępne rabaty, skomponuj swój własny koszyk i złóż zamówienie! Zapewniamy wysokie stany magazynowe i niezwłoczną realizację! ZAŁÓŻ KONTO Limit kupiecki w ecoABM Chcemy Ci pomóc, aby zakupy przebiegały możliwie najłatwiej i najszybciej. Umożliwiamy zatem zamówienia z dostawą bezpośrednio na miejsce inwestycji – bez płatności wcześniej! Z limitem kredytowym zamówienia realizujemy w 24h, a opłacić je możesz kiedy tylko znajdziesz chwilę wytchnienia. Już od pierwszej transakcji możesz zawnioskować o płatności odroczone. WIĘCEJ O FINANSOWANIU Odroczony termin płatności w 5min KATALOG ONLINE Wszystko do fotowoltaiki w jednym miejscu! Jako hurtownia mamy w swojej ofercie wszystkie produkty, by skompletować gotowe instalacje fotowoltaiczne, począwszy od paneli fotowoltaicznych, aż po inwertery. Zamów produkty on-line i przekonaj się o szybkim czasie realizacji i produktach z klasy A na własnej skórze MAGAZYNY ENERGII PANELE FALOWNIKI POMPY CIEPŁA I KLIMATYZACJE KONSTRUKCJE OSPRZĘT ELEKTRYCZNY WIĘCEJ Szkolenia fotowoltaiczne Zbuduj z nami pewną przyszłość ZOBACZ SZKOLENIA Kurs przygotowawczy z PV do egzaminu przed Urzędem Dozoru Technicznego Konferencja ecoLEARNING Szkolenie z asortymentu Growatt ecoABM to ludzie Sprawdź nasze możliwości operacyjno-logistyczne i doświadcz sympatycznej opieki naszych przedstawicieli Stali Klienci zwiedzają z nami Świat za bezcen Pozyskujemy dofinansowania na wyjazdy i targi Klientom, którzy uczestniczą w Programie Lojalnościowym SKONTAKTUJ SIĘ Nie znalazłeś odpowiedzi na pytanie? Odpowiemy jak najszybciej Imię * Nazwisko * Nazwa firmy * Telefon * E-mail * Komentarz Wyślij Zgłoś nadużycie KLIENT INDYWIDUALNY Dla domu Dla firmy Dla rolnika Farmy DLA MONTERA Współpraca Finansowanie Konfigurator Kalkulator Podzespołów Szkolenia Szkolenia – Panel Logowania PRODUKTY Magazyny Energii Panele fotowoltaiczne Falowniki Pompy ciepła i klimatyzacje Konstrukcje fotowoltaiczne Osprzęt elektryczny i akcesoria montażowe ZAMÓWIENIA Regulamin Jak korzystać z platformy zakupowej Reklamacje Gwarancje producentów Sposoby płatności w ecoABM Odbiór osobisty MATERIAŁY INFORMACYJNE KATALOG ONLINE Aktualności Baza Wiedzy FAQ Zmień ustawienia prywatności GDZIE DZIAŁAMY? Hurtownia fotowoltaiczna Białystok Hurtownia fotowoltaiczna Gdańsk Hurtownia fotowoltaiczna Kraków Hurtownia fotowoltaiczna Lublin Hurtownia fotowoltaiczna Łódź Hurtownia fotowoltaiczna Poznań Hurtownia fotowoltaiczna Warszawa Hurtownia fotowoltaiczna Wrocław Hurtownia fotowoltaiczna Szczecin ecoABM Kamil Andruszkiewicz 15-691 Białystok, ul. gen. Stanisława Maczka 52 lok. 2 NIP 5423364054 +48 85 876 01 00 PLATFORMA SPRZEDAŻOWA Polityka prywatności Regulamin wszystkie prawa zastrzeżone 2026 ecoABM agencja digital - hauerpower.com O plikach cookie na tej stronie Używamy plików cookie, aby pomóc w poprawie naszych usług, tworzeniu spersonalizowanych ofert i zwiększeniu Twojego doświadczenia. Jeśli nie akceptujesz poniższych opcjonalnych plików cookie, Twoje doświadczenie może być ograniczone. Jeśli chcesz dowiedzieć się więcej, przeczytaj Politykę prywatności. Dowiedz się więcej Ustawienia plików cookie Akceptuję",
+   "clickLog": [],
+   "finalUrl": "https://ecoabm.com/pl/wspolpraca/"
+  },
+  {
+   "url": "https://segensolar.eu/portal/",
+   "label": "segen-eu-open",
+   "loadedUrl": "https://segensolar.eu/contact-us/?_gl=1*1rapk7m*_up*MQ..*_ga*MTI2MzYyODY0MC4xNzkyMTg0MTc1*_ga_7P37RN0Q7Y*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGgxODIwNTE5NTA4*_ga_V95BT1W9NY*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGg5MDIyMzc2MzI.*_ga_7NQT9LEVYJ*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGgxNDkzODExMzk.",
+   "title": "Contact your PV wholesaler in Europe | Segen",
+   "fetchedAtUtc": "2026-10-16T20:56:28.291Z",
+   "h1": [
+    "Open an account with Segen in 3 simple steps:",
+    "New to Segen?"
+   ],
+   "forms": [
+    {
+     "index": 0,
+     "action": "https://segensolar.eu/",
+     "id": "",
+     "cls": "bg-white flex p-2 corner-br corner-8",
+     "controlCount": 1,
+     "headings": [],
+     "buttons": [
+      "Search"
+     ],
+     "controls": [
+      {
+       "tag": "input",
+       "type": "text",
+       "name": "s",
+       "id": "",
+       "required": false,
+       "label": "Search query",
+       "placeholder": "",
+       "visible": true,
+       "autocomplete": ""
+      }
+     ],
+     "formText": "Search"
+    }
+   ],
+   "loose": [
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "ckySwitchanalytics",
+     "required": false,
+     "label": "Enable Analytics",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "off",
+     "value": "on"
+    },
+    {
+     "tag": "input",
+     "type": "checkbox",
+     "name": "",
+     "id": "ckySwitchadvertisement",
+     "required": false,
+     "label": "Enable Advertisement",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": "off",
+     "value": "on"
+    },
+    {
+     "tag": "textarea",
+     "type": "textarea",
+     "name": "g-recaptcha-response",
+     "id": "g-recaptcha-response-100000",
+     "required": false,
+     "label": "",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": ""
+    },
+    {
+     "tag": "textarea",
+     "type": "textarea",
+     "name": "g-recaptcha-response",
+     "id": "g-recaptcha-response",
+     "required": false,
+     "label": "",
+     "placeholder": "",
+     "visible": false,
+     "autocomplete": ""
+    }
+   ],
+   "iframes": [
+    "https://js-eu1.hsforms.net/ui-forms-embed-components-app/frame.html?_hsPortalId=146376250&_hsFormId=adc484bd-a4ce-4854-92c5-8bfe3d43d9ef&_hsIsQa=false&_hsHublet=eu1&_hsDisableScriptloader=true&_hsDisableRedirect=true&_hsInstanceId=4fc5763c-8775-45c8-b56a-10333e98f0b5&_gl=1*1rapk7m*_up*MQ..*_ga*MTI2MzYyODY0MC4xNzkyMTg0MTc1*_ga_7P37RN0Q7Y*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGgxODIwNTE5NTA4*_ga_V95BT1W9NY*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGg5MDIyMzc2MzI.*_ga_7NQT9LEVYJ*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGgxNDkzODExMzk.",
+    "https://segensolar.eu/contact-us/?_gl=1*1rapk7m*_up*MQ..*_ga*MTI2MzYyODY0MC4xNzkyMTg0MTc1*_ga_7P37RN0Q7Y*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGgxODIwNTE5NTA4*_ga_V95BT1W9NY*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGg5MDIyMzc2MzI.*_ga_7NQT9LEVYJ*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGgxNDkzODExMzk.",
+    "https://www.google.com/recaptcha/api2/anchor?ar=1&k=6Ld3_oMrAAAAAKrTYkoGQcMXZf-8MaeS9N_xS4Jy&co=aHR0cHM6Ly9zZWdlbnNvbGFyLmV1OjQ0Mw..&hl=en&v=4EDjxXf4knsx6UBM1L2V6cv8&size=invisible&anchor-ms=20000&execute-ms=30000&cb=w5a4n9xdan1j",
+    "https://google.com/recaptcha/enterprise/anchor?ar=1&k=6Ld_ad8ZAAAAAAqr0ePo1dUfAi0m4KPkCMQYwPPm&co=aHR0cHM6Ly9zZWdlbnNvbGFyLmV1OjQ0Mw..&hl=en&v=4EDjxXf4knsx6UBM1L2V6cv8&size=invisible&badge=inline&anchor-ms=20000&execute-ms=30000&cb=12ml8060qm7a",
+    "https://google.com/recaptcha/enterprise/bframe?hl=en&v=4EDjxXf4knsx6UBM1L2V6cv8&k=6Ld_ad8ZAAAAAAqr0ePo1dUfAi0m4KPkCMQYwPPm&bft=0dAFcWeA5CKhxWN6J9YO9RsMG23kJlg1QfYdZY9MvR85T0ScKxDjpOBEr_exHT4QIW8uT7PzDP2korCuAkpy4RyI8spAykH8O5Ng"
+   ],
+   "captchaHints": {
+    "recaptcha": true,
+    "hcaptcha": false,
+    "turnstile": false,
+    "friendlycaptcha": false,
+    "honeypotLike": false
+   },
+   "selectWoo": false,
+   "links": [
+    {
+     "t": "Not yet a Segen partner?",
+     "h": "https://segensolar.eu/contact-us/"
+    },
+    {
+     "t": "Are you an end customer?",
+     "h": "https://segensolar.eu/your-pv-installer/"
+    },
+    {
+     "t": "Customer Portal Login",
+     "h": "https://portal.segensolar.eu/Home/Login"
+    },
+    {
+     "t": "Registration",
+     "h": "https://segensolar.eu/contact-us/"
+    },
+    {
+     "t": "Customer portal Our customer portal offers 24/7 live prices, product availability and documentation!",
+     "h": "https://segensolar.eu/portal/"
+    },
+    {
+     "t": "Customer portal Our customer portal offers 24/7 live prices, product availability and documentation!",
+     "h": "https://segensolar.eu/portal/"
+    },
+    {
+     "t": "Open a trade account",
+     "h": "https://segensolar.eu/contact-us/"
+    },
+    {
+     "t": "Customer portal",
+     "h": "https://portal.segensolar.eu/Home/Login"
+    }
+   ],
+   "bodyText": "We value your privacy We use cookies to enhance your browsing experience, serve personalised ads or content, and analyse our traffic. By clicking \"Accept All\", you consent to our use of cookies. Customise Reject All Accept All Skip to content Not yet a Segen partner? Are you an end customer? Customer Portal Login Registration Modules Storage Inverter Mounting EV Charger HEMS C&I About us Contact us Search Modules We offer a large selection of first-class solar modules Products by manufacturer Here you will find an overview of our top solar module manufacturers. Accessories Complementary products for your installation. Storage We offer you the right solar cylinder for every application. Products by manufacturer We have solar storage tanks from leading manufacturers in our portfolio for you. Accessories Complementary products for your installation. Inverter We stock a wide range of inverters that are used for all types of installations, from new builds to commercial and utility applications. Products by manufacturer Here you will find our first-class inverter manufacturers. Accessories Complementary products for your installation. Mounting From traditional rooftop systems for private households to large-scale ground systems, we cover the entire spectrum. Products by manufacturer We have the right mounting system for every roof. Accessories Complementary products for your installation. EV Charger We offer a first-class selection of wallboxes for new and existing PV systems. Products by manufacturer We offer you a selection of wallboxes that are ideal for the German market. Accessories Complementary products for your installation. HEMS Bei uns finden Sie eine erstklassige Auswahl an HEMS Systemen für neue und bestehende PV-Anlagen an. Products by manufacturer HEMS optimize the use of solar power in the home - for greater self-sufficiency, efficiency and cost savings. PV accessories Complementary products for your installation. C&I About us We have been there for you personally for 10 years and supply you with the best PV products. About us With us, you will have personal contact with all departments right from the start and will find a portfolio in line with the market. Segen Team Get to know our PV experts. Customer portal Our customer portal offers 24/7 live prices, product availability and documentation! Career Are you looking for a job in the renewable energy sector? Then you've come to the right place! Homeowner If you are looking for important product and industry information, you will find it here. Contact us HOW CAN WE HELP? Contact us FAQs Are your products available in stock? In the Segen customer portal, you have round-the-clock access to current prices and availability. You can see stock levels and delivery forecasts on every product page – for reliable planning. With over ten years of experience, we ensure that everything is available on time so that your projects can be implemented on schedule. Do you offer 24/7 support? In the Segen customer portal, you can find all important information at any time: from brochures and data sheets to installation instructions, stock levels, quotations and your invoices. Design tools and configurators are also available to you around the clock. We also provide you with personal support: a dedicated sales contact, an order processing expert and a technical contact are on hand to answer all your questions – from the planning stage to after installation. What guarantees are included? All Segen products are covered by the manufacturer’s warranty. You can find the relevant documentation and information for each item in the customer portal. You can often extend the warranty free of charge – simply by registering with the manufacturer. Are there any current offers? At Segen, you can benefit from attractive package offers with price advantages on inverters, batteries and accessories. Can I pick up my order directly from the warehouse? You can collect your orders directly from our warehouse – regardless of whether they are individual items or a container load. Useful links About us Contact us Open an account with Segen in 3 simple steps: 1. Fill out the form below 2. Our sales team will call you back for a brief conversation about your business 3. After verification, you will receive access to our purchasing portal. This allows you to instantly check prices, product availability, and create quotes online. 💬 Have questions? Contact us at: info@segensolar.eu Reasons for Segen. Unique product portfolio We have an extensive portfolio of industry-leading brands. We only work with the best brands on the market! Personal contact person A dedicated support team in all departments - your account manager, your order processor and your technical contact, all there for you! Exclusive webinars and events As a Segen customer, we offer you participation in exclusive webinars / roadshows and events. You will always find all information on this in your customer portal. Your one-stop store Instant access to 24/7 live pricing and stock availability, with access to special design tools, industry news and informed promotions. Fast quotation preparation Use our tools for quick quotation preparation including installation system design with the Renusol Configurator 3.0. Try it out now. Delivery within 24 to 72 hours We deliver products in stock directly to you within 24 to 72 hours. On request also directly to the construction site. Follow us For the latest industry news, events, portfolio updates and offers, visit our social media channels to stay up to date with all things solar! Become part of our team We are always looking for great people to join our team. We are proud to offer a hybrid working model to allow our employees flexibility. Show vacancies Help & Support When you open an account with us, you will have a dedicated team at your disposal to provide you with the sales and technical support you need. New to Segen? Not a Segen Customer? Open a trade account Are you a homeowner? View homeowner information About us Products Customer portal Events & Webinars Contact us Career Data protection & cookies Imprint AGB We are Segen! Your PV wholesaler in Europe based in Cologne. SegenSolar GmbH +49 2234 53204-30 info@segensolar.eu Dieselstraße 2 50859 Cologne Germany Copyright © 2026 - SegenSolar GmbH. All rights reserved.",
+   "clickLog": [
+    "clicked:Open a trade account"
+   ],
+   "finalUrl": "https://segensolar.eu/contact-us/?_gl=1*1rapk7m*_up*MQ..*_ga*MTI2MzYyODY0MC4xNzkyMTg0MTc1*_ga_7P37RN0Q7Y*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGgxODIwNTE5NTA4*_ga_V95BT1W9NY*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGg5MDIyMzc2MzI.*_ga_7NQT9LEVYJ*czE3OTIxODQxNzMkbzEkZzAkdDE3OTIxODQxNzMkajYwJGwwJGgxNDkzODExMzk."
+  }
+ ]
+}

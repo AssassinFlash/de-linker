@@ -1,0 +1,52 @@
+{
+ "meta": {
+  "run_id": "KIEtMOAObWdiPjEJa",
+  "actor_id": "MpRbnNmVAoj5RC1Ma",
+  "status": "SUCCEEDED",
+  "started_at": "2026-10-16T20:56:27.101Z",
+  "finished_at": "2026-10-16T20:56:49.155Z",
+  "dataset_id": "o58ZTGnLJOSxheGHY",
+  "item_count": 1,
+  "saved_at_utc": "2026-10-16T20:56:58Z"
+ },
+ "items": [
+  {
+   "url": "https://ec.europa.eu/taxation_customs/vies/",
+   "finalUrl": "https://ec.europa.eu/taxation_customs/vies/#/vat-validation",
+   "results": [
+    {
+     "cc": "DE",
+     "num": "191691979",
+     "source": "EWS GmbH & Co. KG imprint (vault peer-10)",
+     "httpStatus": 200,
+     "body": "{\n  \"isValid\" : true,\n  \"requestDate\" : \"2026-10-16T20:56:41.088Z\",\n  \"userError\" : \"VALID\",\n  \"name\" : \"---\",\n  \"address\" : \"---\",\n  \"requestIdentifier\" : \"\",\n  \"originalVatNumber\" : \"191691979\",\n  \"vatNumber\" : \"191691979\",\n  \"viesApproximate\" : {\n    \"name\" : \"---\",\n    \"street\" : \"---\",\n    \"postalCode\" : \"---\",\n    \"city\" : \"---\",\n    \"companyType\" : \"---\",\n    \"matchName\" : 3,\n    \"matchStreet\" : 3,\n    \"matchPostalCode\" : 3,\n    \"matchCity\" : 3,\n    \"matchCompanyType\" : 3\n  }\n}",
+     "checkedAtUtc": "2026-10-16T20:56:41.264Z"
+    },
+    {
+     "cc": "DE",
+     "num": "328945324",
+     "source": "PVSelected GmbH imprint (vault peer-1)",
+     "httpStatus": 200,
+     "body": "{\n  \"isValid\" : true,\n  \"requestDate\" : \"2026-10-16T20:56:43.037Z\",\n  \"userError\" : \"VALID\",\n  \"name\" : \"---\",\n  \"address\" : \"---\",\n  \"requestIdentifier\" : \"\",\n  \"originalVatNumber\" : \"328945324\",\n  \"vatNumber\" : \"328945324\",\n  \"viesApproximate\" : {\n    \"name\" : \"---\",\n    \"street\" : \"---\",\n    \"postalCode\" : \"---\",\n    \"city\" : \"---\",\n    \"companyType\" : \"---\",\n    \"matchName\" : 3,\n    \"matchStreet\" : 3,\n    \"matchPostalCode\" : 3,\n    \"matchCity\" : 3,\n    \"matchCompanyType\" : 3\n  }\n}",
+     "checkedAtUtc": "2026-10-16T20:56:43.217Z"
+    },
+    {
+     "cc": "NL",
+     "num": "819150757B01",
+     "source": "Libra Energy B.V. company-information page (captured 2026-10-16)",
+     "httpStatus": 200,
+     "body": "{\n  \"isValid\" : true,\n  \"requestDate\" : \"2026-10-16T20:56:44.988Z\",\n  \"userError\" : \"VALID\",\n  \"name\" : \"LIBRA ENERGY B.V.\",\n  \"address\" : \"\\nEENDRACHTSSTRAAT 00199\\n1951AX VELSEN-NOORD\\n\",\n  \"requestIdentifier\" : \"\",\n  \"originalVatNumber\" : \"819150757B01\",\n  \"vatNumber\" : \"819150757B01\",\n  \"viesApproximate\" : {\n    \"name\" : \"---\",\n    \"street\" : \"---\",\n    \"postalCode\" : \"---\",\n    \"city\" : \"---\",\n    \"companyType\" : \"---\",\n    \"matchName\" : 3,\n    \"matchStreet\" : 3,\n    \"matchPostalCode\" : 3,\n    \"matchCity\" : 3,\n    \"matchCompanyType\" : 3\n  }\n}",
+     "checkedAtUtc": "2026-10-16T20:56:45.164Z"
+    },
+    {
+     "cc": "HU",
+     "num": "12538306",
+     "source": "Solar&Solar imprint (SERP snippet 2026-10-16)",
+     "httpStatus": 200,
+     "body": "{\n  \"isValid\" : true,\n  \"requestDate\" : \"2026-10-16T20:56:46.911Z\",\n  \"userError\" : \"VALID\",\n  \"name\" : \"SOLAR&SOLAR KERESKEDELMI ÉS SZOLGÁLTATÓ KORLÁTOLT FELELŐSSÉGŰ TÁRSASÁG\",\n  \"address\" : \"VERES PETER ÚT 51 1163 BUDAPEST\",\n  \"requestIdentifier\" : \"\",\n  \"originalVatNumber\" : \"12538306\",\n  \"vatNumber\" : \"12538306\",\n  \"viesApproximate\" : {\n    \"name\" : \"---\",\n    \"street\" : \"---\",\n    \"postalCode\" : \"---\",\n    \"city\" : \"---\",\n    \"companyType\" : \"---\",\n    \"matchName\" : 3,\n    \"matchStreet\" : 3,\n    \"matchPostalCode\" : 3,\n    \"matchCity\" : 3,\n    \"matchCompanyType\" : 3\n  }\n}",
+     "checkedAtUtc": "2026-10-16T20:56:47.030Z"
+    }
+   ]
+  }
+ ]
+}

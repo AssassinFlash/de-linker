@@ -1,0 +1,1047 @@
+{
+ "meta": {
+  "run_id": "1yn6F9GhZSUDKoXNN",
+  "actor_id": "aYG0l9s7dbB7j3gbS",
+  "status": "SUCCEEDED",
+  "started_at": "2026-10-16T17:28:12.496Z",
+  "finished_at": "2026-10-16T17:30:05.904Z",
+  "dataset_id": "pCZtq3IcqUtOZA5g8",
+  "item_count": 8,
+  "saved_at_utc": "2026-10-16T20:51:47Z",
+  "partial": false
+ },
+ "items": [
+  {
+   "url": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32016R0679",
+   "crawl": {
+    "loadedUrl": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32016R0679",
+    "loadedTime": "2026-10-16T17:28:20.653Z",
+    "referrerUrl": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32016R0679",
+    "httpStatusCode": 202,
+    "depth": 0,
+    "contentLengthBytes": 2035,
+    "contentType": "text/html; charset=UTF-8"
+   },
+   "metadata": {
+    "canonicalUrl": "https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng",
+    "title": "L_2016119DE.01000101.xml",
+    "description": null,
+    "author": null,
+    "keywords": null,
+    "languageCode": null,
+    "jsonLd": null,
+    "headers": {
+     "server": "CloudFront",
+     "date": "Fri, 16 Oct 2026 17:28:19 GMT",
+     "content-length": "2035",
+     "connection": "keep-alive",
+     "x-amzn-waf-action": "challenge",
+     "cache-control": "no-store, max-age=0",
+     "content-type": "text/html; charset=UTF-8",
+     "access-control-allow-origin": "*",
+     "access-control-max-age": "86400",
+     "access-control-allow-methods": "OPTIONS, GET, POST",
+     "access-control-expose-headers": "x-amzn-waf-action",
+     "x-cache": "Error from cloudfront",
+     "via": "1.1 96ae4ae70eac91ff3f0c8c8c5f3aa326.cloudfront.net (CloudFront)",
+     "x-amz-cf-pop": "DFW59-P7",
+     "x-amz-cf-id": "QwROLql1QN464pzTBu5Cfw7ZbDqpXlvaMU5v8cEUuF9-aI6n9auegg=="
+    }
+   },
+   "screenshotUrl": null,
+   "html": null,
+   "htmlUrl": null,
+   "markdown": null,
+   "debug": {
+    "requestHandlerMode": "browser"
+   },
+   "markdown_excerpt": "[line 1388] dem Zweck angemessen und erheblich sowie auf das für die Zwecke der Verarbeitung notwendige Maß beschränkt sein („Datenminimierung“);\n[line 2282] (2)   Der Verantwortliche trifft geeignete technische und organisatorische Maßnahmen, die sicherstellen, dass durch Voreinstellung grundsätzlich nur personenbezogene Daten, deren Verarbeitung für den jeweiligen bestimmten Verarbeitungszweck erforderlich ist, verarbeitet werden. Diese Verpflichtung gilt für die Menge der erhobenen personenbezogenen Daten, den Umfang ihrer Verarbeitung, ihre Speicherfrist und ihre Zugänglichkeit. Solche Maßnahmen müssen insbesondere sicherstellen, dass personenbezogene Daten durch Voreinstellungen nicht ohne Eingreifen der Person einer unbestimmten Zahl von natürlichen Personen zugänglich gemacht werden.",
+   "note": "Full GDPR text omitted in the repo copy; cited passages kept in markdown_excerpt. Source: the URL above."
+  },
+  {
+   "url": "https://www.gesetze-im-internet.de/ustg_1980/__6a.html",
+   "crawl": {
+    "loadedUrl": "https://www.gesetze-im-internet.de/ustg_1980/__6a.html",
+    "loadedTime": "2026-10-16T17:28:20.981Z",
+    "referrerUrl": "https://www.gesetze-im-internet.de/ustg_1980/__6a.html",
+    "httpStatusCode": 200,
+    "depth": 0,
+    "contentLengthBytes": 2332,
+    "contentType": "text/html"
+   },
+   "metadata": {
+    "canonicalUrl": "https://www.gesetze-im-internet.de/ustg_1980/__6a.html",
+    "title": "§ 6a UStG - Einzelnorm",
+    "description": null,
+    "author": null,
+    "keywords": null,
+    "languageCode": null,
+    "jsonLd": null,
+    "headers": {
+     "date": "Fri, 16 Oct 2026 17:28:20 GMT",
+     "server": "Apache",
+     "last-modified": "Fri, 16 Oct 2026 00:26:57 GMT",
+     "etag": "\"190e-65dea38ce312f-gzip\"",
+     "accept-ranges": "bytes",
+     "vary": "Accept-Encoding",
+     "content-encoding": "gzip",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "sameorigin",
+     "x-xss-protection": "1; mode=block",
+     "content-length": "2332",
+     "content-type": "text/html",
+     "x-firefox-spdy": "h2"
+    }
+   },
+   "screenshotUrl": null,
+   "html": null,
+   "htmlUrl": null,
+   "markdown": "§ 6a UStG - Einzelnorm\n\n![](../img/lay/BMJV_de_v1__BfJ_de_v1__Web_farbig.svg) \n\n[![vorherige Einzelnorm](../img/button/p_left.gif \"vorherige Einzelnorm\")zurück](https://www.gesetze-im-internet.de/ustg_1980/__6.html \"zur vorherigen Einzelnorm\")\n\n[weiter![nachfolgende Einzelnorm](../img/button/p_right.gif \"nachfolgende Einzelnorm\")](https://www.gesetze-im-internet.de/ustg_1980/__6b.html \"zur nachfolgenden Einzelnorm\")\n\n[Nichtamtliches Inhaltsverzeichnis](https://www.gesetze-im-internet.de/ustg_1980/index.html#BJNR119530979BJNE005806123)\n\n# Umsatzsteuergesetz (UStG)  \n§ 6a Innergemeinschaftliche Lieferung\n\n(1) Eine innergemeinschaftliche Lieferung (§ 4 Nummer 1 Buchstabe b) liegt vor, wenn bei einer Lieferung die folgenden Voraussetzungen erfüllt sind:\n\n1.\n\nder Unternehmer oder der Abnehmer hat den Gegenstand der Lieferung in das übrige Gemeinschaftsgebiet befördert oder versendet,\n\n2.\n\nder Abnehmer ist\n\na)\n\nein in einem anderen Mitgliedstaat für Zwecke der Umsatzsteuer erfasster Unternehmer, der den Gegenstand der Lieferung für sein Unternehmen erworben hat,\n\nb)\n\neine in einem anderen Mitgliedstaat für Zwecke der Umsatzsteuer erfasste juristische Person, die nicht Unternehmer ist oder die den Gegenstand der Lieferung nicht für ihr Unternehmen erworben hat, oder\n\nc)\n\nbei der Lieferung eines neuen Fahrzeugs auch jeder andere Erwerber,\n\n3.\n\nder Erwerb des Gegenstands der Lieferung unterliegt beim Abnehmer in einem anderen Mitgliedstaat den Vorschriften der Umsatzbesteuerung\n\nund\n\n4.\n\nder Abnehmer im Sinne der Nummer 2 Buchstabe a oder b hat gegenüber dem Unternehmer eine ihm von einem anderen Mitgliedstaat erteilte gültige Umsatzsteuer-Identifikationsnummer verwendet.\n\nDer Gegenstand der Lieferung kann durch Beauftragte vor der Beförderung oder Versendung in das übrige Gemeinschaftsgebiet bearbeitet oder verarbeitet worden sein.\n\n(2) Als innergemeinschaftliche Lieferung gilt auch das einer Lieferung gleichgestellte Verbringen eines Gegenstands (§ 3 Abs. 1a).\n\n(3) Die Voraussetzungen der Absätze 1 und 2 müssen vom Unternehmer nachgewiesen sein. Das Bundesministerium der Finanzen kann mit Zustimmung des Bundesrates durch Rechtsverordnung bestimmen, wie der Unternehmer den Nachweis zu führen hat.\n\n(4) Hat der Unternehmer eine Lieferung als steuerfrei behandelt, obwohl die Voraussetzungen nach Absatz 1 nicht vorliegen, so ist die Lieferung gleichwohl als steuerfrei anzusehen, wenn die Inanspruchnahme der Steuerbefreiung auf unrichtigen Angaben des Abnehmers beruht und der Unternehmer die Unrichtigkeit dieser Angaben auch bei Beachtung der Sorgfalt eines ordentlichen Kaufmanns nicht erkennen konnte. In diesem Fall schuldet der Abnehmer die entgangene Steuer.\n\n*   [zum Seitenanfang](https://www.gesetze-im-internet.de/ustg_1980/__6a.html#Seitenanfang)\n*   [Impressum](https://www.gesetze-im-internet.de/impressum.html)\n*   [Datenschutz](https://www.gesetze-im-internet.de/datenschutz.html \"Datenschutz\")\n*   [Barrierefreiheitserklärung](https://www.gesetze-im-internet.de/barrierefreiheit.html \"Erklärung zur Barrierefreiheit\")\n*   [Feedback-Formular](https://www.gesetze-im-internet.de/feedbackformular.html \"Barriere melden\")\n*   [Seite ausdrucken](javascript:window.print\\(\\))",
+   "debug": {
+    "requestHandlerMode": "browser"
+   }
+  },
+  {
+   "url": "https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-42019-article-25-data-protection-design-and_en",
+   "crawl": {
+    "loadedUrl": "https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_en",
+    "loadedTime": "2026-10-16T17:28:34.956Z",
+    "referrerUrl": "https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-42019-article-25-data-protection-design-and_en",
+    "httpStatusCode": 200,
+    "depth": 0,
+    "contentLengthBytes": 7993,
+    "contentType": "text/html; charset=utf-8"
+   },
+   "metadata": {
+    "canonicalUrl": "https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_en",
+    "title": "Guidelines 4/2019 on Article 25 Data Protection by Design and by Default | European Data Protection Board",
+    "description": null,
+    "author": null,
+    "keywords": null,
+    "languageCode": "en",
+    "jsonLd": null,
+    "headers": {
+     "date": "Fri, 16 Oct 2026 17:28:33 GMT",
+     "content-type": "text/html; charset=utf-8",
+     "content-length": "7993",
+     "cache-control": "max-age=21600, public",
+     "content-language": "en",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+     "last-modified": "Fri, 16 Oct 2026 14:30:39 GMT",
+     "etag": "\"1792161039-gzip\"",
+     "content-encoding": "gzip",
+     "vary": "Cookie, Accept-Encoding",
+     "age": "10673",
+     "accept-ranges": "bytes",
+     "x-fpfis": "66574367 43729402",
+     "strict-transport-security": "max-age=31536000; includeSubDomains; preload;",
+     "x-firefox-spdy": "h2"
+    }
+   },
+   "screenshotUrl": null,
+   "html": null,
+   "htmlUrl": null,
+   "markdown": "Guidelines 4/2019 on Article 25 Data Protection by Design and by Default | European Data Protection Board [Skip to main content](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_en#main-content)\n\n![](https://webtools.europa.eu/images/flags/eu.svg) An official website of the European Union An official EU website How do you know?\n\nAll official European Union website addresses are in the **europa.eu** domain.\n\n[See all EU institutions and bodies](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies_en)\n\n[![European Data Protection Board logo](/themes/custom/frontend/logo.svg)](https://www.edpb.europa.eu/home_en)\n\n[Close menu](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_en#)\n\n[EN](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_en#)\n\n### Select your language\n\n*   [BGбългарски](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_bg \"български\")\n*   [CSčeština](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_cs \"čeština\")\n*   [DAdansk](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_da \"dansk\")\n*   [DEDeutsch](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_de \"Deutsch\")\n*   [ELελληνικά](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_el \"ελληνικά\")\n*   [ESespañol](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_es \"español\")\n*   [ETeesti](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_et \"eesti\")\n*   [FIsuomi](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_fi \"suomi\")\n*   [FRfrançais](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_fr \"français\")\n*   [GAGaeilge](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_ga \"Gaeilge\")\n*   [HRhrvatski](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_hr \"hrvatski\")\n*   [HUmagyar](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_hu \"magyar\")\n*   [ITitaliano](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_it \"italiano\")\n*   [LTlietuvių](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_lt \"lietuvių\")\n*   [LVlatviešu](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_lv \"latviešu\")\n*   [MTMalti](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_mt \"Malti\")\n*   [NLNederlands](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_nl \"Nederlands\")\n*   [PLpolski](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_pl \"polski\")\n*   [PTportuguês](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_pt \"português\")\n*   [ROromână](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_ro \"română\")\n*   [SKslovenčina](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_sk \"slovenčina\")\n*   [SLslovenščina](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_sl \"slovenščina\")\n*   [SVsvenska](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_sv \"svenska\")\n\n[Close language switcher](https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_en#)\n\nFilter by question \n\nSearch\n\n# \n\nGuidelines 4/2019 on Article 25 Data Protection by Design and by Default\n\n*   Guideline\n    \n*   20 October 2020\n    \n*   Final version\n    \n\nSee the [first version of the publication](https://www.edpb.europa.eu/public-consultations/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_en \"Go to the related public consultation\") drafted before public consultation.\n\n## Downloadable documents\n\n[Guidelines 4/2019](https://www.edpb.europa.eu/system/files/documents/files/file1/edpb_guidelines_201904_dataprotection_by_design_and_by_default_v2.0_en.pdf)\n\nPDF, 305.39 KB\n\nSelect other language to download with the button българскиespañolčeštinadanskDeutscheestiελληνικάEnglishfrançaishrvatskiitalianolatviešulietuviųmagyarMaltiNederlandspolskiportuguêsromânăslovenčinaslovenščinasuomisvenska\n\n[Download Guidelines 4/2019](https://www.edpb.europa.eu/system/files/documents/files/file1/edpb_guidelines_201904_dataprotection_by_design_and_by_default_v2.0_en.pdf)\n\n[Summary: data protection by design & by default, when to act and what to do](https://www.edpb.europa.eu/system/files/documents/2026-02/edpb-summary-gdpr-data-protection-design-default_en.pdf)\n\nPDF, 322.28 KB\n\n[Download Summary: data protection by design & by default, when to act and what to do](https://www.edpb.europa.eu/system/files/documents/2026-02/edpb-summary-gdpr-data-protection-design-default_en.pdf)\n\n**Other (courtesy) translations**\n\nThese translations have been provided by the Deutsche Gesellchaft für Internationale Zusammenarbeit (GIZ) GmbH. The EDPB is not responsible for the accuracy of the translations.\n\n*   [სახელმძღვანელო რეკომენდაცია 4/2019 25-ე მუხლის შესახებ მონაცემთა მეტად დაფარვის პრიორიტეტი, როგორც ალტერნატიული მიდგომის არჩევამდე ავტომატურად გამოყენებული საწყისი მეთოდი ახალი პროდუქტის ან მომსახურების შექმნისას](https://pdps.ge/files/content/5.-%E1%83%A1%E1%83%90%E1%83%AE%E1%83%94%E1%83%9A%E1%83%9B%E1%83%AB%E1%83%A6%E1%83%95%E1%83%90%E1%83%9C%E1%83%94%E1%83%9A%E1%83%9D-%E1%83%A0%E1%83%94%E1%83%99%E1%83%9D%E1%83%9B%E1%83%94%E1%83%9C%E1%83%93%E1%83%90%E1%83%AA%E1%83%98%E1%83%90-%E1%83%9B%E1%83%9D%E1%83%9C%E1%83%90%E1%83%AA%E1%83%94%E1%83%9B%E1%83%97%E1%83%90-%E1%83%9B%E1%83%94%E1%83%A2%E1%83%90%E1%83%93-%E1%83%93%E1%83%90%E1%83%A4%E1%83%90%E1%83%A0%E1%83%95%E1%83%98%E1%83%A1-%E1%83%9E%E1%83%A0%E1%83%98%E1%83%9D%E1%83%A0%E1%83%98%E1%83%A2%E1%83%94%E1%83%A2%E1%83%98-%E1%83%A0%E1%83%9D%E1%83%92%E1%83%9D..._1710402222.pdf) (Georgian)\n*   [Настанови 4/2019](https://www.ombudsman.gov.ua/storage/app/media/uploaded-files/edpbguidelines201904dataprotectionbydesignandbydefaultv20enuk.pdf) (Ukrainian)  \n     \n\n## Related topics:\n\n*   [#Basic principles](https://www.edpb.europa.eu/topics/key-gdpr-concepts/basic-principles_en)\n*   [#Technology](https://www.edpb.europa.eu/topics/ai-and-technology/technology_en)\n*   [#Privacy by design and by default](https://www.edpb.europa.eu/topics/ai-and-technology/privacy-by-design-and-by-default_en)\n\n## Related documents\n\n### \n\nStatement 1/2026 of the EDPB on smart glasses\n\nStatement\n\n13 October 2026\n\n#Technology\n\n[Read more about\n\nStatement 1/2026 of the EDPB on smart glasses\n\n](https://www.edpb.europa.eu/documents/statement/statement-of-the-edpb-on-smart-glasses_en)\n\n### \n\nThe connected gaze. Video recording, surveillance and administering evidence in the age of smart glasses\n\nSupport Pool of Experts\n\n01 October 2026\n\n#Technology\n\n[Read more about\n\nThe connected gaze. Video recording, surveillance and administering evidence in the age of smart glasses\n\n](https://www.edpb.europa.eu/documents/support-pool-of-experts/the-connected-gaze-video-recording-surveillance-and-administering_en)\n\n### \n\nGuidelines 02/2025 on processing of personal data through blockchain technologies\n\nGuideline\n\n07 July 2026\n\n#Technology#Basic principles#Data subject rights#Data protection impact assessment\n\n[Read more about\n\nGuidelines 02/2025 on processing of personal data through blockchain technologies\n\n](https://www.edpb.europa.eu/documents/guideline/guidelines-022025-on-processing-of-personal-data-through-blockchain_en)\n\n[All documents](https://www.edpb.europa.eu/documents_en)",
+   "debug": {
+    "requestHandlerMode": "browser"
+   }
+  },
+  {
+   "url": "https://developers.cloudflare.com/turnstile/concepts/widget/",
+   "crawl": {
+    "loadedUrl": "https://developers.cloudflare.com/turnstile/concepts/widget/",
+    "loadedTime": "2026-10-16T17:28:41.951Z",
+    "referrerUrl": "https://developers.cloudflare.com/turnstile/concepts/widget/",
+    "httpStatusCode": 200,
+    "depth": 0,
+    "contentType": "text/html"
+   },
+   "metadata": {
+    "canonicalUrl": "https://developers.cloudflare.com/turnstile/concepts/widget/",
+    "title": "Turnstile widgets · Cloudflare Turnstile docs",
+    "description": "Turnstile widget modes, sizes, and rendering behavior.",
+    "author": null,
+    "keywords": null,
+    "languageCode": "en",
+    "openGraph": [
+     {
+      "property": "og:title",
+      "content": "Turnstile widgets"
+     },
+     {
+      "property": "og:title",
+      "content": "Turnstile widgets · Cloudflare Turnstile docs"
+     },
+     {
+      "property": "og:type",
+      "content": "article"
+     },
+     {
+      "property": "og:site_name",
+      "content": "Cloudflare Docs"
+     },
+     {
+      "property": "og:locale",
+      "content": "en"
+     },
+     {
+      "property": "og:description",
+      "content": "Turnstile widget modes, sizes, and rendering behavior."
+     },
+     {
+      "property": "og:url",
+      "content": "https://developers.cloudflare.com/turnstile/concepts/widget/"
+     },
+     {
+      "property": "og:image",
+      "content": "https://developers.cloudflare.com/turnstile/concepts/widget/og.png?v=102bf4d58b779f2b"
+     },
+     {
+      "property": "twitter:image",
+      "content": "https://developers.cloudflare.com/turnstile/concepts/widget/og.png?v=102bf4d58b779f2b"
+     }
+    ],
+    "jsonLd": [
+     {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "@id": "https://developers.cloudflare.com/turnstile/concepts/widget/#page",
+      "headline": "Turnstile widgets",
+      "description": "Turnstile widget modes, sizes, and rendering behavior.",
+      "url": "https://developers.cloudflare.com/turnstile/concepts/widget/",
+      "inLanguage": "en",
+      "image": "https://developers.cloudflare.com/turnstile/concepts/widget/og.png?v=102bf4d58b779f2b",
+      "dateModified": "2026-04-16",
+      "publisher": {
+       "@type": "Organization",
+       "name": "Cloudflare",
+       "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+       "url": "https://www.cloudflare.com/",
+       "sameAs": [
+        "https://github.com/cloudflare",
+        "https://www.linkedin.com/company/cloudflare",
+        "https://x.com/cloudflare"
+       ],
+       "logo": {
+        "@type": "ImageObject",
+        "url": "https://developers.cloudflare.com/logo.svg"
+       },
+       "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "101 Townsend St",
+        "addressLocality": "San Francisco",
+        "addressRegion": "CA",
+        "postalCode": "94107",
+        "addressCountry": "US"
+       },
+       "contactPoint": [
+        {
+         "@type": "ContactPoint",
+         "contactType": "Customer Support",
+         "url": "https://support.cloudflare.com/",
+         "availableLanguage": [
+          "English"
+         ]
+        },
+        {
+         "@type": "ContactPoint",
+         "contactType": "Sales",
+         "url": "https://www.cloudflare.com/contact/",
+         "availableLanguage": [
+          "English"
+         ]
+        }
+       ]
+      },
+      "isPartOf": {
+       "@type": "WebSite",
+       "@id": "https://developers.cloudflare.com/#website",
+       "name": "Cloudflare Docs",
+       "url": "https://developers.cloudflare.com/"
+      }
+     }
+    ],
+    "headers": {
+     "date": "Fri, 16 Oct 2026 17:28:37 GMT",
+     "content-type": "text/html",
+     "cf-cache-status": "HIT",
+     "access-control-allow-origin": "*",
+     "cache-control": "public, max-age=0, must-revalidate",
+     "strict-transport-security": "max-age=15552000; preload",
+     "x-content-type-options": "nosniff",
+     "speculation-rules": "\"/cdn-cgi/speculation\"",
+     "vary": "accept-encoding",
+     "set-cookie": "__cf_bm=88R7h8cSjjcKPgG37jtp8Hz69hP0oIOK92vztiV3hik-1792171716.975037-1.0.1.1-AeccXWUU3Bpu0dq50rFAu7dz2LCY3UH929CfqL2fWDUw7nYXMwGI55BaFx8.o7__ysh7BY7uBttBpS6wbmKu43EdcLVHxn8eUDtBaM8ljYB7phowb92Es6nHZo4TBDHe; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Fri, 16 Oct 2026 17:58:37 GMT",
+     "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=21, cfOrigin;dur=0, cfWorker;dur=16",
+     "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=4IMa6jhUGEQLnn0SRP.oN3Yiy56JY6dxFxxSrKgG9k0-1792171716.975037-1.0.1.1-ek0z0b4niK174gtp8A8ACT8Q_beaHaB7XRJExifpEUr7Pojij.icEXUa.EQH6PbyO1O9Sw0YerX7owax5udAG6PIp8mXZpy3e8Zd.5V9Ys1CTsffLQ6QY_0GqH_1lb_veU_TR2yBgcGvfTfvzfNmlZqMRbYKvRhe24UwOrIs8Xm46umV2_szFvwrqNLkz5odKAlrmo4a5UHWEmm2ST95qg; report-to cf-dlfrgaufimrpwmhn",
+     "report-to": "{\"group\":\"cf-dlfrgaufimrpwmhn\", \"max_age\":86400, \"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=4IMa6jhUGEQLnn0SRP.oN3Yiy56JY6dxFxxSrKgG9k0-1792171716.975037-1.0.1.1-ek0z0b4niK174gtp8A8ACT8Q_beaHaB7XRJExifpEUr7Pojij.icEXUa.EQH6PbyO1O9Sw0YerX7owax5udAG6PIp8mXZpy3e8Zd.5V9Ys1CTsffLQ6QY_0GqH_1lb_veU_TR2yBgcGvfTfvzfNmlZqMRbYKvRhe24UwOrIs8Xm46umV2_szFvwrqNLkz5odKAlrmo4a5UHWEmm2ST95qg\"}]}",
+     "reporting-endpoints": "cf-dlfrgaufimrpwmhn=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=4IMa6jhUGEQLnn0SRP.oN3Yiy56JY6dxFxxSrKgG9k0-1792171716.975037-1.0.1.1-ek0z0b4niK174gtp8A8ACT8Q_beaHaB7XRJExifpEUr7Pojij.icEXUa.EQH6PbyO1O9Sw0YerX7owax5udAG6PIp8mXZpy3e8Zd.5V9Ys1CTsffLQ6QY_0GqH_1lb_veU_TR2yBgcGvfTfvzfNmlZqMRbYKvRhe24UwOrIs8Xm46umV2_szFvwrqNLkz5odKAlrmo4a5UHWEmm2ST95qg\"",
+     "content-encoding": "br",
+     "server": "cloudflare",
+     "cf-ray": "a4b8c7ef1e8bf09c-DFW",
+     "alt-svc": "h3=\":443\"; ma=86400",
+     "x-firefox-spdy": "h2"
+    }
+   },
+   "screenshotUrl": null,
+   "html": null,
+   "htmlUrl": null,
+   "markdown": "Turnstile widgets · Cloudflare Turnstile docs [Skip to content](https://developers.cloudflare.com/turnstile/concepts/widget/#main-content)\n\n> Documentation Index  \n> Fetch the complete documentation index at: https://developers.cloudflare.com/turnstile/llms.txt  \n> Use this file to discover all available pages before exploring further.\n\n[![](/_astro/logo.te5VL_aD.svg)Docs](https://developers.cloudflare.com/)\n\nSearch⌘K[](https://github.com/cloudflare/cloudflare-docs)\n\n[Log inDashboard](https://dash.cloudflare.com/)\n\n# Turnstile widgets\n\nLast updated Apr 16, 2026|Copy as Markdown|[View as Markdown](https://developers.cloudflare.com/turnstile/concepts/widget/index.md)|[Agent setup](https://developers.cloudflare.com/agent-setup/)\n\nA Turnstile widget defines how Turnstile behaves on your webpage. Each widget has a mode, a label, a sitekey, and a secret key. You can create multiple widgets with different configurations.\n\nTurnstile is hosted under `challenges.cloudflare.com`. Your application will connect to this origin. If your site uses a [Content Security Policy](https://developers.cloudflare.com/turnstile/reference/content-security-policy/), you must allow connections to this domain.\n\n## Widget components\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#widget-components)\n\nEach widget gets its own unique sitekey and secret key pair, and options for configurations.\n\n| Component | Description |\n| --- | --- |\n| Sitekey | Public key used to invoke the Turnstile widget on your site. |\n| Secret key | Private key used for server-side token validation. |\n| Configurations | Mode, hostnames, appearance settings, and other options. |\n\n## Widget modes\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#widget-modes)\n\nThe available modes for Turnstile widgets are **Managed**, **Non-Interactive**, and **Invisible**.\n\n| Widget mode | Description | Use case |\n| --- | --- | --- |\n| **Managed** (recommended) | Automatically chooses between non-interactive or checkbox challenge based on visitor risk level. No images or text to decipher. | Simple setup with adaptive security. Balances protection and user experience. |\n| **Non-Interactive** | Displays visible widget with loading spinner. Runs challenges without requiring visitor interaction. | Minimize friction while showing verification is occurring. |\n| **Invisible** | Runs challenges completely in the background with no visible widget or loading indicators. | Maximize visual experience with zero visible verification elements. |\n\n### Managed mode (recommended)\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#managed-mode-recommended)\n\nManaged mode is fully managed by Cloudflare. It automatically chooses the appropriate action based on client-side signals and risk levels. Cloudflare uses the information from the visitor to decide if an interactive challenge should be used.\n\nTurnstile will only require interaction if a further check is necessary to verify that the visitor is human. When an interaction is required, the visitor will be prompted to select a box. There will be no images or text to decipher.\n\nManaged mode is ideal for users who want a simple configuration without needing to fine-tune the widget's behavior.\n\n### Non-Interactive mode\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#non-interactive-mode)\n\nVisitors will see a widget with a loading spinner while the challenges run in their browsers. Unlike managed mode, visitors will never be required or prompted to interact with the widget.\n\nNon-Interactive mode is ideal for users who want to prioritize visitor experience and do not want to add any friction on their website with a Turnstile interaction.\n\n### Invisible mode\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#invisible-mode)\n\nInvisible mode is similar to Non-Interactive mode where visitors will never interact with the Turnstile widget. Visitors will also not see a widget or any indication that an invisible browser challenge is in progress.\n\nInvisible mode is ideal for users who want to prioritize visitor and visual experience on their website.\n\nLink to Cloudflare's Turnstile Privacy Policy\n\nAs a condition of enabling invisible mode, you must reference Cloudflare's [Turnstile Privacy Addendum ↗︎](https://www.cloudflare.com/turnstile-privacy-policy/) in your own privacy policy.\n\n* * *\n\n## Widget customization\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#widget-customization)\n\n### Sizes\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#sizes)\n\nWidgets can be implemented in normal, flexible, or compact sizes.\n\nRefer to [Widget configurations](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/) for detailed configuration options and code examples.\n\n### Appearance and themes\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#appearance-and-themes)\n\nTurnstile widgets support multiple appearance modes and themes to match your website's design.\n\nRefer to [Widget configurations](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/) for implementation details.\n\n* * *\n\n## Widget states\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#widget-states)\n\nNormal widget operation states![Cloudflare](/logo.svg)\n\n### Error states\n\n[](https://developers.cloudflare.com/turnstile/concepts/widget/#error-states)\n\n| Type | Description |\n| --- | --- |\n| Unknown error | When an unknown error occurs during the challenge, visitors will encounter this widget state. Visitors can follow the troubleshooting guidelines from the widget or refresh the page to retry the challenge. |\n| Interaction timed out | When the visitor is presented with a checkbox but does not interact with it for an extended period of time. The challenge must be reissued by reloading the page or the widget. |\n| Challenge timed out | When the verification was completed but no further action has been taken, the challenge outcome will no longer be valid. For example, if a Turnstile widget is on a login page and the Turnstile successfully ran, but the visitor did not log in for an extended period of time, the challenge must be reissued by reloading the page or the widget. |\n| Outdated or unsupported browser | Visitors with outdated browsers or unsupported browsers will encounter this widget state. Refer to [Supported browsers](https://developers.cloudflare.com/cloudflare-challenges/reference/supported-browsers/) for more information regarding supported browsers. |\n\nWas this helpful?\n\nYesNo\n\n## On this page\n\nWas this helpful?\n\nYesNo\n\n[![](/_astro/logo.te5VL_aD.svg)Docs](https://developers.cloudflare.com/)",
+   "debug": {
+    "requestHandlerMode": "browser"
+   }
+  },
+  {
+   "url": "https://developers.cloudflare.com/turnstile/frequently-asked-questions/",
+   "crawl": {
+    "loadedUrl": "https://developers.cloudflare.com/turnstile/",
+    "loadedTime": "2026-10-16T17:28:41.953Z",
+    "referrerUrl": "https://developers.cloudflare.com/turnstile/frequently-asked-questions/",
+    "httpStatusCode": 200,
+    "depth": 0,
+    "contentType": "text/html"
+   },
+   "metadata": {
+    "canonicalUrl": "https://developers.cloudflare.com/turnstile/",
+    "title": "Overview · Cloudflare Turnstile docs",
+    "description": "Verify visitors are human with a CAPTCHA-free, privacy-preserving alternative.",
+    "author": null,
+    "keywords": null,
+    "languageCode": "en",
+    "openGraph": [
+     {
+      "property": "og:title",
+      "content": "Cloudflare Turnstile"
+     },
+     {
+      "property": "og:title",
+      "content": "Overview · Cloudflare Turnstile docs"
+     },
+     {
+      "property": "og:type",
+      "content": "article"
+     },
+     {
+      "property": "og:site_name",
+      "content": "Cloudflare Docs"
+     },
+     {
+      "property": "og:locale",
+      "content": "en"
+     },
+     {
+      "property": "og:description",
+      "content": "Verify visitors are human with a CAPTCHA-free, privacy-preserving alternative."
+     },
+     {
+      "property": "og:url",
+      "content": "https://developers.cloudflare.com/turnstile/"
+     },
+     {
+      "property": "og:image",
+      "content": "https://developers.cloudflare.com/turnstile/og.png?v=f32f2fffb8d054ed"
+     },
+     {
+      "property": "twitter:image",
+      "content": "https://developers.cloudflare.com/turnstile/og.png?v=f32f2fffb8d054ed"
+     }
+    ],
+    "jsonLd": [
+     {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": "https://developers.cloudflare.com/turnstile/#page",
+      "headline": "Cloudflare Turnstile",
+      "description": "Verify visitors are human with a CAPTCHA-free, privacy-preserving alternative.",
+      "url": "https://developers.cloudflare.com/turnstile/",
+      "inLanguage": "en",
+      "image": "https://developers.cloudflare.com/turnstile/og.png?v=f32f2fffb8d054ed",
+      "dateModified": "2026-08-14",
+      "publisher": {
+       "@type": "Organization",
+       "name": "Cloudflare",
+       "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+       "url": "https://www.cloudflare.com/",
+       "sameAs": [
+        "https://github.com/cloudflare",
+        "https://www.linkedin.com/company/cloudflare",
+        "https://x.com/cloudflare"
+       ],
+       "logo": {
+        "@type": "ImageObject",
+        "url": "https://developers.cloudflare.com/logo.svg"
+       },
+       "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "101 Townsend St",
+        "addressLocality": "San Francisco",
+        "addressRegion": "CA",
+        "postalCode": "94107",
+        "addressCountry": "US"
+       },
+       "contactPoint": [
+        {
+         "@type": "ContactPoint",
+         "contactType": "Customer Support",
+         "url": "https://support.cloudflare.com/",
+         "availableLanguage": [
+          "English"
+         ]
+        },
+        {
+         "@type": "ContactPoint",
+         "contactType": "Sales",
+         "url": "https://www.cloudflare.com/contact/",
+         "availableLanguage": [
+          "English"
+         ]
+        }
+       ]
+      },
+      "isPartOf": {
+       "@type": "WebSite",
+       "@id": "https://developers.cloudflare.com/#website",
+       "name": "Cloudflare Docs",
+       "url": "https://developers.cloudflare.com/"
+      },
+      "keywords": [
+       "Privacy"
+      ]
+     }
+    ],
+    "headers": {
+     "date": "Fri, 16 Oct 2026 17:28:37 GMT",
+     "content-type": "text/html",
+     "cf-cache-status": "HIT",
+     "access-control-allow-origin": "*",
+     "cache-control": "public, max-age=0, must-revalidate",
+     "set-cookie": "_cf_c=1; Domain=developers.cloudflare.com; Path=/; Max-Age=33696000; Secure; HttpOnly; SameSite=Lax",
+     "strict-transport-security": "max-age=15552000; preload",
+     "x-content-type-options": "nosniff",
+     "speculation-rules": "\"/cdn-cgi/speculation\"",
+     "vary": "accept-encoding",
+     "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=15, cfOrigin;dur=0, cfWorker;dur=15",
+     "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=yG1M.yDrjleUOv27G7Ivi7R66tyrexgqpy8OKNEve_Q-1792171717.3720765-1.0.1.1-3uAhCIwyQ_6IVvL4eLo6l.8wFHPBD40ZglmvnRRreTwxD1rAdrrH75tP33YhQTBzZRIRbFw3NFiOQj1ta_ajX0l3x3niTZIW4r7mXfSKNICX.tAKLNLady_68DlhZ2GwMa5XkoLXHQZ7caGsW8Ib5jZLkcn8rioYUtkfhqyO7Caf.YQCP7ZsdsMiQr2j8.rvzQrP_dZuwbklVGYzlL15bA; report-to cf-hkjfubvckhfummmc",
+     "report-to": "{\"group\":\"cf-hkjfubvckhfummmc\", \"max_age\":86400, \"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=yG1M.yDrjleUOv27G7Ivi7R66tyrexgqpy8OKNEve_Q-1792171717.3720765-1.0.1.1-3uAhCIwyQ_6IVvL4eLo6l.8wFHPBD40ZglmvnRRreTwxD1rAdrrH75tP33YhQTBzZRIRbFw3NFiOQj1ta_ajX0l3x3niTZIW4r7mXfSKNICX.tAKLNLady_68DlhZ2GwMa5XkoLXHQZ7caGsW8Ib5jZLkcn8rioYUtkfhqyO7Caf.YQCP7ZsdsMiQr2j8.rvzQrP_dZuwbklVGYzlL15bA\"}]}",
+     "reporting-endpoints": "cf-hkjfubvckhfummmc=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=yG1M.yDrjleUOv27G7Ivi7R66tyrexgqpy8OKNEve_Q-1792171717.3720765-1.0.1.1-3uAhCIwyQ_6IVvL4eLo6l.8wFHPBD40ZglmvnRRreTwxD1rAdrrH75tP33YhQTBzZRIRbFw3NFiOQj1ta_ajX0l3x3niTZIW4r7mXfSKNICX.tAKLNLady_68DlhZ2GwMa5XkoLXHQZ7caGsW8Ib5jZLkcn8rioYUtkfhqyO7Caf.YQCP7ZsdsMiQr2j8.rvzQrP_dZuwbklVGYzlL15bA\"",
+     "content-encoding": "br",
+     "server": "cloudflare",
+     "cf-ray": "a4b8c7f18e70f09c-DFW",
+     "alt-svc": "h3=\":443\"; ma=86400",
+     "x-firefox-spdy": "h2"
+    }
+   },
+   "screenshotUrl": null,
+   "html": null,
+   "htmlUrl": null,
+   "markdown": "Overview · Cloudflare Turnstile docs [Skip to content](https://developers.cloudflare.com/turnstile/#main-content)\n\n> Documentation Index  \n> Fetch the complete documentation index at: https://developers.cloudflare.com/turnstile/llms.txt  \n> Use this file to discover all available pages before exploring further.\n\n[![](/_astro/logo.te5VL_aD.svg)Docs](https://developers.cloudflare.com/)\n\nSearch⌘K[](https://github.com/cloudflare/cloudflare-docs)\n\n[Log inDashboard](https://dash.cloudflare.com/)\n\n# Cloudflare Turnstile\n\nLast updated Aug 14, 2026|Copy as Markdown|[View as Markdown](https://developers.cloudflare.com/turnstile/index.md)|[Agent setup](https://developers.cloudflare.com/agent-setup/)\n\nCloudflare's smart CAPTCHA alternative.\n\nTurnstile can be embedded into any website without sending traffic through Cloudflare and works without showing visitors a CAPTCHA.\n\nPlay Video\n\n0:00 / 3:47\n\nPlay\n\nCurrently unmuted. Volume set to 100 percent. Click to mute.\n\nCaptions:OffSettingsEnable Picture in PictureEnable Fullscreen\n\nCloudflare issues challenges through the [Challenge Platform](https://developers.cloudflare.com/cloudflare-challenges/), which is the same underlying technology powering [Turnstile](https://developers.cloudflare.com/turnstile/).\n\nIn contrast to our Challenge page offerings, Turnstile allows you to run challenges anywhere on your site in a less-intrusive way without requiring the use of Cloudflare's CDN.\n\n## How Turnstile works\n\n[](https://developers.cloudflare.com/turnstile/#how-turnstile-works)\n\n![Turnstile Overview](/cdn-cgi/image/onerror=redirect,width=3757,height=2700,format=webp/_astro/turnstile-overview.BlA8uXVD.png)\n\nTurnstile adapts the challenge outcome to the individual visitor or browser. First, we run a series of small non-interactive JavaScript challenges to gather signals about the visitor or browser environment.\n\nThese challenges include proof-of-work (computational puzzles), proof-of-space, probing for web APIs, and various other challenges for detecting browser-quirks and human behavior. As a result, we can fine-tune the difficulty of the challenge to the specific request and avoid showing a visual or interactive puzzle to a user.\n\nTurnstile performs client-side security challenges on behalf of the website operator to distinguish human visitors from automated traffic. To do so, Turnstile processes only the data strictly necessary to provide this security function. Turnstile does not access, store, or transmit user communications, form entries, or other page inputs.\n\nNote\n\nFor detailed information on Turnstile's data privacy practices, refer to the [Turnstile Privacy Addendum ↗︎](https://www.cloudflare.com/turnstile-privacy-policy/).\n\n### Widget types\n\n[](https://developers.cloudflare.com/turnstile/#widget-types)\n\nTurnstile [widget types](https://developers.cloudflare.com/turnstile/concepts/widget/) include:\n\n*   **Managed** (recommended): Automatically decides whether to show a checkbox based on visitor risk level.\n*   **Non-interactive**: Visitors never need to interact with the widget.\n*   **Invisible**: The widget is completely hidden from the visitor.\n\n* * *\n\n## Accessibility\n\n[](https://developers.cloudflare.com/turnstile/#accessibility)\n\nTurnstile is WCAG 2.2 AA compliant.\n\n* * *\n\n## Features\n\n[](https://developers.cloudflare.com/turnstile/#features)\n\n[Turnstile Analytics](https://developers.cloudflare.com/turnstile/turnstile-analytics/)\n\nAssess the number of challenges issued, evaluate the [challenge solve rate](https://developers.cloudflare.com/cloudflare-challenges/reference/challenge-solve-rate/), and view the metrics of issued challenges.\n\nUse Turnstile Analytics\n\n[Pre-clearance](https://developers.cloudflare.com/cloudflare-challenges/concepts/clearance/#pre-clearance-support-in-turnstile)\n\nIntegrate Cloudflare challenges on single-page applications (SPAs) by allowing Turnstile to issue a Pre-Clearance cookie.\n\nUse Pre-clearance\n\n* * *\n\n## Related products\n\n[](https://developers.cloudflare.com/turnstile/#related-products)\n\n[Bots](https://developers.cloudflare.com/bots/)\n\nCloudflare bot solutions identify and mitigate automated traffic to protect your domain from bad bots.\n\n[DDoS Protection](https://developers.cloudflare.com/ddos-protection/)\n\nDetect and mitigate Distributed Denial of Service (DDoS) attacks using Cloudflare's Autonomous Edge.\n\n[WAF](https://developers.cloudflare.com/waf/)\n\nGet automatic protection from vulnerabilities and the flexibility to create custom rules.\n\n* * *\n\n## More resources\n\n[](https://developers.cloudflare.com/turnstile/#more-resources)\n\n### [Plans](https://developers.cloudflare.com/turnstile/plans/)\n\nLearn more about Turnstile's plan availability.\n\nWas this helpful?\n\nYesNo\n\n## On this page\n\nWas this helpful?\n\nYesNo\n\n[![](/_astro/logo.te5VL_aD.svg)Docs](https://developers.cloudflare.com/)",
+   "debug": {
+    "requestHandlerMode": "browser"
+   }
+  },
+  {
+   "url": "https://www.nngroup.com/articles/form-design-placeholders/",
+   "crawl": {
+    "loadedUrl": "https://www.nngroup.com/articles/form-design-placeholders/",
+    "loadedTime": "2026-10-16T17:28:56.753Z",
+    "referrerUrl": "https://www.nngroup.com/articles/form-design-placeholders/",
+    "httpStatusCode": 200,
+    "depth": 0,
+    "contentLengthBytes": 37103,
+    "contentType": "text/html; charset=utf-8"
+   },
+   "metadata": {
+    "canonicalUrl": "https://www.nngroup.com/articles/form-design-placeholders/",
+    "title": "Placeholders in Form Fields Are Harmful - NN/G",
+    "description": "Labels or sample text inside a form field makes it difficult for people to remember what information belongs in that field once they start data entry.",
+    "author": null,
+    "keywords": "placeholder text, placeholders, form design, forms, accessibility, inline labels, labels inside form fields, labels inside fields",
+    "languageCode": "en",
+    "openGraph": [
+     {
+      "property": "og:site_name",
+      "content": "Nielsen Norman Group"
+     },
+     {
+      "property": "og:url",
+      "content": "https://www.nngroup.com/articles/form-design-placeholders/"
+     },
+     {
+      "property": "og:title",
+      "content": "Placeholders in Form Fields Are Harmful"
+     },
+     {
+      "property": "og:type",
+      "content": "article"
+     },
+     {
+      "property": "og:description",
+      "content": "Labels or sample text inside a form field makes it difficult for people to remember what information belongs in that field once they start data entry."
+     },
+     {
+      "property": "og:image",
+      "content": "https://media.nngroup.com/media/articles/opengraph_images/Placeholders-Social-Posts_2019.png"
+     }
+    ],
+    "jsonLd": [
+     {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Placeholders in Form Fields Are Harmful",
+      "image": [
+       "https://media.nngroup.com/media/articles/opengraph_images/Placeholders-Social-Posts_2019.png"
+      ],
+      "datePublished": "2014-05-11T16:00:00+0000",
+      "dateModified": "2024-01-26T02:00:26+0000",
+      "author": [
+       {
+        "@type": "Person",
+        "name": "Katie Sherwin",
+        "url": "https://www.nngroup.com/articles/author/katie-sherwin/"
+       }
+      ]
+     },
+     {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "@id": "https://www.nngroup.com/#organization",
+      "name": "Nielsen Norman Group",
+      "alternateName": [
+       "NN/g",
+       "NNG"
+      ],
+      "url": "https://www.nngroup.com",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://media.nngroup.com/static/img/logo-817x388.png",
+       "width": 817,
+       "height": 388
+      },
+      "image": "https://media.nngroup.com/media/metadata/opengraph_images/Homepage_1.png",
+      "description": "Nielsen Norman Group (NN/g) is a world-leading user experience research, training, and consulting firm. Founded in 1998 by UX pioneers Jakob Nielsen and Don Norman, NN/g provides evidence-based UX guidance through live training courses, UX Certification programs, consulting services, and an extensive library of free research articles and reports.",
+      "sameAs": [
+       "https://en.wikipedia.org/wiki/Nielsen_Norman_Group",
+       "https://www.linkedin.com/company/nielsen-norman-group/",
+       "https://x.com/NNgroup",
+       "https://www.youtube.com/@NNgroup",
+       "https://www.instagram.com/nngux",
+       "https://www.facebook.com/nngux",
+       "https://open.spotify.com/show/3GFTfWpfv6m8nhKsPOlT8m",
+       "https://www.wikidata.org/wiki/Q7031613"
+      ],
+      "address": {
+       "@type": "PostalAddress",
+       "streetAddress": "48105 Warm Springs Blvd",
+       "addressLocality": "Fremont",
+       "addressRegion": "CA",
+       "postalCode": "94539",
+       "addressCountry": "US"
+      },
+      "email": "support@nngroup.com",
+      "telephone": "+1-415-682-0688",
+      "contactPoint": [
+       {
+        "@type": "ContactPoint",
+        "contactType": "Customer Service",
+        "telephone": "+1-415-682-0688",
+        "email": "support@nngroup.com",
+        "areaServed": "Worldwide",
+        "availableLanguage": "English"
+       },
+       {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "telephone": "+1-415-685-4230",
+        "email": "training@nngroup.com",
+        "areaServed": "Worldwide",
+        "availableLanguage": "English"
+       }
+      ],
+      "naics": "611430",
+      "founder": [
+       {
+        "@type": "Person",
+        "name": "Jakob Nielsen",
+        "honorificPrefix": "Dr",
+        "url": "https://www.nngroup.com/people/jakob-nielsen/",
+        "sameAs": "https://en.wikipedia.org/wiki/Jakob_Nielsen_(usability_consultant)",
+        "jobTitle": "Co-Founder & Retired Principal"
+       },
+       {
+        "@type": "Person",
+        "name": "Don Norman",
+        "honorificPrefix": "Dr",
+        "url": "https://www.nngroup.com/people/don-norman/",
+        "sameAs": "https://en.wikipedia.org/wiki/Don_Norman",
+        "jobTitle": "Co-Founder & Board Member"
+       }
+      ],
+      "knowsAbout": [
+       "Usability Heuristics",
+       "User Experience Research",
+       "Interaction Design",
+       "UX Training",
+       "Information Architecture",
+       "Content Strategy",
+       "Design Thinking",
+       "Service Design",
+       "UX Management",
+       "Accessibility",
+       "UX Certification",
+       "Journey Mapping",
+       "User Research Methods"
+      ],
+      "foundingDate": "1998-08-08",
+      "numberOfEmployees": {
+       "@type": "QuantitativeValue",
+       "minValue": 51,
+       "maxValue": 200
+      },
+      "employee": [
+       {
+        "@type": "Person",
+        "name": "Kara Pernice",
+        "jobTitle": "President and CEO",
+        "url": "https://www.nngroup.com/people/kara-pernice/"
+       }
+      ],
+      "slogan": "World leaders in research-based user experience"
+     }
+    ],
+    "headers": {
+     "date": "Fri, 16 Oct 2026 17:28:55 GMT",
+     "content-type": "text/html; charset=utf-8",
+     "content-length": "37103",
+     "x-sucuri-id": "20012",
+     "content-encoding": "gzip",
+     "content-security-policy-report-only": "font-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; style-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; script-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; img-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; connect-src 'self'; default-src 'self'",
+     "cross-origin-opener-policy": "same-origin",
+     "etag": "W/\"e37c9ec2e0b6fe07a3bb8b8de5d8d1a1\"",
+     "last-modified": "Fri, 26 Jan 2024 02:00:26 GMT",
+     "nel": "{\"report_to\":\"heroku-nel\", \"response_headers\":[\"Via\"], \"max_age\":3600, \"success_fraction\":0.01, \"failure_fraction\":0.1}",
+     "referrer-policy": "strict-origin-when-cross-origin",
+     "report-to": "{\"group\":\"heroku-nel\", \"endpoints\":[{\"url\":\"https://nel.heroku.com/reports?s=yvMac0Jp%2FYlFgbzDjXUvBwBo7YHlaI1CYl%2FjZJFNXck%3D\\u0026sid=929419e7-33ea-4e2f-85f0-7d8b7cd5cbd6\\u0026ts=1792161151\"}], \"max_age\":3600}",
+     "reporting-endpoints": "heroku-nel=\"https://nel.heroku.com/reports?s=yvMac0Jp%2FYlFgbzDjXUvBwBo7YHlaI1CYl%2FjZJFNXck%3D&sid=929419e7-33ea-4e2f-85f0-7d8b7cd5cbd6&ts=1792161151\"",
+     "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+     "vary": "Cookie, Accept-Encoding",
+     "via": "1.1 heroku-router",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "server": "Sucuri/Cloudproxy",
+     "x-sucuri-cache": "REVALIDATED",
+     "alt-svc": "h3=\":443\"; ma=86400",
+     "x-firefox-spdy": "h2"
+    }
+   },
+   "screenshotUrl": null,
+   "html": null,
+   "htmlUrl": null,
+   "markdown": "Placeholders in Form Fields Are Harmful - NN/G\n\n![](https://cdn-cookieyes.com/assets/images/close.svg)\n\nWe value your privacy\n\nThis website and third-party tools process personal information as described in our [privacy policy](https://www.nngroup.com/contents/privacy-policy/). You can manage your privacy preferences, including opting out of data tracking, using the link below. NN/G will never sell or share your personal information.\n\nOpt out of data tracking\n\n[Skip to content](https://www.nngroup.com/articles/form-design-placeholders/#main)\n\nLive Online Training | New EU-Friendly Times | Oct. 26 – 29\n\n[See Your Timezone](https://www.nngroup.com/training/october-eu/)\n\n5\n\n# Placeholders in Form Fields Are Harmful\n\nKatie Sherwin\n\n![](https://media.nngroup.com/media/people/photos/Katie_Sherwin_portrait.jpg.256x256_q75_autocrop_crop-smart_upscale.jpg)\n\n[Katie Sherwin](https://www.nngroup.com/articles/author/katie-sherwin/)\n\nMay 11, 2014 · Last reviewed Sep. 10, 2018 2018-09-10\n\n[\n\nShare\n\n](https://www.nngroup.com/articles/form-design-placeholders/#)\n\n*   [Email article](mailto:?subject=NN/g%20Article:%20Placeholders%20in%20Form%20Fields%20Are%20Harmful&body=https://www.nngroup.com/articles/form-design-placeholders/)\n*   [Share on LinkedIn](http://www.linkedin.com/shareArticle?mini=true&url=http://www.nngroup.com/articles/form-design-placeholders/&title=Placeholders%20in%20Form%20Fields%20Are%20Harmful&source=Nielsen%20Norman%20Group)\n*   [Share on Twitter](https://twitter.com/intent/tweet?url=http://www.nngroup.com/articles/form-design-placeholders/&text=Placeholders%20in%20Form%20Fields%20Are%20Harmful&via=nngroup)\n\nSummary:  Placeholder text within a form field makes it difficult for people to remember what information belongs in a field, and to check for and fix errors. It also poses additional burdens for users with visual and cognitive impairments.\n\nIn-context descriptions or hints can help clarify what goes inside each form field, and therefore improve completion and [conversion rates](http://www.nngroup.com/articles/conversion-rates/). There are many ways to provide hints. A common implementation is by inserting instructions within form fields. Unfortunately, user testing continually shows that **placeholders in form fields often hurt usability** more than help it.\n\n## In This Article:\n\n[Labels and Placeholders](https://www.nngroup.com/articles/form-design-placeholders/#toc-labels-and-placeholders-1)\n\n*   [Labels and Placeholders](https://www.nngroup.com/articles/form-design-placeholders/#toc-labels-and-placeholders-1)\n*   [Placeholders that Replace Labels](https://www.nngroup.com/articles/form-design-placeholders/#toc-placeholders-that-replace-labels-2)\n*   [Placeholder Text in Addition to Labels](https://www.nngroup.com/articles/form-design-placeholders/#toc-placeholder-text-in-addition-to-labels-3)\n*   [Placeholders and Accessibility](https://www.nngroup.com/articles/form-design-placeholders/#toc-placeholders-and-accessibility-4)\n*   [Floating Labels](https://www.nngroup.com/articles/form-design-placeholders/#toc-floating-labels-5)\n*   [Conclusion](https://www.nngroup.com/articles/form-design-placeholders/#toc-conclusion-6)\n\n## Labels and Placeholders\n\nLabels tell users what information belongs in a given form field and are usually positioned outside the form field. Placeholder text, located inside a form field, is an additional hint, description, or example of the information required for a particular field. These hints typically disappear when the user types in the field.\n\n![Labels and placeholders](//s3.amazonaws.com/media.nngroup.com/media/editor/2014/05/03/label-placeholder-captions.png)\n\n## Placeholders that Replace Labels\n\nSome forms replace field labels with in-field placeholder text to reduce clutter on the page, or to shorten the length of the form. While this approach is based on good intentions, our research shows that it has many negative consequences.\n\n![Placeholder as label](//s3.amazonaws.com/media.nngroup.com/media/editor/2014/05/03/placeholder-as-label.png)\n\n_Worst: In this example, placeholder text is used instead of a label._\n\nBelow are 7 main reasons why placeholders should not be used as replacements for field labels.\n\n### 1\\. Disappearing placeholder text strains users’ [short-term memory](http://www.nngroup.com/articles/short-term-memory-and-web-usability/).\n\nIf the user forgets the hint, which people often do while filling out long forms, he has to delete what he wrote and, in some cases, click away from the field to reveal the placeholder text again. In an ideal world, users would be entirely focused when filling out a form. But in reality, **users multitask**. They [have different tabs open](https://www.nngroup.com/articles/multi-tab-page-parking/), or they might be pulled away by an email or phone call. For complex tasks, they might have to stop and go retrieve a document or order number. From our [research on mobile usability](http://www.nngroup.com/reports/mobile-website-and-application-usability), we know that mobile users are also frequently distracted and interrupted while using their devices. So, it’s important to help users pick up where they left off.  \n  \nOn simple, frequently used forms with one or two fields, such as a search box or login form, the strain on memory is less of an issue than with complex or rarely used forms. That is because with simple, familiar forms, users can guess what they are supposed to enter. Although, on even a simple login form without labels, users may not remember if they have the option to type _Username or Email_ or just _Username._\n\n### 2\\. Without labels, users cannot check their work before submitting a form.\n\nThe lack of labels makes it impossible for customers to glance through the form and make sure that their responses are correct. Similarly, browsers that **autocomplete form fields may fill in information incorrectly.** If there are no labels, or if special instructions are no longer visible, customers must reveal the placeholder text by deleting the text in each field one by one in order verify that it matches the description. Realistically though, many won’t even realize that potential for error, and they won’t make the effort to double check.\n\n### 3\\. When error messages occur, people don’t know how to fix the problem.\n\nIf the form has been filled out, but there are no labels or instructions visible outside the form fields, then users have to go back to each field to reveal the description in order to fix the error.\n\n### 4\\. Placeholder text that disappears when the cursor is placed in a form field is irritating for users [navigating with the keyboard](http://www.nngroup.com/articles/keyboard-accessibility/).\n\nPeople using the _Tab_ key move quickly from field to field, and they don’t stop to study the next field before tabbing to it.\n\n### 5\\. Fields with stuff in them are less noticeable.\n\n[Eyetracking](http://www.nngroup.com/topic/eyetracking/) studies show that **users’ eyes are drawn to empty fields**. At the minimum, users will spend more time locating a non-empty field — a [nuisance](http://www.nngroup.com/articles/does-user-annoyance-matter/). At the worst, they will overlook the field completely—a potential business-killing disaster.\n\n### 6\\. Users may mistake a placeholder for data that was automatically filled in.\n\nWhen there is already text in the field, people are less likely to realize that they can type there. Some users assume the placeholder text is a default value and **skip the field completely**.\n\n### 7\\. Occasionally users have to delete placeholder text manually.\n\nSometimes placeholders do not disappear when users move their input focus into the field. If the placeholder remains in the field as **editable text**, users are forced to manually select and delete it. This creates an unnecessary burden on users and increases the [interaction cost](http://www.nngroup.com/articles/interaction-cost-definition/) of filling in the form.  \n  \nSometimes the placeholder dims when the cursor is placed in a text field. Unfortunately, this interaction pattern is rare and users are not familiar with it: some still think they have to delete the text manually. It often takes a few failed attempts and lots of clicking to realize that they can start typing over the dimmed text.\n\n## Placeholder Text in Addition to Labels\n\nUsing placeholder text in combination with form labels is a step in the right direction. Labels outside the form fields make the essential information visible at all times, while placeholder text inside form fields is reserved for supplementary information. However, even when using labels, placing important hints or instructions within a form field **can still cause the 7 issues mentioned above**, albeit with less severity. If some of the fields require an extra description that is **essential** to completing the form correctly, it’s best to place that text outside the field so that it is always visible. \n\n![Label outside, placeholder inside](//s3.amazonaws.com/media.nngroup.com/media/editor/2014/05/03/label-outside-placeholder-inside.png)\n\n_Better: Here, placeholder text is used as a hint in addition to the label._\n\n## Placeholders and Accessibility\n\nOne last issue to consider is that placeholder text is generally **bad for** [**accessibility**](http://www.nngroup.com/topic/accessibility/). Certainly, accessibility software and modern browsers are improving, but they still have a long way to go. Three of the biggest problems for accessibility are as follows:\n\n1.  **The default light-grey color of placeholder text has poor color contrast against most backgrounds.** For users with a visual impairment, poor color contrast makes it difficult to read the text. Because not all browsers allow placeholder text to be styled using CSS, this is a difficult issue to mitigate.\n2.  **Users with cognitive or motor impairments are more heavily burdened.**  As we saw, placeholders can be problematic for all users: disappearing placeholders increase the memory load; persistent dimmable placeholders cause confusion when they look clickable but aren’t, and placeholders that do not disappear require more keyboard or mouse interaction to be deleted. These difficulties are magnified for people with cognitive or motor impairments.\n3.  **Not all screen readers read placeholder text aloud**. Blind or visually impaired users may miss the hint completely if their software does not speak the placeholder content.\n\n## Floating Labels\n\nRooted in [minimalist web design](https://www.nngroup.com/articles/characteristics-minimalism/), the floating-label pattern is a modified approach to placeholders that mitigates some of the disadvantages of traditional placeholders. This pattern has been around for years, but it has finally made way onto mainstream websites, and it has even been officially embraced by Google's Material Design.\n\nIn this pattern, labels are placed within the form field as placeholders until the field becomes active and the user moves the input focus into the field. At that point, the placeholder label moves to the top of the field. As a result, the floating label (also known as an adaptive placeholder) is always visible, either in the center of the form field, or above the text that the user entered. \n\n![Placeholder label 'First name' rises to the top of the field on input focus](//s3.amazonaws.com/media.nngroup.com/media/editor/2015/10/08/adaptive-placeholder.jpg)\n\n_Good: Floating labels move to the top of the form field when the user selects it to start typing (Warbyparker.com)._\n\nThere are two main advantages to this approach:\n\n*   It can save space on mobile devices, by not requiring extra vertical space to put the label above the field.\n*   The visible label serves as a memory aid while people are in the typing stage. This therefore addresses points 1-4 from the list of pitfalls above.\n\nHowever, **issues #5 and #6 from above are still a problem**: fields with text in them are less noticeable, and users might think there is already a default value entered in the field. Also, the accessibility issues described earlier may still apply, because some browsers and assistive technologies don’t properly or reliably read placeholder text.\n\nUltimately, floating labels do offer a better user experience than the label as a placeholder. But if you have the screen space, placing the label and hint outside the field is still the best way to go.  \n\n## Conclusion\n\nRather than risk having users stumble while filling out forms or waste valuable time figuring out how they work, the best solution is to have clear, visible labels that are placed outside empty form fields.\n\n![Label and placeholder text outside form field](//s3.amazonaws.com/media.nngroup.com/media/editor/2014/05/03/label-hint-outside.png)\n\n_Best: The label and hint are placed outside the form field and are always visible to the user._\n\nHints and instructions should also be persistent and placed outside of the field. Forms are an important part of many [conversion goals](http://www.nngroup.com/articles/conversion-rates/), so it’s worthwhile to make sure that your users can get through them quickly and accurately.\n\n## Related Courses\n\n*   [\n    \n    #### Web Page UX Design\n    \n    Strategically combine content, visuals, and interactive components to design successful web pages\n    \n    Interaction\n    \n    \n    \n    \n    \n    ](https://www.nngroup.com/courses/web-page-design/?lm=form-design-placeholders&pt=article)\n*   [\n    \n    #### Application Design for Web and Desktop\n    \n    Components, design patterns, workflows, and ways of interacting with complex data\n    \n    Interaction\n    \n    \n    \n    \n    \n    ](https://www.nngroup.com/courses/application-ux/?lm=form-design-placeholders&pt=article)\n*   [\n    \n    #### The Human Mind and Usability\n    \n    Use psychology to predict and explain how your customers think and act\n    \n    Interaction\n    \n    \n    \n    \n    \n    ](https://www.nngroup.com/courses/human-mind/?lm=form-design-placeholders&pt=article)\n\nforms,Accessibility,Application Design,Web Usability\n\n## Related Topics\n\n*   Accessibility [Accessibility](https://www.nngroup.com/topic/accessibility/)\n*   [Application Design](https://www.nngroup.com/topic/applications/)\n*   [Web Usability](https://www.nngroup.com/topic/web-usability/)\n\n## Learn More:\n\nTap to unmute\n\n[Placeholders in Form Fields are Harmful](https://www.youtube.com/watch?v=jrigp2L-P-0)[NNgroup](https://www.nngroup.com/channel/UC2oCugzU6W8-h95W7eBTUEg)\n\nNNgroup320K subscribers\n\n[\n\n](https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26hl%3Den%26next%3D%252Fpost_login&hl=en)\n\n[\n\nWatch on\n\n](https://www.youtube.com/watch?v=jrigp2L-P-0)\n\n[\n\n![Placeholders in Form Fields Are Harmful](https://media.nngroup.com/media/videos/thumbnails/Placeholders_in_Form_Fields_are_Harmful_Thumbnail.jpg.1300x728_q75_autocrop_crop-smart_upscale.jpg)](https://www.youtube.com/watch?v=jrigp2L-P-0 \"Placeholders in Form Fields Are Harmful on YouTube (new window)\")\n\nEnable cookies  to watch NN/g videos\n\nPlaceholders in Form Fields Are Harmful\n\nKatie Sherwin · 3 min\n\n*   [\n    \n    ![](https://media.nngroup.com/media/videos/thumbnails/Legacy_Users_Thumbnail.png.650x364_q75_autocrop_crop-smart_upscale.png)\n    \n    Are You Supporting Legacy Users?\n    \n    Rachel Krause · 3 min\n    \n    \n    \n    ](https://www.nngroup.com/videos/are-you-supporting-legacy-users/?lm=form-design-placeholders&pt=article)\n    \n*   [\n    \n    ![](https://media.nngroup.com/media/videos/thumbnails/Therese_Neurodivergence__What_is_it_and_Why_Does_it_Matter.png.650x364_q75_autocrop_crop-smart_upscale.png)\n    \n    Neurodivergence: What is it and Why Does it Matter\n    \n    Therese Fessenden · 6 min\n    \n    \n    \n    ](https://www.nngroup.com/videos/neurodivergence-what-and-why/?lm=form-design-placeholders&pt=article)\n    \n*   [\n    \n    ![](https://media.nngroup.com/media/videos/thumbnails/Better_Forms_Through_Visual_Organization_Thumbnail.jpg.650x364_q75_autocrop_crop-smart_upscale.jpg)\n    \n    Better Forms Through Visual Organization\n    \n    Kathryn Whitenton · 3 min\n    \n    \n    \n    ](https://www.nngroup.com/videos/better-forms-visual-organization/?lm=form-design-placeholders&pt=article)\n    \n\n## Related Articles:\n\n*   [\n    \n    Website Forms Usability: Top 10 Recommendations\n    \n    Kathryn Whitenton · 6 min\n    \n    ](https://www.nngroup.com/articles/web-form-design/?lm=form-design-placeholders&pt=article)\n*   [\n    \n    Inclusive Design\n    \n    Alita Kendrick · 6 min\n    \n    ](https://www.nngroup.com/articles/inclusive-design/?lm=form-design-placeholders&pt=article)\n*   [\n    \n    Reset and Cancel Buttons\n    \n    Jakob Nielsen · 5 min\n    \n    ](https://www.nngroup.com/articles/reset-and-cancel-buttons/?lm=form-design-placeholders&pt=article)\n*   [\n    \n    Contextual Menus: Delivering Relevant Tools for Tasks\n    \n    Anna Kaley · 7 min\n    \n    ](https://www.nngroup.com/articles/contextual-menus/?lm=form-design-placeholders&pt=article)\n*   [\n    \n    6 Tips for Successful Personalization\n    \n    Amy Schade · 6 min\n    \n    ](https://www.nngroup.com/articles/personalization/?lm=form-design-placeholders&pt=article)\n*   [\n    \n    A Checklist for Designing Mobile Input Fields\n    \n    Raluca Budiu · 2 min\n    \n    ](https://www.nngroup.com/articles/mobile-input-checklist/?lm=form-design-placeholders&pt=article)\n\nBack to Top\n\n![](https://bat.bing.com/action/0?ti=343242980&tm=gtm002&Ver=2&mid=acf7e432-1d88-4d5a-9a83-999627c3524d&bo=2&sid=11cc5150c98711f1b3bc09924c5c3abe&vid=11cc3ae0c98711f19825f17fd86c5700&vids=1&msclkid=N&pi=0&lg=en-US&sw=1728&sh=1117&sc=30&tl=Placeholders%20in%20Form%20Fields%20Are%20Harmful%20-%20NN%2FG&kw=placeholder%20text,%20placeholders,%20form%20design,%20forms,%20accessibility,%20inline%20labels,%20labels%20inside%20form%20fields,%20labels%20inside%20fields&p=https%3A%2F%2Fwww.nngroup.com%2Farticles%2Fform-design-placeholders%2F&r=&lt=2303&evt=pageLoad&sv=2&cdb=AQcT&rn=966497)\n\n[](https://www.nngroup.com/)\n\n*   UX Training & Courses\n    *   ### Live Online\n        \n        *   [All Live Online Courses](https://www.nngroup.com/courses/)\n        *   [Upcoming Live Online Training](https://www.nngroup.com/training/live-courses/)\n        *   [Train Your Team](https://www.nngroup.com/contents/train-your-team/)\n            *   [Group-Discount Pricing](https://www.nngroup.com/contents/train-your-team/group-discount-pricing/)\n            *   [Private Team Training](https://www.nngroup.com/contents/train-your-team/private-team-training-ux-certification/)\n        *   [UX Certification](https://www.nngroup.com/ux-certification/)\n    *   ### Self-Paced\n        \n        *   [\n            \n            Self-Paced Courses New\n            \n            ![](https://media.nngroup.com/media/images/SP-Banner_93isepZ.width-260.png)](https://www.nngroup.com/contents/self-paced-courses/)\n    *   ### Deciding Between Formats?\n        \n        Find the training option that fits your learning style.\n        \n        [Which Format Is Right For Me?](https://www.nngroup.com/contents/right-nng-training-format/)\n*   Articles & Resources\n    *   *   [Articles & Videos](https://www.nngroup.com/articles/)\n        *   [Reports & Books](https://www.nngroup.com/reports/)\n        *   [The NN/G UX Podcast](https://podcasters.spotify.com/pod/show/nngroup)\n*   Consulting\n    *   *   [All Consulting Services](https://www.nngroup.com/consulting/)\n        *   [Customized Research](https://www.nngroup.com/consulting/user-research/)\n        *   [Expert Review](https://www.nngroup.com/consulting/expert-review/)\n        *   [Intensive Applied Workshops](https://www.nngroup.com/consulting/applied-workshops/)\n        *   [Keynote Speaking](https://www.nngroup.com/consulting/keynote-speaking/)\n        *   [User Testing](https://www.nngroup.com/consulting/user-testing/)\n        *   [UX Maturity Assessment](https://www.nngroup.com/consulting/ux-maturity-assessment/)\n*   About Us\n    *   *   [About NNGroup](https://www.nngroup.com/about/)\n        *   [People](https://www.nngroup.com/people/)\n        *   [Clients](https://www.nngroup.com/about/about-client-list/)\n        *   [News & Careers](https://www.nngroup.com/news/)\n        *   [FAQs](https://www.nngroup.com/faqs/)\n        *   [Contact Us](https://www.nngroup.com/about/contact/)\n*   [Log In](https://www.nngroup.com/login/?next=%2Farticles%2Fform-design-placeholders%2F)",
+   "debug": {
+    "requestHandlerMode": "browser"
+   }
+  },
+  {
+   "url": "https://baymard.com/research-articles/explain-phone-number-field",
+   "crawl": {
+    "loadedUrl": "https://baymard.com/research-articles/explain-phone-number-field",
+    "loadedTime": "2026-10-16T17:29:17.849Z",
+    "referrerUrl": "https://baymard.com/research-articles/explain-phone-number-field",
+    "httpStatusCode": 200,
+    "depth": 0,
+    "contentType": "text/html; charset=utf-8"
+   },
+   "metadata": {
+    "canonicalUrl": "https://baymard.com/research-articles/explain-phone-number-field",
+    "title": "Explain Why the “Phone Field” Is Required – Baymard",
+    "description": "14% of users will abandon checkout if “phone” is simply required. Testing shows users just need an explanation — yet 39% of sites don’t.",
+    "author": null,
+    "keywords": null,
+    "languageCode": "en",
+    "openGraph": [
+     {
+      "property": "og:title",
+      "content": "Explain Why the “Phone Field” Is Required – Baymard"
+     },
+     {
+      "property": "twitter:title",
+      "content": "Explain Why the “Phone Field” Is Required – Baymard"
+     },
+     {
+      "property": "og:site_name",
+      "content": "Baymard Institute"
+     },
+     {
+      "property": "twitter:site",
+      "content": "@Baymard"
+     },
+     {
+      "property": "og:description",
+      "content": "14% of users will abandon checkout if “phone” is simply required. Testing shows users just need an explanation of why the phone field is required — yet 39% of ecommerce sites don’t."
+     },
+     {
+      "property": "twitter:description",
+      "content": "14% of users will abandon checkout if “phone” is simply required. Testing shows users just need an explanation of why the phone field is required — yet 39% of ecommerce sites don’t."
+     },
+     {
+      "property": "twitter:card",
+      "content": "summary_large_image"
+     },
+     {
+      "property": "twitter:image",
+      "content": "https://baymard.com/api/og/article/explain-phone-number-field"
+     },
+     {
+      "property": "og:image",
+      "content": "https://baymard.com/api/og/article/explain-phone-number-field"
+     },
+     {
+      "property": "og:image:secure_url",
+      "content": "https://baymard.com/api/og/article/explain-phone-number-field"
+     },
+     {
+      "property": "og:image:width",
+      "content": "1200"
+     },
+     {
+      "property": "og:image:height",
+      "content": "630"
+     },
+     {
+      "property": "og:url",
+      "content": "https://baymard.com/research-articles/explain-phone-number-field"
+     }
+    ],
+    "jsonLd": [
+     {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "name": "Phone Number UX: Always Explain Why the “Phone Field” Is Required (39% Don’t)",
+      "headline": "Phone Number UX: Always Explain Why the “Phone Field” Is Required (39% Don’t)",
+      "url": "https://baymard.com/research-articles/explain-phone-number-field",
+      "image": {
+       "@type": "ImageObject",
+       "url": "https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155627/original/research-media-file-fde0a92762c1bef69ce7eac11c914cdc.png"
+      },
+      "description": "14% of users will abandon checkout if “phone” is simply required. Testing shows users just need an explanation of why the phone field is required — yet 39% of ecommerce sites don’t.",
+      "inLanguage": "en",
+      "datePublished": "2020-03-16T09:00:00.000+01:00",
+      "dateModified": "2025-07-29T08:00:00.000+02:00",
+      "author": {
+       "@type": "Person",
+       "url": "https://baymard.com/about/team/edward-scott",
+       "name": "Edward Scott",
+       "jobTitle": "Research Lead",
+       "description": "Ed is the team lead for UX research at Baymard and has been with Baymard since 2016. Ed oversees all UX research areas at Baymard. His specializations within ecommerce UX are Mobile, Checkout, Product Finding, Product Page, and Accounts and Self-Service. Ed has a PhD in technical communication and information design.",
+       "sameAs": [
+        "https://www.linkedin.com/in/edward-scott-27793485/"
+       ],
+       "knowsAbout": [
+        "Mobile UX",
+        "Cart & Checkout UX",
+        "Search UX",
+        "Product Lists & Filtering UX",
+        "Homepage & Category Navigation UX",
+        "Product Page UX",
+        "Accounts and Self-Service UX",
+        "Form UX",
+        "Mobile App UX"
+       ],
+       "image": {
+        "@type": "ImageObject",
+        "url": "https://baymard.com/_next/static/immutable/media/ES.1b2sizvr-jugv.jpg",
+        "caption": "Edward Scott"
+       },
+       "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "US"
+       },
+       "worksFor": {
+        "@id": "https://baymard.com#organization"
+       }
+      },
+      "copyrightHolder": {
+       "@id": "https://baymard.com#organization"
+      },
+      "publisher": {
+       "@id": "https://baymard.com#organization"
+      }
+     },
+     {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://baymard.com#organization",
+      "name": "Baymard Institute",
+      "url": "https://baymard.com/",
+      "logo": "https://baymard.com/assets/images/baymard-logo.png",
+      "sameAs": [
+       "https://x.com/baymard",
+       "https://www.youtube.com/@baymard",
+       "https://www.instagram.com/baymardinstitute",
+       "https://www.linkedin.com/company/baymard-institute"
+      ],
+      "contactPoint": [
+       {
+        "@type": "ContactPoint",
+        "telephone": "+1 (315) 216-7151",
+        "contactType": "customer support",
+        "areaServed": "US",
+        "availableLanguage": "English"
+       },
+       {
+        "@type": "ContactPoint",
+        "telephone": "+45 88 10 85 58",
+        "contactType": "customer support",
+        "areaServed": "EU",
+        "availableLanguage": "English"
+       },
+       {
+        "@type": "ContactPoint",
+        "email": "info@baymard.com",
+        "contactType": "customer support"
+       }
+      ],
+      "address": {
+       "@type": "PostalAddress",
+       "streetAddress": "Flaesketorvet 68",
+       "addressLocality": "Copenhagen",
+       "postalCode": "1711",
+       "addressCountry": "DK"
+      },
+      "vatID": "DK38748890"
+     }
+    ],
+    "headers": {
+     "date": "Fri, 16 Oct 2026 17:29:08 GMT",
+     "content-type": "text/html; charset=utf-8",
+     "cf-ray": "a4b8c8b57b746781-DFW",
+     "cf-cache-status": "DYNAMIC",
+     "age": "18275",
+     "cache-control": "public, max-age=0, must-revalidate",
+     "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.0, \"max_age\":604800}",
+     "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=8lOZurm3VDqNvwVOQAcvZ3FBh2Kitj1aCAmkP%2BVnBeU%2Fo4a9PR7TO0GlSyHP%2FsOCRJawpbSuTMO%2B9cSbW4janvySat7JMNGWg8qzWLW%2FjDUBfztcpzINRPQOEl7A\"}]}",
+     "server": "cloudflare",
+     "strict-transport-security": "max-age=15552000; includeSubDomains",
+     "vary": "accept-encoding",
+     "content-security-policy": "frame-ancestors 'self'; object-src 'none';",
+     "x-matched-path": "/research-articles/explain-phone-number-field",
+     "x-powered-by": "Next.js",
+     "x-vercel-cache": "HIT",
+     "x-vercel-id": "cle1::iad1::94ljb-1792171748760-799fabd6b86a",
+     "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=101, cfOrigin;dur=0",
+     "content-encoding": "br",
+     "x-firefox-spdy": "h2"
+    }
+   },
+   "screenshotUrl": null,
+   "html": null,
+   "htmlUrl": null,
+   "markdown": "Explain Why the “Phone Field” Is Required – Baymard\n\n[Baymard Institute](https://baymard.com/)\n\n*   [Product](https://baymard.com/product)\n    \n    > “Intelligent, consumer-focused insights that are clear and actionable.”\n    \n    Will Close, Director of A/B testing at Nike.com\n    \n    [Read 200+ Testimonials](https://baymard.com/testimonials)\n    \n*   [UX AuditUX Audit Services](https://baymard.com/ux-audit-services)\n    \n    > \"An eye opener. This UX audit helped validate assumptions we had and provided visibility on issues we overlooked.\"\n    \n    Michael Tran, Sr. Business Analyst at Sony PlayStation\n    \n    [Read 200+ Testimonials](https://baymard.com/testimonials)\n    \n*   Research Focus\n    \n    > “Intelligent, consumer-focused insights that are clear and actionable.”\n    \n    Will Close, Director of A/B testing at Nike.com\n    \n    [Read 200+ Testimonials](https://baymard.com/testimonials)\n    \n*   Resources\n    \n    [![Homepage and Category Navigation UX 2026: 10 Pitfalls and Best Practices (64% of Sites Have Mediocre-to-Poor Performance)](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/177138/original/research-media-file-9240ab75f2e25125a7270d92b3c443d3.png?auto=format&fit=max&q=75&w=3840)\n    \n    Homepage and Category Navigation UX 2026: 10 Pitfalls and Best Practices (64% of Sites Have Mediocre-to-Poor Performance)\n    \n    Our latest Homepage & Category Navigation UX benchmark reveals that the performance for up to 64% of leading US and European sites is “mediocre” to “poor”. Here are 10 UX best practices.\n    \n    ](https://baymard.com/research-articles/ecommerce-navigation-best-practice)\n    \n*   [Pricing](https://baymard.com/pricing)\n    \n\n*   [Log In](https://baymard.com/premium/sign-in)\n*   [Book a Demo](https://calendly.com/d/dtdp-nqn-7r8)\n\n[Research Articles](https://baymard.com/research-articles)\n\n# Phone Number UX: Always Explain Why the “Phone Field” Is Required (39% Don’t)\n\n![](/_next/image?url=%2F_next%2Fstatic%2Fimmutable%2Fmedia%2FES.1b2sizvr-jugv.jpg&w=3840&q=75)\n\n[Edward Scott](https://baymard.com/about/team/edward-scott)\n\nResearch Lead\n\nUpdated Jul 29, 2025,  \nPublished Mar 16, 2020\n\n![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155771/original/research-media-file-ad3402ae4e8d8c89685357c131c1613c.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\nKey Takeaways\n\n*   Users are often reluctant to provide their phone number during checkout due to privacy concerns, fearing marketing calls or misuse of their data\n*   When required to provide a phone number without explanation, some users will provide false information or abandon the checkout process entirely\n*   Providing a short, inline explanation, making the field optional, or removing it completely can alleviate user concerns and reduce checkout abandonment\n\nKey Stats\n\n*   14% of online shoppers are reluctant to provide their phone number\n*   14% of online shoppers are reluctant to provide their gender\n*   27% of online shoppers are reluctant to provide their date of birth\n*   39% of sites in our benchmark require a phone number without any explanation\n\n## Video Summary\n\nNote this video includes quantitative research data from 2024. The quantitative data in the article is from 2025.\n\nBaymard’s large-scale UX testing consistently reveals that users are concerned about the **security and confidentiality** of their personal information online.\n\nA common point of hesitation is the request for a **phone number** during checkout.\n\nThis **reluctance** stems from concerns ranging from receiving unwanted marketing calls to fears of identity theft.\n\nWhen confronted with a required phone number field **without any explanation**, some participants in our testing provided false information or abandoned the checkout process altogether.\n\nThis not only undermines the integrity of customer data but also leads to **lost sales**.\n\nThe solution is straightforward: sites should **clearly explain** why a phone number is required, make the field optional, or remove it entirely.\n\nYet **39%** of sites in our [ecommerce UX](https://baymard.com/ux-benchmark) benchmark require users to provide their phone number without any sort of explanation.\n\nIn this article, we’ll discuss our [Baymard research findings](https://baymard.com/research) related to requesting users’ phone numbers during checkout:\n\n*   Why users are reluctant to provide their phone number\n*   How to build user trust by explaining why the information is necessary\n*   How this transparency applies to other requests for personal data\n\n## Users’ Reluctance to Share Their Phone Number Can Disrupt Checkout\n\n![”‘Continue to payment.’ Oh, ‘Phone Number’.” This participant checking out at Apple skipped the ”Phone Number” field, preferring to avoid providing this personal detail, but received an error message because it was required.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155643/original/research-media-file-9b48c7e7e8c251b9f78fb284f94f52b9.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\n_”‘Continue to payment.’ Oh, ‘Phone Number’.”_ This participant checking out at [Apple](https://baymard.com/ux-benchmark/case-studies/apple) skipped the _”Phone Number”_ field, preferring to avoid providing this personal detail, but received an error message because it was required.\n\n![Users shopping for books on Routledge are required to provide their phone number but are not given any explanation for this requirement. Many users don’t understand why a phone number is required to check out, and hence become suspicious when it is.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155634/original/research-media-file-f104db7710a34d588c163157b0db687c.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\nUsers shopping for books on [Routledge](https://baymard.com/ux-benchmark/case-studies/routledge) are required to provide their phone number but are not given any explanation for this requirement. Many users don’t understand why a phone number is required to check out, and hence become suspicious when it is.\n\nAcross multiple rounds of large-scale UX testing, a subgroup of participants consistently voiced **privacy concerns** when required to provide their phone number.\n\nAs one participant stated, _“Normally I wouldn’t fill in something like ‘Phone Number’…I simply can’t see what they need that for”_.\n\nParticipants generally expected order communications to be handled via email, making the phone number requirement **seem suspicious**.\n\nMany assumed the site would use their number for **unwanted marketing purposes**.\n\nHence, this request for what is perceived as unnecessary personal data can cause users to hesitate, and for more privacy-conscious individuals, it can be a direct cause of **site abandonment**.\n\n![Our quantitative study of 1,026 online shoppers shows that 14% of users would never provide their phone number to an online store.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155642/original/research-media-file-97131c1c4e066785e07c36226d26c187.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\nOur quantitative study of 1,026 online shoppers shows that 14% of users would never provide their phone number to an online store.\n\nLikewise, in our quantitative study of 1,026 online shoppers, we see that users are **reluctant** to provide a variety of personal details.\n\nSpecifically for phone number, **14%** of the respondents replied that they would _”…never give an online store this information”_.\n\nWhile sites may not think of a user’s phone number as highly sensitive information that users would be reluctant to provide, for these users, this is **clearly a “deal breaker”**.\n\n![“Arhh. Well now they get a phone number. I do this very often. I don’t want to be called by some sales dude. That happens sometimes and…it turns me off completely. They aren’t allowed to do that, I’ve provided my phone number because of the order, then they are not supposed to call me \\[with a sales call\\]. But now I’ve learned to type ‘9999’…” In an earlier round of testing, this user typed in a fake number when required to provide a phone number by Amazon.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/37109/original/research-media-file-d95dcd6e2b3a68068b2d0838ee480876.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\n_“Arhh. Well now they get a phone number. I do this very often. I don’t want to be called by some sales dude. That happens sometimes and…it turns me off completely. They aren’t allowed to do that, I’ve provided my phone number because of the order, then they are not supposed to call me \\[with a sales call\\]. But now I’ve learned to type ‘9999’…”_ In an earlier round of testing, this user typed in a fake number when required to provide a phone number by [Amazon](https://baymard.com/ux-benchmark/case-studies/amazon).\n\nFurthermore, when users **feel forced** to provide information, some will find creative ways around the requirement.\n\nDuring testing, we observed several participants **enter a false phone number** to proceed with their purchase.\n\nThis practice is highly problematic, as it **undermines the legitimate reasons** for collecting the number, such as for courier services or [credit card validation](https://baymard.com/blog/inline-form-validation).\n\nA fake number can lead to nearly unresolvable [card validation errors](https://baymard.com/blog/adaptive-validation-error-messages), very likely **causing users to abandon** their purchase.\n\n## Build Trust by Explaining Why a Phone Number Is Needed\n\n![”’In case there’s a billing issue’, let me see…‘Don’t worry, we never share a number with anyone’. This is helpful, like they’re just saying in case I need to contact you, you have your number entered.” Checking out at American Eagle, this participant appreciated the explanation detailing how the ”Phone Number” was used to verify the credit card payment.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155673/original/research-media-file-5da2f4ca6768f3fbd433d5e4d31c3f66.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\n_”’In case there’s a billing issue’, let me see…‘Don’t worry, we never share a number with anyone’. This is helpful, like they’re just saying in case I need to contact you, you have your number entered.”_ Checking out at [American Eagle](https://baymard.com/ux-benchmark/case-studies/american-eagle-outfitters), this participant appreciated the explanation detailing how the _”Phone Number”_ was used to verify the credit card payment.\n\n![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155674/original/research-media-file-c05d6695f86119204ed89d0931f705c9.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\n![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155675/original/research-media-file-03cefa2de5772a03c8693cae640d78b7.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\n[Crate & Barrel](https://baymard.com/ux-benchmark/case-studies/crate-barrel) explains how details such as _”Email”_ address (first image) and _”Phone Number”_ (second image) are used, which can help convince users to provide them.\n\nTo address users’ privacy concerns and avoid the problems caused by fake data, sites should **clearly explain why a phone number is required** and what it will be used for.\n\nOur [checkout testing](https://baymard.com/blog/current-state-of-checkout-ux) has consistently shown that providing an explanation for why a phone number is being collected **alleviates the vast majority of users’ privacy concerns**.\n\n![Simply providing a short, inline explanation of what the phone number is used for is enough to alleviate the vast majority of privacy concerns. Here, Everlane explains that the phone number will be used “in case of delivery questions”.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155758/original/research-media-file-af25a34828ffceb75881a724bd6a2c04.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\nSimply providing a short, inline explanation of what the phone number is used for is enough to alleviate the vast majority of privacy concerns. Here, [Everlane](https://baymard.com/ux-benchmark/case-studies/everlane) explains that the phone number will be used _“in case of delivery questions”_.\n\nOne well-performing implementation is providing a short, **inline explanation** placed in close proximity to the field.\n\n**Simple descriptions** like _“Used for payment validation”_ or _“In case we need to contact you about your order”_ help put users’ minds at ease.\n\nOne participant, upon seeing such an explanation, noted, _“This is helpful, like they’re just saying in case I need to contact you, you have your number entered.”_\n\nFor longer descriptions, the explanation can also be located within a **tooltip**.\n\nNote that **on mobile devices**, it’s important to ensure proper [spacing and hit areas](https://baymard.com/blog/mobile-commerce-design) for tooltips to avoid interaction issues.\n\n![At Our Place, the ”Phone” field is clearly labeled as optional and also displays an explanation of what this information is used for.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155677/original/research-media-file-d34fe577b3cfe81b8b74acfe1c1cd921.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\nAt [Our Place](https://baymard.com/ux-benchmark/case-studies/our-place), the _”Phone”_ field is clearly labeled as optional and also displays an explanation of what this information is used for.\n\nAnother solution is to make the phone number field [**explicitly optional**](https://baymard.com/blog/required-optional-form-fields).\n\nThis allows the vast majority of users who have privacy concerns to **simply skip** the field and continue with their checkout without issues.\n\n![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/76822/original/research-media-file-4a418423c6b974571dbb7d7bcd7dd1a1.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\n![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/76823/original/research-media-file-a57ca3744fef999b7d244216780994aa.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\n[Barkbox](https://baymard.com/ux-benchmark/case-studies/barkbox) (first image) and [Dollar Shave Club](https://baymard.com/ux-benchmark/case-studies/dollar-shave-club) (second image) don’t ask for a _”Phone Number”_ at all, removing a field that is likely to cause some users to hesitate.\n\nFinally, it is **worth asking** if a phone number is truly necessary to collect in the first place.\n\nIf order or customer service issues can be managed via email, it **may not be necessary** to ask for a phone number at all.\n\n[Removing the field](https://baymard.com/blog/checkout-flow-average-form-fields) entirely is an effective way to **streamline the checkout form** and eliminate an obstacle that could otherwise lead to abandonment.\n\n## Reconsider or Explain Requests for Other Personal Information\n\n![If asking for personal data is a legal requirement, ask only for what the law requires. For example, the brewing company Carlsberg needs to ensure users are over 18, and consequently only asks users for their birth year. This will most likely provoke far-fewer privacy concerns than asking for the full date of birth (and is faster to complete). Users who type a year in which they could be both above and under the required age then get a follow-up field for month, and then one for day, if necessary.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155683/original/research-media-file-9cd8e995ea394013eb2c1e2a07f6b903.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\nIf asking for personal data is a legal requirement, ask only for what the law requires. For example, the brewing company Carlsberg needs to ensure users are over 18, and consequently only asks users for their birth _year_. This will most likely provoke far-fewer privacy concerns than asking for the full date of birth (and is faster to complete). Users who type a year in which they could be both above and under the required age then get a follow-up field for month, and then one for day, if necessary.\n\n![Personal data such as “Date of Birth” and “Gender” are considered to be highly personal by many users; hence, supplying the information should always be optional, or there should be a “de facto optional” option. Here, at Etsy, a “Rather not say” option is provided.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155685/original/research-media-file-16797394858144da173314d3e2ba34ae.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\nPersonal data such as _“Date of Birth”_ and _“Gender”_ are considered to be highly personal by many users; hence, supplying the information should always be optional, or there should be a “de facto optional” option. Here, at [Etsy](https://baymard.com/ux-benchmark/case-studies/etsy), a _“Rather not say”_ option is provided.\n\nWhile the “Phone Number” field was the most common concern observed in testing, participants also hesitated when asked for other personal information like **date of birth and gender**.\n\nOur quantitative study confirmed this, showing **27% of users are reluctant** to provide their date of birth and **14% are reluctant** to provide their gender (see graph above).\n\nAny data request that seems **irrelevant or overly invasive** can cause users to question if continuing is worth the risk and effort.\n\nAs one participant asked when prompted for a date of birth, _“I’m wondering why it’s doing all this stuff…like, why are you asking for my date of birth?”_\n\nTherefore, sites should consider making **these fields optional** or, ideally, removing them from checkout entirely.\n\nIf the information is required, for instance, for legal age verification, sites should collect it in the **least invasive way possible**.\n\nFor example, a site that must verify a user is over 18 can ask for a birth year instead of a full date of birth, which is **less likely to trigger privacy concerns** and is faster for the user to complete.\n\n## Alleviate Users’ Privacy Concerns and Reduce Checkout Abandonment\n\n![On Zazzle, the phone number field is both clearly marked as “optional” and an explanation is provided via a tooltip. Thus, users are prompted to provide their phone number, while they can simply elect not to provide this information.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/155690/original/research-media-file-eb26782d6a84d34ffb13a0172a7c3e15.png?auto=format&dpr=2&fit=max&q=50&w=880)\n\nOn [Zazzle](https://baymard.com/ux-benchmark/case-studies/zazzle), the phone number field is both clearly marked as _“optional”_ and an explanation is provided via a tooltip. Thus, users are prompted to provide their phone number, while they can simply elect not to provide this information.\n\nAsking for a user’s phone number during checkout may seem like a standard request, but our research shows it can be a **significant point of friction**.\n\nUsers’ **concerns about privacy are valid**, and requiring a phone number without justification can damage trust and lead directly to lost sales.\n\nStill, **39%** of ecommerce sites require users to provide their phone number without any explanation.\n\nThe solution is both simple, low-cost, and yet **impactful**.\n\nBy providing a **clear, concise explanation** for why the information is needed, making the field optional, or removing it altogether, sites can address the users’ privacy concerns head-on.\n\nThis small adjustment to the checkout process demonstrates respect for the user’s privacy, fosters trust, and ultimately helps create a **smoother path** to a completed purchase.\n\n_This article presents the research findings from just 1 of the 700+ UX guidelines in Baymard – [get full access](https://baymard.com/research) to learn how to create a “State of the Art” ecommerce user experience._\n\n_If you want to know how your desktop site, mobile site, or app performs and compares, then learn more about getting Baymard to conduct a [UX audit](https://baymard.com/audits/site-element) of your site or app._\n\n![](/_next/image?url=%2F_next%2Fstatic%2Fimmutable%2Fmedia%2FES.1b2sizvr-jugv.jpg&w=3840&q=75)\n\n[Edward Scott](https://baymard.com/about/team/edward-scott)\n\nResearch Lead\n\nUpdated Jul 29, 2025,  \nPublished Mar 16, 2020\n\nEd is the team lead for UX research at Baymard and has been with Baymard since 2016. Ed oversees all UX research areas at Baymard. His specializations within ecommerce UX are Mobile, Checkout, Product Finding, Product Page, and Accounts and Self-Service. Ed has a PhD in technical communication and information design.\n\nShare:\n\n## Related Articles\n\n1.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/53421/original/research-media-file-a3f683a0c05d5a427ca222f09c0111f9.jpeg?auto=format&fit=max&q=75&w=3840)\n    \n    E-Commerce Checkouts Need to Mark Both Required Fields and Optional Fields Explicitly (Only 14% Do So)\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/required-optional-form-fields)\n2.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/53500/original/research-media-file-c5b37880fe538328044710a8715df476.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Checkout Optimization: 5 Ways to Minimize Form Fields in Checkout\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/checkout-flow-average-form-fields)\n3.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/57443/original/research-media-file-482215c8a567e9dc197293169d21d118.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    The ‘Credit Card Number’ Field Must Allow and Auto-Format Spaces (80% Don’t)\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/credit-card-field-auto-format-spaces)\n4.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/53309/original/research-media-file-bfdd6868de91ce3d9f05e4b5b39a8e99.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Understanding Mobile E-Commerce UX: 5 Overarching Issues\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/mobile-commerce-design)\n5.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/92561/original/research-media-file-f3a0752f67514adfa60880749bbe7152.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Usability Testing of Inline Form Validation: 31% Don’t Have It, 4% Get It Wrong\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/inline-form-validation)\n6.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/92266/original/research-media-file-5f699f138a30d2ed4d3bbbef29d6be7b.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Improve Validation Errors with Adaptive Messages (98% Don’t)\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/adaptive-validation-error-messages)\n7.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75997/original/research-media-file-d84c772f53ab42f4e1731b76f07c7af9.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Form Usability: Getting ‘Address Line 2’ Right\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/address-line-2)\n8.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/165605/original/research-media-file-fc21433619de1290de37ea3d35cb2529.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Checkout UX 2025: 10 Pitfalls and Best Practices\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/current-state-of-checkout-ux)\n9.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/147386/original/research-media-file-5959bc171470c51f42b69df9f15f82a3.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Desktop UX Trends: 10 Common Pitfalls & Best Practices\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/desktop-ux-ecommerce)\n10.  [\n     \n     ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/174529/original/research-media-file-dac6e6862979d96972cb045b5a5ef74c.png?auto=format&fit=max&q=75&w=3840)\n     \n     Mobile UX Trends 2026: 10 Best Practices\n     \n     Popular\n     \n     \n     \n     ](https://baymard.com/research-articles/mobile-ux-ecommerce)\n\nSee all [70 ‘Cart & Checkout’](https://baymard.com/research-articles/collections/cart-and-checkout), [140 ‘Mobile Web’](https://baymard.com/research-articles/collections/mobile), and articles\n\n*   [Introduction](https://baymard.com/research-articles/explain-phone-number-field#introduction)\n    \n*   [Video Summary](https://baymard.com/research-articles/explain-phone-number-field#video-summary)\n    \n*   [Users’ Reluctance to Share Their Phone Number Can Disrupt Checkout](https://baymard.com/research-articles/explain-phone-number-field#users-reluctance-to-share-their-phone-number-can-disrupt-checkout)\n    \n*   [Build Trust by Explaining Why a Phone Number Is Needed](https://baymard.com/research-articles/explain-phone-number-field#build-trust-by-explaining-why-a-phone-number-is-needed)\n    \n*   [Reconsider or Explain Requests for Other Personal Information](https://baymard.com/research-articles/explain-phone-number-field#reconsider-or-explain-requests-for-other-personal-information)\n    \n*   [Alleviate Users’ Privacy Concerns and Reduce Checkout Abandonment](https://baymard.com/research-articles/explain-phone-number-field#alleviate-users-privacy-concerns-and-reduce-checkout-abandonment)\n    \n*   [Related Articles](https://baymard.com/research-articles/explain-phone-number-field#related-articles)\n    \n\n#### User Experience Research, Delivered Weekly\n\nJoin 60,000+ UX professionals and get a new UX article every week.\n\n![A screenshot of the UX article newsletter](/_next/image?url=%2F_next%2Fstatic%2Fimmutable%2Fmedia%2Farticles.1xr2jh1d02oid.png&w=3840&q=75)\n\n![](https://bat.bing.com/action/0?ti=187200813&tm=gtm002&Ver=2&mid=0559ca67-b5b4-418d-a771-57f58c90df58&bo=1&sid=1da70aa0c98711f1a35cbf8ca2785f92&vid=1da73090c98711f1b3c31ff3b5e62690&vids=1&msclkid=N&gtm_tag_source=1&pi=0&lg=en-US&sw=1728&sh=1117&sc=30&tl=Explain%20Why%20the%20%E2%80%9CPhone%20Field%E2%80%9D%20Is%20Required%20%E2%80%93%20Baymard&p=https%3A%2F%2Fbaymard.com%2Fresearch-articles%2Fexplain-phone-number-field&r=&lt=6995&evt=pageLoad&sv=2&cdb=AQAQ&rn=297215)",
+   "debug": {
+    "requestHandlerMode": "browser"
+   }
+  },
+  {
+   "url": "https://baymard.com/research-articles/address-line-2",
+   "crawl": {
+    "loadedUrl": "https://baymard.com/research-articles/address-line-2",
+    "loadedTime": "2026-10-16T17:29:53.748Z",
+    "referrerUrl": "https://baymard.com/research-articles/address-line-2",
+    "httpStatusCode": 200,
+    "depth": 0,
+    "contentType": "text/html; charset=utf-8"
+   },
+   "metadata": {
+    "canonicalUrl": "https://baymard.com/research-articles/address-line-2",
+    "title": "Form Usability: Getting Address Line 2 Right – Baymard",
+    "description": "\"Address Line 2\" often distracts and stops many users who have no need for it. See our latest test findings on how to implement \"Address Line 2\".",
+    "author": null,
+    "keywords": null,
+    "languageCode": "en",
+    "openGraph": [
+     {
+      "property": "og:title",
+      "content": "Form Usability: Getting Address Line 2 Right – Baymard"
+     },
+     {
+      "property": "twitter:title",
+      "content": "Form Usability: Getting Address Line 2 Right – Baymard"
+     },
+     {
+      "property": "og:site_name",
+      "content": "Baymard Institute"
+     },
+     {
+      "property": "twitter:site",
+      "content": "@Baymard"
+     },
+     {
+      "property": "og:description",
+      "content": "\"Address Line 2\" is often an afterthought when it comes to address fields — yet it stops many users who have no need for it. See how to implement \"Address Line 2\" to avoid distracting users."
+     },
+     {
+      "property": "twitter:description",
+      "content": "\"Address Line 2\" is often an afterthought when it comes to address fields — yet it stops many users who have no need for it. See how to implement \"Address Line 2\" to avoid distracting users."
+     },
+     {
+      "property": "twitter:card",
+      "content": "summary_large_image"
+     },
+     {
+      "property": "twitter:image",
+      "content": "https://baymard.com/api/og/article/address-line-2"
+     },
+     {
+      "property": "og:image",
+      "content": "https://baymard.com/api/og/article/address-line-2"
+     },
+     {
+      "property": "og:image:secure_url",
+      "content": "https://baymard.com/api/og/article/address-line-2"
+     },
+     {
+      "property": "og:image:width",
+      "content": "1200"
+     },
+     {
+      "property": "og:image:height",
+      "content": "630"
+     },
+     {
+      "property": "og:url",
+      "content": "https://baymard.com/research-articles/address-line-2"
+     }
+    ],
+    "jsonLd": [
+     {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "name": "Form Usability: Getting ‘Address Line 2’ Right",
+      "headline": "Form Usability: Getting ‘Address Line 2’ Right",
+      "url": "https://baymard.com/research-articles/address-line-2",
+      "image": {
+       "@type": "ImageObject",
+       "url": "https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75964/original/research-media-file-26667577763952bd90c99a0413c442fd.jpg"
+      },
+      "description": "\"Address Line 2\" is often an afterthought when it comes to address fields — yet it stops many users who have no need for it. See how to implement \"Address Line 2\" to avoid distracting users.",
+      "inLanguage": "en",
+      "datePublished": "2022-10-04T10:25:00.000+02:00",
+      "dateModified": "2022-10-04T10:25:00.000+02:00",
+      "author": {
+       "@type": "Person",
+       "url": "https://baymard.com/about/team/edward-scott",
+       "name": "Edward Scott",
+       "jobTitle": "Research Lead",
+       "description": "Ed is the team lead for UX research at Baymard and has been with Baymard since 2016. Ed oversees all UX research areas at Baymard. His specializations within ecommerce UX are Mobile, Checkout, Product Finding, Product Page, and Accounts and Self-Service. Ed has a PhD in technical communication and information design.",
+       "sameAs": [
+        "https://www.linkedin.com/in/edward-scott-27793485/"
+       ],
+       "knowsAbout": [
+        "Mobile UX",
+        "Cart & Checkout UX",
+        "Search UX",
+        "Product Lists & Filtering UX",
+        "Homepage & Category Navigation UX",
+        "Product Page UX",
+        "Accounts and Self-Service UX",
+        "Form UX",
+        "Mobile App UX"
+       ],
+       "image": {
+        "@type": "ImageObject",
+        "url": "https://baymard.com/_next/static/immutable/media/ES.1b2sizvr-jugv.jpg",
+        "caption": "Edward Scott"
+       },
+       "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "US"
+       },
+       "worksFor": {
+        "@id": "https://baymard.com#organization"
+       }
+      },
+      "copyrightHolder": {
+       "@id": "https://baymard.com#organization"
+      },
+      "publisher": {
+       "@id": "https://baymard.com#organization"
+      }
+     },
+     {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://baymard.com#organization",
+      "name": "Baymard Institute",
+      "url": "https://baymard.com/",
+      "logo": "https://baymard.com/assets/images/baymard-logo.png",
+      "sameAs": [
+       "https://x.com/baymard",
+       "https://www.youtube.com/@baymard",
+       "https://www.instagram.com/baymardinstitute",
+       "https://www.linkedin.com/company/baymard-institute"
+      ],
+      "contactPoint": [
+       {
+        "@type": "ContactPoint",
+        "telephone": "+1 (315) 216-7151",
+        "contactType": "customer support",
+        "areaServed": "US",
+        "availableLanguage": "English"
+       },
+       {
+        "@type": "ContactPoint",
+        "telephone": "+45 88 10 85 58",
+        "contactType": "customer support",
+        "areaServed": "EU",
+        "availableLanguage": "English"
+       },
+       {
+        "@type": "ContactPoint",
+        "email": "info@baymard.com",
+        "contactType": "customer support"
+       }
+      ],
+      "address": {
+       "@type": "PostalAddress",
+       "streetAddress": "Flaesketorvet 68",
+       "addressLocality": "Copenhagen",
+       "postalCode": "1711",
+       "addressCountry": "DK"
+      },
+      "vatID": "DK38748890"
+     }
+    ],
+    "headers": {
+     "date": "Fri, 16 Oct 2026 17:29:46 GMT",
+     "content-type": "text/html; charset=utf-8",
+     "cf-ray": "a4b8c9a3ffbc6781-DFW",
+     "cf-cache-status": "DYNAMIC",
+     "age": "8696",
+     "cache-control": "public, max-age=0, must-revalidate",
+     "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.0, \"max_age\":604800}",
+     "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=fD4yd5Bi4L%2FdrrGUpJerRy237Gx%2Blq15hwcMI1bNIYUkKadXAPxfjORVr8S%2B%2BtpvFYVq6cHhJdxb8ot%2BP4PZIZzyzXECWozx8Ut%2FP0V2YRiKsoyrzURR6Q82uF5x\"}]}",
+     "server": "cloudflare",
+     "strict-transport-security": "max-age=15552000; includeSubDomains",
+     "vary": "accept-encoding",
+     "content-security-policy": "frame-ancestors 'self'; object-src 'none';",
+     "x-matched-path": "/research-articles/address-line-2",
+     "x-powered-by": "Next.js",
+     "x-vercel-cache": "HIT",
+     "x-vercel-id": "cle1::iad1::n2x6q-1792171786893-bbcbae29ffb7",
+     "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=82, cfOrigin;dur=0",
+     "content-encoding": "br",
+     "x-firefox-spdy": "h2"
+    }
+   },
+   "screenshotUrl": null,
+   "html": null,
+   "htmlUrl": null,
+   "markdown": "Form Usability: Getting Address Line 2 Right – Baymard\n\n[Baymard Institute](https://baymard.com/)\n\n*   [Product](https://baymard.com/product)\n    \n    > “Intelligent, consumer-focused insights that are clear and actionable.”\n    \n    Will Close, Director of A/B testing at Nike.com\n    \n    [Read 200+ Testimonials](https://baymard.com/testimonials)\n    \n*   [UX AuditUX Audit Services](https://baymard.com/ux-audit-services)\n    \n    > \"An eye opener. This UX audit helped validate assumptions we had and provided visibility on issues we overlooked.\"\n    \n    Michael Tran, Sr. Business Analyst at Sony PlayStation\n    \n    [Read 200+ Testimonials](https://baymard.com/testimonials)\n    \n*   Research Focus\n    \n    > “Intelligent, consumer-focused insights that are clear and actionable.”\n    \n    Will Close, Director of A/B testing at Nike.com\n    \n    [Read 200+ Testimonials](https://baymard.com/testimonials)\n    \n*   Resources\n    \n    [![Homepage and Category Navigation UX 2026: 10 Pitfalls and Best Practices (64% of Sites Have Mediocre-to-Poor Performance)](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/177138/original/research-media-file-9240ab75f2e25125a7270d92b3c443d3.png?auto=format&fit=max&q=75&w=3840)\n    \n    Homepage and Category Navigation UX 2026: 10 Pitfalls and Best Practices (64% of Sites Have Mediocre-to-Poor Performance)\n    \n    Our latest Homepage & Category Navigation UX benchmark reveals that the performance for up to 64% of leading US and European sites is “mediocre” to “poor”. Here are 10 UX best practices.\n    \n    ](https://baymard.com/research-articles/ecommerce-navigation-best-practice)\n    \n*   [Pricing](https://baymard.com/pricing)\n    \n\n*   [Log In](https://baymard.com/premium/sign-in)\n*   [Book a Demo](https://calendly.com/d/dtdp-nqn-7r8)\n\n[Research Articles](https://baymard.com/research-articles)\n\n# Form Usability: Getting ‘Address Line 2’ Right\n\n![](/_next/image?url=%2F_next%2Fstatic%2Fimmutable%2Fmedia%2FES.1b2sizvr-jugv.jpg&w=3840&q=75)\n\n[Edward Scott](https://baymard.com/about/team/edward-scott)\n\nResearch Lead\n\nPublished Oct 4, 2022\n\n![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75964/original/research-media-file-26667577763952bd90c99a0413c442fd.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\nKey Takeaways\n\n*   “Address Line 2” is a field that causes a surprising amount of friction for users\n    \n*   Hiding “Address Line 2” behind a link resolves the issue for users\n    \n*   However only 20% of sites in our benchmark hide “Address Line 2”\n    \n\n## Video Summary\n\nTap to unmute\n\n[How to Simplify Address Fields for Faster, Hassle-Free Checkouts](https://www.youtube.com/watch?v=ZkA7WQZH8Xg)[Baymard Institute](https://baymard.com/channel/UCnecIzOujUV0uK7i4P_pveA)\n\n![thumbnail-image](https://yt3.ggpht.com/N5AZERT24Qwhd_ea_qgTWwRJL1m2hx5UuZTbMBNyRtPIgwKol3CtxjUwVnAILzS66fdvglFwurQ=s68-c-k-c0x00ffffff-no-rj)\n\nBaymard Institute3.01K subscribers\n\n[\n\n](https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26hl%3Den%26next%3D%252Fpost_login&hl=en)\n\n[\n\nWatch on\n\n](https://www.youtube.com/watch?v=ZkA7WQZH8Xg)\n\n“Address Line 2” form fields — where users add an apartment number, suite, or other “secondary” address information — will typically only be used by a **minority** of users.\n\nWhile there’s nothing wrong with including “Address Line 2” in the shipping address form, our large-scale [Cart & Checkout testing](https://baymard.com/research/checkout-usability) reveals that the “Address Line 2” form field can be a **surprising hurdle** for some users to overcome when filling out their address information.\n\nIn fact, our usability testing shows participants **coming to a halt** and puzzling over the field, inputting incorrect information in the field, or simply becoming distracted by the field and staring at it, without ever entering any information into it.\n\nYet only **20%** of sites in our [e-commerce UX](https://baymard.com/ux-benchmark) benchmark alleviate this issue for users by hiding “Address Line 2” behind a link.\n\nIn this article, we’ll discuss our [Premium Research findings](https://baymard.com/research) from our Cart & Checkout usability study related to the “Address Line 2” field. In particular, we’ll discuss:\n\n*   Why “Address Line 2” fields are so distracting for some users\n*   How to include “Address Line 2” in the address form to avoid distracting users\n\n## “Address Line 2” — A Surprisingly Distracting Field\n\nIt may seem that “Address Line 2” — which likely won’t be used by many users — **would simply be ignored** by those users who don’t need to input anything in the field.\n\n![Walmart’s mobile site displays the optional “Address Line 2” field by default. This forces all users, most of whom won’t need to input data into the field, to consider its purpose — an unnecessary drag on the mobile UX.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75965/original/research-media-file-195e40a156b70a8b290a2c7104f63e66.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\n[Walmart’s](https://baymard.com/ux-benchmark/case-studies/walmart) mobile site displays the optional “Address Line 2” field by default. This forces all users, most of whom won’t need to input data into the field, to consider its purpose — an unnecessary drag on the [mobile UX](https://baymard.com/blog/mobile-ux-ecommerce).\n\n![“I dunno why I didn’t enter an address. Oh, I put it in the wrong field. Oops.” On Snowe, a participant accidentally entered her address in the “Address Line 2” field and received an error message.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75966/original/research-media-file-5d88989c5bf54ed39f532b20a3932685.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\n_“I dunno why I didn’t enter an address. Oh, I put it in the wrong field. Oops.”_ On [Snowe](https://baymard.com/ux-benchmark/case-studies/snowe), a participant accidentally entered her address in the “Address Line 2” field and received an error message.\n\n![“Oh, that’s not the apartment. There we go.” A participant on CVS accidentally began typing in the “Address Line 2” field before realizing the error.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75967/original/research-media-file-82d984c61fff26093cfdeb6004365fff.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\n_“Oh, that’s not the apartment. There we go.”_ A participant on [CVS](https://baymard.com/ux-benchmark/case-studies/cvs) accidentally began typing in the “Address Line 2” field before realizing the error.\n\nYet, during testing, some participants were observed to be **confused** by “Address Line 2” fields — many came to a stop to consider the field, while others, upon seeing the field, began to doubt that their input in the “Address Line 1” field was correct.\n\nIn general, many users, faced with **long checkout forms,** try to get through them as quickly as possible.\n\nConsequently, users will often **not read the labels** and instead rely on the general location of the field to infer what should be typed in it.\n\nHence, many users inputting their address information are likely to not read the label “Address Line 2” — instead, they’ll simply continue filling out their address information, only to **realize later** that they’ve entered information in “Address Line 2” that shouldn’t be there.\n\n![Having provided the street number in “Address Line 1” at AllPosters, this user tabbed to “Address Line 2”, and only then realized that both the street number and street name should be placed in the “Address Line 1” field.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75968/original/research-media-file-d9847b4728fc0c5bd0f33496fa5af6c7.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\nHaving provided the street number in “Address Line 1” at AllPosters, this user tabbed to “Address Line 2”, and only then realized that both the street number and street name should be placed in the “Address Line 1” field.\n\nFurthermore, while “Address Line 2” fields are almost always optional, we consistently observe that optional inputs presented as open text fields nevertheless **demand a disproportionate amount of attention** — seen especially in our eye-tracking study gaze plot data — as users still have to notice that the field is optional and determine whether the field is relevant for them.\n\nIn order to understand whether it’s relevant or not users will need a somewhat good understanding of address formatting and structures, and it was in particular observed that the participants _without_ anything to input in the “Address Line 2” field **struggled with understanding it**.\n\nMoreover, besides the high amount of focus, the most commonly observed issue with the “Address Line 2” field during testing is **field ambiguity**, with users often wondering if they should type all street information in “Address Line 1” (street name, number, apartment floor, apartment number, etc.) or divide it into two, following the logic of _“Two form fields, two inputs”_.\n\nThe presence of an “Address Line 2” field can therefore **unintentionally confuse users** who don’t have any use for it.\n\nDuring testing, most participants were able to **solve this issue** themselves and the presence of an “Address Line 2” form field will therefore seldomly provoke a direct validation error.\n\nYet it should be noted that users will generally go to great lengths to try and **preempt validation errors** during the checkout process.\n\nHence, even though “Address Line 2” may not _directly_ provoke a validation error, testing showed how “Address Line 2” often results in users coming to a complete stop in the typing flow as they worry about inputting the wrong information — resulting in a **needlessly cumbersome** typing experience.\n\n## How to Include “Address Line 2” in the Address Form\n\n![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75969/original/research-media-file-2e7d570bacbd36349de3b546086af79c.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\n![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75970/original/research-media-file-fb3de3af8a752ff0a2bbb570cbf8910c.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\nAt [Best Buy](https://baymard.com/ux-benchmark/case-studies/best-buy), a participant opened the “Address Line 2” field (first image) and entered her unit number (second image)\n\n![On Target’s mobile site, “Address Line 2” is also hidden behind a link, allowing the likely majority of users who have no need for it to quickly skip past and continue filling out their address information.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75986/original/research-media-file-4a16627cc906ed1fd2f633003bb0152e.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\nOn [Target’s](https://baymard.com/ux-benchmark/case-studies/target) mobile site, “Address Line 2” is also hidden behind a link, allowing the likely majority of users who have no need for it to quickly skip past and continue filling out their address information.\n\nA design pattern that during testing was observed to perform well is to simply **hide the “Address Line 2” form field** behind a link.\n\nBy only permanently displaying “Address Line 1”, users are **much less likely to second-guess** their initial input, as there’s no immediately available option to divide the address in two.\n\nAs importantly, on the sites that provided a link to reveal the “Address Line 2” field, our eye-tracking testing revealed that **all participants noted the links** before moving on or engaging with them.\n\nThis is a **crucial detail**, as the subset of users who do have a use for “Address Line 2” of course need to be able to spot the link.\n\nBesides **reducing ambiguity and speeding up typing,** an additional bonus of hiding “Address Line 2” is showing one less form field by default, making the step [feel less intimidating](https://baymard.com/blog/checkout-flow-average-form-fields).\n\n_Note: hiding “Address Line 2” behind a link is naturally only advisable if the majority of site users don’t need it. If a significant amount of users do need “Address Line 2”, it should be permanently visible as a form field. If in doubt, it’s advisable to run a custom analysis of the current order data to gauge the usage, but also analyze the type of usage (i.e., the amount of wrongly submitted “Address Line 2” data)._\n\n## Ensure “Address Line 2” Doesn’t Bring Users to a Halt\n\n![At Crate & Barrel, “Address Line 2” is hidden behind a link, and required fields are marked “required”. To perfect this implementation, “Address Line 2” should also be explicitly marked “optional”.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75972/original/research-media-file-4f8aa373934493cae10cbb0374fc8744.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\nAt [Crate & Barrel](https://baymard.com/ux-benchmark/case-studies/crate-barrel), “Address Line 2” is hidden behind a link, and required fields are marked _“required”_. To perfect this implementation, “Address Line 2” should also be explicitly marked _“optional”_.\n\n![At L.L. Bean, “Address Line 2” is hidden behind a link, and is marked “optional”. However, required fields aren’t marked. In addition to hiding “Address Line 2” behind a link, it’s important to also mark “address” and other fields as “Required” or “Optional”. Doing so makes it clear to users scanning forms which fields they must fill out and which they can skip. However, no sites in our benchmark mark both “required” and “optional” fields, and hide “Address Line 2” behind a link.](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/75973/original/research-media-file-c5ee4f8c425540c2806b91b202f1b8aa.jpg?auto=format&dpr=2&fit=max&q=50&w=880)\n\nAt [L.L. Bean](https://baymard.com/ux-benchmark/case-studies/ll-bean), “Address Line 2” is hidden behind a link, and is marked _“optional”_. However, required fields aren’t marked. In addition to hiding “Address Line 2” behind a link, it’s important to also [mark “address” and other fields](https://baymard.com/blog/required-optional-form-fields) as _“Required”_ or _“Optional”_. Doing so makes it clear to users scanning forms which fields they must fill out and which they can skip. However, no sites in our benchmark mark both “required” and “optional” fields, _and_ hide “Address Line 2” behind a link.\n\nThe “Address Line 2” field certainly isn’t that one single thing that will **make or break** your entire checkout experience.\n\nIt is, however, one of those 10–20 smaller improvements that it takes to **lift a checkout experience** from _good_ to _great_.\n\nTesting revealed that “Address Line 2”, despite being an unneeded field for most users, caused **unnecessary disruption** to the form-filling process when it wasn’t hidden behind a link.\n\nOn the other hand, hiding “Address Line 2” behind a link is, for most sites, a way to improve the checkout experience without requiring many resources to implement — in other words, **low-hanging fruit**.\n\nIndeed, hiding “Address Line 2” is one way of **further optimizing** the [checkout UX](https://baymard.com/blog/current-state-of-checkout-ux) for users to ensure they’re able to move efficiently toward finalizing their order.\n\nDespite the benefits of hiding “Address Line 2” and the likely low implementation costs, only **20%** of sites in our [e-commerce UX](https://baymard.com/ux-benchmark) benchmark hide “Address Line 2” behind a link — causing unnecessary friction for the majority of users who don’t need to input any data into the field.\n\n_This article presents the research findings from just 1 of the 700+ UX guidelines in Baymard – [get full access](https://baymard.com/research) to learn how to create a “State of the Art” ecommerce user experience._\n\n![](/_next/image?url=%2F_next%2Fstatic%2Fimmutable%2Fmedia%2FES.1b2sizvr-jugv.jpg&w=3840&q=75)\n\n[Edward Scott](https://baymard.com/about/team/edward-scott)\n\nResearch Lead\n\nPublished Oct 4, 2022\n\nEd is the team lead for UX research at Baymard and has been with Baymard since 2016. Ed oversees all UX research areas at Baymard. His specializations within ecommerce UX are Mobile, Checkout, Product Finding, Product Page, and Accounts and Self-Service. Ed has a PhD in technical communication and information design.\n\nIf you have any comments on this article you can leave them on [LinkedIn](https://www.linkedin.com/feed/update/urn:li:share:6982984168276115456/)\n\nShare:\n\n## Related Articles\n\n1.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/53500/original/research-media-file-c5b37880fe538328044710a8715df476.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Checkout Optimization: 5 Ways to Minimize Form Fields in Checkout\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/checkout-flow-average-form-fields)\n2.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/53421/original/research-media-file-a3f683a0c05d5a427ca222f09c0111f9.jpeg?auto=format&fit=max&q=75&w=3840)\n    \n    E-Commerce Checkouts Need to Mark Both Required Fields and Optional Fields Explicitly (Only 14% Do So)\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/required-optional-form-fields)\n3.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/53623/original/research-media-file-b9e7be9055fa289763d52b22280bdc8e.png?auto=format&fit=max&q=75&w=3840)\n    \n    Add Descriptions To Checkout Form Labels (92% Get It Wrong)\n    \n    \n    \n    ](https://baymard.com/research-articles/checkout-form-field-descriptions)\n4.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/174529/original/research-media-file-dac6e6862979d96972cb045b5a5ef74c.png?auto=format&fit=max&q=75&w=3840)\n    \n    Mobile UX Trends 2026: 10 Best Practices\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/mobile-ux-ecommerce)\n5.  [\n    \n    ![](https://baymard-assets-cdn.imgix.net/research/media_files/attachments/165605/original/research-media-file-fc21433619de1290de37ea3d35cb2529.jpg?auto=format&fit=max&q=75&w=3840)\n    \n    Checkout UX 2025: 10 Pitfalls and Best Practices\n    \n    Popular\n    \n    \n    \n    ](https://baymard.com/research-articles/current-state-of-checkout-ux)\n\nSee all [70 ‘Cart & Checkout’](https://baymard.com/research-articles/collections/cart-and-checkout) articles\n\n*   [Introduction](https://baymard.com/research-articles/address-line-2#introduction)\n    \n*   [Video Summary](https://baymard.com/research-articles/address-line-2#video-summary)\n    \n*   [“Address Line 2” — A Surprisingly Distracting Field](https://baymard.com/research-articles/address-line-2#address-line-2--a-surprisingly-distracting-field)\n    \n*   [How to Include “Address Line 2” in the Address Form](https://baymard.com/research-articles/address-line-2#how-to-include-address-line-2-in-the-address-form)\n    \n*   [Ensure “Address Line 2” Doesn’t Bring Users to a Halt](https://baymard.com/research-articles/address-line-2#ensure-address-line-2-doesnt-bring-users-to-a-halt)\n    \n*   [Related Articles](https://baymard.com/research-articles/address-line-2#related-articles)\n    \n\n#### User Experience Research, Delivered Weekly\n\nJoin 60,000+ UX professionals and get a new UX article every week.\n\n![A screenshot of the UX article newsletter](/_next/image?url=%2F_next%2Fstatic%2Fimmutable%2Fmedia%2Farticles.1xr2jh1d02oid.png&w=3840&q=75)\n\n![](https://bat.bing.com/action/0?ti=187200813&tm=gtm002&Ver=2&mid=18f8f930-3e19-4c21-a5ba-276b5a5858a6&bo=1&sid=1da70aa0c98711f1a35cbf8ca2785f92&vid=1da73090c98711f1b3c31ff3b5e62690&vids=0&msclkid=N&gtm_tag_source=1&pi=0&lg=en-US&sw=1728&sh=1117&sc=30&tl=Form%20Usability%3A%20Getting%20Address%20Line%202%20Right%20%E2%80%93%20Baymard&p=https%3A%2F%2Fbaymard.com%2Fresearch-articles%2Faddress-line-2&r=&lt=3688&evt=pageLoad&sv=2&cdb=AQAQ&rn=635855)",
+   "debug": {
+    "requestHandlerMode": "browser"
+   }
+  }
+ ]
+}
