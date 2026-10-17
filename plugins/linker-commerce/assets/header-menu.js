@@ -77,7 +77,14 @@
 				// hidden and has no such transition).
 				const target = links[ next ];
 				if ( wasClosed && menu.classList.contains( 'tv-mega-menu' ) ) {
-					const focus = () => target.focus();
+					// A closed menu must not steal focus from the next disclosure;
+					// the fallback must not undo a later arrow after transitionend.
+					let focused = false;
+					const focus = () => {
+						if ( focused || button.getAttribute( 'aria-expanded' ) !== 'true' ) return;
+						focused = true;
+						target.focus();
+					};
 					const onEnd = transition => {
 						if ( transition.target !== menu || transition.propertyName !== 'visibility' ) return;
 						menu.removeEventListener( 'transitionend', onEnd );

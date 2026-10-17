@@ -80,6 +80,31 @@ test( 'a later ArrowDown on an open menu focuses in the same turn', () => {
 	assert.equal( queued.length, 0 );
 } );
 
+test( 'closing a menu cancels its delayed keyboard focus', () => {
+	const { window, button, first, queued } = page();
+	arrow( window, button );
+	button.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
+	assert.equal( button.getAttribute( 'aria-expanded' ), 'false' );
+	assert.equal( window.document.activeElement, button );
+	queued[ 0 ].fn();
+	assert.notEqual( window.document.activeElement, first );
+	assert.equal( window.document.activeElement, button );
+} );
+
+test( 'completed opening focus does not undo the next keyboard selection', () => {
+	const { window, button, menu, first, queued } = page();
+	arrow( window, button );
+	const ended = new window.Event( 'transitionend', { bubbles: true } );
+	Object.defineProperty( ended, 'propertyName', { value: 'visibility' } );
+	menu.dispatchEvent( ended );
+	assert.equal( window.document.activeElement, first );
+	arrow( window, first );
+	const second = menu.querySelectorAll( 'a' )[ 1 ];
+	assert.equal( window.document.activeElement, second );
+	queued[ 0 ].fn();
+	assert.equal( window.document.activeElement, second );
+} );
+
 test( 'an account menu served without hidden is closed on load', () => {
 	const dom = new JSDOM( `<!doctype html><html lang="en"><body>
 		<header id="tv-header-v2">
