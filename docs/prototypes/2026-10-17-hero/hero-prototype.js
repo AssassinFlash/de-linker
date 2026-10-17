@@ -14,6 +14,9 @@
 		{ key: 'C', name: '专注模式 · Focus view' },
 	];
 	const params = new URLSearchParams( location.search );
+	if ( ! params.has( 'variant' ) ) {
+		return; // the hero prototype runs only when asked for (?variant=), so the preview card can be tried on its own
+	}
 	let variant = ( params.get( 'variant' ) || 'A' ).toUpperCase();
 	if ( ! VARIANTS.some( ( v ) => v.key === variant ) ) {
 		variant = 'A';
