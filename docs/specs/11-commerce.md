@@ -22,11 +22,27 @@
 - `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可购买性 = 已登录且已批准；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。
 - `Inquiry`（状态注册与颜色、网关类 `ProformaGateway extends WC_Payment_Gateway`、减库存关闭、订单标题与列表列；`Checkout::gateways` 对未批准账号返回空=服务端拦截点）。
 - `Proforma`（PDF：dompdf 或 mpdf（MIT/LGPL），模板 EN/DE，编号 `DLK-PF-YYYY-NNNN`（按年计数，选项 `linker_commerce_proforma_prefix`，空则 `DLK-PF`），银行条款（设置页填写），有效期 30 天，税额行按 Woo 税设置显示；生成后存 `wp-content/uploads/proforma/<order>/` 私有目录，账户内经鉴权下载）。线上 `de-linker.com` 的号是 `DLK-PF-年份-订单ID`（下单即写入账本，不是后台按钮才编）；本站保留同一前缀，序号按年递增，不沿用订单 ID。
-- `Mail`（`wp_mail` 统一：一封主信 To sales@ + Bcc 三个邮箱（设置页）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11；`Mail\TestMode`，与 #73/#94 同一实现）：选项 `linker_commerce_test_mail_to` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp linker-commerce test-mail on|off|status` 设与撤（默认收件人 chester@de-linker.com，`--to=` 可换），不是设置页字段（#17 切换冒烟时开，验证后撤）。
+- `Mail`（`wp_mail` 统一：内部通知一封主信 To 内部通知收件人 + Bcc（设置页，见下文“内部通知收件人”）；每封投递在 WooCommerce 日志 `linker-mail` 留一行 info（主题、收件人与 Bcc，客户回执的行里因此有客户邮箱；保留期 = WooCommerce → Settings → Advanced → Logs 的 Retention period，线上未改即 Woo 缺省 30 天，到期由 Woo 自己删；文件在 `wp-content/uploads/wc-logs/`，目录有 Woo 写的 `.htaccess` deny from all，只能经后台 WooCommerce → Status → Logs 看，需要 `manage_woocommerce` 权限，即管理员与 Shop manager）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11；`Mail\TestMode`，与 #73/#94 同一实现）：选项 `linker_commerce_test_mail_to` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp linker-commerce test-mail on|off|status` 设与撤（默认收件人 chester@de-linker.com，`--to=` 可换），不是设置页字段（#17 切换冒烟时开，验证后撤）。
 - `Account`（端点注册、模板、对接人设置、再次询盘）。
 - `Vocabulary`（gettext 覆盖 Woo 自带字符串：Cart → Solution draft / Lösungsentwurf 等；全部通过 `.po`）。
-- `Settings`（后台一页：对接人、Bcc 列表、银行条款、PI 前缀）。
-- `Health`（`Monitor`：WP cron daily 依次 GET `linker_genie_url`/`linker_engine_url` 的 `/health`（实例配置，本地 `just serve` 写、切换 #17 写），非 200 或不可达或地址为空 → 经 `wp_mail`（即 Outbox 队列）发团队邮件，To 对接人（`Settings::contact()`，缺省回落团队邮箱）+ Bcc；两服务都健康不发。主题与正文 EN 先行、DE 独立撰写，对抗评审记录 `docs/acceptance/2026-10-11/67/copy-review.md`）。
+- `Settings`（后台一页：对外团队邮箱、内部通知收件人与 Bcc 列表、对接人、银行条款、PI 前缀）。
+- `Health`（`Monitor`：WP cron daily 依次 GET `linker_genie_url`/`linker_engine_url` 的 `/health`（实例配置，本地 `just serve` 写、切换 #17 写），非 200 或不可达或地址为空 → 经 `wp_mail`（即 Outbox 队列）发内部通知，To 内部通知收件人（`Options::notify_to()`）+ Bcc（#221 起；此前 To 对接人）；两服务都健康不发。主题与正文 EN 先行、DE 独立撰写，对抗评审记录 `docs/acceptance/2026-10-11/67/copy-review.md`）。
+
+## 内部通知收件人（#221，业主 2026-10-17）
+
+两类地址，两个设置，互不回落：
+
+| 用途 | 读取 | 设置（WooCommerce → Settings → Inquiries） | 缺省 |
+|---|---|---|---|
+| 客户看得到的团队邮箱：Proforma 卖方邮箱、页面 mailto（产品页联系带、联系页直达地址、邀请带）、Genie 转人工句（`linker/handoff-team`）、对接人缺省 | `Options::team_mailbox()` | Team mailbox（`linker_commerce_team_to`） | `sales@de-linker.com` |
+| 内部通知的收件人：新注册、VAT 复核、新询盘、联系表单留言、每日摘要、服务健康告警 | `Options::notify_to()` | Internal notifications → Recipient（`linker_commerce_notify_to`） | `sales@sunriverinverter.com` |
+| 内部通知的抄送 | `Options::notify_bcc()` | Internal notifications → Blind copies（`linker_commerce_team_bcc`，沿用原选项名，线上值不迁移） | 空 |
+
+发件人不在本表：WooCommerce 邮件的 From 是 Woo 的发件地址设置（线上 `Linker <sales@de-linker.com>`），客户邮件的 Reply-to 不变；健康告警是普通 `wp_mail()`，自己带上 WooCommerce 的发件人（`WC()->mailer()->get_from_name()` / `get_from_address()`，与其他内部通知相同）。
+
+**新增一封内部通知的唯一做法**（#243"让 Linker 联系我"等）：继承 `Mail\TeamEmail`（`WC_Email` 子类），在 `trigger()` 里设好占位符后调 `notify( $order_or_user )`；收件人与 Bcc 由基类从 `notify_to()` / `notify_bcc()` 填，Reply-to 是该订单或用户；在本模块的 `woocommerce_email_classes` 注册，员工在 Woo 邮件列表里可见可关。不是 Woo 邮件的纯 `wp_mail()`（如健康告警）直接用 `notify_to()` 作 To、`notify_bcc()` 拼 `Bcc:` 头。两种都经 Outbox（限速、重试、日志）。不要自己写地址，也不要读 `team_mailbox()` 发内部信。
+
+验证：`tests/php/Integration/NotificationRoutingTest.php` 以 Outbox 队列数据断言六类内部通知都只到 `notify_to()` + Bcc、不含 `sales@de-linker.com`，并断言上表第一行各处仍是 `sales@de-linker.com`；新加的内部通知照此加一行断言。
 
 ## 邮件（票据 73 起四封随审批走，注册确认是第五封）
 - ① 注册 → 团队（`NewCustomerEmail`，含审批状态行与后台直达链接）。
@@ -84,7 +100,7 @@
   （填了=当成功回应、不发送）→ 每连接限流（transient，3 次/小时；地址取 `REMOTE_ADDR`，
   不信任转发头）→ 校验 → 发送 → 302 回页面带状态 `?contact=sent|invalid|throttled#contact-form`。
 - 邮件：客户回执（`Contact\Emails\ReceiptEmail`，收件人=访客，语言=提交语言）与团队信
-  （`Contact\Emails\TeamMessageEmail`，收件人=SettingsTab 的团队邮箱，Bcc=SettingsTab 的
+  （`Contact\Emails\TeamMessageEmail`，收件人=内部通知收件人（`Options::notify_to()`），Bcc=SettingsTab 的
   盲抄列表，Reply-to=访客，语言=站点默认）——两封都是 `wp_mail()`，因此走既有 Outbox 队列/
   重试/限速/日志。两封都注册进 `woocommerce_email_classes`，员工可在 WooCommerce →
   Settings → Emails 看到并改主题。文案评审：docs/acceptance/2026-10-11/68/copy-review.md
@@ -121,6 +137,7 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - [ ] 视觉验收：注册、产品页、Lösungsentwurf、提交页、账户 × EN/DE × 1440/390；以及访客提交后邮件确认链接（带 key）**未登录**打开的状态（评审 2026-10-10：此前重放全程登录态，该页漏扫）× EN/DE。
 
 ## 变更记录
+- 2026-10-17（#221）：内部通知改投 `sales@sunriverinverter.com`（业主裁定），与客户可见的团队邮箱拆成两个设置（见“内部通知收件人”）；`Options::team_to()`/`team_bcc()` 改名为 `team_mailbox()` 与 `notify_to()`/`notify_bcc()`，不改任何选项值。健康告警由“To 对接人”改为内部通知收件人，发件人由 WordPress 缺省（`wordpress@…`）改为 WooCommerce 的发件人（评审第 1 轮）。集成测试的邮件隔离统一为 `IntegrationTestCase::isolate_mail()`（保存并还原限速记录、删掉本测试写的队列行），整套可连跑。Outbox 每次投递写一行 `linker-mail` info 日志：线上 cron 由 CLI PHP 跑，主机的 `~/.logs/mail.log` 只记 Web PHP 的 `mail()`，此前摘要、健康告警与队列重试在主机上不留任何痕迹。
 - 2026-10-16：登录与注册拆成两个页面（业主裁定）。`/my-account/` 只出登录卡；注册卡移到账号页的 `register` 端点（EN `/my-account/register/`，DE `/de/mein-konto/register/`，slug 跨语言共享），两页互跳。注册的处理链（Woo 的 nonce、字段、校验、建号、自动登录、pending 门禁）逐字不动，只有呈现分置两个请求。规格：`docs/specs/split-login-register.md`。
 - 2026-10-13：Proforma 号与 PDF 不再只挂在 Issue 按钮上。状态进入 `wc-proforma-issued` 时 `Issuer::ensure_issued` 补签发（已有号或 PDF 的不动，避免按钮路径签两次）。客户侧询盘详情（摘要卡号 + 下载链接）与 Documents 只读 `_linker_proforma_number`；Completed 后号还在，下载仍在。银行账户缺失时按钮隐藏、状态路径不签发，配置键见上节，不补造账户。默认号前缀由 `PI` 改为 `DLK-PF`，与线上 `DLK-PF-年份-…` 一致；空前缀走默认，已保存的自定义前缀不动。
 - 2026-10-13（#138）：注册邮件改为注册确认（`RegistrationReceivedEmail`；Woo 原生欢迎信仍关）。邮件清单补第 5 封。pending 停在审核页；restricted 保留工作台，Proforma request 显示限制原因。文案定稿 `docs/acceptance/2026-10-13/138/copy-review.md`。

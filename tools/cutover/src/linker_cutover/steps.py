@@ -591,6 +591,16 @@ def hygiene(target: Target, *, backup: Path, writes: bool) -> Result:
     else:
         notes.append("options: no legacy option names")
 
+    hooks = [hook for hook in cron_hooks(target) if _is_legacy_cron_hook(hook)]
+    if hooks:
+        if writes:
+            target.wp("cron", "event", "delete", *hooks)
+        actions.append(
+            f"cron: {'deleted' if writes else 'would delete'} {', '.join(hooks)}"
+        )
+    else:
+        notes.append("cron: no legacy hooks")
+
     rows, total = autoload_report(target, Path(backup) / "autoload.json")
     actions.append(
         f"autoload: {rows} options, {total} bytes written to the backup for review"
@@ -945,6 +955,17 @@ def option_names(target: Target) -> list[str]:
     return [line.strip() for line in listed[1:] if line.strip()]
 
 
+def cron_hooks(target: Target) -> list[str]:
+    """Every hook on the WP-Cron schedule, once each, in schedule order."""
+    listed = target.wp("cron", "event", "list", "--fields=hook", "--format=csv")
+    hooks: list[str] = []
+    for line in listed.splitlines()[1:]:
+        hook = line.strip()
+        if hook and hook not in hooks:
+            hooks.append(hook)
+    return hooks
+
+
 def is_legacy_table(name: str, prefix: str) -> bool:
     """Whether a table belongs to the old tree, given the site's own table prefix.
 
@@ -959,6 +980,10 @@ def is_legacy_table(name: str, prefix: str) -> bool:
 
 def _is_legacy_option(name: str) -> bool:
     return name.startswith(plan.LEGACY_OPTION_PREFIXES)
+
+
+def _is_legacy_cron_hook(hook: str) -> bool:
+    return hook.startswith(plan.LEGACY_CRON_PREFIXES)
 
 
 def _snippets_via_eval(target: Target) -> list[dict[str, object]]:

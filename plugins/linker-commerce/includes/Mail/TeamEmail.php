@@ -15,10 +15,12 @@ use WC_Order;
 use WP_User;
 
 /**
- * Base of the company notifications: one message to the team mailbox with a
- * blind copy to each address of the settings (docs/specs/11-commerce.md, Mail:
- * "一封主信 To sales@ + Bcc"), in the site's default language, as HTML. A
- * reply goes to the customer the notification is about.
+ * Base of the internal notifications: one message to the internal
+ * notification address with a blind copy to each address of the settings
+ * (Options::notify_to() and notify_bcc(); docs/specs/11-commerce.md, Mail:
+ * "内部通知收件人"), in the site's default language, as HTML. A reply goes
+ * to the customer the notification is about. Every new internal notification
+ * extends this class, so its recipients follow the one rule.
  */
 abstract class TeamEmail extends WC_Email {
 
@@ -49,7 +51,7 @@ abstract class TeamEmail extends WC_Email {
 	 */
 	protected function notify( WC_Order|WP_User $subject ): void {
 		$this->object    = $subject;
-		$this->recipient = $this->options->team_to();
+		$this->recipient = $this->options->notify_to();
 		$this->locale_switch->to( LocaleSwitch::site_default() );
 		try {
 			$this->send_notification();
@@ -77,7 +79,7 @@ abstract class TeamEmail extends WC_Email {
 		if ( '' !== $reply ) {
 			$header .= 'Reply-to: ' . $reply . "\r\n";
 		}
-		$bcc = $this->options->team_bcc();
+		$bcc = $this->options->notify_bcc();
 		if ( array() !== $bcc ) {
 			$header .= 'Bcc: ' . implode( ', ', $bcc ) . "\r\n";
 		}

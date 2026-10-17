@@ -13,7 +13,7 @@ use Linker\Commerce\Settings\Options;
 
 /**
  * One sentence pointing company, service and logistics questions at the team
- * mailbox (owner 2026-10-05, AGENTS.md §2). The mailbox is Options::team_to(),
+ * mailbox (owner 2026-10-05, AGENTS.md §2). The mailbox is Options::team_mailbox(),
  * not a second copy of the address.
  */
 final class HandoffTeam {
@@ -83,7 +83,7 @@ final class HandoffTeam {
 	public function execute( $input = array() ): array {
 		$input   = (array) $input;
 		$summary = is_string( $input['summary'] ?? null ) ? trim( $input['summary'] ) : '';
-		$to      = ( new Options() )->team_to();
+		$to      = ( new Options() )->team_mailbox();
 		$mailto  = 'mailto:' . $to;
 		if ( '' !== $summary ) {
 			$mailto .= '?body=' . rawurlencode( $summary );

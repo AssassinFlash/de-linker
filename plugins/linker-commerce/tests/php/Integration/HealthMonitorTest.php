@@ -16,7 +16,7 @@ use Linker\Commerce\Settings\Options;
 /**
  * With the daily cron event's hook fired (as WP-Cron fires it), a service
  * that does not answer produces exactly one team message out of the Outbox —
- * to the contact person, with the blind copies — and a healthy pair of
+ * to the internal notification address, with the blind copies — and a healthy pair of
  * services produces none (issue #67, GAP-16).
  *
  * The healthy side answers through the instance's own file server
@@ -85,8 +85,8 @@ final class HealthMonitorTest extends IntegrationTestCase {
 		$contact = "linker-it-{$tag}@example.test";
 		$bcc     = "linker-it-bcc-{$tag}@example.test";
 		$saved   = array(
-			Options::CONTACT_EMAIL     => get_option( Options::CONTACT_EMAIL, '' ),
-			Options::TEAM_BCC          => get_option( Options::TEAM_BCC, '' ),
+			Options::NOTIFY_TO         => get_option( Options::NOTIFY_TO, '' ),
+			Options::NOTIFY_BCC        => get_option( Options::NOTIFY_BCC, '' ),
 			Monitor::GENIE_URL_OPTION  => get_option( Monitor::GENIE_URL_OPTION, '' ),
 			Monitor::ENGINE_URL_OPTION => get_option( Monitor::ENGINE_URL_OPTION, '' ),
 		);
@@ -102,8 +102,8 @@ final class HealthMonitorTest extends IntegrationTestCase {
 		// port on this machine with no listener refuses at once) and an
 		// engine that answers 200: the healthy engine sends nothing even
 		// while the Genie fails.
-		update_option( Options::CONTACT_EMAIL, $contact );
-		update_option( Options::TEAM_BCC, $bcc );
+		update_option( Options::NOTIFY_TO, $contact );
+		update_option( Options::NOTIFY_BCC, $bcc );
 		update_option( Monitor::GENIE_URL_OPTION, 'http://127.0.0.1:9' );
 		update_option( Monitor::ENGINE_URL_OPTION, $this->healthy_url() );
 		delete_option( Throttle::OPTION );
@@ -116,7 +116,7 @@ final class HealthMonitorTest extends IntegrationTestCase {
 		do_action( Monitor::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the monitor's own hook constant.
 
 		$alert = self::new_mail_to( $captured, $contact );
-		$this->assertNotNull( $alert, 'The failed check sends one message to the contact person.' );
+		$this->assertNotNull( $alert, 'The failed check sends one message to the internal notification address.' );
 		$this->assertStringContainsString( 'Subject: The Genie service failed its health check', $alert );
 		$this->assertStringContainsString( "Bcc: {$bcc}", $alert, 'The blind copies of the settings ride along.' );
 		$this->assertStringContainsString( 'Address: http://127.0.0.1:9', $alert );

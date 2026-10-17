@@ -32,7 +32,7 @@ final class Module {
 		add_filter( 'woocommerce_settings_tabs_array', array( $this->tab, 'add_tab' ), 50 );
 		add_action( 'woocommerce_settings_' . SettingsTab::TAB, array( $this->tab, 'output' ) );
 		add_action( 'woocommerce_update_options_' . SettingsTab::TAB, array( $this->tab, 'save' ) );
-		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::TEAM_BCC, array( $this->tab, 'sanitize_bcc' ) );
+		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::NOTIFY_BCC, array( $this->tab, 'sanitize_bcc' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::BANK_IBAN, array( $this->tab, 'sanitize_iban' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::BANK_BIC, array( $this->tab, 'sanitize_bic' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::PROFORMA_PREFIX, array( $this->tab, 'sanitize_prefix' ) );

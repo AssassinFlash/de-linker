@@ -48,7 +48,7 @@ final class Handler {
 	 * Sets up the handler.
 	 *
 	 * @param string  $plugin_file Absolute path of the main plugin file.
-	 * @param Options $options     The plugin settings (team mailbox, blind copies).
+	 * @param Options $options     The plugin settings (internal notification address, blind copies).
 	 */
 	public function __construct(
 		private readonly string $plugin_file,
@@ -107,8 +107,8 @@ final class Handler {
 	}
 
 	/**
-	 * Both emails: the receipt to the visitor, the letter to the team mailbox
-	 * with the settings' blind copies. The email classes are built here, not
+	 * Both emails: the receipt to the visitor, the letter to the internal
+	 * notification address with the settings' blind copies. The email classes are built here, not
 	 * when the plugin loads: WC_Email exists once WooCommerce is loaded.
 	 *
 	 * @param Submission $submission The visitor's message.

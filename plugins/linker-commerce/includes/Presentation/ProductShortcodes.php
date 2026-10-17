@@ -1575,7 +1575,7 @@ final class ProductShortcodes {
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-invitation-actions">';
 		$html .= '<a class="linker-contact-primary" href="' . esc_url( $url ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $contact ) ) . '">' . esc_html__( 'Need help choosing?', 'linker-commerce' ) . '</a>';
-		$html .= '<a class="linker-contact-email" href="mailto:' . esc_attr( ( new Options() )->team_to() ) . '">' . esc_html( ( new Options() )->team_to() ) . '</a>';
+		$html .= '<a class="linker-contact-email" href="mailto:' . esc_attr( ( new Options() )->team_mailbox() ) . '">' . esc_html( ( new Options() )->team_mailbox() ) . '</a>';
 		$html .= '</div>';
 		return $html . '</section>';
 	}

@@ -17,9 +17,14 @@
 
 ## 发送与调度
 - WP 原生 cron：`wp_schedule_single_event` 单次事件链——每次发送完成后把下一次排在"现在之后最近的 09:00 Europe/Berlin"；初始化时（init）无事件才补排。夏令时切换后的一次发送会按旧偏移落在 08:00 或 10:00，该次发送随即自校正；规则就是"每次发送重算下一次"。
-- 收件人 = 团队邮箱（To，WooCommerce → Settings → Inquiries 的 Team mailbox）+ 抄送列表（Bcc，同页 Blind copies），与全部公司通知同源（`Settings/Options`）。空摘要也发。
+- 收件人 = 内部通知收件人（To，`Options::notify_to()`，WooCommerce → Settings → Inquiries 的 Internal notifications → Recipient，缺省 `sales@sunriverinverter.com`）+ 抄送列表（Bcc，`notify_bcc()`，同节 Blind copies），与全部内部通知同源（`docs/specs/11-commerce.md` “内部通知收件人”，#221）。空摘要也发。
 - 发送走 `wp_mail()`，由 Outbox 接管：当时可发就发，配额满或失败进队列，重试 1、5、30 分钟、2、6、12、24 小时，耗尽后消息留在队列标记失败——失败的摘要邮件自身会出现在下一封摘要的第④块里。
-- 手动触发：`wp cron event run linker_commerce_digest`。
+- 手动触发：`wp cron event run linker_commerce_digest`（会真发一封，生产上只在验收需要时用）。
+- 线上由 hPanel 每分钟 `wp cron event run --due-now` 跑（`DISABLE_WP_CRON`，spec 17），即 CLI PHP；主机的 `~/.logs/mail.log` 只记 Web PHP 的 `mail()`，CLI 的 `mail.log` 未设。所以摘要发没发**看 WooCommerce → Status → Logs 的 `linker-mail`**（Outbox 每次投递一行 info：主题、收件人、Bcc），不看 mail.log。
+- 2026-10-17 查证（#221）：切换后摘要每天 07:00 UTC 都发了——Outbox 限速记录里有 2026-10-16 07:00:04 UTC 一次投递，cron 事件每天顺延；只是收件人是 `sales@de-linker.com`（老板的腾讯企业邮，Hostinger 发出的 `@de-linker.com` 邮件 SPF 不对齐，`docs/research/2026-10-09/mail-root-cause.md` §7），且 mail.log 不记。10-17 那次因临时止血（10-16 17:20 UTC 关掉）未发，符合预期。修法：改投内部通知收件人 + 投递日志。
+
+## 给摘要加一块（#258 质检汇总等后续票的接入点）
+实现 `Linker\Commerce\Digest\Block`（四个方法见下节），在自己的 Module 里 `add_filter( 'linker_commerce_digest_blocks', fn ( array $blocks ) => [ ...$blocks, new YourBlock() ] )`——**追加在末尾**（第①块待审账号由审批票放在最前，②③④的顺序不动）。`entries()` 每条一行：`label` 必填，`url` + `link_text` 给后台直达链接（可空），`detail` 给一句说明（可空）；没有条目时显示 `empty_text()`，块照样出现（空态也是信号）。块只读数据、不发信：收件人、语言、发送与重试都归 `DigestEmail`。测试照 `tests/php/Unit/Digest/BlocksTest.php` 断言顺序，照 `tests/php/Integration/DigestTest.php` 断言真实实例里那一块出现在摘要正文。
 
 ## 第①块插拔接口（审批票对接点）
 `Linker\Commerce\Digest\Block` 接口（`id()/title()/entries()/empty_text()`，entry = `label + url + link_text + detail`），`Digest/Blocks` 按固定顺序装配内置的 ②③④，并应用过滤器 `linker_commerce_digest_blocks`（传 `list<Block>`，返回 `list<Block>`，非 Block 元素被剔除）。审批票在自己的 Module 里 unshift 第①块：`add_filter( 'linker_commerce_digest_blocks', … )`；每条 entry 的 `url` 放用户资料页后台直达链接（`admin_url( 'user-edit.php?user_id=…' )` 形态）、`link_text` 放链接名（满足票面"后台直达链接"）。审批票落地前摘要只有三块；`#73` 的状态契约（用户元键）不存在于本票——对接时以审批票定义的元键为准，不在此预写。

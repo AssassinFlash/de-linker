@@ -75,6 +75,13 @@ final class OutboxTest extends TestCase {
 	private int $calls = 0;
 
 	/**
+	 * The info lines the logger was given (one per delivery).
+	 *
+	 * @var list<string>
+	 */
+	private array $sent_lines = array();
+
+	/**
 	 * The outbox under test, set up by outbox().
 	 *
 	 * @var Outbox
@@ -204,6 +211,11 @@ final class OutboxTest extends TestCase {
 		$logger = Mockery::mock();
 		$logger->expects( 'warning' )->times( $warnings );
 		$logger->expects( 'error' )->times( $errors );
+		$logger->allows( 'info' )->andReturnUsing(
+			function ( string $line ): void {
+				$this->sent_lines[] = $line;
+			}
+		);
 		WP_Mock::userFunction( 'wc_get_logger', array( 'return' => $logger ) );
 	}
 
@@ -220,6 +232,11 @@ final class OutboxTest extends TestCase {
 		$this->assertContains( 'Bcc: a@example.test, b@example.test, c@example.test', $this->delivered[0][3] );
 		$this->assertSame( array(), $this->posts );
 		$this->assertCount( 1, $this->options[ Throttle::OPTION ] );
+		$this->assertSame(
+			array( 'Email "' . self::call()['subject'] . '" sent to sales@de-linker.com, bcc a@example.test, b@example.test, c@example.test.' ),
+			$this->sent_lines,
+			'Every delivery leaves one line in the mail log, whichever PHP sent it.'
+		);
 	}
 
 	/**

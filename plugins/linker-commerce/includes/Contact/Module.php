@@ -16,8 +16,8 @@ use Linker\Commerce\Settings\Options;
 /**
  * The contact page's form (ticket #68, GAP-8): the shortcode that renders it,
  * the handler that takes its submission, and the two emails — the receipt to
- * the visitor and the letter to the team mailbox with the settings' blind
- * copies. The site's previous contact form is not carried over: its
+ * the visitor and the letter to the internal notification address with the
+ * settings' blind copies. The site's previous contact form is not carried over: its
  * workspace, project bindings and receipts have no successor, the message
  * itself does.
  *

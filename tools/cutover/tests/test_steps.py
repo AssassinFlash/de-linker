@@ -41,6 +41,7 @@ class FakeTarget(Target):
         self.plugins: str = "name\tstatus\n"
         self.tables: str = "wp_posts,wp_options\n"
         self.options: str = "option_name\nsiteurl\n"
+        self.cron: str = "hook\nwp_version_check\n"
         self.shell_replies: dict[str, str] = {}
         self.eval_reply: str = "[]"
         self.existing: set[str] = set()
@@ -62,6 +63,8 @@ class FakeTarget(Target):
             return "wp_"
         if args[:2] == ("option", "list") and "--fields=option_name" in args:
             return self.options
+        if args[:3] == ("cron", "event", "list"):
+            return self.cron
         if args[0] == "option" and args[1] == "list" and "--autoload=on" in args:
             return json.dumps(
                 [
@@ -464,6 +467,61 @@ def test_a_legacy_option_rule_leaves_the_new_tree_alone() -> None:
         "woocommerce_currency",
     ):
         assert not steps._is_legacy_option(live), live
+
+
+def test_a_legacy_cron_rule_leaves_the_new_tree_alone() -> None:
+    """A deleted live hook is a digest or a health check that silently stops."""
+    for legacy in (
+        "tv_b2b_daily_digest",
+        "tv_b2b_stock_mirror_nightly",
+        "linker_ai_provider_watch",
+        "linker_ai_conversation_cleanup",
+    ):
+        assert steps._is_legacy_cron_hook(legacy), legacy
+    for live in (
+        "linker_commerce_digest",
+        "linker_commerce_health_check",
+        "linker_tools_conversation_sweep",
+        "linker_commerce_stock_batch_sweep",
+        "action_scheduler_run_queue",
+        "wp_version_check",
+    ):
+        assert not steps._is_legacy_cron_hook(live), live
+
+
+def test_hygiene_deletes_the_legacy_cron_hooks_it_lists(tmp_path: Path) -> None:
+    """The old tree's events stay due forever once their handlers are gone."""
+    target = _fake(tmp_path)
+    target.cron = (
+        "hook\ntv_b2b_daily_digest\nlinker_commerce_digest\n"
+        "linker_ai_provider_watch\ntv_b2b_daily_digest\n"
+    )
+
+    dry = steps.hygiene(target, backup=tmp_path, writes=False)
+    assert (
+        "cron: would delete tv_b2b_daily_digest, linker_ai_provider_watch"
+        in dry.actions
+    )
+    assert not [
+        call for call in target.calls if call[1][:3] == ("cron", "event", "delete")
+    ]
+
+    steps.hygiene(target, backup=tmp_path, writes=True)
+    deleted = [
+        call for call in target.calls if call[1][:3] == ("cron", "event", "delete")
+    ]
+    assert deleted == [
+        (
+            "wp",
+            (
+                "cron",
+                "event",
+                "delete",
+                "tv_b2b_daily_digest",
+                "linker_ai_provider_watch",
+            ),
+        )
+    ]
 
 
 def test_hygiene_reports_the_panel_steps_and_the_autoload_review(

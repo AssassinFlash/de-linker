@@ -20,7 +20,8 @@ final class Options {
 	 * Option names, also the field ids of the settings tab.
 	 */
 	public const TEAM_TO         = 'linker_commerce_team_to';
-	public const TEAM_BCC        = 'linker_commerce_team_bcc';
+	public const NOTIFY_TO       = 'linker_commerce_notify_to';
+	public const NOTIFY_BCC      = 'linker_commerce_team_bcc';
 	public const CONTACT_NAME    = 'linker_commerce_contact_name';
 	public const CONTACT_EMAIL   = 'linker_commerce_contact_email';
 	public const CONTACT_PHONE   = 'linker_commerce_contact_phone';
@@ -33,10 +34,21 @@ final class Options {
 	public const PROFORMA_PREFIX = 'linker_commerce_proforma_prefix';
 
 	/**
-	 * The team mailbox: every company notification goes there, and customers are
-	 * pointed to it (owner ruling 2026-10-05, AGENTS.md §2).
+	 * The team mailbox customers see and write to: the seller address of the
+	 * Proforma, the mailto links of the pages, Genie's hand-off sentence and
+	 * the contact person's fallback (owner rulings 2026-10-05 and 2026-10-17,
+	 * AGENTS.md §2). Internal notifications do not go here; see
+	 * DEFAULT_NOTIFY_TO.
 	 */
 	public const DEFAULT_TEAM_TO = 'sales@de-linker.com';
+
+	/**
+	 * Where every internal notification goes — new customer, VAT check, new
+	 * inquiry, contact form message, daily digest, health alert — until the
+	 * owner names another mailbox (owner ruling 2026-10-17, AGENTS.md §2:
+	 * not sales@de-linker.com, which is the owner's own mailbox).
+	 */
+	public const DEFAULT_NOTIFY_TO = 'sales@sunriverinverter.com';
 
 	/**
 	 * Proforma numbers read DLK-PF-YYYY-NNNN when the settings leave the prefix
@@ -53,24 +65,35 @@ final class Options {
 	public const DEFAULT_SELLER_NAME = 'Linker Technology GmbH';
 
 	/**
-	 * Address of the team mailbox.
+	 * Address of the team mailbox customers see (DEFAULT_TEAM_TO). Nothing
+	 * internal is sent here.
 	 */
-	public function team_to(): string {
+	public function team_mailbox(): string {
 		$to = sanitize_email( $this->text( self::TEAM_TO ) );
 		return '' === $to ? self::DEFAULT_TEAM_TO : $to;
 	}
 
 	/**
-	 * The mailboxes that receive a blind copy of each company notification.
-	 *
-	 * @return list<string> Valid addresses, without duplicates and without the team mailbox itself.
+	 * The recipient of every internal notification (DEFAULT_NOTIFY_TO). Send
+	 * an internal notification through Mail\TeamEmail, which reads this and
+	 * notify_bcc(); a plain wp_mail() reads both directly.
 	 */
-	public function team_bcc(): array {
-		$addresses = preg_split( '/[\s,;]+/', $this->text( self::TEAM_BCC ) );
+	public function notify_to(): string {
+		$to = sanitize_email( $this->text( self::NOTIFY_TO ) );
+		return '' === $to ? self::DEFAULT_NOTIFY_TO : $to;
+	}
+
+	/**
+	 * The mailboxes that receive a blind copy of each internal notification.
+	 *
+	 * @return list<string> Valid addresses, without duplicates and without notify_to() itself.
+	 */
+	public function notify_bcc(): array {
+		$addresses = preg_split( '/[\s,;]+/', $this->text( self::NOTIFY_BCC ) );
 		$valid     = array();
 		foreach ( false === $addresses ? array() : $addresses as $address ) {
 			$address = sanitize_email( $address );
-			if ( '' !== $address && is_email( $address ) && $address !== $this->team_to() && ! in_array( $address, $valid, true ) ) {
+			if ( '' !== $address && is_email( $address ) && $address !== $this->notify_to() && ! in_array( $address, $valid, true ) ) {
 				$valid[] = $address;
 			}
 		}
@@ -78,7 +101,8 @@ final class Options {
 	}
 
 	/**
-	 * The customer's contact person; the email falls back to the team mailbox.
+	 * The customer's contact person; the email falls back to the team mailbox
+	 * customers see.
 	 *
 	 * @return array{name: string, email: string, phone: string}
 	 */
@@ -86,7 +110,7 @@ final class Options {
 		$email = sanitize_email( $this->text( self::CONTACT_EMAIL ) );
 		return array(
 			'name'  => $this->text( self::CONTACT_NAME ),
-			'email' => '' === $email ? $this->team_to() : $email,
+			'email' => '' === $email ? $this->team_mailbox() : $email,
 			'phone' => $this->text( self::CONTACT_PHONE ),
 		);
 	}
@@ -114,7 +138,7 @@ final class Options {
 			'name'    => '' === $name ? self::DEFAULT_SELLER_NAME : $name,
 			'vat_id'  => $this->text( self::SELLER_VAT_ID ),
 			'address' => $address,
-			'email'   => $this->team_to(),
+			'email'   => $this->team_mailbox(),
 		);
 	}
 

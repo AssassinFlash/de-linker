@@ -131,7 +131,7 @@ final class HandlerTest extends TestCase {
 
 		WP_Mock::expectFilterAdded( 'plugin_locale', array( new \WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Mail\LocaleSwitch::class ), 'plugin_locale' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_contact_receipt', 'maria@example.test' );
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_contact_message', 'sales@de-linker.com' );
+		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_contact_message', 'sales@sunriverinverter.com' );
 
 		$this->assertSame( 'sent', $handler->process( $this->post() ) );
 		$this->assertConditionsMet();
