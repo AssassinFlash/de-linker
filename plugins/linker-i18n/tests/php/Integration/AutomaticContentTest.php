@@ -136,7 +136,7 @@ final class AutomaticContentTest extends SiteTestCase {
 				true
 			);
 			$this->assertTrue( $during['changed'] );
-			$this->assertSame( 1, self::run_jobs( 'term', $id, true ), (string) json_encode( $during ) );
+			$this->assertSame( 1, self::run_jobs( 'term', $id, true ) );
 			$this->assertSame( array( 'synced', '[de] Latest description from another request.' ), self::php( '$de = pll_get_term( $input["id"], "de" ); return array( get_term_meta( $input["id"], "_linker_i18n_status", true ), get_term( $de )->description );', array( 'id' => $id ) ) );
 		} finally {
 			self::php( '$de = pll_get_term( $input["id"], "de" ); foreach ( as_get_scheduled_actions( array( "hook" => "linker_i18n_translate", "group" => "linker-i18n", "status" => "pending", "per_page" => -1 ), "ids" ) as $action ) { $args = ActionScheduler::store()->fetch_action( $action )->get_args(); if ( "term" === $args[0] && $input["id"] === (int) $args[1] ) { ActionScheduler::store()->cancel_action( $action ); } } if ( $de ) { wp_delete_term( $de, "pa_phase" ); } wp_delete_term( $input["id"], "pa_phase" ); return true;', array( 'id' => $id ) );
