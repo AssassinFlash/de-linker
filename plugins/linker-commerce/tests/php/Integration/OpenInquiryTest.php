@@ -462,13 +462,24 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		}
 	}
 
-	/** Account details expand native optional billing fields, and edits reach the inquiry. */
-	public function test_account_billing_fields_prefill_and_send_the_edited_address(): void {
+	/**
+	 * Billing edits apply only to this inquiry, including clearing or changing VAT.
+	 *
+	 * @testWith ["", "none"]
+	 *           ["CHE123456789", "unverified"]
+	 * @param string $vat Inquiry-specific VAT.
+	 * @param string $verdict Expected inquiry verdict.
+	 */
+	public function test_account_billing_fields_prefill_and_send_the_edited_address( string $vat, string $verdict ): void {
 		$customer = $this->customer();
 		$customer->update_meta_data( 'billing_vat_id', 'DE123456789' );
 		$customer->save();
 		update_user_meta( $customer->get_id(), 'linker_vat_checked_number', 'DE123456789' );
 		update_user_meta( $customer->get_id(), 'linker_vat_status', 'valid' );
+		$account_vat = array();
+		foreach ( array( 'billing_vat_id', 'linker_vat_status', 'linker_vat_detail', 'linker_vat_checked_number', 'linker_vat_checked_at' ) as $key ) {
+			$account_vat[ $key ] = get_user_meta( $customer->get_id(), $key, true );
+		}
 		$this->as_user( $customer->get_id() );
 		wc_load_cart();
 		WC()->cart->empty_cart();
@@ -485,7 +496,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				'message'              => 'Please send a Proforma for this address.',
 				'consent'              => '1',
 				'billing_address_1'    => 'Teststraße 246',
-				'billing_vat_id'       => 'DE123456789',
+				'billing_vat_id'       => $vat,
 				'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
 				'linker_started'       => $stamp,
 				'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
@@ -498,7 +509,11 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			}
 		);
 		$this->assertSame( 'Teststraße 246', $result->get_billing_address_1() );
-		$this->assertSame( 'DE123456789', $result->get_meta( '_billing_vat_id' ) );
+		$this->assertSame( $vat, $result->get_meta( '_billing_vat_id' ) );
+		$this->assertSame( $verdict, $result->get_meta( '_linker_vat_status' ) );
+		foreach ( $account_vat as $key => $saved ) {
+			$this->assertSame( $saved, get_user_meta( $customer->get_id(), $key, true ), 'Inquiry edits preserve account VAT metadata: ' . $key );
+		}
 		$this->as_user( 0 );
 		$this->assertSame( '', \Linker\Commerce\Inquiry\BillingFields::render(), 'Guests are never asked for billing fields.' );
 		$this->assertSame( array(), \Linker\Commerce\Inquiry\BillingFields::values( array( 'billing_country' => 'DE' ) ), 'Guest billing input is ignored.' );

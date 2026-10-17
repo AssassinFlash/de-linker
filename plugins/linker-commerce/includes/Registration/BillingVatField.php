@@ -126,17 +126,13 @@ final class BillingVatField {
 	}
 
 	/**
-	 * Checks the VAT ID given on the Proforma request page and copies the
-	 * verdict onto the inquiry; runs on woocommerce_checkout_create_order, after
-	 * WooCommerce saved the billing fields on the customer.
+	 * Checks the inquiry-specific VAT without changing the saved account profile;
+	 * runs on woocommerce_checkout_create_order. Account edits are checked by
+	 * after_address_saved(), not by sending an inquiry (#246).
 	 *
 	 * @param WC_Order $order Inquiry being created.
 	 */
 	public function on_inquiry( WC_Order $order ): void {
-		$customer_id = $order->get_customer_id();
-		if ( $customer_id > 0 ) {
-			$this->vat->update( $customer_id, (string) $order->get_meta( '_' . VatProfile::VAT_META ), true );
-		}
 		$this->vat->snapshot( $order );
 	}
 
