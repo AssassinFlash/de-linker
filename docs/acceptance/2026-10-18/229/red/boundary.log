@@ -1,0 +1,82 @@
+
+Running 14 tests using 1 worker
+
+(node:7312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › specs/header-parity.spec.ts:42:3 › en-1280: matching navigation structure without overlap (1.1s)
+  ✓   2 [chromium] › specs/header-parity.spec.ts:42:3 › en-1440: matching navigation structure without overlap (736ms)
+  ✓   3 [chromium] › specs/header-parity.spec.ts:42:3 › en-1920: matching navigation structure without overlap (2.5s)
+  ✓   4 [chromium] › specs/header-parity.spec.ts:42:3 › en-390: matching navigation structure without overlap (495ms)
+  ✓   5 [chromium] › specs/header-parity.spec.ts:97:3 › en-1440: navigation disclosures remain usable (2.9s)
+  ✓   6 [chromium] › specs/header-parity.spec.ts:97:3 › en-390: navigation disclosures remain usable (1.6s)
+  ✓   7 [chromium] › specs/header-parity.spec.ts:160:2 › en: resizing restores the correct navigation (901ms)
+  ✘   8 [chromium] › specs/header-parity.spec.ts:42:3 › de-1280: matching navigation structure without overlap (15.8s)
+(node:10351) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [chromium] › specs/header-parity.spec.ts:42:3 › de-1440: matching navigation structure without overlap (877ms)
+  ✓  10 [chromium] › specs/header-parity.spec.ts:42:3 › de-1920: matching navigation structure without overlap (822ms)
+  ✓  11 [chromium] › specs/header-parity.spec.ts:42:3 › de-390: matching navigation structure without overlap (529ms)
+  ✓  12 [chromium] › specs/header-parity.spec.ts:97:3 › de-1440: navigation disclosures remain usable (2.4s)
+  ✓  13 [chromium] › specs/header-parity.spec.ts:97:3 › de-390: navigation disclosures remain usable (3.4s)
+  ✘  14 [chromium] › specs/header-parity.spec.ts:160:2 › de: resizing restores the correct navigation (16.4s)
+
+
+  1) [chromium] › specs/header-parity.spec.ts:42:3 › de-1280: matching navigation structure without overlap
+
+    Error: expect(locator).toBeVisible({ visible: false }) failed
+
+    Locator:  locator('#tv-header-v2').locator('.tv-desktop-nav')
+    Expected: hidden
+    Received: visible
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('#tv-header-v2').locator('.tv-desktop-nav') with timeout 15000ms
+      - waiting for locator('#tv-header-v2').locator('.tv-desktop-nav')
+        34 × locator resolved to <div class="tv-desktop-nav">…</div>
+           - unexpected value "visible"
+
+
+      50 | 			const cta = header.locator('.tv-header-cta:not(.tv-mobile-cta)');
+      51 | 			const toggle = header.locator('#tv-mobile-toggle');
+    > 52 | 			await expect(nav).toBeVisible({ visible: desktop });
+         | 			                  ^
+      53 | 			await expect(cta).toBeVisible({ visible: desktop });
+      54 | 			await expect(toggle).toBeVisible({ visible: !desktop });
+      55 | 			if (desktop) {
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:52:22
+
+    Error Context: artifacts/test-results/header-parity-de-1280-matc-45f18-n-structure-without-overlap-chromium/error-context.md
+
+  2) [chromium] › specs/header-parity.spec.ts:160:2 › de: resizing restores the correct navigation ─
+
+    Error: expect(locator).toBeVisible({ visible: false }) failed
+
+    Locator:  locator('.tv-desktop-nav')
+    Expected: hidden
+    Received: visible
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('.tv-desktop-nav') with timeout 15000ms
+      - waiting for locator('.tv-desktop-nav')
+        34 × locator resolved to <div class="tv-desktop-nav">…</div>
+           - unexpected value "visible"
+
+
+      165 | 		for (const [width, desktop] of [...viewports, [1440, true] as const]) {
+      166 | 			await page.setViewportSize({ width, height: 900 });
+    > 167 | 			await expect(page.locator('.tv-desktop-nav')).toBeVisible({
+          | 			                                              ^
+      168 | 				visible: desktop,
+      169 | 			});
+      170 | 			await expect(page.locator('#tv-mobile-toggle')).toBeVisible({
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:167:50
+
+    Error Context: artifacts/test-results/header-parity-de-resizing-restores-the-correct-navigation-chromium/error-context.md
+
+  2 failed
+    [chromium] › specs/header-parity.spec.ts:42:3 › de-1280: matching navigation structure without overlap
+    [chromium] › specs/header-parity.spec.ts:160:2 › de: resizing restores the correct navigation ──
+  12 passed (52.1s)
+error: recipe `e2e` failed with exit code 1

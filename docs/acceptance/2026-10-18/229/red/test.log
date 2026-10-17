@@ -1,0 +1,38 @@
+
+Running 1 test using 1 worker
+
+(node:61646) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/header-parity.spec.ts:27:1 › de: all desktop navigation and contact remain available at 1440px (16.5s)
+
+
+  1) [chromium] › specs/header-parity.spec.ts:27:1 › de: all desktop navigation and contact remain available at 1440px
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('#tv-header-v2').locator('.tv-desktop-nav')
+    Expected: visible
+    Received: hidden
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('#tv-header-v2').locator('.tv-desktop-nav') with timeout 15000ms
+      - waiting for locator('#tv-header-v2').locator('.tv-desktop-nav')
+        33 × locator resolved to <div class="tv-desktop-nav">…</div>
+           - unexpected value "hidden"
+
+
+      33 | 	const header = page.locator('#tv-header-v2');
+      34 | 	const navigation = header.locator('.tv-desktop-nav');
+    > 35 | 	await expect(navigation).toBeVisible();
+         | 	                         ^
+      36 | 	await expect(navigation.locator('.tv-nav-link')).toHaveCount(6);
+      37 | 	for (const link of await navigation.locator('.tv-nav-link').all()) {
+      38 | 		await expect(link).toBeVisible();
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:35:27
+
+    Error Context: artifacts/test-results/header-parity-de-all-deskt-dd795--remain-available-at-1440px-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/header-parity.spec.ts:27:1 › de: all desktop navigation and contact remain available at 1440px
+error: recipe `e2e` failed with exit code 1

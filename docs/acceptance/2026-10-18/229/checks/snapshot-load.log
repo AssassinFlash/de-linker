@@ -1,0 +1,38 @@
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project /Users/chesterjohn/Documents/de-linker-worktrees/c229/tools/pull linker-pull load "$@"
+database: importing /Users/chesterjohn/de-linker-data/20261018-0238/db.sql.gz into linker_c229
+search-replace https://de-linker.com -> http://127.0.0.1:9099: 5974 replacements
+search-replace https:\/\/de-linker.com -> http:\/\/127.0.0.1:9099: 112 replacements
+search-replace https%3A%2F%2Fde-linker.com -> http%3A%2F%2F127.0.0.1%3A9099: 80 replacements
+files: uploads, plugins, themes
+active plugins: polylang, linker-commerce, linker-i18n, linker-tools, redis-cache, woocommerce, advanced-custom-fields-pro, classic-editor, google-site-kit, livecanvas, user-switching, windpress, wp-seopress-pro, wp-seopress
+licence seopress-pro: applied
+licence livecanvas: applied
+{
+ "home": "http://127.0.0.1:9099",
+ "published_products": {
+  "snapshot": 212,
+  "instance": 212
+ },
+ "attachments": {
+  "snapshot": 2755,
+  "instance": 2755
+ },
+ "attachment_files_missing": 0,
+ "live_address_left": {
+  "https://de-linker.com": 0,
+  "https:\\/\\/de-linker.com": 0,
+  "https%3A%2F%2Fde-linker.com": 0
+ },
+ "staff_logins": [
+  "857558227@qq.com"
+ ],
+ "ok": true,
+ "licences": {
+  "seopress-pro": "applied",
+  "livecanvas": "applied"
+ },
+ "snapshot": {
+  "name": "20261018-0238",
+  "taken": "2026-10-17T18:49:26+00:00"
+ }
+}

@@ -1,0 +1,21 @@
+
+Running 14 tests using 1 worker
+
+(node:25214) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › specs/header-parity.spec.ts:42:3 › en-1280: matching navigation structure without overlap (892ms)
+  ✓   2 [chromium] › specs/header-parity.spec.ts:42:3 › en-1440: matching navigation structure without overlap (650ms)
+  ✓   3 [chromium] › specs/header-parity.spec.ts:42:3 › en-1920: matching navigation structure without overlap (693ms)
+  ✓   4 [chromium] › specs/header-parity.spec.ts:42:3 › en-390: matching navigation structure without overlap (510ms)
+  ✓   5 [chromium] › specs/header-parity.spec.ts:97:3 › en-1440: navigation disclosures remain usable (1.8s)
+  ✓   6 [chromium] › specs/header-parity.spec.ts:97:3 › en-390: navigation disclosures remain usable (1.1s)
+  ✓   7 [chromium] › specs/header-parity.spec.ts:160:2 › en: resizing restores the correct navigation (807ms)
+  ✓   8 [chromium] › specs/header-parity.spec.ts:42:3 › de-1280: matching navigation structure without overlap (632ms)
+  ✓   9 [chromium] › specs/header-parity.spec.ts:42:3 › de-1440: matching navigation structure without overlap (596ms)
+  ✓  10 [chromium] › specs/header-parity.spec.ts:42:3 › de-1920: matching navigation structure without overlap (667ms)
+  ✓  11 [chromium] › specs/header-parity.spec.ts:42:3 › de-390: matching navigation structure without overlap (516ms)
+  ✓  12 [chromium] › specs/header-parity.spec.ts:97:3 › de-1440: navigation disclosures remain usable (1.8s)
+  ✓  13 [chromium] › specs/header-parity.spec.ts:97:3 › de-390: navigation disclosures remain usable (1.1s)
+  ✓  14 [chromium] › specs/header-parity.spec.ts:160:2 › de: resizing restores the correct navigation (759ms)
+
+  14 passed (13.2s)
