@@ -17,6 +17,7 @@ use Linker\Commerce\Settings\Options;
 use Linker\Tools\Genie\ContactGuard;
 use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
+use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Thread;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -64,31 +65,40 @@ final class GenieContactTest extends IntegrationTestCase {
 		foreach ( array( Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, 'woocommerce_' . ContactEmail::ID . '_settings' ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
-		$day           = ContactGuard::PREFIX . 'd' . gmdate( 'Ymd' );
-		$counted       = get_option( $day );
+		$counters      = self::counters();
 		$address       = '192.0.2.' . wp_rand( 1, 254 );
 		$this->address = $address;
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput -- kept as they are, to be put back as they were.
-		$cookie = $_COOKIE[ Conversations::COOKIE ] ?? null;
-		$server = $_SERVER['REMOTE_ADDR'] ?? null;
+		$cookie  = $_COOKIE[ Conversations::COOKIE ] ?? null;
+		$browser = $_COOKIE[ Conversations::BROWSER_COOKIE ] ?? null;
+		$server  = $_SERVER['REMOTE_ADDR'] ?? null;
 		// phpcs:enable
 		$this->later(
-			function () use ( $saved, $day, $counted, $address, $cookie, $server ): void {
+			function () use ( $saved, $counters, $cookie, $browser, $server ): void {
 				foreach ( $saved as $name => $value ) {
 					false === $value ? delete_option( $name ) : update_option( $name, $value );
 				}
-				// The site's day counter as it was, and this connection's hour gone.
-				false === $counted ? delete_option( $day ) : update_option( $day, $counted, false );
+				// The contact limits' rows as they were: the site's day counter
+				// counts on, this test's connection leaves none.
 				global $wpdb;
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the guard's own counter rows (ContactGuard::count()).
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s AND option_name LIKE %s", $wpdb->esc_like( ContactGuard::PREFIX . 'h' ) . '%', '%' . md5( $address ) ) );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows (RateLimit::take()).
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( RateLimit::PREFIX . 'genie_contact' ) . '%' ) );
+				foreach ( $counters as $name => $value ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- puts back the rows counters() read.
+					$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'off')", $name, $value ) );
+				}
 				if ( $this->conversation > 0 ) {
 					wp_delete_post( $this->conversation, true );
 				}
-				if ( null === $cookie ) {
-					unset( $_COOKIE[ Conversations::COOKIE ] );
-				} else {
-					$_COOKIE[ Conversations::COOKIE ] = $cookie;
+				foreach ( array(
+					Conversations::COOKIE         => $cookie,
+					Conversations::BROWSER_COOKIE => $browser,
+				) as $name => $value ) {
+					if ( null === $value ) {
+						unset( $_COOKIE[ $name ] );
+					} else {
+						$_COOKIE[ $name ] = $value;
+					}
 				}
 				if ( null === $server ) {
 					unset( $_SERVER['REMOTE_ADDR'] );
@@ -106,18 +116,23 @@ final class GenieContactTest extends IntegrationTestCase {
 		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$_SERVER['REMOTE_ADDR'] = $address;
-		unset( $_COOKIE[ Conversations::COOKIE ] );
+		unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
 		$this->as_user( 0 );
 		// The cookie lives in $_COOKIE (Conversations::set_cookie()); a header
 		// cannot be sent from the command line once PHPUnit has printed.
 		global $wp_filter;
-		$listeners = $wp_filter['linker_tools_set_conversation_cookie'] ?? null;
-		remove_all_actions( 'linker_tools_set_conversation_cookie' );
+		$listeners = array();
+		foreach ( array( Conversations::COOKIE_ACTION, Conversations::BROWSER_ACTION ) as $hook ) {
+			$listeners[ $hook ] = $wp_filter[ $hook ] ?? null;
+			remove_all_actions( $hook );
+		}
 		$this->later(
 			static function () use ( $listeners ): void {
 				global $wp_filter;
-				if ( null !== $listeners ) {
-					$wp_filter['linker_tools_set_conversation_cookie'] = $listeners; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- puts back what setUp() took away.
+				foreach ( $listeners as $hook => $listener ) {
+					if ( null !== $listener ) {
+						$wp_filter[ $hook ] = $listener; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- puts back what setUp() took away.
+					}
 				}
 			}
 		);
@@ -284,7 +299,7 @@ final class GenieContactTest extends IntegrationTestCase {
 			$this->assertSame( $i <= ContactGuard::LIMIT ? 200 : 429, $response->get_status(), "request {$i}" );
 			wp_delete_post( $this->conversation, true );
 			$this->conversation = 0;
-			unset( $_COOKIE[ Conversations::COOKIE ] );
+			unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
 		}
 		$this->assertCount( ContactGuard::LIMIT, $this->jobs_after( $marker ) );
 	}
@@ -293,7 +308,11 @@ final class GenieContactTest extends IntegrationTestCase {
 	 * When the site's day is full, the request is refused and nothing is queued.
 	 */
 	public function test_the_daily_cap_refuses_and_queues_nothing(): void {
-		update_option( ContactGuard::PREFIX . 'd' . gmdate( 'Ymd' ), (string) ContactGuard::DAILY, false );
+		$day = new RateLimit( 'genie_contact_day', ContactGuard::DAILY, DAY_IN_SECONDS );
+		while ( $day->take( '' ) ) {
+			// Fill the site's day; setUp() puts its count back afterwards.
+			continue;
+		}
 		$this->thread( 'Can I talk to a person?' );
 		$marker   = self::newest_mail_job();
 		$response = $this->send(
@@ -356,11 +375,25 @@ final class GenieContactTest extends IntegrationTestCase {
 			fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- a process pipe.
 			proc_close( $process );
 		}
-		// Each process took one place of the site's day too: give them back.
-		$day = ContactGuard::PREFIX . 'd' . gmdate( 'Ymd' );
-		update_option( $day, (string) max( 0, (int) get_option( $day ) - ContactGuard::LIMIT ), false );
+		// Each process took one place of the site's day too: setUp() puts the count back.
 		$this->assertSame( ContactGuard::LIMIT, count( array_keys( $answers, 'taken', true ) ), implode( ',', $answers ) );
 		$this->assertSame( 10 - ContactGuard::LIMIT, count( array_keys( $answers, 'full', true ) ) );
+	}
+
+	/**
+	 * The contact limits' rows as they are now (RateLimit::PREFIX).
+	 *
+	 * @return array<string, string> Value by option name.
+	 */
+	private static function counters(): array {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows, never loaded through the options API.
+		$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( RateLimit::PREFIX . 'genie_contact' ) . '%' ), ARRAY_A );
+		$found = array();
+		foreach ( (array) $rows as $row ) {
+			$found[ (string) $row['option_name'] ] = (string) $row['option_value'];
+		}
+		return $found;
 	}
 
 	/**

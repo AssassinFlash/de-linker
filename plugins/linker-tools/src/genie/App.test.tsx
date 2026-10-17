@@ -1171,6 +1171,14 @@ test( 'the page a confirmation link opens says how it went, once', async () => {
 	}
 } );
 test( 'a request for a person shows the contact card, and Genie keeps answering', async () => {
+	// A fresh guest: no stored thread or history from the tests above.
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 0,
+		conversations: [],
+		ok: true,
+	} );
 	vi.mocked( sendTurn ).mockResolvedValueOnce( {
 		meta: {
 			grounded: true,

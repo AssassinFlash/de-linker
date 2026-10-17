@@ -18,14 +18,10 @@ namespace Linker\Tools\Genie;
  *   sent sooner than MIN_SECONDS after it, or with a time this site did not
  *   sign, is refused;
  * - a per-connection limit (LIMIT requests per WINDOW), and a site-wide daily
- *   cap (DAILY): both counted in one SQL statement each, so two requests at
- *   the same moment cannot both take the last place, and a request over
- *   either is refused, never queued, so the host's shared mail quota keeps
- *   its room for the account and inquiry mail.
- *
- * The counters are rows of the options table that WordPress never loads
- * (autoload off, never read through get_option()); a counter of a past hour
- * or day is deleted when the next request counts.
+ *   cap (DAILY): both RateLimit (#235), one SQL statement each, so two
+ *   requests at the same moment cannot both take the last place, and a
+ *   request over either is refused, never queued, so the host's shared mail
+ *   quota keeps its room for the account and inquiry mail.
  */
 class ContactGuard {
 
@@ -50,19 +46,46 @@ class ContactGuard {
 	public const WINDOW = HOUR_IN_SECONDS;
 
 	/**
-	 * Requests the whole site passes on per UTC day. Every request is one team
+	 * Requests the whole site passes on per day. Every request is one team
 	 * mail; the site takes at most 80 of the host's 100 mails a day
-	 * (Linker\Commerce\Mail\Throttle::PER_DAY), and a quarter of them for
-	 * Genie leaves 60 for registrations, inquiries and their receipts. On
-	 * 2026-10-17, the busiest day the live mail log holds (the owner's test of
-	 * the account chain), the site sent 7.
+	 * (Linker\Commerce\Mail\Throttle::PER_DAY). With Genie's own
+	 * conversation mail (ConversationMail::DAILY_CAP, 10) Genie takes at most
+	 * 30 of them, which leaves 50 for registrations, inquiries and their
+	 * receipts. On 2026-10-17, the busiest day the live mail log holds (the
+	 * owner's test of the account chain), the site sent 7.
 	 */
 	public const DAILY = 20;
 
 	/**
-	 * Name prefix of the counters in the options table.
+	 * Name of the signature's purpose, so a start time signed for this card
+	 * proves nothing elsewhere.
 	 */
 	public const PREFIX = 'linker_genie_contact_';
+
+	/**
+	 * Per-connection hourly limit.
+	 *
+	 * @var RateLimit
+	 */
+	private readonly RateLimit $connection;
+
+	/**
+	 * Site-wide daily cap.
+	 *
+	 * @var RateLimit
+	 */
+	private readonly RateLimit $site;
+
+	/**
+	 * Sets up the guard.
+	 *
+	 * @param RateLimit|null $connection Per-connection hourly limit; the default when omitted.
+	 * @param RateLimit|null $site       Site-wide daily cap; the default when omitted.
+	 */
+	public function __construct( ?RateLimit $connection = null, ?RateLimit $site = null ) {
+		$this->connection = $connection ?? new RateLimit( 'genie_contact', self::LIMIT, self::WINDOW );
+		$this->site       = $site ?? new RateLimit( 'genie_contact_day', self::DAILY, DAY_IN_SECONDS );
+	}
 
 	/**
 	 * The honeypot field.
@@ -108,52 +131,19 @@ class ContactGuard {
 	/**
 	 * Takes one place of this connection's hour and one of the site's day:
 	 * `connection` or `site` when that one is full, '' when both were taken.
+	 * Each is one statement of RateLimit (#235), so two requests at the same
+	 * moment cannot both take the last place.
 	 *
-	 * @param string   $address The connection's address (REMOTE_ADDR).
-	 * @param int|null $now     Unix time; the clock when omitted.
+	 * @param string $address The connection's address (REMOTE_ADDR).
 	 */
-	public function take( string $address, ?int $now = null ): string {
-		$now = $now ?? time();
-		// Fixed-width buckets, so a past counter sorts below the current one.
-		$hour = sprintf( 'h%010d_', intdiv( $now, self::WINDOW ) );
-		$day  = 'd' . gmdate( 'Ymd', $now );
-		$this->forget( 'h', $hour );
-		$this->forget( 'd', $day );
-		if ( ! $this->count( self::PREFIX . $hour . md5( $address ), self::LIMIT ) ) {
+	public function take( string $address ): string {
+		if ( ! $this->connection->take( $address ) ) {
 			return 'connection';
 		}
-		if ( ! $this->count( self::PREFIX . $day, self::DAILY ) ) {
+		if ( ! $this->site->take( '' ) ) {
 			return 'site';
 		}
 		return '';
-	}
-
-	/**
-	 * One more on a counter, unless it holds $limit already: one conditional
-	 * UPDATE, which the database applies to the row one request at a time.
-	 *
-	 * @param string $name  Counter (option name).
-	 * @param int    $limit Its ceiling.
-	 */
-	private function count( string $name, int $limit ): bool {
-		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- an atomic counter: get_option()/update_option() read and write in two steps, so two requests could both pass the limit; the row is never cached or loaded by WordPress.
-		$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, '0', 'off')", $name ) );
-		$taken = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = option_value + 1 WHERE option_name = %s AND CAST(option_value AS UNSIGNED) < %d", $name, $limit ) );
-		// phpcs:enable
-		return 1 === $taken;
-	}
-
-	/**
-	 * Deletes the counters of past hours or days.
-	 *
-	 * @param string $kind    `h` or `d`.
-	 * @param string $current The current bucket's name part.
-	 */
-	private function forget( string $kind, string $current ): void {
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- see count(): these rows are only the guard's counters.
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s AND option_name < %s", $wpdb->esc_like( self::PREFIX . $kind ) . '%', self::PREFIX . $current ) );
 	}
 
 	/**

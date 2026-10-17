@@ -290,21 +290,16 @@ class QualityPage {
 		$this->render_contact_requests( $conversation );
 
 		printf( '<h2>%s</h2>', esc_html__( 'Conversation', 'linker-tools' ) );
-		$thread = $this->thread->read( $conversation );
+		// The whole conversation with its last answer, which lives in the
+		// stream (Thread::transcript()): the team mail of a contact request
+		// links here (#243).
 		echo '<table class="widefat fixed striped"><tbody>';
-		foreach ( $thread['messages'] as $message ) {
+		foreach ( $this->thread->transcript( $conversation ) as $message ) {
 			printf(
 				'<tr><th scope="row">%s</th><td>%s</td></tr>',
 				esc_html( 'assistant' === $message['role'] ? 'Genie' : __( 'Customer', 'linker-tools' ) ),
-				nl2br( esc_html( (string) $message['content'] ) )
+				nl2br( esc_html( $message['content'] ) )
 			);
-		}
-		// The last answer is kept as its stream (Thread::STREAM), not among the
-		// messages: shown here so the page holds the whole conversation, which
-		// the team mail of a contact request links to (#243).
-		$last = self::answer_text( $thread['stream'] );
-		if ( '' !== $last ) {
-			printf( '<tr><th scope="row">Genie</th><td>%s</td></tr>', nl2br( esc_html( $last ) ) );
 		}
 		echo '</tbody></table>';
 	}
@@ -339,30 +334,6 @@ class QualityPage {
 			);
 		}
 		echo '</ul>';
-	}
-
-	/**
-	 * The text of a stored answer stream: its text and handoff blocks, in order.
-	 *
-	 * @param string $stream The service's SSE text (Thread::STREAM).
-	 */
-	public static function answer_text( string $stream ): string {
-		$parts = array();
-		foreach ( explode( "\n\n", $stream ) as $event ) {
-			if ( ! str_starts_with( $event, 'event: block' ) || ! preg_match( '/^data: (.+)$/m', $event, $data ) ) {
-				continue;
-			}
-			$block = json_decode( $data[1], true );
-			if ( ! is_array( $block ) ) {
-				continue;
-			}
-			if ( 'text' === ( $block['type'] ?? '' ) ) {
-				$parts[] = (string) ( $block['text'] ?? '' );
-			} elseif ( 'handoff' === ( $block['type'] ?? '' ) ) {
-				$parts[] = (string) ( $block['summary'] ?? '' );
-			}
-		}
-		return trim( implode( "\n\n", array_filter( $parts ) ) );
 	}
 
 	/**

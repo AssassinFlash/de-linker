@@ -99,7 +99,7 @@ async function ask(page: Page, question: string): Promise<string> {
 function freshCounters(): void {
 	wp([
 		'eval',
-		'global $wpdb; $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE \'linker\\_genie\\_contact\\_%\'" );',
+		'global $wpdb; $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE \'linker\\_tools\\_limit\\_genie\\_contact%\'" );',
 	]);
 }
 
