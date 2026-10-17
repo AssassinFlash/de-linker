@@ -35,6 +35,8 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
   - **看图与读文件**：铭牌拍照识别与附件读取用 deepseek-flash 做（官方 API 收图；PDF 先转成文字或页面图片，证据 `docs/research/2026-10-17-deepseek-flash-vision/`）。模型通道不变。
   - **首页 hero**：未交互时外观照旧（像素门不变）；打字、点胶囊、拍照、附件、语音之后的交互可以重新设计。
   - **线上实走验收**：账号链与 Genie 的验收包括按业主路径在线上实走。每次注册产生的真实邮件只限通知、已收到、已批准三封，收件人只限 sales@sunriverinverter.com 与业主指定的测试邮箱；其余测试照旧守测试邮件纪律。
+  - **Genie 不换，继续改；不采用 Knocket**（依据 `docs/research/2026-10-17-knocket/TRIAL.md`：同一模型下 Genie 10 对 0 错、Knocket 6 对 1 错，且 Knocket 结构上做不到产品、价格、草稿、页面感知）。改造的过关线见 `docs/specs/13-genie.md` "目标"一节的验收。
+  - **注册表单**：两步——第 1 步"您的公司"（公司名、业务类型、国家、网站或 VAT ID 至少一项），第 2 步"您和您的登录"（名、姓、邮箱、密码）；顶部两段进度条加 "Step 1 of 2 · Your company"；不收地址和电话（原型 `docs/prototypes/2026-10-17-registration/` 变体 B）。
   - **询盘对所有人开放**：不需要账号也能发询盘（推翻"发询盘需要账号"）。访客只填邮箱、姓名、公司（选填）和一个开放留言框，不问国家；Lösungsentwurf 里的产品一并带上。Proforma 请求页左右分栏（左表单、右草稿），已登录客户资料折叠成一行；地址、VAT 由团队开 Proforma 时补或从账号预填。联系表单保持现状；联系留言与询盘"两扇门、一份记录"（原型 `docs/prototypes/2026-10-17-inquiry/`）。
   - **账号状态**：待审账号注册后保持登录，只是不显示价格，也能发询盘；"限制"用于告诉客户信息不够（缺 VAT、公司资料等），原因给客户看。
   - **/wp-admin**：WooCommerce 把客户从 /wp-admin 转到 my-account 是保护行为，保留，但给说明页；员工以客户视角测试用 User Switching（免费插件，已装线上）。

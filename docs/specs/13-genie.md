@@ -22,6 +22,8 @@
 
 验收：业主同意的六条（任何品牌 / 型号词出产品；本页建议并能答本页问题；会话不丢；拍铭牌一步到产品；每个回答给下一步；不编造）+ `docs/research/2026-10-17-ai-assistants/INTL.md` §8 的 A1–A14 + `CN.md` 的补充验收。
 
+对照题集（业主 2026-10-17 定 Genie 不换之后加）：`docs/research/2026-10-17-knocket/raw/trial/questions.json` 的 20 道 EN/DE 题，用 `raw/trial/genie.py` 对本地实例重跑。过关线：Knocket 答对的第 2、3、4、5、8、13 题，Genie 必须全部答对；20 题里零答错；第 1、9、10、14 题（#233 / #257 指出的失分）必须给出产品、手册里的步骤或数字，或者引向配置器，不能用兜底话术，也不能转给 sales@。#257 与 #233 合并后由本线重跑，结果记在这两张票上。
+
 ## 三层
 ### A. Abilities（`plugins/linker-commerce`，`wp-abilities/v1`，命名空间 `Linker\Commerce\Abilities\`，一类一文件一 schema 一测试）
 | ability | 输入 | 输出 |
