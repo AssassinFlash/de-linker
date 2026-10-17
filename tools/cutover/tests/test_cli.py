@@ -8,24 +8,36 @@ directory as "the newest backup", which is a directory with no backup in it.
 from __future__ import annotations
 
 import gzip
+import json
 from argparse import Namespace
 from pathlib import Path
 
 import pytest
 
-from linker_cutover import backup, cli
+from linker_cutover import atomic, backup, cli, plan, steps
 from linker_cutover.target import CutoverError, Target
 
 
+class CliTarget(Target):
+    """Real filesystem transport, with WP/HTTP boundaries isolated."""
+
+    def wp(self, *args: str, check: bool = True) -> str:
+        del check
+        return json.dumps(
+            [{"name": slug, "status": "active"} for slug in plan.NEW_PLUGINS]
+        )
+
+    def http(self, path: str, *, cache_buster: str | None = None) -> tuple[int, str]:
+        del cache_buster
+        return (
+            dict(plan.VERIFY_REDIRECTS).get(path, 200),
+            '<html lang="de"><script type="application/ld+json">{"@type":"Product"}</script></html>',
+        )
+
+
 def _target(tmp_path: Path) -> Target:
-    """A target the failing paths never reach; `_backup` needs one to be called."""
-    return Target(
-        label="local:test",
-        root=str(tmp_path),
-        base_url="http://127.0.0.1:9999",
-        prefix=("wp",),
-        shell_prefix=None,
-        rsync_remote=None,
+    return CliTarget(
+        "local:test", str(tmp_path), "http://127.0.0.1:9999", (), None, None
     )
 
 
@@ -96,3 +108,145 @@ def test_an_explicit_backup_directory_is_still_checked(
 
     _dump(given)
     assert cli._backup(_target(tmp_path), _arguments(backup=given)) == given
+
+
+def test_deploy_dry_run_describes_staging_rename_and_all_owned_paths(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The operator can see the switch strategy without touching the target."""
+    monkeypatch.setattr(cli, "_target", lambda _: _target(tmp_path))
+    assert cli.main(["deploy"]) == 0
+    output = capsys.readouterr().out
+    assert "rename" in output
+    assert ".prev" in output
+    assert "themes/" in output
+    assert not list(tmp_path.iterdir())
+
+
+def test_probe_dry_run_names_all_endpoints_without_starting_deploy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(cli, "_target", lambda _: _target(tmp_path))
+    assert cli.main(["probe"]) == 0
+    output = capsys.readouterr().out
+    for name in (
+        "home",
+        "contact",
+        "proforma",
+        "product",
+        "commerce-rest",
+        "i18n-rest",
+        "tools-rest",
+    ):
+        assert name in output
+    assert not list(tmp_path.iterdir())
+
+
+def test_rollback_deploy_command_is_dry_unless_write_is_given(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The single operator command uses the same local filesystem switch."""
+    target = _target(tmp_path / "site")
+    repository = tmp_path / "repo"
+    repository.mkdir()
+    mu = repository / plan.MU_PLUGINS_REPO
+    mu.mkdir()
+    (mu / "recorder.php").write_text("new")
+    theme = repository / plan.THEMES_REPO / "child"
+    theme.mkdir(parents=True)
+    (theme / "functions.php").write_text("new")
+    for slug in plan.NEW_PLUGINS:
+        plugin = repository / plan.REPO / slug
+        plugin.mkdir(parents=True)
+        (plugin / f"{slug}.php").write_text("new")
+    artifacts = steps.deployment_artifacts(repository)
+    for artifact in artifacts:
+        live = Path(target.path_of(artifact.relative))
+        live.parent.mkdir(parents=True, exist_ok=True)
+        if artifact.source.is_dir():
+            live.mkdir()
+            (live / f"{artifact.source.name}.php").write_text("old")
+        else:
+            live.write_text("old")
+    atomic.publish(target, artifacts, deploy_id="20261018T000000Z-cli")
+    monkeypatch.setattr(cli, "_target", lambda _: target)
+    monkeypatch.setattr(cli, "repository_root", lambda: repository)
+    assert cli.main(["rollback-deploy", "--target", "local:c298"]) == 0
+    assert (live / f"{plan.NEW_PLUGINS[-1]}.php").read_text() == "new"
+    assert cli.main(["rollback-deploy", "--target", "local:c298", "--write"]) == 0
+    assert (live / f"{plan.NEW_PLUGINS[-1]}.php").read_text() == "old"
+
+
+@pytest.mark.parametrize("failure", ["lost-reply", "verify"])
+def test_resume_deploy_finishes_pending_batch_without_republishing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    """Lost SSH replies and transient verify failures need no new upload/rename."""
+
+    class PendingTarget(CliTarget):
+        unavailable = failure == "verify"
+
+        def shell(self, script: str) -> str:
+            output = super().shell(script)
+            if failure == "lost-reply" and "TIMEFORMAT=" in script:
+                raise CutoverError("fixture lost ssh reply")
+            return output
+
+        def http(
+            self, path: str, *, cache_buster: str | None = None
+        ) -> tuple[int, str]:
+            if self.unavailable:
+                return 503, "temporarily unavailable"
+            return super().http(path, cache_buster=cache_buster)
+
+    target = PendingTarget(
+        "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None
+    )
+    repository = tmp_path / "repo"
+    mu = repository / plan.MU_PLUGINS_REPO
+    mu.mkdir(parents=True)
+    (mu / "recorder.php").write_text("new")
+    theme = repository / plan.THEMES_REPO / "child"
+    theme.mkdir(parents=True)
+    (theme / "functions.php").write_text("new")
+    for slug in plan.NEW_PLUGINS:
+        plugin = repository / plan.REPO / slug
+        plugin.mkdir(parents=True)
+        (plugin / f"{slug}.php").write_text("new")
+    artifacts = steps.deployment_artifacts(repository)
+    for artifact in artifacts:
+        live = Path(target.path_of(artifact.relative))
+        live.parent.mkdir(parents=True, exist_ok=True)
+        if artifact.source.is_dir():
+            live.mkdir()
+            (live / f"{artifact.source.name}.php").write_text("old")
+        else:
+            live.write_text("old")
+    if failure == "lost-reply":
+        with pytest.raises(CutoverError, match="lost ssh reply"):
+            atomic.publish(target, artifacts, deploy_id="20261018T000000Z-resume")
+    else:
+        receipt = atomic.publish(target, artifacts, deploy_id="20261018T000000Z-resume")
+        assert steps.finish_deploy(target, receipt, cache_buster="fixture").notes
+    directory, pending = atomic.latest_manifest(target)
+    live_paths = [target.path_of(item.relative) for item in artifacts]
+    before = atomic.identities(target, live_paths)
+    monkeypatch.setattr(cli, "_target", lambda _: target)
+    monkeypatch.setattr(cli, "repository_root", lambda: repository)
+
+    assert cli.main(["resume-deploy"]) == 0
+    assert atomic.latest_manifest(target)[1].state == "pending"
+    if failure == "verify":
+        assert cli.main(["resume-deploy", "--write"]) == 1
+        assert atomic.latest_manifest(target)[1].state == "pending"
+    target.unavailable = False
+    assert cli.main(["resume-deploy", "--write"]) == 0
+
+    archived = atomic.latest_manifest(target)[1]
+    assert archived.state == "archived"
+    assert archived.deploy_id == pending.deploy_id
+    assert atomic.identities(target, live_paths) == before
+    assert all(
+        (Path(directory) / "files" / item.relative).exists() for item in artifacts
+    )
+    assert not list(Path(target.root).rglob("*.prev"))

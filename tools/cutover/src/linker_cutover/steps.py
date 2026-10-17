@@ -19,11 +19,13 @@ import re
 import shlex
 import shutil
 import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 
+from linker_cutover import atomic, plan
 from linker_cutover import backup as backup_module
-from linker_cutover import plan
 from linker_cutover.target import HOST_URL, CutoverError, Target, wp_prefix_for
 
 
@@ -34,6 +36,7 @@ class Result:
     step: str
     actions: list[str]
     notes: list[str]
+    publication: atomic.Receipt | None = None
 
     def describe(self) -> str:
         lines = [f"{self.step}: {action}" for action in self.actions]
@@ -126,29 +129,82 @@ def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:
     return destination
 
 
-def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
-    """Step 3's file half: the three plugins, the must-use recorder, the theme
-    file, Polylang, and the de_DE_formal language packs.
-
-    The translations travel inside each plugin's `languages/` directory, so
-    "new .po/.mo" needs no separate copy. WordPress's and WooCommerce's own
-    strings are different: their German lives in the site-wide language packs,
-    which `deploy_language_packs` installs (the 2026-10-15 incident is on
-    plan.LANGUAGE_PACK_LOCALE). Polylang is installed by WP-CLI from
-    wordpress.org: the native installer verifies the package, and a copy rsynced
-    from a checkout would be a second, unverifiable source of the same plugin.
-    A site that already has it gets the activation alone — the local drill's
-    instances do, because the stack installs it (`just up`, docs/local-stack.md),
-    and the instance's isolation layer blocks wordpress.org on purpose.
-    """
-    actions: list[str] = []
-    actions += deploy_mu_plugins(target, repository=repository)
-    actions += deploy_theme_files(target, repository=repository)
+def deployment_artifacts(repository: Path) -> list[atomic.Artifact]:
+    """The single owned-path inventory used by publication and rollback."""
+    mu = repository / plan.MU_PLUGINS_REPO
+    plugins = sorted(mu.glob("*.php"))
+    if not plugins:
+        raise CutoverError(f"{mu} carries no must-use plugin")
+    themes = repository / plan.THEMES_REPO
+    theme_files = sorted(path for path in themes.rglob("*") if path.is_file())
+    if not theme_files:
+        raise CutoverError(f"{themes} carries no theme file")
+    artifacts = [
+        atomic.Artifact(path, f"{plan.MU_PLUGINS_DIR}/{path.name}")
+        for path in plugins + sorted(mu.glob("*.pem"))
+    ]
+    artifacts += [
+        atomic.Artifact(path, f"{plan.THEMES_DIR}/{path.relative_to(themes)}")
+        for path in theme_files
+    ]
     for slug in plan.NEW_PLUGINS:
-        tree = stage_plugin(repository, slug, staging)
-        target.copy_in(tree, f"{plan.PLUGINS_DIR}/{slug}")
-        actions.append(f"deployed {slug} ({_file_count(tree)} files) from {tree}")
+        source = repository / plan.REPO / slug
+        if not (source / f"{slug}.php").is_file():
+            raise CutoverError(f"{source} does not look like the {slug} plugin")
+        artifacts.append(atomic.Artifact(source, f"{plan.PLUGINS_DIR}/{slug}"))
+    return artifacts
 
+
+def deployment_id(repository: Path) -> str:
+    """UTC time plus the source commit: review #299 decision 3."""
+    git = subprocess.run(
+        ["git", "rev-parse", "--short", "HEAD"],
+        cwd=repository,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if git.returncode:
+        raise CutoverError("the deployment source must be a git checkout")
+    return datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ") + "-" + git.stdout.strip()
+
+
+def deploy(
+    target: Target,
+    *,
+    repository: Path,
+    staging: Path,
+    deploy_id: str | None = None,
+    on_switch: Callable[[], None] | None = None,
+) -> Result:
+    """Build all trees, upload all artifacts, then switch the complete batch.
+
+    Verification and private archiving follow in `finish_deploy`. Keeping that
+    phase separate lets the first-cutover drill complete its data steps and
+    leave maintenance mode before the same verification runs.
+    """
+    artifacts = deployment_artifacts(repository)
+    # Finish every local Composer build before starting any remote upload.
+    prepared = [
+        atomic.Artifact(
+            stage_plugin(repository, item.source.name, staging), item.relative
+        )
+        if item.source.is_dir()
+        else item
+        for item in artifacts
+    ]
+    receipt = atomic.publish(
+        target,
+        prepared,
+        deploy_id=deploy_id or deployment_id(repository),
+        on_switch=on_switch,
+    )
+    assert receipt.switch_seconds is not None
+    actions = [f"deployed {item.relative} by rename" for item in artifacts]
+    actions += [
+        f"deploy id: {receipt.deploy_id}",
+        f"total switch duration: {receipt.switch_seconds:.3f} s",
+    ]
     installed = {
         str(entry["name"])
         for entry in target.wp_json("plugin", "list", "--fields=name")
@@ -168,7 +224,7 @@ def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
     target.wp("plugin", "activate", *plan.NEW_PLUGINS)
     actions.append("wp plugin activate " + " ".join(plan.NEW_PLUGINS))
     actions += deploy_language_packs(target)
-    return Result("deploy", actions, [])
+    return Result("deploy", actions, [], receipt)
 
 
 def deploy_language_packs(target: Target) -> list[str]:
@@ -190,78 +246,68 @@ def deploy_language_packs(target: Target) -> list[str]:
     return actions
 
 
-def deploy_mu_plugins(target: Target, *, repository: Path) -> list[str]:
-    """The repository's must-use plugins, installed over the site's own directory.
-
-    The recorder goes first, before anything else moves: it is the file whose
-    job is to be recording while the rest of the switch runs, and it replaces
-    the live file of the same name rather than being added beside it.
-
-    The other must-use files on the site stay untouched — the theme's own and
-    the host platform's are not this repository's to deploy, and it has no copy
-    of them. The directory is an input of step 3, so a checkout without it stops
-    the step: shipping three plugins while reporting success and never
-    installing the recorder is a gap the step would be hiding.
-    """
-    source = Path(repository) / plan.MU_PLUGINS_REPO
-    # `*.php` are the plugins; a `*.pem` is a certificate a plugin next to it
-    # verifies against (the engine pin, 2026-10-14), and it must travel in the
-    # same step or the pin on the site has nothing to read. The guard below
-    # stays keyed on the PHP files: a directory of certificates is not a
-    # must-use deployment.
-    plugins = sorted(source.glob("*.php")) if source.is_dir() else []
-    if not plugins:
-        raise CutoverError(
-            f"{source} carries no must-use plugin — the switch deploys the error "
-            "recorder PR #86 (ticket #80) ships there"
+def verify_site(target: Target, *, cache_buster: str) -> Result:
+    """The existing site and production Search Console checks, shared by callers."""
+    result = verify(target, cache_buster=cache_buster)
+    if target.rsync_remote is not None:
+        ownership = search_console(target)
+        return Result(
+            "verify", result.actions + ownership.actions, result.notes + ownership.notes
         )
-    files = plugins + (sorted(source.glob("*.pem")) if source.is_dir() else [])
-    actions: list[str] = []
-    for path in files:
-        relative = f"{plan.MU_PLUGINS_DIR}/{path.name}"
-        replaced = target.exists(relative)
-        target.copy_file_in(path, relative)
-        actions.append(
-            f"deployed {plan.MU_PLUGINS_REPO}/{path.name} to {relative}"
-            + (" (replaced the live file)" if replaced else "")
-        )
-    return actions
+    return result
 
 
-def deploy_theme_files(target: Target, *, repository: Path) -> list[str]:
-    """The repository's files inside the live theme, over the live theme's own.
-
-    `themes/<slug>/<file>` mirrors `wp-content/themes/<slug>/<file>`. The
-    child theme's functions.php is this repository's: the site renders through
-    the LiveCanvas templates and the linker-* plugins, so the file carries the
-    theme's own two behaviours and nothing that belongs to those owners — the
-    live copy of the same path belongs to the site being replaced and goes
-    with it. The directory is an input of step 3 like the must-use one: a
-    checkout without it stops the step rather than shipping a site whose theme
-    still behaves like the old one.
-    """
-    source = Path(repository) / plan.THEMES_REPO
-    files = (
-        sorted(path for path in source.rglob("*") if path.is_file())
-        if source.is_dir()
-        else []
+def finish_deploy(
+    target: Target, receipt: atomic.Receipt, *, cache_buster: str
+) -> Result:
+    """Only a passing verify allows backups to leave the web root."""
+    checked = verify_site(target, cache_buster=cache_buster)
+    if checked.notes:
+        return Result("deploy-verify", checked.actions, checked.notes)
+    atomic.archive(target, receipt)
+    return Result(
+        "deploy-verify",
+        checked.actions
+        + [
+            f"archived backups by rename: {receipt.backup_directory}",
+            "retained only the most recent deploy backup set",
+        ],
+        [],
     )
-    if not files:
-        raise CutoverError(
-            f"{source} carries no theme file — the switch deploys the child "
-            "theme's functions.php from themes/"
-        )
-    actions: list[str] = []
-    for path in files:
-        relative = path.relative_to(source)
-        destination = f"{plan.THEMES_DIR}/{relative}"
-        replaced = target.exists(destination)
-        target.copy_file_in(path, destination)
-        actions.append(
-            f"deployed {plan.THEMES_REPO}/{relative} to {destination}"
-            + (" (replaced the live file)" if replaced else "")
-        )
-    return actions
+
+
+def resume_deploy(target: Target, *, repository: Path, cache_buster: str) -> Result:
+    """Verify/archive a pending batch after an interrupted reply or failed verify."""
+    receipt = atomic.pending_receipt(
+        target, [item.relative for item in deployment_artifacts(repository)]
+    )
+    checked = finish_deploy(target, receipt, cache_buster=cache_buster)
+    return Result(
+        "resume-deploy",
+        [f"deploy id: {receipt.deploy_id}", *checked.actions],
+        checked.notes,
+    )
+
+
+def rollback_deploy(target: Target, *, repository: Path) -> Result:
+    """Restore a consistent manifest, then prove live identities, activation and HTTP."""
+    relatives = [item.relative for item in deployment_artifacts(repository)]
+    receipt = atomic.rollback(target, relatives)
+    actions = [f"deploy id: {receipt.deploy_id}", *receipt.readbacks]
+    listed = target.wp_json("plugin", "list", "--fields=name,status")
+    statuses = {
+        row["name"]: row.get("status", "missing")
+        for row in listed
+        if isinstance(row, dict) and "name" in row
+    }
+    notes: list[str] = []
+    for slug in plan.NEW_PLUGINS:
+        status = statuses.get(slug, "missing")
+        actions.append(f"plugin {slug}: {status}")
+        if status != "active":
+            notes.append(f"plugin {slug} is {status} after rollback")
+    checked = verify_site(target, cache_buster=receipt.deploy_id + "-rollback")
+    return Result("rollback-deploy", actions + checked.actions, notes + checked.notes)
 
 
 def ensure_plugins(target: Target, slugs: tuple[str, ...]) -> list[str]:

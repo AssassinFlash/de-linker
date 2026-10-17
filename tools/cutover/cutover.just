@@ -38,6 +38,21 @@ maintenance state *options:
 deploy *options:
     PHP={{ php }} {{ linker_cutover }} deploy "$@" --write
 
+# Finish verify/archive for a pending batch without building or uploading again.
+[positional-arguments]
+resume-deploy *options:
+    PHP={{ php }} {{ linker_cutover }} resume-deploy "$@" --write
+
+# Restore the preceding file deploy by rename; no database import or upload.
+[positional-arguments]
+rollback-deploy *options:
+    PHP={{ php }} {{ linker_cutover }} rollback-deploy "$@" --write
+
+# Deployment plus concurrent read-only page/REST probes; evidence stays local.
+[positional-arguments]
+probe *options:
+    PHP={{ php }} {{ linker_cutover }} probe "$@" --write
+
 # Step 3: export the snippet rows, then deactivate and delete the legacy plugins.
 [positional-arguments]
 plugins *options:
