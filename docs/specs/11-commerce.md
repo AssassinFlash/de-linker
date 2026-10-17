@@ -26,7 +26,7 @@
 - `Mail`（`wp_mail` 统一：内部通知一封主信 To 内部通知收件人 + Bcc（设置页，见下文“内部通知收件人”）；每封投递在 WooCommerce 日志 `linker-mail` 留一行 info（主题、收件人与 Bcc，客户回执的行里因此有客户邮箱；保留期 = WooCommerce → Settings → Advanced → Logs 的 Retention period，线上未改即 Woo 缺省 30 天，到期由 Woo 自己删；文件在 `wp-content/uploads/wc-logs/`，目录有 Woo 写的 `.htaccess` deny from all，只能经后台 WooCommerce → Status → Logs 看，需要 `manage_woocommerce` 权限，即管理员与 Shop manager）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11；`Mail\TestMode`，与 #73/#94 同一实现）：选项 `linker_commerce_test_mail_to` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp linker-commerce test-mail on|off|status` 设与撤（默认收件人 chester@de-linker.com，`--to=` 可换），不是设置页字段（#17 切换冒烟时开，验证后撤）。
 - `Account`（端点注册、模板、对接人设置、再次询盘）。
 - `Vocabulary`（gettext 覆盖 Woo 自带字符串：Cart → Solution draft / Lösungsentwurf 等；全部通过 `.po`）。
-- `Settings`（后台一页：对外团队邮箱、内部通知收件人与 Bcc 列表、对接人、银行条款、PI 前缀）。
+- `Settings`（后台一页：对外团队邮箱、内部通知收件人、发件人与 Bcc 列表、对接人、银行条款、PI 前缀）。
 - `Health`（`Monitor`：WP cron daily 依次 GET `linker_genie_url`/`linker_engine_url` 的 `/health`（实例配置，本地 `just serve` 写、切换 #17 写），非 200 或不可达或地址为空 → 经 `wp_mail`（即 Outbox 队列）发内部通知，To 内部通知收件人（`Options::notify_to()`）+ Bcc（#221 起；此前 To 对接人）；两服务都健康不发。主题与正文 EN 先行、DE 独立撰写，对抗评审记录 `docs/acceptance/2026-10-11/67/copy-review.md`）。
 
 ## 内部通知收件人（#221，业主 2026-10-17；#286 发件人拆分）
