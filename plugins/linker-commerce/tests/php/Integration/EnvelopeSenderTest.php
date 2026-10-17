@@ -115,6 +115,16 @@ final class EnvelopeSenderTest extends IntegrationTestCase {
 				wp_mail( 'customer@example.test', $subject, 'Plain WordPress notification.', array( 'From: Linker <sales@de-linker.com>', 'Reply-To: replies@example.test' ) );
 			}
 			$jobs = self::mail_jobs_after( $marker );
+			// A successful retry removes its queue post, so the base fixture
+			// cannot discover the original scheduled action at teardown.
+			$this->later(
+				static function () use ( $jobs ): void {
+					foreach ( $jobs as $job_id ) {
+						as_unschedule_all_actions( Outbox::HOOK, array( $job_id ), Outbox::GROUP );
+						self::assertFalse( as_has_scheduled_action( Outbox::HOOK, array( $job_id ), Outbox::GROUP ), 'No pending retry survives the fixture.' );
+					}
+				}
+			);
 			$this->assertCount( 'health' === $id ? 2 : 1, $jobs, $id . ': every call queued.' );
 			foreach ( $jobs as $job_id ) {
 				$data = json_decode( (string) get_post_meta( $job_id, '_linker_mail_message', true ), true );
