@@ -119,6 +119,41 @@ def test_our_plugins_never_come_from_a_snapshot(
         snapshot.install(instance, tmp_path / "snapshot")
 
 
+def test_the_live_third_party_plugins_install_at_the_live_version(
+    tmp_path: Path, instance: Instance
+) -> None:
+    """User Switching was on live and on no instance; Polylang ran 3.8.10
+    locally against live's 3.8.11 (2026-10-17, #252): the live site's
+    third-party plugins come with every snapshot, ours stay the checkout's."""
+    write(instance.wp_content / "plugins" / "polylang" / "polylang.php", "<?php 3.8.10")
+    taken = tmp_path / "snapshot"
+    write(taken / "uploads" / "2026" / "logo.webp", "webp")
+    write(taken / "live" / "plugins" / "polylang" / "polylang.php", "<?php 3.8.11")
+    write(taken / "live" / "plugins" / "user-switching" / "user-switching.php", "<?php")
+    write(
+        taken / "live" / "plugins" / "hostinger-reach" / "hostinger-reach.php", "<?php"
+    )
+    write(
+        taken / "live" / "plugins" / "linker-tools" / "linker-tools.php", "<?php live"
+    )
+    write(
+        taken / "site" / "plugins.json",
+        '[{"name": "polylang", "status": "active"},'
+        ' {"name": "user-switching", "status": "active"},'
+        ' {"name": "hostinger-reach", "status": "inactive"},'
+        ' {"name": "linker-tools", "status": "active"}]',
+    )
+
+    slugs = snapshot.install(instance, taken)
+
+    plugins = instance.wp_content / "plugins"
+    assert slugs == ["polylang", "user-switching"]
+    assert (plugins / "polylang" / "polylang.php").read_text() == "<?php 3.8.11"
+    assert (plugins / "user-switching" / "user-switching.php").is_file()
+    assert (plugins / "hostinger-reach").is_dir()  # installed, as inactive as on live
+    assert not (plugins / "linker-tools").exists()
+
+
 def test_live_code_installs_the_live_trees_without_it_it_does_not(
     tmp_path: Path, instance: Instance
 ) -> None:

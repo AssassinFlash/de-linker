@@ -1,18 +1,22 @@
 """The local stack end to end: real MySQL, Redis, PHP 8.3, WP-CLI and two WordPress instances.
 
 The tests drive `linker-local` as `just` does, with a data root of their own
-and the instance names pytesta and pytestb. They need this Mac's tools
+and two instance names of their own run (pytesta_<run>, pytestb_<run>). They
+need this Mac's tools
 (docs/local-stack.md): CI, which has none of them, skips the module; anywhere
 else a missing tool fails it.
 """
 
 from __future__ import annotations
 
+import email
+import email.policy
 import fcntl
 import http.client
 import json
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import sys
@@ -28,12 +32,20 @@ import pytest
 
 from linker_local import objectcache, server
 from linker_local.cli import require_php
-from linker_local.instance import SHARED, Instance, database_of
+from linker_local.instance import DATABASE_PREFIX, SHARED, Instance, database_of
 from linker_local.mysql import CREDENTIALS, MySQL
 from linker_local.processes import port_is_free
 from linker_local.registry import Registry
 
-NAMES = ("pytesta", "pytestb")
+# Every run names its own instances (process id and a random suffix), so its
+# databases and Redis keys are its own: a test name can never be a real
+# instance's or another run's (#252 review). The names pass check_name.
+RUN = f"{os.getpid()}_{secrets.token_hex(3)}"
+A = f"pytesta_{RUN}"
+B = f"pytestb_{RUN}"
+NAMES = (A, B)
+# What every run's instance databases look like, aborted runs' included.
+LEFTOVER_DATABASES = DATABASE_PREFIX + "pytest_\\_%"
 CLI = Path(sys.executable).with_name("linker-local")
 
 
@@ -120,10 +132,24 @@ def drop_databases() -> None:
         MySQL(CREDENTIALS).drop_database(database_of(name))
 
 
+def drop_leftover_databases() -> None:
+    """The databases of runs that ended without their cleanup (a killed run).
+
+    Called under one_run_per_machine(): no other run's instances exist then,
+    so every database with a test instance's name is a leftover.
+    """
+    mysql = MySQL(CREDENTIALS)
+    found = mysql.query(f"SHOW DATABASES LIKE '{LEFTOVER_DATABASES}'")
+    for database in found.split():
+        mysql.drop_database(database)
+
+
 @contextmanager
 def one_run_per_machine() -> Iterator[None]:
     """Hold a lock for the whole run: every checkout's `just test` uses the same
-    MySQL server, database names and ports. The lock ends with the process."""
+    MySQL server and the same ports, and a run allocates its instances' ports
+    from the ones free at that moment, before its servers bind them — two runs
+    at once could take the same ones. The lock ends with the process."""
     SHARED.mkdir(parents=True, exist_ok=True)
     with (SHARED / "stack-test.lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
@@ -146,7 +172,7 @@ def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
     home = tmp_path_factory.mktemp("linker-local-home")
     built = Stack(home, {**os.environ, "LINKER_LOCAL_HOME": str(home)})
     with one_run_per_machine():
-        drop_databases()  # left by an aborted run
+        drop_leftover_databases()
         try:
             for name in NAMES:
                 built.cli("up", name)
@@ -218,7 +244,7 @@ def test_each_instance_has_its_own_redis_object_cache(stack: Stack) -> None:
 
 
 def test_pretty_permalinks_and_files_are_served(stack: Stack) -> None:
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
     shop = path_of(stack.wp(a.name, "eval", "echo wc_get_page_permalink( 'shop' );"))
     for target in ("/", shop, "/sample-page/", "/wp-json/", "/wp-login.php"):
         assert request(a.port, target).status == 200, target
@@ -251,7 +277,7 @@ def test_the_checkout_endpoints_stay_where_the_checkout_page_is(
     /checkout/ slug to the renamed page's address must leave them alone: a
     redirect there would 404 the shop's order links on such a site (#80).
     """
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
     assert (
         path_of(stack.wp(a.name, "eval", "echo wc_get_checkout_url();")) == "/checkout/"
     )
@@ -265,7 +291,7 @@ def test_the_checkout_endpoints_stay_where_the_checkout_page_is(
 def test_a_form_mails_into_the_instance_instead_of_sending(
     stack: Stack,
 ) -> None:
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
     before = set(a.mail_dir.glob("*.eml"))
 
     sent = request(
@@ -283,16 +309,21 @@ def test_a_form_mails_into_the_instance_instead_of_sending(
     assert "checkemail=confirm" in sent.headers["Location"]
     new = set(a.mail_dir.glob("*.eml")) - before
     assert len(new) == 1
-    message = new.pop().read_text()
-    assert "To: local-admin@example.test" in message
-    assert "Subject: [Linker (local pytesta)] Password Reset" in message
+    # Parsed, not matched as text: a header longer than 78 characters is
+    # folded onto a second line (RFC 5322 §2.2.3), as the run's longer
+    # instance name makes this Subject.
+    message = email.message_from_string(
+        new.pop().read_text(), policy=email.policy.default
+    )
+    assert message["To"] == "local-admin@example.test"
+    assert message["Subject"] == f"[Linker (local {A})] Password Reset"
     # Mail that skips wp_mail() fails instead of reaching this Mac's sendmail.
     direct = "var_export( mail( 'sales@example.test', 'Direct', 'Body' ) );"
     assert stack.wp(a.name, "eval", direct) == "false"
 
 
 def test_mail_that_cannot_be_written_is_reported_as_failed(stack: Stack) -> None:
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
     # The isolation layer's own failure reporting; the mail queue of
     # plugins/linker-commerce (#11) deliberately answers wp_mail() true for a
     # send it has queued for retry, so it steps aside for this check.
@@ -310,7 +341,7 @@ def test_mail_that_cannot_be_written_is_reported_as_failed(stack: Stack) -> None
 
 
 def test_a_captured_message_keeps_its_bcc(stack: Stack) -> None:
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
     before = set(a.mail_dir.glob("*.eml"))
 
     sent = stack.wp(
@@ -326,7 +357,7 @@ def test_a_captured_message_keeps_its_bcc(stack: Stack) -> None:
 
 
 def test_wordpress_requests_reach_this_machine_only(stack: Stack) -> None:
-    b = stack.instance("pytestb")
+    b = stack.instance(B)
 
     outcome = stack.wp(
         b.name,
@@ -356,7 +387,7 @@ def serving(respond: type[BaseHTTPRequestHandler]) -> Iterator[int]:
 
 
 def test_a_redirect_cannot_lead_wordpress_off_this_machine(stack: Stack) -> None:
-    b = stack.instance("pytestb")
+    b = stack.instance(B)
     reached: list[str] = []
 
     class Elsewhere(BaseHTTPRequestHandler):
@@ -419,7 +450,7 @@ LOCAL_SOURCES = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-e
 def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
     stack: Stack,
 ) -> None:
-    home = request(stack.instance("pytesta").port, "/")
+    home = request(stack.instance(A).port, "/")
 
     # Outside the machine, a page reaches only what the site itself puts on it:
     # the theme's template scripts (CDNs the snapshot's pages enqueue) and the
@@ -445,7 +476,7 @@ def cookies_of(response: Response) -> str:
 
 
 def test_a_login_link_signs_in_once(stack: Stack) -> None:
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
     link = path_of(stack.cli("login", a.name).stdout.strip())
 
     first = request(a.port, link)
@@ -464,7 +495,7 @@ def test_a_login_link_signs_in_once(stack: Stack) -> None:
 
 def test_a_login_link_lives_ten_minutes(stack: Stack) -> None:
     lifetime = stack.wp(
-        "pytesta",
+        A,
         "eval",
         "add_action( 'setted_transient', function ( $name, $value, $expiration ) {"
         " if ( str_starts_with( $name, 'linker_local_login_' ) ) { echo $expiration; } }, 10, 3 );"
@@ -475,7 +506,7 @@ def test_a_login_link_lives_ten_minutes(stack: Stack) -> None:
 
 
 def test_the_server_runs_with_productions_php_limits(stack: Stack) -> None:
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
     cookies = cookies_of(
         request(a.port, path_of(stack.cli("login", a.name).stdout.strip()))
     )
@@ -491,7 +522,7 @@ def test_the_server_runs_with_productions_php_limits(stack: Stack) -> None:
 
 
 def test_serve_starts_the_services_and_down_stops_everything(stack: Stack) -> None:
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
 
     stack.cli("serve", a.name)
 
@@ -503,7 +534,7 @@ def test_serve_starts_the_services_and_down_stops_everything(stack: Stack) -> No
         assert (health.status, json.loads(health.body)) == (200, {"status": "ok"})
         assert stack.wp(a.name, "option", "get", option) == f"http://127.0.0.1:{port}"
     assert re.search(
-        r"^pytesta\s.*\srunning\s+engine, genie\s", stack.cli("status").stdout, re.M
+        rf"^{A}\s.*\srunning\s+engine, genie\s", stack.cli("status").stdout, re.M
     )
 
     stack.cli("down", a.name)
@@ -516,7 +547,7 @@ def test_serve_starts_the_services_and_down_stops_everything(stack: Stack) -> No
 def test_a_snapshot_brings_its_plugins_themes_and_uploads(
     stack: Stack, tmp_path: Path
 ) -> None:
-    b = stack.instance("pytestb")
+    b = stack.instance(B)
     taken = tmp_path / "20261010-0900"
     plugin = taken / "plugins" / "snapshot-fixture" / "snapshot-fixture.php"
     theme = taken / "themes" / "snapshot-theme"
@@ -547,7 +578,7 @@ def test_a_snapshot_brings_its_plugins_themes_and_uploads(
 def test_a_snapshot_activates_only_the_plugins_the_site_ran_active(
     stack: Stack, tmp_path: Path
 ) -> None:
-    b = stack.instance("pytestb")
+    b = stack.instance(B)
     taken = tmp_path / "20261010-0033"
     liveplugin = taken / "plugins" / "fixture-live" / "fixture-live.php"
     gone = taken / "plugins" / "fixture-retired" / "fixture-retired.php"
@@ -577,7 +608,7 @@ def test_a_snapshot_activates_only_the_plugins_the_site_ran_active(
 def test_a_wrong_snapshot_path_is_refused_before_anything_changes(
     stack: Stack, tmp_path: Path
 ) -> None:
-    a = stack.instance("pytesta")
+    a = stack.instance(A)
 
     refused = stack.cli(
         "reset", a.name, "--snapshot", str(tmp_path / "missing"), check=False

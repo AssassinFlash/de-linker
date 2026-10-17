@@ -6,12 +6,17 @@ Ticket #6 writes the snapshot; this module installs the files it holds, and
     <snapshot>/plugins/<slug>/   a plugin directory, as in wp-content/plugins
     <snapshot>/themes/<slug>/    a theme directory, as in wp-content/themes
     <snapshot>/uploads/          wp-content/uploads
-    <snapshot>/live/plugins/     the live site's other plugins (only live_code)
+    <snapshot>/live/plugins/     the live site's other plugins: the third-party
+                                 ones always, linker-* only with live_code
     <snapshot>/live/mu-plugins/  the live site's must-use plugins (only live_code)
 
 Plugins and themes replace the instance's directories of the same name;
-uploads are merged in. Which theme is active is the database's business.
-Which plugins activate is the snapshot's site/plugins.json business: a
+uploads are merged in. The live site's third-party plugins (User Switching,
+Polylang, ACF and the rest of live/plugins that is not linker-*) install
+always, at the live version: a local instance must look like live
+(AGENTS.md 2026-10-17, #252), and on 2026-10-17 an instance without them ran
+Polylang 3.8.10 against live's 3.8.11 and had no User Switching at all.
+Which theme is active is the database's business. Which plugins activate is the snapshot's site/plugins.json business: a
 plugin the live site ran is active locally too (the local instance must
 look like live, AGENTS.md 2026-10-10); without the file every snapshot
 plugin activates (a test fixture's default).
@@ -24,6 +29,9 @@ import shutil
 from pathlib import Path
 
 from linker_local.instance import Instance
+
+# Our plugins' prefix: a checkout provides them, a snapshot only with live_code.
+OURS = "linker-"
 
 
 class SnapshotError(RuntimeError):
@@ -40,7 +48,7 @@ def check(snapshot: Path) -> None:
     if not any(part.is_dir() for part in parts):
         raise SnapshotError(f"{snapshot} has none of plugins/, themes/, uploads/")
     for source in _directories(snapshot / "plugins"):
-        if source.name.startswith("linker-"):
+        if source.name.startswith(OURS):
             raise SnapshotError(
                 f"{source}: linker-* plugins come from the checkout, not from a snapshot"
             )
@@ -49,11 +57,13 @@ def check(snapshot: Path) -> None:
 def install(instance: Instance, snapshot: Path, live_code: bool = False) -> list[str]:
     """Copy the snapshot's files into the instance; return the plugin slugs.
 
-    live_code also installs the live/ trees, whose only consumer is
+    The live site's third-party plugins (live/plugins without linker-*)
+    replace the same-named ones and count as snapshot plugins. live_code also
+    installs the rest of the live/ trees, whose only consumer is
     linker-pull's `load --live-code` (a local copy of the live site, #6):
-    the live site's other plugins and its must-use plugins, each entry
-    replacing the same-named one. `up --snapshot` never passes live_code, so
-    an instance's linker-* plugins keep coming from its checkout.
+    the live linker-* plugins and the must-use plugins, each entry replacing
+    the same-named one. `up --snapshot` never passes live_code, so an
+    instance's linker-* plugins keep coming from its checkout.
     """
     check(snapshot)
     plugins, themes, uploads = (
@@ -62,6 +72,11 @@ def install(instance: Instance, snapshot: Path, live_code: bool = False) -> list
     slugs = [
         _replace(source, instance.wp_content / "plugins")
         for source in _directories(plugins)
+    ]
+    slugs += [
+        _replace(source, instance.wp_content / "plugins")
+        for source in _directories(snapshot / "live" / "plugins")
+        if not source.name.startswith(OURS)
     ]
     active = _active_slugs(snapshot / "site" / "plugins.json")
     if active is not None:

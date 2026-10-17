@@ -250,12 +250,13 @@ final class RedirectsTest extends TestCase {
 	/**
 	 * Every table the plugin ships, loaded and shaped as the ticket's counts
 	 * state them (the Advisor's three entries joined the retired tools with
-	 * #66).
+	 * #66; six product slugs from SEOPress's deletion notices joined with
+	 * #252).
 	 */
 	public function test_the_maps_load_with_the_ticket_counts(): void {
 		$maps = Redirects::maps();
 		$this->assertNotNull( $maps );
-		$this->assertCount( 255, $maps['products'] );
+		$this->assertCount( 261, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
 		$this->assertCount( 24, $maps['pages'] );
 			$this->assertCount( 5, $maps['retired_tools'] );

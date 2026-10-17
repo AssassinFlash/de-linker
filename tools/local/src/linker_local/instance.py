@@ -90,6 +90,11 @@ class Instance:
         return self.dir / "admin.txt"
 
     @property
+    def snapshot_file(self) -> Path:
+        """Which live snapshot the instance holds (linker-pull's `load` writes it)."""
+        return self.dir / "snapshot.json"
+
+    @property
     def mail_dir(self) -> Path:
         return self.dir / "mail"
 

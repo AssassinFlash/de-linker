@@ -14,6 +14,7 @@ from __future__ import annotations
 import gzip
 import json
 import os
+import secrets
 import shutil
 import subprocess
 from collections.abc import Iterator
@@ -22,14 +23,34 @@ from pathlib import Path
 import pytest
 from linker_local.instance import Instance, database_of
 
-from linker_pull import load, manifest, sqldump
+from linker_pull import live, load, manifest, sqldump
 from linker_pull.anonymize import Anonymizer, accounts_from_dump
 
 WORDPRESS = "7.1.3"
 PORT = 8199  # only part of the address written into the database; nothing listens
-SOURCE_DB = "linker_t6_pytest_source"
-NAME = "t6_pytest"
+# Every run names its own databases (process id and a random suffix), so two
+# sessions running these tests against the one local MySQL at the same time
+# never share a database (#252: a concurrent run in another worktree wrote
+# into this one's source database mid-test).
+RUN = f"{os.getpid()}_{secrets.token_hex(3)}"
+SOURCE_DB = f"linker_t6_pytest_source_{RUN}"
+NAME = f"t6_pytest_{RUN}"
 SOCKET_QUERY = "SELECT @@socket"
+# The live knowledge table as MariaDB 11.8's mysqldump writes it (the
+# 2026-10-17 snapshot's wp_genie_chunks, cut to one row of four dimensions):
+# a VECTOR column, MariaDB's vector index clause, the vector as 0x… float32s.
+MARIADB_VECTOR_TABLE = """DROP TABLE IF EXISTS `wp_genie_chunks`;
+CREATE TABLE `wp_genie_chunks` (
+  `rowid` int(10) unsigned NOT NULL,
+  `text` mediumtext NOT NULL,
+  `embedding` vector(4) NOT NULL,
+  PRIMARY KEY (`rowid`),
+  FULLTEXT KEY `words` (`text`),
+  VECTOR KEY `embedding` (`embedding`) `DISTANCE`='cosine'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `wp_genie_chunks` VALUES (1,'Datasheet: https://de-linker.com/wp-content/uploads/2026/07/ds.pdf',0x0000803F000000400000404000008040);
+"""
+LICENCE_KEY = "0123456789abcdef0123456789abcdef"  # a stand-in, not the owner's key
 
 
 def register(home: Path, name: str, port: int) -> None:
@@ -132,8 +153,10 @@ def core(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 @pytest.fixture(scope="module")
 def snapshot_dir(
-    core: Path, tmp_path_factory: pytest.TempPathFactory
+    core: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
 ) -> Iterator[Path]:
+    # Dropped however the fixture ends, a failure half-way included.
+    request.addfinalizer(lambda: mysql(f"DROP DATABASE IF EXISTS `{SOURCE_DB}`"))
     work = tmp_path_factory.mktemp("live")
     docroot = work / "wordpress"
     install(docroot, SOURCE_DB, "https://de-linker.com", core)
@@ -230,6 +253,7 @@ def snapshot_dir(
     lines = [
         "/*M!999999\\- enable the sandbox mode */ \n",
         *dumped.splitlines(keepends=True),
+        *MARIADB_VECTOR_TABLE.splitlines(keepends=True),
     ]
 
     snapshot = work / "snapshot"
@@ -247,6 +271,7 @@ def snapshot_dir(
         "themes/fake-theme/style.css": "/*\nTheme Name: Fake\n*/\n",
         "live/plugins/code-snippets/code-snippets.php": "<?php\n/**\n * Plugin Name: Code Snippets\n */\n",
         "live/plugins/old-custom/old-custom.php": "<?php\n/**\n * Plugin Name: Old custom\n */\n",
+        "live/plugins/linker-tools/linker-tools.php": "<?php\n/**\n * Plugin Name: Linker tools (live build)\n */\n",
         "live/mu-plugins/old-loader.php": "<?php\n",
     }
     for relative, content in files.items():
@@ -260,6 +285,7 @@ def snapshot_dir(
         snapshot,
         {
             "format": manifest.FORMAT,
+            "created": "2026-10-17T11:28:22+00:00",
             "source": {"wordpress": WORDPRESS},
             "database": {"tables": stats.tables(), "posts": dict(stats.posts)},
             "files": manifest.file_entries(snapshot),
@@ -268,14 +294,31 @@ def snapshot_dir(
     yield snapshot
 
 
+@pytest.fixture(autouse=True)
+def licences(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The owner's key file and live's activation state, without the owner or live."""
+    keys = tmp_path / "keys"
+    keys.mkdir()
+    (keys / "seopress.env").write_text(f"SEOPRESS_LICENSE_KEY={LICENCE_KEY}\n")
+    monkeypatch.setenv("LINKER_LICENSE_DIR", str(keys))
+    state = {
+        "lc_apikey": "f" * 50,
+        "seopress_pro_license_status": "valid",
+        "seopress_pro_license_expiry": "1812240000",
+    }
+    monkeypatch.setattr(live, "option", state.__getitem__)
+
+
 @pytest.fixture
-def instance(core: Path, tmp_path: Path) -> Iterator[Instance]:
+def instance(core: Path, tmp_path: Path, request: pytest.FixtureRequest) -> Instance:
+    request.addfinalizer(
+        lambda: mysql(f"DROP DATABASE IF EXISTS `{database_of(NAME)}`")
+    )
     home = tmp_path / "local"
     target = home / NAME / "wordpress"
     install(target, database_of(NAME), f"http://127.0.0.1:{PORT}", core)
     register(home, NAME, PORT)
-    yield load.instance(NAME, None, home)
-    mysql(f"DROP DATABASE IF EXISTS `{database_of(NAME)}`")
+    return load.instance(NAME, None, home)
 
 
 def test_the_snapshot_lands_with_every_form_of_the_live_address_rewritten(
@@ -302,6 +345,8 @@ def test_the_snapshot_lands_with_every_form_of_the_live_address_rewritten(
         },
         "staff_logins": ["owner"],  # the "live" administrator, for `just login --user`
         "ok": True,
+        "licences": {"seopress-pro": "applied", "livecanvas": "applied"},
+        "snapshot": {"name": "snapshot", "taken": "2026-10-17T11:28:22+00:00"},
     }
     docroot = instance.docroot
     assert wp(docroot, "option", "get", "siteurl") == url
@@ -327,10 +372,41 @@ def test_the_snapshot_lands_with_every_form_of_the_live_address_rewritten(
     assert (instance.wp_content / "uploads/2026/07/logo.webp").read_text() == "image"
     assert local_upload.read_text() == "made here"
     assert (instance.wp_content / "themes/fake-theme/style.css").is_file()
+    # Every plugin live runs runs here too, the third-party ones at the live
+    # version (#252); ours stay the checkout's, Code Snippets stays off.
     assert json.loads(
         wp(docroot, "option", "get", "active_plugins", "--format=json")
-    ) == ["fake-licensed/fake-licensed.php"]
-    assert not (instance.wp_content / "plugins/old-custom").exists()
+    ) == ["fake-licensed/fake-licensed.php", "old-custom/old-custom.php"]
+    assert (instance.wp_content / "plugins/old-custom/old-custom.php").is_file()
+    assert not (instance.wp_content / "plugins/linker-tools").exists()
+    assert not (instance.wp_content / "mu-plugins/old-loader.php").exists()
+    # MariaDB's vector table: imported, its vectors as the same bytes in a
+    # column PHP can read, and the tables after it rewritten (above).
+    assert (
+        wp(
+            docroot,
+            "db",
+            "query",
+            "SELECT HEX(embedding), DATA_TYPE FROM wp_genie_chunks,"
+            " information_schema.columns WHERE table_schema = DATABASE()"
+            " AND table_name = 'wp_genie_chunks' AND column_name = 'embedding'",
+            "--skip-column-names",
+        )
+        == "0000803F000000400000404000008040\tvarbinary"
+    )
+    assert (
+        wp(
+            docroot,
+            "eval",
+            'global $wpdb; $wpdb->get_row( "SELECT * FROM wp_genie_chunks" );'
+            ' echo $wpdb->get_var( "SELECT text FROM wp_genie_chunks" );',
+        )
+        == f"Datasheet: {url}/wp-content/uploads/2026/07/ds.pdf"
+    )
+    # The licences: the owner's key, live's activation state.
+    assert wp(docroot, "option", "get", "seopress_pro_license_key") == LICENCE_KEY
+    assert wp(docroot, "option", "get", "lc_apikey") == "f" * 50
+    assert json.loads(instance.snapshot_file.read_text())["name"] == "snapshot"
     # The snapshot replaced every password. admin.txt must not still offer the
     # one provision() wrote, and it must name a login that is still on the instance.
     note = instance.admin_file.read_text()

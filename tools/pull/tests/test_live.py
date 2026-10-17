@@ -191,3 +191,29 @@ def test_the_page_addresses_of_a_sitemap() -> None:
         "https://de-linker.com/de/produkt/gw10k-et/",
     ]
     assert live.sitemap_urls(index) == []
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ("option", "get", "admin_email"),
+        ("option", "get", "seopress_pro_license_key"),
+        ("option", "get", "lc_apikey", "--format=json"),
+        ("option", "get"),
+    ],
+)
+def test_option_get_reads_only_the_licence_state_a_local_instance_reuses(
+    args: tuple[str, ...],
+) -> None:
+    # Everything else of wp_options reaches this Mac through the
+    # pseudonymized dump (licenses.py, #252); the key is the owner's file's.
+    with pytest.raises(live.LiveError, match="outside LIVE_OPTIONS"):
+        live.wp_command(args)
+
+
+def test_the_licence_options_are_read_without_loading_plugins() -> None:
+    for name in sorted(live.LIVE_OPTIONS):
+        command = live.wp_command(("option", "get", name))
+
+        assert command.endswith(f"option get {name}")
+        assert "--skip-plugins" in command and "--skip-themes" in command
