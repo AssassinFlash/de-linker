@@ -157,6 +157,21 @@ final class SettingsTabTest extends TestCase {
 	}
 
 	/**
+	 * Leading or trailing hyphens cannot create a doubled separator in the number.
+	 *
+	 * @testWith ["--dlk-pf--", "DLK-PF"]
+	 *           [" -p-i !- ", "P-I"]
+	 *           ["---", ""]
+	 *           [["DLK"], ""]
+	 *
+	 * @param mixed  $value    Submitted prefix.
+	 * @param string $expected Stored prefix.
+	 */
+	public function test_prefix_trims_edge_hyphens( $value, string $expected ): void {
+		$this->assertSame( $expected, ( new SettingsTab( new JobStore() ) )->sanitize_prefix( $value ) );
+	}
+
+	/**
 	 * Above the fields stands the number of emails no retry could deliver (review 2026-10-10, S3).
 	 */
 	public function test_shows_the_undelivered_count(): void {

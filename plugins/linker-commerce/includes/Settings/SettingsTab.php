@@ -277,7 +277,7 @@ final class SettingsTab {
 	 * @param mixed $value Value WooCommerce sanitized as text.
 	 */
 	public function sanitize_prefix( $value ): string {
-		return strtoupper( (string) preg_replace( '/[^A-Za-z0-9-]/', '', is_string( $value ) ? $value : '' ) );
+		return trim( strtoupper( (string) preg_replace( '/[^A-Za-z0-9-]/', '', is_string( $value ) ? $value : '' ) ), '-' );
 	}
 
 	/**

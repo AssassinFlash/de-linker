@@ -77,7 +77,7 @@ abstract class TeamEmail extends WC_Email {
 	 * @param string $from_name Sender name passed by WordPress.
 	 */
 	public function get_from_name( $from_name = '' ) {
-		return 'Linker';
+		return $this->options->notify_sender()->name;
 	}
 
 	/**
@@ -86,7 +86,7 @@ abstract class TeamEmail extends WC_Email {
 	 * @param string $from_email Sender address passed by WordPress.
 	 */
 	public function get_from_address( $from_email = '' ) {
-		return $this->options->notify_from();
+		return $this->options->notify_sender()->email;
 	}
 
 	/**

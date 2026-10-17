@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Settings;
 
+use Linker\Commerce\Mail\Identity;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
@@ -16,6 +17,7 @@ use WP_Mock;
 /**
  * Tests for Options.
  *
+ * @covers \Linker\Commerce\Mail\Identity
  * @covers \Linker\Commerce\Settings\Options
  */
 final class OptionsTest extends TestCase {
@@ -44,7 +46,7 @@ final class OptionsTest extends TestCase {
 
 		$this->assertSame( 'sales@de-linker.com', $options->team_mailbox() );
 		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_to() );
-		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_from() );
+		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_sender()->email );
 		$this->assertSame( array(), $options->notify_bcc() );
 		$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
 		$this->assertSame(
@@ -77,7 +79,10 @@ final class OptionsTest extends TestCase {
 				Options::TEAM_TO              => 'public@example.test',
 			)
 		);
-		$this->assertSame( $expected, ( new Options() )->notify_from() );
+		$sender = ( new Options() )->notify_sender();
+		$this->assertInstanceOf( Identity::class, $sender );
+		$this->assertSame( 'Linker', $sender->name );
+		$this->assertSame( $expected, $sender->email );
 	}
 
 	/**

@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Settings;
 
+use Linker\Commerce\Mail\Identity;
+
 /**
  * Reads the values staff enter on WooCommerce → Settings → Inquiries
  * (SettingsTab). Every reader of these settings goes through this class, so a
@@ -91,11 +93,11 @@ final class Options {
 	}
 
 	/**
-	 * The sender address of internal notifications, independent of their recipient.
+	 * One identity for Woo internal notifications and plain wp_mail alerts.
 	 */
-	public function notify_from(): string {
+	public function notify_sender(): Identity {
 		$from = sanitize_email( $this->text( self::NOTIFY_FROM ) );
-		return is_email( $from ) ? $from : self::DEFAULT_NOTIFY_FROM;
+		return new Identity( 'Linker', is_email( $from ) ? $from : self::DEFAULT_NOTIFY_FROM );
 	}
 
 	/**

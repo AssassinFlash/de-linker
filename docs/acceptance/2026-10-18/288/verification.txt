@@ -1,0 +1,66 @@
+#288 / PR #291 review-round-1 corrections
+
+TDD: internal identity public Options seam
+RED: four test_internal_sender data sets error because Mail\Identity is absent.
+GREEN: default, custom, invalid and wrong-type sender options return the Identity;
+TeamEmail, TeamMessageEmail and Monitor consume name/email properties.
+Focused unit run: 35 tests / 91 assertions, PASS.
+Initial c288 mail fixture: 18 tests / 151 assertions, PASS.
+just check: exit 0.
+- All PHP projects: PHPCS / PHPStan 8 green.
+- JS/TS/format and Python ruff/mypy green.
+- i18n coverage gap=0; validity clean (5 catalogs); builds match sources.
+just test: exit 0.
+- Commerce PHP: 1110 tests / 5401 assertions; 78 real-instance tests skipped
+  by the default unit bootstrap (mail fixture is run separately on c288).
+- Other PHP: i18n 190/432; tools 147/1900; mu-plugins 6/23.
+- JS unit: tools 120; commerce 6. Node script tests: 46/46.
+- Playwright configurator: 9/9.
+- Python: Genie 658; engine 112; local stack 98; FAQ 20;
+  pull 113; cutover 82, all passed.
+Independent full-diff reviews: Standards 0 outstanding; Spec 0 outstanding
+after fixing and reading back the obsolete spec change-log claim.
+just sync c288: exit 0; snapshot 20261018-0306,
+recorded 2026-10-17T19:14:34+00:00; both local licences applied.
+Final c288 mail fixture: 18 tests / 155 assertions, PASS.
+Runtime before = after: queued_mail=0; pending_retries=0; local_mail=true;
+internal sender Linker <sales@sunriverinverter.com>;
+envelope_field=false; old_envelope_class=false.
+Computer Use: EN and DE, 1440x1000 and 390x844, four final screenshots.
+Both mobile pages: innerWidth=390, document scrollWidth=390, no envelope field.
+Viewport reset; local user locale restored to zh_CN.
+
+Translation comparison (before 2a06c6dc vs current PO, including obsolete):
+864 before, 861 after, all 861 shared pairs unchanged; changed msgstr = 0.
+Removed only the three envelope-setting entries.
+All 861 origin/main pairs preserved. Fresh POT: 825 entries; built JS included.
+See translation-check.json for the machine-readable result.
+
+ROUND 2 — supersedes the round-1 POT-only preservation conclusion/count.
+Initially rebased on d27d1a3e; final origin/main base is 97f6fc14.
+The final rebase retains all five new #245 translations.
+just i18n-commerce c288: repeated successfully; native PHP/JS/build POT plus
+fresh LC fragment POT, never an old POT input. 29 live LC catalog messages;
+9 entries restored active; final POT 839 entries.
+TDD public gate: bad PR catalogs exit 1 (9 live obsolete entries, including
+Clear search); regenerated catalogs exit 0. See round2-red.txt/round2-green.txt.
+Compiled MO comparison (including header): latest main 787, final 791.
+Initial round-2 baseline was main 782, old PR 777, repaired 786.
+Removed exactly 4 retired approval messages; changed translations 0;
+8 older LC translations added back, and Clear search -> Suche leeren retained.
+All 861 pre-round-2 and all 866 latest-main PO msgid/msgstr pairs unchanged,
+including plurals, obsolete entries and multiline text.
+See mo-comparison-round2.json.
+c288 WordPress translate(): all 9 restored German messages read correctly;
+locale restored. See runtime-translations-round2.json.
+Helper Ruff/import sorting/format and strict mypy: PASS.
+Final just check: exit 0. Final just test: exit 0.
+PHP commerce 1125 tests / 5429 assertions (78 integration tests skipped by
+unit bootstrap); i18n 190/432, tools 147/1900, mu-plugins 6/23.
+JS units 120+6; Node scripts 46; Playwright 9.
+Python Genie 678, engine 112, local 98, FAQ 20, pull 113, cutover 82: PASS.
+Migration tooling: 94 passed, 9 real-instance tests skipped by its bootstrap.
+Independent Spec and Standards review: 0 outstanding on each axis.
+Latest rebase catalog outputs independently confirmed by Spec reviewer:
+787 -> 791 MO entries, only 4 retired messages removed, no msgstr changes.
+No mail sends, deployment or merge.
