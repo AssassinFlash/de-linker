@@ -23,6 +23,12 @@ bounds). Recount without a browser using:
 python3 tests/visual/compare.py <outdir>
 ```
 
+Run the comparator's exact-colour and dimension regression fixtures with:
+
+```sh
+python3 -m unittest discover -s tests/visual -p 'test_*.py'
+```
+
 Capture conditions preserve the already measured procedure: software raster and
 sRGB to avoid GPU dithering, disabled motion/caret, full-height layout before
 decoding lazy images, and loaded fonts. The preview card is dismissed only in
