@@ -1,0 +1,29 @@
+
+Running 1 test using 1 worker
+
+(node:19732) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/header-parity.spec.ts:39:1 › German navigation uses the largest spacing that fits (463ms)
+
+
+  1) [chromium] › specs/header-parity.spec.ts:39:1 › German navigation uses the largest spacing that fits
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 6
+    Received:    4.55
+
+      46 | 		await expect(header.locator('.tv-desktop-nav')).toBeVisible();
+      47 | 		const padding = await header.locator('.tv-nav-link').first().evaluate((link) => parseFloat(getComputedStyle(link).paddingLeft));
+    > 48 | 		expect(padding).toBeGreaterThanOrEqual(minimum!);
+         | 		                ^
+      49 | 		expect(padding).toBeLessThanOrEqual(14);
+      50 | 		// Chromium lays out in 1/64px units. One more unit per side must overflow;
+      51 | 		// otherwise the current spacing left usable space on the table.
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:48:19
+
+    Error Context: artifacts/test-results/header-parity-German-navig-f9e06-e-largest-spacing-that-fits-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/header-parity.spec.ts:39:1 › German navigation uses the largest spacing that fits
+error: recipe `e2e` failed with exit code 1

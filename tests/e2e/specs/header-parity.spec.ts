@@ -46,7 +46,7 @@ test('German navigation uses the largest spacing that fits', async ({
 }) => {
 	await page.goto(`${instance().url}/de/`);
 	await page.evaluate(() => document.fonts.ready);
-	// Independent bounds from the review's rendered-width measurements.
+	// Independent rendered bounds: docs/acceptance/2026-10-18/229/round1/layout-metrics.json.
 	for (const [width, minimum] of [
 		[1300, 6],
 		[1366, 11.3],
