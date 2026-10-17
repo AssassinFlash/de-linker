@@ -2725,15 +2725,18 @@ msgstr ""
 "per E-Mail geschickt. Schreiben Sie an sales@de-linker.com; wir sehen uns "
 "Ihr Konto erneut an."
 
+#: build/accounts.js
 #: includes/Registration/ApprovalAdmin.php:45
 #: includes/Registration/ApprovalAdmin.php:158
 msgid "Approve"
 msgstr "Freigeben"
 
+#: build/accounts.js
 #: includes/Registration/ApprovalAdmin.php:49
 msgid "Restrict"
 msgstr "Einschränken"
 
+#: build/accounts.js
 #: includes/Registration/ApprovalAdmin.php:53
 msgid "Reject"
 msgstr "Ablehnen"
@@ -4213,3 +4216,185 @@ msgstr ""
 #: includes/Settings/SettingsTab.php:102
 msgid "Recipient"
 msgstr "Empfänger"
+
+#: includes/Registration/Accounts.php:104
+msgid "Company website"
+msgstr "Unternehmenswebsite"
+
+#: includes/Registration/Accounts.php:129
+msgid "You do not have permission to switch to this customer."
+msgstr "Sie sind nicht berechtigt, zur Ansicht dieses Kunden zu wechseln."
+
+#: includes/Registration/Accounts.php:129
+msgid "User Switching is not active."
+msgstr "User Switching ist nicht aktiviert."
+
+#: includes/Registration/AccountsAdmin.php:51
+#: build/accounts.js:2
+msgid "Accounts waiting for you"
+msgstr "Konten zur Prüfung"
+
+#: includes/Registration/AccountsAdmin.php:57
+msgid "All accounts →"
+msgstr "Alle Konten →"
+
+#: includes/Registration/AccountsAdmin.php:68
+#: includes/Registration/AccountsAdmin.php:106
+msgid "Accounts"
+msgstr "Konten"
+
+#. translators: %s: number of accounts waiting for review.
+#: includes/Registration/AccountsAdmin.php:82
+#: build/accounts.js:2
+#, php-format,js-format
+msgid "%s account to review"
+msgid_plural "%s accounts to review"
+msgstr[0] "%s Konto zu prüfen"
+msgstr[1] "%s Konten zu prüfen"
+
+#: includes/Registration/AccountsAdmin.php:109
+msgid "Search accounts"
+msgstr "Konten suchen"
+
+#: includes/Registration/AccountsController.php:78
+msgid "You are not allowed to review accounts."
+msgstr "Sie sind nicht berechtigt, Konten zu prüfen."
+
+#: includes/Registration/AccountsController.php:92
+msgid "This account is unavailable or you do not have permission to review it."
+msgstr "Dieses Konto ist nicht verfügbar oder Sie sind nicht berechtigt, es zu prüfen."
+
+#: includes/Registration/AccountsController.php:117
+#: build/accounts.js:1
+msgid "Enter a reason for the customer before restricting or rejecting the account."
+msgstr "Geben Sie einen Grund für den Kunden an, bevor Sie das Konto einschränken oder ablehnen."
+
+#. translators: %s: email domain.
+#: includes/Registration/AccountSignals.php:37
+#, php-format
+msgid "Free email provider: %s"
+msgstr "Kostenloser E-Mail-Anbieter: %s"
+
+#. translators: %s: email domain.
+#: includes/Registration/AccountSignals.php:37
+#, php-format
+msgid "Email domain: %s (not verified)"
+msgstr "E-Mail-Domain: %s (nicht geprüft)"
+
+#. translators: %s: matched text in the company name.
+#: includes/Registration/AccountSignals.php:47
+#, php-format
+msgid "Possible automated registration: company name contains \"%s\"."
+msgstr "Möglicherweise automatisierte Registrierung: Der Unternehmensname enthält „%s“."
+
+#: includes/Registration/AccountSignals.php:52
+msgid "No suspicious company-name pattern found. Please verify the company."
+msgstr "Kein auffälliges Muster im Unternehmensnamen erkannt. Bitte prüfen Sie das Unternehmen."
+
+#: includes/Registration/AccountsTable.php:44
+msgid "Contact"
+msgstr "Kontakt"
+
+#: includes/Registration/AccountsTable.php:47
+#: includes/Registration/RegistrationInformation.php:69
+msgid "Registered"
+msgstr "Registriert am"
+
+#: includes/Registration/AccountsTable.php:76
+msgid "No accounts match these filters."
+msgstr "Für diese Filter wurden keine Konten gefunden."
+
+#: includes/Registration/AccountsTable.php:102
+msgid "Review or change decision"
+msgstr "Prüfen oder Entscheidung ändern"
+
+#: includes/Registration/AccountsTable.php:122
+msgid "All accounts"
+msgstr "Alle Konten"
+
+#: includes/Registration/RegistrationInformation.php:63
+msgid "Login email"
+msgstr "E-Mail-Adresse für die Anmeldung"
+
+#: build/accounts.js:1
+#: build/accounts.js:2
+msgid "The request failed. Please try again."
+msgstr "Die Anfrage ist fehlgeschlagen. Bitte versuchen Sie es erneut."
+
+#: build/accounts.js:1
+msgid "Automatic checks"
+msgstr "Automatische Prüfungen"
+
+#: build/accounts.js:1
+msgid "Details"
+msgstr "Details"
+
+#: build/accounts.js:1
+msgid "View the website as this customer"
+msgstr "Website als dieser Kunde ansehen"
+
+#: build/accounts.js:1
+msgid "Reason for the customer"
+msgstr "Grund für den Kunden"
+
+#: build/accounts.js:1
+msgid "The customer receives this reason by email. Explain what information is needed or why the account cannot be approved."
+msgstr "Der Kunde erhält diesen Grund per E-Mail. Erläutern Sie, welche Angaben fehlen oder warum das Konto nicht freigegeben werden kann."
+
+#: build/accounts.js:1
+msgid "Restrict and notify customer"
+msgstr "Einschränken und Kunden informieren"
+
+#: build/accounts.js:1
+msgid "Reject and notify customer"
+msgstr "Ablehnen und Kunden informieren"
+
+#: build/accounts.js:1
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: build/accounts.js:1
+msgid "Saving decision…"
+msgstr "Entscheidung wird gespeichert…"
+
+#: build/accounts.js:1
+msgid "Decision saved. You can change it at any time."
+msgstr "Die Entscheidung wurde gespeichert. Sie können sie jederzeit ändern."
+
+#: build/accounts.js:1
+msgid "Loading accounts…"
+msgstr "Konten werden geladen…"
+
+#: build/accounts.js:1
+msgid "Try again"
+msgstr "Erneut versuchen"
+
+#: build/accounts.js:1
+msgid "No accounts are waiting for review. New registrations will appear here and in the top bar."
+msgstr "Es warten keine Konten auf Prüfung. Neue Registrierungen erscheinen hier und in der oberen Leiste."
+
+#: build/accounts.js:2
+msgid "Review account"
+msgstr "Konto prüfen"
+
+#: build/accounts.js:2
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Website (from email domain)"
+msgstr "Website der E-Mail-Domain"
+
+msgid "Restricted, awaiting customer information"
+msgstr "Eingeschränkt, Angaben vom Kunden fehlen"
+
+#. translators: %s: number of restricted accounts awaiting customer information.
+#, php-format
+msgid "Restricted, awaiting customer information: %s"
+msgstr "Eingeschränkt, Angaben vom Kunden fehlen: %s"
+
+msgid "View restricted accounts"
+msgstr "Eingeschränkte Konten ansehen"
+
+#: build/accounts.js
+msgid "No restricted accounts are awaiting customer information."
+msgstr "Bei keinem eingeschränkten Konto fehlen derzeit Kundenangaben."

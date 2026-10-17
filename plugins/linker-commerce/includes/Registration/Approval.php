@@ -67,6 +67,15 @@ final class Approval {
 	}
 
 	/**
+	 * The reversible decisions an employee can submit (pending is the initial state).
+	 *
+	 * @return list<string>
+	 */
+	public static function decisions(): array {
+		return array( self::APPROVED, self::RESTRICTED, self::REJECTED );
+	}
+
+	/**
 	 * Adds the hooks: a rejected account cannot sign in (WordPress's own gate
 	 * after the credentials were checked; no other callback was attached on
 	 * this site), and the sign-in form shows this gate's message rather than
@@ -133,8 +142,8 @@ final class Approval {
 	/**
 	 * Applies one of the three reversible actions and records the audit row.
 	 * A change of state announces itself (the customer emails listen on
-	 * CHANGED_ACTION); setting the same state again only refreshes the reason
-	 * and the audit stamps. Rejecting ends the account's sessions: WordPress's
+	 * CHANGED_ACTION); changing a restriction/rejection reason also notifies the
+	 * customer. Repeating the same decision is a no-op. Rejecting ends the account's sessions: WordPress's
 	 * session tokens are the one place a signed-in browser keeps its access.
 	 *
 	 * @param int    $user_id Customer.
@@ -151,13 +160,18 @@ final class Approval {
 		if ( in_array( $status, array( self::RESTRICTED, self::REJECTED ), true ) && '' === $reason ) {
 			return false;
 		}
+		$reason = self::APPROVED === $status ? '' : $reason;
+		if ( $previous === $status && $this->reason( $user_id ) === $reason && '' !== get_user_meta( $user_id, self::STATUS_META, true ) ) {
+			return true;
+		}
+		$reason_changed = $this->reason( $user_id ) !== $reason;
 		update_user_meta( $user_id, self::STATUS_META, $status );
-		update_user_meta( $user_id, self::REASON_META, self::APPROVED === $status ? '' : $reason );
+		update_user_meta( $user_id, self::REASON_META, $reason );
 		update_user_meta( $user_id, self::CHANGED_AT_META, time() );
 		update_user_meta( $user_id, self::CHANGED_BY_META, get_current_user_id() );
 
-		if ( $previous !== $status ) {
-			if ( self::REJECTED === $status ) {
+		if ( $previous !== $status || ( $reason_changed && in_array( $status, array( self::RESTRICTED, self::REJECTED ), true ) ) ) {
+			if ( $previous !== $status && self::REJECTED === $status ) {
 				\WP_Session_Tokens::get_instance( $user_id )->destroy_all();
 			}
 			/**

@@ -28,14 +28,16 @@ final class Module {
 	/**
 	 * Sets up the module.
 	 *
-	 * @param string           $plugin_file Absolute path of the main plugin file.
-	 * @param Options          $options     The plugin settings.
-	 * @param Fields           $fields      The registration fields.
-	 * @param BillingVatField  $vat_field   The VAT ID billing field.
-	 * @param AddressForm      $address     The address form rules.
-	 * @param Approval         $approval    The account approval rule.
-	 * @param ApprovalAdmin    $admin       The approval actions in WordPress's screens.
-	 * @param PendingApprovals $pending     The waiting accounts of the daily digest.
+	 * @param string                  $plugin_file Absolute path of the main plugin file.
+	 * @param Options                 $options     The plugin settings.
+	 * @param Fields                  $fields      The registration fields.
+	 * @param BillingVatField         $vat_field   The VAT ID billing field.
+	 * @param AddressForm             $address     The address form rules.
+	 * @param Approval                $approval    The account approval rule.
+	 * @param ApprovalAdmin           $admin       The approval actions in WordPress's screens.
+	 * @param PendingApprovals        $pending             The waiting accounts of the daily digest.
+	 * @param AccountsAdmin|null      $accounts_admin      Native review surfaces.
+	 * @param AccountsController|null $accounts_controller Staff REST routes.
 	 */
 	public function __construct(
 		private readonly string $plugin_file,
@@ -45,7 +47,9 @@ final class Module {
 		private readonly AddressForm $address,
 		private readonly Approval $approval = new Approval(),
 		private readonly ApprovalAdmin $admin = new ApprovalAdmin( new Approval() ),
-		private readonly PendingApprovals $pending = new PendingApprovals()
+		private readonly PendingApprovals $pending = new PendingApprovals(),
+		private readonly ?AccountsAdmin $accounts_admin = null,
+		private readonly ?AccountsController $accounts_controller = null
 	) {}
 
 	/**
@@ -69,6 +73,10 @@ final class Module {
 
 		$this->approval->register();
 		$this->admin->register();
+		$this->accounts_admin?->register();
+		if ( null !== $this->accounts_controller ) {
+			add_action( 'rest_api_init', array( $this->accounts_controller, 'register_routes' ) );
+		}
 		add_filter( 'linker_commerce_digest_blocks', array( $this, 'digest_blocks' ) );
 
 		add_filter( 'woocommerce_email_actions', array( $this, 'email_actions' ) );

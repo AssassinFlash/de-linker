@@ -1,0 +1,37 @@
+{
+	"name": "linker-commerce",
+	"version": "0.1.0",
+	"private": true,
+	"license": "UNLICENSED",
+	"description": "Native WordPress account review surfaces.",
+	"engines": {
+		"node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+	},
+	"scripts": {
+		"build": "wp-scripts build && node ../linker-tools/bin/build-manifest.mjs write .",
+		"build:check": "node ../linker-tools/bin/build-manifest.mjs check .",
+		"lint:js": "wp-scripts lint-js src eslint.config.cjs webpack.config.js vitest.config.mts vitest.setup.ts --max-warnings=0",
+		"lint:types": "tsc --noEmit",
+		"lint:format": "prettier --check src *.json *.cjs *.mts webpack.config.js vitest.setup.ts",
+		"test:unit": "wp-scripts test-unit-js"
+	},
+	"dependencies": {
+		"@wordpress/element": "8.3.0",
+		"@wordpress/i18n": "6.24.0",
+		"react": "18.3.1",
+		"react-dom": "18.3.1"
+	},
+	"devDependencies": {
+		"@types/react": "^18.3.31",
+		"@types/react-dom": "^18.3.7",
+		"@wordpress/scripts": "^36.0.0",
+		"@wordpress/eslint-plugin": "^27.0.0",
+		"@wordpress/prettier-config": "^4.56.0",
+		"typescript": "~6.0.3",
+		"vitest": "^5.0.3",
+		"vite": "^8.3.4",
+		"jsdom": "^26.1.0",
+		"@testing-library/react": "^16.3.3",
+		"@testing-library/jest-dom": "^7.0.1"
+	}
+}

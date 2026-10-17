@@ -143,12 +143,13 @@ final class ApprovalTest extends TestCase {
 	}
 
 	/**
-	 * Setting the same state again only refreshes the reason and the stamps;
+	 * Updating the customer explanation notifies them, even for the same state;
 	 * no email is queued twice.
 	 */
-	public function test_the_same_state_refreshes_without_announcing(): void {
+	public function test_a_changed_reason_announces_the_updated_explanation(): void {
 		$this->store[ Approval::STATUS_META ] = Approval::RESTRICTED;
 		$this->store[ Approval::REASON_META ] = 'Old reason.';
+		WP_Mock::expectAction( Approval::CHANGED_ACTION, 5, Approval::RESTRICTED, Approval::RESTRICTED, 'Updated reason.' );
 
 		$this->assertTrue( ( new Approval() )->set( 5, Approval::RESTRICTED, 'Updated reason.' ) );
 

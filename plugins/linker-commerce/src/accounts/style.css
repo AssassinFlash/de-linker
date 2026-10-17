@@ -1,0 +1,170 @@
+/* Admin-only layout around native WordPress controls. No storefront selectors. */
+.linker-account-cards {
+	display: grid;
+	gap: 12px;
+}
+.linker-account-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	padding: 16px;
+	margin: 12px 0;
+	overflow-wrap: anywhere;
+}
+.linker-account-card.is-focused {
+	border-left: 4px solid #2271b1;
+}
+.linker-account-card h3 {
+	margin: 0 0 10px;
+	font-size: 16px;
+}
+.linker-account-card p {
+	margin: 10px 0;
+}
+.linker-account-card summary {
+	cursor: pointer;
+	color: #2271b1;
+}
+.linker-account-card a:focus-visible,
+.linker-account-card summary:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+.linker-account-signals {
+	margin: 12px 0;
+}
+.linker-account-signals .notice {
+	padding: 6px 10px;
+	margin: 6px 0;
+	box-shadow: none;
+}
+.linker-account-links,
+.linker-account-actions {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.linker-account-fields {
+	margin: 12px 0;
+}
+.linker-account-fields > div {
+	display: grid;
+	grid-template-columns: minmax(100px, 1fr) minmax(0, 2fr);
+	gap: 12px;
+	padding: 7px 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+.linker-account-fields dt {
+	font-weight: 600;
+}
+.linker-account-fields dd {
+	margin: 0;
+	white-space: pre-wrap;
+}
+.linker-account-reason {
+	margin-top: 16px;
+}
+.linker-account-reason label {
+	font-weight: 600;
+}
+.linker-account-reason textarea {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	margin: 10px 0;
+}
+#linker-accounts-focus {
+	/* Core admin-bar.css defines its height (32px desktop, 46px <=782px).
+	 * One text line of clearance keeps the focused card below that bar. */
+	scroll-margin-top: calc(var(--wp-admin--admin-bar--height) + 1em);
+	/* Variant C layout choice: cap the full registration table at 960px for
+	 * readable two-column rows. Source: accounts-admin.md, Layout dimensions. */
+	max-width: 960px;
+}
+/* Core's mobile list-table display rule otherwise overrides the hidden attribute. */
+#linker-accounts-history tr[hidden] {
+	display: none;
+}
+#linker-accounts-dialog {
+	position: fixed;
+	box-sizing: border-box;
+	/* Native WP bar-height variable follows core's desktop/mobile breakpoint. */
+	inset: var(--wp-admin--admin-bar--height) 0 0 auto;
+	/* Variant C layout choice: 480px card + two 20px drawer gutters. This fits
+	 * the native German reason actions; see accounts-admin.md, Layout dimensions. */
+	width: min(520px, 100%);
+	max-width: 100%;
+	height: calc(100dvh - var(--wp-admin--admin-bar--height));
+	max-height: none;
+	padding: 20px;
+	margin: 0;
+	border: 0;
+	background: #f0f0f1;
+	color: #1d2327;
+	overflow: auto;
+}
+#linker-accounts-dialog::backdrop {
+	background: rgb(0 0 0 / 40%);
+}
+#linker-accounts-dialog > header {
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+	align-items: center;
+}
+#linker-accounts-dialog h2 {
+	font-size: 18px;
+	margin: 0;
+}
+body:has(#linker-accounts-dialog[open]) {
+	overflow: hidden;
+}
+#wpadminbar #wp-admin-bar-linker-accounts.linker-has-pending > .ab-item {
+	background: #b32d2e;
+	color: #fff;
+}
+#wpadminbar #wp-admin-bar-linker-accounts.linker-has-pending .ab-icon::before {
+	color: #fff;
+}
+#wpadminbar .linker-review-compact {
+	display: none;
+}
+/* WordPress wp-includes/css/admin-bar.css switches to mobile sizing at 782px
+ * (46px bar), and uses absolute positioning at <=600px when scrolling. */
+@media (max-width: 782px) {
+	/* Only the open modal pins its bar; other backend screens keep core scrolling. */
+	body.wp-admin:has(#linker-accounts-dialog[open]) #wpadminbar {
+		position: fixed;
+	}
+	#wpadminbar #wp-admin-bar-linker-accounts {
+		display: block !important;
+	}
+	#wpadminbar #wp-admin-bar-linker-accounts > .ab-item {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		padding: 0 10px;
+	}
+	#wpadminbar #wp-admin-bar-linker-accounts .ab-icon {
+		float: none;
+		margin: 0;
+		padding: 0;
+	}
+	#wpadminbar .linker-review-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+	}
+	#wpadminbar .linker-review-compact {
+		display: inline;
+	}
+	#linker-accounts-dialog {
+		padding: 12px;
+	}
+	.linker-account-fields > div {
+		grid-template-columns: 1fr;
+		gap: 2px;
+	}
+}

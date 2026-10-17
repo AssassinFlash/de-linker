@@ -160,6 +160,8 @@ final class Plugin {
 		$documents = new Account\Documents( $solutions, $templates );
 		$gate      = new Presentation\LoginGate( $approval );
 		$checkout  = new Inquiry\Checkout( $approval );
+		$fields    = new Registration\Fields( $vat, $approval );
+		$accounts  = new Registration\Accounts( $approval, new Registration\RegistrationInformation( $fields ) );
 
 		return array(
 			new Settings\Module( new Settings\SettingsTab( $jobs ), new Settings\WooOptions() ),
@@ -167,7 +169,7 @@ final class Plugin {
 			new Gating\Module( $prices, new Gating\DraftSummary( $state, $prices ), new Gating\StoreApiPrices( $state ), new Gating\ProductSorting( $state ) ),
 			new Mail\Module( new Mail\Outbox( $jobs, new Mail\Throttle() ), $jobs, new Mail\EmailLocale(), new Mail\EmailPolicy() ),
 			new Digest\Module( $this->file, $jobs ),
-			new Registration\Module( $this->file, $options, new Registration\Fields( $vat, $approval ), new Registration\BillingVatField( $vat ), new Registration\AddressForm(), $approval, new Registration\ApprovalAdmin( $approval ), new Registration\PendingApprovals( $approval ) ),
+			new Registration\Module( $this->file, $options, $fields, new Registration\BillingVatField( $vat ), new Registration\AddressForm(), $approval, new Registration\ApprovalAdmin( $approval ), new Registration\PendingApprovals( $approval ), new Registration\AccountsAdmin( $this->file, $accounts, $approval ), new Registration\AccountsController( $accounts, $approval ) ),
 			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), $checkout, new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
 			new Proforma\Module( $this->file, new Proforma\AdminBox( $issuer ), $issuer ),
 			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $proformas, $solutions ), new Account\SolutionsRoute( $solutions ) ),

@@ -2500,15 +2500,18 @@ msgstr ""
 msgid "This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again."
 msgstr ""
 
+#: build/accounts.js
 #: includes/Registration/ApprovalAdmin.php:45
 #: includes/Registration/ApprovalAdmin.php:158
 msgid "Approve"
 msgstr ""
 
+#: build/accounts.js
 #: includes/Registration/ApprovalAdmin.php:49
 msgid "Restrict"
 msgstr ""
 
+#: build/accounts.js
 #: includes/Registration/ApprovalAdmin.php:53
 msgid "Reject"
 msgstr ""
@@ -3641,4 +3644,186 @@ msgstr ""
 
 #: includes/Settings/SettingsTab.php:102
 msgid "Recipient"
+msgstr ""
+
+#: includes/Registration/Accounts.php:104
+msgid "Company website"
+msgstr ""
+
+#: includes/Registration/Accounts.php:129
+msgid "You do not have permission to switch to this customer."
+msgstr ""
+
+#: includes/Registration/Accounts.php:129
+msgid "User Switching is not active."
+msgstr ""
+
+#: includes/Registration/AccountsAdmin.php:51
+#: build/accounts.js:2
+msgid "Accounts waiting for you"
+msgstr ""
+
+#: includes/Registration/AccountsAdmin.php:57
+msgid "All accounts →"
+msgstr ""
+
+#: includes/Registration/AccountsAdmin.php:68
+#: includes/Registration/AccountsAdmin.php:106
+msgid "Accounts"
+msgstr ""
+
+#. translators: %s: number of accounts waiting for review.
+#: includes/Registration/AccountsAdmin.php:82
+#: build/accounts.js:2
+#, php-format,js-format
+msgid "%s account to review"
+msgid_plural "%s accounts to review"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Registration/AccountsAdmin.php:109
+msgid "Search accounts"
+msgstr ""
+
+#: includes/Registration/AccountsController.php:78
+msgid "You are not allowed to review accounts."
+msgstr ""
+
+#: includes/Registration/AccountsController.php:92
+msgid "This account is unavailable or you do not have permission to review it."
+msgstr ""
+
+#: includes/Registration/AccountsController.php:117
+#: build/accounts.js:1
+msgid "Enter a reason for the customer before restricting or rejecting the account."
+msgstr ""
+
+#. translators: %s: email domain.
+#: includes/Registration/AccountSignals.php:37
+#, php-format
+msgid "Free email provider: %s"
+msgstr ""
+
+#. translators: %s: email domain.
+#: includes/Registration/AccountSignals.php:37
+#, php-format
+msgid "Email domain: %s (not verified)"
+msgstr ""
+
+#. translators: %s: matched text in the company name.
+#: includes/Registration/AccountSignals.php:47
+#, php-format
+msgid "Possible automated registration: company name contains \"%s\"."
+msgstr ""
+
+#: includes/Registration/AccountSignals.php:52
+msgid "No suspicious company-name pattern found. Please verify the company."
+msgstr ""
+
+#: includes/Registration/AccountsTable.php:44
+msgid "Contact"
+msgstr ""
+
+#: includes/Registration/AccountsTable.php:47
+#: includes/Registration/RegistrationInformation.php:69
+msgid "Registered"
+msgstr ""
+
+#: includes/Registration/AccountsTable.php:76
+msgid "No accounts match these filters."
+msgstr ""
+
+#: includes/Registration/AccountsTable.php:102
+msgid "Review or change decision"
+msgstr ""
+
+#: includes/Registration/AccountsTable.php:122
+msgid "All accounts"
+msgstr ""
+
+#: includes/Registration/RegistrationInformation.php:63
+msgid "Login email"
+msgstr ""
+
+#: build/accounts.js:1
+#: build/accounts.js:2
+msgid "The request failed. Please try again."
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Automatic checks"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Details"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "View the website as this customer"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Reason for the customer"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "The customer receives this reason by email. Explain what information is needed or why the account cannot be approved."
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Restrict and notify customer"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Reject and notify customer"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Cancel"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Saving decision…"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Decision saved. You can change it at any time."
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Loading accounts…"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "Try again"
+msgstr ""
+
+#: build/accounts.js:1
+msgid "No accounts are waiting for review. New registrations will appear here and in the top bar."
+msgstr ""
+
+#: build/accounts.js:2
+msgid "Review account"
+msgstr ""
+
+#: build/accounts.js:2
+msgid "Close"
+msgstr ""
+
+msgid "Website (from email domain)"
+msgstr ""
+
+msgid "Restricted, awaiting customer information"
+msgstr ""
+
+#. translators: %s: number of restricted accounts awaiting customer information.
+#, php-format
+msgid "Restricted, awaiting customer information: %s"
+msgstr ""
+
+msgid "View restricted accounts"
+msgstr ""
+
+#: build/accounts.js
+msgid "No restricted accounts are awaiting customer information."
 msgstr ""

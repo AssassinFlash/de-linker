@@ -12,6 +12,7 @@ dist/
 
 # Built apps are committed; `just build::check` keeps them in step with src/.
 !plugins/linker-tools/build/
+!plugins/linker-commerce/build/
 
 # Test runner output.
 .phpunit.result.cache

@@ -65,7 +65,13 @@ abstract class TestCase extends WP_Mock\Tools\TestCase {
 	 */
 	protected function allow_locale_switch( string $locale ): void {
 		WP_Mock::userFunction( 'WC', array( 'return' => new Fixtures\WooCommerce() ) );
-		WP_Mock::userFunction( 'switch_to_locale', array( 'args' => array( $locale ) ) );
+		WP_Mock::userFunction(
+			'switch_to_locale',
+			array(
+				'args'   => array( $locale ),
+				'return' => true,
+			)
+		);
 		WP_Mock::userFunction( 'restore_previous_locale' );
 		WP_Mock::userFunction( 'remove_filter' );
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)

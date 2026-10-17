@@ -1,0 +1,33 @@
+{
+    "legacy_hooks_present": true,
+    "states": {
+        "65": "rejected",
+        "66": "approved"
+    },
+    "outbox": [
+        {
+            "to": [
+                "a227-review-en@example.test"
+            ],
+            "subject": "Your partner account was not approved",
+            "has_en_reason": true,
+            "has_de_reason": false
+        },
+        {
+            "to": [
+                "a227-review-en@example.test"
+            ],
+            "subject": "Your partner account access is limited",
+            "has_en_reason": false,
+            "has_de_reason": false
+        },
+        {
+            "to": [
+                "a227-review-en@example.test"
+            ],
+            "subject": "Your partner account is approved",
+            "has_en_reason": false,
+            "has_de_reason": false
+        }
+    ]
+}

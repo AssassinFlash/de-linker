@@ -5,7 +5,7 @@
 ## 用户旅程（EN / DE 文案按 AGENTS.md 规则逐处写，此处只给语义）
 1. **访客**：看产品分类与产品，看不到价格（价格位显示 "Log in for prices" / "Preise nach Anmeldung"）；可用 Genie 与配置器；可把产品加入 Lösungsentwurf（按会话保存）。
 2. **注册**（Woo 原生 My Account 注册表单 + 字段）：公司名、增值税号（VIES 实时校验，失败可提交但标记）、地址、角色（安装商 / EPC / 经销商）、姓名、邮箱、密码。**注册即 pending（票据 73）**：账号在团队批准前读站如访客；客户语言随注册写入 WP 用户 `locale`（询盘同源的取语规则）。邮件：注册确认（RegistrationReceivedEmail，Woo 原生欢迎信已关）+ 公司"新客户"提醒（含审批状态行与后台直达链接）。
-3. **审批（票据 73）**：团队在 WP 后台两处操作——用户列表行内「Approve」一键（最高频）+ 用户资料页 Linker 区块（Approve / Restrict / Reject 三动作 + 原因 + 当前状态与最近一次变更的审计行）。全部可逆；Restrict / Reject 必须带原因，原因经邮件正式告知客户。权限=WP 自己的 `edit_users`（与资料页同一守门；shop_manager 默认无此权限，只见状态列）。
+3. **审批**：后台首页原生仪表盘小工具展示待审卡片，顶栏红旗在任意后台页打开同一审核抽屉；Accounts 菜单通向原生列表历史。全部状态随时可再决定，Restrict / Reject 必须带客户可读原因，经既有邮件链告知；相同决定重复提交不重复发信，限制/拒绝的原因变更也通知。资料页与用户列表保留状态及深链，原 GET / 资料表单写入通道在对等验证后移除。权限为 `edit_users` 加每用户 `edit_user`，只审核纯 customer。详情与原生优先证明见 `accounts-admin.md`。
 4. **四态 × 界面**：
    - **approved**：看价；Lösungsentwurf 合并会话内容；产品页按钮 "Add to solution draft / Zum Lösungsentwurf hinzufügen"；可提交询盘。
    - **pending**：与访客同视图——浏览无价产品、Genie 咨询（无价）、开放式询价走 /contact/ 通道；不可看价（价格位 "Prices after approval / Preise nach Freigabe"）、不可进账户工作台（`PendingGate` 把账户端点送回审核页）、不可提交询盘（请求页显示审核 gate，网关对未批准账号一律不开放——视图与服务端同一权威）。
@@ -18,7 +18,8 @@
 ## 模块（PSR-4 `Linker\Commerce\`，一类一文件，各有测试）
 - `Registration`（字段、VIES 客户端、角色元数据、提醒邮件）。
 - `Registration\Approval`（**审批权威，票据 73**：状态机、读写与审计、登录拦截；唯一的 meta 读写方）。
-- `Registration\ApprovalAdmin`（用户列表列与行内一键、资料页区块；admin-post + 每用户 nonce）。
+- `Registration\ApprovalAdmin`（用户列表状态列及列表/资料页审核深链；只读）。
+- `Registration\AccountsAdmin` / `AccountsTable` / `AccountsController`（原生后台入口、历史与受权限/nonce 保护的 POST 决定），`Accounts` / `RegistrationInformation` / `AccountSignals`（同一审批权威、动态注册资料与检查线索）。
 - `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可购买性 = 已登录且已批准；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。
 - `Inquiry`（状态注册与颜色、网关类 `ProformaGateway extends WC_Payment_Gateway`、减库存关闭、订单标题与列表列；`Checkout::gateways` 对未批准账号返回空=服务端拦截点）。
 - `Proforma`（PDF：dompdf 或 mpdf（MIT/LGPL），模板 EN/DE，编号 `DLK-PF-YYYY-NNNN`（按年计数，选项 `linker_commerce_proforma_prefix`，空则 `DLK-PF`），银行条款（设置页填写），有效期 30 天，税额行按 Woo 税设置显示；生成后存 `wp-content/uploads/proforma/<order>/` 私有目录，账户内经鉴权下载）。线上 `de-linker.com` 的号是 `DLK-PF-年份-订单ID`（下单即写入账本，不是后台按钮才编）；本站保留同一前缀，序号按年递增，不沿用订单 ID。
@@ -46,7 +47,7 @@
 
 ## 邮件（票据 73 起四封随审批走，注册确认是第五封）
 - ① 注册 → 团队（`NewCustomerEmail`，含审批状态行与后台直达链接）。
-- ② 通过 → 客户（`ApprovedEmail`）③ 限制 → 客户（`RestrictedEmail`，原因段）④ 拒绝 → 客户（`RejectedEmail`，原因段）。三封经 `linker_commerce_approval_changed` 动作（Woo `_notification` 事务邮件机制 → Action Scheduler → Outbox 重试队列），客户语言=用户 `locale`。状态不变更不重发；限制/拒绝必须带原因才可写入。
+- ② 通过 → 客户（`ApprovedEmail`）③ 限制 → 客户（`RestrictedEmail`，原因段）④ 拒绝 → 客户（`RejectedEmail`，原因段）。三封经 `linker_commerce_approval_changed` 动作（Woo `_notification` 事务邮件机制 → Action Scheduler → Outbox 重试队列），客户语言=用户 `locale`。状态和规范化原因都不变时不重发；限制/拒绝的原因实质改变时重新通知，原因必填才可写入。
 - ⑤ 注册确认 → 客户（`RegistrationReceivedEmail`，发到注册时留下的地址）。Woo 原生欢迎信（`customer_new_account`）已关：那封信说账号已可用，pending 账号不是。文案定稿：`docs/acceptance/2026-10-13/138/copy-review.md`。
 
 ## 审批状态契约（meta 键与取值，#74 每日摘要照此读）
@@ -56,7 +57,7 @@
 | 原因 | `linker_approval_reason`，自由文本；approve 时写空串 |
 | 审计 | `linker_approval_changed_at`（Unix 秒，`int`）、`linker_approval_changed_by`（WP 用户 id，注册写入时为 0=系统） |
 | 缺省 | meta 不存在且角色恰为 `customer` ⇒ `pending`；其他角色 ⇒ `approved`（职员不受审批门约束） |
-| 待审批口径（#74） | `role=customer` 且状态 ≠ `approved` 的账号数 |
+| 待审批口径（#74） | 纯 `customer` 且状态为 `pending`（含缺省）的账号数；限制数量另列，不并入待审 |
 | 语言 | WP 用户 `locale`（注册时写入请求语言；迁移回填最近一次询盘的 `_linker_locale`） |
 | 权威 | 只经 `Approval::status()/sees_prices()` 读；三重 Gating（PriceDisplay / CommerceState / StoreApiPrices）与请求页 gate、网关过滤读同一权威，无第二实现 |
 
@@ -66,7 +67,7 @@
 
 ## 原生优先的穷尽证明（AGENTS §5，逐项）
 - **审批状态机**：Woo 无账号审批概念（角色只有 customer，无 pending 账号、无审批 UI）；WP 原生存储（user meta）+ 原生登录拦截点（`wp_authenticate_user`）+ 原生会话终结（`WP_Session_Tokens`）即全部所需，自定义 `Approval` 只做规则与数据装配，零设计决策。
-- **后台入口**：用户列表与资料页是 WP 核心屏幕；扩展点全用核心的 `manage_users_columns` / `manage_users_custom_column` / `user_row_actions` / `edit_user_profile`；表单走核心 `admin-post.php` + `wp_nonce_field`；**零** `add_menu_page`、**零** `wp_ajax_*`。资料页 Woo 区块（`woocommerce_customer_meta_fields`）只能出输入框，三动作按钮用 `formaction` 指向 admin-post（WP 资料页自带 form，不可嵌套 form）。
+- **后台入口**：仪表盘用 `wp_add_dashboard_widget`，顶栏用 `WP_Admin_Bar`，Accounts 菜单用 `add_menu_page` 与 `WP_List_Table`；同一卡片经受 nonce 和用户权限保护的 REST POST 保存。用户列表、档案页用核心扩展点显示状态和深链。旧 GET/admin-post 审批入口已在对等验证后移除（见 `accounts-admin.md`）。
 - **客户可见面**：价格位/目录/Store API 已有 B2B 价格门（`Gating\PriceDisplay` 在源头隐藏价格：不可见的价在请求里根本不存在，模板/挂件/feed/API 都取不到；Woo 原生不做门——合格先例），审批只是给这一门加输入；未审批 gate 文案沿用既有 LoginGate 的类名与结构，零新站点 CSS、零新页面模板。
 
 ## 联系表单（票 #68，GAP-8）

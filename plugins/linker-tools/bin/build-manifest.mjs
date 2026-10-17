@@ -12,10 +12,13 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = fileURLToPath( new URL( '..', import.meta.url ) );
+// A sibling plugin can use the same committed-build gate with an explicit root.
+const root = process.argv[ 3 ]
+	? resolve( process.argv[ 3 ] )
+	: fileURLToPath( new URL( '..', import.meta.url ) );
 const manifestPath = 'build/manifest.json';
 const buildInputs = [
 	'package.json',
