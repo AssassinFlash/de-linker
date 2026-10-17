@@ -1,0 +1,112 @@
+[
+ {
+  "token_var": "APIFY_TOKEN",
+  "run_id": "fw7kk0LTdFvVoiogi",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:12:03.561Z",
+  "finishedAt": "2026-10-17T08:15:49.407Z",
+  "dataset": "2QuFee3n5NYUm5vYd",
+  "purpose": "search1: Knocket basics (6 queries) -> search-1.json"
+ },
+ {
+  "token_var": "APIFY_TOKEN",
+  "run_id": "Y7JRbdd7gB2IcS4yc",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:16:09.476Z",
+  "finishedAt": "2026-10-17T08:23:23.338Z",
+  "dataset": "n5ElROAoBWZ0sfqmD",
+  "purpose": "crawl1: knocket.trtc.io whole site (254 pages) -> pages/"
+ },
+ {
+  "token_var": "APIFY_TOKEN_PREV",
+  "run_id": "7xDAlsHj2cz4VpDVo",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:16:23.831Z",
+  "finishedAt": "2026-10-17T08:17:21.708Z",
+  "dataset": "NmLiL4W6oWNvomG6L",
+  "purpose": "search2: privacy/terms/DPA/reviews (10 queries) -> search-2.json"
+ },
+ {
+  "token_var": "APIFY_TOKEN_ALT",
+  "run_id": "mbY3O6TmjbmIxKRmi",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:17:41.532Z",
+  "finishedAt": "2026-10-17T08:22:37.925Z",
+  "dataset": "t7fiOKCEmt4pMMoJ6",
+  "purpose": "crawl2: trtc.io legal pages, Tencent privacy policy, third parties -> pages/"
+ },
+ {
+  "token_var": "APIFY_TOKEN_PREV",
+  "run_id": "eFovbtqXA5VnG0KOe",
+  "actor": "apify/rag-web-browser",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:23:10.809Z",
+  "finishedAt": "2026-10-17T08:23:14.884Z",
+  "dataset": "GCX5H9B92WfzZpfSp",
+  "purpose": "DNS attempt 1 (rag-web-browser could not parse JSON; discarded)"
+ },
+ {
+  "token_var": "APIFY_TOKEN_PREV",
+  "run_id": "0jmZ3tZpwRpKTL7LI",
+  "actor": "apify/rag-web-browser",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:23:17.674Z",
+  "finishedAt": "2026-10-17T08:23:25.625Z",
+  "dataset": "Vlg6IIOzOv9Bl7CXp",
+  "purpose": "DNS attempt 2 (same; discarded)"
+ },
+ {
+  "token_var": "APIFY_TOKEN_PREV",
+  "run_id": "WBSLuaY1C0jxLOymW",
+  "actor": "apify/playwright-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:23:46.641Z",
+  "finishedAt": "2026-10-17T08:23:59.028Z",
+  "dataset": "PUPoZHHdXbDojXZqr",
+  "purpose": "DNS-over-HTTPS via dns.google for 4 hosts -> dns.json"
+ },
+ {
+  "token_var": "APIFY_TOKEN_ALT",
+  "run_id": "7KbwTc8plR9nuOBqb",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:26:43.055Z",
+  "finishedAt": "2026-10-17T08:27:53.740Z",
+  "dataset": "xzho9geyU52Qdztxx",
+  "purpose": "search3: DPSA/reviews/data centres (8 queries) -> search-3.json"
+ },
+ {
+  "token_var": "APIFY_TOKEN_PREV",
+  "run_id": "mYBrQU3NMTdZzU8Hf",
+  "actor": "apify/website-content-crawler",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:28:12.357Z",
+  "finishedAt": "2026-10-17T08:30:45.784Z",
+  "dataset": "EZ08SeL4juUs6zHnu",
+  "purpose": "crawl3: DPSA, Chat data-centre doc, WP plugin, third-party write-ups -> pages/"
+ },
+ {
+  "token_var": "APIFY_TOKEN",
+  "run_id": "XqDd6ON57iU5QgrOx",
+  "actor": "apify/google-search-scraper",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:35:27.325Z",
+  "finishedAt": "2026-10-17T08:37:07.863Z",
+  "dataset": "j0AbyibTkmekqe6fp",
+  "purpose": "search4: LG Muenchen Google Fonts / adequacy / TDDDG -> search-4.json"
+ },
+ {
+  "token_var": "APIFY_TOKEN",
+  "run_id": "TwB4Y6rAB7OePpHfu",
+  "actor": "apify/rag-web-browser",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-17T08:37:21.516Z",
+  "finishedAt": "2026-10-17T08:37:25.559Z",
+  "dataset": "rOfwus9GiCrXtbzar",
+  "purpose": "EU adequacy decisions page -> pages/"
+ }
+]

@@ -1,0 +1,222 @@
+[
+ {
+  "url": "https://dns.google/resolve?name=api.trtc.io&type=A",
+  "loadedAt": "2026-10-17T08:23:53.419Z",
+  "body": {
+   "Status": 0,
+   "TC": false,
+   "RD": true,
+   "RA": true,
+   "AD": false,
+   "CD": false,
+   "Question": [
+    {
+     "name": "api.trtc.io.",
+     "type": 1
+    }
+   ],
+   "Answer": [
+    {
+     "name": "api.trtc.io.",
+     "type": 5,
+     "TTL": 600,
+     "data": "api.trtc.io.eo.dnse5.com."
+    },
+    {
+     "name": "api.trtc.io.eo.dnse5.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "43.174.196.51"
+    }
+   ],
+   "Comment": "Response from 162.14.45.45."
+  }
+ },
+ {
+  "url": "https://dns.google/resolve?name=20032564w4s.my-imcloud.com&type=A",
+  "loadedAt": "2026-10-17T08:23:53.600Z",
+  "body": {
+   "Status": 0,
+   "TC": false,
+   "RD": true,
+   "RA": true,
+   "AD": false,
+   "CD": false,
+   "Question": [
+    {
+     "name": "20032564w4s.my-imcloud.com.",
+     "type": 1
+    }
+   ],
+   "Answer": [
+    {
+     "name": "20032564w4s.my-imcloud.com.",
+     "type": 5,
+     "TTL": 60,
+     "data": "accelerator.tencent-cloud.com."
+    },
+    {
+     "name": "accelerator.tencent-cloud.com.",
+     "type": 5,
+     "TTL": 300,
+     "data": "accelerator-v1.tencent-cloud-gslb.com."
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.38.75"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.34.106"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.37.107"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.33.124"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.37.221"
+    }
+   ],
+   "Comment": "Response from 43.130.172.20."
+  }
+ },
+ {
+  "url": "https://dns.google/resolve?name=wsssgp.im.qcloud.com&type=A",
+  "loadedAt": "2026-10-17T08:23:58.363Z",
+  "body": {
+   "Status": 0,
+   "TC": false,
+   "RD": true,
+   "RA": true,
+   "AD": false,
+   "CD": false,
+   "Question": [
+    {
+     "name": "wsssgp.im.qcloud.com.",
+     "type": 1
+    }
+   ],
+   "Answer": [
+    {
+     "name": "wsssgp.im.qcloud.com.",
+     "type": 5,
+     "TTL": 60,
+     "data": "accelerator.tencent-cloud.com."
+    },
+    {
+     "name": "accelerator.tencent-cloud.com.",
+     "type": 5,
+     "TTL": 300,
+     "data": "accelerator-v1.tencent-cloud-gslb.com."
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.37.221"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.37.107"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.34.106"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.33.124"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.38.75"
+    }
+   ]
+  }
+ },
+ {
+  "url": "https://dns.google/resolve?name=wssger.im.qcloud.com&type=A",
+  "loadedAt": "2026-10-17T08:23:58.727Z",
+  "body": {
+   "Status": 0,
+   "TC": false,
+   "RD": true,
+   "RA": true,
+   "AD": false,
+   "CD": false,
+   "Question": [
+    {
+     "name": "wssger.im.qcloud.com.",
+     "type": 1
+    }
+   ],
+   "Answer": [
+    {
+     "name": "wssger.im.qcloud.com.",
+     "type": 5,
+     "TTL": 60,
+     "data": "accelerator.tencent-cloud.com."
+    },
+    {
+     "name": "accelerator.tencent-cloud.com.",
+     "type": 5,
+     "TTL": 300,
+     "data": "accelerator-v1.tencent-cloud-gslb.com."
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.38.75"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.37.107"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.33.124"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.37.221"
+    },
+    {
+     "name": "accelerator-v1.tencent-cloud-gslb.com.",
+     "type": 1,
+     "TTL": 60,
+     "data": "170.106.34.106"
+    }
+   ]
+  }
+ }
+]
