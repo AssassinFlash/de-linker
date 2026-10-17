@@ -23,6 +23,20 @@ final class Message {
 	public const INTERNAL_HEADER = 'X-Linker-Internal: yes';
 
 	/**
+	 * Marks either native wp_mail header form as an internal notification.
+	 *
+	 * @param string|string[] $headers Original headers.
+	 * @return ($headers is string ? string : string[])
+	 */
+	public static function mark_internal( array|string $headers ): array|string {
+		if ( is_string( $headers ) ) {
+			return rtrim( $headers, "\r\n" ) . "\r\n" . self::INTERNAL_HEADER . "\r\n";
+		}
+		$headers[] = self::INTERNAL_HEADER;
+		return $headers;
+	}
+
+	/**
 	 * Sets up the message.
 	 *
 	 * @param string[] $to          Recipients.

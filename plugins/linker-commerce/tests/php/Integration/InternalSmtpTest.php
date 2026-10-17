@@ -49,22 +49,82 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * A queued From must match the auth user; the mismatch cannot send by fallback.
+	 * Env values are literal, including INI comment and assignment characters.
 	 */
-	public function test_mismatched_sender_stays_in_the_retry_queue(): void {
+	public function test_password_punctuation_reaches_the_local_authenticator(): void {
+		$directory = $this->fixture( 'fake;#=password' );
+		wp_mail( 'tester@example.test', 'Literal env fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->assertFileExists( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+	}
+
+	/**
+	 * An auth failure must deliver immediately and make the failure visible.
+	 */
+	public function test_auth_failure_falls_back_and_reports_the_last_outcome(): void {
+		$directory = $this->fixture();
+		$file      = $directory . '/smtp.env';
+		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
+		$marker = self::newest_mail_job();
+		$before = time();
+		wp_mail( 'tester@example.test', 'Auth fallback fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->assertFileExists( $directory . '/mail.eml' );
+		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$outcome = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
+		$this->assertNotNull( $outcome );
+		$this->assertSame( 'failure', $outcome['status'] );
+		$this->assertSame( 'smtp_failure', $outcome['reason'] );
+		$this->assertGreaterThanOrEqual( $before, $outcome['at'] );
+		$block = new \Linker\Commerce\Health\InternalMail( new InternalSmtp( $file ) );
+		$this->assertSame( 'The last SMTP attempt failed.', $block->entries()[0]['label'] );
+		switch_to_locale( 'de_DE_formal' );
+		try {
+			$this->assertSame( 'Der letzte SMTP-Versuch ist fehlgeschlagen.', $block->entries()[0]['label'] );
+		} finally {
+			restore_previous_locale();
+		}
+		$this->assertStringNotContainsString( 'wrong-test-password', (string) wp_json_encode( $outcome ) );
+		$this->assertCount( 1, get_option( Throttle::OPTION ) );
+	}
+
+	/**
+	 * TLS mode is configuration, and the shared mailer returns to native defaults.
+	 */
+	public function test_configured_encryption_and_reset_defaults(): void {
+		$directory = $this->fixture();
+		$file      = $directory . '/smtp.env';
+		file_put_contents( $file, (string) file_get_contents( $file ) . "LINKER_SMTP_SECURE=ssl\n" );
+		$mailer       = $GLOBALS['phpmailer'];
+		$mailer->From = 'sales@sunriverinverter.com';
+		$smtp         = new InternalSmtp( $file );
+		$smtp->configure( $mailer, true );
+		$this->assertSame( 'ssl', $mailer->SMTPSecure, 'Loopback does not select an encryption exception.' );
+		$smtp->reset( $mailer );
+		$this->assertSame( 25, $mailer->Port, 'PHPMailer native default.' );
+		$this->assertTrue( $mailer->SMTPAutoTLS );
+	}
+
+	/**
+	 * A mismatched From falls back without changing the original sender.
+	 */
+	public function test_mismatched_sender_falls_back_with_a_fixed_reason(): void {
 		$directory = $this->fixture();
 		$marker    = self::newest_mail_job();
 		wp_mail( 'tester@example.test', 'Mismatched sender fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@de-linker.com>' ) );
-		$this->assertCount( 1, self::mail_jobs_after( $marker ) );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
-		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		$this->assertStringContainsString( 'From: Linker <sales@de-linker.com>', (string) file_get_contents( $directory . '/mail.eml' ) );
+		$last = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
+		$this->assertNotNull( $last );
+		$this->assertSame( 'identity_mismatch', $last['reason'] );
 	}
 
 	/**
 	 * A failed authenticated attempt keeps its marker and retries through SMTP.
 	 */
 	public function test_retry_redirection_throttle_and_secret_free_diagnostics(): void {
-		$directory = $this->fixture();
+		$directory = $this->fixture( 'fake-password', 1 );
 		$file      = $directory . '/smtp.env';
 		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
 		$lines = array();
@@ -148,6 +208,10 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$this->assertNotEmpty( $option_writes, 'Observe actual quota writes through WordPress.' );
 		$this->assertStringNotContainsString( 'fake-password', (string) wp_json_encode( $option_writes ) );
 		$this->assertStringNotContainsString( 'LINKER_SMTP_', (string) wp_json_encode( $option_writes ) );
+		$last = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
+		$this->assertNotNull( $last );
+		$this->assertSame( 'success', $last['status'] );
+		$this->assertSame( array(), ( new \Linker\Commerce\Health\InternalMail( new InternalSmtp( $file ) ) )->entries() );
 	}
 
 	/**
@@ -193,9 +257,73 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Start a test-owned loopback sink and configure a fake server file.
+	 * The actual daily digest survives an SMTP authentication outage.
 	 */
-	private function fixture(): string {
+	public function test_digest_is_delivered_by_fallback_after_auth_failure(): void {
+		$directory = $this->fixture();
+		$file      = $directory . '/smtp.env';
+		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
+		WC()->mailer();
+		$email = new \Linker\Commerce\Digest\DigestEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new \Linker\Commerce\Settings\Options() );
+		$email->send_report( array( new \Linker\Commerce\Health\InternalMail( new InternalSmtp( $file ) ) ) );
+		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		$this->assertStringContainsString( 'Daily digest', (string) file_get_contents( $directory . '/mail.eml' ) );
+		$this->assertStringContainsString( 'To: tester@example.test', (string) file_get_contents( $directory . '/mail.eml' ) );
+		$last = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
+		$this->assertNotNull( $last );
+		$this->assertSame( 'failure', $last['status'] );
+	}
+
+	/**
+	 * Only authorized staff can read configuration status, never config values.
+	 */
+	public function test_staff_rest_readback_has_no_credentials(): void {
+		$directory = $this->fixture();
+		$server    = rest_get_server();
+		$health    = new \Linker\Commerce\Mail\SmtpHealth( new InternalSmtp( $directory . '/smtp.env' ) );
+		$health->register_routes();
+		$this->later(
+			static function (): void {
+				( new \Linker\Commerce\Mail\SmtpHealth() )->register_routes();
+			}
+		);
+		wp_set_current_user( 0 );
+		$this->assertSame( 401, $server->dispatch( new \WP_REST_Request( 'GET', '/linker/v1/mail-health' ) )->get_status() );
+		wp_set_current_user( 1 );
+		$response = $server->dispatch( new \WP_REST_Request( 'GET', '/linker/v1/mail-health' ) );
+		$this->assertSame( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertTrue( $data['smtp_configured'] );
+		$this->assertSame( 'SMTP configured', $data['label'] );
+		$this->assertSame( array( 'smtp_configured', 'label', 'last_outcome' ), array_keys( $data ) );
+		$this->assertStringNotContainsString( 'fake-password', (string) wp_json_encode( $data ) );
+	}
+
+	/**
+	 * Start a test-owned loopback sink and configure a fake server file.
+	 *
+	 * @param string $password      Fake password accepted by the local sink.
+	 * @param int    $mail_failures Number of initial file deliveries to reject.
+	 */
+	private function fixture( string $password = 'fake-password', int $mail_failures = 0 ): string {
+		$previous_to = get_option( TestMode::OPTION );
+		update_option( TestMode::OPTION, 'tester@example.test' );
+		$this->later(
+			static function () use ( $previous_to ): void {
+				if ( false === $previous_to ) {
+					delete_option( TestMode::OPTION ); } else {
+								update_option( TestMode::OPTION, $previous_to, false ); }
+			}
+		);
+		$previous_outcome = get_option( 'linker_commerce_internal_smtp_outcome' );
+		delete_option( 'linker_commerce_internal_smtp_outcome' );
+		$this->later(
+			static function () use ( $previous_outcome ): void {
+				if ( false === $previous_outcome ) {
+					delete_option( 'linker_commerce_internal_smtp_outcome' ); } else {
+								update_option( 'linker_commerce_internal_smtp_outcome', $previous_outcome, false ); }
+			}
+		);
 		$directory = sys_get_temp_dir() . '/linker-smtp-' . self::tag();
 		mkdir( $directory );
 		$this->later(
@@ -210,7 +338,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$pipes = array();
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- test-owned loopback fixture, never production.
 		$process = proc_open(
-			array( 'python3', dirname( __DIR__, 2 ) . '/fixtures/smtp_sink.py', $directory . '/smtp.jsonl' ),
+			array( 'python3', dirname( __DIR__, 2 ) . '/fixtures/smtp_sink.py', $directory . '/smtp.jsonl', $password ),
 			array(
 				0 => array( 'pipe', 'r' ),
 				1 => array( 'pipe', 'w' ),
@@ -232,9 +360,9 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		stream_set_timeout( $pipes[1], (int) \Linker\Commerce\Health\Monitor::TIMEOUT_SECONDS );
 		$port = (int) fgets( $pipes[1] );
 		$this->assertGreaterThan( 0, $port );
-		file_put_contents( $directory . '/smtp.env', "LINKER_SMTP_HOST=127.0.0.1\nLINKER_SMTP_PORT={$port}\nLINKER_SMTP_USER=sales@sunriverinverter.com\nLINKER_SMTP_PASS='fake-password'\n" );
+		file_put_contents( $directory . '/smtp.env', "LINKER_SMTP_HOST=127.0.0.1\nLINKER_SMTP_PORT={$port}\nLINKER_SMTP_USER=sales@sunriverinverter.com\nLINKER_SMTP_PASS={$password}\nLINKER_SMTP_SECURE=\n" );
 
-		$this->install_outbox( new InternalSmtp( $directory . '/smtp.env' ), $directory );
+		$this->install_outbox( new InternalSmtp( $directory . '/smtp.env' ), $directory, $mail_failures );
 		return $directory;
 	}
 
@@ -243,8 +371,9 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	 *
 	 * @param InternalSmtp $smtp      Transport configured with fake values.
 	 * @param string       $directory Local capture directory.
+	 * @param int          $mail_failures Initial file deliveries to reject.
 	 */
-	private function install_outbox( InternalSmtp $smtp, string $directory ): void {
+	private function install_outbox( InternalSmtp $smtp, string $directory, int $mail_failures = 0 ): void {
 		$hooks = array();
 		foreach ( array( 'pre_wp_mail', 'wp_mail_failed', 'phpmailer_init', Outbox::HOOK ) as $name ) {
 			$hooks[ $name ] = isset( $GLOBALS['wp_filter'][ $name ] ) ? clone $GLOBALS['wp_filter'][ $name ] : null;
@@ -267,13 +396,14 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		require_once ABSPATH . (string) constant( 'WPINC' ) . '/PHPMailer/SMTP.php';
 		require_once ABSPATH . (string) constant( 'WPINC' ) . '/PHPMailer/Exception.php';
 		require_once ABSPATH . (string) constant( 'WPINC' ) . '/class-wp-phpmailer.php';
-		$GLOBALS['phpmailer'] = new class( $directory ) extends WP_PHPMailer {
+		$GLOBALS['phpmailer'] = new class( $directory, $mail_failures ) extends WP_PHPMailer {
 			/**
 			 * Exceptions match WordPress's normal mailer.
 			 *
 			 * @param string $directory Local capture directory.
+			 * @param int    $mail_failures Initial file deliveries to reject.
 			 */
-			public function __construct( private readonly string $directory ) {
+			public function __construct( private readonly string $directory, private int $mail_failures ) {
 				parent::__construct( true );
 			}
 
@@ -281,6 +411,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 			 * Only the test-owned loopback connection may leave PHP; mail() is a file.
 			 *
 			 * @throws \RuntimeException When the test attempts a non-loopback connection.
+			 * @throws \PHPMailer\PHPMailer\Exception On an injected local mail failure.
 			 */
 			public function postSend(): bool {
 				if ( 'smtp' === $this->Mailer ) {
@@ -288,6 +419,10 @@ final class InternalSmtpTest extends IntegrationTestCase {
 						throw new \RuntimeException( 'SMTP fixture refuses non-loopback hosts.' );
 					}
 					return parent::postSend();
+				}
+				if ( $this->mail_failures > 0 ) {
+					--$this->mail_failures;
+					throw new \PHPMailer\PHPMailer\Exception( 'Fake mail failure: wrong-test-password' );
 				}
 				file_put_contents( $this->directory . '/mail.eml', $this->getSentMIMEMessage(), FILE_APPEND );
 				return true;

@@ -21,6 +21,14 @@ use WP_Mock;
 final class MessageTest extends TestCase {
 
 	/**
+	 * All internal producers use the same helper for native wp_mail header forms.
+	 */
+	public function test_marks_string_and_array_headers_internal(): void {
+		$this->assertSame( array( 'Bcc: copy@example.test', 'X-Linker-Internal: yes' ), Message::mark_internal( array( 'Bcc: copy@example.test' ) ) );
+		$this->assertSame( "From: Linker <team@example.test>\r\nX-Linker-Internal: yes\r\n", Message::mark_internal( "From: Linker <team@example.test>\r\n" ) );
+	}
+
+	/**
 	 * The site is https://www.de-linker.com.
 	 */
 	public function setUp(): void {

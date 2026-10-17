@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-17T21:06:53+00:00\n"
+"POT-Creation-Date: 2026-10-17T21:48:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -651,7 +651,7 @@ msgid ""
 msgstr ""
 
 #: includes/Contact/Emails/ContactEmail.php:72
-#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:123
+#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:122
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
 msgstr ""
@@ -680,11 +680,11 @@ msgid ""
 msgstr ""
 
 #. translators: {name}: the visitor's name.
-#: includes/Contact/Emails/TeamMessageEmail.php:108
+#: includes/Contact/Emails/TeamMessageEmail.php:107
 msgid "New message from {name}"
 msgstr ""
 
-#: includes/Contact/Emails/TeamMessageEmail.php:115
+#: includes/Contact/Emails/TeamMessageEmail.php:114
 msgid "New message from the contact form"
 msgstr ""
 
@@ -970,22 +970,40 @@ msgstr ""
 msgid "Price on request"
 msgstr ""
 
-#: includes/Health/InternalMail.php:39
+#: includes/Health/InternalMail.php:41
 msgid "Internal mail authentication"
 msgstr ""
 
-#: includes/Health/InternalMail.php:53
+#: includes/Health/InternalMail.php:54
+msgid "The last SMTP attempt failed."
+msgstr ""
+
+#. translators: 1: UTC timestamp, 2: fixed diagnostic category.
+#: includes/Health/InternalMail.php:59
+#, php-format
+msgid ""
+"Last attempt: %1$s UTC. Reason: %2$s. Internal notifications fall back to "
+"PHP mail()."
+msgstr ""
+
+#: includes/Health/InternalMail.php:71
 msgid "Internal mail not authenticated."
 msgstr ""
 
-#: includes/Health/InternalMail.php:56
+#: includes/Health/InternalMail.php:74
 msgid ""
 "Internal notifications use PHP mail(). Check the SMTP configuration on the "
 "server."
 msgstr ""
 
-#: includes/Health/InternalMail.php:65
-msgid "Authenticated SMTP is configured for internal notifications."
+#. translators: %s: UTC timestamp.
+#: includes/Health/InternalMail.php:87
+#, php-format
+msgid "Last SMTP attempt succeeded at %s UTC."
+msgstr ""
+
+#: includes/Health/InternalMail.php:90
+msgid "SMTP configured; no SMTP attempt has been recorded."
 msgstr ""
 
 #. translators: %s: option name.
@@ -1188,6 +1206,14 @@ msgstr ""
 
 #: includes/Mail/JobStore.php:45
 msgid "Queued emails"
+msgstr ""
+
+#: includes/Mail/SmtpHealth.php:58
+msgid "SMTP configured"
+msgstr ""
+
+#: includes/Mail/SmtpHealth.php:58
+msgid "SMTP not configured"
 msgstr ""
 
 #: includes/Presentation/AccountTemplates.php:277

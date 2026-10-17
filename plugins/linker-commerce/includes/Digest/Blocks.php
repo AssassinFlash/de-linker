@@ -13,7 +13,7 @@ use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Health\InternalMail;
 
 /**
- * Assembles the digest's blocks: the four this plugin builds, in the order of
+ * Assembles Digest's three business blocks and Health\InternalMail, in the order of
  * docs/specs/74-daily-digest.md, then whatever other tickets registered — the
  * approval ticket puts the pending accounts first, so the owner's daily
  * approvals lead the email.

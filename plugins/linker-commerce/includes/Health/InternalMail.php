@@ -11,6 +11,7 @@ namespace Linker\Commerce\Health;
 
 use Linker\Commerce\Digest\Block;
 use Linker\Commerce\Mail\InternalSmtp;
+use Linker\Commerce\Mail\SmtpOutcome;
 
 /**
  * One warning per digest while configuration is absent, invalid or mismatched.
@@ -21,9 +22,10 @@ final class InternalMail implements Block {
 	/**
 	 * Sets up the configuration health check.
 	 *
-	 * @param InternalSmtp $smtp The same configuration rule as the Outbox.
+	 * @param InternalSmtp $smtp    The same configuration rule as the Outbox.
+	 * @param SmtpOutcome  $outcome The last SMTP result.
 	 */
-	public function __construct( private readonly InternalSmtp $smtp = new InternalSmtp() ) {}
+	public function __construct( private readonly InternalSmtp $smtp = new InternalSmtp(), private readonly SmtpOutcome $outcome = new SmtpOutcome() ) {}
 
 	/**
 	 * Stable digest block identifier.
@@ -45,6 +47,22 @@ final class InternalMail implements Block {
 	 * @return list<array{label: string, url: string, link_text: string, detail: string}>
 	 */
 	public function entries(): array {
+		$last = $this->outcome->last();
+		if ( null !== $last && 'failure' === $last['status'] ) {
+			return array(
+				array(
+					'label'     => __( 'The last SMTP attempt failed.', 'linker-commerce' ),
+					'url'       => '',
+					'link_text' => '',
+					'detail'    => sprintf(
+						/* translators: 1: UTC timestamp, 2: fixed diagnostic category. */
+						__( 'Last attempt: %1$s UTC. Reason: %2$s. Internal notifications fall back to PHP mail().', 'linker-commerce' ),
+						gmdate( 'Y-m-d H:i:s', $last['at'] ),
+						$last['reason']
+					),
+				),
+			);
+		}
 		if ( $this->smtp->authenticated() ) {
 			return array();
 		}
@@ -62,6 +80,13 @@ final class InternalMail implements Block {
 	 * Configured does not claim a successful remote delivery.
 	 */
 	public function empty_text(): string {
-		return __( 'Authenticated SMTP is configured for internal notifications.', 'linker-commerce' );
+		$last = $this->outcome->last();
+		return null !== $last && 'success' === $last['status']
+			? sprintf(
+				/* translators: %s: UTC timestamp. */
+				__( 'Last SMTP attempt succeeded at %s UTC.', 'linker-commerce' ),
+				gmdate( 'Y-m-d H:i:s', $last['at'] )
+			)
+			: __( 'SMTP configured; no SMTP attempt has been recorded.', 'linker-commerce' );
 	}
 }

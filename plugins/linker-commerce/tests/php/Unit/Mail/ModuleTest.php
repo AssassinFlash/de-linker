@@ -29,6 +29,7 @@ final class ModuleTest extends TestCase {
 	 * Every wp_mail() call goes through the outbox; retries, the queue type and the email language are hooked.
 	 */
 	public function test_register_adds_the_hooks(): void {
+		$this->expect_action_on_any( 'rest_api_init', \Linker\Commerce\Mail\SmtpHealth::class, 'register_routes' );
 			$jobs   = new JobStore();
 			$outbox = new Outbox( $jobs, new Throttle() );
 			$locale = new EmailLocale();

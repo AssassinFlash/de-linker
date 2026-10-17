@@ -11,6 +11,7 @@ namespace Linker\Commerce\Mail;
 
 use WP_Error;
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 	/**
 	 * Takes every wp_mail() call of the site (WooCommerce's emails included) on
@@ -71,18 +72,34 @@ final class Outbox {
 	private bool $internal = false;
 
 	/**
+	 * Whether this pass must use PHP mail after an SMTP failure.
+	 *
+	 * @var bool
+	 */
+	private bool $fallback = false;
+
+	/**
+	 * Whether the active delivery selected SMTP, including identity rejection.
+	 *
+	 * @var bool
+	 */
+	private bool $smtp_attempt = false;
+
+	/**
 	 * Sets up the outbox.
 	 *
 	 * @param JobStore     $jobs      The queue.
 	 * @param Throttle     $throttle  The sending rate.
 	 * @param TestMode     $test_mode The test-mode switch of outgoing mail.
 	 * @param InternalSmtp $smtp      Internal authenticated transport (#297).
+	 * @param SmtpOutcome  $outcome   The last SMTP result for health reporting.
 	 */
 	public function __construct(
 		private readonly JobStore $jobs,
 		private readonly Throttle $throttle,
 		private readonly TestMode $test_mode = new TestMode(),
-		private readonly InternalSmtp $smtp = new InternalSmtp()
+		private readonly InternalSmtp $smtp = new InternalSmtp(),
+		private readonly SmtpOutcome $outcome = new SmtpOutcome()
 	) {}
 
 	/**
@@ -121,7 +138,7 @@ final class Outbox {
 		if ( $this->delivering ) {
 			// SMTP server replies may echo authentication data. Only this fixed
 			// diagnostic enters the retry queue, logger and digest (#297).
-			$this->error = $this->internal ? 'Internal notification delivery failed.' : $error->get_error_message();
+			$this->error = $this->internal ? InternalSmtp::FAILURE_MESSAGE : $error->get_error_message();
 		}
 	}
 
@@ -132,7 +149,8 @@ final class Outbox {
 	 */
 	public function configure_mailer( PHPMailer $mailer ): void {
 		if ( $this->delivering ) {
-			$this->smtp->configure( $mailer, $this->internal );
+			$this->smtp_attempt = $this->internal && ! $this->fallback;
+			$this->smtp_attempt = $this->smtp->configure( $mailer, $this->smtp_attempt );
 		}
 	}
 
@@ -159,20 +177,27 @@ final class Outbox {
 			// Test mode rewrites the recipients on the way out alone. $message is
 			// what was queued, and it keeps the recipients the routing data names
 			// (Mail\TestMode); only this attempt's copy is redirected.
-			$delivery = $this->test_mode->redirect( $message );
+			$delivery   = $this->test_mode->redirect( $message );
+		$this->fallback = false;
 		try {
-			$sent = wp_mail( $delivery->to, $delivery->subject, $delivery->body, $delivery->headers, $delivery->attachments );
-		} catch ( \PHPMailer\PHPMailer\Exception $error ) {
-			// WordPress calls phpmailer_init outside its send() try/catch. An
-			// identity failure at that hook must enter the same retry path (#297).
-			$sent        = false;
-			$this->error = $this->internal ? 'Internal notification delivery failed.' : $error->getMessage();
-		} finally {
-			$this->delivering = false;
-			$this->internal   = false;
-			if ( isset( $GLOBALS['phpmailer'] ) && $GLOBALS['phpmailer'] instanceof PHPMailer ) {
-				$this->smtp->reset( $GLOBALS['phpmailer'] );
+			$sent = $this->deliver( $delivery );
+			if ( $this->smtp_attempt ) {
+				$reason = $this->smtp->failure_reason();
+				$this->outcome->record( $sent, $reason );
+				if ( ! $sent ) {
+					wc_get_logger()->warning(
+						'Internal SMTP failed; attempting PHP mail fallback. Reason: ' . $reason . '.',
+						array( 'source' => self::LOG_SOURCE )
+					);
+					$this->fallback = true;
+					$sent           = $this->deliver( $delivery );
+				}
 			}
+		} finally {
+			$this->delivering   = false;
+			$this->internal     = false;
+			$this->fallback     = false;
+			$this->smtp_attempt = false;
 		}
 
 		if ( $sent ) {
@@ -210,6 +235,27 @@ final class Outbox {
 			array( 'source' => self::LOG_SOURCE )
 		);
 		return false;
+	}
+
+	/**
+	 * One native delivery, clearing the reusable mailer's authentication on exit.
+	 *
+	 * @param Message $message Send-side copy, already redirected for tests.
+	 */
+	private function deliver( Message $message ): bool {
+		$this->smtp_attempt = false;
+		try {
+			return wp_mail( $message->to, $message->subject, $message->body, $message->headers, $message->attachments );
+		} catch ( Exception $error ) {
+			// phpmailer_init runs outside WordPress's send() catch. Both this
+			// path and wp_mail_failed use one secret-free diagnostic (#297).
+			$this->error = $this->internal ? InternalSmtp::FAILURE_MESSAGE : $error->getMessage();
+			return false;
+		} finally {
+			if ( isset( $GLOBALS['phpmailer'] ) && $GLOBALS['phpmailer'] instanceof PHPMailer ) {
+				$this->smtp->reset( $GLOBALS['phpmailer'] );
+			}
+		}
 	}
 
 	/**

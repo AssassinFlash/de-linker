@@ -12,6 +12,7 @@ namespace Linker\Commerce\Mail;
 // phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer defines these public property names.
 
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Settings\PrivateConfigDirectory;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -22,18 +23,39 @@ use PHPMailer\PHPMailer\PHPMailer;
 final class InternalSmtp {
 
 	/**
+	 * Fixed public diagnostic; server responses must never enter logs or jobs.
+	 */
+	public const FAILURE_MESSAGE = 'Internal notification delivery failed.';
+
+	/**
+	 * Reason of the active attempt, reset before each configuration.
+	 *
+	 * @var string
+	 */
+	private string $failure_reason = SmtpOutcome::SMTP_FAILURE;
+
+	/**
 	 * Sets up the file boundary; empty means #297's path outside the web root.
 	 *
-	 * @param string $path Fake env file in tests, otherwise the default path.
+	 * @param string  $path    Fake env file in tests, otherwise the default path.
+	 * @param Options $options Internal sender settings.
 	 */
-	public function __construct( private readonly string $path = '' ) {}
+	public function __construct( private readonly string $path = '', private readonly Options $options = new Options() ) {}
 
 	/**
 	 * Whether internal mail has complete configuration matching its sender.
 	 * This checks configuration, not remote connectivity or inbox delivery.
 	 */
 	public function authenticated(): bool {
-		return null !== $this->configuration();
+		$config = $this->configuration();
+		return null !== $config && $this->options->notify_sender()->email === $config['user'];
+	}
+
+	/**
+	 * Fixed category of an unsuccessful SMTP attempt.
+	 */
+	public function failure_reason(): string {
+		return $this->failure_reason;
 	}
 
 	/**
@@ -43,27 +65,28 @@ final class InternalSmtp {
 	 * @param bool      $internal The queued message's explicit internal marker.
 	 * @throws Exception When a queued sender no longer matches the auth identity.
 	 */
-	public function configure( PHPMailer $mailer, bool $internal ): void {
+	public function configure( PHPMailer $mailer, bool $internal ): bool {
 		$this->reset( $mailer );
-		$mailer->clearCustomHeader( 'X-Linker-Internal' );
+		$this->failure_reason = SmtpOutcome::SMTP_FAILURE;
+		$mailer->clearCustomHeader( explode( ':', Message::INTERNAL_HEADER, 2 )[0] );
 		$config = $internal ? $this->configuration() : null;
 		if ( null === $config ) {
-			return;
+			return false;
 		}
-		if ( $mailer->From !== $config['user'] ) {
-			throw new Exception( 'Internal SMTP sender does not match the authenticated identity.' );
+		if ( $mailer->From !== $config['user'] || $this->options->notify_sender()->email !== $config['user'] ) {
+			$this->failure_reason = SmtpOutcome::IDENTITY_MISMATCH;
+			throw new Exception( esc_html( self::FAILURE_MESSAGE ) );
 		}
 		$mailer->isSMTP();
-		$mailer->Host     = $config['host'];
-		$mailer->Port     = $config['port'];
-		$mailer->SMTPAuth = true;
-		$mailer->Username = $config['user'];
-		$mailer->Password = $config['password'];
-		$mailer->Sender   = $config['user'];
-		// PHPMailer: implicit TLS on 465, STARTTLS otherwise. Plaintext is only
-		// for the test-owned loopback sink required by #297, never a remote host.
-		$mailer->SMTPSecure  = '127.0.0.1' === $config['host'] ? '' : ( 465 === $config['port'] ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS );
-		$mailer->SMTPAutoTLS = '127.0.0.1' !== $config['host'];
+		$mailer->Host        = $config['host'];
+		$mailer->Port        = $config['port'];
+		$mailer->SMTPAuth    = true;
+		$mailer->Username    = $config['user'];
+		$mailer->Password    = $config['password'];
+		$mailer->Sender      = $config['user'];
+		$mailer->SMTPSecure  = $config['secure'];
+		$mailer->SMTPAutoTLS = '' !== $config['secure'];
+		return true;
 	}
 
 	/**
@@ -74,6 +97,9 @@ final class InternalSmtp {
 	public function reset( PHPMailer $mailer ): void {
 		$mailer->smtpClose();
 		$mailer->isMail();
+		// PHPMailer declares Port=25 and SMTPAutoTLS=true as its native defaults.
+		$mailer->Port          = 25;
+		$mailer->SMTPAutoTLS   = true;
 		$mailer->Host          = '';
 		$mailer->Username      = '';
 		$mailer->Password      = '';
@@ -86,41 +112,50 @@ final class InternalSmtp {
 	}
 
 	/**
-	 * Reads an INI-style env file without interpolation or evaluating shell code.
-	 * Parser errors are suppressed because a malformed line could contain a secret.
+	 * Reads literal KEY=VALUE lines without interpolation or INI comment rules.
 	 *
-	 * @return array{host: string, port: int, user: string, password: string}|null
+	 * @return array{host: string, port: int, user: string, password: string, secure: string}|null
 	 */
 	private function configuration(): ?array {
-		$home = getenv( 'HOME' );
-		$path = '' !== $this->path ? $this->path : ( is_string( $home ) && '' !== $home ? $home . '/.config/terravolt-builder/sunriver-smtp.env' : '' );
+		$path = '' !== $this->path ? $this->path : PrivateConfigDirectory::path( 'sunriver-smtp.env' );
 		if ( '' === $path || ! is_readable( $path ) ) {
 			return null;
 		}
-		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- parser diagnostics may expose a secret; health reports configuration failure instead.
-		$env = @parse_ini_file( $path, false, INI_SCANNER_RAW );
-		if ( ! is_array( $env ) ) {
+		$bytes = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- private config file outside the website.
+		if ( false === $bytes ) {
 			return null;
 		}
+		$env = array();
+		foreach ( explode( "\n", $bytes ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line || str_starts_with( $line, '#' ) || ! str_contains( $line, '=' ) ) {
+				continue;
+			}
+			list( $key, $value ) = explode( '=', $line, 2 );
+			$key                 = trim( $key );
+			$value               = trim( $value );
+			if ( ( str_starts_with( $value, "'" ) && str_ends_with( $value, "'" ) ) || ( str_starts_with( $value, '"' ) && str_ends_with( $value, '"' ) ) ) {
+				$value = substr( $value, 1, -1 );
+			}
+			$env[ $key ] = $value;
+		}
 		foreach ( array( 'LINKER_SMTP_HOST', 'LINKER_SMTP_PORT', 'LINKER_SMTP_USER', 'LINKER_SMTP_PASS' ) as $key ) {
-			if ( ! isset( $env[ $key ] ) || ! is_string( $env[ $key ] ) || '' === trim( $env[ $key ] ) ) {
-				return null;
-			}
-			// INI strips double quotes; env files also commonly use single quotes.
-			if ( str_starts_with( $env[ $key ], "'" ) && str_ends_with( $env[ $key ], "'" ) ) {
-				$env[ $key ] = substr( $env[ $key ], 1, -1 );
-			}
-			if ( '' === trim( $env[ $key ] ) ) {
+			if ( ! isset( $env[ $key ] ) || '' === trim( $env[ $key ] ) ) {
 				return null;
 			}
 		}
 		$port = filter_var( $env['LINKER_SMTP_PORT'], FILTER_VALIDATE_INT );
 		// TCP port bounds (IANA); SMTP encryption follows PHPMailer's 465/587 conventions.
-		if ( false === $port || $port < 1 || $port > 65535 || ( new Options() )->notify_sender()->email !== $env['LINKER_SMTP_USER'] ) {
+		if ( false === $port || $port < 1 || $port > 65535 ) {
 			return null;
 		}
 		// PHPMailer accepts host lists and URI prefixes; this file names one host (#297).
 		if ( 1 !== preg_match( '/^[a-zA-Z0-9.-]+$/D', $env['LINKER_SMTP_HOST'] ) ) {
+			return null;
+		}
+		// PHPMailer's encryption names: implicit TLS on 465, STARTTLS otherwise.
+		$secure = $env['LINKER_SMTP_SECURE'] ?? ( 465 === $port ? 'ssl' : 'tls' );
+		if ( ! in_array( $secure, array( '', 'ssl', 'tls' ), true ) ) {
 			return null;
 		}
 		return array(
@@ -128,6 +163,7 @@ final class InternalSmtp {
 			'port'     => $port,
 			'user'     => $env['LINKER_SMTP_USER'],
 			'password' => $env['LINKER_SMTP_PASS'],
+			'secure'   => $secure,
 		);
 	}
 }

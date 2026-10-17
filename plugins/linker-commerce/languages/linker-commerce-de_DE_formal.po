@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-17T21:06:53+00:00\n"
+"POT-Creation-Date: 2026-10-17T21:48:44+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -683,7 +683,7 @@ msgstr ""
 "benötigt das Dokument und die Seite, auf der er steht."
 
 #: includes/Contact/Emails/ContactEmail.php:72
-#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:123
+#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:122
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
 msgstr "HTML"
@@ -715,11 +715,11 @@ msgstr ""
 "das Kontaktformular abgesendet wird."
 
 #. translators: {name}: the visitor's name.
-#: includes/Contact/Emails/TeamMessageEmail.php:108
+#: includes/Contact/Emails/TeamMessageEmail.php:107
 msgid "New message from {name}"
 msgstr "Neue Nachricht von {name}"
 
-#: includes/Contact/Emails/TeamMessageEmail.php:115
+#: includes/Contact/Emails/TeamMessageEmail.php:114
 msgid "New message from the contact form"
 msgstr "Neue Nachricht über das Kontaktformular"
 
@@ -1022,23 +1022,43 @@ msgstr "Angebot pro Projekt"
 msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
-#: includes/Health/InternalMail.php:39
+#: includes/Health/InternalMail.php:41
 msgid "Internal mail authentication"
 msgstr "Authentifizierung interner E-Mails"
 
-#: includes/Health/InternalMail.php:53
+#: includes/Health/InternalMail.php:54
+msgid "The last SMTP attempt failed."
+msgstr "Der letzte SMTP-Versuch ist fehlgeschlagen."
+
+#. translators: 1: UTC timestamp, 2: fixed diagnostic category.
+#: includes/Health/InternalMail.php:59
+#, php-format
+msgid ""
+"Last attempt: %1$s UTC. Reason: %2$s. Internal notifications fall back to "
+"PHP mail()."
+msgstr "Letzter Versuch: %1$s UTC. Grund: %2$s. Interne Benachrichtigungen werden ersatzweise über PHP mail() versendet."
+
+#: includes/Health/InternalMail.php:71
 msgid "Internal mail not authenticated."
 msgstr "Interne E-Mails sind nicht authentifiziert."
 
-#: includes/Health/InternalMail.php:56
+#: includes/Health/InternalMail.php:74
 msgid ""
 "Internal notifications use PHP mail(). Check the SMTP configuration on the "
 "server."
-msgstr "Interne Benachrichtigungen werden über PHP mail() versendet. Prüfen Sie die SMTP-Konfiguration auf dem Server."
+msgstr ""
+"Interne Benachrichtigungen werden über PHP mail() versendet. Prüfen Sie die "
+"SMTP-Konfiguration auf dem Server."
 
-#: includes/Health/InternalMail.php:65
-msgid "Authenticated SMTP is configured for internal notifications."
-msgstr "Authentifiziertes SMTP ist für interne Benachrichtigungen konfiguriert."
+#. translators: %s: UTC timestamp.
+#: includes/Health/InternalMail.php:87
+#, php-format
+msgid "Last SMTP attempt succeeded at %s UTC."
+msgstr "Der letzte SMTP-Versuch war am %s UTC erfolgreich."
+
+#: includes/Health/InternalMail.php:90
+msgid "SMTP configured; no SMTP attempt has been recorded."
+msgstr "SMTP ist konfiguriert. Es wurde noch kein SMTP-Versuch erfasst."
 
 #. translators: %s: option name.
 #: includes/Health/Monitor.php:119
@@ -1256,6 +1276,14 @@ msgstr "Storniert"
 #: includes/Mail/JobStore.php:45
 msgid "Queued emails"
 msgstr "E-Mails in der Warteschlange"
+
+#: includes/Mail/SmtpHealth.php:58
+msgid "SMTP configured"
+msgstr "SMTP konfiguriert"
+
+#: includes/Mail/SmtpHealth.php:58
+msgid "SMTP not configured"
+msgstr "SMTP nicht konfiguriert"
 
 #: includes/Presentation/AccountTemplates.php:277
 #: includes/Presentation/AccountTemplates.php:353
@@ -4320,6 +4348,10 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#~ msgid "Authenticated SMTP is configured for internal notifications."
+#~ msgstr ""
+#~ "Authentifiziertes SMTP ist für interne Benachrichtigungen konfiguriert."
 
 #, php-format
 #~ msgid "Last change %1$s by %2$s."

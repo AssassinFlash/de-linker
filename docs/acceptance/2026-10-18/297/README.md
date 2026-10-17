@@ -1,23 +1,27 @@
-# #297 内部通知认证 SMTP
+# #297 内部通知认证 SMTP · Review round 1
 
-实现 #297 中 Claude 的 2026-10-18 决定。工作树 `c297`，分支 `feat/297-internal-smtp`。仅使用本机实例 `c297`（WordPress 7.1.3 / WooCommerce 11.2.0 / PHP 8.3），无站点界面改动。没有生产部署、合并、生产写入或真实邮件发送；没有读取或放置真实凭据。
+本轮依据 PR #300 的“Review, round 1 (#297)”裁定。工作树 `c297`，分支 `feat/297-internal-smtp`；无生产写入、部署、合并或真实邮件发送。测试的配置、账号与密码均为假值，SMTP 只到测试自启的 loopback sink，PHP mail 只写文件。
 
-## 验收边界与结果
+## 评审逐项交付
 
-票据已指定测试边界：Outbox 的捕获/重试、WordPress `phpmailer_init` 与真实 loopback SMTP 投递、健康摘要。TDD 在这些公开边界进行，不测试私有方法。队列路由读取按票据与 AGENTS 测试邮件纪律用于路由断言。
+| 项 | 最终行为与证据 |
+|---|---|
+| Spec 1：任何内部 SMTP 失败立即 fallback | Outbox 对同一投递副本立即尝试 PHP `mail()`；连接、认证、发送失败记录 `smtp_failure`，From/auth user 不符记录 `identity_mismatch`。`SmtpOutcome` 仅存 Unix 时间、结果与固定分类；fallback 成功保留 SMTP 失败，后续 SMTP 成功才更新。真实认证失败、身份失败、摘要 fallback 与双失败后原队列恢复均有夹具测试。 |
+| Spec 2：HOME 共用机制与 web 读回 | `Settings\PrivateConfigDirectory` 是唯一的 SMTP 私有目录定位入口。当前 spec 10 已退役 QueryEmbedding；退役前其 HOME 代码在 `load_env_file()` 内，没有独立公共 helper。本轮提取同一 `getenv('HOME') → .config/terravolt-builder` 机制，不恢复编码器或复制一份 SMTP 内部路径实现。下面单列 web 上下文验收，不能用 CLI 结果替代。 |
+| Spec 3：SMTP 配额来源 | spec 11 引用 `mail-root-cause.md` §3、§9 与其中 Hostinger 原始来源：试用每邮箱 100/滚动 24h，Business Starter 1000/滚动 24h；共享 8/80 继续限制每条通道。sunriver 自己发信也占邮箱额度；实际套餐由 Claude 从 hPanel 填下面的字段。 |
+| Standards 1：配置加密与 reset | `LINKER_SMTP_SECURE` 显式控制 `ssl`/`tls`/空；缺省 465→ssl，其他端口→tls。生产不再有主机为 127.0.0.1 的特殊分支。reset 恢复 PHPMailer 原生 Port=25、SMTPAutoTLS=true，并清掉认证。真实 PHPMailer 属性边界有断言。 |
+| Standards 2：注入 Options | `InternalSmtp` 构造函数接收 `Options`，配置读取内部不再 `new Options()`。 |
+| Standards 3：marker 单一常量 | 名称和值只在 `Message::INTERNAL_HEADER` 定义；添加与清除都使用它，clear 从常量解析名称。 |
+| Standards 4：失败文字单一常量 | `InternalSmtp::FAILURE_MESSAGE` 同时供钩子失败与异常路径使用，服务器回显不保存。 |
+| Standards 5：单一标记 helper | `Message::mark_internal()` 支持 WP 两种 header 形态；TeamEmail、TeamMessageEmail、Monitor 都调用它。原六类通知队列断言继续通过。 |
+| Standards 6：Blocks 注释 | 明确 Digest 的三块业务数据与 `Health\InternalMail` 的归属，健康块继续留在 Health。 |
+| Standards 7：手工 KEY=VALUE | 首个等号切分、可选成对引号、空行和整行 # 注释；值内 `;#=` 原样传到真实本机 AUTH 验证器。 |
+| Standards 8：sink 类型检查 | `smtp_sink.py` 补全类型；`just check` 的 py-check 显式执行其 Ruff、format 与 strict mypy，无新依赖。 |
+| Standards 9：Exception import | Outbox 通过 `use PHPMailer\PHPMailer\Exception` 捕获，和其他导入一致。 |
 
-| Done when | 实现与证据 | 状态 |
-|---|---|---|
-| 单元与集成：内部邮件认证 SMTP，auth user = From；客户邮件 `mail()`；秘密不进入日志/options | `Unit\Mail\InternalSmtpTest` 检查完整配置与身份；`Integration\InternalSmtpTest` 做真实 AUTH，验证复用对象后的客户通道、From 不符进重试、服务器回显假密码时日志/队列错误脱敏、options 写入没有凭据、tester 重写与限速；`NotificationRoutingTest` 验证六类内部生产者。 | 本地完成；`just check` / `just test` 通过 |
-| 本机 SMTP sink 收到内部邮件，客户邮件不进入 SMTP | `smtp_sink.py` 由测试 `proc_open` 启动，随机端口仅绑定 `127.0.0.1`，只接受固定假账号。内部 MIME 实际进入 sink；客户 MIME 只写临时文件。测试后恢复 hooks、mailer、限速/选项、队列及进程与文件。 | 完成 |
-| Spec 11 Mail 更新 | `docs/specs/11-commerce.md` 的“Mail：内部认证 SMTP（#297）”；同步 spec 74 健康区块。 | 完成 |
-| 部署后，业主凭据就位，Claude 触发一封摘要，进入 sunriver 收件箱，DKIM 与 DMARC 通过 | 此实现会话不能执行，见下面准确步骤。 | **未完成（Claude）** |
+## 可复跑验证
 
-真实 mail 集成组（CI 同组）本地连续两次通过：**26 tests / 280 assertions**。它包括 SMTP 四场景、六类通知生产者、旧重试、摘要与健康告警回归。SMTP 四场景另以 `--repeat 2` 连跑通过（8 tests / 100 assertions）；成功重试删除队列记录后，夹具仍保留自身 job ID 清理手动触发产生的重试排程。原生 Action Scheduler 读回的孤立待重试排程数为 0。每次自行清理本次夹具并恢复原状态。
-
-全仓库门禁：`just check` **PASS**（PHPCS / PHPStan 8 / JS / Ruff / mypy / i18n / 构建）；`just test` **PASS**。默认商务套件中 82 个未加载真实 WP 的集成项按设计跳过，本票真实邮件链由上面的独立 26 项实际运行证明。其余门禁包括 PHP i18n 190 项、tools 188 项、mu 6 项；前端单元 128 项与 Playwright 9 项；Genie 723 项、engine 112 项、local 98 项、migrate 94 项（另 9 项按原配置跳过）、FAQ 20 项、pull 113 项、cutover 82 项。新增行旧标识符检查无命中，`git diff --check` 通过。
-
-复跑：
+本轮测试边界沿用票据与已裁定评审：Outbox/原生 PHPMailer 的真实投递、配置文件边界、最后结果健康块、员工 REST 权限与读回。SMTP 成功后不 fallback；SMTP 失败但 mail 成功不排队；两者皆失败才保留原队列。测试模式只重写发送副本，队列保留原 To/Bcc。一个逻辑尝试占一个共享限速 slot，任一通道每 slot 最多尝试一次。
 
 ```sh
 cd plugins/linker-commerce
@@ -25,26 +29,49 @@ LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/c297/wordpress \
   /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit \
   -c phpunit.integration.xml.dist \
   --filter 'InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest'
+
+# SMTP 整组连跑：每次保存并还原选项、hooks、mailer、队列与本次排程，关闭自己的 sink。
+LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/c297/wordpress \
+  /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit \
+  -c phpunit.integration.xml.dist --filter InternalSmtpTest --repeat 2
 ```
 
-红绿证据：
+TDD 红绿证据：原 INI 对含 `;#=` 的假密码认证失败，手工解析后通过；认证失败最初没有 mail 文件，接入 fallback/结果记录后通过；本机显式 ssl 最初被主机名分支改为空，改为配置来源后通过；marker helper 与 HOME helper 最初缺接口，加入后公开接口测试通过；sink strict mypy 最初报 16 个未标注类型错误，补类型后零错误。员工 REST 夹具最初缺入口，加入后匿名 401、员工 200、响应只有状态与固定结果字段。
 
-- `MessageTest::test_internal_marker_survives_the_queue` 起初因缺少 `is_internal()` 报错，新增显式标记读取后通过。
-- `NotificationRoutingTest` 起初十二组内部生产者断言缺少标记；接入 TeamEmail、联系团队信、健康告警后十五项通过。
-- `Unit\Mail\InternalSmtpTest` 起初缺少类，随后完整配置/缺文件/身份不符通过；新增“引号内空密码”断言先失败，再修正为未配置。
-- loopback 投递测试起初缺少 `Outbox::configure_mailer`；接入原生钩子后实际 AUTH 与投递通过。
-- 身份不匹配夹具暴露 `phpmailer_init` 在 WordPress 的 send try/catch 外；Outbox 接住 PHPMailer 异常后，错误进入重试而不使请求抛错。
-- `InternalMailTest` 起初缺少健康区块；加入后单条异常通过。德语集成先出现英文，再随 `.po/.mo` 交付通过。
+本轮真实邮件集成组：31 tests / 323 assertions；SMTP 九场景连跑两轮：18 tests / 186 assertions；商务单元：1046 tests / 5443 assertions。PHPCS、PHPStan 8、sink strict mypy 与词条完整性检查通过。最新全仓库门禁与 CI 结果在 PR 的 Evidence 段及本轮交回评论。默认 `just test` 跳过未加载真实 WordPress 的集成项，本票上述集成命令在 c297 实际运行，CI 的临时 WordPress 实例执行同组。
 
-原生优先、配置格式、数字与阈值来源见 spec 11。无新增插件或依赖；无 LC、WindPress、客户页面修改，因此本票无页面像素变化。内部摘要文案评审见同目录 `copy-review.md`。
+## 未完成（Claude）：生产事实字段
 
-## 未完成（Claude）：生产步骤
+部署时由 Claude 读取 hPanel，只记录非秘密套餐信息，不查看密码。研究中的配额按每邮箱、滚动窗口计；sunriver 自用邮件同样消耗该额度。
 
-以下是交接说明，本会话未执行。先完成 Spec + Standards 全量 diff 评审并合并；生产写入只由 Claude 的部署会话执行。
+| 字段 | 当前值 |
+|---|---|
+| `sunriver_mailbox_plan (hPanel)` | **未完成（Claude）** |
+| `sunriver_mailbox_daily_limit (rolling 24h, hPanel)` | **未完成（Claude）** |
+| `hPanel_readback_at_UTC` | **未完成（Claude）** |
+| `web_SMTP_configured_readback` | **未完成（Claude）** |
+| `single_digest_inbox_DKIM_DMARC` | **未完成（Claude）** |
 
-1. **业主放置凭据**：由业主在主机 `$HOME/.config/terravolt-builder/sunriver-smtp.env` 放置四个变量。主机为 `smtp.hostinger.com`，用户为 `sales@sunriverinverter.com`，端口使用 Hostinger 账户的 TLS 配置（465 隐式 TLS，587 STARTTLS）；密码仅业主填写。文件在 web root 外、仅账户本人可读（0600）。Claude 不打开、不打印、不传递该文件。
-2. **备份、部署、读回**：在最新合并后的专用部署工作树按已有管线执行 `just cutover backup`，记录本次备份路径；执行 `just cutover deploy`，然后 `just cutover verify`。部署范围为本票插件与语言包，无服务部署或数据库迁移。
-3. **配置读回只输出布尔值**：通过 `ssh hostinger-de-linker`，在 `/home/u388076051/domains/de-linker.com/public_html` 用 `/usr/local/bin/wp` 执行下面只读命令。`configured` 只证明文件完整且用户匹配内部 From；若为 `not-configured`，由业主修复文件后再继续，不读取文件内容。
+## 未完成（Claude）：生产步骤与回滚
+
+以下是交接命令，本实现会话未执行。先完成 Spec + Standards 全量 diff 评审并合并。
+
+1. **业主放置文件**：业主自行在服务器 `$HOME/.config/terravolt-builder/sunriver-smtp.env` 放置 HOST/PORT/USER/PASS，可选 SECURE；主机为 `smtp.hostinger.com`、用户为 `sales@sunriverinverter.com`，生产用 465/ssl 或邮箱支持的 587/tls。文件在 web root 外、0600；Claude 和执行者不打开或传递密码。格式是字面的 KEY=VALUE，不使用 shell 转义或变量展开；值的外围引号可选。
+2. **备份、部署、读回**：部署工作树执行 `just cutover backup`，记下备份路径；`just cutover deploy` → `just cutover verify`。无服务部署、schema 迁移或凭据安装步骤。先填上面的 hPanel 套餐字段。
+3. **web 上下文独立验收**：已登录的管理员或 Shop manager 打开同站任意后台页，在该页开发者控制台执行以下代码。nonce 仅用于本次请求，不打印或保存。WordPress 原生 `rest-nonce` AJAX 提供 cookie 会话的 REST nonce（本地 WP 7.1.3 `wp-admin/includes/ajax-actions.php::wp_ajax_rest_nonce` 已核实）。
+
+   ```js
+   const nonce = await fetch('/wp-admin/admin-ajax.php?action=rest-nonce', {
+     credentials: 'same-origin'
+   }).then(response => response.text());
+   const response = await fetch('/wp-json/linker/v1/mail-health', {
+     credentials: 'same-origin', headers: { 'X-WP-Nonce': nonce }
+   });
+   console.log(response.status, await response.json());
+   ```
+
+   需要 HTTP 200、`smtp_configured: true` 与 `label: "SMTP configured"`（德语为 `SMTP konfiguriert`）。响应只含配置布尔状态、标签、最后 SMTP 结果；不含路径、主机、用户或密码。保存这份非秘密读回到 `web_SMTP_configured_readback`。若 web 为 false 而 CLI 为 true，停止触发摘要，由部署会话核对 wp-config 给 web PHP 的 HOME；不读取 env 文件内容。
+4. **CLI 前置读回**：SSH `hostinger-de-linker`，在 `/home/u388076051/domains/de-linker.com/public_html` 运行以下命令，只输出非秘密状态。确认 From/To/Bcc 为业主允许的路由、没有待触发的同一摘要，避免与 cron 重复。
 
    ```sh
    /usr/local/bin/wp eval 'echo ( new Linker\Commerce\Mail\InternalSmtp() )->authenticated() ? "configured\n" : "not-configured\n";'
@@ -53,7 +80,6 @@ LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/c297/wordpress \
    /usr/local/bin/wp cron event list --fields=hook,next_run_gmt
    ```
 
-   未设 `linker_commerce_notify_from` 时由 `Options::notify_sender()` 回到 `sales@sunriverinverter.com`；不因 option 不存在判故障。确认内部 To 为业主允许的 sunriver 地址，Bcc 仅保留此前已验证且允许的地址；这些属于现有路由读回，任何调整由 Claude 记录在票上。确认没有待触发的同一摘要，避免 cron 与手动触发重复。
-4. **只触发一封真实摘要**：在上述生产 WordPress 目录执行 `/usr/local/bin/wp cron event run linker_commerce_digest`。不执行注册、客户邮件或额外探针发送。查看 WooCommerce → Status → Logs 的 `linker-mail`：确认这一封有成功记录、没有新增失败/待重试消息；检查下一次摘要已排期。日志成功只证明投递接口成功，不能替代下一步。
-5. **收件箱与头部验收**：在 `sales@sunriverinverter.com` 的 **Inbox** 找到这一封摘要；仅在 Junk 找到算失败。保存脱敏的时间/主题与认证头，确认 `From: Linker <sales@sunriverinverter.com>`，以及 `dkim=pass` 且 `d=sunriverinverter.com`、`dmarc=pass`。在 #297 评论并补入验收记录；完成前保留“未完成（Claude）”。
-6. **回滚**：本票无 schema 或设置迁移；若传输导致故障，使用步骤 2 记录的部署前备份恢复 `wp-content/plugins/linker-commerce`，并读回旧版本与原有 `mail()` 行为。保留现有路由选项、Outbox 队列和限速记录，不重放已经成功的邮件；凭据文件不由 Claude 删除或改动。恢复旧代码会恢复内部 PHP `mail()`，认证问题也随之恢复，应在票上记录。需要完整站点回滚时沿用 `just cutover rollback --backup <步骤2路径> --write`，由部署者按该次备份评估是否适用，不能盲目覆盖新业务数据。
+5. **只触发一封真实摘要**：`/usr/local/bin/wp cron event run linker_commerce_digest`。读 `linker-mail`、队列与下一次排期；再执行步骤 3 的 web 读回，`last_outcome.status` 必须为 `success`。若是 failure，fallback 可能已经投递，不能把“收到”当作 SMTP 验收成功，也不要重发一封探针。
+6. **Inbox 与头部**：在 sunriver **Inbox** 找到这封摘要，记录脱敏的主题/时间与认证头：From 为 sunriver、`dkim=pass d=sunriverinverter.com`、`dmarc=pass`。只在 Junk 到达不通过。填 `single_digest_inbox_DKIM_DMARC` 并补到 #297，之前保持“未完成（Claude）”。
+7. **回滚**：恢复步骤 2 备份里的 linker-commerce 插件，保留原路由选项、队列、限速记录与无秘密的最近结果记录，不重发成功邮件。凭据不由 Claude 改动或删除。完整站点回滚只有部署者评估新业务数据后才使用 `just cutover rollback --backup <路径> --write`，不盲目覆盖业务数据；读回旧版本与 PHP mail 行为并在票上记录。

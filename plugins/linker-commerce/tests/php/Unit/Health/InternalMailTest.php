@@ -25,6 +25,7 @@ final class InternalMailTest extends TestCase {
 	 */
 	public function test_missing_credentials_are_visible_once_in_the_digest(): void {
 		$this->plain_text();
+		$this->options( array() );
 		$block = new InternalMail( new InternalSmtp( '/nonexistent/linker-smtp-test.env' ) );
 		$this->assertCount( 1, $block->entries() );
 		$this->assertSame( 'Internal mail not authenticated.', $block->entries()[0]['label'] );

@@ -8,14 +8,14 @@ from pathlib import Path
 
 
 class Handler(socketserver.StreamRequestHandler):
-    def reply(self, line):
+    def reply(self, line: str) -> None:
         self.wfile.write((line + "\r\n").encode())
         self.wfile.flush()
 
-    def handle(self):
+    def handle(self) -> None:
         self.reply("220 localhost test sink")
         authenticated = False
-        recipients = []
+        recipients: list[str] = []
         while line := self.rfile.readline():
             command = line.decode().strip()
             verb = command.split(" ", 1)[0].upper()
@@ -27,8 +27,14 @@ class Handler(socketserver.StreamRequestHandler):
                 user = base64.b64decode(self.rfile.readline().strip()).decode()
                 self.reply("334 UGFzc3dvcmQ6")
                 password = base64.b64decode(self.rfile.readline().strip()).decode()
-                authenticated = user == "sales@sunriverinverter.com" and password == "fake-password"
-                self.reply("235 authenticated" if authenticated else "535 authentication failed: wrong-test-password")
+                authenticated = (
+                    user == "sales@sunriverinverter.com" and password == sys.argv[2]
+                )
+                self.reply(
+                    "235 authenticated"
+                    if authenticated
+                    else "535 authentication failed: wrong-test-password"
+                )
             elif verb == "MAIL":
                 recipients = []
                 self.reply("250 ok" if authenticated else "530 authenticate first")
@@ -43,7 +49,10 @@ class Handler(socketserver.StreamRequestHandler):
                         return
                     data.append(chunk.decode())
                 with Path(sys.argv[1]).open("a") as capture:
-                    capture.write(json.dumps({"recipients": recipients, "message": "".join(data)}) + "\n")
+                    capture.write(
+                        json.dumps({"recipients": recipients, "message": "".join(data)})
+                        + "\n"
+                    )
                 self.reply("250 accepted")
             elif verb == "QUIT":
                 self.reply("221 bye")

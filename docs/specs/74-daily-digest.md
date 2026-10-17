@@ -17,7 +17,7 @@
 
 ## 内部认证健康（#297）
 
-在原有四块之后固定加入 `Health\InternalMail`：缺失、不可读、无效或身份不匹配的 SMTP 配置只列一条“Internal mail not authenticated.” / “Interne E-Mails sind nicht authentifiziert.”，同时内部邮件按裁定回退 PHP `mail()`；配置完整时显示配置已具备，不宣称远端连通或收件箱成功。该块只读配置、不另发邮件、不展示配置值；后续扩展块仍追加其后。SMTP 失败继续由 Outbox 重试并在耗尽时进入失败邮件块。传输与凭据契约见 spec 11 的“Mail：内部认证 SMTP”。
+在原有四块之后固定加入 `Health\InternalMail`：读取最近 SMTP 结果，报告失败时间与固定分类，或最近一次成功时间；只配置而无发送记录时明确“尚无尝试”。缺配置仍显示未认证。SMTP 失败（含认证、连接和身份）时该封摘要立即走 PHP `mail()`；fallback 不覆盖 SMTP 失败，只有后续 SMTP 成功才更新最近结果。两通道都失败才排队重试，并在耗尽时进入失败邮件块。健康块只读、每封摘要只一个健康项、不另发邮件、不展示配置值；数据权威为 `Mail\SmtpOutcome`，传输、slot 与凭据契约见 spec 11。
 
 ## 发送与调度
 - WP 原生 cron：`wp_schedule_single_event` 单次事件链——每次发送完成后把下一次排在"现在之后最近的 09:00 Europe/Berlin"；初始化时（init）无事件才补排。夏令时切换后的一次发送会按旧偏移落在 08:00 或 10:00，该次发送随即自校正；规则就是"每次发送重算下一次"。

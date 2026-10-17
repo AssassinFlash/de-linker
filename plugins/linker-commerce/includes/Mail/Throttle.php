@@ -14,6 +14,10 @@ namespace Linker\Commerce\Mail;
  * messages per minute and 100 per rolling 24 hours through PHP mail(), shared
  * by the four sites of the account; this site takes at most 8 and 80, so the
  * other sites keep room (docs/research/2026-10-09/mail-root-cause.md §3, §9).
+ * The same 8/80 also bounds each SMTP and fallback channel (#297 review):
+ * that research lists 100/day for trial mailboxes and 1000/day for Business
+ * Starter, both rolling 24h and shared with the mailbox's own sending. The
+ * actual sunriver plan is read by Claude from hPanel at deployment.
  */
 final class Throttle {
 
