@@ -58,4 +58,8 @@ c288 的实际 WordPress `translate()` 在 `de_DE_formal` 下读出九条正确�
 
 ## 本地门禁与评审
 
-最终执行结果在推送前写入本节。
+- `just check`：退出 0；包括新的 source/obsolete 门禁。
+- `just test`：退出 0；包括 PHP/JS、9 项 Playwright、Genie 678 项、engine 112 项、local 98 项、FAQ 20 项、pull 113 项、cutover 82 项。
+- 新 helper 的 Ruff（含 import sorting）、format 与 strict mypy：通过。
+- 全量分支基线 `d27d1a3e...b76c5919`，本轮差异 `8e0da45b..b76c5919`；Standards、Spec 独立复核均为 0 个待处理项。Spec 评审者独立解析实际 MO，确认上表全部比较结果，旧的“Clear search 可 obsolete”建议已明确撤回。
+- 没有旧代码标识符回流；没有新增依赖。

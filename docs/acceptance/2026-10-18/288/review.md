@@ -17,3 +17,11 @@
 其余六项决定完整满足：无信封实现/配置/字段/专用测试/译文；只读 Identity、五个消费点、唯一公开 accessor 和 Monitor 注释一致；前缀清理保留；通知测试按类型拆分，健康告警单独；Mail 节准确记录生产证据与内部 #286/客户可见 From 裁定。
 
 评审者独立解析实际 PO/POT，确认 864 → 861 个非头部翻译对，共享 msgstr 改动 0，只删除三条信封文案；origin/main 的 861 对全部保留（含 obsolete）。POT 有 825 个有效条目，23 个包含 build/ 来源；命令含 build，未用 --merge。无其余缺失、实现错误或范围扩张。
+
+## 第 2 轮复核
+
+第 1 轮关于 LC 条目可 obsolete 的结论由 [第 2 轮评审](https://github.com/AssassinFlash/de-linker/pull/291#issuecomment-6239594631) 推翻；PO 保留不能证明 MO 保留。本轮基线 `d27d1a3e...b76c5919`，新差异 `8e0da45b..b76c5919`，完整方法与证据见 [round2.md](round2.md)。
+
+Standards：0 项违规，0 项需要处理的 smell；新 justfile 命令明确可重复，源码发现逻辑由提取器与门禁共用。真实公开门禁有仓库坏目录退出 1、修复后退出 0 的记录；新增代码无旧标识符回流。
+
+Spec：0 项缺失、范围扩张或实现错误。评审者核验了四项要求和实际已提交的 MO：主线 782 → 最终 786（含 header），仅删除四条退役审批文案，共享翻译改动 0，Clear search 保留为 Suche leeren，另有八条 LC 旧译文恢复有效。全部 861 个原 PO 翻译对不变。评审者明确撤回上一轮关于 Clear search 可 obsolete 的建议。
