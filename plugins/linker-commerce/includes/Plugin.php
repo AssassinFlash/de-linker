@@ -167,7 +167,7 @@ final class Plugin {
 			new Settings\Module( new Settings\SettingsTab( $jobs ), new Settings\WooOptions() ),
 			new Vocabulary\Module( new Vocabulary\Overrides( new Vocabulary\Terms() ), new Vocabulary\Labels(), new Vocabulary\LocaleFormat() ),
 			new Gating\Module( $prices, new Gating\DraftSummary( $state, $prices ), new Gating\StoreApiPrices( $state ), new Gating\ProductSorting( $state ) ),
-			new Mail\Module( new Mail\Outbox( $jobs, new Mail\Throttle() ), $jobs, new Mail\EmailLocale(), new Mail\EmailPolicy() ),
+			new Mail\Module( new Mail\Outbox( $jobs, new Mail\Throttle() ), $jobs, new Mail\EmailLocale(), new Mail\EmailPolicy(), new Mail\EnvelopeSender( $options ) ),
 			new Digest\Module( $this->file, $jobs ),
 			new Registration\Module( $this->file, $options, $fields, new Registration\BillingVatField( $vat ), new Registration\AddressForm(), $approval, new Registration\ApprovalAdmin( $approval ), new Registration\PendingApprovals( $approval ), new Registration\AccountsAdmin( $this->file, $accounts, $approval ), new Registration\AccountsController( $accounts, $approval ) ),
 			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), $checkout, new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),

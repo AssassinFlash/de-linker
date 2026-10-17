@@ -179,7 +179,8 @@ final class Monitor {
 		);
 		// Plain wp_mail() needs an explicit sender; WC_Email installs its own
 		// sender filters for the other internal notifications (#286).
-		$headers = array( 'From: Linker <' . $this->options->notify_from() . '>' );
+		$sender  = $this->options->notify_sender();
+		$headers = array( sprintf( 'From: %s <%s>', $sender['name'], $sender['email'] ) );
 		$bcc     = $this->options->notify_bcc();
 		if ( array() !== $bcc ) {
 			$headers[] = 'Bcc: ' . implode( ', ', $bcc );

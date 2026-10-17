@@ -61,7 +61,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// The email classes extend WC_Email, which WooCommerce loads with its mailer.
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
+		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::ENVELOPE_SENDER, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest' ) as $id ) {
@@ -103,18 +103,20 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$fields = array_values(
 			array_filter(
 				( new SettingsTab( new JobStore() ) )->fields(),
-				static fn ( array $field ): bool => in_array( $field['id'], array( Options::NOTIFY_FROM, Options::PROFORMA_PREFIX ), true )
+				static fn ( array $field ): bool => in_array( $field['id'], array( Options::NOTIFY_FROM, Options::ENVELOPE_SENDER, Options::PROFORMA_PREFIX ), true )
 			)
 		);
 		WC_Admin_Settings::save_fields(
 			$fields,
 			array(
 				Options::NOTIFY_FROM     => 'alerts@example.test',
-				Options::PROFORMA_PREFIX => 'DLK-PF',
+				Options::ENVELOPE_SENDER => 'bounce@example.test',
+				Options::PROFORMA_PREFIX => '--DLK-PF--',
 			)
 		);
 		$this->assertSame( 'alerts@example.test', get_option( Options::NOTIFY_FROM ) );
 		$this->assertSame( 'alerts@example.test', ( new Options() )->notify_from() );
+		$this->assertSame( 'bounce@example.test', ( new Options() )->envelope_sender() );
 		$this->assertSame( 'DLK-PF', get_option( Options::PROFORMA_PREFIX ) );
 	}
 
@@ -176,25 +178,27 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 
 		$rows     = $this->jobs_after( $marker );
 		$internal = array(
-			'New customer: Linker Integration Test GmbH',
-			'VAT check changed: Linker Integration Test GmbH',
-			'New inquiry #' . $order->get_order_number() . ' from ',
-			'New message from Maria Beispiel',
-			'Daily digest, ',
-			'The Genie service failed its health check',
-			'The engine service failed its health check',
+			NewCustomerEmail::ID => 'New customer: Linker Integration Test GmbH',
+			VatReviewEmail::ID   => 'VAT check changed: Linker Integration Test GmbH',
+			NewInquiryEmail::ID  => 'New inquiry #' . $order->get_order_number() . ' from ',
+			TeamMessageEmail::ID => 'New message from Maria Beispiel',
+			'linker_digest'      => 'Daily digest, ',
+			'health_genie'       => 'The Genie service failed its health check',
+			'health_engine'      => 'The engine service failed its health check',
 		);
-		foreach ( $internal as $subject ) {
+		foreach ( $internal as $email_id => $subject ) {
 			$matching = array_values( array_filter( $rows, static fn ( array $row ): bool => str_starts_with( $row['subject'], $subject ) ) );
 			$this->assertCount( 1, $matching, "One queued message: {$subject}" );
 			$this->assertSame( array( self::INTERNAL ), $matching[0]['to'], "{$subject} goes to the internal address alone." );
 			$this->assertContains( $bcc, $matching[0]['headers'], "{$subject} carries the blind copy of the settings." );
 			$this->assertStringNotContainsString( self::PUBLIC, implode( "\n", array_filter( $matching[0]['headers'], static fn ( string $line ): bool => 0 !== stripos( $line, 'From:' ) ) ), "{$subject} names sales@de-linker.com in no recipient header." );
 			$this->assertContains( 'From: Linker <' . $from . '>', $matching[0]['headers'], "{$subject} is sent from the internal sender." );
-			if ( str_starts_with( $subject, 'New customer:' ) || str_starts_with( $subject, 'VAT check changed:' ) || str_starts_with( $subject, 'New inquiry #' ) ) {
+			if ( in_array( $email_id, array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID ), true ) ) {
 				$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $matching[0]['headers'], 'Replies still go to the customer.' );
-			} elseif ( str_starts_with( $subject, 'New message from ' ) ) {
+			} elseif ( TeamMessageEmail::ID === $email_id ) {
 				$this->assertContains( 'Reply-to: Maria Beispiel <' . $submission->email . '>', $matching[0]['headers'], 'Replies still go to the visitor.' );
+			} else {
+				$this->assertSame( array(), array_values( array_filter( $matching[0]['headers'], static fn ( string $line ): bool => str_starts_with( strtolower( $line ), 'reply-to:' ) ) ), $email_id . ' adds no Reply-To.' );
 			}
 		}
 

@@ -58,6 +58,16 @@ final class SettingsTabTest extends TestCase {
 	}
 
 	/**
+	 * The envelope setting applies site-wide, outside the internal mail section.
+	 */
+	public function test_envelope_sender_setting(): void {
+		$fields = array_column( ( new SettingsTab( new JobStore() ) )->fields(), null, 'id' );
+		$this->assertArrayHasKey( Options::ENVELOPE_SENDER, $fields );
+		$this->assertSame( 'email', $fields[ Options::ENVELOPE_SENDER ]['type'] );
+		$this->assertSame( 'sales@sunriverinverter.com', $fields[ Options::ENVELOPE_SENDER ]['default'] );
+	}
+
+	/**
 	 * Every option of Options has a field, each section is opened and closed, and output and save use the same fields.
 	 */
 	public function test_fields_cover_every_option(): void {
@@ -154,6 +164,21 @@ final class SettingsTabTest extends TestCase {
 	 */
 	public function test_saving_settings_preserves_the_default_prefix(): void {
 		$this->assertSame( 'DLK-PF', ( new SettingsTab( new JobStore() ) )->sanitize_prefix( 'DLK-PF' ) );
+	}
+
+	/**
+	 * Leading or trailing hyphens cannot create a doubled separator in the number.
+	 *
+	 * @testWith ["--dlk-pf--", "DLK-PF"]
+	 *           [" -p-i !- ", "P-I"]
+	 *           ["---", ""]
+	 *           [["DLK"], ""]
+	 *
+	 * @param mixed  $value    Submitted prefix.
+	 * @param string $expected Stored prefix.
+	 */
+	public function test_prefix_trims_edge_hyphens( $value, string $expected ): void {
+		$this->assertSame( $expected, ( new SettingsTab( new JobStore() ) )->sanitize_prefix( $value ) );
 	}
 
 	/**

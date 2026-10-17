@@ -29,6 +29,18 @@
 - `Settings`（后台一页：对外团队邮箱、内部通知收件人、发件人与 Bcc 列表、对接人、银行条款、PI 前缀）。
 - `Health`（`Monitor`：WP cron daily 依次 GET `linker_genie_url`/`linker_engine_url` 的 `/health`（实例配置，本地 `just serve` 写、切换 #17 写），非 200 或不可达或地址为空 → 经 `wp_mail`（即 Outbox 队列）发内部通知，To 内部通知收件人（`Options::notify_to()`）+ Bcc（#221 起；此前 To 对接人）；两服务都健康不发。主题与正文 EN 先行、DE 独立撰写，对抗评审记录 `docs/acceptance/2026-10-11/67/copy-review.md`）。
 
+## Mail：信封发件人（#288）
+
+所有经 `wp_mail()` 的邮件（Woo 事务邮件、内部通知、健康告警、WordPress 原生邮件及 Outbox 重试）在原生 `phpmailer_init` 钩子上由 `Mail\EnvelopeSender` 设置 PHPMailer 的 `Sender`。值来自 `Options::envelope_sender()`，后台 WooCommerce → Settings → Inquiries → Mail delivery → Envelope sender（`linker_commerce_envelope_sender`）；未设、空值、无效地址或非字符串值回到 `sales@sunriverinverter.com`。这是站点级投递设置，与内部通知的可见发件地址独立。每次实际投递读取当前值，所以已经排队的消息与重试也会使用新设置，无须改写旧队列。
+
+理由来自 #288 的 2026-10-18 DNS 与邮件取证：`de-linker.com` 的 SPF 是 `v=spf1 include:spf.mail.qq.com ~all`，只授权腾讯；`sunriverinverter.com` 是 `v=spf1 include:_spf.mlsend.com include:_spf.mail.hostinger.com ~all`，包含 Hostinger。业主无法改权威 DNS，因此用已授权 Hostinger 的域作信封发件人。默认地址与内部通知默认发件地址共用 `Options` 中同一来源，代码旁保留 SPF 记录注释。后续自定义地址也须使用 SPF 授权实际发信服务的域；后台不做 DNS 修改或联网校验。
+
+`Sender` 是投递层的 envelope-from，Hostinger `mail()` 经 PHPMailer 使用 `-f`；最终收件服务器据此写 `Return-Path`。不手写 `Return-Path:` 头，不把它当普通消息头存进 Outbox，也不改 SMTP 通道。客户可见的 From 继续使用 WooCommerce 的 `Linker <sales@de-linker.com>`，内部通知继续使用自己的 `Linker <sales@sunriverinverter.com>`（或原自定义内部地址）；Reply-To、To/Cc/Bcc、主题、正文均不因信封设置改变。Outbox 保留捕获时已经解析的 From，重试只在投递层应用当前 Sender。
+
+原生优先：Woo 的发件人设置只控制可见 From，WordPress 不提供站点级信封发件人设置；PHPMailer 已有 `Sender` 属性，WordPress 已有 `phpmailer_init` 钩子，因此仅增加设置读取和该钩子回调，不添加邮件服务、依赖或替代队列。`Options::notify_sender()` 统一供 `Mail\TeamEmail`、`Contact\Emails\TeamMessageEmail` 和 `Health\Monitor` 读取内部名称与地址，消除三处身份拼装。
+
+验证：`Unit/Mail/EnvelopeSenderTest`、`Unit/Settings/OptionsTest` / `SettingsTabTest`；`Integration/EnvelopeSenderTest` 逐类覆盖十二封 Linker 邮件、两封启用的 Woo 原生邮件、普通 `wp_mail()` 和健康告警的队列与实际 PHPMailer/MIME，包含默认/自定义设置、EN/DE、队列后改设置、复用 mailer 和即时发送。真实的改前/改后邮件头、SPF 结果、sunriver 与指定测试邮箱的收件箱截图由 Claude 部署后按 #288 验收；本地文件捕获不能证明收件箱归类。
+
 ## 内部通知收件人（#221，业主 2026-10-17；#286 发件人拆分）
 
 客户团队邮箱与内部通知的收件人、发件人分开设置，互不回落：
@@ -42,7 +54,7 @@
 
 内部通知的 From 为 `Linker <内部发件地址>`（#286；默认 `Linker <sales@sunriverinverter.com>`），空值、无效地址或非字符串值回到此默认值。`Mail\TeamEmail` 与联系留言的 `Contact\Emails\TeamMessageEmail` 通过 Woo 原生 `get_from_name()` / `get_from_address()` 提供发件人，Woo 只在发送该封信时安装过滤器；健康告警是普通 `wp_mail()`，显式携带同一内部发件人头。Outbox 在捕获时将已解析的 From 固化到队列消息，之后重试保留。客户邮件继续读取 WooCommerce → Settings → Emails 的发件人设置（线上 `Linker <sales@de-linker.com>`），内部设置不改该值；两类邮件的 Reply-to 规则不变（与客户相关的内部通知回复客户，联系留言回复访客，摘要与健康告警不新增 Reply-to）。
 
-**新增一封内部通知的唯一做法**（#243"让 Linker 联系我"等）：继承 `Mail\TeamEmail`（`WC_Email` 子类），在 `trigger()` 里设好占位符后调 `notify( $order_or_user )`；收件人与 Bcc 由基类从 `notify_to()` / `notify_bcc()` 填，From 由基类读取 `notify_from()`，Reply-to 是该订单或用户；在本模块的 `woocommerce_email_classes` 注册，员工在 Woo 邮件列表里可见可关。不是 Woo 邮件的纯 `wp_mail()`（如健康告警）直接用 `notify_to()` 作 To、`notify_from()` 与固定名称 Linker 拼 `From:` 头、`notify_bcc()` 拼 `Bcc:` 头。两种都经 Outbox（限速、重试、日志）。不要自己写地址，也不要读 `team_mailbox()` 发内部信。
+**新增一封内部通知的唯一做法**（#243"让 Linker 联系我"等）：继承 `Mail\TeamEmail`（`WC_Email` 子类），在 `trigger()` 里设好占位符后调 `notify( $order_or_user )`；收件人与 Bcc 由基类从 `notify_to()` / `notify_bcc()` 填，From 由基类读取 `notify_sender()`，Reply-to 是该订单或用户；在本模块的 `woocommerce_email_classes` 注册，员工在 Woo 邮件列表里可见可关。不是 Woo 邮件的纯 `wp_mail()`（如健康告警）直接用 `notify_to()` 作 To、`notify_sender()` 的名称与地址拼 `From:` 头、`notify_bcc()` 拼 `Bcc:` 头。两种都经 Outbox（限速、重试、日志）。不要自己写地址，也不要读 `team_mailbox()` 发内部信。
 
 验证：`tests/php/Integration/NotificationRoutingTest.php` 以默认及自定义内部发件地址覆盖六类内部通知的 From、相关客户和访客的 Reply-to，并验证客户询盘和联系回执继续使用 Woo 发件人；同一文件以 Outbox 队列数据断言六类内部通知都只到 `notify_to()` + Bcc、不含 `sales@de-linker.com`，并断言上表第一行各处仍是 `sales@de-linker.com`；新加的内部通知照此加一行断言。
 
@@ -139,6 +151,7 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - [ ] 视觉验收：注册、产品页、Lösungsentwurf、提交页、账户 × EN/DE × 1440/390；以及访客提交后邮件确认链接（带 key）**未登录**打开的状态（评审 2026-10-10：此前重放全程登录态，该页漏扫）× EN/DE。
 
 ## 变更记录
+- 2026-10-18（#288）：全站信封发件人使用独立设置，默认来自 Hostinger SPF 授权域；可见 From 和 Reply-To 保留，实际投递与重试统一在 `phpmailer_init` 赋 Sender。内部发件身份集中到 `Options::notify_sender()`；Proforma 前缀去首尾连字符；翻译模板由 WP-CLI 重建。实现证据见 `docs/acceptance/2026-10-18/288/`，生产头部与收件箱验收待 Claude 部署后补齐。
 - 2026-10-18（#286）：内部通知使用独立发件地址，默认 `Linker <sales@sunriverinverter.com>`；客户邮件仍用 WooCommerce 的 From，Reply-to 不变。后台 Sender email / Absenderadresse 字段与 Recipient 同节；同一设置保存保留既有 Proforma 前缀中的连字符（`DLK-PF` 不变），继续清除其余非字母数字符号；文案评审与本地验收见 `docs/acceptance/2026-10-18/286/`。线上单封内部通知的收件箱验证由 Claude 在 #285 留证。
 - 2026-10-17（#221）：内部通知改投 `sales@sunriverinverter.com`（业主裁定），与客户可见的团队邮箱拆成两个设置（见“内部通知收件人”）；`Options::team_to()`/`team_bcc()` 改名为 `team_mailbox()` 与 `notify_to()`/`notify_bcc()`，不改任何选项值。健康告警由“To 对接人”改为内部通知收件人，发件人由 WordPress 缺省（`wordpress@…`）改为 WooCommerce 的发件人（评审第 1 轮）。集成测试的邮件隔离统一为 `IntegrationTestCase::isolate_mail()`（保存并还原限速记录、删掉本测试写的队列行），整套可连跑。Outbox 每次投递写一行 `linker-mail` info 日志：线上 cron 由 CLI PHP 跑，主机的 `~/.logs/mail.log` 只记 Web PHP 的 `mail()`，此前摘要、健康告警与队列重试在主机上不留任何痕迹。
 - 2026-10-16：登录与注册拆成两个页面（业主裁定）。`/my-account/` 只出登录卡；注册卡移到账号页的 `register` 端点（EN `/my-account/register/`，DE `/de/mein-konto/register/`，slug 跨语言共享），两页互跳。注册的处理链（Woo 的 nonce、字段、校验、建号、自动登录、pending 门禁）逐字不动，只有呈现分置两个请求。规格：`docs/specs/split-login-register.md`。

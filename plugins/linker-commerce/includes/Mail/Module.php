@@ -18,16 +18,18 @@ final class Module {
 	/**
 	 * Sets up the module.
 	 *
-	 * @param Outbox      $outbox The outbox.
-	 * @param JobStore    $jobs   The queue.
-	 * @param EmailLocale $locale The email language rule.
-	 * @param EmailPolicy $policy The WooCommerce emails that stay on.
+	 * @param Outbox         $outbox The outbox.
+	 * @param JobStore       $jobs   The queue.
+	 * @param EmailLocale    $locale The email language rule.
+	 * @param EmailPolicy    $policy The WooCommerce emails that stay on.
+	 * @param EnvelopeSender $sender The envelope identity of every delivery.
 	 */
 	public function __construct(
 		private readonly Outbox $outbox,
 		private readonly JobStore $jobs,
 		private readonly EmailLocale $locale,
-		private readonly EmailPolicy $policy
+		private readonly EmailPolicy $policy,
+		private readonly EnvelopeSender $sender
 	) {}
 
 	/**
@@ -38,6 +40,7 @@ final class Module {
 			add_filter( 'pre_wp_mail', array( $this->outbox, 'intercept' ), 10, 2 );
 			add_action( 'wp_mail_failed', array( $this->outbox, 'remember_error' ) );
 		add_action( Outbox::HOOK, array( $this->outbox, 'retry' ) );
+		add_action( 'phpmailer_init', array( $this->sender, 'apply' ) );
 		add_filter( 'woocommerce_allow_switching_email_locale', array( $this->locale, 'allow' ), 10, 2 );
 		add_filter( 'woocommerce_allow_restoring_email_locale', array( $this->locale, 'allow' ), 10, 2 );
 		add_filter( 'woocommerce_email_classes', array( $this->policy, 'switch_off_others' ), 1000 );

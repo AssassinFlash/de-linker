@@ -11,10 +11,12 @@ namespace Linker\Commerce\Tests\Unit\Mail;
 
 use Linker\Commerce\Mail\EmailLocale;
 use Linker\Commerce\Mail\EmailPolicy;
+use Linker\Commerce\Mail\EnvelopeSender;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Module;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
@@ -33,16 +35,18 @@ final class ModuleTest extends TestCase {
 			$outbox = new Outbox( $jobs, new Throttle() );
 			$locale = new EmailLocale();
 			$policy = new EmailPolicy();
+			$sender = new EnvelopeSender( new Options() );
 
 			WP_Mock::expectActionAdded( 'init', array( $jobs, 'register_post_type' ) );
 			WP_Mock::expectFilterAdded( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
 			WP_Mock::expectActionAdded( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
 		WP_Mock::expectActionAdded( Outbox::HOOK, array( $outbox, 'retry' ) );
+		WP_Mock::expectActionAdded( 'phpmailer_init', array( $sender, 'apply' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_switching_email_locale', array( $locale, 'allow' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_restoring_email_locale', array( $locale, 'allow' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $policy, 'switch_off_others' ), 1000 );
 
-			( new Module( $outbox, $jobs, $locale, $policy ) )->register();
+			( new Module( $outbox, $jobs, $locale, $policy, $sender ) )->register();
 
 		$this->assertConditionsMet();
 	}

@@ -78,6 +78,34 @@ final class OptionsTest extends TestCase {
 			)
 		);
 		$this->assertSame( $expected, ( new Options() )->notify_from() );
+		$this->assertSame(
+			array(
+				'name'  => 'Linker',
+				'email' => $expected,
+			),
+			( new Options() )->notify_sender()
+		);
+	}
+
+	/**
+	 * Every mail uses a valid envelope address independently of its visible sender.
+	 *
+	 * @testWith ["chester@de-linker.com", "chester@de-linker.com"]
+	 *           ["", "sales@sunriverinverter.com"]
+	 *           ["not-an-address", "sales@sunriverinverter.com"]
+	 *           [["invalid"], "sales@sunriverinverter.com"]
+	 *
+	 * @param mixed  $saved    Saved option.
+	 * @param string $expected Effective envelope address.
+	 */
+	public function test_envelope_sender( $saved, string $expected ): void {
+		$this->options(
+			array(
+				'linker_commerce_envelope_sender' => $saved,
+				Options::NOTIFY_FROM              => 'alerts@example.test',
+			)
+		);
+		$this->assertSame( $expected, ( new Options() )->envelope_sender() );
 	}
 
 	/**
