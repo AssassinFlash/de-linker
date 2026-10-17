@@ -67,6 +67,14 @@ LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/c286/wordpress \
 - Spec：初版指出“客户邮件需独立单元断言”的 P2；`3923cf7b` 补齐后复核 PASS，剩余 0 项。`4b6eb0bc` 前缀保护被两轴确认为同一设置保存路径的必要后果，增量复核均无问题。发件人、Reply-To、独立设置、六类内部通知和客户 Outbox 断言均符合 #286。
 - 文案：见 [copy-review.md](copy-review.md)，含 EN 初稿→评审→定稿、DE 独立稿及评审；Standards 独立子代理另行检查定稿，无新增意见。
 
+## 完整检查
+
+最终代码在 `git fetch origin` / `git rebase origin/main` 后：
+
+- `just check`：**exit 0**，包括所有 PHP 项目的 WPCS/PHPStan、JS/TS、Python 静态检查、用词、i18n 覆盖与目录有效性、构建产物一致性。
+- `just test`：**exit 0**。Commerce 默认套件 1,084 tests / 5,392 assertions / 57 skipped（实例测试另以上述真实 c286 命令实跑）；前端单元 98、浏览器 9；Genie 658、engine 112、local 98、migrate 94（另 9 skipped）、FAQ 20、pull 113、cutover 82 均通过。
+- 测试期间遇到另一工作树正在使用固定 Storybook 端口 6006，等待它自行释放后完整重跑通过；没有修改它的进程或端口配置。
+
 ## 上线验证与回滚
 
 本会话只实现、验证并提交 PR。#286 第三条标准由 Claude 上线后触发**一封**内部通知，在 sunriver 网页邮箱确认进入收件箱，并将截图记录在 #285；此项在本会话为**未完成，按分工留给 Claude**。本地证据证明邮件身份与路由，收件箱分类以该线上观察为准。
