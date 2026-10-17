@@ -1,0 +1,17 @@
+captured 2026-10-17 from the live site by curl (read-only)
+
+https://de-linker.com/de/mein-konto/
+  <title>   Partnerkonto: Anmelden oder Registrieren | Linker
+  description Melden Sie sich an, um Preise für Ihr Konto, Bestellhistorie, Adressen und Bestelldokumente zu sehen, oder registrieren Sie Ihr Unternehmen. Nur für Gewerbekunden; jede Registrierung wird geprüft.
+  canonical https://de-linker.com/de/mein-konto/
+
+https://de-linker.com/de/mein-konto/register/
+  <title>   Partnerkonto: Anmelden oder Registrieren | Linker
+  description Melden Sie sich an, um Preise für Ihr Konto, Bestellhistorie, Adressen und Bestelldokumente zu sehen, oder registrieren Sie Ihr Unternehmen. Nur für Gewerbekunden; jede Registrierung wird geprüft.
+  canonical https://de-linker.com/de/mein-konto/
+
+https://de-linker.com/de/mein-konto/lost-password/
+  <title>   Partnerkonto: Anmelden oder Registrieren | Linker
+  description Melden Sie sich an, um Preise für Ihr Konto, Bestellhistorie, Adressen und Bestelldokumente zu sehen, oder registrieren Sie Ihr Unternehmen. Nur für Gewerbekunden; jede Registrierung wird geprüft.
+  canonical https://de-linker.com/de/mein-konto/
+
