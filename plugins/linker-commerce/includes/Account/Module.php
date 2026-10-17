@@ -19,15 +19,16 @@ final class Module {
 	/**
 	 * Sets up the module.
 	 *
-	 * @param Menu             $menu      The menu.
-	 * @param ContactCard      $contact   The contact person card.
-	 * @param InquiryList      $inquiries The inquiry list.
-	 * @param SavedSolutions   $solutions The saved solutions.
-	 * @param Documents        $documents The documents page.
-	 * @param DocumentDownload $download  The downloads.
-	 * @param SolutionsRoute   $route     The route that saves solutions.
-	 * @param PendingGate      $pending   The review page of an account still under review.
-	 * @param AuthTemplates    $auth      The guest sign-in, register and lost-password pages.
+	 * @param Menu              $menu      The menu.
+	 * @param ContactCard       $contact   The contact person card.
+	 * @param InquiryList       $inquiries The inquiry list.
+	 * @param SavedSolutions    $solutions The saved solutions.
+	 * @param Documents         $documents The documents page.
+	 * @param DocumentDownload  $download  The downloads.
+	 * @param SolutionsRoute    $route     The route that saves solutions.
+	 * @param PendingGate       $pending   The review page of an account still under review.
+	 * @param AuthTemplates     $auth      The guest sign-in, register and lost-password pages.
+	 * @param AdminAccessNotice $admin_access The explanation of Woo's admin protection.
 	 */
 	public function __construct(
 		private readonly Menu $menu,
@@ -38,7 +39,8 @@ final class Module {
 		private readonly DocumentDownload $download,
 		private readonly SolutionsRoute $route,
 		private readonly PendingGate $pending = new PendingGate(),
-		private readonly AuthTemplates $auth = new AuthTemplates()
+		private readonly AuthTemplates $auth = new AuthTemplates(),
+		private readonly AdminAccessNotice $admin_access = new AdminAccessNotice()
 	) {}
 
 	/**
@@ -53,6 +55,7 @@ final class Module {
 		$this->pending->register();
 		add_action( 'linker_account_after_content', array( $this->contact, 'render' ) );
 		$this->auth->register();
+		$this->admin_access->register();
 
 		add_filter( 'woocommerce_account_orders_columns', array( $this->inquiries, 'columns' ) );
 		add_filter( 'woocommerce_my_account_my_orders_actions', array( $this->inquiries, 'actions' ), 10, 2 );

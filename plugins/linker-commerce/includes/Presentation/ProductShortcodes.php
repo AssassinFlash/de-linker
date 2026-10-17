@@ -2018,14 +2018,14 @@ final class ProductShortcodes {
 		// carried none. `key` is the order key the confirmation page needs —
 		// without it Woo renders the thank-you page without order details.
 		$kept = array();
-		foreach ( array( 's', 'orderby', 'step', 'key' ) as $query_key ) {
+		foreach ( array( 's', 'orderby', 'step', 'key', 'admin-access' ) as $query_key ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the public address, not a submitted form.
 			if ( ! isset( $_GET[ $query_key ] ) || ! \is_string( $_GET[ $query_key ] ) || '' === $_GET[ $query_key ] ) {
 				continue;
 			}
 			$kept[ $query_key ] = sanitize_text_field( wp_unslash( $_GET[ $query_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
 		}
-		return (string) add_query_arg( $kept, remove_query_arg( array( 's', 'orderby', 'step', 'key', 'cbq' ), $url ) );
+		return (string) add_query_arg( $kept, remove_query_arg( array( 's', 'orderby', 'step', 'key', 'admin-access', 'cbq' ), $url ) );
 	}
 
 	/**

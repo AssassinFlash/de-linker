@@ -3835,3 +3835,25 @@ msgstr ""
 #: includes/Settings/SettingsTab.php
 msgid "Internal notifications use this address with the sender name Linker. Customer emails use the WooCommerce sender settings."
 msgstr ""
+
+#: includes/Account/AdminAccessNotice.php
+msgid "Linker staff only"
+msgstr ""
+
+#: includes/Account/AdminAccessNotice.php
+#. translators: %s: email of the signed-in customer.
+#, php-format
+msgid "You are signed in as %s (customer account)."
+msgstr ""
+
+#: includes/Account/AdminAccessNotice.php
+msgid "The admin area is for Linker staff only."
+msgstr ""
+
+#: includes/Account/AdminAccessNotice.php
+msgid "Sign out and sign in as staff"
+msgstr ""
+
+#: includes/Account/AdminAccessNotice.php
+msgid "Go to my account"
+msgstr ""

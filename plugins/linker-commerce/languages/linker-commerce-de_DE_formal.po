@@ -4406,3 +4406,25 @@ msgstr "Absenderadresse"
 #: includes/Settings/SettingsTab.php
 msgid "Internal notifications use this address with the sender name Linker. Customer emails use the WooCommerce sender settings."
 msgstr "Interne Benachrichtigungen werden mit dieser Adresse und dem Absendernamen Linker gesendet. Für E-Mails an Kunden gelten die Absendereinstellungen von WooCommerce."
+
+#: includes/Account/AdminAccessNotice.php
+msgid "Linker staff only"
+msgstr "Bereich für Linker-Mitarbeitende"
+
+#: includes/Account/AdminAccessNotice.php
+#. translators: %s: email of the signed-in customer.
+#, php-format
+msgid "You are signed in as %s (customer account)."
+msgstr "Sie sind mit %s als Kundenkonto angemeldet."
+
+#: includes/Account/AdminAccessNotice.php
+msgid "The admin area is for Linker staff only."
+msgstr "Der Verwaltungsbereich ist ausschließlich für Linker-Mitarbeitende vorgesehen."
+
+#: includes/Account/AdminAccessNotice.php
+msgid "Sign out and sign in as staff"
+msgstr "Abmelden und als Mitarbeitende anmelden"
+
+#: includes/Account/AdminAccessNotice.php
+msgid "Go to my account"
+msgstr "Zu meinem Konto"

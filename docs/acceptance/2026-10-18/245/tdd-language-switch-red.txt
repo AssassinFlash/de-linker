@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+(node:70853) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/admin-access.spec.ts:233:1 › the language switch keeps the explanation open in both directions (22.3s)
+
+
+  1) [chromium] › specs/admin-access.spec.ts:233:1 › the language switch keeps the explanation open in both directions 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('[data-linker-admin-notice]')
+    Expected substring: "Bereich für Linker-Mitarbeitende"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" locator('[data-linker-admin-notice]') with timeout 15000ms
+      - waiting for locator('[data-linker-admin-notice]')
+
+
+      251 | 			.getByRole('link', { name: 'DE', exact: true })
+      252 | 			.click();
+    > 253 | 		await expect(page.locator('[data-linker-admin-notice]')).toContainText(
+          | 		                                                         ^
+      254 | 			'Bereich für Linker-Mitarbeitende'
+      255 | 		);
+      256 | 		await page
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c245/tests/e2e/specs/admin-access.spec.ts:253:60
+
+    Error Context: artifacts/test-results/admin-access-the-language--f75a9-ion-open-in-both-directions-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/admin-access.spec.ts:233:1 › the language switch keeps the explanation open in both directions 

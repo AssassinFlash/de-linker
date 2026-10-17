@@ -624,6 +624,11 @@
 
 .linker-gate-body { display: grid; gap: 12px; margin-top: 18px; }
 
+/* #245: customer email must wrap inside the account gate on narrow screens. */
+.linker-admin-access .linker-gate-body { overflow-wrap: anywhere; }
+.linker-admin-access .linker-gate-actions { display: grid; grid-template-columns: minmax(0, 1fr); }
+.linker-admin-access .linker-gate-btn { padding-block: var(--proto-space-2); }
+
 .linker-gate-body p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--acct-muted); }
 
 /* The gate's own notice — the restricted account's reason (ticket #184). It is

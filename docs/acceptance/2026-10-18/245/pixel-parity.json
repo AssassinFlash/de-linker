@@ -1,0 +1,66 @@
+{
+  "surface": "existing account sign-in page",
+  "method": "same Chromium process and viewport, full-page, fonts and rendered images loaded, animations disabled, exact RGB, no masks",
+  "results": [
+    {
+      "language": "en",
+      "width": 1440,
+      "live_size": [
+        1440,
+        1419
+      ],
+      "local_size": [
+        1440,
+        1419
+      ],
+      "unmasked_different_pixels": 0,
+      "masks": [],
+      "pass": true
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "live_size": [
+        390,
+        1391
+      ],
+      "local_size": [
+        390,
+        1391
+      ],
+      "unmasked_different_pixels": 0,
+      "masks": [],
+      "pass": true
+    },
+    {
+      "language": "de",
+      "width": 1440,
+      "live_size": [
+        1440,
+        1419
+      ],
+      "local_size": [
+        1440,
+        1419
+      ],
+      "unmasked_different_pixels": 0,
+      "masks": [],
+      "pass": true
+    },
+    {
+      "language": "de",
+      "width": 390,
+      "live_size": [
+        390,
+        1454
+      ],
+      "local_size": [
+        390,
+        1454
+      ],
+      "unmasked_different_pixels": 0,
+      "masks": [],
+      "pass": true
+    }
+  ]
+}
