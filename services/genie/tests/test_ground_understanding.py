@@ -254,7 +254,7 @@ def test_a_handoff_turn_is_the_handoff_block_alone() -> None:
     facts.add(
         Fact(id="handoff.sentence_de", value="Unser Team …", source="handoff-team")
     )
-    person = Route("person", (Call("linker/handoff-team", {}),))
+    service = Route("service", (Call("linker/handoff-team", {}),))
     doubled = TurnOutput(
         language="de",
         blocks=[
@@ -264,12 +264,12 @@ def test_a_handoff_turn_is_the_handoff_block_alone() -> None:
     )
     assert (
         "a handoff turn is the handoff block alone"
-        in check(doubled, facts, person).failures
+        in check(doubled, facts, service).failures
     )
     alone = TurnOutput(
         language="de", blocks=[HandoffBlock(summary="{fact:handoff.sentence_de}")]
     )
-    assert check(alone, facts, person).ok
+    assert check(alone, facts, service).ok
 
 
 def test_datasheet_figures_become_facts_in_the_turns_language() -> None:
