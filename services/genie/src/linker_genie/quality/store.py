@@ -132,6 +132,14 @@ class Store:
             return None
         return str(json.loads(row[0]).get("error") or ""), float(row[1])
 
+    def prune(self, before: float) -> int:
+        """Delete the verdicts last written before `before` (Unix time)."""
+        cursor = self._db.execute(
+            "DELETE FROM judgments WHERE updated_at < ?", (before,)
+        )
+        self._db.commit()
+        return cursor.rowcount
+
     def counts(self, max_attempts: int) -> dict[str, int]:
         """Failed turns still being retried, and those whose retries ran out."""
         retrying, exhausted = self._db.execute(

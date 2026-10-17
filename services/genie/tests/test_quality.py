@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import sqlite3
+import time
 from collections.abc import Callable, Iterator
 from dataclasses import replace
 from pathlib import Path
@@ -34,6 +36,8 @@ from linker_genie.quality.turns import LoggedTurn, TurnSource
 from linker_genie.quality.wordpress import ROUTE, PushError, WordPress
 from linker_genie.quality.worker import (
     MAX_ATTEMPTS,
+    PRUNE_EVERY_SECONDS,
+    RETENTION_DAYS,
     RETRY_AFTER_SECONDS,
     Worker,
     flags_for,
@@ -591,3 +595,60 @@ def test_a_refused_token_is_not_retried_and_not_echoed(site: Site) -> None:
         wordpress.push([], {})
     assert len(site.bodies) == 1
     assert "secret-token" not in str(raised.value)
+
+
+def test_turns_and_verdicts_past_retention_are_deleted_from_both_stores(
+    turns: Path, tmp_path: Path, site: Site, judges: Judges
+) -> None:
+    worker = _worker(turns, tmp_path, site)
+    worker.cycle(1000.0)
+    _ask("old question")
+    _ask("new question")
+    # The log stamps turns with the real clock, so the sweep runs on it too.
+    now = time.time()
+    worker.cycle(now - 60)
+    # Backdate the first turn past retention, as if logged 91 days ago.
+    log = sqlite3.connect(turns)
+    log.execute("UPDATE turns SET created_at = '2000-01-01 00:00:00' WHERE id = 1")
+    log.commit()
+    log.close()
+    worker.store._db.execute("UPDATE judgments SET updated_at = 0 WHERE turn_id = 1")
+    worker.store._db.execute(
+        "UPDATE judgments SET updated_at = ? WHERE turn_id = 2", (now - 3600,)
+    )
+    worker.store._db.commit()
+
+    worker.prune(now)
+
+    assert [turn.id for turn in TurnSource(turns).after(0, 10)] == [2]
+    left = [row[0] for row in worker.store._db.execute("SELECT turn_id FROM judgments")]
+    assert left == [2]
+
+
+def test_the_retention_sweep_runs_once_a_day(
+    turns: Path,
+    tmp_path: Path,
+    site: Site,
+    judges: Judges,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    worker = _worker(turns, tmp_path, site)
+    with caplog.at_level(logging.INFO, logger="linker_genie.quality"):
+        worker.cycle(PRUNE_EVERY_SECONDS)
+        worker.cycle(PRUNE_EVERY_SECONDS + 30)
+        worker.cycle(2 * PRUNE_EVERY_SECONDS)
+    sweeps = [line for line in caplog.messages if line.startswith("retention:")]
+    assert len(sweeps) == 2
+    assert (
+        sweeps[0] == "retention: deleted 0 turn(s) and 0 verdict(s) older than 90 days"
+    )
+
+
+def test_the_vps_keeps_turns_exactly_as_long_as_the_site_keeps_conversations() -> None:
+    retention = (
+        Path(__file__).resolve().parents[3]
+        / "plugins/linker-tools/includes/Genie/Retention.php"
+    ).read_text()
+    match = re.search(r"const RETENTION_DAYS = (\d+);", retention)
+    assert match is not None
+    assert int(match.group(1)) == RETENTION_DAYS

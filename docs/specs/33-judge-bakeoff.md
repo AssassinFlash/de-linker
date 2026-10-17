@@ -25,6 +25,9 @@
 - **标记**：grounded 0（矛盾）或 1（无法核实）、appropriate no、better_pick B、引用核验不过、判不出 → 标记，后台列表可筛。
 - **交给站点**：`POST /wp-json/linker-ai/v1/genie/quality`，共享令牌放在请求头 `X-Linker-Judge-Token`（不用 `Authorization: Bearer`：LiveCanvas 自带的模板系统把每个 REST 请求的 Bearer 当 JWT 解码，非 JWT 令牌直接 500；VPS `GENIE_JUDGE_TOKEN` = 站点 wp-config.php 常量 `LINKER_GENIE_JUDGE_TOKEN`；没有常量时路由关闭）。站点把每轮结论存为对话帖的 post meta（`linker_genie_quality`），无自定义表；没被站点收下的结论下一轮再交。工作进程每 10 分钟报一次状态，站点 30 分钟没收到即视为停止。
 - **后台**：Genie quality（`linker-tools` `QualityPage`）列出有结论的对话，可筛"标记"与"未能评判"；点进对话看逐轮问句、回答、结论、升级原因、评审理由与对话全文。页首显示工作进程停止或最近一次评审错误。
+- **保留期限**：VPS 上的对话日志（顾客原话、页面、工具返回）和结论库保留 90 天，与站点删除访客对话的期限相同（`plugins/linker-tools/includes/Genie/Retention.php` 的 `RETENTION_DAYS`；有测试把两边的数字钉在一起）。注册客户的对话站点会继续保留，但 VPS 上的副本只供评判使用，同样 90 天后删除；结论本身随对话存在站点上。评审进程每天清理一次两个库里的过期行，失败记 ERROR 并在下一轮重试。
+- **部署**：`just cutover services --run` 一条命令完成发布与启用：两份 release 之后在 VPS 上跑 `services/genie/ops/activate.sh`（两个服务各自 `uv sync --locked`、安装/更新 `linker-genie-judge.service`、`daemon-reload`、重启 engine / genie / judge、逐个确认 active，有一个没起来即失败）。唯一的手工步骤是放令牌：站点 wp-config.php 的 `LINKER_GENIE_JUDGE_TOKEN` 与 `/etc/linker-genie.env` 的 `GENIE_JUDGE_TOKEN`；没有令牌时评审单元只安装不启动，该步骤以提示结束。
+- **本地**：`just serve <实例>` 把 Genie 日志写到该实例自己的 `~/de-linker-local/<实例>/genie/turns.sqlite`，评审进程的 `judgments.sqlite` 默认在它旁边；各实例互不串号。本地跑评审：`GENIE_JUDGE_TOKEN=<实例 wp-config 里的值> GENIE_WP_URL=<实例地址> uv run --project services/genie python -m linker_genie.quality.worker --log ~/de-linker-local/<实例>/genie/turns.sqlite`。
 - **每日摘要**：`apply_filters( 'linker_tools_genie_quality_summary', null, $since )` 返回过去 24 小时的计数（judged / flagged / escalated / failed / skipped）、工作进程状态、后台链接和一句现成的 `line`；摘要一节由 #221 按 `Digest\Block` 接入。
 
 ## 指标

@@ -1,4 +1,8 @@
-"""The service's turn log, read-only: the quality worker's queue."""
+"""The service's turn log: the quality worker's queue.
+
+The worker reads it, and deletes from it only what is past retention
+(`prune`); it never changes a turn.
+"""
 
 from __future__ import annotations
 
@@ -37,7 +41,7 @@ class LoggedTurn:
 
 
 class TurnSource:
-    """Reads the log the service writes; never writes it.
+    """Reads the log the service writes; deletes only expired turns.
 
     Each read opens its own read-only connection, so the worker holds no lock
     between cycles and a log the service has not created yet reads as empty.
@@ -71,6 +75,25 @@ class TurnSource:
                 tuple(ids),
             )
         ]
+
+    def prune(self, before: str) -> int:
+        """Delete the turns logged before `before` (`YYYY-MM-DD HH:MM:SS`,
+        UTC, the log's own `created_at` form); return how many went."""
+        if not self.path.exists():
+            return 0
+        database = sqlite3.connect(self.path, timeout=BUSY_TIMEOUT)
+        try:
+            cursor = database.execute(
+                "DELETE FROM turns WHERE created_at < ?", (before,)
+            )
+            database.commit()
+            return cursor.rowcount
+        except sqlite3.OperationalError as error:
+            if "no such table" in str(error):
+                return 0
+            raise
+        finally:
+            database.close()
 
     def _query(self, sql: str, args: tuple[Any, ...]) -> list[sqlite3.Row]:
         if not self.path.exists():

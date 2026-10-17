@@ -635,9 +635,10 @@ def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Resul
     directory, `current` symlink, rollback) for two services. It copies from a
     directory on the machine it runs on, so a publish stages over ssh first
     (the tree and the script into `plan.SERVICES_STAGING`) and runs there.
-    What serves a release afterwards — the units, the environments, the
-    engine's feed — is host setup the window performs; this step lays the
-    releases down. Without `run` it reports the command lines instead.
+    After both publishes it runs `ops/activate.sh` there (venvs, the quality
+    worker's unit, daemon-reload, restarts, every unit up), so a services
+    deploy is this one step; the environments, the tokens and the engine's
+    feed stay host setup. Without `run` it reports the command lines instead.
     """
     actions: list[str] = []
     notes: list[str] = []
@@ -673,6 +674,29 @@ def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Resul
                 f"{service}: rsync {directory} -> {plan.SERVICES_SSH}:{staging}, then "
                 f"GENIE_RELEASE_ROOT={root} bash {staging_root}/release.sh publish {staging}"
             )
+    activate = f"bash {staging_root}/activate.sh"
+    if run:
+        _rsync(repository / plan.ACTIVATE_SCRIPT, f"{staging_root}/activate.sh")
+        completed = subprocess.run([*ssh, activate], check=False)
+        if completed.returncode == plan.ACTIVATE_NO_TOKEN:
+            actions.append("activated engine and genie; quality worker installed")
+            notes.append(
+                "linker-genie-judge is not started: set GENIE_JUDGE_TOKEN in "
+                "/etc/linker-genie.env and LINKER_GENIE_JUDGE_TOKEN in wp-config.php, "
+                "then run this step again"
+            )
+        elif completed.returncode != 0:
+            raise CutoverError(
+                "activating the services failed (journalctl -u <unit> on the VPS)"
+            )
+        else:
+            actions.append("activated engine, genie and the quality worker")
+    else:
+        actions.append(
+            f"would activate: rsync {plan.ACTIVATE_SCRIPT} -> "
+            f"{plan.SERVICES_SSH}:{staging_root}/activate.sh, then {activate} "
+            "(uv sync, judge unit, daemon-reload, restart engine/genie/judge)"
+        )
     for _service, option, variable in plan.SERVICE_OPTIONS:
         value = addresses.get(variable, "")
         if value:

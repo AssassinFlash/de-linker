@@ -766,6 +766,7 @@ def test_the_publish_stages_over_ssh_and_runs_there(
     release = repository / plan.RELEASE_SCRIPT
     release.parent.mkdir(parents=True)
     release.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+    (repository / plan.ACTIVATE_SCRIPT).write_text("#!/usr/bin/env bash\n")
 
     seen: list[list[str]] = []
 
@@ -785,7 +786,11 @@ def test_the_publish_stages_over_ssh_and_runs_there(
         "rsync",
         "rsync",
         "ssh",
+        "rsync",
+        "ssh",
     ]
+    assert seen[-2][-1] == f"{plan.SERVICES_SSH}:{plan.SERVICES_STAGING}/activate.sh"
+    assert seen[-1][-1] == f"bash {plan.SERVICES_STAGING}/activate.sh"
     assert seen[0] == [
         "ssh",
         "-o",
@@ -884,3 +889,43 @@ def test_each_way_of_losing_the_verification_is_a_note(
     )
     result = steps.search_console(site)
     assert len(result.notes) == 1 and note in result.notes[0]
+
+
+def _services_repository(tmp_path: Path) -> Path:
+    repository = tmp_path / "repo"
+    for _service, _root, directory in plan.SERVICES:
+        (repository / directory).mkdir(parents=True)
+    (repository / plan.RELEASE_SCRIPT).parent.mkdir(parents=True, exist_ok=True)
+    (repository / plan.RELEASE_SCRIPT).write_text("#!/usr/bin/env bash\n")
+    (repository / plan.ACTIVATE_SCRIPT).write_text("#!/usr/bin/env bash\n")
+    return repository
+
+
+def test_a_missing_judge_token_is_a_note_not_a_silent_success(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def answer(command: list[str], *args: object, **kwargs: object) -> object:
+        del args, kwargs
+        activating = command[-1] == f"bash {plan.SERVICES_STAGING}/activate.sh"
+        return SimpleNamespace(returncode=plan.ACTIVATE_NO_TOKEN if activating else 0)
+
+    monkeypatch.setattr("linker_cutover.steps.subprocess.run", answer)
+    result = steps.services(
+        repository=_services_repository(tmp_path), addresses={}, run=True
+    )
+    assert any("linker-genie-judge is not started" in note for note in result.notes)
+
+
+def test_a_unit_that_does_not_come_up_fails_the_step(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def answer(command: list[str], *args: object, **kwargs: object) -> object:
+        del args, kwargs
+        activating = command[-1] == f"bash {plan.SERVICES_STAGING}/activate.sh"
+        return SimpleNamespace(returncode=1 if activating else 0)
+
+    monkeypatch.setattr("linker_cutover.steps.subprocess.run", answer)
+    with pytest.raises(CutoverError, match="activating the services failed"):
+        steps.services(
+            repository=_services_repository(tmp_path), addresses={}, run=True
+        )
