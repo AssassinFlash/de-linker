@@ -1,0 +1,168 @@
+[
+ {
+  "url": "https://www.memodo.de/",
+  "loadedUrl": "https://www.memodo.de/photovoltaik/",
+  "loadedAt": "2026-10-17T05:39:13.352Z",
+  "title": "Photovoltaik Großhandel und Photovoltaik-Shop | Memodo",
+  "lang": "de-DE",
+  "scripts": [],
+  "iframes": [],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ },
+ {
+  "url": "https://krannich-solar.com/de-de/",
+  "loadedUrl": "https://krannich-solar.com/de-de/",
+  "loadedAt": "2026-10-17T05:39:19.706Z",
+  "title": "Krannich Solar Deutschland: Ihr PV Großhändler rund um Photovoltaik",
+  "lang": "de-de",
+  "scripts": [
+   "https://consent.cookiebot.com/0dfd8527-156c-4012-adcd-efe55af8e1ea/cc.js?renew=false&referer=krannich-solar.com&dnt=false&init=false",
+   "https://consent.cookiebot.com/uc.js?cbid=0dfd8527-156c-4012-adcd-efe55af8e1ea&implementation=gtm&consentmode-dataredaction=dynamic"
+  ],
+  "iframes": [
+   {
+    "src": "https://consentcdn.cookiebot.com/sdk/bc-v4.min.html",
+    "title": "Blank",
+    "id": "",
+    "name": ""
+   }
+  ],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ },
+ {
+  "url": "https://solar-distribution.baywa-re.de/de/",
+  "loadedUrl": "https://solar-distribution.baywa-re.de/de/",
+  "loadedAt": "2026-10-17T05:39:39.614Z",
+  "title": "PV-Webshop der BayWa r.e. Solar Energy Systems GmbH",
+  "lang": "de",
+  "scripts": [
+   "https://solar-distribution.baywa-re.de/modules/projekteins/pr_projectrelated_basket/out/src/js/custom.js?1782202536"
+  ],
+  "iframes": [],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ },
+ {
+  "url": "https://www.segen.co.uk/",
+  "loadedUrl": "https://www.segen.co.uk/",
+  "loadedAt": "2026-10-17T05:39:44.718Z",
+  "title": "Solar Panel, Heat Pump and EV Charger Supplier | Segen UK",
+  "lang": "en",
+  "scripts": [],
+  "iframes": [],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ },
+ {
+  "url": "https://www.wattkraft.com/",
+  "loadedUrl": "https://www.wattkraft.com/",
+  "loadedAt": "2026-10-17T05:39:46.610Z",
+  "title": "Wattkraft - Distributor für Photovoltaik-Wechselrichter und Solarmodule",
+  "lang": "de-DE",
+  "scripts": [],
+  "iframes": [],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ },
+ {
+  "url": "https://segensolar.eu/",
+  "loadedUrl": "https://segensolar.eu/",
+  "loadedAt": "2026-10-17T05:39:59.338Z",
+  "title": "Your PV distributor in Europe | Segen",
+  "lang": "en-EU",
+  "scripts": [],
+  "iframes": [],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ },
+ {
+  "url": "https://www.libra.energy/en",
+  "loadedUrl": "https://www.libra.energy/en",
+  "loadedAt": "2026-10-17T05:40:13.933Z",
+  "title": "Your wholesaler in sustainable energy",
+  "lang": "en",
+  "scripts": [],
+  "iframes": [
+   {
+    "src": "",
+    "title": "Open chat",
+    "id": "",
+    "name": ""
+   },
+   {
+    "src": "",
+    "title": "Unread chat messages",
+    "id": "",
+    "name": ""
+   },
+   {
+    "src": "",
+    "title": "Ask us anything. We will reply as soon as possible.",
+    "id": "",
+    "name": ""
+   }
+  ],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ },
+ {
+  "url": "https://www.conrad.de/",
+  "loadedUrl": "https://www.conrad.de/",
+  "loadedAt": "2026-10-17T05:40:47.178Z",
+  "title": "Elektronik & Technik bei Conrad » Zum Online-Shop",
+  "lang": "de-DE",
+  "scripts": [],
+  "iframes": [],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ },
+ {
+  "url": "https://www.conrad.com/en/",
+  "loadedUrl": "https://www.conrad.com/en",
+  "loadedAt": "2026-10-17T05:41:16.409Z",
+  "title": "404 ERROR PAGE",
+  "lang": "en-US",
+  "scripts": [],
+  "iframes": [],
+  "elements": [],
+  "globals": [],
+  "viewport": {
+   "w": 1920,
+   "h": 1080
+  }
+ }
+]

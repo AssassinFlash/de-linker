@@ -1,0 +1,1498 @@
+[
+ {
+  "url": "https://www.intercom.com/help/en/articles/10032299-use-fin-ai-agent-in-workflows",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/10032299-use-fin-ai-agent-in-workflows",
+   "loadedTime": "2026-10-17T05:43:37.099Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/10032299-use-fin-ai-agent-in-workflows",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/10032299-use-fin-ai-agent-in-workflows",
+   "title": "Use Fin AI Agent in Workflows | Intercom Help",
+   "description": "How to add Fin to your Workflows for advanced customization and triaging.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Use Fin AI Agent in Workflows | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "How to add Fin to your Workflows for advanced customization and triaging."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6485365-fin-ai-agent",
+       "name": "Fin AI Agent",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6486559-deploy",
+       "name": "Deploy",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "name": "Use Fin AI Agent in Workflows",
+       "position": 4
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "How to add Fin to your Workflows for advanced customization and triaging.",
+     "headline": "Use Fin AI Agent in Workflows",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/10032299-use-fin-ai-agent-in-workflows",
+     "author": {
+      "@type": "Person",
+      "name": "Beth-Ann Sher"
+     },
+     "dateModified": "2026-10-15T14:36:07Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:43:34 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fng24u7fvt29uroqg",
+    "etag": "W/\"a8dcfd9cc2a3eef8a52cdc9454880000\"",
+    "x-runtime": "0.425361",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-L12G4-2uxqvI06GyLNdCr6J0KCVKwzhHmKWgqbwgnxs'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=10f277cf-e0e6-4d3b-a7f4-a37730530ffe; path=/; max-age=1; httponly\ngtm_id=75e42cc3-ad33-47ee-8926-a41bdc643fbd; domain=intercom.com; path=/; <signed-url-removed> 17 Oct 2027 05:43:34 GMT; secure",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 dea1aa5680a2f6c26d32619b1ce694a2.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "MIA50-P9",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "sgs7cu55FQurk1SxrWzPItD9KrJ7Uirt8_S1uzjlv95BbdU1P8xaSQ==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-10032299-use-fin-ai-agent-in-workflows.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/12396892-manage-fin-ai-agent-s-escalation-guidance-and-rules",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/12396892-manage-fin-ai-agent-s-escalation-guidance-and-rules",
+   "loadedTime": "2026-10-17T05:43:37.175Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/12396892-manage-fin-ai-agent-s-escalation-guidance-and-rules",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/12396892-manage-fin-ai-agent-s-escalation-guidance-and-rules",
+   "title": "Manage Fin AI Agent's escalation guidance and rules | Intercom Help",
+   "description": "Control when Fin escalates conversations to human teammates and how the handover is communicated.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Manage Fin AI Agent's escalation guidance and rules | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "Control when Fin escalates conversations to human teammates and how the handover is communicated."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6485365-fin-ai-agent",
+       "name": "Fin AI Agent",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/3990230-train",
+       "name": "Train",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "name": "Manage Fin AI Agent's escalation guidance and rules",
+       "position": 4
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "Control when Fin escalates conversations to human teammates and how the handover is communicated.",
+     "headline": "Manage Fin AI Agent's escalation guidance and rules",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/12396892-manage-fin-ai-agent-s-escalation-guidance-and-rules",
+     "author": {
+      "@type": "Person",
+      "name": "Dawn Perrott"
+     },
+     "dateModified": "2026-10-15T09:45:57Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:43:34 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fpru6tlu2j33frpsg",
+    "etag": "W/\"fedb0c8f1384f9d9036fd89db891882e\"",
+    "x-runtime": "0.378745",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce--rL0rXyeiYCXNnjDXumbfrsD1qfgoKQRNE0ypXMa-Qs'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=ae4273c3-8006-44af-a45c-b7dbd2bc7a64; path=/; max-age=1; httponly\ngtm_id=c914ffda-957a-4094-8c23-5dcc852c8ec1; domain=intercom.com; path=/; <signed-url-removed> 17 Oct 2027 05:43:34 GMT; secure",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 9b52e0894737f687463328cc17b81c30.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "MIA50-P9",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "HAxUwqmX5x8YLRj9swdzUo7wZX-GxyuRYJPebcnl21lYn0pbraFbww==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-12396892-manage-fin-ai-agent-s-escalation-guidance-and-rules.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/13128480-fin-for-sales-integrations-create-leads-in-your-crm",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/13128480-fin-for-sales-integrations-create-leads-in-your-crm",
+   "loadedTime": "2026-10-17T05:43:50.009Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/13128480-fin-for-sales-integrations-create-leads-in-your-crm",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/13128480-fin-for-sales-integrations-create-leads-in-your-crm",
+   "title": "Fin for Sales integrations: Create leads in your CRM | Intercom Help",
+   "description": "Seamlessly connect Fin to Salesforce, HubSpot, Attio and more to automatically capture and sync leads.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Fin for Sales integrations: Create leads in your CRM | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "Seamlessly connect Fin to Salesforce, HubSpot, Attio and more to automatically capture and sync leads."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6485365-fin-ai-agent",
+       "name": "Fin AI Agent",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/15902891-roles",
+       "name": "Roles",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/19558411-fin-for-sales",
+       "name": "Fin for Sales",
+       "position": 4
+      },
+      {
+       "@type": "ListItem",
+       "name": "Fin for Sales integrations: Create leads in your CRM",
+       "position": 5
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "Seamlessly connect Fin to Salesforce, HubSpot, Attio and more to automatically capture and sync leads.",
+     "headline": "Fin for Sales integrations: Create leads in your CRM",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/13128480-fin-for-sales-integrations-create-leads-in-your-crm",
+     "author": {
+      "@type": "Person",
+      "name": "Beth-Ann Sher"
+     },
+     "dateModified": "2026-07-01T15:45:44Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:43:46 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fpuoara8596rsreo0",
+    "etag": "W/\"99854110c5c2c60b084ab2e0ca0fbcab\"",
+    "x-runtime": "0.378268",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-N7-rkEYDrinUm0K7vvWgEeveS4yJfxCi30ZtC2g7oiQ'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=b58b98db-7633-4a14-ab3c-9823e15d2cc4; path=/; max-age=1; httponly",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 9b52e0894737f687463328cc17b81c30.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "MIA50-P9",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "BGbPl-QvANN95v1lK5AV3hWIFPdMCRDKQkHofwhnAjJJCamwkeVvgQ==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-13128480-fin-for-sales-integrations-create-leads-in-your-crm.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/13927077-how-to-train-fin-for-sales",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/13927077-how-to-train-fin-for-sales",
+   "loadedTime": "2026-10-17T05:43:49.014Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/13927077-how-to-train-fin-for-sales",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/13927077-how-to-train-fin-for-sales",
+   "title": "How to train Fin for Sales | Intercom Help",
+   "description": "Learn how to train Fin with your lead qualification criteria and routing outcomes.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "How to train Fin for Sales | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "Learn how to train Fin with your lead qualification criteria and routing outcomes."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6485365-fin-ai-agent",
+       "name": "Fin AI Agent",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/15902891-roles",
+       "name": "Roles",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/19558411-fin-for-sales",
+       "name": "Fin for Sales",
+       "position": 4
+      },
+      {
+       "@type": "ListItem",
+       "name": "How to train Fin for Sales",
+       "position": 5
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "Learn how to train Fin with your lead qualification criteria and routing outcomes.",
+     "headline": "How to train Fin for Sales",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/13927077-how-to-train-fin-for-sales",
+     "author": {
+      "@type": "Person",
+      "name": "Beth-Ann Sher"
+     },
+     "dateModified": "2026-09-21T14:06:14Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:43:45 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fipt2vlg31s7vca90",
+    "etag": "W/\"6e0cd58c8edb09db16cb9447eea62507\"",
+    "x-runtime": "0.447852",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-yPTUcg83l8aQYHwUeUc9p-dtUFcdEndR4oVogEO4gN4'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=acde2cb9-abe7-4a95-a6e3-ed764bef01d6; path=/; max-age=1; httponly",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 9b52e0894737f687463328cc17b81c30.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "MIA50-P9",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "h42iIigR16yb_QvpCPG5HpPSJJgfN4RHEP5-faNqK8vYS7flR4kAAg==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-13927077-how-to-train-fin-for-sales.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/310-how-do-visitors-leads-and-users-work-in-intercom",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/310-how-do-visitors-leads-and-users-work-in-intercom",
+   "loadedTime": "2026-10-17T05:43:49.409Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/310-how-do-visitors-leads-and-users-work-in-intercom",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/310-how-do-visitors-leads-and-users-work-in-intercom",
+   "title": "How do visitors, leads and users work in Intercom? | Intercom Help",
+   "description": "How visitors become leads, how leads become users and more.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "How do visitors, leads and users work in Intercom? | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "How visitors become leads, how leads become users and more."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/2094808-contacts",
+       "name": "Contacts",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/2094815-tracking-filtering-grouping-your-customers",
+       "name": "Tracking, filtering & grouping your customers",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "name": "How do visitors, leads and users work in Intercom?",
+       "position": 4
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "How visitors become leads, how leads become users and more.",
+     "headline": "How do visitors, leads and users work in Intercom?",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/310-how-do-visitors-leads-and-users-work-in-intercom",
+     "author": {
+      "@type": "Person",
+      "name": "Alek Toumert"
+     },
+     "dateModified": "2026-08-28T08:24:45Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:43:45 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000g13g0ck5317ao9nag",
+    "etag": "W/\"7748c61739c7b71960c187260e4f5d6c\"",
+    "x-runtime": "0.353809",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-GO9RyvQYV1G3xyvCr9lH1UsT3bAafeiQ63nzRX00sp4'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=a3c3a26c-5e21-4803-859e-7c71c5793a70; path=/; max-age=1; httponly",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 9b52e0894737f687463328cc17b81c30.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "MIA50-P9",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "h32wZtkflLZXvfoPIC4LG1YBOzGY8TNNTRg2hEWTnsredngb2kKA_w==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-310-how-do-visitors-leads-and-users-work-in-intercom.md>"
+ },
+ {
+  "url": "https://support.zendesk.com/hc/en-us/articles/10169333291290-About-voice-AI-agents",
+  "crawl": {
+   "loadedUrl": "https://support.zendesk.com/hc/en-us/articles/10169333291290-About-voice-AI-agents",
+   "loadedTime": "2026-10-17T05:44:00.321Z",
+   "referrerUrl": "https://support.zendesk.com/hc/en-us/articles/10169333291290-About-voice-AI-agents",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://support.zendesk.com/hc/en-us/articles/10169333291290-About-voice-AI-agents",
+   "title": "About voice AI agents – Zendesk help",
+   "description": "Voice AI agents enable intelligent, conversational phone support by automating end-to-end customer voice interactions. This feature lets...",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:image",
+     "content": "https://support.zendesk.com//static.zdassets.com/logo.png"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Zendesk help"
+    },
+    {
+     "property": "og:title",
+     "content": "About voice AI agents"
+    },
+    {
+     "property": "og:description",
+     "content": "Voice AI agents enable intelligent, conversational phone support by automating end-to-end customer voice interactions. This feature lets incoming calls start with an AI agent and, when needed, esca..."
+    },
+    {
+     "property": "og:url",
+     "content": "https://support.zendesk.com/hc/en-us/articles/10169333291290-About-voice-AI-agents"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "TechArticle",
+     "@id": "https://support.zendesk.com/hc/en-us/articles/10169333291290",
+     "url": "https://support.zendesk.com/hc/en-us/articles/10169333291290",
+     "headline": "About voice AI agents",
+     "description": "You learn how voice AI agents answer calls, resolve issues, update tickets, and escalate to human agents with full context when needed.",
+     "articleSection": "Creating AI agents",
+     "datePublished": "2026-01-13T23:06:08+00:00",
+     "dateModified": "2026-09-25T15:47:42.201586+00:00",
+     "inLanguage": "en",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://support.zendesk.com/hc/en-us/articles/10169333291290"
+     },
+     "author": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "isPartOf": {
+      "@type": "WebSite",
+      "name": "Zendesk Help",
+      "@id": "https://support.zendesk.com/hc/"
+     },
+     "about": {
+      "@type": "SoftwareApplication",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com",
+      "softwareAddOn": {
+       "@type": "SoftwareApplication",
+       "name": "AI agents",
+       "@id": "https://support.zendesk.com/hc/en-us/sections/8988994355994"
+      }
+     }
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:43:55 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "server": "cloudflare",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "x-ua-compatible": "IE=edge",
+    "content-language": "en-us",
+    "x-frame-options": "SAMEORIGIN",
+    "x-envoy-decorator-operation": "/hc",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=dhgj264fdKlEKwt67pk0U6b3CA4Uv7sLkM1JzSitdy62utsLp%2BSj7Bx2P9%2FhLPazLfTySu5eZ4lVOjEmejgQ5%2Fs%2BkA%2FB62efxOhyLx0oKr01ba%2B3C7Hm32UN0kXsrrBr5Hm3GiA%3D\"}]}",
+    "cache-control": "max-age=0, public",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-zendesk-origin-server": "app-server-5f79dbcff7-crjnd",
+    "x-request-id": "a4b99c99dbc9ea88-ORD",
+    "x-runtime": "0.218423",
+    "x-envoy-upstream-service-time": "221",
+    "x-request-validation": "no-match",
+    "zendesk-service": "help-center",
+    "x-zendesk-zorg": "yes",
+    "protocol": "HTTP/1.1 always",
+    "via": "zorg",
+    "cf-cache-status": "REVALIDATED",
+    "set-cookie": "__cf_bm=yiuDSiMfljVaU_zqsX1I9wdNtX5lWNxHsYm4i9oDV0U-1792215835.3268483-1.0.1.1-IBCdzV1qZb72gp1fnNWYTO5ANqHthkavwEbKRBQL9B9dDnxkX8lPKUYLyu3X8dDDTfXQx7s8Koh00vrGVS6OCIdXeE0lL7L5cvtOtvmzIcjhlHRbOWQMUUmGNiywZAlH; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.zendesk.com; Expires=Sat, 17 Oct 2026 06:13:55 GMT\n_cfuvid=SDDfZnbEJUcACUYhIbHEh_hKWXNSdUJH.p1uIfDu9xM-1792215835.3268483-1.0.1.1-y8EwVk.ZGqtMYAzZMUAVNO0qE8Iwu4UoQ3bEZ3BxAUI; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.zendesk.com",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfd0ace9ab989-MIA",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/support-zendesk-com-hc-en-us-articles-10169333291290-About-voice-AI-agents.md>"
+ },
+ {
+  "url": "https://support.zendesk.com/hc/en-us/articles/4408824482586-Managing-conversation-handoff-and-handback",
+  "crawl": {
+   "loadedUrl": "https://support.zendesk.com/hc/en-us/articles/4408824482586-Managing-conversation-handoff-and-handback",
+   "loadedTime": "2026-10-17T05:44:00.117Z",
+   "referrerUrl": "https://support.zendesk.com/hc/en-us/articles/4408824482586-Managing-conversation-handoff-and-handback",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://support.zendesk.com/hc/en-us/articles/4408824482586-Managing-conversation-handoff-and-handback",
+   "title": "Managing conversation handoff and handback – Zendesk help",
+   "description": "What's my plan?      All Suites  Team, Growth, Professional, Enterprise, or Enterprise Plus       In this article, we’ll explain...",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:image",
+     "content": "https://support.zendesk.com//static.zdassets.com/logo.png"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Zendesk help"
+    },
+    {
+     "property": "og:title",
+     "content": "Managing conversation handoff and handback"
+    },
+    {
+     "property": "og:description",
+     "content": "What's my plan?\n\n\n\n\n\nAll Suites\n\nTeam, Growth, Professional, Enterprise, or Enterprise Plus\n\n\n\n\n\n\nIn this article, we’ll explain messaging conversation handoff and handback, the actions that can\n  ..."
+    },
+    {
+     "property": "og:url",
+     "content": "https://support.zendesk.com/hc/en-us/articles/4408824482586-Managing-conversation-handoff-and-handback"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "TechArticle",
+     "@id": "https://support.zendesk.com/hc/en-us/articles/4408824482586",
+     "url": "https://support.zendesk.com/hc/en-us/articles/4408824482586-Managing-conversation-handoff-and-handback",
+     "headline": "Managing conversation handoff and handback",
+     "description": "You can manage conversation handoff and handback by controlling when a live agent or AI agent becomes the first responder in messaging conversations through ticket status changes and automation settings.",
+     "articleSection": "Zendesk messaging",
+     "datePublished": "2021-10-16T03:46:49+00:00",
+     "dateModified": "2025-09-05T23:18:15+00:00",
+     "inLanguage": "en-US",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://support.zendesk.com/hc/en-us/articles/4408824482586"
+     },
+     "author": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "isPartOf": {
+      "@type": "WebSite",
+      "name": "Zendesk Help",
+      "@id": "https://support.zendesk.com/hc/"
+     },
+     "about": {
+      "@type": "SoftwareApplication",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com",
+      "softwareAddOn": {
+       "@type": "SoftwareApplication",
+       "name": "Messaging",
+       "@id": "https://support.zendesk.com/hc/en-us/sections/4405298882330"
+      }
+     }
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:43:55 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "server": "cloudflare",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "x-ua-compatible": "IE=edge",
+    "content-language": "en-us",
+    "x-frame-options": "SAMEORIGIN",
+    "x-envoy-decorator-operation": "/hc",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Q02fHT9PSz7fl4pC5C%2BqsHYkI%2Fp2blm3mR87Veyp9j9FIYAt3PzW4Xc%2Fm%2F7PGGja4QKusXjinrvbz98IZyV0si1GjMqKwwt%2FjPa%2FL7WXihP4h7TA%2FfJhJ%2BcceVomfJLxnIJ8NKM%3D\"}]}",
+    "cache-control": "max-age=0, public",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-zendesk-origin-server": "app-server-5f79dbcff7-wmzxc",
+    "x-request-id": "a4b9f1bd4ed388ee-EWR",
+    "x-runtime": "0.196355",
+    "x-envoy-upstream-service-time": "200",
+    "x-request-validation": "no-match",
+    "zendesk-service": "help-center",
+    "x-zendesk-zorg": "yes",
+    "protocol": "HTTP/1.1 always",
+    "via": "zorg",
+    "cf-cache-status": "REVALIDATED",
+    "set-cookie": "__cf_bm=z212TJu2qAtXzb7BthN3U6DzqocLFTPU2TPGjvILEhg-1792215835.049084-1.0.1.1-I6NPhfauw2B8fzOI.r_au._OkNxvcD7K0R3zql07Ve8GZKz5Sli28hyT98YmJmzEwNHX3nM05tXD1bryxozTy.HlOV1pG.JXZlrp.TH3dWaq3PeSQNRTpJBBpNw12VZa; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.zendesk.com; Expires=Sat, 17 Oct 2026 06:13:55 GMT\n_cfuvid=VcXlHdCsryWBwAL_jCQ665Ntddcat.C2_gVHkl770eQ-1792215835.049084-1.0.1.1-dhVdE0Vr1qfuo9O37dc8FeINxTWcpo7UU_abvRqc1sQ; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.zendesk.com",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfd090c1ab989-MIA",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/support-zendesk-com-hc-en-us-articles-4408824482586-Managing-conversation-handoff-and-handback.md>"
+ },
+ {
+  "url": "https://support.zendesk.com/hc/en-us/articles/4408829019162-Routing-messaging-tickets-and-notifying-agents",
+  "crawl": {
+   "loadedUrl": "https://support.zendesk.com/hc/en-us/articles/4408829019162-Routing-messaging-tickets-and-notifying-agents",
+   "loadedTime": "2026-10-17T05:44:03.359Z",
+   "referrerUrl": "https://support.zendesk.com/hc/en-us/articles/4408829019162-Routing-messaging-tickets-and-notifying-agents",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://support.zendesk.com/hc/en-us/articles/4408829019162-Routing-messaging-tickets-and-notifying-agents",
+   "title": "Routing messaging tickets and notifying agents – Zendesk help",
+   "description": "In Zendesk's messaging for Web Widget, mobile SDKs, and social channels, when a customer requests assistance from a live agent during a...",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:image",
+     "content": "https://support.zendesk.com//static.zdassets.com/logo.png"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Zendesk help"
+    },
+    {
+     "property": "og:title",
+     "content": "Routing messaging tickets and notifying agents"
+    },
+    {
+     "property": "og:description",
+     "content": "In Zendesk's messaging for Web Widget, mobile SDKs, and social channels, when a customer requests assistance from a live agent during a conversation, a ticket is created, and agents are notified th..."
+    },
+    {
+     "property": "og:url",
+     "content": "https://support.zendesk.com/hc/en-us/articles/4408829019162-Routing-messaging-tickets-and-notifying-agents"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "TechArticle",
+     "@id": "https://support.zendesk.com/hc/en-us/articles/4408829019162",
+     "url": "https://support.zendesk.com/hc/en-us/articles/4408829019162",
+     "headline": "Routing messaging tickets and notifying agents",
+     "description": "You can route messaging tickets to specific agents or groups using ticket triggers, chat routing rules, or omnichannel routing, and organize these tickets in views for agent notification and management.",
+     "articleSection": "Zendesk messaging",
+     "datePublished": "2021-10-16T03:33:47+00:00",
+     "dateModified": "2026-07-30T21:14:48.735457+00:00",
+     "inLanguage": "en-US",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://support.zendesk.com/hc/en-us/articles/4408829019162"
+     },
+     "author": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "isPartOf": {
+      "@type": "WebSite",
+      "name": "Zendesk Help",
+      "@id": "https://support.zendesk.com/hc/"
+     },
+     "about": {
+      "@type": "SoftwareApplication",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     }
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:00 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "server": "cloudflare",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "x-ua-compatible": "IE=edge",
+    "content-language": "en-us",
+    "x-frame-options": "SAMEORIGIN",
+    "x-envoy-decorator-operation": "/hc",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=9hIpB8ejgAsZsyoIwHvnPAJbK6RbV%2BYH5ZqEthBZ8OdEHgAbDsgGudVsz34xwM%2BOG1CQplqZBihxQZLK804ucPS04qs6tuZgjujMJ%2Fwued1ykToTqdd05WN%2FV8hwox7IMDL5XRA%3D\"}]}",
+    "cache-control": "max-age=0, public",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-zendesk-origin-server": "app-server-5f79dbcff7-snckd",
+    "x-request-id": "a4bb20805901feee-MIA",
+    "x-runtime": "0.174210",
+    "x-envoy-upstream-service-time": "178",
+    "x-request-validation": "no-match",
+    "zendesk-service": "help-center",
+    "x-zendesk-zorg": "yes",
+    "protocol": "HTTP/1.1 always",
+    "via": "zorg",
+    "cf-cache-status": "REVALIDATED",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfd296ff8b989-MIA",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/support-zendesk-com-hc-en-us-articles-4408829019162-Routing-messaging-tickets-and-notifying-agents.md>"
+ },
+ {
+  "url": "https://www.ikea.com/de/de/customer-service/knowledge/articles/f426b8f6-fdg2-411e-83bf-b6dggc645g8c.html",
+  "crawl": {
+   "loadedUrl": "https://www.ikea.com/de/de/customer-service/knowledge/articles/f426b8f6-fdg2-411e-83bf-b6dggc645g8c.html",
+   "loadedTime": "2026-10-17T05:44:12.127Z",
+   "referrerUrl": "https://www.ikea.com/de/de/customer-service/knowledge/articles/f426b8f6-fdg2-411e-83bf-b6dggc645g8c.html",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.ikea.com/de/de/customer-service/knowledge/articles/f426b8f6-fdg2-411e-83bf-b6dggc645g8c.html",
+   "title": "Wie kann mir der IKEA Chat weiterhelfen? - IKEA Deutschland",
+   "description": "Deutschland - Womit können wir dir helfen?",
+   "author": null,
+   "keywords": null,
+   "languageCode": "de-de",
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:09 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "cf-ray": "a4bcfd648d790944-MIA",
+    "cf-cache-status": "MISS",
+    "set-cookie": "ikexp_id=f753d4f6-481f-4821-80e2-cb17cb7c6e94; Domain=.ikea.com; Path=/; Expires=Sun, 17 Oct 2027 05:44:09 GMT; Secure\nikea_geo=VE; Domain=.ikea.com; Path=/; Secure\n__cf_bm=1BbHXVYxKmFBaVrbcqFFh4cGu7hEPHVw_Z2EmbAFSxA-1792215849.6856933-1.0.1.1-fwADBzWzbXRWymeiq6QJhZGIEo4_3Ug7fR2OwJqQg65tUfeQerPnoPZnjkRlx4eo941Mcv4rEumVEFoE.nvqaAzWKlN19YEg7Kyn4pEsEclUbISDf9Wo8eUycqg0r3SX; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.ikea.com; Expires=Sat, 17 Oct 2026 06:14:09 GMT",
+    "age": "0",
+    "cache-control": "private, max-age=10",
+    "server": "cloudflare",
+    "x-native-worker": "true",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "vary": "Origin",
+    "cache-tag": "www-customer-service, www-customer-service-knowledge, www-customer-service-knowledge-articles, www-customer-service-knowledge-articles-f426b8f6-fdg2-411e-83bf-b6dggc645g8c-html, www-de-customer-service, www-de-customer-service-knowledge, www-de-customer-service-knowledge-articles, www-de-customer-service-knowledge-articles-f426b8f6-fdg2-411e-83bf-b6dggc645g8c-html, www-de-de-customer-service, www-de-de-customer-service-knowledge, www-de-de-customer-service-knowledge-articles, www-de-de-customer-service-knowledge-articles-f426b8f6-fdg2-411e-83bf-b6dggc645g8c-html",
+    "content-security-policy": "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.ikea.com v4.ai.ingka.ikea.net api.addressy.com google.com *.google.com *.gstatic.com translate.googleapis.com translate-pa.googleapis.com mapsresources-pa.googleapis.com www.youtube-nocookie.com www.youtube.com www.paypal.com blob: data: wss://web-api.ikea.com https://storage.googleapis.com/learnwithikeavideos/ *.cdtapps.com challenges.cloudflare.com *.cloudflareinsights.com *.ingka.com *.ctfassets.net *.ipex-insights.com api.o-c.io lf.o-c.io *.ikea.de *.ikea-lsp.de ikeaplanningcalendar.inwebs.com *.parcellab.com *.taskrabbit.com *.adform.net insight.adsrvr.org js.adsrvr.org *.bing.com bat.bing.net *.doubleclick.net googleads.g.doubleclick.net *.facebook.com *.facebook.net www.googleadservices.com *.googlesyndication.com *.google.de ct.pinterest.com s.pinimg.com *.realperson.de wss://*.realperson.de d.ratepay.com dap-prod-dcq.s3-eu-west-1.amazonaws.com dap-prod-dctag.s3-eu-west-1.amazonaws.com *.exactag.com *.teads.tv *.quantummetric.com *.cookielaw.org *.onetrust.com *.contentsquare.net app.contentsquare.com *.google-analytics.com www.googletagmanager.com *.optimizely.com sentry.io *.sentry.io *.avo.app oppwa.com *.oppwa.com mpsnare.iesnare.com *.iesnare.com maps.googleapis.com places.googleapis.com fonts.googleapis.com www.googleapis.com *.bambuser.com firestore.googleapis.com liveshopping-widgets.firebaseapp.com d.lemonpi.io *.syndeo.cx *.production.syndeo.cx wss://web.production.syndeo.cx icsp.ingka.ikea.com wss://icsp.ingka.ikea.com wss://web-api.ikea.com/cschatbot/; img-src * blob: data:; frame-src *; frame-ancestors *.ikea.com *.ingka.com *.ikea.de; object-src 'self'; font-src 'self' www.ikea.com blob: data: fonts.gstatic.com cloud80.realperson.de cdn.parcellab.com; report-uri https://csp.ikea.com",
+    "x-content-type-options": "nosniff",
+    "content-encoding": "br",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-ikea-com-de-de-customer-service-knowledge-articles-f426b8f6-fdg2-411e-83bf-b6dggc645g8c-html.md>"
+ },
+ {
+  "url": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+  "crawl": {
+   "loadedUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "loadedTime": "2026-10-17T05:44:14.807Z",
+   "referrerUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "title": "Zalando: Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter | Zalando Corporate",
+   "description": "All informations about „Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter“ at Zalando Corporate ✓ Current information about Zalando SE",
+   "author": null,
+   "keywords": ", Technology,",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Zalando Corporate Website"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend"
+    },
+    {
+     "property": "og:title",
+     "content": "Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter"
+    },
+    {
+     "property": "og:description",
+     "content": "All informations about „Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter“ at Zalando Corporate, Current information about Zalando SE"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.zalando.com/public/media/Zalando-SE_2023_Zalando_customer_mobile-phone_01_assistant_ES.jpg?VersionId=77BodflBwkPK9W7et5mwJEB_xK1efj4."
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=3600, public",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 15 Oct 2026 10:54:04 GMT",
+    "etag": "W/\"1792061644\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Thu, 15 Oct 2026 10:54:04 GMT",
+    "vary": "Accept-Encoding, Cookie",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 11 (https://www.drupal.org)",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-zalando-com-en-technology-zalando-brings-its-ai-powered-assistant-all-markets-and-adds-fou.md>"
+ },
+ {
+  "url": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+  "crawl": {
+   "loadedUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "loadedTime": "2026-10-17T05:44:14.806Z",
+   "referrerUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "title": "Zalando: More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers | Zalando Corporate",
+   "description": "All informations about „More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers“ at Zalando Corporate ✓ Current information about Zalando SE",
+   "author": null,
+   "keywords": ", Technology,",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Zalando Corporate Website"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers"
+    },
+    {
+     "property": "og:title",
+     "content": "More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers"
+    },
+    {
+     "property": "og:description",
+     "content": "All informations about „More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers“ at Zalando Corporate, Current information about Zalando SE"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.zalando.com/public/media/Zalando-SE_250320_Graphic_AI-Assistent_landscape_4x3.png?VersionId=i.O5HDWpaenV3wYr2W1YS4E.mV1PqprC"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=3600, public",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 15 Oct 2026 10:51:47 GMT",
+    "etag": "W/\"1792061507\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Thu, 15 Oct 2026 10:51:47 GMT",
+    "vary": "Accept-Encoding, Cookie",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 11 (https://www.drupal.org)",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-zalando-com-en-technology-more-personal-and-smarter-zalando-assistant-enhanced-capabilitie.md>"
+ },
+ {
+  "url": "https://corporate.walmart.com/news/2025/06/06/walmart-the-future-of-shopping-is-agentic-meet-sparky",
+  "crawl": {
+   "loadedUrl": "https://corporate.walmart.com/news/2025/06/06/walmart-the-future-of-shopping-is-agentic-meet-sparky",
+   "loadedTime": "2026-10-17T05:44:15.250Z",
+   "referrerUrl": "https://corporate.walmart.com/news/2025/06/06/walmart-the-future-of-shopping-is-agentic-meet-sparky",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 29603,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.walmart.com/news/2025/06/06/walmart-the-future-of-shopping-is-agentic-meet-sparky",
+   "title": "Walmart: The Future of Shopping Is Agentic. Meet Sparky.",
+   "description": "Discover Sparky, Walmart’s AI-powered shopping assistant designed to help customers shop smarter.",
+   "author": null,
+   "keywords": "Newsletter",
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:url",
+     "content": "https://corporate.walmart.com/news/2025/06/06/walmart-the-future-of-shopping-is-agentic-meet-sparky"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.walmart.com/content/dam/corporate/images/newsroom/2025/06/06/walmart-the-future-of-shopping-is-agentic-meet-sparky/sparky-ai.jpg"
+    },
+    {
+     "property": "og:description",
+     "content": "Discover Sparky, Walmart’s AI-powered shopping assistant designed to help customers shop smarter."
+    },
+    {
+     "property": "og:title",
+     "content": "Walmart: The Future of Shopping Is Agentic. Meet Sparky."
+    },
+    {
+     "property": "og:image:secure_url",
+     "content": "https://corporate.walmart.com/content/dam/corporate/images/newsroom/2025/06/06/walmart-the-future-of-shopping-is-agentic-meet-sparky/sparky-ai.jpg"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    }
+   ],
+   "jsonLd": [
+    {
+     "embedUrl": "https://player.vimeo.com/video/1090219376?h=8843897f89",
+     "thumbnailUrl": "https://i.vimeocdn.com/video/2023790305-7e0918c8883651d7248e899822c8249de29835b34e6c8f8ad46cc951edbb705d-d?f=webp",
+     "name": "Sparky",
+     "description": "This is \"Sparky\" by \"Walmart Inc.\" on Vimeo, the home for high quality videos and the people who love them.",
+     "duration": "PT52S",
+     "uploadDate": "2025-06-03T14:55:50-04:00",
+     "@context": "https://schema.org/",
+     "@type": "VideoObject",
+     "hasPart": []
+    }
+   ],
+   "headers": {
+    "accept-ranges": "bytes",
+    "cache-control": "max-age=300",
+    "content-security-policy": "frame-ancestors 'self' https://walmartisd.experiencecloud.adobe.com https://myassistant.dev.walmart.com https://myassistant.qa.walmart.com https://myassistant.stg.walmart.com https://myassistant.walmart.com https://dev.campus.walmart.com https://stage.campus.walmart.com https://dev.my.walmart.com https://stage.my.walmart.com https://my.walmart.com https://campus.walmart.com;",
+    "content-type": "text/html;charset=utf-8",
+    "expires": "Sat, 17 Oct 2026 05:42:42 GMT",
+    "last-modified": "Sat, 17 Oct 2026 05:37:42 GMT",
+    "strict-transport-security": "max-age=31557600",
+    "x-content-type-options": "nosniff",
+    "x-served-by": "cache-dfw-kdfw8210050-DFW",
+    "x-tb": "0",
+    "x-timer": "S1792215851.789356, VS0, VS0, VE34",
+    "x-vhost": "corporate",
+    "x-akamai-transformed": "9 31821 0 pmb=mRUM, 1",
+    "content-encoding": "gzip",
+    "date": "Sat, 17 Oct 2026 05:44:10 GMT",
+    "content-length": "29603",
+    "vary": "Accept-Encoding",
+    "set-cookie": "TSa0b2f905027=08db90953dab200094a2d4c70ee424b9ae135505719b9d1973db0eea4bbf02d6ca7a18cf49ce97b2086a9da19b113000637593165e4d57229e20a22b04c144373f565db40ad13cbe541fa8d006b839c2eb8b81bb4e5588bdf48abaa759014bce; Path=/",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-walmart-com-news-2025-06-06-walmart-the-future-of-shopping-is-agentic-meet-sparky.md>"
+ },
+ {
+  "url": "https://www.aboutamazon.de/news/amazon-prime-und-shopping/rufus-ki-shopping-assistent",
+  "crawl": {
+   "loadedUrl": "https://www.aboutamazon.de/news/amazon-prime-und-shopping/rufus-ki-shopping-assistent",
+   "loadedTime": "2026-10-17T05:44:31.232Z",
+   "referrerUrl": "https://www.aboutamazon.de/news/amazon-prime-und-shopping/rufus-ki-shopping-assistent",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.aboutamazon.de/news/amazon-prime-und-shopping/rufus-ki-shopping-assistent",
+   "title": "Rufus: Amazons KI-Shopping-Assistent jetzt auch am Desktop - About Amazon Deutschland",
+   "description": "Der KI-gestützte Einkaufsberater Rufus ist ab sofort auch auf Desktop-Geräten verfügbar und unterstützt Kunden in Deutschland und Österreich beim Shopping.",
+   "author": "Amazon staff",
+   "keywords": null,
+   "languageCode": "de",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Rufus: Amazons KI-Shopping-Assistent jetzt auch am Desktop"
+    },
+    {
+     "property": "og:description",
+     "content": "Der KI-gestützte Einkaufsberater Rufus ist ab sofort auch auf Desktop-Geräten verfügbar und unterstützt Kunden in Deutschland und Österreich beim Shopping."
+    },
+    {
+     "property": "og:site_name",
+     "content": "About Amazon Deutschland"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Ein Handy mit der Amazon App. Die Suchleiste zeigt \"Stell Rufus eine Frage\" an. "
+    },
+    {
+     "property": "og:image",
+     "content": "https://assets.aboutamazon.com/dims4/default/654e182/2147483647/strip/true/crop/2640x1320+0+83/resize/1200x600!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F7d%2F02%2Fd5d4c29741289475878cfbb163a7%2F24q3-rufus-pr-de-header-b.png"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "600"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2024-10-29T07:00:03.456Z"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2025-07-17T10:51:00.809Z"
+    },
+    {
+     "property": "article:author:name",
+     "content": "Amazon staff"
+    },
+    {
+     "property": "article:tag",
+     "content": "Innovationen"
+    },
+    {
+     "property": "article:tag",
+     "content": "Shopping"
+    },
+    {
+     "property": "article:tag",
+     "content": "KI (Künstliche Intelligenz)"
+    },
+    {
+     "property": "article:tag",
+     "content": "künstlicher Intelligenz (KI)"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "WebSite",
+     "name": "About Amazon Deutschland",
+     "url": "https://www.aboutamazon.de/",
+     "publisher": {
+      "@type": "Organization",
+      "name": "About Amazon",
+      "url": "https://www.aboutamazon.com",
+      "sameAs": [
+       "https://x.com/amazonnews",
+       "https://www.linkedin.com/company/amazon",
+       "https://www.instagram.com/amazonnews"
+      ],
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/bd/8f/88e7b0314cc2bd05b9de3155a0fe/amazon-news.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com",
+       "sameAs": [
+        "https://www.wikidata.org/wiki/Q3884",
+        "https://en.wikipedia.org/wiki/Amazon_(company)",
+        "https://x.com/Amazon"
+       ]
+      }
+     }
+    },
+    {
+     "@context": "http://schema.org",
+     "@type": "Article",
+     "articleSection": "Amazon Prime und Shopping",
+     "url": "https://www.aboutamazon.de/news/amazon-prime-und-shopping/rufus-ki-shopping-assistent",
+     "dateModified": "2025-07-17T10:51:00.809Z",
+     "datePublished": "2024-10-29T07:00:03.456Z",
+     "headline": "Rufus: Amazons KI-Shopping-Assistent jetzt auch am Desktop",
+     "image": [
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "height": 836,
+       "url": "https://assets.aboutamazon.com/dims4/default/c57c767/2147483647/strip/false/crop/2640x1486+0+0/resize/1486x836!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F7d%2F02%2Fd5d4c29741289475878cfbb163a7%2F24q3-rufus-pr-de-header-b.png",
+       "width": 1486
+      },
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "height": 675,
+       "url": "https://assets.aboutamazon.com/dims4/default/5eb7d6e/2147483647/strip/false/crop/2640x1485+0+0/resize/1200x675!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F7d%2F02%2Fd5d4c29741289475878cfbb163a7%2F24q3-rufus-pr-de-header-b.png",
+       "width": 1200
+      }
+     ],
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.aboutamazon.de/news/amazon-prime-und-shopping/rufus-ki-shopping-assistent"
+     },
+     "author": [
+      {
+       "@context": "http://schema.org",
+       "@type": "Person",
+       "name": "Amazon staff"
+      }
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "About Amazon",
+      "url": "https://www.aboutamazon.com",
+      "sameAs": [
+       "https://x.com/amazonnews",
+       "https://www.linkedin.com/company/amazon",
+       "https://www.instagram.com/amazonnews"
+      ],
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/bd/8f/88e7b0314cc2bd05b9de3155a0fe/amazon-news.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com",
+       "sameAs": [
+        "https://www.wikidata.org/wiki/Q3884",
+        "https://en.wikipedia.org/wiki/Amazon_(company)",
+        "https://x.com/Amazon"
+       ]
+      }
+     },
+     "description": "Der KI-gestützte Einkaufsberater Rufus ist ab sofort auch auf Desktop-Geräten verfügbar und unterstützt Kunden in Deutschland und Österreich beim Shopping."
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Amazon News",
+       "item": "https://www.aboutamazon.de/news"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Amazon Prime und Shopping",
+       "item": "https://www.aboutamazon.de/news/amazon-prime-und-shopping"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "server": "CloudFront",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:40:50 GMT",
+    "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "content-encoding": "gzip",
+    "link": "</_next/static/media/06389fc2ceb131fb.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/2573a0816525bbf7.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/337fd6ec2b734835.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/42439b8f44a5716c.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/476c2f4d793101fd.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/4d6a9fb8ff3b8fc2.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/665b265b8ab38986.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/7fe83725c48c9c69.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/b6b6385034af0a3e.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/c3d0f0661915be47.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/d180bbba8bf4e40d.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/d892c3e5c534541d.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/e3d5535913b6b6d3.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/f90a977ffdd12ef5.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/css/c9945c7442fc7d5c.css>; rel=preload; as=\"style\", </_next/static/css/b04376dbda111721.css>; rel=preload; as=\"style\", </_next/static/css/645c7dc07309115c.css>; rel=preload; as=\"style\", </_next/static/css/3477cf02ffac4501.css>; rel=preload; as=\"style\", </_next/static/css/e9fb153fea3d5240.css>; rel=preload; as=\"style\", </_next/static/css/295689712baf0450.css>; rel=preload; as=\"style\"",
+    "x-powered-by": "Next.js",
+    "vary": "Accept-Encoding",
+    "via": "1.1 63779d9b24354ddbcd3ded5970ee8f48.cloudfront.net (CloudFront)",
+    "age": "214",
+    "set-cookie": "aa_bot_signal=category=&name=&signals=&targeted=&token=absent; Path=/; SameSite=Lax; Secure; Max-Age=1800",
+    "x-cache": "Hit from cloudfront",
+    "x-amz-cf-pop": "MIA50-P6",
+    "x-amz-cf-id": "E50gltzqZheA4Ss4_MB3DEqBioSU6T0XNF_Rk4OHwHYY26hsqQ8GcQ==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-aboutamazon-de-news-amazon-prime-und-shopping-rufus-ki-shopping-assistent.md>"
+ },
+ {
+  "url": "https://corporate.lowes.com/newsroom/stories/inside-lowes/meet-mylow-lowes-unveils-first-ever-ai-powered-virtual-home-improvement-assistant",
+  "crawl": {
+   "loadedUrl": "https://corporate.lowes.com/newsroom/stories/inside-lowes/meet-mylow-lowes-unveils-first-ever-ai-powered-virtual-home-improvement-assistant",
+   "loadedTime": "2026-10-17T05:44:32.325Z",
+   "referrerUrl": "https://corporate.lowes.com/newsroom/stories/inside-lowes/meet-mylow-lowes-unveils-first-ever-ai-powered-virtual-home-improvement-assistant",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.lowes.com/newsroom/stories/inside-lowes/meet-mylow-lowes-unveils-first-ever-ai-powered-virtual-home-improvement-assistant",
+   "title": "Meet Mylow: Lowe’s Unveils First Ever AI-Powered Virtual Home Improvement Assistant | Lowe’s Corporate",
+   "description": "Meet Mylow: Lowe’s Unveils First Ever AI-Powered Virtual Home Improvement Assistant",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Lowe’s Corporate"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.lowes.com/newsroom/stories/inside-lowes/meet-mylow-lowes-unveils-first-ever-ai-powered-virtual-home-improvement-assistant"
+    },
+    {
+     "property": "og:title",
+     "content": "Meet Mylow: Lowe’s Unveils First Ever AI-Powered Virtual Home Improvement Assistant"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.lowes.com/sites/lowes-corp/files/lowes-corp/lowes-blue-logo-og-img.png"
+    },
+    {
+     "property": "og:image:url",
+     "content": "https://corporate.lowes.com/sites/lowes-corp/files/lowes-corp/lowes-blue-logo-og-img.png"
+    },
+    {
+     "property": "og:image:secure_url",
+     "content": "https://corporate.lowes.com/sites/lowes-corp/files/lowes-corp/lowes-blue-logo-og-img.png"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:23 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cache-control": "public, max-age=2764800",
+    "content-language": "en",
+    "x-frame-options": "SAMEORIGIN",
+    "expires": "Wed, 18 Nov 2026 05:44:23 GMT",
+    "vary": "Cookie",
+    "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=83, cfOrigin;dur=0",
+    "permissions-policy": "autoplay=(self \"https://*.investisdigital.com\" \"https://*.youtube.com\" \"https://*.vimeo.com\" \"https://*.vimeocdn.com\"), encrypted-media=(self \"https://*.investisdigital.com\" \"https://*.youtube.com\" \"https://*.vimeo.com\" \"https://*.vimeocdn.com\"), fullscreen=(self \"https://*.investisdigital.com\" \"https://*.youtube.com\" \"https://*.vimeo.com\" \"https://*.vimeocdn.com\")",
+    "content-security-policy": "default-src 'self' edge.api.brightcove.com viz.tools.investis.com *.media.brightcove.com cdn.jsdelivr.net dev-api.investisdigital.com api.investisdigital.com dev-assets.investisdigital.com assets.investisdigital.com qaotp.tools.investisdigital.com *.nr-data.net *.googleapis.com manifest.prod.boltdns.net *.brightcovecdn.com svc.webspellchecker.net stage-assets.investisdigital.com otp.tools.investis.com *.myidx.cloud https://vimeo.com/api/ *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net *.trustarc.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com ict.infinity-tracking.net www.gstatic.com viz.tools.investis.com www.google.com maps.googleapis.com maps.google.com www.linkedin.com ajax.googleapis.com pi.pardot.com bam.nr-data.net *.googletagmanager.com *.google-analytics.com sjs.bizographics.com connect.facebook.net *.jquery.com irs.tools.investis.com *.hotjar.com px.ads.linkedin.com d2wy8f7a9ursnm.cloudfront.net ssl.p.jwpcdn.com js-agent.newrelic.com cdn.jsdelivr.net edge.api.brightcove.com *.googleapis.com www.youtube.com youtube.com s.ytimg.com unpkg.com *.investis-live.com dev-api.investisdigital.com api.investisdigital.com dev-assets.investisdigital.com assets.investisdigital.com qaotp.tools.investisdigital.com *.investisdigital.com player.vimeo.com www.recaptcha.net players.brightcove.net vjs.zencdn.net blob: cdn.ckeditor.com svc.webspellchecker.net stage-assets.investisdigital.com otp.tools.investis.com *.juicer.io platform.twitter.com *.instagram.com cdn.schemaapp.com jsv3.recruitics.com sc.lfeeder.com/ secure.quantserve.com consent.trustarc.com rules.quantcount.com *.cloudflareinsights.com *.g.doubleclick.net *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; style-src 'self' 'unsafe-inline' 'unsafe-eval' viz.tools.investis.com fonts.googleapis.com fonts.gstatic.com maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net *.investis-live.com *.investisdigital.com svc.webspellchecker.net assets.investisdigital.com stage-assets.investisdigital.com otp.tools.investis.com *.juicer.io *.googletagmanager.com *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; img-src 'self' data: https:; media-src 'self' edge.api.brightcove.com viz.tools.investis.com *.media.brightcove.com *.youtube.com player.vimeo.com *.brightcovecdn.com blob: http://house-fastly-signed-eu-west-1-prod.brightcovecdn.com *.myidx.cloud *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; frame-src 'self' *.investis.com www.google.com ir.tools.investis.co m staticxx.facebook.com www.youtube.com player.vimeo.com *.youtube-nocookie.com *.youtube.com *.brightcove.net cdn.myidx.cloud platform.twitter.com *.instagram.com mma.prnewswire.com mmx.prnewswire.com *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; font-src 'self' 'unsafe-inline' data: fonts.googleapis.com fonts.gstatic.com viz.tools.investis.com themes.googleusercontent.com maxcdn.bootstrapcdn.com *.cloudflare.com vjs.zencdn.net svc.webspellchecker.net assets.investisdigital.com stage-assets.investisdigital.com otp.tools.investis.com *.juicer.io *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; connect-src 'self' 'unsafe-inline' www.google-analytics.com px.ads.linkedin.com  https://assets.investisdigital.com *.jsdelivr.net *.investis.com *.myidx.cloud *.juicer.io *.investisdigital.com https://www.lowesfoundation.org cdn.schemaapp.com data.schemaapp.com analytics.google.com *.amazonaws.com *.doubleclick.net www.google.com lowes.sharepoint.com pixel.quantserve.com *.quantcount.com *.googletagmanager.com *.trustarc.com *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; report-uri /report-csp-violation",
+    "x-xss-protection": "1; mode=block",
+    "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+    "expect-ct": "max-age=86400",
+    "x-drupal-cache": "MISS",
+    "x-content-type-options": "nosniff",
+    "last-modified": "Fri, 16 Oct 2026 16:01:39 GMT",
+    "set-cookie": "__cf_bm=qtzIDacFh1xttc6.9xq80WBUxGyljEY9JZlWi6v96ic-1792215863.165521-1.0.1.1-7haZU3A4CAiYJ6WUx6ov4trCbUucU3dU0JwdaiId0h.suUuz__XSTJRiYi21UGBdENuosdSsfff.ByPxYA8Buv1G1JNtv8ajBfQul7Lxvrpv3PHkuTKac54EgBUM9Dtf; HttpOnly; SameSite=None; Secure; Path=/; Domain=lowes.com; Expires=Sat, 17 Oct 2026 06:14:23 GMT",
+    "access-control-allow-origin": "*.investisdigital.com",
+    "x-host": "CID-P83-BUWB2",
+    "cf-cache-status": "HIT",
+    "content-encoding": "gzip",
+    "cf-ray": "a4bcfdb8ccc5d965-MIA",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-lowes-com-newsroom-stories-inside-lowes-meet-mylow-lowes-unveils-first-ever-ai-powered-vir.md>"
+ }
+]

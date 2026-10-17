@@ -1,0 +1,868 @@
+[
+ {
+  "url": "https://corporate.homedepot.com/news/company/home-depot-launches-ai-powered-material-lists-help-pros-save-time-building-complete",
+  "crawl": {
+   "loadedUrl": "https://corporate.homedepot.com/news/company/home-depot-launches-ai-powered-material-lists-help-pros-save-time-building-complete",
+   "loadedTime": "2026-10-17T06:15:39.910Z",
+   "referrerUrl": "https://corporate.homedepot.com/news/company/home-depot-launches-ai-powered-material-lists-help-pros-save-time-building-complete",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 16628,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.homedepot.com/news/company/home-depot-launches-ai-powered-material-lists-help-pros-save-time-building-complete",
+   "title": "The Home Depot Launches AI-Powered Material Lists to Help Pros Save Time by Building Complete Job Lists Within Minutes | The Home Depot",
+   "description": "The Home Depot, the world’s largest home improvement retailer, introduced Material List Builder AI, a new capability that helps professional renovators, remodelers, builders and specialty tradespeople create actionable project material lists within minutes. Material List Builder AI leverages AI technology to interpret the project intent and generate an accurate, grouped list of materials needed for the entire job – helping Pros stay on time and on budget.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:description",
+     "content": "The Home Depot, the world’s largest home improvement retailer, introduced Material List Builder AI, a new capability that helps professional renovators, remodelers, builders and specialty tradespeople create actionable project material lists within minutes. Material List Builder AI leverages AI technology to interpret the project intent and generate an accurate, grouped list of materials needed for the entire job – helping Pros stay on time and on budget."
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.homedepot.com/sites/default/files/styles/social935x522/public/2026-01/material_lists_935.jpg?itok=Gzon71PT"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "935"
+    },
+    {
+     "property": "og:image:height",
+     "content": "522"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Home Depot"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=900, public",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' js-agent.newrelic.com cdn.jsdelivr.net www.googletagmanager.com www.google-analytics.com code.jquery.com players.brightcove.net cdn.jsdelivr.net vjs.zencdn.net blob: *.instagram.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: www.googletagmanager.com www.google-analytics.com *.amazonaws.com assets.codepen.io corporate.homedepot.com metrics.brightcove.com *.boltdns.net *.brightcovecdn.com; media-src blob: *.boltdns.net *.brightcovecdn.com; frame-src 'self' *.akamaihd.net www.youtube.com players.brightcove.net w.soundcloud.com *.brightcovecdn.com *.instagram.com; font-src 'self' data:; connect-src 'self' www.googletagmanager.com www.google-analytics.com edge.api.brightcove.com *.boltdns.net *.akamaihd.net *.brightcovecdn.com; report-uri /report-csp-violation; upgrade-insecure-requests",
+    "content-type": "text/html; charset=UTF-8",
+    "etag": "W/\"1792179199\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Fri, 16 Oct 2026 19:33:19 GMT",
+    "server": "nginx",
+    "strict-transport-security": "max-age=1000",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 10 (https://www.drupal.org)",
+    "x-pantheon-styx-hostname": "styx-us-a-fbbcf58dd-sgrhs",
+    "x-styx-req-id": "2ad5950a-c9f2-11f1-9cdc-06a3705869ad",
+    "date": "Sat, 17 Oct 2026 06:15:36 GMT",
+    "x-served-by": "cache-chi-kmdw8640043-CHI, cache-sof1510043-SOF",
+    "x-cache": "MISS, MISS",
+    "x-cache-hits": "0, 0",
+    "x-timer": "S1792217736.235978, VS0, VE174",
+    "vary": "Accept-Encoding, Cookie, Cookie, Cookie",
+    "age": "0",
+    "accept-ranges": "bytes",
+    "via": "1.1 varnish, 1.1 varnish",
+    "content-length": "16628",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-homedepot-com-news-company-home-depot-launches-ai-powered-material-lists-help-pros-save-ti.md>"
+ },
+ {
+  "url": "https://business.amazon.com/en/blog/ai-powered-assistant-launch",
+  "crawl": {
+   "loadedUrl": "https://business.amazon.com/en/blog/ai-powered-assistant-launch",
+   "loadedTime": "2026-10-17T06:15:43.842Z",
+   "referrerUrl": "https://business.amazon.com/en/blog/ai-powered-assistant-launch",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://business.amazon.com/en/blog/ai-powered-assistant-launch",
+   "title": "Say hello to Amazon Business Assistant | Amazon Business",
+   "description": "Discover Amazon Business Assistant, our new AI-powered tool that helps turn complex decisions into simple conversations.",
+   "author": null,
+   "keywords": "Article",
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:type",
+     "content": "blogs"
+    },
+    {
+     "property": "og:title",
+     "content": "Say hello to Amazon Business Assistant | Amazon Business"
+    },
+    {
+     "property": "og:description",
+     "content": "Discover Amazon Business Assistant, our new AI-powered tool that helps turn complex decisions into simple conversations."
+    },
+    {
+     "property": "og:image",
+     "content": "https://static-assets.business.amazon.com/assets/global/polaris/blog-category-images/administrators-blog-hero-1640x920.png.transform/1450x664/image.jpg"
+    },
+    {
+     "property": "og:url",
+     "content": "https://business.amazon.com/en/blog/ai-powered-assistant-launch"
+    },
+    {
+     "property": "twitter:site",
+     "content": "@AmazonBusiness"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "http://schema.org",
+     "@type": "BlogPosting",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://business.amazon.com/en/blog/ai-powered-assistant-launch"
+     },
+     "headline": "Say hello to Amazon Business Assistant",
+     "image": {
+      "@type": "ImageObject",
+      "url": "/assets/global/polaris/blog-category-images/administrators-blog-hero-1640x920.png"
+     },
+     "url": "https://business.amazon.com/en/blog/ai-powered-assistant-launch",
+     "datePublished": "2025-11-11T16_59_00.000Z",
+     "dateModified": "2026-10-07T16_05_47.684Z",
+     "description": "",
+     "text": "",
+     "author": {
+      "@type": "Person",
+      "name": "Elle Hawthorne"
+     },
+     "Publisher": {
+      "@type": "Organization",
+      "name": "Amazon Business",
+      "logo": {
+       "@type": "ImageObject",
+       "url": ""
+      }
+     }
+    }
+   ],
+   "headers": {
+    "content-type": "text/html;charset=utf-8",
+    "server": "Server",
+    "date": "Sat, 17 Oct 2026 06:15:38 GMT",
+    "set-cookie": "session-id=144-8201778-0728732; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:15:38 GMT; Path=/; Secure\nsession-id-time=2082787201l; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:15:38 GMT; Path=/; Secure\nsst-main=Sst1|PQIAeWUtM6_kG6KANL68npx0B5qOt-sOjrVMpstU74SKFb7lWybuqzoG0Oapw2jR53VcaobtbcvPJYL-m_lo9bJRkeXjbfLvr-OtmGWa1E06zfsoEekrufpcT4WZV5oQ6p5L12mF91pQ64R6-WIc1QD4JHLXGv11zNASh5AajOipNbHvhQvigqCwwgWDN6bXgF7nejopegNt-qgcNrAwEhcfe0XwWGiWCb_ODe1g9Jtk0Yxw8f3bkEbyheXjyon374NV; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:15:38 GMT; Path=/; Secure; HttpOnly; SameSite=Lax\ni18n-prefs=USD; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:15:38 GMT; Path=/\nlc-main=en_US; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:15:38 GMT; Path=/",
+    "accept-ch": "ect, rtt, downlink, device-memory, sec-ch-device-memory, viewport-width, sec-ch-viewport-width, dpr, sec-ch-dpr, sec-ch-ua-full-version-list, viewport-height, sec-ch-viewport-height",
+    "accept-ch-lifetime": "86400",
+    "cache-control": "no-cache",
+    "content-encoding": "gzip",
+    "content-language": "en-US",
+    "content-security-policy": "upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/;default-src 'self' wss: blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline'",
+    "permissions-policy": "ch-dpr=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-viewport-width=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-downlink=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-ect=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\")",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1;",
+    "content-security-policy-report-only": "report-uri https://metrics.media-amazon.com/;default-src 'self' wss: blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline'",
+    "x-amz-rid": "BHDHTY0GWEAPH1J56M82",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 50c017c31b8245652ddca43054eeb8de.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "GIG51-P4",
+    "x-amz-cf-id": "Du42Ym_Ph3sBR8YHLIMJlynR5AwdjnucXJHDdYQsq5aCCTPnP_q4XA==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/business-amazon-com-en-blog-ai-powered-assistant-launch.md>"
+ },
+ {
+  "url": "https://corporate.homedepot.com/news/company/home-depot-launches-ai-powered-blueprint-takeoffs",
+  "crawl": {
+   "loadedUrl": "https://corporate.homedepot.com/news/company/home-depot-launches-ai-powered-blueprint-takeoffs",
+   "loadedTime": "2026-10-17T06:15:53.549Z",
+   "referrerUrl": "https://corporate.homedepot.com/news/company/home-depot-launches-ai-powered-blueprint-takeoffs",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 14294,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.homedepot.com/news/company/home-depot-launches-ai-powered-blueprint-takeoffs",
+   "title": "The Home Depot Launches AI-Powered Blueprint Takeoffs to Help Pros Stay on Time and on Budget | The Home Depot",
+   "description": "The Home Depot, the world's largest home improvement retailer, launched a Blueprint Takeoffs solution, a new AI-powered tool that is designed to provide professional renovators, remodelers and builders with faster, more accurate and cost-effective material lists and estimates – also known as takeoffs – for single-family project blueprints.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:description",
+     "content": "The Home Depot, the world's largest home improvement retailer, launched a Blueprint Takeoffs solution, a new AI-powered tool that is designed to provide professional renovators, remodelers and builders with faster, more accurate and cost-effective material lists and estimates – also known as takeoffs – for single-family project blueprints."
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.homedepot.com/sites/default/files/styles/social935x522/public/2025-11/blueprint_935.jpg?itok=EK2uGqAU"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "935"
+    },
+    {
+     "property": "og:image:height",
+     "content": "522"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Home Depot"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=900, public",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' js-agent.newrelic.com cdn.jsdelivr.net www.googletagmanager.com www.google-analytics.com code.jquery.com players.brightcove.net cdn.jsdelivr.net vjs.zencdn.net blob: *.instagram.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: www.googletagmanager.com www.google-analytics.com *.amazonaws.com assets.codepen.io corporate.homedepot.com metrics.brightcove.com *.boltdns.net *.brightcovecdn.com; media-src blob: *.boltdns.net *.brightcovecdn.com; frame-src 'self' *.akamaihd.net www.youtube.com players.brightcove.net w.soundcloud.com *.brightcovecdn.com *.instagram.com; font-src 'self' data:; connect-src 'self' www.googletagmanager.com www.google-analytics.com edge.api.brightcove.com *.boltdns.net *.akamaihd.net *.brightcovecdn.com; report-uri /report-csp-violation; upgrade-insecure-requests",
+    "content-type": "text/html; charset=UTF-8",
+    "etag": "W/\"1792178333\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Fri, 16 Oct 2026 19:18:53 GMT",
+    "server": "nginx",
+    "strict-transport-security": "max-age=1000",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 10 (https://www.drupal.org)",
+    "x-pantheon-styx-hostname": "styx-us-a-fbbcf58dd-7kmpf",
+    "x-styx-req-id": "341e0ef1-c9f2-11f1-98e8-0efb417990db",
+    "date": "Sat, 17 Oct 2026 06:15:51 GMT",
+    "x-served-by": "cache-chi-klot8100172-CHI, cache-sof1510043-SOF",
+    "x-cache": "MISS, MISS",
+    "x-cache-hits": "0, 0",
+    "x-timer": "S1792217752.812664, VS0, VE169",
+    "vary": "Accept-Encoding, Cookie, Cookie, Cookie",
+    "age": "0",
+    "accept-ranges": "bytes",
+    "via": "1.1 varnish, 1.1 varnish",
+    "content-length": "14294",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-homedepot-com-news-company-home-depot-launches-ai-powered-blueprint-takeoffs.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/16001516-fin-memory",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/16001516-fin-memory",
+   "loadedTime": "2026-10-17T06:15:59.048Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/16001516-fin-memory",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/16001516-fin-memory",
+   "title": "Fin memory | Intercom Help",
+   "description": "How Fin retains past conversation context, how long it remembers, and answers to common questions.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Fin memory | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "How Fin retains past conversation context, how long it remembers, and answers to common questions."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6485365-fin-ai-agent",
+       "name": "Fin AI Agent",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "name": "Fin memory",
+       "position": 3
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "How Fin retains past conversation context, how long it remembers, and answers to common questions.",
+     "headline": "Fin memory",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/16001516-fin-memory",
+     "author": {
+      "@type": "Person",
+      "name": "Dawn Perrott"
+     },
+     "dateModified": "2026-07-22T17:01:13Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 06:15:55 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fv599km7o4mlonov0",
+    "etag": "W/\"66c23ec8dca1cbfba5f382ecdb627a31\"",
+    "x-runtime": "1.157152",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-z_JkSReThOgwuaZCfyxyOQfkOAjMHHwTTB3esQrKjRE'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=155eb54e-82f2-4874-bca3-2ab10b92c03c; path=/; max-age=1; httponly\ngtm_id=015bff19-a3c5-4c2b-aa00-556cd15e02ee; domain=intercom.com; path=/; <signed-url-removed> 17 Oct 2027 06:15:54 GMT; secure",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 92524164eb39769dbb84d6dcce9f5b74.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "JED50-P6",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "byBxhS6aU0-s6o-SWdG999nnDv0dH9hGGE_iQMLS7NWzROU2SLQ7og==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-16001516-fin-memory.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/16198358-ask-a-teammate-for-help-with-fin-s-replies-human-in-the-loop",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/16198358-ask-a-teammate-for-help-with-fin-s-replies-human-in-the-loop",
+   "loadedTime": "2026-10-17T06:16:00.841Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/16198358-ask-a-teammate-for-help-with-fin-s-replies-human-in-the-loop",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/16198358-ask-a-teammate-for-help-with-fin-s-replies-human-in-the-loop",
+   "title": "Ask a teammate for help with Fin's replies (Human in the Loop) | Intercom Help",
+   "description": "Let Fin ask your team for an approval, information or a decision, then finish the conversation itself, on email and chat.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Ask a teammate for help with Fin's replies (Human in the Loop) | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "Let Fin ask your team for an approval, information or a decision, then finish the conversation itself, on email and chat."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6485365-fin-ai-agent",
+       "name": "Fin AI Agent",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/3990230-train",
+       "name": "Train",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "name": "Ask a teammate for help with Fin's replies (Human in the Loop)",
+       "position": 4
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "Let Fin ask your team for an approval, information or a decision, then finish the conversation itself, on email and chat.",
+     "headline": "Ask a teammate for help with Fin's replies (Human in the Loop)",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/16198358-ask-a-teammate-for-help-with-fin-s-replies-human-in-the-loop",
+     "author": {
+      "@type": "Person",
+      "name": "Dawn Perrott"
+     },
+     "dateModified": "2026-10-16T13:12:23Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 06:15:57 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000g1hh2uuoji6smlbag",
+    "etag": "W/\"03d16b5253480ce5fdce9d9694738e82\"",
+    "x-runtime": "0.770078",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-8nlYVtvd2pgFRCLjH3MmGRRGynPiFEXQbKBFp3cuDWc'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=e8d85b7b-79d9-4b67-8f71-87d347892d0e; path=/; max-age=1; httponly",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 92524164eb39769dbb84d6dcce9f5b74.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "JED50-P6",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "Bv1XL7rj26JGkQjygDV5BRGixDlOFJlFSC9ZHNvoQBfrQacfX0iCSw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-16198358-ask-a-teammate-for-help-with-fin-s-replies-human-in-the-l.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/15234261-configure-fin-s-behavior-when-no-human-agents-are-available",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/15234261-configure-fin-s-behavior-when-no-human-agents-are-available",
+   "loadedTime": "2026-10-17T06:16:01.040Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/15234261-configure-fin-s-behavior-when-no-human-agents-are-available",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/15234261-configure-fin-s-behavior-when-no-human-agents-are-available",
+   "title": "Configure Fin's behavior when no human agents are available | Intercom Help",
+   "description": "Explains how to control what Fin does when a customer asks for a human but no agents are online — including follow-up check-ins, bot-only mode behavior, and escalation guidance.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Configure Fin's behavior when no human agents are available | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "Explains how to control what Fin does when a customer asks for a human but no agents are online — including follow-up check-ins, bot-only mode behavior, and escalation guidance."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6485365-fin-ai-agent",
+       "name": "Fin AI Agent",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/3990230-train",
+       "name": "Train",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "name": "Configure Fin's behavior when no human agents are available",
+       "position": 4
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "Explains how to control what Fin does when a customer asks for a human but no agents are online — including follow-up check-ins, bot-only mode behavior, and escalation guidance.",
+     "headline": "Configure Fin's behavior when no human agents are available",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/15234261-configure-fin-s-behavior-when-no-human-agents-are-available",
+     "author": {
+      "@type": "Person",
+      "name": "Dawn Perrott"
+     },
+     "dateModified": "2026-05-22T19:27:35Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 06:15:58 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fv5rdturj0fqtig4g",
+    "etag": "W/\"358eb0fed4860d283f1cc9deea335da1\"",
+    "x-runtime": "0.966885",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-By1Z-Pveaiyv1UrfjGqyBB2ZFQzZA9EvAH7yBt8nFoY'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=7ffe302b-d68f-445a-837f-b80b020da9a2; path=/; max-age=1; httponly",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 92524164eb39769dbb84d6dcce9f5b74.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "JED50-P6",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "MaUDHT2JhXrrQQPR_pmqhST37VFtm53g9FUXTW5wb8E4FAMihpJdmQ==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-15234261-configure-fin-s-behavior-when-no-human-agents-are-availab.md>"
+ },
+ {
+  "url": "https://www.nngroup.com/articles/intelligent-assistant-usability/",
+  "crawl": {
+   "loadedUrl": "https://www.nngroup.com/articles/intelligent-assistant-usability/",
+   "loadedTime": "2026-10-17T06:16:08.960Z",
+   "referrerUrl": "https://www.nngroup.com/articles/intelligent-assistant-usability/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 48050,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.nngroup.com/articles/intelligent-assistant-usability/",
+   "title": "Intelligent Assistants Have Poor Usability: A User Study of Alexa, Google Assistant, and Siri - NN/G",
+   "description": "Both voice-only and screen-based intelligent assistants work well only for very limited, simple queries that have fairly simple, short answers.",
+   "author": null,
+   "keywords": "Siri, Alexa, Google Assistant, intelligent assistant, usability of intelligent assistants, artificial intelligence, intelligent agent, voice-based assistant, voice interaction, AI, voice, natural interfaces, natural language, agents, conversational agents, conversational user interfaces, CUI",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Nielsen Norman Group"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.nngroup.com/articles/intelligent-assistant-usability/"
+    },
+    {
+     "property": "og:title",
+     "content": "Intelligent Assistants Have Poor Usability: A User Study of Alexa, Google Assistant, and Siri"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:description",
+     "content": "Both voice-only and screen-based intelligent assistants work well only for very limited, simple queries that have fairly simple, short answers."
+    },
+    {
+     "property": "og:image",
+     "content": "https://media.nngroup.com/media/articles/opengraph_images/intelligent-assistant-usability.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "headline": "Intelligent Assistants Have Poor Usability: A User Study of Alexa, Google Assistant, and Siri",
+     "image": [
+      "https://media.nngroup.com/media/articles/opengraph_images/intelligent-assistant-usability.png"
+     ],
+     "datePublished": "2018-07-22T16:00:00+0000",
+     "dateModified": "2020-04-30T14:27:24+0000",
+     "author": [
+      {
+       "@type": "Person",
+       "name": "Page Laubheimer",
+       "url": "https://www.nngroup.com/articles/author/page-laubheimer/"
+      },
+      {
+       "@type": "Person",
+       "name": "Raluca Budiu",
+       "url": "https://www.nngroup.com/articles/author/raluca-budiu/"
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "EducationalOrganization",
+     "@id": "https://www.nngroup.com/#organization",
+     "name": "Nielsen Norman Group",
+     "alternateName": [
+      "NN/g",
+      "NNG"
+     ],
+     "url": "https://www.nngroup.com",
+     "logo": {
+      "@type": "ImageObject",
+      "url": "https://media.nngroup.com/static/img/logo-817x388.png",
+      "width": 817,
+      "height": 388
+     },
+     "image": "https://media.nngroup.com/media/metadata/opengraph_images/Homepage_1.png",
+     "description": "Nielsen Norman Group (NN/g) is a world-leading user experience research, training, and consulting firm. Founded in 1998 by UX pioneers Jakob Nielsen and Don Norman, NN/g provides evidence-based UX guidance through live training courses, UX Certification programs, consulting services, and an extensive library of free research articles and reports.",
+     "sameAs": [
+      "https://en.wikipedia.org/wiki/Nielsen_Norman_Group",
+      "https://www.linkedin.com/company/nielsen-norman-group/",
+      "https://x.com/NNgroup",
+      "https://www.youtube.com/@NNgroup",
+      "https://www.instagram.com/nngux",
+      "https://www.facebook.com/nngux",
+      "https://open.spotify.com/show/3GFTfWpfv6m8nhKsPOlT8m",
+      "https://www.wikidata.org/wiki/Q7031613"
+     ],
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "48105 Warm Springs Blvd",
+      "addressLocality": "Fremont",
+      "addressRegion": "CA",
+      "postalCode": "94539",
+      "addressCountry": "US"
+     },
+     "email": "support@nngroup.com",
+     "telephone": "+1-415-682-0688",
+     "contactPoint": [
+      {
+       "@type": "ContactPoint",
+       "contactType": "Customer Service",
+       "telephone": "+1-415-682-0688",
+       "email": "support@nngroup.com",
+       "areaServed": "Worldwide",
+       "availableLanguage": "English"
+      },
+      {
+       "@type": "ContactPoint",
+       "contactType": "sales",
+       "telephone": "+1-415-685-4230",
+       "email": "training@nngroup.com",
+       "areaServed": "Worldwide",
+       "availableLanguage": "English"
+      }
+     ],
+     "naics": "611430",
+     "founder": [
+      {
+       "@type": "Person",
+       "name": "Jakob Nielsen",
+       "honorificPrefix": "Dr",
+       "url": "https://www.nngroup.com/people/jakob-nielsen/",
+       "sameAs": "https://en.wikipedia.org/wiki/Jakob_Nielsen_(usability_consultant)",
+       "jobTitle": "Co-Founder & Retired Principal"
+      },
+      {
+       "@type": "Person",
+       "name": "Don Norman",
+       "honorificPrefix": "Dr",
+       "url": "https://www.nngroup.com/people/don-norman/",
+       "sameAs": "https://en.wikipedia.org/wiki/Don_Norman",
+       "jobTitle": "Co-Founder & Board Member"
+      }
+     ],
+     "knowsAbout": [
+      "Usability Heuristics",
+      "User Experience Research",
+      "Interaction Design",
+      "UX Training",
+      "Information Architecture",
+      "Content Strategy",
+      "Design Thinking",
+      "Service Design",
+      "UX Management",
+      "Accessibility",
+      "UX Certification",
+      "Journey Mapping",
+      "User Research Methods"
+     ],
+     "foundingDate": "1998-08-08",
+     "numberOfEmployees": {
+      "@type": "QuantitativeValue",
+      "minValue": 51,
+      "maxValue": 200
+     },
+     "employee": [
+      {
+       "@type": "Person",
+       "name": "Kara Pernice",
+       "jobTitle": "President and CEO",
+       "url": "https://www.nngroup.com/people/kara-pernice/"
+      }
+     ],
+     "slogan": "World leaders in research-based user experience"
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 06:16:04 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "content-length": "48050",
+    "x-sucuri-id": "19012",
+    "content-encoding": "gzip",
+    "content-security-policy-report-only": "default-src 'self'; script-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; img-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; connect-src 'self'; style-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; font-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com",
+    "cross-origin-opener-policy": "same-origin",
+    "etag": "W/\"0bcc4810e3008435e56810033e5617f7\"",
+    "last-modified": "Thu, 30 Apr 2020 14:27:24 GMT",
+    "nel": "{\"report_to\":\"heroku-nel\", \"response_headers\":[\"Via\"], \"max_age\":3600, \"success_fraction\":0.01, \"failure_fraction\":0.1}",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "report-to": "{\"group\":\"heroku-nel\", \"endpoints\":[{\"url\":\"https://nel.heroku.com/reports?s=pg6ROBThOzR6SoJVZyTHITACSJD9cL3l4zgiYNL8SHY%3D\\u0026sid=929419e7-33ea-4e2f-85f0-7d8b7cd5cbd6\\u0026ts=1792217764\"}], \"max_age\":3600}",
+    "reporting-endpoints": "heroku-nel=\"https://nel.heroku.com/reports?s=pg6ROBThOzR6SoJVZyTHITACSJD9cL3l4zgiYNL8SHY%3D&sid=929419e7-33ea-4e2f-85f0-7d8b7cd5cbd6&ts=1792217764\"",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "vary": "Cookie, Accept-Encoding",
+    "via": "1.1 heroku-router",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "server": "Sucuri/Cloudproxy",
+    "x-sucuri-cache": "MISS",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-nngroup-com-articles-intelligent-assistant-usability.md>"
+ },
+ {
+  "url": "https://www.amazon.com/gp/help/customer/display.html?nodeId=THQ1gV8HWJ6jzUS6ed",
+  "crawl": {
+   "loadedUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=THQ1gV8HWJ6jzUS6ed",
+   "loadedTime": "2026-10-17T06:17:12.858Z",
+   "referrerUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=THQ1gV8HWJ6jzUS6ed",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=THQ1gV8HWJ6jzUS6ed",
+   "title": "About Voice Shopping - Amazon Customer Service",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-us",
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Sat, 17 Oct 2026 06:17:11 GMT",
+    "server": "Server",
+    "set-cookie": "session-id=138-6977179-2578844; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:17:11 GMT; Path=/; Secure\nsession-id-time=2082787201l; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:17:11 GMT; Path=/; Secure\nsst-main=Sst1|PQJZAFkDke4mNozzEK2yKActB-sqLkA1csesEL6Gc_iR7GO9891Ov93AwBBy1qHdHSz_wizxSVuKdK1d2E-ho79OxfdXA4v81kNhHe2bnHsesG1E_wfswiZRfgFhQbaXGXMuuoMIBnCogmpby28TL23dck-_ZZlaTnc7ErLZM_aRa0pcNkQ8MY8gpDA7vv_Qq3vp2ziBEz78nWISBPbVT7obxdosrYxQeEmOn2GXCKP_1NAVClMKeDQm-uaJc66H-xTT; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:17:11 GMT; Path=/; Secure; HttpOnly; SameSite=Lax\ni18n-prefs=EUR; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:17:11 GMT; Path=/\nlc-main=en_US; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 06:17:11 GMT; Path=/\nsp-cdn=\"L5Z9:HR\"; Version=1; Domain=.amazon.com; Max-Age=31536000; Expires=Sun, 17-Oct-2027 06:17:11 GMT; Path=/; Secure; HttpOnly",
+    "accept-ch": "ect, rtt, downlink, device-memory, sec-ch-device-memory, viewport-width, sec-ch-viewport-width, dpr, sec-ch-dpr, sec-ch-ua-full-version-list, viewport-height, sec-ch-viewport-height",
+    "accept-ch-lifetime": "86400",
+    "cache-control": "no-cache",
+    "content-encoding": "gzip",
+    "content-language": "en-US",
+    "content-security-policy": "upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/",
+    "expires": "-1",
+    "permissions-policy": "ch-dpr=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-viewport-width=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-downlink=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-ect=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\")",
+    "pragma": "no-cache",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1;",
+    "content-security-policy-report-only": "default-src 'self' blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline';report-uri https://metrics.media-amazon.com/",
+    "x-amz-rid": "F8B97HQ23NAR75JKXWWJ",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "x-frame-options": "SAMEORIGIN",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 2837e5fd1ca723e680b62ffde58e2b84.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "ZAG51-P2",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "39RPHDOvgnvrhKsKfHiJbUysQhE70b3xLW5JOQ4OwnNWxiqpYnaFog==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-amazon-com-gp-help-customer-display-html-nodeId-THQ1gV8HWJ6jzUS6ed.md>"
+ }
+]

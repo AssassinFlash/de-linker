@@ -1,0 +1,1900 @@
+[
+ {
+  "url": "https://knowledge.hubspot.com/chatflows/create-and-customize-a-mobile-chatflow",
+  "crawl": {
+   "loadedUrl": "https://knowledge.hubspot.com/chatflows/create-and-customize-a-mobile-chatflow",
+   "loadedTime": "2026-10-17T05:44:40.317Z",
+   "referrerUrl": "https://knowledge.hubspot.com/chatflows/create-and-customize-a-mobile-chatflow",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://knowledge.hubspot.com/chatflows/create-and-customize-a-mobile-chatflow",
+   "title": "Create and customize a mobile chatflow",
+   "description": "Learn how to create and customize a mobile chatflow.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:description",
+     "content": "Learn how to create and customize a mobile chatflow."
+    },
+    {
+     "property": "og:title",
+     "content": "Create and customize a mobile chatflow"
+    },
+    {
+     "property": "og:url",
+     "content": "https://knowledge.hubspot.com/chatflows/create-and-customize-a-mobile-chatflow"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://knowledge.hubspot.com/hubfs/hubspot_knowledge_base_logo.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "667"
+    },
+    {
+     "property": "og:image:height",
+     "content": "226"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "TechArticle",
+     "@id": "https://knowledge.hubspot.com/chatflows/create-and-customize-a-mobile-chatflow#article",
+     "headline": "Create and customize a mobile chatflow",
+     "description": "Learn how to create and customize a mobile chatflow.",
+     "image": {
+      "@type": "ImageObject",
+      "@id": "https://knowledge.hubspot.com/chatflows/create-and-customize-a-mobile-chatflow#image",
+      "url": "https://knowledge.hubspot.com/hubfs/hubspot_knowledge_base_logo.jpg",
+      "width": 667,
+      "height": 226
+     },
+     "datePublished": "2025-08-21T15:14:22Z",
+     "dateModified": "2026-06-21T06:05:52Z",
+     "inLanguage": "en-US",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://knowledge.hubspot.com/chatflows/create-and-customize-a-mobile-chatflow"
+     },
+     "author": {
+      "@type": "Organization",
+      "name": "HubSpot",
+      "url": "https://www.hubspot.com"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "HubSpot",
+      "url": "https://www.hubspot.com"
+     },
+     "isAccessibleForFree": true
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:39 GMT",
+    "content-type": "text/html;charset=utf-8",
+    "cf-ray": "a4bcfe19aeece168-ORD",
+    "cf-cache-status": "DYNAMIC",
+    "cache-control": "s-maxage=36000, max-age=0",
+    "content-encoding": "gzip",
+    "last-modified": "Sat, 17 Oct 2026 05:44:38 GMT",
+    "link": "<https://static.hsappstatic.net>; rel=preconnect, <https://53.fs1.hubspotusercontent-na1.net>; rel=preconnect, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSans-Book.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSans-Medium.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSerif-Medium.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/35770062229/1778002031299/template_kb-article.min.css>; rel=preload; as=style, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/82342657873/1744213121618/template_a11y.min.css>; rel=preload; as=style, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/24970506845/1776968277728/template__layout.min.css>; rel=preload; as=style",
+    "server": "cloudflare",
+    "x-wt-stamp": "webteam",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "vary": "origin, accept-encoding",
+    "access-control-allow-credentials": "false",
+    "content-security-policy": "script-src 'self' 'unsafe-inline' 'unsafe-eval' api.swiftype.com app.hubspot.com cdn.pdst.fm connect.facebook.net forms.hsforms.com js.hs-analytics.net js.hs-banner.com js.hsleadflows.net js.hubspotfeedback.com js.usemessages.com platform.linkedin.com platform.twitter.com script.google.com script.hotjar.com snap.licdn.com static.hotjar.com static.hsappstatic.net www.google-analytics.com www.googletagmanager.com script.googleusercontent.com 'strict-dynamic' 'nonce-IbXUdVcRMzif2GpnAsy+kQ=='; report-uri https://send.hsbrowserreports.com/csp/report; upgrade-insecure-requests",
+    "content-security-policy-report-only": "script-src 'self' 'unsafe-inline' 'unsafe-eval' api.swiftype.com app.hubspot.com cdn.pdst.fm connect.facebook.net forms.hsforms.com js.hs-analytics.net js.hs-banner.com js.hsleadflows.net js.hubspotfeedback.com js.usemessages.com platform.linkedin.com platform.twitter.com script.google.com script.hotjar.com snap.licdn.com static.hotjar.com static.hsappstatic.net www.google-analytics.com www.googletagmanager.com 'strict-dynamic' 'nonce-IbXUdVcRMzif2GpnAsy+kQ=='; report-uri https://send.hsbrowserreports.com/csp/report",
+    "edge-cache-tag": "CT-193531289603, CG-3345520891, P-53, CW-11295237721, CW-121870956699, CW-158601383022, CW-25063776541, CW-26275571877, CW-27237248932, CW-27867764010, CW-28762968831, CW-34035461660, CW-35770486813, CW-36678222654, CW-39963105441, CW-4108415825, CW-69201365528, CW-75180171821, DB-14510483, DB-7206756, DB-7208361, E-103516871718, E-103790083179, E-103790493086, E-105683881912, E-105683881913, E-11295237615, E-171253060982, E-182757519914, E-182761488664, E-185813233057, E-186807309163, E-186807707401, E-186808447492, E-188327041555, E-188327100024, E-188327573275, E-188327665702, E-188329223604, E-188329346742, E-189257633654, E-190970381433, E-191044787116, E-191317366345, E-191479104684, E-192339359882, E-194052852407, E-194395071298, E-194395071313, E-194395071316, E-194395071326, E-194395071330, E-194395071333, E-195513389386, E-197203986776, E-198774374490, E-201641145628, E-201641145744, E-201641146180, E-201642011524, E-201642011802, E-201642144666, E-201647075434, E-201647315838, E-201647316103, E-201647316335, E-201647382346, E-201647382400, E-206749040455, E-207440410286, E-212229834920, E-212229895803, E-215735717698, E-216172825929, E-220372789805, E-220375132597, E-220464422659, E-22929986078, E-23375212114, E-23435881045, E-24970506845, E-26880948358, E-29939664278, E-29939664294, E-29939671785, E-32026472938, E-32029983694, E-34969648212, E-35260305271, E-35770062229, E-57245085745, E-82342657873, E-9075588180, E-92700496990, PGS-ALL, SW-0, GC-33025739249, GC-33025739390, GC-33026490674, GC-33026490700, GC-61394447616, GC-69209910104",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=AInrh%2BSYl1t7oSvOK7jQPq%2FRIB%2F4J9krshqDPv8C%2FDpLrgEFYApjSZ361Wm3xLJSLpd5GY7Rx%2Bn5IzrFsyoAX89oZpzgsJUHvQLOm7rUfgfPPAJmGbQ3shE8wEJyM6KJXIObtbI7cOb6YE4rJ4i3xWgsPg%3D%3D\"}]}",
+    "server-timing": "hcid;desc=\"01a147c7-b3e3-74b7-b3dd-eb61f50ae940\", cfr;desc=\"a4bc03f20c0b5fc6-IAD\"",
+    "x-content-type-options": "nosniff",
+    "x-hs-cache-config": "BrowserCache-0s-EdgeCache-36000s",
+    "x-hs-cfworker-meta": "{\"contentType\":\"BLOG_POST\", \"resolver\":\"OriginResolver\"}",
+    "x-hs-content-id": "193531289603",
+    "x-hs-hub-id": "53",
+    "x-hs-portal-id": "53",
+    "x-hubspot-correlation-id": "01a147c7-b3e3-74b7-b3dd-eb61f50ae940",
+    "x-hubspot-trust-forwarded-for": "true, true",
+    "x-laboratory-cms-experiment-status": "no-cms-experiment-found",
+    "x-laboratory-redirect-experiment-status": "no-redirect-experiments",
+    "set-cookie": "__cf_bm=wOUC_aWx9h1e3bcxLD6XRLi6sNuflqKYD4D.tKOpcyA-1792215878.667026-1.0.1.1-nylqmjK.i9hFzrJ_e.ak5n5IYhpUUnABK4hz_3849cS9UwUqGtTVWhoasR.MpOVK79kuHMGyyQDza.Ndj0V.B065xKh__swFND1ngbVdGi0DXede6aZHms6c4M8EERCg; HttpOnly; SameSite=None; Secure; Path=/; Domain=knowledge.hubspot.com; Expires=Sat, 17 Oct 2026 06:14:39 GMT",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/knowledge-hubspot-com-chatflows-create-and-customize-a-mobile-chatflow.md>"
+ },
+ {
+  "url": "https://knowledge.hubspot.com/chatflows/create-a-live-chat",
+  "crawl": {
+   "loadedUrl": "https://knowledge.hubspot.com/chatflows/create-a-live-chat",
+   "loadedTime": "2026-10-17T05:44:41.169Z",
+   "referrerUrl": "https://knowledge.hubspot.com/chatflows/create-a-live-chat",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://knowledge.hubspot.com/chatflows/create-a-live-chat",
+   "title": "Create a live chat",
+   "description": "Create a chatflow with live chat to connect visitors with members of your team. ",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:description",
+     "content": "Create a chatflow with live chat to connect visitors with members of your team. "
+    },
+    {
+     "property": "og:title",
+     "content": "Create a live chat"
+    },
+    {
+     "property": "og:image",
+     "content": "https://knowledge.hubspot.com/hubfs/hubspot_knowledge_base_logo.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "667"
+    },
+    {
+     "property": "og:image:height",
+     "content": "226"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "target-for-conversations"
+    },
+    {
+     "property": "og:url",
+     "content": "https://knowledge.hubspot.com/chatflows/create-a-live-chat"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://knowledge.hubspot.com/hubfs/hubspot_knowledge_base_logo.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "667"
+    },
+    {
+     "property": "og:image:height",
+     "content": "226"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "TechArticle",
+     "@id": "https://knowledge.hubspot.com/chatflows/create-a-live-chat#article",
+     "headline": "Create a live chat",
+     "description": "Create a chatflow with live chat to connect visitors with members of your team. ",
+     "image": {
+      "@type": "ImageObject",
+      "@id": "https://knowledge.hubspot.com/chatflows/create-a-live-chat#image",
+      "url": "https://knowledge.hubspot.com/hubfs/hubspot_knowledge_base_logo.jpg",
+      "width": 667,
+      "height": 226
+     },
+     "datePublished": "2019-01-25T20:55:13Z",
+     "dateModified": "2026-10-05T10:43:08Z",
+     "inLanguage": "en-US",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://knowledge.hubspot.com/chatflows/create-a-live-chat"
+     },
+     "author": {
+      "@type": "Organization",
+      "name": "HubSpot",
+      "url": "https://www.hubspot.com"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "HubSpot",
+      "url": "https://www.hubspot.com"
+     },
+     "isAccessibleForFree": true
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:40 GMT",
+    "content-type": "text/html;charset=utf-8",
+    "cf-ray": "a4bcfe219e3ef475-DFW",
+    "cf-cache-status": "DYNAMIC",
+    "age": "199",
+    "cache-control": "s-maxage=36000, max-age=0",
+    "content-encoding": "br",
+    "last-modified": "Sat, 17 Oct 2026 05:41:20 GMT",
+    "link": "<https://static.hsappstatic.net>; rel=preconnect, <https://53.fs1.hubspotusercontent-na1.net>; rel=preconnect, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSans-Book.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSans-Medium.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSerif-Medium.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/35770062229/1778002031299/template_kb-article.min.css>; rel=preload; as=style, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/82342657873/1744213121618/template_a11y.min.css>; rel=preload; as=style, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/24970506845/1776968277728/template__layout.min.css>; rel=preload; as=style",
+    "server": "cloudflare",
+    "x-wt-stamp": "webteam",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "vary": "origin, accept-encoding",
+    "access-control-allow-credentials": "false",
+    "content-security-policy": "script-src 'self' 'unsafe-inline' 'unsafe-eval' api.swiftype.com app.hubspot.com cdn.pdst.fm connect.facebook.net forms.hsforms.com js.hs-analytics.net js.hs-banner.com js.hsleadflows.net js.hubspotfeedback.com js.usemessages.com platform.linkedin.com platform.twitter.com script.google.com script.hotjar.com snap.licdn.com static.hotjar.com static.hsappstatic.net www.google-analytics.com www.googletagmanager.com script.googleusercontent.com 'strict-dynamic' 'nonce-3WR/nJ4jfe0ZBnExPWHAhg=='; report-uri https://send.hsbrowserreports.com/csp/report; upgrade-insecure-requests",
+    "content-security-policy-report-only": "script-src 'self' 'unsafe-inline' 'unsafe-eval' api.swiftype.com app.hubspot.com cdn.pdst.fm connect.facebook.net forms.hsforms.com js.hs-analytics.net js.hs-banner.com js.hsleadflows.net js.hubspotfeedback.com js.usemessages.com platform.linkedin.com platform.twitter.com script.google.com script.hotjar.com snap.licdn.com static.hotjar.com static.hsappstatic.net www.google-analytics.com www.googletagmanager.com 'strict-dynamic' 'nonce-3WR/nJ4jfe0ZBnExPWHAhg=='; report-uri https://send.hsbrowserreports.com/csp/report",
+    "edge-cache-tag": "CT-7121548366, CG-3345520891, P-53, CW-11295237721, CW-121870956699, CW-158601383022, CW-25063776541, CW-26275571877, CW-27237248932, CW-27867764010, CW-28762968831, CW-34035461660, CW-35770486813, CW-36678222654, CW-39963105441, CW-4108415825, CW-69201365528, CW-75180171821, DB-14510483, DB-7206756, DB-7208361, E-103516871718, E-103790083179, E-103790493086, E-105683881912, E-105683881913, E-11295237615, E-171253060982, E-182757519914, E-182761488664, E-185813233057, E-186807309163, E-186807707401, E-186808447492, E-188327041555, E-188327100024, E-188327573275, E-188327665702, E-188329223604, E-188329346742, E-189257633654, E-190970381433, E-191044787116, E-191317366345, E-191479104684, E-192339359882, E-194052852407, E-194395071298, E-194395071313, E-194395071316, E-194395071326, E-194395071330, E-194395071333, E-195513389386, E-197203986776, E-198774374490, E-201641145628, E-201641145744, E-201641146180, E-201642011524, E-201642011802, E-201642144666, E-201647075434, E-201647315838, E-201647316103, E-201647316335, E-201647382346, E-201647382400, E-206749040455, E-207440410286, E-212229834920, E-212229895803, E-215735717698, E-216172825929, E-220372789805, E-220375132597, E-220464422659, E-22929986078, E-23375212114, E-23435881045, E-24970506845, E-26880948358, E-29939664278, E-29939664294, E-29939671785, E-32026472938, E-32029983694, E-34969648212, E-35260305271, E-35770062229, E-57245085745, E-82342657873, E-9075588180, E-92700496990, PGS-ALL, SW-0, GC-33025739249, GC-33025739390, GC-33026490674, GC-33026490700, GC-61394447616, GC-69209910104",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=JndaSXpsYkftY04Pp7CAuyt66Dk3sOs%2FI%2FZyTkp48gSenvUZ6wIL4ntx8E1B%2BixVwR3xwYlQzzKDJprm33gY6qJ2XBPvT1kuKFwfeq8idAMaYW%2FIjM9OSVgq%2Bpogk0Pzv9KQjyG5JhHP2r95unCVgsO%2FuQ%3D%3D\"}]}",
+    "server-timing": "hcid;desc=\"01a14861-04b1-7fcf-9721-fb2734e7cf59\", cfr;desc=\"a4bcf9406bf5fef1-IAD\"",
+    "x-content-type-options": "nosniff",
+    "x-hs-cache-config": "BrowserCache-0s-EdgeCache-36000s",
+    "x-hs-cfworker-meta": "{\"contentType\":\"BLOG_POST\", \"resolver\":\"OriginResolver\"}",
+    "x-hs-content-id": "7121548366",
+    "x-hs-hub-id": "53",
+    "x-hs-portal-id": "53",
+    "x-hubspot-correlation-id": "01a14861-04b1-7fcf-9721-fb2734e7cf59",
+    "x-hubspot-trust-forwarded-for": "true, true",
+    "x-laboratory-cms-experiment-status": "no-cms-experiment-found",
+    "x-laboratory-redirect-experiment-status": "no-redirect-experiments",
+    "set-cookie": "__cf_bm=ea531XJbHUzvwSzQWOeA1FBi9p0liy0MI3hWsW._S_I-1792215879.935351-1.0.1.1-gYaDE2wBdAklscHUNtIsXLpOJgoZbhvhuZRHr.TjyYbZwro3eJnJBvR0j0YAZY5__NVD.zsLt9jfsTW10b2k6GfFNFeqqIWRzUkCyy3P_D.8SofHO3ISrpYZH_iSBgz3; HttpOnly; SameSite=None; Secure; Path=/; Domain=knowledge.hubspot.com; Expires=Sat, 17 Oct 2026 06:14:40 GMT",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/knowledge-hubspot-com-chatflows-create-a-live-chat.md>"
+ },
+ {
+  "url": "https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser",
+  "crawl": {
+   "loadedUrl": "https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser",
+   "loadedTime": "2026-10-17T05:44:49.283Z",
+   "referrerUrl": "https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser",
+   "title": "Cookies set in your visitor's browser by HubSpot",
+   "description": "Learn about the cookies the HubSpot tracking code sets in a visitor's browser.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:description",
+     "content": "Learn about the cookies the HubSpot tracking code sets in a visitor's browser."
+    },
+    {
+     "property": "og:title",
+     "content": "Cookies set in your visitor's browser by HubSpot"
+    },
+    {
+     "property": "og:image",
+     "content": "https://knowledge.hubspot.com/hubfs/hubspot_knowledge_base_logo.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "667"
+    },
+    {
+     "property": "og:image:height",
+     "content": "226"
+    },
+    {
+     "property": "og:url",
+     "content": "https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://knowledge.hubspot.com/hubfs/hubspot_knowledge_base_logo.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "667"
+    },
+    {
+     "property": "og:image:height",
+     "content": "226"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "TechArticle",
+     "@id": "https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser#article",
+     "headline": "Cookies set in your visitor's browser by HubSpot",
+     "description": "Learn about the cookies the HubSpot tracking code sets in a visitor's browser.",
+     "image": {
+      "@type": "ImageObject",
+      "@id": "https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser#image",
+      "url": "https://knowledge.hubspot.com/hubfs/hubspot_knowledge_base_logo.jpg",
+      "width": 667,
+      "height": 226
+     },
+     "datePublished": "2024-09-18T13:15:00Z",
+     "dateModified": "2026-09-09T19:32:44Z",
+     "inLanguage": "en-US",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser"
+     },
+     "author": {
+      "@type": "Organization",
+      "name": "HubSpot",
+      "url": "https://www.hubspot.com"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "HubSpot",
+      "url": "https://www.hubspot.com"
+     },
+     "isAccessibleForFree": true
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:46 GMT",
+    "content-type": "text/html;charset=utf-8",
+    "cf-ray": "a4bcfe47eed7e168-ORD",
+    "cf-cache-status": "DYNAMIC",
+    "cache-control": "s-maxage=36000, max-age=0",
+    "content-encoding": "br",
+    "last-modified": "Sat, 17 Oct 2026 05:44:46 GMT",
+    "link": "<https://static.hsappstatic.net>; rel=preconnect, <https://53.fs1.hubspotusercontent-na1.net>; rel=preconnect, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSans-Book.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSans-Medium.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/assets/hs-components/v4/fonts/hubspot-2025/HubSpotSerif-Medium.woff2>; rel=preload; as=font, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/35770062229/1778002031299/template_kb-article.min.css>; rel=preload; as=style, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/82342657873/1744213121618/template_a11y.min.css>; rel=preload; as=style, <https://knowledge.hubspot.com/hubfs/hub_generated/template_assets/1/24970506845/1776968277728/template__layout.min.css>; rel=preload; as=style",
+    "server": "cloudflare",
+    "set-cookie": "__cf_bm=zBBioVhz7H666NmWvvDf4AyqIUWGFhvYArbtxyxXl1Y-1792215886.069098-1.0.1.1-L3nW8g3G88YrqLb79QHW_9g3wHNcxehlsdSSK1fWlmYXlcy8StEi0NARKRic44CtB3Gs8ourFo3vdMGLZQLjtTKvvy4B2ZZXpfx65IdM53lI5k5WW5dyW5hFtSSJojpT; HttpOnly; SameSite=None; Secure; Path=/; Domain=knowledge.hubspot.com; Expires=Sat, 17 Oct 2026 06:14:46 GMT",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "vary": "origin, accept-encoding",
+    "access-control-allow-credentials": "false",
+    "content-security-policy": "script-src 'self' 'unsafe-inline' 'unsafe-eval' api.swiftype.com app.hubspot.com cdn.pdst.fm connect.facebook.net forms.hsforms.com js.hs-analytics.net js.hs-banner.com js.hsleadflows.net js.hubspotfeedback.com js.usemessages.com platform.linkedin.com platform.twitter.com script.google.com script.hotjar.com snap.licdn.com static.hotjar.com static.hsappstatic.net www.google-analytics.com www.googletagmanager.com script.googleusercontent.com 'strict-dynamic' 'nonce-hvSicAyZcKS8x173rnJ9Qg=='; report-uri https://send.hsbrowserreports.com/csp/report; upgrade-insecure-requests",
+    "content-security-policy-report-only": "script-src 'self' 'unsafe-inline' 'unsafe-eval' api.swiftype.com app.hubspot.com cdn.pdst.fm connect.facebook.net forms.hsforms.com js.hs-analytics.net js.hs-banner.com js.hsleadflows.net js.hubspotfeedback.com js.usemessages.com platform.linkedin.com platform.twitter.com script.google.com script.hotjar.com snap.licdn.com static.hotjar.com static.hsappstatic.net www.google-analytics.com www.googletagmanager.com 'strict-dynamic' 'nonce-hvSicAyZcKS8x173rnJ9Qg=='; report-uri https://send.hsbrowserreports.com/csp/report",
+    "edge-cache-tag": "CT-3355272479, CG-3345520891, P-53, CW-11295237721, CW-121870956699, CW-158601383022, CW-25063776541, CW-26275571877, CW-27237248932, CW-27867764010, CW-28762968831, CW-34035461660, CW-35770486813, CW-36678222654, CW-39963105441, CW-4108415825, CW-69201365528, CW-75180171821, DB-14510483, DB-7206756, DB-7208361, E-103516871718, E-103790083179, E-103790493086, E-105683881912, E-105683881913, E-11295237615, E-171253060982, E-182757519914, E-182761488664, E-185813233057, E-186807309163, E-186807707401, E-186808447492, E-188327041555, E-188327100024, E-188327573275, E-188327665702, E-188329223604, E-188329346742, E-189257633654, E-190970381433, E-191044787116, E-191317366345, E-191479104684, E-192339359882, E-194052852407, E-194395071298, E-194395071313, E-194395071316, E-194395071326, E-194395071330, E-194395071333, E-195513389386, E-197203986776, E-198774374490, E-201641145628, E-201641145744, E-201641146180, E-201642011524, E-201642011802, E-201642144666, E-201647075434, E-201647315838, E-201647316103, E-201647316335, E-201647382346, E-201647382400, E-206749040455, E-207440410286, E-212229834920, E-212229895803, E-215735717698, E-216172825929, E-220372789805, E-220375132597, E-220464422659, E-22929986078, E-23375212114, E-23435881045, E-24970506845, E-26880948358, E-29939664278, E-29939664294, E-29939671785, E-32026472938, E-32029983694, E-34969648212, E-35260305271, E-35770062229, E-57245085745, E-82342657873, E-9075588180, E-92700496990, PGS-ALL, SW-0, GC-33025739249, GC-33025739390, GC-33026490674, GC-33026490700, GC-61394447616, GC-69209910104",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Xmpc8GbPYQ7rkHdsJOt%2FW8C3wpCHRi6fYLOr2VkuXWX7sfahI6kAlEkKcsIlO5uh9j4IYpeCUVac7f%2B%2F%2BdY9lTwfHM6OCOO1Bqps6ZdmJ9xdbOJVtslhB60haRCdkJVwquPc49xn9ZgFYCC%2BsWNB2I752A%3D%3D\"}]}",
+    "server-timing": "hcid;desc=\"01a14864-2942-7a57-a6d4-5e0969074715\", cfr;desc=\"a4bcfe4809ddf939-IAD\"",
+    "x-content-type-options": "nosniff",
+    "x-hs-cache-config": "BrowserCache-0s-EdgeCache-36000s",
+    "x-hs-cfworker-meta": "{\"contentType\":\"BLOG_POST\", \"resolver\":\"OriginResolver\"}",
+    "x-hs-content-id": "3355272479",
+    "x-hs-hub-id": "53",
+    "x-hs-portal-id": "53",
+    "x-hubspot-correlation-id": "01a14864-2942-7a57-a6d4-5e0969074715",
+    "x-hubspot-trust-forwarded-for": "true, true",
+    "x-laboratory-cms-experiment-status": "no-cms-experiment-found",
+    "x-laboratory-redirect-experiment-status": "no-redirect-experiments",
+    "x-wt-stamp": "webteam",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/knowledge-hubspot-com-privacy-and-consent-what-cookies-does-hubspot-set-in-a-visitor-s-browser.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/2499085-customer-visits-a-page",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/2499085-customer-visits-a-page",
+   "loadedTime": "2026-10-17T05:44:50.873Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/2499085-customer-visits-a-page",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/2499085-customer-visits-a-page",
+   "title": "Customer visits a page | Intercom Help",
+   "description": "Use Workflows for customer outreach to target and upsell when a customer visits a page on your website.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Customer visits a page | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "Use Workflows for customer outreach to target and upsell when a customer visits a page on your website."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/2094721-workflows",
+       "name": "Workflows",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/2094726-triggers",
+       "name": "Triggers",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "name": "Customer visits a page",
+       "position": 4
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "Use Workflows for customer outreach to target and upsell when a customer visits a page on your website.",
+     "headline": "Customer visits a page",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/2499085-customer-visits-a-page",
+     "author": {
+      "@type": "Person",
+      "name": "Beth-Ann Sher"
+     },
+     "dateModified": "2025-07-09T09:55:09Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:44:47 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fj90fnf06u0c5kaag",
+    "etag": "W/\"eaeecb4cd6712ab5797fea28706cc4ef\"",
+    "x-runtime": "0.370565",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-vOkKDEYT3Dna4HH1kf-h8wRRltoRkYnTY12EEM230HY'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=5dbade46-d393-4de8-976d-77a1ee39cf3c; path=/; max-age=1; httponly",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 cada1d072bc7a3b2aa4124487ad7a760.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "ORD51-P1",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "Af5J8bawhr5Awdc9KmmDU_FLrEAwMnrFJJdof501sFWUJ1h6Mgb0Bw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-2499085-customer-visits-a-page.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/1729-setting-up-chats-and-posts-for-maximum-impact",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/1729-setting-up-chats-and-posts-for-maximum-impact",
+   "loadedTime": "2026-10-17T05:44:50.559Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/1729-setting-up-chats-and-posts-for-maximum-impact",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/1729-setting-up-chats-and-posts-for-maximum-impact",
+   "title": "Setting up Chats and Posts for maximum impact | Intercom Help",
+   "description": "When to choose a chat or a post. And how to deliver it in the best way.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Setting up Chats and Posts for maximum impact | Intercom Help"
+    },
+    {
+     "property": "og:description",
+     "content": "When to choose a chat or a post. And how to deliver it in the best way."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/2091449-outbound",
+       "name": "Outbound",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/2091464-chats-posts-banners",
+       "name": "Chats, Posts & Banners",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/2091468-best-practices",
+       "name": "Best practices",
+       "position": 4
+      },
+      {
+       "@type": "ListItem",
+       "name": "Setting up Chats and Posts for maximum impact",
+       "position": 5
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "When to choose a chat or a post. And how to deliver it in the best way.",
+     "headline": "Setting up Chats and Posts for maximum impact",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/1729-setting-up-chats-and-posts-for-maximum-impact",
+     "author": {
+      "@type": "Person",
+      "name": "Beth-Ann Sher"
+     },
+     "dateModified": "2025-11-17T17:40:33Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:44:46 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fj8po83451ckiredg",
+    "etag": "W/\"45f8e27d2ff5fdef42da999571170501\"",
+    "x-runtime": "0.318598",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-MOh73yF0qfEbE6DbFNg-vIlEaboCtJ3aAaJA5kplAqg'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=3596eefa-529b-4363-aa00-2487008e428e; path=/; max-age=1; httponly\ngtm_id=00aa2001-aed8-4ce3-bf5c-c8ccb01aaed7; domain=intercom.com; path=/; <signed-url-removed> 17 Oct 2027 05:44:46 GMT; secure",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 cada1d072bc7a3b2aa4124487ad7a760.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "ORD51-P1",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "hIV-ffuf7ljKe9hN8OjcM7sCkKALYh8ZanrbqB1sia7nqyRhOQ0RPg==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-1729-setting-up-chats-and-posts-for-maximum-impact.md>"
+ },
+ {
+  "url": "https://support.zendesk.com/hc/en-us/articles/5511218058650-Proactive-messaging-conditions-and-events-reference",
+  "crawl": {
+   "loadedUrl": "https://support.zendesk.com/hc/en-us/articles/5511218058650-Proactive-messaging-conditions-and-events-reference",
+   "loadedTime": "2026-10-17T05:45:01.459Z",
+   "referrerUrl": "https://support.zendesk.com/hc/en-us/articles/5511218058650-Proactive-messaging-conditions-and-events-reference",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://support.zendesk.com/hc/en-us/articles/5511218058650-Proactive-messaging-conditions-and-events-reference",
+   "title": "Proactive messaging conditions and events reference – Zendesk help",
+   "description": "Conditional statements define the actions that trigger a proactive message for a user, and when those actions should be evaluated.  ...",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:image",
+     "content": "https://support.zendesk.com//static.zdassets.com/logo.png"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Zendesk help"
+    },
+    {
+     "property": "og:title",
+     "content": "Proactive messaging conditions and events reference"
+    },
+    {
+     "property": "og:description",
+     "content": "Conditional statements define the actions that trigger a proactive message for a user, and when those actions should be evaluated.\n\n\nWhat's my plan?\n\n\n\n\n\n\n\n\nAll Suites\n\nTeam, Growth, Professional, ..."
+    },
+    {
+     "property": "og:url",
+     "content": "https://support.zendesk.com/hc/en-us/articles/5511218058650-Proactive-messaging-conditions-and-events-reference"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "TechArticle",
+     "@id": "https://support.zendesk.com/hc/en-us/articles/5511218058650",
+     "url": "https://support.zendesk.com/hc/en-us/articles/5511218058650",
+     "headline": "Proactive messaging conditions and events reference",
+     "description": "You can define conditions and events to trigger proactive messages based on visitor, device, or metadata attributes and specify when these conditions are evaluated during user interactions.",
+     "articleSection": "Zendesk messaging",
+     "datePublished": "2023-03-20T19:32:47+00:00",
+     "dateModified": "2026-08-27T22:00:25.803801+00:00",
+     "inLanguage": "en-US",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://support.zendesk.com/hc/en-us/articles/5511218058650"
+     },
+     "author": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "isPartOf": {
+      "@type": "WebSite",
+      "name": "Zendesk Help",
+      "@id": "https://support.zendesk.com/hc/"
+     },
+     "about": {
+      "@type": "SoftwareApplication",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     }
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:57 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "server": "cloudflare",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "x-ua-compatible": "IE=edge",
+    "content-language": "en-us",
+    "x-frame-options": "SAMEORIGIN",
+    "x-envoy-decorator-operation": "/hc",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=1n55tCeC7nwtAFtk9uIKTPBQNDHmAdepPkrZMGPiFLpBOz2tl%2BeCqvNIcqKQcyow81wvUCds9KIwLx5Jtuf54yXMIZgDjJGo7U%2BdPp7uMdU2%2Fh3nVBgshwDG2FtjD%2BmAKEKTUCA%3D\"}]}",
+    "cache-control": "max-age=0, public",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-zendesk-origin-server": "app-server-5f79dbcff7-snckd",
+    "x-request-id": "a4bcfe8b2d527e6b-EWR",
+    "x-runtime": "0.161233",
+    "x-envoy-upstream-service-time": "164",
+    "x-request-validation": "no-match",
+    "zendesk-service": "help-center",
+    "x-zendesk-zorg": "yes",
+    "protocol": "HTTP/1.1 always",
+    "via": "zorg",
+    "cf-cache-status": "EXPIRED",
+    "set-cookie": "__cf_bm=2esfFvvifiYz8Xiw4S.7NSXmyuZhGWg0nlsXlJn6V_c-1792215896.8227825-1.0.1.1-4t5wtpJC.4L9sE2i7OtkO.58F9kcJWiy7ioXmvSXSYV_25Q0JcEbKG8tQ6.4F1GJDHPpFufPcR2xTZBoX3ryBsQvpQJy_LCrA2d9FPHP_SMt2zCnVJQu44nJ3pYZVYT3; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.zendesk.com; Expires=Sat, 17 Oct 2026 06:14:57 GMT\n_cfuvid=97RGQONwYOKUnWlJ2.J5OhoNpgA9l8flvUvC6TGCbX0-1792215896.8227825-1.0.1.1-1mSJA6UxFguetH9.whjTCDOVnnEc1V3FQqcSWj5nLLc; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.zendesk.com",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfe8b2d527e6b-ORD",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/support-zendesk-com-hc-en-us-articles-5511218058650-Proactive-messaging-conditions-and-events-refere.md>"
+ },
+ {
+  "url": "https://support.zendesk.com/hc/en-us/articles/5381304334234-About-proactive-messages",
+  "crawl": {
+   "loadedUrl": "https://support.zendesk.com/hc/en-us/articles/5381304334234-About-proactive-messages",
+   "loadedTime": "2026-10-17T05:45:01.590Z",
+   "referrerUrl": "https://support.zendesk.com/hc/en-us/articles/5381304334234-About-proactive-messages",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://support.zendesk.com/hc/en-us/articles/5381304334234-About-proactive-messages",
+   "title": "About proactive messages – Zendesk help",
+   "description": "With proactive messaging, you can deliver targeted messages to your customers through your Web Widget or mobile SDK channel without...",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:image",
+     "content": "https://support.zendesk.com//static.zdassets.com/logo.png"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Zendesk help"
+    },
+    {
+     "property": "og:title",
+     "content": "About proactive messages"
+    },
+    {
+     "property": "og:description",
+     "content": "With proactive messaging, you can deliver targeted messages to your customers through your Web Widget or mobile SDK channel without waiting for them to start the conversation.\n\n\nWhat's my plan?\n\n\n\n..."
+    },
+    {
+     "property": "og:url",
+     "content": "https://support.zendesk.com/hc/en-us/articles/5381304334234-About-proactive-messages"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "TechArticle",
+     "@id": "https://support.zendesk.com/hc/en-us/articles/5381304334234",
+     "url": "https://support.zendesk.com/hc/en-us/articles/5381304334234",
+     "headline": "About proactive messages",
+     "description": "You can set up and manage proactive messages to automatically initiate targeted conversations with customers through Web Widget or mobile SDK channels based on defined conditions and agent response types.",
+     "articleSection": "Zendesk messaging",
+     "datePublished": "2023-02-06T20:58:40+00:00",
+     "dateModified": "2026-04-29T21:29:44.995238+00:00",
+     "inLanguage": "en-US",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://support.zendesk.com/hc/en-us/articles/5381304334234"
+     },
+     "author": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     },
+     "isPartOf": {
+      "@type": "WebSite",
+      "name": "Zendesk Help",
+      "@id": "https://support.zendesk.com/hc/"
+     },
+     "about": {
+      "@type": "SoftwareApplication",
+      "name": "Zendesk",
+      "@id": "https://www.zendesk.com"
+     }
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:56 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "server": "cloudflare",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "x-ua-compatible": "IE=edge",
+    "content-language": "en-us",
+    "x-frame-options": "SAMEORIGIN",
+    "x-envoy-decorator-operation": "/hc",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=N6qk3RbFftS8tsa%2B%2BVLRuWoSdPwMRbMytLh8jJj8A%2FN%2FTkRTb%2FyLtPiI4hFfni4bPZ9du6m4jE%2FtwZaXjWDAUbl%2Fad4gDv4WDbsiDtM3I3W8QKV9bJ5wTH7eN6jsb7VEDit1gnA%3D\"}]}",
+    "cache-control": "max-age=0, public",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-zendesk-origin-server": "app-server-5f79dbcff7-nkp57",
+    "x-request-id": "a4b9e52d7cbab8b1-ATL",
+    "x-runtime": "0.244977",
+    "x-envoy-upstream-service-time": "249",
+    "x-request-validation": "no-match",
+    "zendesk-service": "help-center",
+    "x-zendesk-zorg": "yes",
+    "protocol": "HTTP/1.1 always",
+    "via": "zorg",
+    "cf-cache-status": "REVALIDATED",
+    "set-cookie": "__cf_bm=iJ3jZ8LF4n5KAituYQEP2dYsnnuYqdoarInbyo0luFE-1792215896.7584894-1.0.1.1-BEaQOdtnATKMrwEx6zQvCtEfWnm_W1EEmtUaEZegQkUwcZuPPoSvaUAP6PTt1qLGuCu2TOTYEjabLKx5TzugJNxu4YIex4nzUQd11ALUFDqprebHyASXBoF5ArlmpIsV; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.zendesk.com; Expires=Sat, 17 Oct 2026 06:14:56 GMT\n_cfuvid=1HF5vVBnqB4j450vUjIEe4ZfOpNhPcbeIUC8M8tEAtA-1792215896.7584894-1.0.1.1-QTWc8tyAJRWGrGbokN70PtWtjDYlf5fn8r5apfWhWUM; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.zendesk.com",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfe8abc4c1612-ORD",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/support-zendesk-com-hc-en-us-articles-5381304334234-About-proactive-messages.md>"
+ },
+ {
+  "url": "https://www.intercom.com/help/en/articles/13927115-fin-for-sales-faqs",
+  "crawl": {
+   "loadedUrl": "https://www.intercom.com/help/en/articles/13927115-fin-for-sales-faqs",
+   "loadedTime": "2026-10-17T05:44:59.159Z",
+   "referrerUrl": "https://www.intercom.com/help/en/articles/13927115-fin-for-sales-faqs",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.intercom.com/help/en/articles/13927115-fin-for-sales-faqs",
+   "title": "Fin for Sales FAQs | Intercom Help",
+   "description": "",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Fin for Sales FAQs | Intercom Help"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://downloads.intercomcdn.com/i/o/550608/4d6faffc2cbc2fa486eb9fc1/e80fcd09fe4330c1044cfec91d1cb7b6.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/",
+       "name": "All Collections",
+       "position": 1
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/6485365-fin-ai-agent",
+       "name": "Fin AI Agent",
+       "position": 2
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/15902891-roles",
+       "name": "Roles",
+       "position": 3
+      },
+      {
+       "@type": "ListItem",
+       "item": "https://www.intercom.com/help/en/collections/19558411-fin-for-sales",
+       "name": "Fin for Sales",
+       "position": 4
+      },
+      {
+       "@type": "ListItem",
+       "name": "Fin for Sales FAQs",
+       "position": 5
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "",
+     "headline": "Fin for Sales FAQs",
+     "inLanguage": "en",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Intercom Help"
+     },
+     "url": "https://www.intercom.com/help/en/articles/13927115-fin-for-sales-faqs",
+     "author": {
+      "@type": "Person",
+      "name": "Beth-Ann Sher"
+     },
+     "dateModified": "2026-09-22T08:18:47Z"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:44:56 GMT",
+    "x-ami-version": "ami-09219e9136e8457b9",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, Sec-Fetch-Site",
+    "status": "200 OK",
+    "cache-control": "max-age=0, private, must-revalidate",
+    "x-intercom-version": "af888d91c3f9a771030b44ff33929615c9760aba",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-xss-protection": "1; mode=block",
+    "x-request-queueing": "0",
+    "x-request-id": "000fjb6gsnt1aacisgo0",
+    "etag": "W/\"3b76325dbed92189bcf744a6a6d269fc\"",
+    "x-runtime": "0.315458",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; connect-src 'self' wss://*.intercom.io https://*.intercom.io https://*.intercom.com https://*.fin.ai https://*.intercom-messenger.com wss://*.intercom-messenger.com https://*.intercom-chat.com wss://*.intercom-chat.com https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.intercomusercontent.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://cdn.cookielaw.org https://*.onetrust.com https://ad.doubleclick.net https://t.influ2.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://j.6sc.co https://api.6sense.com https://alb.reddit.com https://snap.licdn.com https://bat.bing.com https://px.ads.linkedin.com https://www.influ2.com https://insight.adsrvr.org https://ct.capterra.com; font-src data: https: https://fonts.gstatic.com; frame-ancestors 'self' https://intercomrades.support https://intercom.skilljar.com https://academy.fin.ai https://academy.intercom.com https://academy.guests.intercom.com https://app.intercom.com https://app.eu.intercom.com https://app.au.intercom.com https://intercomrades.intercom.com https://intercomrades.eu.intercom.com https://intercomrades.au.intercom.com https://fin.ai https://app.fin.ai https://app.eu.fin.ai https://app.au.fin.ai; frame-src 'self' https://platform.twitter.com https://staticxx.facebook.com https://fast.wistia.net https://fast.wistia.com https://www.useloom.com https://www.loom.com https://play.vidyard.com https://player.vimeo.com https://web.microsoftstream.com https://share.synthesia.io https://embed.app.guidde.com https://embed.eu.guidde.com https://share.descript.com https://app.guideflow.com https://app.supademo.com https://supercut.ai https://demo.arcade.software https://arcade.software https://www.arcade.software https://watchclueso.com https://www.tella.tv https://www.tella.com https://help.trainn.co https://*.portal.trainn.co https://app.storylane.io https://js.storylane.io https://app.storylane.com https://js.storylane.com https://player.mux.com https://www.facebook.com https://www.youtube.com https://www.youtube-nocookie.com https://content.jwplatform.com https://cdn.jwplayer.com https://players.brightcove.net https://intercom-sheets.com https://www.intercom-reporting.com https://*.sharepoint.com https://www.googletagmanager.com https://*.fls.doubleclick.net; img-src data: blob: https: http: https://ssl.gstatic.com https://www.gstatic.com; manifest-src 'self'; media-src data: blob: https:; object-src 'self' https://static.intercomassets.com; script-src 'self' https://connect.facebook.net https://platform.twitter.com https://static.intercomassets.com https://googleadservices.com https://googletagmanager.com https://google-analytics.com https://widget.intercom.io https://js.intercomcdn.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://cdn.cookielaw.org https://tagmanager.google.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://www.influ2.com https://ct.capterra.com https://j.6sc.co https://www.googleadservices.com https://google.com https://*.googlesyndication.com 'strict-dynamic' 'nonce-URiq6eA_7Kop5jijNaR_0m9S3cR3XgLXYm5bYFe4AhE'; style-src 'self' 'unsafe-inline' https://fonts.intercomcdn.com https://static.intercomassets.com https://static.intercomcdn.com https://marketing.intercomassets.com https://marketing.intercomcdn.com https://intercom.help https://intercom-help.eu https://au.intercom.help https://static.intercomassets.eu https://static.au.intercomassets.com https://tagmanager.google.com https://fonts.googleapis.com https://www.googletagmanager.com",
+    "set-cookie": "recent_write=521235f9-d751-459b-910b-1bb236f7a3f9; path=/; max-age=1; httponly",
+    "server": "nginx",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 cada1d072bc7a3b2aa4124487ad7a760.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "ORD51-P1",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-amz-cf-id": "r2BgZ28Y5kfZCyfM8CY1jllRWE6k8dtYQukobd5GkKQsFh5nZ3EMPA==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-intercom-com-help-en-articles-13927115-fin-for-sales-faqs.md>"
+ },
+ {
+  "url": "https://support.zendesk.com/hc/en-us/articles/9801049560218-Does-my-AI-agent-track-activity-on-my-website",
+  "crawl": {
+   "loadedUrl": "https://support.zendesk.com/hc/en-us/articles/9801049560218-Does-my-AI-agent-track-activity-on-my-website",
+   "loadedTime": "2026-10-17T05:45:10.177Z",
+   "referrerUrl": "https://support.zendesk.com/hc/en-us/articles/9801049560218-Does-my-AI-agent-track-activity-on-my-website",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://support.zendesk.com/hc/en-us/articles/9801049560218-Does-my-AI-agent-track-activity-on-my-website",
+   "title": "Does my AI agent track activity on my website? – Zendesk help",
+   "description": "QuestionCan my AI agent monitor customer activity on my website to automatically provide prompts, recommendations, or articles in real...",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:image",
+     "content": "https://support.zendesk.com//static.zdassets.com/logo.png"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Zendesk help"
+    },
+    {
+     "property": "og:title",
+     "content": "Does my AI agent track activity on my website?"
+    },
+    {
+     "property": "og:description",
+     "content": "QuestionCan my AI agent monitor customer activity on my website to automatically provide prompts, recommendations, or articles in real time?AnswerNo. The AI agent doesn't track individual customer ..."
+    },
+    {
+     "property": "og:url",
+     "content": "https://support.zendesk.com/hc/en-us/articles/9801049560218-Does-my-AI-agent-track-activity-on-my-website"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:45:07 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "server": "cloudflare",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "x-ua-compatible": "IE=edge",
+    "content-language": "en-us",
+    "x-frame-options": "SAMEORIGIN",
+    "x-envoy-decorator-operation": "/hc",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=wOVtpqZR9KkuqXczk%2BuHk5uoE8In8RoHTPXs%2Brmj0ZfvCMOTh4KM2N67gk4tizjaWva5mqheLQCVfoB1GwEMEcKl23YYgUD%2FWPQgIycxmSDDpWM5FhHhnnMScNdbR1YinmEzgGc%3D\"}]}",
+    "cache-control": "max-age=0, public",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-zendesk-origin-server": "app-server-5f79dbcff7-rhqv8",
+    "x-request-id": "a4b9aaf2cf15864a-EWR",
+    "x-runtime": "0.221868",
+    "x-envoy-upstream-service-time": "225",
+    "x-request-validation": "no-match",
+    "zendesk-service": "help-center",
+    "x-zendesk-zorg": "yes",
+    "protocol": "HTTP/1.1 always",
+    "via": "zorg",
+    "cf-cache-status": "REVALIDATED",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfeca2e3b1612-ORD",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/support-zendesk-com-hc-en-us-articles-9801049560218-Does-my-AI-agent-track-activity-on-my-website.md>"
+ },
+ {
+  "url": "https://www.gartner.com/en/newsroom/press-releases/2026-05-20-gartner-survey-finds-sixty-nine-percent-of-b-two-b-buyers-turn-to-sales-reps-to-validate-ai-generated-insights",
+  "crawl": {
+   "loadedUrl": "https://www.gartner.com/en/newsroom/press-releases/2026-05-20-gartner-survey-finds-sixty-nine-percent-of-b-two-b-buyers-turn-to-sales-reps-to-validate-ai-generated-insights",
+   "loadedTime": "2026-10-17T05:45:23.568Z",
+   "referrerUrl": "https://www.gartner.com/en/newsroom/press-releases/2026-05-20-gartner-survey-finds-sixty-nine-percent-of-b-two-b-buyers-turn-to-sales-reps-to-validate-ai-generated-insights",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.gartner.com/en/newsroom/press-releases/2026-05-20-gartner-survey-finds-sixty-nine-percent-of-b-two-b-buyers-turn-to-sales-reps-to-validate-ai-generated-insights",
+   "title": "Gartner Survey Finds 69% of B2B Buyers Turn to Sales Reps to Validate AI-Generated Insights",
+   "description": "Sixty-nine percent of B2B buyers prefer to validate AI-generated insights with sales reps, according to a survey by Gartner, Inc., a business and technology insights company. The findings were presented during the Gartner CSO & Sales Leader Conference, taking place here this week.",
+   "author": null,
+   "keywords": "Press Release,Sales,Announcement",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:url",
+     "content": "https://www.gartner.com/en/newsroom/press-releases/2026-05-20-gartner-survey-finds-sixty-nine-percent-of-b-two-b-buyers-turn-to-sales-reps-to-validate-ai-generated-insights"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:title",
+     "content": "Gartner Survey Finds 69% of B2B Buyers Turn to Sales Reps to Validate AI-Generated Insights"
+    },
+    {
+     "property": "og:image",
+     "content": "https://emt.gartnerweb.com/ngw/globalassets/en/newsroom/images/covers/gartner-press-release.png"
+    },
+    {
+     "property": "og:description",
+     "content": "Sixty-nine percent of B2B buyers prefer to validate AI-generated insights with sales reps, according to a survey by Gartner, Inc., a business and technology insights company. The findings were presented during the Gartner CSO & Sales Leader Conference, taking place here this week."
+    },
+    {
+     "property": "og:site_name",
+     "content": "Gartner"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "headline": "Gartner Survey Finds 69% of B2B Buyers Turn to Sales Reps to Validate AI-Generated Insights",
+     "description": "Sixty-nine percent of B2B buyers prefer to validate AI-generated insights with sales reps, according to a survey by Gartner, Inc., a business and technology insights company. The findings were presented during the Gartner CSO & Sales Leader Conference, taking place here this week.",
+     "datePublished": "2026-05-20T09:00:00Z",
+     "dateModified": "2026-05-28T10:15:09Z",
+     "author": {
+      "@type": "Organization",
+      "name": "Gartner",
+      "url": "https://www.gartner.com/en"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "Gartner",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://emt.gartnerweb.com/ngw/commonassets/images/build-graphics/gartner-logos/globalsite_gartner_logo.png"
+      }
+     },
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.gartner.com/en/newsroom/press-releases/2026-05-20-gartner-survey-finds-sixty-nine-percent-of-b-two-b-buyers-turn-to-sales-reps-to-validate-ai-generated-insights"
+     },
+     "dateline": ""
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:45:21 GMT",
+    "content-type": "text/html;charset=utf-8",
+    "x-gartner-tracker": "6447ab086255d194909d4013b1a89e87",
+    "x-gartner-cf-tracker": "t13d1617h2_86a278354501_3cbfd9057e0d",
+    "server": "cloudflare",
+    "vary": "Accept, accept-encoding",
+    "x-content-type-options": "nosniff",
+    "x-oneagent-js-injection": "true",
+    "x-ruxit-js-agent": "true",
+    "x-gartner-cf-risk-score": "40",
+    "x-xss-protection": "1; mode=block",
+    "x-frame-options": "DENY",
+    "server-timing": "dtSInfo;desc=\"0\", dtRpid;desc=\"-1967904718\"",
+    "set-cookie": "__cf_bm=LIz7.9b0JOrllp2ntqDiUmTnpZUATwzNtI2RO3Gy1gM-1792215921.6331756-1.0.1.1-Lq9unuztFnf1WK8nPoPhiDfigsZx4dcF26hrz5yP5FeWWVNeW9YUs9wjJPJrKcWkE3za9dHNpRa6ukNOMCbcu69HGyzr4.5sQJJEBdjDi2guhSLtI.GMFzSkgq67a_dI; HttpOnly; SameSite=None; Secure; Path=/; Domain=gartner.com; Expires=Sat, 17 Oct 2026 06:15:21 GMT\n_cfuvid=GJC.qh0DVoUfxLYV2ykpITF2oJMH._kJ7j.tG89r_YI-1792215921.6331756-1.0.1.1-Mgq3iSWm4GuOzNANj3cHz_aD4vvI_aplXW52nIRrUUY; HttpOnly; SameSite=None; Secure; Path=/; Domain=gartner.com",
+    "cf-cache-status": "DYNAMIC",
+    "content-encoding": "br",
+    "cf-ray": "a4bcff263a45ab84-YYZ",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-gartner-com-en-newsroom-press-releases-2026-05-20-gartner-survey-finds-sixty-nine-percent-of-b-t.md>"
+ },
+ {
+  "url": "https://corporate.lowes.com/newsroom/press-releases/lowes-boosts-pro-efficiency-ai-driven-material-lists-new-tool-delivers-product-quotes-minutes-05-21-26",
+  "crawl": {
+   "loadedUrl": "https://corporate.lowes.com/newsroom/press-releases/lowes-boosts-pro-efficiency-ai-driven-material-lists-new-tool-delivers-product-quotes-minutes-05-21-26",
+   "loadedTime": "2026-10-17T05:45:11.898Z",
+   "referrerUrl": "https://corporate.lowes.com/newsroom/press-releases/lowes-boosts-pro-efficiency-ai-driven-material-lists-new-tool-delivers-product-quotes-minutes-05-21-26",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.lowes.com/newsroom/press-releases/lowes-boosts-pro-efficiency-ai-driven-material-lists-new-tool-delivers-product-quotes-minutes-05-21-26",
+   "title": "Lowe's Boosts Pro Efficiency with AI-Driven Material Lists, a New Tool That Delivers Product Quotes in Minutes | Lowe’s Corporate",
+   "description": "Lowe's Boosts Pro Efficiency with AI-Driven Material Lists, a New Tool That Delivers Product Quotes in Minutes",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Lowe’s Corporate"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.lowes.com/newsroom/press-releases/lowes-boosts-pro-efficiency-ai-driven-material-lists-new-tool-delivers-product-quotes-minutes-05-21-26"
+    },
+    {
+     "property": "og:title",
+     "content": "Lowe's Boosts Pro Efficiency with AI-Driven Material Lists, a New Tool That Delivers Product Quotes in Minutes"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.lowes.com/sites/lowes-corp/files/lowes-corp/lowes-blue-logo-og-img.png"
+    },
+    {
+     "property": "og:image:url",
+     "content": "https://corporate.lowes.com/sites/lowes-corp/files/lowes-corp/lowes-blue-logo-og-img.png"
+    },
+    {
+     "property": "og:image:secure_url",
+     "content": "https://corporate.lowes.com/sites/lowes-corp/files/lowes-corp/lowes-blue-logo-og-img.png"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:45:08 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cache-control": "public, max-age=2764800",
+    "content-language": "en",
+    "x-frame-options": "SAMEORIGIN",
+    "expires": "Wed, 18 Nov 2026 05:45:08 GMT",
+    "vary": "Cookie",
+    "age": "47686",
+    "permissions-policy": "autoplay=(self \"https://*.investisdigital.com\" \"https://*.youtube.com\" \"https://*.vimeo.com\" \"https://*.vimeocdn.com\"), encrypted-media=(self \"https://*.investisdigital.com\" \"https://*.youtube.com\" \"https://*.vimeo.com\" \"https://*.vimeocdn.com\"), fullscreen=(self \"https://*.investisdigital.com\" \"https://*.youtube.com\" \"https://*.vimeo.com\" \"https://*.vimeocdn.com\")",
+    "content-security-policy": "default-src 'self' edge.api.brightcove.com viz.tools.investis.com *.media.brightcove.com cdn.jsdelivr.net dev-api.investisdigital.com api.investisdigital.com dev-assets.investisdigital.com assets.investisdigital.com qaotp.tools.investisdigital.com *.nr-data.net *.googleapis.com manifest.prod.boltdns.net *.brightcovecdn.com svc.webspellchecker.net stage-assets.investisdigital.com otp.tools.investis.com *.myidx.cloud https://vimeo.com/api/ *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net *.trustarc.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com ict.infinity-tracking.net www.gstatic.com viz.tools.investis.com www.google.com maps.googleapis.com maps.google.com www.linkedin.com ajax.googleapis.com pi.pardot.com bam.nr-data.net *.googletagmanager.com *.google-analytics.com sjs.bizographics.com connect.facebook.net *.jquery.com irs.tools.investis.com *.hotjar.com px.ads.linkedin.com d2wy8f7a9ursnm.cloudfront.net ssl.p.jwpcdn.com js-agent.newrelic.com cdn.jsdelivr.net edge.api.brightcove.com *.googleapis.com www.youtube.com youtube.com s.ytimg.com unpkg.com *.investis-live.com dev-api.investisdigital.com api.investisdigital.com dev-assets.investisdigital.com assets.investisdigital.com qaotp.tools.investisdigital.com *.investisdigital.com player.vimeo.com www.recaptcha.net players.brightcove.net vjs.zencdn.net blob: cdn.ckeditor.com svc.webspellchecker.net stage-assets.investisdigital.com otp.tools.investis.com *.juicer.io platform.twitter.com *.instagram.com cdn.schemaapp.com jsv3.recruitics.com sc.lfeeder.com/ secure.quantserve.com consent.trustarc.com rules.quantcount.com *.cloudflareinsights.com *.g.doubleclick.net *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; style-src 'self' 'unsafe-inline' 'unsafe-eval' viz.tools.investis.com fonts.googleapis.com fonts.gstatic.com maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net *.investis-live.com *.investisdigital.com svc.webspellchecker.net assets.investisdigital.com stage-assets.investisdigital.com otp.tools.investis.com *.juicer.io *.googletagmanager.com *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; img-src 'self' data: https:; media-src 'self' edge.api.brightcove.com viz.tools.investis.com *.media.brightcove.com *.youtube.com player.vimeo.com *.brightcovecdn.com blob: http://house-fastly-signed-eu-west-1-prod.brightcovecdn.com *.myidx.cloud *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; frame-src 'self' *.investis.com www.google.com ir.tools.investis.co m staticxx.facebook.com www.youtube.com player.vimeo.com *.youtube-nocookie.com *.youtube.com *.brightcove.net cdn.myidx.cloud platform.twitter.com *.instagram.com mma.prnewswire.com mmx.prnewswire.com *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; font-src 'self' 'unsafe-inline' data: fonts.googleapis.com fonts.gstatic.com viz.tools.investis.com themes.googleusercontent.com maxcdn.bootstrapcdn.com *.cloudflare.com vjs.zencdn.net svc.webspellchecker.net assets.investisdigital.com stage-assets.investisdigital.com otp.tools.investis.com *.juicer.io *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; connect-src 'self' 'unsafe-inline' www.google-analytics.com px.ads.linkedin.com  https://assets.investisdigital.com *.jsdelivr.net *.investis.com *.myidx.cloud *.juicer.io *.investisdigital.com https://www.lowesfoundation.org cdn.schemaapp.com data.schemaapp.com analytics.google.com *.amazonaws.com *.doubleclick.net www.google.com lowes.sharepoint.com pixel.quantserve.com *.quantcount.com *.googletagmanager.com *.trustarc.com *.investisdigital.com *.highcharts.com *.gstatic.com *.recaptcha.net; report-uri /report-csp-violation",
+    "x-xss-protection": "1; mode=block",
+    "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+    "expect-ct": "max-age=86400",
+    "x-drupal-cache": "MISS",
+    "x-content-type-options": "nosniff",
+    "last-modified": "Fri, 16 Oct 2026 16:30:21 GMT",
+    "set-cookie": "__cf_bm=wSOXi79Wg_Bx2krti2ss3LzSrrOgDjoOnHP2l9oUdA0-1792215908.4066348-1.0.1.1-Hr040c_vvX4Hka0yi5LSwNRF9qwvsgFkrHYPoZX64VVU6MQ75co8TNA7wweNHss5MD4cVpCyPLsQjcdVxMSuW7xUXH.lYhW2NykbV8tt0i._khg7_qDcBYEjrisI9YyJ; HttpOnly; SameSite=None; Secure; Path=/; Domain=lowes.com; Expires=Sat, 17 Oct 2026 06:15:08 GMT",
+    "access-control-allow-origin": "*.investisdigital.com",
+    "x-host": "CID-P83-BUWB2",
+    "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=26, cfOrigin;dur=0",
+    "cf-cache-status": "HIT",
+    "content-encoding": "gzip",
+    "cf-ray": "a4bcfed38dc44674-DFW",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-lowes-com-newsroom-press-releases-lowes-boosts-pro-efficiency-ai-driven-material-lists-new.md>"
+ },
+ {
+  "url": "https://www.ikea.com/se/en/customer-service/privacy-policy/privacy-policy-for-ikea-customers-pub019133cd/",
+  "crawl": {
+   "loadedUrl": "https://www.ikea.com/se/en/customer-service/privacy-policy/privacy-policy-for-ikea-customers-pub019133cd/",
+   "loadedTime": "2026-10-17T05:45:48.719Z",
+   "referrerUrl": "https://www.ikea.com/se/en/customer-service/privacy-policy/privacy-policy-for-ikea-customers-pub019133cd/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.ikea.com/se/en/customer-service/privacy-policy/privacy-policy-for-ikea-customers-pub019133cd/",
+   "title": "Privacy policy for IKEA customers - IKEA Sweden",
+   "description": "IKEA cares about your privacy, and we want you to feel safe when you provide us with your data. At IKEA it is important for us to be transparent about how your personal data is processed.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-SE",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Privacy policy for IKEA customers"
+    },
+    {
+     "property": "og:description",
+     "content": "IKEA cares about your privacy, and we want you to feel safe when you provide us with your data. At IKEA it is important for us to be transparent about how your personal data is processed."
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.ikea.com/se/en/customer-service/privacy-policy/privacy-policy-for-ikea-customers-pub019133cd/"
+    },
+    {
+     "property": "og:image",
+     "content": "https://www.ikea.com/images/a-woman-with-a-laptop-on-her-lap-sits-next-to-a-man-holding--e810b2749741f1c3ebbb6604790fe00d.jpg?f=xl"
+    },
+    {
+     "property": "og:image:width",
+     "content": "2048"
+    },
+    {
+     "property": "og:image:height",
+     "content": "1152"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Customer service",
+       "item": "https://www.ikea.com/se/en/customer-service/"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Privacy policy",
+       "item": "https://www.ikea.com/se/en/customer-service/privacy-policy/"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:45:46 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "cf-ray": "a4bcffc0dccbea72-FCO",
+    "cf-cache-status": "MISS",
+    "set-cookie": "ikexp_id=d23b4d17-a485-4610-b8df-4b0f84ee7d72; Domain=.ikea.com; Path=/; Expires=Sun, 17 Oct 2027 05:45:46 GMT; Secure\nikea_geo=IT; Domain=.ikea.com; Path=/; Secure\n__cf_bm=qnrfPFvtUmd83o9Zinz7cp4bgFZmbaKfdSOink_JvQM-1792215946.3710227-1.0.1.1-kHH7PRuWv5r9lQ4jjVpF08Zf_sqHUMpzUxSqaQnVF4lVveTAdUK8vIECb_7ZKtGk7NYHdGAVhMhbYG7wtS5NZvq4E4nfLK0JLQ8IHufUK5_22Ay8bSFCTvjCd.QXm3Jc; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.ikea.com; Expires=Sat, 17 Oct 2026 06:15:46 GMT",
+    "age": "0",
+    "cache-control": "private, max-age=10",
+    "server": "cloudflare",
+    "x-native-worker": "true",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "vary": "Origin",
+    "cache-tag": "www-customer-service, www-customer-service-privacy-policy, www-customer-service-privacy-policy-privacy-policy-for-ikea-customers-pub019133cd, www-se-customer-service, www-se-customer-service-privacy-policy, www-se-customer-service-privacy-policy-privacy-policy-for-ikea-customers-pub019133cd, www-se-en-customer-service, www-se-en-customer-service-privacy-policy, www-se-en-customer-service-privacy-policy-privacy-policy-for-ikea-customers-pub019133cd",
+    "content-security-policy": "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.ikea.com v4.ai.ingka.ikea.net api.addressy.com google.com *.google.com *.gstatic.com translate.googleapis.com translate-pa.googleapis.com mapsresources-pa.googleapis.com www.youtube-nocookie.com www.youtube.com www.paypal.com blob: data: wss://web-api.ikea.com https://storage.googleapis.com/learnwithikeavideos/ *.cdtapps.com challenges.cloudflare.com *.cloudflareinsights.com *.ingka.com *.ctfassets.net *.ipex-insights.com *.adform.net *.doubleclick.net googleads.g.doubleclick.net www.googleadservices.com *.googlesyndication.com *.google.se conversion.klarnaservices.com ct.pinterest.com s.pinimg.com cdn.adt328.com cnv.adt670.com *.cookielaw.org *.onetrust.com *.contentsquare.net app.contentsquare.com *.google-analytics.com www.googletagmanager.com *.optimizely.com sentry.io *.sentry.io *.avo.app oppwa.com *.oppwa.com mpsnare.iesnare.com *.iesnare.com *.syndeo.cx *.production.syndeo.cx wss://web.production.syndeo.cx icsp.ingka.ikea.com wss://icsp.ingka.ikea.com wss://web-api.ikea.com/cschatbot/ maps.googleapis.com places.googleapis.com fonts.googleapis.com www.googleapis.com *.bambuser.com firestore.googleapis.com liveshopping-widgets.firebaseapp.com; img-src * blob: data:; frame-src *; frame-ancestors *.ikea.com *.ingka.com; object-src 'self'; font-src 'self' www.ikea.com blob: data: fonts.gstatic.com; report-uri https://csp.ikea.com",
+    "x-content-type-options": "nosniff",
+    "content-encoding": "br",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-ikea-com-se-en-customer-service-privacy-policy-privacy-policy-for-ikea-customers-pub019133cd.md>"
+ },
+ {
+  "url": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance/settings",
+  "crawl": {
+   "loadedUrl": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance/settings",
+   "loadedTime": "2026-10-17T05:45:57.092Z",
+   "referrerUrl": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance/settings",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance/settings",
+   "title": "Shopify Help Center | Customize Shopify Inbox chat settings and appearance",
+   "description": "Configure the appearance of the chat for your online store, manage your chat settings, and choose whether customers sign in before chatting with staff.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Shopify Help Center"
+    },
+    {
+     "property": "og:url",
+     "content": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance/settings"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:title",
+     "content": "Customize Shopify Inbox chat settings and appearance"
+    },
+    {
+     "property": "og:description",
+     "content": "Configure the appearance of the chat for your online store, manage your chat settings, and choose whether customers sign in before chatting with staff."
+    },
+    {
+     "property": "og:image",
+     "content": "https://cdn.shopify.com/shopifycloud/help/assets/sharing/share-image-generic-bd3ce342a910c2489b672b00e45c74b1b1548662c41448e456547fa5b6e0f585.png"
+    },
+    {
+     "property": "twitter:site",
+     "content": "@Shopify"
+    },
+    {
+     "property": "twitter:card",
+     "content": "summary"
+    },
+    {
+     "property": "twitter:title",
+     "content": "Customize Shopify Inbox chat settings and appearance"
+    },
+    {
+     "property": "twitter:description",
+     "content": "Configure the appearance of the chat for your online store, manage your chat settings, and choose whether customers sign in before chatting with staff."
+    },
+    {
+     "property": "twitter:creator",
+     "content": "@ShopifySupport"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://cdn.shopify.com/shopifycloud/help/assets/sharing/share-image-generic-bd3ce342a910c2489b672b00e45c74b1b1548662c41448e456547fa5b6e0f585.png"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:45:54 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "vary": "Accept, Accept-Encoding",
+    "set-cookie": "_merchant_essential=:AaFIZTRWAAEA4XMHjR8WwFutJfau_R8-JORJyIz79OIPtFPvgH878RpKqsT5C1OvPRbl68PrkQHLF52HUses7JfI5O16vcl3caho3M9dJkWkeFdOwAh9jYUv5g3al4RYmhISO_JPNmhLu5YhwfHjMtXChhiCG0ruUuy_FrxiLq19QxxxgtjbhbFKEmpqLu7KFuL8atMPql842iAix9eaEll1iRoE6jjAIbBemm33nFcTexXiqrAcRSjFmSHhPSm705NjMw:; Max-Age=31536000; Path=/; HttpOnly; Secure; Priority=High; SameSite=Lax; Domain=.shopify.com",
+    "content-encoding": "br",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "x-dc": "gcp-europe-west1, gcp-us-central1",
+    "x-request-id": "01a14865-332a-708e-a9b4-46bf2176dabf-1792215954",
+    "server": "envoy",
+    "x-shopify-gclb-trace-timing": "1792215954.218",
+    "via": "1.1 google",
+    "nel": "{\"max_age\":0}",
+    "alt-svc": "h3=\":443\"; ma=2592000",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/help-shopify-com-en-manual-inbox-chat-settings-and-appearance-settings.md>"
+ },
+ {
+  "url": "https://help.shopify.com/en/manual/inbox/agent-persona",
+  "crawl": {
+   "loadedUrl": "https://help.shopify.com/en/manual/inbox/agent-persona",
+   "loadedTime": "2026-10-17T05:45:58.178Z",
+   "referrerUrl": "https://help.shopify.com/en/manual/inbox/agent-persona",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://help.shopify.com/en/manual/inbox/agent-persona",
+   "title": "Shopify Help Center | Configuring your Inbox agent persona",
+   "description": "Set your Inbox agent's tone, wording, personality, and service style, and learn where to add the store facts it answers with.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Shopify Help Center"
+    },
+    {
+     "property": "og:url",
+     "content": "https://help.shopify.com/en/manual/inbox/agent-persona"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:title",
+     "content": "Configuring your Inbox agent persona"
+    },
+    {
+     "property": "og:description",
+     "content": "Set your Inbox agent's tone, wording, personality, and service style, and learn where to add the store facts it answers with."
+    },
+    {
+     "property": "og:image",
+     "content": "https://cdn.shopify.com/shopifycloud/help/assets/sharing/share-image-generic-bd3ce342a910c2489b672b00e45c74b1b1548662c41448e456547fa5b6e0f585.png"
+    },
+    {
+     "property": "twitter:site",
+     "content": "@Shopify"
+    },
+    {
+     "property": "twitter:card",
+     "content": "summary"
+    },
+    {
+     "property": "twitter:title",
+     "content": "Configuring your Inbox agent persona"
+    },
+    {
+     "property": "twitter:description",
+     "content": "Set your Inbox agent's tone, wording, personality, and service style, and learn where to add the store facts it answers with."
+    },
+    {
+     "property": "twitter:creator",
+     "content": "@ShopifySupport"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://cdn.shopify.com/shopifycloud/help/assets/sharing/share-image-generic-bd3ce342a910c2489b672b00e45c74b1b1548662c41448e456547fa5b6e0f585.png"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:45:56 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "vary": "Accept, Accept-Encoding",
+    "content-encoding": "br",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "x-dc": "gcp-europe-west1, gcp-us-central1",
+    "x-request-id": "01a14865-3c5f-73fa-967b-7383ce604383-1792215956",
+    "server": "envoy",
+    "x-shopify-gclb-trace-timing": "1792215956.575",
+    "via": "1.1 google",
+    "nel": "{\"max_age\":0}",
+    "alt-svc": "h3=\":443\"; ma=2592000",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/help-shopify-com-en-manual-inbox-agent-persona.md>"
+ },
+ {
+  "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/faq/how-are-ai-agents-addressed-within-ai-act-0",
+  "crawl": {
+   "loadedUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/faq/how-are-ai-agents-addressed-within-ai-act-0",
+   "loadedTime": "2026-10-17T05:46:00.019Z",
+   "referrerUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/faq/how-are-ai-agents-addressed-within-ai-act-0",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 7595,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/faq/how-are-ai-agents-addressed-within-ai-act-0",
+   "title": "How are AI agents addressed within the AI Act? | AI Act Service Desk",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "AI Act Service Desk - How are AI agents addressed within the AI Act? "
+    },
+    {
+     "property": "og:image",
+     "content": "https://ai-act-service-desk.ec.europa.eu/themes/custom/sip_theme/logo.svg"
+    },
+    {
+     "property": "og:url",
+     "content": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/faq/how-are-ai-agents-addressed-within-ai-act-0"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "content-length": "7595",
+    "date": "Sat, 17 Oct 2026 05:45:58 GMT",
+    "x-age": "45291",
+    "content-language": "en",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Fri, 16 Oct 2026 16:55:48 GMT",
+    "etag": "\"1792169748-gzip\"",
+    "content-encoding": "gzip",
+    "accept-ranges": "bytes",
+    "x-fpfis": "5600778 5655105",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload;",
+    "cache-control": "public, max-age=300, s-maxage=300",
+    "vary": "Cookie, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 1044cedd52e23e3ab5a40b1d0e13b2e8.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "FCO50-P9",
+    "x-amz-cf-id": "S5FmWYUzQUxtXka_ThjuktudtM3jcEw5VlkxY_2m5MBtjjSM-9GkfA==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/ai-act-service-desk-ec-europa-eu-en-ai-act-faq-how-are-ai-agents-addressed-within-ai-act-0.md>"
+ },
+ {
+  "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act",
+  "crawl": {
+   "loadedUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act",
+   "loadedTime": "2026-10-17T05:46:03.974Z",
+   "referrerUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 6991,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act",
+   "title": "Timeline for the Implementation of the EU AI Act | AI Act Service Desk",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "AI Act Service Desk - Timeline for the Implementation of the EU AI Act"
+    },
+    {
+     "property": "og:image",
+     "content": "https://ai-act-service-desk.ec.europa.eu/themes/custom/sip_theme/logo.svg"
+    },
+    {
+     "property": "og:url",
+     "content": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "content-length": "6991",
+    "date": "Sat, 17 Oct 2026 05:46:02 GMT",
+    "x-age": "50745",
+    "content-language": "en",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Fri, 16 Oct 2026 15:39:58 GMT",
+    "etag": "\"1792165198-gzip\"",
+    "content-encoding": "gzip",
+    "accept-ranges": "bytes",
+    "x-fpfis": "5600785 5780266",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload;",
+    "cache-control": "public, max-age=300, s-maxage=300",
+    "vary": "Cookie, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 1044cedd52e23e3ab5a40b1d0e13b2e8.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "FCO50-P9",
+    "x-amz-cf-id": "paqIHUxgd0HrjEgvdFaZUXmoVr6OrMSgRdIGfxzYEuiBe956jEWSkw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/ai-act-service-desk-ec-europa-eu-en-ai-act-timeline-timeline-implementation-eu-ai-act.md>"
+ },
+ {
+  "url": "https://www.nngroup.com/articles/impressions-chatgpt-agent/",
+  "crawl": {
+   "loadedUrl": "https://www.nngroup.com/articles/impressions-chatgpt-agent/",
+   "loadedTime": "2026-10-17T05:46:12.689Z",
+   "referrerUrl": "https://www.nngroup.com/articles/impressions-chatgpt-agent/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 40166,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.nngroup.com/articles/impressions-chatgpt-agent/",
+   "title": "Initial Impressions of ChatGPT’s Agent: Successful, Shaky, and Slow - NN/G",
+   "description": "ChatGPT’s agent successfully booked a restaurant reservation. But the process was time-consuming and vulnerable to misunderstandings and errors.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Nielsen Norman Group"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.nngroup.com/articles/impressions-chatgpt-agent/"
+    },
+    {
+     "property": "og:title",
+     "content": "Initial Impressions of ChatGPT’s Agent: Successful, Shaky, and Slow"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:description",
+     "content": "ChatGPT’s agent successfully booked a restaurant reservation. But the process was time-consuming and vulnerable to misunderstandings and errors."
+    },
+    {
+     "property": "og:image",
+     "content": "https://media.nngroup.com/media/articles/opengraph_images/ChatGPT-Agent_Opengraph_copy_13.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "headline": "Initial Impressions of ChatGPT’s Agent: Successful, Shaky, and Slow",
+     "image": [
+      "https://media.nngroup.com/media/articles/opengraph_images/ChatGPT-Agent_Opengraph_copy_13.png"
+     ],
+     "datePublished": "2025-08-08T17:00:00+0000",
+     "dateModified": "2025-09-10T02:24:49+0000",
+     "author": [
+      {
+       "@type": "Person",
+       "name": "Evan Sunwall",
+       "url": "https://www.nngroup.com/articles/author/evan-sunwall/"
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "EducationalOrganization",
+     "@id": "https://www.nngroup.com/#organization",
+     "name": "Nielsen Norman Group",
+     "alternateName": [
+      "NN/g",
+      "NNG"
+     ],
+     "url": "https://www.nngroup.com",
+     "logo": {
+      "@type": "ImageObject",
+      "url": "https://media.nngroup.com/static/img/logo-817x388.png",
+      "width": 817,
+      "height": 388
+     },
+     "image": "https://media.nngroup.com/media/metadata/opengraph_images/Homepage_1.png",
+     "description": "Nielsen Norman Group (NN/g) is a world-leading user experience research, training, and consulting firm. Founded in 1998 by UX pioneers Jakob Nielsen and Don Norman, NN/g provides evidence-based UX guidance through live training courses, UX Certification programs, consulting services, and an extensive library of free research articles and reports.",
+     "sameAs": [
+      "https://en.wikipedia.org/wiki/Nielsen_Norman_Group",
+      "https://www.linkedin.com/company/nielsen-norman-group/",
+      "https://x.com/NNgroup",
+      "https://www.youtube.com/@NNgroup",
+      "https://www.instagram.com/nngux",
+      "https://www.facebook.com/nngux",
+      "https://open.spotify.com/show/3GFTfWpfv6m8nhKsPOlT8m",
+      "https://www.wikidata.org/wiki/Q7031613"
+     ],
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "48105 Warm Springs Blvd",
+      "addressLocality": "Fremont",
+      "addressRegion": "CA",
+      "postalCode": "94539",
+      "addressCountry": "US"
+     },
+     "email": "support@nngroup.com",
+     "telephone": "+1-415-682-0688",
+     "contactPoint": [
+      {
+       "@type": "ContactPoint",
+       "contactType": "Customer Service",
+       "telephone": "+1-415-682-0688",
+       "email": "support@nngroup.com",
+       "areaServed": "Worldwide",
+       "availableLanguage": "English"
+      },
+      {
+       "@type": "ContactPoint",
+       "contactType": "sales",
+       "telephone": "+1-415-685-4230",
+       "email": "training@nngroup.com",
+       "areaServed": "Worldwide",
+       "availableLanguage": "English"
+      }
+     ],
+     "naics": "611430",
+     "founder": [
+      {
+       "@type": "Person",
+       "name": "Jakob Nielsen",
+       "honorificPrefix": "Dr",
+       "url": "https://www.nngroup.com/people/jakob-nielsen/",
+       "sameAs": "https://en.wikipedia.org/wiki/Jakob_Nielsen_(usability_consultant)",
+       "jobTitle": "Co-Founder & Retired Principal"
+      },
+      {
+       "@type": "Person",
+       "name": "Don Norman",
+       "honorificPrefix": "Dr",
+       "url": "https://www.nngroup.com/people/don-norman/",
+       "sameAs": "https://en.wikipedia.org/wiki/Don_Norman",
+       "jobTitle": "Co-Founder & Board Member"
+      }
+     ],
+     "knowsAbout": [
+      "Usability Heuristics",
+      "User Experience Research",
+      "Interaction Design",
+      "UX Training",
+      "Information Architecture",
+      "Content Strategy",
+      "Design Thinking",
+      "Service Design",
+      "UX Management",
+      "Accessibility",
+      "UX Certification",
+      "Journey Mapping",
+      "User Research Methods"
+     ],
+     "foundingDate": "1998-08-08",
+     "numberOfEmployees": {
+      "@type": "QuantitativeValue",
+      "minValue": 51,
+      "maxValue": 200
+     },
+     "employee": [
+      {
+       "@type": "Person",
+       "name": "Kara Pernice",
+       "jobTitle": "President and CEO",
+       "url": "https://www.nngroup.com/people/kara-pernice/"
+      }
+     ],
+     "slogan": "World leaders in research-based user experience"
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:46:07 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "content-length": "40166",
+    "x-sucuri-id": "17013",
+    "content-encoding": "gzip",
+    "content-security-policy-report-only": "style-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; script-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; font-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; connect-src 'self'; default-src 'self'; img-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com",
+    "cross-origin-opener-policy": "same-origin",
+    "etag": "W/\"23fd377764fb2eeb46a3f270d9baa04e\"",
+    "last-modified": "Wed, 10 Sep 2025 02:24:49 GMT",
+    "nel": "{\"report_to\":\"heroku-nel\", \"response_headers\":[\"Via\"], \"max_age\":3600, \"success_fraction\":0.01, \"failure_fraction\":0.1}",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "report-to": "{\"group\":\"heroku-nel\", \"endpoints\":[{\"url\":\"https://nel.heroku.com/reports?s=VbNNFWTwKLEB5aY5RXjbas23cL3MrEtub%2B1Flj2Ls9g%3D\\u0026sid=929419e7-33ea-4e2f-85f0-7d8b7cd5cbd6\\u0026ts=1792215967\"}], \"max_age\":3600}",
+    "reporting-endpoints": "heroku-nel=\"https://nel.heroku.com/reports?s=VbNNFWTwKLEB5aY5RXjbas23cL3MrEtub%2B1Flj2Ls9g%3D&sid=929419e7-33ea-4e2f-85f0-7d8b7cd5cbd6&ts=1792215967\"",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "vary": "Cookie, Accept-Encoding",
+    "via": "1.1 heroku-router",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "server": "Sucuri/Cloudproxy",
+    "x-sucuri-cache": "MISS",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-nngroup-com-articles-impressions-chatgpt-agent.md>"
+ },
+ {
+  "url": "https://www.gartner.com/en/newsroom/press-releases/2026-03-09-gartner-sales-survey-finds-67-percent-of-b2b-buyers-prefer-a-rep-free-experience",
+  "crawl": {
+   "loadedUrl": "https://www.gartner.com/en/newsroom/press-releases/2026-03-09-gartner-sales-survey-finds-67-percent-of-b2b-buyers-prefer-a-rep-free-experience",
+   "loadedTime": "2026-10-17T05:46:16.326Z",
+   "referrerUrl": "https://www.gartner.com/en/newsroom/press-releases/2026-03-09-gartner-sales-survey-finds-67-percent-of-b2b-buyers-prefer-a-rep-free-experience",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.gartner.com/en/newsroom/press-releases/2026-03-09-gartner-sales-survey-finds-67-percent-of-b2b-buyers-prefer-a-rep-free-experience",
+   "title": "Gartner Sales Survey Finds 67% of B2B Buyers Prefer a Rep-Free Experience",
+   "description": "Buyers want to engage on their own terms as 67% of B2B buyers state that they prefer a rep‑free experience, according to a survey by Gartner, Inc., a business and technology insights company.\n",
+   "author": null,
+   "keywords": "Press Release,Announcement,Sales",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:url",
+     "content": "https://www.gartner.com/en/newsroom/press-releases/2026-03-09-gartner-sales-survey-finds-67-percent-of-b2b-buyers-prefer-a-rep-free-experience"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:title",
+     "content": "Gartner Sales Survey Finds 67% of B2B Buyers Prefer a Rep-Free Experience"
+    },
+    {
+     "property": "og:image",
+     "content": "https://emt.gartnerweb.com/ngw/globalassets/en/newsroom/images/covers/gartner-press-release.png"
+    },
+    {
+     "property": "og:description",
+     "content": "Buyers want to engage on their own terms as 67% of B2B buyers state that they prefer a rep‑free experience, according to a survey by Gartner, Inc., a business and technology insights company.\n"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Gartner"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "headline": "Gartner Sales Survey Finds 67% of B2B Buyers Prefer a Rep-Free Experience",
+     "description": "Buyers want to engage on their own terms as 67% of B2B buyers state that they prefer a rep‑free experience, according to a survey by Gartner, Inc., a business and technology insights company.\r\n",
+     "datePublished": "2026-03-09T04:00:00Z",
+     "dateModified": "2026-04-30T08:48:32Z",
+     "author": {
+      "@type": "Organization",
+      "name": "Gartner",
+      "url": "https://www.gartner.com/en"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "Gartner",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://emt.gartnerweb.com/ngw/commonassets/images/build-graphics/gartner-logos/globalsite_gartner_logo.png"
+      }
+     },
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.gartner.com/en/newsroom/press-releases/2026-03-09-gartner-sales-survey-finds-67-percent-of-b2b-buyers-prefer-a-rep-free-experience"
+     },
+     "dateline": ""
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:46:14 GMT",
+    "content-type": "text/html;charset=utf-8",
+    "x-gartner-tracker": "6447ab086255d194909d4013b1a89e87",
+    "x-gartner-cf-tracker": "t13d1617h2_86a278354501_3cbfd9057e0d",
+    "server": "cloudflare",
+    "vary": "Accept, accept-encoding",
+    "x-content-type-options": "nosniff",
+    "x-oneagent-js-injection": "true",
+    "x-ruxit-js-agent": "true",
+    "x-gartner-cf-risk-score": "59",
+    "x-xss-protection": "1; mode=block",
+    "x-frame-options": "DENY",
+    "server-timing": "dtSInfo;desc=\"0\", dtRpid;desc=\"-1348054991\"",
+    "set-cookie": "__cf_bm=QPey7fYXxGhbDnIIcE7KvHi1iE5i30zdkvxt255yw4U-1792215974.7372322-1.0.1.1-3Vibjtk6u5Ha50gqbmoU6PLSA2zOx1AUQGcqN2HC00Roeqe8C_N503EpefE.1USeYM_owXEJQ3vE4xxNWuXyMUYXGKbV5nEXkpa1G_0XNDroC6kITz2nU7laG5UdGoUV; HttpOnly; SameSite=None; Secure; Path=/; Domain=gartner.com; Expires=Sat, 17 Oct 2026 06:16:14 GMT\n_cfuvid=WuRnDOwEASQs_kmgXnuq467dLXcNHEggS1P0xPukNx0-1792215974.7372322-1.0.1.1-jjflNdLZA6e82qm.BAfqmFJ2tKL3T204YtOzPNT_sd8; HttpOnly; SameSite=None; Secure; Path=/; Domain=gartner.com",
+    "cf-cache-status": "DYNAMIC",
+    "content-encoding": "br",
+    "cf-ray": "a4bd00721935a2ac-YUL",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-gartner-com-en-newsroom-press-releases-2026-03-09-gartner-sales-survey-finds-67-percent-of-b2b-b.md>"
+ }
+]

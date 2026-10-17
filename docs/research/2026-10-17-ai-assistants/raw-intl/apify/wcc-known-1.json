@@ -1,0 +1,2575 @@
+[
+ {
+  "url": "https://www.aboutamazon.com/news/retail/alexa-for-shopping-ai-assistant",
+  "crawl": {
+   "loadedUrl": "https://www.aboutamazon.com/news/retail/alexa-for-shopping-ai-assistant",
+   "loadedTime": "2026-10-17T05:30:14.834Z",
+   "referrerUrl": "https://www.aboutamazon.com/news/retail/alexa-for-shopping-ai-assistant",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.aboutamazon.com/news/retail/alexa-for-shopping-ai-assistant",
+   "title": "Alexa for Shopping: Amazon's AI assistant for personalized shopping",
+   "description": "Amazon brings together Rufus and Alexa+ to create ‘Alexa for Shopping’ on the Amazon Shopping app and website.",
+   "author": "Amazon Staff",
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Meet Alexa for Shopping, your personalized, agentic AI assistant on Amazon"
+    },
+    {
+     "property": "og:description",
+     "content": "Amazon brings together Rufus and Alexa+ to create ‘Alexa for Shopping’ on the Amazon Shopping app and website."
+    },
+    {
+     "property": "og:site_name",
+     "content": "Amazon News"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Gif showing Alexa for Shopping interface"
+    },
+    {
+     "property": "og:image",
+     "content": "https://assets.aboutamazon.com/53/dd/fb5a1fac4850ae9bfde31cca551b/2026-pr-bh-gtm-2000x1125-1.GIF"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "600"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-05-13T12:56:07.012Z"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-05-13T12:56:07.012Z"
+    },
+    {
+     "property": "article:author:name",
+     "content": "Amazon Staff"
+    },
+    {
+     "property": "article:tag",
+     "content": "Alexa for Shopping"
+    },
+    {
+     "property": "article:tag",
+     "content": "Retail"
+    },
+    {
+     "property": "article:tag",
+     "content": "Shopping"
+    },
+    {
+     "property": "article:tag",
+     "content": "Artificial Intelligence"
+    },
+    {
+     "property": "article:tag",
+     "content": "Alexa"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "WebSite",
+     "name": "Amazon News",
+     "url": "https://www.aboutamazon.com/",
+     "alternateName": [
+      "Amazon News",
+      "About Amazon"
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "About Amazon",
+      "url": "https://www.aboutamazon.com",
+      "sameAs": [
+       "https://x.com/amazonnews",
+       "https://www.linkedin.com/company/amazon",
+       "https://www.instagram.com/amazonnews"
+      ],
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/bd/8f/88e7b0314cc2bd05b9de3155a0fe/amazon-news.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com",
+       "sameAs": [
+        "https://www.wikidata.org/wiki/Q3884",
+        "https://en.wikipedia.org/wiki/Amazon_(company)",
+        "https://x.com/Amazon"
+       ]
+      }
+     }
+    },
+    {
+     "@context": "http://schema.org",
+     "@type": "Article",
+     "articleSection": "Retail ",
+     "url": "https://www.aboutamazon.com/news/retail/alexa-for-shopping-ai-assistant",
+     "dateModified": "2026-05-13T12:56:07.012Z",
+     "datePublished": "2026-05-13T12:56:07.012Z",
+     "headline": "Alexa for Shopping: Amazon's AI assistant for personalized shopping",
+     "image": [
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "height": 835,
+       "url": "https://assets.aboutamazon.com/dims4/default/b495a8f/2147483647/strip/false/crop/2000x1124+0+0/resize/1486x835!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F53%2Fdd%2Ffb5a1fac4850ae9bfde31cca551b%2F2026-pr-bh-gtm-2000x1125-1.GIF",
+       "width": 1486
+      },
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "height": 675,
+       "url": "https://assets.aboutamazon.com/dims4/default/b7c43c8/2147483647/strip/false/crop/1998x1124+2+0/resize/1200x675!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F53%2Fdd%2Ffb5a1fac4850ae9bfde31cca551b%2F2026-pr-bh-gtm-2000x1125-1.GIF",
+       "width": 1200
+      }
+     ],
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.aboutamazon.com/news/retail/alexa-for-shopping-ai-assistant"
+     },
+     "author": [
+      {
+       "@context": "http://schema.org",
+       "@type": "Person",
+       "image": {
+        "@context": "http://schema.org",
+        "@type": "ImageObject",
+        "url": "https://assets.aboutamazon.com/47/6d/7fe296e642859c7ba2a629eda3ba/amazon-logo-hero-images-2024.jpg"
+       },
+       "name": "Amazon Staff"
+      }
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "About Amazon",
+      "url": "https://www.aboutamazon.com",
+      "sameAs": [
+       "https://x.com/amazonnews",
+       "https://www.linkedin.com/company/amazon",
+       "https://www.instagram.com/amazonnews"
+      ],
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/bd/8f/88e7b0314cc2bd05b9de3155a0fe/amazon-news.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com",
+       "sameAs": [
+        "https://www.wikidata.org/wiki/Q3884",
+        "https://en.wikipedia.org/wiki/Amazon_(company)",
+        "https://x.com/Amazon"
+       ]
+      }
+     },
+     "description": "Amazon brings together Rufus and Alexa+ to create ‘Alexa for Shopping’ on the Amazon Shopping app and website."
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "News",
+       "item": "https://www.aboutamazon.com/amazon-news-today"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Retail ",
+       "item": "https://www.aboutamazon.com/news/retail"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "server": "CloudFront",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:25:51 GMT",
+    "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "content-encoding": "gzip",
+    "link": "</_next/static/media/06389fc2ceb131fb.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/2573a0816525bbf7.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/337fd6ec2b734835.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/42439b8f44a5716c.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/476c2f4d793101fd.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/4d6a9fb8ff3b8fc2.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/665b265b8ab38986.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/7fe83725c48c9c69.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/b6b6385034af0a3e.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/c3d0f0661915be47.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/d180bbba8bf4e40d.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/d892c3e5c534541d.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/e3d5535913b6b6d3.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/f90a977ffdd12ef5.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/css/c9945c7442fc7d5c.css>; rel=preload; as=\"style\", </_next/static/css/b04376dbda111721.css>; rel=preload; as=\"style\", </_next/static/css/645c7dc07309115c.css>; rel=preload; as=\"style\", </_next/static/css/3477cf02ffac4501.css>; rel=preload; as=\"style\", </_next/static/css/e9fb153fea3d5240.css>; rel=preload; as=\"style\", </_next/static/css/295689712baf0450.css>; rel=preload; as=\"style\"",
+    "x-powered-by": "Next.js",
+    "vary": "Accept-Encoding",
+    "via": "1.1 777efc09a8ed2c67b43b8cf66d13fd7a.cloudfront.net (CloudFront)",
+    "age": "257",
+    "set-cookie": "aa_bot_signal=category=&name=&signals=known_bot_data_center&targeted=&token=absent; Path=/; SameSite=Lax; Secure; Max-Age=1800",
+    "x-cache": "Hit from cloudfront",
+    "x-amz-cf-pop": "DFW56-P7",
+    "x-amz-cf-id": "dok1NpqeHTAaYMrk-JH5iAa43hSXdTSG3h-niFg2qwVSppxmrF9kBg==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-aboutamazon-com-news-retail-alexa-for-shopping-ai-assistant.md>"
+ },
+ {
+  "url": "https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features",
+  "crawl": {
+   "loadedUrl": "https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features",
+   "loadedTime": "2026-10-17T05:30:15.309Z",
+   "referrerUrl": "https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features",
+   "title": "Amazon Rufus: Amazon's AI shopping assistant gets smarter and more personal",
+   "description": "Rufus can search for products based on activity, event, purpose, and other use cases, and automatically add items to your cart, tell you if you’re getting the best price, find top deals every day of the year, auto-buy items at a set price, and take a handwritten grocery list and add the items to your cart.",
+   "author": "Amazon Staff",
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Amazon’s next-gen AI assistant for shopping is now even smarter, more capable, and more helpful"
+    },
+    {
+     "property": "og:description",
+     "content": "Rufus can search for products based on activity, event, purpose, and other use cases, and automatically add items to your cart, tell you if you’re getting the best price, find top deals every day of the year, auto-buy items at a set price, and take a handwritten grocery list and add the items to…"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Amazon News"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Rufus AI-powered running shoe recommendations for narrow feet"
+    },
+    {
+     "property": "og:image",
+     "content": "https://assets.aboutamazon.com/dims4/default/2328b3a/2147483647/strip/true/crop/2000x1000+0+51/resize/1200x600!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F2d%2Fe4%2Fe3fcb64e41718766601f96d0ddc2%2Frufus-pr-hero-v2.jpg"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "600"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2025-11-18T14:00:05.889Z"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2025-11-18T14:00:05.889Z"
+    },
+    {
+     "property": "article:author:name",
+     "content": "Amazon Staff"
+    },
+    {
+     "property": "article:tag",
+     "content": "Alexa for Shopping"
+    },
+    {
+     "property": "article:tag",
+     "content": "Shopping"
+    },
+    {
+     "property": "article:tag",
+     "content": "Artificial Intelligence"
+    },
+    {
+     "property": "article:tag",
+     "content": "Retail"
+    },
+    {
+     "property": "article:tag",
+     "content": "Customers"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "WebSite",
+     "name": "Amazon News",
+     "url": "https://www.aboutamazon.com/",
+     "alternateName": [
+      "Amazon News",
+      "About Amazon"
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "About Amazon",
+      "url": "https://www.aboutamazon.com",
+      "sameAs": [
+       "https://x.com/amazonnews",
+       "https://www.linkedin.com/company/amazon",
+       "https://www.instagram.com/amazonnews"
+      ],
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/bd/8f/88e7b0314cc2bd05b9de3155a0fe/amazon-news.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com",
+       "sameAs": [
+        "https://www.wikidata.org/wiki/Q3884",
+        "https://en.wikipedia.org/wiki/Amazon_(company)",
+        "https://x.com/Amazon"
+       ]
+      }
+     }
+    },
+    {
+     "@context": "http://schema.org",
+     "@type": "Article",
+     "articleSection": "Retail ",
+     "url": "https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features",
+     "dateModified": "2025-11-18T14:00:05.889Z",
+     "datePublished": "2025-11-18T14:00:05.889Z",
+     "headline": "Amazon Rufus: Amazon's AI shopping assistant gets smarter and more personal",
+     "image": [
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "height": 836,
+       "url": "https://assets.aboutamazon.com/dims4/default/27dff8e/2147483647/strip/false/crop/2000x1125+0+0/resize/1486x836!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F2d%2Fe4%2Fe3fcb64e41718766601f96d0ddc2%2Frufus-pr-hero-v2.jpg",
+       "width": 1486
+      },
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "height": 675,
+       "url": "https://assets.aboutamazon.com/dims4/default/71ea759/2147483647/strip/false/crop/2000x1125+0+0/resize/1200x675!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F2d%2Fe4%2Fe3fcb64e41718766601f96d0ddc2%2Frufus-pr-hero-v2.jpg",
+       "width": 1200
+      }
+     ],
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features"
+     },
+     "author": [
+      {
+       "@context": "http://schema.org",
+       "@type": "Person",
+       "image": {
+        "@context": "http://schema.org",
+        "@type": "ImageObject",
+        "url": "https://assets.aboutamazon.com/47/6d/7fe296e642859c7ba2a629eda3ba/amazon-logo-hero-images-2024.jpg"
+       },
+       "name": "Amazon Staff"
+      }
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "About Amazon",
+      "url": "https://www.aboutamazon.com",
+      "sameAs": [
+       "https://x.com/amazonnews",
+       "https://www.linkedin.com/company/amazon",
+       "https://www.instagram.com/amazonnews"
+      ],
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/bd/8f/88e7b0314cc2bd05b9de3155a0fe/amazon-news.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com",
+       "sameAs": [
+        "https://www.wikidata.org/wiki/Q3884",
+        "https://en.wikipedia.org/wiki/Amazon_(company)",
+        "https://x.com/Amazon"
+       ]
+      }
+     },
+     "description": "Rufus can search for products based on activity, event, purpose, and other use cases, and automatically add items to your cart, tell you if you’re getting the best price, find top deals every day of the year, auto-buy items at a set price, and take a handwritten grocery list and add the items to your cart."
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "News",
+       "item": "https://www.aboutamazon.com/amazon-news-today"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Retail ",
+       "item": "https://www.aboutamazon.com/news/retail"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "server": "CloudFront",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:25:20 GMT",
+    "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "content-encoding": "gzip",
+    "link": "</_next/static/media/06389fc2ceb131fb.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/2573a0816525bbf7.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/337fd6ec2b734835.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/42439b8f44a5716c.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/476c2f4d793101fd.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/4d6a9fb8ff3b8fc2.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/665b265b8ab38986.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/7fe83725c48c9c69.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/b6b6385034af0a3e.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/c3d0f0661915be47.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/d180bbba8bf4e40d.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/d892c3e5c534541d.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/e3d5535913b6b6d3.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/f90a977ffdd12ef5.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/css/c9945c7442fc7d5c.css>; rel=preload; as=\"style\", </_next/static/css/b04376dbda111721.css>; rel=preload; as=\"style\", </_next/static/css/645c7dc07309115c.css>; rel=preload; as=\"style\", </_next/static/css/3477cf02ffac4501.css>; rel=preload; as=\"style\", </_next/static/css/e9fb153fea3d5240.css>; rel=preload; as=\"style\", </_next/static/css/295689712baf0450.css>; rel=preload; as=\"style\"",
+    "x-powered-by": "Next.js",
+    "vary": "Accept-Encoding",
+    "via": "1.1 a81e9bdf6a788f0d1c6f46cc56e7121e.cloudfront.net (CloudFront)",
+    "age": "288",
+    "set-cookie": "aa_bot_signal=category=&name=&signals=known_bot_data_center&targeted=&token=absent; Path=/; SameSite=Lax; Secure; Max-Age=1800",
+    "x-cache": "Hit from cloudfront",
+    "x-amz-cf-pop": "DFW56-P7",
+    "x-amz-cf-id": "vwKgwPVTqT8nDXHpOGSXAg18kZuJCHoCLn9Sa4-58X7owd1Moa8dSw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-aboutamazon-com-news-retail-amazon-rufus-ai-assistant-personalized-shopping-features.md>"
+ },
+ {
+  "url": "https://www.amazon.science/blog/the-technology-behind-amazons-genai-powered-shopping-assistant-rufus",
+  "crawl": {
+   "loadedUrl": "https://www.amazon.science/blog/the-technology-behind-amazons-genai-powered-shopping-assistant-rufus",
+   "loadedTime": "2026-10-17T05:30:31.903Z",
+   "referrerUrl": "https://www.amazon.science/blog/the-technology-behind-amazons-genai-powered-shopping-assistant-rufus",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.amazon.science/blog/the-technology-behind-amazons-genai-powered-shopping-assistant-rufus",
+   "title": "The technology behind Amazon’s GenAI-powered shopping assistant, Rufus - Amazon Science",
+   "description": "Rufus leverages AWS chips Trainium and Inferentia, AWS’s elasticity and scalability, and a custom-built large language model to quickly answer shoppers’ questions.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "The technology behind Amazon’s GenAI-powered shopping assistant, Rufus"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.amazon.science/blog/the-technology-behind-amazons-genai-powered-shopping-assistant-rufus"
+    },
+    {
+     "property": "og:image",
+     "content": "https://cdn.amazon.science/dims4/default/842ecc6/2147483647/strip/true/crop/1979x1039+0+38/resize/1200x630!/quality/90/?url=https%3A%2F%2Famzn-science-production-science.s3.us-east-1.amazonaws.com%2Fscience%2Ff8%2Fa9%2F02fc1a074b45832e211a74939d13%2Frufus.16x9.png"
+    },
+    {
+     "property": "og:image:url",
+     "content": "https://cdn.amazon.science/dims4/default/842ecc6/2147483647/strip/true/crop/1979x1039+0+38/resize/1200x630!/quality/90/?url=https%3A%2F%2Famzn-science-production-science.s3.us-east-1.amazonaws.com%2Fscience%2Ff8%2Fa9%2F02fc1a074b45832e211a74939d13%2Frufus.16x9.png"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "630"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/png"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Rufus.16x9.png"
+    },
+    {
+     "property": "og:description",
+     "content": "Rufus leverages AWS chips Trainium and Inferentia, AWS’s elasticity and scalability, and a custom-built large language model to quickly answer shoppers’ questions."
+    },
+    {
+     "property": "og:site_name",
+     "content": "Amazon Science"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "article:author",
+     "content": "https://www.amazon.science/author/trishul-chilimbi"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2024-10-04T12:35:24.227"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2024-10-04T13:21:23.924"
+    },
+    {
+     "property": "article:tag",
+     "content": "Large language models (LLMs)"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "http://schema.org",
+     "@type": "Article",
+     "url": "https://www.amazon.science/blog/the-technology-behind-amazons-genai-powered-shopping-assistant-rufus",
+     "dateModified": "2024-10-04T13:21:23.924Z",
+     "datePublished": "2024-10-04T12:35:24.227Z",
+     "description": "Rufus leverages AWS chips Trainium and Inferentia, AWS’s elasticity and scalability, and a custom-built large language model to quickly answer shoppers’ questions.",
+     "headline": "The technology behind Amazon’s GenAI-powered shopping assistant, Rufus",
+     "image": {
+      "@context": "http://schema.org",
+      "@type": "ImageObject",
+      "url": "https://cdn.amazon.science/f8/a9/02fc1a074b45832e211a74939d13/rufus.16x9.png"
+     },
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.amazon.science/blog/the-technology-behind-amazons-genai-powered-shopping-assistant-rufus"
+     },
+     "author": [
+      {
+       "@context": "http://schema.org",
+       "@type": "Person",
+       "affiliation": "Amazon Search",
+       "name": "Trishul Chilimbi",
+       "url": "https://www.amazon.science/author/trishul-chilimbi"
+      }
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "Amazon Science",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://cdn.amazon.science/fb/1c/07d25693486eb3d6b49091864af7/amazonscience-squidink.svg"
+      }
+     },
+     "articleSection": "Search and information retrieval",
+     "keywords": [
+      "Large language models (LLMs)"
+     ],
+     "name": "The technology behind Amazon’s GenAI-powered shopping assistant, Rufus - Amazon Science"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Sat, 17 Oct 2026 03:36:01 GMT",
+    "x-envoy-upstream-service-time": "273",
+    "x-envoy-decorator-operation": "brightspot-frontend-verify.science.svc.cluster.local:80/*",
+    "server": "istio-envoy",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "cache-control": "max-age=600, stale-while-revalidate=86400, stale-if-error=86400",
+    "x-powered-by": "Brightspot",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding",
+    "x-cache": "Hit from cloudfront",
+    "via": "1.1 15bbe97d5866b076d22279f42e40c7f0.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "DFW59-P5",
+    "x-amz-cf-id": "aBACyh4_gXSJ2oy-vws6Jt4WDTcxagl1OQquxM927rO57HPGkLCzXg==",
+    "age": "6867",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-amazon-science-blog-the-technology-behind-amazons-genai-powered-shopping-assistant-rufus.md>"
+ },
+ {
+  "url": "https://www.aboutamazon.com/news/retail/how-to-use-amazon-rufus",
+  "crawl": {
+   "loadedUrl": "https://www.aboutamazon.com/news/retail/how-to-use-amazon-rufus",
+   "loadedTime": "2026-10-17T05:30:31.116Z",
+   "referrerUrl": "https://www.aboutamazon.com/news/retail/how-to-use-amazon-rufus",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.aboutamazon.com/news/retail/how-to-use-amazon-rufus",
+   "title": "Amazon's Rufus AI assistant now available to all US customers",
+   "description": "Rufus, an AI-powered shopping assistant, is now available to all U.S. customers in the Amazon Shopping app.",
+   "author": "Rajiv Mehta, Vice President, Conversational Shopping, Amazon",
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "How customers are making more informed shopping decisions with Rufus, Amazon’s generative AI-powered shopping assistant "
+    },
+    {
+     "property": "og:description",
+     "content": "Rufus is now available to all U.S. customers in the Amazon Shopping app and on desktop."
+    },
+    {
+     "property": "og:site_name",
+     "content": "Amazon News"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Amazon Rufus provides answers to customer questions."
+    },
+    {
+     "property": "og:image",
+     "content": "https://assets.aboutamazon.com/dims4/default/6bce797/2147483647/strip/true/crop/2550x1275+0+80/resize/1200x600!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2F1b%2F27%2Fed7b62fa46d995a365afc5ffdbbc%2F01-header.png"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "600"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2024-07-12T13:00:09.210Z"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2024-09-18T13:43:13.982Z"
+    },
+    {
+     "property": "article:author:name",
+     "content": "Rajiv Mehta, Vice President, Conversational Shopping, Amazon"
+    },
+    {
+     "property": "article:tag",
+     "content": "Retail"
+    },
+    {
+     "property": "article:tag",
+     "content": "Rufus"
+    },
+    {
+     "property": "article:tag",
+     "content": "Artificial Intelligence"
+    },
+    {
+     "property": "article:tag",
+     "content": "Shopping"
+    },
+    {
+     "property": "article:tag",
+     "content": "Customers"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "WebSite",
+     "name": "Amazon News",
+     "url": "https://www.aboutamazon.com/",
+     "alternateName": [
+      "Amazon News",
+      "About Amazon"
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "About Amazon",
+      "url": "https://www.aboutamazon.com",
+      "sameAs": [
+       "https://x.com/amazonnews",
+       "https://www.linkedin.com/company/amazon",
+       "https://www.instagram.com/amazonnews"
+      ],
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/bd/8f/88e7b0314cc2bd05b9de3155a0fe/amazon-news.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com",
+       "sameAs": [
+        "https://www.wikidata.org/wiki/Q3884",
+        "https://en.wikipedia.org/wiki/Amazon_(company)",
+        "https://x.com/Amazon"
+       ]
+      }
+     }
+    },
+    {
+     "@context": "http://schema.org",
+     "@type": "Article",
+     "articleSection": "Retail ",
+     "url": "https://www.aboutamazon.com/news/retail/how-to-use-amazon-rufus",
+     "dateModified": "2024-09-18T13:43:13.982Z",
+     "datePublished": "2024-07-12T13:00:09.210Z",
+     "headline": "Amazon's Rufus AI assistant now available to all US customers",
+     "image": [
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "height": 836,
+       "url": "https://assets.aboutamazon.com/dims4/default/3fefd15/2147483647/strip/false/crop/2001x1126+0+0/resize/1486x836!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2Fee%2F69%2F4159b3624077a098535a532c53d5%2Fheaderimage-praa-post.png",
+       "width": 1486
+      },
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "height": 675,
+       "url": "https://assets.aboutamazon.com/dims4/default/5eb4c06/2147483647/strip/false/crop/2001x1126+0+0/resize/1200x675!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2Fee%2F69%2F4159b3624077a098535a532c53d5%2Fheaderimage-praa-post.png",
+       "width": 1200
+      }
+     ],
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.aboutamazon.com/news/retail/how-to-use-amazon-rufus"
+     },
+     "author": [
+      {
+       "@context": "http://schema.org",
+       "@type": "Person",
+       "image": {
+        "@context": "http://schema.org",
+        "@type": "ImageObject",
+        "url": "https://assets.aboutamazon.com/36/35/e02fff5c4cec9b745dd9939f13d4/mehta.png"
+       },
+       "name": "Rajiv Mehta, Vice President, Conversational Shopping, Amazon",
+       "url": "https://www.aboutamazon.com/author/rajiv-mehta"
+      }
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "About Amazon",
+      "url": "https://www.aboutamazon.com",
+      "sameAs": [
+       "https://x.com/amazonnews",
+       "https://www.linkedin.com/company/amazon",
+       "https://www.instagram.com/amazonnews"
+      ],
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/bd/8f/88e7b0314cc2bd05b9de3155a0fe/amazon-news.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com",
+       "sameAs": [
+        "https://www.wikidata.org/wiki/Q3884",
+        "https://en.wikipedia.org/wiki/Amazon_(company)",
+        "https://x.com/Amazon"
+       ]
+      }
+     },
+     "description": "Rufus is now available to all U.S. customers in the Amazon Shopping app and on desktop."
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "News",
+       "item": "https://www.aboutamazon.com/amazon-news-today"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Retail ",
+       "item": "https://www.aboutamazon.com/news/retail"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "server": "CloudFront",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:29:15 GMT",
+    "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "content-encoding": "gzip",
+    "link": "</_next/static/media/06389fc2ceb131fb.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/2573a0816525bbf7.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/337fd6ec2b734835.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/42439b8f44a5716c.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/476c2f4d793101fd.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/4d6a9fb8ff3b8fc2.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/665b265b8ab38986.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/7fe83725c48c9c69.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/b6b6385034af0a3e.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/c3d0f0661915be47.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/d180bbba8bf4e40d.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/d892c3e5c534541d.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/media/e3d5535913b6b6d3.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/f90a977ffdd12ef5.p.woff>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff\", </_next/static/css/c9945c7442fc7d5c.css>; rel=preload; as=\"style\", </_next/static/css/b04376dbda111721.css>; rel=preload; as=\"style\", </_next/static/css/645c7dc07309115c.css>; rel=preload; as=\"style\", </_next/static/css/3477cf02ffac4501.css>; rel=preload; as=\"style\", </_next/static/css/e9fb153fea3d5240.css>; rel=preload; as=\"style\", </_next/static/css/295689712baf0450.css>; rel=preload; as=\"style\"",
+    "x-powered-by": "Next.js",
+    "vary": "Accept-Encoding",
+    "via": "1.1 a81e9bdf6a788f0d1c6f46cc56e7121e.cloudfront.net (CloudFront)",
+    "age": "74",
+    "set-cookie": "aa_bot_signal=category=&name=&signals=known_bot_data_center&targeted=&token=accepted; Path=/; SameSite=Lax; Secure; Max-Age=1800",
+    "x-cache": "Hit from cloudfront",
+    "x-amz-cf-pop": "DFW56-P7",
+    "x-amz-cf-id": "SjoC577YjJ_gMYEDujAAoi1eqOzbU3uSGiSBJxEaaOtkEdl_e9ZasQ==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-aboutamazon-com-news-retail-how-to-use-amazon-rufus.md>"
+ },
+ {
+  "url": "https://www.cnbc.com/2026/05/13/amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent.html",
+  "crawl": {
+   "loadedUrl": "https://www.cnbc.com/2026/05/13/amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent.html",
+   "loadedTime": "2026-10-17T05:30:33.313Z",
+   "referrerUrl": "https://www.cnbc.com/2026/05/13/amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent.html",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 139357,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.cnbc.com/2026/05/13/amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent.html",
+   "title": "Amazon ditches Rufus AI chatbot in favor of Alexa shopping agent",
+   "description": "Amazon introduced Alexa for Shopping, an e-commerce bot that can answer queries and take actions on behalf of users",
+   "author": "Annie Palmer",
+   "keywords": "Breaking News: Technology,Technology,Internet,Andrew Jassy,Amazon.com Inc,Alphabet Class A,business news",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Amazon ditches Rufus chatbot, launches Alexa shopping agent in AI strategy pivot"
+    },
+    {
+     "property": "og:description",
+     "content": "Amazon introduced Alexa for Shopping, an e-commerce bot that can answer queries and take actions on behalf of users"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.cnbc.com/2026/05/13/amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent.html"
+    },
+    {
+     "property": "og:site_name",
+     "content": "CNBC"
+    },
+    {
+     "property": "og:image",
+     "content": "https://image.cnbcfm.com/api/v1/image/108107890-17405935162025-02-26t175625z_1468855485_rc2h2davv7ny_rtrmadp_0_amazon-com-alexa.jpeg?v=1747278045&w=1920&h=1080"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Amazon ditches Rufus chatbot, launches Alexa shopping agent in AI strategy pivot"
+    },
+    {
+     "property": "og:description",
+     "content": "Amazon introduced Alexa for Shopping, an e-commerce bot that can answer queries and take actions on behalf of users"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.cnbc.com/2026/05/13/amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent.html"
+    },
+    {
+     "property": "og:site_name",
+     "content": "CNBC"
+    },
+    {
+     "property": "og:image",
+     "content": "https://image.cnbcfm.com/api/v1/image/108107890-17405935162025-02-26t175625z_1468855485_rc2h2davv7ny_rtrmadp_0_amazon-com-alexa.jpeg?v=1747278045&w=1920&h=1080"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/cnbc"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-05-13T13:00:01+0000"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-05-13T13:13:23+0000"
+    },
+    {
+     "property": "article:section",
+     "content": "AI Age"
+    },
+    {
+     "property": "article:author",
+     "content": "https://www.facebook.com/CNBC"
+    },
+    {
+     "property": "article:opinion",
+     "content": "false"
+    },
+    {
+     "property": "article:tag",
+     "content": "Breaking News: Technology"
+    },
+    {
+     "property": "article:tag",
+     "content": "Technology"
+    },
+    {
+     "property": "article:tag",
+     "content": "Internet"
+    },
+    {
+     "property": "article:tag",
+     "content": "Andrew Jassy"
+    },
+    {
+     "property": "article:tag",
+     "content": "Amazon.com Inc"
+    },
+    {
+     "property": "article:tag",
+     "content": "Alphabet Class A"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "description": "Amazon introduced Alexa for Shopping, an e-commerce bot that can answer queries and take actions on behalf of users",
+     "speakable": {
+      "@type": "SpeakableSpecification",
+      "xpath": [
+       "/html/head/title",
+       "/html/head/meta[@name=\"description\"]/@content"
+      ],
+      "cssSelector": [
+       ".group p"
+      ]
+     },
+     "mainEntityOfPage": "https://www.cnbc.com/2026/05/13/amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent.html",
+     "url": "https://www.cnbc.com/2026/05/13/amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent.html",
+     "headline": "Amazon ditches Rufus chatbot, launches Alexa shopping agent in AI strategy pivot",
+     "dateCreated": "2026-05-13T13:00:01+0000",
+     "datePublished": "2026-05-13T13:00:01+0000",
+     "dateModified": "2026-05-13T13:13:23+0000",
+     "author": [
+      {
+       "@type": "Person",
+       "name": "Annie Palmer",
+       "url": "https://www.cnbc.com/annie-palmer/"
+      }
+     ],
+     "publisher": {
+      "@type": "NewsMediaOrganization",
+      "name": "CNBC",
+      "url": "https://www.cnbc.com/",
+      "foundingDate": "1989-04-17",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://sc.cnbcfm.com/applications/cnbc.com/staticcontent/img/cnbc-hdr-logo2.png",
+       "width": 378,
+       "height": 98
+      },
+      "sameAs": [
+       "https://www.facebook.com/cnbc",
+       "https://www.instagram.com/cnbc",
+       "https://www.linkedin.com/company/cnbc",
+       "https://twitter.com/cnbc",
+       "https://en.wikipedia.org/wiki/CNBC",
+       "https://www.youtube.com/cnbc"
+      ]
+     },
+     "articleSection": "Technology",
+     "keywords": [
+      "cnbc",
+      "Articles",
+      "Breaking News: Technology",
+      "Technology",
+      "Internet",
+      "Andrew Jassy",
+      "Amazon.com Inc",
+      "Alphabet Class A",
+      "e-commerce",
+      "US: News",
+      "AI - Artificial Intelligence",
+      "AI Age",
+      "source:tagname:CNBC US Source"
+     ],
+     "image": [
+      {
+       "@type": "ImageObject",
+       "url": "https://image.cnbcfm.com/api/v1/image/108107890-17405935162025-02-26t175625z_1468855485_rc2h2davv7ny_rtrmadp_0_amazon-com-alexa.jpeg?v=1747278045&w=1200&h=675",
+       "width": 1200,
+       "height": 675
+      },
+      {
+       "@type": "ImageObject",
+       "url": "https://image.cnbcfm.com/api/v1/image/108107890-17405935162025-02-26t175625z_1468855485_rc2h2davv7ny_rtrmadp_0_amazon-com-alexa.jpeg?v=1747278045&w=1200&h=1200",
+       "width": 1200,
+       "height": 1200
+      }
+     ],
+     "video": {
+      "@type": "VideoObject",
+      "contentUrl": "https://pdl-iphone-cnbc-com.akamaized.net/7000411884/a09be480-480a-11f1-ba05-e5182bc86288/1777934511700-3ED1-REQ-050426-MMBBLOCK_L.mp4",
+      "description": "Amazon CEO Andy Jassy joins 'Mad Money' host Jim Cramer to talk quarterly results, the state of its supply chain, tech advancements and more.",
+      "duration": "PT10M26S",
+      "name": "Amazon CEO Andy Jassy sits down with Jim Cramer",
+      "thumbnailUrl": "https://image.cnbcfm.com/api/v1/image/108301971-3ED1-REQ-050426-MMBBLOCK.jpg?v=1777934513",
+      "uploadDate": "2026-05-04T20:58:37+0000"
+     }
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "content-length": "139357",
+    "x-request-id": "3c2bae60-e7a6-48cc-832d-d7af64beaa18",
+    "etag": "W/\"f2044-0CSJXnTBfbWH3dPWd4bZnPOO3vM\"",
+    "content-encoding": "gzip",
+    "x-ttl": "5.000",
+    "x-varnish": "306016390",
+    "accept-ranges": "bytes",
+    "expires": "Sat, 17 Oct 2026 05:30:31 GMT",
+    "cache-control": "max-age=0, no-cache",
+    "pragma": "no-cache",
+    "date": "Sat, 17 Oct 2026 05:30:31 GMT",
+    "set-cookie": "AWSALB=7/+ZWB7NYlp6FuZwXaHhgkMogBZmm7VZRz/I6a+ZMzNQfb/de1ypMM6dhrjwwwhRMIGEyVgz56vGJD5jDQ4M3gphk02DE0/Xe5K/UtnLB4hBQWKtqrJCw1V92Bvo; Expires=Sat, 24 Oct 2026 05:30:30 GMT; Path=/\nAWSALBCORS=7/+ZWB7NYlp6FuZwXaHhgkMogBZmm7VZRz/I6a+ZMzNQfb/de1ypMM6dhrjwwwhRMIGEyVgz56vGJD5jDQ4M3gphk02DE0/Xe5K/UtnLB4hBQWKtqrJCw1V92Bvo; Expires=Sat, 24 Oct 2026 05:30:30 GMT; Path=/; SameSite=None; Secure\nregion=USA; <signed-url-removed> 15-Jan-2027 05:30:31 GMT; path=/; domain=.cnbc.com\nakaas_CNBC_AudienceSegmentation=1794807031~rv=46~id=2ed056cb7965de42f94651e95da232e2; path=/; Expires=Mon, 16 Nov 2026 05:30:31 GMT; Domain=.www.cnbc.com; Secure; SameSite=None",
+    "content-security-policy": "frame-ancestors 'self' *.cnbc.com https://cnbc.zendesk.com;",
+    "vary": "Accept-Encoding, User-Agent",
+    "akamai-grn": "0.72743617.1792215030.53d98a5a",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-cnbc-com-2026-05-13-amazon-ditches-rufus-ai-chatbot-in-favor-of-alexa-shopping-agent-html.md>"
+ },
+ {
+  "url": "https://aws.amazon.com/blogs/machine-learning/how-rufus-scales-conversational-shopping-experiences-to-millions-of-amazon-customers-with-amazon-bedrock/",
+  "crawl": {
+   "loadedUrl": "https://aws.amazon.com/blogs/machine-learning/how-rufus-scales-conversational-shopping-experiences-to-millions-of-amazon-customers-with-amazon-bedrock/",
+   "loadedTime": "2026-10-17T05:30:41.943Z",
+   "referrerUrl": "https://aws.amazon.com/blogs/machine-learning/how-rufus-scales-conversational-shopping-experiences-to-millions-of-amazon-customers-with-amazon-bedrock/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://aws.amazon.com/blogs/machine-learning/how-rufus-scales-conversational-shopping-experiences-to-millions-of-amazon-customers-with-amazon-bedrock/",
+   "title": "How Rufus scales conversational shopping experiences to millions of Amazon customers with Amazon Bedrock | Artificial Intelligence",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": null,
+   "openGraph": [
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Amazon Web Services"
+    },
+    {
+     "property": "og:title",
+     "content": "How Rufus scales conversational shopping experiences to millions of Amazon customers with Amazon Bedrock | Amazon Web Services"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://aws.amazon.com/blogs/machine-learning/how-rufus-scales-conversational-shopping-experiences-to-millions-of-amazon-customers-with-amazon-bedrock/"
+    },
+    {
+     "property": "og:description",
+     "content": "Our team at Amazon builds Rufus, an AI-powered shopping assistant which delivers intelligent, conversational experiences to delight our customers. More than 250 million customers have used Rufus this year. Monthly users are up 140% YoY and interactions are up 210% YoY. Additionally, customers that use Rufus during a shopping journey are 60% more likely to […]"
+    },
+    {
+     "property": "og:image",
+     "content": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2025/11/20/ml-19594-2-1-1120x630.jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1120"
+    },
+    {
+     "property": "og:image:height",
+     "content": "630"
+    },
+    {
+     "property": "og:updated_time",
+     "content": "2025-11-20T10:14:50-08:00"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/amazonwebservices"
+    },
+    {
+     "property": "article:section",
+     "content": "Amazon Bedrock"
+    },
+    {
+     "property": "article:tag",
+     "content": "Amazon Bedrock"
+    },
+    {
+     "property": "article:tag",
+     "content": "Customer Solutions"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2025-11-20T10:13:39-08:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2025-11-20T10:14:50-08:00"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@type": "WebPage",
+     "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+       {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "AWS",
+        "item": "https://aws.amazon.com/"
+       },
+       {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "AWS Blogs",
+        "item": "https://aws.amazon.com/blogs/training-and-certification/"
+       },
+       {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "How Rufus scales conversational shopping experiences to millions of Amazon customers with Amazon Bedrock",
+        "item": "https://aws.amazon.com/blogs/machine-learning/how-rufus-scales-conversational-shopping-experiences-to-millions-of-amazon-customers-with-amazon-bedrock/"
+       }
+      ]
+     },
+     "mainEntity": {
+      "@type": [
+       "BlogPosting",
+       "TechArticle"
+      ],
+      "@id": "https://aws.amazon.com/blogs/machine-learning/how-rufus-scales-conversational-shopping-experiences-to-millions-of-amazon-customers-with-amazon-bedrock/#blogpost",
+      "headline": "How Rufus scales conversational shopping experiences to millions of Amazon customers with Amazon Bedrock",
+      "name": "How Rufus scales conversational shopping experiences to millions of Amazon customers with Amazon Bedrock",
+      "datePublished": "2025-11-20T10:13:39-08:00",
+      "author": {
+       "@type": "Person",
+       "name": [
+        "James Park, Sean Foo, Shrikar Katti, Gaurang Sinkar, Somu Perianayagam,\",\"Saurabh Trikande"
+       ]
+      },
+      "url": "https://aws.amazon.com/blogs/machine-learning/how-rufus-scales-conversational-shopping-experiences-to-millions-of-amazon-customers-with-amazon-bedrock/",
+      "articleSection": "Amazon Bedrock, Customer Solutions",
+      "articleBody": "Our team at Amazon builds Rufus, an AI-powered shopping assistant which delivers intelligent, conversational experiences to delight our customers.\\n       \\n       More than 250 million customers have used Rufus this year. Monthly users are up 140% YoY and interactions are up 210% YoY. Additionally, customers that use Rufus during a shopping journey are 60% more likely to complete a purchase. To make this possible, our team carefully evaluates every decision, aiming to focus on what matters most: building the best agentic shopping assistant experience. By focusing on customer-driven features, Rufus is now smarter, faster, and more useful.\\n       In this post, we’ll share how our adoption of Amazon Bedrock accelerated the evolution of Rufus.\\n       Building a customer-driven architecture\\n       Defining clear use cases are fundamental to shaping both requirements and implementation, and building an AI-powered shopping assistant is no exception. For a shopping assistant like Rufus our use cases align with the kinds of questions customers ask, and we aim to exceed their expectations with every answer. For example, a customer may want to know something factual about the shoes they’re considering and ask, “are these shoes waterproof?” Another customer may want to ask Rufus for recommendations and ask, “give me a few good options for shoes suitable for marathon running.” These examples represent just a fraction of the diverse question types we designed Rufus to support by working backwards from customer use cases.\\n       After we defined our customer use cases, we design Rufus with the entire stack in mind to work seamlessly for customers. From initial release to subsequent iterations, we collect metrics to see how well Rufus is doing with the aim to keep getting better. This means not only measuring how accurately questions are answered using tools like LLM-as-a-judge, but also analyzing factors such as latency, repeat customer engagement, and number of conversation turns per interaction, to gain deeper insights into customer engagement.\\n       Expanding beyond our in-house LLM\\n       We first launched Rufus by building our own in-house large language model (LLM). The decision to build a custom LLM was driven by the need to use a model that was specialized on shopping domain questions. At first, we considered off-the-shelf models but most of these did not do well in our shopping evaluations (evals). Other models came with the cost of being larger and therefore were slower and more costly. We didn’t need a model that did well across many domains, we needed a model that did well in the shopping domain, while maintaining high accuracy, low latency, and cost performance. By building our custom LLM and deploying it using AWS silicon, we were able to go into production worldwide supporting large scale events such as Prime Day when we used 80,000 AWS Inferentia and Trainium chips.\\n       After the initial success of Rufus, we aimed to expand into use cases requiring advanced reasoning, larger context windows, and multi-step reasoning. However, training an LLM presents a significant challenge: iterations can take weeks or months to complete. With newer more capable models being released at an accelerated pace, we aimed to improve Rufus as quickly as possible and began to evaluate and adopt state-of-the-art models rapidly. To launch these new features and build a truly remarkable shopping assistant Amazon Bedrock was the natural solution.\\n       Accelerating Rufus with Amazon Bedrock\\n       Amazon Bedrock is a comprehensive, secure, and flexible platform for building generative AI applications and agents. Amazon Bedrock connects you to leading foundation models (FMs), services to deploy and operate agents, and tools for fine-tuning, safeguarding, and optimizing models along with knowledge bases to connect applications to your latest data so that you have everything you need to quickly move from experimentation to real-world deployment. Amazon Bedrock gives you access to hundreds of FMs from leading AI companies along with evaluation tools to pick the best model based on your unique performance and cost needs.\\n       Amazon Bedrock provides us great value by:\\n       \\n        Managing hosting of leading foundation models (FMs) from different providers and making them available through model agnostic interfaces such as the converse API. By providing access to frontier models we can evaluate and integrate them quickly with minimal changes to our existing systems. This increased our velocity. We can use the best model for the task while balancing characteristics like cost, latency, and accuracy.\\n        Addressing significant operational overhead from the Rufus team such as managing model hosting infrastructure, handling scaling challenges, or maintaining model serving pipelines around the world where Amazon operates. Bedrock handles the heavy lifting, allowing customers to concentrate on building innovative solutions for their unique needs.\\n        Providing global availability for consistent deployment supporting multiple geographic regions. By using Amazon Bedrock we launched in new marketplaces quickly with minimal effort.\\n       \\n       \\n       Models hosted by Amazon Bedrock also helps Rufus support a wide range of experiences across modalities, including text and images. Even within a particular modality like text-to-text, use cases can vary in complexity, traffic, and latency requirements. Some scenarios such as “planning a camping trip,” “gift recommendations for my mom,” or style advice requires deeper reasoning, multi-turn dialogue, and access to tools like web search to provide contextually rich, personalized answers. Straightforward product inquiries, such as, “what is the wattage on this drill?” can be handled efficiently by smaller, faster models.\\n       Our strategy combines multiple models to power Rufus including Amazon Nova, and Anthropic’s Claude Sonnet, and our custom model, so we can deliver the most reliable, fast, and intuitive customer experience possible.\\n       Integrating Amazon Bedrock with Rufus\\n       With Amazon Bedrock, we can evaluate and select the optimal model for each query type, balancing answer quality, latency, and engagement. The benefits of using Amazon Bedrock increased our development velocity by over 6x. Using multiple models gives us the ability to break down a conversation into granular pieces. By doing so, we’re able to answer questions more effectively and we’ve seen meaningful benefits. After we know what models we plan to use, we also take a hybrid approach in providing the model proper context to perform its task effectively. In some cases, we may already have the context that Rufus needs to answer a question. For example, if we know a customer is asking a question about their previous orders, we can provide their order history to the initial inference request of the model. This optimizes the number of inference calls we need to make and also provides more determinism to help avoid downstream errors. In other cases, we can defer the decision to the model and when it believes it needs more information it can use a tool to retrieve additional context.\\n       We found that it’s very important to ground the model with the proper information. One of the ways we do this is by using Amazon Nova Web Grounding because it can interact with web browsers to retrieve and cite authoritative internet sources, resulting in significantly reduced answer defects and improved accuracy and customer trust. In addition to optimizing model accuracy, we’ve also worked with Amazon Bedrock features to decrease latency whenever possible. By using prompt caching and parallel tool calling we decreased latency even more. These optimizations, from model response to service latency, means customers that use Rufus are 60% more likely to complete a purchase.\\n       Agentic functionality through tool integration\\n       More importantly, the Amazon Bedrock architecture supports agentic capabilities that makes Rufus more useful for shoppers through tool use. Using models on Bedrock, Rufus can dynamically call services as tools to provide personalized, real-time, accurate information or take actions on behalf of the user. When a customer asks Rufus about product availability, pricing, or specifications, Rufus goes far beyond its built-in knowledge. It retrieves relevant information such as your order history and uses integrated tools at inference time to query live databases, check the latest product catalog, and access real-time data. To be more personal Rufus now has account memory, understanding customers based on their individual shopping activity. Rufus can use information you may have shared previously such as hobbies you enjoy, or a previous mention of a pet, to provide a much more personalized and effective experience.\\n       \\n       When building these agentic capabilities, it might be necessary build a service for your agent to interact with to be more effective. For example, Rufus has a Price history feature on the product detail page that lets customers instantly view historical pricing to see if they’re getting a great deal. Shoppers can ask Rufus directly for price history while browsing (for example, For example, “Has this item been on sale in the past thirty days?”) or set an agentic price alert to be notified when a product reaches a target price (“Buy these headphones when they’re 30% off”). With the auto-buy feature, Rufus can complete purchases on your behalf within 30 minutes of when the desired price is met and finalize the order using your default payment and shipping details. Auto-buy requests remain active for six months, and customers currently using this feature are saving an average of 20% per purchase. The agent itself can create a persistent record in the price alert and auto-buy service, but the system then uses traditional software to manage the record and act on it accordingly. This tight integration of models, tools, and services transforms Rufus into a truly dynamic personalized shopping agent.\\n       \\n       Beyond price tracking, Rufus supports natural, conversational reordering. Customers can simply say, “Reorder everything we used to make pumpkin pie last week,” or “Order the hiking boots and poles I browsed yesterday.” Rufus connects the dots between past activity and current intent and can suggest alternatives if items are unavailable. Rufus uses agentic AI capabilities to automatically add products to the cart for quick review and checkout. In these scenarios, Rufus can determine when to gather information to provide a better answer or to perform an action that’s directed by the customer. These are just two examples of the many agentic features we’ve launched.\\n       The result: AI-powered shopping at Amazon scale\\n       By using Amazon Bedrock, Rufus demonstrates how organizations can build sophisticated AI applications that scale to serve millions of users. The combination of flexible model selection, managed infrastructure, and agentic capabilities enables Amazon to deliver a shopping assistant that’s both intelligent and practical while maintaining tight controls on accuracy, latency, and cost. If you are considering your own AI initiatives, Rufus showcases Bedrock’s potential to simplify the journey from AI experimentation to production deployment, allowing you to focus on customer value rather than infrastructure complexity. We encourage you to try Bedrock and observe the same benefits we have and focusing on your agentic solutions and their core capabilities.\\n       \\n       About the authors\\n       James Park is a ML Specialist Solutions Architect at Amazon Web Services. He works with Amazon.com to design, build, and deploy technology solutions on AWS, and has a particular interest in AI and machine learning. In his spare time he enjoys seeking out new cultures, new experiences, and staying up to date with the latest technology trends.\\n       Shrikar Katti is a Principal TPM at Amazon. His current focus is on driving end-to-end delivery, strategy, and cross-org alignment for a large-scale AI products that transforms the Amazon shopping experience, while ensuring safety, scalability, and operational excellence. In his spare time, he enjoys playing chess, and exploring the latest advancements in AI.\\n       Gaurang Sinkar is a Principal Engineer at Amazon. His recent focus is on scaling, performance engineering and optimizing generative ai solutions. Beyond work, he enjoys spending time with family, traveling, occasional hiking and playing cricket.\\n       Sean Foo is an engineer at Amazon. His recent focus is building low latency customer experiences and maintaining a highly available systems at Amazon scale. In his spare time, he enjoys playing video and board games with friends and wandering around.\\n       Saurabh Trikande is a Senior Product Manager for Amazon Bedrock and Amazon SageMaker Inference. He is passionate about working with customers and partners, motivated by the goal of democratizing AI. He focuses on core challenges related to deploying complex AI applications, inference with multi-tenant models, cost optimizations, and making the deployment of generative AI models more accessible. In his spare time, Saurabh enjoys hiking, learning about innovative technologies, following TechCrunch, and spending time with his family.\\n       Somu Perianayagam is an Engineer at AWS specializing in distributed systems for Amazon DynamoDB and Amazon Bedrock. He builds large-scale, resilient architectures that help customers achieve consistent performance across regions, simplify their data paths, and operate reliably at massive scale."
+     }
+    }
+   ],
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Sat, 17 Oct 2026 05:30:29 GMT",
+    "set-cookie": "aws-priv=eyJ2IjoxLCJldSI6MCwic3QiOjB9; Version=1; Comment=\"Anonymous cookie for privacy regulations\"; Domain=.aws.amazon.com; Max-Age=31536000; Expires=Sun, 17 Oct 2027 05:30:29 GMT; Path=/; Secure\naws_lang=en; Domain=.amazon.com; Path=/",
+    "x-content-type-options": "nosniff",
+    "server": "Server",
+    "x-frame-options": "SAMEORIGIN",
+    "x-xss-protection": "1; mode=block",
+    "strict-transport-security": "max-age=47304000; includeSubDomains",
+    "x-amz-id-1": "7FC0E6D392F5477D8E8A",
+    "last-modified": "Wed, 14 Oct 2026 20:19:25 GMT",
+    "vary": "accept-encoding",
+    "content-encoding": "gzip",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 be1920cf7ae65f08e73ebd7740578a0c.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "DFW59-P8",
+    "x-amz-cf-id": "23SJxfzflUAwUbb4dE8RKpIj1TQE6hzG2NUQvnPwewLVruGlQ656hw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/aws-amazon-com-blogs-machine-learning-how-rufus-scales-conversational-shopping-experiences-to-millio.md>"
+ },
+ {
+  "url": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+  "crawl": {
+   "loadedUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "loadedTime": "2026-10-17T05:30:51.295Z",
+   "referrerUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend",
+   "title": "Zalando: Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter | Zalando Corporate",
+   "description": "All informations about „Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter“ at Zalando Corporate ✓ Current information about Zalando SE",
+   "author": null,
+   "keywords": ", Technology,",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Zalando Corporate Website"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.zalando.com/en/technology/zalando-brings-its-ai-powered-assistant-all-markets-and-adds-four-new-cities-its-trend"
+    },
+    {
+     "property": "og:title",
+     "content": "Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter"
+    },
+    {
+     "property": "og:description",
+     "content": "All informations about „Zalando brings its AI-powered assistant to all markets and adds four new cities to its Trend Spotter“ at Zalando Corporate, Current information about Zalando SE"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.zalando.com/public/media/Zalando-SE_2023_Zalando_customer_mobile-phone_01_assistant_ES.jpg?VersionId=77BodflBwkPK9W7et5mwJEB_xK1efj4."
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=3600, public",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 15 Oct 2026 10:54:04 GMT",
+    "etag": "W/\"1792061644\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Thu, 15 Oct 2026 10:54:04 GMT",
+    "vary": "Accept-Encoding, Cookie",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 11 (https://www.drupal.org)",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-zalando-com-en-technology-zalando-brings-its-ai-powered-assistant-all-markets-and-adds-fou.md>"
+ },
+ {
+  "url": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+  "crawl": {
+   "loadedUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "loadedTime": "2026-10-17T05:30:55.430Z",
+   "referrerUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers",
+   "title": "Zalando: More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers | Zalando Corporate",
+   "description": "All informations about „More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers“ at Zalando Corporate ✓ Current information about Zalando SE",
+   "author": null,
+   "keywords": ", Technology,",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Zalando Corporate Website"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.zalando.com/en/technology/more-personal-and-smarter-zalando-assistant-enhanced-capabilities-inspire-customers"
+    },
+    {
+     "property": "og:title",
+     "content": "More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers"
+    },
+    {
+     "property": "og:description",
+     "content": "All informations about „More personal and smarter - the Zalando Assistant with enhanced capabilities to inspire customers“ at Zalando Corporate, Current information about Zalando SE"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.zalando.com/public/media/Zalando-SE_250320_Graphic_AI-Assistent_landscape_4x3.png?VersionId=i.O5HDWpaenV3wYr2W1YS4E.mV1PqprC"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=3600, public",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 15 Oct 2026 10:51:47 GMT",
+    "etag": "W/\"1792061507\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Thu, 15 Oct 2026 10:51:47 GMT",
+    "vary": "Accept-Encoding, Cookie",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 11 (https://www.drupal.org)",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-zalando-com-en-technology-more-personal-and-smarter-zalando-assistant-enhanced-capabilitie.md>"
+ },
+ {
+  "url": "https://help.shopify.com/en/manual/inbox/assigning-your-ai-staff-member",
+  "crawl": {
+   "loadedUrl": "https://help.shopify.com/en/manual/inbox/assigning-your-ai-staff-member",
+   "loadedTime": "2026-10-17T05:31:01.420Z",
+   "referrerUrl": "https://help.shopify.com/en/manual/inbox/assigning-your-ai-staff-member",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://help.shopify.com/en/manual/inbox/assigning-your-ai-staff-member",
+   "title": "Shopify Help Center | Assigning your Inbox agent to conversations",
+   "description": "Choose when your Inbox agent handles customer conversations in Shopify Inbox, and learn how to switch between AI and staff chat modes.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Shopify Help Center"
+    },
+    {
+     "property": "og:url",
+     "content": "https://help.shopify.com/en/manual/inbox/assigning-your-ai-staff-member"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:title",
+     "content": "Assigning your Inbox agent to conversations"
+    },
+    {
+     "property": "og:description",
+     "content": "Choose when your Inbox agent handles customer conversations in Shopify Inbox, and learn how to switch between AI and staff chat modes."
+    },
+    {
+     "property": "og:image",
+     "content": "https://cdn.shopify.com/shopifycloud/help/assets/sharing/share-image-generic-bd3ce342a910c2489b672b00e45c74b1b1548662c41448e456547fa5b6e0f585.png"
+    },
+    {
+     "property": "twitter:site",
+     "content": "@Shopify"
+    },
+    {
+     "property": "twitter:card",
+     "content": "summary"
+    },
+    {
+     "property": "twitter:title",
+     "content": "Assigning your Inbox agent to conversations"
+    },
+    {
+     "property": "twitter:description",
+     "content": "Choose when your Inbox agent handles customer conversations in Shopify Inbox, and learn how to switch between AI and staff chat modes."
+    },
+    {
+     "property": "twitter:creator",
+     "content": "@ShopifySupport"
+    },
+    {
+     "property": "twitter:image",
+     "content": "https://cdn.shopify.com/shopifycloud/help/assets/sharing/share-image-generic-bd3ce342a910c2489b672b00e45c74b1b1548662c41448e456547fa5b6e0f585.png"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:31:00 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "vary": "Accept, Accept-Encoding",
+    "set-cookie": "_merchant_essential=:AaFIV5BJAAEAKg-TrzWW5P-h7IaR87jtV94roLsKUV7szLUgzd4QOAFyuhrwQdD4r0hVwlBmo25E_sqg2ovpl7UYNxy9FwQ0gtDYorgRvB2nCV8kdIP7xySjZtQdeyUXfsXfFos2lrrFC45pAIOMklP-DkSTVUq42bvx676KaFbSLb4x3PaHvvPQttz5eEyyH8zfVd1seLnUEAlGgRv9Ha-THYJKauV4E4CeeR203BbqFDOMmzk9st8:; Max-Age=31536000; Path=/; HttpOnly; Secure; Priority=High; SameSite=Lax; Domain=.shopify.com\n_merchant_analytics=:AaFIV5BJAAEARSk-agzQMueLgkNSCWrw73jZz1_N8OoJ22o7OMeA-z0nmB9Sju_xBNgMpUQ7fTcHRz4WIwwJyUcD-1iR4AmxoIR9jnp_NvisXd5K-CafN48gnA:; Max-Age=31536000; Path=/; HttpOnly; Secure; Priority=High; SameSite=Lax; Domain=.shopify.com",
+    "content-encoding": "br",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "x-dc": "gcp-us-central1, gcp-us-central1",
+    "x-request-id": "01a14857-8f75-75dc-b921-72e7c41daee7-1792215060",
+    "server": "envoy",
+    "x-shopify-gclb-trace-timing": "1792215060.341",
+    "via": "1.1 google",
+    "nel": "{\"max_age\":0}",
+    "alt-svc": "h3=\":443\"; ma=2592000, h3-29=\":443\"; ma=2592000",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/help-shopify-com-en-manual-inbox-assigning-your-ai-staff-member.md>"
+ },
+ {
+  "url": "https://www.prnewswire.com/apac/news-releases/alibaba-international-launches-accio-work-an-enterprise-ai-agent-for-global-businesses-302721781.html",
+  "crawl": {
+   "loadedUrl": "https://www.prnewswire.com/apac/news-releases/alibaba-international-launches-accio-work-an-enterprise-ai-agent-for-global-businesses-302721781.html",
+   "loadedTime": "2026-10-17T05:31:07.921Z",
+   "referrerUrl": "https://www.prnewswire.com/apac/news-releases/alibaba-international-launches-accio-work-an-enterprise-ai-agent-for-global-businesses-302721781.html",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.prnewswire.com/apac/news-releases/alibaba-international-launches-accio-work-an-enterprise-ai-agent-for-global-businesses-302721781.html",
+   "title": "Alibaba International Launches Accio Work, an Enterprise AI Agent for Global Businesses",
+   "description": "/PRNewswire/ -- Alibaba International unveiled Accio Work, a plug-and-play enterprise AI agent that equips businesses with an immediate, no-code taskforce....",
+   "author": "Alibaba International",
+   "keywords": "Alibaba International,Human Resource & Workforce Management ,Computer Software,Computer & Electronics,Artificial Intelligence,New Products & Services ",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Alibaba International Launches Accio Work, an Enterprise AI Agent for Global Businesses"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:description",
+     "content": "/PRNewswire/ -- Alibaba International unveiled Accio Work, a plug-and-play enterprise AI agent that equips businesses with an immediate, no-code taskforce...."
+    },
+    {
+     "property": "og:image",
+     "content": "https://mma.prnewswire.com/media/2939673/PR_Pic_2.jpg?p=facebook"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.prnewswire.com/apac/news-releases/alibaba-international-launches-accio-work-an-enterprise-ai-agent-for-global-businesses-302721781.html"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "mainEntityOfPage": {
+      "@id": "https://www.prnewswire.com/apac/news-releases/alibaba-international-launches-accio-work-an-enterprise-ai-agent-for-global-businesses-302721781.html"
+     },
+     "headline": "Alibaba International Launches Accio Work, an Enterprise AI Agent for Global Businesses",
+     "image": [
+      "https://mma.prnewswire.com/media/2939673/PR_Pic_2.jpg?p=facebook"
+     ],
+     "datePublished": "2026-03-23T13:00:00+00:00",
+     "dateModified": "2026-03-24T12:26:34+00:00",
+     "description": "/PRNewswire/ -- Alibaba International unveiled Accio Work, a plug-and-play enterprise AI agent that equips businesses with an immediate, no-code taskforce....",
+     "publisher": {
+      "@type": "Organization",
+      "name": "",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://www.prnewswire.com"
+      }
+     }
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:31:06 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "x-frame-options": "SAMEORIGIN",
+    "x-content-type-options": "nosniff",
+    "last-modified": "Thu, 15 Oct 2026 00:13:46 GMT",
+    "set-cookie": "__cf_bm=i2riNMa4CD8myzqtA9mjdQxEXVc.aW16wSEqqOugXsU-1792215066.1038709-1.0.1.1-mQWPUytou5SJz8tQNikD6l6pKEeBOSUIDvon3sB5gd_uLfi5hN6lRO98fXxMDAG8H.HhA7867YtZseCFZpWEfs_LSKGNd8u6tHJbB1KFmwSV7N9.nsJuKxTKRbbtR.oy; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.prnewswire.com; Expires=Sat, 17 Oct 2026 06:01:06 GMT",
+    "x-xss-protection": "1; mode=block",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "access-control-allow-origin": "https://app.zoominfo.com; *.prnewswire.com; *.multivu.com; *.vocusdr.com; *.prweb.com",
+    "via": "1.1 google",
+    "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=7, cfOrigin;dur=0",
+    "age": "191839",
+    "expires": "Sat, 17 Oct 2026 05:36:06 GMT",
+    "cache-control": "public, max-age=300",
+    "cf-cache-status": "HIT",
+    "content-encoding": "gzip",
+    "cf-ray": "a4bcea432de32c52-DFW",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-prnewswire-com-apac-news-releases-alibaba-international-launches-accio-work-an-enterprise-ai-age.md>"
+ },
+ {
+  "url": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/",
+  "crawl": {
+   "loadedUrl": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/",
+   "loadedTime": "2026-10-17T05:31:15.440Z",
+   "referrerUrl": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/",
+   "title": "Alibaba International Unveils Enterprise AI Agent Platform for Global SMEs | Alizila",
+   "description": "Alibaba International has launched Accio Work, an enterprise AI agent platform that gives small businesses a team of specialized AI agents capable of",
+   "author": "Alizila Staff",
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:image",
+     "content": "https://alizila.oss-us-west-1.aliyuncs.com/uploads/2026/04/Accio-Work.jpg"
+    },
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Alibaba International Unveils Enterprise AI Agent Platform for Global SMEs"
+    },
+    {
+     "property": "og:description",
+     "content": "Alibaba International has launched Accio Work, an enterprise AI agent platform that gives small businesses a team of specialized AI agents capable of"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Alizila"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/alibabagroupofficial/"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-04-01T16:17:27+00:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-04-01T16:17:28+00:00"
+    },
+    {
+     "property": "og:image",
+     "content": "https://alizila.oss-us-west-1.aliyuncs.com/uploads/2026/04/Accio-Work.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "675"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@graph": [
+      {
+       "@type": "Article",
+       "@id": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/#article",
+       "isPartOf": {
+        "@id": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/"
+       },
+       "author": [
+        {
+         "@id": "https://www.alizila.com/#/schema/person/d2f91620efe357eca93a3f169dfbfdd9"
+        }
+       ],
+       "headline": "Alibaba International Unveils Enterprise AI Agent Platform for Global SMEs",
+       "datePublished": "2026-04-01T16:17:27+00:00",
+       "dateModified": "2026-04-01T16:17:28+00:00",
+       "mainEntityOfPage": {
+        "@id": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/"
+       },
+       "wordCount": 411,
+       "publisher": {
+        "@id": "https://www.alizila.com/#organization"
+       },
+       "image": {
+        "@id": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/#primaryimage"
+       },
+       "thumbnailUrl": "https://alizila.oss-us-west-1.aliyuncs.com/uploads/2026/04/Accio-Work.jpg",
+       "keywords": [
+        "Accio",
+        "AI",
+        "Alibaba International"
+       ],
+       "articleSection": [
+        "AI",
+        "Retail &amp; E-Commerce"
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "WebPage",
+       "@id": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/",
+       "url": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/",
+       "name": "Alibaba International Unveils Enterprise AI Agent Platform for Global SMEs | Alizila",
+       "isPartOf": {
+        "@id": "https://www.alizila.com/#website"
+       },
+       "primaryImageOfPage": {
+        "@id": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/#primaryimage"
+       },
+       "image": {
+        "@id": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/#primaryimage"
+       },
+       "thumbnailUrl": "https://alizila.oss-us-west-1.aliyuncs.com/uploads/2026/04/Accio-Work.jpg",
+       "datePublished": "2026-04-01T16:17:27+00:00",
+       "dateModified": "2026-04-01T16:17:28+00:00",
+       "description": "Alibaba International has launched Accio Work, an enterprise AI agent platform that gives small businesses a team of specialized AI agents capable of",
+       "inLanguage": "en-US",
+       "potentialAction": [
+        {
+         "@type": "ReadAction",
+         "target": [
+          "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/"
+         ]
+        }
+       ]
+      },
+      {
+       "@type": "ImageObject",
+       "inLanguage": "en-US",
+       "@id": "https://www.alizila.com/alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes/#primaryimage",
+       "url": "https://alizila.oss-us-west-1.aliyuncs.com/uploads/2026/04/Accio-Work.jpg",
+       "contentUrl": "https://alizila.oss-us-west-1.aliyuncs.com/uploads/2026/04/Accio-Work.jpg",
+       "width": 1200,
+       "height": 675,
+       "caption": "Accio Work"
+      },
+      {
+       "@type": "WebSite",
+       "@id": "https://www.alizila.com/#website",
+       "url": "https://www.alizila.com/",
+       "name": "Alizila",
+       "description": "",
+       "publisher": {
+        "@id": "https://www.alizila.com/#organization"
+       },
+       "potentialAction": [
+        {
+         "@type": "SearchAction",
+         "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.alizila.com/?s={search_term_string}"
+         },
+         "query-input": {
+          "@type": "PropertyValueSpecification",
+          "valueRequired": true,
+          "valueName": "search_term_string"
+         }
+        }
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "Organization",
+       "@id": "https://www.alizila.com/#organization",
+       "name": "Alizila",
+       "url": "https://www.alizila.com/",
+       "logo": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://www.alizila.com/#/schema/logo/image/",
+        "url": "https://alizila.oss-us-west-1.aliyuncs.com/uploads/2021/03/alizila-860W.jpg",
+        "contentUrl": "https://alizila.oss-us-west-1.aliyuncs.com/uploads/2021/03/alizila-860W.jpg",
+        "width": 1,
+        "height": 1,
+        "caption": "Alizila"
+       },
+       "image": {
+        "@id": "https://www.alizila.com/#/schema/logo/image/"
+       },
+       "sameAs": [
+        "https://www.facebook.com/alibabagroupofficial/",
+        "https://x.com/alibabagroup"
+       ]
+      },
+      {
+       "@type": "Person",
+       "@id": "https://www.alizila.com/#/schema/person/d2f91620efe357eca93a3f169dfbfdd9",
+       "name": "Alizila Staff",
+       "image": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://www.alizila.com/#/schema/person/image/f08cb4479b569c90b285adb59cb05aba",
+        "url": "https://secure.gravatar.com/avatar/d45d5739d3b5d55653113aaf332eab03fa2b697d46a29a7b864e71c3bce767ad?s=96&d=mm&r=g",
+        "contentUrl": "https://secure.gravatar.com/avatar/d45d5739d3b5d55653113aaf332eab03fa2b697d46a29a7b864e71c3bce767ad?s=96&d=mm&r=g",
+        "caption": "Alizila Staff"
+       },
+       "sameAs": [
+        "https://www.alizila.com"
+       ],
+       "url": "https://www.alizila.com/author/alizila_admin/"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:31:11 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "vary": "accept-encoding",
+    "set-cookie": "PHPSESSID=f3nb2ai5h3r2ih2dqgddk6tth5; path=/",
+    "expires": "Thu, 19 Nov 1981 08:52:00 GMT",
+    "cache-control": "no-store, no-cache, must-revalidate",
+    "pragma": "no-cache",
+    "link": "<https://www.alizila.com/?p=66700>; rel=shortlink",
+    "x-xss-protection": "1; mode=block",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "x-frame-options": "âDENYâ",
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "strict-origin",
+    "permissions-policy": "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()",
+    "cf-cache-status": "DYNAMIC",
+    "content-encoding": "br",
+    "cf-ray": "a4bcea5f4e4c578f-DFW",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-alizila-com-alibaba-international-unveils-enterprise-ai-agent-platform-for-global-smes.md>"
+ },
+ {
+  "url": "https://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/",
+  "crawl": {
+   "loadedUrl": "https://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/",
+   "loadedTime": "2026-10-17T05:31:23.707Z",
+   "referrerUrl": "https://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/",
+   "title": "Here's How Alibaba's New, AI-Based Sourcing Agent Works",
+   "description": "The company believes its new sourcing agent, Accio, can particularly aid small-to-medium enterprises working to grow their businesses.",
+   "author": "Meghan Hall",
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Here’s How Alibaba’s New, AI-Based Sourcing Agent Works"
+    },
+    {
+     "property": "og:url",
+     "content": "https://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/"
+    },
+    {
+     "property": "og:description",
+     "content": "The company believes its new sourcing agent, Accio, can particularly aid small-to-medium enterprises working to grow their businesses."
+    },
+    {
+     "property": "article:published_time",
+     "content": "2025-08-14T17:00:00+00:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-04-22T21:02:06+00:00"
+    },
+    {
+     "property": "og:site_name",
+     "content": "WWD"
+    },
+    {
+     "property": "og:image",
+     "content": "https://wwd.com/wp-content/uploads/2025/05/2010460076.jpg?w=1000&h=563&crop=1"
+    },
+    {
+     "property": "og:image:width",
+     "content": "5704"
+    },
+    {
+     "property": "og:image:height",
+     "content": "3803"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Alibaba International has upgraded its AI-enabled sourcing tool Accio to be fully agentic."
+    },
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "Organization",
+     "url": "https://wwd.com",
+     "name": "WWD",
+     "logo": "https://wwd.com/wp-content/themes/vip/pmc-wwd-2021/assets/build/svg/wwd.svg"
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "headline": "Here&#8217;s How Alibaba&#8217;s New, AI-Based Sourcing Agent Works",
+     "url": "http://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "http://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/"
+     },
+     "thumbnailUrl": "https://wwd.com/wp-content/uploads/2025/05/2010460076.jpg?w=150",
+     "image": {
+      "@type": "ImageObject",
+      "url": "https://wwd.com/wp-content/uploads/2025/05/2010460076.jpg"
+     },
+     "articleSection": "Industry News",
+     "author": [
+      {
+       "@type": "Person",
+       "name": "Meghan Hall"
+      }
+     ],
+     "creator": [
+      "Meghan Hall"
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "WWD",
+      "logo": "https://wwd.com/wp-content/uploads/2018/06/a9597fffaf6885dd6f870d1269ef3b72.png"
+     },
+     "keywords": [
+      "alibaba",
+      "artificial intelligence"
+     ],
+     "dateCreated": "2025-08-14T17:00:00Z",
+     "datePublished": "2025-08-14T17:00:00Z",
+     "dateModified": "2026-04-22T21:02:06Z"
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Sourcing Journal",
+       "item": "https://wwd.com/sourcing-journal/"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Industry News",
+       "item": "https://wwd.com/sourcing-journal/industry-news/"
+      }
+     ]
+    },
+    {
+     "@context": "http://schema.org",
+     "@type": "NewsArticle",
+     "url": "https://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/",
+     "name": "WWD",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://wwd.com/sourcing-journal/industry-news/alibaba-artificial-intelligence-agentic-sourcing-international-commerce-1238855697/"
+     },
+     "headline": "Here's How Alibaba's New, AI-Based Sourcing Agent Works",
+     "datePublished": "2025-08-14T17:00:00+00:00",
+     "dateModified": "2026-04-22T17:02:06+00:00",
+     "articleBody": "The company believes its new sourcing agent, Accio, can particularly aid small-to-medium enterprises working to grow their businesses.",
+     "author": {
+      "@type": "Person",
+      "name": "Meghan Hall",
+      "url": "https://wwd.com/wwd-masthead/meghan-hall/"
+     },
+     "publisher": {
+      "@type": "Organization",
+      "name": "WWD",
+      "url": "https://wwd.com",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://wwd.com/wp-content/uploads/2018/06/a9597fffaf6885dd6f870d1269ef3b72.png"
+      }
+     },
+     "isAccessibleForFree": "false",
+     "image": {
+      "@type": "ImageObject",
+      "url": "https://wwd.com/wp-content/uploads/2025/05/2010460076.jpg"
+     },
+     "hasPart": {
+      "@type": "WebPageElement",
+      "isAccessibleForFree": "false",
+      "cssSelector": ".pmc-paywall"
+     }
+    }
+   ],
+   "headers": {
+    "server": "nginx",
+    "date": "Sat, 17 Oct 2026 05:31:20 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "vary": "Accept-Encoding",
+    "x-hacker": "If you're reading this, you should visit https://join.a8c.com/viphacker and apply to join the fun, mention this header.",
+    "x-powered-by": "WordPress VIP <https://wpvip.com>",
+    "host-header": "a9130478a60e5f9135f765b23f26593b",
+    "x-ua-compatible": "IE=Edge",
+    "x-distributor": "yes",
+    "content-security-policy": "upgrade-insecure-requests, frame-ancestors 'none'",
+    "content-security-policy-report-only": "default-src data: 'unsafe-inline' 'unsafe-eval' https: blob: http://*.files.wordpress.com wss://wwd.com; report-uri https://pmcuri.report-uri.com/r/d/csp/reportOnly",
+    "link": "<https://wwd.com/wp-json/>; rel=\"https://api.w.org/\", <https://wwd.com/wp-json/wp/v2/posts/1238855697>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://wwd.com/?p=1238855697>; rel=shortlink",
+    "content-encoding": "br",
+    "x-rq": "dfw8 179 253 80",
+    "accept-ranges": "bytes",
+    "x-cache": "EXPIRED",
+    "cache-control": "max-age=300, must-revalidate",
+    "strict-transport-security": "max-age=31536000",
+    "x-remembering": "Eric Binnion <https://friendsofericbinnion.wordpress.com/>",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/wwd-com-sourcing-journal-industry-news-alibaba-artificial-intelligence-agentic-sourcing-internationa.md>"
+ },
+ {
+  "url": "https://www.cnbc.com/2024/11/12/alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps.html",
+  "crawl": {
+   "loadedUrl": "https://www.cnbc.com/2024/11/12/alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps.html",
+   "loadedTime": "2026-10-17T05:31:22.606Z",
+   "referrerUrl": "https://www.cnbc.com/2024/11/12/alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps.html",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.cnbc.com/2024/11/12/alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps.html",
+   "title": "Alibaba launches AI search for small biz, says purchase intent jumps",
+   "description": "Chinese e-commerce giant Alibaba unveiled an artificial intelligence-powered search engine for small businesses in Europe and the Americas to source supplies.",
+   "author": "Evelyn Cheng",
+   "keywords": "Breaking News: Technology,Alibaba Group Holding Ltd,Alibaba Group Holding Ltd,Market Insider,Markets,Stock markets,Technology,Beijing,business news",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "China's Alibaba releases AI search tool for small businesses in Europe and the Americas"
+    },
+    {
+     "property": "og:description",
+     "content": "Chinese e-commerce giant Alibaba unveiled an artificial intelligence-powered search engine for small businesses in Europe and the Americas to source supplies."
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.cnbc.com/2024/11/12/alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps.html"
+    },
+    {
+     "property": "og:site_name",
+     "content": "CNBC"
+    },
+    {
+     "property": "og:image",
+     "content": "https://image.cnbcfm.com/api/v1/image/108061320-1731397990476-gettyimages-2178698620-vcg111524186532.jpeg?v=1731398159&w=1920&h=1080"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "China's Alibaba releases AI search tool for small businesses in Europe and the Americas"
+    },
+    {
+     "property": "og:description",
+     "content": "Chinese e-commerce giant Alibaba unveiled an artificial intelligence-powered search engine for small businesses in Europe and the Americas to source supplies."
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.cnbc.com/2024/11/12/alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps.html"
+    },
+    {
+     "property": "og:site_name",
+     "content": "CNBC"
+    },
+    {
+     "property": "og:image",
+     "content": "https://image.cnbcfm.com/api/v1/image/108061320-1731397990476-gettyimages-2178698620-vcg111524186532.jpeg?v=1731398159&w=1920&h=1080"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/cnbc"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2024-11-12T10:30:16+0000"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2024-11-12T15:58:00+0000"
+    },
+    {
+     "property": "article:section",
+     "content": "AI Effect"
+    },
+    {
+     "property": "article:author",
+     "content": "https://www.facebook.com/CNBC"
+    },
+    {
+     "property": "article:opinion",
+     "content": "false"
+    },
+    {
+     "property": "article:tag",
+     "content": "Breaking News: Technology"
+    },
+    {
+     "property": "article:tag",
+     "content": "Alibaba Group Holding Ltd"
+    },
+    {
+     "property": "article:tag",
+     "content": "Alibaba Group Holding Ltd"
+    },
+    {
+     "property": "article:tag",
+     "content": "Market Insider"
+    },
+    {
+     "property": "article:tag",
+     "content": "Markets"
+    },
+    {
+     "property": "article:tag",
+     "content": "Stock markets"
+    },
+    {
+     "property": "article:tag",
+     "content": "Technology"
+    },
+    {
+     "property": "article:tag",
+     "content": "Beijing"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "description": "Chinese e-commerce giant Alibaba unveiled an artificial intelligence-powered search engine for small businesses in Europe and the Americas to source supplies.",
+     "speakable": {
+      "@type": "SpeakableSpecification",
+      "xpath": [
+       "/html/head/title",
+       "/html/head/meta[@name=\"description\"]/@content"
+      ],
+      "cssSelector": [
+       ".group p"
+      ]
+     },
+     "mainEntityOfPage": "https://www.cnbc.com/2024/11/12/alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps.html",
+     "url": "https://www.cnbc.com/2024/11/12/alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps.html",
+     "headline": "China's Alibaba releases AI search tool for small businesses in Europe and the Americas",
+     "dateCreated": "2024-11-12T10:30:16+0000",
+     "datePublished": "2024-11-12T10:30:16+0000",
+     "dateModified": "2024-11-12T15:58:00+0000",
+     "author": [
+      {
+       "@type": "Person",
+       "name": "Evelyn Cheng",
+       "url": "https://www.cnbc.com/evelyn-cheng/"
+      }
+     ],
+     "publisher": {
+      "@type": "NewsMediaOrganization",
+      "name": "CNBC",
+      "url": "https://www.cnbc.com/",
+      "foundingDate": "1989-04-17",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://sc.cnbcfm.com/applications/cnbc.com/staticcontent/img/cnbc-hdr-logo2.png",
+       "width": 378,
+       "height": 98
+      },
+      "sameAs": [
+       "https://www.facebook.com/cnbc",
+       "https://www.instagram.com/cnbc",
+       "https://www.linkedin.com/company/cnbc",
+       "https://twitter.com/cnbc",
+       "https://en.wikipedia.org/wiki/CNBC",
+       "https://www.youtube.com/cnbc"
+      ]
+     },
+     "articleSection": "Technology",
+     "keywords": [
+      "cnbc",
+      "Articles",
+      "Breaking News: Technology",
+      "Alibaba Group Holding Ltd",
+      "Market Insider",
+      "Markets",
+      "Stock markets",
+      "Technology",
+      "Beijing",
+      "China Economy",
+      "China Politics",
+      "China Markets",
+      "stocks",
+      "Finance",
+      "AI Age",
+      "AI Effect",
+      "source:tagname:CNBC Asia Source"
+     ],
+     "image": [
+      {
+       "@type": "ImageObject",
+       "url": "https://image.cnbcfm.com/api/v1/image/108061320-1731397990476-gettyimages-2178698620-vcg111524186532.jpeg?v=1731398159&w=1200&h=675",
+       "width": 1200,
+       "height": 675
+      },
+      {
+       "@type": "ImageObject",
+       "url": "https://image.cnbcfm.com/api/v1/image/108061320-1731397990476-gettyimages-2178698620-vcg111524186532.jpeg?v=1731398159&w=1200&h=1200",
+       "width": 1200,
+       "height": 1200
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "x-request-id": "02695437-deb3-49cb-b2e4-ef6336b287b9",
+    "etag": "W/\"e0d76-S5uObLe4KPSJLrZ6Koj58SsJqQk\"",
+    "content-encoding": "gzip",
+    "x-ttl": "5.000",
+    "x-varnish": "305440734",
+    "accept-ranges": "bytes",
+    "expires": "Sat, 17 Oct 2026 05:31:20 GMT",
+    "cache-control": "max-age=0, no-cache",
+    "pragma": "no-cache",
+    "date": "Sat, 17 Oct 2026 05:31:20 GMT",
+    "set-cookie": "AWSALB=mV16a3lGwEFVELYcjd4e/nmp3El1D9CCRpXoRCKRbUmbE4F3LOlhcD/Ia/BkAYNzgWgk9+wjMbqPOS7Ku2uYMFC5/kNNVGltbje7ACOYFJUU7H6qJ7Lbe6cIJnUS; Expires=Sat, 24 Oct 2026 05:31:19 GMT; Path=/\nAWSALBCORS=mV16a3lGwEFVELYcjd4e/nmp3El1D9CCRpXoRCKRbUmbE4F3LOlhcD/Ia/BkAYNzgWgk9+wjMbqPOS7Ku2uYMFC5/kNNVGltbje7ACOYFJUU7H6qJ7Lbe6cIJnUS; Expires=Sat, 24 Oct 2026 05:31:19 GMT; Path=/; SameSite=None; Secure",
+    "content-security-policy": "frame-ancestors 'self' *.cnbc.com https://cnbc.zendesk.com;",
+    "vary": "Accept-Encoding, User-Agent",
+    "akamai-grn": "0.72743617.1792215079.53dbc7b3",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-cnbc-com-2024-11-12-alibaba-launches-ai-search-for-small-biz-says-purchase-intent-jumps-html.md>"
+ },
+ {
+  "url": "https://www.nngroup.com/articles/chat-ux/",
+  "crawl": {
+   "loadedUrl": "https://www.nngroup.com/articles/chat-ux/",
+   "loadedTime": "2026-10-17T05:31:38.916Z",
+   "referrerUrl": "https://www.nngroup.com/articles/chat-ux/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 41449,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.nngroup.com/articles/chat-ux/",
+   "title": "The User Experience of Customer-Service Chat: 20 Guidelines - NN/G",
+   "description": "Chat is hard to find on many websites; it is often inefficiently designed and supplies too superficial information.",
+   "author": null,
+   "keywords": "chat, customer service, ecommerce, live chat",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Nielsen Norman Group"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.nngroup.com/articles/chat-ux/"
+    },
+    {
+     "property": "og:title",
+     "content": "The User Experience of Customer-Service Chat: 20 Guidelines"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:description",
+     "content": "Chat is hard to find on many websites; it is often inefficiently designed and supplies too superficial information."
+    },
+    {
+     "property": "og:image",
+     "content": "https://media.nngroup.com/media/articles/opengraph_images/chat-ux.png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "headline": "The User Experience of Customer-Service Chat: 20 Guidelines",
+     "image": [
+      "https://media.nngroup.com/media/articles/opengraph_images/chat-ux.png"
+     ],
+     "datePublished": "2019-01-13T17:00:00+0000",
+     "dateModified": "2021-05-07T17:53:37+0000",
+     "author": [
+      {
+       "@type": "Person",
+       "name": "Raluca Budiu",
+       "url": "https://www.nngroup.com/articles/author/raluca-budiu/"
+      }
+     ]
+    },
+    {
+     "@context": "https://schema.org",
+     "@type": "EducationalOrganization",
+     "@id": "https://www.nngroup.com/#organization",
+     "name": "Nielsen Norman Group",
+     "alternateName": [
+      "NN/g",
+      "NNG"
+     ],
+     "url": "https://www.nngroup.com",
+     "logo": {
+      "@type": "ImageObject",
+      "url": "https://media.nngroup.com/static/img/logo-817x388.png",
+      "width": 817,
+      "height": 388
+     },
+     "image": "https://media.nngroup.com/media/metadata/opengraph_images/Homepage_1.png",
+     "description": "Nielsen Norman Group (NN/g) is a world-leading user experience research, training, and consulting firm. Founded in 1998 by UX pioneers Jakob Nielsen and Don Norman, NN/g provides evidence-based UX guidance through live training courses, UX Certification programs, consulting services, and an extensive library of free research articles and reports.",
+     "sameAs": [
+      "https://en.wikipedia.org/wiki/Nielsen_Norman_Group",
+      "https://www.linkedin.com/company/nielsen-norman-group/",
+      "https://x.com/NNgroup",
+      "https://www.youtube.com/@NNgroup",
+      "https://www.instagram.com/nngux",
+      "https://www.facebook.com/nngux",
+      "https://open.spotify.com/show/3GFTfWpfv6m8nhKsPOlT8m",
+      "https://www.wikidata.org/wiki/Q7031613"
+     ],
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "48105 Warm Springs Blvd",
+      "addressLocality": "Fremont",
+      "addressRegion": "CA",
+      "postalCode": "94539",
+      "addressCountry": "US"
+     },
+     "email": "support@nngroup.com",
+     "telephone": "+1-415-682-0688",
+     "contactPoint": [
+      {
+       "@type": "ContactPoint",
+       "contactType": "Customer Service",
+       "telephone": "+1-415-682-0688",
+       "email": "support@nngroup.com",
+       "areaServed": "Worldwide",
+       "availableLanguage": "English"
+      },
+      {
+       "@type": "ContactPoint",
+       "contactType": "sales",
+       "telephone": "+1-415-685-4230",
+       "email": "training@nngroup.com",
+       "areaServed": "Worldwide",
+       "availableLanguage": "English"
+      }
+     ],
+     "naics": "611430",
+     "founder": [
+      {
+       "@type": "Person",
+       "name": "Jakob Nielsen",
+       "honorificPrefix": "Dr",
+       "url": "https://www.nngroup.com/people/jakob-nielsen/",
+       "sameAs": "https://en.wikipedia.org/wiki/Jakob_Nielsen_(usability_consultant)",
+       "jobTitle": "Co-Founder & Retired Principal"
+      },
+      {
+       "@type": "Person",
+       "name": "Don Norman",
+       "honorificPrefix": "Dr",
+       "url": "https://www.nngroup.com/people/don-norman/",
+       "sameAs": "https://en.wikipedia.org/wiki/Don_Norman",
+       "jobTitle": "Co-Founder & Board Member"
+      }
+     ],
+     "knowsAbout": [
+      "Usability Heuristics",
+      "User Experience Research",
+      "Interaction Design",
+      "UX Training",
+      "Information Architecture",
+      "Content Strategy",
+      "Design Thinking",
+      "Service Design",
+      "UX Management",
+      "Accessibility",
+      "UX Certification",
+      "Journey Mapping",
+      "User Research Methods"
+     ],
+     "foundingDate": "1998-08-08",
+     "numberOfEmployees": {
+      "@type": "QuantitativeValue",
+      "minValue": 51,
+      "maxValue": 200
+     },
+     "employee": [
+      {
+       "@type": "Person",
+       "name": "Kara Pernice",
+       "jobTitle": "President and CEO",
+       "url": "https://www.nngroup.com/people/kara-pernice/"
+      }
+     ],
+     "slogan": "World leaders in research-based user experience"
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:31:34 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "content-length": "41449",
+    "x-sucuri-id": "20012",
+    "content-encoding": "gzip",
+    "content-security-policy-report-only": "default-src 'self'; style-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; font-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; img-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com; connect-src 'self'; script-src 'self' https://s3.amazonaws.com/media.nngroup.com/ https://media.nngroup.com",
+    "cross-origin-opener-policy": "same-origin",
+    "etag": "W/\"b166b99b316294f883d6fa19f9ef1a33\"",
+    "last-modified": "Fri, 07 May 2021 17:53:37 GMT",
+    "nel": "{\"report_to\":\"heroku-nel\", \"response_headers\":[\"Via\"], \"max_age\":3600, \"success_fraction\":0.01, \"failure_fraction\":0.1}",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "report-to": "{\"group\":\"heroku-nel\", \"endpoints\":[{\"url\":\"https://nel.heroku.com/reports?s=%2BPfk9sHE9wmV1d8sf3V7tZwdz3YhrtUbMvcMgcFYIAg%3D\\u0026sid=929419e7-33ea-4e2f-85f0-7d8b7cd5cbd6\\u0026ts=1792215093\"}], \"max_age\":3600}",
+    "reporting-endpoints": "heroku-nel=\"https://nel.heroku.com/reports?s=%2BPfk9sHE9wmV1d8sf3V7tZwdz3YhrtUbMvcMgcFYIAg%3D&sid=929419e7-33ea-4e2f-85f0-7d8b7cd5cbd6&ts=1792215093\"",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "vary": "Cookie, Accept-Encoding",
+    "via": "1.1 heroku-router",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "server": "Sucuri/Cloudproxy",
+    "x-sucuri-cache": "MISS",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-nngroup-com-articles-chat-ux.md>"
+ },
+ {
+  "url": "https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials",
+  "crawl": {
+   "loadedUrl": "https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials",
+   "loadedTime": "2026-10-17T05:31:40.721Z",
+   "referrerUrl": "https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 29440,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials",
+   "title": "Interstitials and dialogs | Google Search Central  |  Documentation  |  Google for Developers",
+   "description": "Use banners instead of interstitials and large dialogs on your website.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Google for Developers"
+    },
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:title",
+     "content": "Interstitials and dialogs | Google Search Central  |  Documentation  |  Google for Developers"
+    },
+    {
+     "property": "og:description",
+     "content": "Use banners instead of interstitials and large dialogs on your website."
+    },
+    {
+     "property": "og:url",
+     "content": "https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials"
+    },
+    {
+     "property": "og:image",
+     "content": "https://developers.google.com/static/search/images/home-social-share-lockup.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "675"
+    },
+    {
+     "property": "og:locale",
+     "content": "en"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Search Central",
+       "item": "https://developers.google.com/search"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Documentation",
+       "item": "https://developers.google.com/search/docs"
+      },
+      {
+       "@type": "ListItem",
+       "position": 3,
+       "name": "Interstitials and dialogs | Google Search Central",
+       "item": "https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "last-modified": "Wed, 10 Dec 2025 18:38:05 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "content-security-policy": "base-uri 'self'; object-src 'none'; script-src 'strict-dynamic' 'unsafe-inline' https: http: 'nonce-Z0q4HVr3kKycj6g1Gzmp2oXnTFmOQW' 'unsafe-eval'; frame-ancestors 'self' https://codeassist.google.com https://code-assist-free-tier.corp.google.com; report-uri https://csp.withgoogle.com/csp/devsite/v2",
+    "strict-transport-security": "max-age=63072000; includeSubdomains; preload",
+    "x-xss-protection": "0",
+    "x-content-type-options": "nosniff",
+    "cache-control": "no-cache, must-revalidate",
+    "expires": "0",
+    "pragma": "no-cache",
+    "content-encoding": "gzip",
+    "x-cloud-trace-context": "16452e255c94449954a558207ced3e42",
+    "vary": "Accept-Encoding",
+    "date": "Sat, 17 Oct 2026 05:31:33 GMT",
+    "server": "Google Frontend",
+    "content-length": "29440",
+    "alt-svc": "h3=\":443\"; ma=2592000, h3-29=\":443\"; ma=2592000",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/developers-google-com-search-docs-appearance-avoid-intrusive-interstitials.md>"
+ },
+ {
+  "url": "https://www.w3.org/WAI/WCAG22/Understanding/interruptions.html",
+  "crawl": {
+   "loadedUrl": "https://www.w3.org/WAI/WCAG22/Understanding/interruptions.html",
+   "loadedTime": "2026-10-17T05:31:53.326Z",
+   "referrerUrl": "https://www.w3.org/WAI/WCAG22/Understanding/interruptions.html",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.w3.org/WAI/WCAG22/Understanding/interruptions.html",
+   "title": "Understanding Success Criterion 2.2.4: Interruptions | WAI | W3C",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:31:52 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "last-modified": "Thu, 03 Sep 2026 15:17:59 GMT",
+    "vary": "Accept-Encoding",
+    "cf-cache-status": "HIT",
+    "cache-control": "public, s-maxage=2592001",
+    "x-backend": "www-mirrors",
+    "x-request-id": "a4a83b95e9240acf",
+    "strict-transport-security": "max-age=15552000; includeSubdomains; preload",
+    "content-security-policy": "frame-ancestors 'self' https://cms.w3.org/ https://cms-dev.w3.org/; upgrade-insecure-requests",
+    "x-content-type-options": "nosniff",
+    "set-cookie": "__cf_bm=3aiESeNZ1lI2H.CgeSYIkuNtHdCZ8cJX6MzFEv4S7Hw-1792215112.6721892-1.0.1.1-7Kloz6vSOh4CjQrs34fQKGvusFCniUeb2mNfw272P6IuxRsNcMfkWZnhIvcE4CDSXYp68vc73gJJ8QHX0Zq2voEqr4OD1VTPqwD3RnJfbNps2R0C9mCYjL0IcwQNiHRB; HttpOnly; SameSite=None; Secure; Path=/; Domain=w3.org; Expires=Sat, 17 Oct 2026 06:01:52 GMT",
+    "age": "216916",
+    "content-encoding": "br",
+    "server": "cloudflare",
+    "cf-ray": "a4bceb663cf4d8db-DFW",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-w3-org-WAI-WCAG22-Understanding-interruptions-html.md>"
+ },
+ {
+  "url": "https://www.w3.org/WAI/WCAG22/Understanding/on-focus.html",
+  "crawl": {
+   "loadedUrl": "https://www.w3.org/WAI/WCAG22/Understanding/on-focus.html",
+   "loadedTime": "2026-10-17T05:31:53.509Z",
+   "referrerUrl": "https://www.w3.org/WAI/WCAG22/Understanding/on-focus.html",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.w3.org/WAI/WCAG22/Understanding/on-focus.html",
+   "title": "Understanding Success Criterion 3.2.1: On Focus | WAI | W3C",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:31:52 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "last-modified": "Thu, 03 Sep 2026 15:17:59 GMT",
+    "vary": "Accept-Encoding",
+    "cf-cache-status": "HIT",
+    "cache-control": "public, s-maxage=2592001",
+    "x-backend": "www-mirrors",
+    "x-request-id": "a4a835b4af5eabb1",
+    "strict-transport-security": "max-age=15552000; includeSubdomains; preload",
+    "content-security-policy": "frame-ancestors 'self' https://cms.w3.org/ https://cms-dev.w3.org/; upgrade-insecure-requests",
+    "x-content-type-options": "nosniff",
+    "set-cookie": "__cf_bm=e.7EAKTzhT6c7i.lnpG2jnABZzAzHOoAcKn8tUCCdNo-1792215112.6695437-1.0.1.1-VoYURgO5gUls9FoT7D6nrr7HCTeXUtx.ru_kiEpDX2cP7MM5Mhw08ysagFUoYw5J8VkVlsw5epVE52AFxpgyVgWVNykqkOPBJoFCPBxGpijnT896vtmZWyYCwTsL2vGp; HttpOnly; SameSite=None; Secure; Path=/; Domain=w3.org; Expires=Sat, 17 Oct 2026 06:01:52 GMT",
+    "age": "217157",
+    "content-encoding": "br",
+    "server": "cloudflare",
+    "cf-ray": "a4bceb662e56c3bc-DFW",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-w3-org-WAI-WCAG22-Understanding-on-focus-html.md>"
+ }
+]
