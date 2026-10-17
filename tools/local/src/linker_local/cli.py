@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -111,6 +112,17 @@ def login(args: argparse.Namespace) -> int:
     return 0
 
 
+def snapshot_taken(instance: Instance) -> str:
+    """When the live snapshot the instance holds was taken, "-" without one (#252)."""
+    try:
+        note = json.loads(instance.snapshot_file.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return "-"
+    taken = str(note.get("taken", "")) if isinstance(note, dict) else ""
+    # The manifest's ISO time, to the minute, in UTC: 2026-10-17T11:28:22+00:00.
+    return taken[:16].replace("T", " ") + " UTC" if taken else "-"
+
+
 def status(args: argparse.Namespace) -> int:
     instances = Registry(home()).all()
     if not instances:
@@ -125,6 +137,7 @@ def status(args: argparse.Namespace) -> int:
             "services",
             "WordPress",
             "Woo",
+            "snapshot",
             "checkout",
         )
     ]
@@ -140,6 +153,7 @@ def status(args: argparse.Namespace) -> int:
                 ", ".join(services.running(instance)) or "-",
                 found["WordPress"] or "-",
                 found["WooCommerce"] or "-",
+                snapshot_taken(instance),
                 str(checkout) if checkout else "-",
             )
         )

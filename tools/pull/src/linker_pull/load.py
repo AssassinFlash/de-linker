@@ -18,7 +18,8 @@ database's values (the local stack runs Redis).
 The snapshot's files — plugins, themes, uploads, and with live_code the live
 plugins and must-use plugins — are installed by linker-local's
 snapshot.install, the one implementation of that rule. Without live_code the
-plugins the instance had plus the licensed ones stay active; with it the live
+plugins the instance had (ours from the checkout) plus every other plugin live
+runs stay active, the third-party ones at the live version; with it the live
 list stays, so the instance is a copy of the live site. Code Snippets stays
 off either way: its table is data here. The instance must keep mail and
 outgoing requests on this Mac (linker-local's isolation mu-plugin does).
@@ -38,6 +39,11 @@ plugin's rule, and it goes when #18 deletes the old plugins.
 The users afterwards are the snapshot's: staff accounts keep their logins,
 so a login link for one of them (`just login <name> --user <login>`) opens
 wp-admin; the result lists those logins.
+
+Then it applies the local licences (licenses.py: SEOPress PRO's key from the
+owner's file, LiveCanvas's site apikey and SEOPress's status from live), so
+wp-admin opens without activation banners, and writes snapshot.json beside the
+instance: which snapshot it holds and when that was taken.
 
 Finally it compares the instance with the snapshot's manifest (published
 products, attachments, the files of the attachments, leftovers of the live
@@ -59,6 +65,7 @@ import subprocess
 import tempfile
 from collections.abc import Callable, Iterator
 from dataclasses import replace
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -69,9 +76,9 @@ from linker_local.instance import Instance, check_name
 from linker_local.instance import home as local_home
 from linker_local.registry import Registry
 
-from linker_pull import live, manifest
+from linker_pull import licenses, live, manifest
 from linker_pull.anonymize import TABLE_PREFIX
-from linker_pull.snapshot import DATABASE, PLUGINS
+from linker_pull.snapshot import DATABASE
 
 Say = Callable[[str], None]
 
@@ -213,11 +220,13 @@ def load(
     if live_code:
         wanted = live_active
     else:
-        licensed = {
-            path.name for path in (snapshot / PLUGINS).iterdir() if path.is_dir()
-        }
+        # Ours stay the checkout's (before); every other plugin live runs —
+        # the licensed ones and the third-party ones snapshot.install brought
+        # at the live version — runs here too (#252).
         wanted = before + [
-            entry for entry in live_active if entry.split("/")[0] in licensed
+            entry
+            for entry in live_active
+            if not entry.split("/")[0].startswith(local_snapshot.OURS)
         ]
     active = [
         entry
@@ -247,7 +256,37 @@ def load(
         if login
     ]
     write_admin_note(target.admin_file, target.name, target.url, staff)
-    return verify(wp, target, data["database"]["posts"], german)
+    keys = licenses.apply(wp)
+    for product, outcome in keys.items():
+        say(f"licence {product}: {outcome}")
+    write_snapshot_note(target, snapshot, data)
+    result = verify(wp, target, data["database"]["posts"], german)
+    result["licences"] = keys
+    result["snapshot"] = snapshot_note(snapshot, data)
+    # A licence left out brings the activation banners back (#252): not ok.
+    result["ok"] = bool(result["ok"]) and all(
+        outcome.startswith("applied") for outcome in keys.values()
+    )
+    return result
+
+
+def snapshot_note(snapshot: Path, data: dict[str, Any]) -> dict[str, str]:
+    """Which snapshot an instance holds and when it was taken (manifest `created`, UTC)."""
+    return {"name": snapshot.name, "taken": str(data["created"])}
+
+
+def write_snapshot_note(target: Instance, snapshot: Path, data: dict[str, Any]) -> None:
+    """Record the loaded snapshot beside the instance, where `just status` reads it.
+
+    A session can then tell how far its local copy trails live (#252: the
+    snapshot every instance held on 2026-10-17 was two days old, and nothing
+    said so).
+    """
+    note = {
+        **snapshot_note(snapshot, data),
+        "loaded": datetime.now(UTC).isoformat(timespec="seconds"),
+    }
+    target.snapshot_file.write_text(json.dumps(note, indent=2) + "\n")
 
 
 def write_admin_note(path: Path, name: str, url: str, staff: list[str]) -> None:
@@ -608,7 +647,55 @@ def _active_plugins(wp: WpCli) -> list[str]:
 
 
 def _dump(path: Path) -> Iterator[bytes]:
-    """The snapshot's SQL as it is: MySQL 9.6's client imports MariaDB's dump,
-    first line ("enable the sandbox mode") included (tests/test_load.py)."""
+    """The snapshot's SQL for MySQL 9.6: MariaDB's dump as it is, first line
+    ("enable the sandbox mode") included (tests/test_load.py), less the one
+    MariaDB-only clause the live tables hold (mysql_compatible)."""
     with gzip.open(path, "rb") as dump:
-        yield from dump
+        yield from mysql_compatible(dump)
+
+
+# MariaDB 11.7+'s vector index, as mysqldump writes it into a CREATE TABLE
+# (live wp_genie_chunks: VECTOR KEY `embedding` (`embedding`) `DISTANCE`='cosine').
+VECTOR_KEY = re.compile(rb"^\s*VECTOR KEY ")
+# A VECTOR(n) column definition (live wp_genie_chunks: `embedding` vector(3072)).
+VECTOR_COLUMN = re.compile(rb"^(\s*`[^`]+` )vector\((\d+)\)", re.IGNORECASE)
+# A vector component is a float32 (MariaDB VECTOR and MySQL VECTOR alike).
+FLOAT32_BYTES = 4
+
+
+def mysql_compatible(lines: Iterator[bytes]) -> Iterator[bytes]:
+    """The dump with MariaDB's vectors in a form local PHP and MySQL can read.
+
+    Two things, measured 2026-10-17 on the first snapshot that held the
+    knowledge index (live wp_genie_chunks, 33,172 rows):
+
+    - MySQL 9.6 rejects MariaDB's vector index clause with error 1064, and the
+      whole import with it. The clause goes; a clause that closed the key list
+      takes the comma before it along. The table keeps its other keys,
+      FULLTEXT among them.
+    - MySQL takes a VECTOR(3072) column and the 0x… values, but PHP 8.3's
+      mysqlnd cannot read the type: one `SELECT *` on the table leaves the
+      connection "out of sync", and every later query of that request fails
+      (`wp search-replace` then skipped every table after it and rewrote no
+      address). The column becomes VARBINARY of the same bytes: MySQL has no
+      vector distance function either, so locally the search takes the
+      FULLTEXT path (docs/specs/10-knowledge-index.md) and the bytes stay
+      as they are.
+    """
+    held: bytes | None = None
+    for line in lines:
+        if VECTOR_KEY.match(line):
+            if held is not None and not line.rstrip().endswith(b","):
+                stripped = held.rstrip()
+                if stripped.endswith(b","):
+                    held = stripped[:-1] + held[len(stripped) :]
+            continue
+        column = VECTOR_COLUMN.match(line)
+        if column:
+            size = int(column.group(2)) * FLOAT32_BYTES
+            line = column.group(1) + b"varbinary(%d)" % size + line[column.end() :]
+        if held is not None:
+            yield held
+        held = line
+    if held is not None:
+        yield held

@@ -57,6 +57,18 @@ linker_local := "uv run --locked --project tools/local linker-local"
 up name *options: php-install
     PHP={{ php }} {{ linker_local }} up "$@"
 
+# One command from live to a local instance (#252, docs/specs/6-live-pull.md):
+# create or restart <name> with this checkout, take a fresh snapshot of
+# de-linker.com and load it — licences applied, the snapshot's time in
+# `just status`. Extra options go to `just pull load` (e.g. --live-code).
+[positional-arguments]
+sync name *options:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just up "$1"
+    just pull
+    just pull load "$@" latest
+
 # Stop the instance's server and services.
 [positional-arguments]
 down name:

@@ -1,6 +1,6 @@
 {
 	"schema_version": 1,
-	"_source": "The previous site's legacy 301 map, extracted 2026-10-11: 255 retired product slugs, 31 retired category slugs, 18 retired page paths and the retired /shop/ archive, plus the retired /checkout/ slug rule (its commerce pages code). Targets are the routes the live site served them to; /shop/ and /product-category/<slug>/ are resolved at dispatch time (WooCommerce and the term) — /shop/ as a target is the shop page's own address, wherever the site keeps it (measured 2026-10-11: /shop/ answers /products/). The self-map /solution-configurator/ → /solution-configurator/ (2026-10-16) sends the German twin's pre-rename address /de/solution-configurator/ to the twin's own /de/loesungskonfigurator/ while the English page answers its own address (the dispatch's same-address guard).",
+	"_source": "The previous site's legacy 301 map, extracted 2026-10-11: 255 retired product slugs, 31 retired category slugs, 18 retired page paths and the retired /shop/ archive, plus the retired /checkout/ slug rule (its commerce pages code). Targets are the routes the live site served them to; /shop/ and /product-category/<slug>/ are resolved at dispatch time (WooCommerce and the term) — /shop/ as a target is the shop page's own address, wherever the site keeps it (measured 2026-10-11: /shop/ answers /products/). The self-map /solution-configurator/ → /solution-configurator/ (2026-10-16) sends the German twin's pre-rename address /de/solution-configurator/ to the twin's own /de/loesungskonfigurator/ while the English page answers its own address (the dispatch's same-address guard). Six product slugs joined on 2026-10-17 (#252) from SEOPress's deletion notices, the only ones of its 81 that still answered 404 and had a shelf to go to: the five three-phase TerraVolt hybrids beside their single-phase siblings (inverters) and GoodWe's LX U5.4-L beside the other Lynx Home batteries (home storage).",
 	"products": {
 		"pylontech-force-h2-system-7-1": "/product-category/home-storage/",
 		"pylontech-force-h2-system-10-6": "/product-category/home-storage/",
@@ -232,6 +232,12 @@
 		"terravolt-h3": "/product-category/inverters/",
 		"terravolt-h5": "/product-category/inverters/",
 		"terravolt-h6": "/product-category/inverters/",
+		"terravolt-h8-3p": "/product-category/inverters/",
+		"terravolt-h10-3p": "/product-category/inverters/",
+		"terravolt-h12-3p": "/product-category/inverters/",
+		"terravolt-h15-3p": "/product-category/inverters/",
+		"terravolt-h20-3p": "/product-category/inverters/",
+		"goodwe-lx-u5-4-l": "/product-category/home-storage/",
 		"terravolt-link-100": "/product-category/ems-monitoring/",
 		"terravolt-link-lite": "/product-category/ems-monitoring/",
 		"terravolt-link-pro": "/product-category/ems-monitoring/",

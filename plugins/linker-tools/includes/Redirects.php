@@ -17,8 +17,8 @@ use WP_Term;
  * retired (#12: five retired_tools, no advisor addresses), and the addresses
  * the site before it retired (data/legacy-redirects.json, extracted
  * 2026-10-11: 255 product slugs, 31 category slugs, 18 retired page paths,
- * the /shop/ archive and the retired /checkout/ slug) — to what answers them
- * today.
+ * the /shop/ archive and the retired /checkout/ slug; six more product slugs
+ * from SEOPress's deletion notices, 2026-10-17) — to what answers them today.
  *
  * The maps are data, not code: the JSON file holds them, this class only
  * dispatches. Product and category requests are read from WordPress's own

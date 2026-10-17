@@ -205,11 +205,18 @@ def refresh(
     database takes its own instance."""
 
     installed = versions(instance)
-    if installed != PINNED:
+    # A loaded live snapshot brings the live site's plugins at the live
+    # version (snapshot.install, #252); only WordPress itself stays pinned.
+    pinned = (
+        {"WordPress": PINNED["WordPress"]}
+        if instance.snapshot_file.is_file()
+        else PINNED
+    )
+    if any(installed[name] != version for name, version in pinned.items()):
         drift = ", ".join(
-            f"{name} {installed[name]} (pinned {PINNED[name]})"
-            for name in PINNED
-            if installed[name] != PINNED[name]
+            f"{name} {installed[name]} (pinned {version})"
+            for name, version in pinned.items()
+            if installed[name] != version
         )
         say(
             f"runs {drift}: `just reset {instance.name}` rebuilds it with the pinned versions"

@@ -41,8 +41,8 @@
 做法：
 - 分支 feat/<票号>-<短名>，从最新 origin/main 开。AGENTS.md §5："本轮发现的问题本轮修，不开 follow-up，不留 TODO"：你改到的代码、你的票范围内、或与它直接相关的问题，在本分支修掉。只有属于另一张已开的票、而且改了会与那张票冲突的，才记到那张票上并在 PR 里写明。
 - 测试要能反复跑：集成测试自己保存并还原它动过的选项和数据，连跑多次结果一样，不需要"跑前手动清表"。
-- 本地栈：每张票用自己的实例，名字用票号，例如 #233 用 g233：先 just up g233，再 just pull load g233 latest（装入最新的线上快照），本地 Genie 用 just serve g233，进后台用 just login g233 --user <快照里的员工登录名>。地址看 just status。不要用别的会话的实例，也不要动 m4check（业主看原型用）。不要在没装快照的裸实例上做任何 UI 工作。
-- #252 合并之前，最新快照停在 10-15，而且本地缺线上编译好的样式：服务端逻辑和评测照做；界面验收截图等 #252 合并后重新拉快照再拍。
+- 本地栈：每张票用自己的实例，名字用票号，例如 #233 用 g233：just sync g233（一条命令：建或重启实例、拉当前线上快照、装入并施加本地许可；just status 的 snapshot 列是快照时间），本地 Genie 用 just serve g233，进后台用 just login g233 --user <快照里的员工登录名>。地址看 just status。不要用别的会话的实例，也不要动 m4check（业主看原型用）。不要在没装快照的裸实例上做任何 UI 工作。
+- 界面验收截图前先 just sync 自己的实例，让本地是当天的线上。本地的 WindPress 样式是线上编译好的那份：分支新增了 Tailwind 类时，跑 just windpress-compile <实例> 重新编译，否则新类在本地没有样式。
 - 代码约定见 AGENTS.md §4：PHP 一类一文件 + PHPStan 8 + WPCS；Python 用 uv / ruff / mypy / pytest；前端用 React + TS，样式走 WindPress 管线，不在站点页面加插件 CSS。每个数字与阈值写来源注释。
 - 模型只许用 AGENTS.md §5 的四条通道：Genie 对话与升级判分 = deepseek-flash（仅官方 api.deepseek.com）；Jev = typesafe/jev-1.13（仅 OpenRouter /api/v1/systemone）；向量 = gemini-embedding-2（仅 OpenRouter）。OpenRouter 失败必须重试并显式报错，禁止静默换模型或静默降级。
 - 密钥只从环境或已有的配置文件读（本机 ~/.config/terravolt-builder/*.env，VPS /etc/linker-genie.env），永不打印、不写进仓库、提交、日志或 PR。

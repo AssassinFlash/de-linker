@@ -47,7 +47,14 @@ READ_ONLY = frozenset(
         ("plugin", "list"),
         ("theme", "list"),
         ("user", "list"),
+        ("option", "get"),
     }
+)
+# The only options `option get` may read: the activation state a local
+# instance reuses (licenses.py, #252). Everything else of wp_options reaches
+# this Mac through the pseudonymized dump.
+LIVE_OPTIONS = frozenset(
+    {"lc_apikey", "seopress_pro_license_status", "seopress_pro_license_expiry"}
 )
 # Every read-only command runs with these global WP-CLI flags
 # (Runner.php reads both): none of the commands needs plugin or theme code,
@@ -98,6 +105,10 @@ def wp_command(args: Sequence[str]) -> str:
     """The shell command `wp(*args)` runs on the host; the only place it is built."""
     if tuple(args[:2]) not in READ_ONLY:
         raise LiveError(f"wp {' '.join(args)} is not one of the read-only commands")
+    if tuple(args[:2]) == ("option", "get") and (
+        len(args) != 3 or args[2] not in LIVE_OPTIONS
+    ):
+        raise LiveError(f"wp {' '.join(args)} reads an option outside LIVE_OPTIONS")
     flags = (
         *SKIP_LOADING,
         *(("--skip-update-check",) if tuple(args[:2]) in UPDATE_CHECKING else ()),
@@ -116,6 +127,24 @@ def wp(*args: str) -> str:
     if result.returncode != 0:
         raise LiveError(f"wp {' '.join(args)}: {result.stderr.strip()}")
     return result.stdout
+
+
+def option(name: str) -> str:
+    """A LIVE_OPTIONS option's value on the host ("" when it is not set).
+
+    WP-CLI answers an unset option with exit 1 and no output; that is an
+    empty value here, any other failure raises. The value is returned, never
+    printed or put into an error.
+    """
+    remote = wp_command(("option", "get", name))
+    result = subprocess.run(
+        ssh_command(remote), capture_output=True, text=True, check=False
+    )
+    if result.returncode != 0:
+        if not result.stdout and "Could not get" in result.stderr:
+            return ""
+        raise LiveError(f"wp option get {name}: exit {result.returncode}")
+    return result.stdout.rstrip("\n")
 
 
 def wp_json(*args: str) -> object:

@@ -23,6 +23,12 @@
     - 全库：密码哈希、可识别形态的密钥、Stripe 对象号删除；任何表的序列化/JSON 值里，键名以凭据词结尾（`api_key`、`secret`、`token`、`password`、`pass`、`license_key`、`private_key`，可带 `_encrypted`）且不是空值/数字/yes-no 的值置空。
     - 写完后扫描文件本身：密码哈希前缀、应用密码、密钥形态与按名存放的凭据（JSON、序列化、PHP 代码）、Stripe 对象号、明文或 URL 编码的邮箱；不合格即删除并失败。
   - `load <name> <snapshot> [--port N] [--live-code]`：实例是 linker-local 的——按名字在它的登记表（`instances.toml`）里解析（`just up <name>` 建立并登记；名字过 `check_name`；`--port` 覆盖写进数据库的地址），数据库 `linker_<name>`，`wp-config.php` 必须指向它。装入前先拒三样：实例的 WordPress/WooCommerce 版本与快照的（manifest 的 `source.wordpress` 与 `site/plugins.json`）不一致；`db.sql.gz` 不是可读的 gzip 或 sha256 与 manifest 不符；`--live-code` 时实例的插件链接到某个检出。然后才清空并导入 `wp_` 表（MariaDB 的 dump 原样导入，本机 MySQL 9.6 客户端接受其首行）、`wp search-replace` 把 `https://de-linker.com` 的原样/JSON 转义/URL 编码三种写法换成 `http://127.0.0.1:<port>`（含序列化）、立即 `wp cache flush`（本地栈启用 Redis 对象缓存，旧值已失效）；文件全部用 #5 的 `linker_local.snapshot.install` 装（`--live-code` 时传 `live_code=True`，连 `live/` 两棵树也由它装）——插件与主题目录整体替换同名项，uploads 合并进去；不传 `--live-code` 时启用实例原有插件加许可插件，传时沿用线上启用列表；Code Snippets 始终不启用；`wp rewrite flush`；最后对照 manifest 报告已发布商品数、附件数、缺失附件文件、残留线上地址，不一致即失败，并列出员工登录名（装入后用户来自快照，`just login <name> --user <员工登录名>` 进后台）。装入同时改写实例目录的 `admin.txt`：快照把每个账号口令换成不可逆占位，`provision()` 写下的口令不再能登录，文件改为说明这一点并列出仍在的员工登录名。
+  - 装入的三项补充（#252）：
+    - **第三方插件跟线上**：不传 `--live-code` 时，快照 `live/plugins/` 里非 `linker-*` 的插件（User Switching、Polylang、ACF Pro、Classic Editor、Site Kit、Redis Object Cache、WooCommerce…）也由 `snapshot.install` 装入、按线上版本替换同名目录，并按线上启用列表启用；`linker-*` 仍来自检出，must-use 插件仍只在 `--live-code` 时装。实例装过快照后，`up` 只对 WordPress 核心报版本漂移（插件版本跟线上走）。
+    - **MariaDB 向量表**：`mysql_compatible` 在导入流上去掉 MariaDB 的 `VECTOR KEY … DISTANCE=` 子句（MySQL 9.6 报 1064），并把 `VECTOR(n)` 列改成同字节数的 `VARBINARY(4n)`（PHP 8.3 的 mysqlnd 读不了 MySQL 的 VECTOR 类型，一次 `SELECT *` 就让整个连接失步）；其余字节原样。
+    - **本地许可**：`licenses.apply` 写入 SEOPress PRO 的密钥（业主文件 `~/.config/terravolt-builder/seopress.env`）与线上的状态和到期日、LiveCanvas 的站点 apikey（经 `live.option` 只读取自线上，白名单 `LIVE_OPTIONS`）；值只经标准输入进 `wp option update`，不进参数、日志或结果。缺任何一项，结果的 `ok` 为 false 并写明原因。
+    - **拉取时间**：实例目录写 `snapshot.json`（快照名、`taken` = manifest 的 `created`、`loaded`），`just status` 的 snapshot 列显示它。
+  - `just sync <name> [load 的选项]`（根 justfile）：`just up <name>` → `just pull` → `just pull load <name> latest`，一条命令从线上到一个（新的或已有的）实例。
   - `diff <旧> <新>`：两份快照的增量清单（文件增/删/改、表与文章计数的变化）；`scan <快照>`：重扫 SQL；`check-urls <快照> --base <url>`：逐个请求快照里线上 sitemap 的地址。
 - 不进仓库：`~/de-linker-data/` 在仓库之外；`.gitignore` 另挡 `*.sql.gz` 与 `de-linker-data/`。仓库里只有脚本、manifest 的 schema 与合成数据的测试夹具。
 
@@ -35,6 +41,7 @@
 - [ ] 两次 `snapshot` 的 manifest 可比对（增量清单）。
 
 ## 变更记录
+- 2026-10-17（#252）：一条命令 `just sync <name>`；装入带上线上第三方插件（线上 10-17 有 User Switching 1.12.2、Polylang 3.8.11，本地实例没有前者、后者停在 3.8.10）；装入后施加本地许可（LiveCanvas 横幅只看 `lc_apikey`：本地复用线上站点 apikey 而非用许可码另发 staging apikey——后者会把每个本地端口登记到 LiveCanvas 的更新服务，且本地隔离层本就挡住该 apikey 能发出的一切请求；SEOPress PRO 在"状态 valid 而无到期日"时每个后台页面都向商店校验，故到期日一并照线上写入）；`snapshot.json` 与 `just status` 的 snapshot 列。根因证据：线上 2026-10-16 08:18 建了知识库表 `wp_genie_*`（`wp_genie_chunks` 33,172 行，含 `VECTOR KEY … DISTANCE='cosine'`），此后任何快照在本地都 1064 失败，最新可装快照停在 10-15，其中 WindPress 编译缓存是 10-15 07:30 的（线上 10-16 13:58 重编译后才有 `.linker-gate-col` 等类），本地认证/门禁/待审页因此成了无样式纯文字。修后装入 2026-10-17 11:28 UTC 的快照：营销/产品/账户/注册/Proforma 门禁页 EN 与 DE 共 9 页 1440 本地对线上像素差 0（`docs/acceptance/2026-10-17/252/`）。
 - 2026-10-09（#5）：快照目录写成 `plugins/<slug>/`、`themes/<slug>/`、`uploads/` 三部分；`load` 装这些文件用 #5 的 `linker_local.snapshot.install`（`tools/local`，`just up <name> --snapshot <dir>` 用的也是它），自己只做导入 SQL、`search-replace`、清缓存，不再写第二份装文件的代码。线上主题 `picostrap5`、`picostrap5-child-base` 要进快照，否则本地首页对不上线上。线上数据库是 MariaDB 11.8.9，`wp db export` 的第一行是 MySQL 客户端不认的沙箱注释，导入本地 MySQL 前去掉（`docs/local-stack.md`）。
 - 2026-10-09（#6，实测修正 #5 的假设）：MySQL 9.6 的客户端把 MariaDB dump 的沙箱首行当普通注释接受，线上 dump 原样导入、不去掉首行（tests/test_load.py 用真 MySQL + 真 dump 验证；`docs/local-stack.md` 末句同步改写）。
 - 2026-10-09（#5）：`load` 先比对快照 manifest 里的 `wp core version` 与 WooCommerce 版本和实例装的是否一致，不一致就拒绝装入：线上会自动更新（WooCommerce 2026-10-09 从 11.1.0 升到 11.2.0），把新版本迁移过的库装进旧代码是降级，没有迁移路径。#5 在干净安装上无法验收的几项，在装入后验：`/products/`、`/proforma-request/` 返回 200，本地与线上首页对照截图重做一次；`/de/` 归 #9。
