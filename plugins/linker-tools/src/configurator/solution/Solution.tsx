@@ -7,7 +7,7 @@
 /**
  * WordPress dependencies
  */
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, _n, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -96,15 +96,20 @@ function cardStatus( status: AddStatus | undefined ): {
 		case 'unverified':
 			return {
 				state: 'unverified',
-				text: __(
+				text: _x(
 					'Sent, but the draft does not show it yet. Please check.',
+					'configurator',
 					'linker-tools'
 				),
 			};
 		case 'retry':
 			return {
 				state: 'retry',
-				text: __( 'Not added. Try again.', 'linker-tools' ),
+				text: _x(
+					'Not added. Try again.',
+					'configurator',
+					'linker-tools'
+				),
 			};
 		default:
 			return { state: 'idle', text: '' };
@@ -348,7 +353,11 @@ export function Solution( props: SolutionProps ) {
 						: null }
 					{ props.saveState === 'saved' ? (
 						<>
-							{ __( 'Saved to your account.', 'linker-tools' ) }{ ' ' }
+							{ _x(
+								'Saved to your account.',
+								'configurator',
+								'linker-tools'
+							) }{ ' ' }
 							{ props.savedUrl ? (
 								<a href={ props.savedUrl }>
 									{ __(

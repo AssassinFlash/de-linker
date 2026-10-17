@@ -16,7 +16,8 @@ import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import german from '../../languages/linker-tools-de_DE_formal-linker-tools-configurator.json';
+import german from '../../languages/linker-tools-de_DE_formal-ff47dbd6ce1b77b210b406f2367c7ea7.json';
+import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
 import { fakeEngine, fakeStore } from '../../tests/configurator/fakes';
 import { saveSolution } from './api/solutions';
 import { App } from './App';
@@ -261,6 +262,55 @@ test( 'German wording comes from the translation file', async () => {
 	).toBeInTheDocument();
 	expect( langs ).toEqual( [ 'de' ] );
 } );
+
+test.each( [
+	[
+		'unverified',
+		'Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf.',
+	],
+	[ 'retry', 'Nicht hinzugefügt. Versuchen Sie es erneut.' ],
+] as const )(
+	'German configurator keeps its wording alongside Genie (%s)',
+	async ( status, wording ) => {
+		setLocaleData( german.locale_data.messages, 'linker-tools' );
+		setLocaleData( germanGenie.locale_data.messages, 'linker-tools' );
+		vi.mocked( saveSolution ).mockResolvedValue( {
+			id: 61,
+			url: '/de/mein-konto/solutions/61/',
+		} );
+		const { engine } = fakeEngine( { locale: 'de' } );
+		render(
+			<App
+				config={ config( 'de' ) }
+				engine={ engine }
+				store={ fakeStore( status ).store }
+			/>
+		);
+		fill( /Postleitzahl des Standorts/, '80538' );
+		fill( /Jahresverbrauch des Haushalts/, '5000' );
+		fill( /PV-Leistung/, '10' );
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'System berechnen' } )
+		);
+		const add = await screen.findByRole( 'button', {
+			name: 'Alles zum Lösungsentwurf hinzufügen',
+		} );
+		await act( async () => {
+			fireEvent.click( add );
+		} );
+		expect(
+			( await screen.findAllByText( wording ) ).length
+		).toBeGreaterThan( 0 );
+		await act( async () => {
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Lösung speichern' } )
+			);
+		} );
+		expect(
+			await screen.findByText( /In Ihrem Konto gespeichert\./ )
+		).toBeInTheDocument();
+	}
+);
 
 test( 'a saved solution names the account and links to it', async () => {
 	const save = vi.mocked( saveSolution );

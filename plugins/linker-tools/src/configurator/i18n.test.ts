@@ -15,7 +15,7 @@ import { expect, test } from 'vitest';
 /**
  * Internal dependencies
  */
-import german from '../../languages/linker-tools-de_DE_formal-linker-tools-configurator.json';
+import german from '../../languages/linker-tools-de_DE_formal-ff47dbd6ce1b77b210b406f2367c7ea7.json';
 import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
 
 // A string literal in single or double quotes; prettier picks double quotes
@@ -27,6 +27,10 @@ const SINGLE = new RegExp(
 );
 const PLURAL = new RegExp(
 	String.raw`\b_n\(\s*${ STRING }\s*,\s*${ STRING }\s*,`,
+	'g'
+);
+const CONTEXT = new RegExp(
+	String.raw`\b_x\(\s*${ STRING }\s*,\s*${ STRING }\s*,\s*'linker-tools'`,
 	'g'
 );
 
@@ -59,6 +63,12 @@ function used( dirs: string[] ): Map< string, number > {
 		}
 		for ( const match of text.matchAll( PLURAL ) ) {
 			out.set( literal( match ), 2 );
+		}
+		for ( const match of text.matchAll( CONTEXT ) ) {
+			out.set(
+				`${ match[ 3 ] ?? match[ 4 ] }\u0004${ literal( match ) }`,
+				1
+			);
 		}
 	}
 	return out;

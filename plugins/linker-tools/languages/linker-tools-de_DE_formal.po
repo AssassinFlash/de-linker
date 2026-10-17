@@ -1,14 +1,15 @@
 # German (formal) translations of linker-tools: the PHP strings (the dock
 # button, the page chips and the opening prompts of includes/Genie/Entries.php,
-# the quality page) and the Genie app's script strings (references to
+# the quality page) and the Genie and configurator apps' script strings (references to
 # build/genie.js, extracted with `wp i18n make-pot . <pot>
 # --include=build/genie.js --skip-php`). AGENTS.md §3: Sie form. The prompts of
 # #234 passed the copy review of docs/acceptance/2026-10-18/234/copy-review.md;
 # the strings of #235 that of docs/acceptance/2026-10-18/235/copy-review.md.
 # Compile: msgfmt -o linker-tools-de_DE_formal.mo linker-tools-de_DE_formal.po
-# Script JSON: wp i18n make-json languages --no-purge (writes
-# linker-tools-de_DE_formal-<md5 of build/genie.js>.json, which WordPress loads
-# for the linker-tools-genie script).
+# Script JSON: just i18n-tools (wp i18n make-json --no-purge).
+# Configurator source references locate the messages; build/configurator.js
+# groups them under the enqueued entry, including its lazy roof chunk. WordPress
+# loads one hashed JSON for the entry before any of those components render.
 msgid ""
 msgstr ""
 "Project-Id-Version: linker-tools 0.1.0\n"
@@ -57,6 +58,9 @@ msgid "Genie could not load."
 msgstr "Genie konnte nicht geladen werden."
 
 #: includes/Genie/Entries.php build/genie.js:19
+#: src/configurator/residential/ResidentialPanel.tsx:308
+#: src/genie/App.tsx:1351
+#: build/configurator.js
 msgid "Try again"
 msgstr "Erneut versuchen"
 
@@ -142,8 +146,13 @@ msgstr "Datenschutzerklärung"
 # Sie form (AGENTS.md §3).
 #: includes/Genie/QualityStore.php
 #, php-format
-msgid "Genie quality check, last 24 hours: %1$d answers judged, %2$d flagged, %3$d decided by the second judge, %4$d could not be judged."
-msgstr "Genie-Qualitätsprüfung, letzte 24 Stunden: %1$d Antworten bewertet, %2$d markiert, %3$d vom zweiten Prüfer entschieden, %4$d konnten nicht bewertet werden."
+msgid ""
+"Genie quality check, last 24 hours: %1$d answers judged, %2$d flagged, %3$d "
+"decided by the second judge, %4$d could not be judged."
+msgstr ""
+"Genie-Qualitätsprüfung, letzte 24 Stunden: %1$d Antworten bewertet, %2$d "
+"markiert, %3$d vom zweiten Prüfer entschieden, %4$d konnten nicht bewertet "
+"werden."
 
 #: includes/Genie/QualityStore.php
 msgid "The quality check has stopped reporting."
@@ -173,12 +182,23 @@ msgstr "Letzter Fehler der Prüfung (%1$s): %2$s"
 
 #: includes/Genie/QualityPage.php
 #, php-format
-msgid "Judge: %1$s; when unsure: %2$s. Last report: %3$s. Waiting for a retry: %4$d. Given up: %5$d."
-msgstr "Prüfer: %1$s; bei Unsicherheit: %2$s. Letzte Meldung: %3$s. Warten auf einen neuen Versuch: %4$d. Aufgegeben: %5$d."
+msgid ""
+"Judge: %1$s; when unsure: %2$s. Last report: %3$s. Waiting for a retry: "
+"%4$d. Given up: %5$d."
+msgstr ""
+"Prüfer: %1$s; bei Unsicherheit: %2$s. Letzte Meldung: %3$s. Warten auf einen "
+"neuen Versuch: %4$d. Aufgegeben: %5$d."
 
 #: includes/Genie/QualityPage.php
-msgid "Every answer Genie gives is judged after it is sent: is it supported by what Genie looked up, does it stay within Genie's remit, and would a wrong product have been judged better. Answers flagged here need a look."
-msgstr "Jede Antwort von Genie wird nach dem Versand geprüft: ob das, was Genie nachgeschlagen hat, sie deckt, ob sie im Aufgabenbereich von Genie bleibt und ob ein falsches Produkt besser abgeschnitten hätte. Markierte Antworten sollten Sie sich ansehen."
+msgid ""
+"Every answer Genie gives is judged after it is sent: is it supported by what "
+"Genie looked up, does it stay within Genie's remit, and would a wrong "
+"product have been judged better. Answers flagged here need a look."
+msgstr ""
+"Jede Antwort von Genie wird nach dem Versand geprüft: ob das, was Genie "
+"nachgeschlagen hat, sie deckt, ob sie im Aufgabenbereich von Genie bleibt "
+"und ob ein falsches Produkt besser abgeschnitten hätte. Markierte Antworten "
+"sollten Sie sich ansehen."
 
 #: includes/Genie/QualityPage.php
 msgid "All"
@@ -374,7 +394,9 @@ msgstr "Fragen zu %s?"
 
 #: includes/Genie/Preview.php
 msgid "Genie answers from our product data and the manufacturers' documents."
-msgstr "Genie antwortet auf Grundlage unserer Produktdaten und der Herstellerunterlagen."
+msgstr ""
+"Genie antwortet auf Grundlage unserer Produktdaten und der "
+"Herstellerunterlagen."
 
 #. translators: %s: the product's name.
 #: includes/Genie/Preview.php
@@ -401,8 +423,12 @@ msgid "Looking at %s?"
 msgstr "Fragen zur Kategorie %s?"
 
 #: includes/Genie/Preview.php
-msgid "Genie compares the models in this category and checks which suit your project."
-msgstr "Genie vergleicht die Modelle dieser Kategorie und prüft, welche zu Ihrem Projekt passen."
+msgid ""
+"Genie compares the models in this category and checks which suit your "
+"project."
+msgstr ""
+"Genie vergleicht die Modelle dieser Kategorie und prüft, welche zu Ihrem "
+"Projekt passen."
 
 #. translators: %s: the product category's name as the page shows it.
 #: includes/Genie/Preview.php
@@ -424,7 +450,8 @@ msgstr "%s in Planung?"
 
 #: includes/Genie/Preview.php
 msgid "Genie sizes the system and picks the products with you."
-msgstr "Genie legt die Anlage mit Ihnen aus und wählt die passenden Produkte dazu."
+msgstr ""
+"Genie legt die Anlage mit Ihnen aus und wählt die passenden Produkte dazu."
 
 #. translators: %s: the solution's name.
 #: includes/Genie/Preview.php
@@ -444,7 +471,8 @@ msgstr "Fragen Sie Genie zu unseren Produkten"
 
 #: includes/Genie/Preview.php
 msgid "Genie finds any model in our range and checks what works with it."
-msgstr "Genie findet jedes Modell aus unserem Sortiment und prüft, was dazu passt."
+msgstr ""
+"Genie findet jedes Modell aus unserem Sortiment und prüft, was dazu passt."
 
 #. translators: %s: an inverter from the current product range, e.g. "SAJ H2-10K-T3".
 #: includes/Genie/Preview.php
@@ -501,6 +529,10 @@ msgid "Model"
 msgstr "Modell"
 
 #: build/genie.js:1
+#: src/configurator/solution/Solution.tsx:256
+#: src/genie/components/Compare.tsx:55
+#: src/genie/components/GenieCard.tsx:86
+#: build/configurator.js
 msgid "In stock"
 msgstr "Auf Lager"
 
@@ -525,6 +557,9 @@ msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
 #: build/genie.js:1
+#: src/configurator/solution/Solution.tsx:334
+#: src/genie/components/GenieCard.tsx:109
+#: build/configurator.js
 msgid "Save solution"
 msgstr "Lösung speichern"
 
@@ -539,8 +574,12 @@ msgstr "Die E-Mail an %s ist unterwegs."
 
 #. translators: %s is the email address the confirmation link went to.
 #: build/genie.js:7
-msgid "A confirmation link is on its way to %s. The conversation follows once the link is opened."
-msgstr "Ein Bestätigungslink an %s ist unterwegs. Das Gespräch folgt, sobald der Link geöffnet wird."
+msgid ""
+"A confirmation link is on its way to %s. The conversation follows once the "
+"link is opened."
+msgstr ""
+"Ein Bestätigungslink an %s ist unterwegs. Das Gespräch folgt, sobald der "
+"Link geöffnet wird."
 
 #: build/genie.js:7
 msgid "Please enter a valid email address."
@@ -548,16 +587,23 @@ msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
 
 #. translators: %d is how many emails one connection may ask for per hour (ConversationMail::LIMIT).
 #: build/genie.js:10
-msgid "This connection has reached the limit of %d emails per hour. Please try again later."
-msgstr "Über diese Verbindung wurde das Limit von %d E-Mails pro Stunde erreicht. Bitte versuchen Sie es später erneut."
+msgid ""
+"This connection has reached the limit of %d emails per hour. Please try "
+"again later."
+msgstr ""
+"Über diese Verbindung wurde das Limit von %d E-Mails pro Stunde erreicht. "
+"Bitte versuchen Sie es später erneut."
 
 #: build/genie.js:10
 msgid "Today's email limit has been reached. Please try again tomorrow."
-msgstr "Das E-Mail-Limit für heute ist erreicht. Bitte versuchen Sie es morgen erneut."
+msgstr ""
+"Das E-Mail-Limit für heute ist erreicht. Bitte versuchen Sie es morgen "
+"erneut."
 
 #: build/genie.js:10
 msgid "The email could not be sent. Please try again."
-msgstr "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+msgstr ""
+"Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
 
 #: build/genie.js:10
 msgid "Your email address"
@@ -592,6 +638,10 @@ msgid "Not helpful"
 msgstr "Nicht hilfreich"
 
 #: build/genie.js:13
+#: src/configurator/solution/Solution.tsx:90
+#: src/genie/App.tsx:509
+#: src/genie/App.tsx:517
+#: build/configurator.js
 msgid "Adding…"
 msgstr "Wird hinzugefügt …"
 
@@ -600,18 +650,24 @@ msgid "In your solution draft."
 msgstr "Im Lösungsentwurf."
 
 #: build/genie.js:13
+#: src/genie/App.tsx:520
 msgid "Sent, but the draft does not show it yet. Please check."
 msgstr "Gesendet, aber der Entwurf zeigt es noch nicht. Bitte prüfen."
 
 #: build/genie.js:13
+#: src/genie/App.tsx:523
 msgid "Not added. Try again."
 msgstr "Nicht hinzugefügt. Bitte erneut versuchen."
 
 #: build/genie.js:13
+#: src/configurator/solution/Solution.tsx:333
+#: src/genie/App.tsx:531
+#: build/configurator.js
 msgid "Saving…"
 msgstr "Wird gespeichert …"
 
 #: build/genie.js:13
+#: src/genie/App.tsx:551
 msgid "Saved to your account."
 msgstr "Im Konto gespeichert."
 
@@ -621,10 +677,18 @@ msgstr "Nicht gespeichert. Bitte erneut versuchen."
 
 #. translators: %d is the number of days a guest's conversation is kept from its start (Retention::RETENTION_DAYS).
 #: build/genie.js:16
-msgid "Each conversation stays in this browser for %d day from its start. Signing in moves all of them to your account."
-msgid_plural "Each conversation stays in this browser for %d days from its start. Signing in moves all of them to your account."
-msgstr[0] "Jedes Gespräch bleibt ab Beginn %d Tag in diesem Browser gespeichert. Wenn Sie sich anmelden, werden alle in Ihr Konto übernommen."
-msgstr[1] "Jedes Gespräch bleibt ab Beginn %d Tage in diesem Browser gespeichert. Wenn Sie sich anmelden, werden alle in Ihr Konto übernommen."
+msgid ""
+"Each conversation stays in this browser for %d day from its start. Signing "
+"in moves all of them to your account."
+msgid_plural ""
+"Each conversation stays in this browser for %d days from its start. Signing "
+"in moves all of them to your account."
+msgstr[0] ""
+"Jedes Gespräch bleibt ab Beginn %d Tag in diesem Browser gespeichert. Wenn "
+"Sie sich anmelden, werden alle in Ihr Konto übernommen."
+msgstr[1] ""
+"Jedes Gespräch bleibt ab Beginn %d Tage in diesem Browser gespeichert. Wenn "
+"Sie sich anmelden, werden alle in Ihr Konto übernommen."
 
 #: build/genie.js:16
 msgid "Hide"
@@ -674,3 +738,902 @@ msgstr "Löschen"
 #: build/genie.js:22
 msgid "Delete conversation: %s"
 msgstr "Gespräch löschen: %s"
+
+#: src/configurator/App.tsx:56 build/configurator.js
+msgid "Residential"
+msgstr "Wohngebäude"
+
+#: src/configurator/App.tsx:61 build/configurator.js
+msgid "Commercial & industrial"
+msgstr "Gewerbe und Industrie"
+
+#: src/configurator/App.tsx:69 build/configurator.js
+msgid "Utility"
+msgstr "Großanlagen"
+
+#: src/configurator/App.tsx:57 build/configurator.js
+msgid "Home PV, storage and backup"
+msgstr "PV-Anlage, Speicher und Notstrom im Eigenheim"
+
+#: src/configurator/App.tsx:63 build/configurator.js
+msgid "Site load, peak power and operating profile"
+msgstr "Standortlast, Spitzenlast und Betriebsprofil"
+
+#: src/configurator/App.tsx:71 build/configurator.js
+msgid "Storage blocks, grid connection and project stage"
+msgstr "Speicherblöcke, Netzanschluss und Projektphase"
+
+#: src/configurator/App.tsx:97 build/configurator.js
+msgid "Solution Configurator"
+msgstr "Lösungskonfigurator"
+
+#: src/configurator/App.tsx:103 build/configurator.js
+msgid "Size your system and get the bill of materials."
+msgstr "System auslegen und Stückliste erhalten."
+
+#: src/configurator/App.tsx:117 src/configurator/App.tsx:130
+#: build/configurator.js
+msgid "Project type"
+msgstr "Projektart"
+
+#: src/configurator/Steps.tsx:77 build/configurator.js
+msgid "Configurator"
+msgstr "Konfigurator"
+
+#: src/configurator/MobileNavigation.tsx:94 build/configurator.js
+msgid "Configurator navigation"
+msgstr "Konfigurator-Navigation"
+
+#: src/configurator/Steps.tsx:74 build/configurator.js
+msgid "Configurator steps"
+msgstr "Konfigurator-Schritte"
+
+#: src/configurator/Steps.tsx:100 build/configurator.js
+msgid "Three steps. The result follows the inputs you enter."
+msgstr "Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen."
+
+#: src/configurator/App.tsx:121 build/configurator.js
+msgid "Step 1 · Which project are you sizing?"
+msgstr "Schritt 1 · Welches Projekt legen Sie aus?"
+
+#: src/configurator/residential/ResidentialPanel.tsx:220 build/configurator.js
+msgid "Step 2 · The figures that size the system"
+msgstr "Schritt 2 · Die Angaben, nach denen das System ausgelegt wird"
+
+#: src/configurator/residential/ResidentialPanel.tsx:271 build/configurator.js
+msgid "Step 3 · The released system for these inputs"
+msgstr "Schritt 3 · Das für diese Eingaben freigegebene System"
+
+#: src/configurator/commercial/CommercialPanel.tsx:223
+#: src/configurator/residential/ResidentialForm.tsx:164 build/configurator.js
+msgid "Site"
+msgstr "Standort"
+
+#: src/configurator/residential/ResidentialForm.tsx:267 build/configurator.js
+msgid "Connection"
+msgstr "Anschluss"
+
+#: src/configurator/commercial/CommercialPanel.tsx:212 build/configurator.js
+msgid "Step 2 · The figures that size the storage"
+msgstr "Schritt 2 · Die Angaben, nach denen der Speicher ausgelegt wird"
+
+#: src/configurator/commercial/CommercialPanel.tsx:522 build/configurator.js
+msgid "Step 3 · Sized storage, or indicative ranges"
+msgstr "Schritt 3 · Ausgelegter Speicher oder Richtwerte"
+
+#: src/configurator/utility/UtilityForm.tsx:68 build/configurator.js
+msgid "Step 2 · The project we quote"
+msgstr "Schritt 2 · Das Projekt, das wir anbieten"
+
+#: src/configurator/utility/UtilityForm.tsx:79 build/configurator.js
+msgid "Project"
+msgstr "Projekt"
+
+#: src/configurator/Steps.tsx:33
+#: src/configurator/commercial/CommercialPanel.tsx:151
+#: src/configurator/commercial/CommercialPanel.tsx:208
+#: src/configurator/residential/ResidentialPanel.tsx:108
+#: src/configurator/residential/ResidentialPanel.tsx:216 build/configurator.js
+msgid "Inputs"
+msgstr "Eingaben"
+
+#: src/configurator/Steps.tsx:34
+#: src/configurator/residential/ResidentialPanel.tsx:112
+#: src/configurator/residential/ResidentialPanel.tsx:267 build/configurator.js
+msgid "Solution"
+msgstr "Lösung"
+
+#: src/configurator/Steps.tsx:35
+#: src/configurator/residential/ResidentialPanel.tsx:118
+#: src/configurator/residential/ResidentialPanel.tsx:362 build/configurator.js
+msgid "Design report"
+msgstr "Auslegungsbericht"
+
+#: src/configurator/commercial/CommercialPanel.tsx:183 build/configurator.js
+msgid ""
+"The load profile could not be read, or the calculation failed. Check the "
+"file and try again."
+msgstr ""
+"Der Lastgang konnte nicht gelesen werden oder die Berechnung ist "
+"fehlgeschlagen. Prüfen Sie die Datei und versuchen Sie es erneut."
+
+#: src/configurator/commercial/CommercialPanel.tsx:228
+#: src/configurator/residential/ResidentialForm.tsx:168 build/configurator.js
+msgid "Postcode of the site"
+msgstr "Postleitzahl des Standorts"
+
+#: src/configurator/commercial/CommercialPanel.tsx:243 build/configurator.js
+msgid "Grid connection capacity"
+msgstr "Netzanschlussleistung"
+
+#: src/configurator/commercial/CommercialPanel.tsx:258 build/configurator.js
+msgid "Annual consumption"
+msgstr "Jahresverbrauch"
+
+#: src/configurator/commercial/CommercialPanel.tsx:273 build/configurator.js
+msgid "Goals"
+msgstr "Ziele"
+
+#: src/configurator/commercial/CommercialPanel.tsx:283 build/configurator.js
+msgid "Peak shaving"
+msgstr "Spitzenlastkappung"
+
+#: src/configurator/commercial/CommercialPanel.tsx:293 build/configurator.js
+msgid "Self-consumption of PV"
+msgstr "Eigenverbrauch von PV-Strom"
+
+#: src/configurator/commercial/CommercialPanel.tsx:304
+#: src/configurator/residential/ResidentialForm.tsx:294 build/configurator.js
+msgid "Backup supply"
+msgstr "Notstromversorgung"
+
+#: src/configurator/commercial/CommercialPanel.tsx:315 build/configurator.js
+msgid "Annual peak from the bill"
+msgstr "Jahreshöchstlast laut Rechnung"
+
+#: src/configurator/commercial/CommercialPanel.tsx:320 build/configurator.js
+msgid "Optional when you upload the load profile."
+msgstr "Optional, wenn Sie den Lastgang hochladen."
+
+#: src/configurator/commercial/CommercialPanel.tsx:334 build/configurator.js
+msgid "Target peak"
+msgstr "Zielhöchstlast"
+
+#: src/configurator/commercial/CommercialPanel.tsx:352 build/configurator.js
+msgid "PV array, existing or planned"
+msgstr "PV-Anlage, bestehend oder geplant"
+
+#: src/configurator/commercial/CommercialPanel.tsx:370
+#: src/configurator/residential/ResidentialForm.tsx:316 build/configurator.js
+msgid "Load to keep running"
+msgstr "Zu versorgende Last"
+
+#: src/configurator/commercial/CommercialPanel.tsx:385
+#: src/configurator/residential/ResidentialForm.tsx:334 build/configurator.js
+msgid "For how long"
+msgstr "Dauer"
+
+#: src/configurator/commercial/CommercialPanel.tsx:402 build/configurator.js
+msgid "15-minute load profile (CSV, optional)"
+msgstr "15-Minuten-Lastgang (CSV, optional)"
+
+#: src/configurator/commercial/CommercialPanel.tsx:412 build/configurator.js
+msgid ""
+"One value per line, optionally after a timestamp; the last number of each "
+"line counts."
+msgstr ""
+"Ein Wert pro Zeile, gegebenenfalls nach einem Zeitstempel; es zählt die "
+"letzte Zahl jeder Zeile."
+
+#: src/configurator/commercial/CommercialPanel.tsx:429 build/configurator.js
+msgid "Values in the file"
+msgstr "Werte in der Datei"
+
+#: src/configurator/commercial/CommercialPanel.tsx:439 build/configurator.js
+msgid "Average power in kW"
+msgstr "Mittlere Leistung in kW"
+
+#: src/configurator/commercial/CommercialPanel.tsx:445 build/configurator.js
+msgid "Energy per 15 minutes in kWh"
+msgstr "Energie je 15 Minuten in kWh"
+
+#: src/configurator/commercial/CommercialPanel.tsx:454 build/configurator.js
+msgid "Installation place"
+msgstr "Aufstellort"
+
+#: src/configurator/commercial/CommercialPanel.tsx:463 build/configurator.js
+msgid "Not decided"
+msgstr "Noch offen"
+
+#: src/configurator/commercial/CommercialPanel.tsx:466 build/configurator.js
+msgid "Indoors"
+msgstr "Innen"
+
+#: src/configurator/commercial/CommercialPanel.tsx:469 build/configurator.js
+msgid "Outdoors"
+msgstr "Außen"
+
+#: src/configurator/commercial/CommercialPanel.tsx:476 build/configurator.js
+msgid "Site conditions"
+msgstr "Bedingungen vor Ort"
+
+#: src/configurator/commercial/CommercialPanel.tsx:480 build/configurator.js
+msgid "Space, access, fire protection: anything we should know."
+msgstr "Platz, Zufahrt, Brandschutz: alles, was wir wissen sollten."
+
+#: src/configurator/commercial/CommercialPanel.tsx:501
+#: src/configurator/residential/ResidentialForm.tsx:401 build/configurator.js
+msgid "Calculating…"
+msgstr "Wird berechnet …"
+
+#: src/configurator/commercial/CommercialPanel.tsx:502 build/configurator.js
+msgid "Calculate storage"
+msgstr "Speicher berechnen"
+
+#: src/configurator/commercial/CommercialPanel.tsx:155
+#: src/configurator/commercial/CommercialPanel.tsx:518 build/configurator.js
+msgid "Result"
+msgstr "Ergebnis"
+
+#: src/configurator/commercial/CommercialPanel.tsx:538 build/configurator.js
+msgid ""
+"With a 15-minute load profile we size the storage; without one you get "
+"indicative ranges."
+msgstr ""
+"Mit einem 15-Minuten-Lastgang legen wir den Speicher aus; ohne Lastgang "
+"erhalten Sie Richtwerte."
+
+#: src/configurator/commercial/CommercialResult.tsx:72 build/configurator.js
+msgid "Load duration curve: the year sorted from highest to lowest load"
+msgstr "Jahresdauerlinie: das Jahr nach Last absteigend sortiert"
+
+#: src/configurator/commercial/CommercialResult.tsx:146 build/configurator.js
+msgid "Annual peak"
+msgstr "Jahreshöchstlast"
+
+#: src/configurator/commercial/CommercialResult.tsx:151 build/configurator.js
+msgid "Consumption per year"
+msgstr "Verbrauch pro Jahr"
+
+#: src/configurator/commercial/CommercialResult.tsx:156 build/configurator.js
+msgid "Full-load hours"
+msgstr "Volllaststunden"
+
+#: src/configurator/commercial/CommercialResult.tsx:161 build/configurator.js
+msgid "Days in the profile"
+msgstr "Tage im Lastgang"
+
+#: src/configurator/commercial/CommercialResult.tsx:180 build/configurator.js
+msgid "Battery power"
+msgstr "Batterieleistung"
+
+#: src/configurator/commercial/CommercialResult.tsx:182 build/configurator.js
+msgid "Battery power, indicative"
+msgstr "Batterieleistung, Richtwert"
+
+#: src/configurator/commercial/CommercialResult.tsx:197
+#: src/configurator/commercial/CommercialResult.tsx:235 build/configurator.js
+msgid "Usable energy"
+msgstr "Nutzbare Energie"
+
+#: src/configurator/commercial/CommercialResult.tsx:199 build/configurator.js
+msgid "Usable energy, indicative"
+msgstr "Nutzbare Energie, Richtwert"
+
+#: src/configurator/commercial/CommercialResult.tsx:228 build/configurator.js
+msgid "Peak shaving options from your load profile"
+msgstr "Kappungsoptionen aus Ihrem Lastgang"
+
+#: src/configurator/commercial/CommercialResult.tsx:232 build/configurator.js
+msgid "Cap"
+msgstr "Grenze"
+
+#: src/configurator/commercial/CommercialResult.tsx:233 build/configurator.js
+msgid "Power"
+msgstr "Leistung"
+
+#: src/configurator/commercial/CommercialResult.tsx:239 build/configurator.js
+msgid "Peaks per year"
+msgstr "Spitzen pro Jahr"
+
+#: src/configurator/commercial/CommercialResult.tsx:242 build/configurator.js
+msgid "Action"
+msgstr "Aktion"
+
+#: src/configurator/commercial/CommercialResult.tsx:259 build/configurator.js
+msgid "Size for %s kW"
+msgstr "Für %s kW auslegen"
+
+#: src/configurator/commercial/CommercialResult.tsx:270 build/configurator.js
+msgid "Systems from our range"
+msgstr "Systeme aus unserem Sortiment"
+
+#: src/configurator/commercial/CommercialResult.tsx:277 build/configurator.js
+msgid "System"
+msgstr "System"
+
+#: src/configurator/commercial/CommercialResult.tsx:290 build/configurator.js
+msgid "%1$s kW, %2$s kWh usable"
+msgstr "%1$s kW, %2$s kWh nutzbar"
+
+#: src/configurator/commercial/CommercialResult.tsx:323 build/configurator.js
+msgid "Send this to our team"
+msgstr "An unser Team senden"
+
+#: src/configurator/commercial/CommercialResult.tsx:324 build/configurator.js
+msgid "Send us an inquiry"
+msgstr "Anfrage senden"
+
+#: src/configurator/report/ReportView.tsx:52 build/configurator.js
+msgid "Choose a PNG or JPEG file."
+msgstr "Wählen Sie eine PNG- oder JPEG-Datei."
+
+#: src/configurator/report/ReportView.tsx:57 build/configurator.js
+msgid "Choose a logo of at most 500 kB."
+msgstr "Wählen Sie ein Logo mit höchstens 500 kB."
+
+#: src/configurator/report/ReportView.tsx:86 build/configurator.js
+msgid "Your logo on the PDF (optional)"
+msgstr "Ihr Logo im PDF (optional)"
+
+#: src/configurator/report/ReportView.tsx:105 build/configurator.js
+msgid "Your logo"
+msgstr "Ihr Logo"
+
+#: src/configurator/report/ReportView.tsx:117 build/configurator.js
+msgid "Preparing PDF…"
+msgstr "PDF wird erstellt …"
+
+#: src/configurator/report/ReportView.tsx:118 build/configurator.js
+msgid "Download PDF"
+msgstr "PDF herunterladen"
+
+#: src/configurator/report/ReportView.tsx:123 build/configurator.js
+msgid "The PDF could not be created. Try again."
+msgstr "Das PDF konnte nicht erstellt werden. Versuchen Sie es erneut."
+
+#: src/configurator/report/ReportView.tsx:133 build/configurator.js
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#: src/configurator/residential/ResidentialForm.tsx:182 build/configurator.js
+msgid "Annual household consumption"
+msgstr "Jahresverbrauch des Haushalts"
+
+#: src/configurator/residential/ResidentialForm.tsx:187 build/configurator.js
+msgid "Without heat pump and electric car; tick them below."
+msgstr "Ohne Wärmepumpe und Elektroauto; diese wählen Sie unten aus."
+
+#: src/configurator/residential/ResidentialForm.tsx:200 build/configurator.js
+msgid "PV array"
+msgstr "PV-Leistung"
+
+#: src/configurator/residential/ResidentialForm.tsx:238 build/configurator.js
+msgid "Change roof"
+msgstr "Dach ändern"
+
+#: src/configurator/residential/ResidentialForm.tsx:246 build/configurator.js
+msgid "Enter kWp instead"
+msgstr "Stattdessen kWp eingeben"
+
+#: src/configurator/residential/ResidentialForm.tsx:258 build/configurator.js
+msgid "No PV figure yet? Estimate from the roof"
+msgstr "Noch keine PV-Leistung? Aus dem Dach abschätzen"
+
+#: src/configurator/residential/ResidentialForm.tsx:271
+#: src/configurator/utility/UtilityForm.tsx:45 build/configurator.js
+msgid "Grid connection"
+msgstr "Netzanschluss"
+
+#: src/configurator/residential/ResidentialForm.tsx:280 build/configurator.js
+msgid "Three-phase"
+msgstr "Dreiphasig"
+
+#: src/configurator/residential/ResidentialForm.tsx:289 build/configurator.js
+msgid "Single-phase"
+msgstr "Einphasig"
+
+#: src/configurator/residential/ResidentialForm.tsx:298 build/configurator.js
+msgid "Not needed"
+msgstr "Nicht benötigt"
+
+#: src/configurator/residential/ResidentialForm.tsx:301 build/configurator.js
+msgid "Needed"
+msgstr "Benötigt"
+
+#: src/configurator/residential/ResidentialForm.tsx:305 build/configurator.js
+msgid "Needed, an accessory is fine"
+msgstr "Benötigt, auch mit Zubehör"
+
+#: src/configurator/residential/ResidentialForm.tsx:321 build/configurator.js
+msgid "Optional; sizes a reserve on top."
+msgstr "Optional; dafür wird zusätzlich eine Reserve ausgelegt."
+
+#: src/configurator/residential/ResidentialForm.tsx:348 build/configurator.js
+msgid "Additional consumers"
+msgstr "Zusätzliche Verbraucher"
+
+#: src/configurator/residential/ResidentialForm.tsx:357 build/configurator.js
+msgid "Heat pump (installed or planned)"
+msgstr "Wärmepumpe (vorhanden oder geplant)"
+
+#: src/configurator/residential/ResidentialForm.tsx:368 build/configurator.js
+msgid "Electric car (installed or planned)"
+msgstr "Elektroauto (vorhanden oder geplant)"
+
+#: src/configurator/residential/ResidentialForm.tsx:376 build/configurator.js
+msgid "Existing inverter (retrofit)"
+msgstr "Vorhandener Wechselrichter (Nachrüstung)"
+
+#: src/configurator/residential/ResidentialForm.tsx:380 build/configurator.js
+msgid "Optional. Enter its model and we list only batteries released for it."
+msgstr ""
+"Optional. Mit dem Modell zeigen wir nur Batterien, die dafür freigegeben "
+"sind."
+
+#: src/configurator/residential/ResidentialForm.tsx:402 build/configurator.js
+msgid "Calculate system"
+msgstr "System berechnen"
+
+#: src/configurator/residential/ResidentialPanel.tsx:63 build/configurator.js
+msgid "The yield service did not answer. Try again in a minute."
+msgstr ""
+"Der Ertragsdienst hat nicht geantwortet. Versuchen Sie es in einer Minute "
+"erneut."
+
+#: src/configurator/residential/ResidentialPanel.tsx:69 build/configurator.js
+msgid "We do not know this postcode. Check it and try again."
+msgstr ""
+"Diese Postleitzahl ist uns nicht bekannt. Prüfen Sie sie und versuchen Sie "
+"es erneut."
+
+#: src/configurator/residential/ResidentialPanel.tsx:74 build/configurator.js
+msgid "The calculation failed. Try again."
+msgstr "Die Berechnung ist fehlgeschlagen. Versuchen Sie es erneut."
+
+#: src/configurator/residential/ResidentialPanel.tsx:238 build/configurator.js
+msgid "Loading the map…"
+msgstr "Karte wird geladen …"
+
+#: src/configurator/residential/ResidentialPanel.tsx:279 build/configurator.js
+msgid "Enter the household and calculate: the proposed system appears here."
+msgstr ""
+"Geben Sie die Daten des Haushalts ein und berechnen Sie: Das vorgeschlagene "
+"System erscheint hier."
+
+#: src/configurator/residential/ResidentialPanel.tsx:291 build/configurator.js
+msgid "Calculating yield, storage and the released system…"
+msgstr "Ertrag, Speicher und freigegebenes System werden berechnet …"
+
+#: src/configurator/roof/RoofStep.tsx:398 build/configurator.js
+msgid "Loading the aerial image…"
+msgstr "Luftbild wird geladen …"
+
+#: src/configurator/roof/RoofStep.tsx:400 build/configurator.js
+msgid "Click the roof of the building in the aerial image."
+msgstr "Klicken Sie im Luftbild auf das Dach des Gebäudes."
+
+#: src/configurator/roof/RoofStep.tsx:403 build/configurator.js
+msgid "Reading the official building model…"
+msgstr "Amtliches Gebäudemodell wird gelesen …"
+
+#: src/configurator/roof/RoofStep.tsx:407 build/configurator.js
+msgid "Official building model: %s"
+msgstr "Amtliches Gebäudemodell: %s"
+
+#: src/configurator/roof/RoofStep.tsx:410 build/configurator.js
+msgid "Official building model found."
+msgstr "Amtliches Gebäudemodell gefunden."
+
+#: src/configurator/roof/RoofStep.tsx:417 build/configurator.js
+msgid "No building at this point. Click on a roof, or draw the plane yourself."
+msgstr ""
+"An dieser Stelle steht kein Gebäude. Klicken Sie auf ein Dach oder zeichnen "
+"Sie die Fläche selbst."
+
+#: src/configurator/roof/RoofStep.tsx:421 build/configurator.js
+msgid ""
+"No official building model is available here. Draw the roof plane yourself."
+msgstr ""
+"Hier ist kein amtliches Gebäudemodell verfügbar. Zeichnen Sie die Dachfläche "
+"selbst."
+
+#: src/configurator/roof/RoofStep.tsx:424 build/configurator.js
+msgid "The roof could not be loaded. Try again."
+msgstr "Das Dach konnte nicht geladen werden. Versuchen Sie es erneut."
+
+#: src/configurator/roof/RoofStep.tsx:430 build/configurator.js
+msgid "Roof"
+msgstr "Dach"
+
+#: src/configurator/roof/RoofStep.tsx:436 build/configurator.js
+msgid "Close roof step"
+msgstr "Dachauswahl schließen"
+
+#: src/configurator/roof/RoofStep.tsx:445 build/configurator.js
+msgid "Aerial image: click a roof to select it"
+msgstr "Luftbild: Klicken Sie auf ein Dach, um es auszuwählen"
+
+#: src/configurator/roof/RoofStep.tsx:453 build/configurator.js
+msgid "Click the corners of the plane; click the first corner again to finish."
+msgstr ""
+"Klicken Sie die Ecken der Fläche an; ein Klick auf die erste Ecke schließt "
+"sie."
+
+#: src/configurator/roof/RoofStep.tsx:488 build/configurator.js
+msgid "Facing %1$s, tilt %2$s°"
+msgstr "Ausrichtung %1$s, Neigung %2$s°"
+
+#: src/configurator/roof/RoofStep.tsx:525 build/configurator.js
+msgid "Selected: %1$s modules, %2$s kWp"
+msgstr "Ausgewählt: %1$s Module, %2$s kWp"
+
+#: src/configurator/roof/RoofStep.tsx:534 build/configurator.js
+msgid "Draw a plane yourself"
+msgstr "Fläche selbst zeichnen"
+
+#: src/configurator/roof/RoofStep.tsx:537 build/configurator.js
+msgid "Tilt"
+msgstr "Neigung"
+
+#: src/configurator/roof/RoofStep.tsx:549 build/configurator.js
+msgid "Facing (south 180°)"
+msgstr "Ausrichtung (Süden 180°)"
+
+#: src/configurator/roof/RoofStep.tsx:566 build/configurator.js
+msgid "Draw plane"
+msgstr "Fläche zeichnen"
+
+#: src/configurator/roof/RoofStep.tsx:576 build/configurator.js
+msgid "Use this roof"
+msgstr "Dieses Dach übernehmen"
+
+#: src/configurator/roof/RoofStep.tsx:583 build/configurator.js
+msgid "Assumptions of the module count"
+msgstr "Annahmen der Modulzahl"
+
+#: src/configurator/roof/RoofStep.tsx:591 build/configurator.js
+msgid ""
+"Reference module %1$s with %2$s Wp; the module you install can fit "
+"differently."
+msgstr ""
+"Referenzmodul %1$s mit %2$s Wp; das tatsächlich verbaute Modul kann anders "
+"passen."
+
+#: src/configurator/roof/geometry.ts:79 build/configurator.js
+msgid "north"
+msgstr "Nord"
+
+#: src/configurator/roof/geometry.ts:80 build/configurator.js
+msgid "north-east"
+msgstr "Nordost"
+
+#: src/configurator/roof/geometry.ts:81 build/configurator.js
+msgid "east"
+msgstr "Ost"
+
+#: src/configurator/roof/geometry.ts:82 build/configurator.js
+msgid "south-east"
+msgstr "Südost"
+
+#: src/configurator/roof/geometry.ts:83 build/configurator.js
+msgid "south"
+msgstr "Süd"
+
+#: src/configurator/roof/geometry.ts:84 build/configurator.js
+msgid "south-west"
+msgstr "Südwest"
+
+#: src/configurator/roof/geometry.ts:85 build/configurator.js
+msgid "west"
+msgstr "West"
+
+#: src/configurator/roof/geometry.ts:86 build/configurator.js
+msgid "north-west"
+msgstr "Nordwest"
+
+#: src/configurator/roof/geometry.ts:94 build/configurator.js
+msgid "faces north"
+msgstr "nach Norden ausgerichtet"
+
+#: src/configurator/roof/geometry.ts:96 build/configurator.js
+msgid "steeper than 60°"
+msgstr "steiler als 60°"
+
+#: src/configurator/roof/geometry.ts:98 build/configurator.js
+msgid "outline cannot be used"
+msgstr "Umriss nicht verwendbar"
+
+#: src/configurator/solution/Documents.tsx:39 build/configurator.js
+msgid "page %d"
+msgstr "Seite %d"
+
+#: src/configurator/solution/NoCandidate.tsx:40 build/configurator.js
+msgid "No system in our range meets every rule"
+msgstr "Kein System aus unserem Sortiment erfüllt alle Regeln"
+
+#: src/configurator/solution/NoCandidate.tsx:55 build/configurator.js
+msgid "Rules that excluded the inverters:"
+msgstr "Regeln, die Wechselrichter ausgeschlossen haben:"
+
+#: src/configurator/solution/NoCandidate.tsx:84 build/configurator.js
+msgid "What would change the result:"
+msgstr "Was das Ergebnis ändern würde:"
+
+#: src/configurator/solution/NoCandidate.tsx:100 build/configurator.js
+msgid "Change the inputs"
+msgstr "Eingaben ändern"
+
+#: src/configurator/solution/Solution.tsx:48 build/configurator.js
+msgid "Released by the manufacturer"
+msgstr "Vom Hersteller freigegeben"
+
+#: src/configurator/solution/Solution.tsx:50 build/configurator.js
+msgid "Released with accessory"
+msgstr "Freigegeben mit Zubehör"
+
+#: src/configurator/solution/Solution.tsx:52 build/configurator.js
+msgid "Not released"
+msgstr "Nicht freigegeben"
+
+#: src/configurator/solution/Solution.tsx:54 build/configurator.js
+msgid "No release document"
+msgstr "Kein Freigabedokument"
+
+#: src/configurator/solution/Solution.tsx:94 build/configurator.js
+msgid "In your solution draft"
+msgstr "In Ihrem Lösungsentwurf"
+
+#: src/configurator/solution/Solution.tsx:158 build/configurator.js
+msgid "Other inverter"
+msgstr "Anderer Wechselrichter"
+
+#: src/configurator/solution/Solution.tsx:174 build/configurator.js
+msgid "Other battery"
+msgstr "Andere Batterie"
+
+#: src/configurator/solution/Solution.tsx:194 build/configurator.js
+msgid "PV yield per year"
+msgstr "PV-Ertrag pro Jahr"
+
+#: src/configurator/solution/Solution.tsx:204 build/configurator.js
+msgid "Usable storage"
+msgstr "Nutzbarer Speicher"
+
+#: src/configurator/solution/Solution.tsx:208 build/configurator.js
+msgid "None"
+msgstr "Keiner"
+
+#: src/configurator/solution/Solution.tsx:215 build/configurator.js
+msgid "Self-sufficiency"
+msgstr "Autarkiegrad"
+
+#: src/configurator/solution/Solution.tsx:226 build/configurator.js
+msgid "Self-consumption"
+msgstr "Eigenverbrauchsanteil"
+
+#: src/configurator/solution/Solution.tsx:246 build/configurator.js
+msgid "Linker products"
+msgstr "Linker-Produkte"
+
+#: src/configurator/solution/Solution.tsx:268 build/configurator.js
+msgid "Above the HTW limit"
+msgstr "Über der HTW-Grenze"
+
+#: src/configurator/solution/Solution.tsx:285 build/configurator.js
+msgid "Model %s"
+msgstr "Modell %s"
+
+#: src/configurator/solution/Solution.tsx:299 build/configurator.js
+msgid "Why this product"
+msgstr "Warum dieses Produkt"
+
+#: src/configurator/solution/Solution.tsx:323 build/configurator.js
+msgid "Add all to solution draft"
+msgstr "Alles zum Lösungsentwurf hinzufügen"
+
+#: src/configurator/solution/Solution.tsx:339 build/configurator.js
+msgid "All products are in your solution draft."
+msgstr "Alle Produkte sind in Ihrem Lösungsentwurf."
+
+#: src/configurator/solution/Solution.tsx:345 build/configurator.js
+msgid ""
+"Some products are not confirmed in your solution draft. See the cards above."
+msgstr ""
+"Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten "
+"stehen in den Karten oben."
+
+#: src/configurator/solution/Solution.tsx:355 build/configurator.js
+msgid "Open saved solution"
+msgstr "Gespeicherte Lösung öffnen"
+
+#: src/configurator/solution/Solution.tsx:364 build/configurator.js
+msgid "The solution could not be saved. Try again."
+msgstr "Die Lösung konnte nicht gespeichert werden. Versuchen Sie es erneut."
+
+#: src/configurator/solution/Solution.tsx:371 build/configurator.js
+msgid "Installer's scope"
+msgstr "Leistung des Installateurs"
+
+#: src/configurator/solution/Solution.tsx:375 build/configurator.js
+msgid ""
+"We do not supply these parts; the quantities follow the reference layout."
+msgstr ""
+"Diese Teile liefern wir nicht; die Mengen folgen der Referenzauslegung."
+
+#: src/configurator/solution/Solution.tsx:381 build/configurator.js
+msgid "Item"
+msgstr "Position"
+
+#: src/configurator/solution/Solution.tsx:382 build/configurator.js
+msgid "Quantity"
+msgstr "Menge"
+
+#: src/configurator/solution/Solution.tsx:383 build/configurator.js
+msgid "Basis"
+msgstr "Grundlage"
+
+#: src/configurator/utility/UtilityForm.tsx:42 build/configurator.js
+msgid "Site (postcode or place)"
+msgstr "Standort (PLZ oder Ort)"
+
+#: src/configurator/utility/UtilityForm.tsx:43 build/configurator.js
+msgid "Power (MW)"
+msgstr "Leistung (MW)"
+
+#: src/configurator/utility/UtilityForm.tsx:44 build/configurator.js
+msgid "Storage capacity (MWh)"
+msgstr "Speicherkapazität (MWh)"
+
+#: src/configurator/utility/UtilityForm.tsx:46 build/configurator.js
+msgid "Planned commissioning"
+msgstr "Geplante Inbetriebnahme"
+
+#: src/configurator/utility/UtilityForm.tsx:47 build/configurator.js
+msgid "Project details"
+msgstr "Projektbeschreibung"
+
+#: src/configurator/utility/UtilityForm.tsx:49 build/configurator.js
+msgid "Utility-scale storage inquiry"
+msgstr "Anfrage Großspeicher"
+
+#: src/configurator/utility/UtilityForm.tsx:65 build/configurator.js
+msgid "Utility-scale inquiry"
+msgstr "Anfrage Großanlage"
+
+#: src/configurator/utility/UtilityForm.tsx:73 build/configurator.js
+msgid ""
+"We quote utility-scale storage per project. Describe the project and our "
+"team replies within one business day."
+msgstr ""
+"Großspeicher bieten wir pro Projekt an. Beschreiben Sie das Projekt; unser "
+"Team antwortet innerhalb eines Werktags."
+
+#: src/configurator/utility/UtilityForm.tsx:124 build/configurator.js
+msgid "Write to our team"
+msgstr "Unserem Team schreiben"
+
+#: src/configurator/validation.ts:37 build/configurator.js
+msgid "Please fill in this field."
+msgstr "Bitte füllen Sie dieses Feld aus."
+
+#: src/configurator/validation.ts:40 build/configurator.js
+msgid "Enter a German postcode with five digits."
+msgstr "Geben Sie eine deutsche Postleitzahl mit fünf Ziffern ein."
+
+#: src/configurator/validation.ts:46 build/configurator.js
+msgid "Enter at least %s."
+msgstr "Geben Sie mindestens %s ein."
+
+#: src/configurator/validation.ts:52 build/configurator.js
+msgid "Enter more than %s."
+msgstr "Geben Sie mehr als %s ein."
+
+#: src/configurator/validation.ts:59 build/configurator.js
+msgid "Enter at most %s."
+msgstr "Geben Sie höchstens %s ein."
+
+#: src/configurator/validation.ts:63 build/configurator.js
+msgid "Enter a number."
+msgstr "Geben Sie eine Zahl ein."
+
+#: src/configurator/validation.ts:65 build/configurator.js
+msgid "Check this value."
+msgstr "Prüfen Sie diesen Wert."
+
+#: src/configurator/residential/ResidentialForm.tsx:219 build/configurator.js
+msgid "From the roof: %1$s modules on %2$s plane, %3$s kWp."
+msgid_plural "From the roof: %1$s modules on %2$s planes, %3$s kWp."
+msgstr[0] "Aus dem Dach: %1$s Module auf %2$s Fläche, %3$s kWp."
+msgstr[1] "Aus dem Dach: %1$s Module auf %2$s Flächen, %3$s kWp."
+
+#: src/configurator/roof/RoofStep.tsx:505 build/configurator.js
+msgid "%d module"
+msgid_plural "%d modules"
+msgstr[0] "%d Modul"
+msgstr[1] "%d Module"
+
+#: src/configurator/solution/NoCandidate.tsx:67 build/configurator.js
+msgid "%d inverter"
+msgid_plural "%d inverters"
+msgstr[0] "%d Wechselrichter"
+msgstr[1] "%d Wechselrichter"
+
+#: src/configurator/solution/Solution.tsx:66 build/configurator.js
+msgid "%s pair"
+msgid_plural "%s pairs"
+msgstr[0] "%s Paar"
+msgstr[1] "%s Paare"
+
+#: src/configurator/solution/Solution.tsx:72 build/configurator.js
+msgid "%s set"
+msgid_plural "%s sets"
+msgstr[0] "%s Satz"
+msgstr[1] "%s Sätze"
+
+#: src/configurator/solution/Solution.tsx:78 build/configurator.js
+msgid "%s pc"
+msgid_plural "%s pcs"
+msgstr[0] "%s Stk."
+msgstr[1] "%s Stk."
+
+#: src/configurator/commercial/CommercialPanel.tsx:405 build/configurator.js
+msgid "Choose file"
+msgstr "Datei auswählen"
+
+#: src/configurator/commercial/CommercialPanel.tsx:409 build/configurator.js
+msgid "No file chosen"
+msgstr "Keine Datei ausgewählt"
+
+#: src/configurator/commercial/CommercialResult.tsx:101 build/configurator.js
+msgid "Target peak %s kW"
+msgstr "Zielhöchstlast %s kW"
+
+#: src/configurator/commercial/CommercialResult.tsx:114 build/configurator.js
+msgid ""
+"Load duration curve: every 15-minute value of the profile, from the highest "
+"to the lowest."
+msgstr ""
+"Jahresdauerlinie: jeder 15-Minuten-Wert des Lastgangs, vom höchsten zum "
+"niedrigsten."
+
+#: src/configurator/report/ReportView.tsx:89 build/configurator.js
+msgid "Choose logo"
+msgstr "Logo auswählen"
+
+#: src/configurator/report/ReportView.tsx:92 build/configurator.js
+msgid "No logo chosen"
+msgstr "Kein Logo ausgewählt"
+
+#: src/configurator/report/ReportView.tsx:95 build/configurator.js
+msgid "PNG or JPEG, at most 500 kB."
+msgstr "PNG oder JPEG, höchstens 500 kB."
+
+#: src/configurator/roof/RoofStep.tsx:411 build/configurator.js
+msgid "The plane you drew is in the list."
+msgstr "Die gezeichnete Fläche steht in der Liste."
+
+#: src/configurator/roof/RoofStep.tsx:413 build/configurator.js
+msgid "Draw the plane on one roof: this one is too large or outside Germany."
+msgstr ""
+"Zeichnen Sie die Fläche auf einem einzelnen Dach ein: Diese ist zu groß oder "
+"liegt außerhalb Deutschlands."
+
+
+#. #302: retain the configurator wording independently of Genie.
+#: src/configurator/solution/Solution.tsx build/configurator.js
+msgctxt "configurator"
+msgid "Sent, but the draft does not show it yet. Please check."
+msgstr "Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf."
+
+#. #302: retain the configurator wording independently of Genie.
+#: src/configurator/solution/Solution.tsx build/configurator.js
+msgctxt "configurator"
+msgid "Not added. Try again."
+msgstr "Nicht hinzugefügt. Versuchen Sie es erneut."
+
+#. #302: retain the configurator wording independently of Genie.
+#: src/configurator/solution/Solution.tsx build/configurator.js
+msgctxt "configurator"
+msgid "Saved to your account."
+msgstr "In Ihrem Konto gespeichert."

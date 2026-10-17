@@ -1,0 +1,11 @@
+{
+  "alerts": [
+    "Geben Sie eine deutsche Postleitzahl mit fünf Ziffern ein.",
+    "Bitte füllen Sie dieses Feld aus.",
+    "Bitte füllen Sie dieses Feld aus."
+  ],
+  "lang": "de-DE",
+  "scrollWidth": 1440,
+  "url": "http://127.0.0.1:9117/de/loesungskonfigurator/",
+  "width": 1440
+}

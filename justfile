@@ -379,10 +379,11 @@ banned-words:
     echo "banned-words: clean"
 
 # German formal catalogs: untranslated entries minus the developer-facing
-# exemption list must be zero (tools/checks/i18n-coverage.py).
+# exemption list must be zero. linker-tools also checks source coverage and
+# byte-for-byte JSON reproduction via WP-CLI (tools/checks/i18n-coverage.py).
 [group('check')]
 i18n-coverage:
-    python3 "{{ justfile_directory() }}/tools/checks/i18n-coverage.py"
+    PHP={{ php }} python3 "{{ justfile_directory() }}/tools/checks/i18n-coverage.py"
 
 # Rebuild commerce catalogs from PHP/JS/build and live catalog strings in LC
 # fragments. Both input POTs are extracted fresh; no previous POT is merged.
@@ -401,6 +402,13 @@ i18n-commerce name:
     msgcat --use-first --sort-by-file "$extraction/code.pot" "$extraction/fragments.pot" -o "$catalogs.pot"
     msgmerge --update --backup=none --no-fuzzy-matching "$catalogs-de_DE_formal.po" "$catalogs.pot"
     msgfmt --check "$catalogs-de_DE_formal.po" -o "$catalogs-de_DE_formal.mo"
+
+# #302: the PO remains the authority for both scripts; no instance is needed.
+# --no-purge preserves JS messages for subsequent extraction and regeneration.
+[group('build')]
+i18n-tools:
+    {{ php }} "$(command -v wp)" i18n make-json "{{ justfile_directory() }}/plugins/linker-tools/languages/linker-tools-de_DE_formal.po" --no-purge
+    msgfmt --check "{{ justfile_directory() }}/plugins/linker-tools/languages/linker-tools-de_DE_formal.po" -o "{{ justfile_directory() }}/plugins/linker-tools/languages/linker-tools-de_DE_formal.mo"
 
 # Every catalog compiles: msgfmt --check over each plugin's .po and .pot
 # (tools/checks/i18n-validity.py). The coverage gate above reads the German

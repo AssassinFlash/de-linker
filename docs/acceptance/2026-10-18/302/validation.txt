@@ -1,0 +1,61 @@
+#302 validation
+just check: PASS (exit 0)
+just test: PASS (exit 0)
+
+just check: final gates
+Success: no issues found in 21 source files
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c302/tools/cutover && uv run --locked ruff check . && uv run --locked ruff format --check . && uv run --locked mypy .
+All checks passed!
+12 files already formatted
+Success: no issues found in 12 source files
+banned-words: clean
+PHP=/opt/homebrew/opt/php@8.3/bin/php python3 "/Users/chesterjohn/Documents/de-linker-worktrees/c302/tools/checks/i18n-coverage.py"
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: untranslated=49 exempt=49 gap=0
+plugins/linker-i18n/languages/linker-i18n-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source gaps=0 JSON problems=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+i18n-coverage: clean
+python3 "/Users/chesterjohn/Documents/de-linker-worktrees/c302/tools/checks/i18n-validity.py"
+i18n-validity: clean (5 catalogs)
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c302/plugins/linker-tools && npm run --silent build:check
+build/ matches its sources.
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c302/plugins/linker-commerce && npm run --silent build:check
+build/ matches its sources.
+
+just test: suite results
+== plugins/linker-commerce: PHPUnit
+== plugins/linker-i18n: PHPUnit
+OK (190 tests, 432 assertions)
+== plugins/linker-tools: PHPUnit
+OK (188 tests, 2023 assertions)
+== mu-plugins: PHPUnit
+OK (6 tests, 23 assertions)
+ Test Files  21 passed (21)
+      Tests  134 passed (134)
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+# tests 46
+# pass 46
+# fail 0
+  9 passed (35.0s)
+== services/genie: pytest
+============================= 723 passed in 18.18s =============================
+== services/engine: pytest
+============================= 112 passed in 6.47s ==============================
+== tools/local: pytest
+======================== 98 passed in 158.29s (0:02:38) ========================
+== tools/migrate: pytest
+======================== 106 passed, 9 skipped in 4.18s ========================
+== tools/faq: pytest
+============================== 20 passed in 0.11s ==============================
+============================= 113 passed in 52.49s =============================
+============================== 82 passed in 2.50s ==============================
+
+Focused TDD: tools/migrate/tests/test_i18n_coverage.py: 12 passed.
+Focused configurator DOM/i18n: 18 passed.
+Chromium configurator regression: 9 passed.
+Catalog and browser-payload comparison: 209 -> 209; 0 lost, 0 changed, 0 added.
+Genie JSON: byte-for-byte unchanged.
+
+Changed source additions: old-identifier scan PASS (0 matches).
+No account, translation-service, NLU or engine mechanisms changed.

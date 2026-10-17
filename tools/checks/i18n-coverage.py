@@ -12,6 +12,11 @@ Also rejects obsolete messages still used in PHP gettext calls, JS/build
 gettext calls or LiveCanvas fragment text/labels. Source usage is checked
 independently of the POT's references.
 
+For linker-tools (#302), runtime PHP/JS/TS messages in the plugin's text domain
+must also exist in the PO, and every shipped script JSON must match the native
+WP-CLI make-json output byte-for-byte. Regeneration runs in a temporary directory
+with --no-purge so the source PO is never modified.
+
 Exit 0 when every gap is 0 and no live message is obsolete. Exit 1 when a gap
 remains, an exemption is stale, a live message is obsolete, or msgattrib fails.
 
@@ -22,11 +27,14 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from i18n_sources import catalog_msgids, source_references
+from i18n_sources import catalog_msgids, code_references, source_references
 
 ROOT = Path(__file__).resolve().parents[2]
 EXEMPT_PATH = Path(__file__).resolve().parent / "i18n-exempt.json"
@@ -102,6 +110,43 @@ def load_exemptions() -> dict[str, list[dict[str, str]]]:
     return catalogs_in
 
 
+def script_json_problems(catalog: Path) -> list[str]:
+    """Compare shipped script JSON byte-for-byte with native, non-purging output."""
+    wp = shutil.which("wp")
+    if wp is None:
+        # Version source: tools/local/src/linker_local/wpcli.py (production).
+        return ["JSON reproducibility requires WP-CLI 2.12 (the local stack version)."]
+    with TemporaryDirectory(prefix="linker-i18n-") as directory:
+        result = subprocess.run(
+            [
+                os.environ.get("PHP", "php"),
+                wp,
+                "i18n",
+                "make-json",
+                str(catalog),
+                directory,
+                "--no-purge",
+                "--quiet",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            return [f"JSON regeneration failed: {result.stderr.strip()}"]
+        generated = {path.name: path for path in Path(directory).glob("*.json")}
+        shipped = {path.name: path for path in catalog.parent.glob("*.json")}
+        problems = []
+        for name in sorted(generated.keys() | shipped.keys()):
+            if name not in generated:
+                problems.append(f"JSON not generated from PO: {name}")
+            elif name not in shipped:
+                problems.append(f"JSON missing from languages/: {name}")
+            elif generated[name].read_bytes() != shipped[name].read_bytes():
+                problems.append(f"JSON differs from make-json output: {name}")
+        return problems
+
+
 def main() -> int:
     exemptions = load_exemptions()
     found = catalogs()
@@ -121,6 +166,26 @@ def main() -> int:
 
     for catalog in found:
         plugin = (ROOT / catalog).parent.parent
+        if plugin.name == "linker-tools":
+            messages = set(catalog_msgids(ROOT / catalog))
+            missing_source = {
+                msgid: references
+                for msgid, references in code_references(plugin).items()
+                if msgid not in messages
+            }
+            for msgid, references in missing_source.items():
+                print(f"{catalog}: source msgid missing from PO: {msgid!r}")
+                for path, line in references:
+                    print(f"  source: {plugin.relative_to(ROOT)}/{path}:{line}")
+                failed = True
+            problems = script_json_problems(ROOT / catalog)
+            for problem in problems:
+                print(f"{catalog}: {problem}")
+                failed = True
+            print(
+                f"{catalog}: source gaps={len(missing_source)} "
+                f"JSON problems={len(problems)}"
+            )
         used_obsolete = source_references(
             plugin, catalog_msgids(ROOT / catalog, obsolete=True)
         )
