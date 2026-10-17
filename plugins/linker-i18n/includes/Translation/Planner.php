@@ -46,11 +46,14 @@ final class Planner {
 	public function plan( string $value, bool $html, ?array $current, ?array $unit, bool $force ): FieldPlan {
 		$english = $this->split( $value, $html );
 		unset( $force );
+		if ( null !== $unit && $unit['src'] === $english->hashes() ) {
+			return FieldPlan::keep( $english, $current[0] ?? '' );
+		}
 		if ( null === $current || ( '' === trim( $current[0] ) && array() !== $english->segments ) ) {
 			return FieldPlan::build( $english );
 		}
 		// Owner's PR #277 ruling: adopt existing German without translating it.
-		if ( null === $unit || $unit['src'] === $english->hashes() ) {
+		if ( null === $unit ) {
 			return FieldPlan::keep( $english, $current[0] );
 		}
 		$german = $this->split( $current[0], $html );

@@ -66,6 +66,15 @@ final class PlannerTest extends TestCase {
 	}
 
 	/**
+	 * An empty German field accepted in a baseline stays empty while English is unchanged.
+	 */
+	public function test_unchanged_english_does_not_fill_an_adopted_empty_field(): void {
+		$plan = $this->planner()->plan( self::ENGLISH, true, null, $this->unit(), false );
+		$this->assertSame( array(), $plan->missing() );
+		$this->assertSame( '', $plan->render( array() ) );
+	}
+
+	/**
 	 * Only changed English goes to the model, even after a German manual edit.
 	 */
 	public function test_changed_english_replaces_a_manually_edited_german_segment(): void {

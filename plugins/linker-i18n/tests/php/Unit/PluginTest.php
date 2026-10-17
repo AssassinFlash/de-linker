@@ -64,6 +64,8 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'rest_request_after_callbacks', RestLang::class, 'leave', 10, 1 ),
 		array( 'action', 'pre_get_posts', RestLang::class, 'posts', 10, 1 ),
 		array( 'filter', 'get_terms_args', RestLang::class, 'terms', 10, 2 ),
+		array( 'action', 'pre_post_update', Jobs::class, 'before_post_saved', 10, 1 ),
+		array( 'action', 'edit_terms', Jobs::class, 'before_term_saved', 10, 1 ),
 		array( 'action', 'wp_after_insert_post', Jobs::class, 'post_saved', 10, 2 ),
 		array( 'action', 'created_term', Jobs::class, 'term_saved', 10, 3 ),
 		array( 'action', 'edited_term', Jobs::class, 'term_saved', 10, 3 ),

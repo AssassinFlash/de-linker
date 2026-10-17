@@ -79,7 +79,8 @@ final class ManualGermanTest extends SiteTestCase {
 				wp_update_post( wp_slash( array( "ID" => $en, "post_content" => $source ) ) );
 				do_action( "linker_i18n_translate", "post", $en, false, 1 );
 				$expected = preg_replace( "/" . preg_quote( "Wir arbeiten mit Installateuren und EPCs in ganz Europa zusammen, um den Aufwand bei Speichern zu reduzieren.", "/" ) . "/", "[de] " . $new, $fixture["german"], 1 );
-				$second = array( "replaced" => $replaced, "exact" => $expected === get_post( $de )->post_content, "calls" => count( $calls ), "status" => get_post_meta( $en, "_linker_i18n_status", true ) );
+				$payload = json_decode( end( $calls[0]["messages"] )["content"], true );
+				$second = array( "replaced" => $replaced, "exact" => $expected === get_post( $de )->post_content, "calls" => count( $calls ), "status" => get_post_meta( $en, "_linker_i18n_status", true ), "segments" => $payload["segments"], "seo_kept" => "" === get_post_meta( $de, "_seopress_titles_desc", true ) );
 				$before = get_post( $de )->post_content; $hash = get_post_meta( $de, "_linker_i18n_source_hash", true );
 				wp_update_post( wp_slash( array( "ID" => $en, "post_content" => $source . "<p>Another sentence with no German slot.</p>" ) ) );
 				do_action( "linker_i18n_translate", "post", $en, true, 1 );
@@ -107,6 +108,8 @@ final class ManualGermanTest extends SiteTestCase {
 		$this->assertTrue( $result[1]['exact'] );
 		$this->assertSame( 1, $result[1]['calls'] );
 		$this->assertSame( 'synced', $result[1]['status'] );
+		$this->assertSame( array( 'We work alongside installers and EPCs across Europe to simplify storage projects.' ), $result[1]['segments'] );
+		$this->assertTrue( $result[1]['seo_kept'] );
 		$this->assertTrue( $result[2]['same'] );
 		$this->assertTrue( $result[2]['baseline_kept'] );
 		$this->assertSame( 1, $result[2]['calls'] );
