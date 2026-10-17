@@ -174,8 +174,8 @@ def plan(
             hint=(
                 "This is a sizing question. The Solution Configurator sizes the "
                 "system from the customer's PV and consumption: say so in one or "
-                "two sentences and add the open_configurator action with the "
-                "configurator_url fact as args.url. No product cards."
+                "two sentences and add the open_configurator action (the "
+                "service fills its URL). No product cards."
             ),
             reasons=tuple(reasons),
         )

@@ -160,3 +160,25 @@ def test_real_client_sends_no_token() -> None:
         assert client._client.headers.get("authorization") is None
     finally:
         client.close()
+
+
+def test_the_prompt_lists_the_document_refs_the_route_fetched() -> None:
+    from linker_genie.agent import _user_prompt
+    from linker_genie.facts import Document, TurnFacts
+    from linker_genie.route import Route
+    from linker_genie.schema import TurnRequest
+    from linker_genie.understand import Prepared
+
+    facts = TurnFacts()
+    facts.documents["p4106.document.0"] = Document(
+        "https://de-linker.test/a.pdf", "SAJ CHS2 Datasheet", None
+    )
+    prepared = Prepared(route=Route("documents"), facts=facts)
+    request = TurnRequest.model_validate(
+        {"conversation_id": "c", "messages": [{"role": "user", "content": "CB2?"}]}
+    )
+    prompt = _user_prompt(request, None, prepared)
+    assert (
+        "Document refs you may link, and no others: p4106.document.0 = SAJ CHS2 Datasheet"
+        in prompt
+    )

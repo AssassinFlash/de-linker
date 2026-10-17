@@ -82,8 +82,21 @@ BANNED_WORDS = re.compile(
 )
 
 
+# A model code written whole: upper-case letters and digits joined by hyphens or
+# slashes, with at least one letter ("CB2-100.3-HV5", "HS3-5K-T2-W/G-PX"). Its
+# numeric segments are part of the name, not numbers: "CB2-100.3-HV5" was refused
+# as the number "100.3" again and again (trial question 10, 2026-10-17), although
+# the prompt asks for model names as plain codes. "3-phase" (lower case) and
+# "10-20" (no letter) are not codes and stay caught.
+_MODEL_CODE = re.compile(
+    r"(?<![\w.])(?=[A-Z0-9.,/-]*[A-Z])[A-Z0-9]+(?:[.,][0-9]+)?"
+    r"(?:[-/][A-Z0-9]+(?:[.,][0-9]+)?)+(?![\w])"
+)
+
+
 def _bare_numbers(text: str) -> list[str]:
     """Digit tokens that stand outside alphanumeric model codes."""
+    text = _MODEL_CODE.sub(" ", text)
     return [token for token in _TOKEN.findall(text) if _NUMERIC_TOKEN.fullmatch(token)]
 
 
@@ -259,6 +272,10 @@ def _actions(output: TurnOutput, facts: TurnFacts) -> list[str]:
         # view_inquiry URL, which no tool returns — is refused here; the
         # shell links such actions to the account page itself.
         url = args.get("url")
+        if block.name == "open_configurator" and "size.configurator_url" in facts.facts:
+            # The service writes this URL from size-hint (hydrate.py); what the
+            # model put there is replaced, not checked.
+            continue
         if isinstance(url, str) and url and url not in fact_values:
             failures.append(f"action {block.name} url is not from this turn's tools")
     return failures

@@ -340,3 +340,57 @@ def test_a_german_link_of_several_pages_keeps_s() -> None:
         b for b in hydrate(output, _facts()).blocks if isinstance(b, DocumentBlock)
     ]
     assert link.label == "SAJ H2 user manual · S.\u00a07, 42"
+
+
+def test_the_service_writes_the_configurator_link() -> None:
+    facts = _facts()
+    url = "https://de-linker.com/solution-configurator/?pv_kwp=8&annual_kwh=6000"
+    facts.add(Fact(id="size.configurator_url", value=url, source="size-hint"))
+    for args in ({}, {"url": "https://de-linker.com/solution-configurator/?pv=8"}):
+        output = _turn(
+            TextBlock(text="The configurator sizes it."),
+            ActionBlock(name="open_configurator", args=args),
+        )
+        assert check(output, facts, SIZE).ok
+        action = hydrate(output, facts).blocks[1]
+        assert isinstance(action, ActionBlock)
+        assert action.args["url"] == url
+
+
+def test_without_size_hint_an_invented_configurator_link_is_refused() -> None:
+    output = _turn(
+        TextBlock(text="Open it."),
+        ActionBlock(
+            name="open_configurator", args={"url": "https://elsewhere.example/"}
+        ),
+    )
+    assert (
+        "action open_configurator url is not from this turn's tools"
+        in check(output, _facts()).failures
+    )
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "The CB2-100.3-HV5 stands on the floor.",
+        "Der HS3-5K-T2-W/G-PX ist dreiphasig.",
+        "The GW8.3-BAT-D-G21 module fits.",
+    ],
+)
+def test_a_model_code_written_whole_is_no_number(text: str) -> None:
+    assert check(_turn(TextBlock(text=text)), _facts()).ok
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["It is a 3-phase unit.", "Choose 10-20 modules.", "It holds 100.3 of energy."],
+)
+def test_numbers_beside_codes_are_still_refused(text: str) -> None:
+    result = check(_turn(TextBlock(text=text)), _facts())
+    assert any(f.startswith("model text contains numbers") for f in result.failures)
+
+
+def test_a_document_of_this_turn_may_be_cited_in_refs() -> None:
+    output = _turn(TextBlock(text="See the datasheet.", refs=["compat.document.0"]))
+    assert check(output, _facts()).ok

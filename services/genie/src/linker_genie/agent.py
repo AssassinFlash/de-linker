@@ -266,6 +266,17 @@ def _user_prompt(
             "do not call the same tool again with the same input): "
             + results[:MAX_RESULT_CHARS]
         )
+    if prepared is not None and prepared.facts.documents:
+        # The refs a document block may name, spelled out: the model guessed
+        # `p4106.document.1` where get-product had listed one document (trial
+        # question 10, 2026-10-17), and grounding refused the turn twice.
+        lines.append(
+            "Document refs you may link, and no others: "
+            + "; ".join(
+                f"{ref} = {document.title}"
+                for ref, document in prepared.facts.documents.items()
+            )
+        )
     if retry_reason:
         lines.append("The previous answer failed grounding: " + retry_reason)
         lines.append("Produce a new structured turn that passes the checks.")
@@ -286,7 +297,8 @@ def _user_prompt(
         "placeholder renders the whole range. Or leave the number unsaid. "
         "A document (a search-knowledge chunk ID, compat.document.N, "
         "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
-        "get-product lists) is never a placeholder and never a URL in "
+        "get-product listed this turn — such a ref exists only after get-product "
+        "returned it) is never a placeholder and never a URL in "
         'the text: add a block {"type":"document","ref":"<that ID>"}. '
         "Never write article, catalogue, cart or basket (Artikel, Katalog, "
         "Warenkorb): say product, product category, solution draft. "

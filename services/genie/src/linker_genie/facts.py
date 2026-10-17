@@ -47,7 +47,14 @@ class TurnFacts:
         self.facts[fact.id] = fact
 
     def ids(self) -> set[str]:
-        return set(self.facts) | {str(pid) for pid in self.product_ids} | self.chunk_ids
+        return (
+            set(self.facts)
+            | {str(pid) for pid in self.product_ids}
+            | self.chunk_ids
+            # A document of this turn may be cited like a chunk (trial question
+            # 10 cited `p4106.document.0` in refs, 2026-10-17).
+            | set(self.documents)
+        )
 
 
 def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:

@@ -14,6 +14,7 @@ import re
 
 from linker_genie.facts import Document, Fact, TurnFacts
 from linker_genie.schema import (
+    ActionBlock,
     Block,
     DocumentBlock,
     HandoffBlock,
@@ -46,6 +47,17 @@ def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
             blocks.append(
                 block.model_copy(update={"summary": fill(block.summary, facts)})
             )
+        elif (
+            isinstance(block, ActionBlock)
+            and block.name == "open_configurator"
+            and "size.configurator_url" in facts.facts
+        ):
+            # The configurator link is the service's, like a document link: the
+            # model copied size-hint's URL wrong twice in a row on trial question
+            # 14 (2026-10-17, "action open_configurator url is not from this
+            # turn's tools"), so it is filled here from the tool result.
+            url = facts.facts["size.configurator_url"].value
+            blocks.append(block.model_copy(update={"args": {**block.args, "url": url}}))
         elif isinstance(block, DocumentBlock):
             document = facts.documents.get(block.ref)
             if document is None:
