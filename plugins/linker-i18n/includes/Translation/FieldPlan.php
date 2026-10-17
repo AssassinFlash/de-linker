@@ -89,9 +89,22 @@ final class FieldPlan {
 			$html = $this->english->render( $translations, $this->verbatim );
 			return null === $localize ? $html : $localize( $html );
 		}
-		$bytes = $this->verbatim;
+		$bytes = array();
 		foreach ( $translations as $index => $text ) {
-			$html            = $this->english->segments[ $index ]->render( $text, $translations );
+			$segment = $this->english->segments[ $index ];
+			$map     = $segment->map;
+			foreach ( $map as $key => $part ) {
+				if ( $part instanceof TagPart ) {
+					foreach ( $this->target->segments[ $index ]->map as $german ) {
+						if ( $german instanceof TagPart && $german->attributes === $part->attributes ) {
+							$map[ $key ] = new TagPart( $german->tag, $part->attributes );
+							break;
+						}
+					}
+				}
+			}
+			$changed         = new Segment( $segment->text, $segment->raw, $map, $segment->html );
+			$html            = $changed->render( $text, $translations );
 			$bytes[ $index ] = null === $localize ? $html : $localize( $html );
 		}
 		return $this->target->render( array(), $bytes );

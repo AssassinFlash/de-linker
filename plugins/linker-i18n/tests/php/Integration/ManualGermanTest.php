@@ -18,6 +18,58 @@ namespace Linker\I18n\Tests\Integration;
 final class ManualGermanTest extends SiteTestCase {
 
 	/**
+	 * Native writes preserve untouched attributes and expose unsafe inline alignment.
+	 *
+	 * @dataProvider markup_cases
+	 * @param string             $english Old source.
+	 * @param string             $german Human German.
+	 * @param string             $next New source.
+	 * @param string             $expected Expected German bytes.
+	 * @param string             $status Expected source status.
+	 * @param array<int, string> $wanted The only texts allowed in model requests.
+	 * @phpstan-param list<string> $wanted
+	 */
+	public function test_markup_preservation( string $english, string $german, string $next, string $expected, string $status, array $wanted ): void {
+		$result = self::php(
+			'
+			$ids = array(); $sent = array();
+			add_filter( "pre_http_request", static function ( $pre, $args, $url ) use ( &$sent ) { if ( str_starts_with( $url, (string) getenv( "LINKER_I18N_STUB" ) ) ) { $body = json_decode( $args["body"], true ); $payload = json_decode( end( $body["messages"] )["content"], true ); array_push( $sent, ...$payload["segments"] ); } return $pre; }, 1, 3 );
+			try {
+				$en = wp_insert_post( wp_slash( array( "post_type" => "page", "post_status" => "private", "post_title" => "i253 markup case", "post_content" => $input["english"] ) ) ); $ids[] = $en;
+				$de = wp_insert_post( wp_slash( array( "post_type" => "page", "post_status" => "private", "post_title" => "i253 Markup", "post_content" => $input["german"] ) ) ); $ids[] = $de;
+				pll_set_post_language( $en, "en" ); pll_set_post_language( $de, "de" ); pll_save_post_translations( array( "en" => $en, "de" => $de ) );
+				wp_update_post( wp_slash( array( "ID" => $en, "post_content" => $input["next"] ) ) );
+				do_action( "linker_i18n_translate", "post", $en, false, 1 );
+				return array( get_post( $de )->post_content, get_post_meta( $en, "_linker_i18n_status", true ), $sent );
+			} finally {
+				foreach ( as_get_scheduled_actions( array( "hook" => "linker_i18n_translate", "group" => "linker-i18n", "status" => "pending", "per_page" => -1 ), "ids" ) as $action ) { $args = ActionScheduler::store()->fetch_action( $action )->get_args(); if ( "post" === $args[0] && in_array( (int) $args[1], $ids, true ) ) { ActionScheduler::store()->cancel_action( $action ); } }
+				foreach ( $ids as $id ) { wp_delete_post( $id, true ); }
+			}
+			',
+			array(
+				'english' => $english,
+				'german'  => $german,
+				'next'    => $next,
+			),
+			true
+		);
+		$this->assertSame( array( $expected, $status, $wanted ), $result );
+	}
+
+	/**
+	 * Concrete cases found by the independent first-round review.
+	 *
+	 * @return array<string, array{string, string, string, string, string, list<string>}>
+	 */
+	public function markup_cases(): array {
+		return array(
+			'attribute quotes'         => array( "<p>First.</p><img alt='Battery'><p>Second.</p>", "<p>Erste.</p><img alt='Batterie'><p>Zweite.</p>", "<p>First.</p><img alt='Battery'><p>Changed second.</p>", "<p>Erste.</p><img alt='Batterie'><p>[de] Changed second.</p>", 'synced', array( 'Changed second.' ) ),
+			'inline German title'      => array( "<p>First <a title='Download'>sentence</a>.</p>", "<p>Erster <a title='Herunterladen'>Satz</a>.</p>", "<p>Changed first <a title='Download'>sentence</a>.</p>", "<p>[de] Changed first <a title='Herunterladen'>sentence</a>.</p>", 'synced', array( 'Changed first <t1>sentence</t1>.' ) ),
+			'unsafe sentence boundary' => array( '<p>First sentence. <strong>Second sentence.</strong></p>', '<p>Erster Satz. <strong>Zweiter Satz.</strong></p>', '<p>First sentence. <strong>Changed second sentence.</strong></p>', '<p>Erster Satz. <strong>Zweiter Satz.</strong></p>', 'structure_mismatch', array() ),
+		);
+	}
+
+	/**
 	 * The first real English edit works even before any baseline scan was run.
 	 */
 	public function test_first_post_and_term_edits_capture_the_previous_english(): void {

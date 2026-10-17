@@ -57,7 +57,7 @@ final class Planner {
 			return FieldPlan::keep( $english, $current[0] );
 		}
 		$german = $this->split( $current[0], $html );
-		if ( count( $unit['src'] ) !== count( $german->segments ) || count( $unit['src'] ) !== count( $english->segments ) || $this->roles( $english ) !== $this->roles( $german ) ) {
+		if ( count( $unit['src'] ) !== count( $german->segments ) || count( $unit['src'] ) !== count( $english->segments ) || $english->segment_roles() !== $german->segment_roles() ) {
 			return FieldPlan::blocked( $english, $current[0] );
 		}
 		$runs     = $this->aligner->runs( $unit['src'], $english->hashes() );
@@ -70,33 +70,17 @@ final class Planner {
 			for ( $k = 0; $k < $run[2] - $run[1]; $k++ ) {
 				$index = $run[3] + $k;
 				if ( 'equal' !== $run[0] ) {
+					// An inline element may span a sentence boundary. Do not send
+					// that unsplittable run as one replacement for several sentences.
+					$visible = (string) preg_replace( Segment::PLACEHOLDER, '', $english->segments[ $index ]->text );
+					if ( 1 === preg_match( '/[.!?]\s+(?=\p{Lu})/u', $visible ) ) {
+						return FieldPlan::blocked( $english, $current[0] );
+					}
 					continue;
 				}
 				$verbatim[ $index ] = $german->segments[ $run[1] + $k ]->raw;
 			}
 		}
 		return FieldPlan::build( $english, $verbatim, $german );
-	}
-
-	/**
-	 * Text and attribute slots may not be mistaken for one another.
-	 *
-	 * @param Document $document English or German document.
-	 * @return list<string>
-	 */
-	private function roles( Document $document ): array {
-		$roles = array_fill( 0, count( $document->segments ), 'text' );
-		$parts = $document->parts;
-		foreach ( $document->segments as $segment ) {
-			array_push( $parts, ...array_values( $segment->map ) );
-		}
-		foreach ( $parts as $part ) {
-			if ( $part instanceof TagPart ) {
-				foreach ( $part->attributes as $attribute => $index ) {
-					$roles[ $index ] = 'attribute:' . $attribute;
-				}
-			}
-		}
-		return array_values( $roles );
 	}
 }

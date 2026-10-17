@@ -76,7 +76,7 @@ msgstr "Diese Inhalte werden über das Repository verwaltet."
 
 #: includes/Admin/StatusColumn.php:153
 msgid "German sync has been queued."
-msgstr "Die deutsche Synchronisierung wurde eingeplant."
+msgstr "Die Synchronisierung der deutschen Fassung wurde eingeplant."
 
 #: includes/SameSlug/Lookup.php:116
 msgid "Invalid product slug."

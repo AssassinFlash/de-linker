@@ -180,4 +180,53 @@ final class PlannerTest extends TestCase {
 		$this->assertSame( array( 'Neu.' ), $seen );
 		$this->assertSame( '<p><a href="/products/">Manueller Link.</a></p><p>Neu.</p>', $output );
 	}
+
+	/**
+	 * An untouched attribute keeps its original quote style byte for byte.
+	 */
+	public function test_unchanged_attribute_bytes_are_not_normalised(): void {
+		$english = "<p>First.</p><img alt='Battery'><p>Second.</p>";
+		$german  = "<p>Erste.</p><img alt='Batterie'><p>Zweite.</p>";
+		$unit    = array(
+			'src'      => $this->planner()->split( $english, true )->hashes(),
+			'out'      => array(),
+			'conflict' => false,
+		);
+		$plan    = $this->planner()->plan( str_replace( 'Second', 'Changed second', $english ), true, array( $german, true ), $unit, false );
+		$this->assertSame( array( 2 ), $plan->missing() );
+		$this->assertSame( "<p>Erste.</p><img alt='Batterie'><p>Neu.</p>", $plan->render( array( 2 => 'Neu.' ) ) );
+	}
+
+	/**
+	 * Translating a sentence may not replace its unchanged German title with English.
+	 */
+	public function test_changed_sentence_keeps_its_existing_german_attribute(): void {
+		$english = "<p>First <a title='Download'>sentence</a>.</p>";
+		$german  = "<p>Erster <a title='Herunterladen'>Satz</a>.</p>";
+		$unit    = array(
+			'src'      => $this->planner()->split( $english, true )->hashes(),
+			'out'      => array(),
+			'conflict' => false,
+		);
+		$plan    = $this->planner()->plan( str_replace( 'First', 'Changed first', $english ), true, array( $german, true ), $unit, false );
+		$this->assertSame( array( 1 ), $plan->missing() );
+		$this->assertSame( "<p>Geänderter <a title='Herunterladen'>Satz</a>.</p>", $plan->render( array( 1 => 'Geänderter <t1>Satz</t1>.' ) ) );
+	}
+
+	/**
+	 * Inline sentence boundaries that cannot be split safely are visible exceptions.
+	 */
+	public function test_ambiguous_inline_sentence_boundary_preserves_the_whole_field(): void {
+		$english = '<p>First sentence. <strong>Second sentence.</strong></p>';
+		$german  = '<p>Erster Satz. <strong>Zweiter Satz.</strong></p>';
+		$unit    = array(
+			'src'      => $this->planner()->split( $english, true )->hashes(),
+			'out'      => array(),
+			'conflict' => false,
+		);
+		$plan    = $this->planner()->plan( str_replace( 'Second', 'Changed second', $english ), true, array( $german, true ), $unit, false );
+		$this->assertTrue( $plan->mismatch );
+		$this->assertSame( array(), $plan->missing() );
+		$this->assertSame( $german, $plan->render( array() ) );
+	}
 }

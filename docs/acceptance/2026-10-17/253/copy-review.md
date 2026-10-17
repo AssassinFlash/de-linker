@@ -34,6 +34,6 @@
 |---|---|---|
 | German out of date: structure differs | Deutsch nicht aktuell: abweichende Struktur | 状态列及摘要异常原因 |
 | Sync German | Deutsch synchronisieren | 行动作，遵守原样保留及增量规则 |
-| German sync has been queued. | Die deutsche Synchronisierung wurde eingeplant. | 排队成功提示，允许零调用的基线收养 |
+| German sync has been queued. | Die Synchronisierung der deutschen Fassung wurde eingeplant. | 排队成功提示，允许零调用的基线收养 |
 
-第一轮这三组措辞随修改差异作独立 Spec 评审，结果补入本轮记录。
+独立 Spec 评审：结构异常与同步动作可原样定稿；排队提示的 DE 初稿“Die deutsche Synchronisierung”略生硬，建议明确为“Die Synchronisierung der deutschen Fassung”。已采纳，表中为定稿。EN 不变；三组定稿已同步 .pot/.po/.mo。

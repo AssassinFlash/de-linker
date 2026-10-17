@@ -23,6 +23,8 @@
 
 `PlannerTest` 另核同一段落内只改一句、人工双空格及 markup 保留、仅新片段走链接本地化；`CliCandidatesTest` 核实缺失/pending 筛选，排除已有德语的 synced/failed/needs_review/structure_mismatch。
 
+独立 Spec 复核又指出属性引号被规范化、改句内德语 title 回退英文、跨 inline 标签的句界，以及未改 SEO 随正文合批的问题。已补精确输出及请求 segments 断言：未改属性不经回填，改句内使用既有德语属性；无法安全分句的跨标签 run 作为结构异常保留，零模型调用；已收养的空/缺字段在英文未变时仍保持空/缺。`Document::segment_roles()` 承接角色提取，按 Standards 建议从 Planner 移回文档表示所属模块。
+
 ## 上线步骤（尚未授权执行）
 
 Claude 评审与合并后，另获业主上线及生产密钥写入同意，再协调唯一部署窗口：备份 → 部署安全代码并读回 → 退休两类模板遗留任务及状态 → 网站目录之外写密钥并读回 → 处理当前 6 个 pending 页面及 `translate --missing` 补缺 → 逐项核对成功、失败或结构异常 → 网页后台保存英文产品、异步官方翻译及德语前台实走 → cutover verify。

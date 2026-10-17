@@ -36,6 +36,27 @@ final class Document {
 	}
 
 	/**
+	 * Text and attribute slots must align before an incremental replacement.
+	 *
+	 * @return list<string>
+	 */
+	public function segment_roles(): array {
+		$roles = array_fill( 0, count( $this->segments ), 'text' );
+		$parts = $this->parts;
+		foreach ( $this->segments as $segment ) {
+			array_push( $parts, ...array_values( $segment->map ) );
+		}
+		foreach ( $parts as $part ) {
+			if ( $part instanceof TagPart ) {
+				foreach ( $part->attributes as $attribute => $index ) {
+					$roles[ $index ] = 'attribute:' . $attribute;
+				}
+			}
+		}
+		return array_values( $roles );
+	}
+
+	/**
 	 * The value with segments replaced by translations; a segment without a
 	 * translation keeps its own bytes.
 	 *
