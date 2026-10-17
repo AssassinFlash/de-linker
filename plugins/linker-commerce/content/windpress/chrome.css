@@ -47,10 +47,10 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 .tv-desktop-nav{display:none}
 @media (min-width:1280px){#tv-header-v2 .tv-desktop-nav{display:flex;align-items:center;gap:4px;flex:0 0 auto}}
 /* #229: keep the existing German labels in the desktop row. The measured
- * six-link row needs 120px less horizontal padding to fit beside the contact
+ * six-link row returns 108px of horizontal padding to fit beside the contact
  * button (docs/acceptance/2026-10-18/229/README.md). English and mobile retain
  * their original spacing; header-menu.js still owns overflow disclosure. */
-@media (min-width:1280px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-left:4px;padding-right:4px}}
+@media (min-width:1280px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-left:5px;padding-right:5px}}
 #tv-header-v2 .tv-nav-item{position:relative}
 #tv-header-v2 .tv-nav-link{display:inline-flex;align-items:center;gap:4px;height:44px;min-height:44px;padding:0 14px;font-family:inherit;color:var(--proto-ink);text-decoration:none;background:none;border:0;border-radius:8px;cursor:pointer;transition:color 200ms cubic-bezier(.2,0,0,1),background 200ms cubic-bezier(.2,0,0,1);white-space:nowrap;touch-action:manipulation}
 #tv-header-v2 .tv-nav-link:hover{color:var(--proto-teal-600);background:var(--proto-teal-50)}
