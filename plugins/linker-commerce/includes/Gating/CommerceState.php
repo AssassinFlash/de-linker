@@ -49,12 +49,24 @@ final class CommerceState {
 	public function __construct( private readonly Approval $approval = new Approval() ) {}
 
 	/**
-	 * Whether the product is quoted per project; a variation follows its parent.
+	 * Whether the product is quoted per project; a variation follows its parent,
+	 * and a German product its English one (`linker_commerce_facts_product_id`,
+	 * answered by linker-i18n): the mode is the English record's, as the
+	 * selection facts are, and the solution draft holds the English product
+	 * (the German twin of 1957 carries no mode of its own in the live snapshot
+	 * of 2026-10-17, and its page showed the price an English page hides).
 	 *
 	 * @param WC_Product $product Product.
 	 */
 	public function is_rfq_only( WC_Product $product ): bool {
 		$id = $product->get_parent_id() > 0 ? $product->get_parent_id() : $product->get_id();
+		// The same guard as SelectionFacts::for_product(): without the
+		// language layer listening, the product answers itself.
+		if ( \function_exists( 'has_filter' ) && has_filter( 'linker_commerce_facts_product_id' ) ) {
+			/** This filter is documented in includes/Products/SelectionFacts.php */
+			$source = (int) apply_filters( 'linker_commerce_facts_product_id', $id );
+			$id     = $source > 0 ? $source : $id;
+		}
 		return self::RFQ_ONLY === get_post_meta( $id, self::MODE_META, true );
 	}
 
@@ -92,6 +104,28 @@ final class CommerceState {
 	 */
 	public function shows_price( WC_Product $product ): bool {
 		return $this->visitor_sees_prices() && ! $this->is_rfq_only( $product );
+	}
+
+	/**
+	 * Why the product page shows a text instead of the price, or null when it
+	 * shows the price. The page decides in its own order: an account without
+	 * prices reads its account's reason first (a guest signs in, an account
+	 * waiting for approval hears its state), and an approved account reads
+	 * "quoted per project" or "on request" where there is no price. Genie's
+	 * product cards read the same answer (#242), so a card and its product
+	 * page never disagree.
+	 *
+	 * @param WC_Product $product Product.
+	 * @return self::LOGIN|self::APPROVAL|self::PROJECT|self::UNPRICED|null
+	 */
+	public function page_reason( WC_Product $product ): ?string {
+		if ( ! $this->visitor_sees_prices() ) {
+			return $this->visitor_reason();
+		}
+		if ( $this->is_rfq_only( $product ) ) {
+			return self::PROJECT;
+		}
+		return '' === (string) $product->get_price( 'edit' ) ? self::UNPRICED : null;
 	}
 
 	/**

@@ -129,22 +129,32 @@
       {
         "msgid": "Whether this visitor sees the stored price.",
         "reason": "JSON Schema property description inside ProductCommerce::schema(), attached to search-products and get-product outputs.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:35"
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:58"
       },
       {
         "msgid": "Stored price when it is visible.",
         "reason": "JSON Schema property description on the ability commerce object. Not a page string.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:39"
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:62"
+      },
+      {
+        "msgid": "The price as the product page prints it, when it is visible.",
+        "reason": "JSON Schema property description on the ability commerce object (#242). Not a page string; the card shows the value, not this text.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:66"
+      },
+      {
+        "msgid": "Why this visitor sees no price.",
+        "reason": "JSON Schema property description on the ability commerce object (#242). The card words each reason in linker-tools' own catalog.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:71"
       },
       {
         "msgid": "Whether the product is in stock (the stock the ERP pushed).",
         "reason": "JSON Schema property description on the ability commerce object. The customer-facing stock words are separate and already translated.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:43"
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:75"
       },
       {
         "msgid": "Whether the product is quoted per project.",
         "reason": "JSON Schema property description on the ability commerce object. Not a page string.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:47"
+        "evidence": "plugins/linker-commerce/includes/Abilities/ProductCommerce.php:79"
       },
       {
         "msgid": "Qualifies published products against selection facts, sorts them, and explains each match.",

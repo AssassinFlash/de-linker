@@ -50,6 +50,17 @@ trait MocksLiveProducts {
 	 */
 	protected function mock_live_products( array $ids, bool $migrated = false ): void {
 		$products = LiveProducts::products( $migrated );
+		// No language layer listens: SelectionFacts and CommerceState ask
+		// has_filter() before the twin swap, and a test class earlier in the
+		// run may already have made WP_Mock define the function for the rest
+		// of the process (ComparisonLiveProductsTest has the same guard).
+		WP_Mock::userFunction(
+			'has_filter',
+			array(
+				'return' => false,
+				'times'  => '0+',
+			)
+		);
 		WP_Mock::userFunction(
 			'get_the_terms',
 			array(

@@ -48,6 +48,7 @@ final class Module {
 		foreach ( self::PRICE_FILTERS as $filter ) {
 			add_filter( $filter, array( $this->display, 'price' ), 10, 2 );
 		}
+		add_filter( 'linker_commerce_visitor_sees_prices', array( $this->display, 'sees_prices' ) );
 		add_filter( 'woocommerce_get_variation_prices_hash', array( $this->display, 'variation_prices_hash' ) );
 		add_filter( 'woocommerce_is_purchasable', array( $this->display, 'purchasable' ), 10, 2 );
 		add_filter( 'woocommerce_empty_price_html', array( $this->display, 'empty_price_html' ), 10, 2 );

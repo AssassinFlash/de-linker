@@ -24,6 +24,21 @@ use WP_Mock;
 final class CommerceStateTest extends TestCase {
 
 	/**
+	 * Whether linker-i18n's language layer listens in the current test.
+	 *
+	 * @var bool
+	 */
+	private bool $language_layer = false;
+
+	/**
+	 * Without the language layer a product's mode is its own.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'has_filter', array( 'return' => fn (): bool => $this->language_layer ) );
+	}
+
+	/**
 	 * A product with the given id, parent and stored price.
 	 *
 	 * @param int    $id        Product id.
@@ -53,6 +68,7 @@ final class CommerceStateTest extends TestCase {
 		$state = new CommerceState( new Approval() );
 
 		$this->assertTrue( $state->is_rfq_only( $this->product( 1957 ) ) );
+
 		$this->assertTrue( $state->is_rfq_only( $this->product( 9000, 1957 ) ) );
 		$this->assertFalse( $state->is_rfq_only( $this->product( 4107 ) ) );
 	}
@@ -100,5 +116,56 @@ final class CommerceStateTest extends TestCase {
 		$this->assertSame( CommerceState::APPROVAL, $state->visitor_reason() );
 		$this->assertFalse( $state->visitor_sees_prices() );
 		$this->assertSame( Approval::PENDING, $state->current_approval_status() );
+	}
+
+	/**
+	 * The product page decides in its own order: an account without prices
+	 * reads its account's reason before the product's, and an approved one
+	 * reads "quoted per project" or "on request" where there is no price.
+	 *
+	 * @testWith [false, null, "orderable", "1680", "login"]
+	 *           [false, null, "rfq_only", "33250", "login"]
+	 *           [true, "pending", "rfq_only", "33250", "approval"]
+	 *           [true, "restricted", "orderable", "1680", "approval"]
+	 *           [true, "approved", "rfq_only", "33250", "project"]
+	 *           [true, "approved", "orderable", "", "unpriced"]
+	 *           [true, "approved", "orderable", "1680", null]
+	 *
+	 * @param bool        $logged_in Whether a visitor is signed in.
+	 * @param string|null $status    The account's approval state.
+	 * @param string      $mode      Product mode.
+	 * @param string      $price     Stored price.
+	 * @param string|null $reason    Expected reason.
+	 */
+	public function test_page_reason( bool $logged_in, ?string $status, string $mode, string $price, ?string $reason ): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => $mode ) );
+		$this->approval_meta( null === $status ? array() : array( Approval::STATUS_META => $status ) );
+		$this->signed_in( $logged_in ? 5 : 0 );
+		$state = new CommerceState( new Approval() );
+
+		$this->assertSame( $reason, $state->page_reason( $this->product( 4107, 0, $price ) ) );
+	}
+
+	/**
+	 * The German twin of 1957 (6800 in the live snapshot of 2026-10-17)
+	 * carries no mode of its own: it is asked through its English product,
+	 * the one the solution draft holds.
+	 */
+	public function test_a_german_product_reads_the_mode_of_its_english_one(): void {
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static fn ( int $id, string $key ): string => CommerceState::MODE_META === $key && 1957 === $id ? 'rfq_only' : '',
+			)
+		);
+		// linker-i18n swaps a German product for its English one.
+		$this->language_layer = true;
+		$this->filter_returns( 'linker_commerce_facts_product_id', 1957, array( 6800 ) );
+		$this->filter_returns( 'linker_commerce_facts_product_id', 4107, array( 4107 ) );
+		$state = new CommerceState( new Approval() );
+
+		$this->assertTrue( $state->is_rfq_only( $this->product( 6800 ) ) );
+		$this->assertFalse( $state->is_rfq_only( $this->product( 4107 ) ) );
 	}
 }

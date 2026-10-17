@@ -30,6 +30,8 @@ final class StoreApiPricesTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		// No language layer: a product's mode is its own (CommerceState::is_rfq_only).
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => 'orderable' ) );
 		WP_Mock::userFunction(
 			'wc_get_product',

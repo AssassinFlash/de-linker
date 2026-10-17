@@ -33,6 +33,8 @@ final class ProductSortingTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		// No language layer: a product's mode is its own (CommerceState::is_rfq_only).
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => fn (): bool => $this->logged_in ) );
 	}
 

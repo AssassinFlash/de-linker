@@ -30,6 +30,8 @@ final class DraftSummaryTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		// No language layer: a product's mode is its own (CommerceState::is_rfq_only).
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
 		$this->plain_text();
 	}
 

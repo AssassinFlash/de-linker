@@ -38,6 +38,7 @@ final class ModuleTest extends TestCase {
 		foreach ( array( 'woocommerce_product_get_price', 'woocommerce_product_get_regular_price', 'woocommerce_product_get_sale_price', 'woocommerce_product_variation_get_price', 'woocommerce_product_variation_get_regular_price', 'woocommerce_product_variation_get_sale_price' ) as $filter ) {
 			WP_Mock::expectFilterAdded( $filter, array( $display, 'price' ), 10, 2 );
 		}
+		WP_Mock::expectFilterAdded( 'linker_commerce_visitor_sees_prices', array( $display, 'sees_prices' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_variation_prices_hash', array( $display, 'variation_prices_hash' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_is_purchasable', array( $display, 'purchasable' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_empty_price_html', array( $display, 'empty_price_html' ), 10, 2 );

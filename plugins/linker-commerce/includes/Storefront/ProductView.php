@@ -272,13 +272,24 @@ final class ProductView {
 	 * @return array{html: string, url: string} The price HTML and the sign-in URL for a visitor.
 	 */
 	private function price( \WC_Product $product ): array {
-		if ( $this->state->shows_price( $product ) ) {
+		$reason = $this->state->page_reason( $product );
+		if ( null === $reason || CommerceState::UNPRICED === $reason ) {
+			// WooCommerce's own price, or its empty-price text ("Price on
+			// request", Gating\PriceDisplay).
 			return array(
 				'html' => $product->get_price_html(),
 				'url'  => '',
 			);
 		}
-		if ( CommerceState::APPROVAL === $this->state->visitor_reason() ) {
+		if ( CommerceState::PROJECT === $reason ) {
+			// An approved account on a product quoted per project (live 1957):
+			// the account is not what hides the price (#242).
+			return array(
+				'html' => __( 'Quoted per project', 'linker-commerce' ),
+				'url'  => '',
+			);
+		}
+		if ( CommerceState::APPROVAL === $reason ) {
 			$status = $this->state->current_approval_status();
 			$text   = Approval::PENDING === $status
 				? __( 'Prices after approval', 'linker-commerce' )

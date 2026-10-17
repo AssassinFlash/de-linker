@@ -50,6 +50,20 @@ final class PriceDisplay {
 	}
 
 	/**
+	 * Whether the current visitor sees prices, for the plugins that must answer
+	 * the same question without their own rule: runs on
+	 * `linker_commerce_visitor_sees_prices` (linker-tools' Genie shell tells its
+	 * service whether the account is approved, #242). The value handed in is
+	 * ignored; the answer is CommerceState's.
+	 *
+	 * @param mixed $sees The value so far (false without this plugin).
+	 */
+	public function sees_prices( $sees ): bool {
+		unset( $sees );
+		return $this->state->visitor_sees_prices();
+	}
+
+	/**
 	 * The variation price cache must differ between visitors who see prices and
 	 * those who do not.
 	 *
