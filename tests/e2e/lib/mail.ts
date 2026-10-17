@@ -129,17 +129,21 @@ export function addresses(header: string): string[] {
 
 /** MIME encoded-words (`=?UTF-8?Q?…?=`) decoded. */
 function decode(value: string): string {
-	return value.replace(
-		/=\?[^?]+\?([BbQq])\?([^?]*)\?=/g,
-		(_whole, encoding: string, text: string) =>
-			encoding.toUpperCase() === 'B'
-				? Buffer.from(text, 'base64').toString('utf8')
-				: decodeQuotedPrintable(
-						text
-							.replace(/_/g, ' ')
-							.replace(/=\?[^?]+\?[BbQq]\?[^?]*\?=/g, '')
-					)
-	);
+	// RFC 2047 §6.2: white space between two adjacent encoded-words is not
+	// part of the text. A long subject (folded over lines) arrives as several.
+	return value
+		.replace(/(\?=)\s+(?==\?[^?]+\?[BbQq]\?)/g, '$1')
+		.replace(
+			/=\?[^?]+\?([BbQq])\?([^?]*)\?=/g,
+			(_whole, encoding: string, text: string) =>
+				encoding.toUpperCase() === 'B'
+					? Buffer.from(text, 'base64').toString('utf8')
+					: decodeQuotedPrintable(
+							text
+								.replace(/_/g, ' ')
+								.replace(/=\?[^?]+\?[BbQq]\?[^?]*\?=/g, '')
+						)
+		);
 }
 
 /**

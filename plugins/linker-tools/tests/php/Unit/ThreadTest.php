@@ -93,6 +93,7 @@ final class ThreadTest extends TestCase {
 	 */
 	public function test_record_keeps_messages_only_and_caps_the_thread(): void {
 		$written = array();
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
 		WP_Mock::userFunction(
 			'update_post_meta',
 			array(

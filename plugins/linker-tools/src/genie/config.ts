@@ -20,7 +20,13 @@
  * - `data-account-url`: the account page (view_inquiry links here);
  * - `data-prompts`: JSON list of opening prompts for the page;
  * - `data-page`: JSON page context (type, url, title and the IDs of what the
- *   page shows), sent back with every turn (#234, PageContext.php).
+ *   page shows), sent back with every turn (#234, PageContext.php);
+ * - `data-signed-in`: `1` for a signed-in visitor, whose conversation is
+ *   emailed to the account's address (no address field);
+ * - `data-retention-days`: how long a guest's conversations are kept
+ *   (Retention::RETENTION_DAYS), named under a guest's list;
+ * - `data-mail-started`, `data-mail-started-nonce`: the signed time the page
+ *   was made, a guest's bot guard for "email me" (ConversationMail::stamp()).
  *
  * Opening and pending questions use the dock loader's ready/open handshake,
  * not configuration read from the mount.
@@ -49,6 +55,10 @@ export interface GenieConfig {
 	prompts: string[];
 	/** The page context the turn carries; the proxy checks it key by key. */
 	page: PageContext;
+	signedIn: boolean;
+	retentionDays: number;
+	mailStarted: string;
+	mailStartedNonce: string;
 }
 
 function readPage(
@@ -95,5 +105,11 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		workspaceUrl: data.workspaceUrl ?? '/genie/',
 		prompts: data.prompts ? JSON.parse( data.prompts ) : [],
 		page: readPage( data.page, pageType, productId ),
+		signedIn: data.signedIn === '1',
+		// Only the page names the days (Retention::RETENTION_DAYS); a
+		// mount without them names none, and the note stays away.
+		retentionDays: Number( data.retentionDays ) || 0,
+		mailStarted: data.mailStarted ?? '',
+		mailStartedNonce: data.mailStartedNonce ?? '',
 	};
 }

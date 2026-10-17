@@ -334,6 +334,140 @@ export async function selectConversation(
 }
 
 /**
+ * Clears one of the visitor's conversations and answers the list without it.
+ *
+ * @param url     History route.
+ * @param nonce   wp_rest nonce.
+ * @param id      Conversation to clear.
+ * @param fetcher Fetch for tests.
+ */
+export async function deleteConversation(
+	url: string,
+	nonce: string,
+	id: number,
+	fetcher: Fetch = ( ...args ) => fetch( ...args )
+): Promise< ConversationList > {
+	const response = await fetcher( `${ url }/${ id }`, {
+		method: 'DELETE',
+		credentials: 'same-origin',
+		cache: 'no-store',
+		headers: { 'X-WP-Nonce': nonce },
+	} );
+	if ( ! response.ok ) {
+		throw new Error( `delete ${ response.status }` );
+	}
+	const body = ( await response.json() ) as {
+		current_id?: number;
+		conversations?: ConversationSummary[];
+	};
+	return {
+		currentId: body.current_id ?? 0,
+		conversations: body.conversations ?? [],
+		ok: true,
+	};
+}
+
+/**
+ * How an email request, or a confirmation link, ended: the same words as
+ * ConversationMail's outcome constants (includes/Genie/ConversationMail.php),
+ * one definition on this side. `confirm` is a guest's request: the link went
+ * to the typed address.
+ */
+export const EMAIL_OUTCOMES = [
+	'sent',
+	'confirm',
+	'invalid',
+	'unknown',
+	'empty',
+	'throttled',
+	'capped',
+	'expired',
+	'unavailable',
+] as const;
+export type EmailOutcome = ( typeof EMAIL_OUTCOMES )[ number ];
+
+/**
+ * The outcome a word names, `unavailable` for any other word.
+ * @param word
+ */
+export function emailOutcome( word: unknown ): EmailOutcome {
+	return ( EMAIL_OUTCOMES as readonly unknown[] ).includes( word )
+		? ( word as EmailOutcome )
+		: 'unavailable';
+}
+
+/** The answer of an email request: the outcome, where it went, the limit. */
+export interface EmailResult {
+	outcome: EmailOutcome;
+	/** The address it concerns (the account's for a signed-in customer). */
+	to: string;
+	/** Emails one connection may ask for per hour, named by a refusal. */
+	limit: number;
+}
+
+/** A guest's bot-guard fields (ConversationMail::passes()). */
+export interface EmailGuard {
+	started: string;
+	started_nonce: string;
+	website: string;
+}
+
+/**
+ * Asks for one conversation by email: a signed-in customer's goes to the
+ * account's address (`email` is then left out); a guest's typed address
+ * first gets a confirmation link.
+ *
+ * @param url     History route.
+ * @param nonce   wp_rest nonce.
+ * @param id      Conversation to send.
+ * @param locale  Page language: the email's language.
+ * @param email   A guest's address.
+ * @param guard   A guest's bot-guard fields.
+ * @param fetcher Fetch for tests.
+ */
+export async function emailConversation(
+	url: string,
+	nonce: string,
+	id: number,
+	locale: Locale,
+	email?: string,
+	guard?: EmailGuard,
+	fetcher: Fetch = ( ...args ) => fetch( ...args )
+): Promise< EmailResult > {
+	try {
+		const response = await fetcher( `${ url }/${ id }/email`, {
+			method: 'POST',
+			credentials: 'same-origin',
+			cache: 'no-store',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-WP-Nonce': nonce,
+			},
+			body: JSON.stringify(
+				email ? { locale, email, ...guard } : { locale }
+			),
+		} );
+		const body = ( await response.json().catch( () => ( {} ) ) ) as {
+			status?: string;
+			to?: string;
+			code?: string;
+			data?: { limit?: number };
+		};
+		return {
+			outcome: emailOutcome(
+				response.ok
+					? body.status
+					: ( body.code ?? '' ).replace( /^linker_genie_email_/, '' )
+			),
+			to: body.to ?? '',
+			limit: body.data?.limit ?? 0,
+		};
+	} catch {
+		return { outcome: 'unavailable', to: '', limit: 0 };
+	}
+}
+
+/**
  * Stores the customer's vote on one logged turn; best effort, a failed vote
  * never disturbs the conversation.
  *

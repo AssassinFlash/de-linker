@@ -1,9 +1,14 @@
-# German (formal) translations of linker-tools' PHP strings: the dock button,
-# the page chips and the opening prompts of includes/Genie/Entries.php.
-# Wordings match the JED file (linker-tools-de_DE_formal-linker-tools-genie.json);
-# AGENTS.md §3: Sie form. The prompts of #234 passed the copy review of
-# docs/acceptance/2026-10-18/234/copy-review.md.
+# German (formal) translations of linker-tools: the PHP strings (the dock
+# button, the page chips and the opening prompts of includes/Genie/Entries.php,
+# the quality page) and the Genie app's script strings (references to
+# build/genie.js, extracted with `wp i18n make-pot . <pot>
+# --include=build/genie.js --skip-php`). AGENTS.md §3: Sie form. The prompts of
+# #234 passed the copy review of docs/acceptance/2026-10-18/234/copy-review.md;
+# the strings of #235 that of docs/acceptance/2026-10-18/235/copy-review.md.
 # Compile: msgfmt -o linker-tools-de_DE_formal.mo linker-tools-de_DE_formal.po
+# Script JSON: wp i18n make-json languages --no-purge (writes
+# linker-tools-de_DE_formal-<md5 of build/genie.js>.json, which WordPress loads
+# for the linker-tools-genie script).
 msgid ""
 msgstr ""
 "Project-Id-Version: linker-tools 0.1.0\n"
@@ -19,7 +24,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: hand-written, reviewed\n"
 
-#: includes/Genie/Entries.php
+#: includes/Genie/Entries.php build/genie.js:19
 msgid "Ask Genie"
 msgstr "Genie fragen"
 
@@ -51,70 +56,90 @@ msgstr "Wo steht meine Proforma?"
 msgid "Genie could not load."
 msgstr "Genie konnte nicht geladen werden."
 
-#: includes/Genie/Entries.php
+#: includes/Genie/Entries.php build/genie.js:19
 msgid "Try again"
 msgstr "Erneut versuchen"
 
+#: build/genie.js:16
 msgid "Open full page"
 msgstr "Vollständige Seite öffnen"
 
+#: build/genie.js:16 build/genie.js:19
 msgid "Conversations"
 msgstr "Gespräche"
 
+#: build/genie.js:16 build/genie.js:19
 msgid "New conversation"
 msgstr "Neues Gespräch"
 
+#: build/genie.js:16 build/genie.js:19
 msgid "Close sidebar"
 msgstr "Seitenleiste schließen"
 
+#: build/genie.js:19
 msgid "Loading conversations…"
 msgstr "Gespräche werden geladen …"
 
+#: build/genie.js:19
 msgid "No earlier conversation."
 msgstr "Kein früheres Gespräch."
 
+#: build/genie.js:19
 msgid "Conversations could not be loaded."
 msgstr "Gespräche konnten nicht geladen werden."
 
+#: build/genie.js:16
 msgid "Get help with your solar project"
 msgstr "Hilfe bei Ihrem Solarprojekt"
 
+#: build/genie.js:16
 msgid "Products, documents and your next step."
 msgstr "Produkte, Unterlagen und Ihr nächster Schritt."
 
+#: build/genie.js:16
 msgid "Back"
 msgstr "Zurück"
 
+#: build/genie.js:16
 msgid "Close"
 msgstr "Schließen"
 
+#: build/genie.js:19
 msgid "Attach a file"
 msgstr "Datei anhängen"
 
+#. translators: %s is the name of a file the visitor attached.
+#: build/genie.js:13
 msgid "Attached: %s"
 msgstr "Anhang: %s"
 
+#. translators: %s is the attached file's name.
+#: build/genie.js:19
 msgid "Remove attachment %s"
 msgstr "Anhang %s entfernen"
 
+#: build/genie.js:19
 msgid "Dictate"
 msgstr "Diktieren"
 
+#: build/genie.js:19
 msgid "Stop dictation"
 msgstr "Diktat beenden"
 
+#: build/genie.js:19
 msgid "FAQ & Downloads"
 msgstr "FAQ & Downloads"
 
+#: build/genie.js:19
 msgid "Contact Linker"
 msgstr "Linker kontaktieren"
 
+#: build/genie.js:19
 msgid "Privacy Policy"
 msgstr "Datenschutzerklärung"
 
 # The Genie quality check's admin page and digest line (#258): staff strings,
 # Sie form (AGENTS.md §3).
-
 #: includes/Genie/QualityStore.php
 #, php-format
 msgid "Genie quality check, last 24 hours: %1$d answers judged, %2$d flagged, %3$d decided by the second judge, %4$d could not be judged."
@@ -329,7 +354,6 @@ msgstr "Unterhaltung %d"
 # translated; review record docs/acceptance/2026-10-18/249/copy-review.md.
 # A German name cannot be inflected, so the placeholder stands before a
 # colon or in apposition ("zur Kategorie %s") wherever case would matter.
-
 #: includes/Genie/Preview.php
 msgid "Close. Suggestion cards stay hidden for 30 days."
 msgstr "Schließen. Vorschlagskarten bleiben 30 Tage lang ausgeblendet."
@@ -463,3 +487,190 @@ msgstr "Gibt es ein Datenblatt zu meinem Modell?"
 #: includes/Genie/Entries.php
 msgid "Which products fit my project?"
 msgstr "Welche Produkte passen zu meinem Projekt?"
+
+#: build/genie.js:1
+msgid "Open the configurator"
+msgstr "Konfigurator öffnen"
+
+#: build/genie.js:1
+msgid "View your inquiry"
+msgstr "Anfrage ansehen"
+
+#: build/genie.js:1
+msgid "Model"
+msgstr "Modell"
+
+#: build/genie.js:1
+msgid "In stock"
+msgstr "Auf Lager"
+
+#: build/genie.js:1
+msgid "Yes"
+msgstr "Ja"
+
+#: build/genie.js:1
+msgid "On request"
+msgstr "Auf Anfrage"
+
+#: build/genie.js:1
+msgid "Genie could not load this product."
+msgstr "Genie konnte dieses Produkt nicht laden."
+
+#: build/genie.js:1
+msgid "Product"
+msgstr "Produkt"
+
+#: build/genie.js:1
+msgid "Add to solution draft"
+msgstr "Zum Lösungsentwurf hinzufügen"
+
+#: build/genie.js:1
+msgid "Save solution"
+msgstr "Lösung speichern"
+
+#: build/genie.js:1
+msgid "Sending…"
+msgstr "Wird gesendet …"
+
+#. translators: %s is the email address the conversation goes to.
+#: build/genie.js:4
+msgid "Your email to %s is on its way."
+msgstr "Die E-Mail an %s ist unterwegs."
+
+#. translators: %s is the email address the confirmation link went to.
+#: build/genie.js:7
+msgid "A confirmation link is on its way to %s. The conversation follows once the link is opened."
+msgstr "Ein Bestätigungslink an %s ist unterwegs. Das Gespräch folgt, sobald der Link geöffnet wird."
+
+#: build/genie.js:7
+msgid "Please enter a valid email address."
+msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+
+#. translators: %d is how many emails one connection may ask for per hour (ConversationMail::LIMIT).
+#: build/genie.js:10
+msgid "This connection has reached the limit of %d emails per hour. Please try again later."
+msgstr "Über diese Verbindung wurde das Limit von %d E-Mails pro Stunde erreicht. Bitte versuchen Sie es später erneut."
+
+#: build/genie.js:10
+msgid "Today's email limit has been reached. Please try again tomorrow."
+msgstr "Das E-Mail-Limit für heute ist erreicht. Bitte versuchen Sie es morgen erneut."
+
+#: build/genie.js:10
+msgid "The email could not be sent. Please try again."
+msgstr "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+
+#: build/genie.js:10
+msgid "Your email address"
+msgstr "Ihre E-Mail-Adresse"
+
+#: build/genie.js:10
+msgid "Send email"
+msgstr "E-Mail senden"
+
+#: build/genie.js:10 build/genie.js:19
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: build/genie.js:10
+msgid "Email me this conversation"
+msgstr "Gespräch per E-Mail erhalten"
+
+#: build/genie.js:10
+msgid "Email address confirmed. The conversation is on its way."
+msgstr "E-Mail-Adresse bestätigt. Das Gespräch ist unterwegs."
+
+#: build/genie.js:10
+msgid "This link has expired or has already been used."
+msgstr "Dieser Link ist abgelaufen oder wurde bereits verwendet."
+
+#: build/genie.js:10
+msgid "Helpful"
+msgstr "Hilfreich"
+
+#: build/genie.js:10
+msgid "Not helpful"
+msgstr "Nicht hilfreich"
+
+#: build/genie.js:13
+msgid "Adding…"
+msgstr "Wird hinzugefügt …"
+
+#: build/genie.js:13
+msgid "In your solution draft."
+msgstr "Im Lösungsentwurf."
+
+#: build/genie.js:13
+msgid "Sent, but the draft does not show it yet. Please check."
+msgstr "Gesendet, aber der Entwurf zeigt es noch nicht. Bitte prüfen."
+
+#: build/genie.js:13
+msgid "Not added. Try again."
+msgstr "Nicht hinzugefügt. Bitte erneut versuchen."
+
+#: build/genie.js:13
+msgid "Saving…"
+msgstr "Wird gespeichert …"
+
+#: build/genie.js:13
+msgid "Saved to your account."
+msgstr "Im Konto gespeichert."
+
+#: build/genie.js:13
+msgid "Not saved. Try again."
+msgstr "Nicht gespeichert. Bitte erneut versuchen."
+
+#. translators: %d is the number of days a guest's conversation is kept from its start (Retention::RETENTION_DAYS).
+#: build/genie.js:16
+msgid "Each conversation stays in this browser for %d day from its start. Signing in moves all of them to your account."
+msgid_plural "Each conversation stays in this browser for %d days from its start. Signing in moves all of them to your account."
+msgstr[0] "Jedes Gespräch bleibt ab Beginn %d Tag in diesem Browser gespeichert. Wenn Sie sich anmelden, werden alle in Ihr Konto übernommen."
+msgstr[1] "Jedes Gespräch bleibt ab Beginn %d Tage in diesem Browser gespeichert. Wenn Sie sich anmelden, werden alle in Ihr Konto übernommen."
+
+#: build/genie.js:16
+msgid "Hide"
+msgstr "Ausblenden"
+
+#: build/genie.js:16
+msgid "Open"
+msgstr "Öffnen"
+
+#: build/genie.js:16
+msgid "Where should we begin?"
+msgstr "Womit möchten Sie beginnen?"
+
+#: build/genie.js:16 build/genie.js:19
+msgid "Genie"
+msgstr "Genie"
+
+#: build/genie.js:16
+msgid "Genie is thinking…"
+msgstr "Genie denkt nach …"
+
+#: build/genie.js:16
+msgid "Genie did not answer. Please try again."
+msgstr "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut."
+
+#: build/genie.js:19
+msgid "Send"
+msgstr "Senden"
+
+#: build/genie.js:19
+msgid "Genie - Linker's AI assistant"
+msgstr "Genie – der KI-Assistent von Linker"
+
+#: build/genie.js:19
+msgid "Not deleted. Try again."
+msgstr "Nicht gelöscht. Bitte erneut versuchen."
+
+#: build/genie.js:19
+msgid "Delete this conversation permanently?"
+msgstr "Dieses Gespräch endgültig löschen?"
+
+#: build/genie.js:19
+msgid "Delete"
+msgstr "Löschen"
+
+#. translators: %s is the conversation's title (its first message).
+#: build/genie.js:22
+msgid "Delete conversation: %s"
+msgstr "Gespräch löschen: %s"

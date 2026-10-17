@@ -21,6 +21,11 @@ use WP_Mock\Tools\TestCase;
 final class ConversationsTest extends TestCase {
 
 	/**
+	 * The browser key a guest's first conversation mints in these tests.
+	 */
+	public const BROWSER_KEY = '0123456789abcdef0123456789abcdef';
+
+	/**
 	 * The post type, the cookie-writing listener and the login hook are
 	 * registered on init.
 	 */
@@ -37,7 +42,12 @@ final class ConversationsTest extends TestCase {
 			)
 		);
 		WP_Mock::expectActionAdded( 'linker_tools_set_conversation_cookie', array( $conversations, 'send_cookie' ), 10, 5 );
+		WP_Mock::expectActionAdded( 'linker_tools_set_genie_browser_cookie', array( $conversations, 'send_browser_cookie' ), 10, 5 );
 		WP_Mock::expectActionAdded( 'wp_login', array( $conversations, 'claim' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'set_logged_in_cookie', array( $conversations, 'claim_on_sign_in' ), 10, 4 );
+		WP_Mock::expectActionAdded( 'set_olduser_cookie', array( $conversations, 'switching' ) );
+		WP_Mock::expectActionAdded( 'clear_olduser_cookie', array( $conversations, 'switching' ) );
+		WP_Mock::expectActionAdded( 'wp_logout', array( $conversations, 'signed_out' ) );
 
 		$conversations->register();
 
@@ -83,6 +93,13 @@ final class ConversationsTest extends TestCase {
 			protected function cookie_expire(): int {
 				return 1000000;
 			}
+
+			/**
+			 * The fixed browser key.
+			 */
+			protected function new_browser_key(): string {
+				return ConversationsTest::BROWSER_KEY;
+			}
 		};
 
 		$this->logged_out();
@@ -95,6 +112,7 @@ final class ConversationsTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction( 'linker_tools_set_genie_browser_cookie', self::BROWSER_KEY, 1000000, '/', '', false );
 			$signed = $this->signed_cookie( 51 );
 			WP_Mock::expectAction(
 				'linker_tools_set_conversation_cookie',
@@ -158,6 +176,7 @@ final class ConversationsTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction( 'linker_tools_set_genie_browser_cookie', self::BROWSER_KEY, 1000000, '/', '', false );
 		WP_Mock::expectAction(
 			'linker_tools_set_conversation_cookie',
 			$this->signed_cookie( 51 ),
@@ -300,6 +319,7 @@ final class ConversationsTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'is_ssl', array( 'return' => false ) );
+		WP_Mock::expectAction( 'linker_tools_set_genie_browser_cookie', self::BROWSER_KEY, 1000000, '/', '', false );
 		WP_Mock::expectAction(
 			'linker_tools_set_conversation_cookie',
 			$this->signed_cookie( 52 ),
@@ -355,6 +375,13 @@ final class ConversationsTest extends TestCase {
 				),
 			)
 		);
+		WP_Mock::userFunction(
+			'delete_post_meta',
+			array(
+				'times' => 1,
+				'args'  => array( 51, 'linker_genie_browser' ),
+			)
+		);
 
 		( new Conversations() )->claim( 'shopper', $user );
 
@@ -362,9 +389,11 @@ final class ConversationsTest extends TestCase {
 	}
 
 	/**
-	 * A guest's history is the cookie conversation, and nothing else.
+	 * A guest browser without a key (one from before browsers had keys) has
+	 * the cookie conversation as its history, and nothing else. A browser
+	 * with a key lists all of its own (Integration\ConversationListTest).
 	 */
-	public function test_a_guest_lists_only_the_cookie_conversation(): void {
+	public function test_a_guest_without_a_browser_key_lists_only_the_cookie_conversation(): void {
 		$this->logged_out();
 		$_COOKIE = array( 'linker_conversation' => $this->signed_cookie( 51 ) );
 		WP_Mock::userFunction(
@@ -618,6 +647,10 @@ final class ConversationsTest extends TestCase {
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		// A guest's new conversation is marked with the browser key
+		// (ConversationListTest covers the marking on a real site).
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
 		WP_Mock::userFunction(
 			'absint',
 			array(
@@ -645,6 +678,13 @@ final class ConversationsTest extends TestCase {
 			 */
 			protected function cookie_expire(): int {
 				return 1000000;
+			}
+
+			/**
+			 * The fixed browser key.
+			 */
+			protected function new_browser_key(): string {
+				return ConversationsTest::BROWSER_KEY;
 			}
 		};
 	}

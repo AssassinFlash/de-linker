@@ -13,7 +13,13 @@ import { afterEach, expect, test, vi } from 'vitest';
 /**
  * Internal dependencies
  */
-import { assistantMessage, parseStream, readThread, sendVote } from './turn';
+import {
+	assistantMessage,
+	emailConversation,
+	parseStream,
+	readThread,
+	sendVote,
+} from './turn';
 
 afterEach( () => {
 	vi.restoreAllMocks();
@@ -169,4 +175,60 @@ test( 'an assistant message is the turn text, wherever it came from', () => {
 		content: 'First. Second.',
 		turnId: 3,
 	} );
+} );
+
+test( 'an email answer reads the outcome from the route, refusals from their code', async () => {
+	const answer = ( status: number, body: unknown ) =>
+		vi.fn< typeof fetch >(
+			async () => new Response( JSON.stringify( body ), { status } )
+		);
+	const guard = { started: '1', started_nonce: 'n', website: '' };
+
+	const confirm = answer( 202, { status: 'confirm', to: 'a@example.test' } );
+	expect(
+		await emailConversation(
+			'/c',
+			'n',
+			9,
+			'de',
+			'a@example.test',
+			guard,
+			confirm
+		)
+	).toEqual( { outcome: 'confirm', to: 'a@example.test', limit: 0 } );
+	expect(
+		JSON.parse( String( confirm.mock.calls[ 0 ]?.[ 1 ]?.body ) )
+	).toEqual( {
+		locale: 'de',
+		email: 'a@example.test',
+		started: '1',
+		started_nonce: 'n',
+		website: '',
+	} );
+
+	expect(
+		await emailConversation(
+			'/c',
+			'n',
+			9,
+			'en',
+			undefined,
+			undefined,
+			answer( 429, {
+				code: 'linker_genie_email_capped',
+				data: { status: 429, limit: 3 },
+			} )
+		)
+	).toEqual( { outcome: 'capped', to: '', limit: 3 } );
+	expect(
+		await emailConversation(
+			'/c',
+			'n',
+			9,
+			'en',
+			undefined,
+			undefined,
+			answer( 500, { code: 'rest_error' } )
+		)
+	).toEqual( { outcome: 'unavailable', to: '', limit: 0 } );
 } );

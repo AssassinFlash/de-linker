@@ -244,3 +244,53 @@ export function SendIcon( { size = 20 }: IconProps ) {
 		</svg>
 	);
 }
+
+/**
+ * A history row's delete mark (ticket #235).
+ * @param root0
+ * @param root0.size
+ */
+export function TrashIcon( { size = 20 }: IconProps ) {
+	return (
+		<svg
+			viewBox="0 0 24 24"
+			width={ size }
+			height={ size }
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.65"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			aria-hidden="true"
+		>
+			<path d="M4 7h16" />
+			<path d="M10 11v6M14 11v6" />
+			<path d="M6 7l1 13h10l1-13" />
+			<path d="M9 7V4h6v3" />
+		</svg>
+	);
+}
+
+/**
+ * The "email this conversation" mark (ticket #235).
+ * @param root0
+ * @param root0.size
+ */
+export function MailIcon( { size = 20 }: IconProps ) {
+	return (
+		<svg
+			viewBox="0 0 24 24"
+			width={ size }
+			height={ size }
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.65"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			aria-hidden="true"
+		>
+			<rect x="3" y="5" width="18" height="14" rx="2" />
+			<path d="m4 7 8 6 8-6" />
+		</svg>
+	);
+}

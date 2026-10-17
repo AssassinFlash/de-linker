@@ -11,6 +11,7 @@ namespace Linker\Tools;
 
 use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
+use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Preview;
@@ -30,21 +31,22 @@ final class Plugin {
 	/**
 	 * Sets up the plugin.
 	 *
-	 * @param Assets        $assets        Registers the built apps as scripts.
-	 * @param Redirects     $redirects     Retires the tool entry addresses that moved.
-	 * @param SiteChrome    $site_chrome   The chrome's scripts (menu images, hover).
-	 * @param Conversations $conversations Conversation posts for Genie.
-	 * @param Proxy         $proxy         REST proxy to the Genie service.
-	 * @param Entries       $entries       Chips, dock and disclosure.
-	 * @param Retention     $retention     Deletes expired guest conversations.
-	 * @param UserContext   $user_context  The customer-identity seam.
-	 * @param WindPress     $windpress     Scan provider for the entries' Tailwind classes.
-	 * @param Mount         $mount         The Solution Configurator's mount point.
-	 * @param EngineProxy   $engine_proxy  The same-origin route to the sizing engine.
-	 * @param QualityStore  $quality       The quality check's verdicts and the digest's summary.
-	 * @param QualityRoute  $quality_route The route the quality worker reports to.
-	 * @param QualityPage   $quality_page  The quality check's admin page.
-	 * @param Preview       $preview       Genie's preview card (ticket #249).
+	 * @param Assets           $assets        Registers the built apps as scripts.
+	 * @param Redirects        $redirects     Retires the tool entry addresses that moved.
+	 * @param SiteChrome       $site_chrome   The chrome's scripts (menu images, hover).
+	 * @param Conversations    $conversations Conversation posts for Genie.
+	 * @param Proxy            $proxy         REST proxy to the Genie service.
+	 * @param Entries          $entries       Chips, dock and disclosure.
+	 * @param Retention        $retention     Deletes expired guest conversations.
+	 * @param UserContext      $user_context  The customer-identity seam.
+	 * @param WindPress        $windpress     Scan provider for the entries' Tailwind classes.
+	 * @param Mount            $mount         The Solution Configurator's mount point.
+	 * @param EngineProxy      $engine_proxy  The same-origin route to the sizing engine.
+	 * @param QualityStore     $quality       The quality check's verdicts and the digest's summary.
+	 * @param QualityRoute     $quality_route The route the quality worker reports to.
+	 * @param QualityPage      $quality_page  The quality check's admin page.
+	 * @param Preview          $preview       Genie's preview card (ticket #249).
+	 * @param ConversationMail $mail        "Email me this conversation" and its confirmation link (ticket #235).
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -61,7 +63,8 @@ final class Plugin {
 		private readonly QualityStore $quality,
 		private readonly QualityRoute $quality_route,
 		private readonly QualityPage $quality_page,
-		private readonly Preview $preview
+		private readonly Preview $preview,
+		private readonly ConversationMail $mail
 	) {}
 
 	/**
@@ -86,5 +89,6 @@ final class Plugin {
 		$this->quality->register();
 		$this->quality_page->register();
 		$this->preview->register();
+		$this->mail->register();
 	}
 }

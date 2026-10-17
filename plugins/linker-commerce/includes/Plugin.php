@@ -144,7 +144,7 @@ final class Plugin {
 	/**
 	 * The modules of the inquiry chain, with what they share.
 	 *
-	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module|Presentation\Module|Stock\Module|Digest\Module>
+	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module|Presentation\Module|Stock\Module|Digest\Module|Genie\Module>
 	 */
 	private function commerce_modules(): array {
 		$templates = plugin_dir_path( $this->file ) . 'templates/';
@@ -175,6 +175,7 @@ final class Plugin {
 			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $proformas, $solutions ), new Account\SolutionsRoute( $solutions ) ),
 			new Presentation\Module( new Presentation\Shortcodes( $gate, $approval ), $gate, new Presentation\WindPress(), account: new Presentation\AccountTemplates( $documents ) ),
 			new Stock\Module( new Stock\StockController(), new Stock\BatchLog(), new Stock\Retention( $this->file ) ),
+			new Genie\Module( $this->file ),
 		);
 	}
 }

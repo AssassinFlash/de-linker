@@ -21,6 +21,7 @@ namespace Linker\Tools;
 
 use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
+use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\PageContext;
@@ -39,6 +40,8 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/vendor/autoload.php';
 
 $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
+$thread        = new Thread(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
+$mail          = new ConversationMail( $conversations, $thread ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
 $quality       = new QualityStore(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used three times below.
 $page_context  = new PageContext(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used three times below.
 $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
@@ -47,7 +50,7 @@ $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingC
 	new Redirects(),
 	new SiteChrome( __FILE__ ),
 	$conversations,
-	new Proxy( $conversations, pages: $page_context ),
+	new Proxy( $conversations, null, $thread, null, $page_context, $mail ),
 	new Entries( __FILE__, $page_context, $genie_preview ),
 	new Retention( __FILE__ ),
 	new UserContext(),
@@ -57,5 +60,6 @@ $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingC
 	$quality,
 	new QualityRoute( $quality ),
 	new QualityPage( $quality, new Thread() ),
-	$genie_preview
+	$genie_preview,
+	$mail
 ) )->register();

@@ -8,3 +8,7 @@ vendor
 # and compared byte for byte there; formatting them here would make them stale.
 src/configurator/schema
 tests/fixtures/configurator
+# Written by `wp i18n make-json` from languages/linker-tools-de_DE_formal.po
+# (one file per script, named by the md5 of its path); reformatting it would
+# make it differ from what the generator writes.
+languages/linker-tools-de_DE_formal-[0-9a-f]*.json

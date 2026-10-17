@@ -36,6 +36,17 @@ class Thread {
 	public const STREAM = 'linker_genie_turn';
 
 	/**
+	 * Meta key: the products each answer's cards showed, by the answer's text.
+	 */
+	public const PRODUCTS = 'linker_genie_products';
+
+	/**
+	 * Meta key: when the conversation last moved (opened, or a turn was
+	 * answered), unix time. The history list orders by it.
+	 */
+	public const ACTIVITY = 'linker_genie_activity';
+
+	/**
 	 * How many messages are kept. The thread rides in every request, so an
 	 * unbounded one would grow the body without bound; a conversation this
 	 * long is one nobody scrolls back through.
@@ -81,20 +92,152 @@ class Thread {
 			if ( ! is_array( $message ) ) {
 				continue;
 			}
-			$role    = isset( $message['role'] ) && 'assistant' === $message['role'] ? 'assistant' : 'user';
 			$content = isset( $message['content'] ) ? (string) $message['content'] : '';
 			if ( '' === $content ) {
 				continue;
 			}
 			$kept[] = array(
-				'role'    => $role,
+				'role'    => self::role( $message['role'] ?? '' ),
 				'content' => $content,
 			);
 		}
 		if ( count( $kept ) > self::LIMIT ) {
 			$kept = array_slice( $kept, -self::LIMIT );
 		}
+		// The products each answer showed, by the answer's text: the
+		// browser sends earlier answers back as text only, so the text is
+		// how a later transcript finds them. Only answers still in the
+		// thread keep theirs.
+		$answer   = self::answer( $stream );
+		$products = $this->products( $conversation );
+		$known    = array();
+		foreach ( $kept as $message ) {
+			if ( 'assistant' === $message['role'] && isset( $products[ self::key( $message['content'] ) ] ) ) {
+				$known[ self::key( $message['content'] ) ] = $products[ self::key( $message['content'] ) ];
+			}
+		}
+		if ( '' !== $answer['text'] && array() !== $answer['products'] ) {
+			$known[ self::key( $answer['text'] ) ] = $answer['products'];
+		}
 		update_post_meta( $conversation, self::MESSAGES, $kept );
 		update_post_meta( $conversation, self::STREAM, $stream );
+		update_post_meta( $conversation, self::PRODUCTS, $known );
+		update_post_meta( $conversation, self::ACTIVITY, time() );
+	}
+
+	/**
+	 * The whole conversation as the customer read it: the stored messages,
+	 * then the last answer's text, each answer with the products its cards
+	 * showed.
+	 *
+	 * The last answer lives only in its stream. Its text is the stream's
+	 * text blocks joined by a space, which is what the shell's
+	 * `assistantMessage()` (src/genie/api/turn.ts) shows; its products are
+	 * the stream's cards block. A stream without its `done` event is no
+	 * answer, as in the shell's `parseStream()`.
+	 *
+	 * @param int $conversation Conversation post ID.
+	 * @return list<array{role: 'user'|'assistant', content: string, products: list<int>}>
+	 */
+	public function transcript( int $conversation ): array {
+		$stored   = $this->read( $conversation );
+		$products = $this->products( $conversation );
+		$messages = array();
+		foreach ( $stored['messages'] as $message ) {
+			$role       = self::role( $message['role'] ?? '' );
+			$content    = (string) ( $message['content'] ?? '' );
+			$messages[] = array(
+				'role'     => $role,
+				'content'  => $content,
+				'products' => 'assistant' === $role ? ( $products[ self::key( $content ) ] ?? array() ) : array(),
+			);
+		}
+		$answer = self::answer( $stored['stream'] );
+		if ( '' !== $answer['text'] && array() !== $messages ) {
+			$messages[] = array(
+				'role'     => 'assistant',
+				'content'  => $answer['text'],
+				'products' => $answer['products'],
+			);
+		}
+		return $messages;
+	}
+
+	/**
+	 * A message's role: `assistant`, or `user` for anything else. The one
+	 * place the thread decides it.
+	 *
+	 * @param mixed $role The role as sent.
+	 * @return 'user'|'assistant'
+	 */
+	public static function role( mixed $role ): string {
+		return 'assistant' === $role ? 'assistant' : 'user';
+	}
+
+	/**
+	 * The stored products by answer.
+	 *
+	 * @param int $conversation Conversation post ID.
+	 * @return array<string, list<int>>
+	 */
+	private function products( int $conversation ): array {
+		$stored = get_post_meta( $conversation, self::PRODUCTS, true );
+		$out    = array();
+		foreach ( is_array( $stored ) ? $stored : array() as $key => $ids ) {
+			if ( is_string( $key ) && is_array( $ids ) ) {
+				$out[ $key ] = array_values( array_map( 'intval', $ids ) );
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The key an answer's products are kept under.
+	 *
+	 * @param string $text The answer's text.
+	 */
+	private static function key( string $text ): string {
+		return sha1( $text );
+	}
+
+	/**
+	 * The text and the card products of one finished turn's stream; both
+	 * empty when it did not finish.
+	 *
+	 * @param string $stream SSE text.
+	 * @return array{text: string, products: list<int>}
+	 */
+	private static function answer( string $stream ): array {
+		$texts    = array();
+		$products = array();
+		$done     = false;
+		foreach ( explode( "\n\n", $stream ) as $event ) {
+			if ( 1 !== preg_match( '/^event: (.+)$/m', $event, $name ) || 1 !== preg_match( '/^data: (.+)$/m', $event, $data ) ) {
+				continue;
+			}
+			if ( 'done' === $name[1] ) {
+				$done = true;
+				continue;
+			}
+			$block = json_decode( $data[1], true );
+			if ( 'block' !== $name[1] || ! is_array( $block ) ) {
+				continue;
+			}
+			if ( 'text' === ( $block['type'] ?? '' ) && is_string( $block['text'] ?? null ) ) {
+				$texts[] = $block['text'];
+			}
+			if ( 'cards' === ( $block['type'] ?? '' ) && is_array( $block['product_ids'] ?? null ) ) {
+				foreach ( $block['product_ids'] as $id ) {
+					$products[] = (int) $id;
+				}
+			}
+		}
+		return $done ? array(
+			'text'     => implode( ' ', $texts ),
+			'products' => array_values( array_unique( array_filter( $products ) ) ),
+		) : array(
+			'text'     => '',
+			'products' => array(),
+		);
 	}
 }
