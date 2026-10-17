@@ -79,6 +79,8 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
             model=model_name(),
             tool_calls=[],
             output={},
+            question=_question(body),
+            page=body.page_context.model_dump(),
         )
         raise
     turn_id = turn_log().record(
@@ -91,6 +93,8 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         model=model_name(),
         tool_calls=result.facts.tool_calls,
         output=result.output.model_dump(),
+        question=_question(body),
+        page=body.page_context.model_dump(),
     )
     return StreamingResponse(
         _sse(result, turn_id),
@@ -106,6 +110,14 @@ def turn_vote(turn_id: int, body: VoteRequest) -> dict[str, bool]:
     if not turn_log().vote(turn_id, body.vote):
         raise HTTPException(status_code=404, detail="unknown turn")
     return {"ok": True}
+
+
+def _question(body: TurnRequest) -> str:
+    """The customer message this turn answers: the thread's last user message."""
+    for message in reversed(body.messages):
+        if message.role == "user":
+            return message.content
+    return ""
 
 
 def _sse(result: TurnResult, turn_id: int) -> Iterator[str]:

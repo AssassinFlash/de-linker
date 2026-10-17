@@ -1,0 +1,3 @@
+INFO linker_genie.quality: judging <scratch>/g258-turns.sqlite from turn 23: typesafe/jev-1.13 first, deepseek-flash on escalation
+INFO linker_genie.quality: turn 23 escalated to deepseek-flash: grounded 0.22 < 0.6
+INFO linker_genie.quality: turn 23 judged {'grounded': '2', 'appropriate': 'yes'}

@@ -250,6 +250,12 @@ SITE_KIT_VERIFICATION_FILE_META = "googlesitekit_site_verification_file"
 # `ops/release.sh`, whose root is its parameter — so the release rule has one
 # implementation for two services.
 RELEASE_SCRIPT = "services/genie/ops/release.sh"
+# Run on the VPS after both publishes: each release's venv, the quality
+# worker's unit, daemon-reload, the restarts, and the check that every unit
+# is up (#258). Exit 3 means the worker is installed but not started because
+# its token is not set yet — the one step a deploy leaves to a person.
+ACTIVATE_SCRIPT = "services/genie/ops/activate.sh"
+ACTIVATE_NO_TOKEN = 3
 # Where a publish stages on the VPS before release.sh lays it into its root:
 # release.sh copies from a directory on the machine it runs on, and the release
 # script and the two servicetrees travel there over ssh.

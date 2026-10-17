@@ -1,4 +1,11 @@
-"""SQLite log of each Genie turn: tools, grounding, model metadata, votes."""
+"""SQLite log of each Genie turn: tools, grounding, model metadata, votes.
+
+The log is also the quality check's queue (docs/specs/33-judge-bakeoff.md,
+"部署目标"): the judge worker reads it after the fact and never writes it. The
+worker judges what the customer asked (`question`), on which page (`page`),
+against what the turn's abilities returned (`tool_calls[*].result`), so those
+are logged with the turn.
+"""
 
 from __future__ import annotations
 
@@ -20,9 +27,15 @@ CREATE TABLE IF NOT EXISTS turns (
     model TEXT NOT NULL,
     tool_calls TEXT NOT NULL,
     output TEXT NOT NULL,
-    vote INTEGER
+    vote INTEGER,
+    question TEXT,
+    page TEXT
 );
 """
+
+# Columns added after the first release: a log the service already wrote keeps
+# its rows and gains the columns (NULL for the turns logged before them).
+ADDED_COLUMNS = (("question", "TEXT"), ("page", "TEXT"))
 
 
 class TurnLog:
@@ -35,6 +48,10 @@ class TurnLog:
         # the connection's own lock).
         self._db = sqlite3.connect(path, check_same_thread=False)
         self._db.execute(SCHEMA)
+        present = {row[1] for row in self._db.execute("PRAGMA table_info(turns)")}
+        for name, kind in ADDED_COLUMNS:
+            if name not in present:
+                self._db.execute(f"ALTER TABLE turns ADD COLUMN {name} {kind}")
         self._db.commit()
 
     def close(self) -> None:
@@ -51,13 +68,15 @@ class TurnLog:
         model: str,
         tool_calls: list[dict[str, Any]],
         output: dict[str, Any],
+        question: str = "",
+        page: dict[str, Any] | None = None,
     ) -> int:
         cursor = self._db.execute(
             """
             INSERT INTO turns (
                 conversation_id, locale, grounded, failures, fallback,
-                provider, model, tool_calls, output
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                provider, model, tool_calls, output, question, page
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 conversation_id,
@@ -69,6 +88,8 @@ class TurnLog:
                 model,
                 json.dumps(tool_calls),
                 json.dumps(output),
+                question,
+                json.dumps(page or {}),
             ),
         )
         self._db.commit()

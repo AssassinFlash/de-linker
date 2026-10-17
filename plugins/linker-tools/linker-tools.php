@@ -24,7 +24,11 @@ use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Proxy;
+use Linker\Tools\Genie\QualityPage;
+use Linker\Tools\Genie\QualityRoute;
+use Linker\Tools\Genie\QualityStore;
 use Linker\Tools\Genie\Retention;
+use Linker\Tools\Genie\Thread;
 use Linker\Tools\Genie\UserContext;
 use Linker\Tools\Genie\WindPress;
 
@@ -33,6 +37,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/vendor/autoload.php';
 
 $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
+$quality       = new QualityStore(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used three times below.
 ( new Plugin(
 	new Assets( __FILE__ ),
 	new Redirects(),
@@ -44,5 +49,8 @@ $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConvention
 	new UserContext(),
 	new WindPress(),
 	new Mount(),
-	new EngineProxy()
+	new EngineProxy(),
+	$quality,
+	new QualityRoute( $quality ),
+	new QualityPage( $quality, new Thread() )
 ) )->register();

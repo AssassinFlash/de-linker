@@ -70,13 +70,11 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         subprocess.run(
             [str(uv), "sync", "--locked", "--project", str(project)], check=True
         )
-        # Genie calls this instance's WordPress back (the abilities); without
-        # the explicit address its default `http://127.0.0.1` hits whatever
-        # answers on port 80 of this Mac and every ability call fails.
         env = dict(os.environ)
-        env["GENIE_WP_URL"] = instance.url
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
+        else:
+            env.update(genie_environment(instance))
         service.process(instance).restart(
             [
                 str(uv),
@@ -99,6 +97,18 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         wp.run("option", "update", service.option, url)
         urls.append(f"{service.name} {url}")
     return urls
+
+
+def genie_environment(instance: Instance) -> dict[str, str]:
+    """Where this instance's Genie calls back to and logs its turns.
+
+    Genie calls this instance's WordPress back (the abilities); without the
+    explicit address its default `http://127.0.0.1` hits whatever answers on
+    port 80 of this Mac and every ability call fails. Its turn log goes into
+    the instance's own directory (`Instance.genie_log`): the service's default,
+    `~/.cache/linker-genie/turns.sqlite`, is one file for every instance.
+    """
+    return {"GENIE_WP_URL": instance.url, "GENIE_LOG": str(instance.genie_log)}
 
 
 def stop(instance: Instance) -> list[str]:

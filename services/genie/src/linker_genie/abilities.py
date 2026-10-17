@@ -167,8 +167,11 @@ class AbilityClient:
         """Run the ability and collect its facts in the turn's language."""
         payload = self.run(name, arguments, user_context)
         gathered = collect(name, payload, locale)
+        # The result is logged with the call: the quality check judges the
+        # answer against what the model read, not against a later replay
+        # (stock, prices and a signed-in customer's inquiries change).
         gathered.tool_calls.append(
-            {"name": name, "arguments": arguments or {}, "ok": True}
+            {"name": name, "arguments": arguments or {}, "ok": True, "result": payload}
         )
         return payload, gathered
 

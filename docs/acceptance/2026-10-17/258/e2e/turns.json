@@ -1,0 +1,312 @@
+[
+ {
+  "lang": "en",
+  "q": "saj",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237432.203125,
+  "answered_at": 1792237436.642373,
+  "conversation_id": 7071,
+  "turn_id": 1,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "What is the max PV input power of the SAJ H2-10K-T3?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237436.642592,
+  "answered_at": 1792237440.7672908,
+  "conversation_id": 7072,
+  "turn_id": 2,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Wie viele MPPT hat der SAJ H2-10K-T3?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237440.7677708,
+  "answered_at": 1792237458.674983,
+  "conversation_id": 7073,
+  "turn_id": 3,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "Which battery works with the SAJ H2-10K-T3?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237458.675529,
+  "answered_at": 1792237464.0689511,
+  "conversation_id": 7074,
+  "turn_id": 4,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Welcher Speicher passt zum GoodWe ESA 10 kW?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237464.069162,
+  "answered_at": 1792237477.1126,
+  "conversation_id": 7075,
+  "turn_id": 5,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "What is the usable capacity of the Pylontech L260 Omni?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237477.1136892,
+  "answered_at": 1792237485.522433,
+  "conversation_id": 7076,
+  "turn_id": 6,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Welche Garantie gibt GoodWe auf Wechselrichter in Europa?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237485.522639,
+  "answered_at": 1792237488.830592,
+  "conversation_id": 7077,
+  "turn_id": 7,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "Is the EcoFlow OCEAN 2 single-phase or three-phase, and what is its rated power?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237488.830647,
+  "answered_at": 1792237507.242948,
+  "conversation_id": 7078,
+  "turn_id": 8,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "How do I set the export limit on an SAJ H2 inverter?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237507.243249,
+  "answered_at": 1792237523.802656,
+  "conversation_id": 7079,
+  "turn_id": 9,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Wie wird der SAJ CB2-100.3-HV5 installiert? Welcher Mindestabstand?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237523.802947,
+  "answered_at": 1792237527.502121,
+  "conversation_id": 7080,
+  "turn_id": 10,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "Do you have three-phase hybrid inverters around 15 kW?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237527.5022311,
+  "answered_at": 1792237549.158478,
+  "conversation_id": 7081,
+  "turn_id": 11,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Habt ihr Hochvolt-Batteriespeicher für Gewerbe?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237549.158797,
+  "answered_at": 1792237559.6034958,
+  "conversation_id": 7082,
+  "turn_id": 12,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "Compare the SAJ H2-10K-T3 and the GoodWe ESA 10 kW.",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237559.603713,
+  "answered_at": 1792237572.746637,
+  "conversation_id": 7083,
+  "turn_id": 13,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "What size battery for 8 kWp PV and 6000 kWh per year?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237572.746819,
+  "answered_at": 1792237580.3840902,
+  "conversation_id": 7084,
+  "turn_id": 14,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "What does the SAJ H2-10K-T3 cost?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237580.3842108,
+  "answered_at": 1792237587.0725272,
+  "conversation_id": 7085,
+  "turn_id": 15,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Liefern Sie nach Österreich?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237587.0727968,
+  "answered_at": 1792237589.452907,
+  "conversation_id": 7086,
+  "turn_id": 16,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "Can I talk to a person?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237589.452996,
+  "answered_at": 1792237592.807678,
+  "conversation_id": 7087,
+  "turn_id": 17,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Ich möchte mit einem Mitarbeiter sprechen",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237592.808031,
+  "answered_at": 1792237594.8035681,
+  "conversation_id": 7088,
+  "turn_id": 18,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "Does the SAJ H2 support EnWG 14a dimming?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237594.8036249,
+  "answered_at": 1792237608.342432,
+  "conversation_id": 7089,
+  "turn_id": 19,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Wo finde ich das Datenblatt für den Pylontech L260?",
+  "page": {
+   "type": "other"
+  },
+  "sent_at": 1792237608.3429801,
+  "answered_at": 1792237615.001598,
+  "conversation_id": 7090,
+  "turn_id": 20,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "en",
+  "q": "Which battery pairs with this inverter?",
+  "page": {
+   "type": "product",
+   "product_id": 4107
+  },
+  "sent_at": 1792237615.001793,
+  "answered_at": 1792237630.218713,
+  "conversation_id": 7091,
+  "turn_id": 21,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ },
+ {
+  "lang": "de",
+  "q": "Welche Batterie passt zu diesem Wechselrichter?",
+  "page": {
+   "type": "product",
+   "product_id": 6628
+  },
+  "sent_at": 1792237630.2190778,
+  "answered_at": 1792237638.067371,
+  "conversation_id": 7092,
+  "turn_id": 22,
+  "grounded": true,
+  "fallback": false,
+  "error": null
+ }
+]

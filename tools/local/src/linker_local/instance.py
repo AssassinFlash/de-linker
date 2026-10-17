@@ -107,6 +107,15 @@ class Instance:
         return self.dir / "run"
 
     @property
+    def genie_log(self) -> Path:
+        """Genie's turn log for this instance alone: it is also the quality
+        worker's queue (docs/specs/33-judge-bakeoff.md "部署（#258）"), and the
+        worker keeps its judgments.sqlite beside it. One shared log would let
+        one instance's worker judge another's turns and post them to its own
+        site, where the numeric conversation ids can collide."""
+        return self.dir / "genie" / "turns.sqlite"
+
+    @property
     def provisioned_marker(self) -> Path:
         """Written as the last step of provisioning; its absence means unfinished."""
         return self.dir / ".provisioned"
