@@ -92,11 +92,11 @@ final class Planner {
 					return FieldPlan::blocked( $english, $current[0] );
 				}
 				if ( 'delete' === $run[0] ) {
-					$span = $german->span( $run[1], $run[2] );
-					if ( null === $span ) {
+					$deletions = $german->deletions( $run[1], $run[2] );
+					if ( null === $deletions ) {
 						return FieldPlan::blocked( $english, $current[0] );
 					}
-					$splices[] = array( $span[0], $span[1], null );
+					array_push( $splices, ...$deletions );
 				} else {
 					$span = $english->span( $run[3], $run[4] );
 					if ( null === $span ) {
@@ -105,11 +105,15 @@ final class Planner {
 					// Prefer the next unchanged sentence; the previous one anchors an append.
 					$after = ! isset( $runs[ $position + 1 ] ) || 'equal' !== $runs[ $position + 1 ][0];
 					$index = $after ? $run[1] - 1 : $run[2];
-					$at    = $german->boundary( $index, $after, $span[2] );
-					if ( null === $at ) {
+					$at    = $german->boundary( $index, $after, $span['block'] );
+					if ( null === $at || $english->context( $span['start'] ) !== $german->context( $at ) ) {
 						return FieldPlan::blocked( $english, $current[0] );
 					}
-					$splices[] = array( $at, $at, array( $span[0], $span[1] ) );
+					$splices[] = array(
+						'start'  => $at,
+						'end'    => $at,
+						'source' => $english->slice( $span['start'], $span['end'] ),
+					);
 				}
 				continue;
 			}

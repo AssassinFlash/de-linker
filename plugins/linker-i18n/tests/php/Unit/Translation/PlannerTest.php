@@ -126,16 +126,16 @@ final class PlannerTest extends TestCase {
 	 */
 	public function sentence_edits(): array {
 		return array(
-			'paragraph prepend'              => array( self::ENGLISH, self::GERMAN, '<p>New paragraph.</p>' . self::ENGLISH, '<p>Neu.</p>' . self::GERMAN, array( 0 => 'Neu.' ), false ),
-			'paragraph append'               => array( self::ENGLISH, self::GERMAN, self::ENGLISH . '<p>New paragraph.</p>', self::GERMAN . '<p>Neu.</p>', array( 2 => 'Neu.' ), false ),
-			'paragraph deletion'             => array( self::ENGLISH, self::GERMAN, '<p>First paragraph.</p>', '<p>Erster Absatz.</p>', array(), false ),
-			'middle insertion'               => array( '<p>First. Last.</p>', "<p class='manual'>Erster  Satz. Letzter Satz.</p>", '<p>First. New. Last.</p>', "<p class='manual'>Erster  Satz. Neu. Letzter Satz.</p>", array( 1 => 'Neu.' ), false ),
-			'last insertion'                 => array( '<p>First.</p>', "<p class='manual'>Erster  Satz.</p>", '<p>First. New.</p>', "<p class='manual'>Erster  Satz. Neu.</p>", array( 1 => 'Neu.' ), false ),
-			'first insertion'                => array( '<p>First.</p>', '<p>Erster.</p>', '<p>New. First.</p>', '<p>Neu. Erster.</p>', array( 0 => 'Neu.' ), false ),
-			'middle deletion'                => array( '<p>First. Middle. Last.</p>', '<p>Erster  Satz. Mitte. Letzter Satz.</p>', '<p>First. Last.</p>', '<p>Erster  Satz. Letzter Satz.</p>', array(), false ),
-			'last deletion'                  => array( '<p>First. Last.</p>', '<p>Erster  Satz. Letzter.</p>', '<p>First.</p>', '<p>Erster  Satz.</p>', array(), false ),
-			'wrapped insertion'              => array( '<p>First. Last.</p>', '<p>Erster. Letzter.</p>', '<p>First. New <strong>sentence</strong>. Last.</p>', '<p>Erster. Neuer <strong>Satz</strong>. Letzter.</p>', array( 1 => 'Neuer <t1>Satz</t1>.' ), false ),
-			'shifted replacement attributes' => array(
+			'paragraph prepend'               => array( self::ENGLISH, self::GERMAN, '<p>New paragraph.</p>' . self::ENGLISH, '<p>Neu.</p>' . self::GERMAN, array( 0 => 'Neu.' ), false ),
+			'paragraph append'                => array( self::ENGLISH, self::GERMAN, self::ENGLISH . '<p>New paragraph.</p>', self::GERMAN . '<p>Neu.</p>', array( 2 => 'Neu.' ), false ),
+			'paragraph deletion'              => array( self::ENGLISH, self::GERMAN, '<p>First paragraph.</p>', '<p>Erster Absatz.</p>', array(), false ),
+			'middle insertion'                => array( '<p>First. Last.</p>', "<p class='manual'>Erster  Satz. Letzter Satz.</p>", '<p>First. New. Last.</p>', "<p class='manual'>Erster  Satz. Neu. Letzter Satz.</p>", array( 1 => 'Neu.' ), false ),
+			'last insertion'                  => array( '<p>First.</p>', "<p class='manual'>Erster  Satz.</p>", '<p>First. New.</p>', "<p class='manual'>Erster  Satz. Neu.</p>", array( 1 => 'Neu.' ), false ),
+			'first insertion'                 => array( '<p>First.</p>', '<p>Erster.</p>', '<p>New. First.</p>', '<p>Neu. Erster.</p>', array( 0 => 'Neu.' ), false ),
+			'middle deletion'                 => array( '<p>First. Middle. Last.</p>', '<p>Erster  Satz. Mitte. Letzter Satz.</p>', '<p>First. Last.</p>', '<p>Erster  Satz. Letzter Satz.</p>', array(), false ),
+			'last deletion'                   => array( '<p>First. Last.</p>', '<p>Erster  Satz. Letzter.</p>', '<p>First.</p>', '<p>Erster  Satz.</p>', array(), false ),
+			'wrapped insertion'               => array( '<p>First. Last.</p>', '<p>Erster. Letzter.</p>', '<p>First. New <strong>sentence</strong>. Last.</p>', '<p>Erster. Neuer <strong>Satz</strong>. Letzter.</p>', array( 1 => 'Neuer <t1>Satz</t1>.' ), false ),
+			'shifted replacement attributes'  => array(
 				"<p>First.</p><p>Second <a title='Download'>sentence</a>.</p>",
 				"<p>Erster.</p><p>Zweiter <a title='Herunterladen'>Satz</a>.</p>",
 				"<p>New.</p><p>First.</p><p>Changed <a title='Download'>sentence</a>.</p>",
@@ -146,9 +146,26 @@ final class PlannerTest extends TestCase {
 				),
 				false,
 			),
-			'reorder'                        => array( self::ENGLISH, self::GERMAN, '<p>Second paragraph.</p><p>First paragraph.</p>', self::GERMAN, array(), true ),
-			'no anchor'                      => array( self::ENGLISH, self::GERMAN, '<p>New.</p>', self::GERMAN, array(), true ),
-			'ambiguous repeated anchor'      => array( '<p>Same. Same.</p>', '<p>Eins. Zwei.</p>', '<p>Same. New. Same.</p>', '<p>Eins. Zwei.</p>', array(), true ),
+			'media between deleted sentences' => array( "<p>Alpha.</p><img src='/keep.png'><p>Beta.</p><p>Gamma.</p>", "<p>Alpha DE.</p><img src='/keep-de.png'><p>Beta DE.</p><p>Gamma DE.</p>", "<img src='/keep.png'><p>Gamma.</p>", "<img src='/keep-de.png'><p>Gamma DE.</p>", array(), false ),
+			'attribute anchor'                => array( '<p aria-label="Old">Alpha.</p>', "<p aria-label='Alt'>Alpha DE.</p>", '<p>New.</p><p aria-label="Old">Alpha.</p>', "<p>Neu.</p><p aria-label='Alt'>Alpha DE.</p>", array( 0 => 'Neu.' ), false ),
+			'insert attributed paragraph'     => array(
+				'<p>Alpha.</p>',
+				'<p>Alpha DE.</p>',
+				'<p title="New heading">New.</p><p>Alpha.</p>',
+				'<p title="Neue Überschrift">Neu.</p><p>Alpha DE.</p>',
+				array(
+					0 => 'Neue Überschrift',
+					1 => 'Neu.',
+				),
+				false,
+			),
+			'delete attributed paragraph'     => array( '<p title="Old heading">Old.</p><p>Alpha.</p>', "<p title='Alte Überschrift'>Alt.</p><p>Alpha DE.</p>", '<p>Alpha.</p>', '<p>Alpha DE.</p>', array(), false ),
+			'whole list insertion'            => array( '<p>Alpha.</p>', '<p>Alpha DE.</p>', '<ul><li>New.</li></ul><p>Alpha.</p>', '<ul><li>Neu.</li></ul><p>Alpha DE.</p>', array( 0 => 'Neu.' ), false ),
+			'list item insertion'             => array( '<ul><li>Alpha.</li><li>Last.</li></ul>', '<ul><li>Alpha DE.</li><li>Letzter.</li></ul>', '<ul><li>Alpha.</li><li>New.</li><li>Last.</li></ul>', '<ul><li>Alpha DE.</li><li>Neu.</li><li>Letzter.</li></ul>', array( 1 => 'Neu.' ), false ),
+			'incompatible list context'       => array( '<ul><li>Alpha.</li><li>Last.</li></ul>', '<p>Alpha DE.</p><p>Letzter.</p>', '<ul><li>Alpha.</li><li>New.</li><li>Last.</li></ul>', '<p>Alpha DE.</p><p>Letzter.</p>', array(), true ),
+			'reorder'                         => array( self::ENGLISH, self::GERMAN, '<p>Second paragraph.</p><p>First paragraph.</p>', self::GERMAN, array(), true ),
+			'no anchor'                       => array( self::ENGLISH, self::GERMAN, '<p>New.</p>', self::GERMAN, array(), true ),
+			'ambiguous repeated anchor'       => array( '<p>Same. Same.</p>', '<p>Eins. Zwei.</p>', '<p>Same. New. Same.</p>', '<p>Eins. Zwei.</p>', array(), true ),
 		);
 	}
 

@@ -17,9 +17,12 @@ namespace Linker\I18n\Translation;
 final class Document {
 
 	/** Sentence containers can move with a sentence; layout containers stay put. */
-	private const CONTAINERS = array( 'p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'span', 'strong', 'em', 'b', 'i', 'small', 'u', 's', 'mark', 'q' );
+	private const CONTAINERS = array( 'p', 'li', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'data', 'del', 'dfn', 'em', 'font', 'i', 'ins', 'label', 'mark', 'q', 's', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u' );
 
-	private const BLOCKS = array( 'p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' );
+	private const BLOCKS = array( 'p', 'li', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' );
+
+	/** HTML Living Standard void elements do not open a container. */
+	private const VOID_TAGS = array( 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr' );
 
 	/**
 	 * Sets up the document.
@@ -100,30 +103,21 @@ final class Document {
 
 	/**
 	 * A separable sentence range, in part coordinates (end exclusive).
-	 * Shared attribute/text owners and unbalanced markup cannot be spliced.
-	 * Wrappers and separators move with the sentence, never layout or media.
+	 * Layout and media do not belong to sentence edits.
 	 *
 	 * @param int  $start First segment.
-	 * @param int  $end After the last segment.
-	 * @param bool $blocks Include a complete paragraph/list item/heading.
-	 * @param bool $space Include one adjacent whitespace separator.
-	 * @return array{int, int, bool}|null Part bounds and whether they include a block.
+	 * @param int  $end After last segment.
+	 * @param bool $blocks Include complete sentence containers.
+	 * @param bool $space Include one whitespace separator.
+	 * @return array{start: int, end: int, block: bool}|null
 	 */
 	public function span( int $start, int $end, bool $blocks = true, bool $space = true ): ?array {
+		$owners    = $this->owners();
 		$positions = array();
-		foreach ( $this->parts as $position => $part ) {
-			$owners = $part instanceof TagPart ? array_values( $part->attributes ) : array();
-			if ( is_int( $part ) ) {
-				$owners[] = $part;
-				foreach ( $this->segments[ $part ]->map as $tag ) {
-					if ( $tag instanceof TagPart ) {
-						array_push( $owners, ...array_values( $tag->attributes ) );
-					}
-				}
-			}
-			$selected = array_filter( $owners, static fn( int $index ): bool => $index >= $start && $index < $end );
+		foreach ( $owners as $position => $indexes ) {
+			$selected = array_filter( $indexes, static fn( int $index ): bool => $index >= $start && $index < $end );
 			if ( array() !== $selected ) {
-				if ( count( $selected ) !== count( $owners ) ) {
+				if ( count( $selected ) !== count( $indexes ) ) {
 					return null;
 				}
 				$positions[] = $position;
@@ -132,32 +126,25 @@ final class Document {
 		if ( array() === $positions ) {
 			return null;
 		}
-		$first      = min( $positions );
-		$last       = max( $positions ) + 1;
-		$block      = false;
-		$part_count = count( $this->parts );
-		while ( true ) {
-			$left  = $first;
-			$right = $last;
-			while ( $left > 0 && $this->whitespace( $left - 1 ) ) {
-				--$left;
+		$first = min( $positions );
+		$last  = max( $positions ) + 1;
+		$block = false;
+		foreach ( $this->frames() as $frame ) {
+			$is_block = in_array( $frame['name'], self::BLOCKS, true );
+			if ( ! in_array( $frame['name'], self::CONTAINERS, true ) || ( $is_block && ! $blocks ) || $frame['end'] <= $first || $frame['start'] >= $last ) {
+				continue;
 			}
-			while ( $right < $part_count && $this->whitespace( $right ) ) {
-				++$right;
+			$outside = false;
+			for ( $part = $frame['start']; $part < $frame['end']; $part++ ) {
+				foreach ( $owners[ $part ] as $index ) {
+					$outside = $outside || $index < $start || $index >= $end;
+				}
 			}
-			$open  = $this->parts[ $left - 1 ] ?? null;
-			$close = $this->parts[ $right ] ?? null;
-			if ( ! is_string( $open ) || ! is_string( $close ) || 1 !== preg_match( '/^<([a-z0-9]+)(?:\s[^<>]*)?>$/i', $open, $match ) ) {
-				break;
+			if ( ! $outside ) {
+				$first = min( $first, $frame['start'] );
+				$last  = max( $last, $frame['end'] );
+				$block = $block || $is_block;
 			}
-			$name     = strtolower( $match[1] );
-			$is_block = in_array( $name, self::BLOCKS, true );
-			if ( ! in_array( $name, self::CONTAINERS, true ) || ( $is_block && ! $blocks ) || 1 !== preg_match( '/^<\/' . $name . '\s*>$/i', $close ) ) {
-				break;
-			}
-			$first = $left - 1;
-			$last  = $right + 1;
-			$block = $block || $is_block;
 		}
 		if ( $space ) {
 			if ( $this->whitespace( $last ) ) {
@@ -166,12 +153,14 @@ final class Document {
 				--$first;
 			}
 		}
-		// A sentence inside a shared wrapper is balanced; a range crossing
-		// separate containers or owning only an opening attribute tag is not.
 		$stack = array();
 		foreach ( ( new HtmlTokenizer() )->tokens( $this->slice( $first, $last )->render( array() ) ) as $token ) {
-			if ( HtmlToken::TAG !== $token->type || in_array( $token->name, array( 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr' ), true ) || str_ends_with( $token->raw, '/>' ) ) {
+			if ( HtmlToken::TEXT === $token->type ) {
 				continue;
+			}
+			// Never remove an intervening image, script, comment or layout container.
+			if ( HtmlToken::TAG !== $token->type || ! in_array( $token->name, self::CONTAINERS, true ) ) {
+				return null;
 			}
 			if ( $token->closing ) {
 				if ( array_pop( $stack ) !== $token->name ) {
@@ -181,7 +170,41 @@ final class Document {
 				$stack[] = $token->name;
 			}
 		}
-		return array() === $stack ? array( $first, $last, $block ) : null;
+		return array() === $stack ? array(
+			'start' => $first,
+			'end'   => $last,
+			'block' => $block,
+		) : null;
+	}
+
+	/**
+	 * Deletions split around media and layout that must survive the edit.
+	 *
+	 * @param int $start First deleted segment.
+	 * @param int $end After last deleted segment.
+	 * @return list<array{start: int, end: int, source: Document|null}>|null
+	 */
+	public function deletions( int $start, int $end ): ?array {
+		$ranges = array();
+		while ( $start < $end ) {
+			$span = null;
+			for ( $next = $end; $next > $start; --$next ) {
+				$span = $this->span( $start, $next );
+				if ( null !== $span ) {
+					break;
+				}
+			}
+			if ( null === $span ) {
+				return null;
+			}
+			$ranges[] = array(
+				'start'  => $span['start'],
+				'end'    => $span['end'],
+				'source' => null,
+			);
+			$start    = $next;
+		}
+		return $ranges;
 	}
 
 	/**
@@ -195,30 +218,100 @@ final class Document {
 	}
 
 	/**
-	 * An insertion point beside an unchanged sentence, inside or outside its block.
+	 * An insertion point beside an unchanged sentence or its block container.
 	 *
 	 * @param int  $index Anchor segment.
-	 * @param bool $after Insert after the anchor.
+	 * @param bool $after Insert after it.
 	 * @param bool $block Insert a complete block.
 	 */
 	public function boundary( int $index, bool $after, bool $block ): ?int {
-		$span = $this->span( $index, $index + 1, false, false );
-		if ( null === $span ) {
-			return null;
-		}
-		$position = $after ? $span[1] : $span[0];
 		if ( ! $block ) {
-			return $position;
+			$span = $this->span( $index, $index + 1, false, false );
+			return null === $span ? null : $span[ $after ? 'end' : 'start' ];
 		}
-		while ( $this->whitespace( $after ? $position : $position - 1 ) ) {
-			$position += $after ? 1 : -1;
+		$owners = $this->owners();
+		foreach ( $this->frames() as $frame ) {
+			if ( ! in_array( $frame['name'], self::BLOCKS, true ) ) {
+				continue;
+			}
+			$indexes = array();
+			for ( $part = $frame['start']; $part < $frame['end']; ++$part ) {
+				array_push( $indexes, ...$owners[ $part ] );
+			}
+			if ( array() !== $indexes && ( $after ? max( $indexes ) : min( $indexes ) ) === $index ) {
+				return $frame[ $after ? 'end' : 'start' ];
+			}
 		}
-		$part    = $this->parts[ $after ? $position : $position - 1 ] ?? null;
-		$pattern = $after ? '/^<\/([a-z0-9]+)\s*>$/i' : '/^<([a-z0-9]+)(?:\s[^<>]*)?>$/i';
-		if ( ! is_string( $part ) || 1 !== preg_match( $pattern, $part, $match ) || ! in_array( strtolower( $match[1] ), self::BLOCKS, true ) ) {
-			return null;
+		return null;
+	}
+
+	/**
+	 * Parent elements at a part boundary, to keep inserted lists/phrasing valid.
+	 *
+	 * @param int $position Part boundary.
+	 * @return list<string>
+	 */
+	public function context( int $position ): array {
+		return array_values( array_map( static fn( array $frame ): string => $frame['name'], array_filter( $this->frames(), static fn( array $frame ): bool => $frame['start'] < $position && $frame['end'] > $position ) ) );
+	}
+
+	/**
+	 * Part ownership includes attributes nested inside a sentence placeholder.
+	 *
+	 * @return array<int, list<int>>
+	 */
+	private function owners(): array {
+		$owners = array();
+		foreach ( $this->parts as $position => $part ) {
+			$indexes = $part instanceof TagPart ? array_values( $part->attributes ) : array();
+			if ( is_int( $part ) ) {
+				$indexes[] = $part;
+				foreach ( $this->segments[ $part ]->map as $tag ) {
+					if ( $tag instanceof TagPart ) {
+						array_push( $indexes, ...array_values( $tag->attributes ) );
+					}
+				}
+			}
+			$owners[ $position ] = $indexes;
 		}
-		return $after ? $position + 1 : $position - 1;
+		return $owners;
+	}
+
+	/**
+	 * Balanced containers in original part coordinates, inner containers first.
+	 *
+	 * @return list<array{start: int, end: int, name: string}>
+	 */
+	private function frames(): array {
+		$frames = array();
+		$stack  = array();
+		foreach ( $this->parts as $position => $part ) {
+			$raw = $part instanceof TagPart ? $part->tag->raw : $part;
+			if ( ! is_string( $raw ) ) {
+				continue;
+			}
+			foreach ( ( new HtmlTokenizer() )->tokens( $raw ) as $token ) {
+				if ( HtmlToken::TAG !== $token->type || in_array( $token->name, self::VOID_TAGS, true ) || str_ends_with( $token->raw, '/>' ) ) {
+					continue;
+				}
+				if ( $token->closing ) {
+					$open = array_pop( $stack );
+					if ( null !== $open && $open['name'] === $token->name ) {
+						$frames[] = array(
+							'start' => $open['start'],
+							'end'   => $position + 1,
+							'name'  => $token->name,
+						);
+					}
+				} else {
+					$stack[] = array(
+						'start' => $position,
+						'name'  => $token->name,
+					);
+				}
+			}
+		}
+		return $frames;
 	}
 
 	/**

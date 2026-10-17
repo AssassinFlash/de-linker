@@ -17,13 +17,13 @@ final class FieldPlan {
 	/**
 	 * Sets up the plan.
 	 *
-	 * @param Document                                    $english English document.
-	 * @param string|null                                 $kept Complete German field, or null to rebuild it.
-	 * @param array<int, string>                          $verbatim Known German markup by English index.
-	 * @param Document|null                               $target Existing German markup; only changed sentence slots are replaced.
-	 * @param bool                                        $mismatch Whether alignment failed and all German must stay.
-	 * @param array<int, int>                             $mapping Current English index => previous German index.
-	 * @param list<array{int, int, array{int, int}|null}> $splices German part ranges to delete or insert an English fragment into.
+	 * @param Document                                                 $english English document.
+	 * @param string|null                                              $kept Complete German field, or null to rebuild it.
+	 * @param array<int, string>                                       $verbatim Known German markup by English index.
+	 * @param Document|null                                            $target Existing German markup; only changed sentence slots are replaced.
+	 * @param bool                                                     $mismatch Whether alignment failed and all German must stay.
+	 * @param array<int, int>                                          $mapping Current English index => previous German index.
+	 * @param list<array{start: int, end: int, source: Document|null}> $splices German part ranges to delete or insert an English fragment into.
 	 */
 	private function __construct(
 		public readonly Document $english,
@@ -58,11 +58,11 @@ final class FieldPlan {
 	/**
 	 * Builds from English markup with known and newly translated segments.
 	 *
-	 * @param Document                                    $english English document.
-	 * @param array<int, string>                          $verbatim Known German markup.
-	 * @param Document|null                               $target Existing German markup, if aligned.
-	 * @param array<int, int>                             $mapping Current English index => previous German index.
-	 * @param list<array{int, int, array{int, int}|null}> $splices Part ranges to splice.
+	 * @param Document                                                 $english English document.
+	 * @param array<int, string>                                       $verbatim Known German markup.
+	 * @param Document|null                                            $target Existing German markup, if aligned.
+	 * @param array<int, int>                                          $mapping Current English index => previous German index.
+	 * @param list<array{start: int, end: int, source: Document|null}> $splices Part ranges to splice.
 	 */
 	public static function build( Document $english, array $verbatim = array(), ?Document $target = null, array $mapping = array(), array $splices = array() ): self {
 		return new self( $english, null, $verbatim, $target, false, $mapping, $splices );
@@ -120,13 +120,14 @@ final class FieldPlan {
 		}
 		$parts   = $this->target->render_parts( array(), $bytes );
 		$splices = $this->splices;
-		usort( $splices, static fn( array $left, array $right ): int => $right[0] <=> $left[0] );
-		foreach ( $splices as list( $start, $end, $source ) ) {
-			$html = null === $source ? '' : $this->english->slice( $source[0], $source[1] )->render( $translations );
+		usort( $splices, static fn( array $left, array $right ): int => $right['start'] <=> $left['start'] );
+		foreach ( $splices as $splice ) {
+			$source = $splice['source'];
+			$html   = null === $source ? '' : $source->render( $translations );
 			if ( null !== $source && null !== $localize ) {
 				$html = $localize( $html );
 			}
-			array_splice( $parts, $start, $end - $start, array( $html ) );
+			array_splice( $parts, $splice['start'], $splice['end'] - $splice['start'], array( $html ) );
 		}
 		return implode( '', $parts );
 	}
