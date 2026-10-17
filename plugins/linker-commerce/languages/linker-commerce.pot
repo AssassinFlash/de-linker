@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-17T21:48:44+00:00\n"
+"POT-Creation-Date: 2026-10-17T22:23:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -292,19 +292,27 @@ msgid ""
 "customer."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:35
+#: includes/Abilities/ProductCommerce.php:53
 msgid "Whether this visitor sees the stored price."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:39
+#: includes/Abilities/ProductCommerce.php:57
 msgid "Stored price when it is visible."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:43
+#: includes/Abilities/ProductCommerce.php:61
+msgid "What the product page prints where the price stands, for this visitor."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:66
+msgid "Why this visitor sees no price."
+msgstr ""
+
+#: includes/Abilities/ProductCommerce.php:70
 msgid "Whether the product is in stock (the stock the ERP pushed)."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:47
+#: includes/Abilities/ProductCommerce.php:74
 msgid "Whether the product is quoted per project."
 msgstr ""
 
@@ -650,7 +658,7 @@ msgid ""
 "the page it is printed on."
 msgstr ""
 
-#: includes/Contact/Emails/ContactEmail.php:72
+#: includes/Contact/Emails/ContactEmail.php:72 includes/Genie/GenieEmail.php:97
 #: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:122
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
@@ -948,26 +956,58 @@ msgid ""
 "For products without a price, we state the price in your Proforma invoice."
 msgstr ""
 
-#: includes/Gating/PriceDisplay.php:194
+#: includes/Gating/PriceDisplay.php:206
 msgid "Log in for prices"
 msgstr ""
 
-#: includes/Gating/PriceDisplay.php:199 includes/Storefront/ProductView.php:285
-#: includes/Storefront/ProductView.php:311
+#: includes/Gating/PriceDisplay.php:211 includes/Storefront/ProductView.php:305
+#: includes/Storefront/ProductView.php:324
 msgid "Not available for your account"
 msgstr ""
 
-#: includes/Gating/PriceDisplay.php:200 includes/Storefront/ProductView.php:284
-#: includes/Storefront/ProductView.php:310
+#: includes/Gating/PriceDisplay.php:212 includes/Storefront/ProductView.php:304
+#: includes/Storefront/ProductView.php:323
 msgid "Prices after approval"
 msgstr ""
 
-#: includes/Gating/PriceDisplay.php:204
+#: includes/Gating/PriceDisplay.php:216 includes/Storefront/ProductView.php:300
 msgid "Quoted per project"
 msgstr ""
 
-#: includes/Gating/PriceDisplay.php:205
+#: includes/Gating/PriceDisplay.php:217
 msgid "Price on request"
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php:46
+msgid "Genie conversation: address confirmation"
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php:47
+msgid ""
+"Sent to the address a visitor without an account enters to get a Genie "
+"conversation by email. It holds only a link that confirms the address; the "
+"conversation follows after the click."
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php:84
+msgid "Conversation with Genie requested for this email address"
+msgstr ""
+
+#: includes/Genie/ConfirmAddressEmail.php:91
+msgid "Confirm your email address"
+msgstr ""
+
+#: includes/Genie/ConversationEmail.php:34
+msgid "Genie conversation"
+msgstr ""
+
+#: includes/Genie/ConversationEmail.php:35
+msgid "Sent when someone asks for a copy of a Genie conversation by email."
+msgstr ""
+
+#: includes/Genie/ConversationEmail.php:64
+#: includes/Genie/ConversationEmail.php:71
+msgid "Your conversation with Genie"
 msgstr ""
 
 #: includes/Health/InternalMail.php:41
@@ -1019,6 +1059,7 @@ msgid "the service answered HTTP %d instead of 200"
 msgstr ""
 
 #: includes/Health/Monitor.php:145 includes/Presentation/LoginGate.php:279
+#: templates/emails/linker-genie-conversation.php:37
 msgid "Genie"
 msgstr ""
 
@@ -1259,7 +1300,7 @@ msgstr ""
 
 #: includes/Presentation/AccountTemplates.php:465
 #: includes/Presentation/ProductShortcodes.php:626
-#: includes/Storefront/ProductView.php:306 includes/Vocabulary/Labels.php:33
+#: includes/Storefront/ProductView.php:319 includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:43
 #: templates/myaccount/linker-saved-solutions.php:54
 msgid "Add to solution draft"
@@ -1357,7 +1398,7 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php:153
 #: includes/Presentation/ProductShortcodes.php:1540
 #: includes/Storefront/ArchiveSchema.php:174
-#: includes/Storefront/ProductView.php:643
+#: includes/Storefront/ProductView.php:656
 #: templates/myaccount/linker-saved-solutions.php:29
 #: templates/myaccount/linker-saved-solutions.php:41
 msgid "Products"
@@ -1819,6 +1860,7 @@ msgid "Item no."
 msgstr ""
 
 #: includes/Presentation/ProductShortcodes.php:606
+#: templates/emails/linker-genie-conversation.php:46
 msgid "Model"
 msgstr ""
 
@@ -2220,15 +2262,15 @@ msgid ""
 "your account has been reviewed."
 msgstr ""
 
-#: includes/Products/Comparison.php:221 includes/Storefront/ProductView.php:292
+#: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:307
 msgid "Net price after partner sign-in"
 msgstr ""
 
-#: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:67
+#: includes/Products/Comparison.php:227 includes/Storefront/ProductView.php:67
 msgid "In stock"
 msgstr ""
 
-#: includes/Products/Comparison.php:225 includes/Storefront/ProductView.php:67
+#: includes/Products/Comparison.php:228 includes/Storefront/ProductView.php:67
 msgid "Currently unavailable"
 msgstr ""
 
@@ -3320,7 +3362,7 @@ msgstr ""
 msgid "Energy capacity"
 msgstr ""
 
-#: includes/Storefront/ProductView.php:313
+#: includes/Storefront/ProductView.php:326
 msgid "Sign in for partner pricing"
 msgstr ""
 
@@ -3817,6 +3859,54 @@ msgstr ""
 msgid "Answer this email to reply to the visitor directly."
 msgstr ""
 
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-confirm-address.php:29
+#, php-format
+msgid ""
+"On %s, a conversation with Genie, Linker's AI assistant, was requested for "
+"this email address."
+msgstr ""
+
+#: templates/emails/linker-genie-confirm-address.php:32
+msgid "Send me the conversation"
+msgstr ""
+
+#. translators: %d: how many hours the link works.
+#: templates/emails/linker-genie-confirm-address.php:36
+#, php-format
+msgid "The link works once and expires after %d hour."
+msgid_plural "The link works once and expires after %d hours."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/emails/linker-genie-confirm-address.php:39
+msgid ""
+"The conversation is sent only once the link is opened. If you did not ask "
+"for it, you can ignore this email."
+msgstr ""
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-conversation.php:33
+#, php-format
+msgid ""
+"As requested on %s, here is your conversation with Genie, Linker's AI "
+"assistant."
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php:37
+msgid "You"
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php:54
+msgid ""
+"Genie is an AI system, and its answers can contain mistakes. Where an answer "
+"differs from the product's datasheet, the datasheet applies."
+msgstr ""
+
+#: templates/emails/linker-genie-conversation.php:55
+msgid "Replies to this email go to the Linker team."
+msgstr ""
+
 #. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
 #: templates/emails/linker-inquiry-received.php:31
 #, php-format
@@ -4068,72 +4158,4 @@ msgstr ""
 
 #: templates/proforma/proforma.php:177
 msgid "Reference"
-msgstr ""
-
-#: includes/Genie/ConversationEmail.php
-msgid "Genie conversation"
-msgstr ""
-
-#: includes/Genie/ConversationEmail.php
-msgid "Sent when someone asks for a copy of a Genie conversation by email."
-msgstr ""
-
-#: includes/Genie/ConversationEmail.php
-msgid "Your conversation with Genie"
-msgstr ""
-
-#. translators: %s: the site's domain, e.g. de-linker.com.
-#: templates/emails/linker-genie-conversation.php
-#, php-format
-msgid "As requested on %s, here is your conversation with Genie, Linker's AI assistant."
-msgstr ""
-
-#: templates/emails/linker-genie-conversation.php
-msgid "You"
-msgstr ""
-
-#: templates/emails/linker-genie-conversation.php
-msgid "Genie is an AI system, and its answers can contain mistakes. Where an answer differs from the product's datasheet, the datasheet applies."
-msgstr ""
-
-#: templates/emails/linker-genie-conversation.php
-msgid "Replies to this email go to the Linker team."
-msgstr ""
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Genie conversation: address confirmation"
-msgstr ""
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Sent to the address a visitor without an account enters to get a Genie conversation by email. It holds only a link that confirms the address; the conversation follows after the click."
-msgstr ""
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Conversation with Genie requested for this email address"
-msgstr ""
-
-#: includes/Genie/ConfirmAddressEmail.php
-msgid "Confirm your email address"
-msgstr ""
-
-#. translators: %s: the site's domain, e.g. de-linker.com.
-#: templates/emails/linker-genie-confirm-address.php
-#, php-format
-msgid "On %s, a conversation with Genie, Linker's AI assistant, was requested for this email address."
-msgstr ""
-
-#: templates/emails/linker-genie-confirm-address.php
-msgid "Send me the conversation"
-msgstr ""
-
-#. translators: %d: how many hours the link works.
-#: templates/emails/linker-genie-confirm-address.php
-#, php-format
-msgid "The link works once and expires after %d hour."
-msgid_plural "The link works once and expires after %d hours."
-msgstr[0] ""
-msgstr[1] ""
-
-#: templates/emails/linker-genie-confirm-address.php
-msgid "The conversation is sent only once the link is opened. If you did not ask for it, you can ignore this email."
 msgstr ""
