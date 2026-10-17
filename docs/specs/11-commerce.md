@@ -139,7 +139,7 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - [ ] 视觉验收：注册、产品页、Lösungsentwurf、提交页、账户 × EN/DE × 1440/390；以及访客提交后邮件确认链接（带 key）**未登录**打开的状态（评审 2026-10-10：此前重放全程登录态，该页漏扫）× EN/DE。
 
 ## 变更记录
-- 2026-10-18（#286）：内部通知使用独立发件地址，默认 `Linker <sales@sunriverinverter.com>`；客户邮件仍用 WooCommerce 的 From，Reply-to 不变。后台 Sender email / Absenderadresse 字段与 Recipient 同节；文案评审与本地验收见 `docs/acceptance/2026-10-18/286/`。线上单封内部通知的收件箱验证由 Claude 在 #285 留证。
+- 2026-10-18（#286）：内部通知使用独立发件地址，默认 `Linker <sales@sunriverinverter.com>`；客户邮件仍用 WooCommerce 的 From，Reply-to 不变。后台 Sender email / Absenderadresse 字段与 Recipient 同节；同一设置保存保留既有 Proforma 前缀中的连字符（`DLK-PF` 不变），继续清除其余非字母数字符号；文案评审与本地验收见 `docs/acceptance/2026-10-18/286/`。线上单封内部通知的收件箱验证由 Claude 在 #285 留证。
 - 2026-10-17（#221）：内部通知改投 `sales@sunriverinverter.com`（业主裁定），与客户可见的团队邮箱拆成两个设置（见“内部通知收件人”）；`Options::team_to()`/`team_bcc()` 改名为 `team_mailbox()` 与 `notify_to()`/`notify_bcc()`，不改任何选项值。健康告警由“To 对接人”改为内部通知收件人，发件人由 WordPress 缺省（`wordpress@…`）改为 WooCommerce 的发件人（评审第 1 轮）。集成测试的邮件隔离统一为 `IntegrationTestCase::isolate_mail()`（保存并还原限速记录、删掉本测试写的队列行），整套可连跑。Outbox 每次投递写一行 `linker-mail` info 日志：线上 cron 由 CLI PHP 跑，主机的 `~/.logs/mail.log` 只记 Web PHP 的 `mail()`，此前摘要、健康告警与队列重试在主机上不留任何痕迹。
 - 2026-10-16：登录与注册拆成两个页面（业主裁定）。`/my-account/` 只出登录卡；注册卡移到账号页的 `register` 端点（EN `/my-account/register/`，DE `/de/mein-konto/register/`，slug 跨语言共享），两页互跳。注册的处理链（Woo 的 nonce、字段、校验、建号、自动登录、pending 门禁）逐字不动，只有呈现分置两个请求。规格：`docs/specs/split-login-register.md`。
 - 2026-10-13：Proforma 号与 PDF 不再只挂在 Issue 按钮上。状态进入 `wc-proforma-issued` 时 `Issuer::ensure_issued` 补签发（已有号或 PDF 的不动，避免按钮路径签两次）。客户侧询盘详情（摘要卡号 + 下载链接）与 Documents 只读 `_linker_proforma_number`；Completed 后号还在，下载仍在。银行账户缺失时按钮隐藏、状态路径不签发，配置键见上节，不补造账户。默认号前缀由 `PI` 改为 `DLK-PF`，与线上 `DLK-PF-年份-…` 一致；空前缀走默认，已保存的自定义前缀不动。
