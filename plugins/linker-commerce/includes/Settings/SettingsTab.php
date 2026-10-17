@@ -107,6 +107,15 @@ final class SettingsTab {
 				'autoload'    => false,
 			),
 			array(
+				'title'       => __( 'Sender email', 'linker-commerce' ),
+				'desc'        => __( 'Internal notifications use this address with the sender name Linker. Customer emails use the WooCommerce sender settings.', 'linker-commerce' ),
+				'id'          => Options::NOTIFY_FROM,
+				'type'        => 'email',
+				'default'     => Options::DEFAULT_NOTIFY_FROM,
+				'placeholder' => Options::DEFAULT_NOTIFY_FROM,
+				'autoload'    => false,
+			),
+			array(
 				'title'    => __( 'Blind copies', 'linker-commerce' ),
 				'desc'     => __( 'One address per line.', 'linker-commerce' ),
 				'id'       => Options::NOTIFY_BCC,
@@ -262,12 +271,13 @@ final class SettingsTab {
 	}
 
 	/**
-	 * Keeps letters and digits of the number prefix, upper case.
+	 * Keeps letters, digits and hyphens of the number prefix, upper case.
+	 * Hyphens preserve the existing DLK-PF prefix when saving this tab (#286).
 	 *
 	 * @param mixed $value Value WooCommerce sanitized as text.
 	 */
 	public function sanitize_prefix( $value ): string {
-		return strtoupper( (string) preg_replace( '/[^A-Za-z0-9]/', '', is_string( $value ) ? $value : '' ) );
+		return strtoupper( (string) preg_replace( '/[^A-Za-z0-9-]/', '', is_string( $value ) ? $value : '' ) );
 	}
 
 	/**

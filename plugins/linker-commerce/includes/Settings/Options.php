@@ -21,6 +21,7 @@ final class Options {
 	 */
 	public const TEAM_TO         = 'linker_commerce_team_to';
 	public const NOTIFY_TO       = 'linker_commerce_notify_to';
+	public const NOTIFY_FROM     = 'linker_commerce_notify_from';
 	public const NOTIFY_BCC      = 'linker_commerce_team_bcc';
 	public const CONTACT_NAME    = 'linker_commerce_contact_name';
 	public const CONTACT_EMAIL   = 'linker_commerce_contact_email';
@@ -49,6 +50,12 @@ final class Options {
 	 * not sales@de-linker.com, which is the owner's own mailbox).
 	 */
 	public const DEFAULT_NOTIFY_TO = 'sales@sunriverinverter.com';
+
+	/**
+	 * Internal mail uses the Hostinger-authorized sender (ticket #286).
+	 * Customer mail keeps WooCommerce's own sender settings.
+	 */
+	public const DEFAULT_NOTIFY_FROM = 'sales@sunriverinverter.com';
 
 	/**
 	 * Proforma numbers read DLK-PF-YYYY-NNNN when the settings leave the prefix
@@ -81,6 +88,14 @@ final class Options {
 	public function notify_to(): string {
 		$to = sanitize_email( $this->text( self::NOTIFY_TO ) );
 		return '' === $to ? self::DEFAULT_NOTIFY_TO : $to;
+	}
+
+	/**
+	 * The sender address of internal notifications, independent of their recipient.
+	 */
+	public function notify_from(): string {
+		$from = sanitize_email( $this->text( self::NOTIFY_FROM ) );
+		return is_email( $from ) ? $from : self::DEFAULT_NOTIFY_FROM;
 	}
 
 	/**

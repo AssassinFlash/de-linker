@@ -44,6 +44,7 @@ final class OptionsTest extends TestCase {
 
 		$this->assertSame( 'sales@de-linker.com', $options->team_mailbox() );
 		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_to() );
+		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_from() );
 		$this->assertSame( array(), $options->notify_bcc() );
 		$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
 		$this->assertSame(
@@ -55,6 +56,28 @@ final class OptionsTest extends TestCase {
 			$options->contact()
 		);
 		$this->assertSame( 'Linker Technology GmbH', $options->seller()['name'] );
+	}
+
+	/**
+	 * The internal sender is independent of the recipient and public mailbox.
+	 *
+	 * @testWith ["alerts@example.test", "alerts@example.test"]
+	 *           ["", "sales@sunriverinverter.com"]
+	 *           ["not-an-address", "sales@sunriverinverter.com"]
+	 *           [["alerts@example.test"], "sales@sunriverinverter.com"]
+	 *
+	 * @param mixed  $saved    Saved option.
+	 * @param string $expected Effective sender.
+	 */
+	public function test_internal_sender( $saved, string $expected ): void {
+		$this->options(
+			array(
+				'linker_commerce_notify_from' => $saved,
+				Options::NOTIFY_TO            => 'recipient@example.test',
+				Options::TEAM_TO              => 'public@example.test',
+			)
+		);
+		$this->assertSame( $expected, ( new Options() )->notify_from() );
 	}
 
 	/**

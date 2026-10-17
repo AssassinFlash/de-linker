@@ -4398,3 +4398,11 @@ msgstr "Eingeschränkte Konten ansehen"
 #: build/accounts.js
 msgid "No restricted accounts are awaiting customer information."
 msgstr "Bei keinem eingeschränkten Konto fehlen derzeit Kundenangaben."
+
+#: includes/Settings/SettingsTab.php
+msgid "Sender email"
+msgstr "Absenderadresse"
+
+#: includes/Settings/SettingsTab.php
+msgid "Internal notifications use this address with the sender name Linker. Customer emails use the WooCommerce sender settings."
+msgstr "Interne Benachrichtigungen werden mit dieser Adresse und dem Absendernamen Linker gesendet. Für E-Mails an Kunden gelten die Absendereinstellungen von WooCommerce."

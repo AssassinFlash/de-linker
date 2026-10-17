@@ -3827,3 +3827,11 @@ msgstr ""
 #: build/accounts.js
 msgid "No restricted accounts are awaiting customer information."
 msgstr ""
+
+#: includes/Settings/SettingsTab.php
+msgid "Sender email"
+msgstr ""
+
+#: includes/Settings/SettingsTab.php
+msgid "Internal notifications use this address with the sender name Linker. Customer emails use the WooCommerce sender settings."
+msgstr ""

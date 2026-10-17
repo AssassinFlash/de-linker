@@ -45,6 +45,19 @@ final class SettingsTabTest extends TestCase {
 	}
 
 	/**
+	 * Internal mail has its own sender field beside its recipient (#286).
+	 */
+	public function test_internal_sender_setting(): void {
+		$fields = ( new SettingsTab( new JobStore() ) )->fields();
+		$ids    = array_column( $fields, 'id' );
+		$index  = array_search( Options::NOTIFY_TO, $ids, true );
+		$this->assertIsInt( $index );
+		$this->assertSame( Options::NOTIFY_FROM, $fields[ $index + 1 ]['id'] );
+		$this->assertSame( 'email', $fields[ $index + 1 ]['type'] );
+		$this->assertSame( 'sales@sunriverinverter.com', $fields[ $index + 1 ]['default'] );
+	}
+
+	/**
 	 * Every option of Options has a field, each section is opened and closed, and output and save use the same fields.
 	 */
 	public function test_fields_cover_every_option(): void {
@@ -130,10 +143,17 @@ final class SettingsTabTest extends TestCase {
 	}
 
 	/**
-	 * The number prefix keeps letters and digits, upper case.
+	 * The number prefix keeps letters, digits and hyphens, upper case.
 	 */
 	public function test_sanitize_prefix(): void {
-		$this->assertSame( 'PI', ( new SettingsTab( new JobStore() ) )->sanitize_prefix( 'p-i ' ) );
+		$this->assertSame( 'P-I', ( new SettingsTab( new JobStore() ) )->sanitize_prefix( 'p-i !' ) );
+	}
+
+	/**
+	 * Saving an internal sender must preserve the site's existing DLK-PF prefix.
+	 */
+	public function test_saving_settings_preserves_the_default_prefix(): void {
+		$this->assertSame( 'DLK-PF', ( new SettingsTab( new JobStore() ) )->sanitize_prefix( 'DLK-PF' ) );
 	}
 
 	/**
