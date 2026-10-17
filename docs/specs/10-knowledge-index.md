@@ -3,7 +3,7 @@
 依据：`docs/research/2026-10-09/knowledge-audit.md`。
 
 ## 来源
-媒体库里 mime 为 `application/pdf` 的全部附件（按 sha256 去重，预计 383 份），经 #6 的快照在本地取得；每份记录 `{sha256, url(我们托管), title, brand, models[], doc_type(datasheet|manual|compatibility|certificate|other), lang(en|de), pages}`，品牌与型号由商品的 documents 字段反查。不索引营销页、FAQ、AI 写的概念说明。
+媒体库里 mime 为 `application/pdf` 的全部附件（按 sha256 去重，预计 383 份），经 #6 的快照在本地取得；每份记录 `{sha256, url(我们托管), title, brand, models[], doc_type(datasheet|manual|compatibility|certificate|other), lang(en|de), pages}`，品牌与型号由商品的 documents 字段反查。不索引营销页、FAQ、AI 写的概念说明。站内页面的内容不进本索引：Genie 在客户问到所在页面时逐轮读那一页（`services/genie/src/linker_genie/page.py`，#234，规格 13"页面感知"）。
 
 ## 构建（`services/genie/index/`，`just index`，在 Mac 上离线）
 1. 解析：Docling → 带页码的 Markdown；表格保留为整块。

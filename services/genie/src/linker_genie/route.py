@@ -14,8 +14,11 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from linker_genie import page as page_tool
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
+from linker_genie.schema import PageContext
+from linker_genie.tools import MAX_TOOL_CALLS, READ_PAGE
 
 # Jev's intent confidence from which code acts on it: the starting threshold measured
 # 2026-10-17 — 57 of 60 messages reached it and 56 of those 57 were right
@@ -32,6 +35,50 @@ SEARCH_LIMIT = 6
 # a question names one or two models in practice; four keeps a family question
 # (OCEAN 2) inside the documents of the cards it shows.
 KNOWLEDGE_PRODUCTS = 4
+
+# Pairings of a solution draft checked at most: two of the four calls, so a draft of
+# an inverter and two battery types is checked whole beside the page read.
+DRAFT_PAIRS = 2
+# A draft's inverters and its batteries, by device class (SelectionFacts.php).
+_INVERTERS = ("inverters", "all-in-one-systems")
+_BATTERIES = ("home-storage", "battery-systems")
+# Calls a documents route leaves to the model: one, for a follow-up search when the
+# first chunks miss the product (trial question 10, 2026-10-17: the model searched
+# again with the product IDs get-product returned).
+DOCUMENTS_SPARE = 1
+# A delivery, shipping or freight question is the team's (owner 2026-10-05), also when
+# it is asked about a page and Jev reads it otherwise: these words, EN and DE.
+_LOGISTICS = re.compile(
+    r"\b(?:deliver(?:y|ies)|shipping|shipment|freight|lieferung(?:en)?|lieferzeit(?:en)?|"
+    r"lieferkosten|versand(?:kosten)?|fracht(?:kosten)?)\b",
+    re.IGNORECASE,
+)
+
+PAGE_HINT = (
+    " The customer asks about the page they are on; the service read it "
+    "(read-page: the page's opening and the passages nearest the question, with "
+    "its outline). "
+    + page_tool.RULE
+    + " A product, document or pairing question about the page's product is still "
+    "answered from the product tools and the documents. When no read-page result is "
+    "among the tool results, say that the page could not be read just now; never "
+    "guess what it says."
+)
+DRAFT_HINT = (
+    " The customer asks about their solution draft: its products are in the "
+    "read-page result, and the pairings of its inverters and batteries are checked "
+    "(check-compatibility). Name the products, say which pairs are released, with "
+    "conditions, and which are not or unknown; cite the product IDs in refs. An "
+    "empty draft has no products: say so and offer to find products."
+)
+ACCOUNT_HINT = (
+    " The customer asks about their account page: it shows their inquiries, which "
+    "inquiry-status returned; answer from them."
+)
+SERVICE_HINT = (
+    "This is a company, delivery or service question: answer with the "
+    "handoff block from the handoff-team result."
+)
 
 DOCUMENTS_HINT = (
     "This is a question about documents or technical values. Answer from the "
@@ -90,9 +137,11 @@ class Route:
     # A sentence for the model about what the code did and what is expected.
     hint: str = ""
     reasons: tuple[str, ...] = field(default=())
+    # Calls the turn's budget left out (with_page), kept for the turn log.
+    dropped: tuple[Call, ...] = ()
 
     def as_log(self) -> dict[str, Any]:
-        return {
+        log: dict[str, Any] = {
             "route": self.name,
             "calls": [
                 {"name": c.ability, "arguments": c.arguments} for c in self.calls
@@ -103,6 +152,11 @@ class Route:
             "no_handoff": self.no_handoff,
             "reasons": list(self.reasons),
         }
+        if self.dropped:
+            log["dropped_calls"] = [
+                {"name": c.ability, "arguments": c.arguments} for c in self.dropped
+            ]
+        return log
 
 
 @dataclass(frozen=True)
@@ -147,15 +201,7 @@ def plan(
     ):
         return person(message, reasons)
     if intent == "company_logistics_service":
-        return Route(
-            "service",
-            (Call("linker/handoff-team", {"summary": message}),),
-            hint=(
-                "This is a company, delivery or service question: answer with the "
-                "handoff block from the handoff-team result."
-            ),
-            reasons=tuple(reasons),
-        )
+        return service(message, reasons)
     if intent == "inquiry_status":
         return Route(
             "inquiry",
@@ -452,3 +498,97 @@ def _pairing(subject: Subject, lang: str) -> Call | None:
                 },
             )
     return None
+
+
+def service(message: str, reasons: list[str]) -> Route:
+    """A company, delivery or service question: the team sentence (owner 2026-10-05)."""
+    return Route(
+        "service",
+        (Call("linker/handoff-team", {"summary": message}),),
+        hint=SERVICE_HINT,
+        reasons=tuple(reasons),
+    )
+
+
+def with_page(
+    route: Route,
+    page: PageContext,
+    about_page: bool,
+    logged_in: bool,
+    subject: Subject,
+    message: str = "",
+) -> Route:
+    """The route with the page's content added when the message is about the page.
+
+    Jev's `about_this_page` decides (#234). A signed-in customer's account page is
+    their inquiries (inquiry-status); a solution draft is its products and the
+    pairings among them; any other page is read (read-page). A request for a person,
+    a company question or an inquiry status reads nothing, and a delivery question
+    about a page goes to the team whatever Jev says (`_LOGISTICS`).
+
+    The calls fit the turn's budget in a fixed priority: the route's own calls (the
+    subject's get-product among them) first, then the page, then the draft's pairs; a
+    documents route leaves one call to the model (`DOCUMENTS_SPARE`). What does not
+    fit is dropped, named in the turn log and, for a pair, in the hint.
+    """
+    if not about_page or route.name in ("person", "service", "inquiry"):
+        return route
+    if _LOGISTICS.search(message):
+        return service(message, [*route.reasons, "about this page: delivery"])
+    added: list[Call] = []
+    beyond: list[Call] = []
+    hint = PAGE_HINT
+    if page.type == "account" and logged_in:
+        added.append(Call("linker/inquiry-status", {}))
+        hint = ACCOUNT_HINT
+    elif page.type == "draft":
+        added.append(Call(READ_PAGE, {}))
+        if not any(c.ability == "linker/check-compatibility" for c in route.calls):
+            pairs = _draft_pairs(page.draft_ids or [], subject)
+            added.extend(pairs[:DRAFT_PAIRS])
+            beyond = pairs[DRAFT_PAIRS:]
+        hint = DRAFT_HINT
+    elif page.url:
+        added.append(Call(READ_PAGE, {}))
+    else:
+        return route
+    room = MAX_TOOL_CALLS - (DOCUMENTS_SPARE if route.name == "documents" else 0)
+    ordered = [*route.calls, *(call for call in added if call not in route.calls)]
+    calls, dropped = tuple(ordered[:room]), (*ordered[room:], *beyond)
+    unchecked = [
+        f"{c.arguments['inverter_id']}+{c.arguments['battery_id']}"
+        for c in dropped
+        if c.ability == "linker/check-compatibility"
+    ]
+    if unchecked:
+        hint += (
+            " Pairs of the draft not checked in this turn (inverter ID + battery ID): "
+            + ", ".join(unchecked)
+            + "; say that they were not checked yet and offer to check them."
+        )
+    return Route(
+        route.name,
+        calls,
+        show_products=route.show_products,
+        action=route.action,
+        no_cards=route.no_cards,
+        no_handoff=route.no_handoff,
+        hint=(route.hint + hint).strip(),
+        reasons=(*route.reasons, f"about this page: {page.type}"),
+        dropped=dropped,
+    )
+
+
+def _draft_pairs(ids: list[int], subject: Subject) -> list[Call]:
+    """check-compatibility for each inverter and battery of the draft, in draft order.
+
+    All pairs are returned; `with_page` checks `DRAFT_PAIRS` of them and names the rest.
+    """
+    inverters = [pid for pid in ids if subject.device_class.get(pid) in _INVERTERS]
+    batteries = [pid for pid in ids if subject.device_class.get(pid) in _BATTERIES]
+    pairs = [
+        Call("linker/check-compatibility", {"inverter_id": inv, "battery_id": bat})
+        for inv in inverters
+        for bat in batteries
+    ]
+    return pairs

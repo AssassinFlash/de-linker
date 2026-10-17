@@ -93,6 +93,75 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * The page the browser names is checked key by key (#234); a solution
+	 * draft's products are read from the visitor's own draft, as English
+	 * posts, whatever the browser sent.
+	 */
+	public function test_turn_sends_the_checked_page_and_the_visitors_draft(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		WP_Mock::passthruFunction( 'esc_url_raw' );
+		WP_Mock::passthruFunction( 'sanitize_text_field' );
+		WP_Mock::userFunction( 'wc_load_cart', array( 'times' => 1 ) );
+		$cart = new class() {
+			/**
+			 * Lines of the draft: a German product and an English one.
+			 *
+			 * @return list<array{product_id: int}>
+			 */
+			public function get_cart(): array {
+				return array( array( 'product_id' => 6741 ), array( 'product_id' => 2003 ) );
+			}
+		};
+		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'cart' => $cart ) ) );
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'return' => static fn( int $id ): int => 6741 === $id ? 4107 : $id,
+			)
+		);
+		$caught  = array();
+		$fetch   = static function ( string $url, array $body ) use ( &$caught ) {
+			unset( $url );
+			$caught = $body;
+			return "event: done\ndata: {}\n\n";
+		};
+		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param(
+			'messages',
+			array(
+				array(
+					'role'    => 'user',
+					'content' => 'Check my draft',
+				),
+			)
+		);
+		$request->set_param(
+			'page',
+			array(
+				'type'      => 'draft',
+				'url'       => 'https://de-linker.test/de/warenkorb/',
+				'title'     => 'Lösungsentwurf',
+				'draft_ids' => array( 1, 2, 3 ),
+				'extra'     => 'dropped',
+			)
+		);
+
+		$this->proxy( $fetch )->turn( $request );
+
+		$this->assertSame(
+			array(
+				'type'      => 'draft',
+				'url'       => 'https://de-linker.test/de/warenkorb/',
+				'title'     => 'Lösungsentwurf',
+				'draft_ids' => array( 4107, 2003 ),
+			),
+			$caught['page_context']
+		);
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * An upstream failure maps to a 502, not to the raw service error.
 	 */
 	public function test_turn_maps_an_upstream_error(): void {

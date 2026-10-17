@@ -20,6 +20,8 @@ use WP_Mock\Tools\TestCase;
  */
 final class EntriesTest extends TestCase {
 
+	use PageQuery;
+
 	/**
 	 * A previous test's shortcode must not mark this request as a workspace.
 	 */
@@ -67,7 +69,9 @@ final class EntriesTest extends TestCase {
 	}
 
 	/**
-	 * German pages get the German disclosure and the German prompts.
+	 * German pages get the German disclosure; the prompts are translated
+	 * through the German catalogue (msgids here, the catalogue's coverage is
+	 * `just i18n-coverage`).
 	 */
 	public function test_dock_localizes_disclosure_and_prompts(): void {
 		$this->frontend( 'de_DE_formal', array( 'type' => 'account' ) );
@@ -81,7 +85,7 @@ final class EntriesTest extends TestCase {
 		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
 		$this->assertStringContainsString( 'der KI-Assistent von Linker', $html );
-		$this->assertStringContainsString( 'Wo steht meine Proforma?', $html );
+		$this->assertStringContainsString( 'Where is my Proforma?', $html );
 			$this->assertStringContainsString( 'data-page-type="account"', $html );
 			$this->assertStringContainsString( 'data-workspace-url="https://de-linker.test/genie/"', $html );
 			$this->assertConditionsMet();
@@ -177,26 +181,8 @@ final class EntriesTest extends TestCase {
 	 * page. The language layer, not the locale string, decides.
 	 */
 	public function test_german_page_links_the_german_workspace(): void {
+		// The Genie page (41) and its German twin (42): PageQuery's site.
 		$this->frontend( 'de_DE_formal', array( 'type' => 'other' ), '', 'de' );
-		WP_Mock::userFunction(
-			'get_page_by_path',
-			array(
-				'args'   => array( 'genie' ),
-				'return' => new \WP_Post(
-					(object) array(
-						'ID'        => 41,
-						'post_name' => 'genie',
-					)
-				),
-			)
-		);
-		WP_Mock::userFunction(
-			'pll_get_post',
-			array(
-				'args'   => array( 41, 'de' ),
-				'return' => 42,
-			)
-		);
 		WP_Mock::userFunction(
 			'get_permalink',
 			array(
@@ -221,25 +207,76 @@ final class EntriesTest extends TestCase {
 	}
 
 	/**
-	 * Each page type gets its own opening prompts, two or three of them.
+	 * Each of the eight kinds of page, and the rest, gets two or three
+	 * opening prompts of its own; the product and the product category are
+	 * named (目标 3: "打开即点名当前产品或分类"), and the pages with the
+	 * preview card offer the card's questions.
+	 *
+	 * @dataProvider prompt_pages
+	 *
+	 * @param string $page  A page of PageQuery.
+	 * @param string $first The first prompt.
 	 */
-	public function test_prompts_per_page_type(): void {
+	public function test_prompts_per_page( string $page, string $first ): void {
+		$this->query( $page );
 		WP_Mock::passthruFunction( '__' );
+		WP_Mock::userFunction( 'get_terms', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
 		$entries = new Entries( '/plugin/linker-tools.php' );
-		$page    = static fn( string $type ): array => array( 'type' => $type );
 
-		$product = $entries->prompts( $page( 'product' ), 'en' );
-		$this->assertSame( 'What pairs with this model?', $product[0] );
-		$this->assertCount( 3, $product );
+		$prompts = $entries->prompts( $entries->page_context() );
 
-		$this->assertSame( 'Check my draft', $entries->prompts( $page( 'draft' ), 'en' )[0] );
-		$this->assertSame( 'Where is my Proforma?', $entries->prompts( $page( 'account' ), 'en' )[0] );
-		$this->assertSame(
-			'I need a three-phase hybrid inverter for a home with 10 kWp PV.',
-			$entries->prompts( $page( 'category' ), 'en' )[1]
+		$this->assertSame( $first, $prompts[0] );
+		$this->assertGreaterThanOrEqual( 2, count( $prompts ) );
+		$this->assertLessThanOrEqual( 3, count( $prompts ) );
+		foreach ( $prompts as $prompt ) {
+			$this->assertStringNotContainsString( '%s', $prompt );
+		}
+	}
+
+	/**
+	 * Pages and their first prompt.
+	 *
+	 * @return array<string, array{0: string, 1: string}>
+	 */
+	public function prompt_pages(): array {
+		return array(
+			'home'             => array( 'home', 'Which batteries work with my inverter?' ),
+			'product'          => array( 'product', 'What pairs with the SAJ H2-10K-T3?' ),
+			'product category' => array( 'category', 'EMS & Monitoring: which model fits my project?' ),
+			'all products'     => array( 'shop', 'Which model fits my project?' ),
+			'solution'         => array( 'solution', 'What do I need for a residential storage system?' ),
+			'marketing page'   => array( 'about', 'Summarize this page' ),
+			'blog post'        => array( 'post', 'Summarize this post' ),
+			'blog index'       => array( 'blog', 'Which of these posts cover hybrid inverters?' ),
+			'faq'              => array( 'faq', 'Is there a datasheet for my model?' ),
+			'solution draft'   => array( 'cart', 'Check my draft' ),
+			'account'          => array( 'account', 'Where is my Proforma?' ),
+			'other'            => array( 'contact', 'Which model fits my project?' ),
 		);
-		$this->assertCount( 2, $entries->prompts( $page( 'other' ), 'en' ) );
-		$this->assertSame( 'Was passt zu diesem Modell?', $entries->prompts( $page( 'product' ), 'de' )[0] );
+	}
+
+	/**
+	 * The mount carries the whole page context the app sends with each turn.
+	 */
+	public function test_mount_carries_the_page_context(): void {
+		$this->frontend( 'en', array( 'type' => 'product' ) );
+		WP_Mock::userFunction( 'wp_scripts', array( 'return' => static fn() => new FakeScripts() ) );
+
+		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+
+		preg_match( "/data-page='([^']*)'/", $html, $found );
+		$this->assertSame(
+			array(
+				'type'       => 'product',
+				'title'      => 'SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)',
+				'product_id' => 4107,
+				'post_id'    => 4107,
+				'url'        => 'https://de-linker.test/product/saj-h2-10k-t3/',
+			),
+			json_decode( html_entity_decode( $found[1] ?? '' ), true )
+		);
+		$this->assertConditionsMet();
 	}
 
 	/**
@@ -528,44 +565,14 @@ JS
 	 * @param string               $language Language layer's answer; empty when it has none.
 	 */
 	private function frontend( string $locale, array $page, string $slug = '', string $language = '' ): void {
-		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
-		WP_Mock::userFunction( 'determine_locale', array( 'return' => $locale ) );
-		WP_Mock::userFunction(
-			'is_product',
-			array(
-				'return' => 'product' === ( $page['type'] ?? '' ),
-			)
+		$kinds = array(
+			'product'  => 'product',
+			'draft'    => 'cart',
+			'account'  => 'account',
+			'category' => 'shop',
+			'other'    => 'search',
 		);
-		WP_Mock::userFunction(
-			'is_cart',
-			array(
-				'return' => 'draft' === ( $page['type'] ?? '' ),
-			)
-		);
-		WP_Mock::userFunction(
-			'is_account_page',
-			array(
-				'return' => 'account' === ( $page['type'] ?? '' ),
-			)
-		);
-		WP_Mock::userFunction(
-			'is_shop',
-			array(
-				'return' => 'category' === ( $page['type'] ?? '' ),
-			)
-		);
-		WP_Mock::userFunction(
-			'is_product_taxonomy',
-			array(
-				'return' => false,
-			)
-		);
-		WP_Mock::userFunction(
-			'get_queried_object_id',
-			array(
-				'return' => $page['product_id'] ?? 0,
-			)
-		);
+		$this->query( $kinds[ $page['type'] ?? 'other' ], $locale, $language );
 		WP_Mock::userFunction(
 			'rest_url',
 			array(
@@ -576,12 +583,6 @@ JS
 			'home_url',
 			array(
 				'return' => static fn( string $path = '' ): string => 'https://de-linker.test' . $path,
-			)
-		);
-		WP_Mock::userFunction(
-			'esc_url_raw',
-			array(
-				'return' => static fn( string $url ): string => $url,
 			)
 		);
 		WP_Mock::userFunction(
@@ -620,12 +621,6 @@ JS
 								'post_content' => '',
 							)
 						),
-				)
-			);
-			WP_Mock::userFunction(
-				'pll_current_language',
-				array(
-					'return' => '' === $language ? false : $language,
 				)
 			);
 	}

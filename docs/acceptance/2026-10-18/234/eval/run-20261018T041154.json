@@ -1,0 +1,296 @@
+{
+ "wp": "http://127.0.0.1:9102",
+ "index_version": "20261016T072222Z",
+ "chat_model": "deepseek-flash",
+ "passed": 2,
+ "total": 2,
+ "rows": [
+  {
+   "id": "draft-many-pairs",
+   "lang": "en",
+   "question": "Check my draft",
+   "page": {
+    "type": "draft",
+    "url": "/cart/",
+    "title": "Solution draft",
+    "draft_ids": [
+     6528,
+     6510,
+     6520,
+     6522
+    ]
+   },
+   "logged_in": true,
+   "expect": {
+    "reads": "linker/read-page",
+    "shows": [
+     6528,
+     6520
+    ],
+    "all": [
+     "(?i)released|compatible|pair",
+     "(?i)not (yet )?(been )?checked|check (them|those|the remaining)|remaining"
+    ]
+   },
+   "seconds": 10.2,
+   "pass": true,
+   "failures": [],
+   "answer": "Your solution draft contains these products: the GoodWe ESA GW10K-EHA-G20 power module, the GoodWe GW110K-ETR-G10 hybrid inverter, and the ESA battery modules GoodWe GW8.3-BAT-D-G20 and GoodWe GW8.3-BAT-D-G21. The pairing checked in this turn — the ESA power module with the G20 battery module — is released; the condition is that our ESA datasheet for this power module family lists the G20 battery modules, while the G21 variants are not in that table, so the pairing document carries the details. The same power module together with the G21 battery module is not documented, so that pair cannot be recommended on our side. The GW110K-ETR-G10 together with either battery module has not been checked yet; I can run that compatibility check for you if you wish.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Your solution draft contains these products: the GoodWe ESA GW10K-EHA-G20 power module, the GoodWe GW110K-ETR-G10 hybrid inverter, and the ESA battery modules GoodWe GW8.3-BAT-D-G20 and GoodWe GW8.3-BAT-D-G21. The pairing checked in this turn — the ESA power module with the G20 battery module — is released; the condition is that our ESA datasheet for this power module family lists the G20 battery modules, while the G21 variants are not in that table, so the pairing document carries the details. The same power module together with the G21 battery module is not documented, so that pair cannot be recommended on our side. The GW110K-ETR-G10 together with either battery module has not been checked yet; I can run that compatibility check for you if you wish.",
+     "refs": [
+      "6528",
+      "6510",
+      "6520",
+      "6522"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6528,
+      6510,
+      6520,
+      6522
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "compat.document.0",
+     "label": "GW ESA 3 10kW Datasheet EMEA EN V1.1",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.98,
+     "about_this_page": 0.65,
+     "wants_person": 0.14,
+     "needs_followup": 0.9,
+     "seconds": 2.91,
+     "cost": 3.4944e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     },
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6528,
+       "battery_id": 6520
+      }
+     },
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6528,
+       "battery_id": 6522
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": false,
+    "reasons": [
+     "about this page: draft"
+    ],
+    "dropped_calls": [
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6510,
+       "battery_id": 6520
+      }
+     },
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6510,
+       "battery_id": 6522
+      }
+     }
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/check-compatibility",
+     "arguments": {
+      "inverter_id": 6528,
+      "battery_id": 6520
+     },
+     "ok": true
+    },
+    {
+     "name": "linker/check-compatibility",
+     "arguments": {
+      "inverter_id": 6528,
+      "battery_id": 6522
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "draft-many-pairs",
+   "lang": "de",
+   "question": "Meinen Entwurf prüfen",
+   "page": {
+    "type": "draft",
+    "url": "/de/warenkorb/",
+    "title": "Lösungsentwurf",
+    "draft_ids": [
+     6528,
+     6510,
+     6520,
+     6522
+    ]
+   },
+   "logged_in": true,
+   "expect": {
+    "reads": "linker/read-page",
+    "shows": [
+     6528,
+     6520
+    ],
+    "all": [
+     "(?i)freigegeben|Freigabe|kompatibel",
+     "(?i)nicht (ge)?prüf|noch nicht|weiteren? (Paare|Kombination)|übrigen"
+    ]
+   },
+   "seconds": 9.3,
+   "pass": true,
+   "failures": [],
+   "answer": "Ihr Lösungsentwurf enthält ein einphasiges ESA-Leistungsmodul von GoodWe, einen dreiphasigen Hybridwechselrichter und zwei ESA-Batteriemodule. Geprüft habe ich in dieser Runde das Leistungsmodul zusammen mit dem ersten Batteriemodul: Dieses Paar ist freigegeben, mit der Bedingung aus dem ESA-Datenblatt, das für die einphasigen Leistungsmodule nur die Batteriemodule einer Variante in der Tabelle führt – die andere Variante steht dort nicht. Das Leistungsmodul zusammen mit dem zweiten Batteriemodul ist nicht als freigegeben dokumentiert, hier liegt kein eindeutiges Ergebnis vor. Die Kombinationen des dreiphasigen Wechselrichters mit den beiden Batteriemodulen habe ich noch nicht geprüft; sagen Sie kurz Bescheid, dann prüfe ich diese Paare.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Ihr Lösungsentwurf enthält ein einphasiges ESA-Leistungsmodul von GoodWe, einen dreiphasigen Hybridwechselrichter und zwei ESA-Batteriemodule. Geprüft habe ich in dieser Runde das Leistungsmodul zusammen mit dem ersten Batteriemodul: Dieses Paar ist freigegeben, mit der Bedingung aus dem ESA-Datenblatt, das für die einphasigen Leistungsmodule nur die Batteriemodule einer Variante in der Tabelle führt – die andere Variante steht dort nicht. Das Leistungsmodul zusammen mit dem zweiten Batteriemodul ist nicht als freigegeben dokumentiert, hier liegt kein eindeutiges Ergebnis vor. Die Kombinationen des dreiphasigen Wechselrichters mit den beiden Batteriemodulen habe ich noch nicht geprüft; sagen Sie kurz Bescheid, dann prüfe ich diese Paare.",
+     "refs": [
+      "page",
+      "6528",
+      "6510",
+      "6520",
+      "6522"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6528,
+      6510,
+      6520,
+      6522
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "compat.document.0",
+     "label": "GW ESA 3 10kW Datasheet EMEA EN V1.1",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.81,
+     "about_this_page": 0.57,
+     "wants_person": 0.11,
+     "needs_followup": 0.88,
+     "seconds": 2.648,
+     "cost": 3.5154e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     },
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6528,
+       "battery_id": 6520
+      }
+     },
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6528,
+       "battery_id": 6522
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": false,
+    "reasons": [
+     "about this page: draft"
+    ],
+    "dropped_calls": [
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6510,
+       "battery_id": 6520
+      }
+     },
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6510,
+       "battery_id": 6522
+      }
+     }
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/check-compatibility",
+     "arguments": {
+      "inverter_id": 6528,
+      "battery_id": 6520
+     },
+     "ok": true
+    },
+    {
+     "name": "linker/check-compatibility",
+     "arguments": {
+      "inverter_id": 6528,
+      "battery_id": 6522
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  }
+ ]
+}

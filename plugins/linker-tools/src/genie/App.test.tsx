@@ -67,6 +67,7 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		locale,
 		pageType: 'category',
 		productId: 0,
+		page: { type: 'category' },
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
 		conversationsUrl: '/wp-json/linker-ai/v1/genie/conversations',

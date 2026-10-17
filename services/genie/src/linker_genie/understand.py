@@ -18,17 +18,18 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from linker_genie import knowledge
+from linker_genie import knowledge, page
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.lexicon import Match, Vocabulary
-from linker_genie.route import Route, Subject, plan
-from linker_genie.schema import TurnRequest
+from linker_genie.route import Call, Route, Subject, plan, with_page
+from linker_genie.schema import PageContext, TurnRequest
 from linker_genie.storeapi import VocabularyError
 
 logger = logging.getLogger("linker_genie")
@@ -76,11 +77,13 @@ class Understander:
         jev: Reader | None,
         jev_missing: str = "OPENROUTER_API_KEY is not configured",
         search: knowledge.Search | None = None,
+        pages: page.Reader | None = None,
     ) -> None:
         self._vocabulary = vocabulary
         self._jev = jev
         self._jev_missing = jev_missing
         self._search = search or knowledge.SEARCH
+        self._pages = pages or no_pages
 
     def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
         message = _last_customer_message(request)
@@ -99,9 +102,18 @@ class Understander:
             subject = _with_page_product(subject, request, vocabulary)
         bare = vocabulary.bare(message) if vocabulary else False
         route = plan(message, matches, reading, subject, request.locale, bare)
+        # Jev's answer decides when the page's own content is read (#234).
+        route = with_page(
+            route,
+            request.page_context,
+            about_page,
+            request.user.logged_in,
+            subject,
+            message,
+        )
         log.update(route.as_log())
         prepared = Prepared(route=route, log=log)
-        _run_calls(prepared, request, client, self._search)
+        _run_calls(prepared, request, client, self._search, self._pages)
         return prepared
 
     def _load_vocabulary(self, log: dict[str, Any]) -> Vocabulary | None:
@@ -130,7 +142,9 @@ class Understander:
         history = [(m.role, m.content) for m in request.messages[:-1]]
         try:
             reading = self._jev.read(
-                message, page_state(request.page_context.type, name), history
+                message,
+                page_state(request.page_context.type, name, request.page_context.title),
+                history,
             )
         except JevError as error:
             log["jev_error"] = str(error)
@@ -163,6 +177,9 @@ def _subject(
         # ("datasheet please" on the H2-10K-T3 page).
         if request.page_context.product_id:
             ids.append(request.page_context.product_id)
+    if not ids and request.page_context.type == "draft":
+        # On the solution draft, "do these work together?" is about its products.
+        ids.extend(dict.fromkeys(request.page_context.draft_ids or []))
     return Subject(
         ids=tuple(ids),
         device_class=dict(vocabulary.device_class) if vocabulary else {},
@@ -187,32 +204,63 @@ def _with_page_product(
     )
 
 
+def no_pages(context: PageContext, question: str, logged_in: bool) -> dict[str, Any]:
+    """The page reader of a service that has none configured: every read fails."""
+    del context, question, logged_in
+    raise page.PageUnavailable("no page reader is configured")
+
+
 def _run_calls(
     prepared: Prepared,
     request: TurnRequest,
     client: AbilityClient,
     search: knowledge.Search = knowledge.SEARCH,
+    pages: page.Reader = no_pages,
 ) -> None:
+    """Run the route's calls side by side; results and facts keep the route's order.
+
+    The calls do not depend on each other (route.py makes them from the message, the
+    page and the subject alone), so the page read runs while the abilities and the
+    document search do (review of PR #295: the page read added its time to every
+    page question when it ran first).
+    """
+    question = _last_customer_message(request)
+
+    def one(call: Call) -> tuple[dict[str, Any], TurnFacts]:
+        if call.ability == page.NAME:
+            # The page is read in this process from the site (page.py, #234).
+            return page.record(
+                pages, request.page_context, question, request.user.logged_in
+            )
+        if call.ability == knowledge.NAME:
+            # The document search runs in this process (knowledge.py, #257).
+            return knowledge.record(search, call.arguments, request.locale)
+        return client.record(
+            call.ability, call.arguments, request.user.context, request.locale
+        )
+
+    calls = prepared.route.calls
+    if not calls:
+        prepared.facts = merge([])
+        return
+    with ThreadPoolExecutor(max_workers=len(calls)) as pool:
+        futures = [pool.submit(one, call) for call in calls]
     parts: list[TurnFacts] = []
     failures: list[str] = []
-    for call in prepared.route.calls:
+    for call, future in zip(calls, futures, strict=True):
         try:
-            if call.ability == knowledge.NAME:
-                # The document search runs in this process (knowledge.py, #257).
-                payload, gathered = knowledge.record(
-                    search, call.arguments, request.locale
-                )
-            else:
-                payload, gathered = client.record(
-                    call.ability,
-                    call.arguments,
-                    request.user.context,
-                    request.locale,
-                )
+            payload, gathered = future.result()
         except (EmbeddingError, knowledge.KnowledgeUnavailable) as error:
             failures.append(f"{call.ability}: {error}")
             prepared.knowledge_error = f"{call.ability}: {error}"
             logger.error("genie document search failed: %s", error)
+            continue
+        except page.PageUnavailable as error:
+            # The answer goes on without the page; the hint tells the model to say
+            # it could not read it (route.PAGE_HINT), and the log keeps the cause.
+            failures.append(f"{call.ability}: {error}")
+            prepared.log["page_error"] = str(error)
+            logger.warning("genie page read failed: %s", error)
             continue
         except AbilityError as error:
             failures.append(f"{call.ability}: {error}")

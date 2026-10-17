@@ -180,7 +180,12 @@ def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
         if fact is None:
             return match.group(0)
         after = match.group(2)
-        if fact.source == "search-knowledge" and chunk_of(fact.id) is not None:
+        # A figure of a document chunk or of the customer's page (page.py, #234)
+        # carries its own unit, as the text printed it.
+        if (
+            fact.source in ("search-knowledge", "read-page")
+            and chunk_of(fact.id) is not None
+        ):
             value = localize(fact.value, locale)
             unit = _UNIT_TAIL.search(value)
             if unit and after and after.strip() == unit.group(1):

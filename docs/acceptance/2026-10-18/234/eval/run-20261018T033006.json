@@ -1,0 +1,2593 @@
+{
+ "wp": "http://127.0.0.1:9102",
+ "index_version": "20261016T072222Z",
+ "chat_model": "deepseek-flash",
+ "passed": 32,
+ "total": 32,
+ "rows": [
+  {
+   "id": "home-meaning",
+   "lang": "en",
+   "question": "What does this page mean by peak shaving?",
+   "page": {
+    "type": "home",
+    "url": "/",
+    "title": "Home",
+    "post_id": 13
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)demand"
+    ]
+   },
+   "seconds": 8.9,
+   "pass": true,
+   "failures": [],
+   "answer": "On this page, peak shaving appears under Commercial & Industrial Storage: the page describes scalable outdoor battery systems that reduce a commercial site's demand charges and optimise on-site consumption, and lists peak shaving and demand control among the capabilities of its commercial offering, alongside commercial hybrid inverters, outdoor battery cabinets and modular capacity scaling. The page presents it as part of the commercial storage range, with a Solution Configurator and compatibility documents supporting the system choice; it does not go into the control logic behind it.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "On this page, peak shaving appears under Commercial & Industrial Storage: the page describes scalable outdoor battery systems that reduce a commercial site's demand charges and optimise on-site consumption, and lists peak shaving and demand control among the capabilities of its commercial offering, alongside commercial hybrid inverters, outdoor battery cabinets and modular capacity scaling. The page presents it as part of the commercial storage range, with a Solution Configurator and compatibility documents supporting the system choice; it does not go into the control logic behind it.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.98,
+     "about_this_page": 0.85,
+     "wants_person": 0.03,
+     "needs_followup": 0.58,
+     "seconds": 2.554,
+     "cost": 3.5112e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: home"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "home-scales",
+   "lang": "en",
+   "question": "Which project sizes does this page say Linker supplies?",
+   "page": {
+    "type": "home",
+    "url": "/",
+    "title": "Home",
+    "post_id": 13
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)residential",
+     "(?i)commercial",
+     "(?i)utility"
+    ]
+   },
+   "seconds": 2.7,
+   "pass": true,
+   "failures": [],
+   "answer": "The page describes supply across three project scales. For residential homes it lists hybrid inverter and modular battery packages, with hybrid inverters spanning 3–30 kW, modular LFP batteries, emergency backup transition and listed smart meters with CTs. For commercial and industrial sites it covers scalable outdoor battery systems with commercial hybrid inverters, outdoor IP54/IP55 battery cabinets, peak shaving and demand control, and modular capacity scaling. For utility-scale projects it offers containerised battery platforms from 1.0 to 6.9 MWh for grid services and renewable integration, with engineering support and a project quote for each site. The page also describes its route from project brief to delivery: sharing requirements and sizing in the Solution Configurator, checking compatibility of communication and components, a trade quote with net pricing and delivery schedule, fulfilment from the German warehouse, and ongoing technical and warranty support.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The page describes supply across three project scales. For residential homes it lists hybrid inverter and modular battery packages, with hybrid inverters spanning 3–30 kW, modular LFP batteries, emergency backup transition and listed smart meters with CTs. For commercial and industrial sites it covers scalable outdoor battery systems with commercial hybrid inverters, outdoor IP54/IP55 battery cabinets, peak shaving and demand control, and modular capacity scaling. For utility-scale projects it offers containerised battery platforms from 1.0 to 6.9 MWh for grid services and renewable integration, with engineering support and a project quote for each site. The page also describes its route from project brief to delivery: sharing requirements and sizing in the Solution Configurator, checking compatibility of communication and components, a trade quote with net pricing and delivery schedule, fulfilment from the German warehouse, and ongoing technical and warranty support.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "sizing",
+     "confidence": 0.62,
+     "about_this_page": 0.87,
+     "wants_person": 0.03,
+     "needs_followup": 0.51,
+     "seconds": 0.56,
+     "cost": 3.5196e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: sizing 0.62",
+     "about this page: home"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "home-meaning",
+   "lang": "de",
+   "question": "Was meint diese Seite mit Lastspitzenkappung?",
+   "page": {
+    "type": "home",
+    "url": "/de/",
+    "title": "Startseite",
+    "post_id": 6913
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)gewerb|Lastspitze|Spitzenlast"
+    ]
+   },
+   "seconds": 3.4,
+   "pass": true,
+   "failures": [],
+   "answer": "Die Seite nennt die Lastspitzenkappung im Abschnitt zu den Gewerbe- und Industriespeichern: Dort beschreibt sie skalierbare Outdoor-Batteriespeichersysteme, die Leistungsentgelte gewerblicher Standorte senken und den Eigenverbrauch vor Ort optimieren sollen. Gemeint ist damit, dass der Speicher kurzzeitige Verbrauchsspitzen eines Betriebs abfängt, damit sie nicht in voller Höhe über den Netzbezug laufen – zusammen mit der Laststeuerung, also dem gezielten Verschieben oder Begrenzen von Verbrauchern. Die Seite ordnet beides als Funktion der gewerblichen Outdoor-Batterieschränke ein, die Leistungsentgelte senken und den Eigenverbrauch erhöhen.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Die Seite nennt die Lastspitzenkappung im Abschnitt zu den Gewerbe- und Industriespeichern: Dort beschreibt sie skalierbare Outdoor-Batteriespeichersysteme, die Leistungsentgelte gewerblicher Standorte senken und den Eigenverbrauch vor Ort optimieren sollen. Gemeint ist damit, dass der Speicher kurzzeitige Verbrauchsspitzen eines Betriebs abfängt, damit sie nicht in voller Höhe über den Netzbezug laufen – zusammen mit der Laststeuerung, also dem gezielten Verschieben oder Begrenzen von Verbrauchern. Die Seite ordnet beides als Funktion der gewerblichen Outdoor-Batterieschränke ein, die Leistungsentgelte senken und den Eigenverbrauch erhöhen.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.87,
+     "about_this_page": 0.83,
+     "wants_person": 0.03,
+     "needs_followup": 0.56,
+     "seconds": 0.586,
+     "cost": 3.5322e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: home"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "home-scales",
+   "lang": "de",
+   "question": "Für welche Projektgrößen liefert Linker laut dieser Seite?",
+   "page": {
+    "type": "home",
+    "url": "/de/",
+    "title": "Startseite",
+    "post_id": 6913
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)heim|wohn",
+     "(?i)gewerb",
+     "(?i)gro(ß|ss)speicher|netz"
+    ]
+   },
+   "seconds": 5.5,
+   "pass": true,
+   "failures": [],
+   "answer": "Laut dieser Seite liefert Linker komplette Speicherlösungen für jede Projektgröße und deckt dabei drei Bereiche ab: Batteriespeichersysteme für Wohngebäude mit Hybrid-Wechselrichtern von 3 kW bis 30 kW und modularen LFP-Batteriespeichern, Gewerbe- und Industriespeicher als skalierbare Outdoor-Batteriespeichersysteme zur Lastspitzenkappung mit modularer Kapazitätsskalierung sowie Großspeicher als containerisierte Batterieplattformen von 1,0 bis 6,9 MWh. Für Heimprojekte nennt die Seite außerdem Bestandteile wie Notstromumschaltung und gelistete Smart Meter mit Stromwandlern; für Großprojekte technische Unterstützung und Netzdokumentation mit Projektangebot pro Standort. Falls Sie die passende Größe für Ihr Projekt ermitteln möchten, hilft der Lösungskonfigurator dabei.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Laut dieser Seite liefert Linker komplette Speicherlösungen für jede Projektgröße und deckt dabei drei Bereiche ab: Batteriespeichersysteme für Wohngebäude mit Hybrid-Wechselrichtern von 3 kW bis 30 kW und modularen LFP-Batteriespeichern, Gewerbe- und Industriespeicher als skalierbare Outdoor-Batteriespeichersysteme zur Lastspitzenkappung mit modularer Kapazitätsskalierung sowie Großspeicher als containerisierte Batterieplattformen von 1,0 bis 6,9 MWh. Für Heimprojekte nennt die Seite außerdem Bestandteile wie Notstromumschaltung und gelistete Smart Meter mit Stromwandlern; für Großprojekte technische Unterstützung und Netzdokumentation mit Projektangebot pro Standort. Falls Sie die passende Größe für Ihr Projekt ermitteln möchten, hilft der Lösungskonfigurator dabei.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "sizing",
+     "confidence": 0.48,
+     "about_this_page": 0.84,
+     "wants_person": 0.03,
+     "needs_followup": 0.36,
+     "seconds": 0.561,
+     "cost": 3.5406e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: sizing 0.48",
+     "about this page: home"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "product-this-one",
+   "lang": "en",
+   "question": "How many MPPTs does this one have?",
+   "page": {
+    "type": "product",
+    "url": "/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+    "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+    "product_id": 6528,
+    "post_id": 6528
+   },
+   "expect": {
+    "all": [
+     "\\b4\\b",
+     "(?i)MPPT"
+    ],
+    "none": [
+     "(?i)which (model|product)"
+    ]
+   },
+   "seconds": 9.1,
+   "pass": true,
+   "failures": [],
+   "answer": "The GW10K-EHA-G20 power module works with 4 MPPTs, as listed for this model in the parameter table of the ESA Series user manual. The product page here summarises the same figure in its description and product questions. Per tracker the manual gives a maximum MPPT current of 20 A and a maximum MPPT short-circuit current of 26 A, and the datasheet's PV section shows the module's PV input capability and MPPT voltage window for the GW10K-EHA-G20.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The GW10K-EHA-G20 power module works with 4 MPPTs, as listed for this model in the parameter table of the ESA Series user manual. The product page here summarises the same figure in its description and product questions. Per tracker the manual gives a maximum MPPT current of 20 A and a maximum MPPT short-circuit current of 26 A, and the datasheet's PV section shows the module's PV input capability and MPPT voltage window for the GW10K-EHA-G20.",
+     "refs": [
+      "page",
+      "5cd104b9e006-p278-c8821f28",
+      "fea12735d2e6-p2-d151311c"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "5cd104b9e006-p278-c8821f28",
+     "label": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8) · p. 278",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf#page=278"
+    },
+    {
+     "type": "document",
+     "ref": "fea12735d2e6-p2-d151311c",
+     "label": "GoodWe ESA Series 3–10 kW datasheet (EN, EMEA V1.1) · p. 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf#page=2"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.97,
+     "wants_person": 0.02,
+     "needs_followup": 0.1,
+     "seconds": 0.553,
+     "cost": 3.7296e-05
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     },
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "How many MPPTs does this one have?",
+       "lang": "en",
+       "product_ids": [
+        6528
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 6528,
+       "lang": "en"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: product"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "How many MPPTs does this one have?",
+      "lang": "en",
+      "product_ids": [
+       6528
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 6528,
+      "lang": "en"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "product-meaning",
+   "lang": "en",
+   "question": "What does this page mean by internal bypass?",
+   "page": {
+    "type": "product",
+    "url": "/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+    "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+    "product_id": 6528,
+    "post_id": 6528
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "all": [
+     "(?i)bypass",
+     "(?i)grid"
+    ]
+   },
+   "seconds": 12.6,
+   "pass": true,
+   "failures": [],
+   "answer": "The entry describes a passthrough path built into the GW10K-EHA-G20 itself, not an extra device. Our ESA manual states that the ESA series has an internal bypass with a 63A passthrough ability to support a whole-home backup solution: the grid can feed the household loads through the inverter, so the whole home can be supplied without splitting off a separate backup distribution. The same note says that if you do not want to carry out a breaker upgrade, the main breaker size in the GoodWe commissioning app can be set to the previous breaker size. The datasheet footnote gives the same explanation and names SolarGo (or SEMS+) as the app in which that setting is made. On this page the bypass path appears in the AC data as the maximum apparent power taken from the grid with the internal bypass, 63 A on this column. Keep this apart from the BYPASS switch that the manual describes for the switching sequence: that switch belongs to the optional static transfer switch cabinet, which supplies the loads from the grid during inverter maintenance, while the internal bypass is inside the power module.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The entry describes a passthrough path built into the GW10K-EHA-G20 itself, not an extra device. Our ESA manual states that the ESA series has an internal bypass with a 63A passthrough ability to support a whole-home backup solution: the grid can feed the household loads through the inverter, so the whole home can be supplied without splitting off a separate backup distribution. The same note says that if you do not want to carry out a breaker upgrade, the main breaker size in the GoodWe commissioning app can be set to the previous breaker size. The datasheet footnote gives the same explanation and names SolarGo (or SEMS+) as the app in which that setting is made. On this page the bypass path appears in the AC data as the maximum apparent power taken from the grid with the internal bypass, 63 A on this column. Keep this apart from the BYPASS switch that the manual describes for the switching sequence: that switch belongs to the optional static transfer switch cabinet, which supplies the loads from the grid during inverter maintenance, while the internal bypass is inside the power module.",
+     "refs": [
+      "page",
+      "5cd104b9e006-p297-b9351007",
+      "fea12735d2e6-p2-2748636d",
+      "5cd104b9e006-p286-6f47e8b9",
+      "5cd104b9e006-p159-4639af09",
+      "5cd104b9e006-p160-ed13637e"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "5cd104b9e006-p297-b9351007",
+     "label": "GoodWe ESA Series 3–10 kW user manual (EN, V1.8) · pp. 159, 160, 286, 297",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf#page=159"
+    },
+    {
+     "type": "document",
+     "ref": "fea12735d2e6-p2-2748636d",
+     "label": "GoodWe ESA Series 3–10 kW datasheet (EN, EMEA V1.1) · p. 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf#page=2"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 0.89,
+     "about_this_page": 0.96,
+     "wants_person": 0.03,
+     "needs_followup": 0.26,
+     "seconds": 2.909,
+     "cost": 3.7254e-05
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     },
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "What does this page mean by internal bypass?",
+       "lang": "en",
+       "product_ids": [
+        6528
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 6528,
+       "lang": "en"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: product"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "What does this page mean by internal bypass?",
+      "lang": "en",
+      "product_ids": [
+       6528
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 6528,
+      "lang": "en"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "product-this-one",
+   "lang": "de",
+   "question": "Wie viele MPPT hat dieses Gerät?",
+   "page": {
+    "type": "product",
+    "url": "/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+    "title": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+    "product_id": 6528,
+    "post_id": 6567
+   },
+   "expect": {
+    "all": [
+     "\\b4\\b|vier",
+     "(?i)MPPT"
+    ],
+    "none": [
+     "(?i)welches (modell|produkt)"
+    ]
+   },
+   "seconds": 13.4,
+   "pass": true,
+   "failures": [],
+   "answer": "Der GW10K-EHA-G20 hat 4 MPPTs, und an jedem MPPT hängt ein String (1/1/1/1). Passend dazu zählt das Benutzerhandbuch für dieses Modell 4 PV-Eingangsanschlüsse; die kleineren Leistungsmodule der Serie haben weniger. Auch die Produktseite gibt 4 MPPTs an. Die Unterlagen, aus denen diese Angaben stammen, sind unten verlinkt.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Der GW10K-EHA-G20 hat 4 MPPTs, und an jedem MPPT hängt ein String (1/1/1/1). Passend dazu zählt das Benutzerhandbuch für dieses Modell 4 PV-Eingangsanschlüsse; die kleineren Leistungsmodule der Serie haben weniger. Auch die Produktseite gibt 4 MPPTs an. Die Unterlagen, aus denen diese Angaben stammen, sind unten verlinkt.",
+     "refs": [
+      "5cd104b9e006-p278-c8821f28",
+      "5cd104b9e006-p49-80d3e16b",
+      "page"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "5cd104b9e006-p278-c8821f28",
+     "label": "GoodWe ESA Serie 3–10 kW Benutzerhandbuch (EN, V1.8) · S. 49, 278",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf#page=49"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 1.0,
+     "about_this_page": 0.98,
+     "wants_person": 0.02,
+     "needs_followup": 0.09,
+     "seconds": 3.088,
+     "cost": 3.738e-05
+    },
+    "route": "documents",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     },
+     {
+      "name": "linker/search-knowledge",
+      "arguments": {
+       "query": "Wie viele MPPT hat dieses Gerät?",
+       "lang": "de",
+       "product_ids": [
+        6528
+       ]
+      }
+     },
+     {
+      "name": "linker/get-product",
+      "arguments": {
+       "product_id": 6528,
+       "lang": "de"
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: product"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "Wie viele MPPT hat dieses Gerät?",
+      "lang": "de",
+      "product_ids": [
+       6528
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/get-product",
+     "arguments": {
+      "product_id": 6528,
+      "lang": "de"
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "product-meaning",
+   "lang": "de",
+   "question": "Was bedeutet auf dieser Seite „interner Bypass“?",
+   "page": {
+    "type": "product",
+    "url": "/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+    "title": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+    "product_id": 6528,
+    "post_id": 6567
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "all": [
+     "(?i)bypass",
+     "(?i)netz"
+    ]
+   },
+   "seconds": 16.9,
+   "pass": true,
+   "failures": [],
+   "answer": "Auf dieser Seite erscheint „interner Bypass“ in den Angaben zum AC-Ausgang und Notstrom: Aus dem Netz nimmt das GW10K-EHA-G20 14,5 kVA auf, und der interne Bypass ist in dieser Spalte mit 63 A angegeben. Gemeint ist damit ein im Gerät liegender Durchleitungsweg: Die Last kann direkt vom Netz versorgt werden, ohne über die Wechselrichterleistung zu laufen. Das Benutzerhandbuch der ESA-Serie beschreibt diese Funktion als interne Durchleitung mit 63A zur Unterstützung einer Notstromversorgung des ganzen Hauses; wer die Absicherung nicht vergrößern möchte, kann im Inbetriebnahme-Werkzeug die Größe des Hauptschalters auf den bisherigen Wert setzen. Davon zu unterscheiden ist die Umschaltung auf das Netz im Wartungsfall: Dafür nennt das Handbuch den manuellen Umschalter bzw. den BYPASS-Schalter im Zusatzkasten, der die Last von Hand auf das Netz legt.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Auf dieser Seite erscheint „interner Bypass“ in den Angaben zum AC-Ausgang und Notstrom: Aus dem Netz nimmt das GW10K-EHA-G20 14,5 kVA auf, und der interne Bypass ist in dieser Spalte mit 63 A angegeben. Gemeint ist damit ein im Gerät liegender Durchleitungsweg: Die Last kann direkt vom Netz versorgt werden, ohne über die Wechselrichterleistung zu laufen. Das Benutzerhandbuch der ESA-Serie beschreibt diese Funktion als interne Durchleitung mit 63A zur Unterstützung einer Notstromversorgung des ganzen Hauses; wer die Absicherung nicht vergrößern möchte, kann im Inbetriebnahme-Werkzeug die Größe des Hauptschalters auf den bisherigen Wert setzen. Davon zu unterscheiden ist die Umschaltung auf das Netz im Wartungsfall: Dafür nennt das Handbuch den manuellen Umschalter bzw. den BYPASS-Schalter im Zusatzkasten, der die Last von Hand auf das Netz legt.",
+     "refs": [
+      "page",
+      "5cd104b9e006-p297-b9351007",
+      "5cd104b9e006-p174-96306908"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "5cd104b9e006-p297-b9351007",
+     "label": "GoodWe ESA Serie 3–10 kW Benutzerhandbuch (EN, V1.8) · S. 174, 297",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf#page=174"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "documents_specs",
+     "confidence": 0.72,
+     "about_this_page": 0.94,
+     "wants_person": 0.02,
+     "needs_followup": 0.28,
+     "seconds": 2.69,
+     "cost": 3.759e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: documents_specs 0.72",
+     "about this page: product"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "interner Bypass Netzversorgung Last Umschaltung Backup",
+      "lang": "de",
+      "product_ids": [
+       6528
+      ]
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "category-meaning",
+   "lang": "en",
+   "question": "What does \"MPPT trackers\" mean on this page?",
+   "page": {
+    "type": "category",
+    "url": "/product-category/inverters/",
+    "title": "Inverters",
+    "category_id": 449
+   },
+   "expect": {
+    "all": [
+     "(?i)maximum power point|MPPT",
+     "(?i)PV|solar|string|module"
+    ]
+   },
+   "seconds": 14.3,
+   "pass": true,
+   "failures": [],
+   "answer": "On this page, \"MPPT trackers\" is a specification line: it tells you how many independent maximum power point tracking inputs an inverter has. Each tracker continuously adjusts the DC operating point of the PV strings wired to it, so that a string keeps producing at its own best point even when its orientation, tilt or shading differs from the others. In practice the figure shows how many separately optimised array sections the unit can handle — one tracker per group of strings that behave the same way. Our documents add the matching rule: the PV strings inside one MPPT circuit must use the same module model, the same number of panels and the same tilt and azimuth angles, which is why the tracker count matters when you plan several roof orientations.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "On this page, \"MPPT trackers\" is a specification line: it tells you how many independent maximum power point tracking inputs an inverter has. Each tracker continuously adjusts the DC operating point of the PV strings wired to it, so that a string keeps producing at its own best point even when its orientation, tilt or shading differs from the others. In practice the figure shows how many separately optimised array sections the unit can handle — one tracker per group of strings that behave the same way. Our documents add the matching rule: the PV strings inside one MPPT circuit must use the same module model, the same number of panels and the same tilt and azimuth angles, which is why the tracker count matters when you plan several roof orientations.",
+     "refs": [
+      "page",
+      "fba3a03ae50f-p115-073ad572",
+      "26b60e80e6b1-p2-76ed1ee9"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "fba3a03ae50f-p115-073ad572",
+     "label": "GoodWe ET Series 15–30 kW Residential Smart Inverter Solutions Manual (EN) · p. 115",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/goodwe_et12_30kw_user_manual_en.pdf#page=115"
+    },
+    {
+     "type": "document",
+     "ref": "26b60e80e6b1-p2-76ed1ee9",
+     "label": "GW_ETR_Datasheet-EN · p. 2",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet-EN.pdf#page=2"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.61,
+     "about_this_page": 0.93,
+     "wants_person": 0.03,
+     "needs_followup": 0.1,
+     "seconds": 2.612,
+     "cost": 3.528e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: other 0.61",
+     "about this page: category"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "MPPT tracker maximum power point tracking inverter",
+      "lang": "en"
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "category-brands",
+   "lang": "en",
+   "question": "Which brands are listed on this page?",
+   "page": {
+    "type": "category",
+    "url": "/product-category/inverters/",
+    "title": "Inverters",
+    "category_id": 449
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "all": [
+     "GoodWe",
+     "SAJ",
+     "EcoFlow"
+    ]
+   },
+   "seconds": 5.3,
+   "pass": true,
+   "failures": [],
+   "answer": "This is our Inverters product category. The brand filter on the page lists EcoFlow, GoodWe and SAJ, and the families shown in the listing come from GoodWe and EcoFlow. Beyond the brand, you can narrow the listing by application (home or commercial) and by phase, and the page also offers power bands to filter by. If you tell me the brand you are interested in, I will show you the matching models.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "This is our Inverters product category. The brand filter on the page lists EcoFlow, GoodWe and SAJ, and the families shown in the listing come from GoodWe and EcoFlow. Beyond the brand, you can narrow the listing by application (home or commercial) and by phase, and the page also offers power bands to filter by. If you tell me the brand you are interested in, I will show you the matching models.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "find_products",
+     "confidence": 0.91,
+     "about_this_page": 0.95,
+     "wants_person": 0.02,
+     "needs_followup": 0.42,
+     "seconds": 2.631,
+     "cost": 3.5112e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: category"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "category-meaning",
+   "lang": "de",
+   "question": "Was bedeutet „MPPT-Tracker“ auf dieser Seite?",
+   "page": {
+    "type": "category",
+    "url": "/de/produkt-kategorie/wechselrichter/",
+    "title": "Wechselrichter",
+    "category_id": 610
+   },
+   "expect": {
+    "all": [
+     "(?i)maximum power point|MPP",
+     "(?i)PV|Solar|String|Modul"
+    ]
+   },
+   "seconds": 17.4,
+   "pass": true,
+   "failures": [],
+   "answer": "„MPPT“ steht für Maximum Power Point Tracking – die laufende Suche nach dem Punkt, an dem ein PV-Strang die höchste Leistung abgibt. Ein MPPT-Tracker ist der Eingangszweig eines Wechselrichters, der die Spannung seines Strangs selbstständig so nachführt, dass dieser Punkt getroffen wird. Auf dieser Seite steht die Angabe „MPPT-Tracker“ deshalb für die Zahl der unabhängig regelbaren PV-Eingänge eines Modells: So nennt die Produktübersicht beim GW10K-EHA-G20 4 MPPT-Tracker, beim GW30K-ETA-G20 4 – je mehr Eingänge, desto mehr Stränge lassen sich getrennt nachführen, etwa bei unterschiedlicher Dachneigung oder Ausrichtung.\n\nIn unseren Unterlagen finden Sie dazu zwei praktische Hinweise: Stränge, die an demselben MPPT-Kreis hängen, sollten gleiches Modul, gleiche Modulanzahl, gleiche Neigung und gleiche Ausrichtung haben, damit der Ertrag stimmt. Und die Hersteller geben die MPPT-Spannungsbereiche und Ströme je Gerät an – prüfen Sie vor dem Anschluss, dass Kurzschlussstrom und Eingangsspannung jedes MPPT im zulässigen Bereich des Wechselrichters liegen.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "„MPPT“ steht für Maximum Power Point Tracking – die laufende Suche nach dem Punkt, an dem ein PV-Strang die höchste Leistung abgibt. Ein MPPT-Tracker ist der Eingangszweig eines Wechselrichters, der die Spannung seines Strangs selbstständig so nachführt, dass dieser Punkt getroffen wird. Auf dieser Seite steht die Angabe „MPPT-Tracker“ deshalb für die Zahl der unabhängig regelbaren PV-Eingänge eines Modells: So nennt die Produktübersicht beim GW10K-EHA-G20 4 MPPT-Tracker, beim GW30K-ETA-G20 4 – je mehr Eingänge, desto mehr Stränge lassen sich getrennt nachführen, etwa bei unterschiedlicher Dachneigung oder Ausrichtung.\n\nIn unseren Unterlagen finden Sie dazu zwei praktische Hinweise: Stränge, die an demselben MPPT-Kreis hängen, sollten gleiches Modul, gleiche Modulanzahl, gleiche Neigung und gleiche Ausrichtung haben, damit der Ertrag stimmt. Und die Hersteller geben die MPPT-Spannungsbereiche und Ströme je Gerät an – prüfen Sie vor dem Anschluss, dass Kurzschlussstrom und Eingangsspannung jedes MPPT im zulässigen Bereich des Wechselrichters liegen.",
+     "refs": [
+      "page",
+      "f4aa87b49597-p26-9d84841a",
+      "9657b6e7fddc-p138-3b3dfb6f",
+      "9657b6e7fddc-p138-09d7aa4c"
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "f4aa87b49597-p26-9d84841a",
+     "label": "ecoflow-ocean2-p3-s2-user-manual-v1-0 · S. 26",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-user-manual-v1-0.pdf#page=26"
+    },
+    {
+     "type": "document",
+     "ref": "9657b6e7fddc-p138-3b3dfb6f",
+     "label": "GoodWe ET LV 5,0–20 kW Systemhandbuch für Wohngebäude (EN) · S. 138",
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Residential-Smart-Inverter-Solutions_User-Manual-Lynx-A-G4-EN_V1.6.pdf#page=138"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.52,
+     "about_this_page": 0.93,
+     "wants_person": 0.02,
+     "needs_followup": 0.13,
+     "seconds": 0.576,
+     "cost": 3.5406e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: other 0.52",
+     "about this page: category"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "MPPT-Tracker Anzahl MPPT Wechselrichter",
+      "lang": "de"
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    },
+    {
+     "name": "linker/search-knowledge",
+     "arguments": {
+      "query": "MPPT tracker maximum power point tracking",
+      "lang": "de"
+     },
+     "ok": true,
+     "ranking": "vector",
+     "encoder": "google/gemini-embedding-2",
+     "index_version": "20261016T072222Z"
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "category-brands",
+   "lang": "de",
+   "question": "Welche Marken stehen auf dieser Seite?",
+   "page": {
+    "type": "category",
+    "url": "/de/produkt-kategorie/wechselrichter/",
+    "title": "Wechselrichter",
+    "category_id": 610
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "all": [
+     "GoodWe",
+     "SAJ",
+     "EcoFlow"
+    ]
+   },
+   "seconds": 4.8,
+   "pass": true,
+   "failures": [],
+   "answer": "Auf dieser Seite finden Sie im Filter „Marke“ die Marken EcoFlow, GoodWe und SAJ. In der Produktliste sind dazu passend die Produktfamilien von GoodWe (ESA und die ET Series) sowie die EcoFlow OCEAN aufgeführt; die Filter lassen sich außerdem nach Anwendung (Privat, Gewerbe) und Phase eingrenzen.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Auf dieser Seite finden Sie im Filter „Marke“ die Marken EcoFlow, GoodWe und SAJ. In der Produktliste sind dazu passend die Produktfamilien von GoodWe (ESA und die ET Series) sowie die EcoFlow OCEAN aufgeführt; die Filter lassen sich außerdem nach Anwendung (Privat, Gewerbe) und Phase eingrenzen.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "find_products",
+     "confidence": 0.82,
+     "about_this_page": 0.93,
+     "wants_person": 0.02,
+     "needs_followup": 0.51,
+     "seconds": 2.647,
+     "cost": 3.5196e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: category"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "solution-meaning",
+   "lang": "en",
+   "question": "What does this page mean by peak shaving?",
+   "page": {
+    "type": "solution",
+    "url": "/solution/commercial-storage/",
+    "title": "Commercial Storage",
+    "post_id": 792
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)peak|demand"
+    ]
+   },
+   "seconds": 3.3,
+   "pass": true,
+   "failures": [],
+   "answer": "On this page, peak shaving means the storage system discharges during peak windows so that the facility stays under its contracted grid limit — the demand peaks are clipped before they reach the meter, as the page puts it. The page lists peak shaving as the first of four site applications, alongside self-consumption, EV charging buffer and backup, and names the site load profile as the sizing basis and peak shaving as the typical goal.\n\nThe FAQ on the page explains the sizing logic: power and capacity are calculated from the facility's historical demand peaks, and the system is sized to cover the spikes rather than from generic per-square-metre estimates. For a first orientation, the page's peak-shaving entry starts from a peak load of 100 kW. For an actual project the system is worked out in the Solution Configurator from the site's demand data, operating hours and grid constraints.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "On this page, peak shaving means the storage system discharges during peak windows so that the facility stays under its contracted grid limit — the demand peaks are clipped before they reach the meter, as the page puts it. The page lists peak shaving as the first of four site applications, alongside self-consumption, EV charging buffer and backup, and names the site load profile as the sizing basis and peak shaving as the typical goal.\n\nThe FAQ on the page explains the sizing logic: power and capacity are calculated from the facility's historical demand peaks, and the system is sized to cover the spikes rather than from generic per-square-metre estimates. For a first orientation, the page's peak-shaving entry starts from a peak load of 100 kW. For an actual project the system is worked out in the Solution Configurator from the site's demand data, operating hours and grid constraints.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.92,
+     "about_this_page": 0.91,
+     "wants_person": 0.03,
+     "needs_followup": 0.34,
+     "seconds": 0.54,
+     "cost": 3.5154e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: solution"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "solution-brands",
+   "lang": "en",
+   "question": "Which brands does this page offer for commercial storage?",
+   "page": {
+    "type": "solution",
+    "url": "/solution/commercial-storage/",
+    "title": "Commercial Storage",
+    "post_id": 792
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "all": [
+     "GoodWe",
+     "SAJ",
+     "Pylontech"
+    ]
+   },
+   "seconds": 3.4,
+   "pass": true,
+   "failures": [],
+   "answer": "This page offers commercial storage from GoodWe, SAJ and Pylontech, presented as three platforms with different architectures: a GoodWe hybrid inverter combined with a battery cabinet, an all-in-one C&I storage system from SAJ, and an all-in-one storage cabinet from Pylontech. The page frames all three around the same applications — peak-shaving, self-consumption, EV charging buffer and backup — and each system is sized in the Solution Configurator from the facility's load profile.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "This page offers commercial storage from GoodWe, SAJ and Pylontech, presented as three platforms with different architectures: a GoodWe hybrid inverter combined with a battery cabinet, an all-in-one C&I storage system from SAJ, and an all-in-one storage cabinet from Pylontech. The page frames all three around the same applications — peak-shaving, self-consumption, EV charging buffer and backup — and each system is sized in the Solution Configurator from the facility's load profile.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "find_products",
+     "confidence": 0.98,
+     "about_this_page": 0.93,
+     "wants_person": 0.03,
+     "needs_followup": 0.47,
+     "seconds": 0.619,
+     "cost": 3.5196e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: solution"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "solution-meaning",
+   "lang": "de",
+   "question": "Was meint diese Seite mit Lastspitzenkappung?",
+   "page": {
+    "type": "solution",
+    "url": "/de/loesung/gewerbespeicher/",
+    "title": "Gewerblicher Speicher",
+    "post_id": 6921
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)spitze|last"
+    ]
+   },
+   "seconds": 3.7,
+   "pass": true,
+   "failures": [],
+   "answer": "Die Seite meint mit Lastspitzenkappung, dass der gewerbliche Speicher während der Spitzenlastfenster entlädt, damit die Anlage unter ihrem vertraglichen Netzanschlusslimit bleibt. Auslegungsgrundlage ist das Lastprofil des Standorts, und die Seite ordnet dieses Ziel dem Betriebsmodus Lastspitzenkappung zu. Aus dieser Anwendung ergibt sich dann die Gerätewahl: Leistung und Kapazität werden aus den tatsächlichen Bedarfsspitzen berechnet, damit die Spitzen abgedeckt werden, und die Seite verweist dafür auf den Lösungskonfigurator statt auf eine pauschale Schätzung.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Die Seite meint mit Lastspitzenkappung, dass der gewerbliche Speicher während der Spitzenlastfenster entlädt, damit die Anlage unter ihrem vertraglichen Netzanschlusslimit bleibt. Auslegungsgrundlage ist das Lastprofil des Standorts, und die Seite ordnet dieses Ziel dem Betriebsmodus Lastspitzenkappung zu. Aus dieser Anwendung ergibt sich dann die Gerätewahl: Leistung und Kapazität werden aus den tatsächlichen Bedarfsspitzen berechnet, damit die Spitzen abgedeckt werden, und die Seite verweist dafür auf den Lösungskonfigurator statt auf eine pauschale Schätzung.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.8,
+     "about_this_page": 0.91,
+     "wants_person": 0.03,
+     "needs_followup": 0.37,
+     "seconds": 0.692,
+     "cost": 3.5448e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: solution"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "solution-brands",
+   "lang": "de",
+   "question": "Welche Marken bietet diese Seite für gewerbliche Speicher an?",
+   "page": {
+    "type": "solution",
+    "url": "/de/loesung/gewerbespeicher/",
+    "title": "Gewerblicher Speicher",
+    "post_id": 6921
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "all": [
+     "GoodWe",
+     "SAJ",
+     "Pylontech"
+    ]
+   },
+   "seconds": 2.4,
+   "pass": true,
+   "failures": [],
+   "answer": "Diese Seite nennt für gewerbliche Speicher drei Marken: GoodWe, SAJ und Pylontech. Jede Marke steht für eine eigene Architektur — GoodWe mit Hybrid-Wechselrichtern und Batterieschränken, SAJ mit einem All-in-One-Gewerbespeicher samt integriertem STS und Pylontech mit einem All-in-One-Speicherschrank mit integriertem PCS und Flüssigkeitskühlung. Alle Systeme werden laut Seite im Lösungskonfigurator anhand des Lastprofils der Anlage dimensioniert, und die Netzanschlusszertifikate werden je Projekt angefordert.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Diese Seite nennt für gewerbliche Speicher drei Marken: GoodWe, SAJ und Pylontech. Jede Marke steht für eine eigene Architektur — GoodWe mit Hybrid-Wechselrichtern und Batterieschränken, SAJ mit einem All-in-One-Gewerbespeicher samt integriertem STS und Pylontech mit einem All-in-One-Speicherschrank mit integriertem PCS und Flüssigkeitskühlung. Alle Systeme werden laut Seite im Lösungskonfigurator anhand des Lastprofils der Anlage dimensioniert, und die Netzanschlusszertifikate werden je Projekt angefordert.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "find_products",
+     "confidence": 0.98,
+     "about_this_page": 0.92,
+     "wants_person": 0.02,
+     "needs_followup": 0.57,
+     "seconds": 0.582,
+     "cost": 3.549e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: solution"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "blog-meaning",
+   "lang": "en",
+   "question": "What does this post mean by AC coupling?",
+   "page": {
+    "type": "blog",
+    "url": "/hybrid-inverter-vs-ac-coupled-storage/",
+    "title": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup",
+    "post_id": 551
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)battery inverter|separate",
+     "(?i)existing|retrofit"
+    ]
+   },
+   "seconds": 2.6,
+   "pass": true,
+   "failures": [],
+   "answer": "On this page, AC coupling describes a storage architecture in which the solar panels keep their own dedicated solar inverter and the batteries are connected through a separate battery inverter. The two inverters communicate over the AC bus, so each side of the system stays its own device. The post presents this as the usual route for retrofits, where storage is added to an existing PV installation without replacing the inverter that is already there. It also names the trade-offs plainly: slightly lower efficiency and a more involved commissioning process. Hybrid inverters are described in contrast, as a single unit combining the solar and battery inverter, which the post recommends mainly for new installations.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "On this page, AC coupling describes a storage architecture in which the solar panels keep their own dedicated solar inverter and the batteries are connected through a separate battery inverter. The two inverters communicate over the AC bus, so each side of the system stays its own device. The post presents this as the usual route for retrofits, where storage is added to an existing PV installation without replacing the inverter that is already there. It also names the trade-offs plainly: slightly lower efficiency and a more involved commissioning process. Hybrid inverters are described in contrast, as a single unit combining the solar and battery inverter, which the post recommends mainly for new installations.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.88,
+     "about_this_page": 0.93,
+     "wants_person": 0.03,
+     "needs_followup": 0.11,
+     "seconds": 0.578,
+     "cost": 3.5742e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: blog"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "blog-when-hybrid",
+   "lang": "en",
+   "question": "According to this post, when should I choose a hybrid inverter?",
+   "page": {
+    "type": "blog",
+    "url": "/hybrid-inverter-vs-ac-coupled-storage/",
+    "title": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup",
+    "post_id": 551
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)new"
+    ]
+   },
+   "seconds": 2.7,
+   "pass": true,
+   "failures": [],
+   "answer": "According to this post, a hybrid inverter is the better fit for new installations. Because it combines the solar inverter and the battery inverter in one unit, it keeps the component count down, simplifies wiring, and reaches a higher round-trip efficiency, since energy is converted between DC and AC only once. It also manages the DC input from the panels, supplies your loads, and routes surplus energy into the battery through that same device.\n\nThe post contrasts this with AC-coupled setups, which it recommends when a working solar inverter already exists and batteries are to be added without replacing that hardware, at the cost of slightly lower efficiency and more involved commissioning.\n\nOn backup, the post notes that the switchover time to backup power differs by model, and that each product page states it from the datasheet. It also lists what installers should verify: battery compatibility, maximum charge and discharge rates, grid-code settings, and whether the chosen topology supports backup during a grid outage.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "According to this post, a hybrid inverter is the better fit for new installations. Because it combines the solar inverter and the battery inverter in one unit, it keeps the component count down, simplifies wiring, and reaches a higher round-trip efficiency, since energy is converted between DC and AC only once. It also manages the DC input from the panels, supplies your loads, and routes surplus energy into the battery through that same device.\n\nThe post contrasts this with AC-coupled setups, which it recommends when a working solar inverter already exists and batteries are to be added without replacing that hardware, at the cost of slightly lower efficiency and more involved commissioning.\n\nOn backup, the post notes that the switchover time to backup power differs by model, and that each product page states it from the datasheet. It also lists what installers should verify: battery compatibility, maximum charge and discharge rates, grid-code settings, and whether the chosen topology supports backup during a grid outage.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [
+     {
+      "kind": "category",
+      "value": "inverters",
+      "words": "inverter"
+     }
+    ],
+    "jev": {
+     "intent": "compare",
+     "confidence": 0.46,
+     "about_this_page": 0.95,
+     "wants_person": 0.02,
+     "needs_followup": 0.49,
+     "seconds": 0.562,
+     "cost": 3.5994e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: compare 0.46",
+     "about this page: blog"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "blog-meaning",
+   "lang": "de",
+   "question": "Was meint dieser Beitrag mit AC-gekoppelt?",
+   "page": {
+    "type": "blog",
+    "url": "/de/hybridwechselrichter-vs-ac-speicher/",
+    "title": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung",
+    "post_id": 6883
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)Batteriewechselrichter|getrennt|separat|eigene",
+     "(?i)bestehend|nachrüst"
+    ]
+   },
+   "seconds": 2.9,
+   "pass": true,
+   "failures": [],
+   "answer": "Der Beitrag beschreibt ein AC-gekoppeltes System so: Die Solarmodule hängen an einem eigenen Solar-Wechselrichter, die Batterien an einem separaten Batterie-Wechselrichter, und die beiden Geräte kommunizieren über den AC-Bus. Als typischen Einsatz nennt der Beitrag die Nachrüstung, wenn Sie einer bereits bestehenden PV-Anlage Speicher hinzufügen möchten.\n\nDem Beitrag zufolge lohnt sich diese Topologie vor allem dann, wenn schon ein funktionierender Solar-Wechselrichter vorhanden ist und Batterien ergänzt werden sollen, ohne die bestehende Hardware auszutauschen. Als Kompromiss nennt der Beitrag eine etwas geringere Effizienz und einen aufwendigeren Inbetriebnahmeprozess. Bei Neuinstallationen sieht der Beitrag dagegen die Stärken eines Hybrid-Wechselrichters, der Wechselrichter- und Batteriefunktion in einem Gerät vereint.\n\nVor der Entscheidung empfiehlt der Beitrag zu prüfen: Batteriekompatibilität, maximale Lade- und Entladeraten, Netzcode-Einstellungen und ob die gewählte Topologie bei Netzausfällen Notstrom liefert.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Der Beitrag beschreibt ein AC-gekoppeltes System so: Die Solarmodule hängen an einem eigenen Solar-Wechselrichter, die Batterien an einem separaten Batterie-Wechselrichter, und die beiden Geräte kommunizieren über den AC-Bus. Als typischen Einsatz nennt der Beitrag die Nachrüstung, wenn Sie einer bereits bestehenden PV-Anlage Speicher hinzufügen möchten.\n\nDem Beitrag zufolge lohnt sich diese Topologie vor allem dann, wenn schon ein funktionierender Solar-Wechselrichter vorhanden ist und Batterien ergänzt werden sollen, ohne die bestehende Hardware auszutauschen. Als Kompromiss nennt der Beitrag eine etwas geringere Effizienz und einen aufwendigeren Inbetriebnahmeprozess. Bei Neuinstallationen sieht der Beitrag dagegen die Stärken eines Hybrid-Wechselrichters, der Wechselrichter- und Batteriefunktion in einem Gerät vereint.\n\nVor der Entscheidung empfiehlt der Beitrag zu prüfen: Batteriekompatibilität, maximale Lade- und Entladeraten, Netzcode-Einstellungen und ob die gewählte Topologie bei Netzausfällen Notstrom liefert.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.87,
+     "about_this_page": 0.95,
+     "wants_person": 0.03,
+     "needs_followup": 0.11,
+     "seconds": 0.557,
+     "cost": 3.6078e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: blog"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "blog-when-hybrid",
+   "lang": "de",
+   "question": "Wann sollte ich laut diesem Beitrag einen Hybrid-Wechselrichter wählen?",
+   "page": {
+    "type": "blog",
+    "url": "/de/hybridwechselrichter-vs-ac-speicher/",
+    "title": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung",
+    "post_id": 6883
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)neu"
+    ]
+   },
+   "seconds": 2.5,
+   "pass": true,
+   "failures": [],
+   "answer": "Der Beitrag empfiehlt den Hybrid-Wechselrichter vor allem für Neuinstallationen: Ein Gerät vereint Solar- und Batteriewechselrichter, wodurch weniger Komponenten nötig sind, die Verkabelung einfacher wird und der Round-Trip-Wirkungsgrad höher liegt, weil die Energie nur einmal zwischen Gleich- und Wechselstrom umgewandelt wird. Zur Umschaltzeit auf Notstrom sagt der Beitrag, dass sie sich je nach Modell unterscheidet und auf der jeweiligen Produktseite laut Datenblatt genannt wird. Für ihn spricht außerdem, dass eine einzige Topologie Erzeugung, Verbrauch und Speicherung verwaltet, statt zwei Wechselrichter über den AC-Bus kommunizieren zu lassen. Prüfen sollten Sie in jedem Fall Batteriekompatibilität, maximale Lade- und Entladeraten, Netzcode-Einstellungen und ob die gewählte Topologie Notstrom bei Netzausfällen unterstützt.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Der Beitrag empfiehlt den Hybrid-Wechselrichter vor allem für Neuinstallationen: Ein Gerät vereint Solar- und Batteriewechselrichter, wodurch weniger Komponenten nötig sind, die Verkabelung einfacher wird und der Round-Trip-Wirkungsgrad höher liegt, weil die Energie nur einmal zwischen Gleich- und Wechselstrom umgewandelt wird. Zur Umschaltzeit auf Notstrom sagt der Beitrag, dass sie sich je nach Modell unterscheidet und auf der jeweiligen Produktseite laut Datenblatt genannt wird. Für ihn spricht außerdem, dass eine einzige Topologie Erzeugung, Verbrauch und Speicherung verwaltet, statt zwei Wechselrichter über den AC-Bus kommunizieren zu lassen. Prüfen sollten Sie in jedem Fall Batteriekompatibilität, maximale Lade- und Entladeraten, Netzcode-Einstellungen und ob die gewählte Topologie Notstrom bei Netzausfällen unterstützt.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [
+     {
+      "kind": "category",
+      "value": "inverters",
+      "words": "Wechselrichter"
+     }
+    ],
+    "jev": {
+     "intent": "compare",
+     "confidence": 0.47,
+     "about_this_page": 0.95,
+     "wants_person": 0.02,
+     "needs_followup": 0.47,
+     "seconds": 0.58,
+     "cost": 3.6288e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: compare 0.47",
+     "about this page: blog"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "faq-meaning",
+   "lang": "en",
+   "question": "What does this page say about compatibility lists?",
+   "page": {
+    "type": "faq",
+    "url": "/faq-download/",
+    "title": "FAQ Download",
+    "post_id": 932
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)pairing|combin|check"
+    ]
+   },
+   "seconds": 3.7,
+   "pass": true,
+   "failures": [],
+   "answer": "The page is the FAQ download area: datasheets, manuals and trade rules for the equipment on file, grouped into sections such as ordering and delivery, accounts and pricing, shipping and logistics, warranty and service, compliance and documentation, plus product answers per brand.\n\nOn compatibility, the ordering section says that inverters, batteries, smart meters and accessories from different brands can be combined in one project order and ship together under a unified invoice, and that each pairing should be checked against the compatibility lists on file before ordering. The documentation section adds that the assistant indexes the datasheets, manuals and compatibility matrices in this library, so specific technical parameters and wiring requirements can be retrieved from there, and that the declarations of conformity and test certificates for the models in an order are requested on request.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The page is the FAQ download area: datasheets, manuals and trade rules for the equipment on file, grouped into sections such as ordering and delivery, accounts and pricing, shipping and logistics, warranty and service, compliance and documentation, plus product answers per brand.\n\nOn compatibility, the ordering section says that inverters, batteries, smart meters and accessories from different brands can be combined in one project order and ship together under a unified invoice, and that each pairing should be checked against the compatibility lists on file before ordering. The documentation section adds that the assistant indexes the datasheets, manuals and compatibility matrices in this library, so specific technical parameters and wiring requirements can be retrieved from there, and that the declarations of conformity and test certificates for the models in an order are requested on request.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "pairing_compatibility",
+     "confidence": 0.73,
+     "about_this_page": 0.93,
+     "wants_person": 0.03,
+     "needs_followup": 0.51,
+     "seconds": 0.571,
+     "cost": 3.5238e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: pairing_compatibility 0.73",
+     "about this page: faq"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "faq-brands",
+   "lang": "en",
+   "question": "Can I combine different brands in one order, according to this page?",
+   "page": {
+    "type": "faq",
+    "url": "/faq-download/",
+    "title": "FAQ Download",
+    "post_id": 932
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)yes|can be combined|combine"
+    ]
+   },
+   "seconds": 2.0,
+   "pass": true,
+   "failures": [],
+   "answer": "Yes — the page states that inverters, batteries, smart meters and accessories from different brands can be combined in one project order. They ship together under a unified invoice, and the page advises checking each pairing against the compatibility lists on file before ordering. The page also notes that Linker supplies both packaged systems with matching balance-of-system components and individual replacement units and accessories.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Yes — the page states that inverters, batteries, smart meters and accessories from different brands can be combined in one project order. They ship together under a unified invoice, and the page advises checking each pairing against the compatibility lists on file before ordering. The page also notes that Linker supplies both packaged systems with matching balance-of-system components and individual replacement units and accessories.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "company_logistics_service",
+     "confidence": 0.57,
+     "about_this_page": 0.81,
+     "wants_person": 0.03,
+     "needs_followup": 0.52,
+     "seconds": 0.56,
+     "cost": 3.5448e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: company_logistics_service 0.57",
+     "about this page: faq"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "faq-meaning",
+   "lang": "de",
+   "question": "Was sagt diese Seite über Kompatibilitätslisten?",
+   "page": {
+    "type": "faq",
+    "url": "/de/faq-download/",
+    "title": "FAQ-Download",
+    "post_id": 6863
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)prüfen|Kombination|kombinier"
+    ]
+   },
+   "seconds": 3.6,
+   "pass": true,
+   "failures": [],
+   "answer": "Die Seite nennt Kompatibilitätslisten an zwei Stellen. Im Abschnitt „Bestellung & Lieferung“ heißt es, dass Wechselrichter, Batteriespeicher, Smart Meter und Zubehör verschiedener Marken in einer Bestellung kombiniert werden können und gemeinsam mit einer einheitlichen Rechnung geliefert werden – und dass Sie jede Kombination vor der Bestellung anhand der hinterlegten Kompatibilitätslisten prüfen sollen. Im Abschnitt „Konformität & Dokumentation“ beschreibt die Seite, dass Genie die Datenblätter, Handbücher und Kompatibilitätsmatrizen aus dieser Bibliothek indexiert und technische Parameter sowie Verdrahtungsanforderungen direkt daraus abruft. Wenn Sie eine konkrete Kombination prüfen möchten, sagen Sie mir Marke oder Modell des vorhandenen Geräts und den gewünschten Partner – ich sehe dann in den Produktdaten und Unterlagen nach, ob das Paar dokumentiert und freigegeben ist.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Die Seite nennt Kompatibilitätslisten an zwei Stellen. Im Abschnitt „Bestellung & Lieferung“ heißt es, dass Wechselrichter, Batteriespeicher, Smart Meter und Zubehör verschiedener Marken in einer Bestellung kombiniert werden können und gemeinsam mit einer einheitlichen Rechnung geliefert werden – und dass Sie jede Kombination vor der Bestellung anhand der hinterlegten Kompatibilitätslisten prüfen sollen. Im Abschnitt „Konformität & Dokumentation“ beschreibt die Seite, dass Genie die Datenblätter, Handbücher und Kompatibilitätsmatrizen aus dieser Bibliothek indexiert und technische Parameter sowie Verdrahtungsanforderungen direkt daraus abruft. Wenn Sie eine konkrete Kombination prüfen möchten, sagen Sie mir Marke oder Modell des vorhandenen Geräts und den gewünschten Partner – ich sehe dann in den Produktdaten und Unterlagen nach, ob das Paar dokumentiert und freigegeben ist.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "pairing_compatibility",
+     "confidence": 0.74,
+     "about_this_page": 0.9,
+     "wants_person": 0.03,
+     "needs_followup": 0.58,
+     "seconds": 0.574,
+     "cost": 3.5532e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: pairing_compatibility 0.74",
+     "about this page: faq"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "faq-brands",
+   "lang": "de",
+   "question": "Kann ich laut dieser Seite verschiedene Marken in einer Bestellung kombinieren?",
+   "page": {
+    "type": "faq",
+    "url": "/de/faq-download/",
+    "title": "FAQ-Download",
+    "post_id": 6863
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)ja|kombiniert|kombinieren"
+    ]
+   },
+   "seconds": 2.3,
+   "pass": true,
+   "failures": [],
+   "answer": "Ja. Die Seite nennt in den FAQ zu Bestellung und Lieferung, dass Wechselrichter, Batteriespeicher, Smart Meter und Zubehör verschiedener Marken in einer Bestellung kombiniert werden können. Sie werden zusammen mit einer einheitlichen Rechnung geliefert; die Seite empfiehlt, jede Kombination vor der Bestellung anhand der hinterlegten Kompatibilitätslisten zu prüfen. Wenn Sie eine konkrete Kombination prüfen möchten, nennen Sie mir gern die beteiligten Modelle.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Ja. Die Seite nennt in den FAQ zu Bestellung und Lieferung, dass Wechselrichter, Batteriespeicher, Smart Meter und Zubehör verschiedener Marken in einer Bestellung kombiniert werden können. Sie werden zusammen mit einer einheitlichen Rechnung geliefert; die Seite empfiehlt, jede Kombination vor der Bestellung anhand der hinterlegten Kompatibilitätslisten zu prüfen. Wenn Sie eine konkrete Kombination prüfen möchten, nennen Sie mir gern die beteiligten Modelle.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "company_logistics_service",
+     "confidence": 0.62,
+     "about_this_page": 0.89,
+     "wants_person": 0.03,
+     "needs_followup": 0.65,
+     "seconds": 0.553,
+     "cost": 3.5574e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "jev unsure: company_logistics_service 0.62",
+     "about this page: faq"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "draft-check",
+   "lang": "en",
+   "question": "Check my draft",
+   "page": {
+    "type": "draft",
+    "url": "/cart/",
+    "title": "Solution draft",
+    "draft_ids": [
+     6528,
+     6520
+    ]
+   },
+   "logged_in": true,
+   "expect": {
+    "reads": "linker/read-page",
+    "shows": [
+     6528,
+     6520
+    ],
+    "all": [
+     "(?i)released|compatible|work together|pair"
+    ]
+   },
+   "seconds": 4.2,
+   "pass": true,
+   "failures": [],
+   "answer": "Your solution draft holds two products: the GoodWe ESA GW10K-EHA-G20 power module and the GoodWe GW8.3-BAT-D-G20 battery module. The compatibility check for this pair returns released, so the two are a documented combination. The documented condition is this: The GoodWe ESA 3–10 kW datasheet (EMEA, p. 2–3) lists the GW5.1/8.3/6.0/9.0-BAT-D-G20 battery modules for the GW3K–10K-EHA-G20 power modules. The EMEA datasheet names the G20 modules for the single-phase ESA; the G21 variants are not in that table. The datasheet behind that statement is linked below. When you send the draft with the Proforma request, the Linker team replies and issues a Proforma invoice.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Your solution draft holds two products: the GoodWe ESA GW10K-EHA-G20 power module and the GoodWe GW8.3-BAT-D-G20 battery module. The compatibility check for this pair returns released, so the two are a documented combination. The documented condition is this: The GoodWe ESA 3–10 kW datasheet (EMEA, p. 2–3) lists the GW5.1/8.3/6.0/9.0-BAT-D-G20 battery modules for the GW3K–10K-EHA-G20 power modules. The EMEA datasheet names the G20 modules for the single-phase ESA; the G21 variants are not in that table. The datasheet behind that statement is linked below. When you send the draft with the Proforma request, the Linker team replies and issues a Proforma invoice.",
+     "refs": [
+      "6528",
+      "6520"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6528,
+      6520
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "compat.document.0",
+     "label": "GW ESA 3 10kW Datasheet EMEA EN V1.1",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.97,
+     "about_this_page": 0.66,
+     "wants_person": 0.16,
+     "needs_followup": 0.88,
+     "seconds": 0.593,
+     "cost": 3.4944e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     },
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6528,
+       "battery_id": 6520
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: draft"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/check-compatibility",
+     "arguments": {
+      "inverter_id": 6528,
+      "battery_id": 6520
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "draft-next",
+   "lang": "en",
+   "question": "What happens next?",
+   "page": {
+    "type": "draft",
+    "url": "/cart/",
+    "title": "Solution draft",
+    "draft_ids": [
+     6528,
+     6520
+    ]
+   },
+   "logged_in": true,
+   "expect": {
+    "all": [
+     "(?i)Proforma"
+    ],
+    "none": [
+     "(?i)sales@"
+    ]
+   },
+   "seconds": 3.7,
+   "pass": true,
+   "failures": [],
+   "answer": "This solution draft holds the products you have put together so far. When you send it with the Proforma request, the Linker team takes it over: you receive a reply within one business day and a Proforma invoice is issued for the draft as submitted. After that, your account lists the request with its current status — \"Inquiry received\", \"Proforma invoice issued\", \"Completed\" or \"Cancelled\".",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "This solution draft holds the products you have put together so far. When you send it with the Proforma request, the Linker team takes it over: you receive a reply within one business day and a Proforma invoice is issued for the draft as submitted. After that, your account lists the request with its current status — \"Inquiry received\", \"Proforma invoice issued\", \"Completed\" or \"Cancelled\".",
+     "refs": [
+      "page",
+      "6528",
+      "6520"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6528,
+      6520
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "inquiry_status",
+     "confidence": 0.51,
+     "about_this_page": 0.23,
+     "wants_person": 0.06,
+     "needs_followup": 0.86,
+     "seconds": 0.584,
+     "cost": 3.4986e-05
+    },
+    "route": "model",
+    "calls": [],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": false,
+    "reasons": [
+     "jev unsure: inquiry_status 0.51"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "draft-check",
+   "lang": "de",
+   "question": "Meinen Entwurf prüfen",
+   "page": {
+    "type": "draft",
+    "url": "/de/warenkorb/",
+    "title": "Lösungsentwurf",
+    "draft_ids": [
+     6528,
+     6520
+    ]
+   },
+   "logged_in": true,
+   "expect": {
+    "reads": "linker/read-page",
+    "shows": [
+     6528,
+     6520
+    ],
+    "all": [
+     "(?i)freigegeben|Freigabe|kompatibel|passt|zusammen"
+    ]
+   },
+   "seconds": 5.0,
+   "pass": true,
+   "failures": [],
+   "answer": "In Ihrem Lösungsentwurf liegen das Leistungsmodul GoodWe ESA GW10K-EHA-G20 und das Batteriemodul GoodWe GW8.3-BAT-D-G20. Das Paar ist freigegeben: Laut dem EMEA-Datenblatt ESA gehören die G20-Batteriemodule zu den einphasigen G20-Leistungsmodulen; die G21-Varianten führt diese Tabelle nicht. Die Pairing-Unterlage mit den genauen Bedingungen hänge ich an.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "In Ihrem Lösungsentwurf liegen das Leistungsmodul GoodWe ESA GW10K-EHA-G20 und das Batteriemodul GoodWe GW8.3-BAT-D-G20. Das Paar ist freigegeben: Laut dem EMEA-Datenblatt ESA gehören die G20-Batteriemodule zu den einphasigen G20-Leistungsmodulen; die G21-Varianten führt diese Tabelle nicht. Die Pairing-Unterlage mit den genauen Bedingungen hänge ich an.",
+     "refs": [
+      "6528",
+      "6520"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6528,
+      6520
+     ]
+    },
+    {
+     "type": "document",
+     "ref": "compat.document.0",
+     "label": "GW ESA 3 10kW Datasheet EMEA EN V1.1",
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf"
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.82,
+     "about_this_page": 0.56,
+     "wants_person": 0.15,
+     "needs_followup": 0.88,
+     "seconds": 0.764,
+     "cost": 3.5154e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     },
+     {
+      "name": "linker/check-compatibility",
+      "arguments": {
+       "inverter_id": 6528,
+       "battery_id": 6520
+      }
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: draft"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/check-compatibility",
+     "arguments": {
+      "inverter_id": 6528,
+      "battery_id": 6520
+     },
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "draft-next",
+   "lang": "de",
+   "question": "Wie geht es weiter?",
+   "page": {
+    "type": "draft",
+    "url": "/de/warenkorb/",
+    "title": "Lösungsentwurf",
+    "draft_ids": [
+     6528,
+     6520
+    ]
+   },
+   "logged_in": true,
+   "expect": {
+    "all": [
+     "(?i)Proforma"
+    ],
+    "none": [
+     "(?i)sales@"
+    ]
+   },
+   "seconds": 7.2,
+   "pass": true,
+   "failures": [],
+   "answer": "Auf dieser Seite sehen Sie Ihren Lösungsentwurf mit den vorgemerkten Produkten. Sie senden den Lösungsentwurf mit der Proforma-Anfrage ab; das Linker-Team antwortet innerhalb eines Arbeitstags und stellt Ihnen eine Proformarechnung aus. In Ihrem Konto erscheint jede Anfrage als „Anfrage eingegangen“, „Proformarechnung ausgestellt“, „Abgeschlossen“ oder „Storniert“ – den aktuellen Stand können Sie sich direkt in der Anfrage-Ansicht ansehen.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Auf dieser Seite sehen Sie Ihren Lösungsentwurf mit den vorgemerkten Produkten. Sie senden den Lösungsentwurf mit der Proforma-Anfrage ab; das Linker-Team antwortet innerhalb eines Arbeitstags und stellt Ihnen eine Proformarechnung aus. In Ihrem Konto erscheint jede Anfrage als „Anfrage eingegangen“, „Proformarechnung ausgestellt“, „Abgeschlossen“ oder „Storniert“ – den aktuellen Stand können Sie sich direkt in der Anfrage-Ansicht ansehen.",
+     "refs": [
+      "page",
+      "6528",
+      "6520"
+     ]
+    },
+    {
+     "type": "cards",
+     "product_ids": [
+      6528,
+      6520
+     ]
+    },
+    {
+     "type": "action",
+     "name": "view_inquiry",
+     "args": {}
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.46,
+     "about_this_page": 0.27,
+     "wants_person": 0.14,
+     "needs_followup": 0.86,
+     "seconds": 2.926,
+     "cost": 3.5154e-05
+    },
+    "route": "model",
+    "calls": [],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": false,
+    "reasons": [
+     "jev unsure: other 0.46"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "account-statuses",
+   "lang": "en",
+   "question": "What do the statuses on this page mean for my inquiries?",
+   "page": {
+    "type": "account",
+    "url": "/my-account/",
+    "title": "My account"
+   },
+   "logged_in": true,
+   "expect": {
+    "reads": "linker/inquiry-status",
+    "all": [
+     "(?i)cancel"
+    ]
+   },
+   "seconds": 8.9,
+   "pass": true,
+   "failures": [],
+   "answer": "Here is what each status of an inquiry means in your account:\n\n- Inquiry received: your solution draft with the Proforma request has reached us, and the Linker team replies within a business day and issues a Proforma invoice.\n- Proforma invoice issued: the Proforma invoice for that inquiry has been prepared and is available in your account.\n- Completed: the inquiry has been fully handled and closed.\n- Cancelled: the inquiry was cancelled and is no longer being processed.\n\nThe entries currently listed in your account are marked Cancelled. There is also a draft entry that has not been sent off as a Proforma request yet, so no processing has started for it.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Here is what each status of an inquiry means in your account:\n\n- Inquiry received: your solution draft with the Proforma request has reached us, and the Linker team replies within a business day and issues a Proforma invoice.\n- Proforma invoice issued: the Proforma invoice for that inquiry has been prepared and is available in your account.\n- Completed: the inquiry has been fully handled and closed.\n- Cancelled: the inquiry was cancelled and is no longer being processed.\n\nThe entries currently listed in your account are marked Cancelled. There is also a draft entry that has not been sent off as a Proforma request yet, so no processing has started for it.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "inquiry_status",
+     "confidence": 0.98,
+     "about_this_page": 0.91,
+     "wants_person": 0.03,
+     "needs_followup": 0.53,
+     "seconds": 2.756,
+     "cost": 3.5238e-05
+    },
+    "route": "inquiry",
+    "calls": [
+     {
+      "name": "linker/inquiry-status",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": []
+   },
+   "tool_calls": [
+    {
+     "name": "linker/inquiry-status",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "account-guest",
+   "lang": "en",
+   "question": "What can I do on this page?",
+   "page": {
+    "type": "account",
+    "url": "/my-account/",
+    "title": "My account"
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)sign[- ]?in|log ?in",
+     "(?i)inquir|document|price"
+    ]
+   },
+   "seconds": 4.6,
+   "pass": true,
+   "failures": [],
+   "answer": "The page you are on is the sign-in page for My account. It states that the account keeps your inquiries, documents and prices in one place. To sign in you enter your username or email address and your password, and you can tick \"Remember me\" to stay signed in. If you have forgotten your password, a \"Lost your password?\" link is provided. If you do not have a partner account yet, the page offers to create a business account.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "The page you are on is the sign-in page for My account. It states that the account keeps your inquiries, documents and prices in one place. To sign in you enter your username or email address and your password, and you can tick \"Remember me\" to stay signed in. If you have forgotten your password, a \"Lost your password?\" link is provided. If you do not have a partner account yet, the page offers to create a business account.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.94,
+     "about_this_page": 0.95,
+     "wants_person": 0.02,
+     "needs_followup": 0.49,
+     "seconds": 2.587,
+     "cost": 3.507e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: account"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "account-statuses",
+   "lang": "de",
+   "question": "Was bedeuten die Status meiner Anfragen auf dieser Seite?",
+   "page": {
+    "type": "account",
+    "url": "/de/mein-konto/",
+    "title": "Mein Konto"
+   },
+   "logged_in": true,
+   "expect": {
+    "reads": "linker/inquiry-status",
+    "all": [
+     "(?i)storniert"
+    ]
+   },
+   "seconds": 6.8,
+   "pass": true,
+   "failures": [],
+   "answer": "Die Status in Ihrem Konto bedeuten: „Anfrage eingegangen“ – Ihr Lösungsentwurf ist beim Linker-Team angekommen und wird bearbeitet; das Team antwortet innerhalb eines Arbeitstags und stellt eine Proformarechnung aus. „Proformarechnung ausgestellt“ – die Proformarechnung liegt für Sie bereit. „Abgeschlossen“ – die Anfrage ist abgeschlossen. „Storniert“ – die Anfrage wurde storniert und wird nicht weiter bearbeitet. In Ihrer Übersicht stehen derzeit Anfragen mit dem Status „Storniert“ sowie ein Entwurf, den Sie noch nicht abgesendet haben; ein solcher Entwurf erscheint erst nach dem Senden als Anfrage.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Die Status in Ihrem Konto bedeuten: „Anfrage eingegangen“ – Ihr Lösungsentwurf ist beim Linker-Team angekommen und wird bearbeitet; das Team antwortet innerhalb eines Arbeitstags und stellt eine Proformarechnung aus. „Proformarechnung ausgestellt“ – die Proformarechnung liegt für Sie bereit. „Abgeschlossen“ – die Anfrage ist abgeschlossen. „Storniert“ – die Anfrage wurde storniert und wird nicht weiter bearbeitet. In Ihrer Übersicht stehen derzeit Anfragen mit dem Status „Storniert“ sowie ein Entwurf, den Sie noch nicht abgesendet haben; ein solcher Entwurf erscheint erst nach dem Senden als Anfrage.",
+     "refs": []
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "inquiry_status",
+     "confidence": 1.0,
+     "about_this_page": 0.92,
+     "wants_person": 0.03,
+     "needs_followup": 0.51,
+     "seconds": 0.762,
+     "cost": 3.528e-05
+    },
+    "route": "inquiry",
+    "calls": [
+     {
+      "name": "linker/inquiry-status",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": []
+   },
+   "tool_calls": [
+    {
+     "name": "linker/inquiry-status",
+     "arguments": {},
+     "ok": true
+    },
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  },
+  {
+   "id": "account-guest",
+   "lang": "de",
+   "question": "Was kann ich auf dieser Seite tun?",
+   "page": {
+    "type": "account",
+    "url": "/de/mein-konto/",
+    "title": "Mein Konto"
+   },
+   "expect": {
+    "reads": "linker/read-page",
+    "cites_page": true,
+    "all": [
+     "(?i)anmeld|melden|einlogg",
+     "(?i)anfrage|dokument|preis|unterlagen"
+    ]
+   },
+   "seconds": 4.6,
+   "pass": true,
+   "failures": [],
+   "answer": "Auf dieser Seite melden Sie sich in Ihrem Konto an. Dafür geben Sie Ihren Benutzernamen oder Ihre E-Mail-Adresse und Ihr Passwort ein; mit „Angemeldet bleiben“ bleiben Sie eingeloggt. Über „Passwort vergessen?“ können Sie ein neues Passwort anfordern. Wenn Sie noch kein Partner-Konto haben, erstellen Sie direkt hier Ihr Firmenkonto. Nach der Anmeldung finden Sie Ihre Anfragen, Dokumente und Preise an einem Ort.",
+   "blocks": [
+    {
+     "type": "text",
+     "text": "Auf dieser Seite melden Sie sich in Ihrem Konto an. Dafür geben Sie Ihren Benutzernamen oder Ihre E-Mail-Adresse und Ihr Passwort ein; mit „Angemeldet bleiben“ bleiben Sie eingeloggt. Über „Passwort vergessen?“ können Sie ein neues Passwort anfordern. Wenn Sie noch kein Partner-Konto haben, erstellen Sie direkt hier Ihr Firmenkonto. Nach der Anmeldung finden Sie Ihre Anfragen, Dokumente und Preise an einem Ort.",
+     "refs": [
+      "page"
+     ]
+    }
+   ],
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "ground_failures": [],
+   "understanding": {
+    "matches": [],
+    "jev": {
+     "intent": "other",
+     "confidence": 0.92,
+     "about_this_page": 0.93,
+     "wants_person": 0.03,
+     "needs_followup": 0.39,
+     "seconds": 2.828,
+     "cost": 3.5112e-05
+    },
+    "route": "model",
+    "calls": [
+     {
+      "name": "linker/read-page",
+      "arguments": {}
+     }
+    ],
+    "show_products": false,
+    "action": null,
+    "no_cards": false,
+    "no_handoff": true,
+    "reasons": [
+     "about this page: account"
+    ]
+   },
+   "tool_calls": [
+    {
+     "name": "linker/read-page",
+     "arguments": {},
+     "ok": true
+    }
+   ],
+   "model": "deepseek-flash"
+  }
+ ]
+}

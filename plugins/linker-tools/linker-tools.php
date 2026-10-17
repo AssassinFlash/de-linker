@@ -23,6 +23,7 @@ use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\PageContext;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
@@ -39,13 +40,15 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
 $quality       = new QualityStore(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used three times below.
+$page_context  = new PageContext(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used three times below.
+$genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
 ( new Plugin(
 	new Assets( __FILE__ ),
 	new Redirects(),
 	new SiteChrome( __FILE__ ),
 	$conversations,
-	new Proxy( $conversations ),
-	new Entries( __FILE__ ),
+	new Proxy( $conversations, pages: $page_context ),
+	new Entries( __FILE__, $page_context, $genie_preview ),
 	new Retention( __FILE__ ),
 	new UserContext(),
 	new WindPress(),
@@ -54,5 +57,5 @@ $quality       = new QualityStore(); // phpcs:ignore WordPress.NamingConventions
 	$quality,
 	new QualityRoute( $quality ),
 	new QualityPage( $quality, new Thread() ),
-	new Preview()
+	$genie_preview
 ) )->register();

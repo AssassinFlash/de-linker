@@ -3,8 +3,9 @@
 The REST introspection of an ability is permission-protected, so agent.py
 carries the shapes as text (INPUT_DOCS). This file locks that text against
 the PHP sources of truth in plugins/linker-commerce, so the two descriptions
-cannot drift (review 2026-10-10, must-fix 9). The document search is this
-service's own tool; its description is the one `knowledge.validate` reads.
+cannot drift (review 2026-10-10, must-fix 9). The document search and the page
+read are this service's own tools; the search's description is the one
+`knowledge.validate` reads, and the page read takes no input.
 """
 
 import re
@@ -12,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from linker_genie import knowledge
+from linker_genie import knowledge, page
 from linker_genie.abilities import ABILITY_NAMES
 from linker_genie.agent import INPUT_DOCS, TOOL_NAMES
 
@@ -45,7 +46,7 @@ def _device_classes_in_php() -> tuple[str, ...]:
 
 def test_input_docs_covers_every_tool() -> None:
     assert set(INPUT_DOCS) == set(TOOL_NAMES)
-    assert set(TOOL_NAMES) - set(ABILITY_NAMES) == {knowledge.NAME}
+    assert set(TOOL_NAMES) - set(ABILITY_NAMES) == {knowledge.NAME, page.NAME}
 
 
 def test_the_document_search_input_doc_names_the_fields_it_validates() -> None:

@@ -21,13 +21,15 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from linker_genie import knowledge
+from linker_genie import knowledge, page
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
+from linker_genie.tools import MAX_TOOL_CALLS as TOOL_LIMIT
 from linker_genie.understand import Prepared
 
-MAX_TOOL_CALLS = 4
+# The per-turn call limit lives with the other shared names (tools.py).
+MAX_TOOL_CALLS = TOOL_LIMIT
 # The route's results go into the prompt as JSON; a search answers with up to six
 # cards with their facts (route.SEARCH_LIMIT), and a document search with up to 16
 # chunks: 9,500 to 23,400 characters as the model reads them on the 18 questions of
@@ -67,10 +69,11 @@ INPUT_DOCS: dict[str, str] = {
     "linker/inquiry-status": "{}",
     "linker/handoff-team": "{summary: string}",
     knowledge.NAME: knowledge.INPUT_DOC,
+    page.NAME: page.INPUT_DOC,
 }
-# Every tool the model may call: the WordPress abilities, and the document search
-# this process runs itself (linker_genie.knowledge).
-TOOL_NAMES = (*ABILITY_NAMES, knowledge.NAME)
+# Every tool the model may call: the WordPress abilities, and the document search and
+# the page read this process runs itself (linker_genie.knowledge, linker_genie.page).
+TOOL_NAMES = (*ABILITY_NAMES, knowledge.NAME, page.NAME)
 PROMPTS = Path(__file__).resolve().parents[2] / "prompts"
 # Owner ruling 2026-10-11: the one chat model, on the official DeepSeek API.
 CHAT_PROVIDER = "deepseek"
@@ -176,6 +179,7 @@ def make_generate(
     model: Any | None = None,
     prepared: Prepared | None = None,
     search: knowledge.Search | None = None,
+    pages: page.Reader | None = None,
 ) -> Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]:
     """A `cycle.Generate` that runs the Pydantic AI agent with the ability client.
 
@@ -186,6 +190,7 @@ def make_generate(
     A route whose document search failed ends the turn here: the error is raised
     and the cycle answers with its fallback, never with an answer that lacks the
     documents it needed (#257, docs/specs/10-knowledge-index.md 失败显式).
+    `pages` reads the customer's page (page.py, #234) when the model asks for it.
     """
     document_search = search or knowledge.SEARCH
 
@@ -199,13 +204,14 @@ def make_generate(
         budget = ToolBudget(used=prepared.calls_made if prepared else 0)
         tools = []
         for name in TOOL_NAMES:
-            runner = (
-                _knowledge_runner(document_search, budget, request.locale)
-                if name == knowledge.NAME
-                else _ability_runner(
+            if name == knowledge.NAME:
+                runner = _knowledge_runner(document_search, budget, request.locale)
+            elif name == page.NAME:
+                runner = _page_runner(pages, budget, request)
+            else:
+                runner = _ability_runner(
                     client, budget, name, request.user.context, request.locale
                 )
-            )
             doc = INPUT_DOCS.get(name)
             runner.__doc__ = f"Call the WordPress ability {name}." + (
                 f" Input object: {doc}" if doc else ""
@@ -279,12 +285,68 @@ def _knowledge_runner(
     return run
 
 
+def _page_runner(
+    pages: page.Reader | None, budget: ToolBudget, request: TurnRequest
+) -> Callable[[dict[str, Any] | None], Any]:
+    def run(arguments: dict[str, Any] | None = None) -> Any:
+        """Read the page the customer is on and return what it says."""
+        del arguments
+        if not budget.allow():
+            return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
+        if pages is None:
+            return {"error": "the page cannot be read in this turn"}
+        question = next(
+            (m.content for m in reversed(request.messages) if m.role == "user"), ""
+        )
+        try:
+            payload, gathered = page.record(
+                pages, request.page_context, question, request.user.logged_in
+            )
+        except page.PageUnavailable as error:
+            return {"error": f"the page could not be read: {error}"}
+        budget.parts.append(gathered)
+        return page.model_view(payload)
+
+    run.__name__ = _tool_name(page.NAME)
+    return run
+
+
+def _page_lines(request: TurnRequest) -> list[str]:
+    """The page the customer is on, as the prompt names it (#234)."""
+    context = request.page_context
+    lines = [f"page={context.type}"]
+    if context.title:
+        lines.append(f"page_title={context.title}")
+    path = page.page_path(context.url)
+    if path:
+        lines.append(f"page_url={path}")
+    lines.append(
+        "The customer is on this page: 'this page', 'here', 'this one' and 'it' "
+        "without another subject mean this page or its product. To know what the "
+        "page says, use the read-page result (or call linker_read_page); the page "
+        "rule is in the reminder below."
+    )
+    return lines
+
+
+def _result_view(item: dict[str, Any]) -> dict[str, Any]:
+    """A route result as the model reads it, like the model's own call of that tool."""
+    result = item.get("result")
+    if not isinstance(result, dict):
+        return item
+    if item.get("name") == knowledge.NAME:
+        return {**item, "result": knowledge.model_view(result)}
+    if item.get("name") == page.NAME:
+        return {**item, "result": page.model_view(result)}
+    return item
+
+
 def _user_prompt(
     request: TurnRequest, retry_reason: str | None, prepared: Prepared | None = None
 ) -> str:
     lines = [
         f"locale={request.locale}",
-        f"page={request.page_context.type}",
+        *_page_lines(request),
         f"logged_in={request.user.logged_in}",
     ]
     if request.page_context.product_id:
@@ -299,14 +361,7 @@ def _user_prompt(
         # A document search reads as the model's own call would: tagged text, no
         # URL, no figure table (knowledge.model_view).
         results = json.dumps(
-            [
-                {**item, "result": knowledge.model_view(item["result"])}
-                if item.get("name") == knowledge.NAME
-                and isinstance(item.get("result"), dict)
-                else item
-                for item in prepared.results
-            ],
-            ensure_ascii=False,
+            [_result_view(item) for item in prepared.results], ensure_ascii=False
         )
         lines.append(
             "Tool results the service already fetched for this turn (use them; "
@@ -344,7 +399,7 @@ def _user_prompt(
         "placeholder renders the whole range. A figure from a document chunk "
         "goes in {fact:CHUNK_ID.nK}, the [nK=…] tag shown in that chunk's text; "
         "put the chunk IDs you rely on in refs, the service links their "
-        "documents. Or leave the number unsaid. "
+        "documents. Or leave the number unsaid. " + page.RULE + " "
         "A document (a search-knowledge chunk ID, compat.document.N, "
         "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
         "get-product listed this turn — such a ref exists only after get-product "

@@ -20,11 +20,12 @@ import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, get_args
 
 import httpx
 
 from linker_genie.embedding import credentials
+from linker_genie.schema import PageType
 
 Intent = Literal[
     "find_products",
@@ -90,7 +91,16 @@ QUESTIONS: dict[str, dict[str, Any]] = {
     },
 }
 
-_PAGE_TYPES = {"draft": "solution_draft", "other": "other"}
+# The page types as Jev reads them, one for each of schema.PageType: the measured ones
+# (category, product, account, solution_draft, other: eval.py) keep their names, the
+# rest (#234) say what the page is in words.
+_PAGE_WORDS = {
+    "draft": "solution_draft",
+    "home": "home_page",
+    "solution": "solution_page",
+    "faq": "faq_and_documents_page",
+}
+_PAGE_TYPES = {kind: _PAGE_WORDS.get(kind, kind) for kind in get_args(PageType)}
 
 
 class JevError(RuntimeError):
@@ -210,11 +220,17 @@ def _reading(body: dict[str, Any], seconds: float) -> Reading:
         raise JevError(f"jev answer is incomplete: {error!r}") from error
 
 
-def page_state(page_type: str, product_name: str | None) -> dict[str, Any]:
-    """The page as Jev's state describes it (the shape eval.py measured)."""
+def page_state(
+    page_type: str, product_name: str | None, title: str | None = None
+) -> dict[str, Any]:
+    """The page as Jev's state describes it: the shape eval.py measured, and the
+    page's title (#234), so "what does this page mean by …" on a blog post or a
+    solution page is read as a question about that page."""
     state: dict[str, Any] = {"type": _PAGE_TYPES.get(page_type, page_type)}
     if product_name:
         state["product"] = product_name
+    if title:
+        state["title"] = title
     return state
 
 

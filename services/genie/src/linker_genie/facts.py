@@ -11,6 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from linker_genie.tools import READ_PAGE
+
 
 @dataclass
 class Fact:
@@ -88,6 +90,8 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
         _from_inquiry(gathered, payload)
     elif name.endswith("handoff-team"):
         _from_handoff(gathered, payload)
+    elif name == READ_PAGE:
+        _from_page(gathered, payload)
     return gathered
 
 
@@ -250,6 +254,28 @@ def _from_size_hint(gathered: TurnFacts, payload: dict[str, Any]) -> None:
     url = payload.get("configurator_url")
     if isinstance(url, str) and url:
         gathered.add(Fact(id="size.configurator_url", value=url, source="size-hint"))
+
+
+def _from_page(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+    """The page the customer is on (`page.py`, #234): the ref `page`, its text and
+    figures (`page.nK`), and a solution draft's products.
+
+    The products of a draft are this turn's products, so the answer may show them as
+    cards (ground.py: card IDs ⊆ this turn's tool results).
+    """
+    gathered.add(
+        Fact(id="page", value=str(payload.get("title") or ""), source="read-page")
+    )
+    text = payload.get("text")
+    if isinstance(text, str) and text:
+        gathered.add(Fact(id="page.text", value=text, source="read-page"))
+    figures = payload.get("figures")
+    for figure, value in (figures if isinstance(figures, dict) else {}).items():
+        if isinstance(figure, str) and isinstance(value, str) and value:
+            gathered.add(Fact(id=figure, value=value, source="read-page"))
+    for item in payload.get("products") or []:
+        if isinstance(item, dict) and isinstance(item.get("product_id"), int):
+            gathered.product_ids.add(item["product_id"])
 
 
 def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:

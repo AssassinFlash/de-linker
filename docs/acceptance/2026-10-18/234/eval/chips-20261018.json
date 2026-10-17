@@ -1,0 +1,172 @@
+[
+ {
+  "lang": "en",
+  "question": "Is there a datasheet for my model?",
+  "page": "/faq-download/",
+  "meta": {
+   "turn_id": 2,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "documents",
+   "intent": "documents_specs",
+   "jev_error": null
+  },
+  "answer": "This page is the document library: datasheets, manuals and trade rules on file for the equipment, grouped by brand, order topics, warranty and compliance. Datasheets are on file in English and in German where a German edition exists. Tell me the brand and model of your device and I will bring up the matching datasheet directly. | ask:None"
+ },
+ {
+  "lang": "de",
+  "question": "Gibt es ein Datenblatt zu meinem Modell?",
+  "page": "/de/faq-download/",
+  "meta": {
+   "turn_id": 3,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "documents",
+   "intent": "documents_specs",
+   "jev_error": null
+  },
+  "answer": "Auf dieser Seite finden Sie unsere Bibliothek mit Datenblättern, Handbüchern und Kompatibilitätsunterlagen zu den Geräten im Bestand – insgesamt 160, gegliedert nach Marken wie GoodWe, EcoFlow, SAJ, Pylontech und Chint sowie nach Themen wie Garantie, Konformität und Dokumentation. Datenblätter und Handbücher liegen auf Englisch vor und auf Deutsch, wo es eine deutsche Ausgabe gibt. Damit ich Ihnen das passende Datenblatt zu Ihrem Modell zeigen kann: Von welcher Marke ist Ihr Modell? | ask:None"
+ },
+ {
+  "lang": "en",
+  "question": "Which of these posts cover hybrid inverters?",
+  "page": "/blog/",
+  "meta": {
+   "turn_id": 4,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 2,
+   "failures": [],
+   "language": "en",
+   "route": "model",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "answer": "The page leads with \"How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup\", its latest post, which compares hybrid-inverter and AC-coupled storage architectures for residential and small-commercial projects, so installers can pick the right topology.\n\nBeyond that, the closest related reading is \"What Installers Should Check Before Pairing an Inverter with Battery Storage\", a pre-installation checklist on inverter-to-battery compatibility, communication protocols, cable sizing and site preparation. Topically adjacent but not about hybrid inverters as such are the storage sizing, indoor-versus-outdoor battery, commissioning and monitoring pieces.\n\nThe page groups everything under system design, battery storage, installation and commissioning, and monitoring and energy management, and offers a search over all posts, plus a route into the Solution Configurator if the reading turns into a project."
+ },
+ {
+  "lang": "de",
+  "question": "Welche dieser Beiträge behandeln Hybrid-Wechselrichter?",
+  "page": "/de/blog/",
+  "meta": {
+   "turn_id": 5,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "model",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "answer": "Auf der Blog-Seite ist der Hybrid-Wechselrichter vor allem in einem Beitrag das Thema: „So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung“. Der Beitrag ist als praktischer Vergleich der beiden Architekturen angelegt und soll Installateuren bei der Wahl der passenden Topologie für Wohn- und kleine Gewerbeprojekte helfen; er ist unter den neuesten Beiträgen gelistet und mit dem Schlagwort Hybrid-Wechselrichter versehen.\n\nEng verwandt, aber nicht speziell auf Hybrid-Wechselrichter beschränkt, ist der Beitrag „Was Installateure vor der Kombination eines Wechselrichters mit Batteriespeicher prüfen sollten“: Dort geht es um die Prüfpunkte vor der Kombination von Wechselrichter und Batteriespeicher, etwa Wechselrichter-Batterie-Kompatibilität, Kommunikationsprotokolle, Kabeldimensionierung und Standortvorbereitung. Die übrigen Beiträge behandeln Batteriedimensionierung, Innen- und Außenaufstellung, Inbetriebnahme, Dokumentation, Fernüberwachung sowie gewerbliche Speicherplanung."
+ },
+ {
+  "lang": "en",
+  "question": "Summarize this post",
+  "page": "/hybrid-inverter-vs-ac-coupled-storage/",
+  "meta": {
+   "turn_id": 6,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null
+  },
+  "answer": "This post is a practical comparison of the two storage architectures, written for installers working on residential and small-commercial projects. It defines a hybrid inverter as a single unit that combines the solar inverter and the battery inverter, handling DC input from the panels, feeding AC loads and routing surplus into the battery. An AC-coupled setup, by contrast, keeps a dedicated solar inverter for the panels and uses a separate battery inverter, with the two communicating over the AC bus — the usual retrofit path when storage is added to an existing PV installation.\n\nOn selection, the post recommends hybrid for new installations: fewer components, simpler wiring and higher round-trip efficiency, since energy is converted only once between DC and AC. It notes that switchover time to backup differs by model and points to the datasheet on each product page for that value. AC-coupled is recommended when a working solar inverter is already in place and batteries are to be added without replacing existing hardware, at the cost of slightly lower efficiency and more involved commissioning.\n\nThe closing checklist for installers covers battery compatibility, maximum charge and discharge rates, grid-code settings, and whether the chosen topology supports backup during a grid outage. The post was published on 29 May 2026."
+ },
+ {
+  "lang": "de",
+  "question": "Welche Produkte betrifft dieser Beitrag?",
+  "page": "/de/hybridwechselrichter-vs-ac-speicher/",
+  "meta": {
+   "turn_id": 7,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "model",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "answer": "Der Beitrag nennt keine konkreten Modelle. Er stellt zwei Produktkategorien gegenüber: Hybrid-Wechselrichter, die Solar- und Batterie-Wechselrichter in einem Gerät vereinen und sich vor allem für Neuinstallationen eignen, sowie AC-gekoppelte Speicherlösungen, bei denen ein eigener Solar-Wechselrichter und ein separater Batterie-Wechselrichter über den AC-Bus zusammenarbeiten – der übliche Nachrüstweg, wenn eine bestehende PV-Anlage um Speicher ergänzt werden soll. Als Beispiele aus unserem Sortiment für die Hybrid-Seite sehen Sie die folgenden Produkte; für die AC-gekoppelte Variante kommt ein separater Batterie-Wechselrichter hinzu. Der Beitrag empfiehlt außerdem, vor der Kombination Batteriekompatibilität, maximale Lade- und Entladeraten, Netzcode-Einstellungen und die Notstromfähigkeit der gewählten Topologie zu prüfen. | cards:[6483, 6484, 6485, 6486]"
+ },
+ {
+  "lang": "en",
+  "question": "Summarize this page",
+  "page": "/for-installer/",
+  "meta": {
+   "turn_id": 8,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null
+  },
+  "answer": "This page presents Linker as the storage solution partner behind installers' projects in Germany. It covers residential hybrid storage in single- and three-phase versions as well as commercial battery cabinets of up to 261 kWh per unit, and it lists system packages with inverter, battery and metering platforms together with the compatibility lists on file.\n\nTwo tools are described for preparing an installation before ordering: the Roof detail step, which maps the layout from site conditions, and the Solution Configurator, which sizes inverter and battery capacity to actual energy loads and produces the bill of materials; Genie is named alongside them for wiring references from the manuals on file. The page then walks through the project stages — layout around site requirements, electrical sizing in the configurator, transparent project pricing, equipment dispatched to your installation schedule, and support continuing through commissioning.\n\nThe partnership is described in several parts: checking component combinations against the compatibility lists, technical documentation for inspection day, a supply partner that scales with your projects, technical clarification from the engineering team in Germany, warranty coordination backed by your order records, and a digital project and ordering hub. The page closes with questions installers ask before ordering and an invitation to design and source your next installation. | action:open_configurator"
+ },
+ {
+  "lang": "de",
+  "question": "Welche Produkte passen zu meinem Projekt?",
+  "page": "/de/fuer-installateur/",
+  "meta": {
+   "turn_id": 9,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "model",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "answer": "Auf dieser Seite liefert Linker komplette Speicherpakete: ein- und dreiphasige Hybridsysteme für Wohngebäude sowie Batterieschränke für Gewerbeanlagen, jeweils mit hinterlegten Kompatibilitätslisten für Wechselrichter, Batteriespeicher und Messplattformen. Welche Produkte zu Ihrem Projekt passen, hängt von Anwendung, elektrischem Anschluss und Lastprofil ab – die Dimensionierung von Wechselrichterleistung und Speicherkapazität übernimmt der Lösungskonfigurator und stellt daraus eine Stückliste zusammen. | ask:None | action:open_configurator"
+ },
+ {
+  "lang": "en",
+  "question": "Which model fits my project?",
+  "page": "/contact/",
+  "meta": {
+   "turn_id": 10,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "en",
+   "route": "model",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "answer": "How large a system should be is the Solution Configurator's work: it takes the PV size, annual consumption, phase and backup requirement you give it and proposes a matching solution draft with its bill of materials. Open it here and enter your project data, and you can send the result to us as a Proforma request. | action:open_configurator"
+ },
+ {
+  "lang": "de",
+  "question": "Welches Modell passt zu meinem Projekt?",
+  "page": "/de/produkte/",
+  "meta": {
+   "turn_id": 11,
+   "grounded": true,
+   "fallback": false,
+   "attempts": 1,
+   "failures": [],
+   "language": "de",
+   "route": "model",
+   "intent": "find_products",
+   "jev_error": null
+  },
+  "answer": "Welches Modell zu Ihrem Projekt passt, ermittelt der Lösungskonfigurator: Er plant aus Ihren Standortdaten ein Speichersystem, und das Ergebnis ist ein Lösungsentwurf, den Sie als Anfrage senden können. Auf dieser Seite können Sie Produkte außerdem nach Kategorie, Anwendung, Marke, Phase und Leistung filtern, wenn Sie die Auswahl lieber selbst eingrenzen möchten. | action:open_configurator"
+ }
+]

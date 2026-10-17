@@ -47,9 +47,32 @@ class Entries {
 	/**
 	 * Sets up the entries.
 	 *
-	 * @param string $plugin_file Absolute path of the main plugin file.
+	 * @param string           $plugin_file Absolute path of the main plugin file.
+	 * @param PageContext|null $pages       The page of the request; a default one is built when omitted.
+	 * @param Preview|null     $preview     The preview card, whose questions the dock offers on its pages.
 	 */
-	public function __construct( private readonly string $plugin_file ) {}
+	public function __construct(
+		private readonly string $plugin_file,
+		?PageContext $pages = null,
+		?Preview $preview = null
+	) {
+		$this->pages   = $pages ?? new PageContext();
+		$this->preview = $preview ?? new Preview( $this->pages );
+	}
+
+	/**
+	 * The page of the request (ticket #234).
+	 *
+	 * @var PageContext
+	 */
+	private readonly PageContext $pages;
+
+	/**
+	 * The preview card (ticket #249).
+	 *
+	 * @var Preview
+	 */
+	private readonly Preview $preview;
 
 	/**
 	 * Hooks the chips and the dock; runs during plugin registration.
@@ -80,8 +103,8 @@ class Entries {
 	}
 
 	/**
-	 * The Ask Genie chip of the catalogue search box, mountable in the
-	 * LiveCanvas templates that render the catalogue (ticket #68: the markup
+	 * The Ask Genie chip of the products search box, mountable in the
+	 * LiveCanvas templates that render the products page (ticket #68: the markup
 	 * of the search box itself belongs to those templates; this chip and its
 	 * script are the part the entries own). The chip is hidden until the
 	 * script's question detection shows it — without JavaScript the search
@@ -132,8 +155,8 @@ class Entries {
 	}
 
 	/**
-	 * The search box's script: on the pages that carry the catalogue's search
-	 * box (the catalogue and its categories) and on pages that mount the chip
+	 * The search box's script: on the pages that carry the products search
+	 * box (all products and the product categories) and on pages that mount the chip
 	 * shortcode. The chip is markup of those pages; the script only binds to
 	 * what they carry.
 	 */
@@ -166,7 +189,7 @@ class Entries {
 	}
 
 	/**
-	 * Whether the page carries the catalogue's search box or mounts the chip.
+	 * Whether the page carries the products search box or mounts the chip.
 	 */
 	private function has_search_surface(): bool {
 		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
@@ -453,7 +476,7 @@ JS,
 		$locale = $this->locale();
 		$page   = $this->page_context();
 		return sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\'></div>',
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\'></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -467,12 +490,14 @@ JS,
 			esc_attr( $this->disclosure( $locale ) ),
 			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
 			esc_attr( esc_url_raw( $this->workspace_url() ) ),
-			esc_attr( (string) wp_json_encode( $this->prompts( $page, $locale ) ) )
+			esc_attr( (string) wp_json_encode( $this->prompts( $page ) ) ),
+			// The whole page context, sent back with every turn (#234).
+			esc_attr( (string) wp_json_encode( $page ) )
 		);
 	}
 
 	/**
-	 * Shop chip: opens Genie over the catalogue.
+	 * Shop chip: opens Genie over the products page.
 	 */
 	public function shop_chip(): void {
 		$this->print_group( 'category' );
@@ -503,7 +528,7 @@ JS,
 	 * The chip groups of one page type: the one list the Woo hooks and the
 	 * LiveCanvas templates' shortcode both read.
 	 *
-	 * A real question carries its own `ask`. The catalogue opener does not:
+	 * A real question carries its own `ask`. The products-page opener does not:
 	 * "Ask Genie" / "Genie fragen" only opens the dock
 	 * (docs/specs/13-genie.md: the shop opener sends no message of its own).
 	 * Omitting `ask` is the absence, not an empty string the loader could send.
@@ -585,7 +610,7 @@ JS,
 	 * One chip that opens the dock, and asks only when it carries a question.
 	 *
 	 * The label is the visible text. The first question is the explicit `$ask`
-	 * the loader delivers (`data-ask-message`). An opener such as the catalogue
+	 * the loader delivers (`data-ask-message`). An opener such as the products page
 	 * "Ask Genie" button passes an empty ask and prints no payload, so a click
 	 * opens the dock without sending the label (docs/specs/13-genie.md).
 	 *
@@ -611,70 +636,83 @@ JS,
 	}
 
 	/**
-	 * The opening prompts of one page type in its language.
+	 * The opening prompts of one page, two or three of them, naming the
+	 * page where it has a name (docs/specs/13-genie.md, 目标 3: "打开即点名
+	 * 当前产品或分类", "每类页面至少两条本页建议").
 	 *
-	 * @param array{type: string} $page   Page context.
-	 * @param string              $locale `en` or `de`.
+	 * On the pages that carry the preview card — home, product, product
+	 * category, solution — the dock offers the card's own questions
+	 * (Preview::asks). Copy review: docs/acceptance/2026-10-18/249/ for
+	 * those, docs/acceptance/2026-10-18/234/copy-review.md for the rest;
+	 * German is written on its own in languages/linker-tools-de_DE_formal.po.
+	 *
+	 * @param array{type: string, title?: string, post_id?: int, category_id?: int} $page The page context.
 	 * @return list<string>
 	 */
-	public function prompts( array $page, string $locale ): array {
-		$de = 'de' === $locale;
+	public function prompts( array $page ): array {
+		$card = $this->preview->asks( $page );
+		if ( null !== $card ) {
+			return $card;
+		}
 		switch ( $page['type'] ) {
-			case 'product':
-				return array(
-					$de ? 'Was passt zu diesem Modell?' : 'What pairs with this model?',
-					$de ? 'Vergleichen mit …' : 'Compare with…',
-					$de ? 'Unterlagen' : 'Documents',
-				);
 			case 'draft':
 				return array(
-					$de ? 'Meinen Entwurf prüfen' : 'Check my draft',
-					$de ? 'Wie geht es weiter?' : 'What happens next?',
+					__( 'Check my draft', 'linker-tools' ),
+					__( 'What happens next?', 'linker-tools' ),
 				);
 			case 'account':
 				return array(
-					$de ? 'Wo steht meine Proforma?' : 'Where is my Proforma?',
-					$de ? 'Wie geht es weiter?' : 'What happens next?',
+					__( 'Where is my Proforma?', 'linker-tools' ),
+					__( 'What happens next?', 'linker-tools' ),
 				);
 			case 'category':
+				// All products (/products/), which has no category of its own.
 				return array(
-					__( 'Ask Genie', 'linker-tools' ),
-					$de
-						? 'Ich brauche einen dreiphasigen Hybridwechselrichter für ein Wohngebäude mit 10 kWp PV.'
-						: 'I need a three-phase hybrid inverter for a home with 10 kWp PV.',
+					__( 'Which model fits my project?', 'linker-tools' ),
+					__( 'Compare SAJ and GoodWe hybrid inverters', 'linker-tools' ),
+				);
+			case 'blog':
+				return isset( $page['post_id'] )
+					? array(
+						__( 'Summarize this post', 'linker-tools' ),
+						__( 'Which products does this post apply to?', 'linker-tools' ),
+					)
+					: array(
+						__( 'Which of these posts cover hybrid inverters?', 'linker-tools' ),
+						__( 'Summarize this page', 'linker-tools' ),
+					);
+			case 'faq':
+				// The FAQ and documents page: its documents, and the pairing
+				// question the compatibility data answers (its FAQ answers are
+				// site copy, not a source of facts: AGENTS.md 2026-10-09).
+				return array(
+					__( 'Is there a datasheet for my model?', 'linker-tools' ),
+					__( 'Which batteries work with my inverter?', 'linker-tools' ),
+				);
+			case 'solution':
+				// The hub, About and the audience pages; the solutions themselves
+				// carry the card's questions above.
+				return array(
+					__( 'Summarize this page', 'linker-tools' ),
+					__( 'Which products fit my project?', 'linker-tools' ),
 				);
 			default:
+				// Contact, the legal pages, the forms and the tools: a summary
+				// would reword legal text, so the dock offers the range.
 				return array(
-					__( 'Ask Genie', 'linker-tools' ),
-					$de
-						? 'Ich brauche einen Hybridwechselrichter für ein Wohngebäude.'
-						: 'I need a hybrid inverter for a home.',
+					__( 'Which model fits my project?', 'linker-tools' ),
+					__( 'Which batteries work with my inverter?', 'linker-tools' ),
 				);
 		}
 	}
 
 	/**
-	 * Page context from the current query.
+	 * The page of the current request (PageContext, ticket #234).
 	 *
-	 * @return array{type: string, product_id?: int}
+	 * @return array{type: string, url: string, title: string, product_id?: int, post_id?: int, category_id?: int}
 	 */
 	public function page_context(): array {
-		if ( function_exists( 'is_product' ) && is_product() ) {
-			return array(
-				'type'       => 'product',
-				'product_id' => (int) get_queried_object_id(),
-			);
-		}
-		if ( function_exists( 'is_cart' ) && is_cart() ) {
-			return array( 'type' => 'draft' );
-		}
-		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-			return array( 'type' => 'account' );
-		}
-		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
-			return array( 'type' => 'category' );
-		}
-		return array( 'type' => 'other' );
+		return $this->pages->current();
 	}
 
 	/**

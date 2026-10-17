@@ -38,7 +38,7 @@
 只读 ability 匿名可调；写动作（加入 Lösungsentwurf、加入方案）不是 ability，由浏览器执行。文档检索 `linker/search-knowledge` 不是 WordPress ability：它是服务自己的工具（见 B 与规格 10「唯一检索源」，#257）。
 
 ### B. 服务（`services/genie`，FastAPI + Pydantic AI）
-- `POST /turn`（SSE 流）：`{conversation_id, messages[], locale, page_context:{type: category|product|draft|account|other, product_id?, draft_ids?}, user:{logged_in, partner?}}`。
+- `POST /turn`（SSE 流）：`{conversation_id, messages[], locale, page_context:{type: home|product|category|solution|blog|faq|draft|account|other, url?, title?, product_id?, post_id?, category_id?, draft_ids?}, user:{logged_in, partner?}}`（页面上下文见下文"页面感知"）。
 - Ability 调用的瞬态失败重试：5xx 与连接层异常（httpx `TransportError`）退避重试（3 次尝试、指数退避 0.25 s/0.5 s），仍失败抛 `AbilityError` 进既有兜底——失败写入轮次 meta（`fallback`/`failures`），不静默、不从服务层 500 逃逸（`abilities.py::AbilityClient._get`）。WordPress 侧的对象缓存（Redis）抖动是这一失败的主要历史来源：实例的 drop-in 现以 `WP_REDIS_GRACEFUL` 运行（规格 5、17），读失败降级为请求内缓存而非杀请求。
 - 文档检索：`linker/search-knowledge`（`{query, lang, product_ids?}`）在服务进程内读 VPS 上发布的 SQLite 索引（`linker_genie/knowledge.py`，规格 10「唯一检索源」）。路由的调用（`understand._run_calls`）和模型的工具调用走同一个 `knowledge.record`。模型读到的块文本里，每个数字都标成 `[nK=值]`；回答里写 `{fact:块ID.nK}`，水合时填入。答案依据的块由服务端加成文档链接（文档块，#233）。路由的文档检索失败时（编码或索引出错），这一轮直接进兜底，不会写出一个缺少所需文档的回答；同样不退回关键词。
 - Agent：工具 = A 的 ability（HTTP，服务令牌只用于 inquiry-status 的用户上下文透传，不持 WP 写权限）；每轮 ≤4 次工具调用；strict 结构化输出 `{language, blocks:[{type:'text', text, refs:[fact_id]} | {type:'ask', field, options[]} | {type:'cards', product_ids[]} | {type:'compare', product_ids[]} | {type:'action', name, args} | {type:'handoff', summary}]}`；文本不含数字，写 `{fact:ID}` 占位。
@@ -92,7 +92,7 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - 保留策略（`Retention`）：`linker_conversation` 无界增长的收口（issue #67，GAP-18）——匿名/无邮箱会话 90 天过期清理（90 为起步值，改它属策略决定），注册用户（有邮箱的账号）会话保留。WP cron daily 扫描（`init` 懒登记），过期者逐个交给 Action Scheduler 一次性 job，删除走 `wp_delete_post`，不裸 SQL；job 执行时重查规则（扫描与执行之间可能被登录认领）。WP_Query 无法按 `post_author = 0` 过滤（核心对 author=0 不建条件，t67 实测），故扫描按日期分批（批 100、至多 20 批/日）后在 PHP 侧套用唯一规则实现；批界是保留线程（每用户一条）不堵塞清理的保证。
 - Entries（**各面的现行入口形态，2026-10-16 按实例取证重述**——原条目把产品页与账户页的入口写成芯片组，那两个芯片组的挂载钩子在现行 LiveCanvas 模板下不触发）。同一个组件两副形态：页面芯片（`linker-genie-chip`，`[linker_genie_chips]` 或注册在 Woo 钩子上的 `*_chips()` 打印）与常驻 dock 的开场提示（mount 的 `data-prompts`，随页面类型给 2–3 条）。入口逐面：
   - **产品分类页与商城**（`archive_product.html` 与 `shop_page.html`，各 [linker_products_head] 的 `.wb-acts` 与 [linker_products_actions] 的移动条两处）：搜索框识别问句出现的 "Ask Genie" 芯片（`[linker_genie_ask]` + `[linker_genie_chips page_type="category"]`）。**分类面条目只此一枚**——业主 2026-10-13 再确认：线上那排里的 batch item numbers 与 nameplate photo 不补齐。
-  - **产品页**：工具行的 "Ask Genie" 按钮（`[linker_pdp_tools]` 的 `[data-pdp-ask]`，`pdp-ui.js` 广播 `linker-genie-ask`）与项目选择按钮（`[linker_pdp_project_choices]` 三阶段）；三条产品问句（"What pairs with this model?" / "Compare with…" / "Documents"）以 dock 的开场提示出现（`data-page-type="product"`），**不是页面芯片**——#174 重设计的既定入口形态，验收基准是原型变体 A 的 `.tools-row` 与 `.plan-with`。
+  - **产品页**：工具行的 "Ask Genie" 按钮（`[linker_pdp_tools]` 的 `[data-pdp-ask]`，`pdp-ui.js` 广播 `linker-genie-ask`）与项目选择按钮（`[linker_pdp_project_choices]` 三阶段）；三条点名本产品的问句（与预览卡同一组，见"页面感知"）以 dock 的开场提示出现（`data-page-type="product"`），**不是页面芯片**——#174 重设计的既定入口形态，验收基准是原型变体 A 的 `.tools-row` 与 `.plan-with`。
   - **Lösungsentwurf（购物车）**：`Entries::draft_chips()` 挂在 `woocommerce_before_cart`——`[woocommerce_cart]` 走 Woo 自己的 `cart.php`，该钩子真的触发：芯片 "Check my draft" / "Meinen Entwurf prüfen"、"What happens next?" / "Wie geht es weiter?"。
   - **空 Proforma 请求页**：登录门的 Genie pill（`LoginGate::genie_pill()`，`data-linker-genie-open`），#184 验收过的 `gates.html?gate=empty-proforma` 形态。
   - **账户页**：无页面芯片（账户面渲染自己的 overview，不触发 `woocommerce_account_dashboard`）；入口是常驻 dock——mount 带 `data-page-type="account"`，开场提示即 "Where is my Proforma?" / "Wo steht meine Proforma?" 与 "What happens next?"。**账户面条目只此一枚**。
@@ -104,7 +104,7 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 ### 主动预览卡（#249，实现目标第 4 条；业主选样式 A · 提示卡，`docs/prototypes/2026-10-17-preview-card/DECISION.md`）
 
 - **哪些页有卡**（`Linker\Tools\Genie\Preview::context()`，名单即全部）：首页（`is_front_page`，EN/DE）、产品页、产品分类页（`is_product_category`）、解决方案页（`/solution/` 枢纽页的子页，德语经 `pll_get_post` 找枢纽孪生页的子页；枢纽页本身不算）。其余页——Lösungsentwurf、Proforma 请求、账户与登录注册、联系、配置器、博客——没有卡，也不加载卡的脚本与样式。
-- **卡点名当前页面**：产品＝商品标题去掉括号里的描述（"SAJ H2-10K-T3 (10 kW …)" → "SAJ H2-10K-T3"）；分类＝分类名；解决方案＝页面标题（英文句中小写化，缩写与内部大写词保留）。名字取自页面已显示的数据；#234 合并后改用它的页面上下文，本票不扩展 PageContext。
+- **卡点名当前页面**：产品＝商品标题去掉括号里的描述（"SAJ H2-10K-T3 (10 kW …)" → "SAJ H2-10K-T3"）；分类＝分类名；解决方案＝页面标题（英文句中小写化，缩写与内部大写词保留）。名字与页面类型取自 #234 的页面上下文（`PageContext`，`Preview::card_page()`）；有卡的页面仍只是首页、产品页、产品分类页与解决方案枢纽的子页（枢纽本身、About、受众页虽是 `solution` 类型，没有卡）。
 - **首页的建议不写死商品**：问型号那一条取当前商品数据里最新发布的逆变器（产品列表的第一张卡也是最新商品；限逆变器分类，示例是主产品而不是电表或线缆），当前语言；商品下架即自动换。另两条不点名商品（"我的逆变器配什么电池"、SAJ 与 GoodWe 两个品牌的比较）。目标 4 里的"拍铭牌""上传清单"两条**暂不放**：Genie 现在还不能读铭牌照片与清单，等 #236 / #251 上线后补进 `Preview::copy()` 的首页分支（2–4 条上限内，文案走对抗评审；两张票上已留言）。
 - **组成**：PHP 在 `wp_footer` 打印隐藏的 `<aside data-linker-genie-peek>`（语义标记 + 类名，文案经 `.po`），`src/preview/`（构建入口 `preview`，不是 React 应用）决定何时显示；样式 `src/preview/preview.css` 随入口构建，只在有卡的页面加载（工具面的设计，同 dock 的 genie.css 先例）。无 JavaScript 时卡永不出现。
 - **规则**（`src/preview/rules.ts`，每个数字带来源注释，起步值见 `docs/research/2026-10-17-ai-assistants/INTL.md` §0.3、`CN.md` §5.2）：
@@ -118,6 +118,37 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - **样式**：颜色、圆角、阴影、焦点环全部取 `tokens.css` 的设计变量（WindPress 编译缓存，每页都加载），不另起一套十六进制颜色；尺寸与间距照原型。
 - **像素门**：卡与样式只在触发后可见，静止页面与线上逐像素一致——`docs/acceptance/2026-10-18/249/pixel/`（首页、产品、分类、解决方案，EN/DE，1440 与 390，截图工具预设 `linker-genie-peek-dismissed-until`）。
 - 测试：`src/preview/*.test.ts`（规则与控制器）、`tests/php/Unit/PreviewTest.php`、`tests/e2e/specs/genie-preview.spec.ts`（1440/390 × EN/DE，逐条规则，`page.clock` 快进）。验收与文案评审：`docs/acceptance/2026-10-18/249/`。
+
+## 页面感知（#234，实现目标第 3 条）
+
+**页面上下文**（`plugins/linker-tools/includes/Genie/PageContext.php`，一处实现，dock、预览卡、代理共用）：每轮带 `{type, url, title, product_id?, post_id?, category_id?, draft_ids?}`。八类页面 + `other`：
+| type | 哪些页 | ID |
+|---|---|---|
+| `home` | `is_front_page()`（EN/DE） | `post_id` |
+| `product` | `is_product()` | `product_id`＝英文商品（轮次里的商品 ID 一律英文，`pll_get_post`）；`post_id`＝本语言的商品文章 |
+| `category` | `is_product_category()`；商城 `/products/` 与其他商品分类法页没有 `category_id` | `category_id`（本语言的分类） |
+| `solution` | 英文路径首段是 `solution`、`about`、`for-epc`、`for-installer`、`services-support` 的页面及其子页（德语经英文孪生页判断；线上页面清单 2026-10-18） | `post_id` |
+| `blog` | 单篇博文（有 `post_id`）；博客首页、博客分类与标签（无） | `post_id` |
+| `faq` | 英文路径 `faq-download` 及其德语孪生页 | `post_id` |
+| `draft` | `is_cart()` | `draft_ids`：**代理**从访客自己的 Lösungsentwurf 读（`wc_load_cart()`，英文商品），从不采信浏览器 |
+| `account` | `is_account_page()` | — |
+| `other` | 其余（联系、法律页、Proforma 请求、工具页、搜索结果） | 页面有 `post_id` 时带上 |
+
+dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回；代理（`PageContext::sanitize`）只保留上表的键与类型，`type` 不在表内即 `other`。
+
+**页面内容来源**（`services/genie/src/linker_genie/page.py`，工具名 `linker/read-page`）：服务以匿名访客的身份 GET 该页自己的地址，取 `<main>` 的文字，隐藏元素与脚本、样式、SVG、下拉框不算；缓存 10 分钟。理由（2026-10-18 实测）：WP 原生 REST 的 `content.rendered` 不是访客看到的页面——FAQ 页的 REST 内容是带未渲染短代码的旧正文，而页面由 LiveCanvas 动态模板呈现 244 条 FAQ 与 159 份文档；商城、商品分类、Lösungsentwurf、账户、博客首页都没有正文。生成的内容包要在每次编辑与每次德语自动翻译后重建发布。读页面本身不需要 WordPress 端代码（AGENTS.md §5 原生优先）。德语页即德语内容（Polylang 的 `/de/` 路径）。
+- **取页安全**（PR #295 评审第 1 轮）：只取浏览器所给地址的路径（列表页——商品分类、带筛选或搜索的页——连同查询串；以 `post_id` 指名的单页去掉查询串），拼到本服务服务的站点 `GENIE_WP_URL` 上；`/wp-admin`、`/wp-json`、`/wp-content`、`/wp-includes`、`/wp-login.php`、`/xmlrpc.php`、feed 与任何带扩展名（`.html` 除外）的路径不请求；重定向只跟协议、主机、端口都相同的站内地址，至多 3 次；响应须是 `text/html`，流式读取、超过 2 000 000 字节即停（线上最大页面德语 FAQ 718 375 字节）；客户端不收也不发 cookie，每次读取都是匿名访客。
+- **价格与运费不从页面来**：匿名页面上的价格门（"Net price after partner sign-in"）与已批准合作伙伴看到的价格相反，运费属物流（业主 2026-10-05）。类名含 price 的元素（`pdp-price`、`sf-card-price`、Woo 的 `price`）、运费说明 `pdp-avail-note`、店面的 `data-card-price` / `data-card-gate`、任何写着金额的段落、以及只是价格门的短句都不进页面文字。价格只来自产品工具的 `pPRODUCTID.price`（随客户账号，#242）；问到运费、发货、运输的本页问题一律转团队（`route._LOGISTICS`，与 Jev 的判断无关）。
+- **只给模型与问题相关的部分**：页面切成段落（遇标题或 700 字符断开），总长 ≤12 000 字符时整页给出（首页 7 300、分类 8 400、住宅储能 10 400）；更长（FAQ 页 118 000）时给开头 1 500 字符 + 与问题词重合最多的段落，另附页面标题大纲（≤40 条）。数字按文档块的办法标成 `[nK=值]`，模型写 `{fact:page.nK}`、`refs` 写 `page`，水合填值（核验同文档块，`facts._from_page`）。页面文字是站点的数据、从不是给模型的指令（`page.RULE`，系统提示词各语言一处）。
+- **个人页面不匿名读**：Lösungsentwurf 的内容是它的商品（`draft_ids` → Store API `include`，商品可作卡片）；已登录客户的账户是他的询盘（路由调 inquiry-status）。访客的账户页即登录页，照常读。
+- **读不到**：`PageUnavailable` 记入轮次日志 `page_error` 与 `call_failures`，回答照常进行；提示词要求模型说明这次读不到页面，不得猜。
+- **日志**：读页结果整份记入轮次日志的工具调用（事后质检要看模型当时读到的文字），保存与删除跟随轮次日志（`turns.sqlite`）本身。
+
+**何时读**（`route.with_page`）：Jev 的 `about_this_page`（≥0.5，与 #233 判本页产品同一切线）为真时加读页面（Lösungsentwurf：read-page + 至多两对逆变器×电池的 check-compatibility；已登录账户：inquiry-status）。找人、公司物流、询盘状态三类路由不读页面；问本页能否转团队不由本票决定（#243），路由的 `no_handoff` 照旧。调用按固定优先级装进每轮 4 次：路由自己的调用（含主语的 get-product）→ 读页面 → 草稿的配对；文档路由留 1 次给模型的追加检索；装不下的记入轮次日志 `dropped_calls`，没查的配对写进提示，让回答说明还没查。路由的调用彼此独立，并行执行（读页面不再排在前面加时）。Jev 不确定或不可用时，模型可自行调用 `linker_read_page`（无参数）。每轮提示词都写明 `page=`、`page_title=`、`page_url=`，"这页 / 这款 / here / this one" 指本页或本页产品；产品页上没有型号词的问题照旧以本页商品为主语（#233）。Jev 的页面状态加上 `title`，类型取自 `schema.PageType`，新类型以词语命名（`home_page`、`solution_page`、`faq_and_documents_page`）。
+
+**开场建议**（`Entries::prompts`，2–3 条，点名本页）：有预览卡的页面（首页、产品、产品分类、解决方案）用预览卡同一组问题（`Preview::asks`，#249 的评审定稿）；其余：商城 "Which model fits my project?" + SAJ/GoodWe 比较；博文 "Summarize this post" + "Which products does this post apply to?"；博客首页 "Which of these posts cover hybrid inverters?" + "Summarize this page"；FAQ 与文档页 "Is there a datasheet for my model?" + "Which batteries work with my inverter?"（FAQ 的答案是站点文案、不作事实来源，AGENTS.md 2026-10-09）；枢纽、About、受众页 "Summarize this page" + "Which products fit my project?"；Lösungsentwurf 与账户沿用既有两条；其余页（联系、法律页、表单、工具）"Which model fits my project?" + "Which batteries work with my inverter?"（不对法律文本做摘要）。德语独立撰写在 `.po`，文案评审 `docs/acceptance/2026-10-18/234/copy-review.md`。
+
+评测：`services/genie/eval/page/`——`questions.json`（八类页面各两问 × EN/DE，含"这页说的……是什么意思"与产品页"这款"）、`pages.py`（不钉 Jev，真实页面、真实 deepseek-flash；已登录行用 `UserContext` 现签令牌）、`capture_pages.py`（重取 `tests/fixtures/pages/`）。结果：`docs/acceptance/2026-10-18/234/`。
 
 ## 理解层（#233，实现目标第 2 条）
 
@@ -154,6 +185,7 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - [ ] 视觉验收：四入口 + 常驻 × 状态 × EN/DE × 1440/390。
 
 ## 变更记录
+- 2026-10-18（#234 页面感知）：见"页面感知"一节。新增 `Linker\Tools\Genie\PageContext` 与服务模块 `page.py`（工具 `linker/read-page`）；`PageType` 加 `home`、`solution`、`blog`、`faq`，`PageContext` 加 `url`、`title`、`post_id`、`category_id`（只增不改）；代理按键清洗页面上下文并自己填 `draft_ids`；产品页 dock 的开场提示由三条不点名的问句换成预览卡那三条点名本产品的问句；预览卡改从页面上下文取类型与名字。验收 `docs/acceptance/2026-10-18/234/`。
 - 2026-10-18（#249 主动预览卡）：见 §C"主动预览卡"。新增 `Linker\Tools\Genie\Preview` 与构建入口 `preview`（`src/preview/`）；手机端的"圆钮标记"让 860 px 以下本来隐藏的圆钮在出标记时出现（目标 4 的裁定变更，静止状态外观不变）。评审第 1 轮（PR #287）：每次访问改为跨标签页（localStorage + 30 分钟无活动）、解决方案页锚点改为 hero 之后的第一个区块、颜色改用设计变量、首页建议不写死商品、像素门入档；手机标记、对话进行中、Esc＝×、首页暂不放拍铭牌与上传清单四条裁定写入本节。验收 `docs/acceptance/2026-10-18/249/`。
 - 2026-10-17（#233 理解层）：见上文"理解层"一节。新增 `lexicon` / `storeapi` / `jev` / `route` / `understand` 五个模块与 `document` 块（`DocumentBlock`，壳 `DocumentLink.tsx`）；轮次日志加 `understanding` 列（旧库自动补列），SSE meta 加 `route` / `intent` / `jev_error`。证据 `docs/acceptance/2026-10-17/233/`。
 - 2026-10-16（入面取证，欠账 P1）：§C 的 Entries 条目按实例实测重述（原文把产品页与账户页的入口写成芯片组）。取证（snapshot 实例 `nbatch` + 本检出代码，逐面读 HTML）：分类/商城 2 枚 `linker-genie-chip`（短代码挂载）；产品页 `[data-pdp-ask]` 1 枚、无芯片，dock mount 带 `data-page-type="product"` 与三条产品问句的 `data-prompts`；购物车有货态 2 枚 `data-page-type="draft"` 芯片（`woocommerce_before_cart` 经 `[woocommerce_cart]` 的 Woo 模板真的触发）；空 Proforma 请求页 1 枚 `linker-gate-genie-pill`；账户页 0 芯片、dock mount 带 `data-page-type="account"` 与两条账户问句的 `data-prompts`。逐面对照验收过的设计（#174 原型变体 A 只有 `.tools-row` 与 `.plan-with`，无芯片组；#184 原型的 Genie pill 只在 `gates.html?gate=empty-proforma`，工作台各页零 Genie）：**每个面的既定入口都已挂着**，无需回挂代码；`Entries::product_chips/account_chips` 与其 Woo 钩子留作可挂载部件（`[linker_genie_chips page_type="…"]` 可显式挂载），删它们属另一裁定。判分行的入口随之更正（`genie-panel.md` B1–B3、B6、B7）。

@@ -120,6 +120,7 @@ function config(): GenieConfig {
 		locale: 'en',
 		pageType: 'other',
 		productId: 0,
+		page: { type: 'other' },
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
 		conversationsUrl: '/wp-json/linker-ai/v1/genie/conversations',

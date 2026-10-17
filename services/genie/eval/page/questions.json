@@ -1,0 +1,748 @@
+[
+ {
+  "id": "home-meaning",
+  "lang": "en",
+  "question": "What does this page mean by peak shaving?",
+  "page": {
+   "type": "home",
+   "url": "/",
+   "title": "Home",
+   "post_id": 13
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)demand"
+   ]
+  }
+ },
+ {
+  "id": "home-scales",
+  "lang": "en",
+  "question": "Which project sizes does this page say Linker supplies?",
+  "page": {
+   "type": "home",
+   "url": "/",
+   "title": "Home",
+   "post_id": 13
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)residential",
+    "(?i)commercial",
+    "(?i)utility"
+   ]
+  }
+ },
+ {
+  "id": "home-meaning",
+  "lang": "de",
+  "question": "Was meint diese Seite mit Lastspitzenkappung?",
+  "page": {
+   "type": "home",
+   "url": "/de/",
+   "title": "Startseite",
+   "post_id": 6913
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)gewerb|Lastspitze|Spitzenlast"
+   ]
+  }
+ },
+ {
+  "id": "home-scales",
+  "lang": "de",
+  "question": "Für welche Projektgrößen liefert Linker laut dieser Seite?",
+  "page": {
+   "type": "home",
+   "url": "/de/",
+   "title": "Startseite",
+   "post_id": 6913
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)heim|wohn",
+    "(?i)gewerb",
+    "(?i)gro(ß|ss)speicher|netz"
+   ]
+  }
+ },
+ {
+  "id": "product-this-one",
+  "lang": "en",
+  "question": "How many MPPTs does this one have?",
+  "page": {
+   "type": "product",
+   "url": "/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+   "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+   "product_id": 6528,
+   "post_id": 6528
+  },
+  "expect": {
+   "all": [
+    "\\b4\\b",
+    "(?i)MPPT"
+   ],
+   "none": [
+    "(?i)which (model|product)"
+   ]
+  }
+ },
+ {
+  "id": "product-meaning",
+  "lang": "en",
+  "question": "What does this page mean by internal bypass?",
+  "page": {
+   "type": "product",
+   "url": "/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+   "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+   "product_id": 6528,
+   "post_id": 6528
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "all": [
+    "(?i)bypass",
+    "(?i)grid"
+   ]
+  }
+ },
+ {
+  "id": "product-this-one",
+  "lang": "de",
+  "question": "Wie viele MPPT hat dieses Gerät?",
+  "page": {
+   "type": "product",
+   "url": "/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+   "title": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+   "product_id": 6528,
+   "post_id": 6567
+  },
+  "expect": {
+   "all": [
+    "\\b4\\b|vier",
+    "(?i)MPPT"
+   ],
+   "none": [
+    "(?i)welches (modell|produkt)"
+   ]
+  }
+ },
+ {
+  "id": "product-meaning",
+  "lang": "de",
+  "question": "Was bedeutet auf dieser Seite „interner Bypass“?",
+  "page": {
+   "type": "product",
+   "url": "/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+   "title": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+   "product_id": 6528,
+   "post_id": 6567
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "all": [
+    "(?i)bypass",
+    "(?i)netz"
+   ]
+  }
+ },
+ {
+  "id": "category-meaning",
+  "lang": "en",
+  "question": "What does \"MPPT trackers\" mean on this page?",
+  "page": {
+   "type": "category",
+   "url": "/product-category/inverters/",
+   "title": "Inverters",
+   "category_id": 449
+  },
+  "expect": {
+   "all": [
+    "(?i)maximum power point|MPPT",
+    "(?i)PV|solar|string|module"
+   ]
+  }
+ },
+ {
+  "id": "category-brands",
+  "lang": "en",
+  "question": "Which brands are listed on this page?",
+  "page": {
+   "type": "category",
+   "url": "/product-category/inverters/",
+   "title": "Inverters",
+   "category_id": 449
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "all": [
+    "GoodWe",
+    "SAJ",
+    "EcoFlow"
+   ]
+  }
+ },
+ {
+  "id": "category-meaning",
+  "lang": "de",
+  "question": "Was bedeutet „MPPT-Tracker“ auf dieser Seite?",
+  "page": {
+   "type": "category",
+   "url": "/de/produkt-kategorie/wechselrichter/",
+   "title": "Wechselrichter",
+   "category_id": 610
+  },
+  "expect": {
+   "all": [
+    "(?i)maximum power point|MPP",
+    "(?i)PV|Solar|String|Modul"
+   ]
+  }
+ },
+ {
+  "id": "category-brands",
+  "lang": "de",
+  "question": "Welche Marken stehen auf dieser Seite?",
+  "page": {
+   "type": "category",
+   "url": "/de/produkt-kategorie/wechselrichter/",
+   "title": "Wechselrichter",
+   "category_id": 610
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "all": [
+    "GoodWe",
+    "SAJ",
+    "EcoFlow"
+   ]
+  }
+ },
+ {
+  "id": "solution-meaning",
+  "lang": "en",
+  "question": "What does this page mean by peak shaving?",
+  "page": {
+   "type": "solution",
+   "url": "/solution/commercial-storage/",
+   "title": "Commercial Storage",
+   "post_id": 792
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)peak|demand"
+   ]
+  }
+ },
+ {
+  "id": "solution-brands",
+  "lang": "en",
+  "question": "Which brands does this page offer for commercial storage?",
+  "page": {
+   "type": "solution",
+   "url": "/solution/commercial-storage/",
+   "title": "Commercial Storage",
+   "post_id": 792
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "all": [
+    "GoodWe",
+    "SAJ",
+    "Pylontech"
+   ]
+  }
+ },
+ {
+  "id": "solution-meaning",
+  "lang": "de",
+  "question": "Was meint diese Seite mit Lastspitzenkappung?",
+  "page": {
+   "type": "solution",
+   "url": "/de/loesung/gewerbespeicher/",
+   "title": "Gewerblicher Speicher",
+   "post_id": 6921
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)spitze|last"
+   ]
+  }
+ },
+ {
+  "id": "solution-brands",
+  "lang": "de",
+  "question": "Welche Marken bietet diese Seite für gewerbliche Speicher an?",
+  "page": {
+   "type": "solution",
+   "url": "/de/loesung/gewerbespeicher/",
+   "title": "Gewerblicher Speicher",
+   "post_id": 6921
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "all": [
+    "GoodWe",
+    "SAJ",
+    "Pylontech"
+   ]
+  }
+ },
+ {
+  "id": "blog-meaning",
+  "lang": "en",
+  "question": "What does this post mean by AC coupling?",
+  "page": {
+   "type": "blog",
+   "url": "/hybrid-inverter-vs-ac-coupled-storage/",
+   "title": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup",
+   "post_id": 551
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)battery inverter|separate",
+    "(?i)existing|retrofit"
+   ]
+  }
+ },
+ {
+  "id": "blog-when-hybrid",
+  "lang": "en",
+  "question": "According to this post, when should I choose a hybrid inverter?",
+  "page": {
+   "type": "blog",
+   "url": "/hybrid-inverter-vs-ac-coupled-storage/",
+   "title": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup",
+   "post_id": 551
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)new"
+   ]
+  }
+ },
+ {
+  "id": "blog-meaning",
+  "lang": "de",
+  "question": "Was meint dieser Beitrag mit AC-gekoppelt?",
+  "page": {
+   "type": "blog",
+   "url": "/de/hybridwechselrichter-vs-ac-speicher/",
+   "title": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung",
+   "post_id": 6883
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)Batteriewechselrichter|getrennt|separat|eigene",
+    "(?i)bestehend|nachrüst"
+   ]
+  }
+ },
+ {
+  "id": "blog-when-hybrid",
+  "lang": "de",
+  "question": "Wann sollte ich laut diesem Beitrag einen Hybrid-Wechselrichter wählen?",
+  "page": {
+   "type": "blog",
+   "url": "/de/hybridwechselrichter-vs-ac-speicher/",
+   "title": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung",
+   "post_id": 6883
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)neu"
+   ]
+  }
+ },
+ {
+  "id": "faq-meaning",
+  "lang": "en",
+  "question": "What does this page say about compatibility lists?",
+  "page": {
+   "type": "faq",
+   "url": "/faq-download/",
+   "title": "FAQ Download",
+   "post_id": 932
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)pairing|combin|check"
+   ]
+  }
+ },
+ {
+  "id": "faq-brands",
+  "lang": "en",
+  "question": "Can I combine different brands in one order, according to this page?",
+  "page": {
+   "type": "faq",
+   "url": "/faq-download/",
+   "title": "FAQ Download",
+   "post_id": 932
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)yes|can be combined|combine"
+   ]
+  }
+ },
+ {
+  "id": "faq-meaning",
+  "lang": "de",
+  "question": "Was sagt diese Seite über Kompatibilitätslisten?",
+  "page": {
+   "type": "faq",
+   "url": "/de/faq-download/",
+   "title": "FAQ-Download",
+   "post_id": 6863
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)prüfen|Kombination|kombinier"
+   ]
+  }
+ },
+ {
+  "id": "faq-brands",
+  "lang": "de",
+  "question": "Kann ich laut dieser Seite verschiedene Marken in einer Bestellung kombinieren?",
+  "page": {
+   "type": "faq",
+   "url": "/de/faq-download/",
+   "title": "FAQ-Download",
+   "post_id": 6863
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)ja|kombiniert|kombinieren"
+   ]
+  }
+ },
+ {
+  "id": "draft-check",
+  "lang": "en",
+  "question": "Check my draft",
+  "page": {
+   "type": "draft",
+   "url": "/cart/",
+   "title": "Solution draft",
+   "draft_ids": [
+    6528,
+    6520
+   ]
+  },
+  "logged_in": true,
+  "expect": {
+   "reads": "linker/read-page",
+   "shows": [
+    6528,
+    6520
+   ],
+   "all": [
+    "(?i)released|compatible|work together|pair"
+   ]
+  }
+ },
+ {
+  "id": "draft-next",
+  "lang": "en",
+  "question": "What happens next?",
+  "page": {
+   "type": "draft",
+   "url": "/cart/",
+   "title": "Solution draft",
+   "draft_ids": [
+    6528,
+    6520
+   ]
+  },
+  "logged_in": true,
+  "expect": {
+   "all": [
+    "(?i)Proforma"
+   ],
+   "none": [
+    "(?i)sales@"
+   ]
+  }
+ },
+ {
+  "id": "draft-check",
+  "lang": "de",
+  "question": "Meinen Entwurf prüfen",
+  "page": {
+   "type": "draft",
+   "url": "/de/warenkorb/",
+   "title": "Lösungsentwurf",
+   "draft_ids": [
+    6528,
+    6520
+   ]
+  },
+  "logged_in": true,
+  "expect": {
+   "reads": "linker/read-page",
+   "shows": [
+    6528,
+    6520
+   ],
+   "all": [
+    "(?i)freigegeben|Freigabe|kompatibel|passt|zusammen"
+   ]
+  }
+ },
+ {
+  "id": "draft-next",
+  "lang": "de",
+  "question": "Wie geht es weiter?",
+  "page": {
+   "type": "draft",
+   "url": "/de/warenkorb/",
+   "title": "Lösungsentwurf",
+   "draft_ids": [
+    6528,
+    6520
+   ]
+  },
+  "logged_in": true,
+  "expect": {
+   "all": [
+    "(?i)Proforma"
+   ],
+   "none": [
+    "(?i)sales@"
+   ]
+  }
+ },
+ {
+  "id": "account-statuses",
+  "lang": "en",
+  "question": "What do the statuses on this page mean for my inquiries?",
+  "page": {
+   "type": "account",
+   "url": "/my-account/",
+   "title": "My account"
+  },
+  "logged_in": true,
+  "expect": {
+   "reads": "linker/inquiry-status",
+   "all": [
+    "(?i)cancel"
+   ]
+  }
+ },
+ {
+  "id": "account-guest",
+  "lang": "en",
+  "question": "What can I do on this page?",
+  "page": {
+   "type": "account",
+   "url": "/my-account/",
+   "title": "My account"
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)sign[- ]?in|log ?in",
+    "(?i)inquir|document|price"
+   ]
+  }
+ },
+ {
+  "id": "account-statuses",
+  "lang": "de",
+  "question": "Was bedeuten die Status meiner Anfragen auf dieser Seite?",
+  "page": {
+   "type": "account",
+   "url": "/de/mein-konto/",
+   "title": "Mein Konto"
+  },
+  "logged_in": true,
+  "expect": {
+   "reads": "linker/inquiry-status",
+   "all": [
+    "(?i)storniert"
+   ]
+  }
+ },
+ {
+  "id": "account-guest",
+  "lang": "de",
+  "question": "Was kann ich auf dieser Seite tun?",
+  "page": {
+   "type": "account",
+   "url": "/de/mein-konto/",
+   "title": "Mein Konto"
+  },
+  "expect": {
+   "reads": "linker/read-page",
+   "cites_page": true,
+   "all": [
+    "(?i)anmeld|melden|einlogg",
+    "(?i)anfrage|dokument|preis|unterlagen"
+   ]
+  }
+ },
+ {
+  "id": "draft-many-pairs",
+  "lang": "en",
+  "question": "Check my draft",
+  "page": {
+   "type": "draft",
+   "url": "/cart/",
+   "title": "Solution draft",
+   "draft_ids": [
+    6528,
+    6510,
+    6520,
+    6522
+   ]
+  },
+  "logged_in": true,
+  "expect": {
+   "reads": "linker/read-page",
+   "shows": [
+    6528,
+    6520
+   ],
+   "all": [
+    "(?i)released|compatible|pair",
+    "(?i)not (yet )?(been )?checked|check (them|those|the remaining)|remaining"
+   ]
+  }
+ },
+ {
+  "id": "draft-many-pairs",
+  "lang": "de",
+  "question": "Meinen Entwurf prüfen",
+  "page": {
+   "type": "draft",
+   "url": "/de/warenkorb/",
+   "title": "Lösungsentwurf",
+   "draft_ids": [
+    6528,
+    6510,
+    6520,
+    6522
+   ]
+  },
+  "logged_in": true,
+  "expect": {
+   "reads": "linker/read-page",
+   "shows": [
+    6528,
+    6520
+   ],
+   "all": [
+    "(?i)freigegeben|Freigabe|kompatibel",
+    "(?i)nicht (ge)?prüf|noch nicht|weiteren? (Paare|Kombination)|übrigen"
+   ]
+  }
+ },
+ {
+  "id": "product-delivery",
+  "lang": "en",
+  "question": "What does delivery to Germany cost according to this page?",
+  "page": {
+   "type": "product",
+   "url": "/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+   "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+   "product_id": 6528,
+   "post_id": 6528
+  },
+  "expect": {
+   "handoff": true,
+   "none": [
+    "39",
+    "90",
+    "€"
+   ]
+  }
+ },
+ {
+  "id": "product-delivery",
+  "lang": "de",
+  "question": "Was kostet laut dieser Seite die Lieferung nach Deutschland?",
+  "page": {
+   "type": "product",
+   "url": "/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+   "title": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+   "product_id": 6528,
+   "post_id": 6567
+  },
+  "expect": {
+   "handoff": true,
+   "none": [
+    "39",
+    "90",
+    "€"
+   ]
+  }
+ },
+ {
+  "id": "product-price",
+  "lang": "en",
+  "question": "What is the price on this page?",
+  "page": {
+   "type": "product",
+   "url": "/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+   "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+   "product_id": 6528,
+   "post_id": 6528
+  },
+  "expect": {
+   "none": [
+    "€",
+    "(?i)net price after"
+   ]
+  }
+ },
+ {
+  "id": "product-price",
+  "lang": "de",
+  "question": "Welcher Preis steht auf dieser Seite?",
+  "page": {
+   "type": "product",
+   "url": "/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+   "title": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+   "product_id": 6528,
+   "post_id": 6567
+  },
+  "expect": {
+   "none": [
+    "€",
+    "(?i)Nettopreis nach"
+   ]
+  }
+ }
+]
