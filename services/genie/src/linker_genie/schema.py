@@ -72,13 +72,14 @@ PriceReason = Literal["login", "pending", "restricted", "project", "unpriced"]
 class CardPrice(Strict):
     """A product card's price line, filled by the service, never by the model (#242).
 
-    `text` is the price exactly as the product page prints it for this customer
-    (an approved partner account); otherwise `reason` says why there is none, and
-    the shell words it as the product page does.
+    `text` is what the customer's own product page prints where the price stands,
+    in the turn's language: the price for an approved partner account, otherwise
+    the page's sentence, with `reason` saying why there is no price. The shell
+    only renders it.
     """
 
     product_id: int
-    text: str | None = None
+    text: str
     reason: PriceReason | None = None
 
 
@@ -193,8 +194,9 @@ class UserContext(Strict):
         default=None,
         description=(
             "The signed-in customer's identity token, minted by the shell and "
-            "valid for 120 seconds (nothing marks it used; the window is the "
-            "whole of its life). The service sends it back on the abilities that "
+            "valid for UserContext::TTL seconds (plugins/linker-tools; nothing "
+            "marks it used, the window is the whole of its life). The service "
+            "sends it back on the abilities that "
             "answer for this customer (abilities.USER_CONTEXT_ABILITIES: the "
             "inquiry list and the product abilities, whose prices follow the "
             "account) and never stores or logs it."

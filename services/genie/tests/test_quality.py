@@ -452,30 +452,28 @@ def _priced(*, visible: bool, approved: bool) -> LoggedTurn:
     return replace(turn, tool_calls=calls, approved=approved)
 
 
-def test_the_judges_read_the_account_and_the_rule_needs_both_gates() -> None:
+def test_the_judges_read_the_account_and_no_price_belongs_in_the_text() -> None:
     assert build(_priced(visible=True, approved=True)).state["account"] == {
         "approved": True
     }
     assert build(_priced(visible=True, approved=False)).state["account"] == {
         "approved": False
     }
-    rule = _sentence(REMIT, "may state a product price")
-    assert "`price_visible` true" in rule and "`account.approved` is true" in rule
-    other = _sentence(REMIT, "`account` is missing")
-    assert "is false" in other and "states no price" in other
-    # Telling an unapproved customer how to get a price is not a price.
+    rule = _sentence(REMIT, "never states a price")
+    assert "for any account" in rule
+    assert "only on the" in _sentence(REMIT, "the price appears only")
+    # Telling a customer where the price is, or how to get one, is not a price.
     assert "inquiry" in _sentence(REMIT, "Proforma request")
+    assert "card shows the price" in REMIT
 
 
-def test_a_visible_price_for_an_approved_account_passes() -> None:
-    assert citations.verify(_priced(visible=True, approved=True)) == []
-
-
-def test_a_visible_price_for_an_account_not_approved_is_flagged() -> None:
-    # The tool showed the price, but the account is a guest, pending or
-    # restricted one (or a turn logged before #242, when the shell sent none).
-    assert citations.verify(_priced(visible=True, approved=False)) == [
-        "states the price of product 4109, and the account is not approved"
+@pytest.mark.parametrize("approved", [True, False])
+def test_a_visible_price_in_the_text_is_flagged_for_any_account(approved: bool) -> None:
+    # The tool showed the price, but the text is not where it goes (#242): the
+    # product card carries it.
+    assert citations.verify(_priced(visible=True, approved=approved)) == [
+        "states the price of product 4109 in the text; prices appear only on the "
+        "product card"
     ]
 
 

@@ -1,9 +1,9 @@
 /**
  * Prices follow the account (#242, docs/specs/13-genie.md 目标 8): the card
- * shows the price line the service filled from the customer's own product
+ * renders the price line the service filled from the customer's own product
  * ability — the price as the product page prints it for an approved partner
- * account, the product page's own sentence for everybody else — and nothing
- * the model wrote.
+ * account, the product page's own sentence for everybody else — word for word;
+ * it holds no sentence of its own.
  */
 
 /**
@@ -72,6 +72,10 @@ function config(): GenieConfig {
 		accountUrl: '/my-account/',
 		workspaceUrl: '/genie/',
 		prompts: [],
+		signedIn: false,
+		retentionDays: 90,
+		mailStarted: '1800000000',
+		mailStartedNonce: 'stamp-nonce',
 	};
 }
 
@@ -104,18 +108,20 @@ async function cardWith( prices: CardPrice[] | null ) {
 	return screen.findByRole( 'article' );
 }
 
-// The product page's own words (linker-commerce ProductView, PriceDisplay),
-// one per reason the ability gives.
+// What the service sends: the product page's own line for the account, in the
+// page's language (linker-commerce ProductView), and why there is no price.
 test.each( [
 	[ 'login', 'Net price after partner sign-in' ],
-	[ 'pending', 'Prices after approval' ],
+	[ 'pending', 'Preise nach Freigabe' ],
 	[ 'restricted', 'Not available for your account' ],
-	[ 'project', 'Quoted per project' ],
+	[ 'project', 'Angebot pro Projekt' ],
 	[ 'unpriced', 'Price on request' ],
 ] as const )(
-	'a card without a price says what the product page says (%s)',
+	'a card without a price shows the line the service sent (%s)',
 	async ( reason, sentence ) => {
-		const card = await cardWith( [ { product_id: 4107, reason } ] );
+		const card = await cardWith( [
+			{ product_id: 4107, text: sentence, reason },
+		] );
 		const line = within( card ).getByText( sentence );
 		expect( line ).toHaveClass( 'linker-card__price--note' );
 		expect( within( card ).queryByText( /€/ ) ).toBeNull();
@@ -123,8 +129,8 @@ test.each( [
 );
 
 test( 'an approved account reads the price as the product page prints it', async () => {
-	const card = await cardWith( [ { product_id: 4107, text: '€1,680.00' } ] );
-	expect( within( card ).getByText( '€1,680.00' ) ).toHaveClass(
+	const card = await cardWith( [ { product_id: 4107, text: '1.680,00 €' } ] );
+	expect( within( card ).getByText( '1.680,00 €' ) ).toHaveClass(
 		'linker-card__price--net'
 	);
 } );

@@ -34,12 +34,14 @@ Beside the five, the checks of the understanding layer (#233):
    tools; no URL stands in the text, neither written nor through a placeholder.
 7. The domain words of AGENTS.md §3 are kept: no article, catalogue, cart or
    basket (Artikel, Katalog, Warenkorb) in the model's text.
-
-And the price rule (#242): no text writes a price, not even through a price
-placeholder; the product card carries it (prices.fill).
 8. The route's requirements (route.py): a product word's search shows its cards; a
    sizing turn carries the configurator action and no cards; a product, document,
    pairing, comparison or sizing turn is never the team handoff.
+
+And the price rule (#242):
+
+9. No text writes a price, not even through a price placeholder; the product card
+   carries it (prices.fill).
 
 Registered reading of guarantee 2: "推荐 ⊆ search-products 的 qualified"
 means qualified by this turn's tool results. That is search-products'
@@ -182,7 +184,7 @@ def _documents(output: TurnOutput, facts: TurnFacts) -> list[str]:
 
 
 def _no_price_in_text(output: TurnOutput) -> list[str]:
-    """The price is the card's (#242): the service fills it there from the
+    """Check 9. The price is the card's (#242): the service fills it there from the
     customer's own tool result, so no text names it, not even as a placeholder."""
     return [
         f"placeholder {fact_id!r} writes a price; the product card shows it, "

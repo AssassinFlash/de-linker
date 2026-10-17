@@ -11,6 +11,7 @@ product no tool of the turn priced is read with get-product, as the customer.
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 from typing import Any
 
@@ -40,12 +41,18 @@ FIXTURE = json.loads(
 )
 STATES = ("approved", "pending", "restricted", "guest")
 # The product page's price line for each account, read from the same instance
-# (ProductView: €1,680.00 on the English page, 1.680,00 € on the German one).
+# (ProductView::price_html: the price, or the page's sentence in its place).
 EXPECTED = {
     "approved": CardPrice(product_id=4107, text="€1,680.00"),
-    "pending": CardPrice(product_id=4107, reason="pending"),
-    "restricted": CardPrice(product_id=4107, reason="restricted"),
-    "guest": CardPrice(product_id=4107, reason="login"),
+    "pending": CardPrice(
+        product_id=4107, text="Prices after approval", reason="pending"
+    ),
+    "restricted": CardPrice(
+        product_id=4107, text="Not available for your account", reason="restricted"
+    ),
+    "guest": CardPrice(
+        product_id=4107, text="Net price after partner sign-in", reason="login"
+    ),
 }
 
 
@@ -98,33 +105,40 @@ def test_a_german_card_shows_the_german_price_line() -> None:
 
 
 @pytest.mark.parametrize(
-    ("state", "reason"),
+    ("state", "reason", "line"),
     [
-        ("approved", "project"),
-        ("pending", "pending"),
-        ("restricted", "restricted"),
-        ("guest", "login"),
+        ("approved", "project", "Angebot pro Projekt"),
+        ("pending", "pending", "Preise nach Freigabe"),
+        ("restricted", "restricted", "Für Ihr Konto nicht verfügbar"),
+        ("guest", "login", "Nettopreis nach Partner-Anmeldung"),
     ],
 )
 def test_a_product_quoted_per_project_has_no_price_for_anybody(
-    state: str, reason: PriceReason
+    state: str, reason: PriceReason, line: str
 ) -> None:
-    facts = collect("linker/get-product", FIXTURE[state]["product_1957_en"])
+    """In German too: the line is the German product page's sentence."""
+    facts = collect("linker/get-product", FIXTURE[state]["product_1957_de"], "de")
 
-    result = run(_request(state=state), lambda _r, _x: (_answer(1957), facts))
+    result = run(_request("de", state), lambda _r, _x: (_answer(1957), facts))
 
-    assert _cards(result.output).prices == [CardPrice(product_id=1957, reason=reason)]
+    assert _cards(result.output).prices == [
+        CardPrice(product_id=1957, text=line, reason=reason)
+    ]
 
 
 class Site:
     """The abilities endpoint of the fixture: answers get-product as the account
-    whose token the request carries, and records what it was sent."""
+    whose token the request carries, and records what it was sent. `delay`
+    holds each answer back that many seconds (a slow ability)."""
 
-    def __init__(self) -> None:
+    def __init__(self, delay: float = 0.0) -> None:
         self.requests: list[httpx.Request] = []
+        self.delay = delay
 
     def handler(self, request: httpx.Request) -> httpx.Response:
         self.requests.append(request)
+        if self.delay:
+            time.sleep(self.delay)
         token = request.headers.get(USER_CONTEXT_HEADER, "")
         state = token.removeprefix("token-") if token else "guest"
         product = request.url.params.get("input[product_id]")
@@ -149,7 +163,7 @@ def test_a_card_no_tool_priced_is_read_as_the_customer(state: str) -> None:
     result = run(
         request,
         lambda _r, _x: (_answer(4107), known),
-        commerce=commerce_lookup(client, request),
+        commerce=commerce_lookup(client, request, time.monotonic() + 30),
     )
 
     assert _cards(result.output).prices == [EXPECTED[state]]
@@ -158,6 +172,83 @@ def test_a_card_no_tool_priced_is_read_as_the_customer(state: str) -> None:
     assert [call["name"] for call in result.facts.tool_calls] == ["linker/get-product"]
     logged = json.dumps(result.facts.tool_calls)
     assert "token-" not in logged
+
+
+def test_the_lookups_run_side_by_side() -> None:
+    """Three cards no tool priced cost one ability's time, not three."""
+    site = Site(delay=0.3)
+    client = AbilityClient(
+        "http://wp.test", transport=httpx.MockTransport(site.handler)
+    )
+    known = TurnFacts(product_ids={4107, 1957})
+    request = _request(state="approved")
+    started = time.monotonic()
+
+    result = run(
+        request,
+        lambda _r, _x: (_answer(4107, 1957), known),
+        commerce=commerce_lookup(client, request, started + 30),
+    )
+
+    assert time.monotonic() - started < 0.55
+    assert len(site.requests) == 2
+    assert [line.product_id for line in _cards(result.output).prices or []] == [
+        4107,
+        1957,
+    ]
+
+
+@pytest.mark.parametrize(
+    ("state", "line"),
+    [
+        ("guest", EXPECTED["guest"]),
+        ("approved", None),
+    ],
+)
+def test_a_slow_ability_cannot_push_the_turn_past_the_deadline(
+    state: str, line: CardPrice | None
+) -> None:
+    """The lookups end at the deadline whatever the ability does; the missed
+    call is reported, not logged as a result. A card left without its own
+    commerce object reads the account's line when the account decides it (a
+    guest, a pending or a restricted account read the same line on every
+    product page, here taken from the other card); an approved account's line
+    depends on the product, so that card shows none."""
+    site = Site(delay=2.0)
+    client = AbilityClient(
+        "http://wp.test", transport=httpx.MockTransport(site.handler)
+    )
+    known = collect("linker/search-products", FIXTURE[state]["search_h2_en"])
+    # A battery the search's pairings released: a card without a commerce object.
+    known.product_ids.add(1957)
+    known.qualified_ids.add(1957)
+    request = _request(state=state)
+    started = time.monotonic()
+
+    result = run(
+        request,
+        lambda _r, _x: (_answer(4107, 1957), known),
+        commerce=commerce_lookup(client, request, started + 0.3),
+    )
+
+    assert time.monotonic() - started < 1.0
+    assert result.grounded
+    assert result.price_failures == (
+        "linker/get-product 1957: no answer before the turn's deadline",
+    )
+    prices = _cards(result.output).prices or []
+    assert prices[0] == EXPECTED[state]
+    expected_1957 = (
+        None if line is None else line.model_copy(update={"product_id": 1957})
+    )
+    assert (prices[1] if len(prices) > 1 else None) == expected_1957
+    assert all(call["name"] != "linker/get-product" for call in result.facts.tool_calls)
+
+
+def test_the_deadline_keeps_the_turn_inside_the_shells_timeout() -> None:
+    from linker_genie.prices import LOOKUP_DEADLINE, SHELL_TIMEOUT
+
+    assert 0 < LOOKUP_DEADLINE < SHELL_TIMEOUT
 
 
 def test_the_model_never_writes_a_price() -> None:

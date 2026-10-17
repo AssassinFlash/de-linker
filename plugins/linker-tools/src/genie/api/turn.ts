@@ -31,12 +31,13 @@ export interface AskBlock {
 
 /**
  * A card's price line, filled by the service from the customer's own product
- * ability (#242): `text` is the price as the product page prints it for an
- * approved partner account; otherwise `reason` says why there is none.
+ * ability (#242): `text` is what the product page prints where the price
+ * stands, in the page's language (the price for an approved partner account,
+ * otherwise the page's sentence, with `reason` saying why).
  */
 export interface CardPrice {
 	product_id: number;
-	text?: string | null;
+	text: string;
 	reason?: 'login' | 'pending' | 'restricted' | 'project' | 'unpriced' | null;
 }
 

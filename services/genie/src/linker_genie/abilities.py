@@ -18,13 +18,15 @@ the turn's meta, never swallowed.
 
 The customer's identity rides only where the answer depends on the customer: a
 signed-in customer's turn carries the shell's short-lived identity token (valid
-120 seconds after it is minted; the browser never sees it, the service never
-stores or logs it), and the service sends it as `USER_CONTEXT_HEADER` on the
-abilities in `USER_CONTEXT_ABILITIES` — the customer's own inquiry list, and the
-product abilities whose prices follow the account (#242: CommerceState shows an
-approved account its net prices and nobody else). WordPress accepts it on
-`/wp-abilities/` requests only, verifies the signature and the expiry, and
-answers as that customer; an expired or forged token answers as a guest.
+`UserContext::TTL` seconds after it is minted, plugins/linker-tools; the browser
+never sees it, the service never stores or logs it), and the service sends it as
+`USER_CONTEXT_HEADER` on the abilities in `USER_CONTEXT_ABILITIES` — the
+customer's own inquiry list, and the product abilities whose prices follow the
+account (#242: CommerceState shows an approved account its net prices and nobody
+else). WordPress signs the request in only while it dispatches one of those same
+three abilities (`UserContext::ABILITIES`, matched against the parsed route),
+after checking the signature and the expiry; an expired or forged token, or any
+other route, answers as a guest.
 """
 
 from __future__ import annotations

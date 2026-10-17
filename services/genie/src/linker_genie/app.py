@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -22,7 +23,7 @@ from linker_genie.abilities import AbilityClient
 from linker_genie.agent import make_generate, model_name, provider_name
 from linker_genie.cycle import TurnResult, run
 from linker_genie.log import TurnLog
-from linker_genie.prices import commerce_lookup
+from linker_genie.prices import LOOKUP_DEADLINE, commerce_lookup
 from linker_genie.schema import TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
@@ -92,6 +93,7 @@ def health() -> dict[str, str]:
 @app.post("/turn")
 def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     """One conversation turn, grounded and hydrated, as SSE."""
+    started = time.monotonic()
     prepare = getattr(request.app.state, "prepare", None)
     prepared: Prepared = (
         prepare(body)
@@ -101,8 +103,10 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     generate = getattr(request.app.state, "generate", None) or make_generate(
         ability_client(), prepared=prepared, pages=page_reader().read
     )
+    # The cards' price lookups end LOOKUP_DEADLINE s after the turn began, so the
+    # turn stays inside the shell's timeout (prices.py).
     commerce = getattr(request.app.state, "commerce", None) or commerce_lookup(
-        ability_client(), body
+        ability_client(), body, started + LOOKUP_DEADLINE
     )
     try:
         result = run(body, generate, prepared.route, prepared.facts, commerce)

@@ -110,15 +110,16 @@ final class GeniePricesTest extends SiteTestCase {
 
 		if ( 'approved' === $state ) {
 			$this->assertTrue( $commerce['price_visible'] );
-			$this->assertSame( $page, $commerce['price_text'] );
+			$this->assertSame( $page, $commerce['price_line'] );
+			$this->assertArrayNotHasKey( 'price_reason', $commerce );
 			$this->assertMatchesRegularExpression( 'de' === $lang ? '/^1\.680,00\x{a0}€$/u' : '/^€1,680\.00$/u', $page );
 			return;
 		}
 		$this->assertFalse( $commerce['price_visible'] );
 		$this->assertArrayNotHasKey( 'price', $commerce );
-		$this->assertArrayNotHasKey( 'price_text', $commerce );
 		$this->assertSame( 'guest' === $state ? 'login' : $state, $commerce['price_reason'] );
-		// The English page's sentence; the German page says it in German.
+		// The page's own sentence, in the page's language.
+		$this->assertSame( $page, $commerce['price_line'] );
 		if ( 'en' === $lang ) {
 			$this->assertSame( self::SENTENCES[ $commerce['price_reason'] ], $page );
 		}
@@ -135,6 +136,7 @@ final class GeniePricesTest extends SiteTestCase {
 		$this->assertSame( 'project', $commerce['price_reason'] );
 		$this->assertSame( self::SENTENCES['project'], $this->page_price( self::PROJECT, 'en', 'approved' ) );
 		$this->assertSame( 'Angebot pro Projekt', $this->page_price( self::PROJECT, 'de', 'approved' ) );
+		$this->assertSame( 'Angebot pro Projekt', $this->commerce( self::PROJECT, 'de', $this->token( 'approved' ) )['price_line'] );
 	}
 
 	/**
@@ -163,6 +165,24 @@ final class GeniePricesTest extends SiteTestCase {
 			$this->assertFalse( $commerce['price_visible'] );
 			$this->assertSame( 'login', $commerce['price_reason'] );
 		}
+	}
+
+	/**
+	 * The token signs a request in only on the three abilities it was issued
+	 * for, by the route WordPress parsed: another route, and a query string
+	 * that merely names an ability route, stay a guest's. The answer it signed
+	 * in is never cached.
+	 */
+	public function test_the_token_is_bound_to_its_abilities(): void {
+		$token = $this->token( 'approved' );
+
+		$inquiries = $this->http( '/wp-json/wp-abilities/v1/abilities/linker/inquiry-status/run', $token );
+		$this->assertSame( 200, $inquiries['status'] );
+		$this->assertStringContainsString( 'no-store', $inquiries['headers']['cache-control'] ?? '' );
+		$this->assertSame( 401, $this->http( '/wp-json/wp-abilities/v1/abilities/linker/inquiry-status/run', '' )['status'] );
+
+		$this->assertSame( 401, $this->http( '/wp-json/wp/v2/users/me', $token )['status'] );
+		$this->assertSame( 401, $this->http( '/wp-json/wp/v2/users/me?x=/wp-abilities/v1/abilities/linker/get-product/run', $token )['status'] );
 	}
 
 	/**
@@ -220,6 +240,40 @@ final class GeniePricesTest extends SiteTestCase {
 		$this->assertIsArray( $decoded, (string) $body );
 		$this->assertIsArray( $decoded['commerce'] ?? null );
 		return $decoded['commerce'];
+	}
+
+	/**
+	 * A GET of the site with the customer token, or none.
+	 *
+	 * @param string $path  Path and query.
+	 * @param string $token Customer token, '' for none.
+	 * @return array{status: int, headers: array<string, string>}
+	 */
+	private function http( string $path, string $token ): array {
+		$context = stream_context_create(
+			array(
+				'http' => array(
+					'header'        => "Accept: application/json\r\n" . ( '' === $token ? '' : 'X-Linker-User-Context: ' . $token . "\r\n" ),
+					'ignore_errors' => true,
+					'timeout'       => 60,
+				),
+			)
+		);
+		file_get_contents( self::$site . $path, false, $context );
+		$status  = 0;
+		$headers = array();
+		foreach ( $http_response_header as $line ) {
+			if ( 1 === preg_match( '#^HTTP/\S+ (\d{3})#', $line, $match ) ) {
+				$status = (int) $match[1];
+			} elseif ( str_contains( $line, ':' ) ) {
+				list( $name, $value )           = explode( ':', $line, 2 );
+				$headers[ strtolower( $name ) ] = trim( $value );
+			}
+		}
+		return array(
+			'status'  => $status,
+			'headers' => $headers,
+		);
 	}
 
 	/**

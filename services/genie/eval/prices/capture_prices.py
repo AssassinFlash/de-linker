@@ -6,14 +6,14 @@
 
 For each account state the script mints the shell's own customer token through
 WP-CLI (`just wp <instance> eval --user=<login>`, UserContext::mint: the token the
-proxy hands the service, valid 120 seconds), calls the abilities over HTTP the way
+proxy hands the service, valid UserContext::TTL seconds), calls the abilities over HTTP the way
 the service does (abilities.AbilityClient), and writes their answers. The guest
 calls without a token. The token itself is never printed or written.
 
 What is asked, from the live snapshot of 2026-10-17:
 - search-products for "H2-10K-T3" (SAJ H2-10K-T3, product 4107): a search's card;
 - get-product 4107 in English and German: the price line in each language;
-- get-product 1957 (GoodWe GW208.9-BAT-LCD-G10, quoted per project).
+- get-product 1957 (GoodWe GW208.9-BAT-LCD-G10, quoted per project), in both languages.
 
 Only the fields the price path reads are kept (product id, title, facts, commerce),
 so the fixture stays small and holds no documents.
@@ -36,6 +36,7 @@ CALLS: tuple[tuple[str, str, dict[str, Any]], ...] = (
     ("product_4107_en", "linker/get-product", {"product_id": 4107, "lang": "en"}),
     ("product_4107_de", "linker/get-product", {"product_id": 4107, "lang": "de"}),
     ("product_1957_en", "linker/get-product", {"product_id": 1957, "lang": "en"}),
+    ("product_1957_de", "linker/get-product", {"product_id": 1957, "lang": "de"}),
 )
 KEPT = ("product_id", "title", "facts", "commerce")
 

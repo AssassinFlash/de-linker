@@ -12,7 +12,7 @@ on the given instance), Jev on OpenRouter deciding whether the message is about 
 page, the route reading the page from the instance (page.py) or the account's
 inquiries, deepseek-flash (official API) writing the answer, the query encoder
 (gemini-embedding-2 through OpenRouter) for the documents. A signed-in row gets a
-fresh customer token from `--mint` (the shell's UserContext, valid 120 seconds).
+fresh customer token from `--mint` (the shell's UserContext, valid UserContext::TTL seconds).
 
 A row passes when the turn is grounded, not a fallback and not a handoff (a delivery
 row, `expect.handoff`, must be the handoff); the route

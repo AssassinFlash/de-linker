@@ -22,47 +22,20 @@ import { productModel } from '../api/product';
 import type { CardPrice } from '../api/turn';
 
 /**
- * The card's price line (#242): the price as the service filled it, or the
- * sentence the product page shows in its place, word for word (linker-commerce
- * ProductView and PriceDisplay; German in the same words as there).
+ * The card's price line (#242), exactly as the service filled it: the product
+ * page's own line for this customer, already in the page's language (the price,
+ * or the page's sentence when `reason` says why there is none). The shell words
+ * nothing itself.
  *
  * @param price The line the service filled; undefined when it filled none.
  */
 export function priceLine(
 	price: CardPrice | undefined
 ): { text: string; kind: 'net' | 'note' } | undefined {
-	if ( price?.text ) {
-		return { text: price.text, kind: 'net' };
+	if ( ! price?.text ) {
+		return undefined;
 	}
-	switch ( price?.reason ) {
-		case 'login':
-			return {
-				text: __( 'Net price after partner sign-in', 'linker-tools' ),
-				kind: 'note',
-			};
-		case 'pending':
-			return {
-				text: __( 'Prices after approval', 'linker-tools' ),
-				kind: 'note',
-			};
-		case 'restricted':
-			return {
-				text: __( 'Not available for your account', 'linker-tools' ),
-				kind: 'note',
-			};
-		case 'project':
-			return {
-				text: __( 'Quoted per project', 'linker-tools' ),
-				kind: 'note',
-			};
-		case 'unpriced':
-			return {
-				text: __( 'Price on request', 'linker-tools' ),
-				kind: 'note',
-			};
-		default:
-			return undefined;
-	}
+	return { text: price.text, kind: price.reason ? 'note' : 'net' };
 }
 
 export function GenieCard( {

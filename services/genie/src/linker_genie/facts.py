@@ -46,7 +46,7 @@ class TurnFacts:
     # documents), so a document block can link it instead of printing the URL.
     documents: dict[str, Document] = field(default_factory=dict)
     # Product ID → the commerce object a product ability returned for this
-    # customer (price_visible, price, price_text, price_reason; #242), from which
+    # customer (price_visible, price, price_line, price_reason; #242), from which
     # the service fills the product cards' price lines (prices.fill).
     commerce: dict[int, dict[str, Any]] = field(default_factory=dict)
 
