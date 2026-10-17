@@ -1,0 +1,35 @@
+#288 verification record
+just check: exit 0 (final run after 86ca9d4)
+just test: exit 0
+Tests: 1109, Assertions: 5408, Skipped: 73.
+OK (190 tests, 432 assertions)
+OK (147 tests, 1900 assertions)
+OK (6 tests, 23 assertions)
+============================= 658 passed in 13.98s =============================
+============================= 112 passed in 8.29s ==============================
+======================== 98 passed in 137.51s (0:02:17) ========================
+======================== 94 passed, 9 skipped in 2.70s =========================
+============================== 20 passed in 0.07s ==============================
+============================= 113 passed in 53.04s =============================
+============================== 82 passed in 2.27s ==============================
+
+Mail integration: consecutive repeat after cleanup fix
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+...........                                                       11 / 11 (100%)
+
+Time: 00:04.889, Memory: 103.00 MB
+
+OK (11 tests, 916 assertions)
+
+Mail integration: complete current live snapshot loaded in c288
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+...........                                                       11 / 11 (100%)
+
+Time: 00:06.204, Memory: 142.00 MB
+
+OK (11 tests, 916 assertions)
+
+Runtime readback after option/locale restoration
+{"envelope":"sales@sunriverinverter.com","internal":{"name":"Linker","email":"sales@sunriverinverter.com"},"customer_from":"sales@de-linker.com","customer_name":"Linker","pending_retries":0,"queued_mail":0}
