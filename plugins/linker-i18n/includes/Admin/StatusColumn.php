@@ -94,6 +94,9 @@ final class StatusColumn {
 	 * @param string $status The English object's status.
 	 */
 	public function label( bool $exists, string $status ): string {
+		if ( State::STRUCTURE_MISMATCH === $status ) {
+			return State::structure_reason();
+		}
 		if ( State::FAILED === $status ) {
 			return __( 'Translation failed', 'linker-i18n' );
 		}
@@ -117,12 +120,12 @@ final class StatusColumn {
 			return $actions;
 		}
 		$url                     = wp_nonce_url( admin_url( 'admin-post.php?action=' . self::ACTION . '&post=' . $post->ID ), self::ACTION . '_' . $post->ID );
-		$actions[ self::ACTION ] = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $url ), esc_html__( 'Retranslate', 'linker-i18n' ) );
+		$actions[ self::ACTION ] = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $url ), esc_html__( 'Sync German', 'linker-i18n' ) );
 		return $actions;
 	}
 
 	/**
-	 * Queues a full new translation and goes back to the list (action
+	 * Queues a preserving sync and goes back to the list (action
 	 * `admin_post_linker_i18n_retranslate`).
 	 */
 	public function retranslate(): void {
@@ -132,7 +135,7 @@ final class StatusColumn {
 		if ( null === $source || ! current_user_can( 'edit_post', $post_id ) || ! current_user_can( 'edit_post', $source ) ) {
 			wp_die( esc_html__( 'You may not translate this.', 'linker-i18n' ), '', array( 'response' => 403 ) );
 		}
-		if ( ! $this->jobs->queue( State::POST, $source, true ) ) {
+		if ( ! $this->jobs->queue( State::POST, $source ) ) {
 			wp_die( esc_html__( 'This content is managed by the repository.', 'linker-i18n' ), '', array( 'response' => 400 ) );
 		}
 		$back = wp_get_referer();
@@ -147,6 +150,6 @@ final class StatusColumn {
 		if ( ! isset( $_GET['linker_i18n_queued'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a display flag set by retranslate().
 			return;
 		}
-		printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html__( 'The German version will be translated again.', 'linker-i18n' ) );
+		printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html__( 'German sync has been queued.', 'linker-i18n' ) );
 	}
 }

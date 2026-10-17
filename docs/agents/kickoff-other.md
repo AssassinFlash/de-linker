@@ -16,7 +16,7 @@
 
 要点（票里有全文与取证）：
 - 先做安全项：从自动翻译类型里去掉 lc_partial 和 lc_dynamic_template（plugins/linker-i18n/includes/TranslatedTypes.php），它们的德语孪生归仓库的 present 所有。补测试证明英文模板保存后德语模板不被覆盖。这一步不做完，不许在任何环境放翻译密钥。
-- 业主本票会话改定：全部页面（含营销页）、产品、博客、既有可翻译词项自动同步，译文直接生效，不设待审、批准和营销冻结。后台显示同步/排队/失败/缺失，失败保留旧译文。
+- 业主本票会话改定：全部页面（含营销页）、产品、博客、既有可翻译词项自动同步，译文直接生效，不设待审、批准和营销冻结。已有人工德语原样保留，只翻改动且能对齐的句子；无基线先建基线，不能对齐时保留德语并显示结构异常。补缺扫描只选缺失和 pending，不做全站重译。后台显示同步/排队/失败/结构不同/缺失，失败保留旧译文。
 - 每日摘要里加一块"德语翻译异常"：#221（恢复每日摘要）已合并就直接接上；还没合并就在 #221 票上留言写清接口，由 #221 接。
 - 密钥：模型是 deepseek-flash，只走官方 API（AGENTS.md §5）。DeepSeekClient 现在只读环境变量 DEEPSEEK_API_KEY，线上网页 PHP 读不到。参照 Genie 读 OpenRouter 密钥的做法（plugins/linker-commerce 的 Abilities/QueryEmbedding.php：环境变量，或 $HOME/.config/terravolt-builder/ 下的 env 文件；线上 wp-config.php 已设 HOME），密钥文件放网站目录之外。本机密钥在 ~/.config/terravolt-builder/deepseek.env，只读取，不打印。线上放密钥属于生产写入：先备份后读回，并且要业主同意。
 - 切换以来的 20 个 pending 经实查是 14 个 LC 模板和 6 个页面：模板只清遗留任务及状态，6 页面补译后直接 synced；随后扫全部允许内容。

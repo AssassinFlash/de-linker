@@ -25,3 +25,15 @@
 - 无须改词；初稿表原样定稿。新增字符串已写入 .pot/.po/.mo，并通过覆盖及编译检查。
 
 本记录是后台措辞评审。产品与页面机器翻译按业主裁定自动生效，不设人工审阅门。
+
+## 第一轮修改：保留既有德语
+
+原表 Retranslate 动作改为 Sync German，避免暗示整页重译；待结构异常的处理是显性异常处理，不是审批。
+
+| EN 初稿 | DE 独立措辞 | 使用处 |
+|---|---|---|
+| German out of date: structure differs | Deutsch nicht aktuell: abweichende Struktur | 状态列及摘要异常原因 |
+| Sync German | Deutsch synchronisieren | 行动作，遵守原样保留及增量规则 |
+| German sync has been queued. | Die deutsche Synchronisierung wurde eingeplant. | 排队成功提示，允许零调用的基线收养 |
+
+第一轮这三组措辞随修改差异作独立 Spec 评审，结果补入本轮记录。

@@ -291,7 +291,7 @@ final class TranslateOnSaveTest extends SiteTestCase {
 		$this->assertSame( 'Synced', $state['cell'] );
 		$this->assertSame( '<p>[de] Download the Datenblatt and the manual for the wiring diagram.</p>', $after[1] );
 		$this->assertSame( '<p>[de] The battery warranty covers twelve years in Germany.</p>', $after[2] );
-		$this->assertNull( $state['reviewed'] );
+		$this->assertSame( array( 'post_content' => '*' ), $state['reviewed'] );
 	}
 
 	/**

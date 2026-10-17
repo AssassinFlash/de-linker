@@ -19,14 +19,16 @@ final class FieldPlan {
 	 *
 	 * @param Document           $english English document.
 	 * @param string|null        $kept Complete German field, or null to rebuild it.
-	 * @param array<int, string> $texts Known German text by English index.
 	 * @param array<int, string> $verbatim Known German markup by English index.
+	 * @param Document|null      $target Existing German markup; only changed sentence slots are replaced.
+	 * @param bool               $mismatch Whether alignment failed and all German must stay.
 	 */
 	private function __construct(
 		public readonly Document $english,
 		public readonly ?string $kept,
-		public readonly array $texts,
-		public readonly array $verbatim
+		public readonly array $verbatim,
+		public readonly ?Document $target = null,
+		public readonly bool $mismatch = false
 	) {}
 
 	/**
@@ -36,18 +38,28 @@ final class FieldPlan {
 	 * @param string   $german German field.
 	 */
 	public static function keep( Document $english, string $german ): self {
-		return new self( $english, $german, array(), array() );
+		return new self( $english, $german, array() );
+	}
+
+	/**
+	 * Keeps German and exposes an alignment exception without model work.
+	 *
+	 * @param Document $english Current English.
+	 * @param string   $german Existing German, byte for byte.
+	 */
+	public static function blocked( Document $english, string $german ): self {
+		return new self( $english, $german, array(), null, true );
 	}
 
 	/**
 	 * Builds from English markup with known and newly translated segments.
 	 *
 	 * @param Document           $english English document.
-	 * @param array<int, string> $texts Known German texts.
 	 * @param array<int, string> $verbatim Known German markup.
+	 * @param Document|null      $target Existing German markup, if aligned.
 	 */
-	public static function build( Document $english, array $texts = array(), array $verbatim = array() ): self {
-		return new self( $english, null, $texts, $verbatim );
+	public static function build( Document $english, array $verbatim = array(), ?Document $target = null ): self {
+		return new self( $english, null, $verbatim, $target );
 	}
 
 	/**
@@ -59,15 +71,29 @@ final class FieldPlan {
 		if ( null !== $this->kept ) {
 			return array();
 		}
-		return array_values( array_diff( array_keys( $this->english->segments ), array_keys( $this->texts ), array_keys( $this->verbatim ) ) );
+		return array_values( array_diff( array_keys( $this->english->segments ), array_keys( $this->verbatim ) ) );
 	}
 
 	/**
 	 * Renders the German field.
 	 *
 	 * @param array<int, string> $translations New translations by English index.
+	 * @param callable|null      $localize Localises new HTML only, leaving preserved German bytes alone.
+	 * @phpstan-param (callable(string): string)|null $localize
 	 */
-	public function render( array $translations ): string {
-		return $this->kept ?? $this->english->render( $translations + $this->texts, $this->verbatim );
+	public function render( array $translations, ?callable $localize = null ): string {
+		if ( null !== $this->kept ) {
+			return $this->kept;
+		}
+		if ( null === $this->target ) {
+			$html = $this->english->render( $translations, $this->verbatim );
+			return null === $localize ? $html : $localize( $html );
+		}
+		$bytes = $this->verbatim;
+		foreach ( $translations as $index => $text ) {
+			$html            = $this->english->segments[ $index ]->render( $text, $translations );
+			$bytes[ $index ] = null === $localize ? $html : $localize( $html );
+		}
+		return $this->target->render( array(), $bytes );
 	}
 }

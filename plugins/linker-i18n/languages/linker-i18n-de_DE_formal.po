@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker i18n 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-i18n\n"
-"POT-Creation-Date: 2026-10-17T12:05:15+00:00\n"
+"POT-Creation-Date: 2026-10-17T13:16:10+00:00\n"
 "PO-Revision-Date: 2026-10-09 23:00+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -42,45 +42,49 @@ msgstr "Linker Technology GmbH"
 msgid "German"
 msgstr "Deutsch"
 
-#: includes/Admin/StatusColumn.php:98
+#: includes/Admin/StatusColumn.php:101
 msgid "Translation failed"
 msgstr "Übersetzung fehlgeschlagen"
 
-#: includes/Admin/StatusColumn.php:101
+#: includes/Admin/StatusColumn.php:104
 msgid "Missing, translation pending"
 msgstr "Fehlt, Übersetzung ausstehend"
 
-#: includes/Admin/StatusColumn.php:101
+#: includes/Admin/StatusColumn.php:104
 msgid "Missing"
 msgstr "Fehlt"
 
-#: includes/Admin/StatusColumn.php:103
+#: includes/Admin/StatusColumn.php:106
 msgid "Translation pending"
 msgstr "Übersetzung ausstehend"
 
-#: includes/Admin/StatusColumn.php:103
+#: includes/Admin/StatusColumn.php:106
 msgid "Synced"
 msgstr "Synchronisiert"
 
-#: includes/Admin/StatusColumn.php:120
-msgid "Retranslate"
-msgstr "Neu übersetzen"
+#: includes/Admin/StatusColumn.php:123
+msgid "Sync German"
+msgstr "Deutsch synchronisieren"
 
-#: includes/Admin/StatusColumn.php:133
+#: includes/Admin/StatusColumn.php:136
 msgid "You may not translate this."
 msgstr "Sie dürfen diesen Inhalt nicht übersetzen."
 
-#: includes/Admin/StatusColumn.php:136
+#: includes/Admin/StatusColumn.php:139
 msgid "This content is managed by the repository."
 msgstr "Diese Inhalte werden über das Repository verwaltet."
 
-#: includes/Admin/StatusColumn.php:150
-msgid "The German version will be translated again."
-msgstr "Die deutsche Fassung wird erneut übersetzt."
+#: includes/Admin/StatusColumn.php:153
+msgid "German sync has been queued."
+msgstr "Die deutsche Synchronisierung wurde eingeplant."
 
 #: includes/SameSlug/Lookup.php:116
 msgid "Invalid product slug."
 msgstr "Ungültige Produkt-Titelform."
+
+#: includes/Translation/State.php:58
+msgid "German out of date: structure differs"
+msgstr "Deutsch nicht aktuell: abweichende Struktur"
 
 #: includes/Woo/AttributeLabels.php:39
 msgid "Application"
@@ -121,6 +125,12 @@ msgstr "Produktfamilie"
 #: includes/Woo/AttributeLabels.php:48
 msgid "Series"
 msgstr "Serie"
+
+#~ msgid "Retranslate"
+#~ msgstr "Neu übersetzen"
+
+#~ msgid "The German version will be translated again."
+#~ msgstr "Die deutsche Fassung wird erneut übersetzt."
 
 #~ msgid "Needs review"
 #~ msgstr "Prüfung erforderlich"

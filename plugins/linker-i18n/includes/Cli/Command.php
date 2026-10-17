@@ -91,13 +91,16 @@ final class Command {
 	 * : The IDs are term IDs.
 	 *
 	 * [--pending]
-	 * : Every pending, failed or historically unreviewed English object.
+	 * : Every pending English object, using preservation rules for existing German.
+	 *
+	 * [--missing]
+	 * : Missing German and pending objects only; never a site-wide retranslation.
 	 *
 	 * [--all]
-	 * : All English content; unchanged translations do not call the model again.
+	 * : Compatibility alias for --missing.
 	 *
 	 * [--force]
-	 * : Translate every segment again, discarding edits.
+	 * : Legacy option; existing German is always protected.
 	 *
 	 * [--now]
 	 * : Translate here and now instead of queueing.
@@ -111,19 +114,14 @@ final class Command {
 		foreach ( $args as $id ) {
 			$targets[] = array( $kind, (int) $id );
 		}
-		if ( isset( $assoc_args['all'] ) ) {
-			foreach ( $this->english_posts() as $post ) {
-				$targets[] = array( State::POST, $post->ID );
-			}
-			foreach ( $this->english_terms() as $term ) {
-				$targets[] = array( State::TERM, $term->term_id );
-			}
+		if ( isset( $assoc_args['all'] ) || isset( $assoc_args['missing'] ) ) {
+			$targets = array_merge( $targets, $this->pending( true ) );
 		} elseif ( isset( $assoc_args['pending'] ) ) {
 			$targets = array_merge( $targets, $this->pending() );
 		}
 		$targets = array_values( array_unique( $targets, SORT_REGULAR ) );
 		$failed  = 0;
-		$force   = isset( $assoc_args['force'] );
+		$force   = false;
 		foreach ( $targets as list( $target_kind, $id ) ) {
 			if ( ! isset( $assoc_args['now'] ) ) {
 				$queued = $this->jobs->queue( $target_kind, $id, $force );
@@ -131,7 +129,8 @@ final class Command {
 				continue;
 			}
 			try {
-				$status = State::POST === $target_kind ? $this->translator->post( $id, $force ) : $this->translator->term( $id, $force );
+				$status  = State::POST === $target_kind ? $this->translator->post( $id, $force ) : $this->translator->term( $id, $force );
+				$failed += State::STRUCTURE_MISMATCH === $status ? 1 : 0;
 			} catch ( TranslationFailed $failure ) {
 				$this->state->set_status( $target_kind, $id, State::FAILED, $failure->getMessage() );
 				$status = State::FAILED . ': ' . $failure->getMessage();
@@ -441,17 +440,18 @@ final class Command {
 	/**
 	 * The English objects whose status is pending.
 	 *
+	 * @param bool $include_missing Also include objects without a German twin.
 	 * @return list<array{string, int}>
 	 */
-	private function pending(): array {
+	private function pending( bool $include_missing = false ): array {
 		$pending = array();
 		foreach ( $this->english_posts() as $post ) {
-			if ( in_array( $this->state->status( State::POST, $post->ID ), array( State::PENDING, State::FAILED, State::NEEDS_REVIEW ), true ) ) {
+			if ( State::PENDING === $this->state->status( State::POST, $post->ID ) || ( $include_missing && null === $this->languages->post_translation( $post->ID, Languages::TARGET ) ) ) {
 				$pending[] = array( State::POST, $post->ID );
 			}
 		}
 		foreach ( $this->english_terms() as $term ) {
-			if ( in_array( $this->state->status( State::TERM, $term->term_id ), array( State::PENDING, State::FAILED, State::NEEDS_REVIEW ), true ) ) {
+			if ( State::PENDING === $this->state->status( State::TERM, $term->term_id ) || ( $include_missing && null === $this->languages->term_translation( $term->term_id, Languages::TARGET ) ) ) {
 				$pending[] = array( State::TERM, $term->term_id );
 			}
 		}

@@ -68,6 +68,28 @@ final class Jobs {
 	) {}
 
 	/**
+	 * Before WordPress updates the source, preserve its old sentence baseline.
+	 *
+	 * @param int $post_id English post ID.
+	 */
+	public function before_post_saved( int $post_id ): void {
+		if ( ! $this->twins->writing() && ! wp_is_post_revision( $post_id ) && ! wp_is_post_autosave( $post_id ) ) {
+			$this->translator->prime( State::POST, $post_id );
+		}
+	}
+
+	/**
+	 * The same baseline capture for a term, before its text is updated.
+	 *
+	 * @param int $term_id English term ID.
+	 */
+	public function before_term_saved( int $term_id ): void {
+		if ( ! $this->twins->writing() ) {
+			$this->translator->prime( State::TERM, $term_id );
+		}
+	}
+
+	/**
 	 * A post was saved (action `wp_after_insert_post`): an English one is
 	 * queued, or its status passed on; a German one saved by a person is an
 	 * edit to keep.
@@ -113,13 +135,14 @@ final class Jobs {
 		 *
 		 * @param string $kind  State::POST or State::TERM.
 		 * @param int    $id    English object ID.
-		 * @param bool   $force Translate every segment again.
+		 * @param bool   $force Legacy argument; existing German is always preserved.
 		 */
 	public function queue( string $kind, int $id, bool $force = false ): bool {
 		if ( ! $this->translator->accepts( $kind, $id ) ) {
 			return false;
 		}
-		$force = $force || State::NEEDS_REVIEW === $this->state->status( $kind, $id );
+		// Accepted for old callers, but neither legacy flags nor retry may erase German.
+		$force = false;
 		$this->state->set_status( $kind, $id, State::PENDING, 'queued' );
 		$args = array( $kind, $id, $force, 1 );
 		// AS's unique flag also rejects an in-progress action. Deduplicate only
@@ -145,7 +168,7 @@ final class Jobs {
 	 *
 	 * @param string $kind    State::POST or State::TERM.
 	 * @param int    $id      English object ID.
-	 * @param bool   $force   Translate every segment again.
+	 * @param bool   $force   Legacy argument; existing German is always preserved.
 	 * @param int    $attempt Which attempt this is.
 	 */
 	public function run( string $kind, int $id, bool $force = false, int $attempt = 1 ): void {
@@ -159,7 +182,7 @@ final class Jobs {
 			}
 			return;
 		}
-		// Saved again while this run translated: the queue refused a second job then.
+		// A save in another request may have changed the source during this run.
 		if ( State::SYNCED === $status && ! $this->translator->current( $kind, $id ) ) {
 			$this->queue( $kind, $id );
 		}

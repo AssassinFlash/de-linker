@@ -84,6 +84,25 @@ final class Segmenter {
 	 * @param string $text Text.
 	 */
 	public function text( string $text ): Document {
+		$parts    = array();
+		$segments = array();
+		foreach ( $this->sentences( array( new HtmlToken( HtmlToken::TEXT, $text ) ) ) as $tokens ) {
+			$document = $this->plain( implode( '', array_map( static fn( HtmlToken $token ): string => $token->raw, $tokens ) ) );
+			$offset   = count( $segments );
+			foreach ( $document->parts as $part ) {
+				$parts[] = is_int( $part ) ? $part + $offset : $part;
+			}
+			array_push( $segments, ...$document->segments );
+		}
+		return new Document( $parts, $segments );
+	}
+
+	/**
+	 * One plain-text sentence, retaining its surrounding whitespace.
+	 *
+	 * @param string $text Sentence bytes.
+	 */
+	private function plain( string $text ): Document {
 		$core = trim( $text );
 		if ( ! self::has_letters( $core ) ) {
 			return new Document( array( $text ), array() );
@@ -236,8 +255,55 @@ final class Segmenter {
 			$tokens = array_slice( $tokens, 1, -1 );
 		}
 		array_push( $parts, ...$before );
-		$parts[] = $this->segment( $tokens, $segments );
+		foreach ( $this->sentences( array_values( $tokens ) ) as $sentence ) {
+			list( $lead, $trail ) = self::trim_space( $sentence );
+			if ( '' !== $lead ) {
+				$parts[] = $lead;
+			}
+			if ( array() !== $sentence ) {
+				$parts[] = $this->segment( $sentence, $segments );
+			}
+			if ( '' !== $trail ) {
+				$parts[] = $trail;
+			}
+		}
 		array_push( $parts, ...$after );
+	}
+
+	/**
+	 * Splits at sentence punctuation plus whitespace before an uppercase letter.
+	 * An inline element spanning a boundary stays together, so placeholders stay
+	 * balanced. Paragraph/list/heading boundaries remain independent as before.
+	 *
+	 * @param array<int, HtmlToken> $tokens Inline run.
+	 * @return list<list<HtmlToken>>
+	 * @phpstan-param list<HtmlToken> $tokens
+	 */
+	private function sentences( array $tokens ): array {
+		$sentences = array();
+		$sentence  = array();
+		$depth     = 0;
+		foreach ( $tokens as $token ) {
+			if ( HtmlToken::TAG === $token->type && in_array( $token->name, self::INLINE, true ) ) {
+				$depth += $token->closing ? -1 : 1;
+			}
+			$pieces = HtmlToken::TEXT === $token->type && 0 === $depth ? preg_split( '/(?<=[.!?])([ \t\r\n]+)(?=[\p{Lu}])/u', $token->raw, -1, PREG_SPLIT_DELIM_CAPTURE ) : false;
+			if ( false === $pieces ) {
+				$sentence[] = $token;
+				continue;
+			}
+			foreach ( $pieces as $index => $piece ) {
+				$sentence[] = new HtmlToken( HtmlToken::TEXT, $piece );
+				if ( 1 === $index % 2 ) {
+					$sentences[] = $sentence;
+					$sentence    = array();
+				}
+			}
+		}
+		if ( array() !== $sentence ) {
+			$sentences[] = $sentence;
+		}
+		return $sentences;
 	}
 
 	/**

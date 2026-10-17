@@ -71,7 +71,7 @@ final class Plugin {
 		$projection = new Projection( $languages );
 		$twins      = new Twins( $languages, $links, $projection );
 		$rules      = Rules::load( dirname( $this->file ) . '/data' );
-		$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), $state, DeepSeekClient::from_environment( $rules ), new Validator( $rules ), $twins );
+		$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), $state, DeepSeekClient::from_environment( $rules ), new Validator( $rules ), $twins, $links );
 		$jobs       = new Jobs( $languages, $translator, $twins, $state );
 
 		// What Polylang translates.
@@ -118,6 +118,8 @@ final class Plugin {
 		add_filter( 'get_terms_args', array( $rest, 'terms' ), 10, 2 );
 
 		// Translation on save.
+		add_action( 'pre_post_update', array( $jobs, 'before_post_saved' ) );
+		add_action( 'edit_terms', array( $jobs, 'before_term_saved' ) );
 		add_action( 'wp_after_insert_post', array( $jobs, 'post_saved' ), 10, 2 );
 		add_action( 'created_term', array( $jobs, 'term_saved' ), 10, 3 );
 		add_action( 'edited_term', array( $jobs, 'term_saved' ), 10, 3 );

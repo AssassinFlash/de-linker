@@ -102,7 +102,8 @@ final class JobsTest extends TestCase {
 				}
 			},
 			new Validator( Rules::load( $data ) ),
-			new Twins( $languages, new LinkLocalizer( $languages, $tokenizer ), new Projection( $languages ) )
+			new Twins( $languages, new LinkLocalizer( $languages, $tokenizer ), new Projection( $languages ) ),
+			new LinkLocalizer( $languages, $tokenizer )
 		);
 		return new Jobs( $languages, $translator, new Twins( $languages, new LinkLocalizer( $languages, $tokenizer ), new Projection( $languages ) ), new State() );
 	}

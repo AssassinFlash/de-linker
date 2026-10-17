@@ -12,7 +12,7 @@ namespace Linker\I18n\Translation;
 /**
  * Plans one field of a German object from its English and its German: the
  * segments whose English did not change keep their German; changed English
- * is translated automatically. Unalignable fields are rebuilt from English.
+ * is translated automatically. Unalignable fields keep their German.
  */
 final class Planner {
 
@@ -41,40 +41,59 @@ final class Planner {
 	 * @param bool                                                             $html     Whether the field is HTML.
 	 * @param array{string, bool}|null                                         $current  German value, null when there is none.
 	 * @param array{src: list<string>, out: list<string>, conflict: bool}|null $unit     The field's state, null when never written.
-	 * @param bool                                                             $force    Translate every segment again.
+	 * @param bool                                                             $force    Legacy argument; cannot discard existing German.
 	 */
 	public function plan( string $value, bool $html, ?array $current, ?array $unit, bool $force ): FieldPlan {
 		$english = $this->split( $value, $html );
-		if ( $force || null === $current || ( '' === trim( $current[0] ) && array() !== $english->segments ) ) {
+		unset( $force );
+		if ( null === $current || ( '' === trim( $current[0] ) && array() !== $english->segments ) ) {
 			return FieldPlan::build( $english );
 		}
-		$german = $this->split( $current[0], $html );
-		// No baseline or a changed German structure: translate the whole field.
-		// Historical review flags are data to recover, not a translation lock.
-		if ( null === $unit || $unit['conflict'] || count( $unit['src'] ) !== count( $german->segments ) ) {
-			return FieldPlan::build( $english );
-		}
-		$runs = $this->aligner->runs( $unit['src'], $english->hashes() );
-		if ( array() === array_filter( $runs, static fn( array $run ): bool => 'equal' !== $run[0] ) ) {
+		// Owner's PR #277 ruling: adopt existing German without translating it.
+		if ( null === $unit || $unit['src'] === $english->hashes() ) {
 			return FieldPlan::keep( $english, $current[0] );
 		}
-
-		$texts    = array();
+		$german = $this->split( $current[0], $html );
+		if ( count( $unit['src'] ) !== count( $german->segments ) || count( $unit['src'] ) !== count( $english->segments ) || $this->roles( $english ) !== $this->roles( $german ) ) {
+			return FieldPlan::blocked( $english, $current[0] );
+		}
+		$runs     = $this->aligner->runs( $unit['src'], $english->hashes() );
 		$verbatim = array();
 		foreach ( $runs as $run ) {
+			// Insertion/deletion/reordering has no reliable German sentence slot.
+			if ( $run[1] !== $run[3] || $run[2] !== $run[4] ) {
+				return FieldPlan::blocked( $english, $current[0] );
+			}
 			for ( $k = 0; $k < $run[2] - $run[1]; $k++ ) {
 				$index = $run[3] + $k;
 				if ( 'equal' !== $run[0] ) {
 					continue;
 				}
-				$segment = $german->segments[ $run[1] + $k ];
-				if ( Segment::placeholders( $segment->text ) === Segment::placeholders( $english->segments[ $index ]->text ) ) {
-					$texts[ $index ] = $segment->text;
-				} else {
-					$verbatim[ $index ] = $segment->raw;
+				$verbatim[ $index ] = $german->segments[ $run[1] + $k ]->raw;
+			}
+		}
+		return FieldPlan::build( $english, $verbatim, $german );
+	}
+
+	/**
+	 * Text and attribute slots may not be mistaken for one another.
+	 *
+	 * @param Document $document English or German document.
+	 * @return list<string>
+	 */
+	private function roles( Document $document ): array {
+		$roles = array_fill( 0, count( $document->segments ), 'text' );
+		$parts = $document->parts;
+		foreach ( $document->segments as $segment ) {
+			array_push( $parts, ...array_values( $segment->map ) );
+		}
+		foreach ( $parts as $part ) {
+			if ( $part instanceof TagPart ) {
+				foreach ( $part->attributes as $attribute => $index ) {
+					$roles[ $index ] = 'attribute:' . $attribute;
 				}
 			}
 		}
-		return FieldPlan::build( $english, $texts, $verbatim );
+		return array_values( $roles );
 	}
 }

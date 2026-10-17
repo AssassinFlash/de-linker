@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\I18n\Translation;
 
 use Linker\I18n\Languages;
+use Linker\I18n\LinkLocalizer;
 use Linker\I18n\Twins;
 
 /**
@@ -17,8 +18,8 @@ use Linker\I18n\Twins;
  *
  * Segment by segment: what did not change in the English keeps its German,
  * what changed goes to the translator, and every translation is checked
- * before anything is stored. English is the source of truth, including where
- * somebody previously edited German (owner ruling, 2026-10-17). Nothing is
+ * before anything is stored. Existing German without a baseline is adopted as-is. Unalignable changes
+ * preserve it with a visible exception (owner ruling in PR #277). Nothing is
  * stored when a translation is missing or fails a check; the German stays as
  * it was.
  */
@@ -38,13 +39,14 @@ final class Translator {
 	/**
 	 * Sets up the translator.
 	 *
-	 * @param Languages $languages The site's languages.
-	 * @param Planner   $planner   Plans each field from the English and the German.
-	 * @param Fields    $fields    The translatable fields.
-	 * @param State     $state     Translation state.
-	 * @param Client    $client    The machine translator.
-	 * @param Validator $validator Checks translations.
-	 * @param Twins     $twins     Writes German objects.
+	 * @param Languages     $languages The site's languages.
+	 * @param Planner       $planner   Plans each field from the English and the German.
+	 * @param Fields        $fields    The translatable fields.
+	 * @param State         $state     Translation state.
+	 * @param Client        $client    The machine translator.
+	 * @param Validator     $validator Checks translations.
+	 * @param Twins         $twins     Writes German objects.
+	 * @param LinkLocalizer $links Localises newly translated fragments only.
 	 */
 	public function __construct(
 		private readonly Languages $languages,
@@ -53,14 +55,15 @@ final class Translator {
 		private readonly State $state,
 		private readonly Client $client,
 		private readonly Validator $validator,
-		private readonly Twins $twins
+		private readonly Twins $twins,
+		private readonly LinkLocalizer $links
 	) {}
 
 	/**
 	 * Brings the German version of an English post up to date.
 	 *
 	 * @param int  $source_id English post ID.
-	 * @param bool $force     Translate every segment again, discarding edits.
+	 * @param bool $force     Legacy argument; existing German is always preserved.
 	 * @return string The status afterwards; empty when the post is not an English translated post.
 	 * @throws TranslationFailed When a translation is missing or fails its checks; nothing was stored.
 	 */
@@ -75,7 +78,7 @@ final class Translator {
 			$source_id,
 			$this->fields->of_post( $source ),
 			$twin,
-			fn( array $values ): int => $this->twins->post( $source_id, $values ),
+			fn( array $values ): int => $this->twins->post( $source_id, $values, null, false ),
 			$force
 		);
 	}
@@ -99,10 +102,31 @@ final class Translator {
 	}
 
 	/**
+	 * Captures the old English before its first edit when German has no baseline.
+	 * This writes metadata only, so the first saved change can translate by sentence.
+	 *
+	 * @param string $kind State::POST or State::TERM.
+	 * @param int    $id English object ID.
+	 */
+	public function prime( string $kind, int $id ): void {
+		if ( ! $this->accepts( $kind, $id ) ) {
+			return;
+		}
+		$twin = State::POST === $kind ? $this->german_post( $id ) : $this->german_term( $id );
+		if ( null === $twin || array() !== $this->state->units( $kind, $twin ) ) {
+			return;
+		}
+		$source = State::POST === $kind ? get_post( $id ) : get_term( $id );
+		if ( $source instanceof \WP_Post || $source instanceof \WP_Term ) {
+			$this->record( $kind, $twin, $source instanceof \WP_Post ? $this->fields->of_post( $source ) : $this->fields->of_term( $source ) );
+		}
+	}
+
+	/**
 	 * Brings the German version of an English term up to date.
 	 *
 	 * @param int  $term_id English term ID.
-	 * @param bool $force   Translate every segment again, discarding edits.
+	 * @param bool $force   Legacy argument; existing German is always preserved.
 	 * @return string The status afterwards; empty when the term is not an English translated term.
 	 * @throws TranslationFailed When a translation is missing or fails its checks; nothing was stored.
 	 */
@@ -117,7 +141,7 @@ final class Translator {
 			$term_id,
 			$this->fields->of_term( $term ),
 			$twin,
-			fn( array $values ): int => $this->twins->term( $term_id, $values ),
+			fn( array $values ): int => $this->twins->term( $term_id, $values, null, false ),
 			$force
 		);
 	}
@@ -199,18 +223,20 @@ final class Translator {
 	 * @param array<string, array{string, bool}> $source    English fields.
 	 * @param int|null                           $twin      German object ID, null when there is none.
 	 * @param callable                           $write     Writes the German values and returns the German object ID.
-	 * @param bool                               $force     Translate every segment again.
+	 * @param bool                               $force     Legacy argument; cannot discard existing German.
 	 * @return string The status afterwards.
 	 * @throws TranslationFailed When a translation is missing or fails its checks.
 	 *
 	 * @phpstan-param callable(array<string, string>): int $write
 	 */
 	private function run( string $kind, int $source_id, array $source, ?int $twin, callable $write, bool $force = false ): string {
-		$force       = $force || State::NEEDS_REVIEW === $this->state->status( $kind, $source_id );
+		// Legacy forced actions must obey the owner's German-preservation ruling.
+		unset( $force );
 		$fingerprint = self::fingerprint( $source );
-		$units       = null === $twin || $force ? array() : $this->state->units( $kind, $twin );
-		$conflicted  = array() !== array_filter( $units, static fn( array $unit ): bool => $unit['conflict'] );
-		if ( ! $force && ! $conflicted && State::NEEDS_REVIEW !== $this->state->status( $kind, $source_id ) && null !== $twin && $this->state->source_hash( $kind, $twin ) === $fingerprint ) {
+		$units       = null === $twin ? array() : $this->state->units( $kind, $twin );
+		if ( null !== $twin && ( array() === $units || $this->state->source_hash( $kind, $twin ) === $fingerprint ) ) {
+			// Refresh old paragraph-level fingerprints without rewriting German.
+			$this->record( $kind, $twin, $source );
 			$status = State::SYNCED;
 			$this->state->set_status( $kind, $source_id, $status );
 			return $status;
@@ -219,20 +245,27 @@ final class Translator {
 		$current = $this->german_fields( $kind, $twin );
 		$plans   = array();
 		foreach ( $source as $field => list( $value, $html ) ) {
-			$plans[ $field ] = $this->planner->plan( $value, $html, $current[ $field ] ?? null, $units[ $field ] ?? null, $force );
+			$plans[ $field ] = $this->planner->plan( $value, $html, $current[ $field ] ?? null, $units[ $field ] ?? null, false );
+		}
+		if ( array() !== array_filter( $plans, static fn( FieldPlan $plan ): bool => $plan->mismatch ) ) {
+			$this->state->set_status( $kind, $source_id, State::STRUCTURE_MISMATCH, State::structure_reason() );
+			return State::STRUCTURE_MISMATCH;
 		}
 		$translations = $this->translate( $plans );
 
 		$values = array();
 		foreach ( $plans as $field => $plan ) {
-			$values[ $field ] = $plan->render( $translations[ $field ] ?? array() );
+			$values[ $field ] = $plan->render( $translations[ $field ] ?? array(), $source[ $field ][1] ? $this->links->localize( ... ) : null );
 		}
 		foreach ( array_keys( $current ) as $field ) {
 			if ( ! isset( $values[ $field ] ) ) {
-				$values[ $field ] = '';
+				$values[ $field ] = $current[ $field ][0];
 			}
 		}
-		$twin = $write( $values );
+		// Baseline adoption must not pass preserved markup through a content writer.
+		if ( null === $twin || array_map( static fn( array $field ): string => $field[0], $current ) !== $values ) {
+			$twin = $write( $values );
+		}
 
 		$this->record( $kind, $twin, $source );
 		$status = State::SYNCED;

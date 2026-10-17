@@ -60,6 +60,7 @@ final class StatusColumnTest extends TestCase {
 		$this->assertSame( 'Translation pending', $column->label( true, State::NEEDS_REVIEW ) );
 		$this->assertSame( 'Translation failed', $column->label( true, State::FAILED ) );
 		$this->assertSame( 'Translation failed', $column->label( false, State::FAILED ) );
+		$this->assertSame( 'German out of date: structure differs', $column->label( true, State::STRUCTURE_MISMATCH ) );
 	}
 
 	/**

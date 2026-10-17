@@ -156,10 +156,11 @@ final class Twins {
 	 * @param int                   $source_id English post ID.
 	 * @param array<string, string> $values    German values: post_title, post_excerpt, post_content, meta:<key>.
 	 * @param string|null           $slug      Slug of a new German post; the English slug for products, the German title's otherwise.
+	 * @param bool                  $localize Whether whole-field link localisation is needed (imports/new content).
 	 * @return int German post ID.
 	 * @throws \RuntimeException When WordPress refuses the post.
 	 */
-	public function post( int $source_id, array $values, ?string $slug = null ): int {
+	public function post( int $source_id, array $values, ?string $slug = null, bool $localize = true ): int {
 		$source = get_post( $source_id );
 		if ( ! $source instanceof \WP_Post ) {
 			throw new \RuntimeException( esc_html( sprintf( 'No post %d.', $source_id ) ) );
@@ -175,8 +176,8 @@ final class Twins {
 			'ping_status'    => $source->ping_status,
 			'post_password'  => $source->post_password,
 			'post_title'     => $values['post_title'] ?? '',
-			'post_excerpt'   => $this->links->localize( $values['post_excerpt'] ?? '' ),
-			'post_content'   => $this->links->localize( $values['post_content'] ?? '' ),
+			'post_excerpt'   => $localize ? $this->links->localize( $values['post_excerpt'] ?? '' ) : ( $values['post_excerpt'] ?? '' ),
+			'post_content'   => $localize ? $this->links->localize( $values['post_content'] ?? '' ) : ( $values['post_content'] ?? '' ),
 		);
 		$this->writing = true;
 		$kses          = $this->suspend_kses();
@@ -267,10 +268,11 @@ final class Twins {
 	 * @param int                   $term_id English term ID.
 	 * @param array<string, string> $values  German values: name, description.
 	 * @param string|null           $slug    Slug of a new German term; the German name's by default.
+	 * @param bool                  $localize Whether whole-field link localisation is needed.
 	 * @return int German term ID.
 	 * @throws \RuntimeException When WordPress refuses the term.
 	 */
-	public function term( int $term_id, array $values, ?string $slug = null ): int {
+	public function term( int $term_id, array $values, ?string $slug = null, bool $localize = true ): int {
 		$source = get_term( $term_id );
 		if ( ! $source instanceof \WP_Term ) {
 			throw new \RuntimeException( esc_html( sprintf( 'No term %d.', $term_id ) ) );
@@ -279,7 +281,7 @@ final class Twins {
 		$parent        = 0 === $source->parent ? 0 : absint( $this->languages->term_translation( $source->parent, Languages::TARGET ) );
 		$args          = array(
 			'name'        => $values['name'] ?? $source->name,
-			'description' => $this->links->localize( $values['description'] ?? '' ),
+			'description' => $localize ? $this->links->localize( $values['description'] ?? '' ) : ( $values['description'] ?? '' ),
 			'parent'      => $parent,
 		);
 		$this->writing = true;

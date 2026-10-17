@@ -47,11 +47,13 @@ final class PlannerTest extends TestCase {
 	}
 
 	/**
-	 * Missing German and missing baseline both require a complete translation.
+	 * Missing German is translated; German without a baseline is adopted as-is.
 	 */
-	public function test_missing_baseline_translates_every_segment(): void {
+	public function test_missing_baseline_keeps_existing_german(): void {
 		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, null, null, false )->missing() );
-		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), null, false )->missing() );
+		$plan = $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), null, false );
+		$this->assertSame( array(), $plan->missing() );
+		$this->assertSame( self::GERMAN, $plan->render( array() ) );
 	}
 
 	/**
@@ -86,32 +88,36 @@ final class PlannerTest extends TestCase {
 	}
 
 	/**
-	 * Deleting English removes its German; inserting English translates only it.
+	 * Structural changes retain the entire German field as a visible exception.
 	 */
-	public function test_insertions_and_deletions_reuse_aligned_segments(): void {
+	public function test_insertions_and_deletions_preserve_german(): void {
 		$removed = $this->planner()->plan( '<p>First paragraph.</p>', true, array( self::GERMAN, true ), $this->unit(), false );
 		$this->assertSame( array(), $removed->missing() );
-		$this->assertSame( '<p>Erster Absatz.</p>', $removed->render( array() ) );
+		$this->assertTrue( $removed->mismatch );
+		$this->assertSame( self::GERMAN, $removed->render( array() ) );
 		$inserted = $this->planner()->plan( '<p>New paragraph.</p>' . self::ENGLISH, true, array( self::GERMAN, true ), $this->unit(), false );
-		$this->assertSame( array( 0 ), $inserted->missing() );
-		$this->assertSame( '<p>Neu.</p>' . self::GERMAN, $inserted->render( array( 0 => 'Neu.' ) ) );
+		$this->assertTrue( $inserted->mismatch );
+		$this->assertSame( array(), $inserted->missing() );
+		$this->assertSame( self::GERMAN, $inserted->render( array() ) );
 	}
 
 	/**
-	 * Historical conflicts and changed German structures are rebuilt from English.
+	 * Historical flags never force a rewrite. Unalignable changed English is blocked.
 	 */
-	public function test_historical_conflicts_and_unalignable_fields_are_retranslated(): void {
+	public function test_historical_conflicts_and_unalignable_fields_are_preserved(): void {
 		$unit             = $this->unit();
 		$unit['conflict'] = true;
-		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), $unit, false )->missing() );
-		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, array( '<p>Neu strukturiert.</p>', true ), $this->unit(), false )->missing() );
+		$this->assertSame( array(), $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), $unit, false )->missing() );
+		$plan = $this->planner()->plan( str_replace( 'First', 'Changed', self::ENGLISH ), true, array( '<p>Neu strukturiert.</p>', true ), $this->unit(), false );
+		$this->assertTrue( $plan->mismatch );
+		$this->assertSame( '<p>Neu strukturiert.</p>', $plan->render( array() ) );
 	}
 
 	/**
-	 * Explicit retranslation rebuilds all segments.
+	 * Even legacy forced jobs cannot erase existing German.
 	 */
-	public function test_force_translates_everything(): void {
-		$this->assertSame( array( 0, 1 ), $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), $this->unit(), true )->missing() );
+	public function test_force_preserves_existing_german(): void {
+		$this->assertSame( array(), $this->planner()->plan( self::ENGLISH, true, array( self::GERMAN, true ), $this->unit(), true )->missing() );
 	}
 
 	/**
@@ -123,6 +129,46 @@ final class PlannerTest extends TestCase {
 		$unit['src'] = $this->planner()->split( '<p><strong>First paragraph.</strong></p><p>Second paragraph.</p>', true )->hashes();
 		$plan        = $this->planner()->plan( $english, true, array( self::GERMAN, true ), $unit, false );
 		$this->assertSame( array( 1 ), $plan->missing() );
-		$this->assertSame( '<p><strong>Erster Absatz.</strong></p><p>Neu.</p>', $plan->render( array( 1 => 'Neu.' ) ) );
+		$this->assertSame( '<p>Erster Absatz.</p><p>Neu.</p>', $plan->render( array( 1 => 'Neu.' ) ) );
+	}
+
+	/**
+	 * Changing one sentence does not normalise the untouched German sentence's bytes.
+	 */
+	public function test_only_one_sentence_inside_a_paragraph_changes(): void {
+		$original = '<p>First sentence. Second sentence.</p>';
+		$german   = '<p class="manual">Erster  Satz. Zweiter Satz.</p>';
+		$unit     = array(
+			'src'      => $this->planner()->split( $original, true )->hashes(),
+			'out'      => array(),
+			'conflict' => true,
+		);
+		$plan     = $this->planner()->plan( str_replace( 'Second', 'New second', $original ), true, array( $german, true ), $unit, false );
+		$this->assertSame( array( 1 ), $plan->missing() );
+		$this->assertSame( '<p class="manual">Erster  Satz. Neuer zweiter Satz.</p>', $plan->render( array( 1 => 'Neuer zweiter Satz.' ) ) );
+	}
+
+	/**
+	 * Localisation applies to newly translated fragments, never preserved German.
+	 */
+	public function test_new_fragments_only_are_localised(): void {
+		$english = '<p>First sentence.</p><p>Second sentence.</p>';
+		$german  = '<p><a href="/products/">Manueller Link.</a></p><p>Zweiter Satz.</p>';
+		$unit    = array(
+			'src'      => $this->planner()->split( $english, true )->hashes(),
+			'out'      => array(),
+			'conflict' => false,
+		);
+		$plan    = $this->planner()->plan( str_replace( 'Second', 'New second', $english ), true, array( $german, true ), $unit, false );
+		$seen    = array();
+		$output  = $plan->render(
+			array( 1 => 'Neu.' ),
+			static function ( string $html ) use ( &$seen ): string {
+				$seen[] = $html;
+				return $html;
+			}
+		);
+		$this->assertSame( array( 'Neu.' ), $seen );
+		$this->assertSame( '<p><a href="/products/">Manueller Link.</a></p><p>Neu.</p>', $output );
 	}
 }

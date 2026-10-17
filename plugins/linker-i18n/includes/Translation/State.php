@@ -13,11 +13,11 @@ namespace Linker\I18n\Translation;
  * The translation state of an English object and its German version, in
  * post meta or term meta.
  *
- * On the English object: its status (pending, synced, failed) and a
+ * On the English object: its status (pending, synced, failed, structure_mismatch) and a
  * note. On the German object: the fingerprint of the English it was made
  * from (`_linker_i18n_source_hash`), per field the fingerprints of the
- * English and German segments last written (`_linker_i18n_units`), and historical conflict flags read during recovery. New writes clear
- * the old `_linker_i18n_reviewed` locks (owner ruling, 2026-10-17).
+ * English and German segments last written (`_linker_i18n_units`), and historical conflict flags. The existing `_linker_i18n_reviewed` record
+ * is retained as history; it never forces a rewrite or an approval step.
  */
 final class State {
 
@@ -45,6 +45,18 @@ final class State {
 	 * A lasting failure, or transient retries exhausted. The previous German stays.
 	 */
 	public const FAILED = 'failed';
+
+	/**
+	 * English changed, but its sentences cannot be aligned with existing German.
+	 */
+	public const STRUCTURE_MISMATCH = 'structure_mismatch';
+
+	/**
+	 * Shared, localised exception reason for the list and the daily digest.
+	 */
+	public static function structure_reason(): string {
+		return __( 'German out of date: structure differs', 'linker-i18n' );
+	}
 
 	/**
 	 * Historical status, read only to recover objects into automatic translation.
@@ -138,8 +150,6 @@ final class State {
 	public function save( string $kind, int $twin, string $source_hash, array $units ): void {
 		update_metadata( $kind, $twin, self::SOURCE_HASH, $source_hash );
 		update_metadata( $kind, $twin, self::UNITS, wp_slash( (string) wp_json_encode( $units ) ) );
-		// Retire historical manual-approval locks after a successful automatic write.
-		delete_metadata( $kind, $twin, self::REVIEWED );
 	}
 
 	/**

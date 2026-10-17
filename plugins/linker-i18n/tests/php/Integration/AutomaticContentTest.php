@@ -46,10 +46,8 @@ final class AutomaticContentTest extends SiteTestCase {
 				true
 			);
 			$this->assertSame( 'synced', $result['status'] );
-			$this->assertStringContainsString( 'Datenblatt', $result['after'] );
-			$this->assertStringContainsString( 'src="/unchanged-image.png"', $result['after'] );
-			$this->assertStringNotContainsString( 'Old manually protected', $result['after'] );
-			$this->assertSame( '', $result['lock'] );
+			$this->assertSame( '<p>Old manually protected German.</p>', $result['after'] );
+			$this->assertNotSame( '', $result['lock'] );
 		} finally {
 			self::remove_pair( $id );
 		}
