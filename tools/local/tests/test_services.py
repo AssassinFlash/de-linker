@@ -1,7 +1,10 @@
 from pathlib import Path
 
+import pytest
+
 from linker_local.instance import Instance
-from linker_local.services import SERVICES, genie_environment
+from linker_local.processes import ProcessError
+from linker_local.services import SERVICES, genie_environment, genie_index
 
 
 def test_each_service_has_its_own_port_log_and_option() -> None:
@@ -22,8 +25,61 @@ def test_each_instance_logs_genie_turns_in_its_own_directory() -> None:
     a = Instance("a", 8888, 8889, 8890, Path("/data"))
     b = Instance("b", 8891, 8892, 8893, Path("/data"))
 
-    assert genie_environment(a) == {
+    index = Path("/data/index/builds/v/index.sqlite")
+
+    assert genie_environment(a, index) == {
         "GENIE_WP_URL": "http://127.0.0.1:8888",
         "GENIE_LOG": "/data/a/genie/turns.sqlite",
+        "GENIE_INDEX": "/data/index/builds/v/index.sqlite",
     }
-    assert genie_environment(a)["GENIE_LOG"] != genie_environment(b)["GENIE_LOG"]
+    assert (
+        genie_environment(a, index)["GENIE_LOG"]
+        != genie_environment(b, index)["GENIE_LOG"]
+    )
+
+
+def _builds(root: Path, *versions: str) -> Path:
+    for version in versions:
+        directory = root / "index" / "builds" / version
+        directory.mkdir(parents=True)
+        (directory / "index.sqlite").write_bytes(b"")
+    return root
+
+
+def test_genie_reads_the_newest_build(tmp_path: Path) -> None:
+    data = _builds(
+        tmp_path, "20261011T000000Z-repair", "20261016T072222Z", "20261016T065329Z"
+    )
+    (data / "index" / "builds" / "20261099T000000Z-empty").mkdir()
+
+    index = genie_index({"LINKER_DATA": str(data)})
+
+    assert index.path == data / "index/builds/20261016T072222Z/index.sqlite"
+    assert index.line() == (
+        f"genie index {index.path} (build 20261016T072222Z, the newest here)"
+    )
+
+
+def test_an_explicit_genie_index_wins(tmp_path: Path) -> None:
+    data = _builds(tmp_path, "20261016T072222Z")
+    chosen = tmp_path / "other.sqlite"
+    chosen.write_bytes(b"")
+
+    index = genie_index({"LINKER_DATA": str(data), "GENIE_INDEX": str(chosen)})
+
+    assert (index.path, index.source) == (chosen, "GENIE_INDEX")
+
+
+def test_an_explicit_genie_index_that_is_missing_fails(tmp_path: Path) -> None:
+    with pytest.raises(ProcessError, match="is not a file"):
+        genie_index({"GENIE_INDEX": str(tmp_path / "missing.sqlite")})
+
+
+def test_no_index_fails_and_says_how_to_get_one(tmp_path: Path) -> None:
+    with pytest.raises(ProcessError, match="no Genie document index") as error:
+        genie_index({"LINKER_DATA": str(tmp_path)})
+
+    assert "rsync -a linker-services:/opt/linker-genie/index/current/" in str(
+        error.value
+    )
+    assert "just index" in str(error.value)

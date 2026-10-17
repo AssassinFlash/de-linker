@@ -12,7 +12,7 @@ import shutil
 import subprocess
 import urllib.error
 import urllib.request
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -30,6 +30,23 @@ from linker_local.wpcli import WpCli
 # not leave behind.
 ENGINE_FEED_PATH = "/wp-json/linker/v1/engineering-feed"
 ENGINE_FEED_TIMEOUT = 120.0
+
+# Genie's document index (docs/specs/10-knowledge-index.md, 唯一检索源): the builds
+# the index tooling writes under $LINKER_DATA/index/builds/<version>/index.sqlite
+# (services/genie/index/paths.py; LINKER_DATA defaults to ~/de-linker-data). Without
+# GENIE_INDEX the service opens the VPS path /opt/linker-genie/index/current, which
+# does not exist on this Mac: every document question fell back (issue #257).
+INDEX_FILE = "index.sqlite"
+
+
+@dataclass(frozen=True)
+class GenieIndex:
+    path: Path
+    source: str
+
+    def line(self) -> str:
+        return f"genie index {self.path} ({self.source})"
+
 
 # Seconds to wait for a service's port: uvicorn listened 0.55–0.7 s after
 # `uv run` on this Mac (measured 2026-10-09; the environment is synced before,
@@ -61,8 +78,13 @@ SERVICES = (
 
 
 def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
-    """(Re)start both services from this checkout; return their URLs."""
+    """(Re)start both services from this checkout; return their URLs.
+
+    The document index is found before anything restarts: a Genie without one
+    would answer every document question with its fallback.
+    """
     uv = _uv()
+    index = genie_index()
     urls = []
     for service in SERVICES:
         project = checkout.service(service.name)
@@ -74,7 +96,7 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
         else:
-            env.update(genie_environment(instance))
+            env.update(genie_environment(instance, index.path))
         service.process(instance).restart(
             [
                 str(uv),
@@ -96,19 +118,50 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         url = f"http://{HOST}:{port}"
         wp.run("option", "update", service.option, url)
         urls.append(f"{service.name} {url}")
+    urls.append(index.line())
     return urls
 
 
-def genie_environment(instance: Instance) -> dict[str, str]:
-    """Where this instance's Genie calls back to and logs its turns.
+def genie_environment(instance: Instance, index: Path) -> dict[str, str]:
+    """Where this instance's Genie calls back to, logs its turns and reads documents.
 
     Genie calls this instance's WordPress back (the abilities); without the
     explicit address its default `http://127.0.0.1` hits whatever answers on
     port 80 of this Mac and every ability call fails. Its turn log goes into
     the instance's own directory (`Instance.genie_log`): the service's default,
-    `~/.cache/linker-genie/turns.sqlite`, is one file for every instance.
+    `~/.cache/linker-genie/turns.sqlite`, is one file for every instance. Its
+    document index is `index` (`genie_index`).
     """
-    return {"GENIE_WP_URL": instance.url, "GENIE_LOG": str(instance.genie_log)}
+    return {
+        "GENIE_WP_URL": instance.url,
+        "GENIE_LOG": str(instance.genie_log),
+        "GENIE_INDEX": str(index),
+    }
+
+
+def genie_index(environ: Mapping[str, str] = os.environ) -> GenieIndex:
+    """The document index Genie reads: GENIE_INDEX when set, else the newest build.
+
+    Build directories are named by their UTC build time (20261016T072222Z), so the
+    newest sorts last; the line `serve` prints names it, to compare with the VPS's
+    `current`. No index is a broken `serve`, not a Genie that silently falls back.
+    """
+    explicit = environ.get("GENIE_INDEX", "")
+    if explicit:
+        path = Path(explicit).expanduser()
+        if not path.is_file():
+            raise ProcessError(f"GENIE_INDEX={explicit} is not a file")
+        return GenieIndex(path, "GENIE_INDEX")
+    data = Path(environ.get("LINKER_DATA", "~/de-linker-data")).expanduser()
+    builds = data / "index" / "builds"
+    found = sorted(builds.glob(f"*/{INDEX_FILE}")) if builds.is_dir() else []
+    if not found:
+        raise ProcessError(
+            f"no Genie document index under {builds}: copy the VPS's build "
+            f"(rsync -a linker-services:/opt/linker-genie/index/current/ "
+            f"{builds}/<version>/), build one (just index), or set GENIE_INDEX"
+        )
+    return GenieIndex(found[-1], f"build {found[-1].parent.name}, the newest here")
 
 
 def stop(instance: Instance) -> list[str]:
