@@ -83,6 +83,11 @@ LEAD_CHARS = 1_500
 # A passage is cut at a heading or at this length: one FAQ answer or one section's
 # paragraph, small enough that a long page gives the question's passages room.
 PASSAGE_CHARS = 700
+# A block this long or longer is a sentence, kept once; a shorter one is a label
+# that each product card of a category page repeats ("MPPT trackers", 13 characters;
+# the longest card label on the inverter category, "Nominal AC voltage L/N/PE", has
+# 25), kept every time.
+REPEAT_CHARS = 40
 # Headings listed so the model knows what else the page has (the FAQ page has 31
 # section headings, measured 2026-10-18).
 OUTLINE_ITEMS = 40
@@ -207,7 +212,9 @@ def passages(html: str) -> list[Passage]:
     """The page's text in passages, in page order, each repeated block kept once.
 
     The live pages print some blocks twice (a hero for wide and for narrow screens);
-    the repeat says nothing new.
+    the repeat says nothing new. A short block is kept every time: it is a label
+    each product card repeats ("Rated AC power", "MPPT trackers"), and its value
+    means nothing without it.
     """
     parser = _MainText()
     parser.feed(html)
@@ -223,9 +230,10 @@ def passages(html: str) -> list[Passage]:
             current.clear()
 
     for text, is_heading in parser.blocks:
-        if text in seen:
-            continue
-        seen.add(text)
+        if len(text) >= REPEAT_CHARS:
+            if text in seen:
+                continue
+            seen.add(text)
         if is_heading:
             close()
             heading = text
