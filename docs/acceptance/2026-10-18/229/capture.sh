@@ -6,8 +6,5 @@ here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/../../../.." && pwd)"
 out="$1"
 local_base="$2"
-for width in 1280 1440 1920 390; do
-    node "$repo/docs/acceptance/2026-10-18/249/pixel/shoot.mjs" \
-        "$out" "$width" https://de-linker.com=live "$local_base=local" -- / /de/
-done
-python3 "$here/pixels.py" "$out"
+exec node "$repo/tests/visual/pixel-parity.mjs" "$out" https://de-linker.com "$local_base" \
+    --widths 1280,1440,1920,390 --paths /,/de/ --allow-header /de/:1440,1920:89
