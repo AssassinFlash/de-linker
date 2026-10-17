@@ -53,7 +53,15 @@ just cutover test
 
 最终全仓验证：rebase 到 `origin/main` 的 `781f5a223b9997d3d7abf8bcacc40e439c2c4317` 后，`just check`、`just test` 均退出 0。该次全仓运行中的 cutover 套件仍为 **107 passed**；迁移套件保留既有的 **9 skipped**（依赖外部实例）。本机完整输出保存在 `/tmp/c298-round1-check.log` 与 `/tmp/c298-round1-test.log`，生产实走结果仍见下方“未完成（Claude）”。
 
-## 一条命令回滚
+## 中断后继续与一条命令回滚
+
+第 3 轮修复后的 pending 恢复入口（使用该次部署的同一检出版本）：
+
+```sh
+just cutover resume-deploy
+```
+
+用于切换成功但 SSH 回执丢失、计时 marker 无法解析或暂时 verify 失败。命令预检 pending manifest 的库存、同批备份与 live inode，再 verify / archive，不重新构建、上传或切换 live；verify 失败仍返回非零并保持 pending。丢失的切换耗时不补造。只看计划：`uv run --locked --project tools/cutover linker-cutover resume-deploy`；本地入口可加 `--target local:c298`。
 
 在**执行该次部署的同一检出版本**运行：
 
@@ -70,7 +78,7 @@ just cutover rollback-deploy
 本实现会话没有生产写入。评审合并后，Claude 从负责部署的检出版本独占运行：
 
 1. `just cutover backup`，确认成功并记录完整备份路径。
-2. 使用下面的一条探针命令。它先验证全部只读端点的基线，再运行真正的 `deploy --write`，并发循环请求各端点，最后读回 fatal 文件元数据和站外备份 inode。普通 deploy 自行完成 verify 和站外归档；这里不打开维护页遮住真实请求。
+2. 使用下面的一条探针命令。它先验证全部只读端点的基线，再运行真正的 `deploy --write`，同时以单一轻量轮询流请求各端点，最后读回 fatal 文件元数据和站外备份 inode。普通 deploy 自行完成 verify 和站外归档；这里不打开维护页遮住真实请求。
 
    ```sh
    just cutover probe --evidence "$HOME/de-linker-data/c298-proof"
@@ -78,6 +86,22 @@ just cutover rollback-deploy
 
 3. 要求命令 exit 0，`proof.json` 的 `successful`、`fatal_logs_unchanged`、`directory_rename_proved` 全为 true，deploy exit 0，所有端点每阶段都有成功样本。日志轮转/截断、任何端点状态/结构错误或 rename 证据不符都不通过。`deploy.log` 要含 deploy ID、总 switch duration、verify 结果和站外归档路径。文件只存在本机指定 evidence 目录，不包含响应正文或密钥。
 4. 将 proof / deploy 回执与请求起止时间、数量、总切换耗时补到票 #298。若需撤回，运行上一节的命令；它已经包含读回和 verify，不为证明回滚强制把生产改动两次。
+
+## 第 3 轮修复与测试
+
+依据：PR #299 的 “Review, round 3 (#298)” 五项决定。每项均先观察失败测试，再实现至通过；业务页面、邮件与模型没有改动。
+
+| 决定 | 证据 |
+| --- | --- |
+| 1 恢复先 rename，再清理 | `test_publish_recovery_restores_live_before_failing_cleanup` 注入失败的 `rm`：live 保持旧内容和原 inode，失败版本仅留在 `.failed`；不先递归删除 live。 |
+| 2 只解析计时 marker | `test_switch_timing_uses_only_marker_and_reports_parse_failure` 覆盖 publish / rollback 的噪声、丢失与损坏回执；异常为 `CutoverError`，publish 仍有可恢复的 pending manifest。 |
+| 3 resume-deploy | `test_resume_deploy_finishes_pending_batch_without_republishing` 覆盖 SSH 回执丢失与暂时 verify 失败；dry run 不归档，verify 失败保留 pending，恢复后归档同批且 live inode 不变。 |
+| 4 清理中断批次 | `test_successful_archive_prunes_killed_batches_without_manifests` 证明无 manifest 的残件在归档失败时保留，成功并读回后清理，当前批次仍可回滚。 |
+| 5 轻量探针 | `test_probe_samples_slowly_until_switch_then_densely_through_readback` 用真实 loopback HTTP 验证两阶段速率、全部端点与最多一个在途 GET；`test_deployment_process_signals_switch_before_it_finishes` 用真实子进程与确认文件证明切换信号在读回前实时到达。 |
+
+采样配置的来源与速率：第 3 轮决定 5 要求构建 / 上传低频、切换至读回密集；本票将原 **0.1 s** 间隔改为所有端点共用的单一轮询流，构建 / 上传则降十倍到 **1 s**。每次响应后才计等待，所以持续流量分别至多约 **10 GET/s** 与 **1 GET/s**（全体合计），最多一个在途请求；不把配置说成 Hostinger 容量事实。部署进程在调用切换 shell 前刷新专用信号行，父进程实时读到后升频；持续至 deploy 的 verify / archive 读回结束，至少完成一轮密集采样。最终 fatal 元数据在采样线程与前后快照请求全部结束后读取。
+
+成功归档并读回后，只保留当前批次；专用 `~/deploy-prev/` 下无 `manifest.json` 的中断批次也清理。失败恢复时无法删除的 `.failed` 保留供检查，并阻止新发布覆盖它。正常发布会确认 web root 无 `.next/.prev/.prev-absent/.failed` 残件。
 
 端点配置在 `plan.DEPLOY_PROBE_ENDPOINTS`：首页、联系页、Proforma 请求页、`VERIFY_PRODUCT_PATHS` 中的英文产品页、commerce 产品搜索、i18n 的 `wp/v2/pages?lang=de`、tools 的只读 `genie/conversation`。i18n 自己没有 REST 命名空间，实际由 `RestLang` 进入语言并过滤原生路由；探针要求返回非空、全部为德语地址。tools GET 只读已有线程，不创建对话、不调用模型、不发信。root / base URL 从 `Target` 来，插件名单从 `plan.NEW_PLUGINS` 来，README 不另写一套主机路径或 slug。
 

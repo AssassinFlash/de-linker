@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import shlex
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -24,7 +26,7 @@ class Receipt:
     """A publication result, independent of shell output formatting."""
 
     deploy_id: str
-    switch_seconds: float
+    switch_seconds: float | None
     backup_directory: str
     paths: tuple[str, ...]
     readbacks: tuple[str, ...] = ()
@@ -37,6 +39,7 @@ class Siblings:
     next: str
     previous: str
     absent: str
+    failed: str
 
 
 @dataclass(frozen=True)
@@ -68,12 +71,26 @@ _IDENTITY = """identity() {
 """
 
 
+def _switch_seconds(output: str, deploy_id: str) -> float:
+    """Ignore transport/command diagnostics; accept exactly one timing record."""
+    marker = "LINKER_CUTOVER_SWITCH_SECONDS="
+    records = [line for line in output.splitlines() if line.startswith(marker)]
+    if len(records) == 1 and re.fullmatch(r"\d+(?:\.\d+)?", records[0][len(marker) :]):
+        elapsed = float(records[0][len(marker) :])
+        if math.isfinite(elapsed):
+            return elapsed
+    raise CutoverError(
+        f"invalid switch timing for deployment {deploy_id}; inspect the manifest; "
+        "use resume-deploy to verify/archive a pending deploy"
+    )
+
+
 def _siblings(relative: str) -> Siblings:
     path = Path(relative)
     return Siblings(
         *(
             str(path.with_name(f".{path.name}.{suffix}"))
-            for suffix in ("next", "prev", "prev-absent")
+            for suffix in ("next", "prev", "prev-absent", "failed")
         )
     )
 
@@ -169,7 +186,13 @@ def _same_filesystem(target: Target, root: str, parents: list[str]) -> None:
         )
 
 
-def publish(target: Target, artifacts: list[Artifact], *, deploy_id: str) -> Receipt:
+def publish(
+    target: Target,
+    artifacts: list[Artifact],
+    *,
+    deploy_id: str,
+    on_switch: Callable[[], None] | None = None,
+) -> Receipt:
     """Upload everything, then rename everything in one recovery-protected shell."""
     _check_id(deploy_id)
     if not artifacts or len({item.relative for item in artifacts}) != len(artifacts):
@@ -185,7 +208,9 @@ def publish(target: Target, artifacts: list[Artifact], *, deploy_id: str) -> Rec
             )
     for artifact in artifacts:
         names = _siblings(artifact.relative)
-        if target.exists(names.previous) or target.exists(names.absent):
+        if any(
+            target.exists(path) for path in (names.previous, names.absent, names.failed)
+        ):
             raise CutoverError(f"unresolved previous deployment: {artifact.relative}")
         parent = _quoted(target, str(Path(artifact.relative).parent))
         target.shell(
@@ -268,9 +293,17 @@ def publish(target: Target, artifacts: list[Artifact], *, deploy_id: str) -> Rec
             switch.append(f"mv {live} {previous}")
         switch.append(f"mv {'-f ' if not entry.directory else ''}{staged} {live}")
         if entry.existed:
+            recovery = f"mv -f {previous} {live}"
+            if entry.directory:
+                failed = _quoted(target, names.failed)
+                recovery = (
+                    f"if [ -e {live} ] || [ -L {live} ]; then\n"
+                    f"    mv {live} {failed} && mv {previous} {live} && rm -rf {failed}\n"
+                    f"else\n    mv {previous} {live}\nfi"
+                )
             restore.insert(
                 0,
-                f"if [ -e {previous} ] || [ -L {previous} ]; then\n    {'rm -rf ' + live + '; ' if entry.directory else ''}mv {'-f ' if not entry.directory else ''}{previous} {live}\nfi",
+                f"if [ -e {previous} ] || [ -L {previous} ]; then\n{recovery}\nfi",
             )
         else:
             restore.insert(0, f"rm -rf {live}\nrm -f {absent}")
@@ -286,7 +319,7 @@ def publish(target: Target, artifacts: list[Artifact], *, deploy_id: str) -> Rec
         + "\n}\ntrap restore_all EXIT\ntrap 'exit 1' HUP INT TERM\n"
     )
     script += (
-        "TIMEFORMAT='switch_seconds=%R'\n{ time {\n"
+        "TIMEFORMAT='LINKER_CUTOVER_SWITCH_SECONDS=%R'\n{ time {\n"
         + "\n".join(switch)
         + "\n}; } 2>&1\n"
     )
@@ -294,8 +327,10 @@ def publish(target: Target, artifacts: list[Artifact], *, deploy_id: str) -> Rec
         _write_manifest(manifest, directory)
         + f"\nprintf '%s' {shlex.quote(deploy_id)} > {pointer}\ntrap - EXIT HUP INT TERM\n"
     )
+    if on_switch is not None:
+        on_switch()
     output = target.shell(script)
-    elapsed = float(output.strip().removeprefix("switch_seconds="))
+    elapsed = _switch_seconds(output, deploy_id)
     return Receipt(
         deploy_id, elapsed, directory, tuple(item.relative for item in artifacts)
     )
@@ -371,9 +406,6 @@ def archive(target: Target, receipt: Receipt) -> None:
         )
     )
     script += "\ntrap - EXIT HUP INT TERM\n"
-    # Review #299 decision 5: retain exactly the most recent successful deploy.
-    root = shlex.quote(backup_root(target))
-    script += f'for record in {root}/*/manifest.json; do\n    [ -f "$record" ] || continue\n    old=${{record%/manifest.json}}\n    if [ "$old" != {shlex.quote(directory)} ]; then rm -rf "$old"; fi\ndone\n'
     target.shell(script)
     _checked_backups(target, list(receipt.paths))
     siblings = [
@@ -388,6 +420,29 @@ def archive(target: Target, receipt: Receipt) -> None:
         raise CutoverError(
             "deployment artifacts remain in web root: " + ", ".join(remaining)
         )
+    # PR #299 rounds 1/3: this root belongs only to deployment batches. Retain
+    # the latest after successful readback, including pruning killed batches
+    # that never reached their manifest commit.
+    root = shlex.quote(backup_root(target))
+    target.shell(
+        f'set -eu\nfor old in {root}/*; do\n    [ -d "$old" ] || continue\n    if [ "$old" != {shlex.quote(directory)} ]; then rm -rf "$old"; fi\ndone\n'
+    )
+
+
+def pending_receipt(target: Target, relatives: list[str]) -> Receipt:
+    """Recover a lost receipt without inventing timing or republishing live files."""
+    directory, manifest, _ = _checked_backups(target, relatives)
+    if manifest.state != "pending":
+        raise CutoverError(f"deployment {manifest.deploy_id} is not pending")
+    actual = identities(target, [target.path_of(path) for path in relatives])
+    drifted = [
+        entry.relative
+        for entry in manifest.backups
+        if actual[target.path_of(entry.relative)] != entry.new_inode
+    ]
+    if drifted:
+        raise CutoverError("live changed since deploy: " + ", ".join(drifted))
+    return Receipt(manifest.deploy_id, None, directory, tuple(relatives))
 
 
 def rollback(target: Target, relatives: list[str]) -> Receipt:
@@ -462,7 +517,7 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
         + "\n}\ntrap restore_all EXIT\ntrap 'exit 1' HUP INT TERM\n"
     )
     script += (
-        "TIMEFORMAT='switch_seconds=%R'\n{ time {\n"
+        "TIMEFORMAT='LINKER_CUTOVER_SWITCH_SECONDS=%R'\n{ time {\n"
         + "\n".join(switch)
         + "\n}; } 2>&1\ntrap - EXIT HUP INT TERM\n"
     )
@@ -488,7 +543,7 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
     )
     return Receipt(
         manifest.deploy_id,
-        float(output.strip().removeprefix("switch_seconds=")),
+        _switch_seconds(output, manifest.deploy_id),
         directory,
         tuple(relatives),
         tuple(readbacks),

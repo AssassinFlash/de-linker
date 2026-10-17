@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from linker_cutover import atomic
-from linker_cutover.target import Target
+from linker_cutover.target import CutoverError, Target
 
 
 def target_at(root: Path) -> Target:
@@ -52,6 +52,7 @@ def test_all_artifacts_are_uploaded_before_one_switch(tmp_path: Path) -> None:
     assert all((root / path / "plugin.php").read_text() == "new" for path in relatives)
     assert len(switches) == 1
     assert receipt.deploy_id == "20261018T000000Z-abc123"
+    assert receipt.switch_seconds is not None
     assert receipt.switch_seconds >= 0
 
 
@@ -178,6 +179,35 @@ def test_owned_file_rename_keeps_open_descriptor_and_host_neighbour(
     assert not list(live.parent.glob(".*.prev*"))
 
 
+def test_successful_archive_prunes_killed_batches_without_manifests(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Incomplete private batches survive a failed archive, then are pruned."""
+    target, artifacts = batch_fixture(tmp_path)
+    receipt = atomic.publish(target, artifacts, deploy_id="20261018T000001Z-current")
+    killed = Path(atomic.backup_root(target)) / "20261018T000000Z-killed"
+    killed.mkdir()
+    (killed / "manifest.json.next").write_text("partial")
+    original_path = os.environ["PATH"]
+    real_mv = shutil.which("mv")
+    command_shim(
+        tmp_path,
+        monkeypatch,
+        "mv",
+        f'if [[ "$1" == */.first.prev ]]; then exit 1; fi\nexec "{real_mv}" "$@"\n',
+    )
+    with pytest.raises(CutoverError):
+        atomic.archive(target, receipt)
+    assert killed.exists()
+    monkeypatch.setenv("PATH", original_path)
+
+    atomic.archive(target, receipt)
+
+    assert not killed.exists()
+    assert Path(receipt.backup_directory, "manifest.json").is_file()
+    atomic.rollback(target, [item.relative for item in artifacts])
+
+
 def batch_fixture(tmp_path: Path) -> tuple[Target, list[atomic.Artifact]]:
     target = target_at(tmp_path / "site")
     source = tmp_path / "release"
@@ -201,6 +231,45 @@ def batch_fixture(tmp_path: Path) -> tuple[Target, list[atomic.Artifact]]:
     return target, artifacts
 
 
+@pytest.mark.parametrize("operation", ["publish", "rollback"])
+@pytest.mark.parametrize("reply", ["noise", "missing", "invalid"])
+def test_switch_timing_uses_only_marker_and_reports_parse_failure(
+    tmp_path: Path, operation: str, reply: str
+) -> None:
+    """A noisy transport reply is harmless; lost timing is a managed failure."""
+    target, artifacts = batch_fixture(tmp_path)
+
+    class ReplyTarget(Target):
+        def shell(self, script: str) -> str:
+            output = super().shell(script)
+            if "TIMEFORMAT=" not in script:
+                return output
+            if reply == "noise":
+                return "transport notice\n" + output + "unrelated stderr\n"
+            return "" if reply == "missing" else "LINKER_CUTOVER_SWITCH_SECONDS=bad\n"
+
+    noisy = ReplyTarget("fixture", target.root, target.base_url, (), None, None)
+    deploy_id = "20261018T000000Z-timing"
+    if operation == "rollback":
+        atomic.publish(target, artifacts, deploy_id=deploy_id)
+
+    def switch() -> atomic.Receipt:
+        if operation == "publish":
+            return atomic.publish(noisy, artifacts, deploy_id=deploy_id)
+        return atomic.rollback(noisy, [item.relative for item in artifacts])
+
+    if reply == "noise":
+        elapsed = switch().switch_seconds
+        assert elapsed is not None and elapsed >= 0
+    else:
+        with pytest.raises(CutoverError, match="switch timing"):
+            switch()
+        if operation == "publish":
+            _, manifest = atomic.latest_manifest(target)
+            assert manifest.state == "pending"
+            atomic.rollback(target, [item.relative for item in artifacts])
+
+
 def command_shim(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, program: str, body: str
 ) -> None:
@@ -210,6 +279,37 @@ def command_shim(
     shim.write_text("#!/bin/bash\n" + body)
     shim.chmod(0o755)  # Executable fixture: the POSIX program mode.
     monkeypatch.setenv("PATH", f"{commands}{os.pathsep}{os.environ['PATH']}")
+
+
+def test_publish_recovery_restores_live_before_failing_cleanup(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A failed rm must only leave the rejected tree, never damage restored live."""
+    target, artifacts = batch_fixture(tmp_path)
+    live = Path(target.path_of(artifacts[0].relative))
+    old_inode = live.stat().st_ino
+    real_mv, real_rm = shutil.which("mv"), shutil.which("rm")
+    command_shim(
+        tmp_path,
+        monkeypatch,
+        "mv",
+        f'if [[ "$1" == */.second.next ]]; then exit 1; fi\nexec "{real_mv}" "$@"\n',
+    )
+    command_shim(
+        tmp_path,
+        monkeypatch,
+        "rm",
+        'path="${@: -1}"\n'
+        'if [[ "$path" == */plugins/first || "$path" == */.first.failed ]]; then exit 1; fi\n'
+        f'exec "{real_rm}" "$@"\n',
+    )
+
+    with pytest.raises(RuntimeError):
+        atomic.publish(target, artifacts, deploy_id="20261018T000000Z-rm-failed")
+
+    assert (live / "plugin.php").read_text() == "old"
+    assert live.stat().st_ino == old_inode
+    assert (live.with_name(".first.failed") / "plugin.php").read_text() == "new"
 
 
 @pytest.mark.parametrize("interrupt", [False, True])

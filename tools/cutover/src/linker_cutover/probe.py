@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import shlex
+import subprocess
 import threading
 import time
 from collections.abc import Callable
@@ -14,9 +15,14 @@ from pathlib import Path
 from linker_cutover import atomic, plan
 from linker_cutover.target import CutoverError, Target
 
-# Chosen acceptance sampling: #298's former ~30 s window gets ~300 samples per
-# endpoint at 0.1 s. This is a probe setting, not a production service threshold.
-INTERVAL_SECONDS = 0.1
+# PR #299 round 3 decision 5: operator-selected acceptance rates, not a claim
+# about Hostinger capacity. The existing 0.1 s cadence (#298's ~30 s incident)
+# now applies to ONE aggregate stream during switch/readback, not each endpoint.
+# Build/upload uses a tenfold slower 1 s delay. One worker caps in-flight GETs
+# at one; response time adds to each delay, so slow hosting reduces the rate.
+STEADY_INTERVAL_SECONDS = 1.0
+DENSE_INTERVAL_SECONDS = 0.1
+SWITCH_MARKER = "LINKER_CUTOVER_SWITCH_START"
 
 
 @dataclass(frozen=True)
@@ -30,6 +36,7 @@ class Sample:
     status: int | None
     valid: bool
     error_type: str = ""
+    cadence: str = "snapshot"
 
 
 @dataclass(frozen=True)
@@ -82,7 +89,9 @@ def _valid(endpoint: plan.ProbeEndpoint, body: str, target: Target) -> bool:
     raise CutoverError(f"unknown probe contract {endpoint.response}")
 
 
-def _sample(target: Target, endpoint: plan.ProbeEndpoint, phase: str) -> Sample:
+def _sample(
+    target: Target, endpoint: plan.ProbeEndpoint, phase: str, cadence: str = "snapshot"
+) -> Sample:
     stamp = datetime.now(UTC).isoformat()
     start = time.monotonic()
     status = None
@@ -93,7 +102,14 @@ def _sample(target: Target, endpoint: plan.ProbeEndpoint, phase: str) -> Sample:
     except (CutoverError, ValueError) as error_object:
         valid, error = False, type(error_object).__name__
     return Sample(
-        endpoint.name, phase, stamp, time.monotonic() - start, status, valid, error
+        endpoint.name,
+        phase,
+        stamp,
+        time.monotonic() - start,
+        status,
+        valid,
+        error,
+        cadence,
     )
 
 
@@ -133,8 +149,33 @@ def _rename_proof(target: Target, before: dict[str, str]) -> bool:
     )
 
 
-def observe(target: Target, deploy: Callable[[], int], *, evidence: Path) -> Proof:
-    """Baseline all endpoints, continuously probe each during deploy, then read back."""
+def run_deployment(
+    command: list[str], *, repository: Path, log: Path, on_switch: Callable[[], None]
+) -> int:
+    """Stream the real CLI's switch marker while retaining its local deploy log."""
+    with (
+        log.open("w") as output,
+        subprocess.Popen(
+            command,
+            cwd=repository,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        ) as process,
+    ):
+        assert process.stdout is not None
+        for line in process.stdout:
+            output.write(line)
+            output.flush()
+            if line.rstrip("\n") == SWITCH_MARKER:
+                on_switch()
+        return process.wait()
+
+
+def observe(
+    target: Target, deploy: Callable[[Callable[[], None]], int], *, evidence: Path
+) -> Proof:
+    """Probe slowly through builds/uploads, densely from switch through readback."""
     evidence.mkdir(parents=True, exist_ok=True)
     endpoints = plan.DEPLOY_PROBE_ENDPOINTS
     samples = [_sample(target, endpoint, "before") for endpoint in endpoints]
@@ -157,40 +198,61 @@ def observe(target: Target, deploy: Callable[[], int], *, evidence: Path) -> Pro
         [target.path_of(f"{plan.PLUGINS_DIR}/{slug}") for slug in plan.NEW_PLUGINS],
     )
     stop = threading.Event()
-    lock = threading.Lock()
+    switching = threading.Event()
+    wake = threading.Event()
+    dense_complete = threading.Event()
 
-    def watch(endpoint: plan.ProbeEndpoint) -> None:
-        while True:
-            sample = _sample(target, endpoint, "during")
-            with lock:
-                samples.append(sample)
-            if stop.wait(INTERVAL_SECONDS):
-                return
+    def switch_started() -> None:
+        switching.set()
+        wake.set()
 
-    threads = [
-        threading.Thread(target=watch, args=(endpoint,)) for endpoint in endpoints
-    ]
-    for thread in threads:
-        thread.start()
+    def watch() -> None:
+        index = 0
+        dense_seen: set[str] = set()
+        while not stop.is_set():
+            endpoint = endpoints[index % len(endpoints)]
+            cadence = "dense" if switching.is_set() else "steady"
+            sample = _sample(target, endpoint, "during", cadence)
+            samples.append(sample)
+            if cadence == "dense":
+                dense_seen.add(endpoint.name)
+                if len(dense_seen) == len(endpoints):
+                    dense_complete.set()
+            index += 1
+            wake.wait(
+                DENSE_INTERVAL_SECONDS
+                if switching.is_set()
+                else STEADY_INTERVAL_SECONDS
+            )
+            wake.clear()
+
+    thread = threading.Thread(target=watch)
+    thread.start()
+    notes: list[str] = []
     try:
-        exit_code = deploy()
+        exit_code = deploy(switch_started)
+        if switching.is_set():
+            # Even a very fast local switch must sample every endpoint in the
+            # dense phase before the final log/inode readback closes the window.
+            dense_complete.wait()
+        else:
+            notes.append("deployment did not report the switch marker")
     finally:
         stop.set()
-        for thread in threads:
-            thread.join()
+        wake.set()
+        thread.join()
     samples += [_sample(target, endpoint, "after") for endpoint in endpoints]
     after_logs = _fatal_metadata(target)
-    unchanged = all(
-        after_logs.get(path) == value for path, value in before_logs.items()
-    ) and all(
-        path in before_logs or value[1] == "0" for path, value in after_logs.items()
-    )
-    notes: list[str] = []
     try:
         renamed = _rename_proof(target, before)
     except CutoverError as error:
         renamed = False
         notes.append(str(error))
+    unchanged = all(
+        after_logs.get(path) == value for path, value in before_logs.items()
+    ) and all(
+        path in before_logs or value[1] == "0" for path, value in after_logs.items()
+    )
     result = Proof(
         exit_code,
         tuple(samples),

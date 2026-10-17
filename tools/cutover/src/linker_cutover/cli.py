@@ -25,8 +25,8 @@ Nothing writes unless `--write` is given; `drill` writes by design and says so.
 from __future__ import annotations
 
 import argparse
-import subprocess
 import sys
+from collections.abc import Callable
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -94,6 +94,9 @@ def _parser() -> argparse.ArgumentParser:
     )
     maintenance.add_argument("state", choices=("on", "off"))
     sub.add_parser("deploy", parents=[common], help="step 3: the files")
+    sub.add_parser(
+        "resume-deploy", parents=[common], help="verify/archive a pending file deploy"
+    )
     sub.add_parser(
         "rollback-deploy", parents=[common], help="restore the previous deployed files"
     )
@@ -171,7 +174,12 @@ def main(argv: list[str] | None = None) -> int:
                     "deploy: would switch every artifact in one shell, verify, then archive outside the web root (retain latest deploy only)"
                 )
                 return 0
-            deployed = steps.deploy(target, repository=repository, staging=staging)
+            deployed = steps.deploy(
+                target,
+                repository=repository,
+                staging=staging,
+                on_switch=lambda: print(probe.SWITCH_MARKER, flush=True),
+            )
             _print(deployed)
             assert deployed.publication is not None
             checked = steps.finish_deploy(
@@ -179,6 +187,17 @@ def main(argv: list[str] | None = None) -> int:
             )
             _print(checked)
             return 1 if checked.notes else 0
+        if args.command == "resume-deploy":
+            if not args.write:
+                print(
+                    "resume-deploy: would verify/archive the pending deployment manifest"
+                )
+                return 0
+            resumed = steps.resume_deploy(
+                target, repository=repository, cache_buster=_cache_buster()
+            )
+            _print(resumed)
+            return 1 if resumed.notes else 0
         if args.command == "rollback-deploy":
             if not args.write:
                 print(
@@ -196,7 +215,7 @@ def main(argv: list[str] | None = None) -> int:
                 return 0
             evidence = args.evidence or DATA_HOME / ("deploy-proof-" + _cache_buster())
 
-            def deployment_command() -> int:
+            def deployment_command(on_switch: Callable[[], None]) -> int:
                 command = [
                     sys.executable,
                     "-m",
@@ -206,14 +225,12 @@ def main(argv: list[str] | None = None) -> int:
                 ]
                 if args.target:
                     command += ["--target", args.target]
-                with (evidence / "deploy.log").open("w") as output:
-                    return subprocess.run(
-                        command,
-                        cwd=repository,
-                        stdout=output,
-                        stderr=output,
-                        check=False,
-                    ).returncode
+                return probe.run_deployment(
+                    command,
+                    repository=repository,
+                    log=evidence / "deploy.log",
+                    on_switch=on_switch,
+                )
 
             proof_result = probe.observe(target, deployment_command, evidence=evidence)
             print(

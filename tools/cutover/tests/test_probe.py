@@ -1,8 +1,10 @@
 """Multi-endpoint proof against a real loopback HTTP server and temp filesystem."""
 
 import json
+import sys
 import threading
-from collections.abc import Iterator
+import time
+from collections.abc import Callable, Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -81,8 +83,13 @@ def test_probe_hits_required_pages_and_each_plugin_during_real_local_switch(
         (live / "plugin.php").write_text("old")
         artifacts.append(atomic.Artifact(source, relative))
 
-    def deploy() -> int:
-        receipt = atomic.publish(target, artifacts, deploy_id="20261018T000000Z-probe")
+    def deploy(switch_started: Callable[[], None]) -> int:
+        receipt = atomic.publish(
+            target,
+            artifacts,
+            deploy_id="20261018T000000Z-probe",
+            on_switch=switch_started,
+        )
         atomic.archive(target, receipt)
         return 0
 
@@ -112,7 +119,7 @@ def test_invalid_rest_baseline_does_not_start_deploy(
     replies["/wp-json/linker-ai/v1/genie/conversation"] = "{}"
     started = []
 
-    def deploy() -> int:
+    def deploy(switch_started: Callable[[], None]) -> int:
         started.append(True)
         return 0
 
@@ -137,9 +144,12 @@ def test_probe_fails_on_new_fatal_or_invalid_endpoint_even_when_rename_succeeds(
         (live / "plugin.php").write_text("old")
         artifacts.append(atomic.Artifact(source, relative))
 
-    def deploy() -> int:
+    def deploy(switch_started: Callable[[], None]) -> int:
         receipt = atomic.publish(
-            target, artifacts, deploy_id="20261018T000000Z-failed-probe"
+            target,
+            artifacts,
+            deploy_id="20261018T000000Z-failed-probe",
+            on_switch=switch_started,
         )
         atomic.archive(target, receipt)
         if failure == "fatal-log":
@@ -160,3 +170,99 @@ def test_probe_fails_on_new_fatal_or_invalid_endpoint_even_when_rename_succeeds(
             sample.endpoint == "tools-rest" and not sample.valid
             for sample in result.samples
         )
+
+
+def test_probe_samples_slowly_until_switch_then_densely_through_readback(
+    proof_site: tuple[Target, dict[str, str]], tmp_path: Path
+) -> None:
+    """Round 3's lighter probe uses one aggregate stream, not one per endpoint."""
+    site, _ = proof_site
+    active, peak = 0, 0
+    request_lock = threading.Lock()
+
+    class ObservedTarget(Target):
+        def http(
+            self, path: str, *, cache_buster: str | None = None
+        ) -> tuple[int, str]:
+            nonlocal active, peak
+            with request_lock:
+                active += 1
+                peak = max(peak, active)
+            try:
+                return super().http(path, cache_buster=cache_buster)
+            finally:
+                with request_lock:
+                    active -= 1
+
+    target = ObservedTarget(site.label, site.root, site.base_url, (), None, None)
+    source = tmp_path / "release"
+    source.mkdir()
+    (source / "plugin.php").write_text("new")
+    artifacts = []
+    for slug in plan.NEW_PLUGINS:
+        relative = f"{plan.PLUGINS_DIR}/{slug}"
+        live = Path(target.path_of(relative))
+        live.mkdir(parents=True)
+        (live / "plugin.php").write_text("old")
+        artifacts.append(atomic.Artifact(source, relative))
+
+    def deploy(switch_started: Callable[[], None]) -> int:
+        # At one request/s, this build/upload stand-in admits at most starts
+        # at 0, 1, 2 s; the old per-endpoint 0.1 s loop floods this interval.
+        time.sleep(2.2)
+        receipt = atomic.publish(
+            target,
+            artifacts,
+            deploy_id="20261018T000000Z-cadence",
+            on_switch=switch_started,
+        )
+        # At 0.1 s aggregate spacing, a full seven-endpoint sweep fits before
+        # this verify/readback stand-in ends, even with local HTTP overhead.
+        time.sleep(1.2)
+        atomic.archive(target, receipt)
+        return 0
+
+    result = probe.observe(target, deploy, evidence=tmp_path / "cadence-proof")
+
+    assert result.successful
+    during = [sample for sample in result.samples if sample.phase == "during"]
+    steady = [sample for sample in during if sample.cadence == "steady"]
+    dense = [sample for sample in during if sample.cadence == "dense"]
+    assert 1 <= len(steady) <= 3
+    assert {sample.endpoint for sample in dense} == {
+        endpoint.name for endpoint in plan.DEPLOY_PROBE_ENDPOINTS
+    }
+    assert len(dense) > len(steady)
+    assert peak == 1  # Round 3 load cap: one outstanding probe GET.
+
+
+def test_deployment_process_signals_switch_before_it_finishes(tmp_path: Path) -> None:
+    """The actual child-process pipe must notify the observer before readback."""
+    acknowledgement = tmp_path / "observer-saw-switch"
+    # The child waits for an acknowledgement: a buffered/late callback cannot
+    # masquerade as a switch-time notification. Five seconds bounds the fixture.
+    script = (
+        "import pathlib, time\n"
+        f"ack = pathlib.Path({str(acknowledgement)!r})\n"
+        "print('build/upload', flush=True)\n"
+        "print('LINKER_CUTOVER_SWITCH_START', flush=True)\n"
+        "deadline = time.monotonic() + 5\n"
+        "while not ack.exists() and time.monotonic() < deadline: time.sleep(0.01)\n"
+        "print('readback', flush=True)\n"
+        "raise SystemExit(0 if ack.exists() else 1)\n"
+    )
+    log = tmp_path / "deploy.log"
+
+    status = probe.run_deployment(
+        [sys.executable, "-c", script],
+        repository=tmp_path,
+        log=log,
+        on_switch=lambda: acknowledgement.touch(),
+    )
+
+    assert status == 0
+    assert log.read_text().splitlines() == [
+        "build/upload",
+        "LINKER_CUTOVER_SWITCH_START",
+        "readback",
+    ]

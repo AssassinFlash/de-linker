@@ -19,6 +19,7 @@ import re
 import shlex
 import shutil
 import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -169,7 +170,12 @@ def deployment_id(repository: Path) -> str:
 
 
 def deploy(
-    target: Target, *, repository: Path, staging: Path, deploy_id: str | None = None
+    target: Target,
+    *,
+    repository: Path,
+    staging: Path,
+    deploy_id: str | None = None,
+    on_switch: Callable[[], None] | None = None,
 ) -> Result:
     """Build all trees, upload all artifacts, then switch the complete batch.
 
@@ -188,8 +194,12 @@ def deploy(
         for item in artifacts
     ]
     receipt = atomic.publish(
-        target, prepared, deploy_id=deploy_id or deployment_id(repository)
+        target,
+        prepared,
+        deploy_id=deploy_id or deployment_id(repository),
+        on_switch=on_switch,
     )
+    assert receipt.switch_seconds is not None
     actions = [f"deployed {item.relative} by rename" for item in artifacts]
     actions += [
         f"deploy id: {receipt.deploy_id}",
@@ -263,6 +273,19 @@ def finish_deploy(
             "retained only the most recent deploy backup set",
         ],
         [],
+    )
+
+
+def resume_deploy(target: Target, *, repository: Path, cache_buster: str) -> Result:
+    """Verify/archive a pending batch after an interrupted reply or failed verify."""
+    receipt = atomic.pending_receipt(
+        target, [item.relative for item in deployment_artifacts(repository)]
+    )
+    checked = finish_deploy(target, receipt, cache_buster=cache_buster)
+    return Result(
+        "resume-deploy",
+        [f"deploy id: {receipt.deploy_id}", *checked.actions],
+        checked.notes,
     )
 
 

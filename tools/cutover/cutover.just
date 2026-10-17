@@ -38,6 +38,11 @@ maintenance state *options:
 deploy *options:
     PHP={{ php }} {{ linker_cutover }} deploy "$@" --write
 
+# Finish verify/archive for a pending batch without building or uploading again.
+[positional-arguments]
+resume-deploy *options:
+    PHP={{ php }} {{ linker_cutover }} resume-deploy "$@" --write
+
 # Restore the preceding file deploy by rename; no database import or upload.
 [positional-arguments]
 rollback-deploy *options:
